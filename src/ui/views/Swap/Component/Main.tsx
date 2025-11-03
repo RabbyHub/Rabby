@@ -498,15 +498,17 @@ export const Main = () => {
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
 
-  const { openDirect, prefetch } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: findChain({ enum: chain })?.serverId || '',
     autoResetGasStoreOnChainChange: true,
   });
 
   useEffect(() => {
+    closeSign();
     prefetch({
       txs: currentTxs || [],
+      getContainer,
       // checkGasFeeTooHigh: true,
       // enableSecurityEngine: true,
     });
@@ -981,6 +983,7 @@ export const Main = () => {
                     return;
                   }
                   if (!activeProvider) {
+                    console.log('refresh 4');
                     refresh((e) => e + 1);
                     return;
                   }

@@ -5,6 +5,7 @@ import DappActions, {
   ActionType,
 } from '@/ui/views/CommonPopup/AssetList/components/DappActions';
 import { Value } from '.';
+import clsx from 'clsx';
 
 export const hasActions = (
   portfolio: PortfolioItem,
@@ -46,7 +47,10 @@ export const ActionRow = ({
   className,
 }: ActionRowProps) => {
   return (
-    <Table.Row key={`${portfolio?.name}`} className={className}>
+    <Table.Row
+      key={`${portfolio?.name}`}
+      className={clsx('hover:bg-transparent', className)}
+    >
       {actionKeys.filter(Boolean).map((key, index) => {
         if (key === 'withdraw') {
           return (

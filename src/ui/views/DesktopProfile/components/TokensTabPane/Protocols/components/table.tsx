@@ -51,10 +51,6 @@ const ContentRow = styled(FlexRow)`
   min-width: 800px;
   align-items: center;
 
-  &:hover {
-    background-color: var(--bg-light-color);
-  }
-
   > div {
     flex: 1;
     overflow: hidden;
@@ -102,7 +98,7 @@ export const Table = ({
   children: ReactNode;
   className?: string;
 }) => (
-  <div className={className}>
+  <div className={cx('px-8', className)}>
     <WidthContext.Provider value={widths}>{children}</WidthContext.Provider>
   </div>
 );
@@ -115,7 +111,13 @@ const Header = (props: { headers: ReactNode[]; className?: string }) => {
 
   return (
     <>
-      <Row header className={cx('px-16', props.className ?? '')}>
+      <Row
+        header
+        className={cx(
+          'p-8 bg-r-neutral-bg-1 rounded-[6px]',
+          props.className ?? ''
+        )}
+      >
         {headers.map((v, i) => {
           return (
             <Col
@@ -169,7 +171,7 @@ const Row = ({
   return (
     <StyledRow
       ref={ref}
-      className={cx('px-16 py-[5px]', className || '')}
+      className={cx('px-0 py-[1px]', className || '')}
       {...rest}
     >
       {children}

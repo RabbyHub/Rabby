@@ -29,7 +29,10 @@ export const TokenTable: React.FC<Props> = ({
         EmptyComponent
       ) : (
         <Table className="!w-full ml-0 mr-0">
-          <THeader className="w-full justify-between">
+          <THeader
+            className="w-full justify-between bg-r-neutral-bg-1 rounded-[6px] py-8"
+            rowClassName="px-8"
+          >
             <THeadCell className="flex-1">Token</THeadCell>
             <THeadCell className="flex-1">Price</THeadCell>
             <THeadCell className="flex-1">Amount</THeadCell>
@@ -46,19 +49,26 @@ export const TokenTable: React.FC<Props> = ({
               >
                 {({ data, index, style }) => {
                   const item = data[index];
+                  const last = index === (list?.length || 0) - 1;
                   return (
                     <TokenItem
                       style={style}
                       key={`${item.chain}-${item.id}`}
                       item={item}
+                      isLast={last}
                     />
                   );
                 }}
               </FixedSizeList>
             ) : (
-              list?.map((item) => {
+              list?.map((item, index) => {
+                const last = index === (list?.length || 0) - 1;
                 return (
-                  <TokenItem key={`${item.chain}-${item.id}`} item={item} />
+                  <TokenItem
+                    key={`${item.chain}-${item.id}`}
+                    item={item}
+                    isLast={last}
+                  />
                 );
               })
             )}

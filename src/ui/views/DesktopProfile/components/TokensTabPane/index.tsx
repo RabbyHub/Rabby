@@ -10,6 +10,10 @@ import { useQueryProjects } from 'ui/utils/portfolio';
 import { useAppChain } from '@/ui/hooks/useAppChain';
 import { useCommonPopupView } from '@/ui/utils';
 import { TokenList } from './TokenList';
+import { useExpandList } from './useExpandList';
+import ProjectOverview from './ProjectOverview';
+import BigNumber from 'bignumber.js';
+import { getTokenWalletFakeProject } from './utils';
 
 interface Props {
   className?: string;
@@ -84,6 +88,26 @@ export const TokensTabPane: React.FC<Props> = ({
     return [...new Set(appPortfolios?.map((item) => item.id) || [])];
   }, [appPortfolios]);
 
+  const {
+    isExpanded,
+    result: currentList,
+    toggleExpand,
+    hasExpandSwitch,
+  } = useExpandList(displayPortfolios, currentPortfolioNetWorth);
+
+  const tokenListTotalValue = React.useMemo(() => {
+    return sortTokens
+      ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
+      .toNumber();
+  }, [sortTokens]);
+
+  const projectOverviewList = React.useMemo(() => {
+    return [
+      getTokenWalletFakeProject(tokenListTotalValue),
+      ...(currentList || []),
+    ];
+  }, [tokenListTotalValue, currentList]);
+
   if (isTokensLoading && !hasTokens) {
     return (
       <div className="mx-20">
@@ -101,6 +125,13 @@ export const TokensTabPane: React.FC<Props> = ({
 
   return (
     <div className={className}>
+      <ProjectOverview
+        list={projectOverviewList}
+        appIds={appIds}
+        isExpanded={isExpanded}
+        toggleExpand={toggleExpand}
+        hasExpandSwitch={hasExpandSwitch}
+      />
       {isTokensLoading ? (
         <div className="mx-20">
           <TokenListSkeleton />
@@ -111,6 +142,7 @@ export const TokensTabPane: React.FC<Props> = ({
           onAllModeChange={setAllMode}
           list={sortTokens}
           isNoResults={isNoResults}
+          totalValue={tokenListTotalValue}
         />
       )}
 
@@ -122,9 +154,10 @@ export const TokensTabPane: React.FC<Props> = ({
             <ProtocolList
               removeProtocol={removeProtocol}
               appIds={appIds}
-              netWorth={currentPortfolioNetWorth}
-              isSearch={false}
-              list={displayPortfolios}
+              list={currentList}
+              isExpanded={isExpanded}
+              toggleExpand={toggleExpand}
+              hasExpandSwitch={hasExpandSwitch}
             />
           )}
         </div>

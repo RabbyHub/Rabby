@@ -4,7 +4,6 @@ import styled from 'styled-components';
 // Styled components
 const Container = styled.span`
   width: 100%;
-  margin: 0 10px 10px 10px;
   display: flex;
   flex-direction: column;
 `;
@@ -19,7 +18,6 @@ const Line = styled.div`
 
 const KVContainer = styled.div`
   min-width: 220px;
-  margin-bottom: 10px;
   display: flex;
 `;
 

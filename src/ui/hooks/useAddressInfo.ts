@@ -8,7 +8,10 @@ import { isSameAddress, useAlias, useWallet } from '../utils';
 import { KEYRING_CLASS } from '@/constant';
 import { findAccountByPriority } from '@/utils/account';
 import { ellipsisAddress } from '../utils/address';
+import type { Account } from '@/background/service/preference';
+import type { IDisplayedAccountWithBalance } from '../models/accountToDisplay';
 
+export type AddressInfo = Account | IDisplayedAccountWithBalance;
 export const useAddressInfo = (
   address: string,
   options?: {
@@ -55,7 +58,7 @@ export const useAddressInfo = (
     const targetSameAddressAccount = findAccountByPriority(
       accountsList.filter((acc) => isSameAddress(acc.address, address))
     );
-    const targetAccount =
+    const targetAccount: AddressInfo | undefined =
       targetTypeAccount || targetSameAddressAccount || padWatchAccount(address);
 
     return {
@@ -80,6 +83,7 @@ export const useAddressInfo = (
     if (addressDesc?.id && isSameAddress(addressDesc?.id, address)) {
       addrDescRes = { desc: addressDesc };
     } else {
+      if (!isValidAddress(address)) return;
       addrDescRes = await wallet.openapi.addrDesc(address);
     }
     const cexId = await wallet.getCexId(address);

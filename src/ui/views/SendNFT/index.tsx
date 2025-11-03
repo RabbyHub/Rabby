@@ -49,13 +49,20 @@ import {
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { ShowMoreOnSend } from '../SendToken/components/SendShowMore';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { ToAddressCard } from '../SendToken';
+import { ToAddressCard } from '@/ui/component/SendLike/ToAddressCard';
 import { PendingTxItem } from '../Swap/Component/PendingTxItem';
 import { SendNftTxHistoryItem } from '@/background/service/transactionHistory';
-import { UI_TYPE } from '@/constant/ui';
+import { AddressInfoTo } from '@/ui/component/SendLike/AddressInfoTo';
+import { AddressInfoFrom } from '@/ui/component/SendLike/AddressInfoFrom';
+import { appIsDebugPkg } from '@/utils/env';
+import {
+  RiskType,
+  sortRisksDesc,
+  useAddressRisks,
+} from '@/ui/hooks/useAddressRisk';
+import BottomArea from './BottomArea';
 
 const isTab = getUiType().isTab;
-const isDesktop = getUiType().isDesktop;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
@@ -138,6 +145,54 @@ const SendNFT = () => {
     return 1;
   }, [search]);
 
+  const [agreeRequiredChecks, setAgreeRequiredChecks] = useState({
+    forToAddress: false,
+  });
+  const { loading: loadingRisks, risks } = useAddressRisks(toAddress || '', {
+    onLoadFinished: useCallback(() => {
+      setAgreeRequiredChecks((prev) => ({ ...prev, forToAddress: false }));
+    }, []),
+    scene: 'send-nft',
+  });
+
+  const { mostImportantRisks, hasRiskForToAddress } = React.useMemo(() => {
+    const ret = {
+      risksForToAddress: [] as { value: string }[],
+      risksForToken: [] as { value: string }[],
+      mostImportantRisks: [] as { value: string }[],
+    };
+    if (risks.length) {
+      const sorted = [...risks]
+        .filter((item) => item.type !== RiskType.NEVER_SEND)
+        .sort(sortRisksDesc);
+
+      ret.risksForToAddress = sorted
+        .slice(0, 1)
+        .map((item) => ({ value: item.value }));
+    }
+
+    if (appIsDebugPkg) {
+      if (ret.risksForToAddress.length && ret.risksForToken.length) {
+        throw new Error(
+          'Address risk and Token risk should not appear at the same time'
+        );
+      }
+    }
+
+    ret.mostImportantRisks = [
+      ...ret.risksForToAddress,
+      ...ret.risksForToken,
+    ].slice(0, 1);
+
+    return {
+      mostImportantRisks: ret.mostImportantRisks,
+      hasRiskForToAddress: !!ret.risksForToAddress.length,
+    };
+  }, [risks]);
+
+  const agreeRequiredChecked =
+    hasRiskForToAddress && agreeRequiredChecks.forToAddress;
+
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0);
@@ -162,10 +217,9 @@ const SendNFT = () => {
   };
 
   const getNFTTransferParams = useCallback(
-    (amount: number): Record<string, any> | null => {
+    (amount: number): Record<string, any> => {
       if (!nftItem || !chainInfo || !currentAccount) {
-        // throw new Error('Missing required data for NFT transfer');
-        return null;
+        throw new Error('Missing required data for NFT transfer');
       }
       const params: Record<string, any> = {
         chainId: chainInfo.id,
@@ -288,7 +342,7 @@ const SendNFT = () => {
         const params = getNFTTransferParams(amount);
         let shouldForceSignPage = !!forceSignPage;
         wallet.addCacheHistoryData(
-          `${chain}-${params?.data || '0x'}`,
+          `${chain}-${params.data || '0x'}`,
           {
             address: currentAccount!.address,
             chainId: findChainByEnum(chain)?.id || 0,
@@ -348,7 +402,7 @@ const SendNFT = () => {
               },
             },
           });
-          if (isTab || isDesktop) {
+          if (isTab) {
             await promise;
             form.setFieldsValue({
               amount: 0,
@@ -436,7 +490,12 @@ const SendNFT = () => {
     setInited(true);
   };
 
-  const { targetAccount, addressDesc } = useAddressInfo(toAddress);
+  const {
+    targetAccount,
+    isMyImported,
+    addressDesc,
+    loading: loadingToAddressDesc,
+  } = useAddressInfo(toAddress);
 
   useEffect(() => {
     init();
@@ -474,38 +533,30 @@ const SendNFT = () => {
     }
   }, [toAddress, form]);
 
-  const location = useLocation();
-
-  const [gasFeeOpen, setGasFeeOpen] = useState(false);
+  // const [gasFeeOpen, setGasFeeOpen] = useState(false);
 
   return (
     <FullscreenContainer className="h-[700px]">
       <div
         className={clsx(
           'transfer-nft overflow-y-scroll',
-          isDesktop
+          isTab
             ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
         )}
       >
         <PageHeader
           onBack={handleClickBack}
-          forceShowBack={!isDesktop}
-          // canBack={!isDesktop}
-          isShowAccount
+          forceShowBack={!isTab}
+          canBack={!isTab}
+          // isShowAccount
           disableSwitchAccount
           rightSlot={
-            isDesktop ? null : (
+            isTab ? null : (
               <div
                 className="text-r-neutral-title1 absolute right-0 cursor-pointer top-1/2 -translate-y-1/2"
                 onClick={() => {
-                  // openInternalPageInTab(`send-nft${history.location.search}`);
-                  wallet.openInDesktop(
-                    `/desktop/profile?action=send-nft&sendPageType=sendNft&${history.location.search.slice(
-                      1
-                    )}`
-                  );
-                  window.close();
+                  openInternalPageInTab(`send-nft${history.location.search}`);
                 }}
               >
                 <RcIconFullscreen />
@@ -522,50 +573,27 @@ const SendNFT = () => {
             to: toAddress,
             amount: getInitialAmount(),
           }}
+          className="send-nft-form pt-[16px]"
         >
           {nftItem && (
             <div className="flex-1 overflow-auto">
-              <div className="section relative">
-                <div className="section-title justify-between items-center flex">
-                  <span className="section-title__to font-medium">
-                    {t('page.sendNFT.sectionTo.title')}
-                  </span>
-                  <div
-                    className="cursor-pointer text-r-neutral-title1"
-                    onClick={() => {
-                      const query = new URLSearchParams(search);
-                      query.set(
-                        'nftItem',
-                        encodeURIComponent(JSON.stringify(nftItem))
-                      );
-                      query.set('to', toAddress);
-                      if (UI_TYPE.isDesktop) {
-                        query.set('action', 'send-nft');
-                        query.set('sendPageType', 'sendPoly');
+              <AddressInfoFrom />
+              <AddressInfoTo
+                className={'w-full'}
+                titleText={t('page.sendNFT.sectionTo.title')}
+                loadingToAddressDesc={loadingToAddressDesc}
+                toAccount={targetAccount}
+                isMyImported={isMyImported}
+                cexInfo={addressDesc?.cex}
+                onClick={() => {
+                  const query = new URLSearchParams(search);
 
-                        const pathname = location.pathname.startsWith(
-                          '/desktop/profile'
-                        )
-                          ? location.pathname
-                          : '/desktop/profile';
-                        history.replace(`${pathname}?${query.toString()}`);
-                      } else {
-                        history.replace(`/send-poly?${query.toString()}`);
-                      }
-                    }}
-                  >
-                    <RcIconSwitchCC width={20} height={20} />
-                  </div>
-                </div>
-                <div className="to-address">
-                  {targetAccount && (
-                    <ToAddressCard
-                      account={targetAccount}
-                      cexInfo={addressDesc?.cex}
-                    />
-                  )}
-                </div>
-              </div>
+                  query.set('type', 'send-nft');
+                  query.set('rbisource', 'nftdetail');
+
+                  history.replace(`/select-to-address?${query.toString()}`);
+                }}
+              />
               <div className={clsx('section')}>
                 <div className="section-title mt-[20px]">
                   {t('page.sendNFT.sectionAmount.title')}
@@ -643,56 +671,48 @@ const SendNFT = () => {
                   </div>
                 </div>
               </div>
+              {chainInfo?.serverId && canUseDirectSubmitTx ? (
+                <div className="pb-20">
+                  <ShowMoreOnSend
+                    chainServeId={chainInfo?.serverId}
+                    open
+                    // setOpen={setGasFeeOpen}
+                  />
+                </div>
+              ) : null}
               {!canSubmit && (
                 <div className="mt-16 mb-16">
                   <PendingTxItem type="sendNft" />
                 </div>
               )}
-              {chainInfo?.serverId && canUseDirectSubmitTx ? (
-                <div className="pb-20">
-                  <ShowMoreOnSend
-                    chainServeId={chainInfo?.serverId}
-                    open={gasFeeOpen}
-                    setOpen={setGasFeeOpen}
-                  />
-                </div>
-              ) : null}
             </div>
           )}
 
-          <div
-            className={clsx(
-              'footer',
-              isTab || isDesktop ? 'rounded-b-[16px]' : ''
-            )}
-          >
-            <div className="btn-wrapper w-[100%] flex justify-center">
-              {canUseDirectSubmitTx && currentAccount?.type ? (
-                <DirectSignToConfirmBtn
-                  title={t('page.sendToken.sendButton')}
-                  onConfirm={() =>
-                    handleSubmit({
-                      amount: form.getFieldValue('amount'),
-                    })
-                  }
-                  disabled={!canSubmit}
-                  accountType={currentAccount?.type}
-                  loading={miniSignLoading}
-                />
-              ) : (
-                <Button
-                  disabled={!canSubmit}
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  className="w-[100%] h-[48px] text-[16px]"
-                  loading={isSubmitLoading}
-                >
-                  {t('page.sendNFT.sendButton')}
-                </Button>
-              )}
-            </div>
-          </div>
+          <BottomArea
+            mostImportantRisks={mostImportantRisks}
+            agreeRequiredChecked={agreeRequiredChecked}
+            onCheck={(newVal) => {
+              setAgreeRequiredChecks((prev) => ({
+                ...prev,
+                ...(hasRiskForToAddress && { forToAddress: newVal }),
+              }));
+            }}
+            currentAccount={currentAccount}
+            isSubmitLoading={isSubmitLoading}
+            canSubmit={canSubmit}
+            miniSignLoading={miniSignLoading}
+            canUseDirectSubmitTx={canUseDirectSubmitTx}
+            onConfirm={() => {
+              handleSubmit({
+                amount: form.getFieldValue('amount'),
+              });
+              setAgreeRequiredChecks((prev) => ({
+                ...prev,
+                forToAddress: false,
+                forToken: false,
+              }));
+            }}
+          />
         </Form>
       </div>
     </FullscreenContainer>

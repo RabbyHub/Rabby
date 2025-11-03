@@ -472,7 +472,7 @@ export const BridgeContent = () => {
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
 
-  const { openDirect, prefetch } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: findChainByEnum(fromChain)?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -559,6 +559,7 @@ export const BridgeContent = () => {
 
   useEffect(() => {
     if (!canUseDirectSubmitTx) return;
+    closeSign();
     prefetch({
       txs: txs || [],
       getContainer,
@@ -568,7 +569,7 @@ export const BridgeContent = () => {
         trigger: rbiSource,
       },
     });
-  }, [prefetch, txs, canUseDirectSubmitTx, rbiSource]);
+  }, [closeSign, prefetch, txs, canUseDirectSubmitTx, rbiSource]);
 
   const [showMoreOpen, setShowMoreOpen] = useState(false);
 

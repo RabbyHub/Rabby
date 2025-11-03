@@ -107,7 +107,12 @@ const DappActions = ({
   const { t } = useTranslation();
   const { setVisible } = useCommonPopupView();
 
-  const { openUI, resetGasStore, close, updateConfig } = useMiniSigner({
+  const {
+    openUI,
+    resetGasStore,
+    close: closeSign,
+    updateConfig,
+  } = useMiniSigner({
     account: currentAccount!,
   });
 
@@ -178,7 +183,7 @@ const DappActions = ({
 
       if (canDirectSign && currentAccount) {
         resetGasStore();
-        close();
+        closeSign();
         const signerConfig = {
           txs,
           title: (

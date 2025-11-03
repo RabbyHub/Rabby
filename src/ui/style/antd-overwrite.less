@@ -74,7 +74,7 @@
         message
 ---------------------*/
 .ant-message {
-  top: 12px;
+  top: 55px;
   z-index: 1500;
 }
 .ant-message-notice-content {
@@ -407,6 +407,42 @@ textarea {
       display: none !important;
     }
   }
+
+  &.rounded-tooltip {
+    .ant-tooltip-inner {
+      border-radius: 2px !important;
+    }
+    .ant-tooltip-arrow {
+      display: block !important;
+    }
+  }
+  &.address-tooltip.address-tooltip-light {
+    .ant-tooltip-inner {
+      background: var(--r-neutral-bg1);
+      color: var(--r-neutral-title1);
+    }
+
+    .ant-tooltip-arrow {
+      border-color: var(--r-neutral-bg1);
+    }
+
+    .ant-tooltip-arrow-content {
+      background-color: var(--r-neutral-bg1);
+    }
+  }
+  &.address-tooltip.address-tooltip-transparent {
+    .ant-tooltip-inner {
+      background: transparent;
+    }
+
+    .ant-tooltip-arrow {
+      border-color: transparent;
+    }
+
+    .ant-tooltip-arrow-content {
+      background-color: transparent;
+    }
+  }
 }
 
 /*---------------------
@@ -561,4 +597,8 @@ textarea {
       }
     }
   }
+}
+.whitelist-guard-bordered-view {
+  bottom: -6px;
+  right: -6px;
 }

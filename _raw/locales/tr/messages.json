@@ -708,7 +708,8 @@
         "addrValidator__empty": "Lütfen adres girin",
         "addrValidator__invalid": "Bu adres geçersiz",
         "searchInputPlaceholder": "Adres girin veya arayın",
-        "title": "Alıcı"
+        "title": "Alıcı",
+        "placeholder": "Adres Seçin"
       },
       "sendButton": "Gönder",
       "tokenInfoFieldLabel": {
@@ -750,7 +751,13 @@
       "selectToken": "Token Seçin",
       "noSupprotTokenForDex_short": "Bu borsa tarafından desteklenmiyor",
       "noSupprotTokenForSafe_short": "Bu zincirde dağıtılmamış güvenli adres",
-      "noSupportTokenForChain_short": "Sözleşme adresi bu zincirde dağıtılmamış."
+      "noSupportTokenForChain_short": "Sözleşme adresi bu zincirde dağıtılmamış.",
+      "accountSelectorModal": {
+        "title": "Adres Seçin"
+      },
+      "riskAlert": {
+        "checkboxText": "Riskleri anlıyorum ve devam etmek istiyorum."
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "Gas maliyeti için <1>0</1> {{ tokenName }} ayrıldı",
@@ -1113,7 +1120,10 @@
           "bridge": "Köprü",
           "mobile": "Mobile Sync",
           "perps": "Perps",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "setting": "Ayarlar",
+          "dapps": "Dapps",
+          "searchDapp": "Dapp Araştırın"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -1431,7 +1441,9 @@
         },
         "noTestnetAssets": "Özel Ağ Varlığı Yok",
         "addTokenEntryText": "Token",
-        "customButtonText": "Özel token ekle"
+        "customButtonText": "Özel token ekle",
+        "side": "YAN TARAF",
+        "price": "FİYAT"
       },
       "hd": {
         "howToConnectLedger": "Ledger Nasıl Bağlanır",
@@ -2267,7 +2279,9 @@
       "expand": "Genişlet",
       "selectChain": "Zincir Seç",
       "emptyFavorite": "Favori Dapp Yok",
-      "listBy": "Dapp listelendi tarafından"
+      "listBy": "Dapp listelendi tarafından",
+      "searchButton": "Araştırma",
+      "searchPlaceholder": "Dapp adını ara"
     },
     "rabbyPoints": {
       "claimItem": {
@@ -2484,7 +2498,11 @@
         "gotIt": "Anladım",
         "desc": "Tüm Zincirlerde Gas Ücretlerini Ödeyin",
         "title": "USDC / USDT Yatırın",
-        "loginAndClaim": "Giriş yap ve $2.00 al"
+        "loginAndClaim": "Giriş yap ve $2.00 al",
+        "loginTips2": "herhangi bir adres herhangi bir zincirde",
+        "learnAbout": "GasAccount hakkında daha fazla bilgi edinin",
+        "loginTips3": "gazın bittiğinde",
+        "loginTips1": "Gaz ücretlerini ödeyin için"
       },
       "loginConfirmModal": {
         "title": "Mevcut Adres ile Giriş Yap",
@@ -2501,7 +2519,8 @@
         "amount": "Miktar",
         "desc": "Rabby'nin DeBank L2 Hesabına ekstra ücret ödemeden para yatırın—istediğiniz zaman çekin.",
         "title": "Para Yatırma",
-        "invalidAmount": "500'ün altında olmalı"
+        "invalidAmount": "500'ün altında olmalı",
+        "paymentAddr": "Ödeme Adresi"
       },
       "withdrawPopup": {
         "withdrawalLimit": "Para çekme limiti",
@@ -2554,7 +2573,17 @@
       },
       "switchAccount": "GasAccount Değiştir",
       "withdrawDisabledIAP": "Para çekme işlemleri devre dışı bırakılmıştır çünkü bakiyeniz çekilemeyen fiat fonlarını içermektedir. Token bakiyenizi çekmek için destekle iletişime geçin.",
-      "gasToken": "Gaz Token"
+      "gasToken": "Gaz Token",
+      "about": {
+        "title2": "Gas Account nasıl kullanılır",
+        "title4": "GasAccount güvende mi",
+        "title1": "GasAccount nedir",
+        "title3": "GasAccount'ın ek ücretleri var mı?",
+        "desc3": "Rabby Wallet ek ücret talep etmez. Sadece işleminiz için gaz ödersiniz ve bu gazı GasAccount'tan adresinize göndermek için küçük bir gaz ücreti ödersiniz.",
+        "desc2": "GasAccount'unuza fon ekleyin ve bunu herhangi bir işlem için kullanın. İmzalama sırasında, gazı yerel token'larla veya GasAccount ile ödeme seçeneğini belirleyin, istediğiniz zaman geçiş yapın.",
+        "desc4": "GasAccount, herhangi bir sözleşme onayı veya izni gerektirmez. Rabby’nin GasAccount adresine para yatırırsınız ve ihtiyaç duyulduğunda Rabby, adresinize gaz gönderir. Tasarımı gereği tamamen güvenlidir.",
+        "desc1": "GasAccount, gaz ücretlerini ödemenin yeni bir yoludur. Her bir zincirde yerel token'lar kullanmak yerine, tüm zincirlerdeki tüm adresleriniz için gaz ödemek üzere tek bir hesap kullanabilirsiniz. Basit, isteğe bağlı ve asla gazsız kalmaz."
+      }
     },
     "safeMessageQueue": {
       "noData": "Mesaj yok",
@@ -2834,7 +2863,6 @@
         "repeated": "Mevcut adres zaten beyaz listede.",
         "tooltip": "Beyaz liste adresi"
       },
-      "title": "Beyaz Liste Adresi Ekle",
       "name": "Adınız",
       "nameYourAddress": "Adresinizi Adlandırın",
       "invalidAddress": "Bu adres geçersizdir.",
@@ -2843,7 +2871,8 @@
       "confirmPassword": "Şifreyi Onayla",
       "riskTitle": "Beyaz Liste Adresi Ekle",
       "exchangeAddress": "Değişim Adresi",
-      "address": "Adres"
+      "address": "Adres",
+      "title": "Adres listeye ekle"
     },
     "perps": {
       "candleMenuKey": {
@@ -3014,6 +3043,60 @@
       },
       "isolated": "Yalıtılmış",
       "cross": "Çapraz"
+    },
+    "selectToAddress": {
+      "emptyWhitelist": {
+        "title": "Adresi beyaz listeye ekle",
+        "desc": "Güvenilir adresleri hızlı transferler için beyaz listeye ekleyin - bir sonraki sefer onay gerekmez",
+        "addNow": "Şimdi Ekle"
+      },
+      "whitelist": {
+        "title": "Beyaz Liste",
+        "notWhitelist": "Beyaz liste adresi değil",
+        "addWhitelist": "Adresi beyaz listeye ekle",
+        "removeFromWhitelist": "Beyaz listeye eklemekten çıkar",
+        "addWhitelistDesc": "Hızlı transferler için güvenilir adresleri beyaz listeye ekleyin - bir sonraki sefer onay gerekmez."
+      },
+      "addWhitelist": {
+        "title": "Adresi beyaz listeye ekle",
+        "desc": "Güvenilir adresleri beyaz listeye ekleyin, hızlı transferler için --- bir sonraki sefer onay gerekmiyor"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Kötü amaçlı bir adrese gönderiyorsunuz.",
+            "contractAddress": "Bir sözleşmeye gönderim yapıyorsunuz, fonlar kaybolabilir.",
+            "noSend": "Bu adrese son 180 günde hiçbir transfer yapılmadı.",
+            "dexNoDeposite": "Gönderdiğiniz adres bir non-deposit borsa adresidir."
+          }
+        },
+        "cexAddress": "{{cexName}} Adresi",
+        "passwordPlaceholder": "Şifreyi girin devam etmek için",
+        "TransferBeforeValue": "Evet",
+        "title": "Bu Adrese Gönder",
+        "cexDepositAddress": "{{cexName}} Depozit Adresi",
+        "AddToWhitelist": "Beyaz Listeye Ekle",
+        "TransferBefore": "Önce transfer edildi",
+        "understandRisks": "Risksleri anlıyorum ve devam etmek istiyorum."
+      },
+      "tabs": {
+        "imported": "İçe aktarıldı",
+        "whitelist": "Beyaz listeye alındı"
+      },
+      "positiveTips": {
+        "yourOwnAddress": "Kendi adresin",
+        "sentBefore": "Son zamanlarda gönderildi",
+        "whitelistAddress": "Beyaz listeye alınmış adres"
+      },
+      "typedTitle": {
+        "send": "Gönderilecek"
+      },
+      "title": "Adres",
+      "enterAddressOrENS": "Adres girin veya arayın",
+      "enterAddress": "Adres girin",
+      "selectExchangeSource": "Borsa Kaynağını Seçin",
+      "selectImportedAddress": "İçe aktarılan adresi seçin",
+      "sendToImportedAddress": "İçe aktarılan Adrese Gönder"
     }
   },
   "component": {
@@ -3206,7 +3289,7 @@
       "appChain": "{{chain}} Hesabı üzerinde"
     },
     "RiskTip": {
-      "title": "Risk Uyarısı"
+      "title": "Risk Tespit Edildi"
     },
     "DappActions": {
       "queueDescription": "Mevcut çekim, bekleme kuyruğuna girecektir. İşlem tamamlandığında, cüzdanınıza çekilebilir."

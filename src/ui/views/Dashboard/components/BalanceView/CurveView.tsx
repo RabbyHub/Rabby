@@ -56,9 +56,6 @@ const AppChainTips = styled.div`
   pointer-events: none;
 `;
 
-/**
- * @deprecated
- */
 export const CurveThumbnail = ({
   data,
   className,
@@ -70,7 +67,7 @@ export const CurveThumbnail = ({
     return `var(--color-curve-${data?.isLoss ? 'red' : 'green'})`;
   }, [data]);
   const divRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState(92);
+  const [height, setHeight] = useState(66);
   const [showTips, setShowTips] = useState(false);
   const mousePositionRef = useRef({ x: 0, y: 0 });
   const mouseMoveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -143,7 +140,7 @@ export const CurveThumbnail = ({
       {isEmpty ? null : (
         <AreaChart
           data={data?.list}
-          width={380}
+          width={368}
           height={height}
           style={{ position: 'absolute', left: 0, cursor: 'pointer' }}
           margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
@@ -183,7 +180,11 @@ export const CurveThumbnail = ({
             <Tooltip
               cursor={{ strokeDasharray: '2 2', strokeWidth: 0.6 }}
               content={({ label }) => {
-                return <div>{dayjs(label * 1000).format('HH:mm')}</div>;
+                return (
+                  <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title2">
+                    {dayjs(label * 1000).format('HH:mm')}
+                  </div>
+                );
               }}
             />
           )}

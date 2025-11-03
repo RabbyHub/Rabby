@@ -23,7 +23,7 @@ import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import IconCheck from 'ui/assets/check-3.svg';
 import { AddressViewer, Popup } from 'ui/component';
 import { splitNumberByStep, useAlias, useCexId } from 'ui/utils';
-import { ReactComponent as RcWhitelistIconCC } from '@/ui/assets/send-token/lock.svg';
+import { ReactComponent as RcWhitelistGuardBordered } from '@/ui/assets/component/whitelist-guard-bordered.svg';
 import { ReactComponent as IconEditPen } from 'ui/assets/edit-pen-cc.svg';
 import { Exchange } from '@/ui/models/exchange';
 import { useForm } from 'antd/lib/form/Form';
@@ -286,11 +286,8 @@ export const AccountItem = memo(
                 overlayClassName="rectangle addressType__tooltip"
                 title="Whitelist Address"
               >
-                <div className="absolute w-[16px] h-[16px] bottom-[-3px] right-[-3px] text-r-blue-default">
-                  <RcWhitelistIconCC
-                    viewBox="0 0 16 16"
-                    className="w-[16px] h-[16px]"
-                  />
+                <div className="absolute w-[18px] h-[18px] whitelist-guard-bordered-view text-r-blue-default">
+                  <RcWhitelistGuardBordered className="w-[18px] h-[18px]" />
                 </div>
               </Tooltip>
             ) : (

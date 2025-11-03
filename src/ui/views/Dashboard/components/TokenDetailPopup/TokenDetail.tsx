@@ -212,11 +212,11 @@ const TokenDetail = ({
     } else {
       if (isDesktop) {
         wallet.openInDesktop(
-          `desktop/profile?rbisource=tokendetail&action=bridge&chain=${token?.chain}&payTokenId=${token?.id}`
+          `desktop/profile?rbisource=tokendetail&action=bridge&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
         );
       } else {
         history.push(
-          `/bridge?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
+          `/bridge?rbisource=tokendetail&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
         );
       }
     }
@@ -304,7 +304,7 @@ const TokenDetail = ({
           type="primary"
           size="large"
           onClick={goToSwap}
-          className="flex-1 h-[40px] leading-[18px]"
+          className="w-[84px] h-[40px] leading-[18px]"
           style={{
             height: 40,
             lineHeight: '18px',
@@ -316,7 +316,7 @@ const TokenDetail = ({
           type="primary"
           ghost
           size="large"
-          className="flex-1 h-[40px] leading-[18px] rabby-btn-ghost"
+          className="w-[84px] h-[40px] leading-[18px] rabby-btn-ghost"
           onClick={gotoBridge}
         >
           {t('page.dashboard.tokenDetail.bridge')}
@@ -325,7 +325,7 @@ const TokenDetail = ({
           type="primary"
           ghost
           size="large"
-          className="flex-1 h-[40px] leading-[18px] rabby-btn-ghost"
+          className="w-[84px] h-[40px] leading-[18px] rabby-btn-ghost"
           onClick={goToSend}
         >
           {t('page.dashboard.tokenDetail.send')}
@@ -334,7 +334,7 @@ const TokenDetail = ({
           type="primary"
           ghost
           size="large"
-          className="flex-1 h-[40px] leading-[18px] rabby-btn-ghost"
+          className="w-[84px] h-[40px] leading-[18px] rabby-btn-ghost"
           onClick={goToReceive}
         >
           {t('page.dashboard.tokenDetail.receive')}

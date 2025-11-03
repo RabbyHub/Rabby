@@ -93,18 +93,18 @@ const FractionNftRow = ({
               logo={collection.logo_url}
             />
           }
-          labelClassName="text-[15px] text-r-neutral-title1 font-medium"
+          labelClassName="text-[14px] text-r-neutral-title1"
           label={collectionName}
         />
       </Col>
       <Col>
-        <div className="text-[15px] text-r-neutral-title1 font-medium px-[10px] py-[15px]">
+        <div className="text-[14px] text-r-neutral-title1 px-[10px] py-[15px]">
           {formatAmount(amount ?? 0)} {symbol}
         </div>
       </Col>
       <Col>
         {usdValue ? (
-          <div className="flex items-center justify-end text-r-neutral-title1 font-medium">
+          <div className="flex items-center justify-end text-[14px] text-r-neutral-title1">
             {formatUsdValue(usdValue)}
             <HelperTooltip title="Calculate based on the price of the linked ERC20 token.">
               <IconNftUsdInfo

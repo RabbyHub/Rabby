@@ -13,7 +13,6 @@ import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import * as PortfolioTemplate from './Protocols/template';
-import { useExpandList } from './useExpandList';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -37,10 +36,8 @@ const TemplateDict = {
 };
 
 const PoolListContainer = styled.div`
-  border-width: 0.5px;
-  border-style: solid;
-  border-color: var(--r-neutral-line);
-  border-radius: 8px;
+  background-color: var(--r-neutral-bg-3, #f7fafc);
+  border-radius: 16px;
   padding-top: 8;
   margin: 0 20px;
   overflow: hidden;
@@ -73,16 +70,6 @@ const ProtocolItemWrapper = styled.div`
   }
 `;
 
-const PoolListWrapper = styled.div`
-  > div {
-    border-bottom: 0.5px solid var(--r-neutral-line);
-  }
-
-  > div:last-child {
-    border-bottom: 0;
-  }
-`;
-
 export const Main = memo(({ data }: { data: AbstractProject }) => {
   if (!data || !data?._portfolios?.length) return null;
 
@@ -103,7 +90,7 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
   });
 
   return (
-    <PoolListWrapper key={data.id}>
+    <div>
       {[...typesMap].map(([k, v], index) => {
         // 需要根据 common 匹配对应模板
         const [tag, type] = k.split('&&');
@@ -121,7 +108,7 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
           />
         );
       })}
-    </PoolListWrapper>
+    </div>
   );
 });
 
@@ -171,7 +158,7 @@ const ProtocolItem = ({
   ]);
 
   return (
-    <ProtocolItemWrapper>
+    <ProtocolItemWrapper id={protocol.id}>
       <div>
         <div
           className={clsx(
@@ -184,7 +171,7 @@ const ProtocolItem = ({
             chainServerId={protocol.chain || 'eth'}
             width="20px"
             height="20px"
-            chainSize="10px"
+            chainSize="12px"
             noRound={isAppChain}
             isShowChainTooltip={true}
             hideChainIcon={isAppChain}
@@ -214,7 +201,7 @@ const ProtocolItem = ({
             <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot" />
           </div>
           <div className="flex items-center justify-end flex-1">
-            <span className="text-[15px] text-r-neutral-title1 font-medium">
+            <span className="text-[20px] text-r-neutral-title1 font-semibold">
               {protocol._netWorth}
             </span>
           </div>
@@ -229,29 +216,30 @@ const ProtocolItem = ({
 
 interface Props {
   list: DisplayedProject[] | undefined;
-  isSearch?: boolean;
   appIds?: string[];
   removeProtocol?: (id: string) => void;
-  netWorth?: number;
+  isExpanded?: boolean;
+  toggleExpand?: () => void;
+  hasExpandSwitch?: boolean;
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({ list, appIds, removeProtocol, netWorth }: Props) => {
-  const {
-    isExpanded,
-    result: currentList,
-    toggleExpand,
-    hasExpandSwitch,
-  } = useExpandList(list, netWorth);
-
+const ProjectOverview = ({
+  list,
+  appIds,
+  removeProtocol,
+  isExpanded,
+  toggleExpand,
+  hasExpandSwitch,
+}: Props) => {
   if (!list) return null;
 
   return (
     <ProtocolListWrapper>
-      {currentList?.map((item) => (
+      {list?.map((item) => (
         <ProtocolItem
           protocol={item}
           removeProtocol={removeProtocol}
@@ -287,4 +275,4 @@ const ProtocolList = ({ list, appIds, removeProtocol, netWorth }: Props) => {
   );
 };
 
-export default ProtocolList;
+export default ProjectOverview;

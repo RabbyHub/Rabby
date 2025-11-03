@@ -104,8 +104,9 @@ export const useAppChain = (
       setNetWorth(realtimeData.reduce((m, n) => m + n.netWorth, 0));
     } catch (error) {
       // just ignore appChain data
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return {

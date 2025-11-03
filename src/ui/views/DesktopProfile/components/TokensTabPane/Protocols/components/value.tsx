@@ -20,16 +20,15 @@ import { TokenAvatar } from './TokenAvatar';
 
 const BalanceToken = styled.div`
   margin-bottom: 4px;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--r-neutral-title1);
-  font-weight: 500;
 `;
 
 const Col = Table.Col;
 
 export const String = ({ value, ...rest }: { value: ReactNode }) => {
   return (
-    <Col className="text-[15px] text-r-neutral-title1 font-medium" {...rest}>
+    <Col className="text-[14px] text-r-neutral-title1" {...rest}>
       {value}
     </Col>
   );
@@ -37,7 +36,7 @@ export const String = ({ value, ...rest }: { value: ReactNode }) => {
 
 export const Time = (props: { value: string | number | undefined }) => {
   return (
-    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+    <Col className="text-[14px] text-r-neutral-title1">
       {!props.value
         ? '-'
         : dayjs(Number(props.value) * 1000).format('YYYY/MM/DD HH:mm')}
@@ -96,7 +95,7 @@ export const Token = ({ value, ...rest }: { value?: PortfolioItemToken }) => {
 
 export const USDValue = (props: { value: string | number }) => {
   return (
-    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+    <Col className="text-[14px] text-r-neutral-title1">
       {formatUsdValue(+props.value)}
     </Col>
   );
@@ -104,7 +103,7 @@ export const USDValue = (props: { value: string | number }) => {
 
 export const TokensUSDValue = (props: { value: PortfolioItemToken[] }) => {
   return (
-    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+    <Col className="text-[14px] text-r-neutral-title1">
       {getUsd(props.value, 0)}
     </Col>
   );
@@ -116,7 +115,7 @@ export const TokenUSDValue = (props: { value: PortfolioItemToken }) => {
 
 export const Bool = (props: { value: number }) => {
   return (
-    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+    <Col className="text-[14px] text-r-neutral-title1">
       {props.value ? 'Yes' : 'No'}
     </Col>
   );
@@ -126,7 +125,7 @@ export const Percent = (props: { value?: number | string }) => {
   if (props.value === undefined || Number.isNaN(+props.value))
     return <Col></Col>;
   return (
-    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+    <Col className="text-[14px] text-r-neutral-title1">
       {numberWithCommas(+props.value! * 100, 2)}%
     </Col>
   );
@@ -134,7 +133,7 @@ export const Percent = (props: { value?: number | string }) => {
 
 export const NumberWithCommas = (props: { value?: number | string }) => {
   return (
-    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+    <Col className="text-[14px] text-r-neutral-title1">
       {numberWithCommas(props.value ?? 0, 2)}
     </Col>
   );
@@ -144,7 +143,7 @@ export const NumbersWithCommas = (props: {
   value: (number | string | undefined)[];
 }) => {
   return (
-    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+    <Col className="text-[14px] text-r-neutral-title1">
       {props.value.map((v) => (v ? numberWithCommas(v, 2) : '-')).join(' / ')}
     </Col>
   );
@@ -228,19 +227,19 @@ export const NFTTable = ({
                   />
                 }
                 label={
-                  <span className="text-[15px] text-r-neutral-title1 font-medium">
+                  <span className="text-[14px] text-r-neutral-title1">
                     {x.collectionName}
                   </span>
                 }
               />
             </Col>
             <Col>
-              <div className="text-[15px] text-r-neutral-title1 font-medium">
+              <div className="text-[14px] text-r-neutral-title1">
                 <span>{x.collectionName}</span> x{x.amount}
               </div>
             </Col>
             <Col>
-              <div className="flex items-center justify-end text-[15px] text-r-neutral-title1 font-medium">
+              <div className="flex items-center justify-end text-[14px] text-r-neutral-title1">
                 <span>-</span>
                 <HelperTooltip title="NFT value not included in the net worth of this protocol">
                   <IconNftUsdInfo

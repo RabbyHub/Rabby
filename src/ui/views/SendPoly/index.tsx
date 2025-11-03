@@ -92,6 +92,7 @@ const AnimatedInputWrapper = styled.div`
 const isTabOrDesktop = getUiType().isTab || getUiType().isDesktop;
 const getContainer = isTabOrDesktop ? '.js-rabby-popup-container' : undefined;
 
+/** @deprecated */
 const SendPoly = () => {
   const history = useHistory();
   const { search } = useLocation();
