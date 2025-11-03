@@ -15,71 +15,75 @@ export const DesktopNav: React.FC<{
   isLoading?: boolean;
 }> = ({ balance, changePercent, isLoss, isLoading }) => {
   return (
-    <div className="flex items-center gap-[16px]">
+    <div className="flex">
       <div
         className={clsx(
-          'flex items-start gap-[8px] py-[14px] pl-[20px] pr-[6px] w-[200px] rounded-[8px] cursor-pointer',
-          'text-r-neutral-title2 bg-r-blue-default'
+          'flex items-center gap-[16px] rounded-[20px] px-[12px] py-[10px]',
+          'border-[1px] border-solid border-rabby-app-neutral-bg-2',
+          'bg-r-app-neutral-bg-3'
         )}
       >
-        <RcIconHomeCC className="flex-shrink-0" />
-        <div className="min-w-0">
-          <div className="text-r-neutral-title2 text-[18px] leading-[20px] font-medium">
-            Portfolio
-          </div>
-          {isLoading ? (
-            <Skeleton.Input
-              className="w-[96px] h-[16px] rounded-[2px] block"
-              active
-            />
-          ) : (
-            <div className="text-r-neutral-title2 text-[13px] leading-[16px] flex items-center gap-[4px]">
-              <div className="truncate">
-                ${splitNumberByStep((balance || 0).toFixed(2))}
-              </div>
-              {changePercent ? (
-                <span
-                  className={clsx(
-                    isLoss ? 'text-r-red-default' : 'text-[#17FFAA]'
-                  )}
-                >
-                  {isLoss ? '-' : '+'}
-                  {changePercent}
-                </span>
-              ) : null}
-            </div>
+        <div
+          className={clsx(
+            'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
+            'text-r-neutral-title2 bg-r-blue-default'
           )}
+        >
+          <RcIconHomeCC className="flex-shrink-0" />
+          <div className="min-w-0">
+            <div className="text-[16px] leading-[19px] font-bold">
+              Portfolio
+            </div>
+            {isLoading ? (
+              <Skeleton.Input
+                className="w-[96px] h-[16px] rounded-[2px] block"
+                active
+              />
+            ) : (
+              <div className="text-[12px] leading-[14px] flex items-center gap-[4px]">
+                <div className="truncate">
+                  ${splitNumberByStep((balance || 0).toFixed(2))}
+                </div>
+                {changePercent ? (
+                  <span
+                    className={clsx(
+                      isLoss ? 'text-r-red-default' : 'text-[#17FFAA]'
+                    )}
+                  >
+                    {isLoss ? '-' : '+'}
+                    {changePercent}
+                  </span>
+                ) : null}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-      <div
-        className={clsx(
-          'flex items-start gap-[8px] py-[14px] px-[20px] w-[200px] rounded-[8px]',
-          'text-r-neutral-foot bg-r-neutral-card1 opacity-90'
-        )}
-      >
-        <RcIconPerpsCC />
-        <div>
-          <div className="text-r-neutral-foot text-[18px] leading-[20px] font-medium">
-            Perps
-          </div>
-          <div className="text-r-neutral-foot text-[13px] leading-[16px] opacity-70">
-            Coming Soon
+        <div
+          className={clsx(
+            'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
+            'text-r-app-neutral-foot'
+          )}
+        >
+          <RcIconPerpsCC />
+          <div>
+            <div className="text-[16px] leading-[19px] font-bold">Perps</div>
+            <div className="text-r-app-neutral-secondary text-[12px] leading-[14px]">
+              Coming Soon
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        className={clsx(
-          'flex items-start gap-[8px] py-[14px] px-[20px] w-[200px] rounded-[8px]',
-          'text-r-neutral-foot bg-r-neutral-card1 opacity-90'
-        )}
-      >
-        <RcIconLeadingCC />
-        <div>
-          <div className="text-r-neutral-foot text-[18px] leading-[20px] font-medium">
-            Lending
-          </div>
-          <div className="text-r-neutral-foot text-[13px] leading-[16px] opacity-70">
-            Coming Soon
+        <div
+          className={clsx(
+            'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
+            'text-r-app-neutral-foot'
+          )}
+        >
+          <RcIconLeadingCC />
+          <div>
+            <div className="text-[16px] leading-[19px] font-bold">Lending</div>
+            <div className="text-r-app-neutral-secondary text-[12px] leading-[14px]">
+              Coming Soon
+            </div>
           </div>
         </div>
       </div>

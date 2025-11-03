@@ -139,18 +139,26 @@ export const DesktopProfile = () => {
 
   return (
     <>
-      <Wrap className="w-full h-full bg-r-neutral-bg2" ref={scrollContainerRef}>
+      <Wrap
+        className="w-full h-full bg-r-app-neutral-bg-1"
+        ref={scrollContainerRef}
+      >
+        <div className="x-container sticky top-0 z-10 py-[16px] bg-r-app-neutral-bg-1">
+          <DesktopNav
+            balance={balance}
+            changePercent={curveChartData?.changePercent}
+            isLoss={curveChartData?.isLoss}
+            isLoading={isBalanceLoading || isCurveLoading}
+          />
+        </div>
         <div className="x-container">
-          <header className="py-[18px]">
-            <DesktopNav
-              balance={balance}
-              changePercent={curveChartData?.changePercent}
-              isLoss={curveChartData?.isLoss}
-              isLoading={isBalanceLoading || isCurveLoading}
-            />
-          </header>
           <div className="flex items-start gap-[20px]">
-            <main className="flex-1 bg-r-neutral-card-1 rounded-[8px]">
+            <main
+              className={clsx(
+                'flex-1 bg-r-neutral-card-1 rounded-[20px]',
+                'border-[1px] border-solid border-rabby-app-neutral-line'
+              )}
+            >
               <ProfileHeader
                 balance={balance}
                 evmBalance={evmBalance}
@@ -200,7 +208,9 @@ export const DesktopProfile = () => {
               </div>
             </main>
             <aside
-              className={clsx('w-[260px] flex-shrink-0 overflow-auto')}
+              className={clsx(
+                'w-[260px] flex-shrink-0 overflow-auto sticky top-[103px]'
+              )}
               style={{
                 height: 'calc(100vh - 120px)',
               }}
