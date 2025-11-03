@@ -486,7 +486,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                               txDetail={
                                 ctx?.txsCalc[txs.length - 1].preExecResult
                               }
-                              session={undefined}
+                              account={config.account}
+                              isReady={!!ctx.engineResults}
+                              session={config?.session}
                             />
                           </ApprovalUtilsProvider>
                         ) : null}
