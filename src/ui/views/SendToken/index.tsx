@@ -723,9 +723,22 @@ const SendToken = () => {
             },
             getContainer,
           });
+
+          handleFormValuesChange(
+            {
+              amount: '',
+            },
+            {
+              ...form.getFieldsValue(),
+              amount: '',
+            },
+            {
+              updateHistoryState: true,
+            }
+          );
           const hash = hashes[hashes.length - 1];
           if (hash) {
-            handleMiniSignResolve();
+            await handleMiniSignResolve();
           } else {
             setMiniSignLoading(false);
           }
@@ -858,6 +871,31 @@ const SendToken = () => {
     }
   );
 
+  const replaceHistorySearch = useCallback(
+    (input: { token?: TokenItem; amount?: string }) => {
+      const { token, amount } = input;
+      const searchParams = new URLSearchParams(history.location.search);
+      if (token) {
+        searchParams.set('token', encodeTokenParam(token));
+      } else if (token === null) {
+        searchParams.delete('token');
+      }
+      if (amount !== undefined) {
+        searchParams.set('amount', amount);
+      }
+
+      history.replace({
+        pathname: history.location.pathname,
+        search: searchParams.toString(),
+      });
+    },
+    [history]
+  );
+
+  const initialFormValues = {
+    to: toAddress,
+    amount: paramAmount || '',
+  };
   const amount = useDebounceValue(form.getFieldValue('amount'), 300);
   const address = form.getFieldValue('to');
 
@@ -997,16 +1035,24 @@ const SendToken = () => {
   ]);
 
   const handleMiniSignResolve = useCallback(() => {
-    setTimeout(() => {
-      setMiniSignLoading(false);
-      prefetch({
-        txs: [],
-      });
-      form.setFieldsValue({ amount: '' });
-      // persistPageStateCache();
-      wallet.clearPageStateCache();
-      setRefreshId((e) => e + 1);
-    }, 500);
+    return new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          setMiniSignLoading(false);
+          prefetch({
+            txs: [],
+          });
+          form.setFieldsValue({ amount: '' });
+          // persistPageStateCache();
+          wallet.clearPageStateCache();
+          setRefreshId((e) => e + 1);
+          resolve();
+        } catch (err) {
+          console.error(err);
+          reject();
+        }
+      }, 500);
+    });
   }, [form]);
 
   const handleReceiveAddressChanged = useMemoizedFn(async (to: string) => {
@@ -1033,10 +1079,6 @@ const SendToken = () => {
     }
   });
 
-  const initialFormValues = {
-    to: toAddress,
-    amount: paramAmount || '',
-  };
   const handleFormValuesChange = useCallback(
     async (
       changedValues: null | Partial<FormSendToken>,
@@ -1275,27 +1317,6 @@ const SendToken = () => {
   const handleAmountChange = useCallback(() => {
     cancelClickedMax();
   }, [cancelClickedMax]);
-
-  const replaceHistorySearch = useCallback(
-    (input: { token?: TokenItem; amount?: string }) => {
-      const { token, amount } = input;
-      const searchParams = new URLSearchParams(history.location.search);
-      if (token) {
-        searchParams.set('token', encodeTokenParam(token));
-      } else if (token === null) {
-        searchParams.delete('token');
-      }
-      if (amount !== undefined) {
-        searchParams.set('amount', amount);
-      }
-
-      history.replace({
-        pathname: history.location.pathname,
-        search: searchParams.toString(),
-      });
-    },
-    [history]
-  );
 
   const handleCurrentTokenChange = useCallback(
     async (token: TokenItem, ignoreCache = false) => {
@@ -1711,7 +1732,6 @@ const SendToken = () => {
         });
       } else {
         const lastTimeSentToken = await wallet.getLastTimeSendToken();
-        console.debug('[feat] lastTimeSentToken', lastTimeSentToken);
         let needLoadToken: TokenItem | null = lastTimeSentToken || currentToken;
 
         if (await wallet.hasPageStateCache()) {
