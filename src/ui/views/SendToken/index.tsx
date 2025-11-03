@@ -11,8 +11,8 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { useAsyncFn, useDebounce, usePrevious } from 'react-use';
-import { Form, message, Button, Modal, Slider, SliderSingleProps } from 'antd';
+import { useAsyncFn, usePrevious } from 'react-use';
+import { Form, message, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
 import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
@@ -32,7 +32,7 @@ import {
   openInternalPageInTab,
   useWallet,
 } from 'ui/utils';
-import { query2obj } from 'ui/utils/url';
+import { obj2query, query2obj } from 'ui/utils/url';
 import { coerceFloat, formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import {
@@ -172,6 +172,15 @@ function getSliderPercent(
   return 0;
 }
 
+function encodeTokenParam(currentToken: Pick<TokenItem, 'chain' | 'id'>) {
+  return `${currentToken.chain}:${currentToken.id}`;
+}
+
+function decodeTokenParam(tokenParam: string) {
+  const [chain, id] = tokenParam.split(':');
+  return { chain, id };
+}
+
 const ChainSelectWrapper = styled.div`
   border: 1px solid transparent;
   border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
@@ -197,14 +206,15 @@ const SendToken = () => {
 
   // Core States
   const [form] = useForm<FormSendToken>();
-  const toAddress = useMemo(() => {
+  const { toAddress, toAddressType, paramAmount } = useMemo(() => {
     const query = new URLSearchParams(search);
-    return query.get('to') || '';
+    return {
+      toAddress: query.get('to') || '',
+      toAddressType: query.get('type') || '',
+      paramAmount: query.get('amount') || '',
+    };
   }, [search]);
-  const toAddressType = useMemo(() => {
-    const query = new URLSearchParams(search);
-    return query.get('type') || '';
-  }, [search]);
+
   const currentAccount = useCurrentAccount();
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
@@ -699,6 +709,11 @@ const SendToken = () => {
       if (canUseDirectSubmitTx && !shouldForceSignPage) {
         setMiniSignLoading(true);
         try {
+          // no need to wait
+          wallet.setLastTimeSendToken(currentToken).catch((error) => {
+            console.error('[MiniSign] setLastTimeSendToken error', error);
+          });
+
           const hashes = await openDirect({
             txs: [params as Tx],
             ga: {
@@ -708,16 +723,25 @@ const SendToken = () => {
             },
             getContainer,
           });
+
+          handleFormValuesChange(
+            {
+              amount: '',
+            },
+            {
+              ...form.getFieldsValue(),
+              amount: '',
+            },
+            {
+              updateHistoryState: true,
+            }
+          );
           const hash = hashes[hashes.length - 1];
           if (hash) {
-            handleMiniSignResolve();
+            await handleMiniSignResolve();
           } else {
             setMiniSignLoading(false);
           }
-          await wallet.setLastTimeSendToken(
-            currentAccount?.address,
-            currentToken
-          );
 
           return;
         } catch (error) {
@@ -784,10 +808,6 @@ const SendToken = () => {
         }
       }
       try {
-        await wallet.setLastTimeSendToken(
-          currentAccount?.address,
-          currentToken
-        );
         await persistPageStateCache();
         matomoRequestEvent({
           category: 'Send',
@@ -817,6 +837,10 @@ const SendToken = () => {
             'send'
           );
 
+        // no need to wait
+        wallet.setLastTimeSendToken(currentToken).catch((error) => {
+          console.error('[FullSign] setLastTimeSendToken error', error);
+        });
         const promise = wallet.sendRequest({
           method: 'eth_sendTransaction',
           params: [params],
@@ -847,6 +871,31 @@ const SendToken = () => {
     }
   );
 
+  const replaceHistorySearch = useCallback(
+    (input: { token?: TokenItem; amount?: string }) => {
+      const { token, amount } = input;
+      const searchParams = new URLSearchParams(history.location.search);
+      if (token) {
+        searchParams.set('token', encodeTokenParam(token));
+      } else if (token === null) {
+        searchParams.delete('token');
+      }
+      if (amount !== undefined) {
+        searchParams.set('amount', amount);
+      }
+
+      history.replace({
+        pathname: history.location.pathname,
+        search: searchParams.toString(),
+      });
+    },
+    [history]
+  );
+
+  const initialFormValues = {
+    to: toAddress,
+    amount: paramAmount || '',
+  };
   const amount = useDebounceValue(form.getFieldValue('amount'), 300);
   const address = form.getFieldValue('to');
 
@@ -986,16 +1035,24 @@ const SendToken = () => {
   ]);
 
   const handleMiniSignResolve = useCallback(() => {
-    setTimeout(() => {
-      setMiniSignLoading(false);
-      prefetch({
-        txs: [],
-      });
-      form.setFieldsValue({ amount: '' });
-      // persistPageStateCache();
-      wallet.clearPageStateCache();
-      setRefreshId((e) => e + 1);
-    }, 500);
+    return new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          setMiniSignLoading(false);
+          prefetch({
+            txs: [],
+          });
+          form.setFieldsValue({ amount: '' });
+          // persistPageStateCache();
+          wallet.clearPageStateCache();
+          setRefreshId((e) => e + 1);
+          resolve();
+        } catch (err) {
+          console.error(err);
+          reject();
+        }
+      }, 500);
+    });
   }, [form]);
 
   const handleReceiveAddressChanged = useMemoizedFn(async (to: string) => {
@@ -1030,9 +1087,11 @@ const SendToken = () => {
         token?: TokenItem;
         isInitFromCache?: boolean;
         updateSliderValue?: boolean;
+        updateHistoryState?: boolean;
       }
     ) => {
-      const { token, updateSliderValue = true } = opts || {};
+      const { token, updateSliderValue = true, updateHistoryState = true } =
+        opts || {};
       if (changedValues && changedValues.to) {
         handleReceiveAddressChanged(changedValues.to);
       }
@@ -1077,15 +1136,21 @@ const SendToken = () => {
       form.setFieldsValue(nextFormValues);
       setCacheAmount(resultAmount);
 
-      if (updateSliderValue) {
-        if (resultAmount) {
+      if (resultAmount) {
+        if (updateSliderValue) {
           const percentValue = getSliderPercent(resultAmount, {
             token: targetToken,
           });
           setSliderPercentValue(percentValue);
-        } else {
-          setSliderPercentValue(0);
         }
+      } else {
+        setSliderPercentValue(0);
+      }
+
+      if (updateHistoryState) {
+        replaceHistorySearch({
+          amount: resultAmount || '',
+        });
       }
     },
     [
@@ -1284,6 +1349,10 @@ const SendToken = () => {
       setBalanceError(null);
       setIsLoading(true);
       loadCurrentToken(token.id, token.chain, account.address);
+
+      replaceHistorySearch({
+        token: token,
+      });
     },
     [
       currentToken?.chain,
@@ -1295,6 +1364,7 @@ const SendToken = () => {
       showGasReserved,
       wallet,
       cancelClickedMax,
+      replaceHistorySearch,
     ]
   );
 
@@ -1596,8 +1666,23 @@ const SendToken = () => {
       const account = (await wallet.syncGetCurrentAccount())!;
       const qs = query2obj(history.location.search);
 
+      const filledAmountRef = { current: false };
+      const fillAmount = (token?: TokenItem) => {
+        if (filledAmountRef.current) return;
+
+        if (qs.amount) {
+          filledAmountRef.current = true;
+
+          const patchValues = { to: qs.to, amount: qs.amount };
+          handleFormValuesChange(patchValues, initialFormValues, {
+            token,
+            updateSliderValue: true,
+          });
+        }
+      };
+
       if (qs.token) {
-        const [tokenChain, id] = qs.token.split(':');
+        const { chain: tokenChain, id } = decodeTokenParam(qs.token);
         if (!tokenChain || !id) {
           setInitLoading(false);
           return;
@@ -1618,7 +1703,12 @@ const SendToken = () => {
           return;
         }
         setChain(target.enum);
-        await loadCurrentToken(id, tokenChain, account.address);
+        const tokenItem = await loadCurrentToken(
+          id,
+          tokenChain,
+          account.address
+        );
+        fillAmount(tokenItem || undefined);
       } else if ((history.location.state as any)?.safeInfo) {
         const safeInfo: {
           nonce: number;
@@ -1641,10 +1731,8 @@ const SendToken = () => {
           currentToken: nativeToken || currentToken,
         });
       } else {
-        // const lastTimeSentToken = !currentAccount?.address
-        //   ? null
-        //   : await wallet.getLastTimeSendToken(currentAccount?.address);
-        let needLoadToken: TokenItem | null = /* lastTimeSentToken ||  */ currentToken;
+        const lastTimeSentToken = await wallet.getLastTimeSendToken();
+        let needLoadToken: TokenItem | null = lastTimeSentToken || currentToken;
 
         if (await wallet.hasPageStateCache()) {
           const cache = await wallet.getPageStateCache();
@@ -1686,6 +1774,8 @@ const SendToken = () => {
           account.address
         );
       }
+
+      fillAmount();
     } catch (error) {
       /* empty */
       console.error('initByCache error', error);
@@ -1806,10 +1896,7 @@ const SendToken = () => {
           className="send-token-form pt-[16px]"
           onFinish={handleSubmit}
           onValuesChange={handleFormValuesChange}
-          initialValues={{
-            to: toAddress,
-            amount: '',
-          }}
+          initialValues={initialFormValues}
         >
           <div className="flex-1 overflow-auto pb-[32px]">
             <AddressInfoFrom />
@@ -1820,7 +1907,16 @@ const SendToken = () => {
               cexInfo={addressDesc?.cex}
               onClick={() => {
                 history.push(
-                  '/select-to-address?type=send-token&rbisource=send-token'
+                  `/select-to-address?${obj2query({
+                    type: 'send-token',
+                    rbisource:
+                      filterRbiSource('sendToken', rbisource) || rbisource,
+                    token: encodeTokenParam({
+                      chain: currentToken?.chain || '',
+                      id: currentToken?.id || '',
+                    }),
+                    amount: form.getFieldValue('amount') || '',
+                  })}`
                 );
               }}
             />
@@ -1882,6 +1978,7 @@ const SendToken = () => {
                         },
                         {
                           updateSliderValue: false,
+                          updateHistoryState: true,
                         }
                       );
 
