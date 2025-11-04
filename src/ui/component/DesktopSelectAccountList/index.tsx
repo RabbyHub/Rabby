@@ -80,7 +80,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
 
   return (
     <div
-      className="flex flex-col gap-[12px] h-full"
+      className="flex flex-col gap-[12px] h-[670px] rounded-[20px]"
       style={{
         position: shouldElevate ? 'relative' : 'static',
         zIndex: shouldElevate ? 2000 : 'auto',
@@ -154,12 +154,12 @@ const AccountItem: React.FC<{
         'rounded-[20px] px-[16px] cursor-pointer mb-[12px] flex items-center gap-[8px]',
         isSelected
           ? 'py-[20px] border-solid border-[1px] bg-rb-neutral-card1 border-rb-neutral-line'
-          : 'pt-[18px] pb-[16px] bg-rb-neutral-bg-4'
+          : 'pt-[18px] pb-[16px] bg-rb-neutral-bg-3'
       )}
       onClick={onClick}
     >
       <img src={addressTypeIcon} className="w-[24px] h-[24px]" alt="" />
-      <div className="flex flex-col gap-[8px]">
+      <div className="flex flex-col gap-[2px]">
         <div className="flex items-center gap-[4px]">
           <div className={clsx('text-[16px] leading-[19px] font-medium')}>
             {item.alianName}

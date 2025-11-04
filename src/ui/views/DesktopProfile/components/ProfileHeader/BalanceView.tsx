@@ -41,8 +41,10 @@ import {
   useCommonPopupView,
   useWallet,
 } from 'ui/utils';
-import { CurveThumbnail } from './CurveThumbnail';
+import { CurvePoint, CurveThumbnail } from './CurveThumbnail';
 import { CurveModal } from './CurveModal';
+import { useDebounce } from 'react-use';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const Container = styled.div`
   margin-bottom: 24px;
@@ -55,24 +57,108 @@ export const BalanceView: React.FC<{
   evmBalance?: number | null;
   curveChartData?: CurveChartData;
   isLoading?: boolean;
-}> = ({ balance, evmBalance, curveChartData, isLoading }) => {
+  isManualRefreshing?: boolean;
+  balanceLoading?: boolean;
+  curveLoading?: boolean;
+  balanceFromCache?: boolean;
+}> = ({
+  balance,
+  evmBalance,
+  curveChartData,
+  isLoading,
+  isManualRefreshing,
+  balanceLoading,
+  curveLoading,
+  balanceFromCache,
+}) => {
   const { t } = useTranslation();
+  const [isHover, setHover] = useState(false);
+  const [curvePoint, setCurvePoint] = useState<CurvePoint>();
+  const [isDebounceHover, setIsDebounceHover] = useState(false);
+  const currentAccount = useCurrentAccount();
 
-  const [isShowCurveModal, setIsShowCurveModal] = useState(false);
-  const shouldRenderCurve = !isLoading && !!curveChartData;
+  const { currentHomeBalanceCache } = useHomeBalanceView(
+    currentAccount?.address
+  );
 
+  useEffect(() => {
+    if (!isHover) {
+      setCurvePoint(undefined);
+    }
+  }, [isHover]);
+
+  // useEffect(() => {
+  //   if (!balanceLoading && !curveLoading) {
+  //     setIsManualRefreshing(false);
+  //   }
+  // }, [balanceLoading, curveLoading]);
+
+  const onMouseMove = () => {
+    setHover(true);
+  };
+  const onMouseLeave = () => {
+    setHover(false);
+    setIsDebounceHover(false);
+  };
+
+  useDebounce(
+    () => {
+      if (isHover) {
+        setIsDebounceHover(true);
+      }
+    },
+    300,
+    [isHover]
+  );
+
+  const currentHover = isDebounceHover;
+
+  const currentBalance = currentHover ? curvePoint?.value || balance : balance;
+  const currentChangePercent = currentHover
+    ? curvePoint?.changePercent || curveChartData?.changePercent
+    : curveChartData?.changePercent;
+  const currentIsLoss =
+    currentHover && curvePoint ? curvePoint.isLoss : curveChartData?.isLoss;
+  const currentChangeValue = currentHover ? curvePoint?.change : null;
+  const { hiddenBalance } = useRabbySelector((state) => state.preference);
+
+  const shouldShowRefreshButton =
+    isManualRefreshing || balanceLoading || curveLoading;
+
+  const couldShowLoadingDueToBalanceNil =
+    currentBalance === null || (balanceFromCache && currentBalance === 0);
+  // const couldShowLoadingDueToUpdateSource = !balanceFromCache || isManualRefreshing;
+  const couldShowLoadingDueToUpdateSource =
+    !currentHomeBalanceCache?.balance || isManualRefreshing;
+
+  const shouldShowBalanceLoading =
+    couldShowLoadingDueToBalanceNil ||
+    (couldShowLoadingDueToUpdateSource && balanceLoading);
+  const shouldShowCurveLoading =
+    couldShowLoadingDueToBalanceNil ||
+    (couldShowLoadingDueToUpdateSource && curveLoading);
+  const shouldShowLoading = shouldShowBalanceLoading || shouldShowCurveLoading;
   const shouldHidePercentChange =
-    !curveChartData?.changePercent ||
-    isLoading ||
+    !currentChangePercent ||
+    hiddenBalance ||
+    shouldShowLoading ||
     !curveChartData?.startUsdValue;
+
+  const shouldRenderCurve =
+    !shouldShowLoading && !hiddenBalance && !!curveChartData && !isLoading;
 
   const showAppChainTips = useMemo(() => {
     return evmBalance !== balance;
   }, [evmBalance, balance]);
 
+  const handleHoverCurve = (data) => {
+    setCurvePoint(data);
+    console.log('hover', data);
+  };
+
   return (
     <>
-      <Container>
+      <Container onMouseLeave={onMouseLeave}>
         <div className="balance-view-content relative">
           <div>
             <div className={clsx('group w-[100%] flex gap-[8px] items-end')}>
@@ -87,7 +173,9 @@ export const BalanceView: React.FC<{
                     className="w-[200px] h-[53px] rounded block"
                   />
                 ) : (
-                  <div>${splitNumberByStep((balance || 0).toFixed(2))}</div>
+                  <div>
+                    ${splitNumberByStep((currentBalance || 0).toFixed(2))}
+                  </div>
                 )}
               </div>
               <div
@@ -100,23 +188,23 @@ export const BalanceView: React.FC<{
               >
                 <div
                   className={clsx(
-                    curveChartData?.isLoss
-                      ? 'text-r-red-default'
-                      : 'text-r-green-default',
+                    currentIsLoss
+                      ? 'text-rb-red-default'
+                      : 'text-rb-green-default',
                     'text-[20px] leading-[24px] font-medium',
                     {
                       hidden: shouldHidePercentChange,
                     }
                   )}
                 >
-                  {curveChartData?.isLoss ? '-' : '+'}
+                  {currentIsLoss ? '-' : '+'}
                   <span>
-                    {curveChartData?.changePercent === '0%'
+                    {currentChangePercent === '0%'
                       ? '0.00%'
                       : curveChartData?.changePercent}
                   </span>
-                  {curveChartData?.change ? (
-                    <span>({curveChartData.change})</span>
+                  {currentChangeValue ? (
+                    <span>({currentChangeValue})</span>
                   ) : null}
                 </div>
                 {/* {missingList?.length ? (
@@ -138,18 +226,18 @@ export const BalanceView: React.FC<{
           </div>
           <div
             className={clsx('w-[400px] h-[100px] absolute top-[-30px] right-0')}
+            onMouseMove={onMouseMove}
+            onMouseLeave={onMouseLeave}
           >
             {!!shouldRenderCurve && !!curveChartData && (
-              <div onClick={() => setIsShowCurveModal(true)}>
-                <CurveThumbnail
-                  // isHover={currentHover}
-                  data={curveChartData}
-                  showAppChainTips={showAppChainTips}
-                  width={400}
-                  height={100}
-                  // onHover={handleHoverCurve}
-                />
-              </div>
+              <CurveThumbnail
+                isHover={currentHover}
+                data={curveChartData}
+                showAppChainTips={showAppChainTips}
+                onHover={handleHoverCurve}
+                width={400}
+                height={100}
+              />
             )}
             {!!isLoading && (
               <div className="flex mt-[14px]">
@@ -162,15 +250,6 @@ export const BalanceView: React.FC<{
           </div>
         </div>
       </Container>
-      <CurveModal
-        curveChartData={curveChartData}
-        balance={balance}
-        evmBalance={evmBalance}
-        visible={isShowCurveModal}
-        onClose={() => {
-          setIsShowCurveModal(false);
-        }}
-      />
     </>
   );
 };

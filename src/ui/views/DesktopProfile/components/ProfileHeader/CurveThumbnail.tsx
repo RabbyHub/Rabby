@@ -40,8 +40,8 @@ const CurveWrapper = styled.div`
 
 const CurveGlobalStyle = createGlobalStyle`
   :root {
-    --color-curve-green: #2ABB7F;
-    --color-curve-red: #E34935;
+    --color-curve-green: var(--rb-green-default);
+    --color-curve-red: var(--rb-red-default);
   }
 `;
 
@@ -164,12 +164,11 @@ export const CurveThumbnail = ({
             <Tooltip
               cursor={{ strokeDasharray: '2 2', strokeWidth: 0.6 }}
               content={({ label }) => {
-                return null;
-                // return (
-                //   <div className="text-r-neutral-title1">
-                //     {dayjs(label * 1000).format('HH:mm')}
-                //   </div>
-                // );
+                return (
+                  <div className="text-[12px] leading-[14px] text-rb-neutral-body">
+                    {dayjs(label * 1000).format('MMMD,HH:mm')}
+                  </div>
+                );
               }}
             />
           )}

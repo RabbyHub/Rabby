@@ -211,9 +211,6 @@ export const DesktopProfile = () => {
               className={clsx(
                 'w-[260px] flex-shrink-0 overflow-auto sticky top-[103px]'
               )}
-              style={{
-                height: 'calc(100vh - 120px)',
-              }}
             >
               <DesktopSelectAccountList
                 shouldElevate={shouldElevateAccountList}

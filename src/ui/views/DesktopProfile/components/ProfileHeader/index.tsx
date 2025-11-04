@@ -155,11 +155,9 @@ export const ProfileHeader: React.FC<{
             {isGnosis ? (
               <div
                 className={clsx(
-                  'px-[16px] py-[12px] rounded-[8px] bg-r-neutral-card-2',
-                  'flex items-center gap-[8px] cursor-pointer',
-                  'text-r-neutral-title1 text-[13px] leading-[16px] font-medium',
-                  'border-[1px] border-solid border-transparent',
-                  'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+                  'p-[14px] rounded-[14px] bg-rb-brand-light-1',
+                  'flex items-center justify-center gap-[8px] cursor-pointer',
+                  'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
                 )}
                 onClick={() => {
                   history.replace(
