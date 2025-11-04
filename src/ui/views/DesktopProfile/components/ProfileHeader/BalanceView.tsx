@@ -142,7 +142,8 @@ export const BalanceView: React.FC<{
     !currentChangePercent ||
     hiddenBalance ||
     shouldShowLoading ||
-    !curveChartData?.startUsdValue;
+    !curveChartData?.startUsdValue ||
+    isLoading;
 
   const shouldRenderCurve =
     !shouldShowLoading && !hiddenBalance && !!curveChartData && !isLoading;
@@ -153,7 +154,6 @@ export const BalanceView: React.FC<{
 
   const handleHoverCurve = (data) => {
     setCurvePoint(data);
-    console.log('hover', data);
   };
 
   return (
@@ -201,7 +201,7 @@ export const BalanceView: React.FC<{
                   <span>
                     {currentChangePercent === '0%'
                       ? '0.00%'
-                      : curveChartData?.changePercent}
+                      : currentChangePercent}
                   </span>
                   {currentChangeValue ? (
                     <span>({currentChangeValue})</span>

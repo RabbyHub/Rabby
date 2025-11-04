@@ -22,6 +22,7 @@ import { Virtuoso } from 'react-virtuoso';
 import { useEventListener } from 'ahooks';
 import eventBus from '@/eventBus';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
+import { RcIconCopyCC } from '@/ui/assets/desktop/common';
 
 interface DesktopSelectAccountListProps {
   shouldElevate?: boolean;
@@ -193,6 +194,7 @@ const AccountItem: React.FC<{
             )}
           />
           <CopyChecked
+            copyIcon={RcIconCopyCC}
             addr={item.address}
             className={clsx('w-[16px] h-[16px] ml-[2px] text-14')}
             copyClassName={clsx(

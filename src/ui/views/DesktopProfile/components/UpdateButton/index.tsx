@@ -32,11 +32,11 @@ export const UpdateButton: React.FC<{
   return (
     <div className="flex items-center gap-[4px]">
       {isUpdating ? (
-        <div className="text-r-neutral-foot text-[13px] leading-[16px]">
+        <div className="text-rb-neutral-secondary text-[13px] leading-[16px]">
           Updating data
         </div>
       ) : updatedAt && elapseSecs ? (
-        <div className="text-r-neutral-foot text-[13px] leading-[16px]">
+        <div className="text-rb-neutral-secondary text-[13px] leading-[16px]">
           Data updated{' '}
           <span className="text-r-neutral-title1 font-medium">{timeText}</span>{' '}
           ago

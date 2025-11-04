@@ -86,6 +86,7 @@ export const ProfileHeader: React.FC<{
               onClick={() => {
                 copyAddress(currentAccount?.address);
               }}
+              className="cursor-pointer rounded-[4px] text-rb-neutral-foot hover:bg-rb-neutral-bg-0"
             >
               <RcIconCopyCC />
             </div>
@@ -99,7 +100,7 @@ export const ProfileHeader: React.FC<{
                 </div>
               }
             >
-              <div>
+              <div className="cursor-pointer rounded-[4px] text-rb-neutral-foot hover:bg-rb-neutral-bg-0">
                 <RcIconQrCodeCC />
               </div>
             </Popover>

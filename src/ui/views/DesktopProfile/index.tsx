@@ -35,7 +35,7 @@ const Wrap = styled.div`
   height: 100%;
   width: 100%;
   overflow: auto;
-  background: var(--r-neutral-bg2, #f2f4f7);
+  background: var(--rb-neutral-bg-1, #fff);
 
   .x-container {
     padding-left: 20px;
@@ -48,12 +48,12 @@ const Wrap = styled.div`
   /* antd */
   .ant-tabs-tab {
     color: var(--r-neutral-foot, #6a7587);
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 18px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
 
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-top: 16px;
+    padding-bottom: 13px;
 
     &:hover {
       color: var(--r-blue-default, #4c65ff);
@@ -64,17 +64,19 @@ const Wrap = styled.div`
   }
   .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
     color: var(--r-blue-default, #4c65ff);
+    font-weight: 600;
     text-shadow: none;
   }
   .ant-tabs-top > .ant-tabs-nav .ant-tabs-ink-bar {
     height: 3px;
+    border-radius: 2px 2px 0 0;
     background-color: var(--r-blue-default, #4c65ff);
   }
   .ant-tabs-top > .ant-tabs-nav {
     margin-bottom: 0;
   }
   .ant-tabs-top > .ant-tabs-nav::before {
-    border-bottom: 0.5px solid var(--r-neutral-line, #e0e5ec);
+    border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
   }
 `;
 
@@ -214,7 +216,7 @@ export const DesktopProfile = () => {
             >
               <DesktopSelectAccountList
                 shouldElevate={shouldElevateAccountList}
-                isShowApprovalAlert={true}
+                // isShowApprovalAlert={true}
               />
             </aside>
           </div>

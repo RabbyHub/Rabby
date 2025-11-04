@@ -2,10 +2,11 @@ import { CHAINS_ENUM } from '@debank/common';
 import clsx from 'clsx';
 import React from 'react';
 import { ReactComponent as RcIconClose } from '@/ui/assets/dapp-search/cc-close.svg';
-import { ReactComponent as RcIconArrowDownCC } from '@/ui/assets/arrow-down-cc.svg';
+// import { ReactComponent as RcIconArrowDownCC } from '@/ui/assets/arrow-down-cc.svg';
 import { useTranslation } from 'react-i18next';
 import { ChainSelectorLargeModal } from '@/ui/component/ChainSelector/LargeModal';
 import { findChainByEnum } from '@/utils/chain';
+import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 
 interface Props {
   value?: CHAINS_ENUM;
