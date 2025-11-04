@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { AddressViewer } from 'ui/component';
@@ -18,11 +18,12 @@ import { isSameAccount } from '@/utils/account';
 import { flatten } from 'lodash';
 import { CopyChecked } from '../CopyChecked';
 import { useApprovalDangerCount } from '@/ui/hooks/useApprovalDangerCount';
-import { Virtuoso } from 'react-virtuoso';
-import { useEventListener } from 'ahooks';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
+import { useEventListener, useMemoizedFn } from 'ahooks';
 import eventBus from '@/eventBus';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 import { RcIconCopyCC } from '@/ui/assets/desktop/common';
+import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 
 interface DesktopSelectAccountListProps {
   shouldElevate?: boolean;
@@ -38,6 +39,8 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   const location = useLocation();
   const dispatch = useRabbyDispatch();
   const currentAccount = useCurrentAccount();
+  const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const shouldScrollRef = useRef(true);
 
   const {
     sortedAccountsList,
@@ -62,22 +65,37 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
 
   const switchAccount = useCallback(
     async (account: typeof accountsList[number]) => {
+      shouldScrollRef.current = false;
       await dispatch.account.changeAccountAsync(account);
     },
     [dispatch?.account?.changeAccountAsync]
   );
 
-  useEffect(() => {
-    eventBus.addEventListener(EVENTS.PERSIST_KEYRING, fetchAllAccounts);
-    return () =>
-      eventBus.removeEventListener(EVENTS.PERSIST_KEYRING, fetchAllAccounts);
-  }, [fetchAllAccounts]);
+  useEventBusListener(EVENTS.PERSIST_KEYRING, fetchAllAccounts);
 
   useEffect(() => {
     return onBackgroundStoreChanged('contactBook', (payload) => {
       fetchAllAccounts();
     });
   }, [fetchAllAccounts]);
+
+  const scrollToCurrent = useMemoizedFn(() => {
+    const index = filteredAccounts.findIndex(
+      (item) => currentAccount && isSameAccount(item, currentAccount)
+    );
+    console.log(index);
+    if (index !== -1) {
+      virtuosoRef.current?.scrollToIndex({ index, align: 'start' });
+    }
+  });
+
+  useEffect(() => {
+    console.log('currengAccount Change', currentAccount?.address);
+    if (currentAccount?.address && shouldScrollRef.current) {
+      scrollToCurrent();
+    }
+    shouldScrollRef.current = true;
+  }, [currentAccount?.address]);
 
   return (
     <div
@@ -88,6 +106,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
       }}
     >
       <Virtuoso
+        ref={virtuosoRef}
         className="h-full"
         data={filteredAccounts}
         itemContent={(index, item) => {
