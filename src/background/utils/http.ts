@@ -1,5 +1,5 @@
 import axios from 'axios';
-import fetchAdapter from '@vespaiach/axios-fetch-adapter';
+import fetchAdapter from 'background/utils/fetchAdapter';
 
 export const http = axios.create({
   adapter: fetchAdapter,

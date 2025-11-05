@@ -6,7 +6,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Message, sendReadyMessageToTabs } from '@/utils/message';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
-import fetchAdapter from '@vespaiach/axios-fetch-adapter';
+import fetchAdapter from 'background/utils/fetchAdapter';
 import { WalletController } from 'background/controller/wallet';
 import {
   EVENTS,
