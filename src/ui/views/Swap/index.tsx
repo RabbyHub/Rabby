@@ -25,7 +25,7 @@ const Swap = () => {
       <QuoteVisibleProvider>
         <RabbyFeeProvider>
           <DirectSubmitProvider>
-            <FullscreenContainer>
+            <FullscreenContainer className={isTab ? 'h-[700px]' : 'h-[540px]'}>
               <div
                 className={clsx(
                   'px-0 overflow-hidden bg-r-neutral-bg-2 h-full relative flex flex-col',

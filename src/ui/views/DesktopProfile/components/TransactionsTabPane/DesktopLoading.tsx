@@ -22,10 +22,10 @@ export const DesktopLoading = ({
             <div className="w-[180px] flex-shrink-0">
               <Skeleton.Button
                 active={active}
-                className="h-[13px] mb-2 block"
+                className="h-[13px] mb-[6px] block"
                 style={{ width: 120 }}
               />
-              <div className="flex items-center gap-1 mt-1">
+              <div className="flex items-center gap-[6px] mt-1">
                 <Skeleton.Avatar
                   active={active}
                   size={16}
@@ -34,7 +34,7 @@ export const DesktopLoading = ({
                 />
                 <Skeleton.Button
                   active={active}
-                  className="h-[13px] block ml-6"
+                  className="h-[14px] block"
                   style={{ width: 80 }}
                 />
               </div>
@@ -44,19 +44,19 @@ export const DesktopLoading = ({
             <div className="flex-1 min-w-0 mx-4">
               <Skeleton.Button
                 active={active}
-                className="h-[15px] mb-1 block"
+                className="h-[14px] mb-[6px] block"
                 style={{ width: 200 }}
               />
               <Skeleton.Button
                 active={active}
-                className="h-[13px] block"
+                className="h-[14px] block"
                 style={{ width: 150 }}
               />
             </div>
 
             {/* Column 3 - Token Changes */}
             <div className="flex-1 mx-4">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-[6px] mb-[6px]">
                 <Skeleton.Avatar
                   active={active}
                   size={16}
@@ -69,7 +69,7 @@ export const DesktopLoading = ({
                   style={{ width: 100 }}
                 />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-[6px]">
                 <Skeleton.Avatar
                   active={active}
                   size={16}
@@ -78,7 +78,7 @@ export const DesktopLoading = ({
                 />
                 <Skeleton.Button
                   active={active}
-                  className="h-[13px] block"
+                  className="h-[14px] block"
                   style={{ width: 80 }}
                 />
               </div>
@@ -88,7 +88,7 @@ export const DesktopLoading = ({
             <div className="w-[200px] flex-shrink-0 text-right">
               <Skeleton.Button
                 active={active}
-                className="h-[12px] block ml-auto"
+                className="h-[14px] block ml-auto"
                 style={{ width: 150 }}
               />
             </div>

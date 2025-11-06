@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { ModalCloseIcon } from '../TokenDetailModal';
 import { useHistory } from 'react-router-dom';
+import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
+import { useDebounce } from 'ahooks';
 
 export const SwapTokenModal: React.FC<
   ModalProps & { action: 'swap' | 'bridge' }
@@ -25,6 +27,8 @@ export const SwapTokenModal: React.FC<
     history.replace(`/desktop/profile?${searchParams.toString()}`);
   };
 
+  // const visible = useDebounce(props.visible, { wait: 500 });
+
   return (
     <Modal
       {...modalProps}
@@ -40,10 +44,10 @@ export const SwapTokenModal: React.FC<
       maskStyle={{
         zIndex: 1000,
         backdropFilter: 'blur(8px)',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
     >
-      <div className="js-rabby-desktop-swap-container bg-r-neutral-bg-2">
+      <div className="js-rabby-desktop-swap-container bg-r-neutral-bg-2 rounded-[20px]">
         <div className="flex justify-center mt-12 mb-12 ">
           <div className="inline-flex items-center bg-r-neutral-line rounded-[6px] border border-rabby-neutral-line">
             {tabs.map((tab) => {
@@ -69,6 +73,16 @@ export const SwapTokenModal: React.FC<
         </div>
         {action === 'swap' ? <Swap /> : <Bridge />}
       </div>
+
+      <div className="absolute top-0 left-[100%] pl-[20px]">
+        <DesktopSelectAccountList isInModal />
+      </div>
+
+      {/* {visible ? (
+        <div className="absolute top-0 left-[100%] pl-[20px]">
+          <DesktopSelectAccountList isInModal />
+        </div>
+      ) : null} */}
     </Modal>
   );
 };

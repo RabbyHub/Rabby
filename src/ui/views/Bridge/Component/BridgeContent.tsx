@@ -589,9 +589,8 @@ export const BridgeContent = () => {
         pendingNumber={pendingNumber}
         noShowHeader={isDesktop}
         onOpenInTab={async () => {
-          await wallet.openInDesktop(
-            `desktop/profile?${obj2query({
-              action: 'bridge',
+          openInternalPageInTab(
+            `bridge?${obj2query({
               fromChain: fromChain || '',
               fromTokenId: fromToken?.id || '',
               inputAmount: amount || '',
@@ -603,7 +602,21 @@ export const BridgeContent = () => {
                 : '',
             })}`
           );
-          window.close();
+          // await wallet.openInDesktop(
+          //   `desktop/profile?${obj2query({
+          //     action: 'bridge',
+          //     fromChain: fromChain || '',
+          //     fromTokenId: fromToken?.id || '',
+          //     inputAmount: amount || '',
+          //     toChain: toChain || '',
+          //     toTokenId: toToken?.id || '',
+          //     rbiSource: rbiSource || '',
+          //     maxNativeTokenGasPrice: maxNativeTokenGasPrice
+          //       ? String(maxNativeTokenGasPrice)
+          //       : '',
+          //   })}`
+          // );
+          // window.close();
         }}
       />
       <div

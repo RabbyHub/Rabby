@@ -30,6 +30,8 @@ import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { useListenTxReload } from './hooks/useListenTxReload';
 import { GnosisQueueModal } from './components/GnosisQueueModal';
+import { ApprovalsTabPane } from './components/ApprovalsTabPane';
+import { createPortal } from 'react-dom';
 
 const Wrap = styled.div`
   height: 100%;
@@ -192,7 +194,7 @@ export const DesktopProfile = () => {
                   <Tabs.TabPane tab="Tokens" key="tokens">
                     <TokensTabPane selectChainId={chainInfo?.serverId} />
                   </Tabs.TabPane>
-                  {/* <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane> */}
+                  <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane>
                   <Tabs.TabPane tab="Transactions" key="transactions">
                     <TransactionsTabPane
                       selectChainId={chainInfo?.serverId}
@@ -200,7 +202,7 @@ export const DesktopProfile = () => {
                     />
                   </Tabs.TabPane>
                   <Tabs.TabPane tab="Approvals" key="approvals">
-                    <ApprovalManagePage
+                    <ApprovalsTabPane
                       isDesktop={true}
                       desktopChain={chain}
                       key={`${currentAccount?.address}-${currentAccount?.type}`}
@@ -214,10 +216,7 @@ export const DesktopProfile = () => {
                 'w-[260px] flex-shrink-0 overflow-auto sticky top-[103px]'
               )}
             >
-              <DesktopSelectAccountList
-                shouldElevate={shouldElevateAccountList}
-                // isShowApprovalAlert={true}
-              />
+              <DesktopSelectAccountList />
             </aside>
           </div>
         </div>

@@ -15,6 +15,7 @@ import { useRabbySelector } from '@/ui/store';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import IconUnknown from 'ui/assets/token-default.svg';
 import { ellipsis } from '@/ui/utils/address';
+import { DesktopTxExplain } from './DesktopTxExplain';
 
 type HistoryItemProps = {
   data: TxDisplayItem | TxHistoryItem;
@@ -44,7 +45,7 @@ export const DesktopHistoryItem = ({
   return (
     <div
       className={clsx(
-        'flex h-[100px] items-center border-b-[0.5px] px-16 border-rabby-neutral-line relative',
+        'flex min-h-[100px] items-center border-b-[0.5px] py-[8px] border-rabby-neutral-line relative',
         (isScam || isFailed) && 'opacity-50'
       )}
     >
@@ -54,7 +55,7 @@ export const DesktopHistoryItem = ({
           className="rectangle w-[max-content] max-w-[340px]"
         >
           <div
-            className="tag-scam absolute top-0 font-12 text-r-neutral-foot left-0 px-6 py-3 bg-r-neutral-card2"
+            className="tag-scam absolute top-0 text-[12px] leading-[14px] text-r-neutral-foot left-0 px-[6px] py-[3px] bg-r-neutral-card2"
             style={{ borderRadius: '0 0 8px 0' }}
           >
             {t('global.scamTx')}
@@ -63,20 +64,20 @@ export const DesktopHistoryItem = ({
       )}
 
       {/* Column 1 - Time */}
-      <div className="w-[180px] flex-shrink-0">
+      <div className="w-[225px] flex-shrink-0">
         <div className="flex items-center gap-1">
-          <span className="text-13 text-r-neutral-body">
+          <span className="text-[14px] leading-[17px]  text-rb-neutral-secondary">
             {sinceTime(data.time_at)}
           </span>
         </div>
-        <div className="flex items-center gap-1 mt-1">
+        <div className="flex items-center gap-[6px] mt-[6px]">
           <img
             src={chainItem.logo || IconUnknown}
             alt={chainItem.name}
             className="w-16 h-16 rounded-full"
           />
           <a
-            className="underline cursor-pointer text-13 text-r-neutral-foot ml-6"
+            className="underline cursor-pointer text-[14px] leading-[17px] text-r-neutral-foot"
             onClick={handleScanClick}
           >
             {ellipsis(data.id)}
@@ -86,7 +87,7 @@ export const DesktopHistoryItem = ({
 
       {/* Column 2 - Transaction Type/Details */}
       <div className="flex-1 min-w-0 mx-4">
-        <TxInterAddressExplain
+        <DesktopTxExplain
           data={data}
           projectDict={projectDict}
           tokenDict={tokenDict}
@@ -100,9 +101,9 @@ export const DesktopHistoryItem = ({
       </div>
 
       {/* Column 4 - Gas Fee and Status */}
-      <div className="w-[200px] flex-shrink-0 text-right">
+      <div className="w-[220px] flex-shrink-0 text-right">
         {data.tx && data.tx?.eth_gas_fee ? (
-          <div className="text-13 text-r-neutral-foot">
+          <div className="text-[14px] leading-[17px] text-r-neutral-foot">
             Gas fee: {numberWithCommasIsLtOne(data.tx?.eth_gas_fee, 4)}{' '}
             {chainItem?.nativeTokenSymbol} ($
             {numberWithCommasIsLtOne(data.tx?.usd_gas_fee ?? 0, 2)})
@@ -112,7 +113,7 @@ export const DesktopHistoryItem = ({
         )}
 
         {isFailed && (
-          <span className="text-13 text-r-red-default">
+          <span className="text-[14px] leading-[17px] text-r-red-default">
             {t('global.failed')}
           </span>
         )}

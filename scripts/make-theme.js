@@ -43,6 +43,19 @@ ${['light', 'dark']
       .join(LINE_BREAK);
   })
   .join(LINE_BREAK.repeat(2))}
+
+
+${['light', 'dark']
+  .map((theme) => {
+    return Object.entries(appThemeColors[theme])
+      .map(([cssvarKey, colorValue]) => {
+        const varcore = cssvarKey.replace(/^\-\-/, '');
+
+        return `${SPACES}--rb-${theme}-${varcore}: ${colorValue};`;
+      })
+      .join(LINE_BREAK);
+  })
+  .join(LINE_BREAK.repeat(2))}
 }
 
 ${[
@@ -99,7 +112,7 @@ ${Object.entries(themeColors[theme])
         `${SPACES}--${rabbyAppCssPrefix}${cssvarKey}-rgb: ${rgbs.r}, ${rgbs.g}, ${rgbs.b};`,
         // `${SPACES}--${rabbyAppCssPrefix}${cssvarKey}-opacity: ${alpha};`,
         // `${SPACES}--${rabbyAppCssPrefix}${cssvarKey}: rgba(${rgbs.r}, ${rgbs.g}, ${rgbs.b}, var(--${rabbyAppCssPrefix}${cssvarKey}-opacity, 1));`,
-        `${SPACES}--${rabbyAppCssPrefix}${cssvarKey}: var(--rabby-${theme}-${varcore});`,
+        `${SPACES}--${rabbyAppCssPrefix}${cssvarKey}: var(--rb-${theme}-${varcore});`,
       ]
         .filter(Boolean)
         .join(LINE_BREAK);

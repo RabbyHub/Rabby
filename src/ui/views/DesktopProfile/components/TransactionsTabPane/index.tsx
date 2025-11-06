@@ -85,7 +85,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
   ] = React.useState<HistoryItemActionContext | null>(null);
 
   return (
-    <div className="py-16 px-20">
+    <div className="pb-[16px] px-[20px]">
       {/* <Modal
         visible={!!focusingHistoryItem}
         title={t('page.transactions.modalViewMessage.title')}
@@ -101,7 +101,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
       </Modal> */}
 
       {loading ? (
-        <div className="border border-[0.5px] border-rabby-neutral-line rounded-[6px] overflow-hidden">
+        <div className="overflow-hidden">
           <DesktopLoading count={8} active />
         </div>
       ) : (
@@ -122,7 +122,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
               className="pt-[108px]"
             />
           ) : (
-            <div className="border border-[0.5px] border-rabby-neutral-line rounded-[6px] overflow-hidden">
+            <div className="overflow-hidden">
               {data?.list?.map((item) => (
                 <DesktopHistoryItem
                   key={item.id}

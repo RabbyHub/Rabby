@@ -20,8 +20,8 @@ const Container = styled.div<{ $isDarkTheme?: boolean }>`
 
 const Main = styled.div`
   width: 400px !important;
-  height: 540px;
-  border-radius: 8px;
+  height: 600px;
+  border-radius: 16px;
   position: relative;
   overflow: hidden;
   transform: translateX(0);
@@ -48,6 +48,8 @@ interface Props {
 const UiType = getUiType();
 const isTab = UiType.isTab;
 const isDesktop = UiType.isDesktop;
+
+/** @deprecated */
 export const FullscreenContainer: React.FC<Props> = ({
   children,
   className,

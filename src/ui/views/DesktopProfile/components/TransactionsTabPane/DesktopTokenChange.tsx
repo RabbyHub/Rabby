@@ -29,7 +29,7 @@ export const DesktopTokenChange = ({
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-[6px]">
       {info.sends?.map((v) => {
         const tokenId = v.token_id;
         const tokenUUID = `${info.chain}_token:${tokenId}`;
@@ -44,7 +44,7 @@ export const DesktopTokenChange = ({
         return (
           <div
             key={v.token_id}
-            className="flex items-center gap-2"
+            className="flex items-center gap-[6px]"
             title={name}
           >
             {/* Token Icon */}
@@ -64,16 +64,18 @@ export const DesktopTokenChange = ({
             )}
 
             {/* Amount and Symbol */}
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <span className="text-13 text-r-neutral-body font-medium">-</span>
-              <span className="text-13 text-r-neutral-body font-medium">
+            <div className="flex items-center gap-[4px] flex-1 min-w-0">
+              <span className="text-[14px] leading-[17px] text-r-neutral-body font-medium">
+                -
+              </span>
+              <span className="text-[14px] leading-[17px] text-r-neutral-body font-medium">
                 {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 4)}
               </span>
               <DesktopTokenLabel
                 isNft={isNft}
                 token={token}
                 onClose={onClose}
-                textClassName="text-13 text-r-neutral-body  font-medium"
+                textClassName="text-[14px] leading-[17px] text-r-neutral-body font-medium"
                 canClickToken={isNft ? false : canClickToken}
               />
             </div>
@@ -95,7 +97,7 @@ export const DesktopTokenChange = ({
         return (
           <div
             key={v.token_id}
-            className="flex items-center gap-2"
+            className="flex items-center gap-[6px]"
             title={name}
           >
             {isNft ? (
@@ -113,18 +115,18 @@ export const DesktopTokenChange = ({
               />
             )}
 
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <span className="text-13 text-r-green-default font-medium">
+            <div className="flex items-center gap-[4px] flex-1 min-w-0">
+              <span className="text-[14px] leading-[17px] text-r-green-default font-medium">
                 +
               </span>
-              <span className="text-13 text-r-green-default font-medium">
+              <span className="text-[14px] leading-[17px] text-r-green-default font-medium">
                 {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 4)}
               </span>
               <DesktopTokenLabel
                 isNft={isNft}
                 token={token}
                 onClose={onClose}
-                textClassName="text-13 text-r-green-default font-medium"
+                textClassName="text-[14px] leading-[17px] text-r-green-default font-medium"
                 canClickToken={canClickToken}
               />
             </div>

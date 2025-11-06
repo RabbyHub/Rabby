@@ -94,7 +94,10 @@ import { debounce } from 'lodash';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -1772,22 +1775,22 @@ const SendToken = () => {
   });
 
   return (
-    <FullscreenContainer className="h-[700px]">
+    <FullscreenContainer className="h-[600px]">
       <div
         className={clsx(
           'send-token',
-          isTab
+          isTab || isDesktop
             ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
         )}
       >
         <PageHeader
           onBack={handleClickBack}
-          forceShowBack={!isTab}
-          canBack={!isTab}
+          forceShowBack={!(isTab || isDesktop)}
+          canBack={!(isTab || isDesktop)}
           className="mb-[10px]"
           rightSlot={
-            isTab ? null : (
+            isTab || isDesktop ? null : (
               <div
                 className="text-r-neutral-title1 cursor-pointer absolute right-0"
                 onClick={() => {
@@ -1812,16 +1815,22 @@ const SendToken = () => {
           }}
         >
           <div className="flex-1 overflow-auto pb-[32px]">
-            <AddressInfoFrom />
+            {isDesktop ? null : <AddressInfoFrom />}
             <AddressInfoTo
               loadingToAddressDesc={loadingToAddressDesc}
               toAccount={targetAccount}
               isMyImported={isMyImported}
               cexInfo={addressDesc?.cex}
-              onClick={() => {
-                history.push(
-                  '/select-to-address?type=send-token&rbisource=send-token'
-                );
+              onClick={async () => {
+                if (isDesktop) {
+                  history.replace(
+                    `${history.location.pathname}?action=send&sendPageType=selectToAddress&type=send-token&rbisource=send-token`
+                  );
+                } else {
+                  history.push(
+                    '/select-to-address?type=send-token&rbisource=send-token'
+                  );
+                }
               }}
             />
             <div className="section">

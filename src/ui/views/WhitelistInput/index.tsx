@@ -260,11 +260,11 @@ const WhitelistInput = () => {
   }, [wallet]);
 
   return (
-    <FullscreenContainer className="h-[700px]">
+    <FullscreenContainer className={isDesktop ? 'h-[600px]' : 'h-[700px]'}>
       <div
         className={clsx(
           'send-token',
-          isDesktop
+          isDesktop || isTab
             ? 'w-full h-full overflow-auto min-h-0 rounded-[8px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
         )}
@@ -274,7 +274,7 @@ const WhitelistInput = () => {
           forceShowBack
           canBack
           rightSlot={
-            isDesktop ? null : (
+            isDesktop || isTab ? null : (
               <div
                 className="text-r-neutral-title1 cursor-pointer absolute right-0 "
                 onClick={() => {

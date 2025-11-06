@@ -725,8 +725,8 @@ export const Main = () => {
       <Header
         noShowHeader={isDesktop}
         onOpenInTab={async () => {
-          await wallet.openInDesktop(
-            `desktop/profile?${obj2query({
+          openInternalPageInTab(
+            `dex-swap?${obj2query({
               chain:
                 findChain({
                   enum: chain,
@@ -736,10 +736,23 @@ export const Main = () => {
               inputAmount,
               isMax: slider >= 100 ? 'true' : '',
               rbiSource,
-              action: 'swap',
             })}`
           );
-          window.close();
+          // await wallet.openInDesktop(
+          //   `desktop/profile?${obj2query({
+          //     chain:
+          //       findChain({
+          //         enum: chain,
+          //       })?.serverId || '',
+          //     payTokenId: payToken?.id || '',
+          //     receiveTokenId: receiveToken?.id || '',
+          //     inputAmount,
+          //     isMax: slider >= 100 ? 'true' : '',
+          //     rbiSource,
+          //     action: 'swap',
+          //   })}`
+          // );
+          // window.close();
         }}
       />
       <div
