@@ -93,6 +93,7 @@ export const TokensTabPane: React.FC<Props> = ({
     result: currentList,
     toggleExpand,
     hasExpandSwitch,
+    smallLength,
   } = useExpandList(displayPortfolios, currentPortfolioNetWorth);
 
   const tokenListTotalValue = React.useMemo(() => {
@@ -125,13 +126,17 @@ export const TokensTabPane: React.FC<Props> = ({
 
   return (
     <div className={className}>
-      <ProjectOverview
-        list={projectOverviewList}
-        appIds={appIds}
-        isExpanded={isExpanded}
-        toggleExpand={toggleExpand}
-        hasExpandSwitch={hasExpandSwitch}
-      />
+      {!allMode && !isNoResults && (
+        <ProjectOverview
+          list={projectOverviewList}
+          appIds={appIds}
+          isExpanded={isExpanded}
+          smallLength={smallLength}
+          toggleExpand={toggleExpand}
+          hasExpandSwitch={hasExpandSwitch}
+        />
+      )}
+
       {isTokensLoading ? (
         <div className="mx-20">
           <TokenListSkeleton />

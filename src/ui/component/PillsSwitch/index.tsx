@@ -39,8 +39,8 @@ export default function PillsSwitch<T extends readonly Option[] | Option[]>({
             className={clsx(
               'pills-switch__item',
               itemClassname,
-              isActive ? itemClassnameActive : itemClassnameInActive,
-              { 'is-active': isActive }
+              { 'is-active': isActive },
+              isActive ? itemClassnameActive : itemClassnameInActive
             )}
             onClick={() => {
               onTabChange?.(item.key);

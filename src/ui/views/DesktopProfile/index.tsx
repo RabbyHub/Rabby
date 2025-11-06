@@ -32,6 +32,8 @@ import { useListenTxReload } from './hooks/useListenTxReload';
 import { GnosisQueueModal } from './components/GnosisQueueModal';
 import { ApprovalsTabPane } from './components/ApprovalsTabPane';
 import { createPortal } from 'react-dom';
+import { AddCustomNetworkModal } from './components/AddCustomNetworkModal';
+import { AddCustomTokenModal } from './components/AddCustomTokenModal';
 
 const Wrap = styled.div`
   height: 100%;
@@ -194,7 +196,7 @@ export const DesktopProfile = () => {
                   <Tabs.TabPane tab="Tokens" key="tokens">
                     <TokensTabPane selectChainId={chainInfo?.serverId} />
                   </Tabs.TabPane>
-                  <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane>
+                  {/* <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane> */}
                   <Tabs.TabPane tab="Transactions" key="transactions">
                     <TransactionsTabPane
                       selectChainId={chainInfo?.serverId}
@@ -234,13 +236,13 @@ export const DesktopProfile = () => {
           history.replace(history.location.pathname);
         }}
       />
-      <NftTabModal
+      {/* <NftTabModal
         visible={action === 'nft'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}
         destroyOnClose
-      />
+      /> */}
       <SendNftModal
         visible={action === 'send-nft'}
         onCancel={() => {
@@ -264,6 +266,20 @@ export const DesktopProfile = () => {
       />
       <GnosisQueueModal
         visible={action === 'gnosis-queue'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <AddCustomNetworkModal
+        visible={action === 'custom-network'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <AddCustomTokenModal
+        visible={action === 'custom-token'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}

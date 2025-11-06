@@ -11,7 +11,7 @@ import { ReactComponent as RcWalletIconCC } from 'ui/assets/wallet-cc.svg';
 
 const ProjectOverviewItemWrapper = styled.div`
   border-radius: 12px;
-  background-color: var(--r-neutral-bg-3, #f7fafc);
+  background-color: var(--rb-neutral-bg-3);
   display: flex;
   gap: 10px;
   align-items: center;
@@ -68,10 +68,10 @@ const ProjectOverviewItem = ({
         />
       )}
       <div className="flex flex-col">
-        <span className="name inline-flex items-center text-12 font-medium text-r-neutral-body truncate">
+        <span className="name inline-flex items-center text-12 font-medium text-rb-neutral-foot truncate">
           {protocol.name}
         </span>
-        <span className="text-[12px] text-r-neutral-title1 font-medium">
+        <span className="text-[12px] text-rb-neutral-title-1 font-medium">
           {protocol._netWorth}
         </span>
       </div>
@@ -86,6 +86,7 @@ interface Props {
   isExpanded?: boolean;
   toggleExpand?: () => void;
   hasExpandSwitch?: boolean;
+  smallLength?: number;
 }
 
 const ProjectOverviewListWrapper = styled.div`
@@ -105,6 +106,7 @@ const ProjectOverview = ({
   appIds,
   isExpanded,
   toggleExpand,
+  smallLength,
   hasExpandSwitch,
 }: Props) => {
   if (!list) return null;
@@ -119,31 +121,26 @@ const ProjectOverview = ({
             isAppChain={appIds?.includes(item.id)}
           />
         ))}
+        {hasExpandSwitch && (
+          <div
+            onClick={toggleExpand}
+            className="flex items-center justify-center gap-4 py-[16px]"
+          >
+            <div className="text-rb-neutral-secondary text-13 cursor-pointer">
+              {isExpanded
+                ? `Fold ${smallLength} Protocols`
+                : `Unfold ${smallLength} Protocols`}
+            </div>
+            <div className="flex items-center justify-center gap-[2px] cursor-pointer">
+              <RcIconDropdown
+                className={clsx('ml-0', {
+                  'transform rotate-180': isExpanded,
+                })}
+              />
+            </div>
+          </div>
+        )}
       </ListWrapper>
-      {hasExpandSwitch && (
-        <div
-          onClick={toggleExpand}
-          className="flex items-center justify-center gap-4 py-[16px]"
-        >
-          <div className="text-r-neutral-foot text-13 cursor-pointer">
-            {isExpanded
-              ? 'Hide protocols with small deposits.'
-              : 'Protocols with small deposits are not displayed.'}
-          </div>
-          <div className="flex items-center justify-center gap-[2px] cursor-pointer">
-            {isExpanded ? null : (
-              <div className="text-r-neutral-foot text-13 underline">
-                Show all
-              </div>
-            )}
-            <RcIconDropdown
-              className={clsx('ml-0', {
-                'transform rotate-180': isExpanded,
-              })}
-            />
-          </div>
-        </div>
-      )}
     </ProjectOverviewListWrapper>
   );
 };
