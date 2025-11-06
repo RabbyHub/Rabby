@@ -33,8 +33,9 @@ import { MiniSecurityHeader } from '@/ui/component/MiniSignV2/components';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 
-const MiniSignTxV2 = () => {
+const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const { isDarkTheme } = useThemeMode();
@@ -388,6 +389,229 @@ const MiniSignTxV2 = () => {
     !!loading ||
     !ctx?.txsCalc?.length ||
     !!ctx.checkErrors?.some((e) => e.level === 'forbidden');
+
+  if (isDesktop && !config.getContainer) {
+    const desktopPortalClassName = 'desktop-mini-signer';
+    const desktopMiniSignerGetContainer = `.${desktopPortalClassName}`;
+    return (
+      <>
+        <Popup
+          height={'fit-content'}
+          visible={!!error && !!ctx.signInfo?.status}
+          bodyStyle={{ padding: 0 }}
+          getContainer={desktopMiniSignerGetContainer}
+        >
+          <MiniApprovalPopupContainer
+            hdType={hdType}
+            brandIcon={brandIcon}
+            status={'FAILED'}
+            content={content}
+            description={description}
+            onCancel={handleCancel}
+            onRetry={async () => {
+              await wallet.setRetryTxType(retryUpdateType);
+              handleRetry();
+            }}
+            retryUpdateType={retryUpdateType}
+          />
+        </Popup>
+        <Modal
+          visible={visible}
+          onClose={handleCancel}
+          maskClosable={!loading}
+          closable={false}
+          bodyStyle={{ padding: 0, maxHeight: 600, height: 600 }}
+          destroyOnClose={false}
+          forceRender
+          mask={{
+            background: 'rgba(0,0,0,0.3)',
+            backdropFilter: 'blur(8px)',
+          }}
+          key={`${currentAccount?.address}-${currentAccount?.type}`}
+          width={400}
+          centered
+          content
+        >
+          <PopupContainer>
+            <div className={clsx(desktopPortalClassName)}>
+              <MiniFooterBar
+                className="rounded-none h-[600px] flex flex-col"
+                account={currentAccount || undefined}
+                directSubmit={directSubmit}
+                task={task}
+                Header={
+                  <div
+                    className={clsx(
+                      'flex-1 flex flex-col',
+                      directSubmit &&
+                        'fixed left-[99999px] top-[99999px] z-[-1]',
+                      task.status !== 'idle' && 'pointer-events-none'
+                    )}
+                    key={task.status}
+                  >
+                    {enableSecurityEngine ||
+                    showSimulateChange ||
+                    isSpeedUp ||
+                    isCancel ||
+                    title ? (
+                      <div className="flex-1 flex flex-col gap-[22px] mb-16">
+                        {title}
+
+                        {showSimulateChange ? (
+                          <div className="bg-r-neutral-card-2 px-16 py-12 rounded-[8px]">
+                            {txsResult?.[txsResult?.length - 1]
+                              ?.preExecResult ? (
+                              <BalanceChange
+                                version={
+                                  txsResult?.[txsResult?.length - 1]
+                                    .preExecResult.pre_exec_version
+                                }
+                                data={
+                                  txsResult?.[txsResult?.length - 1]
+                                    .preExecResult.balance_change
+                                }
+                              />
+                            ) : (
+                              <BalanceChangeLoading />
+                            )}
+                          </div>
+                        ) : null}
+
+                        {engineResults &&
+                        ctx?.txsCalc[txs.length - 1].preExecResult ? (
+                          <ApprovalUtilsProvider>
+                            <MiniSecurityHeader
+                              engineResults={engineResults}
+                              tx={txs[txs.length - 1]}
+                              txDetail={
+                                ctx?.txsCalc[txs.length - 1].preExecResult
+                              }
+                              account={config.account}
+                              isReady={!!ctx.engineResults}
+                              session={config?.session}
+                            />
+                          </ApprovalUtilsProvider>
+                        ) : null}
+                        <SpeedUpCancelHeader
+                          isSpeedUp={isSpeedUp}
+                          isCancel={isCancel}
+                          originGasPrice={originGasPrice || '0'}
+                          currentGasPrice={
+                            txsResult?.[0]?.tx?.gasPrice ||
+                            txsResult?.[0]?.tx?.maxFeePerGas ||
+                            ''
+                          }
+                        />
+
+                        <Divide className="mt-auto w-[calc(100%+40px)] relative left-[-20px] bg-light-r-neutral-line" />
+                      </div>
+                    ) : null}
+                    <GasSelectorHeader
+                      tx={txs[0]}
+                      gasAccountCost={gasAccountCost}
+                      gasMethod={gasMethod}
+                      onChangeGasMethod={setGasMethod}
+                      pushType={pushType}
+                      disabled={false}
+                      isReady={isReady}
+                      gasLimit={gasLimit}
+                      noUpdate={false}
+                      gasList={gasList}
+                      selectedGas={selectedGas}
+                      version={
+                        txsResult?.[0]?.preExecResult?.pre_exec_version || 'v0'
+                      }
+                      recommendGasLimit={recommendGasLimit}
+                      recommendNonce={recommendNonce}
+                      chainId={chainId}
+                      onChange={handleGasChange}
+                      nonce={realNonce}
+                      disableNonce={true}
+                      isSpeedUp={isSpeedUp}
+                      isCancel={isCancel}
+                      is1559={support1559}
+                      isHardware={isHardware}
+                      manuallyChangeGasLimit={manuallyChangeGasLimit}
+                      errors={checkErrors}
+                      // engineResults={engineResults}
+                      nativeTokenBalance={nativeTokenBalance}
+                      gasPriceMedian={gasPriceMedian}
+                      gas={totalGasCost}
+                      gasCalcMethod={gasCalcMethod}
+                      // directSubmit={directSubmit}
+                      directSubmit={true}
+                      checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
+                      getContainer={desktopMiniSignerGetContainer}
+                    />
+                  </div>
+                }
+                noCustomRPC={noCustomRPC}
+                gasMethod={gasMethod}
+                gasAccountCost={gasAccountCost}
+                gasAccountCanPay={gasAccountCanPay}
+                canGotoUseGasAccount={canGotoUseGasAccount}
+                canDepositUseGasAccount={canDepositUseGasAccount}
+                isGasAccountLogin={isGasAccountLogin}
+                isWalletConnect={isWalletConnect}
+                onChangeGasAccount={() => setGasMethod('gasAccount')}
+                isWatchAddr={isWatchAddr}
+                gasLessConfig={gasLessConfig}
+                gasLessFailedReason={gasLessFailedReason}
+                canUseGasLess={canUseGasLess}
+                showGasLess={showGasLess}
+                useGasLess={
+                  (isGasNotEnough || !!gasLessConfig) &&
+                  canUseGasLess &&
+                  useGasLess
+                }
+                isGasNotEnough={isGasNotEnough}
+                enableGasLess={() => handleToggleGasless(true)}
+                hasShadow={false}
+                origin={INTERNAL_REQUEST_SESSION.origin}
+                originLogo={INTERNAL_REQUEST_SESSION.icon}
+                // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
+                securityLevel={securityLevel}
+                gnosisAccount={undefined}
+                chain={chain}
+                isTestnet={chain.isTestnet}
+                onCancel={handleCancel}
+                onSubmit={handleConfirm}
+                onIgnoreAllRules={noop}
+                enableTooltip={ctx.checkErrors?.some(
+                  (e) => e.code !== 3001 && e.level === 'forbidden'
+                )}
+                tooltipContent={
+                  checkErrors && checkErrors?.[0]?.code === 3001
+                    ? undefined
+                    : checkErrors.find((item) => item.level === 'forbidden')
+                    ? checkErrors.find((item) => item.level === 'forbidden')!
+                        .msg
+                    : undefined
+                }
+                disabledProcess={disabledProcess}
+                disableSignBtn={disableSignBtn}
+                isFirstGasLessLoading={!ctx?.txsCalc.length}
+                isFirstGasCostLoading={!ctx?.txsCalc.length}
+                getContainer={desktopMiniSignerGetContainer}
+                onRedirectToDeposit={onRedirectToDeposit}
+              />
+            </div>
+          </PopupContainer>
+        </Modal>
+
+        <TokenDetailPopup
+          token={tokenDetail.selectToken}
+          visible={tokenDetail.popupVisible}
+          onClose={() => dispatch.sign.closeTokenDetailPopup()}
+          canClickToken={false}
+          hideOperationButtons
+          variant="add"
+          account={currentAccount || undefined}
+          getContainer={desktopMiniSignerGetContainer}
+        />
+      </>
+    );
+  }
 
   return (
     <>

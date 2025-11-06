@@ -1,4 +1,4 @@
-@import "./var.less";
+@import './var.less';
 
 .ellipsis() {
   overflow: hidden;
@@ -35,7 +35,7 @@
   &::-webkit-scrollbar {
     width: @bar-width;
     // background-color: #fafafa;
-    background-color: var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+    background-color: var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     padding-left: 1px;
     padding-right: 1px;
   }
@@ -43,6 +43,20 @@
     // background-color: rgba(193, 193, 193, 0.7);
     background-color: rgba(var(--r-neutral-foot-rgb), 0.5);
     border-radius: 4px;
+  }
+}
+
+.chromelike-scrollbar-v1(@bar-width: 6px) {
+  &::-webkit-scrollbar {
+    width: @bar-width;
+    // background-color: #fafafa;
+    background-color: transparent;
+    padding-left: 1px;
+    padding-right: 1px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--rb-neutral-line, #e0e5ec);
+    border-radius: 1000px;
   }
 }
 
@@ -81,9 +95,9 @@
       background-color: transparent;
     }
   }
-  
+
   .ant-input-affix-wrapper {
-    border-color: var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+    border-color: var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     background: var(--r-neutral-card-2, #f2f4f7);
 
     .ant-input {
@@ -118,13 +132,14 @@
 
 .ant-input-darkmode-withborder() {
   .ant-input-darkmode;
-  
+
   .ant-input {
-    border: 1px solid var(--r-neutral-line, #D3D8E0);
+    border: 1px solid var(--r-neutral-line, #d3d8e0);
   }
 
   .ant-form-item-has-error .ant-input {
-    &, &:hover {
+    &,
+    &:hover {
       background-color: var(--r-neutral-card-1, #fff) !important;
       border-color: var(--r-red-default);
     }
@@ -135,12 +150,12 @@
 
 .ant-input-darkmode2() {
   .ant-input {
-    border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+    border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     color: var(--r-neutral-title-1, #f7fafc);
   }
   .ant-input-number {
-    border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+    border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     color: var(--r-neutral-title-1, #f7fafc);
 

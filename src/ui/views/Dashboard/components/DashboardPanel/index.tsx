@@ -48,6 +48,7 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { EcologyPopup } from '../EcologyPopup';
 import { Settings } from '../index';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
+import { RcIconFullscreenCC } from '@/ui/assets/dashboard';
 import { RecentConnectionsPopup } from '../RecentConnections';
 import { useScroll, useSize } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -233,6 +234,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     eventKey: string;
     iconClassName?: string;
     subContent?: React.ReactNode;
+    isFullscreen?: boolean;
   };
 
   const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
@@ -515,7 +517,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
                     item?.onClick(evt);
                   }}
-                  className="panel-item"
+                  className="panel-item group"
                 >
                   {item.showAlert && (
                     <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
@@ -550,6 +552,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
                   {item.commingSoonBadge && (
                     <div className="coming-soon-badge">
                       {t('page.dashboard.home.soon')}
+                    </div>
+                  )}
+                  {item.isFullscreen && (
+                    <div className="absolute top-[6px] right-[6px] text-r-neutral-foot hidden group-hover:block">
+                      <RcIconFullscreenCC className="w-[12px] h-[12px]" />
                     </div>
                   )}
                 </div>

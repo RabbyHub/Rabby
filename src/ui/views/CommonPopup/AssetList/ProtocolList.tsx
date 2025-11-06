@@ -58,14 +58,14 @@ const PoolItem = ({
   return (
     <PoolItemWrapper>
       <PortfolioDetail name={item._originPortfolio.name} data={item} />
-      {!!item.withdrawActions?.length &&
+      {/* {!!item.withdrawActions?.length &&
         !item?._originPortfolio?.proxy_detail?.proxy_contract_id && (
           <DappActions
             data={item.withdrawActions}
             chain={chain}
             protocolLogo={protocolLogo}
           />
-        )}
+        )} */}
     </PoolItemWrapper>
   );
 };

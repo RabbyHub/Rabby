@@ -7,7 +7,10 @@ import type {
 import { KEYRING_CLASS } from '@/constant';
 import { createModel } from '@rematch/core';
 import { DisplayedKeryring } from 'background/service/keyring';
-import { TotalBalanceResponse } from 'background/service/openapi';
+import {
+  ApprovalStatus,
+  TotalBalanceResponse,
+} from 'background/service/openapi';
 import { RootModel } from '.';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
@@ -56,6 +59,8 @@ export interface AccountState {
   mnemonicAccounts: DisplayedKeryring[];
 
   [symLoaderMatteredBalance]: Promise<MatteredChainBalancesResult> | null;
+
+  approvalStatus: Record<string, ApprovalStatus[]>;
 }
 
 /**
@@ -108,6 +113,8 @@ export const account = createModel<RootModel>()({
     },
 
     [symLoaderMatteredBalance]: null,
+
+    approvalStatus: {},
   } as AccountState,
 
   reducers: {
@@ -187,6 +194,16 @@ export const account = createModel<RootModel>()({
       payload: { currentAccount: typeof state.currentAccount }
     ) {
       return { ...state, currentAccount: payload.currentAccount };
+    },
+
+    setApprovalStatus(state, payload: Record<string, ApprovalStatus[]>) {
+      return {
+        ...state,
+        approvalStatus: {
+          ...state.approvalStatus,
+          ...payload,
+        },
+      };
     },
   },
 
