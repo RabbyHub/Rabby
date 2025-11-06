@@ -42,7 +42,7 @@ export const TokenDetailModal: React.FC<TokenDetailModalProps> = ({
       maskStyle={{
         zIndex: 1000,
         backdropFilter: 'blur(8px)',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
     >
       {visible && token && (

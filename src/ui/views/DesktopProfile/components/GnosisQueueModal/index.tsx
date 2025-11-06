@@ -16,6 +16,10 @@ export const GnosisQueueModal: React.FC<ModalProps> = (props) => {
         maxHeight: 'unset',
         padding: 0,
       }}
+      maskStyle={{
+        background: 'rgba(0, 0, 0, 0.30)',
+        backdropFilter: 'blur(8px)',
+      }}
     >
       <PopupContainer>
         <GnosisQueue isInModal onClose={props.onCancel} />

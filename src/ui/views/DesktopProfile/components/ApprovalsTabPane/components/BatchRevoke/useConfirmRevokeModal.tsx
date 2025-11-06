@@ -28,7 +28,7 @@ export const useConfirmRevokeModal = (props: {
       okCancel: false,
       maskStyle: props.isDesktop
         ? {
-            background: 'rgba(0, 0, 0, 0.80)',
+            background: 'rgba(0, 0, 0, 0.30)',
             backdropFilter: 'blur(8px)',
           }
         : undefined,

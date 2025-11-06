@@ -424,7 +424,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           destroyOnClose={false}
           forceRender
           mask={{
-            background: 'rgba(0,0,0,0.8)',
+            background: 'rgba(0,0,0,0.3)',
             backdropFilter: 'blur(8px)',
           }}
           key={`${currentAccount?.address}-${currentAccount?.type}`}

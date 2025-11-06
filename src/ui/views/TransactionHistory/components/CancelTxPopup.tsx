@@ -69,10 +69,9 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
     isShowRemoveLocalPendingTxTips,
     setIsShowRemoveLocalPendingTxTips,
   ] = useState(false);
+
   const { getContainer } = usePopupContainer();
-  console.log({
-    getContainer,
-  });
+
   const options = [
     {
       title: t(
