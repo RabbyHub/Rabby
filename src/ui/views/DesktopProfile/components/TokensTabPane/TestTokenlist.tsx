@@ -29,6 +29,7 @@ import {
 } from '@/ui/views/CommonPopup/AssetList/CustomTestnetAssetList/CustomTestnetTokenItem';
 import styled from 'styled-components';
 import { TestnetTokenItemAsset } from './TokenItem';
+import { useHistory } from 'react-router-dom';
 
 interface Props {
   className?: string;
@@ -116,13 +117,8 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
-  const [isShowAddModal, setIsShowAddModal] = React.useState<boolean>(false);
-  const [
-    isShowAddTestnetModal,
-    setIsShowAddTestnetModal,
-  ] = React.useState<boolean>(false);
+  const history = useHistory();
   const [isFetched, setIsFetched] = React.useState<boolean>(false);
-  const { isDarkTheme } = useThemeMode();
 
   const wallet = useWallet();
 
@@ -200,7 +196,9 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
                   category: 'Custom Network',
                   action: 'TokenList Add Network',
                 });
-                setIsShowAddTestnetModal(true);
+                history.replace(
+                  history.location.pathname + '?action=custom-network'
+                );
               }}
             >
               <span className="text-rb-blue-default">
@@ -222,7 +220,9 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
                 'flex items-center gap-x-[4px] justify-center'
               )}
               onClick={() => {
-                setIsShowAddModal(true);
+                history.replace(
+                  history.location.pathname + '?action=custom-token'
+                );
               }}
             >
               <span className="text-rb-blue-default">
@@ -233,39 +233,6 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
           </div>
         </div>
       </div>
-      <AddCustomTestnetTokenPopup
-        visible={isShowAddModal}
-        onClose={() => {
-          setIsShowAddModal(false);
-        }}
-        onConfirm={() => {
-          setIsShowAddModal(false);
-          refreshAsync();
-        }}
-      />
-      <EditCustomTestnetModal
-        ctx={{
-          ga: {
-            source: 'tokenList',
-          },
-        }}
-        visible={isShowAddTestnetModal}
-        onCancel={() => {
-          setIsShowAddTestnetModal(false);
-        }}
-        onConfirm={() => {
-          setIsShowAddTestnetModal(false);
-          refreshAsync();
-        }}
-        height={488}
-        maskStyle={
-          isDarkTheme
-            ? {
-                backgroundColor: 'transparent',
-              }
-            : undefined
-        }
-      />
     </div>
   );
 };

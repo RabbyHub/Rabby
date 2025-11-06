@@ -30,6 +30,8 @@ import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { useListenTxReload } from './hooks/useListenTxReload';
 import { GnosisQueueModal } from './components/GnosisQueueModal';
+import { AddCustomNetworkModal } from './components/AddCustomNetworkModal';
+import { AddCustomTokenModal } from './components/AddCustomTokenModal';
 
 const Wrap = styled.div`
   height: 100%;
@@ -265,6 +267,20 @@ export const DesktopProfile = () => {
       />
       <GnosisQueueModal
         visible={action === 'gnosis-queue'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <AddCustomNetworkModal
+        visible={action === 'custom-network'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <AddCustomTokenModal
+        visible={action === 'custom-token'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}
