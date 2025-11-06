@@ -116,3 +116,17 @@ export const useAppChain = (
     updateData: loadProcess,
   };
 };
+
+const id2NameMap = {
+  hyperliquid: 'Hyperliquid',
+  polymarket: 'Polymarket',
+};
+export const getAppChainNames = (appChainIds: string[]) => {
+  const names: string[] = [];
+  appChainIds.forEach((id) => {
+    if (id2NameMap[id]) {
+      names.push(id2NameMap[id]);
+    }
+  });
+  return names.length > 0 ? names.join(' & ') : null;
+};
