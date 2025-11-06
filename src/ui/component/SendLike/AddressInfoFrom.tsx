@@ -80,7 +80,7 @@ export function AddressInfoFrom({
               )}
             </div>
 
-            <RcIconAddressEntry width={26} height={26} />
+            <RcIconAddressEntry width={24} height={24} />
           </div>
         </div>
       </div>
