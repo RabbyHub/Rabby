@@ -35,8 +35,8 @@ const getContainer =
   isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
 
 const SectionHeader = styled.div`
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 17px;
+  font-weight: 700;
   color: var(--r-neutral-title1);
 `;
 
@@ -44,7 +44,7 @@ const StyledInputWrapper = styled.div`
   border-radius: 8px;
   overflow: hidden;
   .ant-input {
-    font-size: 15px !important;
+    font-size: 16px !important;
     background: var(--r-neutral-card1, #ffffff) !important;
     &:hover,
     &:focus {

@@ -21,7 +21,7 @@ export const EmptyWhitelistHolder = ({ onAddWhitelist }: IProps) => {
         <div className="text-r-neutral-title1 text-[20px] font-medium mt-[16px] text-center">
           {t('page.selectToAddress.emptyWhitelist.title')}
         </div>
-        <div className="text-[15px] text-r-neutral-foot mt-[8px] text-center">
+        <div className="text-[15px] text-r-neutral-foot mt-[8px] text-center font-normal">
           {t('page.selectToAddress.emptyWhitelist.desc')}
         </div>
       </div>

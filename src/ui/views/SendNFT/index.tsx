@@ -605,7 +605,7 @@ const SendNFT = () => {
                 }}
               />
               <div className={clsx('section')}>
-                <div className="section-title mt-[20px]">
+                <div className="section-title">
                   {t('page.sendNFT.sectionAmount.title')}
                 </div>
                 <div className="nft-info">
