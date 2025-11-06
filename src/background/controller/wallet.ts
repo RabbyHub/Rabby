@@ -1660,12 +1660,14 @@ export class WalletController extends BaseController {
       }
       const data = await openapiService.getTotalBalance(address, core);
       let appChainTotalNetWorth = 0;
+      const appChainIds: string[] = [];
       try {
         const { apps } = await openapiService.getAppChainList(address);
         apps?.forEach((app) => {
           app?.portfolio_item_list?.forEach((item) => {
             appChainTotalNetWorth += item.stats.net_usd_value;
           });
+          appChainIds.push(app.id);
         });
       } catch (error) {
         // just ignore appChain data
@@ -1674,6 +1676,7 @@ export class WalletController extends BaseController {
         ...data,
         evmUsdValue: data.total_usd_value,
         total_usd_value: data.total_usd_value + appChainTotalNetWorth,
+        appChainIds,
       };
       preferenceService.updateBalanceAboutCache(address, {
         totalBalance: formatData,
@@ -1828,10 +1831,9 @@ export class WalletController extends BaseController {
     preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
   };
 
-  getLastTimeSendToken = (address: string) =>
-    preferenceService.getLastTimeSendToken(address);
-  setLastTimeSendToken = (address: string, token: TokenItem) =>
-    preferenceService.setLastTimeSendToken(address, token);
+  getLastTimeSendToken = () => preferenceService.getLastTimeSendToken();
+  setLastTimeSendToken = (token: TokenItem) =>
+    preferenceService.setLastTimeSendToken(token);
 
   getTokenApprovalChain = (address: string) =>
     preferenceService.getTokenApprovalChain(address);

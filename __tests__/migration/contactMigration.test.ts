@@ -32,6 +32,7 @@ const data: { preference: PreferenceStore; contactBook } = {
         time_at: 1483200000,
       },
     },
+    lastTimeUsedToken: {},
     currentAccount: null,
     initAlianNames: true,
     gasCache: {
@@ -102,6 +103,7 @@ test('should migrate data', () => {
           time_at: 1483200000,
         },
       },
+      lastTimeUsedToken: {},
       currentAccount: null,
       initAlianNames: true,
       gasCache: {
@@ -179,6 +181,7 @@ test('should migrate when no alians', () => {
           time_at: 1483200000,
         },
       },
+      lastTimeUsedToken: {},
       currentAccount: null,
       initAlianNames: true,
       gasCache: {
@@ -244,6 +247,7 @@ test('should migrate when no alians', () => {
           time_at: 1483200000,
         },
       },
+      lastTimeUsedToken: {},
       currentAccount: null,
       initAlianNames: true,
       gasCache: {
@@ -315,6 +319,7 @@ test('should migrate when no contacts', () => {
           time_at: 1483200000,
         },
       },
+      lastTimeUsedToken: {},
       currentAccount: null,
       initAlianNames: true,
       gasCache: {
@@ -374,6 +379,7 @@ test('should migrate when no contacts', () => {
           time_at: 1483200000,
         },
       },
+      lastTimeUsedToken: {},
       currentAccount: null,
       initAlianNames: true,
       gasCache: {
