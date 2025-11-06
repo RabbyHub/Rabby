@@ -56,7 +56,7 @@ interface TokenAmountInputProps {
 }
 
 const StyledInput = styled(Input)`
-  color: var(--r-neutral-title1, #192945);
+  color: var(--r-neutral-foot);
   font-size: 24px !important;
   font-style: normal;
   font-weight: 500;
@@ -64,7 +64,7 @@ const StyledInput = styled(Input)`
   background: transparent !important;
   padding-left: 0;
   & > .ant-input {
-    color: var(--r-neutral-title1, #192945);
+    color: var(--r-neutral-foot);
     font-size: 24px;
     font-style: normal;
     font-weight: 500;
