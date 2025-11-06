@@ -126,7 +126,7 @@ export const TokensTabPane: React.FC<Props> = ({
 
   return (
     <div className={className}>
-      {!allMode && (
+      {!allMode && !isNoResults && (
         <ProjectOverview
           list={projectOverviewList}
           appIds={appIds}

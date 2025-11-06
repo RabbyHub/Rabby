@@ -50,7 +50,6 @@ export const TokenList = ({
   console.log('CUSTOM_LOGGER:=>: selectedTab', selectedTab);
 
   if (isNoResults) {
-    // TODO: 自适应撑满高度
     return <TokenListEmpty text={t('page.dashboard.assets.table.noTokens')} />;
   }
   return (
@@ -82,7 +81,7 @@ export const TokenList = ({
         )}
       </div>
       <ListContainer>
-        {selectedTab === 'mainnet' ? (
+        {selectedTab === 'mainnet' || !allMode ? (
           <>
             <TokenTable
               list={allMode ? list : (currentList as TokenItemProps['item'][])}

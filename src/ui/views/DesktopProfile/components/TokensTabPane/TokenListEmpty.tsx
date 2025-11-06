@@ -15,7 +15,7 @@ export const TokenListEmpty: React.FC<Props> = ({ className, text }) => {
   return (
     <div
       className={clsx(
-        'h-full flex flex-col justify-center items-center',
+        'h-full flex flex-col justify-center items-center py-[100px]',
         className
       )}
     >
