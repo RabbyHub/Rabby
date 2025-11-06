@@ -1,0 +1,271 @@
+import clsx from 'clsx';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useRabbySelector } from '@/ui/store';
+import { useWallet } from '@/ui/utils';
+import { useRequest } from 'ahooks';
+import {
+  TokenListSkeleton,
+  TokenListViewSkeleton,
+} from '@/ui/views/CommonPopup/AssetList/TokenListViewSkeleton';
+import { AddCustomTestnetTokenPopup } from '@/ui/views/CommonPopup/AssetList/CustomTestnetAssetList/AddCustomTestnetTokenPopup';
+import { ReactComponent as RcIconAdd } from '@/ui/assets/dashboard/portfolio/cc-add.svg';
+import { EditCustomTestnetModal } from '@/ui/views/CustomTestnet/components/EditTestnetModal';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import { isSameTesnetToken } from '@/utils/chain';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import {
+  Table,
+  TBody,
+  THeadCell,
+  THeader,
+  TRow,
+} from '@/ui/views/CommonPopup/AssetList/components/Table';
+import { CustomTestnetToken } from '@/background/service/customTestnet';
+import {
+  TokenChain,
+  TokenItemAddress,
+  TokenItemAmount,
+} from '@/ui/views/CommonPopup/AssetList/CustomTestnetAssetList/CustomTestnetTokenItem';
+import styled from 'styled-components';
+import { TestnetTokenItemAsset } from './TokenItem';
+
+interface Props {
+  className?: string;
+  selectChainId?: string | null;
+}
+
+interface TokenItemProps {
+  item: CustomTestnetToken;
+  style?: React.CSSProperties;
+  onClick?: () => void;
+}
+interface TableProps {
+  list?: TokenItemProps['item'][];
+  onAdd?: (item: TokenItemProps['item']) => void;
+  onRemove?: (item: TokenItemProps['item']) => void;
+  virtual?: {
+    height: number;
+    itemSize: number;
+  };
+  EmptyComponent?: React.ReactNode;
+}
+
+const TokenRowWrapper = styled(TRow)`
+  border-bottom: 1px solid var(--r-neutral-bg-4, #f2f4f7);
+  height: 60px;
+  padding-left: 12px;
+  padding-right: 16px;
+  &:hover {
+    background-color: var(--r-neutral-bg-2);
+  }
+  &:last-child {
+    border-bottom-color: transparent;
+  }
+`;
+
+const CustomTestnetTokenItem: React.FC<TokenItemProps> = ({
+  item,
+  style,
+  onClick,
+}) => {
+  return (
+    <TokenRowWrapper onClick={onClick} style={style}>
+      <TestnetTokenItemAsset item={item} />
+      <TokenChain item={item} />
+      <TokenItemAddress item={item} />
+      <TokenItemAmount item={item} className="flex-1 text-14 font-normal" />
+    </TokenRowWrapper>
+  );
+};
+
+const CustomTestnetTokenTable: React.FC<TableProps> = ({
+  list,
+  EmptyComponent,
+}) => {
+  return (
+    <Table className="!w-full ml-0 mr-0">
+      <THeader
+        className="w-full justify-between bg-r-neutral-bg-1 rounded-[6px] py-8"
+        rowClassName="px-8"
+      >
+        <THeadCell className="flex-1">Token</THeadCell>
+        <THeadCell className="flex-1">Chain</THeadCell>
+        <THeadCell className="flex-1">Token Address</THeadCell>
+        <THeadCell className="flex-1 text-right">Amount</THeadCell>
+      </THeader>
+      <TBody className="mt-0">
+        {list?.map((item) => {
+          return (
+            <CustomTestnetTokenItem
+              key={`${item.chainId}-${item.id}`}
+              item={item}
+            />
+          );
+        })}
+      </TBody>
+    </Table>
+  );
+};
+
+export const CustomTestnetAssetList: React.FC<Props> = ({
+  className,
+  selectChainId,
+}) => {
+  const { t } = useTranslation();
+  const { currentAccount } = useRabbySelector((s) => ({
+    currentAccount: s.account.currentAccount,
+  }));
+  const [isShowAddModal, setIsShowAddModal] = React.useState<boolean>(false);
+  const [
+    isShowAddTestnetModal,
+    setIsShowAddTestnetModal,
+  ] = React.useState<boolean>(false);
+  const [isFetched, setIsFetched] = React.useState<boolean>(false);
+  const { isDarkTheme } = useThemeMode();
+
+  const wallet = useWallet();
+
+  const { data: _list, loading, mutate, refreshAsync } = useRequest(
+    async () => {
+      return wallet.getCustomTestnetTokenList({
+        address: currentAccount!.address,
+        isRemote: true,
+      });
+    },
+    {
+      refreshDeps: [currentAccount],
+      onSuccess(data) {
+        setIsFetched(true);
+      },
+    }
+  );
+
+  const list = useMemo(() => {
+    if (!selectChainId) {
+      return _list;
+    }
+    return _list?.filter((item) => {
+      return String(item.chainId) === selectChainId;
+    });
+  }, [_list, selectChainId]);
+
+  if (!isFetched) {
+    return <TokenListViewSkeleton isTestnet />;
+  }
+
+  return (
+    <div className={className}>
+      {loading ? (
+        <TokenListSkeleton />
+      ) : (
+        <div className="mt-18">
+          <CustomTestnetTokenTable
+            list={list || []}
+            onAdd={(token) => {
+              mutate((prev) => {
+                return (prev || []).find((item) => {
+                  return isSameTesnetToken(item, token);
+                })
+                  ? prev
+                  : [...(prev || []), token];
+              });
+            }}
+            onRemove={(token) => {
+              mutate((prev) => {
+                return (prev || []).filter((item) => {
+                  return !isSameTesnetToken(item, token);
+                });
+              });
+            }}
+          />
+        </div>
+      )}
+      <div className="flex items-center justify-between mt-12 gap-x-[24px] widget-has-ant-input">
+        <div className="flex items-center gap-x-[12px]">
+          <div
+            className={clsx(
+              'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[7px] cursor-pointer',
+              ' border border-rb-blue-default min-w-[82px] text-center',
+              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+            )}
+          >
+            <div
+              className={clsx(
+                'text-rb-blue-default text-[13px] leading-[13px] font-medium cursor-pointer',
+                'flex items-center gap-x-[4px] justify-center'
+              )}
+              onClick={() => {
+                matomoRequestEvent({
+                  category: 'Custom Network',
+                  action: 'TokenList Add Network',
+                });
+                setIsShowAddTestnetModal(true);
+              }}
+            >
+              <span className="text-rb-blue-default">
+                <RcIconAdd />
+              </span>
+              {t('page.dashboard.assets.TestnetAssetListContainer.addNetwork')}
+            </div>
+          </div>
+          <div
+            className={clsx(
+              'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[7px] cursor-pointer',
+              ' border border-rb-blue-default min-w-[82px] text-center',
+              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+            )}
+          >
+            <div
+              className={clsx(
+                'text-rb-blue-default text-[13px] leading-[13px] font-medium cursor-pointer',
+                'flex items-center gap-x-[4px] justify-center'
+              )}
+              onClick={() => {
+                setIsShowAddModal(true);
+              }}
+            >
+              <span className="text-rb-blue-default">
+                <RcIconAdd />
+              </span>
+              {t('page.dashboard.assets.TestnetAssetListContainer.addToken')}
+            </div>
+          </div>
+        </div>
+      </div>
+      <AddCustomTestnetTokenPopup
+        visible={isShowAddModal}
+        onClose={() => {
+          setIsShowAddModal(false);
+        }}
+        onConfirm={() => {
+          setIsShowAddModal(false);
+          refreshAsync();
+        }}
+      />
+      <EditCustomTestnetModal
+        ctx={{
+          ga: {
+            source: 'tokenList',
+          },
+        }}
+        visible={isShowAddTestnetModal}
+        onCancel={() => {
+          setIsShowAddTestnetModal(false);
+        }}
+        onConfirm={() => {
+          setIsShowAddTestnetModal(false);
+          refreshAsync();
+        }}
+        height={488}
+        maskStyle={
+          isDarkTheme
+            ? {
+                backgroundColor: 'transparent',
+              }
+            : undefined
+        }
+      />
+    </div>
+  );
+};
