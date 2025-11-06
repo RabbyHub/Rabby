@@ -51,10 +51,15 @@ export const useExpandList = <
     return on || !hasExpandSwitch ? list : list?.slice(0, thresholdIndex);
   }, [on, list, thresholdIndex, hasExpandSwitch]);
 
+  const smallLength = useMemo(() => {
+    return (list?.length || 0) - (thresholdIndex || 0);
+  }, [list?.length, thresholdIndex]);
+
   return {
     hasExpandSwitch,
     isExpanded: on,
     result,
+    smallLength,
     thresholdIndex,
     toggleExpand: toggle,
     turnExpand: turn,

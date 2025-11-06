@@ -22,6 +22,7 @@ const SwapBottom = ({ onClick }: { onClick?: () => void }) => {
     <div
       onClick={onClick}
       className={`
+        swap-action-btn
         px-10 h-[24px] leading-[24px] 
         text-r-blue-default text-12 font-medium rounded-[4px] 
         border-[0.5px] border-r-blue-default w-min cursor-pointer 
@@ -111,8 +112,14 @@ const TokenRowWrapper = styled(TRow)`
   height: 60px;
   padding-left: 12px;
   padding-right: 16px;
+  .swap-action-btn {
+    display: none !important;
+  }
   &:hover {
     background-color: var(--r-neutral-bg-2);
+    .swap-action-btn {
+      display: block !important;
+    }
   }
   &:last-child {
     border-bottom-color: transparent;
