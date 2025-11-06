@@ -40,7 +40,7 @@ export function useSwitchNetTab(options?: { hideTestnetTab?: boolean }) {
   };
 }
 
-function useSwitchOptions() {
+export function useSwitchOptions() {
   const { t } = useTranslation();
 
   return useMemo(() => {

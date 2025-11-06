@@ -126,14 +126,17 @@ export const TokensTabPane: React.FC<Props> = ({
 
   return (
     <div className={className}>
-      <ProjectOverview
-        list={projectOverviewList}
-        appIds={appIds}
-        isExpanded={isExpanded}
-        smallLength={smallLength}
-        toggleExpand={toggleExpand}
-        hasExpandSwitch={hasExpandSwitch}
-      />
+      {!allMode && (
+        <ProjectOverview
+          list={projectOverviewList}
+          appIds={appIds}
+          isExpanded={isExpanded}
+          smallLength={smallLength}
+          toggleExpand={toggleExpand}
+          hasExpandSwitch={hasExpandSwitch}
+        />
+      )}
+
       {isTokensLoading ? (
         <div className="mx-20">
           <TokenListSkeleton />

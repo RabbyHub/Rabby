@@ -12,6 +12,8 @@ import clsx from 'clsx';
 import { numberWithCommasIsLtOne } from '@/ui/utils/number';
 import { TokenListEmpty } from './TokenListEmpty';
 import { TOKEN_WALLET_ANCHOR_ID } from './constant';
+import { useSwitchNetTab } from '@/ui/component/PillsSwitch/NetSwitchTabs';
+import MainnetTestnetSwitchTabs from './components/switchTestTab';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -43,6 +45,9 @@ export const TokenList = ({
   } = useExpandList(list, totalValue);
   const { t } = useTranslation();
 
+  const { selectedTab, onTabChange } = useSwitchNetTab();
+  console.log('CUSTOM_LOGGER:=>: selectedTab', selectedTab);
+
   if (isNoResults) {
     // TODO: 自适应撑满高度
     return <TokenListEmpty text={t('page.dashboard.assets.table.noTokens')} />;
@@ -64,9 +69,16 @@ export const TokenList = ({
             </div>
           </div>
         </div>
-        <div className="text-[20px] text-r-neutral-title1 font-semibold">
-          ${numberWithCommasIsLtOne(totalValue || 0, 0)}
-        </div>
+        {allMode ? (
+          <MainnetTestnetSwitchTabs
+            value={selectedTab}
+            onTabChange={onTabChange}
+          />
+        ) : (
+          <div className="text-[20px] text-r-neutral-title1 font-semibold">
+            ${numberWithCommasIsLtOne(totalValue || 0, 0)}
+          </div>
+        )}
       </div>
       <ListContainer>
         <TokenTable
