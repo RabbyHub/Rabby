@@ -101,8 +101,8 @@ export const EnterAddress = ({
   const isValidAddr = useMemo(() => {
     return isValidAddress(inputAddress);
   }, [inputAddress]);
-  const shouldShowError = !!inputAddress && !isValidAddr && !ensResult?.addr;
-  const disableSubmit = !inputAddress || shouldShowError;
+  const hasError = !!inputAddress && !isValidAddr && !ensResult?.addr;
+  const disableSubmit = !inputAddress || hasError;
 
   const [isFocusAddress, setIsFocusAddress] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
@@ -124,6 +124,8 @@ export const EnterAddress = ({
       );
     });
   }, [allSortedAccountList, inputAddress]);
+
+  const showSearchError = hasError && !filteredAccounts.length;
 
   useEffect(() => {
     // delay footer render to avoid layout animation
@@ -263,7 +265,7 @@ export const EnterAddress = ({
               />
             </div>
           </StyledInputWrapper>
-          {shouldShowError && (
+          {showSearchError && (
             <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center mt-[8px]">
               <div className="text-r-red-default">
                 <RcIconWarningCC />
@@ -317,13 +319,13 @@ export const EnterAddress = ({
       {shouldRender && (
         <>
           <div className="flex-1 pt-[20px] overflow-y-scroll">
-            {/* {!isValidAddr && (
+            {!isValidAddr && (
               <AccountList
                 list={filteredAccounts}
                 whitelist={whitelist}
                 onChange={(acc) => onNext(acc.address, acc.type)}
               />
-            )} */}
+            )}
           </div>
           <div className={'footer'}>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
