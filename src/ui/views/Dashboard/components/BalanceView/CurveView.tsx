@@ -203,7 +203,7 @@ export const CurveThumbnail = ({
           />
         </AreaChart>
       )}
-      {showTips && (
+      {showTips && appChainIds && appChainIds.length > 0 && (
         <AppChainTips>
           <div className="text-r-neutral-title2 mr-[2px]">
             <RcIconInfoCC width={12} height={12} />
