@@ -63,8 +63,12 @@ import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManage
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
-const getContainer =
-  isTab || isDesktop ? '.js-rabby-desktop-swap-container' : undefined;
+
+const getContainer = isTab
+  ? '.js-rabby-popup-container'
+  : isDesktop
+  ? '.js-rabby-desktop-swap-container'
+  : undefined;
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
