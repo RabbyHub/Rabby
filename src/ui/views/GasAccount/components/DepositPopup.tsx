@@ -453,54 +453,6 @@ const GasAccountDepositContent = ({
     setAmount(CUSTOM_AMOUNT);
   };
 
-  const handleNoSignResolve = async (txHash: string) => {
-    try {
-      if (!txHash || !token || !currentAccount) {
-        console.error('Missing required data for rechargeGasAccount');
-        return;
-      }
-      const gasAccountData = await wallet.getGasAccountSig();
-      const { sig, accountId } = gasAccountData || {};
-
-      if (!sig || !accountId) {
-        console.error('Gas account not logged in');
-        return;
-      }
-      const chainEnum = findChainByServerID(token.chain);
-      if (!chainEnum) {
-        console.error('Invalid chain');
-        return;
-      }
-      const nonce = await wallet.getNonceByChain(
-        currentAccount.address,
-        chainEnum.id
-      );
-
-      if (typeof nonce !== 'number') {
-        console.error('Failed to get nonce');
-        return;
-      }
-      const depositAmountNumber = Number(depositAmount);
-      await wallet.openapi.rechargeGasAccount({
-        sig: sig,
-        account_id: accountId,
-        tx_id: txHash,
-        chain_id: chainEnum.serverId,
-        amount: depositAmountNumber,
-        user_addr: currentAccount.address,
-        nonce: nonce - 1,
-      });
-    } catch (error) {
-      console.error('Failed to recharge gas account:', error);
-    } finally {
-      setTimeout(() => {
-        refresh((e) => e + 1);
-        handleRefreshHistory();
-        onClose();
-      }, 500);
-    }
-  };
-
   const errorTips = useMemo(() => {
     if (selectedAmount === CUSTOM_AMOUNT && rawValue && rawValue > 500) {
       return t('page.gasAccount.depositPopup.invalidAmount');
@@ -540,21 +492,40 @@ const GasAccountDepositContent = ({
     }
     setIsPreparingSign(true);
     let succeeded = false;
+    const ga: Record<string, any> = {
+      category: 'GasAccount',
+      action: 'deposit',
+    };
     try {
+      const gasAccountData = await wallet.getGasAccountSig();
+      if (
+        gasAccountData.accountId &&
+        gasAccountData.sig &&
+        currentAccount &&
+        token
+      ) {
+        const chainInfo = findChainByServerID(token.chain);
+        if (chainInfo?.serverId) {
+          ga.rechargeGasAccount = {
+            amount: Number(depositAmount),
+            sig: gasAccountData.sig,
+            account_id: gasAccountData.accountId,
+            user_addr: currentAccount!.address,
+            chain_id: chainInfo!.serverId,
+          };
+        }
+      }
+
       resetGasStore();
       closeSign();
       const hashes = await openDirect({
         txs: miniSignTxs,
-        ga: {
-          category: 'GasAccount',
-          action: 'deposit',
-        },
+        ga,
         checkGasFeeTooHigh: true,
         autoUseGasFree: true,
       });
       const hash = hashes[hashes.length - 1];
       if (hash) {
-        await handleNoSignResolve(hash);
         succeeded = true;
       }
     } catch (error) {
@@ -562,16 +533,12 @@ const GasAccountDepositContent = ({
       if (error === MINI_SIGN_ERROR.GAS_FEE_TOO_HIGH) {
         const hashes = await openUI({
           txs: miniSignTxs,
-          ga: {
-            category: 'GasAccount',
-            action: 'deposit',
-          },
+          ga,
           checkGasFeeTooHigh: false,
           autoUseGasFree: true,
         });
         const hash = hashes[hashes.length - 1];
         if (hash) {
-          await handleNoSignResolve(hash);
           succeeded = true;
         }
       } else if (error == MINI_SIGN_ERROR.USER_CANCELLED) {
@@ -584,14 +551,20 @@ const GasAccountDepositContent = ({
       setIsPreparingSign(false);
       if (!succeeded) {
         refresh((e) => e + 1);
+      } else {
+        setTimeout(() => {
+          refresh((e) => e + 1);
+          handleRefreshHistory();
+          onClose();
+        }, 500);
       }
     }
   }, [
+    token?.chain,
     canUseDirectSubmitTx,
     miniSignTxs,
     topUpGasAccount,
     openDirect,
-    handleNoSignResolve,
     refresh,
   ]);
 
