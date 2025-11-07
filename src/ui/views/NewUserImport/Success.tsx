@@ -83,7 +83,7 @@ const AccountItem = ({ account }: { account: Account }) => {
             className={clsx(
               'relative left-[-8px]',
               'w-[260px] h-[38px]',
-              'border-none bg-r-neutral-card2 ',
+              'border-none bg-r-neutral-card2 text-r-neutral-title-1',
               'p-8 rounded',
               'text-[20px] font-medium'
             )}

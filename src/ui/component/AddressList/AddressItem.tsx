@@ -218,6 +218,7 @@ const AddressItem = memo(
                 <div className="brand-name flex">
                   {!stopEditing && editing ? (
                     <Input
+                      className="text-r-neutral-title-1"
                       value={alianName}
                       defaultValue={alianName}
                       onChange={handleAlianNameChange}
