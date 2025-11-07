@@ -135,7 +135,6 @@ export const CustomTestnetTokenDetail = ({
           onOpen={() => addToken(token)}
           onClose={() => removeToken(token)}
         ></BlockedTopTips>
-        <TokenCharts token={(token as any) as TokenItem}></TokenCharts>
         <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
           <div className="balance-content overflow-hidden flex flex-col gap-8 px-16 py-12">
             <div className="flex flex-row justify-between w-full">
