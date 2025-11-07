@@ -48,6 +48,7 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { EcologyPopup } from '../EcologyPopup';
 import { Settings } from '../index';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
+import { RcIconFullscreenCC } from '@/ui/assets/dashboard';
 import { RecentConnectionsPopup } from '../RecentConnections';
 import { useScroll, useSize } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -234,6 +235,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     eventKey: string;
     iconClassName?: string;
     subContent?: React.ReactNode;
+    isFullscreen?: boolean;
   };
 
   const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
@@ -470,7 +472,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const { isDarkTheme } = useThemeMode();
 
   return (
-    <div className="relative group px-[16px] pt-[14px] pb-[12px]">
+    <div className="relative px-[16px] pt-[14px] pb-[12px]">
       <Container
         ref={ref}
         style={
@@ -516,7 +518,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
                     item?.onClick(evt);
                   }}
-                  className="panel-item"
+                  className="panel-item group"
                 >
                   {item.showAlert && (
                     <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
@@ -553,13 +555,18 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
                       {t('page.dashboard.home.soon')}
                     </div>
                   )}
+                  {item.isFullscreen && (
+                    <div className="absolute top-[6px] right-[6px] text-r-neutral-foot hidden group-hover:block">
+                      <RcIconFullscreenCC className="w-[12px] h-[12px]" />
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           );
         })}
       </Container>
-      <div className="absolute right-[8px] top-[50%] translate-y-[-50%] hidden group-hover:block">
+      <div className="absolute right-[8px] top-[50%] translate-y-[-50%]">
         <div className="w-[3px] h-[80px] rounded-full relative">
           <div
             className="w-[3px] h-[50px] bg-r-blue-default rounded-full relative z-10"

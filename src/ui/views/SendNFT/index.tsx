@@ -63,7 +63,9 @@ import {
 import BottomArea from './BottomArea';
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -536,23 +538,23 @@ const SendNFT = () => {
   // const [gasFeeOpen, setGasFeeOpen] = useState(false);
 
   return (
-    <FullscreenContainer className="h-[700px]">
+    <FullscreenContainer className={isTab ? 'h-[700px]' : 'h-[600px]'}>
       <div
         className={clsx(
           'transfer-nft overflow-y-scroll',
-          isTab
+          isTab || isDesktop
             ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
         )}
       >
         <PageHeader
           onBack={handleClickBack}
-          forceShowBack={!isTab}
-          canBack={!isTab}
+          forceShowBack={!(isTab || isDesktop)}
+          canBack={!(isTab || isDesktop)}
           // isShowAccount
           disableSwitchAccount
           rightSlot={
-            isTab ? null : (
+            isTab || isDesktop ? null : (
               <div
                 className="text-r-neutral-title1 absolute right-0 cursor-pointer top-1/2 -translate-y-1/2"
                 onClick={() => {
@@ -591,7 +593,15 @@ const SendNFT = () => {
                   query.set('type', 'send-nft');
                   query.set('rbisource', 'nftdetail');
 
-                  history.replace(`/select-to-address?${query.toString()}`);
+                  if (isDesktop) {
+                    query.set('action', 'send');
+                    query.set('sendPageType', 'selectToAddress');
+                    history.push(
+                      `${history.location.pathname}?${query.toString()}`
+                    );
+                  } else {
+                    history.replace(`/select-to-address?${query.toString()}`);
+                  }
                 }}
               />
               <div className={clsx('section')}>

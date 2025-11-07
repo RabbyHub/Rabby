@@ -63,7 +63,9 @@ const AnimatedInputWrapper = styled.div`
 `;
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
 
 function getDefaultState() {
   return {
@@ -141,7 +143,13 @@ const SelectToAddress = () => {
     } else {
       query.delete('type');
     }
-    history.replace(`/send-token?${query.toString()}`);
+    if (isDesktop) {
+      query.set('action', 'send');
+      query.set('sendPageType', 'sendToken');
+      history.replace(`${history.location.pathname}?${query.toString()}`);
+    } else {
+      history.replace(`/send-token?${query.toString()}`);
+    }
   };
 
   const handleGotoSendNFT = useCallback(
@@ -150,7 +158,13 @@ const SelectToAddress = () => {
       query.set('to', address);
       query.set('nftItem', nftItem || '');
       // avoid again jump send nft when tx done nft amount error
-      history.replace(`/send-nft?${query.toString()}`);
+      if (isDesktop) {
+        query.set('action', 'send');
+        query.set('sendPageType', 'sendNft');
+        history.replace(`${history.location.pathname}?${query.toString()}`);
+      } else {
+        history.replace(`/send-nft?${query.toString()}`);
+      }
     },
     [history, nftItem]
   );
@@ -278,19 +292,21 @@ const SelectToAddress = () => {
   }, [history.location.search, t]);
 
   return (
-    <FullscreenContainer className="h-[700px]">
+    <FullscreenContainer
+      className={clsx(isDesktop ? 'h-[600px]' : 'h-[700px]')}
+    >
       <div
         className={clsx(
           'send-token select-to-address-page relative overflow-y-scroll',
-          isTab
+          isTab || isDesktop
             ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
         )}
       >
         <PageHeader
           onBack={handleClickBack}
-          forceShowBack={!isTab || inputingAddress}
-          canBack={!isTab || inputingAddress}
+          forceShowBack={!(isTab || isDesktop) || inputingAddress}
+          canBack={!(isTab || isDesktop) || inputingAddress}
           fixed
         >
           {pageTitle}

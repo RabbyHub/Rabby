@@ -43,7 +43,7 @@ export const useBrandIcon = ({
           }) ||
           WALLET_BRAND_CONTENT?.[brandName]?.image ||
           KEYRING_ICONS[type],
-    [type, brandName, brandIcon, isDarkTheme]
+    [type, brandName, brandIcon, isDarkTheme, forceLight]
   );
 
   return addressTypeIcon;

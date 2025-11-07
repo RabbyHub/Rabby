@@ -1,31 +1,45 @@
 const colors = require('tailwindcss/colors');
 const tinycolor2 = require('tinycolor2');
 
-const { themeColors, rabbyCssPrefix } = require('./src/constant/theme-colors');
+const {
+  themeColors,
+  rabbyCssPrefix,
+  appThemeColors,
+  rabbyAppCssPrefix,
+} = require('./src/constant/theme-colors');
 
-const rabbyColors = ['light', 'dark'].reduce((accu, theme) => {
-  Object.entries(themeColors[theme]).forEach(([cssvarKey, colorValue]) => {
-    // const splitorIdx = cssvarKey.indexOf('-');
-    // const group = cssvarKey.slice(0, splitorIdx);
-    // const suffix = cssvarKey.slice(splitorIdx + 1);
-    const tinyColor = tinycolor2(colorValue);
-    const alpha = tinyColor.getAlpha();
-  
-    const hexValue = alpha === 1 ? tinyColor.toHexString() : tinyColor.toHex8String();
-    
-    if (!accu.auto[cssvarKey]) {
-      accu.auto[cssvarKey] = `var(--${rabbyCssPrefix}${cssvarKey}, ${hexValue})`;
+const getRabbyColors = (colors, prefix) => {
+  return ['light', 'dark'].reduce(
+    (accu, theme) => {
+      Object.entries(colors[theme]).forEach(([cssvarKey, colorValue]) => {
+        // const splitorIdx = cssvarKey.indexOf('-');
+        // const group = cssvarKey.slice(0, splitorIdx);
+        // const suffix = cssvarKey.slice(splitorIdx + 1);
+        const tinyColor = tinycolor2(colorValue);
+        const alpha = tinyColor.getAlpha();
+
+        const hexValue =
+          alpha === 1 ? tinyColor.toHexString() : tinyColor.toHex8String();
+
+        if (!accu.auto[cssvarKey]) {
+          accu.auto[cssvarKey] = `var(--${prefix}${cssvarKey}, ${hexValue})`;
+        }
+
+        accu[theme][cssvarKey] = hexValue;
+      });
+
+      return accu;
+    },
+    {
+      light: {},
+      dark: {},
+      auto: {},
     }
+  );
+};
 
-    accu[theme][cssvarKey] = hexValue;
-  });
-
-  return accu;
-}, {
-  light: {},
-  dark: {},
-  auto: {},
-});
+const rabbyColors = getRabbyColors(themeColors, rabbyCssPrefix);
+const rabbyAppColors = getRabbyColors(appThemeColors, rabbyAppCssPrefix);
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -138,10 +152,14 @@ module.exports = {
         [`${rabbyCssPrefix.replace(/\-$/, '')}`]: rabbyColors.auto,
         [`${'rabby-'.replace(/\-$/, '')}`]: rabbyColors.auto,
         [`${'-r-'.replace(/\-$/, '')}`]: rabbyColors.auto,
-        
+
         [`light-${rabbyCssPrefix.replace(/\-$/, '')}`]: rabbyColors.light,
         [`dark-${rabbyCssPrefix.replace(/\-$/, '')}`]: rabbyColors.dark,
-      }
+
+        [`${rabbyAppCssPrefix.replace(/\-$/, '')}`]: rabbyAppColors.auto,
+        [`light-${rabbyAppCssPrefix.replace(/\-$/, '')}`]: rabbyAppColors.light,
+        [`dark-${rabbyAppCssPrefix.replace(/\-$/, '')}`]: rabbyAppColors.dark,
+      },
     },
   },
   // use class insteadof media-query prefers-color-scheme

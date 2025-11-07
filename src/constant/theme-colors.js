@@ -105,7 +105,126 @@ const themeColors = {
   },
 };
 
+const appThemeColors = {
+  light: {
+    'brand-default': 'rgba(76, 101, 255, 1)',
+    'brand-default-light': 'rgba(76, 101, 255, 0.7)',
+    'brand-default-icon': 'rgba(64, 86, 221, 1)',
+
+    'brand-light-1': 'rgba(76, 101, 255, 0.12)',
+    'brand-light-2': 'rgba(76, 101, 255, 0.25)',
+    'brand-disable': 'rgba(76, 101, 255, 0.4)',
+    'brand-light-4': 'rgba(112, 132, 255, 0.7)',
+
+    'red-dark': 'rgba(199, 21, 10, 1)',
+    'red-default': 'rgba(255, 69, 58, 1)',
+    'red-light-1': 'rgba(255, 115, 107, 0.1)',
+    'red-light-2': 'rgba(255, 115, 107, 0.2)',
+    'red-disable': 'rgba(255, 115, 107, 0.4)',
+    'red-light-4': 'rgba(255, 115, 107, 0.85)',
+
+    'orange-default': 'rgba(255, 159, 10, 1)',
+    'orange-light-1': 'rgba(255, 170, 39, 0.1)',
+    'orange-light-2': 'rgba(255, 159, 10, 0.44)',
+    'orange-disable': 'rgba(255, 159, 10, 0.24)',
+    'orange-light-4': 'rgba(255, 159, 10, 0.14)',
+
+    'green-default': 'rgba(88, 198, 105, 1)',
+    'green-default-light': 'rgba(117, 212, 101, 0.70)',
+    'green-light-1': 'rgba(88, 198, 105, 0.8)',
+    'green-light-2': 'rgba(88, 198, 105, 0.4)',
+    'green-disable': 'rgba(88, 198, 105, 0.27)',
+    'green-light-4': 'rgba(88, 198, 105, 0.14)',
+
+    'blue-default': 'rgba(10, 132, 255, 1)',
+    'blue-light-1': 'rgba(10, 132, 255, 0.7)',
+    'blue-light-2': 'rgba(10, 132, 255, 0.4)',
+    'blue-disable': 'rgba(10, 132, 255, 0.27)',
+    'blue-light-4': 'rgba(10, 132, 255, 0.14)',
+
+    'neutral-bg-0': 'rgba(246, 247, 247, 1)',
+    'neutral-bg-1': 'rgba(255, 255, 255, 1)',
+    'neutral-bg-2': 'rgba(242, 244, 247, 1)',
+    'neutral-bg-3': 'rgba(249, 249, 249, 1)',
+    'neutral-bg-4': 'rgba(235, 238, 247, 1)',
+    'neutral-bg-5': 'rgba(224, 229, 236, 0.5)',
+    'neutral-line': 'rgba(224, 229, 236, 1)',
+    'neutral-title-1': 'rgba(25, 41, 69, 1)',
+    /** @deprecated just for compability, use classcial's, not next's */
+    'neutral-title-2': 'rgba(255, 255, 255, 1)',
+    'neutral-card-1': 'rgba(255, 255, 255, 1)',
+    /** @deprecated just for compability, use classcial's, not next's */
+    'neutral-card-2': 'rgba(242, 244, 247, 1)',
+    'neutral-body': 'rgba(62, 73, 94, 1)',
+    'neutral-foot': 'rgba(106, 117, 135, 1)',
+    'neutral-secondary': 'rgba(154, 156, 169, 1)',
+    'neutral-info': 'rgba(197, 197, 207, 1)',
+    'neutral-InvertHighlight': 'rgba(255, 255, 255, 1)',
+    'neutral-black': 'rgba(0, 0, 0, 1)',
+    'neutral-bg-gray': 'rgba(246, 247, 247, 1)',
+  },
+  dark: {
+    'brand-default': 'rgba(112, 132, 255, 1)',
+    'brand-default-light': 'rgba(112, 132, 255, 0.7)',
+    'brand-default-icon': 'rgba(82, 103, 232, 1)',
+
+    'brand-light-1': 'rgba(112, 132, 255, 0.12)',
+    'brand-light-2': 'rgba(112, 132, 255, 0.25)',
+    'brand-disable': 'rgba(112, 132, 255, 0.4)',
+    'brand-light-4': 'rgba(112, 132, 255, 0.7)',
+
+    'red-dark': 'rgba(199, 21, 10, 1)',
+    'red-default': 'rgba(255, 69, 58, 1)',
+    'red-light-1': 'rgba(255, 115, 107, 0.1)',
+    'red-light-2': 'rgba(255, 115, 107, 0.2)',
+    'red-disable': 'rgba(255, 115, 107, 0.4)',
+    'red-light-4': 'rgba(255, 115, 107, 0.85)',
+
+    'orange-default': 'rgba(255, 159, 10, 1)',
+    'orange-light-1': 'rgba(255, 170, 39, 0.1)',
+    'orange-light-2': 'rgba(255, 159, 10, 0.44)',
+    'orange-disable': 'rgba(255, 159, 10, 0.24)',
+    'orange-light-4': 'rgba(255, 159, 10, 0.14)',
+
+    'green-default': 'rgba(88, 198, 105, 1)',
+    'green-default-light': 'rgba(117, 212, 101, 0.70)',
+    'green-light-1': 'rgba(88, 198, 105, 0.8)',
+    'green-light-2': 'rgba(88, 198, 105, 0.4)',
+    'green-disable': 'rgba(88, 198, 105, 0.27)',
+    'green-light-4': 'rgba(88, 198, 105, 0.14)',
+
+    'blue-default': 'rgba(10, 132, 255, 1)',
+    'blue-light-1': 'rgba(10, 132, 255, 0.7)',
+    'blue-light-2': 'rgba(10, 132, 255, 0.4)',
+    'blue-disable': 'rgba(10, 132, 255, 0.27)',
+    'blue-light-4': 'rgba(10, 132, 255, 0.14)',
+
+    'neutral-bg-0': 'rgba(19, 20, 22, 1)',
+    'neutral-bg-1': 'rgba(19, 20, 22, 1)',
+    'neutral-bg-2': 'rgba(35, 36, 40, 1)',
+    'neutral-bg-3': 'rgba(28, 28, 29, 1)',
+    'neutral-bg-4': 'rgba(56, 59, 65, 1)',
+    'neutral-bg-5': 'rgba(47, 49, 53, 0.5)',
+    'neutral-line': 'rgba(47, 49, 53, 1)',
+    'neutral-title-1': 'rgba(247, 250, 252, 1)',
+    /** @deprecated just for compability, use classcial's, not next's */
+    'neutral-title-2': 'rgba(255, 255, 255, 1)',
+    'neutral-card-1': 'rgba(255, 255, 255, 0.06)',
+    /** @deprecated just for compability, use classcial's, not next's */
+    'neutral-card-2': 'rgba(242, 244, 247, 1)',
+    'neutral-body': 'rgba(211, 216, 224, 1)',
+    'neutral-foot': 'rgba(186, 190, 197, 1)',
+    'neutral-secondary': 'rgba(113, 115, 128, 1)',
+    'neutral-info': 'rgba(86, 87, 95, 1)',
+    'neutral-InvertHighlight': 'rgba(255, 255, 255, 1)',
+    'neutral-black': 'rgba(0, 0, 0, 1)',
+    'neutral-bg-gray': 'rgba(19, 20, 22, 1)',
+  },
+};
+
 module.exports = {
   themeColors,
   rabbyCssPrefix: 'r-',
+  appThemeColors,
+  rabbyAppCssPrefix: 'rb-',
 };
