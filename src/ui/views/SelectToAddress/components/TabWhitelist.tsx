@@ -21,6 +21,7 @@ import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-wh
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
 import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import qs from 'qs';
 
 const WhitelistItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
@@ -50,7 +51,9 @@ const WhitelistItemWrapper = styled.div`
 `;
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
 
 export default function TabWhitelist({
   unimportedBalances = {},
@@ -175,7 +178,16 @@ export default function TabWhitelist({
           <div className="px-[20px] w-full">
             <Button
               onClick={() => {
-                history.push('/whitelist-input');
+                if (isDesktop) {
+                  history.push(
+                    `${history.location.pathname}?${qs.stringify({
+                      action: 'send',
+                      sendPageType: 'whitelistInput',
+                    })}`
+                  );
+                } else {
+                  history.push('/whitelist-input');
+                }
               }}
               type="primary"
               className={clsx(

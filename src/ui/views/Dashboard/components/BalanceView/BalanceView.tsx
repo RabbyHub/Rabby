@@ -210,6 +210,8 @@ export const BalanceView = ({
   const { activePopup, setData, componentName } = useCommonPopupView();
   const onClickViewAssets = () => {
     activePopup('AssetList');
+    // wallet.openInDesktop('/desktop/profile');
+    // window.close();
   };
 
   useEffect(() => {

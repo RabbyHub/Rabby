@@ -30,7 +30,9 @@ import { ReactComponent as RcIconContactCC } from '@/ui/assets/contact-cc.svg';
 import './styles.less';
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
 
 const SectionHeader = styled.div`
   font-size: 17px;
@@ -258,12 +260,12 @@ const WhitelistInput = () => {
   }, [wallet]);
 
   return (
-    <FullscreenContainer className="h-[700px]">
+    <FullscreenContainer className={isDesktop ? 'h-[600px]' : 'h-[700px]'}>
       <div
         className={clsx(
           'send-token',
-          isTab
-            ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
+          isDesktop || isTab
+            ? 'w-full h-full overflow-auto min-h-0 rounded-[8px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
         )}
       >
@@ -272,7 +274,7 @@ const WhitelistInput = () => {
           forceShowBack
           canBack
           rightSlot={
-            isTab ? null : (
+            isDesktop || isTab ? null : (
               <div
                 className="text-r-neutral-title1 cursor-pointer absolute right-0 "
                 onClick={() => {

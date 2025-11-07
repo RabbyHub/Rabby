@@ -224,6 +224,12 @@ const config = {
     }),
     new HtmlWebpackPlugin({
       inject: true,
+      template: paths.desktopHtml,
+      chunks: ['ui'],
+      filename: 'desktop.html',
+    }),
+    new HtmlWebpackPlugin({
+      inject: true,
       template: paths.backgroundHtml,
       chunks: ['background'],
       filename: 'background.html',

@@ -902,6 +902,10 @@ export class KeyringService extends EventEmitter {
       hasEncryptedKeyringData,
     });
 
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.PERSIST_KEYRING,
+    });
+
     return true;
   }
 

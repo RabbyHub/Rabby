@@ -50,7 +50,13 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+
+const getContainer = isTab
+  ? '.js-rabby-popup-container'
+  : isDesktop
+  ? '.js-rabby-desktop-swap-container'
+  : undefined;
 
 export const BridgeContent = () => {
   const { userAddress } = useRabbySelector((state) => ({
@@ -247,7 +253,7 @@ export const BridgeContent = () => {
             },
           }
         );
-        if (!isTab) {
+        if (!(isTab || isDesktop)) {
           window.close();
         } else {
           await promise;
@@ -470,7 +476,7 @@ export const BridgeContent = () => {
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
 
-  const { openDirect, prefetch } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: findChainByEnum(fromChain)?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -557,6 +563,7 @@ export const BridgeContent = () => {
 
   useEffect(() => {
     if (!canUseDirectSubmitTx) return;
+    closeSign();
     prefetch({
       txs: txs || [],
       getContainer,
@@ -566,7 +573,7 @@ export const BridgeContent = () => {
         trigger: rbiSource,
       },
     });
-  }, [prefetch, txs, canUseDirectSubmitTx, rbiSource]);
+  }, [closeSign, prefetch, txs, canUseDirectSubmitTx, rbiSource]);
 
   const [showMoreOpen, setShowMoreOpen] = useState(false);
 
@@ -584,7 +591,8 @@ export const BridgeContent = () => {
         historyVisible={historyVisible}
         setHistoryVisible={setHistoryVisible}
         pendingNumber={pendingNumber}
-        onOpenInTab={() => {
+        noShowHeader={isDesktop}
+        onOpenInTab={async () => {
           openInternalPageInTab(
             `bridge?${obj2query({
               fromChain: fromChain || '',
@@ -598,6 +606,21 @@ export const BridgeContent = () => {
                 : '',
             })}`
           );
+          // await wallet.openInDesktop(
+          //   `desktop/profile?${obj2query({
+          //     action: 'bridge',
+          //     fromChain: fromChain || '',
+          //     fromTokenId: fromToken?.id || '',
+          //     inputAmount: amount || '',
+          //     toChain: toChain || '',
+          //     toTokenId: toToken?.id || '',
+          //     rbiSource: rbiSource || '',
+          //     maxNativeTokenGasPrice: maxNativeTokenGasPrice
+          //       ? String(maxNativeTokenGasPrice)
+          //       : '',
+          //   })}`
+          // );
+          // window.close();
         }}
       />
       <div

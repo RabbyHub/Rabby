@@ -17,10 +17,12 @@ import { ReactComponent as RcIconCheck } from '@/ui/assets/dashboard/portfolio/c
 import { ReactComponent as RcIconChecked } from '@/ui/assets/dashboard/portfolio/cc-checked.svg';
 import clsx from 'clsx';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 interface Props {
   visible?: boolean;
   onClose?(): void;
   onConfirm?(): void;
+  inModal?: boolean;
 }
 
 const Wraper = styled.div`
@@ -90,10 +92,11 @@ const Footer = styled.div`
   bottom: 0;
 `;
 
-export const AddCustomTestnetTokenPopup = ({
+export const AddCustomTestnetTokenContent = ({
   visible,
   onClose,
   onConfirm,
+  inModal,
 }: Props) => {
   const wallet = useWallet();
   const [chainSelectorState, setChainSelectorState] = useSetState<{
@@ -103,6 +106,7 @@ export const AddCustomTestnetTokenPopup = ({
     visible: false,
     chain: getChainList('testnet')?.[0]?.enum || null,
   });
+  const { getContainer } = usePopupContainer();
 
   const chain = findChain({ enum: chainSelectorState.chain });
   const [tokenId, setTokenId] = useState('');
@@ -191,6 +195,169 @@ export const AddCustomTestnetTokenPopup = ({
     }
   }, [visible]);
 
+  return (
+    <>
+      <Wraper>
+        <Form layout="vertical" form={form}>
+          <Form.Item label="Chain">
+            <div
+              onClick={() => {
+                setChainSelectorState({
+                  visible: true,
+                });
+              }}
+            >
+              {!chain ? (
+                <div
+                  className={clsx(
+                    'flex items-center bg-r-neutral-card2 rounded-[6px]',
+                    'px-[16px] py-[12px] min-h-[52px] cursor-pointer',
+                    'border-[1px] border-transparent',
+                    'hover:border-rabby-blue-default hover:bg-r-blue-light1',
+                    inModal ? 'bg-rb-neutral-card-1' : ''
+                  )}
+                >
+                  <div className="text-r-neutral-title1 text-[15px] leading-[18px]">
+                    {t('page.dashboard.assets.AddTestnetToken.selectChain')}
+                  </div>
+                  <div className="ml-auto text-r-neutral-body">
+                    <RcIconDown />
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={clsx(
+                    'flex items-center bg-r-neutral-card2 rounded-[6px]',
+                    'gap-[8px] px-[16px] py-[12px] min-h-[52px] cursor-pointer',
+                    'border-[1px] border-transparent',
+                    'hover:border-rabby-blue-default hover:bg-r-blue-light1',
+                    inModal ? 'bg-rb-neutral-card-1' : ''
+                  )}
+                >
+                  <img
+                    src={chain?.logo}
+                    alt=""
+                    className="w-[28px] h-[28px] rounded-full"
+                  />
+                  <div className="text-r-neutral-title1 text-[15px] leading-[18px]">
+                    {chain?.name}
+                  </div>
+                  <div className="ml-auto text-r-neutral-body">
+                    <RcIconDown />
+                  </div>
+                </div>
+              )}
+            </div>
+          </Form.Item>
+          <Form.Item
+            label={t('page.dashboard.assets.AddTestnetToken.tokenAddress')}
+            name="address"
+          >
+            <Input
+              ref={inputRef}
+              autoFocus
+              className={inModal ? 'bg-rb-neutral-card-1' : ''}
+              placeholder={t(
+                'page.dashboard.assets.AddTestnetToken.tokenAddressPlaceholder'
+              )}
+              onChange={(e) => {
+                setTokenId(e.target.value);
+              }}
+              autoComplete="off"
+            />
+          </Form.Item>
+          {loading ? (
+            <div className="flex items-center text-r-neutral-body text-[13px] gap-[4px]">
+              <Loading3QuartersOutlined className="animate-spin" />{' '}
+              {t('page.dashboard.assets.AddTestnetToken.searching')}
+            </div>
+          ) : (
+            <>
+              {token && !error ? (
+                <Form.Item label="Found Token">
+                  <div
+                    className={clsx(
+                      'flex items-center gap-[12px] rounded-[6px]',
+                      'bg-r-neutral-card2 min-h-[52px] px-[16px] py-[14px]'
+                    )}
+                  >
+                    <div className="relative h-[24px]">
+                      <img
+                        src={IconUnknown}
+                        alt=""
+                        className="w-[24px] h-[24px] rounded-full"
+                      />
+                      <TooltipWithMagnetArrow
+                        title={chain?.name}
+                        className="rectangle w-[max-content]"
+                      >
+                        <img
+                          className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
+                          src={chain?.logo || IconUnknown}
+                          alt={chain?.name}
+                        />
+                      </TooltipWithMagnetArrow>
+                    </div>
+                    <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium">
+                      {formatAmount(token.amount || 0)} {token.symbol}
+                    </div>
+                  </div>
+                </Form.Item>
+              ) : null}
+            </>
+          )}
+        </Form>
+        <Footer>
+          <Button
+            type="primary"
+            size="large"
+            className="rabby-btn-ghost w-[172px]"
+            ghost
+            onClick={onClose}
+          >
+            {t('global.Cancel')}
+          </Button>
+          <Button
+            type="primary"
+            size="large"
+            className="w-[172px]"
+            disabled={Boolean(!token || error || loading || !checked)}
+            loading={isSubmitting}
+            onClick={handleConfirm}
+          >
+            {t('global.Confirm')}
+          </Button>
+        </Footer>
+      </Wraper>
+      <ChainSelectorModal
+        hideTestnetTab={false}
+        hideMainnetTab={true}
+        getContainer={getContainer}
+        value={chainSelectorState.chain || CHAINS_ENUM.ETH}
+        visible={chainSelectorState.visible}
+        onCancel={() => {
+          setChainSelectorState({
+            visible: false,
+          });
+        }}
+        showRPCStatus
+        onChange={(value) => {
+          setChainSelectorState({
+            visible: false,
+            chain: value,
+          });
+        }}
+      />
+    </>
+  );
+};
+
+export const AddCustomTestnetTokenPopup = ({
+  visible,
+  onClose,
+  onConfirm,
+}: Props) => {
+  const { t } = useTranslation();
   const { isDarkTheme } = useThemeMode();
 
   return (
@@ -215,154 +382,12 @@ export const AddCustomTestnetTokenPopup = ({
             : undefined
         }
       >
-        <Wraper>
-          <Form layout="vertical" form={form}>
-            <Form.Item label="Chain">
-              <div
-                onClick={() => {
-                  setChainSelectorState({
-                    visible: true,
-                  });
-                }}
-              >
-                {!chain ? (
-                  <div
-                    className={clsx(
-                      'flex items-center bg-r-neutral-card2 rounded-[6px]',
-                      'px-[16px] py-[12px] min-h-[52px] cursor-pointer',
-                      'border-[1px] border-transparent',
-                      'hover:border-rabby-blue-default hover:bg-r-blue-light1'
-                    )}
-                  >
-                    <div className="text-r-neutral-title1 text-[15px] leading-[18px]">
-                      {t('page.dashboard.assets.AddTestnetToken.selectChain')}
-                    </div>
-                    <div className="ml-auto text-r-neutral-body">
-                      <RcIconDown />
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    className={clsx(
-                      'flex items-center bg-r-neutral-card2 rounded-[6px]',
-                      'gap-[8px] px-[16px] py-[12px] min-h-[52px] cursor-pointer',
-                      'border-[1px] border-transparent',
-                      'hover:border-rabby-blue-default hover:bg-r-blue-light1'
-                    )}
-                  >
-                    <img
-                      src={chain?.logo}
-                      alt=""
-                      className="w-[28px] h-[28px] rounded-full"
-                    />
-                    <div className="text-r-neutral-title1 text-[15px] leading-[18px]">
-                      {chain?.name}
-                    </div>
-                    <div className="ml-auto text-r-neutral-body">
-                      <RcIconDown />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Form.Item>
-            <Form.Item
-              label={t('page.dashboard.assets.AddTestnetToken.tokenAddress')}
-              name="address"
-            >
-              <Input
-                ref={inputRef}
-                autoFocus
-                placeholder={t(
-                  'page.dashboard.assets.AddTestnetToken.tokenAddressPlaceholder'
-                )}
-                onChange={(e) => {
-                  setTokenId(e.target.value);
-                }}
-                autoComplete="off"
-              />
-            </Form.Item>
-            {loading ? (
-              <div className="flex items-center text-r-neutral-body text-[13px] gap-[4px]">
-                <Loading3QuartersOutlined className="animate-spin" />{' '}
-                {t('page.dashboard.assets.AddTestnetToken.searching')}
-              </div>
-            ) : (
-              <>
-                {token && !error ? (
-                  <Form.Item label="Found Token">
-                    <div
-                      className={clsx(
-                        'flex items-center gap-[12px] rounded-[6px]',
-                        'bg-r-neutral-card2 min-h-[52px] px-[16px] py-[14px]'
-                      )}
-                    >
-                      <div className="relative h-[24px]">
-                        <img
-                          src={IconUnknown}
-                          alt=""
-                          className="w-[24px] h-[24px] rounded-full"
-                        />
-                        <TooltipWithMagnetArrow
-                          title={chain?.name}
-                          className="rectangle w-[max-content]"
-                        >
-                          <img
-                            className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
-                            src={chain?.logo || IconUnknown}
-                            alt={chain?.name}
-                          />
-                        </TooltipWithMagnetArrow>
-                      </div>
-                      <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium">
-                        {formatAmount(token.amount || 0)} {token.symbol}
-                      </div>
-                    </div>
-                  </Form.Item>
-                ) : null}
-              </>
-            )}
-          </Form>
-          <Footer>
-            <Button
-              type="primary"
-              size="large"
-              className="rabby-btn-ghost w-[172px]"
-              ghost
-              onClick={onClose}
-            >
-              {t('global.Cancel')}
-            </Button>
-            <Button
-              type="primary"
-              size="large"
-              className="w-[172px]"
-              disabled={Boolean(!token || error || loading || !checked)}
-              loading={isSubmitting}
-              onClick={handleConfirm}
-            >
-              {t('global.Confirm')}
-            </Button>
-          </Footer>
-        </Wraper>
+        <AddCustomTestnetTokenContent
+          visible={visible}
+          onClose={onClose}
+          onConfirm={onConfirm}
+        />
       </Popup>
-      <ChainSelectorModal
-        hideTestnetTab={false}
-        hideMainnetTab={true}
-        value={chainSelectorState.chain || CHAINS_ENUM.ETH}
-        visible={chainSelectorState.visible}
-        onCancel={() => {
-          setChainSelectorState({
-            visible: false,
-          });
-        }}
-        showRPCStatus
-        onChange={(value) => {
-          setChainSelectorState({
-            visible: false,
-            chain: value,
-          });
-        }}
-      />
     </>
   );
 };

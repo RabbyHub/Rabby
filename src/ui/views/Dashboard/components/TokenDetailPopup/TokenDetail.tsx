@@ -12,7 +12,12 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { Image } from 'antd';
-import { splitNumberByStep, useWallet, useCommonPopupView } from 'ui/utils';
+import {
+  splitNumberByStep,
+  useWallet,
+  useCommonPopupView,
+  getUiType,
+} from 'ui/utils';
 import { getChain } from '@/utils';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
@@ -30,16 +35,16 @@ import { Account } from '@/background/service/preference';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DbkButton } from '@/ui/views/Ecology/dbk-chain/components/DbkButton';
 import { DBK_CHAIN_ID } from '@/constant';
-
+const isDesktop = getUiType().isDesktop;
 const PAGE_COUNT = 10;
 
 interface TokenDetailProps {
   onClose?(): void;
   token: TokenItem;
-  addToken(token: TokenItem): void;
-  removeToken(token: TokenItem): void;
-  variant?: 'add';
-  isAdded?: boolean;
+  // addToken(token: TokenItem): void;
+  // removeToken(token: TokenItem): void;
+  // variant?: 'add';
+  // isAdded?: boolean;
   canClickToken?: boolean;
   hideOperationButtons?: boolean;
   popupHeight: number;
@@ -49,10 +54,10 @@ interface TokenDetailProps {
 
 const TokenDetail = ({
   token,
-  addToken,
-  removeToken,
-  variant,
-  isAdded,
+  // addToken,
+  // removeToken,
+  // variant,
+  // isAdded,
   onClose,
   canClickToken = true,
   popupHeight,
@@ -149,36 +154,55 @@ const TokenDetail = ({
   const history = useHistory();
   const location = useLocation();
 
-  const isSwap = location.pathname === '/dex-swap';
-  const isSend = location.pathname === '/send-token';
-  const isBridge = location.pathname === '/bridge';
+  const action = new URLSearchParams(location.search).get('action');
+
+  const isSwap =
+    location.pathname === '/dex-swap' || (action === 'swap' && isDesktop);
+  const isSend =
+    location.pathname === '/send-token' || (action === 'send' && isDesktop);
+  const isBridge =
+    location.pathname === '/bridge' || (action === 'bridge' && isDesktop);
+  const isInDesktopActionModal =
+    isDesktop &&
+    (action === 'send' || action === 'swap' || action === 'bridge');
 
   const handleInTokenSelect = useGetHandleTokenSelectInTokenDetails();
-
-  const isInSwap = location.pathname === '/dex-swap';
-  const isInSend = location.pathname === '/send-token';
 
   const goToSend = useCallback(() => {
     setVisible(false);
     onClose?.();
-    if (isInSend && handleInTokenSelect) {
+    if (isSend && handleInTokenSelect) {
       handleInTokenSelect(token);
     } else {
-      history.push(
-        `/send-token?rbisource=tokendetail&token=${token?.chain}:${token?.id}`
-      );
+      if (isDesktop) {
+        wallet.openInDesktop(
+          `desktop/profile?action=send&rbisource=tokendetail&token=${token?.chain}:${token?.id}`
+        );
+      } else {
+        history.push(
+          `/send-token?rbisource=tokendetail&token=${token?.chain}:${token?.id}`
+        );
+      }
     }
-  }, [history, token, isInSend, handleInTokenSelect]);
+  }, [history, token, isSend, handleInTokenSelect]);
 
   const goToReceive = useCallback(() => {
     setVisible(false);
     onClose?.();
-    history.push(
-      `/receive?rbisource=tokendetail&chain=${
-        getChain(token?.chain)?.enum
-      }&token=${token?.symbol}`
-    );
-  }, [history, token]);
+    if (isDesktop) {
+      wallet.openInDesktop(
+        `desktop/profile?rbisource=tokendetail&action=receive&chain=${
+          getChain(token?.chain)?.enum
+        }&token=${token?.symbol}`
+      );
+    } else {
+      history.push(
+        `/receive?rbisource=tokendetail&chain=${
+          getChain(token?.chain)?.enum
+        }&token=${token?.symbol}`
+      );
+    }
+  }, [history, token, isDesktop]);
 
   const gotoBridge = useCallback(() => {
     setVisible(false);
@@ -186,30 +210,39 @@ const TokenDetail = ({
     if (isBridge && handleInTokenSelect) {
       handleInTokenSelect(token);
     } else {
-      history.push(
-        `/bridge?rbisource=tokendetail&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
-      );
+      if (isDesktop) {
+        wallet.openInDesktop(
+          `desktop/profile?rbisource=tokendetail&action=bridge&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
+        );
+      } else {
+        history.push(
+          `/bridge?rbisource=tokendetail&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
+        );
+      }
     }
   }, [history, token]);
 
   const goToSwap = useCallback(() => {
     setVisible(false);
     onClose?.();
-    if (isInSwap && handleInTokenSelect) {
+    if (isSwap && handleInTokenSelect) {
       handleInTokenSelect(token);
     } else {
-      history.push(
-        `/dex-swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`,
-        {
-          closeTokenSelect: true,
-        }
-      );
+      if (isDesktop) {
+        wallet.openInDesktop(
+          `desktop/profile?rbisource=tokendetail&action=swap&chain=${token?.chain}&payTokenId=${token?.id}`
+        );
+      } else {
+        history.push(
+          `/dex-swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
+        );
+      }
     }
-  }, [history, token, isInSwap, handleInTokenSelect]);
+  }, [history, token, isSwap, handleInTokenSelect]);
 
-  const isCustomizedNotAdded = useMemo(() => {
-    return !token.is_core && !isAdded && variant === 'add';
-  }, [token, variant, isAdded]);
+  // const isCustomizedNotAdded = useMemo(() => {
+  //   return !token.is_core && !isAdded && variant === 'add';
+  // }, [token, variant, isAdded]);
 
   const BottomBtn = useMemo(() => {
     if (hideOperationButtons) {
@@ -245,42 +278,40 @@ const TokenDetail = ({
       );
     }
 
-    if (isCustomizedNotAdded) {
-      return (
-        <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => addToken(tokenWithAmount)}
-            className="w-[360px] h-[40px] leading-[18px]"
-            style={{
-              width: 360,
-              height: 40,
-              lineHeight: '18px',
-            }}
-          >
-            {t('page.dashboard.tokenDetail.AddToMyTokenList')}
-          </Button>
-        </div>
-      );
-    }
+    // if (isCustomizedNotAdded) {
+    //   return (
+    //     <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
+    //       <Button
+    //         type="primary"
+    //         size="large"
+    //         onClick={() => addToken(tokenWithAmount)}
+    //         className="w-[360px] h-[40px] leading-[18px]"
+    //         style={{
+    //           width: 360,
+    //           height: 40,
+    //           lineHeight: '18px',
+    //         }}
+    //       >
+    //         {t('page.dashboard.tokenDetail.AddToMyTokenList')}
+    //       </Button>
+    //     </div>
+    //   );
+    // }
 
     return (
-      <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
+      <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 gap-8">
         <Button
           type="primary"
           size="large"
           onClick={goToSwap}
           className="w-[84px] h-[40px] leading-[18px]"
           style={{
-            width: 114,
             height: 40,
             lineHeight: '18px',
           }}
         >
           {t('page.dashboard.tokenDetail.swap')}
         </Button>
-
         <Button
           type="primary"
           ghost
@@ -290,7 +321,6 @@ const TokenDetail = ({
         >
           {t('page.dashboard.tokenDetail.bridge')}
         </Button>
-
         <Button
           type="primary"
           ghost
@@ -312,12 +342,11 @@ const TokenDetail = ({
       </div>
     );
   }, [
-    addToken,
+    isDesktop,
     goToReceive,
     goToSend,
     goToSwap,
     hideOperationButtons,
-    isCustomizedNotAdded,
     isSwap,
     isBridge,
     gotoBridge,
@@ -363,7 +392,7 @@ const TokenDetail = ({
         ref={ref}
         className={clsx('token-detail-body flex flex-col gap-12', 'pt-[0px]')}
       >
-        <ScamTokenTips token={tokenWithAmount}></ScamTokenTips>
+        {/* <ScamTokenTips token={tokenWithAmount}></ScamTokenTips>
         {variant === 'add' && (
           <BlockedTopTips
             token={token}
@@ -371,7 +400,7 @@ const TokenDetail = ({
             onOpen={() => addToken(tokenWithAmount)}
             onClose={() => removeToken(tokenWithAmount)}
           ></BlockedTopTips>
-        )}
+        )} */}
         <TokenCharts token={token}></TokenCharts>
         <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
           <div className="balance-content flex flex-col gap-8 px-16 py-12">
@@ -379,7 +408,7 @@ const TokenDetail = ({
               <div className="balance-title text-r-neutral-body text-13">
                 {t('page.dashboard.tokenDetail.myBalance')}
               </div>
-              {variant === 'add' ? (
+              {/* {variant === 'add' ? (
                 token.is_core ? (
                   <BlockedButton
                     selected={isAdded}
@@ -392,7 +421,7 @@ const TokenDetail = ({
                 //   onClose={() => removeToken(tokenWithAmount)}
                 // />
                 null
-              ) : null}
+              ) : null} */}
             </div>
             <div className="flex flex-row justify-between w-full items-center">
               <div className="flex flex-row gap-8 items-center">
@@ -484,6 +513,7 @@ const TokenDetail = ({
               key={item.id}
               onClose={onClose}
               canClickToken={canClickToken}
+              isInDesktopActionModal={isInDesktopActionModal}
             ></HistoryItem>
           ))}
           {(loadingMore || loading) && <Loading count={5} active />}

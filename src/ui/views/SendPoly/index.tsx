@@ -89,8 +89,8 @@ const AnimatedInputWrapper = styled.div`
   }
 `;
 
-const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isTabOrDesktop = getUiType().isTab || getUiType().isDesktop;
+const getContainer = isTabOrDesktop ? '.js-rabby-popup-container' : undefined;
 
 /** @deprecated */
 const SendPoly = () => {
@@ -183,13 +183,26 @@ const SendPoly = () => {
     } else {
       query.delete('type');
     }
-    history.replace(`/send-token?${query.toString()}`);
+    if (getUiType().isDesktop) {
+      query.set('sendPageType', 'sendToken');
+      query.set('action', 'send');
+      wallet.openInDesktop(`desktop/profile?${query.toString()}`);
+    } else {
+      history.replace(`/send-token?${query.toString()}`);
+    }
   };
 
   const handleGotoSendNFT = (address: string) => {
     const query = new URLSearchParams(history.location.search);
     query.set('to', address);
     query.set('nftItem', nftItem || '');
+    if (getUiType().isDesktop) {
+      query.set('sendPageType', 'sendNft');
+      query.set('action', 'send-nft');
+      history.push(`/desktop/profile?${query.toString()}`);
+      return;
+    }
+
     // avoid again jump send nft when tx done nft amount error
     history.replace(`/send-nft?${query.toString()}`);
   };
@@ -306,27 +319,44 @@ const SendPoly = () => {
     };
   }, [forceUpdateUnimportedBalances, unimportedWhitelistAccounts, wallet]);
 
+  const handleGotoWhitelistInput = () => {
+    if (getUiType().isDesktop) {
+      const query = new URLSearchParams(history.location.search);
+      query.set('sendPageType', 'whitelistInput');
+      query.set('action', 'send');
+      wallet.openInDesktop(`desktop/profile?${query.toString()}`);
+    } else {
+      history.push('/whitelist-input');
+    }
+  };
+
   return (
     <FullscreenContainer className="h-[700px]">
       <div
         className={clsx(
           'send-token overflow-y-scroll',
-          isTab
+          isTabOrDesktop
             ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
         )}
       >
         <PageHeader
           onBack={handleClickBack}
-          forceShowBack={!isTab || inputingAddress}
-          canBack={!isTab || inputingAddress}
+          forceShowBack={!isTabOrDesktop || inputingAddress}
+          canBack={!isTabOrDesktop || inputingAddress}
           fixed
           rightSlot={
-            isTab ? null : (
+            isTabOrDesktop ? null : (
               <div
                 className="text-r-neutral-title1 absolute right-0 cursor-pointer"
-                onClick={() => {
-                  openInternalPageInTab(`send-poly${history.location.search}`);
+                onClick={async () => {
+                  // openInternalPageInTab(`send-poly${history.location.search}`);
+                  await wallet.openInDesktop(
+                    `/desktop/profile?action=send&${history.location.search.slice(
+                      1
+                    )}`
+                  );
+                  window.close();
                 }}
               >
                 <RcIconFullscreen />
@@ -371,9 +401,7 @@ const SendPoly = () => {
                 </div>
                 <div
                   className="text-r-neutral-body cursor-pointer"
-                  onClick={() => {
-                    history.push('/whitelist-input');
-                  }}
+                  onClick={handleGotoWhitelistInput}
                 >
                   <RcIconAddWhitelist width={20} height={20} />
                 </div>
@@ -409,9 +437,7 @@ const SendPoly = () => {
                   ))
                 ) : (
                   <EmptyWhitelistHolder
-                    onAddWhitelist={() => {
-                      history.push('/whitelist-input');
-                    }}
+                    onAddWhitelist={handleGotoWhitelistInput}
                   />
                 )}
               </div>
@@ -420,9 +446,7 @@ const SendPoly = () => {
             {allAccounts.length > 0 && (
               <div>
                 <Button
-                  onClick={() => {
-                    history.push('/whitelist-input');
-                  }}
+                  onClick={handleGotoWhitelistInput}
                   type="primary"
                   className={`
                   bg-r-neutral-card1 mt-[12px] w-full shadow-none h-[48px] border-transparent 
