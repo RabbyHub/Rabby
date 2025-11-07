@@ -17,10 +17,11 @@
     margin-bottom: 20px;
     .section-title {
       display: flex;
-      font-size: 15px;
+      font-size: 17px;
+      font-weight: 700;
       line-height: 18px;
       color: var(--r-neutral-title-1);
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       .token-balance {
         display: flex;
         align-items: center;
@@ -29,8 +30,8 @@
 
     .token-amount-input {
       margin-bottom: 0;
-      padding: 16px;
-      padding-bottom: 12px;
+      padding: 20px;
+      
       .left {
         padding: 8px 12px;
         border-radius: 100px;
@@ -40,6 +41,10 @@
       }
       .left:hover {
         background: var(--r-blue-light2,#eef1ff)
+      }
+      .right .ant-input {
+        font-weight: 700;
+        font-size: 28px;
       }
     }
     .token-price {

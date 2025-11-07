@@ -334,7 +334,7 @@ const SelectToAddress = () => {
               `}
               onClick={() => setInputingAddress(true)}
             >
-              {t('page.selectToAddress.enterAddress')}
+              {t('page.selectToAddress.enterAddressOrENS')}
             </OuterInput>
           )}
         </AnimatedInputWrapper>

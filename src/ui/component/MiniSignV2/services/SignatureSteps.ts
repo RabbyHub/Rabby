@@ -54,6 +54,8 @@ import type {
 } from '@/ui/component/MiniSignV2/domain/types';
 import { isLedgerLockError } from '@/ui/utils/ledger';
 import { t } from 'i18next';
+import AuthenticationModalPromise from '../../AuthenticationModal';
+import { ModalProps } from 'antd';
 
 async function recomputeExplainForCalcItems(params: {
   wallet: WalletControllerType;
@@ -184,6 +186,55 @@ function aggregateCheckErrors(params: {
 let retryTxs = [] as Tx[];
 
 export class SignatureSteps {
+  static async invokeEnterPassphraseModal(params: {
+    wallet: WalletControllerType;
+    value?: string;
+    getContainer?: ModalProps['getContainer'];
+  }) {
+    const { wallet, value, getContainer } = params;
+    const type = 'address';
+    let passphrase = '';
+
+    if (!value) {
+      return '';
+    }
+
+    const needPassphrase = await wallet.getMnemonicKeyringIfNeedPassphrase(
+      type,
+      value
+    );
+    passphrase = await wallet.getMnemonicKeyringPassphrase(type, value);
+
+    if (!needPassphrase || passphrase) {
+      return passphrase;
+    }
+
+    await AuthenticationModalPromise({
+      confirmText: t('global.confirm'),
+      cancelText: t('global.Cancel'),
+      placeholder: t('page.manageAddress.enterThePassphrase'),
+      title: t('page.manageAddress.enterPassphraseTitle'),
+      getContainer: getContainer || undefined,
+      forceRender: true,
+      async validationHandler(input) {
+        passphrase = input;
+
+        if (
+          !(await wallet.checkPassphraseBelongToMnemonic(
+            type,
+            value,
+            passphrase
+          ))
+        ) {
+          throw new Error(t('page.manageAddress.passphraseError'));
+        }
+        return;
+      },
+    });
+
+    return passphrase;
+  }
+
   static async getSecurityEngineResults(params: {
     wallet: WalletControllerType;
     account: Account;

@@ -17,10 +17,8 @@ import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
 import './MnemonicsInputs.less';
 import { Trans, useTranslation } from 'react-i18next';
 import { clearClipboard } from '@/ui/utils/clipboard';
-import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 import { ReactComponent as RcIconArrowCC } from '@/ui/assets/import/arrow-cc.svg';
-import { ReactComponent as RcIconSwipeCC } from '@/ui/assets/import/swipe-cc.svg';
 
 const ITEM_H = 40;
 const ROW_COUNT = 3;
@@ -439,11 +437,11 @@ function MnemonicsInputs({
         <Dropdown
           trigger={['click']}
           overlay={
-            <Menu className="mnemonics-input-menu py-8px rounded-[4px]">
+            <Menu className="mnemonics-input-menu py-8px rounded-[4px] bg-r-neutral-bg-1">
               {MNEMONICS_COUNTS.map((count) => {
                 return (
                   <Menu.Item
-                    className="h-[38px] py-0 px-[8px] text-r-neutral-body hover:bg-transparent"
+                    className="h-[38px] py-0 px-[8px] text-r-neutral-title-1 hover:bg-transparent"
                     key={`countSelector-${count}`}
                     onClick={() => {
                       setMnemonicsCount(count);

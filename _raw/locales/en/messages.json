@@ -1450,7 +1450,8 @@
         "missingDataTooltip": "Balance may not be updated due to current network issues with {{text}}.",
         "chain": " chain, ",
         "chainEnd": " chain",
-        "appChainTips": "Hyperliquid & Polymarket Account not included"
+        "appChainTips": "Hyperliquid & Polymarket Account not included",
+        "slotAppChainTips": "{{appChainNames}} Account not included"
       },
       "recentConnection": {
         "disconnected": "Disconnected",

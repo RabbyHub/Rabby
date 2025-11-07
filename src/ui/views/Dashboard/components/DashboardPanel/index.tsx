@@ -111,6 +111,7 @@ const Container = styled.div`
       font-size: 13px;
       line-height: 16px;
       color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
+      text-align: center;
     }
 
     @keyframes icn-spin {

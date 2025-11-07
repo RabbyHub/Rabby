@@ -45,7 +45,7 @@ export function AddressInfoFrom({
     <div className={clsx(className, 'overflow-auto')}>
       <div className="section relative">
         <div className="section-title justify-between items-center flex">
-          <span className="section-title__to font-medium">
+          <span className="section-title__to font-bold text-[17px]">
             {t('page.sendToken.sectionFrom.title')}
           </span>
         </div>
@@ -73,7 +73,7 @@ export function AddressInfoFrom({
                   title={<MarkedHeadTailAddress address={account.address} />}
                 >
                   <div className="flex items-center ml-[8px]">
-                    <span className="text-[16px] font-[600] leading-[20px] text-r-neutral-title-1">
+                    <span className="text-[16px] font-medium leading-[20px] text-r-neutral-title-1">
                       {aliasName || ellipsisAddress(account.address)}
                     </span>
                   </div>
@@ -81,7 +81,7 @@ export function AddressInfoFrom({
               )}
             </div>
 
-            <RcIconAddressEntry width={26} height={26} />
+            <RcIconAddressEntry width={24} height={24} />
           </div>
         </div>
       </div>

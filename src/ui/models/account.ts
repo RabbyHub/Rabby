@@ -20,6 +20,7 @@ import { requestOpenApiMultipleNets } from '../utils/openapi';
 
 interface TotalBalanceWithEvmUsdValue extends TotalBalanceResponse {
   evmUsdValue?: number;
+  appChainIds?: string[];
 }
 export interface AccountState {
   currentAccount: null | Account;

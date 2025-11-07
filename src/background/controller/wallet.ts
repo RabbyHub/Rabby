@@ -1683,12 +1683,14 @@ export class WalletController extends BaseController {
       }
       const data = await openapiService.getTotalBalance(address, core);
       let appChainTotalNetWorth = 0;
+      const appChainIds: string[] = [];
       try {
         const { apps } = await openapiService.getAppChainList(address);
         apps?.forEach((app) => {
           app?.portfolio_item_list?.forEach((item) => {
             appChainTotalNetWorth += item.stats.net_usd_value;
           });
+          appChainIds.push(app.id);
         });
       } catch (error) {
         // just ignore appChain data
@@ -1697,6 +1699,7 @@ export class WalletController extends BaseController {
         ...data,
         evmUsdValue: data.total_usd_value,
         total_usd_value: data.total_usd_value + appChainTotalNetWorth,
+        appChainIds,
       };
       preferenceService.updateBalanceAboutCache(address, {
         totalBalance: formatData,
@@ -5231,40 +5234,25 @@ export class WalletController extends BaseController {
 
     const { sig, accountId } = this.getGasAccountSig();
 
-    const tx = await this.sendToken({
+    await this.sendToken({
       to,
       chainServerId,
       tokenId,
       rawAmount,
+      $ctx: {
+        ga: {
+          category: 'GasAccount',
+          action: 'deposit',
+          rechargeGasAccount: {
+            amount,
+            sig: sig!,
+            account_id: accountId!,
+            user_addr: account?.address,
+            chain_id: chainServerId,
+          },
+        },
+      },
     });
-
-    const chain = findChainByServerID(chainServerId);
-
-    const nonce = await this.getNonceByChain(account.address, chain!.id);
-
-    if (tx) {
-      this.openapi.rechargeGasAccount({
-        sig: sig!,
-        account_id: accountId!,
-        tx_id: tx,
-        chain_id: chainServerId,
-        amount,
-        user_addr: account?.address,
-        nonce: nonce! - 1,
-      });
-    } else {
-      Sentry.captureException(
-        new Error(
-          'topUp GasAccount tx failed, params: ' +
-            JSON.stringify({
-              userAddr: account.address,
-              gasAccount: accountId,
-              chain: chainServerId,
-              amount: amount,
-            })
-        )
-      );
-    }
   };
 
   addCustomTestnet = async (
