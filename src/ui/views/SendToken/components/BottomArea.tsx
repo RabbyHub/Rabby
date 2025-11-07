@@ -6,12 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { getUiType } from 'ui/utils';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import type { Account } from '@/background/service/preference';
-import {
-  RiskItem,
-  RiskType,
-  sortRisksDesc,
-  useAddressRisks,
-} from '@/ui/hooks/useAddressRisk';
 
 import { ReactComponent as RcIconRiskAlert } from '@/ui/assets/send-token/risk-alert.svg';
 import { ReactComponent as RcIconCheckboxChecked } from '@/ui/assets/send-token/icon-checkbox-checked.svg';
