@@ -5,6 +5,7 @@ import { AreaChart, YAxis, Area, XAxis, Tooltip } from 'recharts';
 import styled, { createGlobalStyle } from 'styled-components';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/tips-cc.svg';
 import { useTranslation } from 'react-i18next';
+import { getAppChainNames } from '@/ui/hooks/useAppChain';
 export type CurvePoint = {
   value: number;
   netWorth: string;
@@ -28,6 +29,7 @@ type CurveThumbnailProps = {
   data?: Curve;
   isHover?: boolean;
   showAppChainTips?: boolean;
+  appChainIds?: string[];
   onHover: (point?: CurvePoint) => void;
 };
 
@@ -61,6 +63,7 @@ export const CurveThumbnail = ({
   className,
   isHover,
   onHover,
+  appChainIds,
   showAppChainTips = false,
 }: CurveThumbnailProps) => {
   const color = useMemo(() => {
@@ -200,13 +203,15 @@ export const CurveThumbnail = ({
           />
         </AreaChart>
       )}
-      {showTips && (
+      {showTips && appChainIds && appChainIds.length > 0 && (
         <AppChainTips>
           <div className="text-r-neutral-title2 mr-[2px]">
             <RcIconInfoCC width={12} height={12} />
           </div>
           <div className="text-r-neutral-title2 whitespace-nowrap">
-            {t('page.dashboard.home.appChainTips')}
+            {t('page.dashboard.home.slotAppChainTips', {
+              appChainNames: getAppChainNames(appChainIds || []),
+            })}
           </div>
         </AppChainTips>
       )}
