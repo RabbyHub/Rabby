@@ -4653,10 +4653,10 @@
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.14.tgz#f382909ca99aa306f8670e9befdebadb978c9837"
   integrity sha512-KSG+MGJjxj+nzNqneQaTtOXPlZHxWmWSv8KG5aac4xEdStkGzZXogURqrDVwKwnF+fXgMFyKRjUfrAwiBOpSEg==
 
-"@rabby-wallet/rabby-api@0.9.45":
-  version "0.9.45"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.9.45.tgz#15e90bfd51b8e09308d8516b6c9f0510fd284f26"
-  integrity sha512-WemKKpNmWhtIHHCfFbdJwOB+3AGUqc54cgAgozmwZQQ0q+vVSE0kkKiywW9+mnM0QuOSdnsNOKT6Kij88pxkpA==
+"@rabby-wallet/rabby-api@0.9.47":
+  version "0.9.47"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.9.47.tgz#b5a2e9ad39d01ed28f3d1d08944739d389424370"
+  integrity sha512-vbRKInIGO7ANu8sqJxgIHBMGD6dgjYSPf/Q2nqJ0M0O/fG86JPskCrHIKDW1njNSteAVk975wCg7CNwRM8VsHQ==
   dependencies:
     "@rabby-wallet/rabby-sign" "0.4.0"
     axios "^0.27.2"
@@ -7181,11 +7181,6 @@
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
-
-"@vespaiach/axios-fetch-adapter@0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@vespaiach/axios-fetch-adapter/-/axios-fetch-adapter-0.3.1.tgz#b0c08167bec9cc558f578a1b9ccff52ead1cf1cb"
-  integrity sha512-+1F52VWXmQHSRFSv4/H0wtnxfvjRMPK5531e880MIjypPdUSX6QZuoDgEVeCE1vjhzDdxCVX7rOqkub7StEUwQ==
 
 "@walletconnect/core@2.11.3":
   version "2.11.3"
