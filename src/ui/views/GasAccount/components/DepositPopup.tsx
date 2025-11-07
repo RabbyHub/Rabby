@@ -559,7 +559,14 @@ const GasAccountDepositContent = ({
         }, 500);
       }
     }
-  }, [canUseDirectSubmitTx, miniSignTxs, topUpGasAccount, openDirect, refresh]);
+  }, [
+    token?.chain,
+    canUseDirectSubmitTx,
+    miniSignTxs,
+    topUpGasAccount,
+    openDirect,
+    refresh,
+  ]);
 
   useEffect(() => {
     if (token && depositAmount && token.amount < depositAmount) {

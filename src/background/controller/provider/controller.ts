@@ -361,7 +361,10 @@ class ProviderController extends BaseController {
     account: Account;
   }) => {
     const rechargeGasAccountOnTx = (txHash = '') => {
-      if (options?.data?.$ctx?.ga?.rechargeGasAccount) {
+      if (
+        options?.data?.$ctx?.ga?.rechargeGasAccount &&
+        options?.approvalRes?.nonce
+      ) {
         try {
           openapiService
             .rechargeGasAccount({
