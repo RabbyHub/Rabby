@@ -83,7 +83,7 @@ export const DesktopNav: React.FC<{
         >
           <RcIconLeadingCC className="text-rb-neutral-secondary" />
           <div>
-            <div className="'text-rb-neutral-foot text-[16px] leading-[19px] font-bold">
+            <div className="text-rb-neutral-foot text-[16px] leading-[19px] font-bold">
               Lending
             </div>
             <div className="text-rb-neutral-secondary text-[12px] leading-[14px]">
