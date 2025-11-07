@@ -1902,7 +1902,7 @@ const SendToken = () => {
           initialValues={initialFormValues}
         >
           <div className="flex-1 overflow-auto pb-[32px]">
-            {isDesktop ? null : <AddressInfoFrom />}
+            <AddressInfoFrom />
             <AddressInfoTo
               loadingToAddressDesc={loadingToAddressDesc}
               toAccount={targetAccount}
@@ -1910,7 +1910,7 @@ const SendToken = () => {
               cexInfo={addressDesc?.cex}
               onClick={() => {
                 if (isDesktop) {
-                  history.replace(
+                  history.push(
                     `${history.location.pathname}?${obj2query({
                       action: 'send',
                       sendPageType: 'selectToAddress',
