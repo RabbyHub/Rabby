@@ -26,8 +26,11 @@ export const DesktopNav: React.FC<{
         <div
           className={clsx(
             'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
-            'text-r-neutral-title2 bg-r-blue-default'
+            'text-r-neutral-title2'
           )}
+          style={{
+            background: 'linear-gradient(267deg, #5A71FF 1.05%, #384ABA 98.9%)',
+          }}
         >
           <RcIconHomeCC className="flex-shrink-0" />
           <div className="min-w-0">
@@ -60,13 +63,14 @@ export const DesktopNav: React.FC<{
         </div>
         <div
           className={clsx(
-            'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
-            'text-rb-neutral-foot'
+            'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer'
           )}
         >
-          <RcIconPerpsCC />
+          <RcIconPerpsCC className="text-rb-neutral-secondary" />
           <div>
-            <div className="text-[16px] leading-[19px] font-bold">Perps</div>
+            <div className="text-rb-neutral-foot text-[16px] leading-[19px] font-bold">
+              Perps
+            </div>
             <div className="text-rb-neutral-secondary text-[12px] leading-[14px]">
               Coming Soon
             </div>
@@ -74,13 +78,14 @@ export const DesktopNav: React.FC<{
         </div>
         <div
           className={clsx(
-            'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
-            'text-rb-neutral-foot'
+            'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer'
           )}
         >
-          <RcIconLeadingCC />
+          <RcIconLeadingCC className="text-rb-neutral-secondary" />
           <div>
-            <div className="text-[16px] leading-[19px] font-bold">Lending</div>
+            <div className="'text-rb-neutral-foot text-[16px] leading-[19px] font-bold">
+              Lending
+            </div>
             <div className="text-rb-neutral-secondary text-[12px] leading-[14px]">
               Coming Soon
             </div>

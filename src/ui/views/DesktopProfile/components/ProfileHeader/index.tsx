@@ -113,7 +113,7 @@ export const ProfileHeader: React.FC<{
           <div
             className={clsx(
               'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
-              'flex items-center gap-[8px] cursor-pointer',
+              'flex items-center justify-center gap-[8px] cursor-pointer',
               'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
               // 'hover:bg-r-blue-light1'
             )}
@@ -127,7 +127,7 @@ export const ProfileHeader: React.FC<{
           <div
             className={clsx(
               'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
-              'flex items-center gap-[8px] cursor-pointer',
+              'flex items-center justify-center gap-[8px] cursor-pointer',
               'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
               // 'hover:bg-r-blue-light1'
             )}
@@ -141,7 +141,7 @@ export const ProfileHeader: React.FC<{
           <div
             className={clsx(
               'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
-              'flex items-center gap-[8px] cursor-pointer',
+              'flex items-center justify-center gap-[8px] cursor-pointer',
               'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
               // 'hover:bg-r-blue-light1'
             )}
@@ -171,8 +171,7 @@ export const ProfileHeader: React.FC<{
             ) : pendingTxCount ? (
               <div
                 className={clsx(
-                  'flex items-center gap-[8px] p-[12px] cursor-pointer',
-                  'rounded-[8px] border-[1px] border-solid border-rabby-orange-default'
+                  'flex items-center gap-[8px] p-[12px] cursor-pointer'
                 )}
                 onClick={() => {
                   history.replace(

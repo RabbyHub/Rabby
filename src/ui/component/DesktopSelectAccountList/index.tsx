@@ -212,7 +212,9 @@ const AccountItem: React.FC<{
           <div className="flex items-center gap-[4px]">
             <div
               className={clsx(
-                'text-[16px] text-rb-neutral-body leading-[19px] font-medium'
+                isSelected
+                  ? 'text-[20px] leading-[24px] font-bold text-rb-neutral-title-1'
+                  : 'text-[16px] text-rb-neutral-body leading-[19px] font-medium'
               )}
             >
               {item.alianName}
