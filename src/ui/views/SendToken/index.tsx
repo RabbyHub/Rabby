@@ -1942,7 +1942,7 @@ const SendToken = () => {
             />
             <div className="section">
               <div className="section-title flex justify-between items-center">
-                <div className="token-balance whitespace-pre-wrap font-medium">
+                <div className="token-balance whitespace-pre-wrap">
                   {t('page.sendToken.sectionBalance.title')}
                 </div>
 

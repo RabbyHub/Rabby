@@ -25,6 +25,7 @@ import { MaxButton } from '@/ui/views/SendToken/components/MaxButton';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
 import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
+import { ReactComponent as RcArrowDown } from './icons/arrow-down.svg';
 import styled from 'styled-components';
 import { RiskWarningTitle } from '../RiskWarningTitle';
 
@@ -56,30 +57,19 @@ interface TokenAmountInputProps {
 }
 
 const StyledInput = styled(Input)`
-  color: var(--r-neutral-foot);
-  font-size: 24px !important;
+  color: var(--r-neutral-title1, #192945);
+  font-size: 28px !important;
   font-style: normal;
-  font-weight: 500;
-  line-height: normal;
+  font-weight: 700;
+  line-height: 36px;
   background: transparent !important;
   padding-left: 0;
-  & > .ant-input {
-    color: var(--r-neutral-foot);
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    border-width: 0px !important;
-    border-right-width: 0px !important;
-    border-color: transparent !important;
-    &:hover,
-    &:focus {
-      border-right-width: 0px !important;
-      border-color: transparent !important;
-    }
-  }
   &::placeholder {
     color: var(--r-neutral-foot, #6a7587);
+    font-size: 28px !important;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 36px;
   }
 
   &::-webkit-inner-spin-button,
@@ -277,6 +267,7 @@ const TokenAmountInput = ({
           placeholder="0"
           className={clsx(
             !valueNum && 'h-[29px]',
+            valueNum && 'with-value',
             insufficientError && 'text-rabby-red-default'
           )}
           autoFocus
@@ -335,7 +326,8 @@ const TokenAmountInput = ({
             </>
           )}
           <div className="text-r-neutral-foot ml-[6px]">
-            <RcIconDownCC width={16} height={16} />
+            {/* <RcIconDownCC width={16} height={16} /> */}
+            <RcArrowDown width={20} height={20} />
           </div>
         </div>
         <div className="flex items-center">
