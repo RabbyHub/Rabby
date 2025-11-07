@@ -1851,10 +1851,9 @@ export class WalletController extends BaseController {
     preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
   };
 
-  getLastTimeSendToken = (address: string) =>
-    preferenceService.getLastTimeSendToken(address);
-  setLastTimeSendToken = (address: string, token: TokenItem) =>
-    preferenceService.setLastTimeSendToken(address, token);
+  getLastTimeSendToken = () => preferenceService.getLastTimeSendToken();
+  setLastTimeSendToken = (token: TokenItem) =>
+    preferenceService.setLastTimeSendToken(token);
 
   getTokenApprovalChain = (address: string) =>
     preferenceService.getTokenApprovalChain(address);

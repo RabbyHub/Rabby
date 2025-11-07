@@ -401,17 +401,8 @@ export const BalanceView = ({
           /> */}
           {!shouldShowLoading && (
             <div className={clsx('px-[12px] pointer-events-none')}>
-              {!loadBalanceSuccess ? (
-                <div className="flex items-center gap-[4px]">
-                  <SvgIconOffline
-                    viewBox="0 0 16 16"
-                    className="w-[14px] h-[14px] text-r-neutral-title2"
-                  />
-                  <span className="text-[12px] leading-[14px] text-r-neutral-title2">
-                    {t('page.dashboard.home.offline')}
-                  </span>
-                </div>
-              ) : chainBalancesWithValue.length > 0 ? (
+              {!loadBalanceSuccess ? null : chainBalancesWithValue.length >
+                0 ? (
                 <div
                   className={clsx(
                     'w-full flex items-center gap-[4px]',
