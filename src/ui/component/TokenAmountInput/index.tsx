@@ -15,7 +15,7 @@ import React, {
 } from 'react';
 import useSearchToken from 'ui/hooks/useSearchToken';
 import useSortToken from 'ui/hooks/useSortTokens';
-import { splitNumberByStep, useWallet } from 'ui/utils';
+import { formatUsdValue, splitNumberByStep, useWallet } from 'ui/utils';
 import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
 import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import TokenWithChain from '../TokenWithChain';
@@ -28,6 +28,7 @@ import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down
 import { ReactComponent as RcArrowDown } from './icons/arrow-down.svg';
 import styled from 'styled-components';
 import { RiskWarningTitle } from '../RiskWarningTitle';
+import BigNumber from 'bignumber.js';
 
 interface TokenAmountInputProps {
   token: TokenItem | null;
@@ -248,13 +249,20 @@ const TokenAmountInput = ({
     setChainServerId(chainId);
   }, [chainId]);
 
-  const valueNum = Number(value);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (INPUT_NUMBER_RE.test(e.target.value)) {
       onChange?.(filterNumber(e.target.value));
     }
   };
+
+  const useValue = useMemo(() => {
+    if (token && value) {
+      return formatUsdValue(
+        new BigNumber(value).multipliedBy(token.price || 0).toString()
+      );
+    }
+    return '$0.00';
+  }, [token?.price, value]);
 
   return (
     <div className={clsx('token-amount-input', className)}>
@@ -266,8 +274,7 @@ const TokenAmountInput = ({
           ref={tokenInputRef}
           placeholder="0"
           className={clsx(
-            !valueNum && 'h-[29px]',
-            valueNum && 'with-value',
+            !value && 'h-[29px]',
             insufficientError && 'text-rabby-red-default'
           )}
           autoFocus
@@ -279,15 +286,9 @@ const TokenAmountInput = ({
 
         <div
           className="text-r-neutral-foot font-normal text-[13px] max-w-full truncate"
-          title={splitNumberByStep(
-            ((valueNum || 0) * (token?.price || 0) || 0).toFixed(2)
-          )}
+          title={useValue}
         >
-          {valueNum
-            ? `$${splitNumberByStep(
-                ((valueNum || 0) * (token?.price || 0) || 0).toFixed(2)
-              )}`
-            : '$0.00'}
+          {useValue}
         </div>
       </div>
       <div className="flex flex-col justify-between gap-[13px] items-end">
