@@ -38,7 +38,7 @@ export default function useCurrentBalance(
   const [matteredChainBalances, setChainBalances] = useState<
     DisplayChainWithWhiteLogo[]
   >([]);
-
+  const [appChainIds, setAppChainIds] = useState<string[]>([]);
   const [missingList, setMissingList] = useState<string[]>();
 
   const [getInMemoryAddressBalance] = useWalletRequest(
@@ -48,7 +48,10 @@ export default function useCurrentBalance(
         const { total_usd_value, chain_list } = options;
         const evmUsdValue =
           'evmUsdValue' in options ? (options.evmUsdValue as number) : 0;
+        const chainIds =
+          'appChainIds' in options ? (options.appChainIds as string[]) : [];
         if (isCanceled) return;
+        setAppChainIds(chainIds);
         setEvmBalance(evmUsdValue);
         setBalance(total_usd_value);
         setSuccess(true);
@@ -147,6 +150,7 @@ export default function useCurrentBalance(
   return {
     balance,
     evmBalance,
+    appChainIds,
     matteredChainBalances,
     chainBalancesWithValue,
     isCurrentBalanceExpired,
