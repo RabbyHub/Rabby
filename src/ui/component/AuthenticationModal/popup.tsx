@@ -158,6 +158,8 @@ const AuthenticationPopup = ({
     return 480;
   }, [description, checklist]);
 
+  const [force, setForceRender] = useState(!!forceRender);
+
   const handleSubmit = async ({ password }: { password: string }) => {
     try {
       if (validationHandler) {
@@ -165,6 +167,7 @@ const AuthenticationPopup = ({
       } else {
         await wallet?.verifyPassword(password);
       }
+      setForceRender(false);
       onFinished();
       setVisible(false);
     } catch (e: any) {
@@ -180,6 +183,7 @@ const AuthenticationPopup = ({
   };
 
   const handleCancel = () => {
+    setForceRender(false);
     setVisible(false);
     onCancel();
   };
@@ -206,7 +210,7 @@ const AuthenticationPopup = ({
       getContainer={getContainer}
       push={false}
       key={String(visible)}
-      forceRender={forceRender}
+      forceRender={force}
     >
       {description && <Description>{description}</Description>}
       {checklist.length > 0 && (
