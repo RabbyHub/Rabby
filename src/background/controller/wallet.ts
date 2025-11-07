@@ -5208,40 +5208,25 @@ export class WalletController extends BaseController {
 
     const { sig, accountId } = this.getGasAccountSig();
 
-    const tx = await this.sendToken({
+    await this.sendToken({
       to,
       chainServerId,
       tokenId,
       rawAmount,
+      $ctx: {
+        ga: {
+          category: 'GasAccount',
+          action: 'deposit',
+          rechargeGasAccount: {
+            amount,
+            sig: sig!,
+            account_id: accountId!,
+            user_addr: account?.address,
+            chain_id: chainServerId,
+          },
+        },
+      },
     });
-
-    const chain = findChainByServerID(chainServerId);
-
-    const nonce = await this.getNonceByChain(account.address, chain!.id);
-
-    if (tx) {
-      this.openapi.rechargeGasAccount({
-        sig: sig!,
-        account_id: accountId!,
-        tx_id: tx,
-        chain_id: chainServerId,
-        amount,
-        user_addr: account?.address,
-        nonce: nonce! - 1,
-      });
-    } else {
-      Sentry.captureException(
-        new Error(
-          'topUp GasAccount tx failed, params: ' +
-            JSON.stringify({
-              userAddr: account.address,
-              gasAccount: accountId,
-              chain: chainServerId,
-              amount: amount,
-            })
-        )
-      );
-    }
   };
 
   addCustomTestnet = async (
