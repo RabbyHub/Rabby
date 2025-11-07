@@ -34,6 +34,7 @@ import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPop
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
+import { ModalProps } from 'antd';
 
 const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const { t } = useTranslation();
@@ -224,17 +225,17 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const handleToggleGasless = (value) => {
     signatureStore.toggleGasless(value);
   };
-  const handleConfirm = () => {
+  const handleConfirm = (getContainer: ModalProps['getContainer']) => {
     if (!ctx?.txsCalc?.length) return;
-    signatureStore.send(wallet).catch(() => undefined);
+    signatureStore.send({ wallet, getContainer }).catch(() => undefined);
   };
 
   const handleCancel = () => {
     signatureStore.close();
   };
 
-  const handleRetry = () => {
-    signatureStore.retry(wallet).catch(() => undefined);
+  const handleRetry = (getContainer: ModalProps['getContainer']) => {
+    signatureStore.retry({ wallet, getContainer }).catch(() => undefined);
   };
 
   const totalGasCost = ctx.txsCalc?.reduce(
@@ -410,7 +411,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
             onCancel={handleCancel}
             onRetry={async () => {
               await wallet.setRetryTxType(retryUpdateType);
-              handleRetry();
+              handleRetry(desktopMiniSignerGetContainer);
             }}
             retryUpdateType={retryUpdateType}
           />
@@ -575,7 +576,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 chain={chain}
                 isTestnet={chain.isTestnet}
                 onCancel={handleCancel}
-                onSubmit={handleConfirm}
+                onSubmit={() => handleConfirm(desktopMiniSignerGetContainer)}
                 onIgnoreAllRules={noop}
                 enableTooltip={ctx.checkErrors?.some(
                   (e) => e.code !== 3001 && e.level === 'forbidden'
@@ -620,6 +621,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
         visible={!!error && !!ctx.signInfo?.status}
         bodyStyle={{ padding: 0 }}
         getContainer={config?.getContainer}
+        push={false}
       >
         <MiniApprovalPopupContainer
           hdType={hdType}
@@ -630,7 +632,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           onCancel={handleCancel}
           onRetry={async () => {
             await wallet.setRetryTxType(retryUpdateType);
-            handleRetry();
+            handleRetry(config?.getContainer);
           }}
           retryUpdateType={retryUpdateType}
         />
@@ -651,7 +653,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
         maskStyle={{
           backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
         }}
-        getContainer={config?.getContainer}
+        getContainer={visible ? config?.getContainer : undefined}
         key={`${currentAccount?.address}-${currentAccount?.type}`}
       >
         <MiniFooterBar
@@ -787,7 +789,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           chain={chain}
           isTestnet={chain.isTestnet}
           onCancel={handleCancel}
-          onSubmit={handleConfirm}
+          onSubmit={() => handleConfirm(getContainer)}
           onIgnoreAllRules={noop}
           enableTooltip={ctx.checkErrors?.some(
             (e) => e.code !== 3001 && e.level === 'forbidden'

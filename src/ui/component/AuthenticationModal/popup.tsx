@@ -45,6 +45,7 @@ interface AuthenticationModalProps extends WrappedComponentProps {
   getContainer?: DrawerProps['getContainer'];
   btnClassName?: string;
   containerClassName?: string;
+  forceRender?: boolean;
 }
 
 const Description = styled.div`
@@ -139,6 +140,7 @@ const AuthenticationPopup = ({
   confrimClassName,
   btnClassName,
   containerClassName,
+  forceRender,
 }: AuthenticationModalProps) => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -204,6 +206,7 @@ const AuthenticationPopup = ({
       getContainer={getContainer}
       push={false}
       key={String(visible)}
+      forceRender={forceRender}
     >
       {description && <Description>{description}</Description>}
       {checklist.length > 0 && (
