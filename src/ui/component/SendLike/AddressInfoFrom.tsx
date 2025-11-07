@@ -16,6 +16,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconAddressEntry } from '@/ui/views/SendToken/icons/address-entry.svg';
 
 const isTab = getUiType().isTab;
+const isDesktop = getUiType().isDesktop;
 
 export function AddressInfoFrom({
   className,
@@ -94,7 +95,7 @@ export function AddressInfoFrom({
           setIsShowModal(false);
         }}
         getContainer={
-          isTab
+          isTab || isDesktop
             ? (document.querySelector(
                 '.js-rabby-popup-container'
               ) as HTMLDivElement) || document.body

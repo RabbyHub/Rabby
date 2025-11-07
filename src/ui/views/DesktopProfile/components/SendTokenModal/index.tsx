@@ -49,9 +49,6 @@ export const SendTokenModal: React.FC<ModalProps> = (props) => {
       <div className="h-full w-full rounded-[20px] overflow-hidden">
         {SendPage}
       </div>
-      <div className="absolute top-0 left-[100%] pl-[20px]">
-        <DesktopSelectAccountList isInModal />
-      </div>
     </Modal>
   );
 };

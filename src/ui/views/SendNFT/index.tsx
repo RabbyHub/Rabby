@@ -579,7 +579,7 @@ const SendNFT = () => {
         >
           {nftItem && (
             <div className="flex-1 overflow-auto">
-              {isDesktop ? null : <AddressInfoFrom />}
+              <AddressInfoFrom />
               <AddressInfoTo
                 className={'w-full'}
                 titleText={t('page.sendNFT.sectionTo.title')}

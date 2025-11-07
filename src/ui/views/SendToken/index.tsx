@@ -1815,7 +1815,7 @@ const SendToken = () => {
           }}
         >
           <div className="flex-1 overflow-auto pb-[32px]">
-            {isDesktop ? null : <AddressInfoFrom />}
+            <AddressInfoFrom />
             <AddressInfoTo
               loadingToAddressDesc={loadingToAddressDesc}
               toAccount={targetAccount}
