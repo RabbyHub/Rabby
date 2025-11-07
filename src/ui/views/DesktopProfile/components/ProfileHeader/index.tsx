@@ -50,7 +50,7 @@ export const ProfileHeader: React.FC<{
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const dispatch = useRabbyDispatch();
 
-  const { data: pendingTxCount1, runAsync } = useRequest(
+  const { data: pendingTxCount, runAsync } = useRequest(
     async () => {
       if (!currentAccount?.address || isGnosis) {
         return;
@@ -65,8 +65,6 @@ export const ProfileHeader: React.FC<{
       pollingInterval: 30_000,
     }
   );
-
-  const pendingTxCount = 1;
 
   useEventBusListener(EVENTS.TX_SUBMITTING, runAsync);
   useEventBusListener(EVENTS.RELOAD_TX, runAsync);

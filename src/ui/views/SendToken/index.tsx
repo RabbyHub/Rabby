@@ -1775,7 +1775,7 @@ const SendToken = () => {
   });
 
   return (
-    <FullscreenContainer className="h-[600px]">
+    <FullscreenContainer className={isDesktop ? 'h-[600px]' : 'h-[700px]'}>
       <div
         className={clsx(
           'send-token',
