@@ -13,13 +13,14 @@ import {
 } from './constants';
 import { isSameAddress } from '@/ui/utils';
 import { findAccountByPriority } from '@/utils/account';
-import { KEYRING_CLASS } from '@/constant';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { message, Modal } from 'antd';
 import { MiniTypedData } from '../Approval/components/MiniSignTypedData/useTypedDataTask';
 import { useStartDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { create, maxBy, minBy } from 'lodash';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 type SignActionType = 'approveAgent' | 'approveBuilderFee';
 
 interface SignAction {
@@ -430,6 +431,8 @@ export const usePerpsState = ({
     }
   );
 
+  const invoke = useEnterPassphraseModal('address');
+
   const executeSignatures = useMemoizedFn(
     async (signActions: SignAction[], account: Account): Promise<void> => {
       if (!signActions || signActions.length === 0) {
@@ -472,6 +475,9 @@ export const usePerpsState = ({
           let signature = '';
 
           if (isLocalWallet) {
+            if (account.type === KEYRING_TYPE.HdKeyring) {
+              await invoke(account.address);
+            }
             signature = await wallet.signTypedData(
               account.type,
               account.address,
@@ -692,6 +698,9 @@ export const usePerpsState = ({
           currentPerpsAccount.type === KEYRING_CLASS.PRIVATE_KEY ||
           currentPerpsAccount.type === KEYRING_CLASS.MNEMONIC
         ) {
+          if (currentPerpsAccount.type === KEYRING_TYPE.HdKeyring) {
+            await invoke(currentPerpsAccount.address);
+          }
           signature = await wallet.signTypedData(
             currentPerpsAccount.type,
             currentPerpsAccount.address.toLowerCase(),
