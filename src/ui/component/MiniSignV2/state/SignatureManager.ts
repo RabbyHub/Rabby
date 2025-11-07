@@ -15,11 +15,15 @@ import type {
 } from './types';
 
 import { signatureReducer } from './machine';
-import { signatureService } from '@/ui/component/MiniSignV2/services';
-import { CHAINS_ENUM, EVENTS, KEYRING_CLASS } from '@/constant';
+import {
+  signatureService,
+  SignatureSteps,
+} from '@/ui/component/MiniSignV2/services';
+import { CHAINS_ENUM, EVENTS, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import eventBus from '@/eventBus';
 import { findChain } from '@/utils/chain';
 import { t } from 'i18next';
+import { ModalProps } from 'antd';
 
 const ETH_GAS_USD_LIMIT = 15;
 const OTHER_GAS_USD_LIMIT = 5;
@@ -386,7 +390,15 @@ class SignatureManager {
     return this.updateGas(gas, wallet);
   }
 
-  public async send(wallet: WalletControllerType, retry?: boolean) {
+  public async send({
+    wallet,
+    retry,
+    getContainer,
+  }: {
+    wallet: WalletControllerType;
+    retry?: boolean;
+    getContainer?: ModalProps['getContainer'];
+  }) {
     const { ctx, config, fingerprint } = this.state;
     if (!ctx || !config || !fingerprint) {
       throw new Error('Signature is not ready');
@@ -396,6 +408,18 @@ class SignatureManager {
       throw MINI_SIGN_ERROR.CANT_PROCESS;
     }
     const opId = this.markRun(fingerprint);
+    if (config.account.type === KEYRING_TYPE.HdKeyring) {
+      try {
+        await SignatureSteps.invokeEnterPassphraseModal({
+          wallet: wallet,
+          value: config.account.address,
+          getContainer: getContainer || config.getContainer,
+        });
+      } catch (error) {
+        this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
+        return;
+      }
+    }
     this.dispatch({ type: 'SEND_START', fingerprint });
     try {
       const res = await signatureService.send({
@@ -526,7 +550,7 @@ class SignatureManager {
       });
 
       await this.checkHardWareConnected(() =>
-        this.send(wallet).catch(() => undefined)
+        this.send({ wallet }).catch(() => undefined)
       );
     } catch (error) {
       const message = createErrorMessage(error);
@@ -557,8 +581,8 @@ class SignatureManager {
     });
   }
 
-  public async retry(wallet: WalletControllerType) {
-    return this.send(wallet, true);
+  public async retry(params: Parameters<typeof this.send>[0]) {
+    return this.send({ ...params, retry: true });
   }
 
   public async startUI(
