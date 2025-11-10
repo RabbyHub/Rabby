@@ -182,13 +182,13 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
           <div
             className={clsx(
               'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[7px] cursor-pointer',
-              ' border border-rb-blue-default min-w-[82px] text-center',
-              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+              ' border border-rabby-blue-default min-w-[82px] text-center',
+              'hover:bg-r-blue-light1'
             )}
           >
             <div
               className={clsx(
-                'text-rb-blue-default text-[13px] leading-[13px] font-medium cursor-pointer',
+                'text-r-blue-default text-[13px] leading-[13px] font-medium cursor-pointer',
                 'flex items-center gap-x-[4px] justify-center'
               )}
               onClick={() => {
@@ -201,7 +201,7 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
                 );
               }}
             >
-              <span className="text-rb-blue-default">
+              <span className="text-r-blue-default">
                 <RcIconAdd />
               </span>
               {t('page.dashboard.assets.TestnetAssetListContainer.addNetwork')}
@@ -210,13 +210,13 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
           <div
             className={clsx(
               'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[7px] cursor-pointer',
-              ' border border-rb-blue-default min-w-[82px] text-center',
-              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+              ' border border-rabby-blue-default min-w-[82px] text-center',
+              'hover:bg-r-blue-light1'
             )}
           >
             <div
               className={clsx(
-                'text-rb-blue-default text-[13px] leading-[13px] font-medium cursor-pointer',
+                'text-r-blue-default text-[13px] leading-[13px] font-medium cursor-pointer',
                 'flex items-center gap-x-[4px] justify-center'
               )}
               onClick={() => {
@@ -225,7 +225,7 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
                 );
               }}
             >
-              <span className="text-rb-blue-default">
+              <span className="text-r-blue-default">
                 <RcIconAdd />
               </span>
               {t('page.dashboard.assets.TestnetAssetListContainer.addToken')}

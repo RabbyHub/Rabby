@@ -558,7 +558,13 @@ const SendNFT = () => {
               <div
                 className="text-r-neutral-title1 absolute right-0 cursor-pointer top-1/2 -translate-y-1/2"
                 onClick={() => {
-                  openInternalPageInTab(`send-nft${history.location.search}`);
+                  // openInternalPageInTab(`send-nft${history.location.search}`);
+                  wallet.openInDesktop(
+                    `/desktop/profile?action=send&sendPageType=sendNft&${history.location.search.slice(
+                      1
+                    )}`
+                  );
+                  window.close();
                 }}
               >
                 <RcIconFullscreen />

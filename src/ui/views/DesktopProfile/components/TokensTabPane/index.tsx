@@ -14,6 +14,7 @@ import { useExpandList } from './useExpandList';
 import ProjectOverview from './ProjectOverview';
 import BigNumber from 'bignumber.js';
 import { getTokenWalletFakeProject } from './utils';
+import { useSwitchNetTab } from '@/ui/component/PillsSwitch/NetSwitchTabs';
 
 interface Props {
   className?: string;
@@ -51,7 +52,7 @@ export const TokensTabPane: React.FC<Props> = ({
   }, [portfolioNetWorth, appPortfolioNetWorth]);
 
   const displayTokenList = useMemo(() => {
-    const result = tokenList;
+    const result = tokenList.filter((item) => item.is_verified); // only show verified tokens
     if (selectChainId) {
       return result.filter((item) => item.chain === selectChainId);
     }
@@ -95,6 +96,7 @@ export const TokensTabPane: React.FC<Props> = ({
     hasExpandSwitch,
     smallLength,
   } = useExpandList(displayPortfolios, currentPortfolioNetWorth);
+  const { selectedTab, onTabChange } = useSwitchNetTab();
 
   const tokenListTotalValue = React.useMemo(() => {
     return sortTokens
@@ -148,6 +150,8 @@ export const TokensTabPane: React.FC<Props> = ({
           list={sortTokens}
           isNoResults={isNoResults}
           totalValue={tokenListTotalValue}
+          selectedTab={selectedTab}
+          onTabChange={onTabChange}
         />
       )}
 
