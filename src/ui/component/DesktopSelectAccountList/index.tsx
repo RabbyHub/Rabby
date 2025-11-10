@@ -31,6 +31,8 @@ import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 import { RcIconCopyCC } from '@/ui/assets/desktop/common';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { createPortal } from 'react-dom';
+import styled from 'styled-components';
+import './styles.less';
 
 interface DesktopSelectAccountListProps {
   shouldElevate?: boolean;
@@ -103,11 +105,16 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
     shouldScrollRef.current = true;
   }, [currentAccount?.address]);
 
+  const isShowScroller = filteredAccounts?.length > 8;
+
   const Node = (
     <>
       <Virtuoso
         ref={virtuosoRef}
-        className="h-full"
+        className={clsx(
+          'h-full',
+          isShowScroller ? 'w-[268px] pr-[8px]' : 'w-[260px]'
+        )}
         data={filteredAccounts}
         totalCount={filteredAccounts.length}
         defaultItemHeight={72 + 12}
@@ -158,7 +165,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   return (
     <div
       className={clsx(
-        'flex flex-col gap-[12px] h-[670px] w-[260px] rounded-[20px]'
+        'desktop-select-account-list flex flex-col gap-[12px] h-[676px] rounded-[20px]'
       )}
     >
       {Node}
@@ -186,7 +193,7 @@ const AccountItem: React.FC<{
     <div className="pb-[12px]">
       <div
         className={clsx(
-          'rounded-[20px] px-[16px] cursor-pointer flex items-center gap-[8px] min-h-[72px]',
+          'rounded-[20px] px-[16px] cursor-pointer flex items-center gap-[8px] min-h-[72px] w-[260px]',
           isSelected
             ? 'py-[20px] border-solid border-[1px] bg-rb-neutral-card-1 border-rb-neutral-line'
             : isInModal

@@ -215,7 +215,7 @@ export const DesktopProfile = () => {
             </main>
             <aside
               className={clsx(
-                'w-[260px] flex-shrink-0 overflow-auto sticky top-[103px]'
+                'min-w-[260px] flex-shrink-0 overflow-auto sticky top-[103px]'
               )}
             >
               <DesktopSelectAccountList />
