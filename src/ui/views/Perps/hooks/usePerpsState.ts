@@ -2,7 +2,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Account } from '@/background/service/preference';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWallet } from '@/ui/utils';
-import { destroyPerpsSDK, getPerpsSDK } from './sdkManager';
+import { destroyPerpsSDK, getPerpsSDK } from '../sdkManager';
 import * as Sentry from '@sentry/browser';
 import {
   PERPS_AGENT_NAME,
@@ -10,14 +10,14 @@ import {
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
   PERPS_REFERENCE_CODE,
   DELETE_AGENT_EMPTY_ADDRESS,
-} from './constants';
+} from '../constants';
 import { isSameAddress } from '@/ui/utils';
 import { findAccountByPriority } from '@/utils/account';
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { message, Modal } from 'antd';
-import { MiniTypedData } from '../Approval/components/MiniSignTypedData/useTypedDataTask';
+import { MiniTypedData } from '../../Approval/components/MiniSignTypedData/useTypedDataTask';
 import { useStartDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { create, maxBy, minBy } from 'lodash';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
@@ -801,6 +801,7 @@ export const usePerpsState = ({
     userFills: perpsState.userFills,
     hasPermission: perpsState.hasPermission,
     homeHistoryList,
+    localLoadingHistory: perpsState.localLoadingHistory,
     perpFee: perpsState.perpFee,
 
     // Actions

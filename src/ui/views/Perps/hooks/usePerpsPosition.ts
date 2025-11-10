@@ -1,11 +1,11 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
-import { getPerpsSDK } from './sdkManager';
+import { getPerpsSDK } from '../sdkManager';
 import { usePerpsState } from './usePerpsState';
 import * as Sentry from '@sentry/browser';
 import { sleep, useWallet } from '@/ui/utils';
-import { PERPS_BUILDER_INFO } from './constants';
+import { PERPS_BUILDER_INFO } from '../constants';
 import { OrderResponse } from '@rabby-wallet/hyperliquid-sdk';
 import { useTranslation } from 'react-i18next';
 

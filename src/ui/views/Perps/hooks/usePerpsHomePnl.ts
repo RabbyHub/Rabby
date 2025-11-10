@@ -1,6 +1,6 @@
 import { useMemoizedFn } from 'ahooks';
 import { useEffect, useState } from 'react';
-import { getPerpsSDK } from './sdkManager';
+import { getPerpsSDK } from '../sdkManager';
 import { useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 

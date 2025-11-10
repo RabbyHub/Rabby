@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { useRabbySelector } from '@/ui/store';
 import { PageHeader } from '@/ui/component';
 import { formatUsdValueKMB } from '@/ui/views/Dashboard/components/TokenDetailPopup/utils';
-import { TokenImg } from './TokenImg';
+import { TokenImg } from '../components/TokenImg';
 
 const Row: React.FC<{
   index: number;

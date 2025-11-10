@@ -2,7 +2,7 @@ import { CHAINS_ENUM, KEYRING_TYPE, ThemeIconType } from '@/constant';
 import RateModal from '@/ui/component/RateModal/RateModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useRabbySelector } from '@/ui/store';
-import { usePerpsHomePnl } from '@/ui/views/Perps/usePerpsHomePnl';
+import { usePerpsHomePnl } from '@/ui/views/Perps/hooks/usePerpsHomePnl';
 import { findChainByID } from '@/utils/chain';
 import { appIsDev } from '@/utils/env';
 import { ga4 } from '@/utils/ga4';

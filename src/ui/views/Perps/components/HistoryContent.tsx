@@ -4,7 +4,7 @@ import { HistoryAccountItem, HistoryItem } from './HistoryItem';
 import { Empty } from '@/ui/component';
 import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import { useTranslation } from 'react-i18next';
-import { HistoryDetailPopup } from './HistoryDetailPopup';
+import { HistoryDetailPopup } from '../popup/HistoryDetailPopup';
 import { ReactComponent as RcIconNoSrc } from '@/ui/assets/perps/IconNoSrc.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { AccountHistoryItem, MarketData } from '@/ui/models/perps';

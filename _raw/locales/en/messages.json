@@ -764,6 +764,11 @@
       "deposit": "Deposit",
       "withdraw": "Withdraw",
       "positions": "Positions",
+      "closeAll": "Close All",
+      "closeAllPopup": {
+        "title": "Confirm Close All Positions",
+        "description": "All your open positions will be closed at market price."
+      },
       "toast": {
         "setAutoCloseSuccess": "Auto close position set successfully",
         "closePositionSuccess": "Closed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
@@ -927,6 +932,106 @@
         "hyperliquidBalance": "Perps Balance",
         "notActivatedAddress": "Not Activated",
         "noPosition": "No Position"
+      },
+      "riskLevel": {
+        "title": "Risk Level",
+        "subTitle": "Real-time liquidation distance (%)",
+        "liquidationDistance": "Liquidation Distance",
+        "currentPrice": "Current Price",
+        "liquidationPrice": "Liquidation Price",
+        "liquidationDistanceTips": "Liquidation Distance (%) shows how far the current price is from your liquidation price. A larger distance indicates a safer position, while a smaller distance means higher liquidation risk.",
+        "danger": {
+          "title": "Danger",
+          "description": "Your position is at high risk of liquidation. The distance to liquidation price is ≤3%. Consider adding margin or closing your position to avoid liquidation."
+        },
+        "warning": {
+          "title": "Warning",
+          "description": "Your position is approaching liquidation risk. The distance to liquidation price is between 3% and 8%. Monitor your position carefully and consider adding margin."
+        },
+        "safe": {
+          "title": "Safe",
+          "description": "Your position is at a safe level. The distance to liquidation price is >8%. Continue to monitor market conditions."
+        },
+        "gotIt": "Got it"
+      },
+      "PerpsAutoCloseModal": {
+        "title": "Auto Close Position",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "noPosition": "Please open a position first",
+        "takeProfitTipsLong": "Take profit price must be higher than current price",
+        "takeProfitTipsShort": "Take profit price must be lower than current price",
+        "stopLossTipsLong": "Stop loss price must be lower than current price",
+        "stopLossTipsShort": "Stop loss price must be higher than current price",
+        "stopLossTipsLongLiquidation": "Price is lower than the liquidation price ({{price}})",
+        "stopLossTipsShortLiquidation": "Price is higher than the liquidation price ({{price}})"
+      },
+      "searchPerpsPopup": {
+        "openPosition": "Open Position",
+        "searchPerps": "Search Perps",
+        "onePosition": "1 Position",
+        "searchPosition": "Search position",
+        "searchPlaceholder": "Search perps",
+        "empty": "No markets found",
+        "hasPosition": "Position"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "margin": "Margin",
+        "available": "Available",
+        "leverage": "Leverage",
+        "size": "Size",
+        "sizeTips": "The total value or quantity of your trade, set by margin and leverage.",
+        "takeProfitWhenPriceAbove": "Take Profit When Price Above",
+        "takeProfitWhenPriceBelow": "Take Profit When Price Below",
+        "stopLossWhenPriceAbove": "Stop Loss When Price Above",
+        "stopLossWhenPriceBelow": "Stop Loss When Price Below",
+        "invalidNumber": "Invalid number",
+        "insufficientBalance": "Insufficient balance",
+        "minimumOrderSize": "The minimum order size is $10",
+        "maximumOrderSize": "The maximum order size is {{amount}}"
+      },
+      "PerpsEditMarginPopup": {
+        "title": "Edit Margin",
+        "addMargin": "Add Margin",
+        "reduceMargin": "Reduce Margin",
+        "currentPrice": "Current Price",
+        "amountToAdd": "Amount to Add",
+        "amountToReduce": "Amount to Reduce",
+        "perpsBalance": "Perps Balance",
+        "available": "Available",
+        "liqPrice": "Est. Liq. Price",
+        "confirm": "Confirm",
+        "insufficientBalance": "Insufficient balance",
+        "exceedMaxReduction": "Exceeds maximum reduction",
+        "addMarginSuccess": "Margin added successfully",
+        "reduceMarginSuccess": "Margin reduced successfully"
+      },
+      "PerpsClosePositionPopup": {
+        "title": "Close Position",
+        "amount": "Amount",
+        "total": "Total",
+        "minimumWarning": "Minimum close amount is {{percent}}%",
+        "receive": "Receive",
+        "closedPnl": "Closed PNL",
+        "fee": "Fee",
+        "confirm": "Confirm"
+      },
+      "PerpsAutoCloseModal": {
+        "title": "Auto Close Position",
+        "takeProfitWhen": "Take Profit When",
+        "stopLossWhen": "Stop Loss When",
+        "currentPrice": "Current Price: ${{price}}",
+        "EntryAndCurrentPrice": "Entry: ${{entryPrice}} Current: ${{currentPrice}}",
+        "priceAbove": "Price above",
+        "priceBelow": "Price below",
+        "youGain": "You gain",
+        "youLoss": "You lose",
+        "takeProfitExpectedPNL": "Take Profit Expected PNL",
+        "stopLossExpectedPNL": "Stop Loss Expected PNL",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
       }
     },
     "sendPoly": {

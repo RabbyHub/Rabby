@@ -9,12 +9,11 @@ import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconPerpsLeveragePlus } from 'ui/assets/perps/ImgLeveragePlus.svg';
 import { ReactComponent as RcIconPerpsLeverageMinus } from 'ui/assets/perps/ImgLeverageMinus.svg';
-import { formatPercent } from './SingleCoin';
 import { useMemoizedFn } from 'ahooks';
-import { calLiquidationPrice } from '../utils';
-import { AutoClosePositionPopup } from './AutoClosePositionPopup';
+import { calLiquidationPrice, formatPercent } from '../utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { PERPS_MAX_NTL_VALUE } from '../constants';
+import { EditTpSlTag } from '../components/EditTpSlTag';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -65,14 +64,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const { t } = useTranslation();
   const [isReviewMode, setIsReviewMode] = React.useState(false);
 
-  const [autoCloseVisible, setAutoCloseVisible] = React.useState(false);
   const [margin, setMargin] = React.useState<string>('');
   const [leverage, setLeverage] = React.useState<number>(5);
-  const [autoClose, setAutoClose] = React.useState({
-    isOpen: false,
-    tpTriggerPx: '',
-    slTriggerPx: '',
-  });
+  const [tpTriggerPx, setTpTriggerPx] = React.useState<string>('');
+  const [slTriggerPx, setSlTriggerPx] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -161,14 +156,11 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     if (!visible) {
       setMargin('');
       setLeverage(Math.min(leverageRange[1], 5));
-      setAutoClose({
-        isOpen: false,
-        tpTriggerPx: '',
-        slTriggerPx: '',
-      });
+      setTpTriggerPx('');
+      setSlTriggerPx('');
       setIsReviewMode(false);
     }
-  }, [visible]);
+  }, [visible, leverageRange]);
 
   const handleReview = () => {
     setIsReviewMode(true);
@@ -196,65 +188,13 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       leverage,
       direction,
       midPx: markPrice.toString(),
-      tpTriggerPx:
-        autoClose.isOpen && autoClose.tpTriggerPx
-          ? autoClose.tpTriggerPx
-          : undefined,
-      slTriggerPx:
-        autoClose.isOpen && autoClose.slTriggerPx
-          ? autoClose.slTriggerPx
-          : undefined,
+      tpTriggerPx: tpTriggerPx ? tpTriggerPx : undefined,
+      slTriggerPx: slTriggerPx ? slTriggerPx : undefined,
     });
     setLoading(false);
     onConfirm();
     return res;
   });
-
-  const handleAutoCloseSwitch = useMemoizedFn((e: boolean) => {
-    if (e) {
-      setAutoCloseVisible(true);
-    } else {
-      setAutoClose({
-        isOpen: false,
-        tpTriggerPx: '',
-        slTriggerPx: '',
-      });
-    }
-  });
-
-  const AutoCloseInfo = useMemo(() => {
-    if (autoClose.isOpen) {
-      if (autoClose.tpTriggerPx && autoClose.slTriggerPx) {
-        const Line = (
-          <span className="text-r-neutral-line text-13 mr-4 ml-4">|</span>
-        );
-        return (
-          <div className="text-r-neutral-title-1 font-medium text-13">
-            ${splitNumberByStep(autoClose.tpTriggerPx)}{' '}
-            {t('page.perps.takeProfit')} {Line}$
-            {splitNumberByStep(autoClose.slTriggerPx)}{' '}
-            {t('page.perps.stopLoss')}
-          </div>
-        );
-      } else if (autoClose.tpTriggerPx) {
-        return (
-          <div className="text-r-neutral-title-1 font-medium text-13">
-            ${splitNumberByStep(autoClose.tpTriggerPx)}{' '}
-            {t('page.perps.takeProfit')}
-          </div>
-        );
-      } else if (autoClose.slTriggerPx) {
-        return (
-          <div className="text-r-neutral-title-1 font-medium text-13">
-            ${splitNumberByStep(autoClose.slTriggerPx)}{' '}
-            {t('page.perps.stopLoss')}
-          </div>
-        );
-      } else {
-        return null;
-      }
-    }
-  }, [autoClose.isOpen, autoClose.tpTriggerPx, autoClose.slTriggerPx]);
 
   // 渲染编辑模式UI
   const renderEditMode = useMemoizedFn(() => (
@@ -393,19 +333,65 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               = {tradeSize} {coin}
             </div>
           </div>
-          <div
-            className="flex w-full py-16 items-center justify-between cursor-pointer"
-            onClick={() => {
-              handleAutoCloseSwitch(!autoClose.isOpen);
-            }}
-          >
-            <div className="text-13 text-r-neutral-title-1">
-              {t('page.perps.autoClose')}
-              {AutoCloseInfo}
+          {/* TP/SL Section */}
+          <div className="flex w-full py-16 items-center justify-between">
+            <div className="text-13 text-r-neutral-body">
+              {direction === 'Long'
+                ? t(
+                    'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceAbove'
+                  )
+                : t(
+                    'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceBelow'
+                  )}
             </div>
-            <Switch
-              checked={autoClose.isOpen}
-              // onChange={handleAutoCloseSwitch}
+            <EditTpSlTag
+              coin={coin}
+              markPrice={markPrice}
+              initTpOrSlPrice={tpTriggerPx}
+              direction={direction}
+              size={Number(tradeSize)}
+              margin={Number(margin)}
+              liqPrice={Number(estimatedLiquidationPrice)}
+              pxDecimals={pxDecimals}
+              szDecimals={szDecimals}
+              actionType="tp"
+              type="openPosition"
+              handleSetAutoClose={async (price: string) => {
+                setTpTriggerPx(price);
+              }}
+              handleCancelAutoClose={async () => {
+                setTpTriggerPx('');
+              }}
+            />
+          </div>
+          <div className="flex w-full py-16 items-center justify-between">
+            <div className="text-13 text-r-neutral-body">
+              {direction === 'Long'
+                ? t(
+                    'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceBelow'
+                  )
+                : t(
+                    'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceAbove'
+                  )}
+            </div>
+            <EditTpSlTag
+              coin={coin}
+              markPrice={markPrice}
+              initTpOrSlPrice={slTriggerPx}
+              direction={direction}
+              size={Number(tradeSize)}
+              margin={Number(margin)}
+              liqPrice={Number(estimatedLiquidationPrice)}
+              pxDecimals={pxDecimals}
+              szDecimals={szDecimals}
+              actionType="sl"
+              type="openPosition"
+              handleSetAutoClose={async (price: string) => {
+                setSlTriggerPx(price);
+              }}
+              handleCancelAutoClose={async () => {
+                setSlTriggerPx('');
+              }}
             />
           </div>
         </div>
@@ -476,12 +462,26 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
               </div>
             </div>
-            {autoClose.isOpen && (
+            {(tpTriggerPx || slTriggerPx) && (
               <div className="flex justify-between items-center">
                 <div className="text-13 text-r-neutral-body">
                   {t('page.perps.autoClose')}
                 </div>
-                {AutoCloseInfo}
+                <div className="flex items-center gap-8">
+                  {tpTriggerPx && (
+                    <span className="text-13 text-r-neutral-title-1 font-medium">
+                      TP: ${splitNumberByStep(tpTriggerPx)}
+                    </span>
+                  )}
+                  {tpTriggerPx && slTriggerPx && (
+                    <span className="text-r-neutral-line">|</span>
+                  )}
+                  {slTriggerPx && (
+                    <span className="text-13 text-r-neutral-title-1 font-medium">
+                      SL: ${splitNumberByStep(slTriggerPx)}
+                    </span>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -585,29 +585,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           {isReviewMode ? renderReviewMode() : renderEditMode()}
         </div>
       </Popup>
-
-      <AutoClosePositionPopup
-        visible={autoCloseVisible}
-        coin={coin}
-        szDecimals={szDecimals}
-        type="openPosition"
-        price={markPrice}
-        liqPrice={Number(estimatedLiquidationPrice)}
-        direction={direction}
-        size={Number(tradeSize)}
-        pxDecimals={pxDecimals}
-        onClose={() => setAutoCloseVisible(false)}
-        handleSetAutoClose={async (params: {
-          tpPrice: string;
-          slPrice: string;
-        }) => {
-          setAutoClose({
-            isOpen: true,
-            tpTriggerPx: params.tpPrice,
-            slTriggerPx: params.slPrice,
-          });
-        }}
-      />
     </>
   );
 };
