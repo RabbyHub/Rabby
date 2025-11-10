@@ -6,8 +6,6 @@ import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { ModalCloseIcon } from '../TokenDetailModal';
 import { useHistory } from 'react-router-dom';
-import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
-import { useDebounce } from 'ahooks';
 
 export const SwapTokenModal: React.FC<
   ModalProps & { action: 'swap' | 'bridge' }
@@ -26,8 +24,6 @@ export const SwapTokenModal: React.FC<
     searchParams.set('action', key);
     history.replace(`/desktop/profile?${searchParams.toString()}`);
   };
-
-  // const visible = useDebounce(props.visible, { wait: 500 });
 
   return (
     <Modal
@@ -73,16 +69,6 @@ export const SwapTokenModal: React.FC<
         </div>
         {action === 'swap' ? <Swap /> : <Bridge />}
       </div>
-
-      <div className="absolute top-0 left-[100%] pl-[20px]">
-        <DesktopSelectAccountList isInModal />
-      </div>
-
-      {/* {visible ? (
-        <div className="absolute top-0 left-[100%] pl-[20px]">
-          <DesktopSelectAccountList isInModal />
-        </div>
-      ) : null} */}
     </Modal>
   );
 };

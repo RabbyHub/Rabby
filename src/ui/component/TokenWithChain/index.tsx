@@ -88,6 +88,7 @@ export const IconWithChain = ({
   hideChainIcon = false,
   chainSize,
   isShowChainTooltip = false,
+  chainClassName,
 }: {
   iconUrl?: string;
   chainServerId: string;
@@ -98,6 +99,7 @@ export const IconWithChain = ({
   hideChainIcon?: boolean;
   isShowChainTooltip?: boolean;
   chainSize?: string;
+  chainClassName?: string;
 }) => {
   const chain = findChain({
     serverId: chainServerId,
@@ -131,14 +133,14 @@ export const IconWithChain = ({
             className="rectangle w-[max-content]"
           >
             <img
-              className="chain-symbol"
+              className={clsx('chain-symbol', chainClassName)}
               src={chain?.logo || IconUnknown}
               style={chainStyle}
             />
           </TooltipWithMagnetArrow>
         ) : (
           <img
-            className="chain-symbol"
+            className={clsx('chain-symbol', chainClassName)}
             src={chain?.logo || IconUnknown}
             style={chainStyle}
           />

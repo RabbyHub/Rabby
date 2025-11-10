@@ -64,7 +64,7 @@ export const TokenList = ({
           </div>
           <div className="flex items-center gap-[6px]">
             <Switch checked={allMode} onChange={onAllModeChange} />
-            <div className="text-[13px] font-normal text-r-neutral-body">
+            <div className="text-[14px] leading-[16px] font-normal text-rb-neutral-body">
               All Token Mode
             </div>
           </div>

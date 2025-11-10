@@ -13,6 +13,7 @@ import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import * as PortfolioTemplate from './Protocols/template';
+import { RcIconExternal1CC } from '@/ui/assets/desktop/common';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -175,15 +176,16 @@ const ProtocolItem = ({
             noRound={isAppChain}
             isShowChainTooltip={true}
             hideChainIcon={isAppChain}
+            chainClassName="top-[-4px] right-[-4px]"
           />
           <div
-            className="ml-[8px] flex items-center border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot"
+            className="ml-[10px] flex items-center border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot"
             onClick={(evt) => {
               evt.stopPropagation();
               openInTab(protocol.site_url, false);
             }}
           >
-            <span className="name inline-flex items-center text-15 font-medium text-r-blue-default">
+            <span className="name inline-flex items-center text-[20px] leading-[24px] font-semibold text-r-neutral-title1">
               {protocol.name}
             </span>
             {!!isAppChain && (
@@ -193,12 +195,12 @@ const ProtocolItem = ({
                   chain: protocol.name,
                 })}
               >
-                <div className="text-r-neutral-foot ml-[4px] mr-[2px]">
+                <div className="text-r-neutral-foot ml-[6px]">
                   <RcIconInfoCC />
                 </div>
               </Tooltip>
             )}
-            <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot" />
+            <RcIconExternal1CC className="ml-[6px] w-[16px] h-[16px] text-r-neutral-foot" />
           </div>
           <div className="flex items-center justify-end flex-1">
             <span className="text-[20px] text-r-neutral-title1 font-semibold">

@@ -53,12 +53,12 @@ interface TableProps {
 }
 
 const TokenRowWrapper = styled(TRow)`
-  border-bottom: 1px solid var(--r-neutral-bg-4, #f2f4f7);
+  border-bottom: 1px solid var(--rb-neutral-bg-4, #f2f4f7);
   height: 60px;
   padding-left: 12px;
   padding-right: 16px;
   &:hover {
-    background-color: var(--r-neutral-bg-2);
+    background-color: var(--rb-neutral-bg-2, #f2f4f7);
   }
   &:last-child {
     border-bottom-color: transparent;
