@@ -195,7 +195,7 @@ const AccountItem: React.FC<{
         className={clsx(
           'rounded-[20px] px-[16px] cursor-pointer flex items-center gap-[8px] min-h-[72px] w-[260px]',
           isSelected
-            ? 'py-[20px] border-solid border-[1px] bg-rb-neutral-card-1 border-rb-neutral-line'
+            ? 'py-[19px] border-solid border-[1px] bg-rb-neutral-card-1 border-rb-neutral-line'
             : isInModal
             ? 'pt-[18px] pb-[16px] bg-rb-neutral-bg-4'
             : 'pt-[18px] pb-[16px] bg-rb-neutral-bg-3'

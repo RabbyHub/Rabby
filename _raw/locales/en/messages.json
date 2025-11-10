@@ -3047,6 +3047,10 @@
       "CurveModal": {
         "appChainTips": "Hyperliquid & Polymarket Account not included",
         "netWorth": "Net Worth"
+      },
+      "UpdateButton": {
+        "updating": "Updating data",
+        "updatedAgo": "Data updated <1/> <2>{{timeText}}</2> <3/> ago"
       }
     },
     "selectToAddress": {
@@ -3297,10 +3301,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
