@@ -13,11 +13,11 @@ import { useRabbyDispatch } from '@/ui/store';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { CurveChartData } from '@/ui/views/Dashboard/components/BalanceView/useCurve';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { Popover } from 'antd';
 import clsx from 'clsx';
 import QRCode from 'qrcode.react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import { BalanceView } from './BalanceView';
@@ -114,7 +114,8 @@ export const ProfileHeader: React.FC<{
             className={clsx(
               'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
               'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
+              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold',
+              'hover:bg-rb-brand-light-2'
               // 'hover:bg-r-blue-light1'
             )}
             onClick={() => {
@@ -128,8 +129,8 @@ export const ProfileHeader: React.FC<{
             className={clsx(
               'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
               'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
-              // 'hover:bg-r-blue-light1'
+              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold',
+              'hover:bg-rb-brand-light-2'
             )}
             onClick={() => {
               history.replace(history.location.pathname + '?action=send');
@@ -142,8 +143,8 @@ export const ProfileHeader: React.FC<{
             className={clsx(
               'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
               'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
-              // 'hover:bg-r-blue-light1'
+              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold',
+              'hover:bg-rb-brand-light-2'
             )}
             onClick={() => {
               history.replace(history.location.pathname + '?action=bridge');
@@ -158,7 +159,8 @@ export const ProfileHeader: React.FC<{
                 className={clsx(
                   'p-[14px] rounded-[14px] bg-rb-brand-light-1',
                   'flex items-center justify-center gap-[8px] cursor-pointer',
-                  'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
+                  'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold',
+                  'hover:bg-rb-brand-light-2'
                 )}
                 onClick={() => {
                   history.replace(
