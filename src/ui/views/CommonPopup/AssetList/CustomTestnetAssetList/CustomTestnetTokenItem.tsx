@@ -97,7 +97,7 @@ export const TokenItemAddress: React.FC<Props> = ({ item }) => {
     <TCell className="py-[13px] flex gap-10 flex-1 items-center">
       <div className="flex flex-row items-center gap-6">
         <span className=" text-rb-neutral-title-1 text-14">
-          {isNative ? item.id : ellipsis(item.id)}
+          {isNative ? '-' : ellipsis(item.id)}
         </span>
         {!isNative && (
           <ThemeIcon

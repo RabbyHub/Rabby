@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { numberWithCommasIsLtOne } from '@/ui/utils/number';
 import { TokenListEmpty } from './TokenListEmpty';
 import { TOKEN_WALLET_ANCHOR_ID } from './constant';
-import { useSwitchNetTab } from '@/ui/component/PillsSwitch/NetSwitchTabs';
+import type { NetSwitchTabsKey } from '@/ui/component/PillsSwitch/NetSwitchTabs';
 import MainnetTestnetSwitchTabs from './components/switchTestTab';
 import { CustomTestnetAssetList } from './TestTokenlist';
 
@@ -22,13 +22,20 @@ export interface Props {
   allMode?: boolean;
   onAllModeChange?: (allMode: boolean) => void;
   totalValue?: number;
+  selectedTab?: NetSwitchTabsKey;
+  onTabChange?: (tab: NetSwitchTabsKey) => void;
 }
+const AllModeSwitchWrapper = styled.div`
+  .ant-switch-checked {
+    background-color: var(--r-green-default) !important;
+  }
+`;
 
 const ListContainer = styled.div`
   background-color: var(--rb-neutral-bg-3, #f9f9f9);
   border-radius: 16px;
   padding: 16px;
-  margin: 0 20px;
+  margin: 0 20px 20px;
 `;
 
 export const TokenList = ({
@@ -37,6 +44,8 @@ export const TokenList = ({
   allMode,
   onAllModeChange,
   totalValue,
+  selectedTab,
+  onTabChange,
 }: Props) => {
   const {
     result: currentList,
@@ -46,12 +55,6 @@ export const TokenList = ({
   } = useExpandList(list, totalValue);
   const { t } = useTranslation();
 
-  const { selectedTab, onTabChange } = useSwitchNetTab();
-  console.log('CUSTOM_LOGGER:=>: selectedTab', selectedTab);
-
-  if (isNoResults) {
-    return <TokenListEmpty text={t('page.dashboard.assets.table.noTokens')} />;
-  }
   return (
     <div className="mt-[7px]" id={TOKEN_WALLET_ANCHOR_ID}>
       <div className="flex items-center justify-between py-[14px] px-[20px]">
@@ -62,12 +65,12 @@ export const TokenList = ({
               Wallet
             </div>
           </div>
-          <div className="flex items-center gap-[6px]">
+          <AllModeSwitchWrapper className="flex items-center gap-[6px]">
             <Switch checked={allMode} onChange={onAllModeChange} />
             <div className="text-[14px] leading-[16px] font-normal text-rb-neutral-body">
               All Token Mode
             </div>
-          </div>
+          </AllModeSwitchWrapper>
         </div>
         {allMode ? (
           <MainnetTestnetSwitchTabs
@@ -82,36 +85,40 @@ export const TokenList = ({
       </div>
       <ListContainer>
         {selectedTab === 'mainnet' || !allMode ? (
-          <>
-            <TokenTable
-              list={allMode ? list : (currentList as TokenItemProps['item'][])}
-              EmptyComponent={<div></div>}
-            />
-            {hasExpandSwitch && !allMode && (
-              <div
-                onClick={toggleExpand}
-                className="flex items-center justify-center gap-4 py-[16px]"
-              >
-                <div className="text-r-neutral-foot text-13 cursor-pointer">
-                  {isExpanded
-                    ? 'Hide tokens with small balances.'
-                    : 'Tokens with small balances are not displayed.'}
+          isNoResults ? (
+            <TokenListEmpty text={t('page.dashboard.assets.table.noTokens')} />
+          ) : (
+            <>
+              <TokenTable
+                list={currentList as TokenItemProps['item'][]}
+                EmptyComponent={<div></div>}
+              />
+              {hasExpandSwitch && (
+                <div
+                  onClick={toggleExpand}
+                  className="flex items-center justify-center gap-4 py-[16px]"
+                >
+                  <div className="text-r-neutral-foot text-13 cursor-pointer">
+                    {isExpanded
+                      ? 'Hide tokens with small balances.'
+                      : 'Tokens with small balances are not displayed.'}
+                  </div>
+                  <div className="flex items-center justify-center gap-[2px] cursor-pointer">
+                    {isExpanded ? null : (
+                      <div className="text-r-neutral-foot text-13 underline">
+                        Show all
+                      </div>
+                    )}
+                    <RcIconDropdown
+                      className={clsx('ml-0', {
+                        'transform rotate-180': isExpanded,
+                      })}
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center justify-center gap-[2px] cursor-pointer">
-                  {isExpanded ? null : (
-                    <div className="text-r-neutral-foot text-13 underline">
-                      Show all
-                    </div>
-                  )}
-                  <RcIconDropdown
-                    className={clsx('ml-0', {
-                      'transform rotate-180': isExpanded,
-                    })}
-                  />
-                </div>
-              </div>
-            )}
-          </>
+              )}
+            </>
+          )
         ) : (
           <CustomTestnetAssetList />
         )}
