@@ -146,7 +146,7 @@ const appThemeColors = {
     'neutral-bg-1': 'rgba(255, 255, 255, 1)',
     'neutral-bg-2': 'rgba(242, 244, 247, 1)',
     'neutral-bg-3': 'rgba(249, 249, 249, 1)',
-    'neutral-bg-4': 'rgba(235, 238, 247, 1)',
+    'neutral-bg-4': 'rgba(235, 237, 240, 1)',
     'neutral-bg-5': 'rgba(224, 229, 236, 0.5)',
     'neutral-line': 'rgba(224, 229, 236, 1)',
     'neutral-title-1': 'rgba(25, 41, 69, 1)',
