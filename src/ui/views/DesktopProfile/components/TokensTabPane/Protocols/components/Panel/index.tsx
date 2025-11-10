@@ -4,7 +4,7 @@ import BookMark from '../BookMark';
 import styled from 'styled-components';
 
 const Container = styled.div`
-  padding-top: 8px;
+  padding-top: 12px;
 `;
 
 const PanelHead = styled.div`

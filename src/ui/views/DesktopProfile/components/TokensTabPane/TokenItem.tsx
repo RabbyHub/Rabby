@@ -16,6 +16,7 @@ export interface Props {
   style?: React.CSSProperties;
   isLast?: boolean;
   disableSwap?: boolean;
+  disableSend?: boolean;
   onClick?: () => void;
 }
 
@@ -23,7 +24,13 @@ export interface TestnetTokenItemProps {
   item: CustomTestnetToken;
 }
 
-const SwapBottom = ({ onClick }: { onClick?: () => void }) => {
+const ActionBottom = ({
+  onClick,
+  text,
+}: {
+  onClick?: () => void;
+  text?: string;
+}) => {
   return (
     <div
       onClick={onClick}
@@ -35,12 +42,16 @@ const SwapBottom = ({ onClick }: { onClick?: () => void }) => {
         hover:bg-r-blue-light1
       `}
     >
-      Swap
+      {text}
     </div>
   );
 };
 
-export const TokenItemAsset: React.FC<Props> = ({ item, disableSwap }) => {
+export const TokenItemAsset: React.FC<Props> = ({
+  item,
+  disableSwap,
+  disableSend,
+}) => {
   const chain = findChain({
     serverId: item.chain,
   });
@@ -49,6 +60,13 @@ export const TokenItemAsset: React.FC<Props> = ({ item, disableSwap }) => {
     history.replace(
       history.location.pathname +
         `?action=swap&chain=${item.chain}&payTokenId=${item._tokenId}`
+    );
+  }, [item._tokenId, item.chain]);
+
+  const gotoSend = useCallback(() => {
+    history.replace(
+      history.location.pathname +
+        `?action=send&token=${item.chain}:${item._tokenId}`
     );
   }, [item._tokenId, item.chain]);
 
@@ -83,7 +101,8 @@ export const TokenItemAsset: React.FC<Props> = ({ item, disableSwap }) => {
             hover:text-r-blue-default hover:underline 
           `}
         />
-        {!disableSwap && <SwapBottom onClick={gotoSwap} />}
+        {!disableSwap && <ActionBottom onClick={gotoSwap} text="Swap" />}
+        {!disableSend && <ActionBottom onClick={gotoSend} text="Send" />}
       </div>
     </TCell>
   );

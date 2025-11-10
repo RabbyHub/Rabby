@@ -1,6 +1,6 @@
 import { DisplayedProject } from '@/ui/utils/portfolio/project';
 import { TOKEN_WALLET_ANCHOR_ID } from './constant';
-import { formatUsdValue, numberWithCommasIsLtOne } from '@/ui/utils';
+import { numberWithCommasIsLtOne } from '@/ui/utils';
 
 export const ScrollToDomById = (id: string) => {
   const dom = document.getElementById(id);
@@ -13,9 +13,7 @@ export const ScrollToDomById = (id: string) => {
 
   if (!scrollElement) return;
   scrollElement?.scrollTo({
-    // 58 是顶部选择的高度
-    top: window.scrollY + y,
-    // - 80 + (bar?.style.display === 'none' ? 58 : 0),
+    top: window.scrollY + y - 103, // 103 是stick header的高度
     behavior: 'smooth',
   });
 };
