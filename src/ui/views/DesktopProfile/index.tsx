@@ -27,7 +27,7 @@ import { SendNftModal } from './components/SendNftModal';
 import { ReceiveTokenModal } from './components/ReceiveTokenModal';
 import { SignatureRecordModal } from './components/SignatureRecordModal';
 import eventBus from '@/eventBus';
-import { EVENTS } from '@/constant';
+import { EVENTS, KEYRING_TYPE } from '@/constant';
 import { useListenTxReload } from './hooks/useListenTxReload';
 import { GnosisQueueModal } from './components/GnosisQueueModal';
 import { ApprovalsTabPane } from './components/ApprovalsTabPane';
@@ -142,6 +142,18 @@ export const DesktopProfile = () => {
     await refreshBalance();
     await refreshCurve();
   });
+
+  useEffect(
+    useMemoizedFn(() => {
+      if (
+        action === 'gnosis-queue' &&
+        currentAccount?.type !== KEYRING_TYPE.GnosisKeyring
+      ) {
+        history.replace(history.location.pathname);
+      }
+    }),
+    [currentAccount?.type]
+  );
 
   return (
     <>

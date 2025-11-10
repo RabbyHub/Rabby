@@ -1621,10 +1621,17 @@ export class WalletController extends BaseController {
 
     const url = `desktop.html#/${_url.replace(/^\//, '')}`;
     if (currentDesktopTab) {
-      return await Browser.tabs.update(currentDesktopTab.id, {
+      const tab = await Browser.tabs.update(currentDesktopTab.id, {
         active: true,
         url: url,
       });
+      const currentWindow = await Browser.windows.getLastFocused();
+      if (tab.windowId && tab.windowId !== currentWindow.id) {
+        Browser.windows.update(tab.windowId, {
+          focused: true,
+        });
+      }
+      return tab;
     }
     const tab = await Browser.tabs.create({
       active: true,

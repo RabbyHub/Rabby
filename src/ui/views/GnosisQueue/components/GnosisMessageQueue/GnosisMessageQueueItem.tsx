@@ -12,6 +12,7 @@ import { timeago, useWallet } from 'ui/utils';
 import { stringToHex } from 'viem';
 import { GnosisMessageExplain } from './GnosisMessageExplain';
 import { GnosisMessageQueueConfirmations } from './GnosisMessageQueueConfirmations';
+import { UI_TYPE } from '@/constant/ui';
 
 export const GnosisMessageQueueItem = ({
   data,
@@ -92,7 +93,9 @@ export const GnosisMessageQueueItem = ({
           },
         });
       }
-      window.close();
+      if (UI_TYPE.isPop) {
+        window.close();
+      }
     },
     {
       manual: true,
