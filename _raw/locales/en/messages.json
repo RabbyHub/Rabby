@@ -1426,7 +1426,8 @@
           "gasAccount": "GasAccount",
           "setting": "Setting",
           "searchDapp": "Search Dapp",
-          "dapps": "Dapps"
+          "dapps": "Dapps",
+          "settings": "Settings"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",

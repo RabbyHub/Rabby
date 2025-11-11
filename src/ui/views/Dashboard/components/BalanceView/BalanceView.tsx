@@ -35,7 +35,7 @@ import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import type { Account } from '@/background/service/preference';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { OfflineChainNotify } from '../OfflineChainNotify';
-import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
+import { RcIconExternalCC } from '@/ui/assets/dashboard';
 
 export const BalanceView = ({
   currentAccount,
@@ -420,10 +420,7 @@ export const BalanceView = ({
                     matteredChainBalances={chainBalancesWithValue.slice(0)}
                     gnosisNetworks={gnosisNetworks}
                   />
-                  <RcIconArrowRightCC
-                    viewBox="0 0 14 14"
-                    className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50"
-                  />
+                  <RcIconExternalCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
                 </div>
               ) : (
                 <div
