@@ -33,6 +33,7 @@ export const SwapTokenModal: React.FC<
       title={null}
       bodyStyle={{ background: 'transparent', maxHeight: 'unset', padding: 0 }}
       maskClosable={true}
+      centered
       footer={null}
       zIndex={1000}
       closeIcon={ModalCloseIcon}

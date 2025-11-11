@@ -2,8 +2,6 @@ import { SvgIconCross } from '@/ui/assets';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import AddAddress from '@/ui/views/AddAddress';
 import { AddFromCurrentSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase';
-import AddressBackupMnemonics from '@/ui/views/AddressBackup/Mnemonics';
-import AddressBackupPrivateKey from '@/ui/views/AddressBackup/PrivateKey';
 import { ImportCoboArgus } from '@/ui/views/ImportCoboArgus/ImportCoboArgus';
 import { ImportCoinbase } from '@/ui/views/ImportCoinbase/ImportCoinbase';
 import ImportGnosisAddress from '@/ui/views/ImportGnosisAddress';

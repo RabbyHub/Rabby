@@ -298,20 +298,7 @@ export const DesktopProfile = () => {
         }}
         destroyOnClose
       />
-      <AddCustomNetworkModal
-        visible={action === 'custom-network'}
-        onCancel={() => {
-          history.replace(history.location.pathname);
-        }}
-        destroyOnClose
-      />
-      <AddCustomTokenModal
-        visible={action === 'custom-token'}
-        onCancel={() => {
-          history.replace(history.location.pathname);
-        }}
-        destroyOnClose
-      />
+
       <AddressDetailModal
         visible={action === 'address-detail'}
         onCancel={() => {

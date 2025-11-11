@@ -19,6 +19,7 @@ import { useHistory } from 'react-router-dom';
 import { sortBy } from 'lodash';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
+import clsx from 'clsx';
 
 const Footer = styled.div`
   height: 84px;
@@ -129,75 +130,78 @@ export const CustomTestnet = ({ inModal }: { inModal?: boolean }) => {
   });
 
   return (
-    <FullscreenContainer className="h-[700px]">
-      <div className="custom-testnet h-full overflow-auto">
-        <PageHeader
-          className="pt-[24px] mx-[20px] mb-16"
-          canBack={false}
-          closeable={!inModal}
-          onClose={() => {
-            if (history.length > 1) {
-              history.goBack();
-            } else {
-              history.replace('/');
-            }
-          }}
-        >
-          {t('page.customTestnet.title')}
-        </PageHeader>
-        <p className="text-r-neutral-body text-[13px] text-center leading-[16px] mb-20 px-20">
-          {t('page.customTestnet.desc')}
-        </p>
-        {!list?.length ? (
-          <Emtpy description={t('page.customTestnet.empty')} />
-        ) : (
-          <div className="flex flex-col gap-[12px] px-[20px] flex-1 overflow-auto pb-[12px]">
-            {list?.map((item) => (
-              <CustomTestnetItem
-                item={item as any}
-                key={item.id}
-                className="bg-r-neutral-card1"
-                onEdit={handleEditClick}
-                onRemove={handleRemoveClick}
-                editable
-              />
-            ))}
-          </div>
-        )}
-        <Footer>
-          <Button size="large" type="primary" block onClick={handleAddClick}>
-            {t('page.customTestnet.add')}
-          </Button>
-        </Footer>
-        <EditCustomTestnetModal
-          ctx={{
-            ga: {
-              source: 'setting',
+    <div
+      className={clsx(
+        'custom-testnet h-full overflow-auto',
+        inModal ? 'h-[600px]' : ''
+      )}
+    >
+      <PageHeader
+        className="pt-[24px] mx-[20px] mb-16"
+        canBack={false}
+        closeable={!inModal}
+        onClose={() => {
+          if (history.length > 1) {
+            history.goBack();
+          } else {
+            history.replace('/');
+          }
+        }}
+      >
+        {t('page.customTestnet.title')}
+      </PageHeader>
+      <p className="text-r-neutral-body text-[13px] text-center leading-[16px] mb-20 px-20">
+        {t('page.customTestnet.desc')}
+      </p>
+      {!list?.length ? (
+        <Emtpy description={t('page.customTestnet.empty')} />
+      ) : (
+        <div className="flex flex-col gap-[12px] px-[20px] flex-1 overflow-auto pb-[12px]">
+          {list?.map((item) => (
+            <CustomTestnetItem
+              item={item as any}
+              key={item.id}
+              className="bg-r-neutral-card1"
+              onEdit={handleEditClick}
+              onRemove={handleRemoveClick}
+              editable
+            />
+          ))}
+        </div>
+      )}
+      <Footer>
+        <Button size="large" type="primary" block onClick={handleAddClick}>
+          {t('page.customTestnet.add')}
+        </Button>
+      </Footer>
+      <EditCustomTestnetModal
+        ctx={{
+          ga: {
+            source: 'setting',
+          },
+        }}
+        visible={state.isShowModal}
+        data={state.current}
+        isEdit={state.isEdit}
+        onCancel={() => {
+          setState({
+            isShowModal: false,
+            current: null,
+            isEdit: false,
+          });
+          wallet.clearPageStateCache();
+        }}
+        onChange={(values) => {
+          wallet.setPageStateCache({
+            path: '/custom-testnet',
+            states: {
+              ...state,
+              current: values,
             },
-          }}
-          visible={state.isShowModal}
-          data={state.current}
-          isEdit={state.isEdit}
-          onCancel={() => {
-            setState({
-              isShowModal: false,
-              current: null,
-              isEdit: false,
-            });
-            wallet.clearPageStateCache();
-          }}
-          onChange={(values) => {
-            wallet.setPageStateCache({
-              path: '/custom-testnet',
-              states: {
-                ...state,
-                current: values,
-              },
-            });
-          }}
-          onConfirm={handleConfirm}
-        />
-      </div>
-    </FullscreenContainer>
+          });
+        }}
+        onConfirm={handleConfirm}
+      />
+    </div>
   );
 };
