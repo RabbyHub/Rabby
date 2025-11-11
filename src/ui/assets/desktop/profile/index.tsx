@@ -8,3 +8,4 @@ export { ReactComponent as RcIconRefreshCC } from './refresh-cc.svg';
 export { ReactComponent as RcIconQueueCC } from './queue-cc.svg';
 export { ReactComponent as RcIconAddWalletCC } from './add-wallet-cc.svg';
 export { ReactComponent as RcIconMoreCC } from './more-cc.svg';
+export { ReactComponent as RcIconBackTop } from './back-top.svg';

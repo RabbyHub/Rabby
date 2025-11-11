@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { ProfileHeader } from './components/ProfileHeader';
-import { Tabs } from 'antd';
+import { BackTop, Tabs } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { TokensTabPane } from './components/TokensTabPane';
 import { SendTokenModal } from './components/SendTokenModal';
@@ -37,6 +37,7 @@ import { AddCustomTokenModal } from './components/AddCustomTokenModal';
 import { AddressDetailModal } from './components/AddressDetailModal';
 import { AddressBackupModal } from './components/AddressBackupModal';
 import { AddAddressModal } from './components/AddAddressModal';
+import { RcIconBackTop } from '@/ui/assets/desktop/profile';
 
 const Wrap = styled.div`
   height: 100%;
@@ -237,6 +238,16 @@ export const DesktopProfile = () => {
               <DesktopSelectAccountList />
             </aside>
           </div>
+          <BackTop
+            target={() => scrollContainerRef.current || window}
+            style={{
+              left: '50%',
+              bottom: 32,
+              transform: 'translateX(700px)',
+            }}
+          >
+            <RcIconBackTop />
+          </BackTop>
         </div>
       </Wrap>
       <SendTokenModal
