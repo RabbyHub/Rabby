@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { ProfileHeader } from './components/ProfileHeader';
-import { Tabs } from 'antd';
+import { BackTop, Tabs } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { TokensTabPane } from './components/TokensTabPane';
 import { SendTokenModal } from './components/SendTokenModal';
@@ -34,6 +34,10 @@ import { ApprovalsTabPane } from './components/ApprovalsTabPane';
 import { createPortal } from 'react-dom';
 import { AddCustomNetworkModal } from './components/AddCustomNetworkModal';
 import { AddCustomTokenModal } from './components/AddCustomTokenModal';
+import { AddressDetailModal } from './components/AddressDetailModal';
+import { AddressBackupModal } from './components/AddressBackupModal';
+import { AddAddressModal } from './components/AddAddressModal';
+import { RcIconBackTop } from '@/ui/assets/desktop/profile';
 
 const Wrap = styled.div`
   height: 100%;
@@ -182,6 +186,7 @@ export const DesktopProfile = () => {
                 evmBalance={evmBalance}
                 curveChartData={curveChartData}
                 isLoading={isBalanceLoading || isCurveLoading}
+                onRefresh={handleUpdate}
               />
               <div key={refreshKey}>
                 <Tabs
@@ -233,6 +238,16 @@ export const DesktopProfile = () => {
               <DesktopSelectAccountList />
             </aside>
           </div>
+          <BackTop
+            target={() => scrollContainerRef.current || window}
+            style={{
+              left: '50%',
+              bottom: 32,
+              transform: 'translateX(700px)',
+            }}
+          >
+            <RcIconBackTop />
+          </BackTop>
         </div>
       </Wrap>
       <SendTokenModal
@@ -292,6 +307,27 @@ export const DesktopProfile = () => {
       />
       <AddCustomTokenModal
         visible={action === 'custom-token'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <AddressDetailModal
+        visible={action === 'address-detail'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <AddressBackupModal
+        visible={action === 'address-backup'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <AddAddressModal
+        visible={action === 'add-address'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}

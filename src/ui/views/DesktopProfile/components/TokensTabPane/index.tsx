@@ -128,7 +128,8 @@ export const TokensTabPane: React.FC<Props> = ({
 
   return (
     <div className={className}>
-      {!allMode && !isNoResults && (
+      {/* 只有wallet的话也不显示 */}
+      {!allMode && !isNoResults && projectOverviewList?.length > 1 && (
         <ProjectOverview
           list={projectOverviewList}
           appIds={appIds}

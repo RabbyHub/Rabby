@@ -3,6 +3,7 @@ import {
   RcIconBridgeCC,
   RcIconCopyCC,
   RcIconQrCodeCC,
+  RcIconQueueCC,
   RcIconSendCC,
   RcIconSpinCC,
   RcIconSwapCC,
@@ -21,6 +22,7 @@ import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import { BalanceView } from './BalanceView';
+import { useAlias } from '@/ui/utils';
 
 const GlobalStyle = createGlobalStyle`
   .global-qr-code-popover {
@@ -43,6 +45,7 @@ export const ProfileHeader: React.FC<{
   evmBalance?: number | null;
   curveChartData?: CurveChartData;
   isLoading?: boolean;
+  onRefresh?(): void;
 }> = (props) => {
   const currentAccount = useCurrentAccount();
   const history = useHistory();
@@ -69,6 +72,8 @@ export const ProfileHeader: React.FC<{
   useEventBusListener(EVENTS.TX_SUBMITTING, runAsync);
   useEventBusListener(EVENTS.RELOAD_TX, runAsync);
 
+  const [alias] = useAlias(currentAccount?.address || '');
+
   if (!currentAccount) {
     return null;
   }
@@ -76,8 +81,11 @@ export const ProfileHeader: React.FC<{
   return (
     <>
       <GlobalStyle />
-      <div className="px-[20px] py-[24px]">
+      <div className="px-[20px] py-[24px] relative">
         <div className="mb-[16px] flex items-center gap-[12px]">
+          <div className="text-r-neutral-title1 text-[16px] leading-[19px] font-semibold">
+            {alias}
+          </div>
           <div className="text-rb-neutral-body text-[16px] leading-[19px]">
             {ellipsisAddress(currentAccount?.address || '', true)}
           </div>
@@ -153,41 +161,40 @@ export const ProfileHeader: React.FC<{
             <RcIconBridgeCC />
             Bridge
           </div>
-          <div className="ml-auto">
-            {isGnosis ? (
-              <div
-                className={clsx(
-                  'p-[14px] rounded-[14px] bg-rb-brand-light-1',
-                  'flex items-center justify-center gap-[8px] cursor-pointer',
-                  'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold',
-                  'hover:bg-rb-brand-light-2'
-                )}
-                onClick={() => {
-                  history.replace(
-                    history.location.pathname + '?action=gnosis-queue'
-                  );
-                }}
-              >
-                Queue
-              </div>
-            ) : pendingTxCount ? (
-              <div
-                className={clsx(
-                  'flex items-center gap-[8px] p-[12px] cursor-pointer'
-                )}
-                onClick={() => {
-                  history.replace(
-                    history.location.pathname + '?action=activities'
-                  );
-                }}
-              >
-                <RcIconSpinCC className="w-[16px] h-[16px] animate-spin text-r-orange-default" />
-                <div className="text-[13px] leading-[16px] font-medium text-r-orange-default">
-                  {pendingTxCount} pending
-                </div>
-              </div>
-            ) : null}
-          </div>
+          {isGnosis ? (
+            <div
+              className={clsx(
+                'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
+                'flex items-center justify-center gap-[8px] cursor-pointer',
+                'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold',
+                'hover:bg-rb-brand-light-2'
+              )}
+              onClick={() => {
+                history.replace(
+                  history.location.pathname + '?action=gnosis-queue'
+                );
+              }}
+            >
+              <RcIconQueueCC />
+              Queue
+            </div>
+          ) : pendingTxCount ? (
+            <div
+              className={clsx(
+                'min-w-[100px] py-[14px] px-[10px] rounded-[14px',
+                'flex items-center justify-center gap-[8px] cursor-pointer',
+                'text-[14px] leading-[17px] font-semibold text-r-orange-default'
+              )}
+              onClick={() => {
+                history.replace(
+                  history.location.pathname + '?action=activities'
+                );
+              }}
+            >
+              <RcIconSpinCC className="w-[16px] h-[16px] animate-spin" />
+              <div>{pendingTxCount} Pending</div>
+            </div>
+          ) : null}
         </div>
       </div>
     </>

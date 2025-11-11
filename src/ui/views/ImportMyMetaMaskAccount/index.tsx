@@ -10,8 +10,12 @@ import IconTinRightArrow from 'ui/assets/address/tiny-arrow-right.svg';
 
 import './style.less';
 import clsx from 'clsx';
+import { UI_TYPE } from '@/constant/ui';
+import qs from 'qs';
 
-export const ImportMyMetaMaskAccount = () => {
+export const ImportMyMetaMaskAccount: React.FC<{
+  isInModal?: boolean;
+}> = ({ isInModal }) => {
   const history = useHistory();
   const { t } = useTranslation();
 
@@ -39,11 +43,21 @@ export const ImportMyMetaMaskAccount = () => {
   ];
 
   return (
-    <div className="add-metamask">
+    <div
+      className={clsx(
+        'add-metamask',
+        isInModal ? 'min-h-0 h-[600px] overflow-auto' : ''
+      )}
+    >
       <BlueHeader className="mx-[-20px]">
         {t('page.newAddress.importMyMetamaskAccount')}
       </BlueHeader>
-      <div className="rabby-container text-r-neutral-title-1">
+      <div
+        className={clsx(
+          'rabby-container text-r-neutral-title-1',
+          isInModal ? 'w-full' : ''
+        )}
+      >
         <div
           style={{
             background:
@@ -145,7 +159,16 @@ export const ImportMyMetaMaskAccount = () => {
                 'rounded-[6px] bg-r-neutral-card-2'
               )}
               onClick={() => {
-                history.push('/import/key');
+                if (UI_TYPE.isDesktop) {
+                  history.push(
+                    `${history.location.pathname}?${qs.stringify({
+                      action: 'add-address',
+                      import: 'key',
+                    })}`
+                  );
+                } else {
+                  history.push('/import/key');
+                }
               }}
             >
               <RcIconPrivatekey />

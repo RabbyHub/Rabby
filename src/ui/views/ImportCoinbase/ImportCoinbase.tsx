@@ -10,10 +10,15 @@ import { EVENTS, WALLET_BRAND_CONTENT } from 'consts';
 import './style.less';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { SESSION_STATUS_MAP } from '@rabby-wallet/eth-coinbase-keyring/dist/type';
+import clsx from 'clsx';
+import { UI_TYPE } from '@/constant/ui';
+import qs from 'qs';
 
 const COINBASE = WALLET_BRAND_CONTENT.Coinbase;
 
-export const ImportCoinbase = () => {
+export const ImportCoinbase: React.FC<{ isInModal?: boolean }> = ({
+  isInModal,
+}) => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
@@ -28,15 +33,31 @@ export const ImportCoinbase = () => {
 
   const [run, loading] = useWalletRequest(wallet.importCoinbase, {
     onSuccess(accounts) {
-      history.replace({
-        pathname: '/popup/import/success',
-        state: {
-          accounts,
-          editing: true,
-          title: t('page.newAddress.walletConnect.connectedSuccessfully'),
-          importedAccount: true,
-        },
-      });
+      if (UI_TYPE.isDesktop) {
+        history.replace({
+          pathname: history.location.pathname,
+          search: `?${qs.stringify({
+            action: 'add-address',
+            import: 'success',
+          })}`,
+          state: {
+            accounts,
+            editing: true,
+            title: t('page.newAddress.walletConnect.connectedSuccessfully'),
+            importedAccount: true,
+          },
+        });
+      } else {
+        history.replace({
+          pathname: '/popup/import/success',
+          state: {
+            accounts,
+            editing: true,
+            title: t('page.newAddress.walletConnect.connectedSuccessfully'),
+            importedAccount: true,
+          },
+        });
+      }
     },
     onError(err) {
       if (!err?.message.includes('duplicate')) {
@@ -119,7 +140,12 @@ export const ImportCoinbase = () => {
   }, []);
 
   return (
-    <div className="import-coinbase pb-0">
+    <div
+      className={clsx(
+        'import-coinbase pb-0',
+        isInModal ? 'min-h-0 h-[600px] overflow-auto' : ''
+      )}
+    >
       <div className="create-new-header create-password-header h-[180px] py-[20px] dark:bg-r-blue-disable">
         <img
           src={IconBack}

@@ -22,10 +22,15 @@ import { getOriginFromUrl, safeJSONParse } from '@/utils';
 import { ConnectedSite } from '@/background/service/permission';
 import { findChainByEnum } from '@/utils/chain';
 import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
+import { UI_TYPE } from '@/constant/ui';
+import { action } from 'webextension-polyfill';
+import qs from 'qs';
 
 const WalletConnectName = WALLET_BRAND_CONTENT['WALLETCONNECT']?.name;
 
-const WalletConnectTemplate = () => {
+const WalletConnectTemplate: React.FC<{ isInModal?: boolean }> = ({
+  isInModal,
+}) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation<{ brand: any }>();
@@ -54,17 +59,35 @@ const WalletConnectTemplate = () => {
 
   const [run, loading] = useWalletRequest(wallet.importWalletConnect, {
     onSuccess(accounts) {
-      history.replace({
-        pathname: '/popup/import/success',
-        state: {
-          accounts,
-          brand: brand.brand,
-          image: brand.image,
-          editing: true,
-          title: t('page.newAddress.walletConnect.connectedSuccessfully'),
-          importedAccount: true,
-        },
-      });
+      if (UI_TYPE.isDesktop) {
+        history.replace({
+          pathname: history.location.pathname,
+          search: `?${qs.stringify({
+            action: 'add-address',
+            import: 'success',
+          })}`,
+          state: {
+            accounts,
+            brand: brand.brand,
+            image: brand.image,
+            editing: true,
+            title: t('page.newAddress.walletConnect.connectedSuccessfully'),
+            importedAccount: true,
+          },
+        });
+      } else {
+        history.replace({
+          pathname: '/popup/import/success',
+          state: {
+            accounts,
+            brand: brand.brand,
+            image: brand.image,
+            editing: true,
+            title: t('page.newAddress.walletConnect.connectedSuccessfully'),
+            importedAccount: true,
+          },
+        });
+      }
     },
     onError(err) {
       if (err.message?.includes?.('DuplicateAccountError')) {
@@ -207,7 +230,12 @@ const WalletConnectTemplate = () => {
   const hasWallet = useBrandNameHasWallet(brandName);
 
   return (
-    <div className="wallet-connect pb-0">
+    <div
+      className={clsx(
+        'wallet-connect pb-0',
+        isInModal ? 'min-h-0 h-[600px] overflow-auto' : ''
+      )}
+    >
       {contextHolder}
       <div className="create-new-header create-password-header h-[180px] py-[20px] dark:bg-r-blue-disable">
         <img
