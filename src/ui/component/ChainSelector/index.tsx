@@ -1,4 +1,6 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { CHAINS_ENUM } from 'consts';
 import { useHover, useWallet } from 'ui/utils';
 import { ReactComponent as ArrowDownSVG } from '@/ui/assets/dashboard/arrow-down.svg';
@@ -55,14 +57,14 @@ const ChainSelector = ({
     setShowSelectorModal(false);
   };
 
-  const getCustomRPC = async () => {
+  const getCustomRPC = useCallback(async () => {
     const rpc = await wallet.getCustomRpcByChain(value);
     setCustomRPC(rpc?.enable ? rpc.url : '');
-  };
+  }, [value, wallet]);
 
   useEffect(() => {
     getCustomRPC();
-  }, [value]);
+  }, [getCustomRPC]);
 
   return (
     <>

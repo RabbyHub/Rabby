@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Input,
@@ -46,6 +48,7 @@ import NetSwitchTabs, {
 import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useHistory } from 'react-router-dom';
 import { ExchangeLogos } from './CexLogos';
+import { ChainMatrixLine } from './ChainMatrixLine';
 
 const isTab = getUiType().isTab;
 
@@ -54,7 +57,7 @@ export const isSwapTokenType = (s: string) =>
 
 export interface SearchCallbackCtx {
   chainServerId: Chain['serverId'] | null;
-  chainItem: Chain | null | undefined;
+  // chainItem: Chain | null | undefined;
 }
 export interface TokenSelectorProps {
   visible: boolean;
@@ -68,6 +71,7 @@ export interface TokenSelectorProps {
     }
   );
   onRemoveChainFilter?(ctx: SearchCallbackCtx);
+  onStartSelectChain?: () => void;
   type?: 'default' | 'swapFrom' | 'swapTo' | 'bridgeFrom' | 'bridgeTo' | 'send';
   placeholder?: string;
   chainId?: string;
@@ -99,6 +103,7 @@ const TokenSelector = ({
   onCancel,
   onSearch,
   onRemoveChainFilter,
+  onStartSelectChain,
   isLoading = false,
   type = 'default',
   placeholder,
@@ -120,29 +125,29 @@ const TokenSelector = ({
     currentAccount: s.account.currentAccount,
   }));
 
-  const { chainItem, chainSearchCtx, isTestnet } = useMemo(() => {
+  const { chainItem, isTestnet } = useMemo(() => {
     const chain = !chainServerId
       ? null
       : findChain({ serverId: chainServerId });
     return {
       chainItem: chain,
       isTestnet: !!chain?.isTestnet,
-      chainSearchCtx: {
-        chainServerId: type === 'send' ? '' : chainServerId || '',
-        chainItem: chain,
-      },
     };
-  }, [chainServerId, visible]);
+  }, [chainServerId]);
 
   const [tokenDetailOpen, setTokenDetailOpen] = useState(false);
   const [tokenDetail, setTokenDetail] = useState<TokenItemWithEntity>();
 
   useDebounce(
     () => {
-      onSearch({ ...chainSearchCtx, keyword: query });
+      onSearch({
+        chainServerId: /* type === 'send' ? '' :  */ chainServerId || '',
+        // chainItem: chainItem,
+        keyword: query,
+      });
     },
     150,
-    [chainSearchCtx, query]
+    [chainItem, query]
   );
 
   const handleQueryChange = (value: string) => {
@@ -268,6 +273,10 @@ const TokenSelector = ({
     return !['swapTo', 'bridgeFrom', 'bridgeTo', 'send'].includes(type);
   }, [type]);
 
+  const showChainMatrixs = useMemo(() => {
+    return ['send'].includes(type);
+  }, [type]);
+
   const swapAndBridgeNoDataTip = useMemo(() => {
     if (isSwapOrBridge) {
       return (
@@ -284,7 +293,7 @@ const TokenSelector = ({
       );
     }
     return null;
-  }, [isSwapOrBridge]);
+  }, [isSwapOrBridge, t]);
 
   const NoDataUI = useMemo(
     () =>
@@ -333,7 +342,6 @@ const TokenSelector = ({
         </div>
       ),
     [
-      isEmpty,
       isLoading,
       isSwapType,
       t,
@@ -342,6 +350,7 @@ const TokenSelector = ({
       swapAndBridgeNoDataTip,
       type,
       isSwapOrBridge,
+      query,
     ]
   );
 
@@ -353,7 +362,7 @@ const TokenSelector = ({
         keyword: query,
       });
     }
-  }, [type, query, isSwapType, displayList, query, chainServerId]);
+  }, [type, query, isSwapType, displayList, chainServerId]);
 
   const CommonHeader = React.useMemo(() => {
     if (type === 'bridgeTo') {
@@ -375,7 +384,7 @@ const TokenSelector = ({
       );
     }
     return null;
-  }, [isSwapOrBridge, type, t]);
+  }, [type, t]);
 
   const isSwapTo = type === 'swapTo';
   const isBridgeTo = type === 'bridgeTo';
@@ -391,7 +400,7 @@ const TokenSelector = ({
     return isDisabled
       ? t('component.TokenSelector.chainNotSupport')
       : undefined;
-  }, [tokenDetail, supportChains]);
+  }, [tokenDetail, supportChains, isBridgeTo, isSwapTo, t]);
 
   const commonItemRender = React.useCallback(
     (
@@ -535,10 +544,10 @@ const TokenSelector = ({
                 onClick={() => {
                   onRemoveChainFilter?.({
                     chainServerId: chainServerId || '',
-                    chainItem,
+                    // chainItem,
                   });
                   onSearch({
-                    chainItem: null,
+                    // chainItem: null,
                     chainServerId: '',
                     keyword: query,
                   });
@@ -550,6 +559,21 @@ const TokenSelector = ({
                 />
               </div>
             </div>
+          </div>
+        )}
+        {showChainMatrixs && (
+          <div className="filters-wrapper">
+            <ChainMatrixLine
+              selectedChain={chainItem}
+              onStartSelectChain={onStartSelectChain}
+              onChange={(chainItem) => {
+                onSearch({
+                  // chainItem,
+                  chainServerId: chainItem.serverId,
+                  keyword: '',
+                });
+              }}
+            />
           </div>
         )}
 
@@ -703,7 +727,7 @@ function CommonTokenItem(props: {
       e.preventDefault();
       openTokenDetail();
     },
-    [token, openTokenDetail]
+    [openTokenDetail]
   );
 
   const disabled = useMemo(() => {
@@ -731,7 +755,7 @@ function CommonTokenItem(props: {
 
   const tips = useMemo(() => {
     return disabled ? t('component.TokenSelector.chainNotSupport') : undefined;
-  }, [value, token, supportChains]);
+  }, [disabled, t]);
 
   const showExchangeLogos = useMemo(() => {
     return isBridgeTo && !!token.cex_ids?.length;
@@ -742,7 +766,8 @@ function CommonTokenItem(props: {
       return;
     }
     onConfirm(value || token);
-  }, [disabled, value || token]);
+  }, [disabled, value, token, onConfirm]);
+
   if (type === 'swapTo') {
     return (
       <Tooltip

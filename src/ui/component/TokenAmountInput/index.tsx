@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useRabbySelector } from '@/ui/store';
 import { useTokens } from '@/ui/utils/portfolio/token';
@@ -7,6 +9,7 @@ import { TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
 import uniqBy from 'lodash/uniqBy';
 import React, {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -37,7 +40,7 @@ interface TokenAmountInputProps {
   initLoading?: boolean;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
-  chainId?: string;
+  onStartSelectChain?: () => void;
   amountFocus?: boolean;
   excludeTokens?: TokenItem['id'][];
   className?: string;
@@ -85,7 +88,8 @@ const TokenAmountInput = ({
   value,
   onChange,
   onTokenChange,
-  chainId,
+  onStartSelectChain,
+  // chainId,
   amountFocus,
   excludeTokens = [],
   className,
@@ -107,8 +111,12 @@ const TokenAmountInput = ({
   );
   const wallet = useWallet();
   const [keyword, setKeyword] = useState('');
-  const [chainServerId, setChainServerId] = useState(chainId);
+  const [chainServerId, setChainServerId] = useState(token?.chain);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setChainServerId(token?.chain || '');
+  }, [token?.chain]);
 
   const chainItem = useMemo(
     () =>
@@ -126,58 +134,57 @@ const TokenAmountInput = ({
     }
   }, [amountFocus, tokenSelectorVisible]);
 
-  const checkBeforeConfirm = (token: TokenItem) => {
-    const { disable, reason, cexId } = disableItemCheck?.(token) || {};
-    if (disable) {
-      Modal.confirm({
-        width: 340,
-        closable: true,
-        closeIcon: <></>,
-        centered: true,
-        className: 'token-selector-disable-item-tips',
-        title: <RiskWarningTitle />,
-        content: reason,
-        okText: t('global.proceedButton'),
-        cancelText: t('global.cancelButton'),
-        cancelButtonProps: {
-          type: 'ghost',
-          className: 'text-r-blue-default border-r-blue-default',
-        },
-        onOk() {
-          if (cexId) {
-            wallet.openapi.checkCex({
-              chain_id: token.chain,
-              id: token.id,
-              cex_id: cexId,
-            });
-          }
-          handleCurrentTokenChange(token);
-        },
-      });
-      return;
-    }
-    handleCurrentTokenChange(token);
-  };
+  const handleCurrentTokenChange = useCallback(
+    (token: TokenItem) => {
+      onChange && onChange('');
+      onTokenChange(token);
+      setTokenSelectorVisible(false);
+      tokenInputRef.current?.focus();
+      setChainServerId(token.chain);
+    },
+    [onChange, onTokenChange]
+  );
 
-  const handleCurrentTokenChange = (token: TokenItem) => {
-    onChange && onChange('');
-    onTokenChange(token);
+  const handleTokenSelectorClose = useCallback(() => {
+    setChainServerId(token?.chain || '');
     setTokenSelectorVisible(false);
-    tokenInputRef.current?.focus();
-    setChainServerId(token.chain);
-  };
+  }, [token?.chain]);
 
-  const handleTokenSelectorClose = () => {
-    setChainServerId(chainId);
-    setTokenSelectorVisible(false);
-  };
-
-  const handleSelectToken = () => {
-    if (allTokens.length > 0) {
-      setUpdateNonce(updateNonce + 1);
-    }
-    setTokenSelectorVisible(true);
-  };
+  const checkBeforeConfirm = useCallback(
+    (token: TokenItem) => {
+      const { disable, reason, cexId } = disableItemCheck?.(token) || {};
+      if (disable) {
+        Modal.confirm({
+          width: 340,
+          closable: true,
+          closeIcon: <></>,
+          centered: true,
+          className: 'token-selector-disable-item-tips',
+          title: <RiskWarningTitle />,
+          content: reason,
+          okText: t('global.proceedButton'),
+          cancelText: t('global.cancelButton'),
+          cancelButtonProps: {
+            type: 'ghost',
+            className: 'text-r-blue-default border-r-blue-default',
+          },
+          onOk() {
+            if (cexId) {
+              wallet.openapi.checkCex({
+                chain_id: token.chain,
+                id: token.id,
+                cex_id: cexId,
+              });
+            }
+            handleCurrentTokenChange(token);
+          },
+        });
+        return;
+      }
+      handleCurrentTokenChange(token);
+    },
+    [disableItemCheck, t, wallet, handleCurrentTokenChange]
+  );
 
   // when no any queryConds
   const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
@@ -187,6 +194,13 @@ const TokenAmountInput = ({
     updateNonce,
     chainServerId
   );
+
+  const handleSelectToken = useCallback(() => {
+    if (allTokens.length > 0) {
+      setUpdateNonce(updateNonce + 1);
+    }
+    setTokenSelectorVisible(true);
+  }, [allTokens, updateNonce]);
 
   const allDisplayTokens = useMemo(() => {
     return allTokens.map(abstractTokenToTokenItem);
@@ -240,14 +254,16 @@ const TokenAmountInput = ({
     isTestnet,
   ]);
 
-  const handleSearchTokens = React.useCallback(async (ctx) => {
+  const handleSearchTokens = React.useCallback<
+    React.ComponentProps<typeof TokenSelector>['onSearch'] & object
+  >(async (ctx) => {
     setKeyword(ctx.keyword);
-    setChainServerId(ctx.chainServerId);
+    setChainServerId(ctx.chainServerId || '');
   }, []);
 
-  useEffect(() => {
-    setChainServerId(chainId);
-  }, [chainId]);
+  // useEffect(() => {
+  //   setChainServerId(token?.chain || '');
+  // }, [token?.chain]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (INPUT_NUMBER_RE.test(e.target.value)) {
@@ -262,7 +278,7 @@ const TokenAmountInput = ({
       );
     }
     return '$0.00';
-  }, [token?.price, value]);
+  }, [token, value]);
 
   return (
     <div className={clsx('token-amount-input', className)}>
@@ -354,11 +370,11 @@ const TokenAmountInput = ({
               </span>
             </div>
           )}
-          {/* {token && token.amount > 0 && !isLoading && (
+          {token && token.amount > 0 && !isLoading && (
             <MaxButton onClick={handleClickMaxButton}>
               {t('page.sendToken.max')}
             </MaxButton>
-          )} */}
+          )}
         </div>
       </div>
       <TokenSelector
@@ -374,6 +390,7 @@ const TokenAmountInput = ({
         placeholder={placeholder}
         chainId={chainServerId}
         getContainer={getContainer}
+        onStartSelectChain={onStartSelectChain}
       />
     </div>
   );
