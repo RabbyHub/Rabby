@@ -45,6 +45,7 @@ import { CurvePoint, CurveThumbnail } from './CurveThumbnail';
 import { CurveModal } from './CurveModal';
 import { useDebounce } from 'react-use';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { RcIconRefreshCC } from '@/ui/assets/desktop/profile';
 
 const Container = styled.div`
   margin-bottom: 24px;
@@ -61,6 +62,7 @@ export const BalanceView: React.FC<{
   balanceLoading?: boolean;
   curveLoading?: boolean;
   balanceFromCache?: boolean;
+  onRefresh?(): void;
 }> = ({
   balance,
   evmBalance,
@@ -70,6 +72,7 @@ export const BalanceView: React.FC<{
   balanceLoading,
   curveLoading,
   balanceFromCache,
+  onRefresh,
 }) => {
   const { t } = useTranslation();
   const [isHover, setHover] = useState(false);
@@ -207,6 +210,17 @@ export const BalanceView: React.FC<{
                     <span>({currentChangeValue})</span>
                   ) : null}
                 </div>
+                <div>
+                  <RcIconRefreshCC
+                    viewBox="0 0 16 16"
+                    className={clsx(
+                      'w-[24px] h-[24px] text-rb-neutral-foot cursor-pointer',
+                      'hover:text-r-blue-default',
+                      isLoading ? 'animate-spin' : ''
+                    )}
+                    onClick={onRefresh}
+                  />
+                </div>
                 {/* {missingList?.length ? (
                   <Tooltip
                     overlayClassName="rectangle font-normal whitespace-pre-wrap"
@@ -236,7 +250,7 @@ export const BalanceView: React.FC<{
                 showAppChainTips={showAppChainTips}
                 onHover={handleHoverCurve}
                 width={400}
-                height={100}
+                height={140}
               />
             )}
             {!!isLoading && (

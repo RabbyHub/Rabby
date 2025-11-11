@@ -34,6 +34,8 @@ import { ApprovalsTabPane } from './components/ApprovalsTabPane';
 import { createPortal } from 'react-dom';
 import { AddCustomNetworkModal } from './components/AddCustomNetworkModal';
 import { AddCustomTokenModal } from './components/AddCustomTokenModal';
+import { AddressDetailModal } from './components/AddressDetailModal';
+import { AddressBackupModal } from './components/AddressBackupModal';
 
 const Wrap = styled.div`
   height: 100%;
@@ -182,6 +184,7 @@ export const DesktopProfile = () => {
                 evmBalance={evmBalance}
                 curveChartData={curveChartData}
                 isLoading={isBalanceLoading || isCurveLoading}
+                onRefresh={handleUpdate}
               />
               <div key={refreshKey}>
                 <Tabs
@@ -292,6 +295,20 @@ export const DesktopProfile = () => {
       />
       <AddCustomTokenModal
         visible={action === 'custom-token'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <AddressDetailModal
+        visible={action === 'address-detail'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <AddressBackupModal
+        visible={action === 'address-backup'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}
