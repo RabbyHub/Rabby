@@ -159,7 +159,7 @@ const ProtocolItem = ({
   ]);
 
   return (
-    <ProtocolItemWrapper id={protocol.id}>
+    <ProtocolItemWrapper className="protocol-item-wrapper" id={protocol.id}>
       <div>
         <div
           className={clsx(
