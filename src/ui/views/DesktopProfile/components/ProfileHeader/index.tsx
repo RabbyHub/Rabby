@@ -81,7 +81,7 @@ export const ProfileHeader: React.FC<{
   return (
     <>
       <GlobalStyle />
-      <div className="px-[20px] py-[24px]">
+      <div className="px-[20px] py-[24px] relative">
         <div className="mb-[16px] flex items-center gap-[12px]">
           <div className="text-r-neutral-title1 text-[16px] leading-[19px] font-semibold">
             {alias}

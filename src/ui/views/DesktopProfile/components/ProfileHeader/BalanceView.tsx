@@ -162,7 +162,7 @@ export const BalanceView: React.FC<{
   return (
     <>
       <Container onMouseLeave={onMouseLeave}>
-        <div className="balance-view-content relative">
+        <div className="balance-view-content">
           <div>
             <div className={clsx('group w-[100%] flex gap-[8px] items-end')}>
               <div
@@ -239,7 +239,9 @@ export const BalanceView: React.FC<{
             </div>
           </div>
           <div
-            className={clsx('w-[400px] h-[100px] absolute top-[-30px] right-0')}
+            className={clsx(
+              'w-[400px] h-[180px] absolute top-[12px] right-[20px]'
+            )}
             onMouseMove={onMouseMove}
             onMouseLeave={onMouseLeave}
           >
@@ -250,14 +252,14 @@ export const BalanceView: React.FC<{
                 showAppChainTips={showAppChainTips}
                 onHover={handleHoverCurve}
                 width={400}
-                height={140}
+                height={180}
               />
             )}
             {!!isLoading && (
               <div className="flex mt-[14px]">
                 <Skeleton.Input
                   active
-                  className="m-auto w-[400px] h-[80px] rounded block"
+                  className="m-auto w-[400px] h-[180px] rounded block"
                 />
               </div>
             )}
