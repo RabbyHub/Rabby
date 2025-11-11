@@ -13,6 +13,8 @@ import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { useRepeatImportConfirm } from '../utils/useRepeatImportConfirm';
 import { safeJSONParse } from '@/utils';
+import { UI_TYPE } from '@/constant/ui';
+import qs from 'qs';
 
 const TipTextList = styled.div`
   margin-top: 32px;
@@ -36,7 +38,7 @@ const TipTextList = styled.div`
   }
 `;
 
-const ImportPrivateKey = () => {
+const ImportPrivateKey: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm();
@@ -53,16 +55,33 @@ const ImportPrivateKey = () => {
         return { ...item, index: index + 1 };
       });
       clearClipboard();
-      history.replace({
-        pathname: '/popup/import/success',
-        state: {
-          accounts: successShowAccounts,
-          title: t('page.newAddress.importedSuccessfully'),
-          editing: true,
-          importedAccount: true,
-          importedLength: importedAccountsLength,
-        },
-      });
+      if (UI_TYPE.isDesktop) {
+        history.replace({
+          pathname: history.location.pathname,
+          search: `?${qs.stringify({
+            action: 'add-address',
+            import: 'success',
+          })}`,
+          state: {
+            accounts: successShowAccounts,
+            title: t('page.newAddress.importedSuccessfully'),
+            editing: true,
+            importedAccount: true,
+            importedLength: importedAccountsLength,
+          },
+        });
+      } else {
+        history.replace({
+          pathname: '/popup/import/success',
+          state: {
+            accounts: successShowAccounts,
+            title: t('page.newAddress.importedSuccessfully'),
+            editing: true,
+            importedAccount: true,
+            importedLength: importedAccountsLength,
+          },
+        });
+      }
     },
     onError(err) {
       if (err.message?.includes?.('DuplicateAccountError')) {
@@ -118,6 +137,7 @@ const ImportPrivateKey = () => {
         className={clsx(isWide && 'rabby-stray-page')}
         NextButtonContent={t('global.confirm')}
         formProps={{
+          className: 'h-[600px]',
           onValuesChange: (states) => {
             wallet.setPageStateCache({
               path: '/import/key',
@@ -210,7 +230,18 @@ const ImportPrivateKey = () => {
                     Yes, you can
                     <a
                       className="underline text-r-blue-default cursor-pointer"
-                      onClick={() => history.push('/import/json')}
+                      onClick={() => {
+                        if (UI_TYPE.isDesktop) {
+                          history.push(
+                            `${history.location.pathname}?${qs.stringify({
+                              action: 'add-address',
+                              import: 'json',
+                            })}`
+                          );
+                        } else {
+                          history.push('/import/json');
+                        }
+                      }}
                     >
                       import KeyStore
                     </a>

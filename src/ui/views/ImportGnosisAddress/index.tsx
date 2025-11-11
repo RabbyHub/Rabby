@@ -13,8 +13,13 @@ import { useWallet } from 'ui/utils';
 import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
 import './style.less';
 import { safeJSONParse } from '@/utils';
+import clsx from 'clsx';
+import { UI_TYPE } from '@/constant/ui';
+import qs from 'qs';
 
-const ImportGnosisAddress = () => {
+const ImportGnosisAddress: React.FC<{ isInModal?: boolean }> = ({
+  isInModal,
+}) => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
@@ -54,19 +59,39 @@ const ImportGnosisAddress = () => {
   const { runAsync: handleNext } = useRequest(wallet.importGnosisAddress, {
     manual: true,
     async onSuccess(accounts) {
-      history.replace({
-        pathname: '/popup/import/success',
-        state: {
-          accounts,
-          title: t('Added successfully'),
-          editing: true,
-          importedAccount: true,
-          importedLength: (
-            await wallet.getTypedAccounts(KEYRING_TYPE.GnosisKeyring)
-          )?.[0]?.accounts?.length,
-          supportChainList: chainList,
-        },
-      });
+      if (UI_TYPE.isDesktop) {
+        history.replace({
+          pathname: history.location.pathname,
+          search: `?${qs.stringify({
+            action: 'add-address',
+            import: 'success',
+          })}`,
+          state: {
+            accounts,
+            title: t('Added successfully'),
+            editing: true,
+            importedAccount: true,
+            importedLength: (
+              await wallet.getTypedAccounts(KEYRING_TYPE.GnosisKeyring)
+            )?.[0]?.accounts?.length,
+            supportChainList: chainList,
+          },
+        });
+      } else {
+        history.replace({
+          pathname: '/popup/import/success',
+          state: {
+            accounts,
+            title: t('Added successfully'),
+            editing: true,
+            importedAccount: true,
+            importedLength: (
+              await wallet.getTypedAccounts(KEYRING_TYPE.GnosisKeyring)
+            )?.[0]?.accounts?.length,
+            supportChainList: chainList,
+          },
+        });
+      }
     },
     onError(err) {
       if (err.message?.includes?.('DuplicateAccountError')) {
@@ -82,7 +107,12 @@ const ImportGnosisAddress = () => {
   });
 
   return (
-    <div className="import-gnosis h-full relative">
+    <div
+      className={clsx(
+        'import-gnosis h-full relative',
+        isInModal ? 'h-[600px] overflow-auto' : ''
+      )}
+    >
       {contextHolder}
       <header className="header h-[180px] relative dark:bg-r-blue-disable">
         <div className="rabby-container pt-[40px]">

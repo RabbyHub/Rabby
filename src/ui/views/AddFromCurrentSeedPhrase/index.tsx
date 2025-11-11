@@ -13,13 +13,20 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import clsx from 'clsx';
 
-export const AddFromCurrentSeedPhrase = () => {
+export const AddFromCurrentSeedPhrase: React.FC<{
+  isInModal?: boolean;
+}> = ({ isInModal }) => {
   const { t } = useTranslation();
   const { handleAddSeedPhraseAddress, seedPhraseList } = UseSeedPhrase();
 
   return (
-    <div className="flex flex-col min-h-full bg-r-neutral-bg-2 px-20 ">
-      <PageHeader className="pt-[20px]" fixed>
+    <div
+      className={clsx(
+        'flex flex-col bg-r-neutral-bg-2 px-20',
+        isInModal ? 'h-[600px] overflow-auto' : 'min-h-full'
+      )}
+    >
+      <PageHeader className="pt-[20px]" fixed canBack={!isInModal}>
         {t('page.newAddress.addFromCurrentSeedPhrase')}
       </PageHeader>
       <div className="flex-1 flex flex-col space-y-[20px] pb-[20px]">

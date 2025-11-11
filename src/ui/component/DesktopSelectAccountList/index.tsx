@@ -182,6 +182,9 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
         components={{
           Footer: () => (
             <div
+              onClick={() => {
+                history.replace(`${location.pathname}?action=add-address`);
+              }}
               className="w-[260px] cursor-pointer rounded-[20px] h-[72px] p-[16px] flex items-center gap-[8px] text-r-blue-default"
               style={{
                 background: 'rgba(76, 101, 255, 0.08)',
@@ -278,7 +281,7 @@ const AccountItem: React.FC<{
                 e.preventDefault();
                 e.stopPropagation();
 
-                history.push(
+                history.replace(
                   `${history.location.pathname}?${obj2query({
                     action: 'address-detail',
                     address: item.address,

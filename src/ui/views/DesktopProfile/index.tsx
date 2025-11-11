@@ -36,6 +36,7 @@ import { AddCustomNetworkModal } from './components/AddCustomNetworkModal';
 import { AddCustomTokenModal } from './components/AddCustomTokenModal';
 import { AddressDetailModal } from './components/AddressDetailModal';
 import { AddressBackupModal } from './components/AddressBackupModal';
+import { AddAddressModal } from './components/AddAddressModal';
 
 const Wrap = styled.div`
   height: 100%;
@@ -309,6 +310,13 @@ export const DesktopProfile = () => {
       />
       <AddressBackupModal
         visible={action === 'address-backup'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <AddAddressModal
+        visible={action === 'add-address'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}
