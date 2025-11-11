@@ -45,7 +45,7 @@ const PoolListContainer = styled.div`
 `;
 
 const ProtocolItemWrapper = styled.div`
-  margin-bottom: 8px;
+  margin-bottom: 28px;
   border-radius: 8px;
 
   .title {
