@@ -58,49 +58,119 @@ export const usePerpsPosition = ({
           builder: PERPS_BUILDER_INFO,
         });
 
-        setCurrentTpOrSl({
-          tpPrice: formattedTpTriggerPx,
-          slPrice: formattedSlTriggerPx,
-        });
+        const nextCurrentTpOrSl = {} as { tpPrice?: string; slPrice?: string };
+        formattedTpTriggerPx &&
+          (nextCurrentTpOrSl.tpPrice = formattedTpTriggerPx);
+        formattedSlTriggerPx &&
+          (nextCurrentTpOrSl.slPrice = formattedSlTriggerPx);
+        setCurrentTpOrSl(nextCurrentTpOrSl);
         setTimeout(() => {
           dispatch.perps.fetchPositionOpenOrders();
         }, 1000);
-        message.success(t('page.perps.toast.setAutoCloseSuccess'));
-
-        // if (
-        //   res?.response.data.statuses.every(
-        //     (item) => ((item as unknown) as string) === 'waitingForTrigger'
-        //   )
-        // ) {
-        //   refreshData();
-        //   message.success('Auto close position set successfully');
-        // } else {
-        //   message.error('Set auto close error');
-        //   Sentry.captureException(
-        //     new Error(
-        //       'Set auto close error' +
-        //         'params: ' +
-        //         JSON.stringify(params) +
-        //         'res: ' +
-        //         JSON.stringify(res)
-        //     )
-        //   );
-        // }
+        message.success(
+          tpTriggerPx
+            ? t('page.perps.toast.takeProfitSuccess')
+            : t('page.perps.toast.stopLossSuccess')
+        );
       } catch (error) {
         const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
         if (isExpired) {
           return;
         }
-        message.error(error?.message || 'Set auto close error');
+        const errorText = params.tpTriggerPx
+          ? 'Take profit set error'
+          : 'Stop loss set error';
+        message.error(error?.message || errorText);
         Sentry.captureException(
           new Error(
-            'Set auto close error' +
+            errorText +
               'params: ' +
               JSON.stringify(params) +
               'error: ' +
               JSON.stringify(error)
           )
         );
+      }
+    }
+  );
+
+  const handleCancelOrder = useMemoizedFn(
+    async (oid: number, coin: string, actionType: 'tp' | 'sl') => {
+      const actionText = actionType === 'tp' ? 'Take profit' : 'Stop loss';
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.exchange?.cancelOrder([
+          {
+            oid,
+            coin,
+          },
+        ]);
+        if (
+          res?.response.data.statuses.every(
+            (item) => ((item as unknown) as string) === 'success'
+          )
+        ) {
+          message.success(actionText + ' canceled successfully');
+          setTimeout(() => {
+            dispatch.perps.fetchPositionOpenOrders();
+          }, 1000);
+        } else {
+          message.error(actionText + ' cancel error');
+          Sentry.captureException(
+            new Error(
+              actionText + ' cancel error' + 'res: ' + JSON.stringify(res)
+            )
+          );
+        }
+      } catch (error) {
+        message.error(actionText + ' cancel error');
+        Sentry.captureException(
+          new Error(
+            actionText + ' cancel error' + 'error: ' + JSON.stringify(error)
+          )
+        );
+      }
+    }
+  );
+
+  const handleUpdateMargin = useMemoizedFn(
+    async (coin: string, action: 'add' | 'reduce', margin: number) => {
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.exchange?.updateIsolatedMargin({
+          coin,
+          value: action === 'add' ? margin : -margin,
+        });
+
+        if (res?.status === 'ok') {
+          message.success(
+            t(
+              action === 'add'
+                ? 'page.perpsDetail.PerpsEditMarginPopup.addMarginSuccess'
+                : 'page.perpsDetail.PerpsEditMarginPopup.reduceMarginSuccess'
+            )
+          );
+          dispatch.perps.fetchClearinghouseState();
+        } else {
+          const msg = res?.response?.data?.statuses[0];
+          message.error(msg || 'Update margin failed');
+          Sentry.captureException(
+            new Error(
+              'PERPS update margin failed: ' +
+                JSON.stringify({ action, margin, res })
+            )
+          );
+        }
+      } catch (error) {
+        console.error('Update margin error:', error);
+        message.error(error?.message || 'Update margin failed');
+        Sentry.captureException(
+          new Error(
+            'PERPS update margin error: ' +
+              JSON.stringify({ action, margin, error })
+          )
+        );
+        throw error;
       }
     }
   );
@@ -299,6 +369,8 @@ export const usePerpsPosition = ({
     handleOpenPosition,
     handleClosePosition,
     handleSetAutoClose,
+    handleCancelOrder,
+    handleUpdateMargin,
     userFills,
     isLogin,
     currentPerpsAccount,

@@ -1,6 +1,5 @@
 import React from 'react';
-import { Slider } from 'antd';
-import './index.less';
+import { SwapSlider } from '@/ui/views/Swap/Component/Slider';
 
 interface PerpsSliderProps {
   value: number;
@@ -22,19 +21,20 @@ export const PerpsSlider: React.FC<PerpsSliderProps> = ({
   step = 1,
 }) => {
   return (
-    <div className="perps-slider-container">
-      <div className="perps-slider-wrapper">
-        <Slider
-          value={value}
-          onChange={onValueChange}
-          disabled={disabled}
-          min={min}
-          max={max}
-          step={step}
-        />
-      </div>
+    <div className="flex items-center gap-16 relative w-full pl-4">
+      <SwapSlider
+        className="flex-1"
+        value={value}
+        onChange={onValueChange}
+        onAfterChange={onValueChange}
+        min={min}
+        max={max}
+        step={step}
+        tooltipVisible={false}
+        disabled={disabled}
+      />
       {showPercentage && (
-        <span className="perps-slider-percentage">{value.toFixed(0)}%</span>
+        <div className="text-13 text-r-blue-default font-medium">{value}%</div>
       )}
     </div>
   );

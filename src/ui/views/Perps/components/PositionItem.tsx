@@ -99,7 +99,7 @@ export const PositionItem: React.FC<{
       onClick={handleNavigate}
     >
       <div className={clsx('flex items-center justify-between px-16 py-12')}>
-        <div className="flex flex-col gap-4 flex-1">
+        <div className="flex flex-col gap-8 flex-1">
           <div className="flex items-center gap-6">
             <TokenImg
               logoUrl={logoUrl}
@@ -154,7 +154,7 @@ export const PositionItem: React.FC<{
         <div className="flex items-center gap-4 px-12 py-10 border-t-[0.5px] border-rabby-neutral-line">
           {hasTakeProfit && (
             <div className="text-12 text-r-neutral-body">
-              {t('page.perps.PerpsAutoCloseModal.takeProfit')} :{' '}
+              {t('page.perpsDetail.PerpsAutoCloseModal.takeProfit')} :{' '}
               <span className="text-r-neutral-title-1 font-medium">
                 ${splitNumberByStep(tpPrice)}
               </span>
@@ -165,7 +165,7 @@ export const PositionItem: React.FC<{
           )}
           {hasStopLoss && (
             <div className="text-12 text-r-neutral-body">
-              {t('page.perps.PerpsAutoCloseModal.stopLoss')} :{' '}
+              {t('page.perpsDetail.PerpsAutoCloseModal.stopLoss')} :{' '}
               <span className="text-r-neutral-title-1 font-medium">
                 ${splitNumberByStep(slPrice)}
               </span>

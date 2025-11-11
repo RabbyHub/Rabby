@@ -90,7 +90,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
   return (
     <Popup
       placement="bottom"
-      height={472}
+      height={420}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
@@ -101,7 +101,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
       {...rest}
     >
       <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
-        <div className="text-20 font-black text-r-neutral-title-1 text-center pt-16 pb-20 leading-[24px]">
+        <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-16 pb-20 leading-[24px]">
           {t('page.perpsDetail.PerpsClosePositionPopup.title')}
         </div>
 
@@ -109,26 +109,29 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
           {/* Amount Section */}
           <div className="bg-r-neutral-card1 border border-rabby-neutral-line rounded-[20px] py-16 px-20 mb-12">
             <div className="flex justify-between items-center mb-4">
-              <div className="text-20 font-black text-r-blue-default leading-[24px]">
+              <div className="text-20 font-bold text-r-blue-default leading-[24px]">
                 {t('page.perpsDetail.PerpsClosePositionPopup.amount')}
               </div>
             </div>
-            <div className="flex justify-between items-center h-[42px]">
+            <div className="flex justify-between items-center h-[40px]">
               <div className="flex items-center gap-4">
-                <span className="text-20 font-black text-r-neutral-title-1 leading-[24px]">
+                <span className="text-20 font-bold text-r-neutral-back leading-[24px]">
                   ${splitNumberByStep(marginUsed.toFixed(2))}
                 </span>
-                <span className="text-18 font-bold text-r-neutral-info leading-[22px]">
+                <span className="text-15 font-medium text-r-neutral-foot leading-[22px]">
                   {t('page.perpsDetail.PerpsClosePositionPopup.total')}
                 </span>
               </div>
-              <span className="text-36 font-black text-r-blue-default leading-[42px]">
+              <span
+                style={{ fontSize: '36px' }}
+                className="font-bold text-r-blue-default"
+              >
                 {closePercent}%
               </span>
             </div>
-            {!isValidClosePercent && (
-              <div className="mt-4 mb-16 h-[14px]">
-                <span className="text-14 font-medium text-r-red-default leading-[18px]">
+            <div className="mb-8 h-[14px]">
+              {!isValidClosePercent && (
+                <span className="text-14 font-medium text-r-red-default">
                   {t(
                     'page.perpsDetail.PerpsClosePositionPopup.minimumWarning',
                     {
@@ -136,8 +139,8 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                     }
                   )}
                 </span>
-              </div>
-            )}
+              )}
+            </div>
             <div className="mt-16">
               <PerpsSlider
                 value={closePercent}
@@ -148,13 +151,13 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
           </div>
 
           {/* PNL Card */}
-          <div className="bg-r-neutral-card1 rounded-[16px] p-16 mb-20">
+          <div className="bg-r-neutral-card1 rounded-[16px] p-16 mb-12">
             <div className="flex flex-col gap-12">
               <div className="flex justify-between items-center">
-                <span className="text-14 font-medium text-r-neutral-foot leading-[18px]">
-                  {t('page.perpsDetail.PerpsClosePositionPopup.receive')}
+                <span className="text-14 font-medium text-rb-neutral-body leading-[18px]">
+                  {t('page.perpsDetail.PerpsClosePositionPopup.receive')}:
                 </span>
-                <span className="text-17 font-extrabold text-r-neutral-title-1 leading-[22px]">
+                <span className="text-17 font-bold text-r-neutral-title-1 leading-[22px]">
                   +$
                   {splitNumberByStep(
                     ((marginUsed * closePercent) / 100).toFixed(2)
@@ -162,12 +165,12 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-14 font-medium text-r-neutral-foot leading-[18px]">
-                  {t('page.perpsDetail.PerpsClosePositionPopup.closedPnl')}
+                <span className="text-14 font-medium text-rb-neutral-body leading-[18px]">
+                  {t('page.perpsDetail.PerpsClosePositionPopup.closedPnl')}:
                 </span>
                 <span
                   className={clsx(
-                    'text-17 font-extrabold leading-[22px]',
+                    'text-17 font-bold leading-[22px]',
                     closedPnl >= 0
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
@@ -180,35 +183,33 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
             </div>
           </div>
 
-          {/* Action Button */}
-          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 flex flex-col gap-12">
-            {/* Fee Information */}
-            <div className="flex items-center justify-center gap-8 text-13 text-r-neutral-body">
-              <span>
-                {t('page.perpsDetail.PerpsClosePositionPopup.fee')}:{' '}
-                {formatPercent(bothFee, 4)}
-              </span>
-              <Tooltip
-                overlayClassName={clsx('rectangle')}
-                placement="top"
-                title={
-                  <div>
-                    <div className="text-13 text-r-neutral-title-2">
-                      {t('page.perps.rabbyFeeTips')}
-                    </div>
-                    <div className="text-13 text-r-neutral-title-2">
-                      {t('page.perps.providerFeeTips', {
-                        fee: formatPercent(providerFee, 4),
-                      })}
-                    </div>
+          <div className="flex items-center justify-center gap-8 text-13 text-r-neutral-body mb-12">
+            <span>
+              {t('page.perpsDetail.PerpsClosePositionPopup.fee')}:{' '}
+              {formatPercent(bothFee, 4)}
+            </span>
+            <Tooltip
+              overlayClassName={clsx('rectangle')}
+              placement="top"
+              title={
+                <div>
+                  <div className="text-13 text-r-neutral-title-2">
+                    {t('page.perps.rabbyFeeTips')}
                   </div>
-                }
-                align={{ targetOffset: [0, 0] }}
-              >
-                <RcIconInfo className="text-rabby-neutral-foot w-18 h-18" />
-              </Tooltip>
-            </div>
-
+                  <div className="text-13 text-r-neutral-title-2">
+                    {t('page.perps.providerFeeTips', {
+                      fee: formatPercent(providerFee, 4),
+                    })}
+                  </div>
+                </div>
+              }
+              align={{ targetOffset: [0, 0] }}
+            >
+              <RcIconInfo className="text-rabby-neutral-foot w-18 h-18" />
+            </Tooltip>
+          </div>
+          {/* Action Button */}
+          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 flex flex-col">
             <Button
               block
               size="large"

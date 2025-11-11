@@ -770,7 +770,8 @@
         "description": "All your open positions will be closed at market price."
       },
       "toast": {
-        "setAutoCloseSuccess": "Auto close position set successfully",
+        "takeProfitSuccess": "Take profit set successfully",
+        "stopLossSuccess": "Stop loss set successfully",
         "closePositionSuccess": "Closed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
         "openPositionSuccess": "Opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}"
       },
@@ -864,6 +865,7 @@
       "lastUsed": "Last used",
       "selectTokenToDeposit": "Select Token to Deposit",
       "tradePerps": "Trade Perps",
+      "position": "Position",
       "yourPosition": "Your Position",
       "pnl": "PNL",
       "size": "Size",
@@ -954,18 +956,6 @@
         },
         "gotIt": "Got it"
       },
-      "PerpsAutoCloseModal": {
-        "title": "Auto Close Position",
-        "takeProfit": "Take Profit",
-        "stopLoss": "Stop Loss",
-        "noPosition": "Please open a position first",
-        "takeProfitTipsLong": "Take profit price must be higher than current price",
-        "takeProfitTipsShort": "Take profit price must be lower than current price",
-        "stopLossTipsLong": "Stop loss price must be lower than current price",
-        "stopLossTipsShort": "Stop loss price must be higher than current price",
-        "stopLossTipsLongLiquidation": "Price is lower than the liquidation price ({{price}})",
-        "stopLossTipsShortLiquidation": "Price is higher than the liquidation price ({{price}})"
-      },
       "searchPerpsPopup": {
         "openPosition": "Open Position",
         "searchPerps": "Search Perps",
@@ -978,7 +968,10 @@
     },
     "perpsDetail": {
       "PerpsOpenPositionPopup": {
+        "newPosition": "Open Position",
         "margin": "Margin",
+        "long": "Long",
+        "short": "Short",
         "available": "Available",
         "leverage": "Leverage",
         "size": "Size",
@@ -989,11 +982,15 @@
         "stopLossWhenPriceBelow": "Stop Loss When Price Below",
         "invalidNumber": "Invalid number",
         "insufficientBalance": "Insufficient balance",
+        "free": "Free",
+        "rabbyFee": "Rabby Fee",
+        "providerFee": "Hyperliquid Fee",
         "minimumOrderSize": "The minimum order size is $10",
         "maximumOrderSize": "The maximum order size is {{amount}}"
       },
       "PerpsEditMarginPopup": {
-        "title": "Edit Margin",
+        "margin": "Margin",
+        "title": "Adjust Margin",
         "addMargin": "Add Margin",
         "reduceMargin": "Reduce Margin",
         "currentPrice": "Current Price",
@@ -1001,7 +998,8 @@
         "amountToReduce": "Amount to Reduce",
         "perpsBalance": "Perps Balance",
         "available": "Available",
-        "liqPrice": "Est. Liq. Price",
+        "liqPrice": "Liq. Price:",
+        "reduceMarginTooltip": "Insufficient margin to reduce position.",
         "confirm": "Confirm",
         "insufficientBalance": "Insufficient balance",
         "exceedMaxReduction": "Exceeds maximum reduction",
@@ -1021,7 +1019,11 @@
       "PerpsAutoCloseModal": {
         "title": "Auto Close Position",
         "takeProfitWhen": "Take Profit When",
+        "takeProfitWhenPriceAbove": "Take Profit When Price Above",
+        "takeProfitWhenPriceBelow": "Take Profit When Price Below",
         "stopLossWhen": "Stop Loss When",
+        "stopLossWhenPriceAbove": "Stop Loss When Price Above",
+        "stopLossWhenPriceBelow": "Stop Loss When Price Below",
         "currentPrice": "Current Price: ${{price}}",
         "EntryAndCurrentPrice": "Entry: ${{entryPrice}} Current: ${{currentPrice}}",
         "priceAbove": "Price above",
@@ -1031,6 +1033,15 @@
         "takeProfitExpectedPNL": "Take Profit Expected PNL",
         "stopLossExpectedPNL": "Stop Loss Expected PNL",
         "confirm": "Confirm",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "noPosition": "Please input margin first",
+        "takeProfitTipsLong": "Take profit price must be higher than current price",
+        "takeProfitTipsShort": "Take profit price must be lower than current price",
+        "stopLossTipsLong": "Stop loss price must be lower than current price",
+        "stopLossTipsShort": "Stop loss price must be higher than current price",
+        "stopLossTipsLongLiquidation": "Price is lower than liquidation price ({{price}})",
+        "stopLossTipsShortLiquidation": "Price is higher than liquidation price ({{price}})",
         "cancel": "Cancel"
       }
     },

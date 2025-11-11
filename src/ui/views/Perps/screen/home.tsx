@@ -1,7 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from 'react';
 import { PageHeader, TokenWithChain } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
-import { ReactComponent as IconSearchCC } from '@/ui/assets/perps/IconSearchCC.svg';
 import { useTranslation } from 'react-i18next';
 import {
   formatUsdValue,
@@ -10,6 +15,7 @@ import {
   useWallet,
 } from '@/ui/utils';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
+import { ReactComponent as RcIconBackTopCC } from '@/ui/assets/perps/IconBackTopCC.svg';
 import { AssetPosition, HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
 import { Button, message, Modal } from 'antd';
 import { PerpsLoginPopup } from '../popup/LoginPopup';
@@ -21,7 +27,6 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import clsx from 'clsx';
 import { PerpsBlueBorderedButton } from '../components/BlueBorderedButton';
 import { PerpsDepositAmountPopup } from '../popup/DepositAmountPopup';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { MiniTypedDataApproval } from '../../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
 import {
   DirectSubmitProvider,
@@ -48,6 +53,8 @@ import { RiskLevelPopup } from '../popup/RiskLevelPopup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { PerpsHeaderRight } from '../components/PerpsHeaderRight';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
+import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
+import { BackToTopButton } from '../components/BackToTopButton';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -115,6 +122,13 @@ export const Perps: React.FC = () => {
   const [logoutVisible, setLogoutVisible] = useState(false);
   const [isPreparingSign, setIsPreparingSign] = useState(false);
   const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const headerInitialTopRef = useRef<number>(0);
+
+  console.log('showBackToTop', showBackToTop);
+
   useEffect(() => {
     wallet.getHasDoneNewUserProcess().then((hasDoneNewUserProcess) => {
       if (!hasDoneNewUserProcess) {
@@ -122,6 +136,53 @@ export const Perps: React.FC = () => {
       }
     });
   }, [wallet]);
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer || !isInitialized) return;
+
+    // 重置初始位置
+    headerInitialTopRef.current = 0;
+
+    const handleScroll = () => {
+      if (!headerRef.current) return;
+
+      const stickyRect = headerRef.current.getBoundingClientRect();
+      const containerRect = scrollContainer.getBoundingClientRect();
+
+      if (
+        headerInitialTopRef.current === 0 &&
+        scrollContainer.scrollTop === 0
+      ) {
+        headerInitialTopRef.current = stickyRect.top - containerRect.top;
+      }
+
+      const scrollTop = scrollContainer.scrollTop;
+      const isSticky =
+        stickyRect.top <= containerRect.top ||
+        (headerInitialTopRef.current > 0 &&
+          scrollTop >= headerInitialTopRef.current);
+
+      setShowBackToTop(isSticky);
+    };
+
+    scrollContainer.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll);
+    };
+  }, [isInitialized]);
+
+  const handleBackToTop = useCallback(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (isLogin) {
@@ -282,7 +343,7 @@ export const Perps: React.FC = () => {
       </PageHeader>
       {!hasPermission ? <TopPermissionTips /> : null}
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
         {!isInitialized ? (
           <PerpsLoading />
         ) : isLogin ? (
@@ -471,23 +532,13 @@ export const Perps: React.FC = () => {
 
         {isInitialized && (
           <div className="mt-20 mx-20">
-            <div className="flex justify-between mb-8">
-              <div className="text-13 font-medium text-r-neutral-title-1">
-                {t('page.perps.explorePerps')}
-              </div>
-              <div
-                className="cursor-pointer p-[2px]"
-                onClick={() => {
-                  setSearchPopupVisible(true);
-                  setOpenFromSource('searchPerps');
-                }}
-              >
-                <ThemeIcon
-                  className="icon text-r-neutral-foot"
-                  src={IconSearchCC}
-                />
-              </div>
-            </div>
+            <ExplorePerpsHeader
+              ref={headerRef}
+              onSearchClick={() => {
+                setSearchPopupVisible(true);
+                setOpenFromSource('searchPerps');
+              }}
+            />
             <div className="rounded-[8px] flex flex-col gap-8">
               {marketSectionList.map((item) => (
                 <AssetItem
@@ -502,6 +553,9 @@ export const Perps: React.FC = () => {
             </div>
           </div>
         )}
+
+        <BackToTopButton visible={showBackToTop} onClick={handleBackToTop} />
+
         {isLogin && hasPermission && (
           <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
             <Button

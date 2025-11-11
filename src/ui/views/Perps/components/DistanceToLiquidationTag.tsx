@@ -54,7 +54,7 @@ export const DistanceToLiquidationTag: React.FC<DistanceToLiquidationTagProps> =
   return (
     <div
       className={clsx(
-        'flex items-center gap-4 rounded-[100px] px-4 pl-6 h-[18px] border',
+        'flex items-center gap-4 rounded-[100px] px-4 pl-6 h-[18px] border cursor-pointer',
         riskColorClass.container
       )}
       onClick={(e) => {

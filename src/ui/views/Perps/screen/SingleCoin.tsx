@@ -11,7 +11,7 @@ import * as Sentry from '@sentry/browser';
 import { getPerpsSDK } from '../sdkManager';
 import { useMemoizedFn } from 'ahooks';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
-import { ReactComponent as RcIconEdit } from 'ui/assets/perps/icon-edit-cc.svg';
+import { ReactComponent as RcIconEdit } from 'ui/assets/perps/IconEditCC.svg';
 import { ReactComponent as RcIconTitleSelectCC } from 'ui/assets/perps/IconTitleSelectCC.svg';
 import { EditMarginPopup } from '../popup/EditMarginPopup';
 import { RiskLevelPopup } from '../popup/RiskLevelPopup';
@@ -41,6 +41,8 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
+import DistanceToLiquidationTag from '../components/DistanceToLiquidationTag';
+import { EditTpSlTag } from '../components/EditTpSlTag';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -67,8 +69,6 @@ export const PerpsSingleCoin = () => {
   const [activeAssetCtx, setActiveAssetCtx] = React.useState<
     WsActiveAssetCtx['ctx'] | null
   >(null);
-
-  const [openPositionVisible, setOpenPositionVisible] = React.useState(false);
   const [searchPopupVisible, setSearchPopupVisible] = useState(false);
   const [positionDirection, setPositionDirection] = React.useState<
     'Long' | 'Short'
@@ -127,17 +127,27 @@ export const PerpsSingleCoin = () => {
       slOid: slItem?.oid,
     };
   }, [currentPosition]);
-  const [currentTpOrSl, setCurrentTpOrSl] = useState<{
+  const [currentTpOrSl, _setCurrentTpOrSl] = useState<{
     tpPrice?: string;
     slPrice?: string;
   }>({
     tpPrice: tpPrice,
     slPrice: slPrice,
   });
+  const setCurrentTpOrSl = useMemoizedFn(
+    (params: { tpPrice?: string; slPrice?: string }) => {
+      _setCurrentTpOrSl((prev) => ({
+        ...prev,
+        ...params,
+      }));
+    }
+  );
   const {
     handleOpenPosition,
     handleClosePosition,
     handleSetAutoClose,
+    handleUpdateMargin,
+    handleCancelOrder,
     currentPerpsAccount,
     isLogin,
     userFills,
@@ -145,6 +155,15 @@ export const PerpsSingleCoin = () => {
   } = usePerpsPosition({
     setCurrentTpOrSl,
   });
+
+  const hasPosition = useMemo(() => {
+    return !!currentPosition;
+  }, [currentPosition]);
+
+  const canOpenPosition = isLogin && hasPermission && !hasPosition;
+  const [openPositionVisible, setOpenPositionVisible] = React.useState(
+    canOpenPosition
+  );
 
   const {
     miniSignTx,
@@ -172,10 +191,6 @@ export const PerpsSingleCoin = () => {
       .filter((fill) => fill.coin.toLowerCase() === coin?.toLowerCase())
       .sort((a, b) => b.time - a.time);
   }, [userFills, coin]);
-
-  const hasPosition = useMemo(() => {
-    return !!currentPosition;
-  }, [currentPosition]);
 
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
@@ -323,49 +338,6 @@ export const PerpsSingleCoin = () => {
     return Boolean(currentTpOrSl.tpPrice || currentTpOrSl.slPrice);
   }, [currentTpOrSl]);
 
-  const handleUpdateMargin = useMemoizedFn(
-    async (action: 'add' | 'reduce', margin: number) => {
-      try {
-        const sdk = getPerpsSDK();
-        const res = await sdk.exchange?.updateIsolatedMargin({
-          coin,
-          value: action === 'add' ? margin : -margin,
-        });
-
-        if (res?.status === 'ok') {
-          message.success(
-            t(
-              action === 'add'
-                ? 'page.perpsDetail.PerpsEditMarginPopup.addMarginSuccess'
-                : 'page.perpsDetail.PerpsEditMarginPopup.reduceMarginSuccess'
-            )
-          );
-          dispatch.perps.fetchClearinghouseState();
-          dispatch.perps.fetchPositionAndOpenOrders();
-        } else {
-          const msg = res?.response?.data?.statuses[0];
-          message.error(msg || 'Update margin failed');
-          Sentry.captureException(
-            new Error(
-              'PERPS update margin failed: ' +
-                JSON.stringify({ action, margin, res })
-            )
-          );
-        }
-      } catch (error) {
-        console.error('Update margin error:', error);
-        message.error(error?.message || 'Update margin failed');
-        Sentry.captureException(
-          new Error(
-            'PERPS update margin error: ' +
-              JSON.stringify({ action, margin, error })
-          )
-        );
-        throw error;
-      }
-    }
-  );
-
   const handleAutoCloseSwitch = useMemoizedFn(async (e: boolean) => {
     if (e) {
       setAutoCloseVisible(true);
@@ -430,35 +402,29 @@ export const PerpsSingleCoin = () => {
     }
   });
 
-  const AutoCloseInfo = useMemo(() => {
-    if (hasAutoClose) {
-      if (currentTpOrSl.tpPrice && currentTpOrSl.slPrice) {
-        const Line = (
-          <span className="text-r-neutral-line text-13 mr-4 ml-4">|</span>
-        );
-        return (
-          <div className="text-r-neutral-title-1 font-medium text-13">
-            ${currentTpOrSl.tpPrice} {t('page.perps.takeProfit')}
-            {Line}${currentTpOrSl.slPrice} {t('page.perps.stopLoss')}
-          </div>
-        );
-      } else if (currentTpOrSl.tpPrice) {
-        return (
-          <div className="text-r-neutral-title-1 font-medium text-13">
-            ${currentTpOrSl.tpPrice} {t('page.perps.takeProfit')}
-          </div>
-        );
-      } else if (currentTpOrSl.slPrice) {
-        return (
-          <div className="text-r-neutral-title-1 font-medium text-13">
-            ${currentTpOrSl.slPrice} {t('page.perps.stopLoss')}
-          </div>
-        );
-      } else {
-        return null;
+  const handleCancelAutoClose = useMemoizedFn(
+    async (actionType: 'tp' | 'sl') => {
+      if (actionType === 'tp') {
+        if (tpOid) {
+          setCurrentTpOrSl({
+            tpPrice: undefined,
+          });
+          await handleCancelOrder(tpOid, coin, 'tp');
+        } else {
+          message.error('Take profit not found');
+        }
+      } else if (actionType === 'sl') {
+        if (slOid) {
+          setCurrentTpOrSl({
+            slPrice: undefined,
+          });
+          await handleCancelOrder(slOid, coin, 'sl');
+        } else {
+          message.error('Stop loss not found');
+        }
       }
     }
-  }, [hasAutoClose, currentTpOrSl]);
+  );
 
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
@@ -517,8 +483,19 @@ export const PerpsSingleCoin = () => {
 
         {hasPosition && isLogin && (
           <>
-            <div className="text-15 font-medium text-r-neutral-title-1 mt-16 mb-8">
-              {t('page.perps.yourPosition')}
+            <div className="flex items-center gap-6 mt-16 mb-8">
+              <div className="text-13 font-medium text-r-neutral-title-1">
+                {t('page.perps.position')}
+              </div>
+              <DistanceToLiquidationTag
+                liquidationPrice={Number(
+                  currentPosition?.position.liquidationPx || 0
+                )}
+                markPrice={markPrice}
+                onPress={() => {
+                  setRiskPopupVisible(true);
+                }}
+              />
             </div>
             <div className="bg-r-neutral-card1 rounded-[12px] px-16">
               <div className="flex justify-between text-13 py-16">
@@ -560,42 +537,112 @@ export const PerpsSingleCoin = () => {
                 </span>
               </div>
 
-              <div
-                className="flex justify-between text-13 py-16 cursor-pointer group"
-                onClick={() => setEditMarginVisible(true)}
-              >
+              <div className="flex justify-between text-13 py-16 group">
                 <span className="text-r-neutral-body">
                   {positionData?.type === 'isolated'
                     ? t('page.perps.marginIsolated')
                     : t('page.perps.marginCross')}
                 </span>
-                <div className="flex items-center gap-8">
-                  <span className="text-r-neutral-title-1 font-medium">
-                    $
-                    {splitNumberByStep(
-                      Number(positionData?.marginUsed || 0).toFixed(2)
-                    )}
-                  </span>
-                  <RcIconEdit className="w-14 h-14 text-r-blue-default opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
+                {positionData?.type === 'isolated' ? (
+                  <div
+                    className="flex items-center justify-center gap-6 bg-r-blue-light-1 rounded-[8px] px-6 h-[26px] cursor-pointer"
+                    onClick={() => setEditMarginVisible(true)}
+                  >
+                    <span className="text-r-blue-default font-bold text-13 font-medium">
+                      $
+                      {splitNumberByStep(
+                        Number(positionData?.marginUsed || 0).toFixed(2)
+                      )}
+                    </span>
+                    <RcIconEdit className="w-16 h-16 text-r-blue-default" />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-8">
+                    <span className="text-r-neutral-title-1 font-medium">
+                      $
+                      {splitNumberByStep(
+                        Number(positionData?.marginUsed || 0).toFixed(2)
+                      )}
+                    </span>
+                  </div>
+                )}
               </div>
 
-              <div
-                className="flex justify-between text-13 py-16 cursor-pointer"
-                onClick={() => {
-                  handleAutoCloseSwitch(!hasAutoClose);
-                }}
-              >
+              <div className="flex justify-between text-13 py-16">
                 <div className="text-r-neutral-body">
                   <div className="text-13 text-r-neutral-body">
-                    {t('page.perps.autoClose')}
+                    {positionData?.direction === 'Long'
+                      ? t(
+                          'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceAbove'
+                        )
+                      : t(
+                          'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceBelow'
+                        )}
                   </div>
-                  {AutoCloseInfo}
                 </div>
-                <Switch
-                  className="mt-[2px]"
-                  checked={hasAutoClose}
-                  // onChange={handleAutoCloseSwitch}
+                <EditTpSlTag
+                  coin={coin}
+                  markPrice={markPrice}
+                  initTpOrSlPrice={currentTpOrSl.tpPrice || ''}
+                  direction={positionData?.direction as 'Long' | 'Short'}
+                  size={Number(positionData?.size || 0)}
+                  margin={Number(positionData?.marginUsed || 0)}
+                  liqPrice={Number(positionData?.liquidationPrice || 0)}
+                  pxDecimals={currentAssetCtx?.pxDecimals || 2}
+                  szDecimals={currentAssetCtx?.szDecimals || 0}
+                  actionType="tp"
+                  entryPrice={Number(positionData?.entryPrice || 0)}
+                  type="hasPosition"
+                  handleCancelAutoClose={async () => {
+                    await handleCancelAutoClose('tp');
+                  }}
+                  handleSetAutoClose={async (price: string) => {
+                    await handleSetAutoClose({
+                      coin,
+                      tpTriggerPx: price,
+                      slTriggerPx: '',
+                      direction: positionData?.direction as 'Long' | 'Short',
+                    });
+                  }}
+                />
+              </div>
+
+              <div className="flex justify-between text-13 py-16">
+                <div className="text-r-neutral-body">
+                  <div className="text-13 text-r-neutral-body">
+                    {positionData?.direction === 'Long'
+                      ? t(
+                          'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceBelow'
+                        )
+                      : t(
+                          'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceAbove'
+                        )}
+                  </div>
+                </div>
+                <EditTpSlTag
+                  coin={coin}
+                  markPrice={markPrice}
+                  entryPrice={Number(positionData?.entryPrice || 0)}
+                  initTpOrSlPrice={currentTpOrSl.slPrice || ''}
+                  direction={positionData?.direction as 'Long' | 'Short'}
+                  size={Number(positionData?.size || 0)}
+                  margin={Number(positionData?.marginUsed || 0)}
+                  liqPrice={Number(positionData?.liquidationPrice || 0)}
+                  pxDecimals={currentAssetCtx?.pxDecimals || 2}
+                  szDecimals={currentAssetCtx?.szDecimals || 0}
+                  actionType="sl"
+                  type="hasPosition"
+                  handleCancelAutoClose={async () => {
+                    await handleCancelAutoClose('sl');
+                  }}
+                  handleSetAutoClose={async (price: string) => {
+                    await handleSetAutoClose({
+                      coin,
+                      tpTriggerPx: '',
+                      slTriggerPx: price,
+                      direction: positionData?.direction as 'Long' | 'Short',
+                    });
+                  }}
                 />
               </div>
 
@@ -743,7 +790,7 @@ export const PerpsSingleCoin = () => {
                   <Button
                     size="large"
                     type="primary"
-                    className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px] flex-1"
+                    className="h-[48px] border-none text-15 font-medium rounded-[8px] flex-1 bg-r-green-default text-r-neutral-title-2"
                     onClick={() => {
                       setPositionDirection('Long');
                       setOpenPositionVisible(true);
@@ -754,7 +801,7 @@ export const PerpsSingleCoin = () => {
                   <Button
                     size="large"
                     type="primary"
-                    className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px] flex-1"
+                    className="h-[48px] border-none text-15 font-medium rounded-[8px] flex-1 bg-r-red-default text-r-neutral-title-2 "
                     onClick={() => {
                       setPositionDirection('Short');
                       setOpenPositionVisible(true);
@@ -774,6 +821,8 @@ export const PerpsSingleCoin = () => {
       </div>
 
       <PerpsOpenPositionPopup
+        currentAssetCtx={currentAssetCtx}
+        activeAssetCtx={activeAssetCtx}
         visible={openPositionVisible}
         direction={positionDirection}
         providerFee={providerFee}
@@ -888,15 +937,12 @@ export const PerpsSingleCoin = () => {
         <>
           <EditMarginPopup
             visible={editMarginVisible}
-            direction={positionData.direction as 'Long' | 'Short'}
             coin={coin}
-            coinLogo={currentAssetCtx?.logoUrl}
-            markPrice={markPrice}
+            currentAssetCtx={currentAssetCtx}
+            activeAssetCtx={activeAssetCtx}
+            direction={positionData.direction as 'Long' | 'Short'}
             entryPrice={positionData.entryPrice}
             leverage={positionData.leverage}
-            leverageMax={currentAssetCtx?.maxLeverage || 5}
-            pxDecimals={currentAssetCtx?.pxDecimals || 2}
-            szDecimals={currentAssetCtx?.szDecimals || 0}
             availableBalance={Number(accountSummary?.withdrawable || 0)}
             liquidationPx={Number(currentPosition?.position.liquidationPx || 0)}
             positionSize={positionData.size}
@@ -905,7 +951,10 @@ export const PerpsSingleCoin = () => {
             pnl={positionData.pnl}
             handlePressRiskTag={() => setRiskPopupVisible(true)}
             onCancel={() => setEditMarginVisible(false)}
-            onConfirm={handleUpdateMargin}
+            onConfirm={async (action: 'add' | 'reduce', margin: number) => {
+              await handleUpdateMargin(coin, action, margin);
+              setEditMarginVisible(false);
+            }}
           />
 
           <RiskLevelPopup

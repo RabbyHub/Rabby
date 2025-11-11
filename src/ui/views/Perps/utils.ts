@@ -99,17 +99,16 @@ export const calLiquidationPrice = (
   leverage: number,
   maxLeverage: number
 ) => {
-  if (margin === 0) return 0;
-
   const MMR = 1 / maxLeverage / 2;
   const side = direction === 'Long' ? 1 : -1;
-  const nationalValue = margin * leverage;
+  // const nationalValue = margin * leverage;
+  const nationalValue = positionSize * markPrice;
   const maintenance_margin_required = nationalValue * MMR;
   const margin_available = margin - maintenance_margin_required;
   const liq_price =
     markPrice - (side * margin_available) / positionSize / (1 - MMR * side);
   // liq_price = price - side * margin_available / position_size / (1 - l * side)
-  return liq_price;
+  return Math.max(liq_price, 0);
 };
 
 /**
@@ -159,6 +158,35 @@ export const calTransferMarginRequired = (
 };
 
 const MAX_SIGNIFICANT_FIGURES = 6;
+
+export const validatePriceInput = (
+  value: string,
+  szDecimals: number
+): boolean => {
+  if (!value || value === '0' || value === '0.') return true;
+
+  // Check if it's an integer (no decimal point or ends with decimal point)
+  if (!value.includes('.') || value.endsWith('.')) {
+    return true; // Integers are always allowed
+  }
+
+  // Split integer and decimal parts
+  const [integerPart, decimalPart] = value.split('.');
+
+  // Check decimal places: max (6 - szDecimals)
+  const maxDecimals = 6 - szDecimals;
+  if (decimalPart.length > maxDecimals) {
+    return false;
+  }
+
+  // Calculate significant figures (remove leading zeros)
+  const allDigits = (integerPart + decimalPart).replace(/^0+/, '');
+  if (allDigits.length > 5) {
+    return false;
+  }
+
+  return true;
+};
 
 /**
  * Format TP/SL price to ensure it passes validation

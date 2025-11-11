@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Button, Skeleton, Tooltip } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
-import { TokenSelectPopup } from './TokenSelectPopup';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useDebounce } from 'react-use';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
@@ -31,11 +30,10 @@ import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@/types/chain';
 import { Tx } from 'background/service/openapi';
 import { useRabbyDispatch } from '@/ui/store';
-import { formatTokenAmount } from '@debank/common';
-import { useMemoizedFn } from 'ahooks';
 import { getPerpsSDK } from '../sdkManager';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import TokenSelectPopup from './TokenSelectPopup';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
