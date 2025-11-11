@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
@@ -30,6 +30,9 @@ import {
 import styled from 'styled-components';
 import { TestnetTokenItemAsset } from './TokenItem';
 import { useHistory } from 'react-router-dom';
+import { AddCustomTokenModal } from '../AddCustomTokenModal';
+import { AddressDetailModal } from '../AddressDetailModal';
+import { AddCustomNetworkModal } from '../AddCustomNetworkModal';
 
 interface Props {
   className?: string;
@@ -119,6 +122,8 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
   }));
   const history = useHistory();
   const [isFetched, setIsFetched] = React.useState<boolean>(false);
+  const [isShowAddNetworkModal, setIsShowAddNetworkModal] = useState(false);
+  const [isShowAddTokenModal, setIsShowAddTokenModal] = useState(false);
 
   const wallet = useWallet();
 
@@ -181,9 +186,9 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
         <div className="flex items-center gap-x-[12px]">
           <div
             className={clsx(
-              'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[7px] cursor-pointer',
+              'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[10px] cursor-pointer min-w-[292px]',
               ' border border-rabby-blue-default min-w-[82px] text-center',
-              'hover:bg-r-blue-light1'
+              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
             )}
           >
             <div
@@ -196,9 +201,7 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
                   category: 'Custom Network',
                   action: 'TokenList Add Network',
                 });
-                history.replace(
-                  history.location.pathname + '?action=custom-network'
-                );
+                setIsShowAddNetworkModal(true);
               }}
             >
               <span className="text-r-blue-default">
@@ -209,9 +212,9 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
           </div>
           <div
             className={clsx(
-              'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[7px] cursor-pointer',
+              'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[10px] cursor-pointer min-w-[292px]',
               ' border border-rabby-blue-default min-w-[82px] text-center',
-              'hover:bg-r-blue-light1'
+              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
             )}
           >
             <div
@@ -220,9 +223,7 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
                 'flex items-center gap-x-[4px] justify-center'
               )}
               onClick={() => {
-                history.replace(
-                  history.location.pathname + '?action=custom-token'
-                );
+                setIsShowAddTokenModal(true);
               }}
             >
               <span className="text-r-blue-default">
@@ -233,6 +234,25 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
           </div>
         </div>
       </div>
+      <AddCustomNetworkModal
+        visible={isShowAddNetworkModal}
+        onCancel={() => {
+          setIsShowAddNetworkModal(false);
+          refreshAsync();
+        }}
+        destroyOnClose
+      />
+      <AddCustomTokenModal
+        visible={isShowAddTokenModal}
+        onCancel={() => {
+          setIsShowAddTokenModal(false);
+        }}
+        onOk={() => {
+          setIsShowAddTokenModal(false);
+          refreshAsync();
+        }}
+        destroyOnClose
+      />
     </div>
   );
 };
