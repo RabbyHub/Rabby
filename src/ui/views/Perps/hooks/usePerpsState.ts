@@ -2,7 +2,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Account } from '@/background/service/preference';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWallet } from '@/ui/utils';
-import { destroyPerpsSDK, getPerpsSDK } from './sdkManager';
+import { destroyPerpsSDK, getPerpsSDK } from '../sdkManager';
 import * as Sentry from '@sentry/browser';
 import {
   PERPS_AGENT_NAME,
@@ -10,14 +10,14 @@ import {
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
   PERPS_REFERENCE_CODE,
   DELETE_AGENT_EMPTY_ADDRESS,
-} from './constants';
+} from '../constants';
 import { isSameAddress } from '@/ui/utils';
 import { findAccountByPriority } from '@/utils/account';
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { message, Modal } from 'antd';
-import { MiniTypedData } from '../Approval/components/MiniSignTypedData/useTypedDataTask';
+import { MiniTypedData } from '../../Approval/components/MiniSignTypedData/useTypedDataTask';
 import { useStartDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { create, maxBy, minBy } from 'lodash';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
@@ -324,7 +324,10 @@ export const usePerpsState = ({
       const agentAddress = agentWalletPreference?.agentAddress;
       if (agentAddress && errorMessage.includes(agentAddress)) {
         console.warn('handle action agent is expired, logout');
-        message.error('Agent is expired, please login again');
+        message.error({
+          className: 'toast-message-2025-center',
+          content: 'Agent is expired, please login again',
+        });
         logout(masterAddress);
         return true;
       }
@@ -336,7 +339,10 @@ export const usePerpsState = ({
       try {
         await deleteAgentCbRef.current();
       } catch (error) {
-        message.error(error.message || 'Delete agent failed');
+        message.error({
+          className: 'toast-message-2025-center',
+          content: error.message || 'Delete agent failed',
+        });
       }
       deleteAgentCbRef.current = null;
     }
@@ -652,7 +658,10 @@ export const usePerpsState = ({
       return true;
     } catch (error: any) {
       console.error('Failed to login Perps account:', error);
-      message.error(error.message || 'Login failed');
+      message.error({
+        className: 'toast-message-2025-center',
+        content: error.message || 'Login failed',
+      });
       Sentry.captureException(
         new Error(
           'PERPS Login failed' +
@@ -756,7 +765,10 @@ export const usePerpsState = ({
         return true;
       } catch (error) {
         console.error('Failed to withdraw:', error);
-        message.error(error.message || 'Withdraw failed');
+        message.error({
+          className: 'toast-message-2025-center',
+          content: error.message || 'Withdraw failed',
+        });
         Sentry.captureException(
           new Error(
             'PERPS Withdraw failed' +
@@ -801,6 +813,7 @@ export const usePerpsState = ({
     userFills: perpsState.userFills,
     hasPermission: perpsState.hasPermission,
     homeHistoryList,
+    localLoadingHistory: perpsState.localLoadingHistory,
     perpFee: perpsState.perpFee,
 
     // Actions

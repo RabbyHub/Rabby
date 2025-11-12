@@ -1,51 +1,60 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { PageHeader } from '@/ui/component';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from 'react';
+import { PageHeader, TokenWithChain } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue, splitNumberByStep, useWallet } from '@/ui/utils';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { findChainByEnum, findChainByServerID } from '@/utils/chain';
+import {
+  formatUsdValue,
+  sleep,
+  splitNumberByStep,
+  useWallet,
+} from '@/ui/utils';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
-import { ReactComponent as RcIconPerps } from 'ui/assets/perps/imgPerps.svg';
-import { ReactComponent as RcIconLogout } from '@/ui/assets/perps/IconLogout.svg';
-import { useDebounce } from 'react-use';
+import { ReactComponent as RcIconBackTopCC } from '@/ui/assets/perps/IconBackTopCC.svg';
 import { AssetPosition, HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
-import { Button, message } from 'antd';
-import { PerpsLoginPopup } from './components/LoginPopup';
-import { PerpsLogoutPopup } from './components/LogoutPopup';
-import { CHAINS_ENUM } from '@debank/common';
-import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
-import { Account } from '@/background/service/preference';
-import { usePerpsDeposit } from './usePerpsDeposit';
-import { usePerpsState } from './usePerpsState';
-import { HeaderAddress } from './components/headerAddress';
-import { PerpsLoginContent } from './components/LoginContent';
-import { HistoryContent } from './components/HistoryContent';
+import { Button, message, Modal } from 'antd';
+import { PerpsLoginPopup } from '../popup/LoginPopup';
+import { PerpsLogoutPopup } from '../popup/LogoutPopup';
+import { usePerpsDeposit } from '../hooks/usePerpsDeposit';
+import { usePerpsState } from '../hooks/usePerpsState';
+import { PerpsLoginContent } from '../components/LoginContent';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import clsx from 'clsx';
-import { PerpsBlueBorderedButton } from './components/BlueBorderedButton';
-import { PerpsDepositAmountPopup } from './components/DepositAmountPopup';
-import { TokenSelectPopup } from './components/TokenSelectPopup';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { MiniTypedDataApproval } from '../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
+import { PerpsBlueBorderedButton } from '../components/BlueBorderedButton';
+import { PerpsDepositAmountPopup } from '../popup/DepositAmountPopup';
+import { MiniTypedDataApproval } from '../../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { PositionItem } from './components/PositionItem';
+import { PositionItem } from '../components/PositionItem';
 import BigNumber from 'bignumber.js';
-import { AssetItem } from './components/AssetMetaItem';
-import NewUserProcessPopup from './components/NewUserProcessPopup';
+import { AssetItem } from '../components/AssetMetaItem';
+import NewUserProcessPopup from '../popup/NewUserProcessPopup';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { TopPermissionTips } from './components/TopPermissionTips';
-import { PerpsModal } from './components/Modal';
-import { PerpsLoading } from './components/Loading';
-import { ARB_USDC_TOKEN_SERVER_CHAIN, PERPS_BUILDER_INFO } from './constants';
-import { ClosePositionPopup } from './components/ClosePositionPopup';
+import { TopPermissionTips } from '../components/TopPermissionTips';
+import { PerpsModal } from '../components/Modal';
+import { PerpsLoading } from '../components/Loading';
+import {
+  ARB_USDC_TOKEN_ID,
+  ARB_USDC_TOKEN_SERVER_CHAIN,
+  PERPS_BUILDER_INFO,
+} from '../constants';
 import { useMemoizedFn } from 'ahooks';
-import { getPerpsSDK } from './sdkManager';
+import { getPerpsSDK } from '../sdkManager';
 import * as Sentry from '@sentry/browser';
 import { sortBy } from 'lodash';
+import { RiskLevelPopup } from '../popup/RiskLevelPopup';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import { PerpsHeaderRight } from '../components/PerpsHeaderRight';
+import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
+import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
+import { BackToTopButton } from '../components/BackToTopButton';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -68,7 +77,7 @@ export const Perps: React.FC = () => {
     handleWithdraw,
     homeHistoryList,
     hasPermission,
-
+    localLoadingHistory,
     miniSignTypeData,
     clearMiniSignTypeData,
     handleMiniSignResolve,
@@ -82,11 +91,18 @@ export const Perps: React.FC = () => {
     setDeleteAgentModalVisible,
   });
 
+  const { isDarkTheme } = useThemeMode();
   const [closePositionVisible, setClosePositionVisible] = useState(false);
   const [closePosition, setClosePosition] = useState<
     AssetPosition['position'] | null
   >(null);
+  const [searchPopupVisible, setSearchPopupVisible] = useState(false);
   const [amountVisible, setAmountVisible] = useState(false);
+  const [riskPopupVisible, setRiskPopupVisible] = useState(false);
+  const [riskPopupCoin, setRiskPopupCoin] = useState<string>('');
+  const [openFromSource, setOpenFromSource] = useState<
+    'openPosition' | 'searchPerps'
+  >('openPosition');
   const {
     miniSignTx,
     clearMiniSignTx,
@@ -106,6 +122,13 @@ export const Perps: React.FC = () => {
   const [logoutVisible, setLogoutVisible] = useState(false);
   const [isPreparingSign, setIsPreparingSign] = useState(false);
   const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const headerInitialTopRef = useRef<number>(0);
+
+  console.log('showBackToTop', showBackToTop);
+
   useEffect(() => {
     wallet.getHasDoneNewUserProcess().then((hasDoneNewUserProcess) => {
       if (!hasDoneNewUserProcess) {
@@ -113,6 +136,53 @@ export const Perps: React.FC = () => {
       }
     });
   }, [wallet]);
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer || !isInitialized) return;
+
+    // 重置初始位置
+    headerInitialTopRef.current = 0;
+
+    const handleScroll = () => {
+      if (!headerRef.current) return;
+
+      const stickyRect = headerRef.current.getBoundingClientRect();
+      const containerRect = scrollContainer.getBoundingClientRect();
+
+      if (
+        headerInitialTopRef.current === 0 &&
+        scrollContainer.scrollTop === 0
+      ) {
+        headerInitialTopRef.current = stickyRect.top - containerRect.top;
+      }
+
+      const scrollTop = scrollContainer.scrollTop;
+      const isSticky =
+        stickyRect.top <= containerRect.top ||
+        (headerInitialTopRef.current > 0 &&
+          scrollTop >= headerInitialTopRef.current);
+
+      setShowBackToTop(isSticky);
+    };
+
+    scrollContainer.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll);
+    };
+  }, [isInitialized]);
+
+  const handleBackToTop = useCallback(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (isLogin) {
@@ -150,7 +220,7 @@ export const Perps: React.FC = () => {
   );
 
   const marketSectionList = useMemo(() => {
-    return sortBy(marketData, (item) => -(item.dayNtlVlm || 0)).slice(0, 3);
+    return sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
   }, [marketData]);
 
   const handleClosePosition = useMemoizedFn(
@@ -173,19 +243,23 @@ export const Perps: React.FC = () => {
 
         const filled = res?.response?.data?.statuses[0]?.filled;
         if (filled) {
-          dispatch.perps.fetchClearinghouseState();
+          // dispatch.perps.fetchClearinghouseState();
           const { totalSz, avgPx } = filled;
-          message.success(
-            t('page.perps.toast.closePositionSuccess', {
+          message.success({
+            className: 'toast-message-2025-center',
+            content: t('page.perps.toast.closePositionSuccess', {
               direction,
               coin,
               size: totalSz,
               price: avgPx,
-            })
-          );
+            }),
+          });
         } else {
           const msg = res?.response?.data?.statuses[0]?.error;
-          message.error(msg || 'close position error');
+          message.error({
+            className: 'toast-message-2025-center',
+            content: msg || 'close position error',
+          });
           Sentry.captureException(
             new Error(
               'PERPS close position noFills' +
@@ -203,7 +277,10 @@ export const Perps: React.FC = () => {
           return null;
         }
         console.error('close position error', e);
-        message.error(e?.message || 'close position error');
+        message.error({
+          className: 'toast-message-2025-center',
+          content: e?.message || 'close position error',
+        });
         Sentry.captureException(
           new Error(
             'PERPS close position error' +
@@ -218,6 +295,93 @@ export const Perps: React.FC = () => {
     }
   );
 
+  const handleCloseAllPosition = useMemoizedFn(async () => {
+    try {
+      const sdk = getPerpsSDK();
+      for (const item of positionAndOpenOrders) {
+        await handleClosePosition({
+          coin: item.position.coin,
+          size: Math.abs(Number(item.position.szi || 0)).toString() || '0',
+          direction: Number(item.position.szi || 0) > 0 ? 'Long' : 'Short',
+          price: marketDataMap[item.position.coin.toUpperCase()]?.markPx || '0',
+        });
+        await sleep(10);
+      }
+      dispatch.perps.fetchClearinghouseState();
+    } catch (error) {
+      console.error('close all position error', error);
+      message.error({
+        className: 'toast-message-2025-center',
+        content: error?.message || 'close all position error',
+      });
+      Sentry.captureException(
+        new Error(
+          'PERPS close all position error' + 'error: ' + JSON.stringify(error)
+        )
+      );
+    }
+  });
+
+  const handleClickCloseAll = useMemoizedFn(async () => {
+    const modal = Modal.info({
+      width: 360,
+      closable: false,
+      maskClosable: true,
+      centered: true,
+      title: null,
+      bodyStyle: {
+        padding: 0,
+      },
+      className: clsx(
+        'perps-bridge-swap-modal perps-close-all-position-modal',
+        isDarkTheme
+          ? 'perps-bridge-swap-modal-dark'
+          : 'perps-bridge-swap-modal-light'
+      ),
+      content: (
+        <>
+          <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
+            <div className="text-[17px] font-bold text-r-neutral-title-1 text-center">
+              {t('page.perps.closeAllPopup.title')}
+            </div>
+            <div className="text-15 font-medium text-r-neutral-title-1 text-center">
+              {t('page.perps.closeAllPopup.description')}
+            </div>
+            <div className="flex items-center justify-center w-full gap-12 mt-20">
+              <PerpsBlueBorderedButton
+                block
+                onClick={() => {
+                  modal.destroy();
+                }}
+              >
+                {t('page.manageAddress.cancel')}
+              </PerpsBlueBorderedButton>
+              <Button
+                size="large"
+                block
+                type="primary"
+                onClick={async () => {
+                  handleCloseAllPosition();
+                  modal.destroy();
+                }}
+              >
+                {t('page.manageAddress.confirm')}
+              </Button>
+            </div>
+          </div>
+        </>
+      ),
+    });
+  });
+
+  const positionCoinSet = useMemo(() => {
+    const set = new Set();
+    positionAndOpenOrders?.forEach((order) => {
+      set.add(order.position.coin);
+    });
+    return set;
+  }, [positionAndOpenOrders]);
+
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
       <PageHeader
@@ -229,23 +393,19 @@ export const Perps: React.FC = () => {
         onSwitchAccountClick={() => {
           setLoginVisible(true);
         }}
-        // rightSlot={
-        //   isLogin ? (
-        //     <div
-        //       className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0 cursor-pointer"
-        //       onClick={() => setLogoutVisible(true)}
-        //     >
-        //       <ThemeIcon src={RcIconLogout} />
-        //     </div>
-        //   ) : null
-        // }
+        rightSlot={
+          <PerpsHeaderRight
+            isLogin={isLogin}
+            localLoadingHistory={localLoadingHistory}
+          />
+        }
         showCurrentAccount={currentPerpsAccount || undefined}
       >
         {t('page.perps.title')}
       </PageHeader>
       {!hasPermission ? <TopPermissionTips /> : null}
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
         {!isInitialized ? (
           <PerpsLoading />
         ) : isLogin ? (
@@ -338,9 +498,15 @@ export const Perps: React.FC = () => {
 
         {isInitialized && Boolean(positionAndOpenOrders?.length) && (
           <div className="mt-20 mx-20">
-            <div className="flex items-center mb-8">
+            <div className="flex items-center mb-8 justify-between">
               <div className="text-13 font-medium text-r-neutral-title-1">
                 {t('page.perps.positions')}
+              </div>
+              <div
+                className="text-13 font-medium text-r-neutral-foot hover:text-rb-brand-default cursor-pointer"
+                onClick={handleClickCloseAll}
+              >
+                {t('page.perps.closeAll')}
               </div>
             </div>
             <div className="flex flex-col gap-8">
@@ -355,6 +521,7 @@ export const Perps: React.FC = () => {
                   <PositionItem
                     key={asset.position.coin}
                     position={asset.position}
+                    openOrders={asset.openOrders}
                     marketData={
                       marketDataMap[asset.position.coin.toUpperCase()]
                     }
@@ -365,6 +532,10 @@ export const Perps: React.FC = () => {
                     handleNavigate={() => {
                       history.push(`/perps/single-coin/${asset.position.coin}`);
                     }}
+                    onShowRiskPopup={(coin) => {
+                      setRiskPopupCoin(coin);
+                      setRiskPopupVisible(true);
+                    }}
                   />
                 ))}
             </div>
@@ -373,46 +544,44 @@ export const Perps: React.FC = () => {
 
         {isInitialized && (
           <div className="mt-20 mx-20">
-            <div className="flex justify-between mb-8">
-              <div className="text-13 font-medium text-r-neutral-title-1">
-                {t('page.perps.explorePerps')}
-              </div>
-              <div
-                className="text-13 text-r-neutral-foot flex items-center cursor-pointer"
-                onClick={() => {
-                  history.push('/perps/explore');
-                }}
-              >
-                {t('page.perps.seeMore')}
-                <ThemeIcon
-                  className="icon icon-arrow-right"
-                  src={RcIconArrowRight}
-                />
-              </div>
-            </div>
-            <div className="bg-r-neutral-card1 rounded-[12px] flex flex-col">
+            <ExplorePerpsHeader
+              ref={headerRef}
+              onSearchClick={() => {
+                setSearchPopupVisible(true);
+                setOpenFromSource('searchPerps');
+              }}
+            />
+            <div className="rounded-[8px] flex flex-col gap-8">
               {marketSectionList.map((item) => (
-                <AssetItem key={item.name} item={item} />
+                <AssetItem
+                  key={item.name}
+                  item={item}
+                  onClick={() => {
+                    history.push(`/perps/single-coin/${item.name}`);
+                  }}
+                  hasPosition={positionCoinSet.has(item.name)}
+                />
               ))}
             </div>
           </div>
         )}
-        {isInitialized && isLogin ? (
-          <div className="mx-20">
-            <HistoryContent
-              marketData={marketDataMap}
-              historyData={homeHistoryList}
-            />
-          </div>
-        ) : isInitialized ? (
-          <div className="h-[20px]" />
-        ) : null}
-        {isInitialized && (
-          <div
-            className="text-r-neutral-foot mb-20 mx-20"
-            style={{ fontSize: '11px', lineHeight: '16px' }}
-          >
-            {t('page.perps.openPositionTips')}
+
+        <BackToTopButton visible={showBackToTop} onClick={handleBackToTop} />
+
+        {isLogin && hasPermission && (
+          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20">
+            <Button
+              block
+              type="primary"
+              onClick={() => {
+                setSearchPopupVisible(true);
+                setOpenFromSource('openPosition');
+              }}
+              size="large"
+              className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
+            >
+              {t('page.perps.searchPerpsPopup.openPosition')}
+            </Button>
           </div>
         )}
       </div>
@@ -509,29 +678,19 @@ export const Perps: React.FC = () => {
         }}
       />
 
-      {closePosition && (
-        <ClosePositionPopup
-          visible={closePositionVisible}
-          coin={closePosition?.coin}
-          providerFee={perpFee}
-          direction={Number(closePosition.szi || 0) > 0 ? 'Long' : 'Short'}
-          positionSize={Math.abs(Number(closePosition.szi || 0)).toString()}
-          pnl={Number(closePosition.unrealizedPnl || 0)}
-          onCancel={() => setClosePositionVisible(false)}
-          onConfirm={() => {
-            setClosePositionVisible(false);
-          }}
-          handleClosePosition={async () => {
-            const marketData = marketDataMap[closePosition.coin.toUpperCase()];
-            await handleClosePosition({
-              coin: closePosition.coin,
-              size: Math.abs(Number(closePosition.szi || 0)).toString() || '0',
-              direction: Number(closePosition.szi || 0) > 0 ? 'Long' : 'Short',
-              price: marketData?.markPx || '0',
-            });
-          }}
-        />
-      )}
+      <SearchPerpsPopup
+        visible={searchPopupVisible}
+        onCancel={() => {
+          setSearchPopupVisible(false);
+          setOpenFromSource('openPosition');
+        }}
+        marketData={marketData}
+        positionAndOpenOrders={positionAndOpenOrders}
+        onSelect={(coin) => {
+          history.push(`/perps/single-coin/${coin}`);
+        }}
+        openFromSource={openFromSource}
+      />
 
       <PerpsModal
         visible={deleteAgentModalVisible}
@@ -540,6 +699,26 @@ export const Perps: React.FC = () => {
         }}
         onConfirm={handleDeleteAgent}
       />
+
+      {riskPopupCoin && (
+        <RiskLevelPopup
+          visible={riskPopupVisible}
+          pxDecimals={Number(
+            marketDataMap[riskPopupCoin.toUpperCase()]?.pxDecimals || 2
+          )}
+          liquidationPrice={Number(
+            positionAndOpenOrders.find((p) => p.position.coin === riskPopupCoin)
+              ?.position.liquidationPx || 0
+          )}
+          markPrice={Number(
+            marketDataMap[riskPopupCoin.toUpperCase()]?.markPx || 0
+          )}
+          onClose={() => {
+            setRiskPopupVisible(false);
+            setRiskPopupCoin('');
+          }}
+        />
+      )}
     </div>
   );
 };

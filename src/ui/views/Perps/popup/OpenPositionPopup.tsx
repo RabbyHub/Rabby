@@ -9,12 +9,15 @@ import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconPerpsLeveragePlus } from 'ui/assets/perps/ImgLeveragePlus.svg';
 import { ReactComponent as RcIconPerpsLeverageMinus } from 'ui/assets/perps/ImgLeverageMinus.svg';
-import { formatPercent } from './SingleCoin';
 import { useMemoizedFn } from 'ahooks';
-import { calLiquidationPrice } from '../utils';
-import { AutoClosePositionPopup } from './AutoClosePositionPopup';
+import { calLiquidationPrice, formatPercent } from '../utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { PERPS_MAX_NTL_VALUE } from '../constants';
+import { EditTpSlTag } from '../components/EditTpSlTag';
+import { AssetPriceInfo } from '../components/AssetPriceInfo';
+import { MarketData } from '@/ui/models/perps';
+import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
+import { MarginInput } from '../components/MarginInput';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -26,6 +29,8 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   szDecimals: number;
   availableBalance: number;
   maxNtlValue: number;
+  currentAssetCtx: MarketData;
+  activeAssetCtx: WsActiveAssetCtx['ctx'] | null;
   onCancel: () => void;
   onConfirm: () => void;
   handleOpenPosition: (params: {
@@ -48,7 +53,7 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
 
 export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   visible,
-  direction,
+  direction: _direction,
   providerFee,
   coin,
   markPrice,
@@ -60,19 +65,21 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   onConfirm,
   maxNtlValue,
   handleOpenPosition,
-  ...rest
+  currentAssetCtx,
+  activeAssetCtx,
 }) => {
   const { t } = useTranslation();
   const [isReviewMode, setIsReviewMode] = React.useState(false);
 
-  const [autoCloseVisible, setAutoCloseVisible] = React.useState(false);
+  const [direction, setDirection] = React.useState<'Long' | 'Short'>(
+    _direction
+  );
   const [margin, setMargin] = React.useState<string>('');
-  const [leverage, setLeverage] = React.useState<number>(5);
-  const [autoClose, setAutoClose] = React.useState({
-    isOpen: false,
-    tpTriggerPx: '',
-    slTriggerPx: '',
-  });
+  const [leverage, setLeverage] = React.useState<number>(
+    Math.min(leverageRange[1], 5)
+  );
+  const [tpTriggerPx, setTpTriggerPx] = React.useState<string>('');
+  const [slTriggerPx, setSlTriggerPx] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -107,10 +114,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       Number(margin),
       direction,
       Number(tradeSize),
-      leverage,
+      tradeAmount,
       maxLeverage
     ).toFixed(pxDecimals);
-  }, [markPrice, leverage, leverageRange, margin, tradeSize]);
+  }, [markPrice, leverage, leverageRange, margin, tradeSize, tradeAmount]);
 
   const bothFee = React.useMemo(() => {
     return providerFee;
@@ -157,18 +164,23 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     return { isValid: true, error: null };
   }, [margin, availableBalance, t, leverage, maxNtlValue]);
 
+  const resetInitValues = useMemoizedFn(() => {
+    setMargin('');
+    setLeverage(Math.min(leverageRange[1], 5));
+    setTpTriggerPx('');
+    setSlTriggerPx('');
+  });
+
   React.useEffect(() => {
     if (!visible) {
-      setMargin('');
-      setLeverage(Math.min(leverageRange[1], 5));
-      setAutoClose({
-        isOpen: false,
-        tpTriggerPx: '',
-        slTriggerPx: '',
-      });
+      resetInitValues();
       setIsReviewMode(false);
     }
-  }, [visible]);
+  }, [visible, resetInitValues]);
+
+  React.useEffect(() => {
+    setDirection(_direction);
+  }, [_direction]);
 
   const handleReview = () => {
     setIsReviewMode(true);
@@ -180,14 +192,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
 
   const isValidAmount = marginValidation.isValid;
 
-  // 获取错误状态下的文字颜色
-  const getMarginTextColor = () => {
-    if (marginValidation.error) {
-      return 'text-r-red-default';
-    }
-    return 'text-r-neutral-title-1';
-  };
-
   const openPosition = useMemoizedFn(async () => {
     setLoading(true);
     const res = await handleOpenPosition({
@@ -196,130 +200,70 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       leverage,
       direction,
       midPx: markPrice.toString(),
-      tpTriggerPx:
-        autoClose.isOpen && autoClose.tpTriggerPx
-          ? autoClose.tpTriggerPx
-          : undefined,
-      slTriggerPx:
-        autoClose.isOpen && autoClose.slTriggerPx
-          ? autoClose.slTriggerPx
-          : undefined,
+      tpTriggerPx: tpTriggerPx ? tpTriggerPx : undefined,
+      slTriggerPx: slTriggerPx ? slTriggerPx : undefined,
     });
     setLoading(false);
     onConfirm();
     return res;
   });
 
-  const handleAutoCloseSwitch = useMemoizedFn((e: boolean) => {
-    if (e) {
-      setAutoCloseVisible(true);
-    } else {
-      setAutoClose({
-        isOpen: false,
-        tpTriggerPx: '',
-        slTriggerPx: '',
-      });
-    }
-  });
-
-  const AutoCloseInfo = useMemo(() => {
-    if (autoClose.isOpen) {
-      if (autoClose.tpTriggerPx && autoClose.slTriggerPx) {
-        const Line = (
-          <span className="text-r-neutral-line text-13 mr-4 ml-4">|</span>
-        );
-        return (
-          <div className="text-r-neutral-title-1 font-medium text-13">
-            ${splitNumberByStep(autoClose.tpTriggerPx)}{' '}
-            {t('page.perps.takeProfit')} {Line}$
-            {splitNumberByStep(autoClose.slTriggerPx)}{' '}
-            {t('page.perps.stopLoss')}
-          </div>
-        );
-      } else if (autoClose.tpTriggerPx) {
-        return (
-          <div className="text-r-neutral-title-1 font-medium text-13">
-            ${splitNumberByStep(autoClose.tpTriggerPx)}{' '}
-            {t('page.perps.takeProfit')}
-          </div>
-        );
-      } else if (autoClose.slTriggerPx) {
-        return (
-          <div className="text-r-neutral-title-1 font-medium text-13">
-            ${splitNumberByStep(autoClose.slTriggerPx)}{' '}
-            {t('page.perps.stopLoss')}
-          </div>
-        );
-      } else {
-        return null;
-      }
-    }
-  }, [autoClose.isOpen, autoClose.tpTriggerPx, autoClose.slTriggerPx]);
-
-  // 渲染编辑模式UI
   const renderEditMode = useMemoizedFn(() => (
     <>
-      <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-16 pb-12">
-        {direction} {coin}-USD
-      </div>
-
       <div className="flex-1 px-20">
-        <div className="bg-r-neutral-card1 rounded-[8px] p-16 h-[168px] mb-12 items-center">
-          <div className="text-13 text-r-neutral-body text-center">
-            {t('page.perps.margin')}
-          </div>
-          <input
-            className={`text-[40px] bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${getMarginTextColor()}`}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              boxShadow: 'none',
+        <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-12 pb-4">
+          {t('page.perpsDetail.PerpsOpenPositionPopup.newPosition')}
+        </div>
+        <AssetPriceInfo
+          coin={coin}
+          currentAssetCtx={currentAssetCtx}
+          activeAssetCtx={activeAssetCtx}
+        />
+
+        <div className="flex mb-16 bg-r-neutral-card1 rounded-[8px] p-4 h-[42px]">
+          <div
+            className={clsx(
+              'flex-1 h-[34px] rounded-[4px] text-16 cursor-pointer flex items-center justify-center',
+              direction === 'Long'
+                ? 'bg-r-green-light text-r-green-default font-bold'
+                : 'text-r-neutral-foot font-medium'
+            )}
+            onClick={() => {
+              setDirection('Long');
+              resetInitValues();
             }}
-            ref={inputRef}
-            autoFocus
-            placeholder="$0"
-            value={margin ? `$${margin}` : ''}
-            onChange={(e) => {
-              let value = e.target.value;
-              if (value.startsWith('$')) {
-                value = value.slice(1);
-              }
-              // 只允许数字和小数点
-              if (/^\d*\.?\d*$/.test(value) || value === '') {
-                setMargin(value);
-              }
-            }}
-          />
-          <div className="text-13 text-r-neutral-body text-center flex items-center justify-center gap-6">
-            {t('page.perps.availableBalance', {
-              balance: formatUsdValue(availableBalance, BigNumber.ROUND_DOWN),
-            })}
-            <div
-              className={clsx(
-                'text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer'
-              )}
-              onClick={() => {
-                setMargin(
-                  new BigNumber(availableBalance)
-                    .decimalPlaces(2, BigNumber.ROUND_DOWN)
-                    .toFixed()
-                );
-              }}
-            >
-              Max
-            </div>
+          >
+            {t('page.perpsDetail.PerpsOpenPositionPopup.long')}
           </div>
-          {marginValidation.error && (
-            <div className="text-13 text-r-red-default text-center mt-8">
-              {marginValidation.errorMessage}
-            </div>
-          )}
+          <div
+            className={clsx(
+              'flex-1 h-[34px] rounded-[4px] text-16 cursor-pointer flex items-center justify-center',
+              direction === 'Short'
+                ? 'bg-r-red-light text-r-red-default font-bold'
+                : 'text-r-neutral-foot font-medium'
+            )}
+            onClick={() => {
+              setDirection('Short');
+              resetInitValues();
+            }}
+          >
+            {t('page.perpsDetail.PerpsOpenPositionPopup.short')}
+          </div>
         </div>
 
+        <MarginInput
+          title={t('page.perpsDetail.PerpsEditMarginPopup.margin')}
+          availableAmount={availableBalance}
+          margin={margin}
+          onMarginChange={setMargin}
+          errorMessage={
+            marginValidation.error ? marginValidation.errorMessage : null
+          }
+        />
+
         <div className="mb-20 bg-r-neutral-card1 rounded-[8px] flex items-center flex-col px-16">
-          <div className="flex w-full py-16 justify-between items-center">
-            <div className="text-13 text-r-neutral-title-1">
+          <div className="flex w-full py-8 justify-between items-center">
+            <div className="text-14 text-r-neutral-foot font-medium">
               {t('page.perps.leverage')}{' '}
               <span className="text-r-neutral-foot">
                 ({leverageRange[0]} - {leverageRange[1]}x)
@@ -374,8 +318,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               </div>
             </div>
           </div>
-          <div className="flex w-full py-16 justify-between items-center">
-            <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
+          <div className="flex w-full py-12 justify-between items-center">
+            <div className="text-14 text-r-neutral-foot font-medium flex items-center gap-4 relative">
               {t('page.perps.size')}
               <TooltipWithMagnetArrow
                 overlayClassName="rectangle w-[max-content]"
@@ -385,7 +329,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
               </TooltipWithMagnetArrow>
             </div>
-            <div className="text-13 text-r-neutral-title-1 font-medium">
+            <div className="text-14 text-r-neutral-title-1 font-medium">
               {formatUsdValue(
                 Number(tradeSize) * markPrice,
                 BigNumber.ROUND_DOWN
@@ -393,19 +337,65 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               = {tradeSize} {coin}
             </div>
           </div>
-          <div
-            className="flex w-full py-16 items-center justify-between cursor-pointer"
-            onClick={() => {
-              handleAutoCloseSwitch(!autoClose.isOpen);
-            }}
-          >
-            <div className="text-13 text-r-neutral-title-1">
-              {t('page.perps.autoClose')}
-              {AutoCloseInfo}
+          {/* TP/SL Section */}
+          <div className="flex w-full py-12 items-center justify-between">
+            <div className="text-14 text-r-neutral-foot font-medium">
+              {direction === 'Long'
+                ? t(
+                    'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceAbove'
+                  )
+                : t(
+                    'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceBelow'
+                  )}
             </div>
-            <Switch
-              checked={autoClose.isOpen}
-              // onChange={handleAutoCloseSwitch}
+            <EditTpSlTag
+              coin={coin}
+              markPrice={markPrice}
+              initTpOrSlPrice={tpTriggerPx}
+              direction={direction}
+              size={Number(tradeSize)}
+              margin={Number(margin)}
+              liqPrice={Number(estimatedLiquidationPrice)}
+              pxDecimals={pxDecimals}
+              szDecimals={szDecimals}
+              actionType="tp"
+              type="openPosition"
+              handleSetAutoClose={async (price: string) => {
+                setTpTriggerPx(price);
+              }}
+              handleCancelAutoClose={async () => {
+                setTpTriggerPx('');
+              }}
+            />
+          </div>
+          <div className="flex w-full py-12 items-center justify-between">
+            <div className="text-14 text-r-neutral-foot font-medium">
+              {direction === 'Long'
+                ? t(
+                    'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceBelow'
+                  )
+                : t(
+                    'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceAbove'
+                  )}
+            </div>
+            <EditTpSlTag
+              coin={coin}
+              markPrice={markPrice}
+              initTpOrSlPrice={slTriggerPx}
+              direction={direction}
+              size={Number(tradeSize)}
+              margin={Number(margin)}
+              liqPrice={Number(estimatedLiquidationPrice)}
+              pxDecimals={pxDecimals}
+              szDecimals={szDecimals}
+              actionType="sl"
+              type="openPosition"
+              handleSetAutoClose={async (price: string) => {
+                setSlTriggerPx(price);
+              }}
+              handleCancelAutoClose={async () => {
+                setSlTriggerPx('');
+              }}
             />
           </div>
         </div>
@@ -426,7 +416,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     </>
   ));
 
-  // 渲染检查订单模式UI
   const renderReviewMode = useMemoizedFn(() => (
     <>
       <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-16 pb-12">
@@ -435,7 +424,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
 
       <div className="flex-1 px-20">
         {/* Order Details Section */}
-        <div className="bg-r-neutral-card1 rounded-[8px] p-16 mb-12">
+        <div className="bg-r-neutral-card1 rounded-[8px] py-12 px-16 mb-12">
           <div className="space-y-16">
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body">
@@ -476,19 +465,47 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
               </div>
             </div>
-            {autoClose.isOpen && (
+            {Boolean(tpTriggerPx) && (
               <div className="flex justify-between items-center">
                 <div className="text-13 text-r-neutral-body">
-                  {t('page.perps.autoClose')}
+                  {direction === 'Long'
+                    ? t(
+                        'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceAbove'
+                      )
+                    : t(
+                        'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceBelow'
+                      )}
                 </div>
-                {AutoCloseInfo}
+                <div className="flex items-center gap-8">
+                  <span className="text-13 text-r-neutral-title-1 font-medium">
+                    ${splitNumberByStep(tpTriggerPx)}
+                  </span>
+                </div>
+              </div>
+            )}
+            {Boolean(slTriggerPx) && (
+              <div className="flex justify-between items-center">
+                <div className="text-13 text-r-neutral-body">
+                  {direction === 'Long'
+                    ? t(
+                        'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceBelow'
+                      )
+                    : t(
+                        'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceAbove'
+                      )}
+                </div>
+                <div className="flex items-center gap-8">
+                  <span className="text-13 text-r-neutral-title-1 font-medium">
+                    ${splitNumberByStep(slTriggerPx)}
+                  </span>
+                </div>
               </div>
             )}
           </div>
         </div>
 
         {/* Price and Fee Section */}
-        <div className="bg-r-neutral-card1 rounded-[8px] p-16 mb-20">
+        <div className="bg-r-neutral-card1 rounded-[8px] py-12 px-16 mb-20">
           <div className="space-y-16">
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body">
@@ -519,29 +536,23 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body flex items-center gap-4">
-                {t('page.perps.fee')}
-                <Tooltip
-                  overlayClassName={clsx('rectangle')}
-                  placement="top"
-                  title={
-                    <div>
-                      <div className="text-13 text-r-neutral-title-2">
-                        {t('page.perps.rabbyFeeTipsZero')}
-                      </div>
-                      <div className="text-13 text-r-neutral-title-2">
-                        {t('page.perps.providerFeeTips', {
-                          fee: formatPercent(providerFee, 4),
-                        })}
-                      </div>
-                    </div>
-                  }
-                  align={{ targetOffset: [0, 0] }}
-                >
-                  <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-                </Tooltip>
+                {t('page.perpsDetail.PerpsOpenPositionPopup.rabbyFee')}
+              </div>
+              <div className="flex items-center gap-6">
+                <div className="h-[24px] px-6 text-12 text-r-blue-default bg-r-blue-light-1 rounded-[4px] flex items-center justify-center font-medium">
+                  {t('page.perpsDetail.PerpsOpenPositionPopup.free')}
+                </div>
+                <div className="text-13 text-r-neutral-title-1 font-medium">
+                  0%
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="text-13 text-r-neutral-body flex items-center gap-4">
+                {t('page.perpsDetail.PerpsOpenPositionPopup.providerFee')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                {formatPercent(bothFee, 4)}
+                {formatPercent(providerFee, 4)}
               </div>
             </div>
           </div>
@@ -570,7 +581,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     <>
       <Popup
         placement="bottom"
-        height={540}
+        height={544}
         isSupportDarkMode
         bodyStyle={{ padding: 0 }}
         destroyOnClose
@@ -579,35 +590,11 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         visible={visible}
         onCancel={onCancel}
         onClose={isReviewMode ? handleBackToEdit : onCancel}
-        {...rest}
       >
         <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
           {isReviewMode ? renderReviewMode() : renderEditMode()}
         </div>
       </Popup>
-
-      <AutoClosePositionPopup
-        visible={autoCloseVisible}
-        coin={coin}
-        szDecimals={szDecimals}
-        type="openPosition"
-        price={markPrice}
-        liqPrice={Number(estimatedLiquidationPrice)}
-        direction={direction}
-        size={Number(tradeSize)}
-        pxDecimals={pxDecimals}
-        onClose={() => setAutoCloseVisible(false)}
-        handleSetAutoClose={async (params: {
-          tpPrice: string;
-          slPrice: string;
-        }) => {
-          setAutoClose({
-            isOpen: true,
-            tpTriggerPx: params.tpPrice,
-            slTriggerPx: params.slPrice,
-          });
-        }}
-      />
     </>
   );
 };

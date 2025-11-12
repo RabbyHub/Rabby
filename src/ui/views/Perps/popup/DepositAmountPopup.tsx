@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Button, Skeleton, Tooltip } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
-import { TokenSelectPopup } from './TokenSelectPopup';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useDebounce } from 'react-use';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
@@ -31,11 +30,10 @@ import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@/types/chain';
 import { Tx } from 'background/service/openapi';
 import { useRabbyDispatch } from '@/ui/store';
-import { formatTokenAmount } from '@debank/common';
-import { useMemoizedFn } from 'ahooks';
 import { getPerpsSDK } from '../sdkManager';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import TokenSelectPopup from './TokenSelectPopup';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
@@ -183,6 +181,12 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     }
   }, [visible]);
 
+  const depositMaxUsdValue = useMemo(() => {
+    return isDirectDeposit
+      ? tokenAmountBn(tokenInfo).toNumber()
+      : Number((tokenInfo?.amount || 0) * (tokenInfo?.price || 0));
+  }, [tokenInfo, isDirectDeposit]);
+
   const amountValidation = React.useMemo(() => {
     const value = Number(usdValue) || 0;
     if (!usdValue) {
@@ -215,8 +219,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         };
       }
 
-      const tokenAmount = (tokenInfo?.amount || 0) * (tokenInfo?.price || 0);
-      if (value > tokenAmount) {
+      if (value > depositMaxUsdValue) {
         return {
           isValid: false,
           error: 'insufficient_balance',
@@ -225,7 +228,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       }
       return { isValid: true, error: null };
     }
-  }, [usdValue, t, tokenInfo]);
+  }, [usdValue, t, tokenInfo, depositMaxUsdValue]);
 
   const isValidAmount = useMemo(() => amountValidation.isValid, [
     amountValidation.isValid,
@@ -235,10 +238,6 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
     [currentPerpsAccount?.type]
   );
-
-  const depositMaxUsdValue = useMemo(() => {
-    return Number((tokenInfo?.amount || 0) * (tokenInfo?.price || 0));
-  }, [tokenInfo]);
 
   const { value: gasList } = useAsync(async () => {
     if (!selectedToken?.chain) {
@@ -306,12 +305,16 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         }
       }
       setGasPrice(0);
-      setUsdValue(
-        tokenAmountBn(tokenInfo)
-          ?.times(tokenInfo?.price || 0)
-          .decimalPlaces(2, BigNumber.ROUND_DOWN)
-          .toFixed()
-      );
+      if (isDirectDeposit) {
+        setUsdValue(tokenAmountBn(tokenInfo).toString());
+      } else {
+        setUsdValue(
+          tokenAmountBn(tokenInfo)
+            ?.times(tokenInfo?.price || 0)
+            .decimalPlaces(2, BigNumber.ROUND_DOWN)
+            .toFixed()
+        );
+      }
     }
   }, [tokenInfo, nativeTokenDecimals, gasList, gasLimit, tokenIsNativeToken]);
 
