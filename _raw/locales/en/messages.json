@@ -3055,6 +3055,35 @@
       },
       "ReachedEnd": {
         "content": "You’ve reached the end"
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "Wallet",
+          "allTokenMode": "All Token Mode",
+          "foldProtocols": "Fold {{count}} Protocols",
+          "unfoldProtocols": "Unfold {{count}} Protocols"
+        },
+        "hidden": {
+          "tokensWithZeroBalance": "Hide $0 tokens",
+          "tokensWithZeroBalanceDesc": "Tokens with $0 balances are hidden.",
+          "showAll": "Show all",
+          "hideSmall": "Hide tokens with small balances.",
+          "hideSmallDesc": "Tokens with small balances are not displayed.",
+          "hideProtocolsWithSmallDeposits": "Hide protocols with small deposits.",
+          "hideProtocolsWithSmallDepositsDesc": "Protocols with small deposits are not displayed."
+        },
+        "table": {
+          "token": "Token",
+          "price": "Price",
+          "amount": "Amount",
+          "usdValue": "USD Value",
+          "chain": "Chain",
+          "tokenAddress": "Token Address"
+        },
+        "actions": {
+          "swap": "Swap",
+          "send": "Send"
+        }
       }
     },
     "selectToAddress": {

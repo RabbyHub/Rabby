@@ -72,13 +72,13 @@ export const TokenList = ({
           <div className="flex items-center gap-[6px]">
             <RcWalletIconCC className="w-[20px] h-[20px] text-r-blue-default" />
             <div className="text-[20px] leading-[24px] font-semibold text-r-neutral-title1">
-              Wallet
+              {t('page.desktopProfile.portfolio.headers.wallet')}
             </div>
           </div>
           <AllModeSwitchWrapper className="flex items-center gap-[6px]">
             <Switch checked={allMode} onChange={onAllModeChange} />
             <div className="text-[14px] leading-[16px] font-normal text-rb-neutral-body">
-              All Token Mode
+              {t('page.desktopProfile.portfolio.headers.allTokenMode')}
             </div>
           </AllModeSwitchWrapper>
         </div>
@@ -115,13 +115,17 @@ export const TokenList = ({
                     >
                       <div className="text-rb-neutral-secondary text-13 cursor-pointer">
                         {allOverZeroExpanded
-                          ? 'Hide $0 tokens'
-                          : 'Tokens with $0 balances are hidden.'}
+                          ? t(
+                              'page.desktopProfile.portfolio.hidden.tokensWithZeroBalance'
+                            )
+                          : t(
+                              'page.desktopProfile.portfolio.hidden.tokensWithZeroBalanceDesc'
+                            )}
                       </div>
                       <div className="flex items-center justify-center gap-[2px] cursor-pointer">
                         {allOverZeroExpanded ? null : (
                           <div className="text-rb-neutral-secondary text-13 underline">
-                            Show all
+                            {t('page.desktopProfile.portfolio.hidden.showAll')}
                           </div>
                         )}
                         <RcIconDropdown
@@ -139,13 +143,15 @@ export const TokenList = ({
                     >
                       <div className="text-rb-neutral-secondary text-13 cursor-pointer">
                         {isExpanded
-                          ? 'Hide tokens with small balances.'
-                          : 'Tokens with small balances are not displayed.'}
+                          ? t('page.desktopProfile.portfolio.hidden.hideSmall')
+                          : t(
+                              'page.desktopProfile.portfolio.hidden.hideSmallDesc'
+                            )}
                       </div>
                       <div className="flex items-center justify-center gap-[2px] cursor-pointer">
                         {isExpanded ? null : (
                           <div className="text-rb-neutral-secondary text-13 underline">
-                            Show all
+                            {t('page.desktopProfile.portfolio.hidden.showAll')}
                           </div>
                         )}
                         <RcIconDropdown

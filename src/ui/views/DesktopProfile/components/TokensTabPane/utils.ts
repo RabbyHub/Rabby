@@ -19,10 +19,10 @@ export const ScrollToDomById = (id: string, stickAnchor?: boolean) => {
   });
 };
 
-export const getTokenWalletFakeProject = (netWorth: number) => {
+export const getTokenWalletFakeProject = (netWorth: number, name: string) => {
   const p = new DisplayedProject({
     id: TOKEN_WALLET_ANCHOR_ID,
-    name: 'Wallet',
+    name,
     chain: 'eth',
   });
   p.netWorth = netWorth;

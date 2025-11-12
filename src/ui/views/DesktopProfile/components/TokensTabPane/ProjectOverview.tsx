@@ -8,6 +8,7 @@ import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown
 import { ScrollToDomById } from './utils';
 import { TOKEN_WALLET_ANCHOR_ID } from './constant';
 import { ReactComponent as RcWalletIconCC } from 'ui/assets/wallet-cc.svg';
+import { useTranslation } from 'react-i18next';
 
 const ProjectOverviewItemWrapper = styled.div`
   border-radius: 12px;
@@ -111,6 +112,7 @@ const ProjectOverview = ({
   smallLength,
   hasExpandSwitch,
 }: Props) => {
+  const { t } = useTranslation();
   const truncateLength = useMemo(() => {
     const allLength = isExpanded
       ? list?.length || 0
@@ -139,8 +141,12 @@ const ProjectOverview = ({
           >
             <div className="text-rb-neutral-secondary text-13 cursor-pointer">
               {isExpanded
-                ? `Fold ${truncateLength} Protocols`
-                : `Unfold ${truncateLength} Protocols`}
+                ? t('page.desktopProfile.portfolio.headers.foldProtocols', {
+                    count: truncateLength,
+                  })
+                : t('page.desktopProfile.portfolio.headers.unfoldProtocols', {
+                    count: truncateLength,
+                  })}
             </div>
             <div className="flex items-center justify-center gap-[2px] cursor-pointer">
               <RcIconDropdown

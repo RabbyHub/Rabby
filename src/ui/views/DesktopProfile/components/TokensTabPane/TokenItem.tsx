@@ -10,6 +10,7 @@ import { DesktopTokenLabel } from '../TransactionsTabPane/DesktopTokenLabel';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import { CustomTestnetToken } from '@/background/service/customTestnet';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -52,6 +53,7 @@ export const TokenItemAsset: React.FC<Props> = ({
   disableSwap,
   disableSend,
 }) => {
+  const { t } = useTranslation();
   const chain = findChain({
     serverId: item.chain,
   });
@@ -101,8 +103,18 @@ export const TokenItemAsset: React.FC<Props> = ({
             hover:text-r-blue-default hover:underline 
           `}
         />
-        {!disableSwap && <ActionBottom onClick={gotoSwap} text="Swap" />}
-        {!disableSend && <ActionBottom onClick={gotoSend} text="Send" />}
+        {!disableSwap && (
+          <ActionBottom
+            onClick={gotoSwap}
+            text={t('page.desktopProfile.portfolio.actions.swap')}
+          />
+        )}
+        {!disableSend && (
+          <ActionBottom
+            onClick={gotoSend}
+            text={t('page.desktopProfile.portfolio.actions.send')}
+          />
+        )}
       </div>
     </TCell>
   );
@@ -111,6 +123,7 @@ export const TokenItemAsset: React.FC<Props> = ({
 export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
   item,
 }) => {
+  const { t } = useTranslation();
   const chain = findChain({
     id: item.chainId,
   });
@@ -169,7 +182,10 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
             hover:text-r-blue-default hover:underline 
           `}
         />
-        <ActionBottom onClick={gotoSend} text="Send" />
+        <ActionBottom
+          onClick={gotoSend}
+          text={t('page.desktopProfile.portfolio.actions.send')}
+        />
       </div>
     </TCell>
   );
