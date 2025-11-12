@@ -245,17 +245,21 @@ export const Perps: React.FC = () => {
         if (filled) {
           // dispatch.perps.fetchClearinghouseState();
           const { totalSz, avgPx } = filled;
-          message.success(
-            t('page.perps.toast.closePositionSuccess', {
+          message.success({
+            className: 'toast-message-2025-center',
+            content: t('page.perps.toast.closePositionSuccess', {
               direction,
               coin,
               size: totalSz,
               price: avgPx,
-            })
-          );
+            }),
+          });
         } else {
           const msg = res?.response?.data?.statuses[0]?.error;
-          message.error(msg || 'close position error');
+          message.error({
+            className: 'toast-message-2025-center',
+            content: msg || 'close position error',
+          });
           Sentry.captureException(
             new Error(
               'PERPS close position noFills' +
@@ -273,7 +277,10 @@ export const Perps: React.FC = () => {
           return null;
         }
         console.error('close position error', e);
-        message.error(e?.message || 'close position error');
+        message.error({
+          className: 'toast-message-2025-center',
+          content: e?.message || 'close position error',
+        });
         Sentry.captureException(
           new Error(
             'PERPS close position error' +
@@ -303,13 +310,68 @@ export const Perps: React.FC = () => {
       dispatch.perps.fetchClearinghouseState();
     } catch (error) {
       console.error('close all position error', error);
-      message.error(error?.message || 'close all position error');
+      message.error({
+        className: 'toast-message-2025-center',
+        content: error?.message || 'close all position error',
+      });
       Sentry.captureException(
         new Error(
           'PERPS close all position error' + 'error: ' + JSON.stringify(error)
         )
       );
     }
+  });
+
+  const handleClickCloseAll = useMemoizedFn(async () => {
+    const modal = Modal.info({
+      width: 360,
+      closable: false,
+      maskClosable: true,
+      centered: true,
+      title: null,
+      bodyStyle: {
+        padding: 0,
+      },
+      className: clsx(
+        'perps-bridge-swap-modal perps-close-all-position-modal',
+        isDarkTheme
+          ? 'perps-bridge-swap-modal-dark'
+          : 'perps-bridge-swap-modal-light'
+      ),
+      content: (
+        <>
+          <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
+            <div className="text-[17px] font-bold text-r-neutral-title-1 text-center">
+              {t('page.perps.closeAllPopup.title')}
+            </div>
+            <div className="text-15 font-medium text-r-neutral-title-1 text-center">
+              {t('page.perps.closeAllPopup.description')}
+            </div>
+            <div className="flex items-center justify-center w-full gap-12 mt-20">
+              <PerpsBlueBorderedButton
+                block
+                onClick={() => {
+                  modal.destroy();
+                }}
+              >
+                {t('page.manageAddress.cancel')}
+              </PerpsBlueBorderedButton>
+              <Button
+                size="large"
+                block
+                type="primary"
+                onClick={async () => {
+                  handleCloseAllPosition();
+                  modal.destroy();
+                }}
+              >
+                {t('page.manageAddress.confirm')}
+              </Button>
+            </div>
+          </div>
+        </>
+      ),
+    });
   });
 
   const positionCoinSet = useMemo(() => {
@@ -442,57 +504,7 @@ export const Perps: React.FC = () => {
               </div>
               <div
                 className="text-13 font-medium text-r-neutral-foot hover:text-rb-brand-default cursor-pointer"
-                onClick={() => {
-                  const modal = Modal.info({
-                    width: 360,
-                    closable: false,
-                    maskClosable: true,
-                    centered: true,
-                    title: null,
-                    bodyStyle: {
-                      padding: 0,
-                    },
-                    className: clsx(
-                      'perps-bridge-swap-modal perps-close-all-position-modal',
-                      isDarkTheme
-                        ? 'perps-bridge-swap-modal-dark'
-                        : 'perps-bridge-swap-modal-light'
-                    ),
-                    content: (
-                      <>
-                        <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
-                          <div className="text-[17px] font-bold text-r-neutral-title-1 text-center">
-                            {t('page.perps.closeAllPopup.title')}
-                          </div>
-                          <div className="text-15 font-medium text-r-neutral-title-1 text-center">
-                            {t('page.perps.closeAllPopup.description')}
-                          </div>
-                          <div className="flex items-center justify-center w-full gap-12 mt-20">
-                            <PerpsBlueBorderedButton
-                              block
-                              onClick={() => {
-                                modal.destroy();
-                              }}
-                            >
-                              {t('page.manageAddress.cancel')}
-                            </PerpsBlueBorderedButton>
-                            <Button
-                              size="large"
-                              block
-                              type="primary"
-                              onClick={async () => {
-                                await handleCloseAllPosition();
-                                modal.destroy();
-                              }}
-                            >
-                              {t('page.manageAddress.confirm')}
-                            </Button>
-                          </div>
-                        </div>
-                      </>
-                    ),
-                  });
-                }}
+                onClick={handleClickCloseAll}
               >
                 {t('page.perps.closeAll')}
               </div>
@@ -557,7 +569,7 @@ export const Perps: React.FC = () => {
         <BackToTopButton visible={showBackToTop} onClick={handleBackToTop} />
 
         {isLogin && hasPermission && (
-          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
+          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20">
             <Button
               block
               type="primary"

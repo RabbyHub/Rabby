@@ -114,10 +114,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       Number(margin),
       direction,
       Number(tradeSize),
-      leverage,
+      tradeAmount,
       maxLeverage
     ).toFixed(pxDecimals);
-  }, [markPrice, leverage, leverageRange, margin, tradeSize]);
+  }, [markPrice, leverage, leverageRange, margin, tradeSize, tradeAmount]);
 
   const bothFee = React.useMemo(() => {
     return providerFee;

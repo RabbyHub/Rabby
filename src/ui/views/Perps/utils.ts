@@ -96,13 +96,12 @@ export const calLiquidationPrice = (
   margin: number,
   direction: 'Long' | 'Short',
   positionSize: number,
-  leverage: number,
+  nationalValue: number,
   maxLeverage: number
 ) => {
   const MMR = 1 / maxLeverage / 2;
   const side = direction === 'Long' ? 1 : -1;
   // const nationalValue = margin * leverage;
-  const nationalValue = positionSize * markPrice;
   const maintenance_margin_required = nationalValue * MMR;
   const margin_available = margin - maintenance_margin_required;
   const liq_price =

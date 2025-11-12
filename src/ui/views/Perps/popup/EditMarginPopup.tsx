@@ -74,12 +74,13 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
       action === 'add'
         ? Number(marginUsed) + marginValue
         : Number(marginUsed) - marginValue;
+    const nationalValue = positionSize * markPrice;
     return calLiquidationPrice(
       markPrice,
       newMargin,
       direction,
       Number(positionSize),
-      leverage,
+      nationalValue,
       leverageMax
     ).toFixed(pxDecimals);
   }, [

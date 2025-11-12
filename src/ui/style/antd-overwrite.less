@@ -76,6 +76,10 @@
 .ant-message {
   top: 55px;
   z-index: 1500;
+  &:has(.toast-message-2025-center) {
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 .ant-message-notice-content {
   padding: 8px 12px;

@@ -23,7 +23,6 @@ import { formatUsdValueKMB } from '../../Dashboard/components/TokenDetailPopup/u
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { PerpsOpenPositionPopup } from '../popup/OpenPositionPopup';
 import { ClosePositionPopup } from '../popup/ClosePositionPopup';
-import { AutoClosePositionPopup } from '../components/AutoClosePositionPopup';
 import BigNumber from 'bignumber.js';
 import { usePerpsPosition } from '../hooks/usePerpsPosition';
 import HistoryContent from '../components/HistoryContent';
@@ -74,7 +73,6 @@ export const PerpsSingleCoin = () => {
     'Long' | 'Short'
   >('Long');
   const [closePositionVisible, setClosePositionVisible] = React.useState(false);
-  const [autoCloseVisible, setAutoCloseVisible] = useState(false);
   const [editMarginVisible, setEditMarginVisible] = useState(false);
   const [riskPopupVisible, setRiskPopupVisible] = useState(false);
   const activeAssetCtxRef = useRef<(() => void) | null>(null);
@@ -245,11 +243,13 @@ export const PerpsSingleCoin = () => {
           handleDeposit();
         } else if (error !== 'User cancelled') {
           console.error('perps single coin direct sign error', error);
-          message.error(
-            typeof (error as any)?.message === 'string'
-              ? (error as any).message
-              : 'Transaction failed'
-          );
+          message.error({
+            className: 'toast-message-2025-center',
+            content:
+              typeof (error as any)?.message === 'string'
+                ? (error as any).message
+                : 'Transaction failed',
+          });
         }
         setIsPreparingSign(false);
         clearMiniSignTx();
@@ -334,74 +334,6 @@ export const PerpsSingleCoin = () => {
     [currentPosition, currentAssetCtx]
   );
 
-  const hasAutoClose = useMemo(() => {
-    return Boolean(currentTpOrSl.tpPrice || currentTpOrSl.slPrice);
-  }, [currentTpOrSl]);
-
-  const handleAutoCloseSwitch = useMemoizedFn(async (e: boolean) => {
-    if (e) {
-      setAutoCloseVisible(true);
-    } else {
-      try {
-        // 取消所有止盈止损订单
-        const sdk = getPerpsSDK();
-        if (!tpOid && !slOid) {
-          console.error('no find auto close order id');
-          return;
-        }
-
-        const cancelOrders: CancelOrderParams[] = [];
-        if (tpOid) {
-          cancelOrders.push({
-            oid: tpOid,
-            coin,
-          });
-        }
-        if (slOid) {
-          cancelOrders.push({
-            oid: slOid,
-            coin,
-          });
-        }
-        const res = await sdk.exchange?.cancelOrder(cancelOrders);
-        if (
-          res?.response.data.statuses.every(
-            (item) => ((item as unknown) as string) === 'success'
-          )
-        ) {
-          message.success('Auto close position canceled successfully');
-          setCurrentTpOrSl({
-            tpPrice: undefined,
-            slPrice: undefined,
-          });
-          setTimeout(() => {
-            dispatch.perps.fetchPositionOpenOrders();
-          }, 1000);
-        } else {
-          message.error('Auto close position cancel error');
-          Sentry.captureException(
-            new Error(
-              'Auto close position cancel error' +
-                'cancelOrders: ' +
-                JSON.stringify(cancelOrders) +
-                'res: ' +
-                JSON.stringify(res)
-            )
-          );
-        }
-      } catch (error) {
-        message.error('Auto close position cancel error');
-        Sentry.captureException(
-          new Error(
-            'Auto close position cancel error' +
-              'error: ' +
-              JSON.stringify(error)
-          )
-        );
-      }
-    }
-  });
-
   const handleCancelAutoClose = useMemoizedFn(
     async (actionType: 'tp' | 'sl') => {
       if (actionType === 'tp') {
@@ -411,7 +343,10 @@ export const PerpsSingleCoin = () => {
           });
           await handleCancelOrder(tpOid, coin, 'tp');
         } else {
-          message.error('Take profit not found');
+          message.error({
+            className: 'toast-message-2025-center',
+            content: 'Take profit not found',
+          });
         }
       } else if (actionType === 'sl') {
         if (slOid) {
@@ -420,7 +355,10 @@ export const PerpsSingleCoin = () => {
           });
           await handleCancelOrder(slOid, coin, 'sl');
         } else {
-          message.error('Stop loss not found');
+          message.error({
+            className: 'toast-message-2025-center',
+            content: 'Stop loss not found',
+          });
         }
       }
     }
@@ -839,6 +777,7 @@ export const PerpsSingleCoin = () => {
         handleOpenPosition={handleOpenPosition}
         onConfirm={() => {
           setOpenPositionVisible(false);
+          history.goBack();
         }}
       />
 
@@ -869,31 +808,6 @@ export const PerpsSingleCoin = () => {
             size: sizeStr,
             direction: positionData?.direction as 'Long' | 'Short',
             price: activeAssetCtx?.markPx || '0',
-          });
-        }}
-      />
-
-      {/* Auto Close Position Popup */}
-      <AutoClosePositionPopup
-        visible={autoCloseVisible}
-        coin={coin}
-        liqPrice={Number(currentPosition?.position.liquidationPx || 0)}
-        type="hasPosition"
-        price={positionData?.entryPrice || markPrice}
-        direction={(positionData?.direction || 'Long') as 'Long' | 'Short'}
-        size={Math.abs(positionData?.size || 0)}
-        szDecimals={currentAssetCtx?.szDecimals || 0}
-        pxDecimals={currentAssetCtx?.pxDecimals || 2}
-        onClose={() => setAutoCloseVisible(false)}
-        handleSetAutoClose={async (params: {
-          tpPrice: string;
-          slPrice: string;
-        }) => {
-          await handleSetAutoClose({
-            coin,
-            tpTriggerPx: params.tpPrice,
-            slTriggerPx: params.slPrice,
-            direction: positionData?.direction as 'Long' | 'Short',
           });
         }}
       />
