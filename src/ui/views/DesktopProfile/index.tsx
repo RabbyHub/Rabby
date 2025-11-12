@@ -121,6 +121,7 @@ export const DesktopProfile = () => {
     curveChartData,
     isBalanceLoading,
     isCurveLoading,
+    appChainIds,
     refreshBalance,
     refreshCurve,
   } = useDesktopBalanceView({
@@ -205,6 +206,7 @@ export const DesktopProfile = () => {
                   curveChartData={curveChartData}
                   isLoading={isBalanceLoading || isCurveLoading}
                   onRefresh={handleUpdate}
+                  appChainIds={appChainIds}
                 />
                 <div key={refreshKey}>
                   <Tabs
