@@ -15,6 +15,7 @@ import {
 import IconSuccess from 'ui/assets/success.svg';
 import { useHistory } from 'react-router-dom';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { UI_TYPE } from '@/constant/ui';
 
 type AddressDeleteProps = {
   brandName?: string;
@@ -51,9 +52,13 @@ export const AddressDelete = ({
       duration: 0.5,
     });
     setVisible(false);
-    setTimeout(() => {
-      history.goBack();
-    }, 500);
+    if (UI_TYPE.isDesktop) {
+      history.replace(history.location.pathname);
+    } else {
+      setTimeout(() => {
+        history.goBack();
+      }, 500);
+    }
   };
 
   const handleClickDelete = async () => {

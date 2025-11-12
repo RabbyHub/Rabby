@@ -404,21 +404,23 @@ const SendNFT = () => {
               },
             },
           });
-          if (isTab) {
+          if (isTab || isDesktop) {
             await promise;
             form.setFieldsValue({
               amount: 0,
             });
             updateUrlAmount(0);
-            wallet.setPageStateCache({
-              path: '/send-nft',
-              search: history.location.search,
-              params: {},
-              states: {
-                values: form.getFieldsValue(),
-                nftItem,
-              },
-            });
+            if (isTab) {
+              wallet.setPageStateCache({
+                path: '/send-nft',
+                search: history.location.search,
+                params: {},
+                states: {
+                  values: form.getFieldsValue(),
+                  nftItem,
+                },
+              });
+            }
             setRefreshId((e) => e + 1);
           } else {
             window.close();
