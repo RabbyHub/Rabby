@@ -40,6 +40,11 @@ import { AddAddressModal } from './components/AddAddressModal';
 import { RcIconBackTop } from '@/ui/assets/desktop/profile';
 import { ReachedEnd } from './components/ReachedEnd';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import TopShortcut, {
+  PORTFOLIO_LIST_ID,
+  TOP_SHORTCUT_SLOT_ID,
+} from './components/TokensTabPane/components/TopShortCut';
+import { AbstractProject } from '@/ui/utils/portfolio/types';
 
 const Wrap = styled.div`
   height: 100%;
@@ -140,6 +145,9 @@ export const DesktopProfile = () => {
     await refreshBalance();
     await refreshCurve();
   });
+  const [cacheProjectOverviewList, setCacheProjectOverviewList] = useState<
+    AbstractProject[]
+  >([]);
 
   useListenTxReload(async () => {
     if (['tokens', 'transactions'].includes(activeTab)) {
@@ -167,17 +175,26 @@ export const DesktopProfile = () => {
         className="w-full h-full bg-rb-neutral-bg-1"
         ref={scrollContainerRef}
       >
-        <div className="x-container sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
+        <div className="x-container sticky top-0 z-10 pt-[16px] bg-rb-neutral-bg-1">
           <DesktopNav
             balance={balance}
             changePercent={curveChartData?.changePercent}
             isLoss={curveChartData?.isLoss}
             isLoading={isBalanceLoading || isCurveLoading}
           />
+          <div
+            className="sticky top-[103px] z-10 pt-[16px] overflow-scroll flex-initial"
+            style={{ width: 0, scrollbarWidth: 'none' }}
+            id={TOP_SHORTCUT_SLOT_ID}
+          >
+            {cacheProjectOverviewList?.length > 0 && activeTab === 'tokens' && (
+              <TopShortcut projects={cacheProjectOverviewList || []} />
+            )}
+          </div>
         </div>
         <div className="x-container">
           <div className="flex items-start gap-[20px]">
-            <main className="flex-1">
+            <main className="flex-1" id={PORTFOLIO_LIST_ID}>
               <div
                 className={clsx(
                   'bg-r-neutral-card-1 rounded-[20px]',
@@ -214,7 +231,12 @@ export const DesktopProfile = () => {
                     }}
                   >
                     <Tabs.TabPane tab="Tokens" key="tokens">
-                      <TokensTabPane selectChainId={chainInfo?.serverId} />
+                      <TokensTabPane
+                        onProjectOverviewListChange={
+                          setCacheProjectOverviewList
+                        }
+                        selectChainId={chainInfo?.serverId}
+                      />
                     </Tabs.TabPane>
                     {/* <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane> */}
                     <Tabs.TabPane tab="Transactions" key="transactions">

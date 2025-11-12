@@ -15,15 +15,18 @@ import ProjectOverview from './ProjectOverview';
 import BigNumber from 'bignumber.js';
 import { getTokenWalletFakeProject } from './utils';
 import { useSwitchNetTab } from '@/ui/component/PillsSwitch/NetSwitchTabs';
+import { AbstractProject } from '@/ui/utils/portfolio/types';
 
 interface Props {
   className?: string;
   selectChainId?: string;
+  onProjectOverviewListChange?: (projects: AbstractProject[]) => void;
 }
 
 export const TokensTabPane: React.FC<Props> = ({
   className,
   selectChainId,
+  onProjectOverviewListChange,
 }) => {
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
@@ -111,6 +114,23 @@ export const TokensTabPane: React.FC<Props> = ({
     ];
   }, [tokenListTotalValue, currentList]);
 
+  const isNoResults =
+    !isTokensLoading &&
+    !isPortfoliosLoading &&
+    !isAppPortfoliosLoading &&
+    !sortTokens.length &&
+    !displayPortfolios?.length;
+
+  useEffect(() => {
+    if (allMode || isNoResults || projectOverviewList?.length <= 1) {
+      onProjectOverviewListChange?.([]);
+      return;
+    }
+    if (projectOverviewList) {
+      onProjectOverviewListChange?.(projectOverviewList);
+    }
+  }, [projectOverviewList.length, allMode, isNoResults]);
+
   if (isTokensLoading && !hasTokens) {
     return (
       <div className="mx-20">
@@ -118,13 +138,6 @@ export const TokensTabPane: React.FC<Props> = ({
       </div>
     );
   }
-
-  const isNoResults =
-    !isTokensLoading &&
-    !isPortfoliosLoading &&
-    !isAppPortfoliosLoading &&
-    !sortTokens.length &&
-    !displayPortfolios?.length;
 
   return (
     <div className={className}>

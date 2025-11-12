@@ -114,6 +114,13 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
   const chain = findChain({
     id: item.chainId,
   });
+  const history = useHistory();
+  const gotoSend = useCallback(() => {
+    history.replace(
+      history.location.pathname +
+        `?action=send&token=${chain?.serverId}:${item.id}`
+    );
+  }, [chain?.serverId, item.id]);
   return (
     <TCell className="py-8 flex gap-10 flex-1 items-center overflow-hidden">
       <div className="relative h-[24px]">
@@ -162,6 +169,7 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
             hover:text-r-blue-default hover:underline 
           `}
         />
+        <ActionBottom onClick={gotoSend} text="Send" />
       </div>
     </TCell>
   );
