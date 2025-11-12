@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useRabbySelector } from '@/ui/store';
+import React, { useEffect, useMemo } from 'react';
+import { useRabbySelector, useRabbyDispatch } from '@/ui/store';
 import useSortTokens from 'ui/hooks/useSortTokens';
 import {
   TokenListSkeleton,
@@ -30,11 +30,20 @@ export const TokensTabPane: React.FC<Props> = ({
   onProjectOverviewListChange,
 }) => {
   const { t } = useTranslation();
-  const { currentAccount } = useRabbySelector((s) => ({
+  const dispatch = useRabbyDispatch();
+  const { currentAccount, allMode } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
+    allMode: s.preference.desktopTokensAllMode ?? false,
   }));
   const { setApps } = useCommonPopupView();
-  const [allMode, setAllMode] = useState(false);
+
+  useEffect(() => {
+    dispatch.preference.getPreference('desktopTokensAllMode');
+  }, [dispatch]);
+
+  const setAllMode = (value: boolean) => {
+    dispatch.preference.setDesktopTokensAllMode(value);
+  };
 
   const {
     isTokensLoading,

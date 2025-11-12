@@ -144,6 +144,8 @@ export interface PreferenceStore {
   rateGuideLastExposure?: RateGuideLastExposure;
 
   desktopTabId?: number;
+
+  desktopTokensAllMode?: boolean;
 }
 
 export interface AddressSortStore {
@@ -221,6 +223,7 @@ class PreferenceService {
         ga4EventTime: 0,
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
         desktopTabId: undefined,
+        desktopTokensAllMode: false,
       },
     });
 
@@ -861,6 +864,9 @@ class PreferenceService {
   };
   setIsShowTestnet = (value: boolean) => {
     this.store.isShowTestnet = value;
+  };
+  setDesktopTokensAllMode = (value: boolean) => {
+    this.store.desktopTokensAllMode = value;
   };
   saveCurrentCoboSafeAddress = async () => {
     this.currentCoboSafeAddress = await this.getCurrentAccount();
