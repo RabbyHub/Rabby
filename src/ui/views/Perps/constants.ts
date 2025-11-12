@@ -717,3 +717,11 @@ export const PERPS_REFERENCE_CODE = 'RABBYWALLET';
 
 export const DELETE_AGENT_EMPTY_ADDRESS =
   '0x0000000000000000000000000000000000000000';
+
+export enum PERPS_POSITION_RISK_LEVEL {
+  SAFE = 'safe',
+  WARNING = 'warning',
+  DANGER = 'danger',
+}
+
+export const PERPS_MINI_USD_VALUE = 10; // $10

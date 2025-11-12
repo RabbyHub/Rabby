@@ -9,7 +9,7 @@ import {
   splitNumberByStep,
 } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
-import { TokenImg } from './TokenImg';
+import { TokenImg } from '../components/TokenImg';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 

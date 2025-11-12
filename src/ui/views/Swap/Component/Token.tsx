@@ -188,7 +188,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
           {isFrom ? t('page.swap.from') : t('page.swap.to')}
         </span>
         {isFrom && (
-          <div className="flex items-center gap-10 relative pr-[40px]">
+          <div className="flex items-center justify-end gap-10 relative pr-[40px]">
             <SwapSlider
               className="w-[125px]"
               value={slider}

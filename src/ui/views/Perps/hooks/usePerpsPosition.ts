@@ -1,11 +1,11 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
-import { getPerpsSDK } from './sdkManager';
+import { getPerpsSDK } from '../sdkManager';
 import { usePerpsState } from './usePerpsState';
 import * as Sentry from '@sentry/browser';
 import { sleep, useWallet } from '@/ui/utils';
-import { PERPS_BUILDER_INFO } from './constants';
+import { PERPS_BUILDER_INFO } from '../constants';
 import { OrderResponse } from '@rabby-wallet/hyperliquid-sdk';
 import { useTranslation } from 'react-i18next';
 
@@ -58,49 +58,139 @@ export const usePerpsPosition = ({
           builder: PERPS_BUILDER_INFO,
         });
 
-        setCurrentTpOrSl({
-          tpPrice: formattedTpTriggerPx,
-          slPrice: formattedSlTriggerPx,
-        });
+        const nextCurrentTpOrSl = {} as { tpPrice?: string; slPrice?: string };
+        formattedTpTriggerPx &&
+          (nextCurrentTpOrSl.tpPrice = formattedTpTriggerPx);
+        formattedSlTriggerPx &&
+          (nextCurrentTpOrSl.slPrice = formattedSlTriggerPx);
+        setCurrentTpOrSl(nextCurrentTpOrSl);
         setTimeout(() => {
           dispatch.perps.fetchPositionOpenOrders();
         }, 1000);
-        message.success(t('page.perps.toast.setAutoCloseSuccess'));
-
-        // if (
-        //   res?.response.data.statuses.every(
-        //     (item) => ((item as unknown) as string) === 'waitingForTrigger'
-        //   )
-        // ) {
-        //   refreshData();
-        //   message.success('Auto close position set successfully');
-        // } else {
-        //   message.error('Set auto close error');
-        //   Sentry.captureException(
-        //     new Error(
-        //       'Set auto close error' +
-        //         'params: ' +
-        //         JSON.stringify(params) +
-        //         'res: ' +
-        //         JSON.stringify(res)
-        //     )
-        //   );
-        // }
+        message.success({
+          className: 'toast-message-2025-center',
+          content: tpTriggerPx
+            ? t('page.perps.toast.takeProfitSuccess')
+            : t('page.perps.toast.stopLossSuccess'),
+        });
       } catch (error) {
         const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
         if (isExpired) {
           return;
         }
-        message.error(error?.message || 'Set auto close error');
+        const errorText = params.tpTriggerPx
+          ? 'Take profit set error'
+          : 'Stop loss set error';
+        message.error({
+          className: 'toast-message-2025-center',
+          content: error?.message || errorText,
+        });
         Sentry.captureException(
           new Error(
-            'Set auto close error' +
+            errorText +
               'params: ' +
               JSON.stringify(params) +
               'error: ' +
               JSON.stringify(error)
           )
         );
+      }
+    }
+  );
+
+  const handleCancelOrder = useMemoizedFn(
+    async (oid: number, coin: string, actionType: 'tp' | 'sl') => {
+      const actionText = actionType === 'tp' ? 'Take profit' : 'Stop loss';
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.exchange?.cancelOrder([
+          {
+            oid,
+            coin,
+          },
+        ]);
+        if (
+          res?.response.data.statuses.every(
+            (item) => ((item as unknown) as string) === 'success'
+          )
+        ) {
+          message.success({
+            className: 'toast-message-2025-center',
+            content: actionText + ' canceled successfully',
+          });
+          setTimeout(() => {
+            dispatch.perps.fetchPositionOpenOrders();
+          }, 1000);
+        } else {
+          message.error({
+            className: 'toast-message-2025-center',
+            content: actionText + ' cancel error',
+          });
+          Sentry.captureException(
+            new Error(
+              actionText + ' cancel error' + 'res: ' + JSON.stringify(res)
+            )
+          );
+        }
+      } catch (error) {
+        message.error({
+          className: 'toast-message-2025',
+          content: actionText + ' cancel error',
+        });
+        Sentry.captureException(
+          new Error(
+            actionText + ' cancel error' + 'error: ' + JSON.stringify(error)
+          )
+        );
+      }
+    }
+  );
+
+  const handleUpdateMargin = useMemoizedFn(
+    async (coin: string, action: 'add' | 'reduce', margin: number) => {
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.exchange?.updateIsolatedMargin({
+          coin,
+          value: action === 'add' ? margin : -margin,
+        });
+
+        if (res?.status === 'ok') {
+          message.success({
+            className: 'toast-message-2025-center',
+            content: t(
+              action === 'add'
+                ? 'page.perpsDetail.PerpsEditMarginPopup.addMarginSuccess'
+                : 'page.perpsDetail.PerpsEditMarginPopup.reduceMarginSuccess'
+            ),
+          });
+          dispatch.perps.fetchClearinghouseState();
+        } else {
+          const msg = res?.response?.data?.statuses[0];
+          message.error({
+            className: 'toast-message-2025-center',
+            content: msg || 'Update margin failed',
+          });
+          Sentry.captureException(
+            new Error(
+              'PERPS update margin failed: ' +
+                JSON.stringify({ action, margin, res })
+            )
+          );
+        }
+      } catch (error) {
+        console.error('Update margin error:', error);
+        message.error({
+          className: 'toast-message-2025-center',
+          content: error?.message || 'Update margin failed',
+        });
+        Sentry.captureException(
+          new Error(
+            'PERPS update margin error: ' +
+              JSON.stringify({ action, margin, error })
+          )
+        );
+        throw error;
       }
     }
   );
@@ -128,14 +218,15 @@ export const usePerpsPosition = ({
           dispatch.perps.fetchClearinghouseState();
           dispatch.perps.fetchUserHistoricalOrders();
           const { totalSz, avgPx } = filled;
-          message.success(
-            t('page.perps.toast.closePositionSuccess', {
+          message.success({
+            className: 'toast-message-2025-center',
+            content: t('page.perps.toast.closePositionSuccess', {
               direction,
               coin,
               size: totalSz,
               price: avgPx,
-            })
-          );
+            }),
+          });
           setCurrentTpOrSl({
             tpPrice: undefined,
             slPrice: undefined,
@@ -147,7 +238,10 @@ export const usePerpsPosition = ({
           };
         } else {
           const msg = res?.response?.data?.statuses[0]?.error;
-          message.error(msg || 'close position error');
+          message.error({
+            className: 'toast-message-2025-center',
+            content: msg || 'close position error',
+          });
           Sentry.captureException(
             new Error(
               'PERPS close position noFills' +
@@ -165,7 +259,10 @@ export const usePerpsPosition = ({
           return null;
         }
         console.error('close position error', e);
-        message.error(e?.message || 'close position error');
+        message.error({
+          className: 'toast-message-2025-center',
+          content: e?.message || 'close position error',
+        });
         Sentry.captureException(
           new Error(
             'PERPS close position error' +
@@ -245,14 +342,15 @@ export const usePerpsPosition = ({
           dispatch.perps.fetchClearinghouseState();
 
           const { totalSz, avgPx } = filled;
-          message.success(
-            t('page.perps.toast.openPositionSuccess', {
+          message.success({
+            className: 'toast-message-2025-center',
+            content: t('page.perps.toast.openPositionSuccess', {
               direction,
               coin,
               size: totalSz,
               price: avgPx,
-            })
-          );
+            }),
+          });
           setCurrentTpOrSl({
             tpPrice: formattedTpTriggerPx,
             slPrice: formattedSlTriggerPx,
@@ -264,7 +362,10 @@ export const usePerpsPosition = ({
           };
         } else {
           const msg = res?.response?.data?.statuses[0]?.error;
-          message.error(msg || 'open position error');
+          message.error({
+            className: 'toast-message-2025-center',
+            content: msg || 'open position error',
+          });
           Sentry.captureException(
             new Error(
               'PERPS open position noFills' +
@@ -281,7 +382,10 @@ export const usePerpsPosition = ({
           return;
         }
         console.error(error);
-        message.error(error?.message || 'open position error');
+        message.error({
+          className: 'toast-message-2025-center',
+          content: error?.message || 'open position error',
+        });
         Sentry.captureException(
           new Error(
             'PERPS open position error' +
@@ -299,6 +403,8 @@ export const usePerpsPosition = ({
     handleOpenPosition,
     handleClosePosition,
     handleSetAutoClose,
+    handleCancelOrder,
+    handleUpdateMargin,
     userFills,
     isLogin,
     currentPerpsAccount,

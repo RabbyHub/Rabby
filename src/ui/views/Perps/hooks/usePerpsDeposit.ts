@@ -17,7 +17,7 @@ import {
   ARB_USDC_TOKEN_ITEM,
   PERPS_AGENT_NAME,
   PERPS_SEND_ARB_USDC_ADDRESS,
-} from './constants';
+} from '../constants';
 import { findChain } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
 import { Tx } from 'background/service/openapi';
