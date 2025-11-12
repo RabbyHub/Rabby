@@ -300,6 +300,12 @@ export function VirtualTable<RecordType extends object>({
 
   const { t } = useTranslation();
 
+  const tableHeight = useMemo(() => {
+    return isDesktop
+      ? Math.min(totalHeight, window.innerHeight > 900 ? 556 : 280)
+      : (scroll!.y as number);
+  }, [isDesktop, scroll]);
+
   const renderVirtualList = (
     rowList: readonly RecordType[],
     { scrollbarSize, ref, onScroll }: any
@@ -368,7 +374,7 @@ export function VirtualTable<RecordType extends object>({
               },
           getCellClassName,
         }}
-        height={isDesktop ? Math.min(totalHeight, 556) : (scroll!.y as number)}
+        height={tableHeight}
         width={tableWidth}
         onScroll={({ scrollLeft }: { scrollLeft: number }) => {
           onScroll({ scrollLeft });
