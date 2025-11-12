@@ -63,6 +63,7 @@ export const BalanceView: React.FC<{
   curveLoading?: boolean;
   balanceFromCache?: boolean;
   onRefresh?(): void;
+  appChainIds: string[];
 }> = ({
   balance,
   evmBalance,
@@ -73,6 +74,7 @@ export const BalanceView: React.FC<{
   curveLoading,
   balanceFromCache,
   onRefresh,
+  appChainIds,
 }) => {
   const { t } = useTranslation();
   const [isHover, setHover] = useState(false);
@@ -250,6 +252,7 @@ export const BalanceView: React.FC<{
                 isHover={currentHover}
                 data={curveChartData}
                 showAppChainTips={showAppChainTips}
+                appChainIds={appChainIds}
                 onHover={handleHoverCurve}
                 width={400}
                 height={180}

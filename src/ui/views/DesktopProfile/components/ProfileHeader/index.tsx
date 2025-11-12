@@ -46,6 +46,7 @@ export const ProfileHeader: React.FC<{
   balance?: number | null;
   evmBalance?: number | null;
   curveChartData?: CurveChartData;
+  appChainIds: string[];
   isLoading?: boolean;
   onRefresh?(): void;
 }> = (props) => {

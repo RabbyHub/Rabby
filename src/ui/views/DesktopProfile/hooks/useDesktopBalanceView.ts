@@ -35,6 +35,7 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
   const {
     balance: latestBalance,
     evmBalance: latestEvmBalance,
+    appChainIds: latestAppChainIds,
     matteredChainBalances: latestMatteredChainBalances,
     chainBalancesWithValue: latestChainBalancesWithValue,
     success: loadBalanceSuccess,
@@ -68,13 +69,17 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
     curveChartData,
     matteredChainBalances,
     chainBalancesWithValue,
+    appChainIds,
   } = useMemo(() => {
     const balanceValue = latestBalance || currentHomeBalanceCache?.balance;
     const evmBalanceValue =
       latestEvmBalance || currentHomeBalanceCache?.evmBalance;
+    const appChainIds =
+      latestAppChainIds || currentHomeBalanceCache?.appChainIds;
     return {
       balance: balanceValue,
       evmBalance: evmBalanceValue,
+      appChainIds,
       curveChartData:
         latestCurveChartData ||
         formChartData(
@@ -166,5 +171,6 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
     isBalanceLoading,
     refreshCurve,
     refreshBalance,
+    appChainIds,
   };
 };
