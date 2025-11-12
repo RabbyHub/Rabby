@@ -1245,7 +1245,7 @@ export const MiniSignTx = ({
                   }
                 />
 
-                <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-light-r-neutral-line" />
+                <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-r-neutral-line" />
               </div>
             ) : null}
             <GasSelectorHeader

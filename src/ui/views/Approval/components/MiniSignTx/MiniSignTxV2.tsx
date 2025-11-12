@@ -505,7 +505,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                           }
                         />
 
-                        <Divide className="mt-auto w-[calc(100%+40px)] relative left-[-20px] bg-light-r-neutral-line" />
+                        <Divide className="mt-auto w-[calc(100%+40px)] relative left-[-20px] bg-r-neutral-line" />
                       </div>
                     ) : null}
                     <GasSelectorHeader
@@ -720,7 +720,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                     }
                   />
 
-                  <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-light-r-neutral-line" />
+                  <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-r-neutral-line" />
                 </div>
               ) : null}
               <GasSelectorHeader
