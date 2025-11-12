@@ -142,6 +142,8 @@ export interface PreferenceStore {
   isEnabledDappAccount?: boolean;
 
   rateGuideLastExposure?: RateGuideLastExposure;
+
+  desktopTabId?: number;
 }
 
 export interface AddressSortStore {
@@ -218,6 +220,7 @@ class PreferenceService {
         isEnabledDappAccount: false,
         ga4EventTime: 0,
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
+        desktopTabId: undefined,
       },
     });
 

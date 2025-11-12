@@ -67,6 +67,7 @@ export const BalanceView = ({
   const {
     balance: latestBalance,
     evmBalance: latestEvmBalance,
+    appChainIds: latestAppChainIds,
     matteredChainBalances: latestMatteredChainBalances,
     chainBalancesWithValue: latestChainBalancesWithValue,
     success: loadBalanceSuccess,
@@ -106,11 +107,15 @@ export const BalanceView = ({
     curveChartData,
     matteredChainBalances,
     chainBalancesWithValue,
+    appChainIds,
   } = useMemo(() => {
     const balanceValue = latestBalance || currentHomeBalanceCache?.balance;
     const evmBalanceValue =
       latestEvmBalance || currentHomeBalanceCache?.evmBalance;
+    const appChainIds =
+      latestAppChainIds || currentHomeBalanceCache?.appChainIds;
     return {
+      appChainIds,
       balance: balanceValue,
       evmBalance: evmBalanceValue,
       curveChartData:
@@ -130,6 +135,7 @@ export const BalanceView = ({
   }, [
     latestBalance,
     latestEvmBalance,
+    latestAppChainIds,
     latestMatteredChainBalances,
     latestChainBalancesWithValue,
     latestCurveChartData,
@@ -204,6 +210,8 @@ export const BalanceView = ({
   const { activePopup, setData, componentName } = useCommonPopupView();
   const onClickViewAssets = () => {
     activePopup('AssetList');
+    // wallet.openInDesktop('/desktop/profile');
+    // window.close();
   };
 
   useEffect(() => {
@@ -435,6 +443,7 @@ export const BalanceView = ({
                 isHover={currentHover}
                 data={curveChartData}
                 showAppChainTips={showAppChainTips}
+                appChainIds={appChainIds}
                 onHover={handleHoverCurve}
               />
             )}

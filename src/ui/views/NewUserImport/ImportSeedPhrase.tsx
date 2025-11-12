@@ -224,7 +224,7 @@ export const ImportSeedPhrase = () => {
                 type="password"
                 className={clsx(
                   isSlip39 ? 'h-[56px] text-15' : 'h-[44px]',
-                  'border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue'
+                  'border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue text-r-neutral-title-1'
                 )}
                 spellCheck={false}
                 placeholder={t('page.newAddress.seedPhrase.passphrase')}

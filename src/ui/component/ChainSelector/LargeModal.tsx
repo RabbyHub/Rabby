@@ -187,7 +187,7 @@ export const ChainSelectorLargeModal = ({
 
   return (
     <Modal
-      width={480}
+      width={400}
       footer={null}
       visible={visible}
       onCancel={handleCancel}

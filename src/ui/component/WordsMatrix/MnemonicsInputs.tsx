@@ -457,13 +457,13 @@ function MnemonicsInputs({
           onVisibleChange={handleDropdownVisibleChange}
           overlay={
             <Menu
-              className="mnemonics-input-menu py-8px rounded-[8px]"
+              className="mnemonics-input-menu py-8px rounded-[8px] bg-r-neutral-bg-1"
               selectable={false}
             >
               {MNEMONICS_COUNTS.map((count) => {
                 return (
                   <Menu.Item
-                    className="h-[38px] py-0 px-[8px] text-r-neutral-body hover:bg-transparent"
+                    className="h-[38px] py-0 px-[8px] text-r-neutral-title-1 hover:bg-transparent"
                     key={`countSelector-${count}`}
                     onClick={() => {
                       setMnemonicsCount(count);

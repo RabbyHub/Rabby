@@ -62,7 +62,13 @@ import { useTwoStepSwap } from '../hooks/twoStepSwap';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+
+const getContainer = isTab
+  ? '.js-rabby-popup-container'
+  : isDesktop
+  ? '.js-rabby-desktop-swap-container'
+  : undefined;
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
@@ -254,7 +260,7 @@ export const Main = () => {
               },
             }
           );
-          if (!isTab) {
+          if (!(isTab || isDesktop)) {
             window.close();
           } else {
             await promise;
@@ -496,15 +502,17 @@ export const Main = () => {
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
 
-  const { openDirect, prefetch } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: findChain({ enum: chain })?.serverId || '',
     autoResetGasStoreOnChainChange: true,
   });
 
   useEffect(() => {
+    closeSign();
     prefetch({
       txs: currentTxs || [],
+      getContainer,
       // checkGasFeeTooHigh: true,
       // enableSecurityEngine: true,
     });
@@ -719,7 +727,8 @@ export const Main = () => {
   return (
     <>
       <Header
-        onOpenInTab={() => {
+        noShowHeader={isDesktop}
+        onOpenInTab={async () => {
           openInternalPageInTab(
             `dex-swap?${obj2query({
               chain:
@@ -733,6 +742,21 @@ export const Main = () => {
               rbiSource,
             })}`
           );
+          // await wallet.openInDesktop(
+          //   `desktop/profile?${obj2query({
+          //     chain:
+          //       findChain({
+          //         enum: chain,
+          //       })?.serverId || '',
+          //     payTokenId: payToken?.id || '',
+          //     receiveTokenId: receiveToken?.id || '',
+          //     inputAmount,
+          //     isMax: slider >= 100 ? 'true' : '',
+          //     rbiSource,
+          //     action: 'swap',
+          //   })}`
+          // );
+          // window.close();
         }}
       />
       <div
@@ -976,6 +1000,7 @@ export const Main = () => {
                     return;
                   }
                   if (!activeProvider) {
+                    console.log('refresh 4');
                     refresh((e) => e + 1);
                     return;
                   }

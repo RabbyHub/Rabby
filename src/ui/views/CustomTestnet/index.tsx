@@ -4,13 +4,7 @@ import {
 } from '@/background/service/customTestnet';
 import { useWallet } from '@/ui/utils';
 import { updateChainStore } from '@/utils/chain';
-import {
-  useMemoizedFn,
-  useMount,
-  useRequest,
-  useSetState,
-  useUnmount,
-} from 'ahooks';
+import { useMemoizedFn, useMount, useRequest, useSetState } from 'ahooks';
 import { Button, message } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +29,7 @@ const Footer = styled.div`
   justify-content: center;
 `;
 
-export const CustomTestnet = () => {
+export const CustomTestnet = ({ inModal }: { inModal?: boolean }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const history = useHistory();
@@ -140,7 +134,7 @@ export const CustomTestnet = () => {
         <PageHeader
           className="pt-[24px] mx-[20px] mb-16"
           canBack={false}
-          closeable
+          closeable={!inModal}
           onClose={() => {
             if (history.length > 1) {
               history.goBack();

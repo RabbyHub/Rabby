@@ -11,7 +11,7 @@ import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { groupBy } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
@@ -20,7 +20,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { findChain, findChainByID } from '@/utils/chain';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SafeTransactionDataPartial } from '@safe-global/types-kit';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
 import { intToHex, toChecksumAddress } from '@ethereumjs/util';
 import { useHistory } from 'react-router-dom';
@@ -39,6 +39,8 @@ import { splitNumberByStep } from 'ui/utils/number';
 import { getProtocol } from '@rabby-wallet/rabby-action';
 import { ReplacePopup } from './ReplacePopup';
 import { numberToHex } from 'viem';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { UI_TYPE } from '@/constant/ui';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -376,22 +378,36 @@ const GnosisTransactionItem = ({
         },
       ],
     });
-    window.close();
+    if (!(UI_TYPE.isDesktop || UI_TYPE.isTab)) {
+      window.close();
+    }
   };
 
   const history = useHistory();
   const handleReplace = async (type: string) => {
     if (type === 'send') {
-      history.replace({
-        pathname: '/send-token',
-        state: {
-          safeInfo: {
-            nonce: data.nonce,
-            chainId: Number(networkId),
+      if (UI_TYPE.isDesktop) {
+        // todo check this
+        history.replace(
+          `/desktop/profile?action=send&safeInfo=${encodeURIComponent(
+            JSON.stringify({
+              nonce: data.nonce,
+              chainId: Number(networkId),
+            })
+          )}`
+        );
+      } else {
+        history.replace({
+          pathname: '/send-token',
+          state: {
+            safeInfo: {
+              nonce: data.nonce,
+              chainId: Number(networkId),
+            },
+            from: '/gnosis-queue',
           },
-          from: '/gnosis-queue',
-        },
-      });
+        });
+      }
     } else if (type === 'reject') {
       const params = {
         chainId: Number(networkId),
@@ -408,13 +424,17 @@ const GnosisTransactionItem = ({
         method: 'eth_sendTransaction',
         params: [params],
       });
-      window.close();
+      if (UI_TYPE.isPop) {
+        window.close();
+      }
     }
   };
 
   useEffect(() => {
     init();
   }, []);
+
+  const { getContainer } = usePopupContainer();
 
   return (
     <>
@@ -490,6 +510,7 @@ const GnosisTransactionItem = ({
         visible={isShowReplacePopup}
         onClose={() => setIsShowReplacePopup(false)}
         onSelect={handleReplace}
+        getContainer={getContainer}
       />
     </>
   );
@@ -670,6 +691,8 @@ export const GnosisTransactionQueueList = (props: {
     return Object.entries(transactionsGroup);
   }, [transactionsGroup]);
 
+  const { getContainer } = usePopupContainer();
+
   return (
     <div className="queue-list h-full">
       {safeInfo && list.length ? (
@@ -752,6 +775,7 @@ export const GnosisTransactionQueueList = (props: {
         isLoading={isSubmitting}
         networkId={networkId}
         owners={safeInfo?.owners}
+        getContainer={getContainer}
       />
     </div>
   );

@@ -1,5 +1,11 @@
 import clsx from 'clsx';
-import React, { useRef, useState, useEffect } from 'react';
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  ReactNode,
+  ReactComponentElement,
+} from 'react';
 import { copyAddress } from '../utils/clipboard';
 import { ReactComponent as RcIconCopyCheck } from 'ui/assets/copy-checked.svg';
 import { ReactComponent as RcIconCopy } from 'ui/assets/component/icon-copy-cc.svg';
@@ -9,11 +15,13 @@ export const CopyChecked = ({
   className,
   copyClassName,
   checkedClassName,
+  copyIcon,
 }: {
   addr: string;
   className?: string;
   copyClassName?: string;
   checkedClassName?: string;
+  copyIcon?: React.FC<React.SVGProps<SVGSVGElement>>;
 }) => {
   const timerRef = useRef<NodeJS.Timeout>();
   const [copied, setCopied] = useState(false);
@@ -28,6 +36,8 @@ export const CopyChecked = ({
       setCopied(false);
     }, 2000);
   };
+
+  const Node = copyIcon || RcIconCopy;
 
   useEffect(() => {
     return () => {
@@ -45,7 +55,7 @@ export const CopyChecked = ({
     );
   }
   return (
-    <RcIconCopy
+    <Node
       viewBox="0 0 16 16"
       onClick={handleCopy}
       className={clsx(

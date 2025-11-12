@@ -3,6 +3,7 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 
 import { findChainByServerID, DisplayChainWithWhiteLogo } from '@/utils/chain';
 import { filterChainWithBalance, normalizeChainList } from '@/utils/account';
+import { useRabbyDispatch, useRabbySelector } from '../store';
 
 /** @deprecated import from '@/utils/chain' directly  */
 export type { DisplayChainWithWhiteLogo };
@@ -38,8 +39,10 @@ export default function useCurrentBalance(
   const [matteredChainBalances, setChainBalances] = useState<
     DisplayChainWithWhiteLogo[]
   >([]);
-
+  const [appChainIds, setAppChainIds] = useState<string[]>([]);
   const [missingList, setMissingList] = useState<string[]>();
+
+  const dispatch = useRabbyDispatch();
 
   const [getInMemoryAddressBalance] = useWalletRequest(
     wallet.getInMemoryAddressBalance,
@@ -48,11 +51,16 @@ export default function useCurrentBalance(
         const { total_usd_value, chain_list } = options;
         const evmUsdValue =
           'evmUsdValue' in options ? (options.evmUsdValue as number) : 0;
+        const chainIds =
+          'appChainIds' in options ? (options.appChainIds as string[]) : [];
         if (isCanceled) return;
+        setAppChainIds(chainIds);
         setEvmBalance(evmUsdValue);
         setBalance(total_usd_value);
         setSuccess(true);
         const chainList = normalizeChainList(chain_list);
+
+        dispatch.accountToDisplay.getAllAccountsToDisplay();
 
         setChainBalances(chainList);
         setBalanceLoading(false);
@@ -147,6 +155,7 @@ export default function useCurrentBalance(
   return {
     balance,
     evmBalance,
+    appChainIds,
     matteredChainBalances,
     chainBalancesWithValue,
     isCurrentBalanceExpired,

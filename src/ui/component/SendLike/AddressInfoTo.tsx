@@ -112,12 +112,12 @@ export function AddressInfoTo({
     <div className={clsx(className, 'overflow-auto')}>
       <div className="section relative">
         <div className="section-title justify-between items-center flex">
-          <span className="section-title__to font-medium">
+          <span className="section-title__to font-bold text-[17px]">
             {titleText || t('page.sendToken.sectionTo.title')}
           </span>
 
           {hasPositiveTips && (
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end font-medium text-[15px]">
               <RcCheckRight width={18} height={18} className="mr-[3px]" />
               {inWhitelist ? (
                 <span className="text-r-green-default">
@@ -140,7 +140,7 @@ export function AddressInfoTo({
         <div className="mt-[12px]">
           <div
             className={clsx(
-              'h-[58px] w-[100%] flex items-center justify-between p-[12px] ',
+              'h-[58px] w-[100%] flex items-center justify-between p-[16px] ',
               isDarkTheme ? 'bg-r-neutral-card1' : 'bg-r-neutral-bg1',
               'cursor-pointer border-[1px] border-transparent hover:border-rabby-blue-default hover:bg-r-blue-light1 rounded-[8px]'
             )}
@@ -157,20 +157,22 @@ export function AddressInfoTo({
                 <div className="relative">
                   {!toAccount?.address ? (
                     <div
-                      className="w-[36px] h-[36px] rounded-[6px] flex justify-center items-center bg-r-neutral-line"
-                      style={{ width: 36, height: 36 }}
+                      className="w-[24px] h-[24px] flex justify-center items-center"
+                      style={{}}
                     >
-                      <RcAvatarCC
-                        width={13}
-                        height={15}
-                        className="text-r-neutral-foot"
-                      />
+                      <div className="w-[24px] h-[24px] rounded-[6px] flex justify-center items-center bg-r-neutral-line">
+                        <RcAvatarCC
+                          width={13}
+                          height={15}
+                          className="text-r-neutral-foot"
+                        />
+                      </div>
                     </div>
                   ) : (
                     <ThemeIcon
                       src={cexInfo?.logo_url || addressTypeIcon}
-                      className={'w-[36px] h-[36px] rounded-full'}
-                      style={{ width: 36, height: 36, padding: 4 }}
+                      className={'w-[24px] h-[24px] rounded-full'}
+                      style={{ padding: 0 }}
                     />
                   )}
                   {inWhitelist && (
@@ -185,7 +187,7 @@ export function AddressInfoTo({
                 </div>
               </Tooltip>
 
-              <div className="flex flex-col items-center ml-[8px]">
+              <div className={clsx('flex flex-col items-center', 'ml-[8px]')}>
                 {toAccount?.address ? (
                   <Tooltip
                     overlayClassName="address-tooltip address-tooltip-transparent rounded-tooltip"
@@ -211,7 +213,7 @@ export function AddressInfoTo({
                   >
                     <div className="flex flex-col justify-center items-start">
                       {aliasName ? (
-                        <span className="text-[14px] mb-[4px] font-[600] leading-[20px] text-r-neutral-title-1">
+                        <span className="text-[14px] mb-[4px] font-medium leading-[20px] text-r-neutral-title-1">
                           {aliasName}
                         </span>
                       ) : (
@@ -233,7 +235,7 @@ export function AddressInfoTo({
                     </div>
                   </Tooltip>
                 ) : (
-                  <span className="text-[16px] font-[600] leading-[20px] text-r-neutral-title-1">
+                  <span className="text-[16px] font-medium leading-[20px] text-r-neutral-foot">
                     {t('page.sendToken.sectionTo.placeholder')}
                   </span>
                 )}
@@ -241,9 +243,9 @@ export function AddressInfoTo({
             </div>
 
             {toAccount ? (
-              <RcToSwitch />
+              <RcToSwitch width={24} height={24} />
             ) : (
-              <RcIconAddressEntry width={26} height={26} />
+              <RcIconAddressEntry width={24} height={24} />
             )}
           </div>
         </div>

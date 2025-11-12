@@ -99,6 +99,9 @@ export const useDappAction = (
 
   useEffect(() => {
     if (!data || !chain) return;
+
+    let isMounted = true;
+
     try {
       const normalizedFunc = getMethodDesc(data.func);
       const abi = parseAbiItem(normalizedFunc) as AbiFunction;
@@ -127,30 +130,44 @@ export const useDappAction = (
           data?.need_approve?.to &&
           !isWhitelistSpender(data.need_approve?.to, chain)
         ) {
-          setValid(false);
+          if (isMounted) {
+            setValid(false);
+          }
           return;
         }
         const isValidMethod = !isBlacklistMethod(data.func);
         if (!isValidMethod) {
-          setValid(false);
+          if (isMounted) {
+            setValid(false);
+          }
           return;
         }
         if (!addresses?.length) {
-          setValid(true);
+          if (isMounted) {
+            setValid(true);
+          }
           return;
         }
         const results = await Promise.all(
           addresses.map((addr) => validate(addr))
         );
         const passed = results.every((item) => item);
-        setValid(passed);
+        if (isMounted) {
+          setValid(passed);
+        }
       };
 
       run();
     } catch (error) {
       // ignore error and hide actions
-      setValid(false);
+      if (isMounted) {
+        setValid(false);
+      }
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [chain, currentAccount?.address, data, isErc20Contract]);
 
   const buildApproveTxs = useCallback(async (): Promise<Tx[]> => {

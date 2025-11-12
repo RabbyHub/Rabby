@@ -148,6 +148,7 @@ eventBus.addEventListener('syncChainList', (params) => {
 });
 
 const main = () => {
+  console.log('name', getUITypeName());
   portMessageChannel.connect(getUITypeName());
 
   store.dispatch.app.initBizStore();

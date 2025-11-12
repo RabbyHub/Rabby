@@ -1450,7 +1450,8 @@
         "missingDataTooltip": "Balance may not be updated due to current network issues with {{text}}.",
         "chain": " chain, ",
         "chainEnd": " chain",
-        "appChainTips": "Hyperliquid & Polymarket Account not included"
+        "appChainTips": "Hyperliquid & Polymarket Account not included",
+        "slotAppChainTips": "{{appChainNames}} Account not included"
       },
       "recentConnection": {
         "disconnected": "Disconnected",
@@ -1708,6 +1709,7 @@
           "summaryTips": "Asset value divided by total net worth",
           "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
           "noMatch": "No Match",
+          "noTokens": "No Tokens",
           "lowValueDescription": "Low value assets will be shown here",
           "lowValueAssets_0": "{{count}} low value token",
           "lowValueAssets_one": "{{count}} low value token",
@@ -1741,6 +1743,8 @@
         },
         "TestnetAssetListContainer": {
           "add": "Token",
+          "addNetwork": "Add Network",
+          "addToken": "Add Token",
           "addTestnet": "Network"
         },
         "noTestnetAssets": "No Custom Network Assets",
@@ -3040,6 +3044,12 @@
         "searchTips": "Search the web"
       }
     },
+    "desktopProfile": {
+      "CurveModal": {
+        "appChainTips": "Hyperliquid & Polymarket Account not included",
+        "netWorth": "Net Worth"
+      }
+    },
     "selectToAddress": {
       "title": "Address",
       "enterAddress": "Enter address",
@@ -3295,6 +3305,9 @@
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
+    },
+    "DesktopChainSelector": {
+      "allChains": "All Chains"
     }
   },
   "global": {
