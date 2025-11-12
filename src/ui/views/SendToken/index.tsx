@@ -1500,14 +1500,15 @@ const SendToken = () => {
     ]
   );
   const [sliderPercentValue, setSliderPercentValue] = useState(0);
-  const onSliderValueChangeTo100 = useCallback(
-    debounce((value: number) => {
-      if (value !== 100) return;
+  // const onSliderValueChangeTo100 = useCallback(
+  //   debounce((value: number) => {
+  //     if (value !== 100) return;
 
-      handleMaxInfoChanged(undefined, { updateSliderValue: false });
-    }, 300),
-    [handleMaxInfoChanged]
-  );
+  //     handleMaxInfoChanged(undefined, { updateSliderValue: false });
+  //   }, 300),
+  //   [handleMaxInfoChanged]
+  // );
+
   const handleGasLevelChanged = useCallback(
     async (gl?: GasLevel | null) => {
       handleReserveGasClose();
@@ -1946,7 +1947,7 @@ const SendToken = () => {
                   {t('page.sendToken.sectionBalance.title')}
                 </div>
 
-                <div className="token-balance-slider flex pl-[2px] w-[192px] pr-[8px] justify-between items-center">
+                {/* <div className="token-balance-slider flex pl-[2px] w-[192px] pr-[8px] justify-between items-center">
                   <SendSlider
                     min={0}
                     max={100}
@@ -2009,7 +2010,7 @@ const SendToken = () => {
                   <div className="ml-[8px] w-[42px] text-right text-[13px] text-r-blue-default">
                     {sliderPercentValue}%
                   </div>
-                </div>
+                </div> */}
               </div>
               {currentAccount && chainItem && (
                 <div className="bg-r-neutral-card1 rounded-[8px]">
