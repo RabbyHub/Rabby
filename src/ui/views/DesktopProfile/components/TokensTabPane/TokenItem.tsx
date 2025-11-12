@@ -37,7 +37,7 @@ const ActionBottom = ({
       className={`
         swap-action-btn
         px-10 h-[24px] leading-[24px] 
-        text-r-blue-default text-12 font-medium rounded-[4px] 
+        text-r-blue-default text-12 font-medium rounded-[6px] 
         border-[0.5px] border-r-blue-default w-min cursor-pointer 
         hover:bg-r-blue-light1
       `}
