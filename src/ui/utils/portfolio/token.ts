@@ -164,13 +164,14 @@ export const useTokens = (
     setData(_data);
     const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
 
-    const blocked = (await wallet.getBlockedToken()).filter((token) => {
-      if (isTestnet) {
-        return checkIsTestnet(token.chain);
-      } else {
-        return !checkIsTestnet(token.chain);
-      }
-    });
+    // const blocked = (await wallet.getBlockedToken()).filter((token) => {
+    //   if (isTestnet) {
+    //     return checkIsTestnet(token.chain);
+    //   } else {
+    //     return !checkIsTestnet(token.chain);
+    //   }
+    // });
+    const blocked = [];
 
     if (!snapshot) {
       log('--Terminate-tokens-snapshot-', userAddr);
