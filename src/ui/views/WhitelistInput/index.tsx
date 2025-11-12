@@ -273,18 +273,18 @@ const WhitelistInput = () => {
           onBack={handleClickBack}
           forceShowBack
           canBack
-          rightSlot={
-            isDesktop || isTab ? null : (
-              <div
-                className="text-r-neutral-title1 cursor-pointer absolute right-0 "
-                onClick={() => {
-                  openInternalPageInTab(`send-poly${history.location.search}`);
-                }}
-              >
-                <RcIconFullscreen />
-              </div>
-            )
-          }
+          // rightSlot={
+          //   isDesktop || isTab ? null : (
+          //     <div
+          //       className="text-r-neutral-title1 cursor-pointer absolute right-0 "
+          //       onClick={() => {
+          //         openInternalPageInTab(`send-poly${history.location.search}`);
+          //       }}
+          //     >
+          //       <RcIconFullscreen />
+          //     </div>
+          //   )
+          // }
         >
           {t('page.whitelist.title')}
         </PageHeader>
