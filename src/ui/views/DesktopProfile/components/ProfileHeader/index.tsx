@@ -24,6 +24,7 @@ import { createGlobalStyle } from 'styled-components';
 import { BalanceView } from './BalanceView';
 import { useAlias, useWallet } from '@/ui/utils';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
+import { useTranslation } from 'react-i18next';
 
 const GlobalStyle = createGlobalStyle`
   .global-qr-code-popover {
@@ -53,6 +54,7 @@ export const ProfileHeader: React.FC<{
   const location = useLocation();
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   const { data: pendingTxCount, runAsync } = useRequest(
     async () => {
@@ -154,7 +156,7 @@ export const ProfileHeader: React.FC<{
             }}
           >
             <RcIconSwapCC />
-            Swap
+            {t('page.desktopProfile.button.swap')}
           </div>
           <div
             className={clsx(
@@ -168,7 +170,7 @@ export const ProfileHeader: React.FC<{
             }}
           >
             <RcIconSendCC />
-            Send
+            {t('page.desktopProfile.button.send')}
           </div>
           <div
             className={clsx(
@@ -182,7 +184,7 @@ export const ProfileHeader: React.FC<{
             }}
           >
             <RcIconBridgeCC />
-            Bridge
+            {t('page.desktopProfile.button.bridge')}
           </div>
           {isGnosis ? (
             <div
@@ -199,14 +201,15 @@ export const ProfileHeader: React.FC<{
               }}
             >
               <RcIconQueueCC />
-              Queue
+              {t('page.desktopProfile.button.queue')}
             </div>
           ) : pendingTxCount ? (
             <div
               className={clsx(
                 'min-w-[100px] py-[14px] px-[10px] rounded-[14px',
                 'flex items-center justify-center gap-[8px] cursor-pointer',
-                'text-[14px] leading-[17px] font-semibold text-r-orange-default'
+                'text-[14px] leading-[17px] font-semibold text-r-orange-default',
+                'bg-rb-orange-light-1 rounded-[14px]'
               )}
               onClick={() => {
                 history.replace(
@@ -215,7 +218,9 @@ export const ProfileHeader: React.FC<{
               }}
             >
               <RcIconSpinCC className="w-[16px] h-[16px] animate-spin" />
-              <div>{pendingTxCount} Pending</div>
+              <div>
+                {t('page.desktopProfile.button.pending', { pendingTxCount })}
+              </div>
             </div>
           ) : null}
         </div>
