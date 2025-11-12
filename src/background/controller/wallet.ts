@@ -5666,6 +5666,13 @@ export class WalletController extends BaseController {
   ) => {
     signTextHistoryService.createHistory(params);
   };
+
+  emitEvent = (method: string, params?: any) => {
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: method,
+      params,
+    });
+  };
 }
 
 const wallet = new WalletController();

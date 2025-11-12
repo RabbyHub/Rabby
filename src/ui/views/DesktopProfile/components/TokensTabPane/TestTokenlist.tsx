@@ -238,6 +238,8 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
         visible={isShowAddNetworkModal}
         onCancel={() => {
           setIsShowAddNetworkModal(false);
+        }}
+        onChange={() => {
           refreshAsync();
         }}
         destroyOnClose

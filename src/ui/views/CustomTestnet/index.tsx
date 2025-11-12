@@ -30,7 +30,13 @@ const Footer = styled.div`
   justify-content: center;
 `;
 
-export const CustomTestnet = ({ inModal }: { inModal?: boolean }) => {
+export const CustomTestnet = ({
+  inModal,
+  onChange,
+}: {
+  inModal?: boolean;
+  onChange?(): void;
+}) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const history = useHistory();
@@ -53,12 +59,14 @@ export const CustomTestnet = ({ inModal }: { inModal?: boolean }) => {
       isEdit: false,
     };
     setState(next);
-    wallet.setPageStateCache({
-      path: '/custom-testnet',
-      states: {
-        ...next,
-      },
-    });
+    if (!inModal) {
+      wallet.setPageStateCache({
+        path: '/custom-testnet',
+        states: {
+          ...next,
+        },
+      });
+    }
     matomoRequestEvent({
       category: 'Custom Network',
       action: 'Click Add Network',
@@ -79,6 +87,7 @@ export const CustomTestnet = ({ inModal }: { inModal?: boolean }) => {
       isEdit: false,
     });
     const list = await runGetCustomTestnetList();
+    onChange?.();
     updateChainStore({
       testnetList: list,
     });
@@ -100,6 +109,7 @@ export const CustomTestnet = ({ inModal }: { inModal?: boolean }) => {
       ),
     });
     const list = await runGetCustomTestnetList();
+    onChange?.();
     updateChainStore({
       testnetList: list,
     });
@@ -112,12 +122,14 @@ export const CustomTestnet = ({ inModal }: { inModal?: boolean }) => {
       isEdit: true,
     };
     setState(next);
-    wallet.setPageStateCache({
-      path: '/custom-testnet',
-      states: {
-        ...next,
-      },
-    });
+    if (!inModal) {
+      wallet.setPageStateCache({
+        path: '/custom-testnet',
+        states: {
+          ...next,
+        },
+      });
+    }
   });
 
   useMount(async () => {
