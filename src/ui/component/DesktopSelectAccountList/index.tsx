@@ -150,10 +150,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
     >
       <Virtuoso
         ref={virtuosoRef}
-        className={clsx(
-          'h-full',
-          isShowScroller ? 'w-[268px] pr-[8px]' : 'w-[260px]'
-        )}
+        className={clsx('h-full', isShowScroller ? 'w-[270px]' : 'w-[260px]')}
         data={filteredAccounts}
         totalCount={filteredAccounts.length}
         defaultItemHeight={72 + 12}

@@ -301,9 +301,10 @@ export function VirtualTable<RecordType extends object>({
   const { t } = useTranslation();
 
   const tableHeight = useMemo(() => {
-    return isDesktop
-      ? Math.min(totalHeight, window.innerHeight > 900 ? 556 : 280)
-      : (scroll!.y as number);
+    return isDesktop ? Math.min(totalHeight, 556) : (scroll!.y as number);
+    // return isDesktop
+    //   ? Math.min(totalHeight, window.innerHeight > 900 ? 556 : 280)
+    //   : (scroll!.y as number);
   }, [isDesktop, scroll]);
 
   const renderVirtualList = (
