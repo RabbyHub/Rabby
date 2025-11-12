@@ -69,7 +69,11 @@ export const ProfileHeader: React.FC<{
     }
   );
 
-  useEventBusListener(EVENTS.TX_SUBMITTING, runAsync);
+  useEventBusListener(EVENTS.TX_SUBMITTING, () => {
+    setTimeout(() => {
+      runAsync();
+    }, 800);
+  });
   useEventBusListener(EVENTS.RELOAD_TX, runAsync);
 
   const [alias] = useAlias(currentAccount?.address || '');

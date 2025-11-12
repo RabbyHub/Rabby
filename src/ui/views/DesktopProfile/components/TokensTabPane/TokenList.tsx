@@ -63,7 +63,7 @@ export const TokenList = ({
   const { t } = useTranslation();
 
   return (
-    <div className="mt-[7px]" id={TOKEN_WALLET_ANCHOR_ID}>
+    <div className="mt-[7px] protocol-item-wrapper" id={TOKEN_WALLET_ANCHOR_ID}>
       <div className="flex items-center justify-between py-[14px] px-[20px]">
         <div className="flex items-center gap-[16px]">
           <div className="flex items-center gap-[6px]">
