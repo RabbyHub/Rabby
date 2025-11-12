@@ -90,7 +90,7 @@ const CustomTestnetTokenTable: React.FC<TableProps> = ({
   return (
     <Table className="!w-full ml-0 mr-0">
       <THeader
-        className="w-full justify-between bg-r-neutral-bg-1 rounded-[6px] py-8"
+        className="w-full justify-between bg-rb-neutral-bg-1 rounded-[6px] py-8"
         rowClassName="px-8"
       >
         <THeadCell className="flex-1">Token</THeadCell>

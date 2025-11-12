@@ -20,7 +20,7 @@ const HeaderRow = styled(FlexRow)`
   width: 100%;
   font-size: 12px;
   font-weight: bold;
-  color: var(--r-neutral-title1);
+  color: var(--rb-neutral-title1);
   line-height: 15px;
   min-width: 800px;
 
@@ -77,11 +77,11 @@ const ContentRow = styled(FlexRow)`
 const Content = styled.div`
   width: 100%;
   font-size: 14px;
-  color: var(--r-neutral-title1);
+  color: var(--rb-neutral-title1);
   line-height: 17px;
 
   > div {
-    border-bottom: 0.5px solid var(--r-neutral-line);
+    border-bottom: 0.5px solid var(--rb-neutral-line);
   }
 
   > div:last-child {
@@ -114,7 +114,7 @@ const Header = (props: { headers: ReactNode[]; className?: string }) => {
       <Row
         header
         className={cx(
-          'p-8 bg-r-neutral-bg-1 rounded-[6px]',
+          'p-8 bg-rb-neutral-bg-1 rounded-[6px]',
           props.className ?? ''
         )}
       >
@@ -122,7 +122,7 @@ const Header = (props: { headers: ReactNode[]; className?: string }) => {
           return (
             <Col
               key={i}
-              className="text-13 text-r-neutral-foot font-normal"
+              className="text-13 text-rb-neutral-foot font-normal"
               style={{
                 width: widths[i] || '',
                 flex: widths[i] ? `0 0 ${widths[i]}px` : '1',

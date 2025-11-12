@@ -15,6 +15,7 @@ export const AddCustomTokenModal: React.FC<
       bodyStyle={{ background: 'transparent', maxHeight: 'unset', padding: 0 }}
       footer={null}
       zIndex={1000}
+      className="modal-support-darkmode"
       closeIcon={
         <div className="pt-[10px]">
           <RcIconClose

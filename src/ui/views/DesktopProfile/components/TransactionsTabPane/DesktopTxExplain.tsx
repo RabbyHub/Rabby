@@ -68,7 +68,9 @@ export const DesktopTxExplain = ({
           {cateDict[data.cate_id || '']?.name ??
             (data.tx?.name || t('page.transactions.explain.unknown'))}
         </div>
-        <div className="tx-explain-desc">{projectName}</div>
+        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
+          {projectName}
+        </div>
       </>
     );
   }

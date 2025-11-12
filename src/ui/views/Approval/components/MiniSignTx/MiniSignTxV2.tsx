@@ -424,7 +424,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           bodyStyle={{ padding: 0, maxHeight: 600, height: 600 }}
           destroyOnClose={false}
           forceRender
-          mask={{
+          maskStyle={{
             background: 'rgba(0,0,0,0.3)',
             backdropFilter: 'blur(8px)',
           }}
@@ -432,6 +432,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           width={400}
           centered
           content
+          className="modal-support-darkmode"
         >
           <PopupContainer>
             <div className={clsx(desktopPortalClassName)}>

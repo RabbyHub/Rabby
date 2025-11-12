@@ -27,6 +27,7 @@ export const AddAddressModal: React.FC<ModalProps & { onCancel?(): void }> = (
       width={400}
       centered
       closable
+      className="modal-support-darkmode"
       closeIcon={
         <SvgIconCross
           className={clsx(

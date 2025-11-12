@@ -94,6 +94,11 @@ export const DesktopChainSelector: React.FC<Props> = ({
         onCancel={() => {
           setIsShowChainSelector(false);
         }}
+        maskStyle={{
+          background: 'rgba(0,0,0,0.3)',
+          backdropFilter: 'blur(8px)',
+        }}
+        centered
       />
     </>
   );

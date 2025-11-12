@@ -15,6 +15,7 @@ export const AddressDetailModal: React.FC<ModalProps> = (props) => {
       centered
       closable
       closeIcon={ModalCloseIcon}
+      className="modal-support-darkmode"
       footer={null}
       bodyStyle={{
         maxHeight: 'unset',

@@ -39,6 +39,7 @@ import { AddressBackupModal } from './components/AddressBackupModal';
 import { AddAddressModal } from './components/AddAddressModal';
 import { RcIconBackTop } from '@/ui/assets/desktop/profile';
 import { ReachedEnd } from './components/ReachedEnd';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import TopShortcut, {
   PORTFOLIO_LIST_ID,
   TOP_SHORTCUT_SLOT_ID,
@@ -258,7 +259,7 @@ export const DesktopProfile = () => {
             </main>
             <aside
               className={clsx(
-                'min-w-[260px] flex-shrink-0 overflow-auto sticky top-[103px]'
+                'min-w-[260px] flex-shrink-0 overflow-auto sticky top-[103px] z-20'
               )}
             >
               <DesktopSelectAccountList />
@@ -272,7 +273,7 @@ export const DesktopProfile = () => {
               transform: 'translateX(700px)',
             }}
           >
-            <RcIconBackTop />
+            <ThemeIcon src={RcIconBackTop} />
           </BackTop>
         </div>
       </Wrap>
