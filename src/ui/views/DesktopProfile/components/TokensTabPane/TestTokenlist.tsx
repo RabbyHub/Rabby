@@ -60,8 +60,14 @@ const TokenRowWrapper = styled(TRow)`
   height: 60px;
   padding-left: 12px;
   padding-right: 16px;
+  .swap-action-btn {
+    display: none !important;
+  }
   &:hover {
     background-color: var(--rb-neutral-bg-2, #f2f4f7);
+    .swap-action-btn {
+      display: block !important;
+    }
   }
   &:last-child {
     border-bottom-color: transparent;
@@ -87,16 +93,25 @@ const CustomTestnetTokenTable: React.FC<TableProps> = ({
   list,
   EmptyComponent,
 }) => {
+  const { t } = useTranslation();
   return (
     <Table className="!w-full ml-0 mr-0">
       <THeader
         className="w-full justify-between bg-rb-neutral-bg-1 rounded-[6px] py-8"
         rowClassName="px-8"
       >
-        <THeadCell className="flex-1">Token</THeadCell>
-        <THeadCell className="flex-1">Chain</THeadCell>
-        <THeadCell className="flex-1">Token Address</THeadCell>
-        <THeadCell className="flex-1 text-right">Amount</THeadCell>
+        <THeadCell className="flex-1">
+          {t('page.desktopProfile.portfolio.table.token')}
+        </THeadCell>
+        <THeadCell className="flex-1">
+          {t('page.desktopProfile.portfolio.table.chain')}
+        </THeadCell>
+        <THeadCell className="flex-1">
+          {t('page.desktopProfile.portfolio.table.tokenAddress')}
+        </THeadCell>
+        <THeadCell className="flex-1 text-right">
+          {t('page.desktopProfile.portfolio.table.amount')}
+        </THeadCell>
       </THeader>
       <TBody className="mt-0">
         {list?.map((item) => {

@@ -237,6 +237,7 @@ const ProjectOverview = ({
   toggleExpand,
   hasExpandSwitch,
 }: Props) => {
+  const { t } = useTranslation();
   if (!list) return null;
 
   return (
@@ -256,13 +257,17 @@ const ProjectOverview = ({
         >
           <div className="text-r-neutral-foot text-13 cursor-pointer">
             {isExpanded
-              ? 'Hide protocols with small deposits.'
-              : 'Protocols with small deposits are not displayed.'}
+              ? t(
+                  'page.desktopProfile.portfolio.hidden.hideProtocolsWithSmallDeposits'
+                )
+              : t(
+                  'page.desktopProfile.portfolio.hidden.hideProtocolsWithSmallDepositsDesc'
+                )}
           </div>
           <div className="flex items-center justify-center gap-[2px] cursor-pointer">
             {isExpanded ? null : (
               <div className="text-r-neutral-foot text-13 underline">
-                Show all
+                {t('page.desktopProfile.portfolio.hidden.showAll')}
               </div>
             )}
             <RcIconDropdown

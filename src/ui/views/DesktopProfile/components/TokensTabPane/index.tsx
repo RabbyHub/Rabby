@@ -16,6 +16,7 @@ import BigNumber from 'bignumber.js';
 import { getTokenWalletFakeProject } from './utils';
 import { useSwitchNetTab } from '@/ui/component/PillsSwitch/NetSwitchTabs';
 import { AbstractProject } from '@/ui/utils/portfolio/types';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   className?: string;
@@ -28,6 +29,7 @@ export const TokensTabPane: React.FC<Props> = ({
   selectChainId,
   onProjectOverviewListChange,
 }) => {
+  const { t } = useTranslation();
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
@@ -109,7 +111,10 @@ export const TokensTabPane: React.FC<Props> = ({
 
   const projectOverviewList = React.useMemo(() => {
     return [
-      getTokenWalletFakeProject(tokenListTotalValue),
+      getTokenWalletFakeProject(
+        tokenListTotalValue,
+        t('page.desktopProfile.portfolio.headers.wallet')
+      ),
       ...(currentList || []),
     ];
   }, [tokenListTotalValue, currentList]);
