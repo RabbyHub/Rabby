@@ -22,7 +22,8 @@ import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import { BalanceView } from './BalanceView';
-import { useAlias } from '@/ui/utils';
+import { useAlias, useWallet } from '@/ui/utils';
+import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 
 const GlobalStyle = createGlobalStyle`
   .global-qr-code-popover {
@@ -76,7 +77,25 @@ export const ProfileHeader: React.FC<{
   });
   useEventBusListener(EVENTS.RELOAD_TX, runAsync);
 
-  const [alias] = useAlias(currentAccount?.address || '');
+  const wallet = useWallet();
+
+  const { data: alias, runAsync: runFetchAlias } = useRequest(
+    async () => {
+      if (!currentAccount?.address) {
+        return '';
+      }
+      return wallet.getAlianName(currentAccount?.address || '');
+    },
+    {
+      refreshDeps: [currentAccount?.address],
+    }
+  );
+
+  useEffect(() => {
+    return onBackgroundStoreChanged('contactBook', (payload) => {
+      runFetchAlias();
+    });
+  }, [runFetchAlias]);
 
   if (!currentAccount) {
     return null;

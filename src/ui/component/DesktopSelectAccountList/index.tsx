@@ -88,6 +88,10 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   );
 
   useEventBusListener(EVENTS.PERSIST_KEYRING, fetchAllAccounts);
+  useEventBusListener(EVENTS.RELOAD_ACCOUNT_LIST, async () => {
+    await dispatch.preference.getPreference('addressSortStore');
+    fetchAllAccounts();
+  });
 
   useEffect(() => {
     return onBackgroundStoreChanged('contactBook', (payload) => {

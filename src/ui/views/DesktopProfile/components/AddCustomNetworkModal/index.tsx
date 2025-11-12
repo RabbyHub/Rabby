@@ -4,7 +4,10 @@ import { CustomTestnet } from '@/ui/views/CustomTestnet';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { ReactComponent as RcIconClose } from '@/ui/assets/dapp-search/cc-close.svg';
 
-export const AddCustomNetworkModal: React.FC<ModalProps> = (props) => {
+export const AddCustomNetworkModal: React.FC<
+  ModalProps & { onChange?(): void }
+> = (props) => {
+  const { onChange, ...rest } = props;
   return (
     <Modal
       {...props}
@@ -31,7 +34,7 @@ export const AddCustomNetworkModal: React.FC<ModalProps> = (props) => {
       destroyOnClose
     >
       <PopupContainer>
-        <CustomTestnet inModal />
+        <CustomTestnet inModal onChange={onChange} />
       </PopupContainer>
     </Modal>
   );
