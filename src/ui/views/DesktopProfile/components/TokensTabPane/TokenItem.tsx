@@ -192,7 +192,7 @@ const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
 };
 
 const TokenRowWrapper = styled(TRow)`
-  border-bottom: 1px solid var(--r-neutral-bg-4, #f2f4f7);
+  border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
   height: 60px;
   padding-left: 12px;
   padding-right: 16px;
@@ -200,7 +200,7 @@ const TokenRowWrapper = styled(TRow)`
     display: none !important;
   }
   &:hover {
-    background-color: var(--r-neutral-bg-2);
+    background-color: var(--rb-neutral-bg-2, #f2f4f7);
     .swap-action-btn {
       display: block !important;
     }

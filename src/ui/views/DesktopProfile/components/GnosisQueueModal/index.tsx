@@ -7,7 +7,6 @@ export const GnosisQueueModal: React.FC<ModalProps> = (props) => {
   return (
     <Modal
       {...props}
-      className="global-desktop-modal"
       width={400}
       centered
       closable={false}
@@ -20,6 +19,7 @@ export const GnosisQueueModal: React.FC<ModalProps> = (props) => {
         background: 'rgba(0, 0, 0, 0.30)',
         backdropFilter: 'blur(8px)',
       }}
+      className="modal-support-darkmode"
     >
       <PopupContainer>
         <GnosisQueue isInModal onClose={props.onCancel} />

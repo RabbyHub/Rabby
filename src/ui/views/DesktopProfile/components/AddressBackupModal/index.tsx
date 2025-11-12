@@ -21,6 +21,7 @@ export const AddressBackupModal: React.FC<
       closeIcon={
         <SvgIconCross className="w-[14px] fill-current text-r-neutral-title-2" />
       }
+      className="modal-support-darkmode"
       footer={null}
       bodyStyle={{
         maxHeight: 'unset',

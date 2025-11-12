@@ -13,6 +13,7 @@ export const AddCustomNetworkModal: React.FC<ModalProps> = (props) => {
       centered
       bodyStyle={{ background: 'transparent', maxHeight: 'unset', padding: 0 }}
       footer={null}
+      className="modal-support-darkmode"
       zIndex={1000}
       maskStyle={{
         zIndex: 1000,

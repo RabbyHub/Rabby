@@ -39,6 +39,7 @@ import { AddressBackupModal } from './components/AddressBackupModal';
 import { AddAddressModal } from './components/AddAddressModal';
 import { RcIconBackTop } from '@/ui/assets/desktop/profile';
 import { ReachedEnd } from './components/ReachedEnd';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const Wrap = styled.div`
   height: 100%;
@@ -250,7 +251,7 @@ export const DesktopProfile = () => {
               transform: 'translateX(700px)',
             }}
           >
-            <RcIconBackTop />
+            <ThemeIcon src={RcIconBackTop} />
           </BackTop>
         </div>
       </Wrap>
