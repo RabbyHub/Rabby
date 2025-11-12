@@ -4,6 +4,7 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import { findChainByServerID, DisplayChainWithWhiteLogo } from '@/utils/chain';
 import { filterChainWithBalance, normalizeChainList } from '@/utils/account';
 import { useRabbyDispatch, useRabbySelector } from '../store';
+import { useRequest } from 'ahooks';
 
 /** @deprecated import from '@/utils/chain' directly  */
 export type { DisplayChainWithWhiteLogo };
@@ -44,7 +45,7 @@ export default function useCurrentBalance(
 
   const dispatch = useRabbyDispatch();
 
-  const [getInMemoryAddressBalance] = useWalletRequest(
+  const { runAsync: getInMemoryAddressBalance } = useRequest(
     wallet.getInMemoryAddressBalance,
     {
       onSuccess(options) {
@@ -84,6 +85,7 @@ export default function useCurrentBalance(
         }
         setSuccess(false);
       },
+      manual: true,
     }
   );
 

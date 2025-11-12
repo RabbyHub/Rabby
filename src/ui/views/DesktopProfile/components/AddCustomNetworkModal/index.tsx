@@ -10,7 +10,7 @@ export const AddCustomNetworkModal: React.FC<
   const { onChange, ...rest } = props;
   return (
     <Modal
-      {...props}
+      {...rest}
       width={400}
       title={null}
       centered
