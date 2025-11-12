@@ -181,6 +181,12 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     }
   }, [visible]);
 
+  const depositMaxUsdValue = useMemo(() => {
+    return isDirectDeposit
+      ? tokenAmountBn(tokenInfo).toNumber()
+      : Number((tokenInfo?.amount || 0) * (tokenInfo?.price || 0));
+  }, [tokenInfo, isDirectDeposit]);
+
   const amountValidation = React.useMemo(() => {
     const value = Number(usdValue) || 0;
     if (!usdValue) {
@@ -213,8 +219,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         };
       }
 
-      const tokenAmount = (tokenInfo?.amount || 0) * (tokenInfo?.price || 0);
-      if (value > tokenAmount) {
+      if (value > depositMaxUsdValue) {
         return {
           isValid: false,
           error: 'insufficient_balance',
@@ -223,7 +228,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       }
       return { isValid: true, error: null };
     }
-  }, [usdValue, t, tokenInfo]);
+  }, [usdValue, t, tokenInfo, depositMaxUsdValue]);
 
   const isValidAmount = useMemo(() => amountValidation.isValid, [
     amountValidation.isValid,
@@ -233,10 +238,6 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
     [currentPerpsAccount?.type]
   );
-
-  const depositMaxUsdValue = useMemo(() => {
-    return Number((tokenInfo?.amount || 0) * (tokenInfo?.price || 0));
-  }, [tokenInfo]);
 
   const { value: gasList } = useAsync(async () => {
     if (!selectedToken?.chain) {
@@ -304,12 +305,16 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         }
       }
       setGasPrice(0);
-      setUsdValue(
-        tokenAmountBn(tokenInfo)
-          ?.times(tokenInfo?.price || 0)
-          .decimalPlaces(2, BigNumber.ROUND_DOWN)
-          .toFixed()
-      );
+      if (isDirectDeposit) {
+        setUsdValue(tokenAmountBn(tokenInfo).toString());
+      } else {
+        setUsdValue(
+          tokenAmountBn(tokenInfo)
+            ?.times(tokenInfo?.price || 0)
+            .decimalPlaces(2, BigNumber.ROUND_DOWN)
+            .toFixed()
+        );
+      }
     }
   }, [tokenInfo, nativeTokenDecimals, gasList, gasLimit, tokenIsNativeToken]);
 
