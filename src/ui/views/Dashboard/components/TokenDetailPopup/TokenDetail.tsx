@@ -359,6 +359,9 @@ const TokenDetail = ({
   ]);
 
   const chain = useMemo(() => getChain(token?.chain), [token?.chain]);
+  const isCustomNetworkToken = useMemo(() => {
+    return token.id.startsWith('custom');
+  }, [token]);
 
   return (
     <div className="token-detail">
@@ -405,7 +408,7 @@ const TokenDetail = ({
             onClose={() => removeToken(tokenWithAmount)}
           ></BlockedTopTips>
         )} */}
-        <TokenCharts token={token}></TokenCharts>
+        {!isCustomNetworkToken && <TokenCharts token={token}></TokenCharts>}
         <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
           <div className="balance-content flex flex-col gap-8 px-16 py-12">
             <div className="flex flex-row justify-between w-full">
