@@ -102,9 +102,8 @@ export const RevokeButton: React.FC<Props> = ({
         <div className="mt-[16px] h-[16px] mb-[16px] text-13 leading-[15px] text-r-neutral-body">
           {revokeTxCount} transactions to be signed sequentially
         </div>
-      ) : (
-        <div className="mt-[16px] h-[16px] mb-[16px]"> </div>
-      )}
+      ) : null}
+      {/* <div className="mt-[16px] h-[16px] mb-[16px]"></div> */}
       <Button
         loading={isRevokeLoading}
         className="w-[280px] h-[56px] text-[15px] leading-[18px] rounded-[16px] am-revoke-btn"
