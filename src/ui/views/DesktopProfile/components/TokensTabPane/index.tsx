@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useRabbySelector } from '@/ui/store';
+import React, { useEffect, useMemo } from 'react';
+import { useRabbySelector, useRabbyDispatch } from '@/ui/store';
 import useSortTokens from 'ui/hooks/useSortTokens';
 import {
   TokenListSkeleton,
@@ -16,6 +16,7 @@ import BigNumber from 'bignumber.js';
 import { getTokenWalletFakeProject } from './utils';
 import { useSwitchNetTab } from '@/ui/component/PillsSwitch/NetSwitchTabs';
 import { AbstractProject } from '@/ui/utils/portfolio/types';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   className?: string;
@@ -28,11 +29,21 @@ export const TokensTabPane: React.FC<Props> = ({
   selectChainId,
   onProjectOverviewListChange,
 }) => {
-  const { currentAccount } = useRabbySelector((s) => ({
+  const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
+  const { currentAccount, allMode } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
+    allMode: s.preference.desktopTokensAllMode ?? false,
   }));
   const { setApps } = useCommonPopupView();
-  const [allMode, setAllMode] = useState(false);
+
+  useEffect(() => {
+    dispatch.preference.getPreference('desktopTokensAllMode');
+  }, [dispatch]);
+
+  const setAllMode = (value: boolean) => {
+    dispatch.preference.setDesktopTokensAllMode(value);
+  };
 
   const {
     isTokensLoading,
@@ -109,7 +120,10 @@ export const TokensTabPane: React.FC<Props> = ({
 
   const projectOverviewList = React.useMemo(() => {
     return [
-      getTokenWalletFakeProject(tokenListTotalValue),
+      getTokenWalletFakeProject(
+        tokenListTotalValue,
+        t('page.desktopProfile.portfolio.headers.wallet')
+      ),
       ...(currentList || []),
     ];
   }, [tokenListTotalValue, currentList]);

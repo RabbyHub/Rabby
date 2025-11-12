@@ -1608,6 +1608,10 @@ export class WalletController extends BaseController {
     return preferenceService.setIsShowTestnet(value);
   };
 
+  setDesktopTokensAllMode = (value: boolean) => {
+    return preferenceService.setDesktopTokensAllMode(value);
+  };
+
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);
   };

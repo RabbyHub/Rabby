@@ -1,20 +1,19 @@
 import { AbstractProject } from '@/ui/utils/portfolio/types';
-import cx from 'clsx';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { ScrollToDomById } from '../utils';
 import styled from 'styled-components';
 import clsx from 'clsx';
-
-// 先不显示，设计可能还要
-const IconCircleRight = ({ className }: { className?: string }) => {
-  return null;
-};
+import { ReactComponent as RcIconCircleRight } from '@/ui/views/DesktopProfile/components/ApprovalsTabPane/icons/right-cc.svg';
 
 const AnchorWrapper = styled.div`
   background-color: var(--r-neutral-bg-1);
-  padding: 10px 20px 10px;
+  padding: 10px 0;
   width: 100%;
   border-bottom: 1px solid var(--r-neutral-line);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: space-between;
 `;
 
 const CenterWrapper = styled.div`
@@ -22,12 +21,25 @@ const CenterWrapper = styled.div`
   position: static;
   scrollbar-width: none;
   margin: 0 auto;
+  flex: 1;
   /* firefox */
   -ms-overflow-style: none;
   /* IE 10+ */
   white-space: nowrap;
   overflow: auto;
   max-width: 100%;
+`;
+
+const DirectionIcon = styled.div`
+  width: 24px;
+  height: 24px;
+  margin-top: -3px;
+  background-color: var(--r-neutral-bg-2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 `;
 export const TOP_SHORTCUT_SLOT_ID = 'top-shortcut-slot';
 
@@ -38,6 +50,21 @@ export const TopShortcut = memo(
     const [id, setId] = useState('');
     const ref = useRef<HTMLDivElement>(null);
     const [show, setShow] = useState(false);
+    const [, setRender] = useState({});
+    const [leftShow, setLeftShow] = useState(false);
+    const [rShow, setRShow] = useState(false);
+
+    useEffect(() => {
+      if (!ref.current) return;
+      const width = ref.current.getBoundingClientRect().width;
+      const _show = ref.current!.scrollWidth > width;
+      if (width < 970) {
+        setRShow(false);
+        setLeftShow(false);
+        return;
+      }
+      setRShow(_show);
+    }, [projects, show]);
 
     // 滚动监听
     useEffect(() => {
@@ -128,14 +155,43 @@ export const TopShortcut = memo(
       };
     }, []);
 
+    const scrollFn = (isRight = false, width = 970) => {
+      if (!ref.current) return;
+      const offset = ref.current.scrollLeft;
+      ref.current.scrollTo({
+        left: offset - (isRight ? -width : width),
+        behavior: 'smooth',
+      });
+      setRender({});
+    };
+
     return (
       <AnchorWrapper
         id="_anchor"
         style={{
-          display: !show ? 'none' : 'block',
+          display: !show ? 'none' : 'flex',
         }}
       >
-        <CenterWrapper ref={ref}>
+        <DirectionIcon
+          className={clsx('rotate-180', {
+            'opacity-0': !leftShow,
+          })}
+          onClick={() => {
+            leftShow && scrollFn(false);
+          }}
+        >
+          <RcIconCircleRight className="w-[16px] h-[16px] text-rb-neutral-secondary" />
+        </DirectionIcon>
+        <CenterWrapper
+          ref={ref}
+          onScroll={(e) => {
+            if (!ref.current) return;
+            setLeftShow((e.target as HTMLDivElement).scrollLeft > 10);
+            const vw = ref.current.getBoundingClientRect().width;
+            const show = ref.current.scrollLeft + vw < ref.current.scrollWidth;
+            setRShow(show);
+          }}
+        >
           {projects.map((v) => {
             if (!v) {
               return null;
@@ -165,6 +221,16 @@ export const TopShortcut = memo(
             );
           })}
         </CenterWrapper>
+        <DirectionIcon
+          className={clsx({
+            'opacity-0': !rShow,
+          })}
+          onClick={() => {
+            rShow && scrollFn(true);
+          }}
+        >
+          <RcIconCircleRight className="w-[16px] h-[16px] text-rb-neutral-secondary" />
+        </DirectionIcon>
       </AnchorWrapper>
     );
   }
