@@ -8,6 +8,7 @@ import {
 import { Props as TokenItemProps } from '@/ui/views/CommonPopup/AssetList/TokenItem';
 import { FixedSizeList } from 'react-window';
 import { TokenItem } from './TokenItem';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -23,6 +24,7 @@ export const TokenTable: React.FC<Props> = ({
   virtual,
   EmptyComponent,
 }) => {
+  const { t } = useTranslation();
   return (
     <>
       {EmptyComponent && !list?.length ? (
@@ -30,13 +32,21 @@ export const TokenTable: React.FC<Props> = ({
       ) : (
         <Table className="!w-full ml-0 mr-0">
           <THeader
-            className="w-full justify-between bg-r-neutral-bg-1 rounded-[6px] py-8"
+            className="w-full justify-between bg-rb-neutral-bg-1 rounded-[6px] py-8"
             rowClassName="px-8"
           >
-            <THeadCell className="flex-1">Token</THeadCell>
-            <THeadCell className="flex-1">Price</THeadCell>
-            <THeadCell className="flex-1">Amount</THeadCell>
-            <THeadCell className="flex-1 text-right">USD Value</THeadCell>
+            <THeadCell className="flex-1">
+              {t('page.desktopProfile.portfolio.table.token')}
+            </THeadCell>
+            <THeadCell className="flex-1">
+              {t('page.desktopProfile.portfolio.table.price')}
+            </THeadCell>
+            <THeadCell className="flex-1">
+              {t('page.desktopProfile.portfolio.table.amount')}
+            </THeadCell>
+            <THeadCell className="flex-1 text-right">
+              {t('page.desktopProfile.portfolio.table.usdValue')}
+            </THeadCell>
           </THeader>
           <TBody className="mt-0">
             {virtual ? (

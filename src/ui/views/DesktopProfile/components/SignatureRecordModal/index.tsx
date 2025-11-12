@@ -19,6 +19,7 @@ export const SignatureRecordModal: React.FC<ModalProps> = (props) => {
         background: 'rgba(0, 0, 0, 0.30)',
         backdropFilter: 'blur(8px)',
       }}
+      className="modal-support-darkmode"
     >
       <PopupContainer>
         <Activities isInModal onClose={props.onCancel} />

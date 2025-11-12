@@ -56,6 +56,10 @@ import { Modal, Tooltip } from 'antd';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { useHadSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { UI_TYPE } from '@/constant/ui';
+import qs from 'qs';
+
+const isDesktop = UI_TYPE.isDesktop;
 
 const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
 
@@ -158,7 +162,7 @@ const AddAddressOptions = () => {
   type Valueof<T> = T[keyof T];
   const connectRouter1 = React.useCallback(
     (
-      history,
+      history: ReturnType<typeof useHistory>,
       item: Valueof<typeof WALLET_BRAND_CONTENT>,
       params?: {
         address: string;
@@ -178,9 +182,18 @@ const AddAddressOptions = () => {
         openInternalPageInTab('import/hardware/onekey-connect');
         // openInternalPageInTab('import/hardware?connectType=ONEKEY');
       } else if (item.connectType === 'GnosisConnect') {
-        history.push({
-          pathname: '/import/gnosis',
-        });
+        if (isDesktop) {
+          history.push(
+            `${history.location.pathname}?${qs.stringify({
+              action: 'add-address',
+              import: 'gnosis',
+            })}`
+          );
+        } else {
+          history.push({
+            pathname: '/import/gnosis',
+          });
+        }
       } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
         /**
          * Check if the wallet brand is Keystone. Although Keystone supports both USB signing and import,
@@ -198,26 +211,57 @@ const AddAddressOptions = () => {
       } else if (
         item.connectType === BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect
       ) {
-        history.push({
-          pathname: '/import/cobo-argus',
-          state: params,
-        });
+        if (isDesktop) {
+          history.push(
+            `${history.location.pathname}?${qs.stringify({
+              action: 'add-address',
+              import: 'cobo-argus',
+            })}`
+          );
+        } else {
+          history.push({
+            pathname: '/import/cobo-argus',
+            state: params,
+          });
+        }
       } else if (
         item.connectType === BRAND_WALLET_CONNECT_TYPE.CoinbaseConnect
       ) {
-        history.push({
-          pathname: '/import/coinbase',
-          state: params,
-        });
+        if (isDesktop) {
+          history.push(
+            `${history.location.pathname}?${qs.stringify({
+              action: 'add-address',
+              import: 'coinbase',
+            })}`
+          );
+        } else {
+          history.push({
+            pathname: '/import/coinbase',
+            state: params,
+          });
+        }
       } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.ImKeyConnect) {
         openInternalPageInTab('import/hardware/imkey-connect');
       } else {
-        history.push({
-          pathname: '/import/wallet-connect',
-          state: {
-            brand: item,
-          },
-        });
+        if (isDesktop) {
+          history.push({
+            pathname: `${history.location.pathname}`,
+            search: `?${qs.stringify({
+              action: 'add-address',
+              import: 'wallet-connect',
+            })}`,
+            state: {
+              brand: item,
+            },
+          });
+        } else {
+          history.push({
+            pathname: '/import/wallet-connect',
+            state: {
+              brand: item,
+            },
+          });
+        }
       }
     },
     []
@@ -302,7 +346,16 @@ const AddAddressOptions = () => {
               brand: 'AddAddressFromCurrentSeedPhrase',
               onClick: () => {
                 handleRouter((history) => {
-                  history.push('/import/add-from-current-seed-phrase');
+                  if (isDesktop) {
+                    history.push(
+                      `${history.location.pathname}?${qs.stringify({
+                        action: 'add-address',
+                        import: 'add-from-current-seed-phrase',
+                      })}`
+                    );
+                  } else {
+                    history.push('/import/add-from-current-seed-phrase');
+                  }
                 });
               },
             },
@@ -341,14 +394,37 @@ const AddAddressOptions = () => {
         leftIcon: RcIconPrivatekey,
         brand: 'importPrivatekey',
         content: t('page.newAddress.importPrivateKey'),
-        onClick: () => handleRouter((history) => history.push('/import/key')),
+        onClick: () =>
+          handleRouter((history) => {
+            if (isDesktop) {
+              return history.push(
+                `${history.location.pathname}?${qs.stringify({
+                  action: 'add-address',
+                  import: 'key',
+                })}`
+              );
+            } else {
+              return history.push('/import/key');
+            }
+          }),
       },
       {
         leftIcon: IconMetamask,
         brand: 'addMetaMaskAccount',
         content: t('page.newAddress.importMyMetamaskAccount'),
         onClick: () =>
-          handleRouter((history) => history.push('/import/metamask')),
+          handleRouter((history) => {
+            if (isDesktop) {
+              return history.push(
+                `${history.location.pathname}?${qs.stringify({
+                  action: 'add-address',
+                  import: 'metamask',
+                })}`
+              );
+            } else {
+              return history.push('/import/metamask');
+            }
+          }),
       },
     ],
     []
@@ -362,7 +438,18 @@ const AddAddressOptions = () => {
         content: t('page.newAddress.addContacts.content'),
         subText: t('page.newAddress.addContacts.description'),
         onClick: () =>
-          handleRouter((history) => history.push('/import/watch-address')),
+          handleRouter((history) => {
+            if (isDesktop) {
+              return history.push(
+                `${history.location.pathname}?${qs.stringify({
+                  action: 'add-address',
+                  import: 'watch-address',
+                })}`
+              );
+            } else {
+              history.push('/import/watch-address');
+            }
+          }),
       },
     ],
     [t, isDarkTheme]
@@ -393,7 +480,13 @@ const AddAddressOptions = () => {
   if (preventMount) return null;
 
   return (
-    <div className="rabby-container pb-[12px]" ref={rootRef}>
+    <div
+      className={clsx(
+        'rabby-container pb-[12px]',
+        UI_TYPE.isDesktop ? 'w-full' : ''
+      )}
+      ref={rootRef}
+    >
       {[createImportAddrList, centerList].map((items, index) => (
         <div
           className="bg-r-neutral-card-1 rounded-[6px] mb-[12px]"

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { ProfileHeader } from './components/ProfileHeader';
-import { Tabs } from 'antd';
+import { BackTop, Tabs } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { TokensTabPane } from './components/TokensTabPane';
 import { SendTokenModal } from './components/SendTokenModal';
@@ -27,13 +27,24 @@ import { SendNftModal } from './components/SendNftModal';
 import { ReceiveTokenModal } from './components/ReceiveTokenModal';
 import { SignatureRecordModal } from './components/SignatureRecordModal';
 import eventBus from '@/eventBus';
-import { EVENTS } from '@/constant';
+import { EVENTS, KEYRING_TYPE } from '@/constant';
 import { useListenTxReload } from './hooks/useListenTxReload';
 import { GnosisQueueModal } from './components/GnosisQueueModal';
 import { ApprovalsTabPane } from './components/ApprovalsTabPane';
 import { createPortal } from 'react-dom';
 import { AddCustomNetworkModal } from './components/AddCustomNetworkModal';
 import { AddCustomTokenModal } from './components/AddCustomTokenModal';
+import { AddressDetailModal } from './components/AddressDetailModal';
+import { AddressBackupModal } from './components/AddressBackupModal';
+import { AddAddressModal } from './components/AddAddressModal';
+import { RcIconBackTop } from '@/ui/assets/desktop/profile';
+import { ReachedEnd } from './components/ReachedEnd';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import TopShortcut, {
+  PORTFOLIO_LIST_ID,
+  TOP_SHORTCUT_SLOT_ID,
+} from './components/TokensTabPane/components/TopShortCut';
+import { AbstractProject } from '@/ui/utils/portfolio/types';
 
 const Wrap = styled.div`
   height: 100%;
@@ -102,8 +113,6 @@ export const DesktopProfile = () => {
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
   const dispatch = useRabbyDispatch();
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
-  const shouldElevateAccountList =
-    action === 'send' || action === 'swap' || action === 'bridge';
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
@@ -112,6 +121,7 @@ export const DesktopProfile = () => {
     curveChartData,
     isBalanceLoading,
     isCurveLoading,
+    appChainIds,
     refreshBalance,
     refreshCurve,
   } = useDesktopBalanceView({
@@ -134,14 +144,29 @@ export const DesktopProfile = () => {
     await refreshBalance();
     await refreshCurve();
   });
+  const [cacheProjectOverviewList, setCacheProjectOverviewList] = useState<
+    AbstractProject[]
+  >([]);
 
   useListenTxReload(async () => {
-    if (activeTab === 'tokens') {
+    if (['tokens', 'transactions'].includes(activeTab)) {
       setRefreshKey((prev) => prev + 1);
     }
     await refreshBalance();
     await refreshCurve();
   });
+
+  useEffect(
+    useMemoizedFn(() => {
+      if (
+        action === 'gnosis-queue' &&
+        currentAccount?.type !== KEYRING_TYPE.GnosisKeyring
+      ) {
+        history.replace(history.location.pathname);
+      }
+    }),
+    [currentAccount?.type]
+  );
 
   return (
     <>
@@ -149,78 +174,117 @@ export const DesktopProfile = () => {
         className="w-full h-full bg-rb-neutral-bg-1"
         ref={scrollContainerRef}
       >
-        <div className="x-container sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
+        <div className="x-container sticky top-0 z-10 pt-[16px] bg-rb-neutral-bg-1">
           <DesktopNav
             balance={balance}
             changePercent={curveChartData?.changePercent}
             isLoss={curveChartData?.isLoss}
             isLoading={isBalanceLoading || isCurveLoading}
           />
+          <div
+            className="sticky top-[103px] z-10 pt-[16px] overflow-scroll flex-initial"
+            style={{ width: 0, scrollbarWidth: 'none' }}
+            id={TOP_SHORTCUT_SLOT_ID}
+          >
+            {cacheProjectOverviewList?.length > 0 && activeTab === 'tokens' && (
+              <TopShortcut projects={cacheProjectOverviewList || []} />
+            )}
+          </div>
         </div>
         <div className="x-container">
           <div className="flex items-start gap-[20px]">
-            <main
-              className={clsx(
-                'flex-1 bg-r-neutral-card-1 rounded-[20px]',
-                'border-[1px] border-solid border-rb-neutral-line'
-              )}
-            >
-              <ProfileHeader
-                balance={balance}
-                evmBalance={evmBalance}
-                curveChartData={curveChartData}
-                isLoading={isBalanceLoading || isCurveLoading}
-              />
-              <div key={refreshKey}>
-                <Tabs
-                  activeKey={activeTab}
-                  onChange={handleTabChange}
-                  tabBarExtraContent={{
-                    right: (
-                      <div className="flex items-center gap-[16px] pr-[20px]">
-                        <UpdateButton
-                          isUpdating={isUpdating}
-                          onUpdate={handleUpdate}
-                          updatedAt={updatedAt}
-                        />
-                        <DesktopChainSelector
-                          value={chain}
-                          onChange={(v) =>
-                            dispatch.desktopProfile.setField({ chain: v })
-                          }
-                        />
-                      </div>
-                    ),
-                  }}
-                >
-                  <Tabs.TabPane tab="Tokens" key="tokens">
-                    <TokensTabPane selectChainId={chainInfo?.serverId} />
-                  </Tabs.TabPane>
-                  {/* <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane> */}
-                  <Tabs.TabPane tab="Transactions" key="transactions">
-                    <TransactionsTabPane
-                      selectChainId={chainInfo?.serverId}
-                      scrollContainerRef={scrollContainerRef}
-                    />
-                  </Tabs.TabPane>
-                  <Tabs.TabPane tab="Approvals" key="approvals">
-                    <ApprovalsTabPane
-                      isDesktop={true}
-                      desktopChain={chain}
-                      key={`${currentAccount?.address}-${currentAccount?.type}`}
-                    />
-                  </Tabs.TabPane>
-                </Tabs>
+            <main className="flex-1" id={PORTFOLIO_LIST_ID}>
+              <div
+                className={clsx(
+                  'bg-r-neutral-card-1 rounded-[20px]',
+                  'border-[1px] border-solid border-rb-neutral-line'
+                )}
+              >
+                <ProfileHeader
+                  balance={balance}
+                  evmBalance={evmBalance}
+                  curveChartData={curveChartData}
+                  isLoading={isBalanceLoading || isCurveLoading}
+                  onRefresh={handleUpdate}
+                  appChainIds={appChainIds}
+                />
+                <div key={refreshKey}>
+                  <Tabs
+                    defaultActiveKey={activeTab}
+                    activeKey={activeTab}
+                    onChange={handleTabChange}
+                    tabBarExtraContent={{
+                      right: (
+                        <div className="flex items-center gap-[16px] pr-[20px]">
+                          <UpdateButton
+                            isUpdating={isUpdating}
+                            onUpdate={handleUpdate}
+                            updatedAt={updatedAt}
+                          />
+                          <DesktopChainSelector
+                            value={chain}
+                            onChange={(v) =>
+                              dispatch.desktopProfile.setField({ chain: v })
+                            }
+                          />
+                        </div>
+                      ),
+                    }}
+                  >
+                    <Tabs.TabPane
+                      tab={t('page.desktopProfile.tabs.tokens')}
+                      key="tokens"
+                    >
+                      <TokensTabPane
+                        onProjectOverviewListChange={
+                          setCacheProjectOverviewList
+                        }
+                        selectChainId={chainInfo?.serverId}
+                      />
+                    </Tabs.TabPane>
+                    {/* <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane> */}
+                    <Tabs.TabPane
+                      tab={t('page.desktopProfile.tabs.transactions')}
+                      key="transactions"
+                    >
+                      <TransactionsTabPane
+                        selectChainId={chainInfo?.serverId}
+                        scrollContainerRef={scrollContainerRef}
+                      />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane
+                      tab={t('page.desktopProfile.tabs.approvals')}
+                      key="approvals"
+                    >
+                      <ApprovalsTabPane
+                        isDesktop={true}
+                        desktopChain={chain}
+                        key={`${currentAccount?.address}-${currentAccount?.type}`}
+                      />
+                    </Tabs.TabPane>
+                  </Tabs>
+                </div>
               </div>
+              <ReachedEnd />
             </main>
             <aside
               className={clsx(
-                'w-[260px] flex-shrink-0 overflow-auto sticky top-[103px]'
+                'min-w-[260px] flex-shrink-0 overflow-auto sticky top-[103px] z-20'
               )}
             >
               <DesktopSelectAccountList />
             </aside>
           </div>
+          <BackTop
+            target={() => scrollContainerRef.current || window}
+            style={{
+              left: '50%',
+              bottom: 32,
+              transform: 'translateX(700px)',
+            }}
+          >
+            <ThemeIcon src={RcIconBackTop} />
+          </BackTop>
         </div>
       </Wrap>
       <SendTokenModal
@@ -271,15 +335,23 @@ export const DesktopProfile = () => {
         }}
         destroyOnClose
       />
-      <AddCustomNetworkModal
-        visible={action === 'custom-network'}
+
+      <AddressDetailModal
+        visible={action === 'address-detail'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}
         destroyOnClose
       />
-      <AddCustomTokenModal
-        visible={action === 'custom-token'}
+      <AddressBackupModal
+        visible={action === 'address-backup'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <AddAddressModal
+        visible={action === 'add-address'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}

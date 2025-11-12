@@ -3,6 +3,7 @@ import {
   RcIconBridgeCC,
   RcIconCopyCC,
   RcIconQrCodeCC,
+  RcIconQueueCC,
   RcIconSendCC,
   RcIconSpinCC,
   RcIconSwapCC,
@@ -13,14 +14,17 @@ import { useRabbyDispatch } from '@/ui/store';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { CurveChartData } from '@/ui/views/Dashboard/components/BalanceView/useCurve';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { Popover } from 'antd';
 import clsx from 'clsx';
 import QRCode from 'qrcode.react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import { BalanceView } from './BalanceView';
+import { useAlias, useWallet } from '@/ui/utils';
+import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
+import { useTranslation } from 'react-i18next';
 
 const GlobalStyle = createGlobalStyle`
   .global-qr-code-popover {
@@ -42,13 +46,16 @@ export const ProfileHeader: React.FC<{
   balance?: number | null;
   evmBalance?: number | null;
   curveChartData?: CurveChartData;
+  appChainIds: string[];
   isLoading?: boolean;
+  onRefresh?(): void;
 }> = (props) => {
   const currentAccount = useCurrentAccount();
   const history = useHistory();
   const location = useLocation();
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   const { data: pendingTxCount, runAsync } = useRequest(
     async () => {
@@ -66,8 +73,32 @@ export const ProfileHeader: React.FC<{
     }
   );
 
-  useEventBusListener(EVENTS.TX_SUBMITTING, runAsync);
+  useEventBusListener(EVENTS.TX_SUBMITTING, () => {
+    setTimeout(() => {
+      runAsync();
+    }, 800);
+  });
   useEventBusListener(EVENTS.RELOAD_TX, runAsync);
+
+  const wallet = useWallet();
+
+  const { data: alias, runAsync: runFetchAlias } = useRequest(
+    async () => {
+      if (!currentAccount?.address) {
+        return '';
+      }
+      return wallet.getAlianName(currentAccount?.address || '');
+    },
+    {
+      refreshDeps: [currentAccount?.address],
+    }
+  );
+
+  useEffect(() => {
+    return onBackgroundStoreChanged('contactBook', (payload) => {
+      runFetchAlias();
+    });
+  }, [runFetchAlias]);
 
   if (!currentAccount) {
     return null;
@@ -76,8 +107,11 @@ export const ProfileHeader: React.FC<{
   return (
     <>
       <GlobalStyle />
-      <div className="px-[20px] py-[24px]">
+      <div className="px-[20px] py-[24px] relative">
         <div className="mb-[16px] flex items-center gap-[12px]">
+          <div className="text-r-neutral-title1 text-[16px] leading-[19px] font-semibold">
+            {alias}
+          </div>
           <div className="text-rb-neutral-body text-[16px] leading-[19px]">
             {ellipsisAddress(currentAccount?.address || '', true)}
           </div>
@@ -114,7 +148,8 @@ export const ProfileHeader: React.FC<{
             className={clsx(
               'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
               'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
+              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold',
+              'hover:bg-rb-brand-light-2'
               // 'hover:bg-r-blue-light1'
             )}
             onClick={() => {
@@ -122,70 +157,73 @@ export const ProfileHeader: React.FC<{
             }}
           >
             <RcIconSwapCC />
-            Swap
+            {t('page.desktopProfile.button.swap')}
           </div>
           <div
             className={clsx(
               'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
               'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
-              // 'hover:bg-r-blue-light1'
+              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold',
+              'hover:bg-rb-brand-light-2'
             )}
             onClick={() => {
               history.replace(history.location.pathname + '?action=send');
             }}
           >
             <RcIconSendCC />
-            Send
+            {t('page.desktopProfile.button.send')}
           </div>
           <div
             className={clsx(
               'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
               'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
-              // 'hover:bg-r-blue-light1'
+              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold',
+              'hover:bg-rb-brand-light-2'
             )}
             onClick={() => {
               history.replace(history.location.pathname + '?action=bridge');
             }}
           >
             <RcIconBridgeCC />
-            Bridge
+            {t('page.desktopProfile.button.bridge')}
           </div>
-          <div className="ml-auto">
-            {isGnosis ? (
-              <div
-                className={clsx(
-                  'p-[14px] rounded-[14px] bg-rb-brand-light-1',
-                  'flex items-center justify-center gap-[8px] cursor-pointer',
-                  'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
-                )}
-                onClick={() => {
-                  history.replace(
-                    history.location.pathname + '?action=gnosis-queue'
-                  );
-                }}
-              >
-                Queue
+          {isGnosis ? (
+            <div
+              className={clsx(
+                'min-w-[100px] p-[14px] rounded-[14px]',
+                'flex items-center justify-center gap-[8px] cursor-pointer',
+                'text-rb-brand-default text-[14px] leading-[17px] font-semibold',
+                'border-[0.5px] border-solid border-rb-brand-default'
+              )}
+              onClick={() => {
+                history.replace(
+                  history.location.pathname + '?action=gnosis-queue'
+                );
+              }}
+            >
+              <RcIconQueueCC />
+              {t('page.desktopProfile.button.queue')}
+            </div>
+          ) : pendingTxCount ? (
+            <div
+              className={clsx(
+                'min-w-[100px] py-[14px] px-[10px] rounded-[14px',
+                'flex items-center justify-center gap-[8px] cursor-pointer',
+                'text-[14px] leading-[17px] font-semibold text-r-orange-default',
+                'border-[0.5px] border-solid border-rb-orange-default rounded-[14px]'
+              )}
+              onClick={() => {
+                history.replace(
+                  history.location.pathname + '?action=activities'
+                );
+              }}
+            >
+              <RcIconSpinCC className="w-[16px] h-[16px] animate-spin" />
+              <div>
+                {t('page.desktopProfile.button.pending', { pendingTxCount })}
               </div>
-            ) : pendingTxCount ? (
-              <div
-                className={clsx(
-                  'flex items-center gap-[8px] p-[12px] cursor-pointer'
-                )}
-                onClick={() => {
-                  history.replace(
-                    history.location.pathname + '?action=activities'
-                  );
-                }}
-              >
-                <RcIconSpinCC className="w-[16px] h-[16px] animate-spin text-r-orange-default" />
-                <div className="text-[13px] leading-[16px] font-medium text-r-orange-default">
-                  {pendingTxCount} pending
-                </div>
-              </div>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </div>
       </div>
     </>

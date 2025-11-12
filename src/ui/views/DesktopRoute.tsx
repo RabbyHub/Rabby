@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch } from 'react-router-dom';
+import { Switch, useLocation } from 'react-router-dom';
 import { PrivateRoute } from 'ui/component';
 
 import { PortalHost } from '../component/PortalHost';
@@ -14,6 +14,7 @@ declare global {
 }
 
 const Main = () => {
+  const location = useLocation();
   return (
     <>
       <Switch>
@@ -22,9 +23,13 @@ const Main = () => {
         </PrivateRoute>
       </Switch>
 
-      <CommonPopup />
-      <PortalHost />
-      <GlobalSignerPortal isDesktop />
+      {location.pathname !== '/unlock' ? (
+        <>
+          <CommonPopup />
+          <PortalHost />
+          <GlobalSignerPortal isDesktop />
+        </>
+      ) : null}
     </>
   );
 };

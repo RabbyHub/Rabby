@@ -20,7 +20,10 @@ import { INTERNAL_REQUEST_SESSION, KEYRING_CLASS } from 'consts';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useAsync } from 'react-use';
 import BigNumber from 'bignumber.js';
-import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
+import {
+  useGasAccountInfo,
+  useGasAccountSign,
+} from '@/ui/views/GasAccount/hooks';
 import { BalanceChangeLoading } from './BalanceChangeLoanding';
 import clsx from 'clsx';
 import { checkGasAndNonce, explainGas } from '@/utils/transaction';
@@ -67,6 +70,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const loading =
     status === 'prefetching' || status === 'signing' || !ctx?.txsCalc.length;
 
+  useGasAccountInfo();
   const { sig, accountId: gasAccountAddress } = useGasAccountSign();
 
   const { value } = useAsync(() => {
@@ -424,7 +428,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           bodyStyle={{ padding: 0, maxHeight: 600, height: 600 }}
           destroyOnClose={false}
           forceRender
-          mask={{
+          maskStyle={{
             background: 'rgba(0,0,0,0.3)',
             backdropFilter: 'blur(8px)',
           }}
@@ -432,6 +436,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           width={400}
           centered
           content
+          className="modal-support-darkmode"
         >
           <PopupContainer>
             <div className={clsx(desktopPortalClassName)}>
@@ -504,7 +509,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                           }
                         />
 
-                        <Divide className="mt-auto w-[calc(100%+40px)] relative left-[-20px] bg-light-r-neutral-line" />
+                        <Divide className="mt-auto w-[calc(100%+40px)] relative left-[-20px] bg-r-neutral-line" />
                       </div>
                     ) : null}
                     <GasSelectorHeader
@@ -719,7 +724,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                     }
                   />
 
-                  <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-light-r-neutral-line" />
+                  <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-r-neutral-line" />
                 </div>
               ) : null}
               <GasSelectorHeader

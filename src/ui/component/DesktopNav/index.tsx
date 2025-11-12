@@ -7,6 +7,7 @@ import { splitNumberByStep } from '@/ui/utils';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const DesktopNav: React.FC<{
   balance?: number | null;
@@ -14,11 +15,12 @@ export const DesktopNav: React.FC<{
   isLoss?: boolean;
   isLoading?: boolean;
 }> = ({ balance, changePercent, isLoss, isLoading }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex">
       <div
         className={clsx(
-          'flex items-center gap-[16px] rounded-[20px] px-[12px] py-[10px]',
+          'flex items-center gap-[12px] rounded-[20px] px-[12px] py-[10px]',
           'border-[1px] border-solid border-rb-neutral-bg-2',
           'bg-rb-neutral-bg-3'
         )}
@@ -35,7 +37,7 @@ export const DesktopNav: React.FC<{
           <RcIconHomeCC className="flex-shrink-0" />
           <div className="min-w-0">
             <div className="text-[16px] leading-[19px] font-bold">
-              Portfolio
+              {t('component.DesktopNav.portfolio')}
             </div>
             {isLoading ? (
               <Skeleton.Input
@@ -69,10 +71,10 @@ export const DesktopNav: React.FC<{
           <RcIconPerpsCC className="text-rb-neutral-secondary" />
           <div>
             <div className="text-rb-neutral-foot text-[16px] leading-[19px] font-bold">
-              Perps
+              {t('component.DesktopNav.perps')}
             </div>
             <div className="text-rb-neutral-secondary text-[12px] leading-[14px]">
-              Coming Soon
+              {t('component.DesktopNav.comingSoon')}
             </div>
           </div>
         </div>
@@ -84,10 +86,10 @@ export const DesktopNav: React.FC<{
           <RcIconLeadingCC className="text-rb-neutral-secondary" />
           <div>
             <div className="text-rb-neutral-foot text-[16px] leading-[19px] font-bold">
-              Lending
+              {t('component.DesktopNav.lending')}
             </div>
             <div className="text-rb-neutral-secondary text-[12px] leading-[14px]">
-              Coming Soon
+              {t('component.DesktopNav.comingSoon')}
             </div>
           </div>
         </div>

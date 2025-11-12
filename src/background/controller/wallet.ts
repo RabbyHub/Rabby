@@ -1608,6 +1608,10 @@ export class WalletController extends BaseController {
     return preferenceService.setIsShowTestnet(value);
   };
 
+  setDesktopTokensAllMode = (value: boolean) => {
+    return preferenceService.setDesktopTokensAllMode(value);
+  };
+
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);
   };
@@ -1621,10 +1625,17 @@ export class WalletController extends BaseController {
 
     const url = `desktop.html#/${_url.replace(/^\//, '')}`;
     if (currentDesktopTab) {
-      return await Browser.tabs.update(currentDesktopTab.id, {
+      const tab = await Browser.tabs.update(currentDesktopTab.id, {
         active: true,
         url: url,
       });
+      const currentWindow = await Browser.windows.getLastFocused();
+      if (tab.windowId && tab.windowId !== currentWindow.id) {
+        Browser.windows.update(tab.windowId, {
+          focused: true,
+        });
+      }
+      return tab;
     }
     const tab = await Browser.tabs.create({
       active: true,
@@ -5658,6 +5669,13 @@ export class WalletController extends BaseController {
     params: Parameters<typeof signTextHistoryService.createHistory>[0]
   ) => {
     signTextHistoryService.createHistory(params);
+  };
+
+  emitEvent = (method: string, params?: any) => {
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: method,
+      params,
+    });
   };
 }
 

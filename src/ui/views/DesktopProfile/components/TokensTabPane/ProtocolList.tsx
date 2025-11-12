@@ -13,6 +13,7 @@ import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import * as PortfolioTemplate from './Protocols/template';
+import { RcIconExternal1CC } from '@/ui/assets/desktop/common';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -36,7 +37,7 @@ const TemplateDict = {
 };
 
 const PoolListContainer = styled.div`
-  background-color: var(--r-neutral-bg-3, #f7fafc);
+  background-color: var(--rb-neutral-bg-3, #f9f9f9);
   border-radius: 16px;
   padding-top: 8;
   margin: 0 20px;
@@ -44,7 +45,7 @@ const PoolListContainer = styled.div`
 `;
 
 const ProtocolItemWrapper = styled.div`
-  margin-bottom: 8px;
+  margin-bottom: 28px;
   border-radius: 8px;
 
   .title {
@@ -158,7 +159,7 @@ const ProtocolItem = ({
   ]);
 
   return (
-    <ProtocolItemWrapper id={protocol.id}>
+    <ProtocolItemWrapper className="protocol-item-wrapper" id={protocol.id}>
       <div>
         <div
           className={clsx(
@@ -175,15 +176,16 @@ const ProtocolItem = ({
             noRound={isAppChain}
             isShowChainTooltip={true}
             hideChainIcon={isAppChain}
+            chainClassName="top-[-4px] right-[-4px]"
           />
           <div
-            className="ml-[8px] flex items-center border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot"
+            className="ml-[10px] flex items-center border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot"
             onClick={(evt) => {
               evt.stopPropagation();
               openInTab(protocol.site_url, false);
             }}
           >
-            <span className="name inline-flex items-center text-15 font-medium text-r-blue-default">
+            <span className="name inline-flex items-center text-[20px] leading-[24px] font-semibold text-r-neutral-title1">
               {protocol.name}
             </span>
             {!!isAppChain && (
@@ -193,12 +195,12 @@ const ProtocolItem = ({
                   chain: protocol.name,
                 })}
               >
-                <div className="text-r-neutral-foot ml-[4px] mr-[2px]">
+                <div className="text-r-neutral-foot ml-[6px]">
                   <RcIconInfoCC />
                 </div>
               </Tooltip>
             )}
-            <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot" />
+            <RcIconExternal1CC className="ml-[6px] w-[16px] h-[16px] text-r-neutral-foot" />
           </div>
           <div className="flex items-center justify-end flex-1">
             <span className="text-[20px] text-r-neutral-title1 font-semibold">
@@ -235,6 +237,7 @@ const ProjectOverview = ({
   toggleExpand,
   hasExpandSwitch,
 }: Props) => {
+  const { t } = useTranslation();
   if (!list) return null;
 
   return (
@@ -254,13 +257,17 @@ const ProjectOverview = ({
         >
           <div className="text-r-neutral-foot text-13 cursor-pointer">
             {isExpanded
-              ? 'Hide protocols with small deposits.'
-              : 'Protocols with small deposits are not displayed.'}
+              ? t(
+                  'page.desktopProfile.portfolio.hidden.hideProtocolsWithSmallDeposits'
+                )
+              : t(
+                  'page.desktopProfile.portfolio.hidden.hideProtocolsWithSmallDepositsDesc'
+                )}
           </div>
           <div className="flex items-center justify-center gap-[2px] cursor-pointer">
             {isExpanded ? null : (
               <div className="text-r-neutral-foot text-13 underline">
-                Show all
+                {t('page.desktopProfile.portfolio.hidden.showAll')}
               </div>
             )}
             <RcIconDropdown

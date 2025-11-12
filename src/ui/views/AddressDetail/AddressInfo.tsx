@@ -33,6 +33,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import clsx from 'clsx';
 import { HardwareBar } from './HardwareBar';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 
 type Props = {
   address: string;
@@ -51,19 +52,24 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
 
   const isGnosis = type === KEYRING_CLASS.GNOSIS;
   const isCoboArugs = type === KEYRING_CLASS.CoboArgus;
+  const { getContainer } = usePopupContainer();
+  const isAutoFocus = !getContainer;
 
   const handleEditMemo = () => {
     form.setFieldsValue({
       memo: alias,
     });
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 50);
+    if (isAutoFocus) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+    }
     const { destroy } = Popup.info({
       title: t('page.addressDetail.edit-memo-title'),
       isSupportDarkMode: true,
       height: 215,
       isNew: true,
+      getContainer,
       content: (
         <div className="pt-[4px]">
           <Form
@@ -97,7 +103,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
                 className="popup-input h-[48px] bg-r-neutral-card-1"
                 size="large"
                 placeholder={t('page.addressDetail.please-input-address-note')}
-                autoFocus
+                autoFocus={isAutoFocus}
                 allowClear
                 spellCheck={false}
                 autoComplete="off"

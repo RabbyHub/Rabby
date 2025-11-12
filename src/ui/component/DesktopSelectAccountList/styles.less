@@ -1,0 +1,16 @@
+.desktop-select-account-list {
+  ::-webkit-scrollbar {
+    background-color: transparent;
+    width: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--rb-neutral-line, #e0e5ec);
+    border-radius: 1000px;
+  }
+
+  div[data-test-id='virtuoso-item-list'] + div {
+    background-color: var(--rb-neutral-bg-1, #fff);
+    position: sticky;
+    bottom: 0;
+  }
+}

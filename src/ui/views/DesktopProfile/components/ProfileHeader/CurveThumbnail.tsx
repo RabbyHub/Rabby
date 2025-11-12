@@ -4,6 +4,8 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import { AreaChart, YAxis, Area, XAxis, Tooltip } from 'recharts';
 import styled, { createGlobalStyle } from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import { getAppChainNames } from '@/ui/hooks/useAppChain';
+import { ReactComponent as RcIconInfoCC } from '@/ui/assets/tips-cc.svg';
 export type CurvePoint = {
   value: number;
   netWorth: string;
@@ -27,6 +29,7 @@ type CurveThumbnailProps = {
   data?: Curve;
   isHover?: boolean;
   showAppChainTips?: boolean;
+  appChainIds?: string[];
   onHover?: (point?: CurvePoint) => void;
   width?: number;
   height?: number;
@@ -45,6 +48,18 @@ const CurveGlobalStyle = createGlobalStyle`
   }
 `;
 
+const AppChainTips = styled.div`
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  font-size: 9px;
+  opacity: 70%;
+  pointer-events: none;
+`;
+
 export const CurveThumbnail = ({
   data,
   height,
@@ -52,6 +67,7 @@ export const CurveThumbnail = ({
   className,
   isHover,
   onHover,
+  appChainIds,
   showAppChainTips = false,
 }: CurveThumbnailProps) => {
   const color = useMemo(() => {
@@ -183,6 +199,18 @@ export const CurveThumbnail = ({
             fillOpacity={0.8}
           />
         </AreaChart>
+      )}
+      {showTips && appChainIds && appChainIds.length > 0 && (
+        <AppChainTips>
+          <div className="text-rb-neutral-title-1 mr-[2px]">
+            <RcIconInfoCC width={12} height={12} />
+          </div>
+          <div className="text-rb-neutral-title-1 whitespace-nowrap">
+            {t('page.dashboard.home.slotAppChainTips', {
+              appChainNames: getAppChainNames(appChainIds || []),
+            })}
+          </div>
+        </AppChainTips>
       )}
     </CurveWrapper>
   );

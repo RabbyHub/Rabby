@@ -14,6 +14,8 @@ import {
 } from '@/constant';
 import IconSuccess from 'ui/assets/success.svg';
 import { useHistory } from 'react-router-dom';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { UI_TYPE } from '@/constant/ui';
 
 type AddressDeleteProps = {
   brandName?: string;
@@ -31,6 +33,7 @@ export const AddressDelete = ({
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const history = useHistory();
+  const { getContainer } = usePopupContainer();
 
   const handleDeleteAddress = async () => {
     await wallet.removeAddress(
@@ -49,9 +52,13 @@ export const AddressDelete = ({
       duration: 0.5,
     });
     setVisible(false);
-    setTimeout(() => {
-      history.goBack();
-    }, 500);
+    if (UI_TYPE.isDesktop) {
+      history.replace(history.location.pathname);
+    } else {
+      setTimeout(() => {
+        history.goBack();
+      }, 500);
+    }
   };
 
   const handleClickDelete = async () => {
@@ -74,6 +81,7 @@ export const AddressDelete = ({
         onCancel() {
           // do nothing
         },
+        getContainer,
         wallet,
       });
     } else {
@@ -135,6 +143,7 @@ const AddressDeleteModal = ({
   brandName: string | undefined;
   type: string;
 }) => {
+  const { getContainer } = usePopupContainer();
   const { t } = useTranslation();
   const renderBrand = useMemo(() => {
     if (brandName && WALLET_BRAND_CONTENT[brandName]) {
@@ -153,6 +162,7 @@ const AddressDeleteModal = ({
       className="address-delete-modal"
       onClose={onClose}
       isSupportDarkMode
+      getContainer={getContainer}
     >
       <div className="desc">
         {t('page.addressDetail.direct-delete-desc', { renderBrand })}

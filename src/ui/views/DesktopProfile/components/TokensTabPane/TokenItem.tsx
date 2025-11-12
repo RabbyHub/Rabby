@@ -10,12 +10,14 @@ import { DesktopTokenLabel } from '../TransactionsTabPane/DesktopTokenLabel';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import { CustomTestnetToken } from '@/background/service/customTestnet';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   item: AbstractPortfolioToken;
   style?: React.CSSProperties;
   isLast?: boolean;
   disableSwap?: boolean;
+  disableSend?: boolean;
   onClick?: () => void;
 }
 
@@ -23,24 +25,35 @@ export interface TestnetTokenItemProps {
   item: CustomTestnetToken;
 }
 
-const SwapBottom = ({ onClick }: { onClick?: () => void }) => {
+const ActionBottom = ({
+  onClick,
+  text,
+}: {
+  onClick?: () => void;
+  text?: string;
+}) => {
   return (
     <div
       onClick={onClick}
       className={`
         swap-action-btn
         px-10 h-[24px] leading-[24px] 
-        text-r-blue-default text-12 font-medium rounded-[4px] 
+        text-r-blue-default text-12 font-medium rounded-[6px] 
         border-[0.5px] border-r-blue-default w-min cursor-pointer 
         hover:bg-r-blue-light1
       `}
     >
-      Swap
+      {text}
     </div>
   );
 };
 
-export const TokenItemAsset: React.FC<Props> = ({ item, disableSwap }) => {
+export const TokenItemAsset: React.FC<Props> = ({
+  item,
+  disableSwap,
+  disableSend,
+}) => {
+  const { t } = useTranslation();
   const chain = findChain({
     serverId: item.chain,
   });
@@ -49,6 +62,13 @@ export const TokenItemAsset: React.FC<Props> = ({ item, disableSwap }) => {
     history.replace(
       history.location.pathname +
         `?action=swap&chain=${item.chain}&payTokenId=${item._tokenId}`
+    );
+  }, [item._tokenId, item.chain]);
+
+  const gotoSend = useCallback(() => {
+    history.replace(
+      history.location.pathname +
+        `?action=send&token=${item.chain}:${item._tokenId}`
     );
   }, [item._tokenId, item.chain]);
 
@@ -83,7 +103,18 @@ export const TokenItemAsset: React.FC<Props> = ({ item, disableSwap }) => {
             hover:text-r-blue-default hover:underline 
           `}
         />
-        {!disableSwap && <SwapBottom onClick={gotoSwap} />}
+        {!disableSwap && (
+          <ActionBottom
+            onClick={gotoSwap}
+            text={t('page.desktopProfile.portfolio.actions.swap')}
+          />
+        )}
+        {!disableSend && (
+          <ActionBottom
+            onClick={gotoSend}
+            text={t('page.desktopProfile.portfolio.actions.send')}
+          />
+        )}
       </div>
     </TCell>
   );
@@ -92,9 +123,17 @@ export const TokenItemAsset: React.FC<Props> = ({ item, disableSwap }) => {
 export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
   item,
 }) => {
+  const { t } = useTranslation();
   const chain = findChain({
     id: item.chainId,
   });
+  const history = useHistory();
+  const gotoSend = useCallback(() => {
+    history.replace(
+      history.location.pathname +
+        `?action=send&token=${chain?.serverId}:${item.id}`
+    );
+  }, [chain?.serverId, item.id]);
   return (
     <TCell className="py-8 flex gap-10 flex-1 items-center overflow-hidden">
       <div className="relative h-[24px]">
@@ -143,6 +182,10 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
             hover:text-r-blue-default hover:underline 
           `}
         />
+        <ActionBottom
+          onClick={gotoSend}
+          text={t('page.desktopProfile.portfolio.actions.send')}
+        />
       </div>
     </TCell>
   );
@@ -173,7 +216,7 @@ const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
 };
 
 const TokenRowWrapper = styled(TRow)`
-  border-bottom: 1px solid var(--r-neutral-bg-4, #f2f4f7);
+  border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
   height: 60px;
   padding-left: 12px;
   padding-right: 16px;
@@ -181,7 +224,7 @@ const TokenRowWrapper = styled(TRow)`
     display: none !important;
   }
   &:hover {
-    background-color: var(--r-neutral-bg-2);
+    background-color: var(--rb-neutral-bg-2, #f2f4f7);
     .swap-action-btn {
       display: block !important;
     }

@@ -1585,12 +1585,20 @@ export const ApprovalsTabPane = ({
                 />
               ) : null}
               {batchRevokeModal.node}
-              {isDesktop && (
-                <div className="sticky-footer w-full static pt-[36[x] pb-[40px]]">
+              {!isLoading && isDesktop && (
+                <div
+                  className="pt-[16px] text-center"
+                  style={{
+                    position: 'fixed',
+                    bottom: 0,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    paddingRight: 280,
+                    paddingBottom: 24,
+                  }}
+                >
                   {tab === 'eip-7702' ? (
                     <>
-                      <div className="h-[36px]" />
-
                       <RevokeEIP7702Button
                         onRevoke={handleEIP7702Revoke}
                         selectedCount={eip7702SelectedRows.length || 0}
