@@ -20,7 +20,10 @@ import { INTERNAL_REQUEST_SESSION, KEYRING_CLASS } from 'consts';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useAsync } from 'react-use';
 import BigNumber from 'bignumber.js';
-import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
+import {
+  useGasAccountInfo,
+  useGasAccountSign,
+} from '@/ui/views/GasAccount/hooks';
 import { BalanceChangeLoading } from './BalanceChangeLoanding';
 import clsx from 'clsx';
 import { checkGasAndNonce, explainGas } from '@/utils/transaction';
@@ -67,6 +70,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const loading =
     status === 'prefetching' || status === 'signing' || !ctx?.txsCalc.length;
 
+  useGasAccountInfo();
   const { sig, accountId: gasAccountAddress } = useGasAccountSign();
 
   const { value } = useAsync(() => {
