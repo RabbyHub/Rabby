@@ -448,6 +448,10 @@ function MnemonicsInputs({
     setDropdownVisible(true);
   };
 
+  React.useEffect(() => {
+    handleDropdownVisibleChange(false);
+  }, [mnemonicsCount]);
+
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
       <HeadToolbar className="mb-[20px] text-r-neutral-body">
@@ -456,10 +460,7 @@ function MnemonicsInputs({
           visible={dropdownVisible}
           onVisibleChange={handleDropdownVisibleChange}
           overlay={
-            <Menu
-              className="mnemonics-input-menu py-8px rounded-[8px] bg-r-neutral-bg-1"
-              selectable={false}
-            >
+            <Menu className="mnemonics-input-menu py-8px rounded-[8px] bg-r-neutral-bg-1">
               {MNEMONICS_COUNTS.map((count) => {
                 return (
                   <Menu.Item
