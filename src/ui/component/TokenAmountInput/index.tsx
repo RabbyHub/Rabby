@@ -358,11 +358,11 @@ const TokenAmountInput = ({
               </span>
             </div>
           )}
-          {/* {token && token.amount > 0 && !isLoading && (
+          {token && token.amount > 0 && !isLoading && (
             <MaxButton onClick={handleClickMaxButton}>
               {t('page.sendToken.max')}
             </MaxButton>
-          )} */}
+          )}
         </div>
       </div>
       <TokenSelector
