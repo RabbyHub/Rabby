@@ -3201,6 +3201,18 @@
           "swap": "Swap",
           "send": "Send"
         }
+      },
+      "button": {
+        "swap": "Swap",
+        "send": "Send",
+        "bridge": "Bridge",
+        "queue": "Queue",
+        "pending": "{{pendingTxCount}} Pending"
+      },
+      "tabs": {
+        "tokens": "Tokens",
+        "transactions": "Transactions",
+        "approvals": "Approvals"
       }
     },
     "selectToAddress": {
@@ -3467,6 +3479,9 @@
       "perps": "Perps",
       "lending": "Lending",
       "comingSoon": "Coming Soon"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Add addresses"
     }
   },
   "global": {

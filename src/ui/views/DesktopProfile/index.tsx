@@ -113,8 +113,6 @@ export const DesktopProfile = () => {
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
   const dispatch = useRabbyDispatch();
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
-  const shouldElevateAccountList =
-    action === 'send' || action === 'swap' || action === 'bridge';
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
@@ -210,6 +208,7 @@ export const DesktopProfile = () => {
                 />
                 <div key={refreshKey}>
                   <Tabs
+                    defaultActiveKey={activeTab}
                     activeKey={activeTab}
                     onChange={handleTabChange}
                     tabBarExtraContent={{
@@ -230,7 +229,10 @@ export const DesktopProfile = () => {
                       ),
                     }}
                   >
-                    <Tabs.TabPane tab="Tokens" key="tokens">
+                    <Tabs.TabPane
+                      tab={t('page.desktopProfile.tabs.tokens')}
+                      key="tokens"
+                    >
                       <TokensTabPane
                         onProjectOverviewListChange={
                           setCacheProjectOverviewList
@@ -239,13 +241,19 @@ export const DesktopProfile = () => {
                       />
                     </Tabs.TabPane>
                     {/* <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane> */}
-                    <Tabs.TabPane tab="Transactions" key="transactions">
+                    <Tabs.TabPane
+                      tab={t('page.desktopProfile.tabs.transactions')}
+                      key="transactions"
+                    >
                       <TransactionsTabPane
                         selectChainId={chainInfo?.serverId}
                         scrollContainerRef={scrollContainerRef}
                       />
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab="Approvals" key="approvals">
+                    <Tabs.TabPane
+                      tab={t('page.desktopProfile.tabs.approvals')}
+                      key="approvals"
+                    >
                       <ApprovalsTabPane
                         isDesktop={true}
                         desktopChain={chain}

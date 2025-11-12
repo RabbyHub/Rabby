@@ -189,14 +189,11 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
               onClick={() => {
                 history.replace(`${location.pathname}?action=add-address`);
               }}
-              className="w-[260px] cursor-pointer rounded-[20px] h-[72px] p-[16px] flex items-center gap-[8px] text-r-blue-default"
-              style={{
-                background: 'rgba(76, 101, 255, 0.08)',
-              }}
+              className="bg-rb-neutral-bg-3 w-[260px] cursor-pointer rounded-[20px] h-[72px] p-[16px] flex items-center gap-[8px] text-r-blue-default"
             >
               <RcIconAddWalletCC />
               <div className="text-[16px] leading-[19px] font-medium">
-                Add addresses
+                {t('component.DesktopSelectAccountList.addAddresses')}
               </div>
             </div>
           ),

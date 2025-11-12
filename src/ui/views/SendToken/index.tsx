@@ -856,7 +856,7 @@ const SendToken = () => {
           },
         });
 
-        if (isTab) {
+        if (isTab || isDesktop) {
           await promise;
           form.setFieldsValue({
             amount: '',

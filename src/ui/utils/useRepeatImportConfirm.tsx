@@ -6,6 +6,7 @@ import { isSameAddress, useWallet } from '@/ui/utils';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import './confirmPopup.less';
+import { UI_TYPE } from '@/constant/ui';
 
 type NullFunction = () => void;
 let cleanup: NullFunction | undefined;
@@ -56,7 +57,11 @@ export const useRepeatImportConfirm = () => {
         ),
         onOk: () => {
           wallet.changeAccount(account).then(() => {
-            history.push('/dashboard');
+            if (UI_TYPE.isDesktop) {
+              history.replace(history.location.pathname);
+            } else {
+              history.push('/dashboard');
+            }
           });
         },
         okText: t('global.confirm'),
