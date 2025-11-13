@@ -1040,8 +1040,8 @@
         "takeProfitTipsShort": "Take profit price must be lower than current price",
         "stopLossTipsLong": "Stop loss price must be lower than current price",
         "stopLossTipsShort": "Stop loss price must be higher than current price",
-        "stopLossTipsLongLiquidation": "Price is lower than liq.price ({{price}})",
-        "stopLossTipsShortLiquidation": "Price is higher than liq.price ({{price}})",
+        "stopLossTipsLongLiquidation": "Price is lower than the liq.price ({{price}})",
+        "stopLossTipsShortLiquidation": "Price is higher than the liq.price ({{price}})",
         "cancel": "Cancel"
       }
     },

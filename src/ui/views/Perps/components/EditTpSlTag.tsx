@@ -315,19 +315,31 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
           </div>
 
           <div className="w-full">
-            <div className="text-15 px-4 text-rb-neutral-title-1 mb-8">
+            <div className="text-15 font-medium px-4 text-rb-neutral-title-1 mb-8">
               {actionType === 'tp'
-                ? t('page.perpsDetail.PerpsAutoCloseModal.takeProfitWhen')
-                : t('page.perpsDetail.PerpsAutoCloseModal.stopLossWhen')}
+                ? direction === 'Long'
+                  ? t(
+                      'page.perpsDetail.PerpsAutoCloseModal.takeProfitWhenPriceAbove'
+                    )
+                  : t(
+                      'page.perpsDetail.PerpsAutoCloseModal.takeProfitWhenPriceBelow'
+                    )
+                : direction === 'Long'
+                ? t(
+                    'page.perpsDetail.PerpsAutoCloseModal.stopLossWhenPriceBelow'
+                  )
+                : t(
+                    'page.perpsDetail.PerpsAutoCloseModal.stopLossWhenPriceAbove'
+                  )}
             </div>
 
             <div
               className={clsx(
-                'bg-r-neutral-card1 rounded-[12px] p-12 mb-8 border  border-transparent border-solid',
+                'bg-r-neutral-card1 rounded-[12px] p-12 border  border-transparent border-solid',
                 inputFocused && 'border-rabby-blue-default'
               )}
             >
-              <div className="text-12 font-medium text-rb-neutral-secondary mb-4">
+              {/* <div className="text-12 font-medium text-rb-neutral-secondary mb-4">
                 {direction === 'Long'
                   ? actionType === 'tp'
                     ? t('page.perpsDetail.PerpsAutoCloseModal.priceAbove')
@@ -335,7 +347,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                   : actionType === 'tp'
                   ? t('page.perpsDetail.PerpsAutoCloseModal.priceBelow')
                   : t('page.perpsDetail.PerpsAutoCloseModal.priceAbove')}
-              </div>
+              </div> */}
               <input
                 ref={inputRef}
                 type="text"
@@ -345,7 +357,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                 onChange={(e) => handlePriceChange(e.target.value)}
                 placeholder="$0"
                 className={clsx(
-                  'text-16 font-bold bg-transparent border-none p-0 w-full outline-none focus:outline-none',
+                  'text-24 text-rb-neutral-title-1 font-bold bg-transparent border-none p-0 w-full outline-none focus:outline-none',
                   priceValidation.error && 'text-r-red-default'
                 )}
                 style={{
@@ -355,16 +367,17 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
               />
             </div>
 
-            <div className="h-[14px]">
-              {priceValidation.error && (
-                <div className="text-14 font-medium text-rb-red-default mb-12">
-                  {priceValidation.errorMessage}
-                </div>
-              )}
-            </div>
+            {priceValidation.error && (
+              <div
+                className="text-14 font-medium text-rb-red-default mt-10"
+                style={{ marginBottom: '-10px' }}
+              >
+                {priceValidation.errorMessage}
+              </div>
+            )}
 
             {/* PNL Card */}
-            <div className="bg-r-neutral-card1 rounded-[8px] p-16 mt-12 gap-12 flex flex-col">
+            <div className="bg-r-neutral-card1 rounded-[8px] p-16 mt-20 gap-12 flex flex-col">
               <div className="flex justify-between items-center">
                 <span className="text-14 font-medium text-r-neutral-body">
                   {gainOrLoss === 'gain'

@@ -24,8 +24,8 @@ export const ExplorePerpsHeader = React.forwardRef<
         <div className="text-13 font-medium text-r-neutral-title-1">
           {t('page.perps.explorePerps')}
         </div>
-        <div className="cursor-pointer p-[2px]" onClick={onSearchClick}>
-          <ThemeIcon className="icon text-r-neutral-foot" src={IconSearchCC} />
+        <div className="cursor-pointer px-2" onClick={onSearchClick}>
+          <ThemeIcon className="icon text-r-neutral-body" src={IconSearchCC} />
         </div>
       </div>
     </div>
