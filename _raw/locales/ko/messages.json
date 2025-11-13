@@ -1195,7 +1195,8 @@
           "gasAccount": "GasAccount",
           "dapps": "Dapps",
           "setting": "설정",
-          "searchDapp": "Dapp 검색"
+          "searchDapp": "Dapp 검색",
+          "settings": "설정"
         },
         "queue": {
           "count": "{{count}} 에서",
@@ -1220,7 +1221,8 @@
         "chain": "체인,",
         "missingDataTooltip": "현재 {{text}}의 네트워크 문제로 인해 잔액이 업데이트되지 않을 수 있습니다.",
         "importType": "{{type}}에 의해 가져왔습니다.",
-        "appChainTips": "Hyperliquid 계정이 포함되지 않음"
+        "appChainTips": "Hyperliquid 계정이 포함되지 않음",
+        "slotAppChainTips": "{{appChainNames}} 계좌가 포함되지 않았습니다."
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {
@@ -1477,7 +1479,8 @@
           "endAt": "종료 시",
           "summaryDescription": "프로토콜의 모든 자산(예: LP tokens)은 통계 계산을 위해 기본 자산으로 해결됩니다.",
           "balanceValue": "잔액 / 가치",
-          "review": "리뷰"
+          "review": "리뷰",
+          "noTokens": "토큰 없음"
         },
         "AddMainnetToken": {
           "title": "맞춤형 토큰 추가",
@@ -1498,7 +1501,9 @@
         },
         "TestnetAssetListContainer": {
           "addTestnet": "네트워크",
-          "add": "토큰"
+          "add": "토큰",
+          "addToken": "토큰 추가",
+          "addNetwork": "네트워크 추가"
         },
         "amount": "금액",
         "usdValue": "USD 가치",
@@ -1647,7 +1652,8 @@
         "inputInvalidCount_other": "{{count}} 개의 입력이 Seed Phrase 규범에 준수하지 않으니 확인해 주세요.",
         "importQuestion1": "내 시드 구문을 잃어버리거나 공유하면, 자산에 대한 접근을 영구적으로 잃게 됩니다.",
         "importQuestion2": "내 시드 문구는 오직 내 기기에만 저장됩니다. Rabby는 이를 접근할 수 없습니다.",
-        "importQuestion3": "Rabby를 백업하지 않고 제거하면 seed phrase를 복구할 수 없습니다."
+        "importQuestion3": "Rabby를 백업하지 않고 제거하면 seed phrase를 복구할 수 없습니다.",
+        "showMoreOptions": "더 많은 옵션 보기"
       },
       "metamask": {
         "tips": "팁:",
@@ -3091,6 +3097,60 @@
       "enterAddress": "주소 입력",
       "selectImportedAddress": "가져온 주소 선택",
       "sendToImportedAddress": "가져온 주소로 보내기"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "순자산",
+        "appChainTips": "Hyperliquid 및 Polymarket 계정이 포함되지 않음"
+      },
+      "UpdateButton": {
+        "updating": "데이터 업데이트 중",
+        "updatedAgo": "데이터 업데이트됨 <1/> <2>{{timeText}}</2> <3/> 전"
+      },
+      "ReachedEnd": {
+        "content": "당신은 끝에 도달했습니다"
+      },
+      "portfolio": {
+        "headers": {
+          "allTokenMode": "모든 토큰 모드",
+          "wallet": "지갑",
+          "unfoldProtocols": "{{count}} 프로토콜 펼치기",
+          "foldProtocols": "Fold {{count}} 프로토콜"
+        },
+        "hidden": {
+          "showAll": "모두 보기",
+          "hideSmallDesc": "잔고가 적은 토큰은 표시되지 않습니다.",
+          "hideProtocolsWithSmallDeposits": "소액 예치금이 있는 프로토콜 숨기기.",
+          "hideProtocolsWithSmallDepositsDesc": "소액 예치가 있는 프로토콜은 표시되지 않습니다.",
+          "tokensWithZeroBalance": "$0 토큰 숨기기",
+          "hideSmall": "작은 잔액의 토큰 숨기기.",
+          "tokensWithZeroBalanceDesc": "$0 잔액의 토큰은 숨겨져 있습니다."
+        },
+        "table": {
+          "token": "토큰",
+          "chain": "체인",
+          "amount": "금액",
+          "tokenAddress": "토큰 주소",
+          "usdValue": "USD 가치",
+          "price": "가격"
+        },
+        "actions": {
+          "send": "보내기",
+          "swap": "스왑"
+        }
+      },
+      "button": {
+        "send": "보내기",
+        "queue": "대기열",
+        "swap": "스왑",
+        "pending": "{{pendingTxCount}} 대기 중",
+        "bridge": "브리지"
+      },
+      "tabs": {
+        "approvals": "승인",
+        "transactions": "거래",
+        "tokens": "토큰"
+      }
     }
   },
   "component": {
@@ -3287,6 +3347,18 @@
     },
     "DappActions": {
       "queueDescription": "현재 인출은 대기 열에 들어갑니다. 처리되면 귀하의 지갑으로 인출할 수 있습니다."
+    },
+    "DesktopChainSelector": {
+      "allChains": "모든 체인"
+    },
+    "DesktopNav": {
+      "lending": "대출",
+      "perps": "Perps",
+      "comingSoon": "곧 출시됩니다",
+      "portfolio": "포트폴리오"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "주소 추가"
     }
   },
   "global": {

@@ -1123,7 +1123,8 @@
           "gasAccount": "GasAccount",
           "searchDapp": "Dapp suchen",
           "setting": "Einstellungen",
-          "dapps": "Dapps"
+          "dapps": "Dapps",
+          "settings": "Einstellungen"
         },
         "comingSoon": "Demnächst",
         "soon": "Bald",
@@ -1147,7 +1148,8 @@
         "chainEnd": "Kette",
         "chain": "kette,",
         "missingDataTooltip": "Der Kontostand wird möglicherweise aufgrund aktueller Netzwerkprobleme mit {{text}} nicht aktualisiert.",
-        "appChainTips": "Hyperliquid Account nicht enthalten"
+        "appChainTips": "Hyperliquid Account nicht enthalten",
+        "slotAppChainTips": "{{appChainNames}} Konto nicht enthalten"
       },
       "recentConnection": {
         "disconnected": "Getrennt",
@@ -1407,7 +1409,8 @@
           "lowValueAssets_other": "{{count}} niedrigwertige Token",
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_0": "{{count}} Low-Value-Token",
-          "review": "Überprüfung"
+          "review": "Überprüfung",
+          "noTokens": "Keine Token"
         },
         "noAssets": "Keine Vermögenswerte",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",
@@ -1437,7 +1440,9 @@
         },
         "TestnetAssetListContainer": {
           "add": "Token",
-          "addTestnet": "Netzwerk"
+          "addTestnet": "Netzwerk",
+          "addToken": "Token hinzufügen",
+          "addNetwork": "Netzwerk hinzufügen"
         },
         "customButtonText": "Benutzerdefiniertes Token hinzufügen",
         "noTestnetAssets": "Keine benutzerdefinierten Netzwerk-Assets",
@@ -1588,7 +1593,8 @@
         "slip39SeedPhrasePlaceholder_few": "Geben Sie hier Ihre {{count}}te Seed-Phrase-Teile ein",
         "importQuestion2": "Mein Seed-Phrase wird nur auf meinem Gerät gespeichert. Rabby kann nicht darauf zugreifen.",
         "importQuestion1": "Wenn ich meinen Seed-Phrase verliere oder teile, verliere ich den Zugriff auf meine Vermögenswerte dauerhaft.",
-        "importQuestion3": "Wenn ich Rabby deinstalliere, ohne meinen Seed-Phrase zu sichern, kann er von Rabby nicht wiederhergestellt werden."
+        "importQuestion3": "Wenn ich Rabby deinstalliere, ohne meinen Seed-Phrase zu sichern, kann er von Rabby nicht wiederhergestellt werden.",
+        "showMoreOptions": "Mehr Optionen anzeigen"
       },
       "metamask": {
         "step1": "Seed Phrase oder Private Key aus MetaMask exportieren <br /> <1>Klicken Sie hier, um das Tutorial anzuzeigen <1/></1>",
@@ -3094,6 +3100,60 @@
       "sendToImportedAddress": "An Adresse senden, die importiert wurde",
       "enterAddress": "Adresse eingeben",
       "selectExchangeSource": "Wählen Sie die Börsenquelle aus"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "Vermögen",
+        "appChainTips": "Hyperliquid & Polymarket-Konto nicht enthalten"
+      },
+      "UpdateButton": {
+        "updating": "Daten aktualisieren",
+        "updatedAgo": "Daten aktualisiert <1/> <2>{{timeText}}</2> <3/> her"
+      },
+      "ReachedEnd": {
+        "content": "Du hast das Ende erreicht."
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "Wallet",
+          "allTokenMode": "Alle Token-Modus",
+          "foldProtocols": "Fold {{count}} Protokolle",
+          "unfoldProtocols": "Entfalten {{count}} Protokolle"
+        },
+        "hidden": {
+          "showAll": "Alle anzeigen",
+          "hideSmallDesc": "Tokens mit kleinen Guthaben werden nicht angezeigt.",
+          "hideSmall": "Verstecke Token mit kleinen Beständen.",
+          "tokensWithZeroBalance": "$0-Token ausblenden",
+          "tokensWithZeroBalanceDesc": "Tokens mit $0 Salden sind ausgeblendet.",
+          "hideProtocolsWithSmallDeposits": "Protokolle mit kleinen Einlagen ausblenden.",
+          "hideProtocolsWithSmallDepositsDesc": "Protokolle mit kleinen Einzahlungen werden nicht angezeigt."
+        },
+        "table": {
+          "token": "Token",
+          "chain": "Kette",
+          "tokenAddress": "Token-Adresse",
+          "price": "Preis",
+          "amount": "Betrag",
+          "usdValue": "USD-Wert"
+        },
+        "actions": {
+          "send": "Senden",
+          "swap": "Tauschen"
+        }
+      },
+      "button": {
+        "bridge": "Brücke",
+        "swap": "Tauschen",
+        "send": "Senden",
+        "pending": "{{pendingTxCount}} Ausstehend",
+        "queue": "Warteschlange"
+      },
+      "tabs": {
+        "tokens": "Tokens",
+        "transactions": "Transaktionen",
+        "approvals": "Genehmigungen"
+      }
     }
   },
   "component": {
@@ -3290,6 +3350,18 @@
     },
     "DappActions": {
       "queueDescription": "Aktuelle Abhebungen gelangen in eine Warteschlange. Sobald sie bearbeitet sind, können sie in Ihr Wallet abgehoben werden."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Alle Chains"
+    },
+    "DesktopNav": {
+      "lending": "Kreditvergabe",
+      "portfolio": "Portfolio",
+      "perps": "Perps",
+      "comingSoon": "Bald verfügbar"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Adresse hinzufügen"
     }
   },
   "global": {

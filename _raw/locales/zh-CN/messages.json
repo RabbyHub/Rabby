@@ -120,7 +120,8 @@
           "gasAccount": "GasAccount",
           "setting": "设置",
           "dapps": "Dapps",
-          "searchDapp": "搜索 Dapp"
+          "searchDapp": "搜索 Dapp",
+          "settings": "设置"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -144,7 +145,8 @@
         "missingDataTooltip": "由于 {{text}}的当前网络问题，地址余额可能无法更新。",
         "chain": " 链、",
         "chainEnd": " 链",
-        "appChainTips": "Hyperliquid 账户未包含"
+        "appChainTips": "Hyperliquid 账户未包含",
+        "slotAppChainTips": "{{appChainNames}} 账户未包含"
       },
       "recentConnection": {
         "disconnected": "已断开连接",
@@ -374,7 +376,8 @@
           "lowValueAssets_one": "{{count}} 个低价值代币",
           "lowValueAssets_other": "{{count}} 个低价值代币",
           "lowValueAssets_0": "{{count}} 个低价值代币",
-          "review": "审核"
+          "review": "审核",
+          "noTokens": "没有代币"
         },
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址，隐藏代币",
@@ -405,7 +408,9 @@
         },
         "TestnetAssetListContainer": {
           "add": "代币",
-          "addTestnet": "网络"
+          "addTestnet": "网络",
+          "addToken": "添加 Token",
+          "addNetwork": "添加网络"
         },
         "noTestnetAssets": "没有自定义网络资产",
         "addTokenEntryText": "代币",
@@ -562,7 +567,8 @@
         "passphrase": "密码",
         "importQuestion1": "如果我丢失或分享我的种子短语，我将永久失去对我的资产的访问权限。",
         "importQuestion3": "如果我在没有备份我的种子短语的情况下卸载 Rabby，将无法通过 Rabby 恢复。",
-        "importQuestion2": "我的助记词仅存储在我的设备上。Rabby 无法访问它。"
+        "importQuestion2": "我的助记词仅存储在我的设备上。Rabby 无法访问它。",
+        "showMoreOptions": "显示更多选项"
       },
       "metamask": {
         "step1": "从 MetaMask 导出助记词或私钥  <br/><1>查看操作指南<1/></1>",
@@ -3132,6 +3138,60 @@
       "title": "地址",
       "selectImportedAddress": "选择导入的地址",
       "sendToImportedAddress": "发送到导入的地址"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "净资产",
+        "appChainTips": "Hyperliquid & Polymarket 账户不包括在内"
+      },
+      "UpdateButton": {
+        "updating": "更新数据",
+        "updatedAgo": "数据更新于 <1/> <2>{{timeText}}</2> <3/> 前"
+      },
+      "ReachedEnd": {
+        "content": "您已到达结束。"
+      },
+      "portfolio": {
+        "headers": {
+          "allTokenMode": "全部代币模式",
+          "wallet": "钱包",
+          "foldProtocols": "折叠 {{count}} 协议",
+          "unfoldProtocols": "展开 {{count}} 个协议"
+        },
+        "hidden": {
+          "tokensWithZeroBalance": "隐藏 $0 代币",
+          "showAll": "显示全部",
+          "hideSmallDesc": "余额较小的 Tokens 不会显示。",
+          "hideProtocolsWithSmallDeposits": "隐藏存款少的协议。",
+          "hideSmall": "隐藏小额余额的代币。",
+          "tokensWithZeroBalanceDesc": "余额为 $0 的代币被隐藏。",
+          "hideProtocolsWithSmallDepositsDesc": "小额存款的协议不会显示。"
+        },
+        "table": {
+          "token": "令牌",
+          "price": "价格",
+          "amount": "金额",
+          "chain": "链",
+          "tokenAddress": "代币地址",
+          "usdValue": "美元价值"
+        },
+        "actions": {
+          "send": "发送",
+          "swap": "交换"
+        }
+      },
+      "button": {
+        "queue": "队列",
+        "send": "发送",
+        "bridge": "桥接",
+        "swap": "兑换",
+        "pending": "{{pendingTxCount}} 待处理"
+      },
+      "tabs": {
+        "tokens": "代币",
+        "approvals": "授权",
+        "transactions": "交易"
+      }
     }
   },
   "component": {
@@ -3328,6 +3388,18 @@
     },
     "DappActions": {
       "queueDescription": "当前提款将进入等待队列。一旦处理完成，可以提取到您的钱包。"
+    },
+    "DesktopChainSelector": {
+      "allChains": "所有链"
+    },
+    "DesktopNav": {
+      "perps": "永久合约",
+      "comingSoon": "即将推出",
+      "portfolio": "投资组合",
+      "lending": "借贷"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "添加地址"
     }
   },
   "background": {
