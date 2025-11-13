@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useMemoizedFn } from 'ahooks';
-import { validatePriceInput } from '../utils';
+import { formatTpOrSlPrice, validatePriceInput } from '../utils';
 interface EditTpSlTagProps {
   coin: string;
   entryPrice?: number;
@@ -22,6 +22,7 @@ interface EditTpSlTagProps {
   pxDecimals: number;
   szDecimals: number;
   actionType: 'tp' | 'sl';
+  isUp?: boolean;
   type: 'openPosition' | 'hasPosition';
   handleSetAutoClose: (price: string) => Promise<void>;
   handleCancelAutoClose: () => Promise<void>;
@@ -39,6 +40,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   pxDecimals,
   szDecimals,
   actionType,
+  isUp,
   type,
   handleSetAutoClose,
   handleCancelAutoClose,
@@ -56,6 +58,19 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   const priceIsEmptyValue = useMemo(() => {
     return !autoClosePrice || !Number(autoClosePrice);
   }, [autoClosePrice]);
+
+  const handlePriceChange = useMemoizedFn((price: string) => {
+    let value = price.replace(',', '.');
+    if (value.startsWith('$')) {
+      value = value.slice(1);
+    }
+    if (
+      (/^\d*\.?\d*$/.test(value) || value === '') &&
+      validatePriceInput(value, szDecimals)
+    ) {
+      setAutoClosePrice(value);
+    }
+  });
 
   // Calculate gain percentage from price
   const calculatedPnl = React.useMemo(() => {
@@ -158,11 +173,43 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
     actionType,
   ]);
 
+  const handleInitGainPct = useMemoizedFn(() => {
+    // console.log('szDecimals', szDecimals);
+    const pct = actionType === 'tp' ? 5.0 : 4.5;
+    const pctValue = Number(pct) / 100;
+    const costValue = margin;
+    const pnlUsdValue = costValue * pctValue;
+    const priceDifference = Number((pnlUsdValue / size).toFixed(pxDecimals));
+
+    // make difference to mark price avoid error from hy validator
+    const costPrice = markPrice;
+
+    if (actionType === 'tp') {
+      const newPrice =
+        direction === 'Long'
+          ? costPrice + priceDifference
+          : costPrice - priceDifference;
+      const newPriceStr = formatTpOrSlPrice(newPrice, szDecimals);
+      handlePriceChange(newPriceStr);
+    } else {
+      const newPrice =
+        direction === 'Long'
+          ? costPrice - priceDifference
+          : costPrice + priceDifference;
+      const newPriceStr = formatTpOrSlPrice(newPrice, szDecimals);
+      handlePriceChange(newPriceStr);
+    }
+  });
+
   const isValidPrice = priceValidation.isValid;
   useEffect(() => {
     if (modalVisible) {
       if (initTpOrSlPrice) {
         setAutoClosePrice(initTpOrSlPrice);
+      } else {
+        if (type === 'openPosition') {
+          handleInitGainPct();
+        }
       }
       const timer = setTimeout(() => {
         inputRef.current?.focus();
@@ -245,35 +292,54 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
             <div className="text-20 font-medium text-r-neutral-title-1 mb-4">
               {direction} {coin}-USD
             </div>
-            <div className="text-14 text-r-neutral-secondary">
-              {type === 'openPosition'
-                ? t('page.perpsDetail.PerpsAutoCloseModal.currentPrice', {
-                    price: splitNumberByStep(markPrice),
-                  })
-                : t(
-                    'page.perpsDetail.PerpsAutoCloseModal.EntryAndCurrentPrice',
-                    {
-                      entryPrice: splitNumberByStep(entryPrice || markPrice),
-                      currentPrice: splitNumberByStep(markPrice),
-                    }
-                  )}
+            <div className={clsx('text-14 text-rb-neutral-secondary')}>
+              {type === 'openPosition' ? (
+                <>
+                  {t('page.perpsDetail.PerpsAutoCloseModal.currentPrice')}
+                  <span
+                    className={clsx('text-14', {
+                      'text-r-green-default': isUp,
+                      'text-r-red-default': !isUp,
+                    })}
+                  >
+                    ${splitNumberByStep(markPrice)}
+                  </span>
+                </>
+              ) : (
+                t('page.perpsDetail.PerpsAutoCloseModal.EntryAndCurrentPrice', {
+                  entryPrice: splitNumberByStep(entryPrice || markPrice),
+                  currentPrice: splitNumberByStep(markPrice),
+                })
+              )}
             </div>
           </div>
 
           <div className="w-full">
-            <div className="text-15 px-4 text-rb-neutral-title-1 mb-8">
+            <div className="text-15 font-medium px-4 text-rb-neutral-title-1 mb-8">
               {actionType === 'tp'
-                ? t('page.perpsDetail.PerpsAutoCloseModal.takeProfitWhen')
-                : t('page.perpsDetail.PerpsAutoCloseModal.stopLossWhen')}
+                ? direction === 'Long'
+                  ? t(
+                      'page.perpsDetail.PerpsAutoCloseModal.takeProfitWhenPriceAbove'
+                    )
+                  : t(
+                      'page.perpsDetail.PerpsAutoCloseModal.takeProfitWhenPriceBelow'
+                    )
+                : direction === 'Long'
+                ? t(
+                    'page.perpsDetail.PerpsAutoCloseModal.stopLossWhenPriceBelow'
+                  )
+                : t(
+                    'page.perpsDetail.PerpsAutoCloseModal.stopLossWhenPriceAbove'
+                  )}
             </div>
 
             <div
               className={clsx(
-                'bg-r-neutral-card1 rounded-[12px] p-12 mb-8 border  border-transparent border-solid',
+                'bg-r-neutral-card1 rounded-[12px] p-12 border  border-transparent border-solid',
                 inputFocused && 'border-rabby-blue-default'
               )}
             >
-              <div className="text-12 font-medium text-rb-neutral-secondary mb-4">
+              {/* <div className="text-12 font-medium text-rb-neutral-secondary mb-4">
                 {direction === 'Long'
                   ? actionType === 'tp'
                     ? t('page.perpsDetail.PerpsAutoCloseModal.priceAbove')
@@ -281,28 +347,17 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                   : actionType === 'tp'
                   ? t('page.perpsDetail.PerpsAutoCloseModal.priceBelow')
                   : t('page.perpsDetail.PerpsAutoCloseModal.priceAbove')}
-              </div>
+              </div> */}
               <input
                 ref={inputRef}
                 type="text"
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
                 value={autoClosePrice ? `$${autoClosePrice}` : ''}
-                onChange={(e) => {
-                  let value = e.target.value.replace(',', '.');
-                  if (value.startsWith('$')) {
-                    value = value.slice(1);
-                  }
-                  if (
-                    (/^\d*\.?\d*$/.test(value) || value === '') &&
-                    validatePriceInput(value, szDecimals)
-                  ) {
-                    setAutoClosePrice(value);
-                  }
-                }}
+                onChange={(e) => handlePriceChange(e.target.value)}
                 placeholder="$0"
                 className={clsx(
-                  'text-16 font-bold bg-transparent border-none p-0 w-full outline-none focus:outline-none',
+                  'text-24 text-rb-neutral-title-1 font-bold bg-transparent border-none p-0 w-full outline-none focus:outline-none',
                   priceValidation.error && 'text-r-red-default'
                 )}
                 style={{
@@ -312,16 +367,17 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
               />
             </div>
 
-            <div className="h-[14px]">
-              {priceValidation.error && (
-                <div className="text-14 font-medium text-rb-red-default mb-12">
-                  {priceValidation.errorMessage}
-                </div>
-              )}
-            </div>
+            {priceValidation.error && (
+              <div
+                className="text-14 font-medium text-rb-red-default mt-10"
+                style={{ marginBottom: '-10px' }}
+              >
+                {priceValidation.errorMessage}
+              </div>
+            )}
 
             {/* PNL Card */}
-            <div className="bg-r-neutral-card1 rounded-[8px] p-16 mt-12 gap-12 flex flex-col">
+            <div className="bg-r-neutral-card1 rounded-[8px] p-16 mt-20 gap-12 flex flex-col">
               <div className="flex justify-between items-center">
                 <span className="text-14 font-medium text-r-neutral-body">
                   {gainOrLoss === 'gain'

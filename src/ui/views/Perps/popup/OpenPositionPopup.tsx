@@ -165,7 +165,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   }, [margin, availableBalance, t, leverage, maxNtlValue]);
 
   const resetInitValues = useMemoizedFn(() => {
-    setMargin('');
     setLeverage(Math.min(leverageRange[1], 5));
     setTpTriggerPx('');
     setSlTriggerPx('');
@@ -174,6 +173,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   React.useEffect(() => {
     if (!visible) {
       resetInitValues();
+      setMargin('');
       setIsReviewMode(false);
     }
   }, [visible, resetInitValues]);
@@ -189,6 +189,17 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const handleBackToEdit = () => {
     setIsReviewMode(false);
   };
+
+  const dayDelta = useMemo(() => {
+    const prevDayPx = Number(
+      activeAssetCtx?.prevDayPx || currentAssetCtx?.prevDayPx || 0
+    );
+    return markPrice - prevDayPx;
+  }, [activeAssetCtx, markPrice, currentAssetCtx]);
+
+  const isPositiveChange = useMemo(() => {
+    return dayDelta >= 0;
+  }, [dayDelta]);
 
   const isValidAmount = marginValidation.isValid;
 
@@ -350,6 +361,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
             <EditTpSlTag
               coin={coin}
+              isUp={isPositiveChange}
               markPrice={markPrice}
               initTpOrSlPrice={tpTriggerPx}
               direction={direction}

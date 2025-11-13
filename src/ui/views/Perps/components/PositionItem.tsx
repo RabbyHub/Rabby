@@ -94,20 +94,23 @@ export const PositionItem: React.FC<{
     <div
       className={clsx(
         'w-full bg-r-neutral-card1 rounded-[8px] flex flex-col cursor-pointer',
+        'border-[1px]',
+        'border-solid border-transparent',
+        'hover:bg-r-blue-light1 hover:border-rabby-blue-default',
         (hasTakeProfit || hasStopLoss) && 'pb-2'
       )}
       onClick={handleNavigate}
     >
       <div className={clsx('flex items-center justify-between px-16 py-12')}>
         <div className="flex flex-col gap-8 flex-1">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center">
             <TokenImg
               logoUrl={logoUrl}
               direction={side}
               withDirection={false}
               size={20}
             />
-            <span className="text-15 font-medium text-rb-neutral-title-1">
+            <span className="text-15 ml-4 font-medium text-rb-neutral-title-1">
               {coin}
             </span>
             <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-title-1" />
@@ -136,12 +139,12 @@ export const PositionItem: React.FC<{
           </div>
         </div>
         <div className="flex flex-col items-end gap-4">
-          <div className="text-16 font-bold text-rb-neutral-title-1">
+          <div className="text-15 font-bold text-rb-neutral-title-1">
             {formatUsdValue(Number(marginUsed))}
           </div>
           <div
             className={clsx(
-              'text-14 font-medium',
+              'text-13 font-medium',
               isUp ? 'text-rb-green-default' : 'text-rb-red-default'
             )}
           >

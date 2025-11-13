@@ -4,8 +4,9 @@ import clsx from 'clsx';
 import styled from 'styled-components';
 
 const FloatDiv = styled.div`
-  bottom: 120px;
+  bottom: 100px;
   right: 12px;
+  fill: rgba(255, 255, 255, 0.6);
 `;
 
 interface BackToTopButtonProps {
@@ -29,7 +30,7 @@ export const BackToTopButton: React.FC<BackToTopButtonProps> = ({
       )}
       onClick={onClick}
     >
-      <div className="w-[58px] h-[58px] rounded-full bg-r-neutral-bg-1 shadow-lg flex items-center justify-center transition-colors">
+      <div className="w-[48px] h-[48px] rounded-full bg-r-neutral-bg-1 shadow-lg flex items-center justify-center transition-colors">
         <RcIconBackTopCC className="text-r-neutral-body" />
       </div>
     </FloatDiv>

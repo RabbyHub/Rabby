@@ -1024,7 +1024,7 @@
         "stopLossWhen": "Stop Loss When",
         "stopLossWhenPriceAbove": "Stop Loss When Price Above",
         "stopLossWhenPriceBelow": "Stop Loss When Price Below",
-        "currentPrice": "Current Price: ${{price}}",
+        "currentPrice": "Current Price: ",
         "EntryAndCurrentPrice": "Entry: ${{entryPrice}} Current: ${{currentPrice}}",
         "priceAbove": "Price above",
         "priceBelow": "Price below",
@@ -1040,8 +1040,8 @@
         "takeProfitTipsShort": "Take profit price must be lower than current price",
         "stopLossTipsLong": "Stop loss price must be lower than current price",
         "stopLossTipsShort": "Stop loss price must be higher than current price",
-        "stopLossTipsLongLiquidation": "Price is lower than liquidation price ({{price}})",
-        "stopLossTipsShortLiquidation": "Price is higher than liquidation price ({{price}})",
+        "stopLossTipsLongLiquidation": "Price is lower than the liq.price ({{price}})",
+        "stopLossTipsShortLiquidation": "Price is higher than the liq.price ({{price}})",
         "cancel": "Cancel"
       }
     },
