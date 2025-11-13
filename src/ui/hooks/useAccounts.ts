@@ -6,6 +6,7 @@ import { IDisplayedAccountWithBalance } from '../models/accountToDisplay';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { sortAccountsByBalance } from '../utils/account';
 import { getWalletScore } from '../views/ManageAddress/hooks';
+import { isSameAddress } from '../utils';
 
 export const useAccounts = () => {
   const addressSortStore = useRabbySelector(
@@ -61,17 +62,20 @@ export const useAccounts = () => {
       return [normalAccounts, watchModeAccounts];
     }
     if (addressSortStore.sortType === 'alphabet') {
+      const sortByAlphabet = (
+        a: typeof highlightedAccounts[0],
+        b: typeof highlightedAccounts[0]
+      ) =>
+        (a?.alianName || '').localeCompare(b?.alianName || '', 'en', {
+          numeric: true,
+        });
       return [
-        normalAccounts.sort((a, b) =>
-          (a?.alianName || '').localeCompare(b?.alianName || '', 'en', {
-            numeric: true,
-          })
-        ),
-        watchModeAccounts.sort((a, b) =>
-          (a?.alianName || '').localeCompare(b?.alianName || '', 'en', {
-            numeric: true,
-          })
-        ),
+        highlightedAccounts
+          .concat(data['0'].sort(sortByAlphabet))
+          .filter((e) => !!e),
+        watchModeHighlightedAccounts
+          .concat(data['1'].sort(sortByAlphabet))
+          .filter((e) => !!e),
       ];
     }
 
@@ -88,7 +92,8 @@ export const useAccounts = () => {
       normalArr[KEYRING_CLASS.HARDWARE.LEDGER],
       (a) => a.hdPathBasePublicKey || nanoid()
     ) as Dictionary<IDisplayedAccountWithBalance[]>;
-    return [
+
+    console.log('sorted account', [
       [
         ...Object.values(ledgersGroup).sort((a, b) => b.length - a.length),
         ...Object.values(hdKeyringGroup).sort((a, b) => b.length - a.length),
@@ -102,6 +107,36 @@ export const useAccounts = () => {
       ]
         .filter((e) => Array.isArray(e) && e.length > 0)
         .sort((a, b) => getWalletScore(a) - getWalletScore(b)),
+      [],
+    ]);
+    return [
+      [
+        ...Object.values(ledgersGroup).sort((a, b) => b.length - a.length),
+        ...Object.values(hdKeyringGroup).sort((a, b) => b.length - a.length),
+        ...Object.values(
+          omit(normalArr, [
+            KEYRING_TYPE.HdKeyring,
+            KEYRING_CLASS.HARDWARE.LEDGER,
+          ])
+        ),
+        sortAccountsByBalance(watchModeAccounts),
+      ]
+        .filter((e) => Array.isArray(e) && e.length > 0)
+        .sort((a, b) => getWalletScore(a) - getWalletScore(b))
+        .map((groupedAccount) =>
+          groupedAccount.sort((a, b) => {
+            const isHighlighted = (item: typeof a) => {
+              return highlightedAddresses.some(
+                (e) =>
+                  isSameAddress(e.address, item.address) &&
+                  e.brandName === item.brandName
+              );
+            };
+            const aScore = isHighlighted(a) ? 0 : 1;
+            const bScore = isHighlighted(b) ? 0 : 1;
+            return aScore - bScore;
+          })
+        ),
       [],
     ];
   }, [accountsList, highlightedAddresses, addressSortStore.sortType]);
