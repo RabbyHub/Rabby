@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useMemoizedFn } from 'ahooks';
-import { validatePriceInput } from '../utils';
+import { formatTpOrSlPrice, validatePriceInput } from '../utils';
 interface EditTpSlTagProps {
   coin: string;
   entryPrice?: number;
@@ -22,6 +22,7 @@ interface EditTpSlTagProps {
   pxDecimals: number;
   szDecimals: number;
   actionType: 'tp' | 'sl';
+  isUp?: boolean;
   type: 'openPosition' | 'hasPosition';
   handleSetAutoClose: (price: string) => Promise<void>;
   handleCancelAutoClose: () => Promise<void>;
@@ -39,6 +40,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   pxDecimals,
   szDecimals,
   actionType,
+  isUp,
   type,
   handleSetAutoClose,
   handleCancelAutoClose,
@@ -56,6 +58,19 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   const priceIsEmptyValue = useMemo(() => {
     return !autoClosePrice || !Number(autoClosePrice);
   }, [autoClosePrice]);
+
+  const handlePriceChange = useMemoizedFn((price: string) => {
+    let value = price.replace(',', '.');
+    if (value.startsWith('$')) {
+      value = value.slice(1);
+    }
+    if (
+      (/^\d*\.?\d*$/.test(value) || value === '') &&
+      validatePriceInput(value, szDecimals)
+    ) {
+      setAutoClosePrice(value);
+    }
+  });
 
   // Calculate gain percentage from price
   const calculatedPnl = React.useMemo(() => {
@@ -158,11 +173,43 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
     actionType,
   ]);
 
+  const handleInitGainPct = useMemoizedFn(() => {
+    // console.log('szDecimals', szDecimals);
+    const pct = actionType === 'tp' ? 5.0 : 4.5;
+    const pctValue = Number(pct) / 100;
+    const costValue = margin;
+    const pnlUsdValue = costValue * pctValue;
+    const priceDifference = Number((pnlUsdValue / size).toFixed(pxDecimals));
+
+    // make difference to mark price avoid error from hy validator
+    const costPrice = markPrice;
+
+    if (actionType === 'tp') {
+      const newPrice =
+        direction === 'Long'
+          ? costPrice + priceDifference
+          : costPrice - priceDifference;
+      const newPriceStr = formatTpOrSlPrice(newPrice, szDecimals);
+      handlePriceChange(newPriceStr);
+    } else {
+      const newPrice =
+        direction === 'Long'
+          ? costPrice - priceDifference
+          : costPrice + priceDifference;
+      const newPriceStr = formatTpOrSlPrice(newPrice, szDecimals);
+      handlePriceChange(newPriceStr);
+    }
+  });
+
   const isValidPrice = priceValidation.isValid;
   useEffect(() => {
     if (modalVisible) {
       if (initTpOrSlPrice) {
         setAutoClosePrice(initTpOrSlPrice);
+      } else {
+        if (type === 'openPosition') {
+          handleInitGainPct();
+        }
       }
       const timer = setTimeout(() => {
         inputRef.current?.focus();
@@ -245,18 +292,25 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
             <div className="text-20 font-medium text-r-neutral-title-1 mb-4">
               {direction} {coin}-USD
             </div>
-            <div className="text-14 text-r-neutral-secondary">
-              {type === 'openPosition'
-                ? t('page.perpsDetail.PerpsAutoCloseModal.currentPrice', {
-                    price: splitNumberByStep(markPrice),
-                  })
-                : t(
-                    'page.perpsDetail.PerpsAutoCloseModal.EntryAndCurrentPrice',
-                    {
-                      entryPrice: splitNumberByStep(entryPrice || markPrice),
-                      currentPrice: splitNumberByStep(markPrice),
-                    }
-                  )}
+            <div className={clsx('text-14 text-rb-neutral-secondary')}>
+              {type === 'openPosition' ? (
+                <>
+                  {t('page.perpsDetail.PerpsAutoCloseModal.currentPrice')}
+                  <span
+                    className={clsx('text-14', {
+                      'text-r-green-default': isUp,
+                      'text-r-red-default': !isUp,
+                    })}
+                  >
+                    ${splitNumberByStep(markPrice)}
+                  </span>
+                </>
+              ) : (
+                t('page.perpsDetail.PerpsAutoCloseModal.EntryAndCurrentPrice', {
+                  entryPrice: splitNumberByStep(entryPrice || markPrice),
+                  currentPrice: splitNumberByStep(markPrice),
+                })
+              )}
             </div>
           </div>
 
@@ -288,18 +342,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
                 value={autoClosePrice ? `$${autoClosePrice}` : ''}
-                onChange={(e) => {
-                  let value = e.target.value.replace(',', '.');
-                  if (value.startsWith('$')) {
-                    value = value.slice(1);
-                  }
-                  if (
-                    (/^\d*\.?\d*$/.test(value) || value === '') &&
-                    validatePriceInput(value, szDecimals)
-                  ) {
-                    setAutoClosePrice(value);
-                  }
-                }}
+                onChange={(e) => handlePriceChange(e.target.value)}
                 placeholder="$0"
                 className={clsx(
                   'text-16 font-bold bg-transparent border-none p-0 w-full outline-none focus:outline-none',
