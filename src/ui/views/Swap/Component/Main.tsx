@@ -419,7 +419,7 @@ export const Main = () => {
   } = useTwoStepSwap({
     txs,
     chain,
-    enable: !!canUseDirectSubmitTx && !!currentAccount?.type,
+    enable: true, //!!canUseDirectSubmitTx && !!currentAccount?.type,
     type: 'approveSwap',
     onApprovePending,
   });
@@ -574,6 +574,47 @@ export const Main = () => {
         setMiniSignLoading(false);
       }
       return;
+    } else if (shouldTwoStepSwap) {
+      if (shouldTwoStepSwap && isApprove && currentTxs?.[0]) {
+        wallet.addCacheHistoryData(
+          `${chain}-${currentTxs?.[0].data}`,
+          {
+            address: userAddress,
+            chainId: findChain({ enum: chain })?.id || 0,
+            amount: Number(inputAmount),
+            token: payToken,
+            status: 'pending',
+            createdAt: Date.now(),
+          } as any,
+          'approveSwap'
+        );
+      }
+      // not supported miniSign account
+      try {
+        clearExpiredTimer();
+        setMiniSignLoading(true);
+        console.log('currentTxs');
+        const hash = await wallet.sendRequest<string>({
+          $ctx: {
+            category: 'Swap',
+            source: 'swap',
+            trigger: rbiSource,
+            swapUseSlider,
+          },
+          method: 'eth_sendTransaction',
+          params: currentTxs,
+        });
+        console.log('hash');
+        miniSignNextStep(hash);
+        if (!isApprove) {
+          refresh((e) => e + 1);
+          mutateTxs([]);
+        }
+      } catch (error) {
+        console.log('two step swap fail:', error);
+        refresh((e) => e + 1);
+        mutateTxs([]);
+      }
     } else {
       gotoSwap();
     }
@@ -581,12 +622,10 @@ export const Main = () => {
 
   useEffect(() => {
     if (!swapBtnDisabled && activeProvider) {
-      if (canUseDirectSubmitTx) {
-        mutateTxs([]);
-        runBuildSwapTxs();
-      }
+      mutateTxs([]);
+      runBuildSwapTxs();
     }
-  }, [swapBtnDisabled, canUseDirectSubmitTx, activeProvider]);
+  }, [swapBtnDisabled, activeProvider]);
 
   const history = useHistory();
 
