@@ -41,10 +41,10 @@ const PAGE_COUNT = 10;
 interface TokenDetailProps {
   onClose?(): void;
   token: TokenItem;
-  // addToken(token: TokenItem): void;
-  // removeToken(token: TokenItem): void;
-  // variant?: 'add';
-  // isAdded?: boolean;
+  addToken(token: TokenItem): void;
+  removeToken(token: TokenItem): void;
+  variant?: 'add';
+  isAdded?: boolean;
   canClickToken?: boolean;
   hideOperationButtons?: boolean;
   popupHeight: number;
@@ -54,10 +54,10 @@ interface TokenDetailProps {
 
 const TokenDetail = ({
   token,
-  // addToken,
-  // removeToken,
-  // variant,
-  // isAdded,
+  addToken,
+  removeToken,
+  variant,
+  isAdded,
   onClose,
   canClickToken = true,
   popupHeight,
@@ -244,9 +244,9 @@ const TokenDetail = ({
     }
   }, [history, token, isSwap, handleInTokenSelect, desktopPathname]);
 
-  // const isCustomizedNotAdded = useMemo(() => {
-  //   return !token.is_core && !isAdded && variant === 'add';
-  // }, [token, variant, isAdded]);
+  const isCustomizedNotAdded = useMemo(() => {
+    return !token.is_core && !isAdded && variant === 'add';
+  }, [token, variant, isAdded]);
 
   const BottomBtn = useMemo(() => {
     if (hideOperationButtons) {
@@ -282,25 +282,25 @@ const TokenDetail = ({
       );
     }
 
-    // if (isCustomizedNotAdded) {
-    //   return (
-    //     <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
-    //       <Button
-    //         type="primary"
-    //         size="large"
-    //         onClick={() => addToken(tokenWithAmount)}
-    //         className="w-[360px] h-[40px] leading-[18px]"
-    //         style={{
-    //           width: 360,
-    //           height: 40,
-    //           lineHeight: '18px',
-    //         }}
-    //       >
-    //         {t('page.dashboard.tokenDetail.AddToMyTokenList')}
-    //       </Button>
-    //     </div>
-    //   );
-    // }
+    if (isCustomizedNotAdded) {
+      return (
+        <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
+          <Button
+            type="primary"
+            size="large"
+            onClick={() => addToken(tokenWithAmount)}
+            className="w-[360px] h-[40px] leading-[18px]"
+            style={{
+              width: 360,
+              height: 40,
+              lineHeight: '18px',
+            }}
+          >
+            {t('page.dashboard.tokenDetail.AddToMyTokenList')}
+          </Button>
+        </div>
+      );
+    }
 
     return (
       <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 gap-8">
@@ -399,7 +399,7 @@ const TokenDetail = ({
         ref={ref}
         className={clsx('token-detail-body flex flex-col gap-12', 'pt-[0px]')}
       >
-        {/* <ScamTokenTips token={tokenWithAmount}></ScamTokenTips>
+        <ScamTokenTips token={tokenWithAmount}></ScamTokenTips>
         {variant === 'add' && (
           <BlockedTopTips
             token={token}
@@ -407,7 +407,7 @@ const TokenDetail = ({
             onOpen={() => addToken(tokenWithAmount)}
             onClose={() => removeToken(tokenWithAmount)}
           ></BlockedTopTips>
-        )} */}
+        )}
         {!isCustomNetworkToken && <TokenCharts token={token}></TokenCharts>}
         <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
           <div className="balance-content flex flex-col gap-8 px-16 py-12">
@@ -415,7 +415,7 @@ const TokenDetail = ({
               <div className="balance-title text-r-neutral-body text-13">
                 {t('page.dashboard.tokenDetail.myBalance')}
               </div>
-              {/* {variant === 'add' ? (
+              {variant === 'add' ? (
                 token.is_core ? (
                   <BlockedButton
                     selected={isAdded}
@@ -428,7 +428,7 @@ const TokenDetail = ({
                 //   onClose={() => removeToken(tokenWithAmount)}
                 // />
                 null
-              ) : null} */}
+              ) : null}
             </div>
             <div className="flex flex-row justify-between w-full items-center">
               <div className="flex flex-row gap-8 items-center">

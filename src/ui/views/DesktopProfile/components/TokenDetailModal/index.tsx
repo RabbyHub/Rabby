@@ -2,10 +2,14 @@ import { Modal, ModalProps } from 'antd';
 import React, { useMemo } from 'react';
 import TokenDetail from '../../../Dashboard/components/TokenDetailPopup/TokenDetail';
 import { TokenItem } from '@/background/service/openapi';
-import { Account } from '@/background/service/preference';
+import { Account, Token } from '@/background/service/preference';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { SvgIconCross } from 'ui/assets';
+import { isSameAddress, useWallet } from '@/ui/utils';
+import { useRabbyDispatch } from '@/ui/store';
+import { DisplayedToken } from '@/ui/utils/portfolio/project';
+import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 interface TokenDetailModalProps {
   visible?: boolean;
   onClose?(): void;
@@ -25,6 +29,60 @@ export const TokenDetailModal: React.FC<TokenDetailModalProps> = ({
   hideOperationButtons = false,
 }) => {
   const account = useCurrentAccount();
+  const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
+  const [isAdded, setIsAdded] = React.useState(false);
+
+  const handleAddToken = React.useCallback((tokenWithAmount) => {
+    if (!tokenWithAmount) return;
+
+    if (tokenWithAmount.is_core) {
+      dispatch.account.addBlockedToken(
+        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
+      );
+    } else {
+      dispatch.account.addCustomizeToken(
+        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
+      );
+    }
+    setIsAdded(true);
+  }, []);
+
+  const handleRemoveToken = React.useCallback((tokenWithAmount) => {
+    if (!tokenWithAmount) return;
+
+    if (tokenWithAmount?.is_core) {
+      dispatch.account.removeBlockedToken(
+        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
+      );
+    } else {
+      dispatch.account.removeCustomizeToken(
+        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
+      );
+    }
+    setIsAdded(false);
+  }, []);
+
+  const checkIsAdded = React.useCallback(async () => {
+    if (!token) return;
+
+    let list: Token[] = [];
+    if (token.is_core) {
+      list = await wallet.getBlockedToken();
+    } else {
+      list = await wallet.getCustomizedToken();
+    }
+
+    const isAdded = list.some(
+      (item) =>
+        isSameAddress(item.address, token.id) && item.chain === token.chain
+    );
+    setIsAdded(isAdded);
+  }, [token]);
+
+  React.useEffect(() => {
+    checkIsAdded();
+  }, [checkIsAdded]);
 
   return (
     <Modal
@@ -49,6 +107,10 @@ export const TokenDetailModal: React.FC<TokenDetailModalProps> = ({
         <PopupContainer className="h-[600px] bg-r-neutral-bg-2">
           <TokenDetail
             account={account || undefined}
+            addToken={handleAddToken}
+            removeToken={handleRemoveToken}
+            variant="add"
+            isAdded={isAdded}
             token={token}
             popupHeight={540}
             onClose={onClose}
