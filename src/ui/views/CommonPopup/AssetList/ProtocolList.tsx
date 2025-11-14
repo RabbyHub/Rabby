@@ -12,8 +12,8 @@ import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown
 import { openInTab, useCommonPopupView, useWallet } from '@/ui/utils';
 import { ReactComponent as RcOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
-import DappActions from './components/DappActions';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import DappActionsForPopup from './components/DappActions/DappActionsForPopup';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -58,14 +58,14 @@ const PoolItem = ({
   return (
     <PoolItemWrapper>
       <PortfolioDetail name={item._originPortfolio.name} data={item} />
-      {/* {!!item.withdrawActions?.length &&
+      {!!item.withdrawActions?.length &&
         !item?._originPortfolio?.proxy_detail?.proxy_contract_id && (
-          <DappActions
+          <DappActionsForPopup
             data={item.withdrawActions}
             chain={chain}
             protocolLogo={protocolLogo}
           />
-        )} */}
+        )}
     </PoolItemWrapper>
   );
 };
