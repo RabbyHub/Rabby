@@ -4,6 +4,7 @@ import { SwapSlider } from '@/ui/views/Swap/Component/Slider';
 interface PerpsSliderProps {
   value: number;
   onValueChange: (value: number) => void;
+  onAfterChange?: (value: number) => void;
   showPercentage?: boolean;
   disabled?: boolean;
   min?: number;
@@ -14,6 +15,7 @@ interface PerpsSliderProps {
 export const PerpsSlider: React.FC<PerpsSliderProps> = ({
   value,
   onValueChange,
+  onAfterChange,
   disabled = false,
   showPercentage = true,
   min = 0,
@@ -26,7 +28,7 @@ export const PerpsSlider: React.FC<PerpsSliderProps> = ({
         className="flex-1"
         value={value}
         onChange={onValueChange}
-        onAfterChange={onValueChange}
+        onAfterChange={onAfterChange}
         min={min}
         max={max}
         step={step}

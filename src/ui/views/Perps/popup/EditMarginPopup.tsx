@@ -17,6 +17,7 @@ import { AssetPriceInfo } from '../components/AssetPriceInfo';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { MarginInput } from '../components/MarginInput';
 import { MarketData } from '@/ui/models/perps';
+import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../constants';
 
 export interface EditMarginPopupProps {
   visible: boolean;
@@ -102,7 +103,11 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
       positionSize,
       leverage
     );
-    return Math.max(marginUsed - transferMarginRequired, 0);
+    return Number(
+      Math.max(marginUsed - transferMarginRequired, 0).toFixed(
+        PERPS_MARGIN_SIGNIFICANT_DIGITS
+      )
+    );
   }, [entryPrice, markPrice, positionSize, leverage, marginUsed]);
 
   // 验证 margin 输入

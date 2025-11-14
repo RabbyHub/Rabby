@@ -267,6 +267,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           availableAmount={availableBalance}
           margin={margin}
           onMarginChange={setMargin}
+          sliderDisabled={availableBalance < 0.1}
           errorMessage={
             marginValidation.error ? marginValidation.errorMessage : null
           }

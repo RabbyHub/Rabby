@@ -724,4 +724,6 @@ export enum PERPS_POSITION_RISK_LEVEL {
   DANGER = 'danger',
 }
 
+export const PERPS_MARGIN_SIGNIFICANT_DIGITS = 6;
+
 export const PERPS_MINI_USD_VALUE = 10; // $10
