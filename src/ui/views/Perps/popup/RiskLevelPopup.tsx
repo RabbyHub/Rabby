@@ -146,7 +146,7 @@ export const RiskLevelPopup: React.FC<RiskLevelPopupProps> = ({
             </div>
           </div>
         </div>
-        <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
+        <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg1">
           <Button
             block
             size="large"
