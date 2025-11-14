@@ -1448,7 +1448,8 @@
         "addTokenEntryText": "Token",
         "customButtonText": "Özel token ekle",
         "side": "YAN TARAF",
-        "price": "FİYAT"
+        "price": "FİYAT",
+        "openInTab": "Sekmede aç"
       },
       "hd": {
         "howToConnectLedger": "Ledger Nasıl Bağlanır",
@@ -3038,7 +3039,9 @@
       "toast": {
         "openPositionSuccess": "Açıldı {{direction}} {{coin}}-USD: Boyut {{size}} Fiyattan ${{price}}",
         "setAutoCloseSuccess": "Otomatik pozisyon kapatma ayarı başarıyla oluşturuldu.",
-        "closePositionSuccess": "Kapandı {{direction}} {{coin}}-USD: Büyüklük {{size}} Fiyat ${{price}}'de"
+        "closePositionSuccess": "Kapandı {{direction}} {{coin}}-USD: Büyüklük {{size}} Fiyat ${{price}}'de",
+        "stopLossSuccess": "Zarar durdurma başarıyla ayarlandı",
+        "takeProfitSuccess": "Kar alım başarıyla ayarlandı"
       },
       "closePositionPopup": {
         "closeShort": "Kapat Short",
@@ -3048,7 +3051,43 @@
         "positionSize": "Pozisyon Boyutu"
       },
       "isolated": "Yalıtılmış",
-      "cross": "Çapraz"
+      "cross": "Çapraz",
+      "closeAllPopup": {
+        "title": "Tüm Pozisyonları Kapatmayı Onayla",
+        "description": "Tüm açık pozisyonlarınız piyasa fiyatı üzerinden kapatılacaktır."
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Tehlike",
+          "description": "Pozisyonunuz likidasyon riski altındadır. Likidasyon fiyatına olan mesafe ≤%3'tür. Likidasyonu önlemek için marj eklemeyi veya pozisyonunuzu kapatmayı düşünün."
+        },
+        "warning": {
+          "title": "Uyarı",
+          "description": "Pozisyonunuz likidasyon riskiyle karşı karşıya. Likidasyon fiyatına olan mesafe %3 ile %8 arasındadır. Pozisyonunuzu dikkatlice izleyin ve marj eklemeyi düşünün."
+        },
+        "safe": {
+          "title": "Güvenli",
+          "description": "Pozisyonunuz güvenli bir seviyede. Tasfiye fiyatına olan mesafe >%8. Piyasa koşullarını izlemeye devam edin."
+        },
+        "currentPrice": "Mevcut Fiyat",
+        "title": "Risk Seviyesi",
+        "liquidationPrice": "Tasfiye Fiyatı",
+        "gotIt": "Anladım",
+        "liquidationDistance": "Likidasyon Mesafesi",
+        "subTitle": "Gerçek zamanlı likidasyon mesafesi (%)",
+        "liquidationDistanceTips": "Tasfiye Mesafesi (%) mevcut fiyatın tasfiye fiyatınızdan ne kadar uzakta olduğunu gösterir. Daha büyük bir mesafe daha güvenli bir pozisyonu belirtirken, daha küçük bir mesafe daha yüksek tasfiye riski anlamına gelir."
+      },
+      "searchPerpsPopup": {
+        "hasPosition": "Pozisyon",
+        "empty": "Pazar bulunamadı",
+        "openPosition": "Açık Pozisyon",
+        "onePosition": "1 Pozisyon",
+        "searchPerps": "Perps Araştırması",
+        "searchPlaceholder": "perps araştırın",
+        "searchPosition": "Pozisyon Ara"
+      },
+      "position": "Pozisyon",
+      "closeAll": "Tümünü Kapat"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3156,6 +3195,85 @@
         "approvals": "Onaylar",
         "tokens": "Jetonlar",
         "transactions": "İşlemler"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "short": "Short",
+        "newPosition": "Açık Pozisyon",
+        "margin": "Marjin",
+        "long": "Uzun",
+        "free": "Ücretsiz",
+        "available": "Mevcut",
+        "size": "Boyut",
+        "invalidNumber": "Geçersiz sayı",
+        "leverage": "Kaldıraç",
+        "insufficientBalance": "Yetersiz bakiye",
+        "takeProfitWhenPriceBelow": "Fiyat Altında Kar Al",
+        "providerFee": "Hyperliquid Ücreti",
+        "maximumOrderSize": "Maksimum emir boyutu {{amount}}'dir",
+        "rabbyFee": "Rabby Ücreti",
+        "takeProfitWhenPriceAbove": "Kar Al, Fiyat Üstünde Olduğunda",
+        "minimumOrderSize": "Minimum sipariş büyüklüğü 10$'dır.",
+        "stopLossWhenPriceAbove": "Fiyat Üstünde Stop Loss",
+        "stopLossWhenPriceBelow": "Fiyat Aşağıda Olduğunda Zarar Durdur",
+        "sizeTips": "Ticaretinizin toplam değeri veya miktarı, teminat ve kaldıraç tarafından belirlenir."
+      },
+      "PerpsEditMarginPopup": {
+        "title": "Marjini Ayarla",
+        "reduceMargin": "Marjini Azaltın",
+        "amountToAdd": "Ekleyeceğiniz Miktar",
+        "perpsBalance": "Perps Bakiyesi",
+        "addMargin": "Marjinal Ekle",
+        "available": "Mevcut",
+        "currentPrice": "Mevcut Fiyat",
+        "amountToReduce": "Azaltılacak Miktar",
+        "liqPrice": "Lik. Fiyat:",
+        "confirm": "Onayla",
+        "margin": "Marjinal",
+        "addMarginSuccess": "Marj ekleme başarılı bir şekilde yapıldı",
+        "reduceMarginTooltip": "Pozisyonu azaltmak için yetersiz marj.",
+        "insufficientBalance": "Yetersiz bakiye",
+        "exceedMaxReduction": "Maksimum azaltmayı aştı",
+        "reduceMarginSuccess": "Marjinal azaltma başarıyla gerçekleştirildi"
+      },
+      "PerpsClosePositionPopup": {
+        "receive": "Alacak",
+        "fee": "Ücret",
+        "closedPnl": "Kapalı PNL",
+        "amount": "Miktar",
+        "minimumWarning": "Minimum close amount is {{percent}}%",
+        "confirm": "Onayla",
+        "title": "Pozisyon Kapat",
+        "total": "Toplam"
+      },
+      "PerpsAutoCloseModal": {
+        "stopLoss": "Zarar Durdurma",
+        "youLoss": "Kaybediyorsun",
+        "priceAbove": "Fiyat üzerinde",
+        "confirm": "Onayla",
+        "youGain": "Kazanç sağlarsınız",
+        "takeProfitTipsShort": "Kar alım fiyatı mevcut fiyatın altında olmalıdır.",
+        "stopLossWhen": "Stop Loss Ne Zaman",
+        "takeProfit": "Kar Alayı",
+        "currentPrice": "Mevcut Fiyat:",
+        "priceBelow": "Fiyat altındadır",
+        "stopLossExpectedPNL": "Stop Loss Beklenen PNL",
+        "takeProfitTipsLong": "Kar elde etme fiyatı mevcut fiyatın üzerinde olmalıdır.",
+        "takeProfitWhenPriceAbove": "Fiyat Üstünde Kar Al",
+        "takeProfitWhenPriceBelow": "Fiyat Aşağıda Olduğunda Kar Al",
+        "takeProfitExpectedPNL": "Kâr Al, Beklenen PNL",
+        "title": "Otomatik Pozisyon Kapatma",
+        "takeProfitWhen": "Kar Alırken",
+        "stopLossWhenPriceAbove": "Fiyat Üstünde Zarar Durdurma",
+        "EntryAndCurrentPrice": "Giriş: ${{entryPrice}} Mevcut: ${{currentPrice}}",
+        "noPosition": "Öncelikle teminat girmelisiniz.",
+        "cancel": "İptal",
+        "stopLossTipsLongLiquidation": "Fiyat likidasyon fiyatından ({{price}}) daha düşük.",
+        "stopLossTipsLong": "Zarar durdurma fiyatı mevcut fiyatın altında olmalıdır.",
+        "stopLossTipsShortLiquidation": "Fiyat likidasyon fiyatından ({{price}}) daha yüksek.",
+        "stopLossTipsShort": "Stop loss fiyatı mevcut fiyatın üzerinde olmalıdır.",
+        "stopLossWhenPriceBelow": "Fiyat Altında Zarar Durdur"
       }
     }
   },

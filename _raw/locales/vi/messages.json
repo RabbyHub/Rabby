@@ -1519,7 +1519,8 @@
         "noTestnetAssets": "Không có Tài sản Mạng Tùy chỉnh",
         "customButtonText": "Thêm token tùy chỉnh",
         "side": "BÊN",
-        "price": "GIÁ"
+        "price": "GIÁ",
+        "openInTab": "Mở trong tab"
       },
       "hd": {
         "ledger": {
@@ -3032,7 +3033,9 @@
       "toast": {
         "setAutoCloseSuccess": "Đã thiết lập tự động đóng vị trí thành công.",
         "openPositionSuccess": "Mở {{direction}} {{coin}}-USD: Kích thước {{size}} tại giá ${{price}}",
-        "closePositionSuccess": "Đã đóng {{direction}} {{coin}}-USD: Kích thước {{size}} với giá ${{price}}"
+        "closePositionSuccess": "Đã đóng {{direction}} {{coin}}-USD: Kích thước {{size}} với giá ${{price}}",
+        "takeProfitSuccess": "Đặt lợi nhuận thành công",
+        "stopLossSuccess": "Đặt lệnh dừng lỗ thành công"
       },
       "closePositionPopup": {
         "closeLong": "Đóng Long",
@@ -3042,7 +3045,43 @@
         "title": "Đóng {{coin}}-USD {{direction}}"
       },
       "isolated": "Isolated",
-      "cross": "Giao thoa"
+      "cross": "Giao thoa",
+      "closeAllPopup": {
+        "description": "Tất cả các vị trí mở của bạn sẽ được đóng với giá thị trường.",
+        "title": "Xác nhận Đóng Tất Cả Các Vị Thế"
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Nguy hiểm",
+          "description": "Vị trí của bạn đang có nguy cơ bị thanh lý cao. Khoảng cách đến giá thanh lý là ≤3%. Xem xét việc thêm ký quỹ hoặc đóng vị trí của bạn để tránh thanh lý."
+        },
+        "warning": {
+          "title": "Cảnh báo",
+          "description": "Vị thế của bạn đang gần với nguy cơ thanh lý. Khoảng cách đến giá thanh lý nằm giữa 3% và 8%. Hãy theo dõi vị thế của bạn một cách cẩn thận và xem xét việc thêm ký quỹ."
+        },
+        "safe": {
+          "title": "An toàn",
+          "description": "Vị thế của bạn đang ở mức an toàn. Khoảng cách đến giá thanh lý là >8%. Tiếp tục theo dõi điều kiện thị trường."
+        },
+        "gotIt": "Hiểu rồi",
+        "title": "Mức độ rủi ro",
+        "liquidationPrice": "Giá thanh lý",
+        "liquidationDistance": "Khoảng cách Thanh lý",
+        "subTitle": "Khoảng cách thanh lý theo thời gian thực (%)",
+        "currentPrice": "Giá Hiện Tại",
+        "liquidationDistanceTips": "Khoảng Cách Thanh Lý (%) cho thấy giá hiện tại cách giá thanh lý của bạn bao xa. Khoảng cách lớn hơn thể hiện vị thế an toàn hơn, trong khi khoảng cách nhỏ hơn có nghĩa là rủi ro thanh lý cao hơn."
+      },
+      "searchPerpsPopup": {
+        "searchPerps": "Tìm kiếm Perps",
+        "searchPlaceholder": "Tìm kiếm perps",
+        "empty": "Không tìm thấy thị trường nào",
+        "onePosition": "1 Vị trí",
+        "searchPosition": "Tìm kiếm vị trí",
+        "hasPosition": "Vị trí",
+        "openPosition": "Mở Vị Trí"
+      },
+      "position": "Vị thế",
+      "closeAll": "Đóng tất cả"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3150,6 +3189,84 @@
         "tokens": "Tokens",
         "transactions": "Giao dịch",
         "approvals": "Phê duyệt"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "newPosition": "Mở Vị Thế",
+        "long": "Mua vào",
+        "short": "Short",
+        "margin": "Margin",
+        "free": "Miễn phí",
+        "stopLossWhenPriceBelow": "Cắt lỗ khi giá dưới",
+        "leverage": "Đòn bẩy",
+        "size": "Kích thước",
+        "maximumOrderSize": "Kích thước đơn hàng tối đa là {{amount}}",
+        "takeProfitWhenPriceAbove": "Chốt Lợi Nhuận Khi Giá Trên",
+        "available": "Sẵn có",
+        "invalidNumber": "Số không hợp lệ",
+        "stopLossWhenPriceAbove": "Dừng lỗ khi giá trên",
+        "takeProfitWhenPriceBelow": "Chốt Lợi Nhuận Khi Giá Dưới",
+        "rabbyFee": "Phí Rabby",
+        "minimumOrderSize": "Kích thước đơn đặt hàng tối thiểu là $10",
+        "insufficientBalance": "Số dư không đủ",
+        "sizeTips": "Giá trị hoặc số lượng tổng của giao dịch của bạn, được thiết lập bởi ký quỹ và đòn bẩy.",
+        "providerFee": "Phí Hyperliquid"
+      },
+      "PerpsEditMarginPopup": {
+        "title": "Điều chỉnh Biên độ",
+        "amountToAdd": "Số tiền thêm vào",
+        "addMargin": "Thêm ký quỹ",
+        "available": "Có sẵn",
+        "currentPrice": "Giá hiện tại",
+        "insufficientBalance": "Số dư không đủ",
+        "perpsBalance": "Số dư Perps",
+        "liqPrice": "Giá thanh lý:",
+        "reduceMargin": "Giảm Ký Quỹ",
+        "confirm": "Xác nhận",
+        "exceedMaxReduction": "Vượt quá mức giảm tối đa",
+        "margin": "Ký quỹ",
+        "amountToReduce": "Số lượng để Giảm",
+        "reduceMarginTooltip": "Không đủ ký quỹ để giảm vị thế.",
+        "reduceMarginSuccess": "Biên độ đã được giảm thành công"
+      },
+      "PerpsClosePositionPopup": {
+        "total": "Tổng cộng",
+        "receive": "Nhận",
+        "title": "Đóng Vị Trí",
+        "closedPnl": "PNL đã đóng",
+        "amount": "Số lượng",
+        "confirm": "Xác nhận",
+        "fee": "Phí",
+        "minimumWarning": "Số tiền đóng tối thiểu là {{percent}}%"
+      },
+      "PerpsAutoCloseModal": {
+        "priceBelow": "Giá dưới",
+        "youGain": "Bạn kiếm được",
+        "stopLoss": "Cắt lỗ",
+        "noPosition": "Bạn phải nhập ký quỹ trước.",
+        "takeProfitWhenPriceAbove": "Chốt lời khi giá trên",
+        "title": "Đóng vị trí tự động",
+        "youLoss": "Bạn thua",
+        "stopLossWhenPriceAbove": "Dừng lỗ khi giá trên",
+        "currentPrice": "Giá hiện tại: ",
+        "takeProfitWhen": "Chốt lợi nhuận khi",
+        "takeProfitTipsLong": "Giá mục tiêu chốt lời phải cao hơn giá hiện tại.",
+        "stopLossWhenPriceBelow": "Dừng Lỗ Khi Giá Dưới",
+        "takeProfitWhenPriceBelow": "Chốt Lợi Nhuận Khi Giá Dưới",
+        "takeProfitTipsShort": "Giá chốt lời phải thấp hơn giá hiện tại.",
+        "EntryAndCurrentPrice": "Entry: ${{entryPrice}} Hiện tại: ${{currentPrice}}",
+        "priceAbove": "Giá trên",
+        "takeProfitExpectedPNL": "Lấy Lợi Nhuận PNL Dự Kiến",
+        "takeProfit": "Chốt Lợi Nhuận",
+        "stopLossWhen": "Dừng lỗ khi",
+        "confirm": "Xác nhận",
+        "stopLossExpectedPNL": "Dừng Lỗ Lợi Nhuận Mong Đợi",
+        "cancel": "Hủy bỏ",
+        "stopLossTipsLong": "Giá dừng lỗ phải thấp hơn giá hiện tại",
+        "stopLossTipsLongLiquidation": "Giá thấp hơn giá thanh lý ({{price}})",
+        "stopLossTipsShort": "Giá dừng lỗ phải cao hơn giá hiện tại.",
+        "stopLossTipsShortLiquidation": "Giá cao hơn giá thanh lý ({{price}})"
       }
     }
   },

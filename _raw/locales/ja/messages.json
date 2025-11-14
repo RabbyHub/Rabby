@@ -1448,7 +1448,8 @@
         "noTestnetAssets": "カスタムネットワーク資産なし",
         "customButtonText": "カスタムトークンを追加",
         "side": "サイド",
-        "price": "価格"
+        "price": "価格",
+        "openInTab": "タブで開く"
       },
       "hd": {
         "howToConnectLedger": "Ledgerとの接続方法",
@@ -3035,7 +3036,9 @@
       "toast": {
         "setAutoCloseSuccess": "自動ポジションクローズ設定が成功しました",
         "openPositionSuccess": "{{direction}} {{coin}}-USDをオープンしました: サイズ {{size}}、価格 ${{price}}",
-        "closePositionSuccess": "クローズ {{direction}} {{coin}}-USD: サイズ {{size}} 価格 ${{price}} で"
+        "closePositionSuccess": "クローズ {{direction}} {{coin}}-USD: サイズ {{size}} 価格 ${{price}} で",
+        "stopLossSuccess": "ストップロスが正常に設定されました",
+        "takeProfitSuccess": "利益確定が正常に設定されました"
       },
       "closePositionPopup": {
         "closeShort": "ショートをクローズ",
@@ -3045,7 +3048,43 @@
         "closeLong": "ロングをクローズ"
       },
       "cross": "クロス",
-      "isolated": "孤立"
+      "isolated": "孤立",
+      "closeAllPopup": {
+        "title": "すべてのポジションをクローズすることを確認します",
+        "description": "すべてのオープンポジションは、マーケット価格でクローズされます。"
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "危険",
+          "description": "あなたのポジションは清算の高リスクにさらされています。清算価格までの距離は≤3%です。清算を避けるために、マージンを追加するかポジションを閉じることを検討してください。"
+        },
+        "warning": {
+          "title": "警告",
+          "description": "あなたのポジションは清算リスクに近づいています。清算価格までの距離は3%から8%の間です。ポジションを注意深く監視し、マージンを追加することを検討してください。"
+        },
+        "safe": {
+          "title": "安全",
+          "description": "あなたのポジションは安全なレベルにあります。清算価格までの距離は8%以上です。市場状況を引き続き監視してください。"
+        },
+        "gotIt": "わかりました",
+        "liquidationPrice": "清算価格",
+        "currentPrice": "現在の価格",
+        "subTitle": "リアルタイム清算距離（％）",
+        "liquidationDistance": "清算距離",
+        "title": "リスクレベル",
+        "liquidationDistanceTips": "清算距離 (%) は現在の価格が清算価格からどれだけ離れているかを示します。距離が大きいほどポジションは安全ですが、距離が小さいほど清算リスクが高くなります。"
+      },
+      "searchPerpsPopup": {
+        "onePosition": "1 ポジション",
+        "empty": "市場が見つかりませんでした",
+        "hasPosition": "ポジション",
+        "searchPlaceholder": "永続契約を検索",
+        "searchPosition": "ポジションを検索",
+        "searchPerps": "永続契約を検索",
+        "openPosition": "ポジションを開く"
+      },
+      "position": "ポジション",
+      "closeAll": "すべて閉じる"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3153,6 +3192,83 @@
         "transactions": "取引",
         "tokens": "トークン",
         "approvals": "承認"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "margin": "マージン",
+        "long": "ロング",
+        "short": "ショート",
+        "newPosition": "ポジションをオープンする",
+        "free": "無料",
+        "invalidNumber": "無効な番号",
+        "available": "利用可能",
+        "leverage": "レバレッジ",
+        "providerFee": "ハイパーリキッド手数料",
+        "size": "サイズ",
+        "maximumOrderSize": "最大注文サイズは{{amount}}です。",
+        "insufficientBalance": "残高不足",
+        "takeProfitWhenPriceAbove": "価格が上昇したときに利益確定",
+        "stopLossWhenPriceAbove": "価格が上回ったときのストップロス",
+        "sizeTips": "取引の合計値または数量は、証拠金とレバレッジによって設定されます。",
+        "minimumOrderSize": "最小注文サイズは$10です。",
+        "stopLossWhenPriceBelow": "価格が以下のときにストップロス",
+        "takeProfitWhenPriceBelow": "価格が下回ったときに利益を確定する",
+        "rabbyFee": "Rabby手数料"
+      },
+      "PerpsEditMarginPopup": {
+        "available": "利用可能",
+        "amountToAdd": "追加する金額",
+        "currentPrice": "現在の価格",
+        "margin": "マージン",
+        "reduceMargin": "マージンを減らす",
+        "confirm": "確認",
+        "perpsBalance": "永续合約残高",
+        "addMargin": "マージンを追加",
+        "liqPrice": "Liq. 価格:",
+        "title": "マージンを調整する",
+        "amountToReduce": "減少する金額",
+        "exceedMaxReduction": "最大減少を超えています",
+        "reduceMarginTooltip": "ポジションを減少させるのに十分なマージンがありません。",
+        "reduceMarginSuccess": "マージンが正常に削減されました",
+        "insufficientBalance": "残高不足"
+      },
+      "PerpsClosePositionPopup": {
+        "total": "合計",
+        "fee": "手数料",
+        "receive": "受け取る",
+        "title": "ポジションを閉じる",
+        "amount": "金額",
+        "closedPnl": "クローズドPNL",
+        "confirm": "確認してください",
+        "minimumWarning": "最小クローズ額は{{percent}}%です。"
+      },
+      "PerpsAutoCloseModal": {
+        "priceAbove": "価格上限",
+        "youLoss": "あなたは負けます",
+        "stopLossExpectedPNL": "ストップロス期待PNL",
+        "currentPrice": "現在の価格:",
+        "stopLossWhen": "損切り時",
+        "title": "自動ポジションクローズ",
+        "takeProfitExpectedPNL": "利益確定期待PNL",
+        "takeProfitWhen": "利益確定時",
+        "stopLossWhenPriceBelow": "価格が下回った場合にストップロス",
+        "stopLossWhenPriceAbove": "価格が上回ったときのストップロス",
+        "priceBelow": "価格が下回る",
+        "takeProfitWhenPriceBelow": "価格が下回ったときに利益確定",
+        "confirm": "確認",
+        "takeProfitWhenPriceAbove": "価格が上昇したときに利益を確定する",
+        "takeProfit": "利益確定",
+        "youGain": "あなたは得ます",
+        "EntryAndCurrentPrice": "エントリー: ${{entryPrice}} 現在: ${{currentPrice}}",
+        "takeProfitTipsLong": "利益確定価格は現在の価格より高くなければなりません。",
+        "stopLoss": "ストップロス",
+        "cancel": "キャンセル",
+        "takeProfitTipsShort": "利益確定価格は現在の価格よりも低くなければなりません。",
+        "stopLossTipsShortLiquidation": "価格は清算価格（{{price}}）よりも高いです。",
+        "stopLossTipsLong": "ストップロス価格は現在の価格より低くなければなりません",
+        "stopLossTipsLongLiquidation": "価格は清算価格（{{price}}）よりも低くなっています。",
+        "stopLossTipsShort": "ストップロス価格は現在の価格よりも高くなければなりません"
       }
     }
   },

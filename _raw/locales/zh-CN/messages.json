@@ -415,7 +415,8 @@
         "noTestnetAssets": "没有自定义网络资产",
         "addTokenEntryText": "代币",
         "side": "侧边",
-        "price": "价格"
+        "price": "价格",
+        "openInTab": "在新标签页中打开"
       },
       "hd": {
         "howToConnectLedger": "如何连接 Ledger",
@@ -3073,7 +3074,9 @@
       "toast": {
         "openPositionSuccess": "已开 {{direction}} {{coin}}-USD：数量 {{size}}，价格 ${{price}}",
         "setAutoCloseSuccess": "自动关闭头寸设置成功",
-        "closePositionSuccess": "已平仓 {{direction}} {{coin}}-USD：规模 {{size}}，价格 ${{price}}"
+        "closePositionSuccess": "已平仓 {{direction}} {{coin}}-USD：规模 {{size}}，价格 ${{price}}",
+        "takeProfitSuccess": "成功设置止盈",
+        "stopLossSuccess": "止损设置成功"
       },
       "closePositionPopup": {
         "closeShort": "平仓做空",
@@ -3083,7 +3086,43 @@
         "positionSize": "持仓规模"
       },
       "isolated": "逐仓",
-      "cross": "全仓"
+      "cross": "全仓",
+      "closeAllPopup": {
+        "title": "确认关闭所有仓位",
+        "description": "你所有的未平仓头寸将以市场价格平仓。"
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "危险",
+          "description": "您的头寸面临高风险清算。距离清算价格的距离为≤3%。请考虑追加保证金或平仓以避免清算。"
+        },
+        "warning": {
+          "title": "警告",
+          "description": "您的仓位接近清算风险。距离清算价格的区间为3%到8%。请谨慎监控您的仓位，并考虑追加保证金。"
+        },
+        "safe": {
+          "title": "安全",
+          "description": "您的头寸处于安全水平。距清算价的距离超过8%。继续关注市场情况。"
+        },
+        "title": "风险等级",
+        "liquidationPrice": "清算价格",
+        "gotIt": "明白了",
+        "subTitle": "实时清算距离 (%)",
+        "currentPrice": "当前价格",
+        "liquidationDistance": "清算距离",
+        "liquidationDistanceTips": "清算距离 (%) 显示当前价格与您的清算价格之间的距离。更大的距离表示更安全的头寸，而更小的距离则意味着更高的清算风险。"
+      },
+      "searchPerpsPopup": {
+        "searchPlaceholder": "搜索永续合约",
+        "searchPosition": "搜索头寸",
+        "empty": "未找到市场",
+        "hasPosition": "头寸",
+        "searchPerps": "搜索永续合约",
+        "openPosition": "开仓",
+        "onePosition": "1 头寸"
+      },
+      "position": "头寸",
+      "closeAll": "关闭所有"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3191,6 +3230,85 @@
         "tokens": "代币",
         "approvals": "授权",
         "transactions": "交易"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "newPosition": "开仓",
+        "long": "做多",
+        "margin": "保证金",
+        "short": "做空",
+        "insufficientBalance": "余额不足",
+        "available": "可用",
+        "rabbyFee": "Rabby 费用",
+        "size": "规模",
+        "free": "免费",
+        "invalidNumber": "无效的数字",
+        "takeProfitWhenPriceAbove": "当价格高于时止盈",
+        "providerFee": "Hyperliquid 费用",
+        "stopLossWhenPriceBelow": "当价格低于时止损",
+        "minimumOrderSize": "最低订单金额为 $10",
+        "maximumOrderSize": "最大订单大小为 {{amount}}",
+        "stopLossWhenPriceAbove": "当价格高于时止损",
+        "sizeTips": "您的交易的总价值或数量，根据保证金和杠杆设置。",
+        "leverage": "杠杆",
+        "takeProfitWhenPriceBelow": "当价格低于时获利了结"
+      },
+      "PerpsEditMarginPopup": {
+        "margin": "保证金",
+        "title": "调整保证金",
+        "addMargin": "添加保证金",
+        "amountToReduce": "减少的数量",
+        "insufficientBalance": "余额不足",
+        "currentPrice": "当前价格",
+        "reduceMarginTooltip": "减少头寸的保证金不足。",
+        "liqPrice": "Liq. Price: 清算价格",
+        "addMarginSuccess": "保证金成功添加",
+        "available": "可用",
+        "confirm": "确认",
+        "exceedMaxReduction": "超过最大减免",
+        "reduceMargin": "减少保证金",
+        "perpsBalance": "永续合约余额",
+        "amountToAdd": "增加金额",
+        "reduceMarginSuccess": "保证金减少成功"
+      },
+      "PerpsClosePositionPopup": {
+        "confirm": "确认",
+        "receive": "接收",
+        "amount": "金额",
+        "closedPnl": "已实现盈亏",
+        "fee": "费用",
+        "title": "平仓",
+        "minimumWarning": "最低平仓额度为 {{percent}}%",
+        "total": "总计"
+      },
+      "PerpsAutoCloseModal": {
+        "priceAbove": "价格高于",
+        "youLoss": "你输了",
+        "stopLossWhen": "止损当",
+        "takeProfitWhen": "止盈条件",
+        "takeProfitExpectedPNL": "止盈预期收益",
+        "title": "自动平仓",
+        "takeProfit": "止盈",
+        "currentPrice": "当前价格：",
+        "stopLossWhenPriceAbove": "当价格高于时止损",
+        "youGain": "你获得",
+        "noPosition": "您必须先输入保证金",
+        "priceBelow": "价格低于",
+        "takeProfitTipsShort": "止盈价格必须低于当前价格",
+        "stopLossWhenPriceBelow": "止损价位低于",
+        "takeProfitWhenPriceBelow": "当价格低于时止盈",
+        "confirm": "确认",
+        "stopLoss": "止损",
+        "stopLossExpectedPNL": "止损预期PNL",
+        "takeProfitTipsLong": "止盈价格必须高于当前价格",
+        "EntryAndCurrentPrice": "入场: ${{entryPrice}} 当前: ${{currentPrice}}",
+        "takeProfitWhenPriceAbove": "当价格超过时获利了结",
+        "cancel": "取消",
+        "stopLossTipsShort": "止损价必须高于当前价格",
+        "stopLossTipsLongLiquidation": "价格低于清算价格 ({{price}})",
+        "stopLossTipsLong": "止损价格必须低于当前价格",
+        "stopLossTipsShortLiquidation": "价格高于清算价 ({{price}})"
       }
     }
   },
