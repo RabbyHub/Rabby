@@ -1,4 +1,4 @@
-import { useCommonPopupView } from '@/ui/utils';
+import { useCommonPopupView, useWallet } from '@/ui/utils';
 import React, { useState, useRef, useEffect } from 'react';
 import { ChainList } from './ChainList';
 import { AssetListContainer } from './AssetListContainer';
@@ -14,6 +14,7 @@ import { Button } from 'antd';
 import { SpecialTokenListPopup } from './components/TokenButton';
 import { TestnetChainList } from './TestnetChainList';
 import { useFilteredTokens } from './useFilteredTokens';
+import { RcIconExternal1CC, RcIconExternalCC } from '@/ui/assets/dashboard';
 
 export const AssetList = ({
   visible,
@@ -60,6 +61,7 @@ export const AssetList = ({
 
   const { sortedCustomize: tokens } = useFilteredTokens(selectChainId, false);
   const [showCustomizedTokens, setShowCustomizedTokens] = React.useState(false);
+  const wallet = useWallet();
 
   return (
     <div ref={containerRef}>
@@ -135,6 +137,30 @@ export const AssetList = ({
           onClose={onClose}
         />
       </div>
+      <footer className="h-[72px]">
+        <div
+          className={clsx(
+            'fixed bottom-0 left-0 right-0 px-[20px] py-[14px]',
+            'border-t-[0.5px] border-solid border-rabby-neutral-line',
+            'bg-r-neutral-bg-2'
+          )}
+        >
+          <Button
+            type="primary"
+            block
+            className="h-[44px] text-r-neutral-title2 text-[15px] leading-[18px] font-medium"
+            onClick={() => {
+              wallet.openInDesktop('/desktop/profile');
+              window.close();
+            }}
+          >
+            <div className="flex items-center justify-center gap-[4px]">
+              {t('page.dashboard.assets.openInTab')}
+              <RcIconExternalCC />
+            </div>
+          </Button>
+        </div>
+      </footer>
     </div>
   );
 };

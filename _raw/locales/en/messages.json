@@ -1749,7 +1749,8 @@
           "addTestnet": "Network"
         },
         "noTestnetAssets": "No Custom Network Assets",
-        "addTokenEntryText": "Token"
+        "addTokenEntryText": "Token",
+        "openInTab": "Open in tab"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",
