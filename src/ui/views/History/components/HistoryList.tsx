@@ -42,38 +42,44 @@ export const HistoryList = ({
     });
   };
 
-  const buildDisplayData = (result?: TxHistoryResult | TxAllHistoryResult) => {
-    if (!result) {
-      return {
-        last: undefined,
-        list: [],
-      };
-    }
-    const tokenDict = (result as any).token_dict;
-    const tokenUUIDDict = (result as any).token_uuid_dict;
-    const historyList = (result.history_list || []).filter((item) => {
-      if (isFilterScam) {
-        return !item.is_scam;
+  const buildDisplayData = React.useCallback(
+    (result?: TxHistoryResult | TxAllHistoryResult) => {
+      if (!result) {
+        return {
+          last: undefined,
+          list: [],
+        };
       }
-      return true;
-    });
-    const displayList = historyList
-      .map((item) => ({
-        ...item,
-        projectDict: result.project_dict,
-        cateDict: result.cate_dict,
-        tokenDict,
-        tokenUUIDDict,
-      }))
-      .sort((v1, v2) => v2.time_at - v1.time_at);
-    return {
-      last: last(displayList)?.time_at,
-      list: displayList,
-    };
-  };
+      const tokenDict = (result as any).token_dict;
+      const tokenUUIDDict = (result as any).token_uuid_dict;
+      const historyList = (result.history_list || []).filter((item) => {
+        if (isFilterScam) {
+          return !item.is_scam;
+        }
+        return true;
+      });
+      const displayList = historyList
+        .map((item) => ({
+          ...item,
+          projectDict: result.project_dict,
+          cateDict: result.cate_dict,
+          tokenDict,
+          tokenUUIDDict,
+        }))
+        .sort((v1, v2) => v2.time_at - v1.time_at);
+      return {
+        last: last(displayList)?.time_at,
+        list: displayList,
+      };
+    },
+    [isFilterScam]
+  );
+
+  const [cachedDisplayData, setCachedDisplayData] = React.useState<ReturnType<
+    typeof buildDisplayData
+  > | null>(null);
 
   const fetchData = async (startTime = 0) => {
-    console.log('>>>> fetchData');
     const { address } = account!;
     const shouldUseCache = !isFilterScam && startTime === 0;
     let cachedResult: TxHistoryResult | undefined;
@@ -135,7 +141,7 @@ export const HistoryList = ({
     return buildDisplayData(res);
   };
 
-  const { data, loading, loadingMore, loadMore } = useInfiniteScroll(
+  const { data, loading, loadingMore, loadMore, mutate } = useInfiniteScroll(
     (d) => fetchData(d?.last),
     {
       isNoMore: (d) => {
@@ -146,7 +152,34 @@ export const HistoryList = ({
     }
   );
 
-  const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
+  React.useEffect(() => {
+    let cancelled = false;
+    if (!account || isFilterScam) {
+      setCachedDisplayData(null);
+      return;
+    }
+    (async () => {
+      const cached = await wallet.getTransactionsCache(account.address);
+      if (cancelled) {
+        return;
+      }
+      if (cached?.history_list?.length) {
+        const displayData = buildDisplayData(cached);
+        setCachedDisplayData(displayData);
+        mutate(displayData);
+      } else {
+        setCachedDisplayData(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [account?.address, isFilterScam, buildDisplayData, wallet, mutate]);
+
+  const renderData = data || cachedDisplayData;
+  const listData = renderData?.list || [];
+  const showInitialLoading = loading && listData.length <= 0;
+  const isEmpty = listData.length <= 0 && !showInitialLoading;
 
   const [
     focusingHistoryItem,
@@ -170,7 +203,7 @@ export const HistoryList = ({
         </div>
       </Modal>
 
-      {loading ? (
+      {showInitialLoading ? (
         <div className={isFilterScam ? 'pt-[20px]' : ''}>
           {isFilterScam ? (
             <div className="filter-scam-loading-text">
@@ -201,7 +234,7 @@ export const HistoryList = ({
               style={{
                 height: '100%',
               }}
-              data={data?.list || []}
+              data={listData}
               itemContent={(_, item) => {
                 return (
                   <HistoryItem
