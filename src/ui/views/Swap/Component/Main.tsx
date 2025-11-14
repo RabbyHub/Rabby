@@ -593,7 +593,6 @@ export const Main = () => {
       try {
         clearExpiredTimer();
         setMiniSignLoading(true);
-        console.log('currentTxs');
         const hash = await wallet.sendRequest<string>({
           $ctx: {
             category: 'Swap',
@@ -604,7 +603,6 @@ export const Main = () => {
           method: 'eth_sendTransaction',
           params: currentTxs,
         });
-        console.log('hash');
         miniSignNextStep(hash);
         if (!isApprove) {
           refresh((e) => e + 1);
