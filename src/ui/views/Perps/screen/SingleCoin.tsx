@@ -367,18 +367,23 @@ export const PerpsSingleCoin = () => {
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
       <PageHeader className="mx-[20px] pt-[20px]" forceShowBack>
-        <div className="flex items-center justify-center gap-8">
-          <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={24} />
-          <span className="text-20 font-medium text-r-neutral-title-1">
-            {coin}-USD
-          </span>
-          <ThemeIcon
-            className="icon text-r-neutral-title-1 cursor-pointer"
-            src={RcIconTitleSelectCC}
+        <div className="flex items-center justify-center">
+          <div
+            className="flex items-center gap-8 cursor-pointer"
+            style={{ width: 'fit-content' }}
             onClick={() => {
               setSearchPopupVisible(true);
             }}
-          />
+          >
+            <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={24} />
+            <span className="text-20 font-medium text-r-neutral-title-1">
+              {coin}-USD
+            </span>
+            <ThemeIcon
+              className="icon text-r-neutral-title-1"
+              src={RcIconTitleSelectCC}
+            />
+          </div>
         </div>
       </PageHeader>
 

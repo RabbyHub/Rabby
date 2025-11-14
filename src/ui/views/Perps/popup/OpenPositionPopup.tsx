@@ -231,7 +231,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           activeAssetCtx={activeAssetCtx}
         />
 
-        <div className="flex mb-16 bg-r-neutral-card1 rounded-[8px] p-4 h-[42px]">
+        <div className="flex mt-12 mb-16 bg-r-neutral-card1 rounded-[8px] p-4 h-[42px]">
           <div
             className={clsx(
               'flex-1 h-[34px] rounded-[4px] text-16 cursor-pointer flex items-center justify-center',
@@ -361,7 +361,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
             <EditTpSlTag
               coin={coin}
-              isUp={isPositiveChange}
+              activeAssetCtx={activeAssetCtx}
+              currentAssetCtx={currentAssetCtx}
               markPrice={markPrice}
               initTpOrSlPrice={tpTriggerPx}
               direction={direction}
@@ -392,6 +393,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
             <EditTpSlTag
               coin={coin}
+              activeAssetCtx={activeAssetCtx}
+              currentAssetCtx={currentAssetCtx}
               markPrice={markPrice}
               initTpOrSlPrice={slTriggerPx}
               direction={direction}

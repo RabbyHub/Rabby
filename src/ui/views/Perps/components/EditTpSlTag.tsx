@@ -10,6 +10,9 @@ import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useMemoizedFn } from 'ahooks';
 import { formatTpOrSlPrice, validatePriceInput } from '../utils';
+import { AssetPriceInfo } from './AssetPriceInfo';
+import { MarketData } from '@/ui/models/perps';
+import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 interface EditTpSlTagProps {
   coin: string;
   entryPrice?: number;
@@ -22,7 +25,8 @@ interface EditTpSlTagProps {
   pxDecimals: number;
   szDecimals: number;
   actionType: 'tp' | 'sl';
-  isUp?: boolean;
+  activeAssetCtx?: WsActiveAssetCtx['ctx'] | null;
+  currentAssetCtx?: MarketData;
   type: 'openPosition' | 'hasPosition';
   handleSetAutoClose: (price: string) => Promise<void>;
   handleCancelAutoClose: () => Promise<void>;
@@ -40,8 +44,9 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   pxDecimals,
   szDecimals,
   actionType,
-  isUp,
   type,
+  activeAssetCtx,
+  currentAssetCtx,
   handleSetAutoClose,
   handleCancelAutoClose,
 }) => {
@@ -294,17 +299,11 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
             </div>
             <div className={clsx('text-14 text-rb-neutral-secondary')}>
               {type === 'openPosition' ? (
-                <>
-                  {t('page.perpsDetail.PerpsAutoCloseModal.currentPrice')}
-                  <span
-                    className={clsx('text-14', {
-                      'text-r-green-default': isUp,
-                      'text-r-red-default': !isUp,
-                    })}
-                  >
-                    ${splitNumberByStep(markPrice)}
-                  </span>
-                </>
+                <AssetPriceInfo
+                  coin={coin}
+                  activeAssetCtx={activeAssetCtx}
+                  currentAssetCtx={currentAssetCtx}
+                />
               ) : (
                 t('page.perpsDetail.PerpsAutoCloseModal.EntryAndCurrentPrice', {
                   entryPrice: splitNumberByStep(entryPrice || markPrice),

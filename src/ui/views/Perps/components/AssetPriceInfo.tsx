@@ -7,8 +7,8 @@ import { MarketData } from '@/ui/models/perps';
 
 interface AssetPriceInfoProps {
   coin: string;
-  activeAssetCtx: WsActiveAssetCtx['ctx'] | null;
-  currentAssetCtx: MarketData;
+  activeAssetCtx?: WsActiveAssetCtx['ctx'] | null;
+  currentAssetCtx?: MarketData | null;
 }
 
 export const AssetPriceInfo = ({
@@ -39,7 +39,7 @@ export const AssetPriceInfo = ({
   }, [activeAssetCtx, currentAssetCtx, dayDelta]);
 
   return (
-    <div className="text-center mb-12 px-20 flex flex-row items-center justify-center gap-6">
+    <div className="text-center px-20 flex flex-row items-center justify-center gap-6">
       <div className="text-13 font-medium text-r-neutral-foot">{coin}-USD</div>
       <div
         className={clsx(

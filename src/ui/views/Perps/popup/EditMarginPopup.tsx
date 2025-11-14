@@ -182,7 +182,7 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
           activeAssetCtx={activeAssetCtx}
         />
 
-        <div className="flex-1 px-20 overflow-y-auto pb-24">
+        <div className="flex-1 mt-12 px-20 overflow-y-auto pb-24">
           <div className="flex mb-16 bg-r-neutral-card1 rounded-[8px] p-4 h-[42px]">
             <div
               className={clsx(
@@ -297,6 +297,8 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
         <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
           {!canReduce && action === 'reduce' ? (
             <TooltipWithMagnetArrow
+              placement="top"
+              overlayClassName={clsx('rectangle')}
               title={t(
                 'page.perpsDetail.PerpsEditMarginPopup.reduceMarginTooltip'
               )}
