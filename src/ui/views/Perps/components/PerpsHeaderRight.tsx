@@ -30,7 +30,7 @@ export const PerpsHeaderRight: React.FC<PerpsHeaderRightProps> = ({
 
   return loadingNumber > 0 ? (
     <div
-      className="flex justify-center items-center cursor-pointer relative rounded-full px-4 py-6 bg-rb-orange-light-1 border border-rb-orange-light-2"
+      className="flex justify-center items-center cursor-pointer absolute right-0 rounded-full px-4 py-6 bg-rb-orange-light-1 border border-rb-orange-light-2"
       onClick={() => {
         history.push(`/perps/history/${coin}`);
       }}

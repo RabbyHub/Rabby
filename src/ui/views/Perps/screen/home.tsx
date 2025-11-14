@@ -385,7 +385,7 @@ export const Perps: React.FC = () => {
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
       <PageHeader
-        className={`mx-[20px] pt-[20px] ${isLogin ? 'mb-0' : ''}`}
+        className={`mx-[20px] pt-[20px] relative ${isLogin ? 'mb-0' : ''}`}
         forceShowBack
         onBack={goBack}
         isShowAccount={isLogin ? true : false}
