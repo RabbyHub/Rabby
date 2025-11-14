@@ -106,7 +106,7 @@ export const TokenDetailPopup = ({
     checkIsAdded();
   }, [checkIsAdded]);
 
-  const popupHeight = isInSend || isInSwap || isBridge ? 540 : 494;
+  const popupHeight = isInSend || isInSwap || isBridge ? 540 : 500;
 
   return (
     <Popup

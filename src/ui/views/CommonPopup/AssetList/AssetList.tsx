@@ -41,7 +41,7 @@ export const AssetList = ({
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
 
   React.useEffect(() => {
-    setHeight(488);
+    setHeight(500);
   }, []);
 
   React.useEffect(() => {

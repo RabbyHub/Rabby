@@ -68,7 +68,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
           </div>
         }
         isNew
-        height={494}
+        height={500}
         visible={visible}
         closable
         push={false}
