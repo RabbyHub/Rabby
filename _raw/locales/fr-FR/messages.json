@@ -240,6 +240,18 @@
     },
     "DappActions": {
       "queueDescription": "Le retrait actuel sera mis dans une file d'attente. Une fois traité, il pourra être retiré vers votre wallet."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Toutes les chaînes"
+    },
+    "DesktopNav": {
+      "perps": "Perps",
+      "portfolio": "Portefeuille",
+      "lending": "Prêt",
+      "comingSoon": "Bientôt disponible"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Ajouter une adresse"
     }
   },
   "constant": {
@@ -698,7 +710,8 @@
           "lowValueAssets_0": "{{count}} jeton de faible valeur",
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_other": "{{count}} low value tokens",
-          "review": "Revue"
+          "review": "Revue",
+          "noTokens": "Aucun Token"
         },
         "tokenButton": {
           "subTitle": "Le token de cette liste ne sera pas ajouté au solde total"
@@ -725,7 +738,9 @@
         },
         "TestnetAssetListContainer": {
           "add": "Jeton",
-          "addTestnet": "Réseau"
+          "addTestnet": "Réseau",
+          "addToken": "Ajouter un jeton",
+          "addNetwork": "Ajouter un réseau"
         },
         "customButtonText": "Ajouter un token personnalisé",
         "noTestnetAssets": "Aucun actif de réseau personnalisé",
@@ -812,7 +827,8 @@
           "gasAccount": "GasAccount",
           "setting": "Paramètres",
           "dapps": "Dapps",
-          "searchDapp": "Rechercher Dapp"
+          "searchDapp": "Rechercher Dapp",
+          "settings": "Paramètres"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",
@@ -832,7 +848,8 @@
         "chain": "chaîne,",
         "chainEnd": "chaîne",
         "missingDataTooltip": "Le solde peut ne pas être mis à jour en raison de problèmes de réseau actuels avec {{text}}.",
-        "appChainTips": "Compte Hyperliquid non inclus"
+        "appChainTips": "Compte Hyperliquid non inclus",
+        "slotAppChainTips": "{{appChainNames}} Compte non inclus"
       },
       "nft": {
         "collectionList": {
@@ -1413,7 +1430,8 @@
         "slip39SeedPhraseWithPassphrase": "J'ai une phrase secrète <0>{{SLIP39}}</0> avec une phrase de passe",
         "importQuestion1": "Si je perds ou partage ma phrase secrète, je perdrai l'accès à mes actifs de manière permanente.",
         "importQuestion2": "Ma phrase de récupération est uniquement stockée sur mon appareil. Rabby ne peut pas y accéder.",
-        "importQuestion3": "Si je désinstalle Rabby sans sauvegarder ma phrase de récupération, elle ne pourra pas être restaurée par Rabby."
+        "importQuestion3": "Si je désinstalle Rabby sans sauvegarder ma phrase de récupération, elle ne pourra pas être restaurée par Rabby.",
+        "showMoreOptions": "Afficher plus d'options"
       },
       "selectImportMethod": "Sélectionner la méthode d'importation",
       "theSeedPhraseIsInvalidPleaseCheck": "La seed phrase n'est pas valide, veuillez vérifier !",
@@ -3386,6 +3404,60 @@
       "enterAddressOrENS": "Entrer ou rechercher une adresse",
       "selectImportedAddress": "Sélectionner l'adresse importée",
       "sendToImportedAddress": "Envoyer à l'adresse importée"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "appChainTips": "Compte Hyperliquid et Polymarket non inclus",
+        "netWorth": "Valeur nette"
+      },
+      "UpdateButton": {
+        "updating": "Mise à jour des données",
+        "updatedAgo": "Données mises à jour <1/> <2>{{timeText}}</2> <3/> auparavant"
+      },
+      "ReachedEnd": {
+        "content": "Vous avez atteint la fin"
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "Portefeuille",
+          "foldProtocols": "Pliez {{count}} Protocoles",
+          "allTokenMode": "Tous les modes de jetons",
+          "unfoldProtocols": "Déplier {{count}} Protocoles"
+        },
+        "hidden": {
+          "showAll": "Afficher tout",
+          "hideProtocolsWithSmallDeposits": "Masquer les protocoles avec de petits dépôts.",
+          "hideSmall": "Masquer les tokens avec de petits soldes.",
+          "hideSmallDesc": "Les tokens avec de petits soldes ne sont pas affichés.",
+          "hideProtocolsWithSmallDepositsDesc": "Les protocoles avec de petits dépôts ne sont pas affichés.",
+          "tokensWithZeroBalanceDesc": "Les tokens avec des soldes de $0 sont masqués.",
+          "tokensWithZeroBalance": "Cacher les jetons $0"
+        },
+        "table": {
+          "token": "Jeton",
+          "amount": "Montant",
+          "tokenAddress": "Adresse du Token",
+          "usdValue": "Valeur en USD",
+          "chain": "Chaîne",
+          "price": "Prix"
+        },
+        "actions": {
+          "swap": "Échanger",
+          "send": "Envoyer"
+        }
+      },
+      "button": {
+        "bridge": "Pont",
+        "send": "Envoyer",
+        "swap": "Échanger",
+        "queue": "File d'attente",
+        "pending": "{{pendingTxCount}} En attente"
+      },
+      "tabs": {
+        "transactions": "Transactions",
+        "tokens": "Jetons",
+        "approvals": "Approbations"
+      }
     }
   }
 }

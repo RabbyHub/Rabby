@@ -22,8 +22,15 @@ import { useMedia } from 'react-use';
 import { connectStore, useRabbyDispatch } from '@/ui/store';
 import { Chain } from '@debank/common';
 import { ga4 } from '@/utils/ga4';
+import { UI_TYPE } from '@/constant/ui';
 
-const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
+const ImportSuccess = ({
+  isPopup = false,
+  isInModal,
+}: {
+  isPopup?: boolean;
+  isInModal?: boolean;
+}) => {
   const history = useHistory();
   const { state } = useLocation<{
     accounts: Account[];
@@ -69,7 +76,11 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
       return;
     }
 
-    history.push('/dashboard');
+    if (UI_TYPE.isDesktop) {
+      history.push('/desktop/profile');
+    } else {
+      history.push('/dashboard');
+    }
   };
   const importedIcon =
     KEYRING_ICONS[accounts[0].type] ||
@@ -111,7 +122,10 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   return (
     <StrayPageWithButton
       custom={isWide}
-      className={clsx(isWide && 'rabby-stray-page')}
+      className={clsx(
+        isWide && 'rabby-stray-page',
+        isInModal ? 'min-h-0 h-[600px] overflow-auto' : ''
+      )}
       hasDivider={hasDivider}
       NextButtonContent={t('global.Done')}
       onNextClick={handleNextClick}

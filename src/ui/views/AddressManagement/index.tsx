@@ -15,7 +15,7 @@ import { ReactComponent as RcIconAddAddress } from '@/ui/assets/address/new-addr
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcNoMatchedAddress } from '@/ui/assets/address/no-matched-addr.svg';
 
-import { KEYRING_CLASS } from '@/constant';
+import { EVENTS, KEYRING_CLASS } from '@/constant';
 import { useRequest } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
@@ -28,6 +28,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBar';
 import dayjs from 'dayjs';
 import { useAccounts } from '@/ui/hooks/useAccounts';
+import { useWallet } from '@/ui/utils';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -82,6 +83,7 @@ const AddressManagement = () => {
     addressSortStore?.search || ''
   );
   const debouncedSearchKeyword = useDebounceValue(searchKeyword, 250);
+  const wallet = useWallet();
 
   const {
     accountList,
@@ -270,6 +272,7 @@ const AddressManagement = () => {
                         address: account.address,
                         brandName: account.brandName,
                       });
+                      wallet.emitEvent(EVENTS.RELOAD_ACCOUNT_LIST);
                     }}
                   >
                     <ThemeIcon

@@ -1126,7 +1126,8 @@
           "gasAccount": "GasAccount",
           "dapps": "Dapps",
           "searchDapp": "Пошук Dapp",
-          "setting": "Налаштування"
+          "setting": "Налаштування",
+          "settings": "Налаштування"
         },
         "comingSoon": "Скоро",
         "soon": "Незабаром",
@@ -1150,7 +1151,8 @@
         "chainEnd": "ланцюг",
         "missingDataTooltip": "Через поточні проблеми з мережею {{text}} баланс може не оновлюватись.",
         "chain": "ланцюг,",
-        "appChainTips": "Обліковий запис Hyperliquid не включено"
+        "appChainTips": "Обліковий запис Hyperliquid не включено",
+        "slotAppChainTips": "{{appChainNames}} Обліковий запис не включено"
       },
       "recentConnection": {
         "disconnected": "Відключено",
@@ -1410,7 +1412,8 @@
           "lowValueAssets_0": "{{count}} токен з низькою вартістю",
           "lowValueAssets_one": "{{count}} токенів низької вартості",
           "lowValueAssets_other": "{{count}} низьковартісних токенів",
-          "review": "Огляд"
+          "review": "Огляд",
+          "noTokens": "Немає токенів"
         },
         "noAssets": "Немає активів",
         "blockLinkText": "Адреса для пошуку токена блоку",
@@ -1440,7 +1443,9 @@
         },
         "TestnetAssetListContainer": {
           "add": "Токен",
-          "addTestnet": "Мережа"
+          "addTestnet": "Мережа",
+          "addToken": "Додати токен",
+          "addNetwork": "Додати мережу"
         },
         "customButtonText": "Додати користувацький токен",
         "addTokenEntryText": "Токен",
@@ -1596,7 +1601,8 @@
         "inputInvalidCount_one": "Вхідні дані не відповідають нормам Seed Phrase, будь ласка, перевірте.",
         "importQuestion2": "Моя семантична фраза зберігається лише на моєму пристрої. Rabby не може отримати до неї доступ.",
         "importQuestion3": "Якщо я видалю Rabby без резервного копіювання своєї фрази відновлення, її не можна буде відновити через Rabby.",
-        "importQuestion1": "Якщо я втрачу або поділюся своєю seed-фразою, я втрачу доступ до своїх активів назавжди."
+        "importQuestion1": "Якщо я втрачу або поділюся своєю seed-фразою, я втрачу доступ до своїх активів назавжди.",
+        "showMoreOptions": "Показати більше параметрів"
       },
       "metamask": {
         "step1": " Експортуйте сід фразу або приватний ключ з Metamask<br /> <1> Натисніть, щоб переглянути підручник <1/></1>",
@@ -3106,6 +3112,60 @@
       "enterAddressOrENS": "Введіть або знайдіть адресу",
       "sendToImportedAddress": "Відправити на імпортовану адресу",
       "selectImportedAddress": "Виберіть імпортовану адресу"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "Чистий капітал",
+        "appChainTips": "Облікові записи Hyperliquid & Polymarket не включені"
+      },
+      "UpdateButton": {
+        "updating": "Оновлення даних",
+        "updatedAgo": "Дані оновлені <1/> <2>{{timeText}}</2> <3/> тому"
+      },
+      "ReachedEnd": {
+        "content": "Ви досягли кінця"
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "Гаманець",
+          "foldProtocols": "Fold {{count}} Протоколів",
+          "allTokenMode": "Усі токен-режими",
+          "unfoldProtocols": "Розгорніть {{count}} Протоколів"
+        },
+        "hidden": {
+          "showAll": "Показати все",
+          "hideSmall": "Сховати токени з малими залишками.",
+          "tokensWithZeroBalance": "Сховати токени в $0",
+          "tokensWithZeroBalanceDesc": "Токени з балансом $0 приховані.",
+          "hideProtocolsWithSmallDepositsDesc": "Протоколи з невеликими депозитами не відображаються.",
+          "hideProtocolsWithSmallDeposits": "Сховати протоколи з невеликими депозитами.",
+          "hideSmallDesc": "Токени з невеликими залишками не відображаються."
+        },
+        "table": {
+          "tokenAddress": "Адрес токена",
+          "amount": "Сума",
+          "usdValue": "USD Вартість",
+          "chain": "Цепочка",
+          "price": "Ціна",
+          "token": "Токен"
+        },
+        "actions": {
+          "swap": "Обмін",
+          "send": "Відправити"
+        }
+      },
+      "button": {
+        "bridge": "Міст",
+        "send": "Надіслати",
+        "queue": "Черга",
+        "swap": "Обмін",
+        "pending": "{{pendingTxCount}} В очікуванні"
+      },
+      "tabs": {
+        "tokens": "Токени",
+        "transactions": "Транзакції",
+        "approvals": "Схвалення"
+      }
     }
   },
   "component": {
@@ -3302,6 +3362,18 @@
     },
     "DappActions": {
       "queueDescription": "Поточне виведення​ потрапить у чергу очікування. Після обробки його можна буде ​вивести​ на ваш гаманець."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Усі ланцюги"
+    },
+    "DesktopNav": {
+      "lending": "Позика",
+      "portfolio": "Портфель",
+      "comingSoon": "Скоро буде",
+      "perps": "Периферійні"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Додати адресу"
     }
   },
   "global": {

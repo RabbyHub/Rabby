@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
@@ -30,6 +30,9 @@ import {
 import styled from 'styled-components';
 import { TestnetTokenItemAsset } from './TokenItem';
 import { useHistory } from 'react-router-dom';
+import { AddCustomTokenModal } from '../AddCustomTokenModal';
+import { AddressDetailModal } from '../AddressDetailModal';
+import { AddCustomNetworkModal } from '../AddCustomNetworkModal';
 
 interface Props {
   className?: string;
@@ -53,12 +56,18 @@ interface TableProps {
 }
 
 const TokenRowWrapper = styled(TRow)`
-  border-bottom: 1px solid var(--r-neutral-bg-4, #f2f4f7);
+  border-bottom: 1px solid var(--rb-neutral-bg-4, #f2f4f7);
   height: 60px;
   padding-left: 12px;
   padding-right: 16px;
+  .swap-action-btn {
+    display: none !important;
+  }
   &:hover {
-    background-color: var(--r-neutral-bg-2);
+    background-color: var(--rb-neutral-bg-2, #f2f4f7);
+    .swap-action-btn {
+      display: block !important;
+    }
   }
   &:last-child {
     border-bottom-color: transparent;
@@ -84,16 +93,25 @@ const CustomTestnetTokenTable: React.FC<TableProps> = ({
   list,
   EmptyComponent,
 }) => {
+  const { t } = useTranslation();
   return (
     <Table className="!w-full ml-0 mr-0">
       <THeader
-        className="w-full justify-between bg-r-neutral-bg-1 rounded-[6px] py-8"
+        className="w-full justify-between bg-rb-neutral-bg-1 rounded-[6px] py-8"
         rowClassName="px-8"
       >
-        <THeadCell className="flex-1">Token</THeadCell>
-        <THeadCell className="flex-1">Chain</THeadCell>
-        <THeadCell className="flex-1">Token Address</THeadCell>
-        <THeadCell className="flex-1 text-right">Amount</THeadCell>
+        <THeadCell className="flex-1">
+          {t('page.desktopProfile.portfolio.table.token')}
+        </THeadCell>
+        <THeadCell className="flex-1">
+          {t('page.desktopProfile.portfolio.table.chain')}
+        </THeadCell>
+        <THeadCell className="flex-1">
+          {t('page.desktopProfile.portfolio.table.tokenAddress')}
+        </THeadCell>
+        <THeadCell className="flex-1 text-right">
+          {t('page.desktopProfile.portfolio.table.amount')}
+        </THeadCell>
       </THeader>
       <TBody className="mt-0">
         {list?.map((item) => {
@@ -119,6 +137,8 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
   }));
   const history = useHistory();
   const [isFetched, setIsFetched] = React.useState<boolean>(false);
+  const [isShowAddNetworkModal, setIsShowAddNetworkModal] = useState(false);
+  const [isShowAddTokenModal, setIsShowAddTokenModal] = useState(false);
 
   const wallet = useWallet();
 
@@ -181,14 +201,14 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
         <div className="flex items-center gap-x-[12px]">
           <div
             className={clsx(
-              'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[7px] cursor-pointer',
-              ' border border-rb-blue-default min-w-[82px] text-center',
+              'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[10px] cursor-pointer min-w-[292px]',
+              ' border border-rabby-blue-default min-w-[82px] text-center',
               'hover:border-rabby-blue-default hover:bg-r-blue-light1'
             )}
           >
             <div
               className={clsx(
-                'text-rb-blue-default text-[13px] leading-[13px] font-medium cursor-pointer',
+                'text-r-blue-default text-[13px] leading-[13px] font-medium cursor-pointer',
                 'flex items-center gap-x-[4px] justify-center'
               )}
               onClick={() => {
@@ -196,12 +216,10 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
                   category: 'Custom Network',
                   action: 'TokenList Add Network',
                 });
-                history.replace(
-                  history.location.pathname + '?action=custom-network'
-                );
+                setIsShowAddNetworkModal(true);
               }}
             >
-              <span className="text-rb-blue-default">
+              <span className="text-r-blue-default">
                 <RcIconAdd />
               </span>
               {t('page.dashboard.assets.TestnetAssetListContainer.addNetwork')}
@@ -209,23 +227,21 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
           </div>
           <div
             className={clsx(
-              'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[7px] cursor-pointer',
-              ' border border-rb-blue-default min-w-[82px] text-center',
+              'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[10px] cursor-pointer min-w-[292px]',
+              ' border border-rabby-blue-default min-w-[82px] text-center',
               'hover:border-rabby-blue-default hover:bg-r-blue-light1'
             )}
           >
             <div
               className={clsx(
-                'text-rb-blue-default text-[13px] leading-[13px] font-medium cursor-pointer',
+                'text-r-blue-default text-[13px] leading-[13px] font-medium cursor-pointer',
                 'flex items-center gap-x-[4px] justify-center'
               )}
               onClick={() => {
-                history.replace(
-                  history.location.pathname + '?action=custom-token'
-                );
+                setIsShowAddTokenModal(true);
               }}
             >
-              <span className="text-rb-blue-default">
+              <span className="text-r-blue-default">
                 <RcIconAdd />
               </span>
               {t('page.dashboard.assets.TestnetAssetListContainer.addToken')}
@@ -233,6 +249,27 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
           </div>
         </div>
       </div>
+      <AddCustomNetworkModal
+        visible={isShowAddNetworkModal}
+        onCancel={() => {
+          setIsShowAddNetworkModal(false);
+        }}
+        onChange={() => {
+          refreshAsync();
+        }}
+        destroyOnClose
+      />
+      <AddCustomTokenModal
+        visible={isShowAddTokenModal}
+        onCancel={() => {
+          setIsShowAddTokenModal(false);
+        }}
+        onOk={() => {
+          setIsShowAddTokenModal(false);
+          refreshAsync();
+        }}
+        destroyOnClose
+      />
     </div>
   );
 };

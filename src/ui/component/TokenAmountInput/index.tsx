@@ -102,6 +102,7 @@ const TokenAmountInput = ({
   const tokenInputRef = useRef<Input>(null);
   const [updateNonce, setUpdateNonce] = useState(0);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
+  const selectorOpened = useRef(false);
   const currentAccount = useRabbySelector(
     (state) => state.account.currentAccount
   );
@@ -173,17 +174,20 @@ const TokenAmountInput = ({
   };
 
   const handleSelectToken = () => {
-    if (allTokens.length > 0) {
+    if (allTokens.length > 0 && selectorOpened.current === true) {
       setUpdateNonce(updateNonce + 1);
     }
     setTokenSelectorVisible(true);
+    if (!selectorOpened.current) {
+      selectorOpened.current = true;
+    }
   };
 
   // when no any queryConds
   const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
     currentAccount?.address,
     undefined,
-    tokenSelectorVisible,
+    selectorOpened.current ? tokenSelectorVisible : true,
     updateNonce,
     chainServerId
   );
@@ -354,11 +358,11 @@ const TokenAmountInput = ({
               </span>
             </div>
           )}
-          {/* {token && token.amount > 0 && !isLoading && (
+          {token && token.amount > 0 && !isLoading && (
             <MaxButton onClick={handleClickMaxButton}>
               {t('page.sendToken.max')}
             </MaxButton>
-          )} */}
+          )}
         </div>
       </div>
       <TokenSelector

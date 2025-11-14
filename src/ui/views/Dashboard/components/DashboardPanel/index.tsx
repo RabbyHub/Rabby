@@ -48,7 +48,7 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { EcologyPopup } from '../EcologyPopup';
 import { Settings } from '../index';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
-import { RcIconFullscreenCC } from '@/ui/assets/dashboard';
+import { RcIconExternal1CC, RcIconFullscreenCC } from '@/ui/assets/dashboard';
 import { RecentConnectionsPopup } from '../RecentConnections';
 import { useScroll, useSize } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -300,15 +300,18 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       eventKey: 'Approvals',
       content: t('page.dashboard.home.panel.approvals'),
       onClick: async (evt) => {
-        openInternalPageInTab('approval-manage');
+        // openInternalPageInTab('approval-manage');
+        await wallet.openInDesktop('/desktop/profile/approvals');
+        window.close();
       },
       badge: approvalRiskAlert,
       badgeAlert: approvalRiskAlert > 0,
+      isFullscreen: true,
     } as IPanelItem,
     more: {
       icon: RcIconSettingCC,
       eventKey: 'More',
-      content: t('page.dashboard.home.panel.setting'),
+      content: t('page.dashboard.home.panel.settings'),
       onClick: onSettingClick,
     } as IPanelItem,
     nft: {
@@ -365,6 +368,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       onClick: () => {
         openInternalPageInTab('sync');
       },
+      isFullscreen: true,
     } as IPanelItem,
     perps: {
       icon: RcIconPerpsCC,
@@ -403,6 +407,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       onClick: () => {
         openInternalPageInTab('dapp-search');
       },
+      isFullscreen: true,
     } as IPanelItem,
     dapps: {
       icon: RcIconDappsCC,
@@ -556,8 +561,8 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
                     </div>
                   )}
                   {item.isFullscreen && (
-                    <div className="absolute top-[6px] right-[6px] text-r-neutral-foot hidden group-hover:block">
-                      <RcIconFullscreenCC className="w-[12px] h-[12px]" />
+                    <div className="absolute top-[6px] right-[6px] opacity-50 text-r-neutral-foot hidden group-hover:block">
+                      <RcIconExternal1CC />
                     </div>
                   )}
                 </div>

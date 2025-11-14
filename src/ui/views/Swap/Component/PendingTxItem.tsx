@@ -254,7 +254,13 @@ export const PendingTxItem = forwardRef<
       openBridgeHistory();
     } else {
       if (isDesktop) {
-        wallet.openInDesktop('desktop/profile?action=activities');
+        history.push(
+          `${
+            history.location.pathname.startsWith('/desktop/profile')
+              ? history.location.pathname
+              : '/desktop/profile'
+          }?action=activities`
+        );
       } else {
         history.push('/activities');
       }

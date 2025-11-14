@@ -2,13 +2,20 @@ import React from 'react';
 import { AddAddressOptions, BlueHeader } from 'ui/component';
 import './style.less';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 
-const AddAddress = () => {
+const AddAddress: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="add-address">
+    <div
+      className={clsx(
+        'add-address',
+        isInModal ? 'min-h-0 h-[600px] overflow-auto' : ''
+      )}
+    >
       <BlueHeader
+        showBackIcon={!isInModal}
         fixed
         className="mx-[-20px] h-[48px]"
         fillClassName="mb-[20px] h-[48px]"

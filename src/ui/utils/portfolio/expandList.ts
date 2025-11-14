@@ -11,13 +11,21 @@ export const getExpandListSwitch = <
   T extends { netWorth?: number; _usdValue?: number }
 >(
   list?: T[],
-  totalValue?: number
+  totalValue?: number,
+  equalThreshold?: boolean
 ) => {
   const listLength = list?.length || 0;
 
-  const threshold = Math.min((totalValue || 0) / 1000, 1000);
+  const threshold = Math.min((totalValue || 0) / 100, 1000);
   const thresholdIndex = list
-    ? list.findIndex((m) => (m._usdValue || m.netWorth || 0) < threshold)
+    ? list.findIndex((m) => {
+        const value = m._usdValue || m.netWorth || 0;
+        if (equalThreshold) {
+          return value <= threshold;
+        } else {
+          return value < threshold;
+        }
+      })
     : -1;
 
   const hasExpandSwitch =
@@ -31,13 +39,14 @@ export const useExpandList = <
 >(
   list?: T[],
   totalValue?: number,
-  defaultExpand?: boolean
+  defaultExpand?: boolean,
+  equalThreshold?: boolean
 ) => {
   const { on, toggle, turn } = useSwitch(defaultExpand);
 
   const { thresholdIndex, hasExpandSwitch } = useMemo(
-    () => getExpandListSwitch(list, totalValue),
-    [list, totalValue]
+    () => getExpandListSwitch(list, totalValue, equalThreshold),
+    [list, totalValue, equalThreshold]
   );
 
   const result = useMemo(() => {

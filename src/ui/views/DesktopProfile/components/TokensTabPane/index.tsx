@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useRabbySelector } from '@/ui/store';
+import React, { useEffect, useMemo } from 'react';
+import { useRabbySelector, useRabbyDispatch } from '@/ui/store';
 import useSortTokens from 'ui/hooks/useSortTokens';
 import {
   TokenListSkeleton,
@@ -14,21 +14,36 @@ import { useExpandList } from './useExpandList';
 import ProjectOverview from './ProjectOverview';
 import BigNumber from 'bignumber.js';
 import { getTokenWalletFakeProject } from './utils';
+import { useSwitchNetTab } from '@/ui/component/PillsSwitch/NetSwitchTabs';
+import { AbstractProject } from '@/ui/utils/portfolio/types';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   className?: string;
   selectChainId?: string;
+  onProjectOverviewListChange?: (projects: AbstractProject[]) => void;
 }
 
 export const TokensTabPane: React.FC<Props> = ({
   className,
   selectChainId,
+  onProjectOverviewListChange,
 }) => {
-  const { currentAccount } = useRabbySelector((s) => ({
+  const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
+  const { currentAccount, allMode } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
+    allMode: s.preference.desktopTokensAllMode ?? false,
   }));
   const { setApps } = useCommonPopupView();
-  const [allMode, setAllMode] = useState(false);
+
+  useEffect(() => {
+    dispatch.preference.getPreference('desktopTokensAllMode');
+  }, [dispatch]);
+
+  const setAllMode = (value: boolean) => {
+    dispatch.preference.setDesktopTokensAllMode(value);
+  };
 
   const {
     isTokensLoading,
@@ -51,7 +66,7 @@ export const TokensTabPane: React.FC<Props> = ({
   }, [portfolioNetWorth, appPortfolioNetWorth]);
 
   const displayTokenList = useMemo(() => {
-    const result = tokenList;
+    const result = tokenList.filter((item) => item.is_verified); // only show verified tokens
     if (selectChainId) {
       return result.filter((item) => item.chain === selectChainId);
     }
@@ -95,6 +110,7 @@ export const TokensTabPane: React.FC<Props> = ({
     hasExpandSwitch,
     smallLength,
   } = useExpandList(displayPortfolios, currentPortfolioNetWorth);
+  const { selectedTab, onTabChange } = useSwitchNetTab();
 
   const tokenListTotalValue = React.useMemo(() => {
     return sortTokens
@@ -104,10 +120,30 @@ export const TokensTabPane: React.FC<Props> = ({
 
   const projectOverviewList = React.useMemo(() => {
     return [
-      getTokenWalletFakeProject(tokenListTotalValue),
+      getTokenWalletFakeProject(
+        tokenListTotalValue,
+        t('page.desktopProfile.portfolio.headers.wallet')
+      ),
       ...(currentList || []),
     ];
   }, [tokenListTotalValue, currentList]);
+
+  const isNoResults =
+    !isTokensLoading &&
+    !isPortfoliosLoading &&
+    !isAppPortfoliosLoading &&
+    !sortTokens.length &&
+    !displayPortfolios?.length;
+
+  useEffect(() => {
+    if (allMode || isNoResults || projectOverviewList?.length <= 1) {
+      onProjectOverviewListChange?.([]);
+      return;
+    }
+    if (projectOverviewList) {
+      onProjectOverviewListChange?.(projectOverviewList);
+    }
+  }, [projectOverviewList.length, allMode, isNoResults]);
 
   if (isTokensLoading && !hasTokens) {
     return (
@@ -117,16 +153,10 @@ export const TokensTabPane: React.FC<Props> = ({
     );
   }
 
-  const isNoResults =
-    !isTokensLoading &&
-    !isPortfoliosLoading &&
-    !isAppPortfoliosLoading &&
-    !sortTokens.length &&
-    !displayPortfolios?.length;
-
   return (
     <div className={className}>
-      {!allMode && !isNoResults && (
+      {/* 只有wallet的话也不显示 */}
+      {!allMode && !isNoResults && projectOverviewList?.length > 1 && (
         <ProjectOverview
           list={projectOverviewList}
           appIds={appIds}
@@ -148,6 +178,8 @@ export const TokensTabPane: React.FC<Props> = ({
           list={sortTokens}
           isNoResults={isNoResults}
           totalValue={tokenListTotalValue}
+          selectedTab={selectedTab}
+          onTabChange={onTabChange}
         />
       )}
 

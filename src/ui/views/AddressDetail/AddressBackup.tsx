@@ -8,6 +8,9 @@ import { useHistory } from 'react-router-dom';
 import { KEYRING_TYPE } from '@/constant';
 import { useTranslation } from 'react-i18next';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { UI_TYPE } from '@/constant/ui';
+import { obj2query } from '@/ui/utils/url';
 
 type Props = {
   address: string;
@@ -18,6 +21,7 @@ export const AddressBackup = ({ address, type }: Props) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const history = useHistory();
+  const { getContainer } = usePopupContainer();
 
   const [form] = useForm();
 
@@ -54,16 +58,30 @@ export const AddressBackup = ({ address, type }: Props) => {
         }
       },
       onFinished() {
-        history.push({
-          pathname: `/settings/address-backup/${path}`,
-          state: {
-            data: data,
-          },
-        });
+        if (UI_TYPE.isDesktop) {
+          history.push({
+            pathname: `${history.location.pathname}`,
+            search: `?${obj2query({
+              action: 'address-backup',
+              backupType: path,
+            })}`,
+            state: {
+              data: data,
+            },
+          });
+        } else {
+          history.push({
+            pathname: `/settings/address-backup/${path}`,
+            state: {
+              data: data,
+            },
+          });
+        }
       },
       onCancel() {
         // do nothing
       },
+      getContainer,
       wallet,
     });
   };

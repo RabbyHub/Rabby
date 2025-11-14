@@ -1123,7 +1123,8 @@
           "gasAccount": "GasAccount",
           "dapps": "Dapps",
           "setting": "設定",
-          "searchDapp": "Dappを検索"
+          "searchDapp": "Dappを検索",
+          "settings": "設定"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -1147,7 +1148,8 @@
         "chainEnd": "チェーン",
         "chain": "チェーン，",
         "missingDataTooltip": "現在の{{text}}のネットワーク問題により、残高が更新されない場合があります。",
-        "appChainTips": "Hyperliquid アカウントは含まれていません"
+        "appChainTips": "Hyperliquid アカウントは含まれていません",
+        "slotAppChainTips": "{{appChainNames}} アカウントは含まれていません"
       },
       "recentConnection": {
         "disconnected": "切断済み",
@@ -1407,7 +1409,8 @@
           "lowValueAssets_0": "{{count}} 個の low value token",
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_other": "{{count}} 個の低価値トークン",
-          "review": "レビュー"
+          "review": "レビュー",
+          "noTokens": "トークンがありません"
         },
         "noAssets": "アセットなし",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
@@ -1437,7 +1440,9 @@
         },
         "TestnetAssetListContainer": {
           "addTestnet": "ネットワーク",
-          "add": "トークン"
+          "add": "トークン",
+          "addNetwork": "ネットワークを追加",
+          "addToken": "トークンを追加"
         },
         "addTokenEntryText": "トークン",
         "noTestnetAssets": "カスタムネットワーク資産なし",
@@ -1588,7 +1593,8 @@
         "slip39SeedPhrasePlaceholder_one": "ここに{{count}}番目のシードフレーズシェアを入力してください。",
         "importQuestion2": "私のシードフレーズは私のデバイスのみに保存されています。Rabbyはそれにアクセスできません。",
         "importQuestion1": "もし私がシードフレーズを失ったり共有したりすると、資産へのアクセスを永久に失うことになります。",
-        "importQuestion3": "Rabbyをアンインストールしてシードフレーズをバックアップしなかった場合、Rabbyでは回復できません。"
+        "importQuestion3": "Rabbyをアンインストールしてシードフレーズをバックアップしなかった場合、Rabbyでは回復できません。",
+        "showMoreOptions": "オプションをさらに表示"
       },
       "metamask": {
         "step1": "MetaMaskからシードフレーズまたはプライベートキーをエクスポートします <br /> <1>チュートリアルを表示するにはここをクリック<1/></1>",
@@ -3094,6 +3100,60 @@
       "enterAddress": "アドレスを入力してください",
       "sendToImportedAddress": "インポートされたアドレスに送信",
       "selectImportedAddress": "インポートされたアドレスを選択してください"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "純資産",
+        "appChainTips": "Hyperliquid & Polymarketアカウントは含まれていません。"
+      },
+      "UpdateButton": {
+        "updating": "データを更新中",
+        "updatedAgo": "データは<1/> <2>{{timeText}}</2> <3/>前に更新されました"
+      },
+      "ReachedEnd": {
+        "content": "終了しました"
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "ウォレット",
+          "unfoldProtocols": "{{count}} プロトコルを展開",
+          "allTokenMode": "すべてのトークンモード",
+          "foldProtocols": "Fold {{count}} プロトコル"
+        },
+        "hidden": {
+          "showAll": "すべて表示",
+          "tokensWithZeroBalance": "$0トークンを非表示にする",
+          "hideProtocolsWithSmallDeposits": "小額預金のあるプロトコルを非表示にする。",
+          "tokensWithZeroBalanceDesc": "$0残高のトークンは非表示です。",
+          "hideProtocolsWithSmallDepositsDesc": "小額入金のプロトコルは表示されません。",
+          "hideSmall": "小さい残高のトークンを非表示にします。",
+          "hideSmallDesc": "小額残高のトークンは表示されません。"
+        },
+        "table": {
+          "tokenAddress": "トークンアドレス",
+          "usdValue": "USDの価値",
+          "price": "価格",
+          "token": "トークン",
+          "amount": "金額",
+          "chain": "チェーン"
+        },
+        "actions": {
+          "swap": "スワップ",
+          "send": "送信"
+        }
+      },
+      "button": {
+        "send": "送信",
+        "swap": "スワップ",
+        "queue": "キュー",
+        "pending": "{{pendingTxCount}} 保留中",
+        "bridge": "ブリッジ"
+      },
+      "tabs": {
+        "transactions": "取引",
+        "tokens": "トークン",
+        "approvals": "承認"
+      }
     }
   },
   "component": {
@@ -3290,6 +3350,18 @@
     },
     "DappActions": {
       "queueDescription": "現在の引き出しは待機キューに入ります。処理が完了すると、あなたのウォレットに引き出すことができます。"
+    },
+    "DesktopChainSelector": {
+      "allChains": "すべてのチェーン"
+    },
+    "DesktopNav": {
+      "lending": "レンディング",
+      "perps": "パープス",
+      "portfolio": "ポートフォリオ",
+      "comingSoon": "近日公開予定"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "アドレスを追加"
     }
   },
   "global": {

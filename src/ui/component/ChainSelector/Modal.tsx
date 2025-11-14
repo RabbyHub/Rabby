@@ -53,7 +53,7 @@ interface ChainSelectorModalProps {
   account?: Account | null;
 }
 
-const useChainSeletorList = ({
+const useChainSelectorList = ({
   supportChains,
   netTabKey,
 }: {
@@ -178,7 +178,7 @@ const ChainSelectorModal = ({
     search,
     setSearch,
     pinned,
-  } = useChainSeletorList({
+  } = useChainSelectorList({
     supportChains,
     netTabKey: !hideMainnetTab ? selectedTab : 'testnet',
   });

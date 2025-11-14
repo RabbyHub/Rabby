@@ -1542,7 +1542,8 @@
           "gasAccount": "GasAccount",
           "setting": "Setting",
           "searchDapp": "Search Dapp",
-          "dapps": "Dapps"
+          "dapps": "Dapps",
+          "settings": "Settings"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -2009,7 +2010,8 @@
         "invalidContent": "Invalid content",
         "inputInvalidCount_one": "1 input do not conform to Seed Phrase norms, please check.",
         "inputInvalidCount_other": "{{count}} inputs do not conform to Seed Phrase norms, please check.",
-        "passphrase": "Passphrase"
+        "passphrase": "Passphrase",
+        "showMoreOptions": "Show More Options"
       },
       "metamask": {
         "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
@@ -3163,6 +3165,54 @@
       "CurveModal": {
         "appChainTips": "Hyperliquid & Polymarket Account not included",
         "netWorth": "Net Worth"
+      },
+      "UpdateButton": {
+        "updating": "Updating data",
+        "updatedAgo": "Data updated <1/> <2>{{timeText}}</2> <3/> ago"
+      },
+      "ReachedEnd": {
+        "content": "You’ve reached the end"
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "Wallet",
+          "allTokenMode": "All Token Mode",
+          "foldProtocols": "Fold {{count}} Protocols",
+          "unfoldProtocols": "Unfold {{count}} Protocols"
+        },
+        "hidden": {
+          "tokensWithZeroBalance": "Hide $0 tokens",
+          "tokensWithZeroBalanceDesc": "Tokens with $0 balances are hidden.",
+          "showAll": "Show all",
+          "hideSmall": "Hide tokens with small balances.",
+          "hideSmallDesc": "Tokens with small balances are not displayed.",
+          "hideProtocolsWithSmallDeposits": "Hide protocols with small deposits.",
+          "hideProtocolsWithSmallDepositsDesc": "Protocols with small deposits are not displayed."
+        },
+        "table": {
+          "token": "Token",
+          "price": "Price",
+          "amount": "Amount",
+          "usdValue": "USD Value",
+          "chain": "Chain",
+          "tokenAddress": "Token Address"
+        },
+        "actions": {
+          "swap": "Swap",
+          "send": "Send"
+        }
+      },
+      "button": {
+        "swap": "Swap",
+        "send": "Send",
+        "bridge": "Bridge",
+        "queue": "Queue",
+        "pending": "{{pendingTxCount}} Pending"
+      },
+      "tabs": {
+        "tokens": "Tokens",
+        "transactions": "Transactions",
+        "approvals": "Approvals"
       }
     },
     "selectToAddress": {
@@ -3413,13 +3463,25 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
     },
     "DesktopChainSelector": {
       "allChains": "All Chains"
+    },
+    "DesktopNav": {
+      "portfolio": "Portfolio",
+      "perps": "Perps",
+      "lending": "Lending",
+      "comingSoon": "Coming Soon"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Add address"
     }
   },
   "global": {

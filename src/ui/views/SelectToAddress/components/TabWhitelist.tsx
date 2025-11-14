@@ -166,7 +166,14 @@ export default function TabWhitelist({
           ) : (
             <EmptyWhitelistHolder
               onAddWhitelist={() => {
-                history.push('/whitelist-input');
+                if (getUiType().isDesktop) {
+                  const query = new URLSearchParams(history.location.search);
+                  query.set('sendPageType', 'whitelistInput');
+                  query.set('action', 'send');
+                  wallet.openInDesktop(`desktop/profile?${query.toString()}`);
+                } else {
+                  history.push('/whitelist-input');
+                }
               }}
             />
           )}

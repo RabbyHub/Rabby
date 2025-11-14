@@ -4,6 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMount } from 'ahooks';
 import styled from 'styled-components';
+import { UI_TYPE } from '@/constant/ui';
 
 const Warper = styled.div`
   .ant-form-item {
@@ -73,6 +74,9 @@ export const CustomTestnetForm = ({
 
   useMount(() => {
     setTimeout(() => {
+      if (UI_TYPE.isDesktop) {
+        return;
+      }
       inputRef?.current?.focus();
     });
   });

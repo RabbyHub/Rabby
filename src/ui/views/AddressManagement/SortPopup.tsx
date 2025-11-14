@@ -8,7 +8,8 @@ import ImgChecked from '@/ui/assets/address/checked.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { AddressSortStore } from '@/background/service/preference';
 import { useTranslation } from 'react-i18next';
-import { ThemeIconType } from '@/constant';
+import { EVENTS, ThemeIconType } from '@/constant';
+import { useWallet } from '@/ui/utils';
 
 const AddressSortImgMapping: Record<
   AddressSortStore['sortType'],
@@ -30,9 +31,11 @@ export const AddressSortPopup = ({
   const sortType = useRabbySelector(
     (s) => s.preference.addressSortStore.sortType
   );
+  const wallet = useWallet();
   const dispath = useRabbyDispatch();
   const handleChange = (value: AddressSortStore['sortType']) => () => {
     dispath.preference.setAddressSortStoreValue({ key: 'sortType', value });
+    wallet.emitEvent(EVENTS.RELOAD_ACCOUNT_LIST);
     onCancel?.();
   };
 

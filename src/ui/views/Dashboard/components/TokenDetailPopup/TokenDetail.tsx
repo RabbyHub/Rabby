@@ -168,6 +168,10 @@ const TokenDetail = ({
 
   const handleInTokenSelect = useGetHandleTokenSelectInTokenDetails();
 
+  const desktopPathname = location.pathname.startsWith('/desktop/profile')
+    ? location.pathname
+    : '/desktop/profile';
+
   const goToSend = useCallback(() => {
     setVisible(false);
     onClose?.();
@@ -175,8 +179,8 @@ const TokenDetail = ({
       handleInTokenSelect(token);
     } else {
       if (isDesktop) {
-        wallet.openInDesktop(
-          `desktop/profile?action=send&rbisource=tokendetail&token=${token?.chain}:${token?.id}`
+        history.push(
+          `${desktopPathname}?action=send&rbisource=tokendetail&token=${token?.chain}:${token?.id}`
         );
       } else {
         history.push(
@@ -184,14 +188,14 @@ const TokenDetail = ({
         );
       }
     }
-  }, [history, token, isSend, handleInTokenSelect]);
+  }, [history, token, isSend, handleInTokenSelect, desktopPathname]);
 
   const goToReceive = useCallback(() => {
     setVisible(false);
     onClose?.();
     if (isDesktop) {
-      wallet.openInDesktop(
-        `desktop/profile?rbisource=tokendetail&action=receive&chain=${
+      history.push(
+        `${desktopPathname}?rbisource=tokendetail&action=receive&chain=${
           getChain(token?.chain)?.enum
         }&token=${token?.symbol}`
       );
@@ -202,7 +206,7 @@ const TokenDetail = ({
         }&token=${token?.symbol}`
       );
     }
-  }, [history, token, isDesktop]);
+  }, [history, token, isDesktop, desktopPathname]);
 
   const gotoBridge = useCallback(() => {
     setVisible(false);
@@ -211,8 +215,8 @@ const TokenDetail = ({
       handleInTokenSelect(token);
     } else {
       if (isDesktop) {
-        wallet.openInDesktop(
-          `desktop/profile?rbisource=tokendetail&action=bridge&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
+        history.push(
+          `${desktopPathname}?rbisource=tokendetail&action=bridge&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
         );
       } else {
         history.push(
@@ -220,7 +224,7 @@ const TokenDetail = ({
         );
       }
     }
-  }, [history, token]);
+  }, [history, token, desktopPathname]);
 
   const goToSwap = useCallback(() => {
     setVisible(false);
@@ -229,8 +233,8 @@ const TokenDetail = ({
       handleInTokenSelect(token);
     } else {
       if (isDesktop) {
-        wallet.openInDesktop(
-          `desktop/profile?rbisource=tokendetail&action=swap&chain=${token?.chain}&payTokenId=${token?.id}`
+        history.push(
+          `${desktopPathname}?rbisource=tokendetail&action=swap&chain=${token?.chain}&payTokenId=${token?.id}`
         );
       } else {
         history.push(
@@ -238,7 +242,7 @@ const TokenDetail = ({
         );
       }
     }
-  }, [history, token, isSwap, handleInTokenSelect]);
+  }, [history, token, isSwap, handleInTokenSelect, desktopPathname]);
 
   // const isCustomizedNotAdded = useMemo(() => {
   //   return !token.is_core && !isAdded && variant === 'add';
@@ -355,6 +359,9 @@ const TokenDetail = ({
   ]);
 
   const chain = useMemo(() => getChain(token?.chain), [token?.chain]);
+  const isCustomNetworkToken = useMemo(() => {
+    return token.id.startsWith('custom');
+  }, [token]);
 
   return (
     <div className="token-detail">
@@ -401,7 +408,7 @@ const TokenDetail = ({
             onClose={() => removeToken(tokenWithAmount)}
           ></BlockedTopTips>
         )} */}
-        <TokenCharts token={token}></TokenCharts>
+        {!isCustomNetworkToken && <TokenCharts token={token}></TokenCharts>}
         <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
           <div className="balance-content flex flex-col gap-8 px-16 py-12">
             <div className="flex flex-row justify-between w-full">

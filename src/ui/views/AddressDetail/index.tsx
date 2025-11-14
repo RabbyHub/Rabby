@@ -11,8 +11,10 @@ import { AddressBackup } from './AddressBackup';
 import { AddressDelete } from './AddressDelete';
 import { AddressInfo } from './AddressInfo';
 import './style.less';
+import clsx from 'clsx';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 
-const AddressDetail = () => {
+const AddressDetail: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
   const { t } = useTranslation();
   const { search } = useLocation();
   const dispatch = useRabbyDispatch();
@@ -26,6 +28,8 @@ const AddressDetail = () => {
     brandName: string;
     byImport?: string;
   };
+
+  const { getContainer } = usePopupContainer();
 
   const { address, type, brandName, byImport } = qs || {};
 
@@ -54,6 +58,7 @@ const AddressDetail = () => {
       cancelText: t('global.Cancel'),
       wallet,
       containerClassName: 'whitelist-confirm-modal',
+      getContainer,
       validationHandler: async (password) => {
         await wallet.addWhitelist(password, address);
       },
@@ -71,8 +76,17 @@ const AddressDetail = () => {
   }
 
   return (
-    <div className="page-address-detail overflow-auto">
-      <PageHeader wrapperClassName="bg-r-neutral-bg-2" fixed>
+    <div
+      className={clsx(
+        'page-address-detail overflow-auto',
+        isInModal ? 'min-h-0 h-[600px]' : ''
+      )}
+    >
+      <PageHeader
+        wrapperClassName="bg-r-neutral-bg-2"
+        fixed
+        canBack={!isInModal}
+      >
         {t('page.addressDetail.address-detail')}
       </PageHeader>
       <AddressInfo

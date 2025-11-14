@@ -35,7 +35,7 @@ import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import type { Account } from '@/background/service/preference';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { OfflineChainNotify } from '../OfflineChainNotify';
-import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
+import { RcIconExternalCC } from '@/ui/assets/dashboard';
 
 export const BalanceView = ({
   currentAccount,
@@ -209,9 +209,9 @@ export const BalanceView = ({
 
   const { activePopup, setData, componentName } = useCommonPopupView();
   const onClickViewAssets = () => {
-    activePopup('AssetList');
-    // wallet.openInDesktop('/desktop/profile');
-    // window.close();
+    // activePopup('AssetList');
+    wallet.openInDesktop('/desktop/profile');
+    window.close();
   };
 
   useEffect(() => {
@@ -420,19 +420,23 @@ export const BalanceView = ({
                     matteredChainBalances={chainBalancesWithValue.slice(0)}
                     gnosisNetworks={gnosisNetworks}
                   />
-                  <RcIconArrowRightCC
-                    viewBox="0 0 14 14"
-                    className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50"
-                  />
+                  <RcIconExternalCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
                 </div>
               ) : (
                 <div
                   className={clsx(
-                    'text-[12px] leading-[14px] text-r-neutral-title-2',
-                    !currentHover && 'opacity-70'
+                    'w-full flex items-center gap-[4px]',
+                    !currentHover && 'opacity-80'
                   )}
                 >
-                  {t('page.dashboard.assets.noAssets')}
+                  <div
+                    className={clsx(
+                      'text-[12px] leading-[14px] text-r-neutral-title-2'
+                    )}
+                  >
+                    {t('page.dashboard.assets.noAssets')}
+                  </div>
+                  <RcIconExternalCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
                 </div>
               )}
             </div>

@@ -36,6 +36,7 @@ export const SendTokenModal: React.FC<ModalProps> = (props) => {
       title={null}
       bodyStyle={{ background: 'transparent', maxHeight: 'unset', padding: 0 }}
       maskClosable={true}
+      centered
       closeIcon={ModalCloseIcon}
       footer={null}
       zIndex={1000}
