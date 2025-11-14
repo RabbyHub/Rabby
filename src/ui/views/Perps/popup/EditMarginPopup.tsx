@@ -188,8 +188,8 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
               className={clsx(
                 'flex-1 h-[34px] rounded-[4px] text-16 cursor-pointer flex items-center justify-center',
                 action === 'add'
-                  ? 'bg-r-blue-default text-r-neutral-title-2 font-bold'
-                  : 'text-r-neutral-foot font-medium'
+                  ? 'bg-r-blue-light-1 text-r-blue-default font-bold'
+                  : 'text-rb-neutral-secondary font-medium'
               )}
               onClick={() => {
                 setAction('add');
@@ -202,8 +202,8 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
               className={clsx(
                 'flex-1 h-[34px] rounded-[4px] text-16 cursor-pointer flex items-center justify-center',
                 action === 'reduce'
-                  ? 'bg-r-blue-default text-r-neutral-title-2 font-bold'
-                  : 'text-r-neutral-foot font-medium'
+                  ? 'bg-r-blue-light-1 text-r-blue-default font-bold'
+                  : 'text-rb-neutral-secondary font-medium'
               )}
               onClick={() => {
                 setAction('reduce');
