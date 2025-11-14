@@ -57,12 +57,12 @@ export const PerpsLoading = ({ active = true }: PerpsLoadingProps) => {
                   <Skeleton.Button
                     active={active}
                     className="h-[16px] block rounded-[8px]"
-                    style={{ width: 80 }}
+                    style={{ width: 60 }}
                   />
                   <Skeleton.Button
                     active={active}
                     className="h-[14px] block rounded-[8px]"
-                    style={{ width: 60 }}
+                    style={{ width: 80 }}
                   />
                 </div>
               </div>

@@ -23,8 +23,10 @@ import { CANDLE_MENU_KEY } from '../constants';
 import clsx from 'clsx';
 import { MarketData } from '@/ui/models/perps';
 import { useTranslation } from 'react-i18next';
-import { t } from 'i18next';
-import { formatPercent } from './SingleCoin';
+// local formatter to avoid cross-screen import
+const formatPercent = (value: number, decimals = 8) => {
+  return `${(value * 100).toFixed(decimals)}%`;
+};
 import { splitNumberByStep } from '@/ui/utils';
 
 export type ChartProps = {
@@ -194,6 +196,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
   onHoverData,
 }) => {
   const { isDarkTheme } = useThemeMode();
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
