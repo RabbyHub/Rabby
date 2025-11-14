@@ -150,10 +150,14 @@ export const calTransferMarginRequired = (
   positionSize: number,
   leverage: number
 ) => {
-  const costValue = entryPrice * positionSize;
-  const initialMargin = costValue / leverage;
-  const positionValue = markPrice * positionSize;
-  return Math.max(initialMargin, 0.1 * positionValue);
+  const nationalValue = Number(positionSize) * Number(markPrice);
+  const initialNationalValue = Number(positionSize) * Number(entryPrice);
+  const initialMarginRequired = initialNationalValue * (1 / leverage);
+  const transferMarginRequired = Math.max(
+    initialMarginRequired,
+    0.1 * nationalValue
+  );
+  return transferMarginRequired;
 };
 
 const MAX_SIGNIFICANT_FIGURES = 6;
