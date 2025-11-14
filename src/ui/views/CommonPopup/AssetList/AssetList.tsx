@@ -148,7 +148,10 @@ export const AssetList = ({
           <Button
             type="primary"
             block
-            className="h-[44px] text-r-neutral-title2 text-[15px] leading-[18px] font-medium"
+            className={clsx(
+              'h-[44px] text-r-neutral-title2 text-[15px] leading-[18px] font-medium',
+              'rounded-[8px]'
+            )}
             onClick={() => {
               wallet.openInDesktop('/desktop/profile');
               window.close();
