@@ -120,7 +120,8 @@
           "gasAccount": "GasAccount",
           "searchDapp": "搜索 Dapp",
           "setting": "設定",
-          "dapps": "Dapps"
+          "dapps": "Dapps",
+          "settings": "設置"
         },
         "comingSoon": "即將推出",
         "soon": "很快",
@@ -144,7 +145,8 @@
         "missingDataTooltip": "由於 {{text}}的當前網絡問題，地址結餘可能無法更新。",
         "chain": " 鏈、",
         "chainEnd": " 鏈",
-        "appChainTips": "Hyperliquid 帳戶未包含"
+        "appChainTips": "Hyperliquid 帳戶未包含",
+        "slotAppChainTips": "{{appChainNames}} 賬戶不在其中"
       },
       "recentConnection": {
         "disconnected": "已斷開連接",
@@ -374,7 +376,8 @@
           "lowValueAssets_other": "{{count}} 低價值代幣",
           "lowValueAssets_one": "{{count}} 低價值代幣",
           "lowValueAssets_0": "{{count}} 低價值代幣",
-          "review": "審查"
+          "review": "審查",
+          "noTokens": "沒有 Tokens"
         },
         "noAssets": "沒有資產",
         "blockLinkText": "搜索代幣地址，隱藏代幣",
@@ -405,7 +408,9 @@
         },
         "TestnetAssetListContainer": {
           "add": "代幣",
-          "addTestnet": "網絡"
+          "addTestnet": "網絡",
+          "addNetwork": "添加网络",
+          "addToken": "添加 Token"
         },
         "noTestnetAssets": "無自定義網絡資產",
         "addTokenEntryText": "代幣",
@@ -561,7 +566,8 @@
         "passphrase": "通行密碼",
         "importQuestion2": "我的种子短语只存储在我的设备上。Rabby 无法访问它。",
         "importQuestion1": "如果我丟失或分享我的 seed phrase，我將永久失去對我的資產的訪問權限。",
-        "importQuestion3": "如果我在没有备份我的 seed phrase 的情况下卸载 Rabby，Rabby 将无法恢复它。"
+        "importQuestion3": "如果我在没有备份我的 seed phrase 的情况下卸载 Rabby，Rabby 将无法恢复它。",
+        "showMoreOptions": "顯示更多選項"
       },
       "metamask": {
         "step1": "從 MetaMask 導出助記詞或私鑰  <br/><1>查看操作指南<1/></1>",
@@ -3132,6 +3138,60 @@
       "selectExchangeSource": "選擇交易所來源",
       "sendToImportedAddress": "發送到導入地址",
       "selectImportedAddress": "選擇已導入的地址"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "淨資產",
+        "appChainTips": "Hyperliquid & Polymarket 帳戶不包括在內"
+      },
+      "UpdateButton": {
+        "updating": "更新數據",
+        "updatedAgo": "數據於 <1/> <2>{{timeText}}</2> <3/> 前更新"
+      },
+      "ReachedEnd": {
+        "content": "你已到達結束。"
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "錢包",
+          "unfoldProtocols": "展開 {{count}} Protocols",
+          "allTokenMode": "所有代幣模式",
+          "foldProtocols": "Fold {{count}} 协议"
+        },
+        "hidden": {
+          "hideProtocolsWithSmallDepositsDesc": "小额存款的协议不会显示。",
+          "hideSmall": "隱藏餘額較小的代幣。",
+          "tokensWithZeroBalanceDesc": "余額為 $0 的代幣將被隱藏。",
+          "hideSmallDesc": "餘額較少的代幣不會顯示。",
+          "showAll": "顯示所有",
+          "hideProtocolsWithSmallDeposits": "隱藏小額存款的協議。",
+          "tokensWithZeroBalance": "隱藏 $0 tokens"
+        },
+        "table": {
+          "chain": "鏈",
+          "amount": "金額",
+          "price": "價格",
+          "token": "代幣",
+          "tokenAddress": "代幣地址",
+          "usdValue": "USD 價值"
+        },
+        "actions": {
+          "swap": "交換",
+          "send": "發送"
+        }
+      },
+      "button": {
+        "queue": "隊列",
+        "send": "發送",
+        "bridge": "橋接",
+        "pending": "{{pendingTxCount}} 待處理",
+        "swap": "交換"
+      },
+      "tabs": {
+        "approvals": "批准",
+        "transactions": "交易",
+        "tokens": "代幣"
+      }
     }
   },
   "component": {
@@ -3328,6 +3388,18 @@
     },
     "DappActions": {
       "queueDescription": "當前提取將進入等待隊列。一旦處理完成，可以提取到您的錢包。"
+    },
+    "DesktopChainSelector": {
+      "allChains": "所有鏈"
+    },
+    "DesktopNav": {
+      "lending": "借貸",
+      "comingSoon": "即將推出",
+      "perps": "合约",
+      "portfolio": "投资组合"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "添加地址"
     }
   },
   "background": {

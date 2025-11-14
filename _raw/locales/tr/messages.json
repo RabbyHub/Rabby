@@ -1123,7 +1123,8 @@
           "gasAccount": "GasAccount",
           "setting": "Ayarlar",
           "dapps": "Dapps",
-          "searchDapp": "Dapp Araştırın"
+          "searchDapp": "Dapp Araştırın",
+          "settings": "Ayarlar"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -1147,7 +1148,8 @@
         "missingDataTooltip": "Dengen, {{text}} ile ilgili mevcut ağ sorunları nedeniyle güncellenmeyebilir.",
         "chainEnd": "zincir",
         "chain": "zincir,",
-        "appChainTips": "Hyperliquid Hesabı dahil edilmedi"
+        "appChainTips": "Hyperliquid Hesabı dahil edilmedi",
+        "slotAppChainTips": "{{appChainNames}} Hesabı dahil edilmedi"
       },
       "recentConnection": {
         "disconnected": "Bağlantı kesildi",
@@ -1407,7 +1409,8 @@
           "lowValueAssets_other": "{{count}} düşük değerli tokenlar",
           "lowValueAssets_one": "{{count}} düşük değerli token",
           "lowValueAssets_0": "{{count}} düşük değerli token",
-          "review": "Gözden Geçir"
+          "review": "Gözden Geçir",
+          "noTokens": "No Tokens"
         },
         "noAssets": "Varlık Yok",
         "blockLinkText": "Tokeni engellemek için adresi ara",
@@ -1437,7 +1440,9 @@
         },
         "TestnetAssetListContainer": {
           "add": "Token",
-          "addTestnet": "Ağ"
+          "addTestnet": "Ağ",
+          "addToken": "Token Ekle",
+          "addNetwork": "Ağ Ekle"
         },
         "noTestnetAssets": "Özel Ağ Varlığı Yok",
         "addTokenEntryText": "Token",
@@ -1588,7 +1593,8 @@
         "inputInvalidCount_one": "1 giriş Seed Phrase normlarına uymuyor, lütfen kontrol edin.",
         "importQuestion3": "Eğer Rabby'yi seed ifademi yedeklemeden kaldırırsam, Rabby tarafından kurtarılamaz.",
         "importQuestion1": "Eğer kurtarma kelimelerimi kaybeder veya paylaşırsam, varlıklarıma kalıcı olarak erişimimi kaybedeceğim.",
-        "importQuestion2": "Kıdemli kelime ifadem yalnızca cihazımda saklanıyor. Rabby buna erişemez."
+        "importQuestion2": "Kıdemli kelime ifadem yalnızca cihazımda saklanıyor. Rabby buna erişemez.",
+        "showMoreOptions": "Daha Fazla Seçenek Göster"
       },
       "metamask": {
         "step1": "MetaMask'tan seed phrase'i veya özel anahtarı dışa aktarın <1>Rehber <2/></1>",
@@ -3097,6 +3103,60 @@
       "selectExchangeSource": "Borsa Kaynağını Seçin",
       "selectImportedAddress": "İçe aktarılan adresi seçin",
       "sendToImportedAddress": "İçe aktarılan Adrese Gönder"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "Net Worth",
+        "appChainTips": "Hyperliquid & Polymarket Hesabı dahil edilmedi"
+      },
+      "UpdateButton": {
+        "updating": "Veri güncelleniyor",
+        "updatedAgo": "Veri <1/> <2>{{timeText}}</2> <3/> önce güncellendi"
+      },
+      "ReachedEnd": {
+        "content": "Sonuna ulaştınız"
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "Cüzdan",
+          "foldProtocols": "Fold {{count}} Protokolü",
+          "allTokenMode": "Tüm Token Modu",
+          "unfoldProtocols": "Aç {{count}} Protokolü"
+        },
+        "hidden": {
+          "tokensWithZeroBalance": "$0 token'ları gizle",
+          "hideProtocolsWithSmallDepositsDesc": "Küçük mevduatlara sahip protokoller görüntülenmez.",
+          "hideSmall": "Küçük bakiyeli tokenleri gizle.",
+          "hideSmallDesc": "Küçük bakiyelere sahip tokenler görüntülenmez.",
+          "showAll": "Hepsini göster",
+          "hideProtocolsWithSmallDeposits": "Küçük bakiye ile protokolleri gizle.",
+          "tokensWithZeroBalanceDesc": "$0 bakiyesi olan tokenlar gizlenmiştir."
+        },
+        "table": {
+          "token": "Jeton",
+          "price": "Fiyat",
+          "amount": "Miktar",
+          "tokenAddress": "Token Adresi",
+          "usdValue": "USD Değeri",
+          "chain": "Zincir"
+        },
+        "actions": {
+          "swap": "Değiştir",
+          "send": "Gönder"
+        }
+      },
+      "button": {
+        "queue": "Sıra",
+        "bridge": "Köprü",
+        "pending": "{{pendingTxCount}} Beklemede",
+        "send": "Gönder",
+        "swap": "Değiştir"
+      },
+      "tabs": {
+        "approvals": "Onaylar",
+        "tokens": "Jetonlar",
+        "transactions": "İşlemler"
+      }
     }
   },
   "component": {
@@ -3293,6 +3353,18 @@
     },
     "DappActions": {
       "queueDescription": "Mevcut çekim, bekleme kuyruğuna girecektir. İşlem tamamlandığında, cüzdanınıza çekilebilir."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Tüm Zincirler"
+    },
+    "DesktopNav": {
+      "perps": "Perps",
+      "comingSoon": "Yakında",
+      "lending": "Kredi Verme",
+      "portfolio": "Portföy"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Adres ekle"
     }
   },
   "global": {

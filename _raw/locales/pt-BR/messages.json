@@ -1123,7 +1123,8 @@
           "gasAccount": "GasAccount",
           "searchDapp": "Pesquisar Dapp",
           "setting": "Configurações",
-          "dapps": "Dapps"
+          "dapps": "Dapps",
+          "settings": "Configurações"
         },
         "comingSoon": "Em breve",
         "soon": "Em breve",
@@ -1147,7 +1148,8 @@
         "chainEnd": "rede",
         "chain": "cadeia,",
         "missingDataTooltip": "O saldo pode não estar atualizado devido a problemas atuais na rede com {{text}}.",
-        "appChainTips": "Hyperliquid Account não incluído"
+        "appChainTips": "Hyperliquid Account não incluído",
+        "slotAppChainTips": "{{appChainNames}} Conta não incluída"
       },
       "recentConnection": {
         "disconnected": "Desconectado",
@@ -1407,7 +1409,8 @@
           "lowValueAssets_0": "{{count}} low value token",
           "lowValueAssets_one": "{{count}} token de baixo valor",
           "lowValueAssets_other": "{{count}} tokens de baixo valor",
-          "review": "Revisar"
+          "review": "Revisar",
+          "noTokens": "Sem Tokens"
         },
         "noAssets": "Sem ativos",
         "blockLinkText": "Pesquise o endereço para bloquear o token",
@@ -1437,7 +1440,9 @@
         },
         "TestnetAssetListContainer": {
           "add": "Token",
-          "addTestnet": "Rede"
+          "addTestnet": "Rede",
+          "addToken": "Adicionar Token",
+          "addNetwork": "Adicionar Rede"
         },
         "customButtonText": "Adicionar token personalizado",
         "addTokenEntryText": "Token",
@@ -1588,7 +1593,8 @@
         "inputInvalidCount_other": "{{count}} inputs não estão em conformidade com as normas da Seed Phrase, por favor, verifique.",
         "importQuestion1": "Se eu perder ou compartilhar minha frase semente, perderei o acesso aos meus ativos permanentemente.",
         "importQuestion2": "Minha frase-semente é armazenada apenas no meu dispositivo. Rabby não pode acessar.",
-        "importQuestion3": "Se eu desinstalar o Rabby sem fazer backup da minha frase-semente, não poderá ser recuperado pelo Rabby."
+        "importQuestion3": "Se eu desinstalar o Rabby sem fazer backup da minha frase-semente, não poderá ser recuperado pelo Rabby.",
+        "showMoreOptions": "Mostrar Mais Opções"
       },
       "metamask": {
         "step1": "Exporte a frase de recuperação ou chave privada do MetaMask <1>Guia <2/></1>",
@@ -3094,6 +3100,60 @@
       "selectExchangeSource": "Selecionar Fonte de Câmbio",
       "selectImportedAddress": "Selecionar endereço importado",
       "sendToImportedAddress": "Enviar para Endereço Importado"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "appChainTips": "Hyperliquid & Polymarket Account não incluído",
+        "netWorth": "Patrimônio Líquido"
+      },
+      "UpdateButton": {
+        "updating": "Atualizando dados",
+        "updatedAgo": "Dados atualizados <1/> <2>{{timeText}}</2> <3/> atrás"
+      },
+      "ReachedEnd": {
+        "content": "Você chegou ao fim"
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "Carteira",
+          "unfoldProtocols": "Desdobrar {{count}} Protocolos",
+          "foldProtocols": "Dobre {{count}} Protocolos",
+          "allTokenMode": "Todos os Modos de Token"
+        },
+        "hidden": {
+          "showAll": "Mostrar tudo",
+          "hideProtocolsWithSmallDepositsDesc": "Protocolos com depósitos pequenos não são exibidos.",
+          "hideSmallDesc": "Tokens com saldos pequenos não são exibidos.",
+          "hideProtocolsWithSmallDeposits": "Oculte protocolos com pequenos depósitos.",
+          "tokensWithZeroBalanceDesc": "Tokens com saldo de $0 estão ocultos.",
+          "tokensWithZeroBalance": "Ocultar tokens de $0",
+          "hideSmall": "Ocultar tokens com saldos pequenos."
+        },
+        "table": {
+          "price": "Preço",
+          "amount": "Quantidade",
+          "chain": "Cadeia",
+          "token": "Token",
+          "tokenAddress": "Endereço do Token",
+          "usdValue": "Valor em USD"
+        },
+        "actions": {
+          "send": "Enviar",
+          "swap": "Trocar"
+        }
+      },
+      "button": {
+        "swap": "Trocar",
+        "queue": "Fila",
+        "send": "Enviar",
+        "bridge": "Ponte",
+        "pending": "{{pendingTxCount}} Pendente"
+      },
+      "tabs": {
+        "approvals": "Aprovações",
+        "transactions": "Transações",
+        "tokens": "Tokens"
+      }
     }
   },
   "component": {
@@ -3291,6 +3351,18 @@
     },
     "DappActions": {
       "queueDescription": "O saque atual irá entrar em uma fila de espera. Uma vez processado, pode ser retirado para sua wallet."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Todas as Chains"
+    },
+    "DesktopNav": {
+      "comingSoon": "Em Breve",
+      "perps": "Perps",
+      "lending": "Empréstimo",
+      "portfolio": "Portfólio"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Adicionar endereço"
     }
   },
   "global": {

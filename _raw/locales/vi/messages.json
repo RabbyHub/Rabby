@@ -1195,7 +1195,8 @@
           "gasAccount": "GasAccount",
           "searchDapp": "Tìm kiếm Dapp",
           "setting": "Cài đặt",
-          "dapps": "Dapps"
+          "dapps": "Dapps",
+          "settings": "Cài đặt"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -1220,7 +1221,8 @@
         "chainEnd": "chuỗi",
         "chain": "chuỗi,",
         "pendingCountPlural": "{{countStr}} Đang chờ xử lý",
-        "appChainTips": "Tài khoản Hyperliquid không được bao gồm"
+        "appChainTips": "Tài khoản Hyperliquid không được bao gồm",
+        "slotAppChainTips": "{{appChainNames}} Tài khoản không được bao gồm"
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {
@@ -1477,7 +1479,8 @@
           "summaryTips": "Giá trị tài sản chia cho tổng giá trị ròng",
           "summaryDescription": "Tất cả tài sản trong các giao thức (ví dụ: LP tokens) đều được quy đổi thành tài sản cơ sở để thực hiện các phép tính thống kê.",
           "lowValueDescription": "Tài sản có giá trị thấp sẽ được hiển thị ở đây",
-          "review": "Xem lại"
+          "review": "Xem lại",
+          "noTokens": "Không có Token"
         },
         "AddMainnetToken": {
           "title": "Thêm Token Tùy Chỉnh",
@@ -1498,7 +1501,9 @@
         },
         "TestnetAssetListContainer": {
           "addTestnet": "Mạng",
-          "add": "Token"
+          "add": "Token",
+          "addToken": "Thêm Token",
+          "addNetwork": "Thêm Mạng"
         },
         "amount": "SỐ TIỀN",
         "usdValue": "GIÁ TRỊ USD",
@@ -1647,7 +1652,8 @@
         "slip39SeedPhraseWithPassphrase": "Tôi có một cụm từ hạt giống <0>{{SLIP39}}</0> với mật khẩu.",
         "importQuestion2": "Câu gốc của tôi chỉ được lưu trữ trên thiết bị của tôi. Rabby không thể truy cập nó.",
         "importQuestion3": "Nếu tôi gỡ cài đặt Rabby mà không sao lưu cụm từ khôi phục của mình, nó sẽ không thể được phục hồi bởi Rabby.",
-        "importQuestion1": "Nếu tôi mất hoặc chia sẻ cụm từ hạt giống của mình, tôi sẽ mất quyền truy cập vào tài sản của mình vĩnh viễn."
+        "importQuestion1": "Nếu tôi mất hoặc chia sẻ cụm từ hạt giống của mình, tôi sẽ mất quyền truy cập vào tài sản của mình vĩnh viễn.",
+        "showMoreOptions": "Hiện thêm tùy chọn"
       },
       "metamask": {
         "tips": "Mẹo:",
@@ -3091,6 +3097,60 @@
       "title": "Địa chỉ",
       "selectImportedAddress": "Chọn địa chỉ đã nhập",
       "sendToImportedAddress": "Gửi đến địa chỉ đã nhập"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "Giá trị ròng",
+        "appChainTips": "Tài khoản Hyperliquid & Polymarket không được bao gồm"
+      },
+      "UpdateButton": {
+        "updating": "Cập nhật dữ liệu",
+        "updatedAgo": "Dữ liệu đã được cập nhật <1/> <2>{{timeText}}</2> <3/> trước"
+      },
+      "ReachedEnd": {
+        "content": "Bạn đã đến cuối cùng"
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "Ví 財布",
+          "unfoldProtocols": "Mở {{count}} Giao thức",
+          "foldProtocols": "Gấp {{count}} Protocols",
+          "allTokenMode": "Tất cả chế độ Token"
+        },
+        "hidden": {
+          "showAll": "Hiển thị tất cả",
+          "tokensWithZeroBalance": "Ẩn $0 tokens",
+          "hideSmall": "Ẩn các token có số dư nhỏ.",
+          "hideSmallDesc": "Các token có số dư nhỏ không được hiển thị.",
+          "hideProtocolsWithSmallDepositsDesc": "Các giao thức có khoản tiền gửi nhỏ không được hiển thị.",
+          "hideProtocolsWithSmallDeposits": "Ẩn các giao thức có khoản nạp nhỏ.",
+          "tokensWithZeroBalanceDesc": "Các token có số dư $0 sẽ bị ẩn."
+        },
+        "table": {
+          "chain": "Chuỗi",
+          "price": "Giá",
+          "amount": "Số lượng",
+          "token": "Token",
+          "usdValue": "Giá trị USD",
+          "tokenAddress": "Địa chỉ Token"
+        },
+        "actions": {
+          "swap": "Đổi",
+          "send": "Gửi"
+        }
+      },
+      "button": {
+        "send": "Gửi",
+        "bridge": "Cầu",
+        "queue": "Hàng đợi",
+        "pending": "{{pendingTxCount}} Đang chờ",
+        "swap": "Hoán đổi"
+      },
+      "tabs": {
+        "tokens": "Tokens",
+        "transactions": "Giao dịch",
+        "approvals": "Phê duyệt"
+      }
     }
   },
   "component": {
@@ -3287,6 +3347,18 @@
     },
     "DappActions": {
       "queueDescription": "Rút tiền hiện tại sẽ vào hàng chờ. Khi được xử lý, nó có thể được rút về ví của bạn."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Tất cả các chuỗi"
+    },
+    "DesktopNav": {
+      "perps": "Perps",
+      "portfolio": "Danh mục đầu tư",
+      "lending": "Cho vay",
+      "comingSoon": "Sắp ra mắt"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Thêm địa chỉ"
     }
   },
   "global": {

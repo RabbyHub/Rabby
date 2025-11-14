@@ -1195,7 +1195,8 @@
           "gasAccount": "GasAccount",
           "dapps": "Dapps",
           "searchDapp": "Cari Dapp",
-          "setting": "Pengaturan"
+          "setting": "Pengaturan",
+          "settings": "Pengaturan"
         },
         "queue": {
           "title": "Antrian",
@@ -1220,7 +1221,8 @@
         "pendingCountPlural": "{{countStr}} Pendings",
         "missingDataTooltip": "Saldo mungkin tidak diperbarui karena masalah jaringan saat ini dengan {{text}}.",
         "rejectAll": "Tolak Semua",
-        "appChainTips": "Akun Hyperliquid tidak termasuk"
+        "appChainTips": "Akun Hyperliquid tidak termasuk",
+        "slotAppChainTips": "{{appChainNames}} Akun tidak termasuk"
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {
@@ -1477,7 +1479,8 @@
           "lowValueAssets_other": "{{count}} token nilai rendah",
           "summaryTips": "Nilai aset dibagi dengan total kekayaan bersih",
           "price": "Harga",
-          "review": "Tinjau"
+          "review": "Tinjau",
+          "noTokens": "Tidak Ada Token"
         },
         "AddMainnetToken": {
           "tokenAddress": "Alamat Token",
@@ -1498,7 +1501,9 @@
         },
         "TestnetAssetListContainer": {
           "addTestnet": "Jaringan",
-          "add": "Token"
+          "add": "Token",
+          "addToken": "Tambah Token",
+          "addNetwork": "Tambahkan Jaringan"
         },
         "amount": "JUMLAH",
         "usdValue": "NILAI USD",
@@ -1647,7 +1652,8 @@
         "inputInvalidCount_other": "{{count}} input tidak sesuai dengan norma Seed Phrase, silakan periksa.",
         "importQuestion2": "Frasa seed saya hanya disimpan di perangkat saya. Rabby tidak dapat mengaksesnya.",
         "importQuestion3": "Jika saya mencopot pemasangan Rabby tanpa mencadangkan frase benih saya, itu tidak dapat dipulihkan oleh Rabby.",
-        "importQuestion1": "Jika saya kehilangan atau membagikan seed phrase saya, saya akan kehilangan akses ke aset saya secara permanen."
+        "importQuestion1": "Jika saya kehilangan atau membagikan seed phrase saya, saya akan kehilangan akses ke aset saya secara permanen.",
+        "showMoreOptions": "Tampilkan Lebih Banyak Opsi"
       },
       "metamask": {
         "tips": "Tips:",
@@ -3091,6 +3097,60 @@
       "selectExchangeSource": "Pilih Sumber Pertukaran",
       "selectImportedAddress": "Pilih alamat yang diimpor",
       "sendToImportedAddress": "Kirim ke Alamat yang Diimpor"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "Kekayaan Bersih",
+        "appChainTips": "Akun Hyperliquid & Polymarket tidak termasuk"
+      },
+      "UpdateButton": {
+        "updating": "Memperbarui data",
+        "updatedAgo": "Data diperbarui <1/> <2>{{timeText}}</2> <3/> yang lalu"
+      },
+      "ReachedEnd": {
+        "content": "Anda telah mencapai akhir"
+      },
+      "portfolio": {
+        "headers": {
+          "allTokenMode": "Semua Mode Token",
+          "wallet": "Dompet",
+          "foldProtocols": "Fold {{count}} Protokol",
+          "unfoldProtocols": "Buka {{count}} Protokol"
+        },
+        "hidden": {
+          "hideSmall": "Sembunyikan token dengan saldo kecil.",
+          "tokensWithZeroBalance": "Sembunyikan token $0",
+          "hideProtocolsWithSmallDeposits": "Sembunyikan protokol dengan setoran kecil.",
+          "hideProtocolsWithSmallDepositsDesc": "Protokol dengan deposit kecil tidak ditampilkan.",
+          "hideSmallDesc": "Token dengan saldo kecil tidak ditampilkan.",
+          "showAll": "Tampilkan semua",
+          "tokensWithZeroBalanceDesc": "Token dengan saldo $0 disembunyikan."
+        },
+        "table": {
+          "token": "Token",
+          "tokenAddress": "Alamat Token",
+          "price": "Harga",
+          "usdValue": "Nilai USD",
+          "chain": "Rantai",
+          "amount": "Jumlah"
+        },
+        "actions": {
+          "send": "Kirim",
+          "swap": "Tukar"
+        }
+      },
+      "button": {
+        "swap": "Tukar",
+        "bridge": "Jembatan",
+        "send": "Kirim",
+        "queue": "Antrian",
+        "pending": "{{pendingTxCount}} Menunggu"
+      },
+      "tabs": {
+        "tokens": "Token",
+        "approvals": "Persetujuan",
+        "transactions": "Transaksi"
+      }
     }
   },
   "component": {
@@ -3287,6 +3347,18 @@
     },
     "DappActions": {
       "queueDescription": "Penarikan saat ini akan masuk ke dalam antrean tunggu. Setelah diproses, itu dapat ditarik ke dompet Anda."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Semua Rantai"
+    },
+    "DesktopNav": {
+      "perps": "Perps",
+      "portfolio": "Portofolio",
+      "comingSoon": "Segera Hadir",
+      "lending": "Peminjaman"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Tambah alamat"
     }
   },
   "global": {

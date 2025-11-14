@@ -1123,7 +1123,8 @@
           "gasAccount": "GasAccount",
           "setting": "Настройки",
           "searchDapp": "Поиск Dapp",
-          "dapps": "Dapps"
+          "dapps": "Dapps",
+          "settings": "Настройки"
         },
         "comingSoon": "Скоро будет",
         "soon": "Скоро",
@@ -1147,7 +1148,8 @@
         "missingDataTooltip": "Баланс может быть не актуальным из за задержек в сети {{text}}.",
         "chain": " сети, ",
         "chainEnd": " сеть",
-        "appChainTips": "Hyperliquid Account не включен"
+        "appChainTips": "Hyperliquid Account не включен",
+        "slotAppChainTips": "{{appChainNames}} Аккаунт не включен"
       },
       "recentConnection": {
         "disconnected": "Отключено",
@@ -1408,7 +1410,8 @@
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_0": "{{count}} с низкой стоимостью token",
           "lowValueAssets_other": "{{count}} токенов с низкой стоимостью",
-          "review": "Обзор"
+          "review": "Обзор",
+          "noTokens": "Нет токенов"
         },
         "noAssets": "Нет активов",
         "blockLinkText": "Искать адрес, чтобы заблокировать токен",
@@ -1438,7 +1441,9 @@
         },
         "TestnetAssetListContainer": {
           "add": "Токен",
-          "addTestnet": "Сеть"
+          "addTestnet": "Сеть",
+          "addToken": "Добавить токен",
+          "addNetwork": "Добавить сеть"
         },
         "noTestnetAssets": "Нет активов пользовательской сети",
         "addTokenEntryText": "Токен",
@@ -1589,7 +1594,8 @@
         "passphrase": "Пароль",
         "importQuestion1": "Если я потеряю или поделюсь своей seed-фразой, я навсегда потеряю доступ к своим активам.",
         "importQuestion3": "Если я удалю Rabby без резервного копирования своей сид-фразы, она не может быть восстановлена Rabby.",
-        "importQuestion2": "Моя seed-фраза хранится только на моем устройстве. Rabby не может получить к ней доступ."
+        "importQuestion2": "Моя seed-фраза хранится только на моем устройстве. Rabby не может получить к ней доступ.",
+        "showMoreOptions": "Показать больше опций"
       },
       "metamask": {
         "step1": "Экспорт секретной фразы или приватного ключа из MetaMask <br /> <1>Нажмите, чтобы просмотреть руководство<1/></1>",
@@ -3096,6 +3102,60 @@
       "title": "Адрес",
       "selectImportedAddress": "Выберите импортированный адрес",
       "sendToImportedAddress": "Отправить на импортированный адрес"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "appChainTips": "Учётная запись Hyperliquid и Polymarket не включена",
+        "netWorth": "Чистые активы"
+      },
+      "UpdateButton": {
+        "updating": "Обновление данных",
+        "updatedAgo": "Данные обновлены <1/> <2>{{timeText}}</2> <3/> назад"
+      },
+      "ReachedEnd": {
+        "content": "Вы достигли конца"
+      },
+      "portfolio": {
+        "headers": {
+          "foldProtocols": "Сложите {{count}} Протоколов",
+          "allTokenMode": "Все токен режим",
+          "wallet": "Кошелек",
+          "unfoldProtocols": "Развернуть {{count}} Protocols"
+        },
+        "hidden": {
+          "showAll": "Показать все",
+          "tokensWithZeroBalance": "Скрыть токены $0",
+          "hideProtocolsWithSmallDeposits": "Скрыть протоколы с небольшими депозитами.",
+          "hideSmallDesc": "Токены с небольшими балансами не отображаются.",
+          "tokensWithZeroBalanceDesc": "Токены с нулевыми баланса скрыты.",
+          "hideProtocolsWithSmallDepositsDesc": "Протоколы с небольшими депозитами не отображаются.",
+          "hideSmall": "Скрыть токены с небольшими балансами."
+        },
+        "table": {
+          "token": "Токен",
+          "chain": "Цепочка",
+          "tokenAddress": "Адрес токена",
+          "price": "Цена",
+          "amount": "Сумма",
+          "usdValue": "USD Значение"
+        },
+        "actions": {
+          "swap": "Сwap",
+          "send": "Отправить"
+        }
+      },
+      "button": {
+        "queue": "Очередь",
+        "bridge": "Мост",
+        "swap": "Обмен",
+        "pending": "{{pendingTxCount}} В ожидании",
+        "send": "Отправить"
+      },
+      "tabs": {
+        "approvals": "Подтверждения",
+        "tokens": "Токены",
+        "transactions": "Транзакции"
+      }
     }
   },
   "component": {
@@ -3292,6 +3352,18 @@
     },
     "DappActions": {
       "queueDescription": "Текущий вывод будет помещен в очередь ожидания. После обработки его можно будет вывести на ваш кошелек."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Все цепочки"
+    },
+    "DesktopNav": {
+      "lending": "Кредитование",
+      "perps": "Перпсы",
+      "comingSoon": "Скоро будет",
+      "portfolio": "Портфель"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Добавить адрес"
     }
   },
   "global": {

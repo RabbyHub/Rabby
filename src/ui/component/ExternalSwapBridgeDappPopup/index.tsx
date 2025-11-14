@@ -8,7 +8,7 @@ import { ReactComponent as RcIconLink } from '@/ui/assets/link-cc.svg';
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
 
 import { Popup } from '@/ui/component';
-import { Skeleton } from 'antd';
+import { DrawerProps, Skeleton } from 'antd';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -171,11 +171,13 @@ export const SwapBridgeDappPopup = ({
   onClose,
   dappList,
   loading,
+  getContainer,
 }: {
   visible: boolean;
   onClose: () => void;
   dappList: SwapBridgeExternalDappInfo[];
   loading?: boolean;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
   return (
