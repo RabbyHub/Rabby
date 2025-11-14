@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { PERPS_POSITION_RISK_LEVEL } from '../constants';
 import { getRiskLevel, calculateDistanceToLiquidation } from '../utils';
-import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
+import { ReactComponent as IconRiskInfoCC } from 'ui/assets/perps/IconRiskInfoCC.svg';
 
 import { ReactComponent as ImgDanger } from 'ui/assets/perps/img-danger.svg';
 import { ReactComponent as ImgWarning } from 'ui/assets/perps/img-warning.svg';
@@ -122,9 +122,7 @@ export const RiskLevelPopup: React.FC<RiskLevelPopupProps> = ({
                 placement="top"
                 title={t('page.perps.riskLevel.liquidationDistanceTips')}
               >
-                <RcIconInfo
-                  className={clsx('text-rabby-neutral-foot w-14 h-14', color)}
-                />
+                <IconRiskInfoCC className={clsx('w-14 h-14', color)} />
               </TooltipWithMagnetArrow>
             </div>
             <div className={`text-14 ${color} flex items-center`}>
@@ -146,7 +144,7 @@ export const RiskLevelPopup: React.FC<RiskLevelPopupProps> = ({
             </div>
           </div>
         </div>
-        <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
+        <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg1">
           <Button
             block
             size="large"
