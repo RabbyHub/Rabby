@@ -3,3 +3,4 @@ export { ReactComponent as RcIconCopyCC } from './copy-cc.svg';
 export { ReactComponent as RcIconCopy1CC } from './copy-1-cc.svg';
 export { ReactComponent as RcIconExternalCC } from './external-cc.svg';
 export { ReactComponent as RcIconExternal1CC } from './external-1-cc.svg';
+export { ReactComponent as RcIconNftEmpty } from './empty-nft.svg';
