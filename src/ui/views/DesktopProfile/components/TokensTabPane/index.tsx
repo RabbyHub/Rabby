@@ -53,7 +53,14 @@ export const TokensTabPane: React.FC<Props> = ({
     hasTokens,
     removeProtocol,
     portfolioNetWorth,
-  } = useQueryProjects(currentAccount?.address, false, true, false, allMode);
+  } = useQueryProjects(
+    currentAccount?.address,
+    false,
+    true,
+    false,
+    allMode,
+    true
+  );
 
   const {
     data: appPortfolios,
