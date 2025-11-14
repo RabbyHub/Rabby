@@ -301,7 +301,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
         }}
         destroyOnClose
         closeIcon={
-          <RcIconClose className="w-20 h-20 text-r-neutral-secondary" />
+          <RcIconClose className="w-20 h-20 text-rb-neutral-secondary" />
         }
       >
         <div className="flex flex-col items-center">
