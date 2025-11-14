@@ -1519,7 +1519,8 @@
         "blockLinkText": "Cari alamat untuk memblokir token",
         "customDescription": "Token kustom yang ditambahkan oleh Anda akan ditampilkan di sini",
         "price": "HARGA",
-        "side": "SISI"
+        "side": "SISI",
+        "openInTab": "Buka di tab"
       },
       "hd": {
         "ledger": {
@@ -3032,7 +3033,9 @@
       "toast": {
         "setAutoCloseSuccess": "Pengaturan penutupan posisi otomatis berhasil",
         "closePositionSuccess": "Tutup {{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
-        "openPositionSuccess": "Dibuka {{direction}} {{coin}}-USD: Ukuran {{size}} dengan Harga ${{price}}"
+        "openPositionSuccess": "Dibuka {{direction}} {{coin}}-USD: Ukuran {{size}} dengan Harga ${{price}}",
+        "stopLossSuccess": "Stop loss berhasil diatur",
+        "takeProfitSuccess": "Take profit telah disetel dengan sukses"
       },
       "closePositionPopup": {
         "positionSize": "Ukuran Posisi",
@@ -3042,7 +3045,43 @@
         "pnl": "P&L"
       },
       "cross": "Silang",
-      "isolated": "Terisolasi"
+      "isolated": "Terisolasi",
+      "closeAllPopup": {
+        "title": "Konfirmasi Tutup Semua Posisi",
+        "description": "Semua posisi terbuka Anda akan ditutup pada harga pasar."
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Bahaya",
+          "description": "Posisi Anda berisiko tinggi untuk dilikuidasi. Jarak ke harga likuidasi adalah ≤3%. Pertimbangkan untuk menambah margin atau menutup posisi Anda untuk menghindari likuidasi."
+        },
+        "warning": {
+          "title": "Peringatan",
+          "description": "Posisi Anda mendekati risiko likuidasi. Jarak ke harga likuidasi berada antara 3% dan 8%. Pantau posisi Anda dengan hati-hati dan pertimbangkan untuk menambah margin."
+        },
+        "safe": {
+          "title": "Aman",
+          "description": "Posisi Anda berada pada level yang aman. Jarak ke harga likuidasi adalah >8%. Terus pantau kondisi pasar."
+        },
+        "gotIt": "Mengerti",
+        "title": "Tingkat Risiko",
+        "liquidationDistance": "Jarak Likuidasi",
+        "liquidationPrice": "Harga Likuidasi",
+        "currentPrice": "Harga Saat Ini",
+        "subTitle": "Jarak likuidasi waktu nyata (%)",
+        "liquidationDistanceTips": "Jarak Likuidasi (%) menunjukkan seberapa jauh harga saat ini dari harga likuidasi Anda. Jarak yang lebih besar menunjukkan posisi yang lebih aman, sementara jarak yang lebih kecil berarti risiko likuidasi yang lebih tinggi."
+      },
+      "searchPerpsPopup": {
+        "searchPosition": "Cari posisi",
+        "searchPerps": "Cari Perps",
+        "hasPosition": "Posisi",
+        "searchPlaceholder": "Cari perps",
+        "openPosition": "Buka Posisi",
+        "empty": "Tidak ada pasar yang ditemukan",
+        "onePosition": "1 Posisi"
+      },
+      "position": "Posisi",
+      "closeAll": "Tutup Semua"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3150,6 +3189,85 @@
         "tokens": "Token",
         "approvals": "Persetujuan",
         "transactions": "Transaksi"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "long": "Long",
+        "short": "Pendek",
+        "margin": "Margin",
+        "newPosition": "Buka Posisi",
+        "available": "Tersedia",
+        "invalidNumber": "Nomor tidak valid",
+        "free": "Gratis",
+        "providerFee": "Hyperliquid Fee",
+        "sizeTips": "Nilai total atau kuantitas dari perdagangan Anda, ditentukan oleh margin dan leverage.",
+        "insufficientBalance": "Saldo tidak mencukupi",
+        "rabbyFee": "Rabby Biaya",
+        "stopLossWhenPriceBelow": "Stop Loss Saat Harga Di Bawah",
+        "size": "Ukuran",
+        "minimumOrderSize": "Ukuran pesanan minimum adalah $10",
+        "takeProfitWhenPriceAbove": "Ambil Untung Ketika Harga Di Atas",
+        "stopLossWhenPriceAbove": "Stop Loss Ketika Harga Di Atas",
+        "takeProfitWhenPriceBelow": "Ambil Untung Saat Harga Di Bawah",
+        "leverage": "Leverage",
+        "maximumOrderSize": "Ukuran pesanan maksimum adalah {{amount}}"
+      },
+      "PerpsEditMarginPopup": {
+        "confirm": "Konfirmasi",
+        "margin": "Margin",
+        "perpsBalance": "Saldo Perps",
+        "addMargin": "Tambahkan Margin",
+        "available": "Tersedia",
+        "currentPrice": "Harga Terkini",
+        "amountToReduce": "Jumlah untuk Dikurangi",
+        "addMarginSuccess": "Margin berhasil ditambahkan",
+        "liqPrice": "Harga Likuidasi:",
+        "title": "Sesuaikan Margin",
+        "reduceMargin": "Kurangi Margin",
+        "amountToAdd": "Jumlah yang Akan Ditambahkan",
+        "exceedMaxReduction": "Melebihi pengurangan maksimum",
+        "reduceMarginTooltip": "Margin tidak mencukupi untuk mengurangi posisi.",
+        "insufficientBalance": "Saldo tidak mencukupi",
+        "reduceMarginSuccess": "Margin berhasil dikurangi"
+      },
+      "PerpsClosePositionPopup": {
+        "fee": "Biaya",
+        "amount": "Jumlah",
+        "closedPnl": "Closed PNL",
+        "confirm": "Konfirmasi",
+        "title": "Tutup Posisi",
+        "receive": "Menerima",
+        "total": "Total",
+        "minimumWarning": "Jumlah penutupan minimum adalah {{percent}}%"
+      },
+      "PerpsAutoCloseModal": {
+        "confirm": "Konfirmasi",
+        "priceAbove": "Harga di atas",
+        "takeProfitWhenPriceBelow": "Ambil Keuntungan Saat Harga Dibawah",
+        "stopLoss": "Stop Loss",
+        "youGain": "Anda mendapatkan",
+        "youLoss": "Anda kalah",
+        "takeProfitWhen": "Ambil Keuntungan Saat",
+        "title": "Tutup Posisi Otomatis",
+        "takeProfit": "Ambil Untung",
+        "priceBelow": "Harga di bawah",
+        "takeProfitExpectedPNL": "Ambil Profit PNL yang Diharapkan",
+        "noPosition": "Anda harus memasukkan margin terlebih dahulu",
+        "stopLossWhen": "Stop Loss Ketika",
+        "currentPrice": "Harga Saat Ini:",
+        "takeProfitWhenPriceAbove": "Ambil Untung Ketika Harga Di Atas",
+        "takeProfitTipsShort": "Harga ambil untung harus lebih rendah dari harga saat ini",
+        "EntryAndCurrentPrice": "Entry: ${{entryPrice}} Current: ${{currentPrice}}",
+        "takeProfitTipsLong": "Harga take profit harus lebih tinggi dari harga saat ini.",
+        "stopLossWhenPriceBelow": "Stop Loss Saat Harga Di Bawah",
+        "stopLossExpectedPNL": "Stop Loss PNL yang Diharapkan",
+        "stopLossWhenPriceAbove": "Hentikan Kerugian Ketika Harga Di Atas",
+        "cancel": "Batalkan",
+        "stopLossTipsShortLiquidation": "Harga lebih tinggi dari liq.price ({{price}})",
+        "stopLossTipsShort": "Harga stop loss harus lebih tinggi dari harga saat ini",
+        "stopLossTipsLongLiquidation": "Harga lebih rendah dari liq.price ({{price}})",
+        "stopLossTipsLong": "Harga stop loss harus lebih rendah dari harga saat ini."
       }
     }
   },

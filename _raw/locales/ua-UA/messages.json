@@ -1451,7 +1451,8 @@
         "addTokenEntryText": "Токен",
         "noTestnetAssets": "Немає активів у користувацькій мережі",
         "price": "ЦІНА",
-        "side": "БОКОВИЙ"
+        "side": "БОКОВИЙ",
+        "openInTab": "Відкрити у вкладці"
       },
       "hd": {
         "howToConnectLedger": "Як підключити Ledger",
@@ -3047,7 +3048,9 @@
       "toast": {
         "setAutoCloseSuccess": "Успішно налаштовано автоматичне закриття позиції",
         "openPositionSuccess": "Відкрито {{direction}} {{coin}}-USD: Розмір {{size}} за ціною ${{price}}",
-        "closePositionSuccess": "Закрито {{direction}} {{coin}}-USD: Розмір {{size}} за ціною ${{price}}"
+        "closePositionSuccess": "Закрито {{direction}} {{coin}}-USD: Розмір {{size}} за ціною ${{price}}",
+        "stopLossSuccess": "Стоп-лос налаштовано успішно",
+        "takeProfitSuccess": "Прибуток зафіксовано успішно"
       },
       "closePositionPopup": {
         "pnl": "Прибуток і збиток",
@@ -3057,7 +3060,43 @@
         "closeShort": "Закрити Short"
       },
       "isolated": "Ізольований",
-      "cross": "Перехресний"
+      "cross": "Перехресний",
+      "closeAllPopup": {
+        "description": "Всі ваші відкриті позиції будуть закриті за ринковою ціною.",
+        "title": "Підтвердіть закриття всіх позицій"
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Небезпека",
+          "description": "Ваша позиція піддається високому ризику ліквідації. Відстань до ціни ліквідації складає ≤3%. Розгляньте можливість додавання маржі або закриття вашої позиції, щоб уникнути ліквідації."
+        },
+        "warning": {
+          "title": "Увага",
+          "description": "Ваша позиція наближається до ризику ліквідації. Відстань до ціни ліквідації становить від 3% до 8%. Уважно стежте за своєю позицією і подумайте про добавлення маржі."
+        },
+        "safe": {
+          "title": "Безпечний",
+          "description": "Ваша позиція на безпечному рівні. Відстань до ліквідаційної ціни становить >8%. Продовжуйте слідкувати за умовами на ринку."
+        },
+        "currentPrice": "Поточна ціна",
+        "liquidationPrice": "Ціна ліквідації",
+        "title": "Рівень ризику",
+        "gotIt": "Зрозуміло",
+        "subTitle": "Відстань ліквідації в реальному часі (%)",
+        "liquidationDistance": "Відстань ліквідації",
+        "liquidationDistanceTips": "Відстань ліквідації (%) показує, як далеко поточна ціна від вашої цінової ліквідації. Більша відстань вказує на безпечнішу позицію, тоді як менша відстань означає вищий ризик ліквідації."
+      },
+      "searchPerpsPopup": {
+        "searchPlaceholder": "Пошук перпс",
+        "openPosition": "Відкрити позицію",
+        "searchPosition": "Пошук позиції",
+        "hasPosition": "Позиція",
+        "onePosition": "1 Позиція",
+        "empty": "Не знайдено ринків",
+        "searchPerps": "Пошук Perps"
+      },
+      "closeAll": "Закрити всі",
+      "position": "Позиція"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3165,6 +3204,85 @@
         "tokens": "Токени",
         "transactions": "Транзакції",
         "approvals": "Схвалення"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "long": "Довгий",
+        "short": "Шорт",
+        "newPosition": "Відкрита позиція",
+        "margin": "Маржа",
+        "available": "Доступно",
+        "leverage": "Плече",
+        "free": "Безкоштовно",
+        "insufficientBalance": "Нехватка балансу",
+        "invalidNumber": "Недійсне число",
+        "size": "Розмір",
+        "rabbyFee": "Rabby Комісія",
+        "providerFee": "Гіперліквідний збір",
+        "stopLossWhenPriceBelow": "Стоп-лосс, коли ціна нижче",
+        "takeProfitWhenPriceBelow": "Виводи прибуток, коли ціна нижча за",
+        "stopLossWhenPriceAbove": "Стоп-лосс, коли ціна перевищує",
+        "maximumOrderSize": "Максимальний розмір замовлення становить {{amount}}.",
+        "minimumOrderSize": "Мінімальний розмір замовлення – 10 доларів США.",
+        "sizeTips": "Загальна вартість або кількість вашої угоди, встановлена за рахунок маржі та важеля.",
+        "takeProfitWhenPriceAbove": "Візьміть прибуток, коли ціна вище"
+      },
+      "PerpsEditMarginPopup": {
+        "available": "Доступно",
+        "amountToAdd": "Сума для додавання",
+        "addMarginSuccess": "Маржа успішно додана",
+        "reduceMargin": "Зменшити маржу",
+        "confirm": "Підтвердити",
+        "margin": "Маржа",
+        "insufficientBalance": "Недостатньо коштів",
+        "liqPrice": "Liq. Ціна:",
+        "perpsBalance": "Баланс перпс",
+        "currentPrice": "Поточна ціна",
+        "amountToReduce": "Сума для зменшення",
+        "exceedMaxReduction": "Перевищує максимальне зниження",
+        "reduceMarginTooltip": "Недостатньо маржі для зменшення позиції.",
+        "title": "Регулювати маржу",
+        "addMargin": "Додати маржу",
+        "reduceMarginSuccess": "Маржа успішно зменшена"
+      },
+      "PerpsClosePositionPopup": {
+        "amount": "Сума",
+        "title": "Закрити позицію",
+        "total": "Всього",
+        "fee": "Комісія",
+        "closedPnl": "Закрита PNL",
+        "confirm": "Підтвердити",
+        "minimumWarning": "Мінімальна сума закриття становить {{percent}}%",
+        "receive": "Отримати"
+      },
+      "PerpsAutoCloseModal": {
+        "confirm": "Підтвердити",
+        "priceAbove": "Ціна вище",
+        "title": "Автоматичне закриття позиції",
+        "stopLossWhenPriceBelow": "Зупинити втрати, коли ціна нижча за",
+        "priceBelow": "Ціна нижча за",
+        "youLoss": "Ви програли",
+        "youGain": "Ви отримуєте",
+        "takeProfitWhen": "Вийдіть з прибутком, коли",
+        "stopLossWhen": "Стоп-лосс коли",
+        "currentPrice": "Поточна ціна:",
+        "takeProfitWhenPriceAbove": "Взяти прибуток, коли ціна перевищує",
+        "takeProfit": "Взяти прибуток",
+        "stopLossExpectedPNL": "Стоп-Лосс Очікуваний PNL",
+        "takeProfitWhenPriceBelow": "Виведіть прибуток, коли ціна нижча за",
+        "takeProfitExpectedPNL": "Визначене прибуток Очікуваний PNL",
+        "noPosition": "Ви спочатку повинні ввести маржу",
+        "takeProfitTipsLong": "Ціна взяття прибутку повинна бути вищою за поточну ціну.",
+        "takeProfitTipsShort": "Ціна для фіксації прибутку повинна бути нижчою за поточну ціну",
+        "stopLoss": "Стоп-Лосс",
+        "cancel": "Скасувати",
+        "EntryAndCurrentPrice": "Вхід: ${{entryPrice}} Поточна: ${{currentPrice}}",
+        "stopLossTipsLong": "Ціна стоп-лосс повинна бути нижчою за поточну ціну",
+        "stopLossTipsShort": "Ціна стоп-лосс має бути вищою за поточну ціну.",
+        "stopLossTipsLongLiquidation": "Ціна нижча за ціну ліквідації ({{price}})",
+        "stopLossTipsShortLiquidation": "Ціна вища за liq.price ({{price}})",
+        "stopLossWhenPriceAbove": "Стоп-лос, коли ціна вище"
       }
     }
   },

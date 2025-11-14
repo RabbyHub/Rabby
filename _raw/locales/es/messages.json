@@ -1448,7 +1448,8 @@
         "noTestnetAssets": "Sin activos de red personalizados",
         "addTokenEntryText": "Token",
         "price": "PRECIO",
-        "side": "LADO"
+        "side": "LADO",
+        "openInTab": "Abrir en pestaña"
       },
       "hd": {
         "howToConnectLedger": "¿Cómo Conectar Ledger?",
@@ -3035,7 +3036,9 @@
       "toast": {
         "setAutoCloseSuccess": "La posición de cierre automático se estableció con éxito.",
         "closePositionSuccess": "Cerrado {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}",
-        "openPositionSuccess": "Abierto {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}"
+        "openPositionSuccess": "Abierto {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}",
+        "stopLossSuccess": "Stop loss configurado con éxito",
+        "takeProfitSuccess": "Toma de ganancias establecida con éxito"
       },
       "closePositionPopup": {
         "closeLong": "Cerrar Long",
@@ -3045,7 +3048,43 @@
         "title": "Cerrar {{coin}}-USD {{direction}}"
       },
       "cross": "Cruz",
-      "isolated": "Aislado"
+      "isolated": "Aislado",
+      "closeAllPopup": {
+        "description": "Todas tus posiciones abiertas se cerrarán al precio de mercado.",
+        "title": "Confirmar cerrar todas las posiciones"
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Peligro",
+          "description": "Su posición está en alto riesgo de liquidación. La distancia al precio de liquidación es ≤3%. Considere agregar margen o cerrar su posición para evitar la liquidación."
+        },
+        "warning": {
+          "title": "Advertencia",
+          "description": "Tu posición se está acercando al riesgo de liquidación. La distancia al precio de liquidación está entre el 3% y el 8%. Monitorea tu posición cuidadosamente y considera agregar margen."
+        },
+        "safe": {
+          "title": "Seguro",
+          "description": "Tu posición está en un nivel seguro. La distancia al precio de liquidación es >8%. Sigue monitoreando las condiciones del mercado."
+        },
+        "liquidationPrice": "Precio de Liquidación",
+        "currentPrice": "Precio Actual",
+        "title": "Nivel de Riesgo",
+        "gotIt": "Entendido",
+        "subTitle": "Distancia de liquidación en tiempo real (%)",
+        "liquidationDistance": "Distancia de Liquidación",
+        "liquidationDistanceTips": "La Distancia de Liquidación (%) muestra qué tan lejos está el precio actual de tu precio de liquidación. Una mayor distancia indica una posición más segura, mientras que una distancia más pequeña significa un mayor riesgo de liquidación."
+      },
+      "searchPerpsPopup": {
+        "onePosition": "1 Posición",
+        "hasPosition": "Posición",
+        "empty": "No se encontraron mercados",
+        "searchPerps": "Buscar Perps",
+        "openPosition": "Abrir Posición",
+        "searchPosition": "Buscar posición",
+        "searchPlaceholder": "Buscar perps"
+      },
+      "closeAll": "Cerrar Todo",
+      "position": "Posición"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3153,6 +3192,85 @@
         "tokens": "Tokens",
         "approvals": "Aprobaciones",
         "transactions": "Transacciones"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "long": "Largo",
+        "margin": "Margen",
+        "short": "Corto",
+        "newPosition": "Abrir posición",
+        "rabbyFee": "Rabby Tarifa",
+        "invalidNumber": "Número inválido",
+        "free": "Gratis",
+        "size": "Tamaño",
+        "insufficientBalance": "Saldo insuficiente",
+        "leverage": "Apalancamiento",
+        "available": "Disponible",
+        "maximumOrderSize": "El tamaño máximo del pedido es {{amount}}",
+        "stopLossWhenPriceBelow": "Stop Loss Cuando el Precio Está por Debajo",
+        "takeProfitWhenPriceBelow": "Toma ganancias cuando el precio esté por debajo",
+        "minimumOrderSize": "El tamaño mínimo del pedido es de $10.",
+        "stopLossWhenPriceAbove": "Stop Loss Cuando el Precio Está por Encima",
+        "takeProfitWhenPriceAbove": "Toma de Ganancias Cuando el Precio Está por Encima",
+        "providerFee": "Tarifa de Hyperliquid",
+        "sizeTips": "El valor total o la cantidad de su operación, establecido por el margen y el apalancamiento."
+      },
+      "PerpsEditMarginPopup": {
+        "addMargin": "Agregar margen",
+        "margin": "Margen",
+        "reduceMargin": "Reducir Margen",
+        "currentPrice": "Precio Actual",
+        "available": "Disponible",
+        "confirm": "Confirmar",
+        "addMarginSuccess": "Margen añadida con éxito",
+        "title": "Ajustar Margen",
+        "liqPrice": "Precio de Liquidación:",
+        "insufficientBalance": "Saldo insuficiente",
+        "reduceMarginTooltip": "Margen insuficiente para reducir la posición.",
+        "perpsBalance": "Saldo de Perps",
+        "amountToReduce": "Cantidad a Reducir",
+        "exceedMaxReduction": "Excede la reducción máxima",
+        "amountToAdd": "Cantidad a agregar",
+        "reduceMarginSuccess": "Margen reducida con éxito"
+      },
+      "PerpsClosePositionPopup": {
+        "confirm": "Confirmar",
+        "total": "Total",
+        "amount": "Cantidad",
+        "title": "Cerrar Posición",
+        "fee": "Tarifa",
+        "closedPnl": "PNL Cerrado",
+        "receive": "Recibir",
+        "minimumWarning": "La cantidad mínima de cierre es del {{percent}}%"
+      },
+      "PerpsAutoCloseModal": {
+        "youLoss": "Pierdes",
+        "priceBelow": "Precio por debajo",
+        "priceAbove": "Precio por encima",
+        "currentPrice": "Precio actual:",
+        "stopLossExpectedPNL": "Stop Loss PNL Esperado",
+        "youGain": "Ganas",
+        "takeProfit": "Toma de Ganancias",
+        "confirm": "Confirmar",
+        "stopLoss": "Orden de Stop Loss",
+        "stopLossWhen": "Stop Loss Cuando",
+        "takeProfitExpectedPNL": "Toma de Beneficio PNL Esperado",
+        "stopLossWhenPriceBelow": "Stop Loss Cuando el Precio esté por Debajo",
+        "takeProfitWhenPriceAbove": "Toma de ganancias cuando el precio esté por encima",
+        "takeProfitWhen": "Toma de Ganancias Cuando",
+        "takeProfitTipsLong": "El precio de toma de ganancias debe ser más alto que el precio actual.",
+        "takeProfitWhenPriceBelow": "Toma de Beneficios Cuando el Precio Esté por Debajo",
+        "title": "Cerrar posición automáticamente",
+        "EntryAndCurrentPrice": "Entrada: ${{entryPrice}} Actual: ${{currentPrice}}",
+        "stopLossWhenPriceAbove": "Stop Loss Cuando el Precio Esté por Encima",
+        "noPosition": "Debes ingresar primero el margen.",
+        "takeProfitTipsShort": "El precio de toma de ganancias debe ser inferior al precio actual.",
+        "cancel": "Cancelar",
+        "stopLossTipsShort": "El precio de stop loss debe ser más alto que el precio actual.",
+        "stopLossTipsLong": "El precio de stop loss debe ser inferior al precio actual.",
+        "stopLossTipsShortLiquidation": "El precio es más alto que el liq.price ({{price}})",
+        "stopLossTipsLongLiquidation": "El precio es inferior al liq.price ({{price}})"
       }
     }
   },

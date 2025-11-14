@@ -1449,7 +1449,8 @@
         "addTokenEntryText": "Токен",
         "customButtonText": "Добавить пользовательский токен",
         "price": "ЦЕНА",
-        "side": "Сторона"
+        "side": "Сторона",
+        "openInTab": "Открыть в вкладке"
       },
       "hd": {
         "howToConnectLedger": "Как подключить Ledger",
@@ -3037,7 +3038,9 @@
       "toast": {
         "setAutoCloseSuccess": "Автоматическое закрытие позиции успешно установлено",
         "closePositionSuccess": "Закрыто {{direction}} {{coin}}-USD: Размер {{size}} по цене ${{price}}",
-        "openPositionSuccess": "Открыта {{direction}} {{coin}}-USD: Размер {{size}} по цене ${{price}}"
+        "openPositionSuccess": "Открыта {{direction}} {{coin}}-USD: Размер {{size}} по цене ${{price}}",
+        "takeProfitSuccess": "Установка профита выполнена успешно",
+        "stopLossSuccess": "Стоп-лосс установлен успешно"
       },
       "closePositionPopup": {
         "closeLong": "Закрыть Long",
@@ -3047,7 +3050,43 @@
         "title": "Закрыть {{coin}}-USD {{direction}}"
       },
       "cross": "Кросс",
-      "isolated": "Изолированный"
+      "isolated": "Изолированный",
+      "closeAllPopup": {
+        "title": "Подтвердить закрытие всех позиций",
+        "description": "Все ваши открытые позиции будут закрыты по рыночной цене."
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Опасность",
+          "description": "Ваша позиция находится под высоким риском ликвидации. Расстояние до цены ликвидации ≤3%. Рассмотрите возможность добавления маржи или закрытия своей позиции, чтобы избежать ликвидации."
+        },
+        "warning": {
+          "title": "Предупреждение",
+          "description": "Ваша позиция приближается к риску ликвидации. Расстояние до цены ликвидации составляет от 3% до 8%. Внимательно следите за своей позицией и подумайте о добавлении маржи."
+        },
+        "safe": {
+          "title": "Безопасно",
+          "description": "Ваша позиция находится на безопасном уровне. Расстояние до цены ликвидации составляет >8%. Продолжайте следить за рыночными условиями."
+        },
+        "title": "Уровень риска",
+        "liquidationDistance": "Расстояние ликвидации",
+        "currentPrice": "Текущая цена",
+        "liquidationPrice": "Цена ликвидации",
+        "gotIt": "Понял",
+        "subTitle": "Расстояние ликвидирования в реальном времени (%)",
+        "liquidationDistanceTips": "Расстояние ликвидации (%) показывает, насколько текущая цена удалена от вашей цены ликвидации. Большое расстояние указывает на более безопасную позицию, тогда как маленькое расстояние означает более высокий риск ликвидации."
+      },
+      "searchPerpsPopup": {
+        "searchPosition": "Поиск позиции",
+        "empty": "Не найдено рынков",
+        "openPosition": "Открыть позицию",
+        "searchPerps": "Поиск Perps",
+        "searchPlaceholder": "Поиск перпсов",
+        "hasPosition": "Позиция",
+        "onePosition": "1 Позиция"
+      },
+      "closeAll": "Закрыть все",
+      "position": "позиция"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3155,6 +3194,85 @@
         "approvals": "Подтверждения",
         "tokens": "Токены",
         "transactions": "Транзакции"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "long": "Долгий",
+        "margin": "Маржа",
+        "newPosition": "Открыть позицию",
+        "short": "Короткая позиция",
+        "size": "Размер",
+        "rabbyFee": "Rabby Комиссия",
+        "free": "Свободно",
+        "available": "Доступно",
+        "insufficientBalance": "Недостаточно средств",
+        "invalidNumber": "Неверный номер",
+        "takeProfitWhenPriceAbove": "Зафиксируйте прибыль, когда цена выше",
+        "takeProfitWhenPriceBelow": "Фиксируйте прибыль, когда цена ниже",
+        "leverage": "Кредитное плечо",
+        "minimumOrderSize": "Минимальный размер заказа составляет 10 $.",
+        "stopLossWhenPriceBelow": "Стоп-лосс при цене ниже",
+        "sizeTips": "Общая стоимость или количество вашей сделки, установленное маржей и кредитным плечом.",
+        "stopLossWhenPriceAbove": "Стоп-лосс при цене выше",
+        "maximumOrderSize": "Максимальный размер заказа составляет {{amount}}",
+        "providerFee": "Гиперликвидная комиссия"
+      },
+      "PerpsEditMarginPopup": {
+        "liqPrice": "Liq. Цена:",
+        "amountToAdd": "Сумма для добавления",
+        "title": "Настроить маржу",
+        "available": "Доступно",
+        "insufficientBalance": "Недостаточно средств",
+        "perpsBalance": "Баланс перпсов",
+        "reduceMargin": "Сократить маржу",
+        "addMargin": "Добавить маржу",
+        "amountToReduce": "Сумма для снижения",
+        "currentPrice": "Текущая цена",
+        "margin": "Маржа",
+        "exceedMaxReduction": "Превышает максимальное снижение",
+        "reduceMarginTooltip": "Недостаточно маржи для сокращения позиции.",
+        "addMarginSuccess": "Маржа успешно добавлена",
+        "confirm": "Подтвердить",
+        "reduceMarginSuccess": "Маржа успешно уменьшена"
+      },
+      "PerpsClosePositionPopup": {
+        "receive": "Получить",
+        "amount": "Сумма",
+        "fee": "Комиссия",
+        "minimumWarning": "Минимальная сумма закрытия составляет {{percent}}%",
+        "confirm": "Подтвердить",
+        "closedPnl": "Закрытая PNL",
+        "title": "Закрыть позицию",
+        "total": "Итого"
+      },
+      "PerpsAutoCloseModal": {
+        "youLoss": "Вы проигрываете",
+        "takeProfitWhen": "Брать прибыль, когда",
+        "youGain": "Вы получаете",
+        "takeProfit": "Закрыть прибыль",
+        "priceAbove": "Цена выше",
+        "stopLoss": "Стоп-лосс",
+        "takeProfitWhenPriceAbove": "Заберите прибыль, когда цена выше",
+        "title": "Авто закройте позицию",
+        "priceBelow": "Цена ниже",
+        "stopLossWhen": "Стоп-лосс при",
+        "stopLossWhenPriceBelow": "Стоп-лосс при цене ниже",
+        "takeProfitWhenPriceBelow": "Зафиксируйте прибыль, когда цена ниже",
+        "currentPrice": "Текущая цена:",
+        "stopLossWhenPriceAbove": "Стоп-лосс, когда цена выше",
+        "EntryAndCurrentPrice": "Вход: ${{entryPrice}} Текущий: ${{currentPrice}}",
+        "confirm": "Подтвердить",
+        "takeProfitExpectedPNL": "Ожидаемая PNL от Take Profit",
+        "takeProfitTipsShort": "Цена тейк-профита должна быть ниже текущей цены.",
+        "noPosition": "Сначала вы должны ввести маржу",
+        "stopLossExpectedPNL": "Стоп-Лосс Ожидаемая Прибыль и Убытки",
+        "takeProfitTipsLong": "Цена для получения прибыли должна быть выше текущей цены.",
+        "cancel": "Отменить",
+        "stopLossTipsShort": "Цена стоп-лосса должна быть выше текущей цены.",
+        "stopLossTipsLongLiquidation": "Цена ниже ликвидационной цены ({{price}})",
+        "stopLossTipsShortLiquidation": "Цена выше ликвидационной цены ({{price}})",
+        "stopLossTipsLong": "Цена стоп-лосса должна быть ниже текущей цены"
       }
     }
   },
