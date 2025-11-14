@@ -45,6 +45,7 @@ import TopShortcut, {
   TOP_SHORTCUT_SLOT_ID,
 } from './components/TokensTabPane/components/TopShortCut';
 import { AbstractProject } from '@/ui/utils/portfolio/types';
+import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 
 const Wrap = styled.div`
   height: 100%;
@@ -167,6 +168,11 @@ export const DesktopProfile = () => {
     }),
     [currentAccount?.type]
   );
+
+  useEventBusListener(EVENTS.DESKTOP.FOCUSED, () => {
+    // window.location.reload();
+    handleUpdate();
+  });
 
   return (
     <>
