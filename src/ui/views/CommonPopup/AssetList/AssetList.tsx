@@ -145,12 +145,13 @@ export const AssetList = ({
             'bg-r-neutral-bg-2'
           )}
         >
-          <Button
-            type="primary"
-            block
+          <button
+            type="button"
             className={clsx(
-              'h-[44px] text-r-neutral-title2 text-[15px] leading-[18px] font-medium',
-              'rounded-[8px]'
+              'w-full h-[44px] text-r-blue-default text-[15px] leading-[18px] font-medium',
+              'rounded-[8px]',
+              'border-[1px] border-solid border-rabby-blue-default',
+              'bg-r-neutral-bg-2 hover:bg-r-blue-light1'
             )}
             onClick={() => {
               wallet.openInDesktop('/desktop/profile');
@@ -161,7 +162,7 @@ export const AssetList = ({
               {t('page.dashboard.assets.openInTab')}
               <RcIconExternalCC />
             </div>
-          </Button>
+          </button>
         </div>
       </footer>
     </div>
