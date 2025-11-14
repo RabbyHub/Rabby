@@ -282,7 +282,7 @@ const TokenDetail = ({
       );
     }
 
-    if (isCustomizedNotAdded) {
+    if (isCustomizedNotAdded && !isDesktop) {
       return (
         <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
           <Button
@@ -400,7 +400,7 @@ const TokenDetail = ({
         className={clsx('token-detail-body flex flex-col gap-12', 'pt-[0px]')}
       >
         <ScamTokenTips token={tokenWithAmount}></ScamTokenTips>
-        {variant === 'add' && (
+        {variant === 'add' && !isDesktop && (
           <BlockedTopTips
             token={token}
             isAdded={isAdded}
@@ -415,7 +415,7 @@ const TokenDetail = ({
               <div className="balance-title text-r-neutral-body text-13">
                 {t('page.dashboard.tokenDetail.myBalance')}
               </div>
-              {variant === 'add' ? (
+              {variant === 'add' && !isDesktop ? (
                 token.is_core ? (
                   <BlockedButton
                     selected={isAdded}
