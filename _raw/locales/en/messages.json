@@ -1035,7 +1035,7 @@
         "confirm": "Confirm",
         "takeProfit": "Take Profit",
         "stopLoss": "Stop Loss",
-        "noPosition": "Please input margin first",
+        "noPosition": "You must input margin first",
         "takeProfitTipsLong": "Take profit price must be higher than current price",
         "takeProfitTipsShort": "Take profit price must be lower than current price",
         "stopLossTipsLong": "Stop loss price must be lower than current price",

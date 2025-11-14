@@ -543,10 +543,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 </Tooltip>
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                $
-                {splitNumberByStep(
-                  Number(estimatedLiquidationPrice).toFixed(2)
-                )}
+                ${splitNumberByStep(Number(estimatedLiquidationPrice))}
               </div>
             </div>
             <div className="flex justify-between items-center">
