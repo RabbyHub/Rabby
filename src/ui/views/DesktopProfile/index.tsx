@@ -45,6 +45,7 @@ import TopShortcut, {
   TOP_SHORTCUT_SLOT_ID,
 } from './components/TokensTabPane/components/TopShortCut';
 import { AbstractProject } from '@/ui/utils/portfolio/types';
+import { NftTabPane } from './components/NftTabPane';
 
 const Wrap = styled.div`
   height: 100%;
@@ -102,10 +103,6 @@ export const DesktopProfile = () => {
   const history = useHistory();
   const activeTab = useParams<{ activeTab: string }>().activeTab || 'tokens';
   const handleTabChange = (key: string) => {
-    if (key === 'nft') {
-      history.replace(`/desktop/profile?action=${key}`);
-      return;
-    }
     history.replace(`/desktop/profile/${key}`);
   };
   const location = useLocation();
@@ -242,7 +239,9 @@ export const DesktopProfile = () => {
                         selectChainId={chainInfo?.serverId}
                       />
                     </Tabs.TabPane>
-                    {/* <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane> */}
+                    <Tabs.TabPane tab="NFTs" key="nft">
+                      <NftTabPane />
+                    </Tabs.TabPane>
                     <Tabs.TabPane
                       tab={t('page.desktopProfile.tabs.transactions')}
                       key="transactions"
