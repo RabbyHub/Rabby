@@ -1629,6 +1629,9 @@ export class WalletController extends BaseController {
         active: true,
         url: url,
       });
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.DESKTOP.FOCUSED,
+      });
       const currentWindow = await Browser.windows.getLastFocused();
       if (tab.windowId && tab.windowId !== currentWindow.id) {
         Browser.windows.update(tab.windowId, {
