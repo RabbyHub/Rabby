@@ -1,15 +1,29 @@
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
+import { findChain } from '@/utils/chain';
+import {
+  CollectionList,
+  NFTCollection,
+  NFTItem,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { Button, Modal, ModalProps } from 'antd';
 import React from 'react';
 
-export const NftDetailModal: React.FC<ModalProps> = (props) => {
+export const NftDetailModal: React.FC<
+  ModalProps & {
+    nft?: NFTItem;
+    collection?: Omit<CollectionList, 'nft_list'>;
+  }
+> = (props) => {
+  const { nft, collection, ...rest } = props;
+
+  const chain = findChain({ serverId: nft?.chain });
+
   return (
     <Modal
-      {...props}
+      {...rest}
       width={796}
       centered
-      closable={false}
       footer={null}
       bodyStyle={{
         maxHeight: 'unset',
@@ -20,29 +34,38 @@ export const NftDetailModal: React.FC<ModalProps> = (props) => {
         backdropFilter: 'blur(8px)',
       }}
       className="modal-support-darkmode"
+      destroyOnClose
     >
       <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
-        Rabby Desktop Genesis 37345
+        {nft?.name || '-'}
       </h1>
       <div className="px-[20px] pb-[20px]">
         <div className="flex items-start gap-[16px]">
-          <NFTAvatar className="w-[340px] h-[340px]" />
-          <div className="flex-1">
+          <NFTAvatar
+            className="w-[340px] h-[340px] flex-shrink-0"
+            type={nft?.content_type}
+            amount={nft?.amount}
+            content={nft?.content}
+          />
+          <div className="flex-1 min-w-0">
             <div className="border-[0.5px] border-solid border-rabby-neutral-line rounded-[8px]">
               <div className="flex items-center justify-between gap-[16px] p-[16px]">
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px]">
                   Collection
                 </div>
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
-                  Rabby Desktop Genesis
+                  {collection?.name || '-'}
                 </div>
               </div>
               <div className="flex items-center justify-between gap-[16px] p-[16px]">
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px]">
                   Chain
                 </div>
-                <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
-                  Ethereum
+                <div className="flex items-center gap-[6px]">
+                  <img src={chain?.logo} className="w-[16px] h-[16px]" alt="" />
+                  <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
+                    {chain?.name || '-'}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center justify-between gap-[16px] p-[16px]">
@@ -50,7 +73,7 @@ export const NftDetailModal: React.FC<ModalProps> = (props) => {
                   Collection floor
                 </div>
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
-                  0.001 ETH
+                  {collection?.floor_price}
                 </div>
               </div>
               <div className="flex items-center justify-between gap-[16px] p-[16px]">
@@ -58,7 +81,7 @@ export const NftDetailModal: React.FC<ModalProps> = (props) => {
                   Rarity
                 </div>
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
-                  #2954
+                  #{nft?.inner_id || '-'}
                 </div>
               </div>
               <div className="flex items-center justify-between gap-[16px] p-[16px]">
