@@ -71,10 +71,10 @@ export const useAccounts = () => {
         });
       return [
         highlightedAccounts
-          .concat(data['0'].sort(sortByAlphabet))
+          .concat((data['0'] || []).sort(sortByAlphabet))
           .filter((e) => !!e),
         watchModeHighlightedAccounts
-          .concat(data['1'].sort(sortByAlphabet))
+          .concat((data['1'] || []).sort(sortByAlphabet))
           .filter((e) => !!e),
       ];
     }
@@ -93,22 +93,6 @@ export const useAccounts = () => {
       (a) => a.hdPathBasePublicKey || nanoid()
     ) as Dictionary<IDisplayedAccountWithBalance[]>;
 
-    console.log('sorted account', [
-      [
-        ...Object.values(ledgersGroup).sort((a, b) => b.length - a.length),
-        ...Object.values(hdKeyringGroup).sort((a, b) => b.length - a.length),
-        ...Object.values(
-          omit(normalArr, [
-            KEYRING_TYPE.HdKeyring,
-            KEYRING_CLASS.HARDWARE.LEDGER,
-          ])
-        ),
-        sortAccountsByBalance(watchModeAccounts),
-      ]
-        .filter((e) => Array.isArray(e) && e.length > 0)
-        .sort((a, b) => getWalletScore(a) - getWalletScore(b)),
-      [],
-    ]);
     return [
       [
         ...Object.values(ledgersGroup).sort((a, b) => b.length - a.length),
