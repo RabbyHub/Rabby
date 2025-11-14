@@ -13,6 +13,7 @@ import { formatTpOrSlPrice, validatePriceInput } from '../utils';
 import { AssetPriceInfo } from './AssetPriceInfo';
 import { MarketData } from '@/ui/models/perps';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 interface EditTpSlTagProps {
   coin: string;
   entryPrice?: number;
@@ -53,6 +54,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   const { t } = useTranslation();
   const [modalVisible, setModalVisible] = React.useState(false);
   const [autoClosePrice, setAutoClosePrice] = React.useState<string>('');
+  const { isDarkTheme } = useThemeMode();
   const [inputFocused, setInputFocused] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const inputRef = React.useRef<any>(null);
@@ -287,14 +289,22 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
         onCancel={() => !loading && setModalVisible(false)}
         width={352}
         footer={null}
-        className={clsx('is-support-darkmode')}
+        className={clsx(
+          'perps-bridge-swap-modal perps-edit-tp-sl-modal',
+          isDarkTheme
+            ? 'perps-bridge-swap-modal-dark'
+            : 'perps-bridge-swap-modal-light'
+        )}
         centered
+        bodyStyle={{
+          background: 'var(--r-neutral-card-2, #F5F6FA)',
+        }}
         destroyOnClose
         closeIcon={
           <RcIconClose className="w-20 h-20 text-r-neutral-secondary" />
         }
       >
-        <div className="flex flex-col items-center bg-r-neutral-card-2">
+        <div className="flex flex-col items-center">
           {/* Header */}
           <div className="mb-20 text-center">
             <div className="text-20 font-medium text-r-neutral-title-1 mb-4">

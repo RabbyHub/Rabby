@@ -21,7 +21,7 @@ export const AssetItem: React.FC<{
   return (
     <div
       className="
-        bg-rb-neutral-bg-1
+        bg-r-neutral-card-1
         flex items-center justify-between cursor-pointer
         hover:bg-r-blue-light-1 px-16 py-12
         rounded-[8px]
