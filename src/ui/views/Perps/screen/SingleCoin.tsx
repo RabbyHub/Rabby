@@ -12,7 +12,8 @@ import { getPerpsSDK } from '../sdkManager';
 import { useMemoizedFn } from 'ahooks';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconEdit } from 'ui/assets/perps/IconEditCC.svg';
-import { ReactComponent as RcIconTitleSelectCC } from 'ui/assets/perps/IconTitleSelectCC.svg';
+import { ReactComponent as RcIconTitleSelect } from 'ui/assets/perps/IconTitleSelect.svg';
+import { ReactComponent as RcIconTitleSelectDark } from 'ui/assets/perps/IconTitleSelectDark.svg';
 import { EditMarginPopup } from '../popup/EditMarginPopup';
 import { RiskLevelPopup } from '../popup/RiskLevelPopup';
 import {
@@ -42,6 +43,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import DistanceToLiquidationTag from '../components/DistanceToLiquidationTag';
 import { EditTpSlTag } from '../components/EditTpSlTag';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -51,6 +53,7 @@ export const PerpsSingleCoin = () => {
   const { coin: _coin } = useParams<{ coin: string }>();
   const history = useHistory();
   const { t } = useTranslation();
+  const { isDarkTheme } = useThemeMode();
   const dispatch = useRabbyDispatch();
   const {
     positionAndOpenOrders,
@@ -381,7 +384,7 @@ export const PerpsSingleCoin = () => {
             </span>
             <ThemeIcon
               className="icon text-r-neutral-title-1"
-              src={RcIconTitleSelectCC}
+              src={isDarkTheme ? RcIconTitleSelectDark : RcIconTitleSelect}
             />
           </div>
         </div>
