@@ -4,7 +4,7 @@ import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
-import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
+import { ReactComponent as RcIconInfo } from 'ui/assets/perps/RcIconInfoCC.svg';
 import { useMemoizedFn } from 'ahooks';
 import { formatPercent } from '../utils';
 import { PERPS_MINI_USD_VALUE } from '../constants';
@@ -183,7 +183,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-8 text-13 text-r-neutral-body mb-12">
+          <div className="flex items-center justify-center gap-4 text-13 text-r-neutral-foot mb-12">
             <span>
               {t('page.perpsDetail.PerpsClosePositionPopup.fee')}:{' '}
               {formatPercent(bothFee, 4)}
@@ -205,7 +205,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
               }
               align={{ targetOffset: [0, 0] }}
             >
-              <RcIconInfo className="text-rabby-neutral-foot w-18 h-18" />
+              <RcIconInfo className="text-rb-neutral-info w-15 h-15" />
             </Tooltip>
           </div>
           {/* Action Button */}

@@ -7,6 +7,9 @@ const FloatDiv = styled.div`
   bottom: 100px;
   right: 12px;
   fill: rgba(255, 255, 255, 0.6);
+  filter: drop-shadow(0 20px 45.5px rgba(55, 56, 63, 0.12));
+  backdrop-filter: blur(14.5px);
+  border-radius: 100%;
 `;
 
 interface BackToTopButtonProps {

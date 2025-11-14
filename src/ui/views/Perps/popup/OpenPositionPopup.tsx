@@ -231,7 +231,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           activeAssetCtx={activeAssetCtx}
         />
 
-        <div className="flex mt-12 mb-16 bg-r-neutral-card1 rounded-[8px] p-4 h-[42px]">
+        <div className="flex mt-12 mb-12 bg-r-neutral-card1 rounded-[8px] p-4 h-[42px]">
           <div
             className={clsx(
               'flex-1 h-[34px] rounded-[4px] text-16 cursor-pointer flex items-center justify-center',
@@ -275,7 +275,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
 
         <div className="mb-20 bg-r-neutral-card1 rounded-[8px] flex items-center flex-col px-16">
           <div className="flex w-full py-8 justify-between items-center">
-            <div className="text-14 text-r-neutral-foot font-medium">
+            <div className="text-14 text-r-neutral-foot">
               {t('page.perps.leverage')}{' '}
               <span className="text-r-neutral-foot">
                 ({leverageRange[0]} - {leverageRange[1]}x)
@@ -331,7 +331,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
           </div>
           <div className="flex w-full py-12 justify-between items-center">
-            <div className="text-14 text-r-neutral-foot font-medium flex items-center gap-4 relative">
+            <div className="text-14 text-r-neutral-foot flex items-center gap-4 relative">
               {t('page.perps.size')}
               <TooltipWithMagnetArrow
                 overlayClassName="rectangle w-[max-content]"
@@ -351,7 +351,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           </div>
           {/* TP/SL Section */}
           <div className="flex w-full py-12 items-center justify-between">
-            <div className="text-14 text-r-neutral-foot font-medium">
+            <div className="text-14 text-r-neutral-foot">
               {direction === 'Long'
                 ? t(
                     'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceAbove'
@@ -383,7 +383,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             />
           </div>
           <div className="flex w-full py-12 items-center justify-between">
-            <div className="text-14 text-r-neutral-foot font-medium">
+            <div className="text-14 text-r-neutral-foot">
               {direction === 'Long'
                 ? t(
                     'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceBelow'

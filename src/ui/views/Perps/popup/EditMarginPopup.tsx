@@ -188,7 +188,7 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
         />
 
         <div className="flex-1 mt-12 px-20 overflow-y-auto pb-24">
-          <div className="flex mb-16 bg-r-neutral-card1 rounded-[8px] p-4 h-[42px]">
+          <div className="flex mb-12 bg-r-neutral-card1 rounded-[8px] p-4 h-[42px]">
             <div
               className={clsx(
                 'flex-1 h-[34px] rounded-[4px] text-16 cursor-pointer flex items-center justify-center',
@@ -219,7 +219,7 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center justify-between p-12 border border-rabby-neutral-line mb-12 h-[78px] bg-r-neutral-card1 rounded-[8px]">
+          <div className="flex items-center justify-between p-12 mb-12 h-[78px] bg-r-neutral-card1 rounded-[8px]">
             <div className="flex flex-col gap-8">
               <div className="flex items-center gap-6">
                 <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={28} />
