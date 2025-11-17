@@ -7,6 +7,7 @@ export { default as openapiService } from './openapi';
 export { default as transactionWatchService } from './transactionWatcher';
 export { default as pageStateCacheService } from './pageStateCache';
 export { default as transactionHistoryService } from './transactionHistory';
+export { default as transactionsService } from './transactions';
 export { default as contactBookService } from './contactBook';
 export { default as signTextHistoryService } from './signTextHistory';
 export { default as whitelistService } from './whitelist';
