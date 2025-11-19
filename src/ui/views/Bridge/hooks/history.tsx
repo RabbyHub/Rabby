@@ -8,7 +8,7 @@ import { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
 import { ONE_DAY_MS, ONE_HOUR_MS } from '../constants';
 import { useInterval } from 'ahooks';
 
-export const useCheckBridgePendingItem = (timer = 5000) => {
+export const useCheckBridgePendingItem = (timer = 10000) => {
   const wallet = useWallet();
   const [needPoll, setNeedPoll] = useState(false);
   const currentAccount = useRabbySelector(
@@ -92,7 +92,7 @@ export const useCheckBridgePendingItem = (timer = 5000) => {
   useInterval(needPoll ? checkPendingItem : () => {}, timer);
 };
 
-export const usePollBridgePendingNumber = (timer = 5000) => {
+export const usePollBridgePendingNumber = (timer = 10000) => {
   const [refetchCount, setRefetchCount] = useState(0);
 
   const wallet = useWallet();
