@@ -52,6 +52,7 @@ import { RcIconExternal1CC, RcIconFullscreenCC } from '@/ui/assets/dashboard';
 import { RecentConnectionsPopup } from '../RecentConnections';
 import { useScroll, useSize } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
 
 const Container = styled.div`
   position: relative;
@@ -152,6 +153,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const { t } = useTranslation();
   const history = useHistory();
   const { perpsPositionInfo, isFetching } = usePerpsHomePnl();
+  useCheckBridgePendingItem();
 
   const [badgeModalVisible, setBadgeModalVisible] = useState(false);
 

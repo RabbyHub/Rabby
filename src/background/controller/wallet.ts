@@ -59,7 +59,12 @@ import {
 import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
-import { TokenItem, Tx, testnetOpenapiService } from '../service/openapi';
+import {
+  BridgeHistory,
+  TokenItem,
+  Tx,
+  testnetOpenapiService,
+} from '../service/openapi';
 import {
   ContextActionData,
   ContractAddress,
@@ -4132,12 +4137,14 @@ export class WalletController extends BaseController {
   completeBridgeTxHistory = (
     from_tx_id: string,
     chainId: number,
-    status: BridgeTxHistoryItem['status']
+    status: BridgeTxHistoryItem['status'],
+    bridgeTx?: BridgeHistory
   ) =>
     transactionHistoryService.completeBridgeTxHistory(
       from_tx_id,
       chainId,
-      status
+      status,
+      bridgeTx
     );
 
   getTransactionHistory = (address: string) =>

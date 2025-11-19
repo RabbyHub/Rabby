@@ -21,7 +21,7 @@ import {
 } from '../hooks';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 
 import pRetry, { AbortError } from 'p-retry';
@@ -44,10 +44,10 @@ import {
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { PendingTxItem } from '../../Swap/Component/PendingTxItem';
 import { DbkButton } from '../../Ecology/dbk-chain/components/DbkButton';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { BridgePendingTxItem } from './PendingTxItem';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -233,9 +233,10 @@ export const BridgeContent = () => {
             },
             addHistoryData: {
               address: userAddress,
-              fromChainId: findChainByEnum(fromToken.chain)?.id || 0,
-              toChainId: findChainByEnum(toToken.chain)?.id || 0,
+              fromChainId: findChain({ serverId: fromToken.chain })?.id || 0,
+              toChainId: findChain({ serverId: toToken.chain })?.id || 0,
               fromToken: fromToken,
+              estimatedDuration: selectedBridgeQuote.duration,
               toToken: toToken,
               fromAmount: Number(amount),
               toAmount: Number(selectedBridgeQuote.to_token_amount),
@@ -372,10 +373,11 @@ export const BridgeContent = () => {
             },
             addHistoryData: {
               address: userAddress,
-              fromChainId: findChainByEnum(fromToken.chain)?.id || 0,
-              toChainId: findChainByEnum(toToken.chain)?.id || 0,
+              fromChainId: findChain({ serverId: fromToken.chain })?.id || 0,
+              toChainId: findChain({ serverId: toToken.chain })?.id || 0,
               fromToken: fromToken,
               toToken: toToken,
+              estimatedDuration: selectedBridgeQuote.duration,
               fromAmount: Number(amount),
               toAmount: Number(selectedBridgeQuote.to_token_amount),
               slippage: new BigNumber(slippage).div(100).toNumber(),
@@ -583,8 +585,6 @@ export const BridgeContent = () => {
     switchFeePopup(true);
   }, [switchFeePopup]);
 
-  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
-
   return (
     <>
       <Header
@@ -720,6 +720,7 @@ export const BridgeContent = () => {
               setOpen={setShowMoreOpen}
               sourceName={selectedBridgeQuote?.aggregator.name || ''}
               sourceLogo={selectedBridgeQuote?.aggregator.logo_url || ''}
+              duration={selectedBridgeQuote?.duration || 0}
               slippage={slippageState}
               displaySlippage={slippage}
               onSlippageChange={(e) => {
@@ -757,11 +758,9 @@ export const BridgeContent = () => {
         </div>
         {!selectedBridgeQuote && !recommendFromToken && (
           <div className="mt-20 mx-20">
-            <PendingTxItem
-              type="bridge"
+            <BridgePendingTxItem
               bridgeHistoryList={historyList}
-              openBridgeHistory={() => setHistoryVisible(true)}
-              ref={pendingTxRef}
+              getContainer={getContainer}
             />
           </div>
         )}
