@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { QuoteLogo } from './QuoteLogo';
 import ImgLock from '@/ui/assets/swap/lock.svg';
 import { TokenWithChain } from '@/ui/component';
 import ImgGas from '@/ui/assets/swap/gas.svg';
 import { ReactComponent as RCIconDuration } from '@/ui/assets/bridge/duration.svg';
+import { ReactComponent as RCIconDurationCC } from '@/ui/assets/bridge/durationCC.svg';
 import clsx from 'clsx';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { TokenItem } from '@/background/service/openapi';
@@ -53,6 +54,21 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
   const selectedAggregators = useRabbySelector(
     (s) => s.bridge.selectedAggregators || []
   );
+
+  const showMinDuration = useMemo(() => {
+    return Math.max(Math.round(props.duration / 60), 1);
+  }, [props.duration]);
+
+  const durationColor = useMemo(() => {
+    if (showMinDuration > 10) {
+      return 'text-r-red-default';
+    }
+
+    if (showMinDuration > 3) {
+      return 'text-r-orange-default';
+    }
+    return 'text-r-neutral-foot';
+  }, [showMinDuration]);
 
   const diffPercent = React.useMemo(() => {
     if (props.onlyShow || props.isBestQuote) {
@@ -179,13 +195,13 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
           <div className="flex  items-center text-13 text-r-neutral-foot">
             <img src={ImgGas} className="w-16 h16 mr-4" />
             <span>{formatUsdValue(props.gas_fee.usd_value)}</span>
-            <RCIconDuration
+            <RCIconDurationCC
               viewBox="0 0 16 16"
-              className="w-16 h16 ml-8 mr-4"
+              className={`w-16 h16 ml-8 mr-4 ${durationColor}`}
             />
-            <span>
+            <span className={durationColor}>
               {t('page.bridge.duration', {
-                duration: Math.round(props.duration / 60),
+                duration: showMinDuration,
               })}
             </span>
           </div>

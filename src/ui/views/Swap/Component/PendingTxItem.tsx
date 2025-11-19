@@ -183,55 +183,56 @@ export const PendingTxItem = forwardRef<
     }
   }, 1000);
 
-  useEffect(() => {
-    if (
-      bridgeHistoryList &&
-      bridgeHistoryList?.length > 0 &&
-      type === 'bridge'
-    ) {
-      const recentlyTxHash = data?.hash;
-      if (
-        recentlyTxHash &&
-        'fromChainId' in data && // only bridge logic
-        data.status !== 'allSuccess'
-      ) {
-        const findTx = bridgeHistoryList.find(
-          (item) => item.from_tx?.tx_id === recentlyTxHash
-        );
-        if (!findTx) {
-          const currentTime = Date.now();
-          const txCreateTime = data?.createdAt;
-          if (currentTime - txCreateTime > 1000 * 60 * 60) {
-            // tx create time is more than 60 minutes, set this tx failed
-            wallet.completeBridgeTxHistory(
-              recentlyTxHash,
-              data?.fromChainId,
-              'failed'
-            );
-            return;
-          }
-        }
-        if (
-          findTx &&
-          (findTx.status === 'completed' || findTx.status === 'failed') &&
-          data
-        ) {
-          const status =
-            findTx.status === 'completed' ? 'allSuccess' : 'failed';
-          setData({
-            ...data,
-            status,
-            completedAt: Date.now(),
-          });
-          wallet.completeBridgeTxHistory(
-            recentlyTxHash,
-            data.fromChainId,
-            status
-          );
-        }
-      }
-    }
-  }, [bridgeHistoryList, data, type, wallet]);
+  // not use in bridge, so no need
+  // useEffect(() => {
+  //   if (
+  //     bridgeHistoryList &&
+  //     bridgeHistoryList?.length > 0 &&
+  //     type === 'bridge'
+  //   ) {
+  //     const recentlyTxHash = data?.hash;
+  //     if (
+  //       recentlyTxHash &&
+  //       'fromChainId' in data && // only bridge logic
+  //       data.status !== 'allSuccess'
+  //     ) {
+  //       const findTx = bridgeHistoryList.find(
+  //         (item) => item.from_tx?.tx_id === recentlyTxHash
+  //       );
+  //       if (!findTx) {
+  //         const currentTime = Date.now();
+  //         const txCreateTime = data?.createdAt;
+  //         if (currentTime - txCreateTime > 1000 * 60 * 60) {
+  //           // tx create time is more than 60 minutes, set this tx failed
+  //           wallet.completeBridgeTxHistory(
+  //             recentlyTxHash,
+  //             data?.fromChainId,
+  //             'failed'
+  //           );
+  //           return;
+  //         }
+  //       }
+  //       if (
+  //         findTx &&
+  //         (findTx.status === 'completed' || findTx.status === 'failed') &&
+  //         data
+  //       ) {
+  //         const status =
+  //           findTx.status === 'completed' ? 'allSuccess' : 'failed';
+  //         setData({
+  //           ...data,
+  //           status,
+  //           completedAt: Date.now(),
+  //         });
+  //         wallet.completeBridgeTxHistory(
+  //           recentlyTxHash,
+  //           data.fromChainId,
+  //           status
+  //         );
+  //       }
+  //     }
+  //   }
+  // }, [bridgeHistoryList, data, type, wallet]);
 
   const isPending =
     data?.status === 'pending' || data?.status === 'fromSuccess';

@@ -61,6 +61,7 @@ export const BridgeShowMore = ({
   openQuotesList,
   sourceName,
   sourceLogo,
+  duration,
   slippage,
   displaySlippage,
   onSlippageChange,
@@ -92,6 +93,7 @@ export const BridgeShowMore = ({
   openQuotesList: () => void;
   sourceName: string;
   sourceLogo: string;
+  duration?: number;
   slippage: string;
   displaySlippage: string;
   onSlippageChange: (n: string) => void;
@@ -157,6 +159,21 @@ export const BridgeShowMore = ({
   }, [isBestQuote]);
 
   const showSlippageError = slippageError;
+
+  const showMinDuration = useMemo(() => {
+    return Math.max(Math.round((duration || 0) / 60), 1);
+  }, [duration]);
+
+  const durationColor = useMemo(() => {
+    if (showMinDuration > 10) {
+      return 'text-r-red-default';
+    }
+
+    if (showMinDuration > 3) {
+      return 'text-r-orange-default';
+    }
+    return 'text-r-blue-default';
+  }, [showMinDuration]);
 
   const [showGasFeeError, setShowGasFeeError] = useState(false);
 
@@ -257,32 +274,45 @@ export const BridgeShowMore = ({
             />
           ) : (
             <div
-              className={clsx(
-                'flex items-center gap-4 cursor-pointer',
-                isBestQuote &&
-                  'border-[0.5px] border-solid border-rabby-blue-default rounded-[4px] pr-[5px]'
-              )}
-              style={bestQuoteStyle}
+              className="flex items-center gap-4  cursor-pointer"
               onClick={openQuotesList}
             >
-              {isBestQuote ? (
-                <span className="text-r-neutral-title2 text-[12px] font-medium italic py-1 pl-6 pr-8">
-                  {t('page.swap.best')}
+              <div
+                className={clsx(
+                  'flex items-center gap-4 cursor-pointer',
+                  isBestQuote &&
+                    'border-[0.5px] border-solid border-rabby-blue-default rounded-[4px] pr-[5px]'
+                )}
+                style={bestQuoteStyle}
+                // onClick={openQuotesList}
+              >
+                {isBestQuote ? (
+                  <span className="text-r-neutral-title2 text-[12px] font-medium italic py-1 pl-6 pr-8">
+                    {t('page.swap.best')}
+                  </span>
+                ) : null}
+                {sourceLogo && (
+                  <img
+                    className="w-12 h-12 rounded-full"
+                    src={sourceLogo}
+                    alt={sourceName}
+                  />
+                )}
+                <span className="text-12 text-rabby-blue-default font-medium">
+                  {sourceName}
                 </span>
-              ) : null}
-              {sourceLogo && (
-                <img
-                  className="w-12 h-12 rounded-full"
-                  src={sourceLogo}
-                  alt={sourceName}
-                />
+                {!sourceLogo && !sourceName ? (
+                  <span className="text-12 text-r-neutral-foot">-</span>
+                ) : null}
+              </div>
+              {type === 'bridge' && (
+                <span className={`text-12 font-medium ${durationColor}`}>
+                  {' · '}
+                  {t('page.bridge.duration', {
+                    duration: showMinDuration,
+                  })}
+                </span>
               )}
-              <span className="text-12 text-rabby-blue-default font-medium">
-                {sourceName}
-              </span>
-              {!sourceLogo && !sourceName ? (
-                <span className="text-12 text-r-neutral-foot">-</span>
-              ) : null}
             </div>
           )}
         </ListItem>
