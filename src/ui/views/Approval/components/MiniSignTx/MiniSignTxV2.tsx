@@ -62,10 +62,12 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
       return ['ui-open', 'signing', 'error'].includes(status);
     }
     if (ctx?.mode === 'direct' && status !== 'ready') {
-      return isDirectSignAccount ? false : true;
+      return isDirectSignAccount || config?.hiddenHardWareProcess
+        ? false
+        : true;
     }
     return false;
-  }, [status, ctx?.mode]);
+  }, [status, ctx?.mode, config?.hiddenHardWareProcess, config?.account?.type]);
   const visible = useDebounceValue(_visible, 100);
   const loading =
     status === 'prefetching' || status === 'signing' || !ctx?.txsCalc.length;
