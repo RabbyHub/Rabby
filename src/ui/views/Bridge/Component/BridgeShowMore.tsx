@@ -230,6 +230,68 @@ export const BridgeShowMore = ({
 
   return (
     <div className="mx-16">
+      <ListItem
+        name={
+          type === 'bridge'
+            ? t('page.bridge.showMore.source')
+            : t('page.swap.source')
+        }
+        className="mb-12 h-18"
+      >
+        {quoteLoading ? (
+          <Skeleton.Input
+            active
+            className="rounded"
+            style={{
+              width: 52,
+              height: 12,
+            }}
+          />
+        ) : (
+          <div
+            className="flex items-center gap-4  cursor-pointer"
+            onClick={openQuotesList}
+          >
+            <div
+              className={clsx(
+                'flex items-center gap-4 cursor-pointer',
+                isBestQuote &&
+                  'border-[0.5px] border-solid border-rabby-blue-default rounded-[4px] pr-[5px]'
+              )}
+              style={bestQuoteStyle}
+              // onClick={openQuotesList}
+            >
+              {isBestQuote ? (
+                <span className="text-r-neutral-title2 text-[12px] font-medium italic py-1 pl-6 pr-8">
+                  {t('page.swap.best')}
+                </span>
+              ) : null}
+              {sourceLogo && (
+                <img
+                  className="w-12 h-12 rounded-full"
+                  src={sourceLogo}
+                  alt={sourceName}
+                />
+              )}
+              <span className="text-12 text-rabby-blue-default font-medium">
+                {sourceName}
+              </span>
+              {!sourceLogo && !sourceName ? (
+                <span className="text-12 text-r-neutral-foot">-</span>
+              ) : null}
+            </div>
+            {type === 'bridge' && (
+              <span className={`text-12 font-medium ${durationColor}`}>
+                {' · '}
+                {t('page.bridge.duration', {
+                  duration: showMinDuration,
+                })}
+              </span>
+            )}
+          </div>
+        )}
+      </ListItem>
+
       <div className="flex items-center justify-center gap-8 mb-8">
         <div
           className={clsx(
@@ -254,68 +316,6 @@ export const BridgeShowMore = ({
 
       <div className={clsx('overflow-hidden', !open && 'h-0')}>
         {lostValueContentRender()}
-
-        <ListItem
-          name={
-            type === 'bridge'
-              ? t('page.bridge.showMore.source')
-              : t('page.swap.source')
-          }
-          className="mb-12 h-18"
-        >
-          {quoteLoading ? (
-            <Skeleton.Input
-              active
-              className="rounded"
-              style={{
-                width: 52,
-                height: 12,
-              }}
-            />
-          ) : (
-            <div
-              className="flex items-center gap-4  cursor-pointer"
-              onClick={openQuotesList}
-            >
-              <div
-                className={clsx(
-                  'flex items-center gap-4 cursor-pointer',
-                  isBestQuote &&
-                    'border-[0.5px] border-solid border-rabby-blue-default rounded-[4px] pr-[5px]'
-                )}
-                style={bestQuoteStyle}
-                // onClick={openQuotesList}
-              >
-                {isBestQuote ? (
-                  <span className="text-r-neutral-title2 text-[12px] font-medium italic py-1 pl-6 pr-8">
-                    {t('page.swap.best')}
-                  </span>
-                ) : null}
-                {sourceLogo && (
-                  <img
-                    className="w-12 h-12 rounded-full"
-                    src={sourceLogo}
-                    alt={sourceName}
-                  />
-                )}
-                <span className="text-12 text-rabby-blue-default font-medium">
-                  {sourceName}
-                </span>
-                {!sourceLogo && !sourceName ? (
-                  <span className="text-12 text-r-neutral-foot">-</span>
-                ) : null}
-              </div>
-              {type === 'bridge' && (
-                <span className={`text-12 font-medium ${durationColor}`}>
-                  {' · '}
-                  {t('page.bridge.duration', {
-                    duration: showMinDuration,
-                  })}
-                </span>
-              )}
-            </div>
-          )}
-        </ListItem>
 
         <BridgeSlippage
           autoSuggestSlippage={autoSuggestSlippage}

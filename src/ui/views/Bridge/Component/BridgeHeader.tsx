@@ -26,13 +26,11 @@ const getContainer = isTab
 
 export const Header = ({
   onOpenInTab,
-  pendingNumber,
   noShowHeader,
   historyVisible,
   setHistoryVisible,
 }: {
   onOpenInTab?(): void;
-  pendingNumber: number;
   noShowHeader: boolean;
   historyVisible: boolean;
   setHistoryVisible: (visible: boolean) => void;

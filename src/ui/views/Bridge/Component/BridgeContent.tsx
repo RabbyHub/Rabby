@@ -155,10 +155,10 @@ export const BridgeContent = () => {
   const wallet = useWallet();
   const rbiSource = useRbiSource();
 
-  const { pendingNumber, historyList } = usePollBridgePendingNumber() || {
-    pendingNumber: 0,
-    historyList: [],
-  };
+  // const {
+  //   pendingNumber,
+  //   historyList,
+  // } = usePollBridgePendingNumber();
 
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
 
@@ -590,7 +590,6 @@ export const BridgeContent = () => {
       <Header
         historyVisible={historyVisible}
         setHistoryVisible={setHistoryVisible}
-        pendingNumber={pendingNumber}
         noShowHeader={isDesktop}
         onOpenInTab={async () => {
           // openInternalPageInTab(
@@ -758,10 +757,7 @@ export const BridgeContent = () => {
         </div>
         {!selectedBridgeQuote && !recommendFromToken && (
           <div className="mt-20 mx-20">
-            <BridgePendingTxItem
-              bridgeHistoryList={historyList}
-              getContainer={getContainer}
-            />
+            <BridgePendingTxItem getContainer={getContainer} />
           </div>
         )}
 
