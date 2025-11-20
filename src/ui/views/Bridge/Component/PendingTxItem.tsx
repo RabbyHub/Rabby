@@ -225,7 +225,7 @@ const PendingStatusDetail = ({
       status === 'allSuccess'
         ? data.actualToAmount || data.toAmount
         : data.toAmount;
-    const usdValue = new BigNumber(amount).multipliedBy(token.price).toString();
+    const usdValue = new BigNumber(amount).multipliedBy(token?.price || 0).toString();
     return {
       token,
       amount,
