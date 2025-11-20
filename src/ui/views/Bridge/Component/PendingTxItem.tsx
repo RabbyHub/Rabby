@@ -47,7 +47,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { Popup } from '@/ui/component';
 import { ReactComponent as RcImgArrowCC } from '@/ui/assets/bridge/ImgArrowCC.svg';
 import { getChain } from '@/utils';
-import { ONE_DAY_MS, ONE_HOUR_MS } from '../constants';
+import { ONE_DAY_MS, ONE_HOUR_MS, ONE_MINUTE_MS } from '../constants';
 
 const isDesktop = getUiType().isDesktop;
 type PendingTxData = BridgeTxHistoryItem;
@@ -165,19 +165,15 @@ const PendingStatusDetail = ({
   status,
   step1Status,
   step2Status,
-  bridgeHistoryList,
 }: {
   data: BridgeTxHistoryItem;
   status: 'pending' | 'fromSuccess' | 'fromFailed' | 'allSuccess' | 'failed';
   step1Status: StepStatusType;
   step2Status: StepStatusType;
-  bridgeHistoryList?: BridgeHistory[];
 }) => {
   const history = useHistory();
   const { t } = useTranslation();
-  const findTx = bridgeHistoryList?.find(
-    (item) => item.from_tx?.tx_id === data.hash
-  );
+  const [refreshEstTime, setRefreshEstTime] = useState(0);
 
   const fromChain = findChain({ serverId: data.fromToken?.chain || '' });
   const toChain = findChain({ serverId: data.toToken?.chain || '' });
@@ -202,7 +198,7 @@ const PendingStatusDetail = ({
       const elapsed = Date.now() - data.fromTxCompleteTs;
       const estimatedDuration = data.estimatedDuration * 1000;
       const remainingDuration = estimatedDuration - elapsed;
-      if (elapsed > estimatedDuration * 2) {
+      if (elapsed > estimatedDuration * 2 && elapsed > 2 * ONE_MINUTE_MS) {
         return -1;
       }
       if (remainingDuration <= 0) {
@@ -212,7 +208,13 @@ const PendingStatusDetail = ({
       return estimated;
     }
     return null;
-  }, [step2Status, data]);
+  }, [step2Status, data, refreshEstTime]);
+
+  useInterval(async () => {
+    if (data?.status === 'fromSuccess') {
+      setRefreshEstTime((e) => e + 1);
+    }
+  }, 1000);
 
   const receiveItem = useMemo(() => {
     const token =
@@ -380,6 +382,13 @@ const PendingStatusDetail = ({
     }
   };
 
+  const receiveNotRightToken = useMemo(() => {
+    return (
+      data.actualToToken?.id !== data.toToken?.id ||
+      data.actualToToken?.chain !== data.toToken?.chain
+    );
+  }, [data.actualToToken, data.toToken]);
+
   return (
     <div className="flex flex-col px-20 w-full pt-12">
       <div className="flex items-center mb-12 justify-center">
@@ -395,7 +404,7 @@ const PendingStatusDetail = ({
               <span className="text-24 font-bold text-r-neutral-title-1">
                 1
               </span>
-              <span className="text-15 font-medium text-r-neutral-title-1">
+              <span className="text-15 font-bold text-r-neutral-title-1">
                 {t('page.bridge.pendingItem.sendingFrom', {
                   chain: fromChain?.name || '',
                 })}
@@ -432,7 +441,7 @@ const PendingStatusDetail = ({
 
       <div className="flex justify-center my-12">
         <RcImgArrowCC
-          className="text-r-neutral-foot"
+          className="text-r-neutral-foot opacity-50"
           style={{ width: 24, height: 24 }}
         />
       </div>
@@ -452,7 +461,7 @@ const PendingStatusDetail = ({
                 2
               </span>
               <span
-                className={`text-15 font-medium ${
+                className={`text-15 font-bold ${
                   receiveItemNeedOpacity
                     ? 'text-r-neutral-foot'
                     : 'text-r-neutral-title-1'
@@ -466,7 +475,7 @@ const PendingStatusDetail = ({
             {getStatusLabel(step2Status)}
           </div>
         </div>
-        {status === 'failed' && (
+        {status === 'failed' && receiveNotRightToken && (
           <div className="flex items-center justify-between px-12 py-14">
             <div className="flex gap-8">
               <TokenWithChain
@@ -527,10 +536,8 @@ const PendingStatusDetail = ({
 };
 
 export const BridgePendingTxItem = ({
-  bridgeHistoryList,
   getContainer,
 }: {
-  bridgeHistoryList?: BridgeHistory[];
   getContainer?: DrawerProps['getContainer'];
 }) => {
   const type = 'bridge';
@@ -593,18 +600,20 @@ export const BridgePendingTxItem = ({
   });
 
   useInterval(async () => {
-    if (data) {
-      const refreshTx = await fetchRefreshLocalData(data);
-      if (refreshTx) {
-        setData(refreshTx as PendingTxData);
-      }
-    }
-  }, 1000);
-
-  useEffect(() => {
-    if (bridgeHistoryList && bridgeHistoryList?.length > 0) {
-      const recentlyTxHash = data?.hash;
-      if (recentlyTxHash && data.status !== 'allSuccess') {
+    const recentlyTxHash = data?.hash;
+    if (
+      recentlyTxHash &&
+      (data.status === 'pending' || data.status === 'fromSuccess')
+    ) {
+      const res = await wallet.openapi.getBridgeHistoryList({
+        user_addr: userAddress,
+        start: 0,
+        limit: 10,
+        is_all: true,
+      });
+      const bridgeHistoryList = res.history_list;
+      if (bridgeHistoryList && bridgeHistoryList?.length > 0) {
+        const recentlyTxHash = data?.hash;
         const findTx = bridgeHistoryList.find(
           (item) => item.from_tx?.tx_id === recentlyTxHash
         );
@@ -618,6 +627,7 @@ export const BridgePendingTxItem = ({
               data?.fromChainId,
               'failed'
             );
+            setData(null);
             return;
           }
         }
@@ -645,7 +655,16 @@ export const BridgePendingTxItem = ({
         }
       }
     }
-  }, [bridgeHistoryList, data, wallet]);
+  }, 10 * 1000);
+
+  useInterval(async () => {
+    if (data?.status === 'pending' || data?.status === 'fromSuccess') {
+      const refreshTx = await fetchRefreshLocalData(data);
+      if (refreshTx) {
+        setData(refreshTx as PendingTxData);
+      }
+    }
+  }, 1000);
 
   const status = data?.status || 'pending';
   // Determine step statuses based on bridge status and history
@@ -757,7 +776,6 @@ export const BridgePendingTxItem = ({
             status={status}
             step1Status={step1Status}
             step2Status={step2Status}
-            bridgeHistoryList={bridgeHistoryList}
           />
         )}
       </Popup>

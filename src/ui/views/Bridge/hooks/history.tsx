@@ -127,7 +127,10 @@ export const usePollBridgePendingNumber = (timer = 5000) => {
   const timerRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    if ((!loading && value !== undefined) || error) {
+    if (
+      (!loading && value !== undefined && value?.pendingNumber > 0) ||
+      error
+    ) {
       timerRef.current = setTimeout(() => {
         setRefetchCount((e) => e + 1);
       }, timer);
@@ -144,7 +147,13 @@ export const usePollBridgePendingNumber = (timer = 5000) => {
     };
   }, []);
 
-  return value;
+  return {
+    pendingNumber: value?.pendingNumber || 0,
+    historyList: value?.historyList || [],
+    refreshHistoryList: () => {
+      setRefetchCount((e) => e + 1);
+    },
+  };
 };
 
 export const useBridgeHistory = () => {

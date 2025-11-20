@@ -153,7 +153,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const { t } = useTranslation();
   const history = useHistory();
   const { perpsPositionInfo, isFetching } = usePerpsHomePnl();
-  useCheckBridgePendingItem();
+  // useCheckBridgePendingItem();
 
   const [badgeModalVisible, setBadgeModalVisible] = useState(false);
 
