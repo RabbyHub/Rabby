@@ -188,7 +188,9 @@ const PendingStatusDetail = ({
 
   const receiveUsdValue = useMemo(() => {
     if (!data.toToken?.price || !data.toAmount) return '0';
-    return new BigNumber(data.toAmount).times(data.toToken.price).toString();
+    return new BigNumber(data.toAmount)
+      .multipliedBy(data.toToken?.price || 0)
+      .toString();
   }, [data.toToken?.price, data.toAmount]);
 
   // Get estimated duration from bridge history
@@ -225,7 +227,9 @@ const PendingStatusDetail = ({
       status === 'allSuccess'
         ? data.actualToAmount || data.toAmount
         : data.toAmount;
-    const usdValue = new BigNumber(amount).multipliedBy(token?.price || 0).toString();
+    const usdValue = new BigNumber(amount)
+      .multipliedBy(token?.price || 0)
+      .toString();
     return {
       token,
       amount,
