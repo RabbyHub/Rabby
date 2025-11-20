@@ -525,6 +525,7 @@ export const BridgeContent = () => {
         }
         console.error('bridge direct sign error', error);
       } finally {
+        setFetchingBridgeQuote(false);
         setMiniSignLoading(false);
       }
     } else {

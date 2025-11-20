@@ -549,7 +549,6 @@ export const BridgePendingTxItem = ({
   const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
   }));
-  const preFulfilledRef = useRef<boolean>(true);
 
   const fetchHistory = useCallback(async () => {
     if (!userAddress) return;
@@ -571,7 +570,56 @@ export const BridgePendingTxItem = ({
       return;
     }
 
-    setData(historyData);
+    if (
+      historyData.hash &&
+      (historyData.status === 'pending' || historyData.status === 'fromSuccess')
+    ) {
+      const res = await wallet.openapi.getBridgeHistoryList({
+        user_addr: userAddress,
+        start: 0,
+        limit: 10,
+        is_all: true,
+      });
+      const bridgeHistoryList = res.history_list;
+      if (bridgeHistoryList && bridgeHistoryList?.length > 0) {
+        const findTx = bridgeHistoryList.find(
+          (item) => item.from_tx?.tx_id === historyData.hash
+        );
+        if (!findTx) {
+          const currentTime = Date.now();
+          const txCreateTime = historyData.createdAt;
+          if (currentTime - txCreateTime > ONE_HOUR_MS) {
+            // tx create time is more than 60 minutes, set this tx failed
+            wallet.completeBridgeTxHistory(
+              historyData.hash,
+              historyData.fromChainId!,
+              'failed'
+            );
+          }
+        } else {
+          if (findTx.status === 'completed' || findTx.status === 'failed') {
+            const status =
+              findTx.status === 'completed' ? 'allSuccess' : 'failed';
+            const updateData = {
+              ...historyData,
+              status,
+              actualToToken: findTx.to_actual_token,
+              actualToAmount: findTx.actual.receive_token_amount,
+              completedAt: Date.now(),
+            };
+            setData(updateData as BridgeTxHistoryItem);
+            wallet.completeBridgeTxHistory(
+              historyData.hash,
+              historyData.fromChainId!,
+              status,
+              findTx
+            );
+          } else {
+            setData(historyData);
+          }
+        }
+      }
+    }
   }, [type, userAddress]);
 
   useEffect(() => {
