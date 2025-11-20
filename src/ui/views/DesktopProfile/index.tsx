@@ -45,7 +45,7 @@ import TopShortcut, {
   TOP_SHORTCUT_SLOT_ID,
 } from './components/TokensTabPane/components/TopShortCut';
 import { AbstractProject } from '@/ui/utils/portfolio/types';
-import { NftTabPane } from './components/NftTabPane';
+import { NFTTabPane } from './components/NFTTabPane';
 
 const Wrap = styled.div`
   height: 100%;
@@ -240,7 +240,7 @@ export const DesktopProfile = () => {
                       />
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="NFTs" key="nft">
-                      <NftTabPane />
+                      <NFTTabPane />
                     </Tabs.TabPane>
                     <Tabs.TabPane
                       tab={t('page.desktopProfile.tabs.transactions')}
