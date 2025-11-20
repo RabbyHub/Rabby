@@ -8,7 +8,7 @@ import {
   NFTItem,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
-import { Skeleton, Switch } from 'antd';
+import { message, Skeleton, Switch } from 'antd';
 import clsx from 'clsx';
 import { omit, range } from 'lodash';
 import React from 'react';
@@ -225,16 +225,17 @@ export const NFTTabPane = () => {
           });
         }}
         onSuccess={() => {
+          message.success('Cancel Listing Success');
           // todo fix this
-          setState({
-            cancelModalVisible: false,
-            resultModalVisible: true,
-            resultState: {
-              status: 'success',
-              title: 'Just listed!',
-              desc: `You've listed ${state.nftDetail?.name} on OpenSea`,
-            },
-          });
+          // setState({
+          //   cancelModalVisible: false,
+          //   resultModalVisible: true,
+          //   resultState: {
+          //     status: 'success',
+          //     title: 'Just listed!',
+          //     desc: `You've listed ${state.nftDetail?.name} on OpenSea`,
+          //   },
+          // });
         }}
       />
       <CreateListingModal

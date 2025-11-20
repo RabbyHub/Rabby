@@ -390,7 +390,13 @@ export const Content: React.FC<Props> = (props) => {
       return;
     }
     const tx = isApproved
-      ? null
+      ? isEdit && nftDetail?.listing_order?.protocol_data?.parameters
+        ? await wallet.buildCancelNFTListTx({
+            address: currentAccount?.address,
+            chainId: chain?.id,
+            order: nftDetail?.listing_order?.protocol_data?.parameters,
+          })
+        : null
       : await wallet.buildSetApprovedForAllTx({
           from: currentAccount?.address,
           chainId: chain.id,
@@ -499,8 +505,6 @@ export const Content: React.FC<Props> = (props) => {
       };
 
       let hashes: string[] = [];
-
-      console.log({ steps });
 
       if (supportedDirectSign(currentAccount.type)) {
         try {
