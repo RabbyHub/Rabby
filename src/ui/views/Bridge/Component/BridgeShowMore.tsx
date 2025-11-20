@@ -37,6 +37,7 @@ import {
   GasLessNotEnough,
 } from '../../Approval/components/FooterBar/GasLessComponents';
 import { useGasAccountSign } from '../../GasAccount/hooks';
+import { useMemoizedFn } from 'ahooks';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -123,6 +124,7 @@ export const BridgeShowMore = ({
   supportDirectSign?: boolean;
 }) => {
   const { t } = useTranslation();
+  const sourceAlwaysShow = type === 'bridge';
 
   const RABBY_FEE = '0.25%';
 
@@ -177,59 +179,8 @@ export const BridgeShowMore = ({
 
   const [showGasFeeError, setShowGasFeeError] = useState(false);
 
-  const lostValueContentRender = useCallback(() => {
+  const sourceContentRender = useMemoizedFn(() => {
     return (
-      <>
-        {data?.showLoss && !quoteLoading && (
-          <div className="leading-4 mb-12 text-12 text-r-neutral-foot">
-            <div className="flex justify-between">
-              <span>{t('page.bridge.price-impact')}</span>
-              <span
-                className={clsx(
-                  'font-medium  inline-flex items-center',
-                  'text-r-red-default'
-                )}
-              >
-                -{data.diff}%
-                <Tooltip
-                  align={{
-                    offset: [10, 0],
-                  }}
-                  placement={'topRight'}
-                  overlayClassName="rectangle max-w-[360px]"
-                  title={
-                    <div className="flex flex-col gap-4 py-[5px] text-13">
-                      <div>
-                        {t('page.bridge.est-payment')} {amount}
-                        {getTokenSymbol(fromToken)} ≈ {data.fromUsd}
-                      </div>
-                      <div>
-                        {t('page.bridge.est-receiving')} {toAmount}
-                        {getTokenSymbol(toToken)} ≈ {data.toUsd}
-                      </div>
-                      <div>
-                        {t('page.bridge.est-difference')} {data.lossUsd}
-                      </div>
-                    </div>
-                  }
-                >
-                  <RcIconInfo className="ml-4 text-rabby-neutral-foot w-14 h-14 " />
-                </Tooltip>
-              </span>
-            </div>
-            <div className="mt-[8px] rounded-[4px] border-[0.5px] border-rabby-red-default bg-r-red-light p-8 text-13 font-normal text-r-red-default">
-              {t('page.bridge.loss-tips', {
-                usd: data?.lossUsd,
-              })}
-            </div>
-          </div>
-        )}
-      </>
-    );
-  }, [data, quoteLoading, toToken, fromToken]);
-
-  return (
-    <div className="mx-16">
       <ListItem
         name={
           type === 'bridge'
@@ -291,6 +242,63 @@ export const BridgeShowMore = ({
           </div>
         )}
       </ListItem>
+    );
+  });
+
+  const lostValueContentRender = useCallback(() => {
+    return (
+      <>
+        {data?.showLoss && !quoteLoading && (
+          <div className="leading-4 mb-12 text-12 text-r-neutral-foot">
+            <div className="flex justify-between">
+              <span>{t('page.bridge.price-impact')}</span>
+              <span
+                className={clsx(
+                  'font-medium  inline-flex items-center',
+                  'text-r-red-default'
+                )}
+              >
+                -{data.diff}%
+                <Tooltip
+                  align={{
+                    offset: [10, 0],
+                  }}
+                  placement={'topRight'}
+                  overlayClassName="rectangle max-w-[360px]"
+                  title={
+                    <div className="flex flex-col gap-4 py-[5px] text-13">
+                      <div>
+                        {t('page.bridge.est-payment')} {amount}
+                        {getTokenSymbol(fromToken)} ≈ {data.fromUsd}
+                      </div>
+                      <div>
+                        {t('page.bridge.est-receiving')} {toAmount}
+                        {getTokenSymbol(toToken)} ≈ {data.toUsd}
+                      </div>
+                      <div>
+                        {t('page.bridge.est-difference')} {data.lossUsd}
+                      </div>
+                    </div>
+                  }
+                >
+                  <RcIconInfo className="ml-4 text-rabby-neutral-foot w-14 h-14 " />
+                </Tooltip>
+              </span>
+            </div>
+            <div className="mt-[8px] rounded-[4px] border-[0.5px] border-rabby-red-default bg-r-red-light p-8 text-13 font-normal text-r-red-default">
+              {t('page.bridge.loss-tips', {
+                usd: data?.lossUsd,
+              })}
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }, [data, quoteLoading, toToken, fromToken]);
+
+  return (
+    <div className="mx-16">
+      {sourceAlwaysShow && sourceContentRender()}
 
       <div className="flex items-center justify-center gap-8 mb-8">
         <div
@@ -316,7 +324,7 @@ export const BridgeShowMore = ({
 
       <div className={clsx('overflow-hidden', !open && 'h-0')}>
         {lostValueContentRender()}
-
+        {!sourceAlwaysShow && sourceContentRender()}
         <BridgeSlippage
           autoSuggestSlippage={autoSuggestSlippage}
           value={slippage}
