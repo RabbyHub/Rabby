@@ -12,6 +12,7 @@ export type SignatureStatus =
   | 'ready'
   | 'ui-open'
   | 'signing'
+  | 'paused'
   | 'completed'
   | 'error';
 
@@ -20,6 +21,11 @@ export type SignatureFlowState = {
   fingerprint?: string;
   config?: SignerConfig;
   ctx?: SignerCtx;
+  progress?: {
+    signed: number;
+    total: number;
+    status?: string;
+  };
   error?: {
     status: 'REJECTED' | 'FAILED';
     content: string;
@@ -89,4 +95,9 @@ export type SignatureAction =
       type: 'SEND_FAILURE';
       fingerprint: string;
       error: SignatureFlowState['error'];
+    }
+  | {
+      type: 'SEND_PAUSED';
+      fingerprint: string;
+      ctx: SignerCtx;
     };

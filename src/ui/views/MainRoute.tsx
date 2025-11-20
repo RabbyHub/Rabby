@@ -91,7 +91,10 @@ import { PreferenceStore } from '@/background/service/preference';
 import SendPoly from './SendPoly';
 import WhitelistInput from './WhitelistInput';
 import { PortalHost } from '../component/PortalHost';
-import { GlobalSignerPortal } from '../component/MiniSignV2/components/GlobalSignerPortal';
+import {
+  GlobalSignerPortal,
+  GlobalTypedDataSignerPortal,
+} from '../component/MiniSignV2/components';
 import SelectToAddress from './SelectToAddress';
 
 declare global {
@@ -464,6 +467,7 @@ const Main = () => {
       <CommonPopup />
       <PortalHost />
       <GlobalSignerPortal />
+      <GlobalTypedDataSignerPortal />
     </>
   );
 };
