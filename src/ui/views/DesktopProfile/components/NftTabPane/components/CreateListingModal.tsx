@@ -9,8 +9,8 @@ import {
 } from '@/ui/utils';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { findChain } from '@/utils/chain';
-import { NFTDetail } from '@rabby-wallet/rabby-api/dist/types';
-import { useRequest, useSetState } from 'ahooks';
+import { NFTDetail, Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { useMemoizedFn, useRequest, useSetState } from 'ahooks';
 import {
   Button,
   Input,
@@ -40,6 +40,10 @@ import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
 import { calcBestOfferPrice } from '../utils';
+import { useMixedSigner } from '@/ui/hooks/useMixedSigner';
+import { SignProcessButton } from '@/ui/component/SignProcessButton';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 const Container = styled.div`
   table {
@@ -348,7 +352,220 @@ export const CreateListingModal: React.FC<
     serverId: nftDetail?.chain,
   });
 
-  const { runAsync: handleListing } = useRequest(
+  const { data: isApproved, runAsync: runCheckIsApproved } = useRequest(
+    async () => {
+      if (!chain?.id || !currentAccount?.address || !nftDetail) {
+        return;
+      }
+      const isApproved = await wallet.checkIsApprovedForAll({
+        chainId: chain.id,
+        owner: currentAccount!.address,
+        operator: OPENSEA_CONDUIT_ADDRESS,
+        contractAddress: nftDetail.contract_id,
+      });
+
+      return isApproved;
+    },
+    {
+      refreshDeps: [chain?.id, currentAccount?.address, nftDetail],
+    }
+  );
+
+  const { currentIndex, isSigning, run } = useMixedSigner({
+    account: currentAccount!,
+  });
+
+  console.log({ isSigning });
+
+  const buildTxs = useMemoizedFn(async () => {
+    if (
+      !nftDetail ||
+      !fees ||
+      !chain ||
+      !currentAccount ||
+      !listingToken ||
+      !formValues.amount ||
+      !formValues.listingPrice ||
+      !formValues.duration
+    ) {
+      return;
+    }
+    const tx = isApproved
+      ? null
+      : await wallet.buildSetApprovedForAllTx({
+          from: currentAccount?.address,
+          chainId: chain.id,
+          operator: OPENSEA_CONDUIT_ADDRESS,
+          contractAddress: nftDetail.contract_id,
+        });
+
+    const endTime = ((Date.now() + formValues.duration) / 1000).toFixed();
+    console.log(endTime);
+    const res = await wallet.openapi.prepareListingNFT({
+      chain_id: nftDetail.chain,
+      inner_id: nftDetail.inner_id,
+      wei_price: new BigNumber(formValues.listingPrice)
+        .times(new BigNumber(10).exponentiatedBy(listingToken?.decimals))
+        .toString(),
+      quantity: formValues.amount,
+      maker: currentAccount!.address,
+      collection_id: last(nftDetail.collection_id?.split(':')) || '',
+      salt: generateRandomSalt(),
+      marketplace_fees: fees.marketplace_fees,
+      custom_royalties: formValues.creatorFeeEnable
+        ? fees.custom_royalties
+        : [],
+      expiration_time_at: +endTime,
+      currency:
+        nftTradingConfig?.[nftDetail.chain].listing_currency.token_id || '',
+    });
+
+    const sign = res.data.sign;
+
+    const typedData = {
+      domain: sign.domain,
+      message: sign.value,
+      primaryType: sign.primaryType,
+      types: sign.types,
+    };
+
+    const result: Parameters<typeof run>[0] = [];
+    if (tx) {
+      result.push({
+        kind: 'tx',
+        txs: [tx as Tx],
+      });
+    }
+    result.push({
+      kind: 'typed',
+      txs: [
+        {
+          data: typedData,
+          from: currentAccount.address,
+          version: 'V4',
+        },
+      ],
+    });
+
+    return {
+      steps: result,
+      res,
+    };
+  });
+
+  const { runAsync: handleListing, loading: isSubmitting } = useRequest(
+    async () => {
+      if (
+        !nftDetail ||
+        !fees ||
+        !chain ||
+        !currentAccount ||
+        !listingToken ||
+        !formValues.amount ||
+        !formValues.listingPrice ||
+        !formValues.duration
+      ) {
+        return;
+      }
+      const txsInfo = await buildTxs();
+      if (!txsInfo?.steps) {
+        throw new Error('buildTx failed');
+      }
+
+      const steps = txsInfo.steps;
+
+      const runFallback = async () => {
+        const result: string[] = [];
+        for (const step of steps) {
+          if (step.kind === 'tx') {
+            for (const tx of step.txs) {
+              const hash = await wallet.sendRequest<string>({
+                method: 'eth_sendTransaction',
+                params: [tx],
+              });
+              result.push(hash);
+            }
+          }
+          if (step.kind === 'typed') {
+            for (const tx of step.txs) {
+              const sig = await wallet.sendRequest<string>({
+                method: 'eth_signTypedData_v4',
+                params: [currentAccount.address, JSON.stringify(tx.data)],
+              });
+              result.push(sig);
+            }
+          }
+        }
+        return result;
+      };
+
+      let hashes: string[] = [];
+
+      console.log({ steps });
+
+      if (supportedDirectSign(currentAccount.type)) {
+        try {
+          hashes = await run(steps, {
+            hiddenHardWareProcess: true,
+            // getContainer: getContainer,
+          });
+          console.log('hashes', hashes);
+        } catch (error) {
+          console.error('-------', error);
+          if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+            //
+            throw new Error(MINI_SIGN_ERROR.USER_CANCELLED);
+          } else {
+            hashes = await runFallback();
+          }
+        }
+      } else {
+        hashes = await runFallback();
+      }
+
+      if (!hashes.length) {
+        throw new Error('sign failed');
+      }
+      if (hashes.length > 1) {
+        const hash = hashes[0];
+        const txCompleted = await new Promise((resolve) => {
+          const handler = (res) => {
+            if (res?.hash === hash) {
+              eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+              resolve(res || {});
+            }
+          };
+          runCheckIsApproved().then((v) => {
+            if (v) {
+              resolve({});
+            }
+          });
+          eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+        });
+      }
+      const signature = last(hashes);
+      if (!signature) {
+        throw new Error('Sign Failed');
+      }
+      const listingRes = await wallet.openapi.createListingNFT({
+        order: txsInfo.res.data.post.body.order,
+        signature,
+        chain_id: nftDetail.chain,
+      });
+    },
+    {
+      manual: true,
+      onError(e) {
+        console.error(e);
+        onFailed?.();
+      },
+      onSuccess() {
+        onSuccess?.();
+      },
+    }
+  );
+
+  const { runAsync: handleListingBack } = useRequest(
     async () => {
       if (
         !nftDetail ||
@@ -399,7 +616,8 @@ export const CreateListingModal: React.FC<
           ? fees.custom_royalties
           : [],
         expiration_time_at: +endTime,
-        currency: nftTradingConfig?.[nftDetail.chain].listing_currency.token_id,
+        currency:
+          nftTradingConfig?.[nftDetail.chain].listing_currency.token_id || '',
       });
 
       const sign = res.data.sign;
@@ -851,14 +1069,24 @@ export const CreateListingModal: React.FC<
                 className="custom-select"
                 options={options}
               ></Select>
-              <Button
-                type="primary"
-                size="large"
-                className="ml-[16px]"
-                onClick={handleListing}
-              >
-                Complete listing
-              </Button>
+              {currentAccount ? (
+                <SignProcessButton
+                  type="primary"
+                  size="large"
+                  className="ml-[16px]"
+                  onClick={handleListing}
+                  account={currentAccount}
+                  isSigning={isSubmitting && isSigning}
+                  loading={isSubmitting}
+                  disabled={
+                    !formValues.amount ||
+                    !formValues.listingPrice ||
+                    !formValues.duration
+                  }
+                >
+                  {isApproved ? 'Complete listing' : 'Approve and Listing'}
+                </SignProcessButton>
+              ) : null}
             </div>
           </footer>
         </div>

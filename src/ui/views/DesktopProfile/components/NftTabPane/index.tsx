@@ -19,14 +19,13 @@ import { CreateListingModal } from './components/CreateListingModal';
 import { NFTCardItem } from './components/NFTCardItem';
 import { NFTDetailModal } from './components/NFTDetailModal';
 import { ResultModal } from './components/ResultModal';
+import { useHistory } from 'react-router-dom';
 
 export const NFTTabPane = () => {
   const wallet = useWallet();
   const [isAll, setIsAll] = React.useState(false);
-  const [selectedNft, setSelectedNft] = React.useState<{
-    nft: NFTItem;
-    collection: Omit<CollectionList, 'nft_list'>;
-  } | null>(null);
+
+  const history = useHistory();
 
   const [state, setState] = useSetState<{
     current: {
@@ -224,6 +223,18 @@ export const NFTTabPane = () => {
         }}
         nft={state.current?.nft}
         collection={state.current?.collection}
+        onSend={() => {
+          const query = new URLSearchParams();
+          query.set('nftItem', JSON.stringify(state.current!.nft!));
+          query.set('action', 'send');
+          query.set('sendPageType', 'sendNft');
+          history.replace(`${history.location.pathname}?${query.toString()}`);
+          setState({
+            detailModalVisible: false,
+            current: null,
+            nftDetail: undefined,
+          });
+        }}
       />
       <CancelListingModal
         visible={state.cancelModalVisible}
