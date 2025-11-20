@@ -203,7 +203,7 @@ const TokenItemAmount: React.FC<Props> = ({ item }) => {
 
 const TokenItemPrice: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="text-r-neutral-title1 text-14 flex-1 truncate flex items-center gap-2">
+    <TCell className="text-r-neutral-title1 text-14 flex-1 truncate flex items-center gap-4">
       <div>${item._priceStr}</div>
       {isNil(item.price_24h_change) ? null : (
         <div
