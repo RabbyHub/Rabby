@@ -20,13 +20,15 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { findChain } from '@/utils/chain';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { IconOpenSea } from '@/ui/assets';
 
-export const CancelListingModal: React.FC<
-  ModalProps & {
-    nftDetail?: NFTDetail;
-    onSuccess?(): void;
-  }
-> = (props) => {
+type Props = ModalProps & {
+  nftDetail?: NFTDetail;
+  onSuccess?(): void;
+  onFailed?(): void;
+};
+
+const Content: React.FC<Props> = (props) => {
   const { nftDetail, onSuccess, ...rest } = props;
 
   const currentAccount = useCurrentAccount();
@@ -106,7 +108,21 @@ export const CancelListingModal: React.FC<
       closeSign();
       const signerConfig = {
         txs,
-
+        title: (
+          <div className="flex items-center justify-center gap-[8px]">
+            <div className="relative">
+              <img src={IconOpenSea} alt="" className="w-[24px] h-[24px]" />
+              <img
+                src={chain.logo}
+                alt=""
+                className="absolute top-[-2px] right-[-2px] w-[12px] h-[12px] rounded-full"
+              />
+            </div>
+            <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
+              Cancel Listing NFT
+            </div>
+          </div>
+        ),
         showSimulateChange: true,
         disableSignBtn: false,
         onRedirectToDeposit: () => {},
@@ -150,22 +166,7 @@ export const CancelListingModal: React.FC<
   });
 
   return (
-    <Modal
-      {...rest}
-      width={440}
-      centered
-      footer={null}
-      bodyStyle={{
-        maxHeight: 'unset',
-        padding: 0,
-      }}
-      maskStyle={{
-        background: 'rgba(0, 0, 0, 0.30)',
-        backdropFilter: 'blur(8px)',
-      }}
-      className="modal-support-darkmode"
-      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
-    >
+    <>
       <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
         Cancel Listing
       </h1>
@@ -248,6 +249,29 @@ export const CancelListingModal: React.FC<
           </Button>
         </footer>
       </div>
+    </>
+  );
+};
+export const CancelListingModal: React.FC<Props> = (props) => {
+  return (
+    <Modal
+      {...props}
+      width={440}
+      centered
+      footer={null}
+      bodyStyle={{
+        maxHeight: 'unset',
+        padding: 0,
+      }}
+      maskStyle={{
+        background: 'rgba(0, 0, 0, 0.30)',
+        backdropFilter: 'blur(8px)',
+      }}
+      className="modal-support-darkmode"
+      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      destroyOnClose
+    >
+      <Content {...props} />
     </Modal>
   );
 };

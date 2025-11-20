@@ -1,8 +1,8 @@
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
-import { NFTDetail } from '@rabby-wallet/rabby-api/dist/types';
-import { Button, Modal, ModalProps, Switch, Tooltip } from 'antd';
+import { NFTDetail, Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { Button, message, Modal, ModalProps, Switch, Tooltip } from 'antd';
 import React, { useMemo } from 'react';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
@@ -14,14 +14,36 @@ import { useMemoizedFn, useRequest, useSetState } from 'ahooks';
 import { findChain } from '@/utils/chain';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { calcBestOfferPrice } from '../utils';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { IconOpenSea } from '@/ui/assets';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
-export const AcceptOfferModal: React.FC<
-  ModalProps & { nftDetail?: NFTDetail; onSuccess?(): void; onFailed?(): void }
-> = (props) => {
-  const { nftDetail, onSuccess, ...rest } = props;
+type Props = ModalProps & {
+  nftDetail?: NFTDetail;
+  onSuccess?(): void;
+  onFailed?(): void;
+};
+
+const Content: React.FC<Props> = (props) => {
+  const { nftDetail, onSuccess, onFailed, ...rest } = props;
 
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
+
+  const {
+    openUI,
+    resetGasStore,
+    close: closeSign,
+    updateConfig,
+  } = useMiniSigner({
+    account: currentAccount!,
+  });
+
+  const canDirectSign = useMemo(
+    () => supportedDirectSign(currentAccount?.type || ''),
+    [currentAccount?.type]
+  );
 
   // todo remove this
   const [formValues, setFormValues] = useSetState<{
@@ -122,7 +144,132 @@ export const AcceptOfferModal: React.FC<
     serverId: nftDetail?.chain,
   });
 
-  const handleSubmit = useMemoizedFn(async () => {
+  const { data: isApproved, runAsync: runCheckIsApproved } = useRequest(
+    async () => {
+      if (
+        !chain?.id ||
+        !currentAccount?.address ||
+        !nftDetail ||
+        !nftTradingConfig
+      ) {
+        return;
+      }
+      const isApproved = await wallet.checkIsApprovedForAll({
+        chainId: chain.id,
+        owner: currentAccount!.address,
+        operator: nftTradingConfig[nftDetail.chain].opensea_conduit_address!,
+        contractAddress: nftDetail.contract_id,
+      });
+
+      return isApproved;
+    },
+    {
+      refreshDeps: [chain?.id, currentAccount?.address, nftDetail],
+    }
+  );
+
+  const { runAsync: handleSubmit, loading: isSubmitting } = useRequest(
+    async () => {
+      if (
+        !currentAccount ||
+        !nftDetail ||
+        !currentAccount ||
+        !chain ||
+        !bestOffer ||
+        !nftTradingConfig
+      ) {
+        throw new Error('error');
+      }
+      const txs: Tx[] = [];
+      const approveTx = isApproved
+        ? null
+        : await wallet.buildSetApprovedForAllTx({
+            from: currentAccount?.address,
+            chainId: chain.id,
+            operator: nftTradingConfig[nftDetail.chain].opensea_conduit_address,
+            contractAddress: nftDetail.contract_id,
+          });
+      const tx = await wallet.buildAcceptNFTOfferTx({
+        address: currentAccount!.address,
+        chainId: chain!.id,
+        collectionId: nftDetail?.contract_id,
+        innerId: nftDetail?.inner_id,
+        order: bestOffer,
+      });
+
+      if (approveTx) {
+        txs.push(approveTx as Tx);
+      }
+      txs.push((tx as unknown) as Tx);
+
+      const runFallback = async () => {
+        for (const tx of txs) {
+          await wallet.sendRequest<string>({
+            method: 'eth_sendTransaction',
+            params: [tx],
+          });
+        }
+      };
+
+      if (canDirectSign && currentAccount) {
+        resetGasStore();
+        closeSign();
+        const signerConfig = {
+          txs,
+          title: (
+            <div className="flex items-center justify-center gap-[8px]">
+              <div className="relative">
+                <img src={IconOpenSea} alt="" className="w-[24px] h-[24px]" />
+                <img
+                  src={chain.logo}
+                  alt=""
+                  className="absolute top-[-2px] right-[-2px] w-[12px] h-[12px] rounded-full"
+                />
+              </div>
+              <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
+                Sale NFT
+              </div>
+            </div>
+          ),
+          showSimulateChange: true,
+          disableSignBtn: false,
+          onRedirectToDeposit: () => {},
+          ga: {},
+        } as const;
+        try {
+          await openUI(signerConfig);
+        } catch (error) {
+          console.log('openUI error', error);
+          if (error !== MINI_SIGN_ERROR.USER_CANCELLED) {
+            console.error('Dapp action direct sign error', error);
+            return await runFallback();
+            // await runFallback().catch((fallbackError) => {
+            //   console.error('Dapp action fallback error', fallbackError);
+            //   const fallbackMsg =
+            //     typeof (fallbackError as any)?.message === 'string'
+            //       ? (fallbackError as any).message
+            //       : 'Transaction failed';
+            //   message.error(fallbackMsg);
+            // });
+          }
+          throw error;
+        }
+      }
+
+      await runFallback();
+    },
+    {
+      manual: true,
+      onSuccess() {
+        onSuccess?.();
+      },
+      onError() {
+        onFailed?.();
+      },
+    }
+  );
+
+  const handleSubmit1 = useMemoizedFn(async () => {
     if (!nftDetail || !currentAccount || !chain || !bestOffer) {
       return;
     }
@@ -141,7 +288,7 @@ export const AcceptOfferModal: React.FC<
 
   return (
     <Modal
-      {...props}
+      {...rest}
       width={880}
       centered
       footer={null}
@@ -369,6 +516,7 @@ export const AcceptOfferModal: React.FC<
               type="primary"
               size="large"
               className="ml-auto"
+              loading={isSubmitting}
               onClick={handleSubmit}
             >
               Accept Offer
@@ -376,6 +524,29 @@ export const AcceptOfferModal: React.FC<
           </div>
         </footer>
       </div>
+    </Modal>
+  );
+};
+export const AcceptOfferModal: React.FC<Props> = (props) => {
+  return (
+    <Modal
+      {...props}
+      width={880}
+      centered
+      footer={null}
+      bodyStyle={{
+        maxHeight: 'unset',
+        padding: 0,
+      }}
+      maskStyle={{
+        background: 'rgba(0, 0, 0, 0.30)',
+        backdropFilter: 'blur(8px)',
+      }}
+      className="modal-support-darkmode"
+      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      destroyOnClose
+    >
+      <Content {...props} />
     </Modal>
   );
 };

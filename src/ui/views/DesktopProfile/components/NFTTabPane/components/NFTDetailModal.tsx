@@ -29,17 +29,17 @@ import { IconOpenSea } from '@/ui/assets';
 import { RcIconFindCC, RcIconNftEmpty } from '@/ui/assets/desktop/common';
 import { calcBestOfferPrice } from '../utils';
 
-export const NFTDetailModal: React.FC<
-  ModalProps & {
-    nft?: NFTItem;
-    collection?: Omit<CollectionList, 'nft_list'>;
-    onCreateListing?: (nftDetail: NFTDetail) => void;
-    onSend?: (nftDetail: NFTDetail) => void;
-    onAccept?: (nftDetail: NFTDetail) => void;
-    onCancelListing?: (nftDetail: NFTDetail) => void;
-    onEditListing?: (nftDetail: NFTDetail) => void;
-  }
-> = (props) => {
+type Props = ModalProps & {
+  nft?: NFTItem;
+  collection?: Omit<CollectionList, 'nft_list'>;
+  onCreateListing?: (nftDetail: NFTDetail) => void;
+  onSend?: (nftDetail: NFTDetail) => void;
+  onAccept?: (nftDetail: NFTDetail) => void;
+  onCancelListing?: (nftDetail: NFTDetail) => void;
+  onEditListing?: (nftDetail: NFTDetail) => void;
+};
+
+const Content: React.FC<Props> = (props) => {
   const {
     nft,
     collection,
@@ -123,25 +123,8 @@ export const NFTDetailModal: React.FC<
   }, [offerToken, bestOfferPrice]);
 
   console.log('nftDetail', nftDetail);
-
   return (
-    <Modal
-      {...rest}
-      width={796}
-      centered
-      footer={null}
-      bodyStyle={{
-        maxHeight: 'unset',
-        padding: 0,
-      }}
-      maskStyle={{
-        background: 'rgba(0, 0, 0, 0.30)',
-        backdropFilter: 'blur(8px)',
-      }}
-      className="modal-support-darkmode"
-      destroyOnClose
-      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
-    >
+    <>
       <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
         {nft?.name || '-'}
       </h1>
@@ -489,6 +472,29 @@ export const NFTDetailModal: React.FC<
           </div>
         </footer>
       </div>
+    </>
+  );
+};
+export const NFTDetailModal: React.FC<Props> = (props) => {
+  return (
+    <Modal
+      {...props}
+      width={796}
+      centered
+      footer={null}
+      bodyStyle={{
+        maxHeight: 'unset',
+        padding: 0,
+      }}
+      maskStyle={{
+        background: 'rgba(0, 0, 0, 0.30)',
+        backdropFilter: 'blur(8px)',
+      }}
+      className="modal-support-darkmode"
+      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      destroyOnClose
+    >
+      <Content {...props}></Content>
     </Modal>
   );
 };

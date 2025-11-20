@@ -199,27 +199,6 @@ export const NFTTabPane = () => {
             cancelModalVisible: true,
             nftDetail,
           });
-          // const order = (nftDetail.listing_order as any).protocol_data
-          //   .parameters as OrderParameters;
-          // const data = encodeFunctionData({
-          //   abi: SeaportABI,
-          //   functionName: 'cancel',
-          //   args: [[]],
-          // });
-          // const chain = findChain({
-          //   serverId: nftDetail?.chain,
-          // });
-          // wallet.sendRequest({
-          //   method: 'eth_sendTransaction',
-          //   params: [
-          //     {
-          //       from: currentAccount!.address,
-          //       to: CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
-          //       chainId: chain?.id,
-          //       data,
-          //     },
-          //   ],
-          // });
         }}
         nft={state.current?.nft}
         collection={state.current?.collection}
@@ -298,6 +277,27 @@ export const NFTTabPane = () => {
           setState({
             nftDetail: undefined,
             acceptModalVisible: false,
+          });
+        }}
+        onSuccess={() => {
+          setState({
+            listingModalVisible: false,
+            resultModalVisible: true,
+            resultState: {
+              status: 'success',
+              title: 'Sold Successfully',
+              desc: `You’ve successfully sold ${state.nftDetail?.name}`,
+            },
+          });
+        }}
+        onFailed={() => {
+          setState({
+            resultModalVisible: true,
+            resultState: {
+              status: 'failed',
+              title: 'Sale Failed',
+              desc: 'Please try again.',
+            },
           });
         }}
       />

@@ -1,18 +1,9 @@
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { PopupContainer } from '@/ui/hooks/usePopupContainer';
+import { RcIconSuccessCC, RcIconWaringCC } from '@/ui/assets/desktop/common';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { NFTDetail } from '@rabby-wallet/rabby-api/dist/types';
-import { Button, Modal, ModalProps, Switch } from 'antd';
-import React, { useMemo } from 'react';
+import { Button, Modal, ModalProps } from 'antd';
+import React from 'react';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
-import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
-import clsx from 'clsx';
-import { formatTokenAmount, formatUsdValue, useWallet } from '@/ui/utils';
-import BigNumber from 'bignumber.js';
-import { useMemoizedFn, useRequest, useSetState } from 'ahooks';
-import { findChain } from '@/utils/chain';
-import { RcIconSuccessCC, RcIconWaringCC } from '@/ui/assets/desktop/common';
 
 export const ResultModal: React.FC<
   ModalProps & {
@@ -41,6 +32,7 @@ export const ResultModal: React.FC<
       closable={false}
       className="modal-support-darkmode"
       closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      destroyOnClose
     >
       <div className="flex flex-col items-center py-[40px] px-[20px]">
         <NFTAvatar

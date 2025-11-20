@@ -189,14 +189,14 @@ function findClosestOption(inputMs: number) {
   return closestOption;
 }
 
-export const CreateListingModal: React.FC<
-  ModalProps & {
-    nftDetail?: NFTDetail;
-    onFailed?(): void;
-    onSuccess?(): void;
-    isEdit?: boolean;
-  }
-> = (props) => {
+type Props = ModalProps & {
+  nftDetail?: NFTDetail;
+  onFailed?(): void;
+  onSuccess?(): void;
+  isEdit?: boolean;
+};
+
+export const Content: React.FC<Props> = (props) => {
   const { nftDetail, onSuccess, onFailed, isEdit, ...rest } = props;
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
@@ -663,8 +663,421 @@ export const CreateListingModal: React.FC<
   );
 
   return (
+    <Container>
+      <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
+        {isEdit ? 'Edit Listing' : 'Create listing'}
+      </h1>
+      <div className="px-[20px] pb-[24px]">
+        <div className="py-[12px] border-b-[0.5px] border-solid border-rabby-neutral-line">
+          <table className="w-full">
+            <colgroup>
+              <col width={260} />
+              <col width={100} />
+              <col width={100} />
+              <col width={100} />
+              <col width={100} />
+              <col width={180} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
+                  NFT
+                </th>
+                <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
+                  Floor
+                </th>
+                <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
+                  Top Offer
+                </th>
+                <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
+                  Cost
+                </th>
+                <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
+                  Proceeds
+                </th>
+                <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
+                  Listed as
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div className="flex items-center gap-[10px]">
+                    <NFTAvatar
+                      className="w-[36px] h-[36px]"
+                      chain={nftDetail?.chain}
+                      content={nftDetail?.content}
+                      type={nftDetail?.content_type}
+                    />
+                    <div className="flex-1 min-w-0 flex flex-col gap-[4px]">
+                      <div
+                        className={clsx(
+                          'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate'
+                        )}
+                      >
+                        {nftDetail?.name || '-'}
+                      </div>
+                      <div
+                        className={clsx(
+                          'text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate'
+                        )}
+                      >
+                        {nftDetail?.collection?.name || '-'}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div
+                    className={clsx(
+                      'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
+                    )}
+                  >
+                    {formatTokenAmount(
+                      nftDetail?.collection?.opensea_floor_price?.price || 0
+                    )}{' '}
+                    {nftDetail?.collection?.opensea_floor_price?.token?.symbol}
+                  </div>
+                  <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
+                    {formatUsdValue(
+                      new BigNumber(
+                        nftDetail?.collection?.opensea_floor_price?.price || 0
+                      )
+                        .times(
+                          nftDetail?.collection?.opensea_floor_price?.token
+                            ?.price || 0
+                        )
+                        .toString()
+                    )}
+                  </div>
+                </td>
+                <td>
+                  {nftDetail?.best_offer_order ? (
+                    <>
+                      <div
+                        className={clsx(
+                          'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
+                        )}
+                      >
+                        {bestOfferPrice
+                          ? formatTokenAmount(bestOfferPrice.toString())
+                          : '-'}{' '}
+                        {nftDetail?.best_offer_order?.price?.currency || '-'}
+                      </div>
+                      <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
+                        {bestOfferUsdPrice
+                          ? formatUsdValue(bestOfferUsdPrice.toString())
+                          : '-'}
+                      </div>
+                    </>
+                  ) : (
+                    '-'
+                  )}
+                </td>
+                <td>
+                  <div
+                    className={clsx(
+                      'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
+                    )}
+                  >
+                    -
+                  </div>
+                </td>
+                <td>
+                  {formValues.listingPrice ? (
+                    <>
+                      <div
+                        className={clsx(
+                          'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
+                        )}
+                      >
+                        {formatTokenAmount(
+                          new BigNumber(formValues.listingPrice)
+                            .times(1 - feesRate.total)
+                            .times(formValues?.amount || 0)
+                            .toString()
+                        )}{' '}
+                        {listingToken?.symbol}
+                      </div>
+                      <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
+                        {formatUsdValue(
+                          new BigNumber(formValues.listingPrice)
+                            .times(1 - feesRate.total)
+                            .times(formValues?.amount || 0)
+                            .times(listingToken?.price || 0)
+                            .toString()
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div
+                      className={clsx(
+                        'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
+                      )}
+                    >
+                      -
+                    </div>
+                  )}
+                </td>
+                <td>
+                  <Input
+                    className="custom-input"
+                    value={formValues.listingPrice}
+                    onChange={(e) => {
+                      setFormValues({ listingPrice: e.target.value });
+                    }}
+                    min={0}
+                    step={1e-14}
+                    type="number"
+                    placeholder="0"
+                    suffix={listingToken?.symbol}
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        {nftDetail?.amount && nftDetail?.amount > 1 ? (
+          <div className="py-[16px] space-y-[24px] border-b-[0.5px] border-solid border-rabby-neutral-line">
+            <div className="flex items-center justify-between">
+              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
+                Quantity
+              </div>
+              <div>
+                <StepInput
+                  min={1}
+                  max={nftDetail?.amount || 1}
+                  value={formValues.amount}
+                  onChange={(v) => {
+                    setFormValues({
+                      amount: v,
+                    });
+                  }}
+                  maxTooltip={
+                    (formValues.amount || 0) >= (nftDetail?.amount || 1)
+                      ? `Your balance is ${nftDetail?.amount || 1}`
+                      : undefined
+                  }
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
+                Total listing price
+              </div>
+              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
+                {formValues?.listingPrice && formValues.amount ? (
+                  <>
+                    {formatTokenAmount(
+                      new BigNumber(formValues.listingPrice)
+                        .times(formValues.amount)
+                        .toString()
+                    )}{' '}
+                    {listingToken?.symbol}{' '}
+                    <span className="text-r-neutral-foot font-normal">
+                      (
+                      {formatUsdValue(
+                        new BigNumber(formValues.listingPrice)
+                          .times(formValues.amount)
+                          .times(listingToken?.price || 0)
+                          .toString()
+                      )}
+                      )
+                    </span>
+                  </>
+                ) : (
+                  '-'
+                )}
+              </div>
+            </div>
+          </div>
+        ) : null}
+        <div className="py-[16px] space-y-[16px] border-b-[0.5px] border-solid border-rabby-neutral-line">
+          <div className="flex items-center justify-between">
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
+              Floor difference
+            </div>
+            <div
+              className={clsx(
+                'text-[13px] leading-[16px] font-medium',
+                floorDiff && floorDiff < 0
+                  ? 'text-r-red-default'
+                  : 'text-r-neutral-title1'
+              )}
+            >
+              {floorDiff ? (
+                <>
+                  {floorDiff < 0
+                    ? `${(floorDiff * 100).toFixed(1)}% below floor`
+                    : `${(floorDiff * 100).toFixed(1)}% above floor`}
+                </>
+              ) : (
+                '-'
+              )}
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <div
+              className={clsx(
+                'flex items-center gap-[2px]',
+                'text-[13px] leading-[16px] font-medium text-r-neutral-foot'
+              )}
+            >
+              Opensea Platform fees ({+(feesRate.market * 100).toFixed(2)}
+              %)
+              <Tooltip
+                title="This fee is OpenSea's service charge"
+                overlayClassName="rectangle"
+              >
+                <RcIconInfoCC />
+              </Tooltip>
+            </div>
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
+              {formatTokenAmount(
+                feesRate.market *
+                  +(formValues.listingPrice || 0) *
+                  (formValues.amount || 0)
+              )}{' '}
+              {listingToken?.symbol}{' '}
+              <span className="text-r-neutral-foot font-normal">
+                (
+                {formatUsdValue(
+                  feesRate.market *
+                    +(formValues.listingPrice || 0) *
+                    (formValues.amount || 0) *
+                    (listingToken?.price || 0)
+                )}
+                )
+              </span>
+            </div>
+          </div>
+          {feesRate.custom ? (
+            <div className="flex items-center justify-between">
+              <div
+                className={clsx(
+                  'flex items-center',
+                  'text-[13px] leading-[16px] font-medium text-r-neutral-foot'
+                )}
+              >
+                Creator fees ({+(feesRate.custom * 100).toFixed(2)}%)
+                <Tooltip
+                  title="Creator earnings will be paid by the seller."
+                  overlayClassName="rectangle"
+                >
+                  <RcIconInfoCC className="ml-[2px] mr-[4px]" />
+                </Tooltip>
+                <Switch
+                  checked={formValues.creatorFeeEnable}
+                  onChange={(v) => {
+                    setFormValues({
+                      creatorFeeEnable: v,
+                    });
+                  }}
+                ></Switch>
+              </div>
+              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
+                {formValues?.creatorFeeEnable && feesRate.custom ? (
+                  <>
+                    {formatTokenAmount(
+                      feesRate.custom *
+                        +(formValues.listingPrice || 0) *
+                        (formValues.amount || 0)
+                    )}{' '}
+                    {listingToken?.symbol}{' '}
+                    <span className="text-r-neutral-foot font-normal">
+                      (
+                      {formatUsdValue(
+                        feesRate.custom *
+                          +(formValues.listingPrice || 0) *
+                          (formValues.amount || 0) *
+                          (listingToken?.price || 0)
+                      )}
+                      )
+                    </span>
+                  </>
+                ) : (
+                  '-'
+                )}
+              </div>
+            </div>
+          ) : null}
+          <div className="flex items-center justify-between">
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
+              Rabby fee (0%)
+            </div>
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
+              -
+            </div>
+          </div>
+        </div>
+        <div className="py-[16px] mb-[12px]">
+          <div className="flex items-center justify-between">
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
+              Total est. proceeds
+            </div>
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
+              {formatTokenAmount(
+                new BigNumber(formValues.listingPrice || 0)
+                  .times(1 - feesRate.total)
+                  .times(formValues?.amount || 0)
+                  .toString()
+              )}{' '}
+              {listingToken?.symbol}{' '}
+              <span className="text-r-neutral-foot font-normal">
+                (
+                {formatUsdValue(
+                  new BigNumber(formValues.listingPrice || 0)
+                    .times(1 - feesRate.total)
+                    .times(formValues?.amount || 0)
+                    .times(listingToken?.price || 0)
+                    .toString()
+                )}
+                )
+              </span>
+            </div>
+          </div>
+        </div>
+        <footer>
+          <div className="flex items-center justify-between">
+            <Select
+              value={formValues.duration}
+              onChange={(v) => {
+                setFormValues({
+                  duration: v,
+                });
+              }}
+              className="custom-select"
+              options={options}
+            ></Select>
+            {currentAccount ? (
+              <SignProcessButton
+                type="primary"
+                size="large"
+                className="ml-[16px]"
+                onClick={handleListing}
+                account={currentAccount}
+                isSigning={isSubmitting && isSigning}
+                loading={isSubmitting}
+                disabled={
+                  !formValues.amount ||
+                  !formValues.listingPrice ||
+                  !formValues.duration
+                }
+              >
+                {isApproved ? 'Complete listing' : 'Approve and Listing'}
+              </SignProcessButton>
+            ) : null}
+          </div>
+        </footer>
+      </div>
+    </Container>
+  );
+};
+export const CreateListingModal: React.FC<Props> = (props) => {
+  return (
     <Modal
-      {...rest}
+      {...props}
       width={880}
       centered
       footer={null}
@@ -678,419 +1091,9 @@ export const CreateListingModal: React.FC<
       }}
       className="modal-support-darkmode"
       closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      destroyOnClose
     >
-      <Container>
-        <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
-          {isEdit ? 'Edit Listing' : 'Create listing'}
-        </h1>
-        <div className="px-[20px] pb-[24px]">
-          <div className="py-[12px] border-b-[0.5px] border-solid border-rabby-neutral-line">
-            <table className="w-full">
-              <colgroup>
-                <col width={260} />
-                <col width={100} />
-                <col width={100} />
-                <col width={100} />
-                <col width={100} />
-                <col width={180} />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
-                    NFT
-                  </th>
-                  <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
-                    Floor
-                  </th>
-                  <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
-                    Top Offer
-                  </th>
-                  <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
-                    Cost
-                  </th>
-                  <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
-                    Proceeds
-                  </th>
-                  <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
-                    Listed as
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <div className="flex items-center gap-[10px]">
-                      <NFTAvatar
-                        className="w-[36px] h-[36px]"
-                        chain={nftDetail?.chain}
-                        content={nftDetail?.content}
-                        type={nftDetail?.content_type}
-                      />
-                      <div className="flex-1 min-w-0 flex flex-col gap-[4px]">
-                        <div
-                          className={clsx(
-                            'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate'
-                          )}
-                        >
-                          {nftDetail?.name || '-'}
-                        </div>
-                        <div
-                          className={clsx(
-                            'text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate'
-                          )}
-                        >
-                          {nftDetail?.collection?.name || '-'}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div
-                      className={clsx(
-                        'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
-                      )}
-                    >
-                      {formatTokenAmount(
-                        nftDetail?.collection?.opensea_floor_price?.price || 0
-                      )}{' '}
-                      {
-                        nftDetail?.collection?.opensea_floor_price?.token
-                          ?.symbol
-                      }
-                    </div>
-                    <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
-                      {formatUsdValue(
-                        new BigNumber(
-                          nftDetail?.collection?.opensea_floor_price?.price || 0
-                        )
-                          .times(
-                            nftDetail?.collection?.opensea_floor_price?.token
-                              ?.price || 0
-                          )
-                          .toString()
-                      )}
-                    </div>
-                  </td>
-                  <td>
-                    {nftDetail?.best_offer_order ? (
-                      <>
-                        <div
-                          className={clsx(
-                            'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
-                          )}
-                        >
-                          {bestOfferPrice
-                            ? formatTokenAmount(bestOfferPrice.toString())
-                            : '-'}{' '}
-                          {nftDetail?.best_offer_order?.price?.currency || '-'}
-                        </div>
-                        <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
-                          {bestOfferUsdPrice
-                            ? formatUsdValue(bestOfferUsdPrice.toString())
-                            : '-'}
-                        </div>
-                      </>
-                    ) : (
-                      '-'
-                    )}
-                  </td>
-                  <td>
-                    <div
-                      className={clsx(
-                        'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
-                      )}
-                    >
-                      -
-                    </div>
-                  </td>
-                  <td>
-                    {formValues.listingPrice ? (
-                      <>
-                        <div
-                          className={clsx(
-                            'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
-                          )}
-                        >
-                          {formatTokenAmount(
-                            new BigNumber(formValues.listingPrice)
-                              .times(1 - feesRate.total)
-                              .times(formValues?.amount || 0)
-                              .toString()
-                          )}{' '}
-                          {listingToken?.symbol}
-                        </div>
-                        <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
-                          {formatUsdValue(
-                            new BigNumber(formValues.listingPrice)
-                              .times(1 - feesRate.total)
-                              .times(formValues?.amount || 0)
-                              .times(listingToken?.price || 0)
-                              .toString()
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <div
-                        className={clsx(
-                          'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
-                        )}
-                      >
-                        -
-                      </div>
-                    )}
-                  </td>
-                  <td>
-                    <Input
-                      className="custom-input"
-                      value={formValues.listingPrice}
-                      onChange={(e) => {
-                        setFormValues({ listingPrice: e.target.value });
-                      }}
-                      min={0}
-                      step={1e-14}
-                      type="number"
-                      placeholder="0"
-                      suffix={listingToken?.symbol}
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          {nftDetail?.amount && nftDetail?.amount > 1 ? (
-            <div className="py-[16px] space-y-[24px] border-b-[0.5px] border-solid border-rabby-neutral-line">
-              <div className="flex items-center justify-between">
-                <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
-                  Quantity
-                </div>
-                <div>
-                  <StepInput
-                    min={1}
-                    max={nftDetail?.amount || 1}
-                    value={formValues.amount}
-                    onChange={(v) => {
-                      setFormValues({
-                        amount: v,
-                      });
-                    }}
-                    maxTooltip={
-                      (formValues.amount || 0) >= (nftDetail?.amount || 1)
-                        ? `Your balance is ${nftDetail?.amount || 1}`
-                        : undefined
-                    }
-                  />
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
-                  Total listing price
-                </div>
-                <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
-                  {formValues?.listingPrice && formValues.amount ? (
-                    <>
-                      {formatTokenAmount(
-                        new BigNumber(formValues.listingPrice)
-                          .times(formValues.amount)
-                          .toString()
-                      )}{' '}
-                      {listingToken?.symbol}{' '}
-                      <span className="text-r-neutral-foot font-normal">
-                        (
-                        {formatUsdValue(
-                          new BigNumber(formValues.listingPrice)
-                            .times(formValues.amount)
-                            .times(listingToken?.price || 0)
-                            .toString()
-                        )}
-                        )
-                      </span>
-                    </>
-                  ) : (
-                    '-'
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : null}
-          <div className="py-[16px] space-y-[16px] border-b-[0.5px] border-solid border-rabby-neutral-line">
-            <div className="flex items-center justify-between">
-              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
-                Floor difference
-              </div>
-              <div
-                className={clsx(
-                  'text-[13px] leading-[16px] font-medium',
-                  floorDiff && floorDiff < 0
-                    ? 'text-r-red-default'
-                    : 'text-r-neutral-title1'
-                )}
-              >
-                {floorDiff ? (
-                  <>
-                    {floorDiff < 0
-                      ? `${(floorDiff * 100).toFixed(1)}% below floor`
-                      : `${(floorDiff * 100).toFixed(1)}% above floor`}
-                  </>
-                ) : (
-                  '-'
-                )}
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div
-                className={clsx(
-                  'flex items-center gap-[2px]',
-                  'text-[13px] leading-[16px] font-medium text-r-neutral-foot'
-                )}
-              >
-                Opensea Platform fees ({+(feesRate.market * 100).toFixed(2)}
-                %)
-                <Tooltip
-                  title="This fee is OpenSea's service charge"
-                  overlayClassName="rectangle"
-                >
-                  <RcIconInfoCC />
-                </Tooltip>
-              </div>
-              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
-                {formatTokenAmount(
-                  feesRate.market *
-                    +(formValues.listingPrice || 0) *
-                    (formValues.amount || 0)
-                )}{' '}
-                {listingToken?.symbol}{' '}
-                <span className="text-r-neutral-foot font-normal">
-                  (
-                  {formatUsdValue(
-                    feesRate.market *
-                      +(formValues.listingPrice || 0) *
-                      (formValues.amount || 0) *
-                      (listingToken?.price || 0)
-                  )}
-                  )
-                </span>
-              </div>
-            </div>
-            {feesRate.custom ? (
-              <div className="flex items-center justify-between">
-                <div
-                  className={clsx(
-                    'flex items-center',
-                    'text-[13px] leading-[16px] font-medium text-r-neutral-foot'
-                  )}
-                >
-                  Creator fees ({+(feesRate.custom * 100).toFixed(2)}%)
-                  <Tooltip
-                    title="Creator earnings will be paid by the seller."
-                    overlayClassName="rectangle"
-                  >
-                    <RcIconInfoCC className="ml-[2px] mr-[4px]" />
-                  </Tooltip>
-                  <Switch
-                    checked={formValues.creatorFeeEnable}
-                    onChange={(v) => {
-                      setFormValues({
-                        creatorFeeEnable: v,
-                      });
-                    }}
-                  ></Switch>
-                </div>
-                <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
-                  {formValues?.creatorFeeEnable && feesRate.custom ? (
-                    <>
-                      {formatTokenAmount(
-                        feesRate.custom *
-                          +(formValues.listingPrice || 0) *
-                          (formValues.amount || 0)
-                      )}{' '}
-                      {listingToken?.symbol}{' '}
-                      <span className="text-r-neutral-foot font-normal">
-                        (
-                        {formatUsdValue(
-                          feesRate.custom *
-                            +(formValues.listingPrice || 0) *
-                            (formValues.amount || 0) *
-                            (listingToken?.price || 0)
-                        )}
-                        )
-                      </span>
-                    </>
-                  ) : (
-                    '-'
-                  )}
-                </div>
-              </div>
-            ) : null}
-            <div className="flex items-center justify-between">
-              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
-                Rabby fee (0%)
-              </div>
-              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
-                -
-              </div>
-            </div>
-          </div>
-          <div className="py-[16px] mb-[12px]">
-            <div className="flex items-center justify-between">
-              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
-                Total est. proceeds
-              </div>
-              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
-                {formatTokenAmount(
-                  new BigNumber(formValues.listingPrice || 0)
-                    .times(1 - feesRate.total)
-                    .times(formValues?.amount || 0)
-                    .toString()
-                )}{' '}
-                {listingToken?.symbol}{' '}
-                <span className="text-r-neutral-foot font-normal">
-                  (
-                  {formatUsdValue(
-                    new BigNumber(formValues.listingPrice || 0)
-                      .times(1 - feesRate.total)
-                      .times(formValues?.amount || 0)
-                      .times(listingToken?.price || 0)
-                      .toString()
-                  )}
-                  )
-                </span>
-              </div>
-            </div>
-          </div>
-          <footer>
-            <div className="flex items-center justify-between">
-              <Select
-                value={formValues.duration}
-                onChange={(v) => {
-                  setFormValues({
-                    duration: v,
-                  });
-                }}
-                className="custom-select"
-                options={options}
-              ></Select>
-              {currentAccount ? (
-                <SignProcessButton
-                  type="primary"
-                  size="large"
-                  className="ml-[16px]"
-                  onClick={handleListing}
-                  account={currentAccount}
-                  isSigning={isSubmitting && isSigning}
-                  loading={isSubmitting}
-                  disabled={
-                    !formValues.amount ||
-                    !formValues.listingPrice ||
-                    !formValues.duration
-                  }
-                >
-                  {isApproved ? 'Complete listing' : 'Approve and Listing'}
-                </SignProcessButton>
-              ) : null}
-            </div>
-          </footer>
-        </div>
-      </Container>
+      <Content {...props} />
     </Modal>
   );
 };
