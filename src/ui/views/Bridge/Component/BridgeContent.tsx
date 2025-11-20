@@ -801,7 +801,7 @@ export const BridgeContent = () => {
               isSupportedChain ? (
                 <DirectSignToConfirmBtn
                   disabled={btnDisabled}
-                  title={t('page.bridge.title')}
+                  title={btnText}
                   onConfirm={handleBridge}
                   showRiskTips={showRiskTips && !btnDisabled}
                   accountType={currentAccount?.type}
