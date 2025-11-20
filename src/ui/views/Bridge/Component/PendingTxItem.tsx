@@ -219,14 +219,8 @@ const PendingStatusDetail = ({
   }, 1000);
 
   const receiveItem = useMemo(() => {
-    const token =
-      status === 'allSuccess'
-        ? data.actualToToken || data.toToken
-        : data.toToken;
-    const amount =
-      status === 'allSuccess'
-        ? data.actualToAmount || data.toAmount
-        : data.toAmount;
+    const token = data.actualToToken || data.toToken;
+    const amount = data.actualToAmount || data.toAmount;
     const usdValue = new BigNumber(amount)
       .multipliedBy(token?.price || 0)
       .toString();
@@ -308,7 +302,7 @@ const PendingStatusDetail = ({
 
     if (estimatedDuration) {
       return (
-        <div className="flex items-center justify-between mx-12 py-14 border-t-[0.5px] border-solid border-rabby-neutral-line">
+        <div className="flex items-center justify-between mx-12 py-12 border-t-[0.5px] border-solid border-rabby-neutral-line">
           {estimatedDuration === -1 ? (
             <div className="flex items-start gap-4">
               <RcIconFailedCC className="w-20 h-20 text-r-neutral-foot" />
@@ -451,7 +445,11 @@ const PendingStatusDetail = ({
       </div>
 
       {/* Step 2: Receiving on chain */}
-      <div className="flex flex-col bg-r-neutral-card-1 rounded-[8px] w-full mb-32">
+      <div
+        className={`flex flex-col bg-r-neutral-card-1 rounded-[8px] w-full ${
+          status === 'failed' ? 'mb-32' : ''
+        }`}
+      >
         <div className="border-b-[0.5px] border-solid border-rabby-neutral-line">
           <div className="flex items-center justify-between px-12 py-8">
             <div className="flex items-center gap-6">
@@ -574,6 +572,7 @@ export const BridgePendingTxItem = ({
       return;
     }
 
+    setData(historyData);
     if (
       historyData.hash &&
       (historyData.status === 'pending' || historyData.status === 'fromSuccess')
@@ -599,6 +598,7 @@ export const BridgePendingTxItem = ({
               historyData.fromChainId!,
               'failed'
             );
+            setData(null);
           }
         } else {
           if (findTx.status === 'completed' || findTx.status === 'failed') {
@@ -806,11 +806,13 @@ export const BridgePendingTxItem = ({
         closable={true}
         contentWrapperStyle={{
           maxHeight: '480px',
+          minHeight: '360px',
           height: 'auto',
         }}
         destroyOnClose
         bodyStyle={{
           padding: 0,
+          minHeight: '360px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
