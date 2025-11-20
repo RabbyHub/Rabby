@@ -118,19 +118,6 @@ export const AcceptOfferModal: React.FC<
     return bestOfferPrice.minus(floorPrice).div(floorPrice).toNumber();
   }, [nftDetail?.collection?.opensea_floor_price?.price, bestOfferPrice]);
 
-  const offerPrice = useMemo(() => {
-    if (!bestOffer) {
-      return new BigNumber(0);
-    }
-    return new BigNumber(bestOffer?.price?.value || 0)
-      .div(new BigNumber(10).exponentiatedBy(bestOffer?.price.decimals))
-      .div(bestOffer.remaining_quantity);
-  }, [bestOffer]);
-
-  const offerUsdPrice = useMemo(() => {
-    return offerPrice.times(offerToken?.price || 0);
-  }, [offerPrice, offerToken?.price]);
-
   const chain = findChain({
     serverId: nftDetail?.chain,
   });
@@ -209,7 +196,9 @@ export const AcceptOfferModal: React.FC<
               {offerToken ? (
                 <>
                   <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 text-right">
-                    {formatTokenAmount(offerPrice.toString())}{' '}
+                    {bestOfferPrice
+                      ? formatTokenAmount(bestOfferPrice.toString())
+                      : '-'}{' '}
                     {bestOffer?.price.currency}
                   </div>
                   <div
@@ -217,7 +206,9 @@ export const AcceptOfferModal: React.FC<
                       'text-[13px] leading-[16px] font-medium text-r-neutral-foot'
                     )}
                   >
-                    {formatUsdValue(offerUsdPrice.toString())}
+                    {bestOfferUsdPrice
+                      ? formatUsdValue(bestOfferUsdPrice.toString())
+                      : '-'}
                   </div>
                 </>
               ) : (
@@ -271,14 +262,16 @@ export const AcceptOfferModal: React.FC<
             </div>
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
               {formatTokenAmount(
-                feesRate.market * +(offerPrice || 0) * (formValues.amount || 0)
+                feesRate.market *
+                  +(bestOfferUsdPrice || 0) *
+                  (formValues.amount || 0)
               )}{' '}
               {offerToken?.symbol}{' '}
               <span className="text-r-neutral-foot font-normal">
                 (
                 {formatUsdValue(
                   feesRate.market *
-                    +(offerPrice || 0) *
+                    +(bestOfferUsdPrice || 0) *
                     (formValues.amount || 0) *
                     (offerToken?.price || 0)
                 )}
@@ -301,24 +294,30 @@ export const AcceptOfferModal: React.FC<
                 >
                   <RcIconInfoCC className="ml-[2px] mr-[4px]" />
                 </Tooltip>
-                <Switch disabled></Switch>
+                <Switch
+                  checked={formValues.creatorFeeEnable}
+                  onChange={(v) => {
+                    setFormValues({
+                      creatorFeeEnable: v,
+                    });
+                  }}
+                ></Switch>
               </div>
               <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
                 {formValues?.creatorFeeEnable && feesRate.custom ? (
                   <>
                     {formatTokenAmount(
-                      feesRate.custom *
-                        +(formValues.listingPrice || 0) *
-                        (formValues.amount || 0)
+                      new BigNumber(feesRate.custom)
+                        .times(bestOfferPrice || 0)
+                        .toString()
                     )}{' '}
                     {offerToken?.symbol}{' '}
                     <span className="text-r-neutral-foot font-normal">
                       (
                       {formatUsdValue(
-                        feesRate.custom *
-                          +(formValues.listingPrice || 0) *
-                          (formValues.amount || 0) *
-                          (offerToken?.price || 0)
+                        new BigNumber(feesRate.custom)
+                          .times(bestOfferUsdPrice || 0)
+                          .toString()
                       )}
                       )
                     </span>
@@ -345,8 +344,7 @@ export const AcceptOfferModal: React.FC<
             </div>
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
               {formatTokenAmount(
-                new BigNumber(offerPrice || 0)
-                  .times(1 - feesRate.total)
+                new BigNumber(bestOfferPrice || 0)
                   .times(1 - feesRate.total)
                   .times(formValues?.amount || 0)
                   .toString()
@@ -355,10 +353,9 @@ export const AcceptOfferModal: React.FC<
               <span className="text-r-neutral-foot font-normal">
                 (
                 {formatUsdValue(
-                  new BigNumber(offerPrice || 0)
+                  new BigNumber(bestOfferUsdPrice || 0)
                     .times(1 - feesRate.total)
                     .times(formValues?.amount || 0)
-                    .times(offerToken?.price || 0)
                     .toString()
                 )}
                 )
