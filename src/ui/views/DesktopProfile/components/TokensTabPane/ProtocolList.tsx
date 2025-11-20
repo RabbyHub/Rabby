@@ -179,13 +179,19 @@ const ProtocolItem = ({
             chainClassName="top-[-4px] right-[-4px]"
           />
           <div
-            className="ml-[10px] flex items-center border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot"
+            className="ml-[10px] flex items-center"
             onClick={(evt) => {
               evt.stopPropagation();
               openInTab(protocol.site_url, false);
             }}
           >
-            <span className="name inline-flex items-center text-[20px] leading-[24px] font-semibold text-r-neutral-title1">
+            <span
+              className={`
+                name inline-flex items-center text-[20px] leading-[24px] font-semibold 
+                text-r-neutral-title1 hover:text-r-blue-default 
+                border-b-[1px] border-b-solid border-transparent hover:border-b-r-blue-default
+              `}
+            >
               {protocol.name}
             </span>
             {!!isAppChain && (
