@@ -1519,7 +1519,8 @@
         "noTestnetAssets": "사용자 지정 네트워크 자산이 없습니다.",
         "searchPlaceholder": "토큰",
         "price": "가격",
-        "side": "측면"
+        "side": "측면",
+        "openInTab": "탭에서 열기"
       },
       "hd": {
         "ledger": {
@@ -3032,7 +3033,9 @@
       "toast": {
         "setAutoCloseSuccess": "포지션 자동 종료가 성공적으로 설정되었습니다.",
         "closePositionSuccess": "닫은 {{direction}} {{coin}}-USD: 크기 {{size}} 가격 ${{price}}에서",
-        "openPositionSuccess": "열린 {{direction}} {{coin}}-USD: 규모 {{size}} 가격 ${{price}}에서"
+        "openPositionSuccess": "열린 {{direction}} {{coin}}-USD: 규모 {{size}} 가격 ${{price}}에서",
+        "stopLossSuccess": "손절매가 성공적으로 설정되었습니다",
+        "takeProfitSuccess": "이익 실현 설정 완료되었습니다."
       },
       "closePositionPopup": {
         "pnl": "손익",
@@ -3042,7 +3045,43 @@
         "closeShort": "Short 매도 마감"
       },
       "cross": "교차",
-      "isolated": "격리된"
+      "isolated": "격리된",
+      "closeAllPopup": {
+        "description": "모든 열린 포지션은 시장 가격으로 종료됩니다.",
+        "title": "모든 포지션 닫기 확인"
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "위험",
+          "description": "귀하의 포지션은 청산의 고위험에 처해 있습니다. 청산 가격까지의 거리는 ≤3%입니다. 청산을 피하기 위해 마진을 추가하거나 포지션을 종료하는 것을 고려하십시오."
+        },
+        "warning": {
+          "title": "경고",
+          "description": "당신의 포지션이 청산 위험에 가까워지고 있습니다. 청산 가격까지의 거리는 3%에서 8% 사이입니다. 포지션을 주의 깊게 모니터링하고 마진 추가를 고려하세요."
+        },
+        "safe": {
+          "title": "안전한",
+          "description": "귀하의 포지션은 안전한 수준입니다. 청산 가격까지의 거리는 8% 이상입니다. 시장 상황을 계속 모니터링하십시오."
+        },
+        "liquidationDistance": "청산 거리",
+        "currentPrice": "현재 가격",
+        "gotIt": "알겠어요",
+        "title": "위험 수준",
+        "subTitle": "실시간 청산 거리 (%)",
+        "liquidationPrice": "청산 가격",
+        "liquidationDistanceTips": "청산 거리 (%)는 현재 가격이 청산 가격에서 얼마나 멀리 떨어져 있는지를 보여줍니다. 큰 거리는 더 안전한 포지션을 나타내고, 작은 거리는 더 높은 청산 위험을 의미합니다."
+      },
+      "searchPerpsPopup": {
+        "empty": "시장 없음",
+        "searchPerps": "Perps 검색",
+        "searchPosition": "위치 검색",
+        "openPosition": "포지션 열기",
+        "onePosition": "1 포지션",
+        "searchPlaceholder": "perps 검색",
+        "hasPosition": "포지션"
+      },
+      "closeAll": "모두 닫기",
+      "position": "포지션"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3150,6 +3189,85 @@
         "approvals": "승인",
         "transactions": "거래",
         "tokens": "토큰"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "margin": "마진",
+        "long": "롱",
+        "short": "공매도",
+        "newPosition": "포지션 열기",
+        "free": "무료",
+        "available": "사용 가능",
+        "insufficientBalance": "잔액 부족",
+        "leverage": "레버리지",
+        "invalidNumber": "잘못된 번호",
+        "providerFee": "하이퍼유동성 수수료",
+        "size": "사이즈",
+        "stopLossWhenPriceAbove": "가격이 위에 있을 때 손절잡기",
+        "minimumOrderSize": "최소 주문 금액은 $10입니다.",
+        "stopLossWhenPriceBelow": "가격이 아래로 떨어질 때 손절",
+        "takeProfitWhenPriceBelow": "가격이 아래일 때 이익 실현",
+        "rabbyFee": "Rabby 수수료",
+        "takeProfitWhenPriceAbove": "가격이 상승할 때 이익 실현",
+        "sizeTips": "거래의 총 가치 또는 수량으로, 마진 및 레버리지에 의해 설정됩니다.",
+        "maximumOrderSize": "최대 주문 크기는 {{amount}}입니다."
+      },
+      "PerpsEditMarginPopup": {
+        "margin": "마진",
+        "addMargin": "마진 추가",
+        "confirm": "확인",
+        "exceedMaxReduction": "최대 감소 초과",
+        "amountToReduce": "감소할 금액",
+        "currentPrice": "현재 가격",
+        "available": "사용 가능",
+        "amountToAdd": "추가할 금액",
+        "perpsBalance": "퍼프스 잔액",
+        "title": "마진 조정",
+        "insufficientBalance": "잔액 부족",
+        "addMarginSuccess": "마진이 성공적으로 추가되었습니다",
+        "reduceMarginTooltip": "포지션을 줄이기에 충분한 마진이 아닙니다.",
+        "liqPrice": "Liq. 가격:",
+        "reduceMargin": "마진 축소",
+        "reduceMarginSuccess": "마진이 성공적으로 감소되었습니다."
+      },
+      "PerpsClosePositionPopup": {
+        "fee": "수수료",
+        "total": "총합",
+        "confirm": "확인",
+        "amount": "금액",
+        "closedPnl": "닫은 PNL",
+        "receive": "받기",
+        "minimumWarning": "최소 청산 금액은 {{percent}}%입니다.",
+        "title": "포지션 닫기"
+      },
+      "PerpsAutoCloseModal": {
+        "priceAbove": "가격 상승",
+        "title": "포지션 자동 종료",
+        "currentPrice": "현재 가격:",
+        "stopLoss": "손절매",
+        "confirm": "확인",
+        "takeProfitWhen": "이익 실현 시",
+        "stopLossWhen": "손절매 시",
+        "youLoss": "당신은 잃습니다",
+        "priceBelow": "가격 이하",
+        "takeProfitExpectedPNL": "이익 실현 예상 PNL",
+        "stopLossExpectedPNL": "손절매 예상 PNL",
+        "youGain": "당신은 얻습니다",
+        "takeProfitTipsShort": "이익 실현 가격은 현재 가격보다 낮아야 합니다.",
+        "stopLossWhenPriceAbove": "가격이 위에 있을 때 손절매",
+        "EntryAndCurrentPrice": "진입: ${{entryPrice}} 현재: ${{currentPrice}}",
+        "takeProfitWhenPriceAbove": "가격이 이상일 때 이익 실현",
+        "stopLossWhenPriceBelow": "가격이 아래로 떨어질 때 손절 매도",
+        "takeProfitWhenPriceBelow": "가격이 아래일 때 이익 실현",
+        "noPosition": "먼저 마진을 입력해야 합니다.",
+        "takeProfitTipsLong": "이익 실현 가격은 현재 가격보다 높아야 합니다.",
+        "stopLossTipsLong": "손절 가격은 현재 가격보다 낮아야 합니다.",
+        "stopLossTipsShortLiquidation": "가격이 청산 가격( {{price}} )보다 높습니다.",
+        "stopLossTipsShort": "손절매 가격은 현재 가격보다 높아야 합니다.",
+        "stopLossTipsLongLiquidation": "가격이 청산가( {{price}} )보다 낮습니다.",
+        "cancel": "취소",
+        "takeProfit": "이익 실현"
       }
     }
   },

@@ -59,7 +59,8 @@ export const useTokens = (
   isTestnet: boolean = chainServerId
     ? !!findChain({ serverId: chainServerId })?.isTestnet
     : false,
-  showAll = false
+  showAll = false,
+  showBlocked = false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
@@ -162,6 +163,16 @@ export const useTokens = (
     setData(_data);
     const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
 
+    const blocked = showBlocked
+      ? []
+      : (await wallet.getBlockedToken()).filter((token) => {
+          if (isTestnet) {
+            return checkIsTestnet(token.chain);
+          } else {
+            return !checkIsTestnet(token.chain);
+          }
+        });
+
     if (!snapshot) {
       log('--Terminate-tokens-snapshot-', userAddr);
       setLoading(false);
@@ -188,9 +199,11 @@ export const useTokens = (
       setData(_data);
       _tokens = sortWalletTokens(_data);
       if (isTestnet) {
-        dispatch.account.setTestnetTokenList(filterDisplayToken(_tokens, []));
+        dispatch.account.setTestnetTokenList(
+          filterDisplayToken(_tokens, blocked)
+        );
       } else {
-        dispatch.account.setTokenList(filterDisplayToken(_tokens, []));
+        dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
       }
       setLoading(false);
       // setTokens(filterDisplayToken(_tokens, blocked));
@@ -239,9 +252,23 @@ export const useTokens = (
         // customize with balance
         customTokenList.push(token);
       }
+      if (
+        blocked.find(
+          (t) =>
+            isSameAddress(token.id, t.address) &&
+            token.chain === t.chain &&
+            token.is_core
+        )
+      ) {
+        blockedTokenList.push(token);
+      }
     });
     const apiProvider = isTestnet ? wallet.testnetOpenapi : wallet.openapi;
-
+    const noBalanceBlockedTokens = blocked.filter((token) => {
+      return !blockedTokenList.find(
+        (t) => isSameAddress(token.address, t.id) && token.chain === t.chain
+      );
+    });
     const noBalanceCustomizeTokens = customizeTokens.filter((token) => {
       return !customTokenList.find(
         (t) => isSameAddress(token.address, t.id) && token.chain === t.chain
@@ -255,6 +282,13 @@ export const useTokens = (
       customTokenList.push(
         ...noBalanceCustomTokens.filter((token) => !token.is_core)
       );
+    }
+    if (noBalanceBlockedTokens.length > 0) {
+      const blockedTokens = await apiProvider.customListToken(
+        noBalanceBlockedTokens.map((item) => `${item.chain}:${item.address}`),
+        userAddr
+      );
+      blockedTokenList.push(...blockedTokens.filter((token) => token.is_core));
     }
     const formattedCustomTokenList = customTokenList.map(
       (token) => new DisplayedToken(token) as AbstractPortfolioToken
@@ -286,12 +320,12 @@ export const useTokens = (
     _tokens = sortWalletTokens(_data);
     if (isTestnet) {
       dispatch.account.setTestnetTokenList([
-        ...filterDisplayToken(_tokens, []),
+        ...filterDisplayToken(_tokens, blocked),
         ...formattedCustomTokenList,
       ]);
     } else {
       dispatch.account.setTokenList([
-        ...filterDisplayToken(_tokens, []),
+        ...filterDisplayToken(_tokens, blocked),
         ...formattedCustomTokenList,
       ]);
     }

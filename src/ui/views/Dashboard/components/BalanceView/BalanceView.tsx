@@ -35,7 +35,7 @@ import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import type { Account } from '@/background/service/preference';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { OfflineChainNotify } from '../OfflineChainNotify';
-import { RcIconExternalCC } from '@/ui/assets/dashboard';
+import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
 
 export const BalanceView = ({
   currentAccount,
@@ -209,9 +209,9 @@ export const BalanceView = ({
 
   const { activePopup, setData, componentName } = useCommonPopupView();
   const onClickViewAssets = () => {
-    // activePopup('AssetList');
-    wallet.openInDesktop('/desktop/profile');
-    window.close();
+    activePopup('AssetList');
+    // wallet.openInDesktop('/desktop/profile');
+    // window.close();
   };
 
   useEffect(() => {
@@ -420,7 +420,7 @@ export const BalanceView = ({
                     matteredChainBalances={chainBalancesWithValue.slice(0)}
                     gnosisNetworks={gnosisNetworks}
                   />
-                  <RcIconExternalCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
+                  <RcIconArrowRightCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
                 </div>
               ) : (
                 <div
@@ -436,7 +436,7 @@ export const BalanceView = ({
                   >
                     {t('page.dashboard.assets.noAssets')}
                   </div>
-                  <RcIconExternalCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
+                  <RcIconArrowRightCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
                 </div>
               )}
             </div>

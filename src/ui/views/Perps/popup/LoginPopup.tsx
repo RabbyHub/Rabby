@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import { useAlias } from '@/ui/utils';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
-import { SelectAddressList } from './SelectAddressList';
+import { SelectAddressList } from '../components/SelectAddressList';
 import { Account } from '@/background/service/preference';
 
 export const GasACcountCurrentAddress = ({

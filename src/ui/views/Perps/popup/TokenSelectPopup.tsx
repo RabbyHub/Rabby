@@ -21,7 +21,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { FixedSizeList } from 'react-window';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { PerpsBlueBorderedButton } from './BlueBorderedButton';
+import { PerpsBlueBorderedButton } from '../components/BlueBorderedButton';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export type TokenSelectPopupProps = PopupProps & {
