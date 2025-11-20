@@ -4,6 +4,7 @@ import { ScrollToDomById } from '../utils';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import { ReactComponent as RcIconCircleRight } from '@/ui/views/DesktopProfile/components/ApprovalsTabPane/icons/right-cc.svg';
+import { TOKEN_WALLET_ANCHOR_ID } from '../constant';
 
 const AnchorWrapper = styled.div`
   background-color: var(--r-neutral-bg-1);
@@ -192,34 +193,36 @@ export const TopShortcut = memo(
             setRShow(show);
           }}
         >
-          {projects.map((v) => {
-            if (!v) {
-              return null;
-            }
+          {projects
+            .filter((v) => v.id !== TOKEN_WALLET_ANCHOR_ID)
+            .map((v) => {
+              if (!v) {
+                return null;
+              }
 
-            const name = v.name;
-            if (v.netWorth === 0 && !v._portfolios?.length) return null;
-            return (
-              <a
-                href={`#${v.id}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  ScrollToDomById(v.id, true);
-                }}
-                className={clsx(
-                  'inline-block mr-[4px] w-[100px] h-[32px] px-[10px] truncate',
-                  'text-r-neutral-title1 rounded-[12px] bg-r-neutral-bg-2',
-                  'leading-[32px] text-r-neutral-body text-center',
-                  id === v.id
-                    ? ' text-rb-brand-default bg-rb-brand-light-1'
-                    : ''
-                )}
-                key={v.id}
-              >
-                {name || v.id}
-              </a>
-            );
-          })}
+              const name = v.name;
+              if (v.netWorth === 0 && !v._portfolios?.length) return null;
+              return (
+                <a
+                  href={`#${v.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    ScrollToDomById(v.id, true);
+                  }}
+                  className={clsx(
+                    'inline-block mr-[4px] w-[100px] h-[32px] px-[10px] truncate',
+                    'text-r-neutral-title1 rounded-[12px] bg-r-neutral-bg-2',
+                    'leading-[32px] text-r-neutral-body text-center',
+                    id === v.id
+                      ? ' text-rb-brand-default bg-rb-brand-light-1'
+                      : ''
+                  )}
+                  key={v.id}
+                >
+                  {name || v.id}
+                </a>
+              );
+            })}
         </CenterWrapper>
         <DirectionIcon
           className={clsx({
