@@ -28,7 +28,6 @@ import styled from 'styled-components';
 import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
 import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
 import NumberInput from '@/ui/component/NFTNumberInput';
-import { generateRandomSalt } from '@opensea/seaport-js/src/utils/order';
 import {
   CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
   OPENSEA_CONDUIT_ADDRESS,
@@ -39,7 +38,7 @@ import { StepInput } from '@/ui/component/StepInput';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
-import { calcBestOfferPrice } from '../utils';
+import { calcBestOfferPrice, generateRandomSalt } from '../utils';
 import { useMixedSigner } from '@/ui/hooks/useMixedSigner';
 import { SignProcessButton } from '@/ui/component/SignProcessButton';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';

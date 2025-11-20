@@ -59,7 +59,7 @@ const config = {
     rules: [
       {
         test: /\.jsx?$|\.tsx?$/,
-        exclude: /node_modules\/(?!(.*seaport-js.*)\/)/,
+        exclude: /node_modules/,
         oneOf: [
           {
             // prevent webpack remove this file's output even it's not been used in entry
