@@ -710,7 +710,7 @@ export const CreateListingModal: React.FC<
                 {floorDiff ? (
                   <>
                     {floorDiff < 0
-                      ? `-${(floorDiff * 100).toFixed(1)}% below floor`
+                      ? `${(floorDiff * 100).toFixed(1)}% below floor`
                       : `${(floorDiff * 100).toFixed(1)}% above floor`}
                   </>
                 ) : (
