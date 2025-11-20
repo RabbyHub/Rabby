@@ -25,23 +25,14 @@ export const MiniTypedDataApprovalV2: React.FC<{
   const state = useTypedDataSignatureStore();
   const { status, request, error, progress } = state;
 
-  if (
-    !request ||
-    !request.config.account ||
-    status === 'idle' ||
-    request.config.silent
-  ) {
-    return null;
-  }
-
-  const currentAccount = request.config.account;
-  const config = request.config;
+  const currentAccount = request?.config.account;
+  const config = request?.config;
 
   const handleClose = () => typedDataSignatureStore.close();
   const handleAllow = () => typedDataSignatureStore.retry();
 
   const hdType =
-    currentAccount!.type === KEYRING_CLASS.HARDWARE.LEDGER
+    currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER
       ? 'wired'
       : 'privatekey';
 
@@ -79,8 +70,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
     return msg;
   }, [error, currentAccount?.type]);
 
-  const total = progress?.total ?? request.txs.length;
-  const current = progress?.current ?? 0;
+  const total = progress?.total ?? request?.txs?.length;
 
   // mock mini sign task
   const task = {
@@ -95,7 +85,16 @@ export const MiniTypedDataApprovalV2: React.FC<{
     total: total,
   } as any;
 
-  if (isDesktop && !config.getContainer) {
+  if (
+    !request ||
+    !request.config.account ||
+    status === 'idle' ||
+    (request.config.silent && !error)
+  ) {
+    return null;
+  }
+
+  if (isDesktop && !config?.getContainer) {
     const desktopPortalClassName = 'desktop-mini-signer-typed-data';
     const desktopMiniSignerGetContainer = `.${desktopPortalClassName}`;
     return (
@@ -120,7 +119,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
           />
         </Popup>
         <Modal
-          visible={status === 'signing'}
+          visible={status === 'signing' || error}
           onClose={() => handleClose()}
           maskClosable={false}
           closable={false}
@@ -131,7 +130,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
             background: 'rgba(0,0,0,0.3)',
             backdropFilter: 'blur(8px)',
           }}
-          key={`${currentAccount?.address}-${currentAccount?.type}`}
+          key={`typedDate-${currentAccount?.address}-${currentAccount?.type}`}
           width={400}
           centered
           content
@@ -140,7 +139,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
           <PopupContainer>
             <div className={clsx(desktopPortalClassName)}>
               <MiniFooterBar
-                // directSubmit={directSubmit}
+                className="rounded-none h-[600px] flex flex-col"
                 directSubmit
                 hasShadow={false}
                 origin={INTERNAL_REQUEST_SESSION.origin}
@@ -154,6 +153,12 @@ export const MiniTypedDataApprovalV2: React.FC<{
                 task={task as any}
                 disabledProcess={false}
                 account={currentAccount || undefined}
+                getContainer={desktopMiniSignerGetContainer}
+                Header={
+                  <>
+                    <div className="mt-auto" />
+                  </>
+                }
               />
             </div>
           </PopupContainer>

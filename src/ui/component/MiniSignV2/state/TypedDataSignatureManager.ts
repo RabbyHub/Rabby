@@ -208,11 +208,6 @@ class TypedDataSignatureManager {
     if (!request) {
       throw new Error('No typed data request to retry');
     }
-    this.ensureNoPending();
-    this.lastRequest = request;
-    const promise = new Promise<string[]>((resolve, reject) => {
-      this.pendingResult = { resolve, reject };
-    });
     const startIndex = this.resumeIndex || 0;
     const existingResults = [...this.partialResults];
     this.setState({
@@ -222,7 +217,6 @@ class TypedDataSignatureManager {
       progress: { current: startIndex, total: request.txs.length },
     });
     this.runSigningFlow({ request, startIndex, existingResults, getContainer });
-    return promise;
   }
 
   private reset() {
