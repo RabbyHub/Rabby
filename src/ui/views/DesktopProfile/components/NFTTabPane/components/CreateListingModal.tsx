@@ -22,7 +22,7 @@ import {
 } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import { last, unescape } from 'lodash';
+import { last, sum, unescape } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
@@ -374,6 +374,8 @@ export const Content: React.FC<Props> = (props) => {
     account: currentAccount!,
   });
 
+  const [totalSteps, setTotalSteps] = useState(1);
+
   console.log({ isSigning });
 
   const buildTxs = useMemoizedFn(async () => {
@@ -479,6 +481,8 @@ export const Content: React.FC<Props> = (props) => {
 
       const steps = txsInfo.steps;
 
+      setTotalSteps(sum(steps.map((item) => item.txs.length)));
+
       const runFallback = async () => {
         const result: string[] = [];
         for (const step of steps) {
@@ -564,6 +568,9 @@ export const Content: React.FC<Props> = (props) => {
       },
       onSuccess() {
         onSuccess?.();
+      },
+      onFinally() {
+        setTotalSteps(1);
       },
     }
   );
@@ -1067,6 +1074,8 @@ export const Content: React.FC<Props> = (props) => {
                   !formValues.listingPrice ||
                   !formValues.duration
                 }
+                currentIndex={currentIndex}
+                total={totalSteps}
               >
                 {isApproved ? 'Complete listing' : 'Approve and Listing'}
               </SignProcessButton>

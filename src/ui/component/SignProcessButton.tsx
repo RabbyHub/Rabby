@@ -13,6 +13,8 @@ export const SignProcessButton: React.FC<
   ButtonProps & {
     account: Account;
     isSigning?: boolean;
+    currentIndex?: number;
+    total?: number;
   }
 > = ({
   account,
@@ -21,6 +23,8 @@ export const SignProcessButton: React.FC<
   title,
   onClick,
   children,
+  currentIndex,
+  total,
   ...btnProps
 }) => {
   const handleClick = useMemoizedFn(
@@ -55,7 +59,8 @@ export const SignProcessButton: React.FC<
         )}
       >
         <ThemeIcon src={addressTypeIcon} className={'w-[16px] h-[16px]'} />
-        Sending signing request <Dots />
+        Sending signing request{' '}
+        {(total || 0) > 1 ? `(${currentIndex || 1}/${total})` : ''} <Dots />
       </div>
     );
   }
