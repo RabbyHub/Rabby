@@ -1272,9 +1272,9 @@
         "level": {
           "$unknown": "未知",
           "custom": "自定义",
-          "fast": "立即",
-          "normal": "快速",
-          "slow": "标准"
+          "fast": "",
+          "normal": "",
+          "slow": ""
         },
         "popupDesc": "矿工费将根据你设置的 Gas Price 从转账金额中预留",
         "popupTitle": "设置 Gas Price (Gwei)"
@@ -3465,9 +3465,9 @@
     },
     "ReserveGasPopup": {
       "doNotReserve": "不要保留Gas",
-      "normal": "正常",
-      "instant": "即时",
-      "fast": "快速",
+      "normal": "",
+      "instant": "",
+      "fast": "",
       "title": "Reserve Gas"
     },
     "OpenExternalWebsiteModal": {

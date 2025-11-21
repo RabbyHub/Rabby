@@ -676,9 +676,9 @@
         "level": {
           "$unknown": "Неизвестно",
           "custom": "Вручную",
-          "fast": "Мгновенно",
-          "normal": "Быстро",
-          "slow": "Стандарт"
+          "fast": "",
+          "normal": "",
+          "slow": ""
         },
         "popupDesc": "Стоимость газа будет зарезервирована из суммы перевода на основе установленной вами цены газа",
         "popupTitle": "Установите цену газа (Gwei)"
@@ -3429,10 +3429,10 @@
     },
     "ReserveGasPopup": {
       "doNotReserve": "Не резервировать Gas",
-      "instant": "Мгновенный",
+      "instant": "",
       "title": "Резервный Gas",
-      "fast": "Быстро",
-      "normal": "Нормальный"
+      "fast": "",
+      "normal": ""
     },
     "OpenExternalWebsiteModal": {
       "button": "Продолжить",

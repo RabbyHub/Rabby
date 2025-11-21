@@ -199,10 +199,10 @@
     },
     "ReserveGasPopup": {
       "title": "Réserve de Gas",
-      "normal": "Normal",
+      "normal": "",
       "doNotReserve": "Ne réservez pas de Gas",
-      "instant": "Instant",
-      "fast": "Rapide"
+      "instant": "",
+      "fast": ""
     },
     "OpenExternalWebsiteModal": {
       "button": "Continuer",
@@ -1639,9 +1639,9 @@
         "level": {
           "$unknown": "Inconnu",
           "custom": "Personnalisé",
-          "fast": "Instantané",
-          "normal": "Rapide",
-          "slow": "Standard"
+          "fast": "",
+          "normal": "",
+          "slow": ""
         },
         "popupDesc": "Le coût du gaz sera réservé sur le montant du transfert en fonction du prix du gaz que vous avez fixé",
         "popupTitle": "Fixer le prix du gaz (Gwei)"
