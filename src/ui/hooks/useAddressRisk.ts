@@ -68,7 +68,7 @@ export const useAddressRisks = (
     AddrDescResponse['desc'] | undefined
   >();
   const [loadingAddrDesc, setLoadingAddrDesc] = useState(true);
-  const [hasNoSend, setHasNoSend] = useState(false);
+  const [hasNoSent, setHasNoSent] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [loadingHasTransfer, setLoadingHasTransfer] = useState(true);
 
@@ -114,7 +114,7 @@ export const useAddressRisks = (
                   ),
           }
         : null,
-      hasNoSend
+      hasNoSent
         ? {
             type: RiskType.NEVER_SEND,
             value:
@@ -124,7 +124,7 @@ export const useAddressRisks = (
           }
         : null,
     ].filter((i) => !!i) as { type: RiskType; value: string }[];
-  }, [scene, addressDesc, hasNoSend, t]);
+  }, [scene, addressDesc, hasNoSent, t]);
 
   const myTop10AccountList = useMemo(
     () =>
@@ -155,7 +155,7 @@ export const useAddressRisks = (
       riskGetRef.current = false;
       setAddressDesc(undefined);
       setLoadingAddrDesc(true);
-      setHasNoSend(false);
+      setHasNoSent(false);
       setHasError(false);
       setLoadingHasTransfer(true);
     }
@@ -214,7 +214,7 @@ export const useAddressRisks = (
     (async () => {
       setLoadingHasTransfer(true);
       setHasError(false);
-      let hasSended = false;
+      let hasSent = false;
       let hasError = false;
       try {
         const timeoutPromise = new Promise((_, reject) => {
@@ -227,7 +227,7 @@ export const useAddressRisks = (
             }
             queue.add(async () => {
               try {
-                if (hasSended || hasError) {
+                if (hasSent || hasError) {
                   return;
                 }
                 const res = await wallet.openapi.hasTransferAllChain(
@@ -235,7 +235,7 @@ export const useAddressRisks = (
                   address
                 );
                 if (res?.has_transfer) {
-                  hasSended = true;
+                  hasSent = true;
                   queue.clear();
                   resolve();
                 }
@@ -251,12 +251,12 @@ export const useAddressRisks = (
         });
 
         await Promise.race([checkTransferPromise, timeoutPromise]);
-        setHasNoSend(!hasSended);
+        setHasNoSent(!hasSent);
         setHasError(hasError);
       } catch (error) {
         console.error('check transfer timeout or error', error);
         setHasError(true);
-        setHasNoSend(true);
+        setHasNoSent(true);
         queue.clear();
       } finally {
         onLoadFinished?.();
@@ -268,7 +268,7 @@ export const useAddressRisks = (
   return {
     risks,
     addressDesc,
-    hasNoSend,
+    hasNoSent,
     loading: loadingHasTransfer || loadingAddrDesc,
     loadingAddrDesc,
     loadingHasTransfer,

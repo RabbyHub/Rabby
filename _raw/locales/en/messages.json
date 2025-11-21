@@ -1079,10 +1079,10 @@
         "AddToWhitelist": "Add to Whitelist",
         "riskType": {
           "risks": {
-            "noSend": "No transfers to this address in 180 days",
             "dexNoDeposite": "Not a CEX deposit address, funds may be lost",
             "contractAddress": "Contract address detected, funds may be lost",
-            "scamAddress": "Scam address flagged by Rabby"
+            "scamAddress": "Scam address flagged by Rabby",
+            "noSend": "You haven’t sent to this address in 180 days"
           }
         }
       }
@@ -3267,10 +3267,10 @@
         "AddToWhitelist": "Add to Whitelist",
         "riskType": {
           "risks": {
-            "noSend": "No transfers to this address in 180 days",
             "dexNoDeposite": "You're sending to a non-deposit exchange address",
             "contractAddress": "You're sending to a contract, funds may be lost",
-            "scamAddress": "You're sending to a scam address"
+            "scamAddress": "You're sending to a scam address",
+            "noSend": "You haven’t sent to this address in 180 days"
           }
         }
       },

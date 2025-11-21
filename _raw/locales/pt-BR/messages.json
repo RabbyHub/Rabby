@@ -2840,8 +2840,7 @@
           "risks": {
             "scamAddress": "Endereço de golpe sinalizado pelo Rabby",
             "contractAddress": "Endereço do contrato detectado, os fundos podem ser perdidos",
-            "dexNoDeposite": "Não é um endereço de depósito CEX, os fundos podem ser perdidos",
-            "noSend": "Nenhuma transferência para este endereço nos últimos 180 dias"
+            "dexNoDeposite": "Não é um endereço de depósito CEX, os fundos podem ser perdidos"
           }
         },
         "cexAddress": "{{cexName}} Endereço",
@@ -3107,7 +3106,6 @@
         "riskType": {
           "risks": {
             "scamAddress": "Você está enviando para um endereço de golpe",
-            "noSend": "Nenhuma transferência para este endereço nos últimos 180 dias",
             "dexNoDeposite": "Você está enviando para um endereço de exchange não depositária",
             "contractAddress": "Você está enviando para um contrato, os fundos podem ser perdidos."
           }

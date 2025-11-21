@@ -2838,7 +2838,6 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "Sin transferencias a esta dirección en 180 días",
             "contractAddress": "Dirección de contrato detectada, los fondos pueden perderse.",
             "scamAddress": "Dirección de estafa marcada por Rabby",
             "dexNoDeposite": "No es una dirección de depósito CEX, los fondos pueden perderse."
@@ -3107,7 +3106,6 @@
         "riskType": {
           "risks": {
             "scamAddress": "Estás enviando a una dirección de estafa",
-            "noSend": "Sin transferencias a esta dirección en 180 días",
             "contractAddress": "Estás enviando a un contrato, los fondos pueden perderse.",
             "dexNoDeposite": "Estás enviando a una dirección de intercambio no de depósito"
           }

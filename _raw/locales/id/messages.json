@@ -2835,7 +2835,6 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "Tidak ada transfer ke alamat ini dalam 180 hari",
             "contractAddress": "Alamat kontrak terdeteksi, dana mungkin hilang",
             "dexNoDeposite": "Bukan alamat deposit CEX, dana mungkin hilang",
             "scamAddress": "Alamat penipuan ditandai oleh Rabby"
@@ -3105,7 +3104,6 @@
           "risks": {
             "scamAddress": "Anda mengirim ke alamat penipuan",
             "dexNoDeposite": "Anda mengirim ke alamat exchange non-deposit",
-            "noSend": "Tidak ada transfer ke alamat ini dalam 180 hari",
             "contractAddress": "Anda mengirim ke kontrak, dana mungkin hilang"
           }
         },

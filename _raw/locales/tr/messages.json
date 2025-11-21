@@ -2842,7 +2842,6 @@
         "riskType": {
           "risks": {
             "contractAddress": "Kontrat adresi tespit edildi, fonlar kaybolabilir.",
-            "noSend": "Bu adrese 180 gün boyunca transfer yok.",
             "dexNoDeposite": "CEX depozit adresi değil, fonlar kaybolabilir",
             "scamAddress": "Rabby tarafından işaretlenmiş dolandırıcılık adresi"
           }
@@ -3111,7 +3110,6 @@
           "risks": {
             "scamAddress": "Kötü amaçlı bir adrese gönderiyorsunuz.",
             "contractAddress": "Bir sözleşmeye gönderim yapıyorsunuz, fonlar kaybolabilir.",
-            "noSend": "Bu adrese son 180 günde hiçbir transfer yapılmadı.",
             "dexNoDeposite": "Gönderdiğiniz adres bir non-deposit borsa adresidir."
           }
         },

@@ -2840,8 +2840,7 @@
           "risks": {
             "scamAddress": "Scam-Adresse von Rabby markiert",
             "contractAddress": "Vertragsadresse erkannt, Gelder könnten verloren gehen",
-            "dexNoDeposite": "Nicht eine CEX-Einzahlungsadresse, Gelder könnten verloren gehen",
-            "noSend": "Keine Überweisungen an diese Adresse in 180 Tagen"
+            "dexNoDeposite": "Nicht eine CEX-Einzahlungsadresse, Gelder könnten verloren gehen"
           }
         },
         "cexAddress": "{{cexName}} Adresse",
@@ -3105,7 +3104,6 @@
         "riskType": {
           "risks": {
             "scamAddress": "Sie senden an eine Betrugsadresse",
-            "noSend": "Keine Überweisungen an diese Adresse in 180 Tagen",
             "dexNoDeposite": "Sie senden an eine Nicht-Einzahlungsbörse-Adresse",
             "contractAddress": "Sie senden an einen Vertrag, Gelder könnten verloren gehen."
           }
