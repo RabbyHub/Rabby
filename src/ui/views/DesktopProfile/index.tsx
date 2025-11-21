@@ -47,6 +47,8 @@ import TopShortcut, {
 import { AbstractProject } from '@/ui/utils/portfolio/types';
 import { NFTTabPane } from './components/NFTTabPane';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { ga4 } from '@/utils/ga4';
 
 const Wrap = styled.div`
   height: 100%;
@@ -170,6 +172,24 @@ export const DesktopProfile = () => {
     // window.location.reload();
     handleUpdate();
   });
+
+  const isReportedRef = useRef(false);
+  useEffect(() => {
+    if (isReportedRef.current) {
+      return;
+    }
+    if (!action) {
+      matomoRequestEvent({
+        category: 'RabbyWeb_Active',
+        action: 'RabbyWeb_Portfolio',
+      });
+
+      ga4.fireEvent('RabbyWeb_Active', {
+        event_category: 'RabbyWeb_Portfolio',
+      });
+      isReportedRef.current = true;
+    }
+  }, [action]);
 
   return (
     <>
