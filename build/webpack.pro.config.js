@@ -2,8 +2,6 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 
-const SecSDK = require('supplychain_security_sdk').default;
-
 const sentrySourceMap = !!process.env.sourcemap || false;
 
 const config = {
@@ -33,13 +31,6 @@ const config = {
         authToken: process.env.SENTRY_AUTH_TOKEN,
       }),
     ,
-    new SecSDK({
-      dev: false,
-      disableProtoAssets: ['pageProvider.js'],
-      skipScuttleAssets: ['pageProvider.js'],
-      scuttle: true,
-      monkeyPatchGlobals: [{ expr: 'this._targetWindow' }],
-    }),
   ].filter(Boolean),
 
   optimization: {
