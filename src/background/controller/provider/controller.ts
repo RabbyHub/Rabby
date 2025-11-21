@@ -78,6 +78,9 @@ import {
   removeLeadingZeroes,
 } from '@/background/utils/7702';
 import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
+import Safe from '@rabby-wallet/gnosis-sdk';
+import GnosisKeyring from 'background/service/keyring/eth-gnosis-keyring';
+import { SafeVersion } from '@safe-global/types-kit';
 
 const reportSignText = (params: {
   method: string;
@@ -1511,6 +1514,171 @@ class ProviderController extends BaseController {
       }
     }
     return null;
+  };
+
+  @Reflect.metadata('SAFE', true)
+  walletGetCapabilities = async (req: ProviderRequest) => {
+    const {
+      data: { params },
+    } = req;
+    const [address] = params || [];
+    const origin = req.session?.origin;
+
+    if (!Wallet.isUnlocked() || !origin || !Wallet.getSite(origin)) {
+      console.error('walletGetCapabilities', 'unauthorized: not connected');
+      throw ethErrors.provider.unauthorized();
+    }
+
+    if (
+      address &&
+      (await Wallet.getAccountByAddress(address))?.address.toLowerCase() !==
+        address.toLowerCase()
+    ) {
+      console.error('walletGetCapabilities', 'unauthorized: not authorized');
+      throw ethErrors.provider.unauthorized();
+    }
+
+    try {
+      const keyring: GnosisKeyring = await keyringService.getKeyringForAccount(
+        address || preferenceService.getCurrentAccount()?.address,
+        KEYRING_TYPE.GnosisKeyring
+      );
+      const networks = keyring.networkIdsMap?.[address.toLowerCase()];
+
+      const capabilities: Record<
+        `0x${string}`,
+        { atomicBatch: { supported: boolean } } & Record<string, unknown>
+      > = {};
+
+      for (const network of networks || []) {
+        capabilities[`0x${Number(network).toString(16)}`] = {
+          atomicBatch: {
+            supported: true,
+          },
+        };
+      }
+      return capabilities;
+    } catch (e) {
+      console.error('walletGetCapabilities', 'keyring failure: ', e);
+      throw ethErrors.provider.unauthorized();
+    }
+  };
+
+  @Reflect.metadata('SAFE', true)
+  walletSendCalls = async (req: ProviderRequest) => {
+    const {
+      data: { params },
+    } = req;
+    const [data] = params || [];
+    const { from, calls, capabilities } = data;
+    const account =
+      req.account || preferenceService.getCurrentAccount() || undefined;
+
+    if (
+      !account ||
+      account.type !== KEYRING_TYPE.GnosisKeyring ||
+      account.address.toLowerCase() !== from.toLowerCase()
+    ) {
+      throw ethErrors.provider.unauthorized();
+    }
+
+    const keyring = (await keyringService.getKeyringByType(
+      KEYRING_TYPE.GnosisKeyring
+    )) as GnosisKeyring;
+
+    const chain =
+      permissionService.getWithoutUpdate(req.session?.origin || '')?.chain ||
+      CHAINS_ENUM.ETH;
+    const chainId = findChain({ enum: chain })?.id;
+    const currentChain = findChain({ enum: chain });
+
+    if (!currentChain) {
+      throw ethErrors.provider.custom({
+        code: 4001,
+        message: 'Chain not found',
+      });
+    }
+
+    let rpcUrl = '';
+    const customRpc = RPCService.getRPCByChain(chain);
+    if (customRpc && customRpc.enable) {
+      rpcUrl = customRpc.url;
+    } else {
+      const defaultRpc = RPCService.getDefaultRPC(currentChain.serverId);
+      rpcUrl = defaultRpc?.rpcUrl?.[0] || '';
+    }
+
+    if (!rpcUrl) {
+      throw ethErrors.provider.custom({
+        code: 4001,
+        message: 'RPC URL not found',
+      });
+    }
+
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+
+    const version = await Safe.getSafeVersion({
+      address: from,
+      provider: (provider as unknown) as ethers.providers.Web3Provider,
+    });
+
+    await keyring.buildBatchTransaction(
+      from,
+      calls,
+      provider,
+      version as SafeVersion,
+      currentChain.network
+    );
+
+    const requestApprovalLoop = async ({ uiRequestComponent, ...rest }) => {
+      const res = await notificationService.requestApproval({
+        approvalComponent: uiRequestComponent,
+        params: rest,
+        account,
+        origin: req.session?.origin,
+        approvalType: 'SignTx',
+        isUnshift: true,
+      });
+      if (res?.uiRequestComponent) {
+        return await requestApprovalLoop(res);
+      } else {
+        return res;
+      }
+    };
+
+    let approvalRes = await notificationService.requestApproval({
+      approvalComponent: 'SignTx',
+      params: {
+        data: [
+          {
+            from,
+            to: keyring.currentTransaction!.data.to,
+            value: keyring.currentTransaction!.data.value,
+            data: keyring.currentTransaction!.data.data,
+            operation: keyring.currentTransaction!.data.operation,
+            safeTxGas: keyring.currentTransaction!.data.safeTxGas,
+            baseGas: keyring.currentTransaction!.data.baseGas,
+            gasPrice: keyring.currentTransaction!.data.gasPrice,
+            gasToken: keyring.currentTransaction!.data.gasToken,
+            refundReceiver: keyring.currentTransaction!.data.refundReceiver,
+            nonce: keyring.currentTransaction!.data.nonce,
+            chainId,
+          },
+        ],
+        session: req.session,
+        isGnosis: true,
+        account,
+        method: 'eth_sendTransaction',
+      },
+      origin: req.session?.origin,
+      approvalType: 'SignTx',
+    });
+
+    if (approvalRes.uiRequestComponent) {
+      approvalRes = await requestApprovalLoop(approvalRes);
+    }
+
+    return [keyring.currentTransactionHash];
   };
 
   personalEcRecover = ({
