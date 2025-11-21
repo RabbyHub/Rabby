@@ -15,7 +15,7 @@ import {
 import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { findChain } from '@/utils/chain';
@@ -79,91 +79,77 @@ const Content: React.FC<Props> = (props) => {
     serverId: nftDetail?.chain,
   });
 
-  const handleSubmit = useMemoizedFn(async () => {
-    if (
-      !currentAccount?.address ||
-      !chain?.id ||
-      !nftDetail?.listing_order?.protocol_data?.parameters
-    ) {
-      return;
-    }
-    const tx = (await wallet.buildCancelNFTListTx({
-      address: currentAccount?.address,
-      chainId: chain?.id,
-      order: nftDetail?.listing_order?.protocol_data?.parameters,
-    })) as Tx;
-    const txs = [tx];
-
-    const runFallback = async () => {
-      for (const tx of txs) {
-        await wallet.sendRequest<string>({
-          method: 'eth_sendTransaction',
-          params: [tx],
-        });
+  const { runAsync: handleSubmit, loading: isSubmitting } = useRequest(
+    async () => {
+      if (
+        !currentAccount?.address ||
+        !chain?.id ||
+        !nftDetail?.listing_order?.protocol_data?.parameters
+      ) {
+        throw new Error('failed');
       }
-    };
+      const tx = (await wallet.buildCancelNFTListTx({
+        address: currentAccount?.address,
+        chainId: chain?.id,
+        order: nftDetail?.listing_order?.protocol_data?.parameters,
+      })) as Tx;
+      const txs = [tx];
 
-    if (canDirectSign && currentAccount) {
-      resetGasStore();
-      closeSign();
-      const signerConfig = {
-        txs,
-        title: (
-          <div className="flex items-center justify-center gap-[8px]">
-            <div className="relative">
-              <img src={IconOpenSea} alt="" className="w-[24px] h-[24px]" />
-              <img
-                src={chain.logo}
-                alt=""
-                className="absolute top-[-2px] right-[-2px] w-[12px] h-[12px] rounded-full"
-              />
-            </div>
-            <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
-              Cancel Listing NFT
-            </div>
-          </div>
-        ),
-        showSimulateChange: true,
-        disableSignBtn: false,
-        onRedirectToDeposit: () => {},
-        ga: {},
-      } as const;
-      try {
-        await openUI(signerConfig);
-        onSuccess?.();
-        return;
-      } catch (error) {
-        console.log('openUI error', error);
-        if (error !== MINI_SIGN_ERROR.USER_CANCELLED) {
-          console.error('Dapp action direct sign error', error);
-          await runFallback()
-            .then(() => {
-              onSuccess?.();
-            })
-            .catch((fallbackError) => {
-              console.error('Dapp action fallback error', fallbackError);
-              const fallbackMsg =
-                typeof (fallbackError as any)?.message === 'string'
-                  ? (fallbackError as any).message
-                  : 'Transaction failed';
-              message.error(fallbackMsg);
-            });
+      const runFallback = async () => {
+        for (const tx of txs) {
+          await wallet.sendRequest<string>({
+            method: 'eth_sendTransaction',
+            params: [tx],
+          });
         }
-        return;
-      }
-    }
+      };
 
-    try {
-      await runFallback();
-    } catch (error) {
-      console.error('Transaction failed:', error);
-      message.error(
-        typeof error?.message === 'string'
-          ? error?.message
-          : 'Transaction failed'
-      );
+      if (canDirectSign && currentAccount) {
+        resetGasStore();
+        closeSign();
+        const signerConfig = {
+          txs,
+          title: (
+            <div className="flex items-center justify-center gap-[8px]">
+              <div className="relative">
+                <img src={IconOpenSea} alt="" className="w-[24px] h-[24px]" />
+                <img
+                  src={chain.logo}
+                  alt=""
+                  className="absolute top-[-2px] right-[-2px] w-[12px] h-[12px] rounded-full"
+                />
+              </div>
+              <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
+                Cancel Listing NFT
+              </div>
+            </div>
+          ),
+          showSimulateChange: true,
+          disableSignBtn: false,
+          onRedirectToDeposit: () => {},
+          ga: {},
+        } as const;
+        try {
+          await openUI(signerConfig);
+        } catch (error) {
+          console.log('openUI error', error);
+          if (error !== MINI_SIGN_ERROR.USER_CANCELLED) {
+            console.error('direct sign error', error);
+            await runFallback();
+          }
+          throw error;
+        }
+      } else {
+        await runFallback();
+      }
+    },
+    {
+      manual: true,
+      onSuccess() {
+        onSuccess?.();
+      },
     }
-  });
+  );
 
   return (
     <>
@@ -203,10 +189,10 @@ const Content: React.FC<Props> = (props) => {
                 {nftDetail?.collection?.name || '-'}
               </div>
             </div>
-            <div className="space-y-[4px]">
+            <div className="space-y-[4px] text-right">
               {listingOffer && listingToken ? (
                 <>
-                  <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 text-right">
+                  <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
                     {formatTokenAmount(
                       new BigNumber(listingOffer.current_price)
                         .div(
@@ -244,7 +230,13 @@ const Content: React.FC<Props> = (props) => {
           </div>
         </div>
         <footer>
-          <Button type="primary" block size="large" onClick={handleSubmit}>
+          <Button
+            type="primary"
+            block
+            size="large"
+            onClick={handleSubmit}
+            loading={isSubmitting}
+          >
             Cancel listing
           </Button>
         </footer>

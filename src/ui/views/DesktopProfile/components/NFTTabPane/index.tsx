@@ -226,6 +226,10 @@ export const NFTTabPane = () => {
         }}
         onSuccess={() => {
           message.success('Cancel Listing Success');
+          setState({
+            nftDetail: undefined,
+            cancelModalVisible: false,
+          });
           // todo fix this
           // setState({
           //   cancelModalVisible: false,
@@ -282,7 +286,7 @@ export const NFTTabPane = () => {
         }}
         onSuccess={() => {
           setState({
-            listingModalVisible: false,
+            acceptModalVisible: false,
             resultModalVisible: true,
             resultState: {
               status: 'success',

@@ -254,9 +254,9 @@ const Content: React.FC<Props> = (props) => {
           }
           throw error;
         }
+      } else {
+        await runFallback();
       }
-
-      await runFallback();
     },
     {
       manual: true,
