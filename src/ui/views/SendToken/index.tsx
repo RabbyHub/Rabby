@@ -93,6 +93,7 @@ import { SendSlider } from '@/ui/component/SendLike/Slider';
 import { appIsDebugPkg } from '@/utils/env';
 import { add, debounce } from 'lodash';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -454,6 +455,11 @@ const SendToken = () => {
     scene: 'send-token',
   });
 
+  const toAddressPositiveTips = useToAddressPositiveTips({
+    toAddress,
+    isMyImported,
+  });
+
   const {
     mostImportantRisks,
     hasRiskForToAddress,
@@ -465,7 +471,10 @@ const SendToken = () => {
       mostImportantRisks: [] as { value: string }[],
     };
     if (risks.length) {
-      const sorted = [...risks].sort(sortRisksDesc);
+      const sorted = (!toAddressPositiveTips.hasPositiveTips
+        ? [...risks]
+        : [...risks].filter((item) => item.type !== RiskType.NEVER_SEND)
+      ).sort(sortRisksDesc);
 
       ret.risksForToAddress = sorted
         .slice(0, 1)
@@ -498,7 +507,12 @@ const SendToken = () => {
       hasRiskForToAddress: !!ret.risksForToAddress.length,
       hasRiskForToken: !!ret.risksForToken.length,
     };
-  }, [currentToken, risks, disableItemCheck]);
+  }, [
+    toAddressPositiveTips.hasPositiveTips,
+    currentToken,
+    risks,
+    disableItemCheck,
+  ]);
 
   const agreeRequiredChecked =
     (hasRiskForToAddress && agreeRequiredChecks.forToAddress) ||
@@ -1916,7 +1930,7 @@ const SendToken = () => {
             <AddressInfoTo
               loadingToAddressDesc={loadingToAddressDesc}
               toAccount={targetAccount}
-              isMyImported={isMyImported}
+              toAddressPositiveTips={toAddressPositiveTips}
               cexInfo={addressDesc?.cex}
               onClick={() => {
                 if (isDesktop) {
