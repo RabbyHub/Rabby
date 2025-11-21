@@ -1,3 +1,4 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -148,7 +149,7 @@ export const useAddressRisks = (
       return;
     }
     dispatch.accountToDisplay.getAllAccountsToDisplay();
-  }, []);
+  }, [address, dispatch.accountToDisplay]);
 
   useLayoutEffect(() => {
     if (address) {

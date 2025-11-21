@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import { useCallback, useMemo } from 'react';
 
 import { SendRequireData } from '@rabby-wallet/rabby-action';
@@ -6,10 +8,10 @@ import dayjs from 'dayjs';
 import { unionBy } from 'lodash';
 
 import { findChain } from '@/utils/chain';
-import { useWallet, WalletControllerType } from '@/ui/utils';
+import { isSameAddress, useWallet, WalletControllerType } from '@/ui/utils';
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useRabbyGetter } from '@/ui/store';
+import { useRabbyGetter, useRabbySelector } from '@/ui/store';
 import { findMaxGasTx } from '@/utils/tx';
 import { isValidAddress } from '@ethereumjs/util';
 
@@ -128,7 +130,7 @@ export const useRecentSend = ({
       list.push(...localTxs);
     }
     return list;
-  }, [accountList]);
+  }, [accountList, wallet]);
 
   const { data: historyList, runAsync } = useRequest(
     async () => {
@@ -226,5 +228,40 @@ export function useRecentSendToHistoryFor(toAddress?: string) {
             (item) => item.toAddress.toLowerCase() === toAddress.toLowerCase()
           )
         : [],
+  };
+}
+
+export type ToAddressPositiveTips = {
+  hasPositiveTips: boolean;
+  inWhitelist: boolean;
+  toAddressIsRecentlySend: boolean;
+  isMyImported?: boolean;
+};
+export function useToAddressPositiveTips({
+  toAddress,
+  isMyImported,
+}: {
+  toAddress?: string;
+  isMyImported?: boolean;
+}): ToAddressPositiveTips {
+  const { whitelist } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+  }));
+  const inWhitelist = useMemo(() => {
+    return !!toAddress && whitelist?.some((w) => isSameAddress(w, toAddress));
+  }, [toAddress, whitelist]);
+
+  const { recentHistory: recentSendToHistory } = useRecentSendToHistoryFor(
+    toAddress
+  );
+  const toAddressIsRecentlySend = recentSendToHistory.length > 0;
+  const hasPositiveTips =
+    toAddressIsRecentlySend || inWhitelist || !!isMyImported;
+
+  return {
+    hasPositiveTips,
+    inWhitelist,
+    toAddressIsRecentlySend,
+    isMyImported,
   };
 }
