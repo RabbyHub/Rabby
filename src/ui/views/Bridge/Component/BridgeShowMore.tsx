@@ -37,6 +37,7 @@ import {
   GasLessNotEnough,
 } from '../../Approval/components/FooterBar/GasLessComponents';
 import { useGasAccountSign } from '../../GasAccount/hooks';
+import { useMemoizedFn } from 'ahooks';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -61,6 +62,7 @@ export const BridgeShowMore = ({
   openQuotesList,
   sourceName,
   sourceLogo,
+  duration,
   slippage,
   displaySlippage,
   onSlippageChange,
@@ -92,6 +94,7 @@ export const BridgeShowMore = ({
   openQuotesList: () => void;
   sourceName: string;
   sourceLogo: string;
+  duration?: number;
   slippage: string;
   displaySlippage: string;
   onSlippageChange: (n: string) => void;
@@ -121,6 +124,7 @@ export const BridgeShowMore = ({
   supportDirectSign?: boolean;
 }) => {
   const { t } = useTranslation();
+  const sourceAlwaysShow = type === 'bridge';
 
   const RABBY_FEE = '0.25%';
 
@@ -158,7 +162,88 @@ export const BridgeShowMore = ({
 
   const showSlippageError = slippageError;
 
+  const showMinDuration = useMemo(() => {
+    return Math.max(Math.round((duration || 0) / 60), 1);
+  }, [duration]);
+
+  const durationColor = useMemo(() => {
+    if (showMinDuration > 10) {
+      return 'text-r-red-default';
+    }
+
+    if (showMinDuration > 3) {
+      return 'text-r-orange-default';
+    }
+    return 'text-r-blue-default';
+  }, [showMinDuration]);
+
   const [showGasFeeError, setShowGasFeeError] = useState(false);
+
+  const sourceContentRender = useMemoizedFn(() => {
+    return (
+      <ListItem
+        name={
+          type === 'bridge'
+            ? t('page.bridge.showMore.source')
+            : t('page.swap.source')
+        }
+        className="mb-12 h-18"
+      >
+        {quoteLoading ? (
+          <Skeleton.Input
+            active
+            className="rounded"
+            style={{
+              width: 52,
+              height: 12,
+            }}
+          />
+        ) : (
+          <div
+            className="flex items-center gap-4  cursor-pointer"
+            onClick={openQuotesList}
+          >
+            <div
+              className={clsx(
+                'flex items-center gap-4 cursor-pointer',
+                isBestQuote &&
+                  'border-[0.5px] border-solid border-rabby-blue-default rounded-[4px] pr-[5px]'
+              )}
+              style={bestQuoteStyle}
+              // onClick={openQuotesList}
+            >
+              {isBestQuote ? (
+                <span className="text-r-neutral-title2 text-[12px] font-medium italic py-1 pl-6 pr-8">
+                  {t('page.swap.best')}
+                </span>
+              ) : null}
+              {sourceLogo && (
+                <img
+                  className="w-12 h-12 rounded-full"
+                  src={sourceLogo}
+                  alt={sourceName}
+                />
+              )}
+              <span className="text-12 text-rabby-blue-default font-medium">
+                {sourceName}
+              </span>
+              {!sourceLogo && !sourceName ? (
+                <span className="text-12 text-r-neutral-foot">-</span>
+              ) : null}
+            </div>
+            {type === 'bridge' && (
+              <span className={`text-12 font-medium ${durationColor}`}>
+                {' · '}
+                {t('page.bridge.duration', {
+                  duration: showMinDuration,
+                })}
+              </span>
+            )}
+          </div>
+        )}
+      </ListItem>
+    );
+  });
 
   const lostValueContentRender = useCallback(() => {
     return (
@@ -213,6 +298,8 @@ export const BridgeShowMore = ({
 
   return (
     <div className="mx-16">
+      {sourceAlwaysShow && sourceContentRender()}
+
       <div className="flex items-center justify-center gap-8 mb-8">
         <div
           className={clsx(
@@ -237,56 +324,7 @@ export const BridgeShowMore = ({
 
       <div className={clsx('overflow-hidden', !open && 'h-0')}>
         {lostValueContentRender()}
-
-        <ListItem
-          name={
-            type === 'bridge'
-              ? t('page.bridge.showMore.source')
-              : t('page.swap.source')
-          }
-          className="mb-12 h-18"
-        >
-          {quoteLoading ? (
-            <Skeleton.Input
-              active
-              className="rounded"
-              style={{
-                width: 52,
-                height: 12,
-              }}
-            />
-          ) : (
-            <div
-              className={clsx(
-                'flex items-center gap-4 cursor-pointer',
-                isBestQuote &&
-                  'border-[0.5px] border-solid border-rabby-blue-default rounded-[4px] pr-[5px]'
-              )}
-              style={bestQuoteStyle}
-              onClick={openQuotesList}
-            >
-              {isBestQuote ? (
-                <span className="text-r-neutral-title2 text-[12px] font-medium italic py-1 pl-6 pr-8">
-                  {t('page.swap.best')}
-                </span>
-              ) : null}
-              {sourceLogo && (
-                <img
-                  className="w-12 h-12 rounded-full"
-                  src={sourceLogo}
-                  alt={sourceName}
-                />
-              )}
-              <span className="text-12 text-rabby-blue-default font-medium">
-                {sourceName}
-              </span>
-              {!sourceLogo && !sourceName ? (
-                <span className="text-12 text-r-neutral-foot">-</span>
-              ) : null}
-            </div>
-          )}
-        </ListItem>
-
+        {!sourceAlwaysShow && sourceContentRender()}
         <BridgeSlippage
           autoSuggestSlippage={autoSuggestSlippage}
           value={slippage}

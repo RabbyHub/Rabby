@@ -1,11 +1,98 @@
 import { useInViewport, useInfiniteScroll } from 'ahooks';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { useAsync } from 'react-use';
 import { uniqBy } from 'lodash';
 import { useWallet } from '@/ui/utils';
+import { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
+import { ONE_DAY_MS, ONE_HOUR_MS } from '../constants';
+import { useInterval } from 'ahooks';
 
-export const usePollBridgePendingNumber = (timer = 10000) => {
+export const useCheckBridgePendingItem = (timer = 5000) => {
+  const wallet = useWallet();
+  const [needPoll, setNeedPoll] = useState(false);
+  const currentAccount = useRabbySelector(
+    (state) => state.account.currentAccount
+  );
+
+  const checkPendingItem = useCallback(async () => {
+    const userAddress = currentAccount?.address;
+    if (!userAddress) {
+      setNeedPoll(false);
+      return;
+    }
+    const historyData = (await wallet.getRecentPendingTxHistory(
+      userAddress,
+      'bridge'
+    )) as BridgeTxHistoryItem;
+
+    if (!historyData) {
+      setNeedPoll(false);
+      return;
+    }
+
+    // tx create time is more than one day, set this tx failed and no show in loading pendingTxItem
+    if (
+      historyData?.createdAt &&
+      Date.now() - historyData.createdAt > ONE_DAY_MS
+    ) {
+      wallet.completeBridgeTxHistory(
+        historyData.hash,
+        historyData.fromChainId!,
+        'failed'
+      );
+      setNeedPoll(false);
+      return;
+    }
+
+    const data = await wallet.openapi.getBridgeHistoryList({
+      user_addr: userAddress,
+      start: 0,
+      limit: 10,
+      is_all: true,
+    });
+
+    const findTx = data.history_list.find(
+      (item) => item.from_tx?.tx_id === historyData.hash
+    );
+
+    if (findTx) {
+      const isPending = findTx.status === 'pending';
+      if (isPending) {
+        setNeedPoll(true);
+        return;
+      } else {
+        const status = findTx.status === 'completed' ? 'allSuccess' : 'failed';
+        wallet.completeBridgeTxHistory(
+          historyData.hash,
+          historyData.fromChainId,
+          status,
+          findTx
+        );
+      }
+    } else {
+      const currentTime = Date.now();
+      const txCreateTime = historyData.createdAt;
+      if (currentTime - txCreateTime > ONE_HOUR_MS) {
+        // tx create time is more than 60 minutes, set this tx failed
+        wallet.completeBridgeTxHistory(
+          historyData.hash,
+          historyData.fromChainId,
+          'failed'
+        );
+      }
+    }
+    setNeedPoll(false);
+  }, [currentAccount]);
+
+  useEffect(() => {
+    checkPendingItem();
+  }, [checkPendingItem]);
+
+  useInterval(needPoll ? checkPendingItem : () => {}, timer);
+};
+
+export const usePollBridgePendingNumber = (timer = 5000) => {
   const [refetchCount, setRefetchCount] = useState(0);
 
   const wallet = useWallet();
@@ -40,7 +127,10 @@ export const usePollBridgePendingNumber = (timer = 10000) => {
   const timerRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    if ((!loading && value !== undefined) || error) {
+    if (
+      (!loading && value !== undefined && value?.pendingNumber > 0) ||
+      error
+    ) {
       timerRef.current = setTimeout(() => {
         setRefetchCount((e) => e + 1);
       }, timer);
@@ -57,7 +147,13 @@ export const usePollBridgePendingNumber = (timer = 10000) => {
     };
   }, []);
 
-  return value;
+  return {
+    pendingNumber: value?.pendingNumber || 0,
+    historyList: value?.historyList || [],
+    refreshHistoryList: () => {
+      setRefetchCount((e) => e + 1);
+    },
+  };
 };
 
 export const useBridgeHistory = () => {

@@ -127,8 +127,6 @@ export const Perps: React.FC = () => {
   const headerRef = useRef<HTMLDivElement>(null);
   const headerInitialTopRef = useRef<number>(0);
 
-  console.log('showBackToTop', showBackToTop);
-
   useEffect(() => {
     wallet.getHasDoneNewUserProcess().then((hasDoneNewUserProcess) => {
       if (!hasDoneNewUserProcess) {
