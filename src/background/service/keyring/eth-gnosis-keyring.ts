@@ -10,6 +10,7 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import {
   SafeTransaction,
   SafeTransactionDataPartial,
+  SafeVersion,
 } from '@safe-global/types-kit';
 import semverSatisfies from 'semver/functions/satisfies';
 import { adjustVInSignature } from '@safe-global/protocol-kit/dist/src/utils';
@@ -19,6 +20,9 @@ import {
   EthSafeSignature,
   hashSafeMessage,
   SigningMethod,
+  encodeMultiSendData,
+  getMultiSendContract,
+  SafeProvider,
 } from '@safe-global/protocol-kit';
 import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 import { TypedTransaction } from '@ethereumjs/tx';
@@ -489,6 +493,67 @@ class GnosisKeyring extends EventEmitter {
 
     const safe = new Safe(checksumAddress, version, provider, networkId);
     this.safeInstance = safe;
+    const safeTransaction = await safe.buildTransaction(tx);
+    this.currentTransaction = safeTransaction;
+    this.currentTransactionHash = await safe.getTransactionHash(
+      safeTransaction
+    );
+    return safeTransaction;
+  }
+
+  async buildBatchTransaction(
+    address: string,
+    transactions: SafeTransactionDataPartial[],
+    provider,
+    version: SafeVersion,
+    networkId: string
+  ) {
+    if (
+      !this.accounts.find(
+        (account) => account.toLowerCase() === address.toLowerCase()
+      )
+    ) {
+      throw new Error('Can not find this address');
+    }
+    const checksumAddress = toChecksumAddress(address);
+
+    const safe = new Safe(checksumAddress, version, provider, networkId);
+    this.safeInstance = safe;
+
+    const multiSendData = encodeMultiSendData(
+      transactions.map((tx) => ({
+        to: tx.to,
+        value: tx.value || '0',
+        data: tx.data || '0x',
+        operation: tx.operation || 0,
+      }))
+    ) as `0x${string}`;
+
+    const safeProvider = new SafeProvider({
+      provider: {
+        request: async ({ method, params }) => {
+          return provider.send(method, params);
+        },
+      },
+    });
+
+    const multiSendContract = await getMultiSendContract({
+      safeProvider,
+      safeVersion: version,
+    });
+
+    const multiSendCallData = multiSendContract.encode('multiSend', [
+      multiSendData,
+    ]);
+
+    const tx = {
+      data: multiSendCallData,
+      from: address,
+      to: multiSendContract.contractAddress,
+      value: '0',
+      operation: 1, // DelegateCall
+    };
+
     const safeTransaction = await safe.buildTransaction(tx);
     this.currentTransaction = safeTransaction;
     this.currentTransactionHash = await safe.getTransactionHash(
