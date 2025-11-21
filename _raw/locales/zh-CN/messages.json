@@ -1272,9 +1272,9 @@
         "level": {
           "$unknown": "未知",
           "custom": "自定义",
-          "fast": "",
-          "normal": "",
-          "slow": ""
+          "fast": "快速",
+          "normal": "正常",
+          "slow": "慢"
         },
         "popupDesc": "矿工费将根据你设置的 Gas Price 从转账金额中预留",
         "popupTitle": "设置 Gas Price (Gwei)"
@@ -2458,7 +2458,24 @@
       "duration": "{{duration}} 分钟",
       "recommendFromToken": "从 <1></1> 桥接以获取可用报价",
       "est-receiving": "预计接收：",
-      "bridgeDbkBtn": "通过 DeBank 官方服务进行桥接"
+      "bridgeDbkBtn": "通过 DeBank 官方服务进行桥接",
+      "pendingItem": {
+        "estimatedTime": "预计时间",
+        "completed": "已完成",
+        "sendingFrom": "从 {{chain}} 发送",
+        "receivingTo": "在 {{chain}} 上接收",
+        "pending": "待处理",
+        "failed": "失败",
+        "queued": "排队中",
+        "swap": "交换",
+        "beReturnFailed": "桥接失败。您的资产已被返回。",
+        "bridgeStatus": "桥接状态",
+        "receivedDifferentTokenFromSource": "桥接失败。源链返回了不同的代币。",
+        "BridgeStatusUnavailable": "桥接状态不可用。请检查您的交易历史以确认资金是否到账。",
+        "fromFailed": "交易未成功。请再试一次。",
+        "receivedDifferentTokenNeedSwap": "您收到了不同的代币。您可以将其兑换为您选择的代币。",
+        "longTimeNoReceive": "网络繁忙。这可能会比平时花费更长的时间。请耐心等待。"
+      }
     },
     "ecology": {
       "sonic": {
@@ -2878,7 +2895,8 @@
           "risks": {
             "dexNoDeposite": "不是CEX存款地址，资金可能会丢失",
             "contractAddress": "检测到合约地址，资金可能会丢失。",
-            "scamAddress": "被Rabby标记的诈骗地址"
+            "scamAddress": "被Rabby标记的诈骗地址",
+            "noSend": "您在过去180天内没有发送到该地址。"
           }
         },
         "title": "发送到此地址",
@@ -3145,7 +3163,8 @@
           "risks": {
             "contractAddress": "您正在发送到一个合约，资金可能会丢失。",
             "dexNoDeposite": "您正在发送到一个非托管的交易所地址",
-            "scamAddress": "您正在向一个欺诈地址发送交易"
+            "scamAddress": "您正在向一个欺诈地址发送交易",
+            "noSend": "您在过去180天内没有向该地址发送过。"
           }
         },
         "passwordPlaceholder": "输入密码以继续",
@@ -3463,9 +3482,9 @@
     },
     "ReserveGasPopup": {
       "doNotReserve": "不要保留Gas",
-      "normal": "",
-      "instant": "",
-      "fast": "",
+      "normal": "慢",
+      "instant": "快速",
+      "fast": "正常",
       "title": "Reserve Gas"
     },
     "OpenExternalWebsiteModal": {

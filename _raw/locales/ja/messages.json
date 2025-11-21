@@ -676,9 +676,9 @@
         "level": {
           "$unknown": "未知",
           "custom": "カスタム",
-          "fast": "",
-          "normal": "",
-          "slow": ""
+          "fast": "速い",
+          "normal": "ノーマル",
+          "slow": "遅い"
         },
         "popupDesc": "設定したガス価格に基づいて転送額からガス費用が予約されます",
         "popupTitle": "ガス価格（Gwei）を設定"
@@ -2192,7 +2192,24 @@
       "loss-tips": "損失しています {{usd}}。異なる金額を試してください。",
       "unlimited-allowance": "無制限の許可",
       "no-quote-found": "見積もりが見つかりませんでした。他のトークンペアをお試しください。",
-      "bridgeDbkBtn": "DBK公式サービス経由でブリッジ"
+      "bridgeDbkBtn": "DBK公式サービス経由でブリッジ",
+      "pendingItem": {
+        "estimatedTime": "推定時間",
+        "queued": "キューに入れられた",
+        "beReturnFailed": "ブリッジに失敗しました。あなたの資産は返却されました。",
+        "bridgeStatus": "ブリッジステータス",
+        "completed": "完了",
+        "failed": "失敗しました",
+        "swap": "スワップ",
+        "fromFailed": "取引が完了しませんでした。もう一度試してください。",
+        "receivingTo": "{{chain}}で受け取る",
+        "sendingFrom": "{{chain}} から送信中",
+        "pending": "保留中",
+        "longTimeNoReceive": "ネットワークが混雑しています。通常より時間がかかる場合があります。お待ちください。",
+        "receivedDifferentTokenNeedSwap": "異なるトークンを受け取りました。選択したトークンにスワップできます。",
+        "receivedDifferentTokenFromSource": "ブリッジに失敗しました。ソースチェーンで異なるトークンが返されました。",
+        "BridgeStatusUnavailable": "ブリッジステータスは利用できません。資金が到着したことを確認するために、transaction historyを確認してください。"
+      }
     },
     "pendingDetail": {
       "Header": {
@@ -2840,7 +2857,8 @@
           "risks": {
             "scamAddress": "Rabby によってフラグされた詐欺アドレス",
             "contractAddress": "契約アドレスが検出されました、資金が失われる可能性があります",
-            "dexNoDeposite": "CEXの入金アドレスではありません。資金が失われる可能性があります。"
+            "dexNoDeposite": "CEXの入金アドレスではありません。資金が失われる可能性があります。",
+            "noSend": "このアドレスには180日間送信していません。"
           }
         },
         "understandRisks": "リスクを理解しており、続行したいと思います。",
@@ -3107,7 +3125,8 @@
           "risks": {
             "contractAddress": "契約に送信しています。資金が失われる可能性があります。",
             "dexNoDeposite": "あなたは非預金取引所のアドレスに送信しています",
-            "scamAddress": "詐欺アドレスに送信しています"
+            "scamAddress": "詐欺アドレスに送信しています",
+            "noSend": "このアドレスには180日間送信していません。"
           }
         },
         "TransferBeforeValue": "はい",
@@ -3229,7 +3248,8 @@
         "exceedMaxReduction": "最大減少を超えています",
         "reduceMarginTooltip": "ポジションを減少させるのに十分なマージンがありません。",
         "reduceMarginSuccess": "マージンが正常に削減されました",
-        "insufficientBalance": "残高不足"
+        "insufficientBalance": "残高不足",
+        "addMarginSuccess": "マージンが正常に追加されました"
       },
       "PerpsClosePositionPopup": {
         "total": "合計",
@@ -3266,7 +3286,8 @@
         "stopLossTipsShortLiquidation": "価格は清算価格（{{price}}）よりも高いです。",
         "stopLossTipsLong": "ストップロス価格は現在の価格より低くなければなりません",
         "stopLossTipsLongLiquidation": "価格は清算価格（{{price}}）よりも低くなっています。",
-        "stopLossTipsShort": "ストップロス価格は現在の価格よりも高くなければなりません"
+        "stopLossTipsShort": "ストップロス価格は現在の価格よりも高くなければなりません",
+        "noPosition": "最初にマージンを入力する必要があります。"
       }
     }
   },
@@ -3423,10 +3444,10 @@
     },
     "ReserveGasPopup": {
       "title": "ガスを予約する",
-      "instant": "",
-      "normal": "",
+      "instant": "速い",
+      "normal": "遅い",
       "doNotReserve": "ガスを予約しない",
-      "fast": ""
+      "fast": "ノーマル"
     },
     "OpenExternalWebsiteModal": {
       "title": "Rabby Wallet を離れようとしています",
