@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import React, {
   useState,
   useEffect,
@@ -61,6 +63,7 @@ import {
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
 import BottomArea from './BottomArea';
+import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -157,6 +160,18 @@ const SendNFT = () => {
     scene: 'send-nft',
   });
 
+  const {
+    targetAccount,
+    isMyImported,
+    addressDesc,
+    loading: loadingToAddressDesc,
+  } = useAddressInfo(toAddress);
+
+  const toAddressPositiveTips = useToAddressPositiveTips({
+    toAddress,
+    isMyImported,
+  });
+
   const { mostImportantRisks, hasRiskForToAddress } = React.useMemo(() => {
     const ret = {
       risksForToAddress: [] as { value: string }[],
@@ -164,9 +179,10 @@ const SendNFT = () => {
       mostImportantRisks: [] as { value: string }[],
     };
     if (risks.length) {
-      const sorted = [...risks]
-        .filter((item) => item.type !== RiskType.NEVER_SEND)
-        .sort(sortRisksDesc);
+      const sorted = (!toAddressPositiveTips.hasPositiveTips
+        ? [...risks]
+        : [...risks].filter((item) => item.type !== RiskType.NEVER_SEND)
+      ).sort(sortRisksDesc);
 
       ret.risksForToAddress = sorted
         .slice(0, 1)
@@ -190,7 +206,7 @@ const SendNFT = () => {
       mostImportantRisks: ret.mostImportantRisks,
       hasRiskForToAddress: !!ret.risksForToAddress.length,
     };
-  }, [risks]);
+  }, [toAddressPositiveTips.hasPositiveTips, risks]);
 
   const agreeRequiredChecked =
     hasRiskForToAddress && agreeRequiredChecks.forToAddress;
@@ -458,7 +474,14 @@ const SendNFT = () => {
       });
       setRefreshId((e) => e + 1);
     }, 500);
-  }, [form, updateUrlAmount]);
+  }, [
+    form,
+    updateUrlAmount,
+    history.location.search,
+    nftItem,
+    prefetch,
+    wallet,
+  ]);
 
   const handleClickBack = () => {
     if (history.length > 1) {
@@ -468,7 +491,7 @@ const SendNFT = () => {
     }
   };
 
-  const initByCache = async () => {
+  const initByCache = useCallback(async () => {
     if (!nftItem) {
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
@@ -479,9 +502,9 @@ const SendNFT = () => {
         }
       }
     }
-  };
+  }, [nftItem, wallet, history.location.pathname, form]);
 
-  const init = async () => {
+  const init = useCallback(async () => {
     dispatch.whitelist.getWhitelistEnabled();
     dispatch.whitelist.getWhitelist();
     dispatch.contactBook.getContactBookAsync();
@@ -492,24 +515,19 @@ const SendNFT = () => {
       return;
     }
     setInited(true);
-  };
-
-  const {
-    targetAccount,
-    isMyImported,
-    addressDesc,
-    loading: loadingToAddressDesc,
-  } = useAddressInfo(toAddress);
+  }, [dispatch.contactBook, dispatch.whitelist, history, wallet]);
 
   useEffect(() => {
     init();
     return () => {
       wallet.clearPageStateCache();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (inited) initByCache();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inited]);
 
   useEffect(() => {
@@ -525,7 +543,7 @@ const SendNFT = () => {
         }
       }
     }
-  }, [nftItem, chain]);
+  }, [nftItem, chain, history]);
 
   useEffect(() => {
     if (toAddress) {
@@ -593,7 +611,7 @@ const SendNFT = () => {
                 titleText={t('page.sendNFT.sectionTo.title')}
                 loadingToAddressDesc={loadingToAddressDesc}
                 toAccount={targetAccount}
-                isMyImported={isMyImported}
+                toAddressPositiveTips={toAddressPositiveTips}
                 cexInfo={addressDesc?.cex}
                 onClick={() => {
                   const query = new URLSearchParams(search);

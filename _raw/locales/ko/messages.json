@@ -2835,7 +2835,6 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "이 주소로 180일 동안의 전송이 없습니다.",
             "contractAddress": "계약 주소가 감지되었습니다. 자금이 손실될 수 있습니다.",
             "dexNoDeposite": "CEX 예치 주소가 아닙니다, 자금이 손실될 수 있습니다",
             "scamAddress": "Rabby에서 플래그된 사기 주소"
@@ -3105,7 +3104,6 @@
           "risks": {
             "dexNoDeposite": "비수탁 거래소 주소로 전송하고 있습니다.",
             "contractAddress": "계약에 전송 중입니다, 자금이 손실될 수 있습니다",
-            "noSend": "이 주소로 180일 동안의 전송이 없습니다.",
             "scamAddress": "당신은 사기 주소로 전송하고 있습니다."
           }
         },

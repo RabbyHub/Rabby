@@ -2837,7 +2837,6 @@
           "risks": {
             "dexNoDeposite": "Không phải địa chỉ gửi CEX, có thể mất tiền.",
             "scamAddress": "Địa chỉ lừa đảo đã được Rabby đánh dấu",
-            "noSend": "Không có giao dịch chuyển khoản đến địa chỉ này trong 180 ngày",
             "contractAddress": "Địa chỉ hợp đồng được phát hiện, quỹ có thể bị mất."
           }
         },
@@ -3103,7 +3102,6 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "Không có chuyển khoản đến địa chỉ này trong 180 ngày",
             "scamAddress": "Bạn đang gửi đến một địa chỉ lừa đảo",
             "contractAddress": "Bạn đang gửi đến một hợp đồng, tiền có thể bị mất.",
             "dexNoDeposite": "Bạn đang gửi đến một địa chỉ sàn giao dịch không phải là nơi gửi tiền"
