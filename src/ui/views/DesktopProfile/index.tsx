@@ -271,6 +271,18 @@ export const DesktopProfile = () => {
                 </div>
               </div>
               <ReachedEnd />
+              <div className="flex justify-end px-[20px]">
+                <BackTop
+                  target={() => scrollContainerRef.current || window}
+                  style={{
+                    bottom: 32,
+                    zIndex: 100,
+                    right: 'initial',
+                  }}
+                >
+                  <ThemeIcon src={RcIconBackTop} />
+                </BackTop>
+              </div>
             </main>
             <aside
               className={clsx(
@@ -280,16 +292,6 @@ export const DesktopProfile = () => {
               <DesktopSelectAccountList />
             </aside>
           </div>
-          <BackTop
-            target={() => scrollContainerRef.current || window}
-            style={{
-              left: '50%',
-              bottom: 32,
-              transform: 'translateX(700px)',
-            }}
-          >
-            <ThemeIcon src={RcIconBackTop} />
-          </BackTop>
         </div>
       </Wrap>
       <SendTokenModal
