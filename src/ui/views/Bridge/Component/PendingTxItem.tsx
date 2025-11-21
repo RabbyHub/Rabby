@@ -232,8 +232,12 @@ const PendingStatusDetail = ({
   }, [data.toToken, data.toAmount, receiveUsdValue, status]);
 
   const receiveItemNeedOpacity = useMemo(() => {
-    return status === 'fromFailed' || status === 'pending';
-  }, [status]);
+    return (
+      status === 'fromFailed' ||
+      status === 'pending' ||
+      (!data.actualToToken && status === 'failed')
+    );
+  }, [status, data.actualToToken]);
 
   const location = useLocation();
   const desktopPathname = location.pathname.startsWith('/desktop/profile')
@@ -393,8 +397,9 @@ const PendingStatusDetail = ({
 
   const receiveNotRightToken = useMemo(() => {
     return (
-      data.actualToToken?.id !== data.toToken?.id ||
-      data.actualToToken?.chain !== data.toToken?.chain
+      data.actualToToken &&
+      (data.actualToToken?.id !== data.toToken?.id ||
+        data.actualToToken?.chain !== data.toToken?.chain)
     );
   }, [data.actualToToken, data.toToken]);
 
