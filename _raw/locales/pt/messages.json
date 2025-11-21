@@ -672,11 +672,11 @@
       },
       "GasSelector": {
         "level": {
-          "fast": "",
+          "fast": "Rápido",
           "custom": "Personalizado",
-          "normal": "",
+          "normal": "Normal",
           "$unknown": "Desconhecido",
-          "slow": ""
+          "slow": "Lento"
         },
         "confirm": "Confirmar",
         "popupTitle": "Definir Preço do Gás (Gwei)",
@@ -1124,7 +1124,24 @@
       "price-impact": "Impacto de Preço",
       "loss-tips": "Você está perdendo {{usd}}. Tente um valor diferente.",
       "max-tips": "Este valor é calculado subtraindo o custo de gás para a bridge.",
-      "bridgeDbkBtn": "Atravesse via Serviço Oficial DBK"
+      "bridgeDbkBtn": "Atravesse via Serviço Oficial DBK",
+      "pendingItem": {
+        "pending": "Pendente",
+        "completed": "Concluído",
+        "estimatedTime": "Tempo estimado",
+        "bridgeStatus": "Status da Bridge",
+        "fromFailed": "A transação não foi concluída. Tente novamente.",
+        "sendingFrom": "Enviando de {{chain}}",
+        "receivingTo": "Recebendo em {{chain}}",
+        "swap": "Trocar",
+        "beReturnFailed": "A ponte falhou. Seus ativos foram devolvidos.",
+        "failed": "Falhou",
+        "receivedDifferentTokenNeedSwap": "Você recebeu um token diferente. Você pode trocá-lo pelo token que você selecionou.",
+        "BridgeStatusUnavailable": "Status da ponte indisponível. Por favor, verifique seu histórico de transações para confirmar se os fundos chegaram.",
+        "longTimeNoReceive": "A rede está sobrecarregada. Isso pode levar mais tempo do que o habitual. Por favor, aguarde pacientemente.",
+        "receivedDifferentTokenFromSource": "A ponte falhou. Um token diferente foi retornado na cadeia de origem.",
+        "queued": "Em espera"
+      }
     },
     "manageAddress": {
       "whitelisted-address": "Endereço na lista branca",
@@ -2837,7 +2854,8 @@
           "risks": {
             "scamAddress": "Endereço de golpe sinalizado pelo Rabby",
             "dexNoDeposite": "Não é um endereço de depósito CEX, os fundos podem ser perdidos",
-            "contractAddress": "Endereço de contrato detectado, os fundos podem ser perdidos"
+            "contractAddress": "Endereço de contrato detectado, os fundos podem ser perdidos",
+            "noSend": "Você não enviou para este endereço nos últimos 180 dias"
           }
         },
         "title": "Enviar para este Endereço",
@@ -3104,7 +3122,8 @@
           "risks": {
             "scamAddress": "Você está enviando para um endereço de golpe",
             "dexNoDeposite": "Você está enviando para um endereço de exchange não depositário",
-            "contractAddress": "Você está enviando para um contrato, os fundos podem ser perdidos"
+            "contractAddress": "Você está enviando para um contrato, os fundos podem ser perdidos",
+            "noSend": "Você não enviou para este endereço nos últimos 180 dias."
           }
         },
         "AddToWhitelist": "Adicionar à Lista Branca",
@@ -3421,9 +3440,9 @@
       "desc": "Os seguintes serviços serão fornecidos diretamente por parceiros do Ecossistema de terceiros. A Rabby Wallet não assume responsabilidade pela segurança desses serviços."
     },
     "ReserveGasPopup": {
-      "normal": "",
-      "instant": "",
-      "fast": "",
+      "normal": "Lento",
+      "instant": "Rápido",
+      "fast": "Normal",
       "doNotReserve": "Não reserve Gas",
       "title": "Reservar Gas"
     },

@@ -674,9 +674,9 @@
         "level": {
           "$unknown": "Không xác định",
           "custom": "Tùy chỉnh",
-          "normal": "",
-          "fast": "",
-          "slow": ""
+          "normal": "Bình thường",
+          "fast": "Nhanh",
+          "slow": "Chậm"
         },
         "confirm": "Xác nhận",
         "popupTitle": "Đặt giá Gas (Gwei)",
@@ -1124,7 +1124,24 @@
       "via-bridge": "qua {{bridge}}",
       "max-tips": "Giá trị này được tính bằng cách trừ chi phí gas cho cầu.",
       "completedTip": "Giao dịch trên chuỗi, giải mã dữ liệu để tạo bản ghi",
-      "bridgeDbkBtn": "Cầu nối qua Dịch vụ Chính thức của DeBank"
+      "bridgeDbkBtn": "Cầu nối qua Dịch vụ Chính thức của DeBank",
+      "pendingItem": {
+        "swap": "Hoán đổi",
+        "bridgeStatus": "Trạng thái cầu",
+        "pending": "Đang chờ xử lý",
+        "fromFailed": "Giao dịch không thành công. Vui lòng thử lại.",
+        "receivingTo": "Nhận trên {{chain}}",
+        "estimatedTime": "Thời gian ước tính",
+        "failed": "Thất bại",
+        "completed": "Đã hoàn thành",
+        "queued": "Đang xếp hàng",
+        "BridgeStatusUnavailable": "Trạng thái cầu không khả dụng. Vui lòng kiểm tra lịch sử giao dịch của bạn để xác nhận rằng tiền đã đến.",
+        "sendingFrom": "Gửi từ {{chain}}",
+        "beReturnFailed": "Cầu nối không thành công. Tài sản của bạn đã được hoàn trả.",
+        "receivedDifferentTokenFromSource": "Cầu nối thất bại. Một token khác đã được trả về trên chuỗi nguồn.",
+        "longTimeNoReceive": "Mạng đang bận. Điều này có thể mất thời gian hơn bình thường. Vui lòng chờ đợi một cách kiên nhẫn.",
+        "receivedDifferentTokenNeedSwap": "Bạn đã nhận một mã thông báo khác. Bạn có thể trao đổi nó với mã thông báo mà bạn đã chọn."
+      }
     },
     "manageAddress": {
       "no-match": "Không tìm thấy",
@@ -2837,7 +2854,8 @@
           "risks": {
             "dexNoDeposite": "Không phải địa chỉ gửi CEX, có thể mất tiền.",
             "scamAddress": "Địa chỉ lừa đảo đã được Rabby đánh dấu",
-            "contractAddress": "Địa chỉ hợp đồng được phát hiện, quỹ có thể bị mất."
+            "contractAddress": "Địa chỉ hợp đồng được phát hiện, quỹ có thể bị mất.",
+            "noSend": "Bạn chưa gửi đến địa chỉ này trong 180 ngày."
           }
         },
         "title": "Gửi đến địa chỉ này",
@@ -3104,7 +3122,8 @@
           "risks": {
             "scamAddress": "Bạn đang gửi đến một địa chỉ lừa đảo",
             "contractAddress": "Bạn đang gửi đến một hợp đồng, tiền có thể bị mất.",
-            "dexNoDeposite": "Bạn đang gửi đến một địa chỉ sàn giao dịch không phải là nơi gửi tiền"
+            "dexNoDeposite": "Bạn đang gửi đến một địa chỉ sàn giao dịch không phải là nơi gửi tiền",
+            "noSend": "Bạn chưa gửi đến địa chỉ này trong 180 ngày."
           }
         },
         "TransferBeforeValue": "Có",
@@ -3226,7 +3245,8 @@
         "margin": "Ký quỹ",
         "amountToReduce": "Số lượng để Giảm",
         "reduceMarginTooltip": "Không đủ ký quỹ để giảm vị thế.",
-        "reduceMarginSuccess": "Biên độ đã được giảm thành công"
+        "reduceMarginSuccess": "Biên độ đã được giảm thành công",
+        "addMarginSuccess": "Bỏ cọc đã được thêm thành công"
       },
       "PerpsClosePositionPopup": {
         "total": "Tổng cộng",
@@ -3420,9 +3440,9 @@
       "desc": "Các dịch vụ sau sẽ được cung cấp trực tiếp bởi đối tác hệ sinh thái bên thứ ba. Ví Rabby không chịu trách nhiệm về sự an toàn của các dịch vụ này."
     },
     "ReserveGasPopup": {
-      "instant": "",
-      "fast": "",
-      "normal": "",
+      "instant": "Nhanh",
+      "fast": "Bình thường",
+      "normal": "Chậm",
       "title": "Dự trữ Gas",
       "doNotReserve": "Đừng dành Gas"
     },

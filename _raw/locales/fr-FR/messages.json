@@ -199,10 +199,10 @@
     },
     "ReserveGasPopup": {
       "title": "Réserve de Gas",
-      "normal": "",
+      "normal": "Lent",
       "doNotReserve": "Ne réservez pas de Gas",
-      "instant": "",
-      "fast": ""
+      "instant": "Rapide",
+      "fast": "Normal"
     },
     "OpenExternalWebsiteModal": {
       "button": "Continuer",
@@ -1639,9 +1639,9 @@
         "level": {
           "$unknown": "Inconnu",
           "custom": "Personnalisé",
-          "fast": "",
-          "normal": "",
-          "slow": ""
+          "fast": "Rapide",
+          "normal": "Normal",
+          "slow": "Lentement"
         },
         "popupDesc": "Le coût du gaz sera réservé sur le montant du transfert en fonction du prix du gaz que vous avez fixé",
         "popupTitle": "Fixer le prix du gaz (Gwei)"
@@ -2575,7 +2575,24 @@
       "need-to-approve-token-before-bridge": "Besoin d'approuver le token avant le bridge",
       "aggregator-not-enabled": "Cet agrégateur n'est pas activé pour le trading par vous.",
       "max-tips": "Cette valeur est calculée en soustrayant le coût en gas pour le bridge.",
-      "bridgeDbkBtn": "Pont via le service officiel DeBank"
+      "bridgeDbkBtn": "Pont via le service officiel DeBank",
+      "pendingItem": {
+        "failed": "Échoué",
+        "queued": "En attente",
+        "estimatedTime": "Temps estimé",
+        "pending": "En attente",
+        "swap": "Échanger",
+        "receivingTo": "Recevoir sur {{chain}}",
+        "beReturnFailed": "Pont échoué. Vos actifs ont été retournés.",
+        "completed": "Terminé",
+        "sendingFrom": "Envoi depuis {{chain}}",
+        "longTimeNoReceive": "Le réseau est occupé. Cela peut prendre plus de temps que d'habitude. Veuillez patienter.",
+        "receivedDifferentTokenFromSource": "Le pont a échoué. Un token différent a été retourné sur la chaîne source.",
+        "bridgeStatus": "État du Bridge",
+        "receivedDifferentTokenNeedSwap": "Vous avez reçu un jeton différent. Vous pouvez l'échanger contre le jeton que vous avez sélectionné.",
+        "BridgeStatusUnavailable": "Statut du pont indisponible. Veuillez vérifier votre historique de transactions pour confirmer que les fonds sont arrivés.",
+        "fromFailed": "La transaction n'a pas été effectuée. Essayez à nouveau."
+      }
     },
     "dappSearch": {
       "searchResult": {
@@ -3144,7 +3161,8 @@
           "risks": {
             "scamAddress": "Adresse de scam signalée par Rabby",
             "contractAddress": "Adresse de contrat détectée, des fonds pourraient être perdus.",
-            "dexNoDeposite": "Pas une adresse de dépôt CEX, les fonds peuvent être perdus."
+            "dexNoDeposite": "Pas une adresse de dépôt CEX, les fonds peuvent être perdus.",
+            "noSend": "Vous n'avez pas envoyé d'argent à cette adresse depuis 180 jours."
           }
         },
         "cexAddress": "{{cexName}} Adresse",
@@ -3411,7 +3429,8 @@
           "risks": {
             "dexNoDeposite": "Vous envoyez à une adresse d'échange non dépositaire",
             "contractAddress": "Vous envoyez à un contrat, des fonds peuvent être perdus.",
-            "scamAddress": "Vous envoyez à une adresse frauduleuse"
+            "scamAddress": "Vous envoyez à une adresse frauduleuse",
+            "noSend": "Vous n'avez pas envoyé à cette adresse depuis 180 jours."
           }
         },
         "TransferBeforeValue": "Oui",
