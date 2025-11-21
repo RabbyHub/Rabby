@@ -409,7 +409,7 @@ const Content: React.FC<Props> = (props) => {
                   block
                   type="primary"
                   className="rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
-                  disabled={!collection?.is_tradable}
+                  disabled={!collection?.is_tradable || loading}
                   onClick={() => {
                     if (!nftDetail) {
                       return;
@@ -425,7 +425,7 @@ const Content: React.FC<Props> = (props) => {
                   size="large"
                   type="primary"
                   ghost
-                  disabled={!collection?.is_tradable}
+                  disabled={!collection?.is_tradable || loading}
                   className="hover:before:hidden rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
                   onClick={() => {
                     if (!nftDetail) {
@@ -442,7 +442,7 @@ const Content: React.FC<Props> = (props) => {
                 block
                 type="primary"
                 className="rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
-                disabled={!collection?.is_tradable}
+                disabled={!collection?.is_tradable || loading}
                 onClick={() => {
                   if (!nftDetail) {
                     return;
