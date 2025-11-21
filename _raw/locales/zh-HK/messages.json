@@ -1272,9 +1272,9 @@
         "level": {
           "$unknown": "未知",
           "custom": "自定義",
-          "fast": "立即",
-          "normal": "快速",
-          "slow": "標準"
+          "fast": "",
+          "normal": "",
+          "slow": ""
         },
         "popupDesc": "礦工費將根據你設置的 Gas Price 從轉賬金額中預留",
         "popupTitle": "設置 Gas Price (Gwei)"
@@ -3464,10 +3464,10 @@
       "desc": "以下服務將由第三方生態合作夥伴直接提供。Rabby Wallet 不承擔這些服務的安全性責任。"
     },
     "ReserveGasPopup": {
-      "fast": "快速",
-      "instant": "即時",
+      "fast": "",
+      "instant": "",
       "doNotReserve": "不要预留 Gas",
-      "normal": "普通",
+      "normal": "",
       "title": "預留 Gas"
     },
     "OpenExternalWebsiteModal": {

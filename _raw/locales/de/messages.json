@@ -676,9 +676,9 @@
         "level": {
           "$unknown": "Unbekannt",
           "custom": "Benutzerdefiniert",
-          "fast": "Sofort",
-          "normal": "Schnell",
-          "slow": "Standard"
+          "fast": "",
+          "normal": "",
+          "slow": ""
         },
         "popupDesc": "Die Gaskosten werden auf Grundlage des von Ihnen festgelegten Gaspreises vom Überweisungsbetrag abgezogen",
         "popupTitle": "Gaspreis festlegen (Gwei)"
@@ -3423,11 +3423,11 @@
       "desc": "Die folgenden Dienstleistungen werden direkt von einem Drittanbieter-Ecosystem-Partner bereitgestellt. Rabby Wallet übernimmt keine Verantwortung für die Sicherheit dieser Dienstleistungen."
     },
     "ReserveGasPopup": {
-      "instant": "Sofort",
+      "instant": "",
       "title": "Reservieren Gas",
       "doNotReserve": "Reservieren Sie kein Gas",
-      "fast": "Schnell",
-      "normal": "Normal"
+      "fast": "",
+      "normal": ""
     },
     "OpenExternalWebsiteModal": {
       "button": "Fortfahren",

@@ -676,9 +676,9 @@
         "level": {
           "$unknown": "Desconocido",
           "custom": "Personalizado",
-          "fast": "Instantáneo",
-          "normal": "Rápido",
-          "slow": "Estándar"
+          "fast": "",
+          "normal": "",
+          "slow": ""
         },
         "popupDesc": "El costo de gas se reservará del monto de la transferencia en función del precio de gas que establezcas",
         "popupTitle": "Establecer Precio de Gas (Gwei)"
@@ -3427,9 +3427,9 @@
     },
     "ReserveGasPopup": {
       "title": "Reservar Gas",
-      "instant": "Instant",
-      "normal": "Normal",
-      "fast": "Rápido",
+      "instant": "",
+      "normal": "",
+      "fast": "",
       "doNotReserve": "No reserves de Gas"
     },
     "OpenExternalWebsiteModal": {
