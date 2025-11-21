@@ -3144,7 +3144,6 @@
           "risks": {
             "scamAddress": "Adresse de scam signalée par Rabby",
             "contractAddress": "Adresse de contrat détectée, des fonds pourraient être perdus.",
-            "noSend": "Aucun transfert vers cette adresse depuis 180 jours",
             "dexNoDeposite": "Pas une adresse de dépôt CEX, les fonds peuvent être perdus."
           }
         },
@@ -3410,7 +3409,6 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "Aucun transfert vers cette adresse depuis 180 jours",
             "dexNoDeposite": "Vous envoyez à une adresse d'échange non dépositaire",
             "contractAddress": "Vous envoyez à un contrat, des fonds peuvent être perdus.",
             "scamAddress": "Vous envoyez à une adresse frauduleuse"

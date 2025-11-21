@@ -465,9 +465,7 @@ const SendToken = () => {
       mostImportantRisks: [] as { value: string }[],
     };
     if (risks.length) {
-      const sorted = [...risks]
-        .filter((item) => item.type !== RiskType.NEVER_SEND)
-        .sort(sortRisksDesc);
+      const sorted = [...risks].sort(sortRisksDesc);
 
       ret.risksForToAddress = sorted
         .slice(0, 1)

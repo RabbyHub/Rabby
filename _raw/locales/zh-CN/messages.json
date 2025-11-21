@@ -2876,7 +2876,6 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "180天内没有转账到此地址",
             "dexNoDeposite": "不是CEX存款地址，资金可能会丢失",
             "contractAddress": "检测到合约地址，资金可能会丢失。",
             "scamAddress": "被Rabby标记的诈骗地址"
@@ -3144,7 +3143,6 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "180天内没有转账到此地址",
             "contractAddress": "您正在发送到一个合约，资金可能会丢失。",
             "dexNoDeposite": "您正在发送到一个非托管的交易所地址",
             "scamAddress": "您正在向一个欺诈地址发送交易"
