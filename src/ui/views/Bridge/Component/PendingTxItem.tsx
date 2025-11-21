@@ -246,6 +246,8 @@ const PendingStatusDetail = ({
       const isReturn =
         data.actualToToken?.chain === data.fromToken?.chain &&
         data.actualToToken?.id === data.fromToken?.id;
+      const isReturnSourceChain =
+        data.actualToToken?.chain === data.fromToken?.chain;
 
       return (
         <div className="flex items-center justify-between mx-12 py-14 border-t-[0.5px] border-solid border-rabby-neutral-line gap-12">
@@ -286,13 +288,22 @@ const PendingStatusDetail = ({
                 {t('page.bridge.pendingItem.swap')}
               </div>
             </>
-          ) : (
+          ) : isReturnSourceChain ? (
             <div className="flex items-start gap-4 flex-1">
               <div className="w-16 h-16 flex items-center justify-center">
                 <RcIconFailedCC className="w-16 h-16 text-r-red-default" />
               </div>
               <span className="text-13 leading-[16px] font-medium text-r-red-default">
                 {t('page.bridge.pendingItem.receivedDifferentTokenFromSource')}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-start gap-4 flex-1">
+              <div className="w-16 h-16 flex items-center justify-center">
+                <RcIconFailedCC className="w-16 h-16 text-r-red-default" />
+              </div>
+              <span className="text-13 leading-[16px] font-medium text-r-red-default">
+                {t('page.bridge.pendingItem.BridgeStatusUnavailable')}
               </span>
             </div>
           )}

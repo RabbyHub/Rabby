@@ -404,7 +404,7 @@ export const BridgeContent = () => {
               )
           )
         );
-        message.error(error?.message || String(error));
+        // message.error(error?.message || String(error));
         stats.report('bridgeQuoteResult', {
           aggregatorIds: selectedBridgeQuote.aggregator.id,
           bridgeId: selectedBridgeQuote.bridge_id,
