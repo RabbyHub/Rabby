@@ -62,10 +62,23 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
       return ['ui-open', 'signing', 'error'].includes(status);
     }
     if (ctx?.mode === 'direct' && status !== 'ready') {
-      return isDirectSignAccount ? false : true;
+      const showPopup =
+        isDirectSignAccount || config?.hiddenHardWareProcess ? false : true;
+      if (isDesktop && !config?.getContainer && !showPopup && error) {
+        return true;
+      }
+      return showPopup;
     }
     return false;
-  }, [status, ctx?.mode]);
+  }, [
+    status,
+    ctx?.mode,
+    config?.hiddenHardWareProcess,
+    config?.account?.type,
+    config?.getContainer,
+    error,
+    isDesktop,
+  ]);
   const visible = useDebounceValue(_visible, 100);
   const loading =
     status === 'prefetching' || status === 'signing' || !ctx?.txsCalc.length;
@@ -446,110 +459,118 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 directSubmit={directSubmit}
                 task={task}
                 Header={
-                  <div
-                    className={clsx(
-                      'flex-1 flex flex-col',
-                      directSubmit &&
-                        'fixed left-[99999px] top-[99999px] z-[-1]',
-                      task.status !== 'idle' && 'pointer-events-none'
-                    )}
-                    key={task.status}
-                  >
-                    {enableSecurityEngine ||
-                    showSimulateChange ||
-                    isSpeedUp ||
-                    isCancel ||
-                    title ? (
-                      <div className="flex-1 flex flex-col gap-[22px] mb-16">
-                        {title}
+                  <>
+                    <div
+                      className={clsx(
+                        'flex-1 flex flex-col',
+                        directSubmit &&
+                          'fixed left-[99999px] top-[99999px] z-[-1]',
+                        task.status !== 'idle' && 'pointer-events-none'
+                      )}
+                      key={task.status}
+                    >
+                      {enableSecurityEngine ||
+                      showSimulateChange ||
+                      isSpeedUp ||
+                      isCancel ||
+                      title ? (
+                        <div className="flex-1 flex flex-col gap-[22px] mb-16">
+                          {title}
 
-                        {showSimulateChange ? (
-                          <div className="bg-r-neutral-card-2 px-16 py-12 rounded-[8px]">
-                            {txsResult?.[txsResult?.length - 1]
-                              ?.preExecResult ? (
-                              <BalanceChange
-                                version={
-                                  txsResult?.[txsResult?.length - 1]
-                                    .preExecResult.pre_exec_version
+                          {showSimulateChange ? (
+                            <div className="bg-r-neutral-card-2 px-16 py-12 rounded-[8px]">
+                              {txsResult?.[txsResult?.length - 1]
+                                ?.preExecResult ? (
+                                <BalanceChange
+                                  version={
+                                    txsResult?.[txsResult?.length - 1]
+                                      .preExecResult.pre_exec_version
+                                  }
+                                  data={
+                                    txsResult?.[txsResult?.length - 1]
+                                      .preExecResult.balance_change
+                                  }
+                                />
+                              ) : (
+                                <BalanceChangeLoading />
+                              )}
+                            </div>
+                          ) : null}
+
+                          {engineResults &&
+                          ctx?.txsCalc[txs.length - 1].preExecResult ? (
+                            <ApprovalUtilsProvider>
+                              <MiniSecurityHeader
+                                engineResults={engineResults}
+                                tx={txs[txs.length - 1]}
+                                txDetail={
+                                  ctx?.txsCalc[txs.length - 1].preExecResult
                                 }
-                                data={
-                                  txsResult?.[txsResult?.length - 1]
-                                    .preExecResult.balance_change
-                                }
+                                account={config.account}
+                                isReady={!!ctx.engineResults}
+                                session={config?.session}
                               />
-                            ) : (
-                              <BalanceChangeLoading />
-                            )}
-                          </div>
-                        ) : null}
+                            </ApprovalUtilsProvider>
+                          ) : null}
+                          <SpeedUpCancelHeader
+                            isSpeedUp={isSpeedUp}
+                            isCancel={isCancel}
+                            originGasPrice={originGasPrice || '0'}
+                            currentGasPrice={
+                              txsResult?.[0]?.tx?.gasPrice ||
+                              txsResult?.[0]?.tx?.maxFeePerGas ||
+                              ''
+                            }
+                          />
 
-                        {engineResults &&
-                        ctx?.txsCalc[txs.length - 1].preExecResult ? (
-                          <ApprovalUtilsProvider>
-                            <MiniSecurityHeader
-                              engineResults={engineResults}
-                              tx={txs[txs.length - 1]}
-                              txDetail={
-                                ctx?.txsCalc[txs.length - 1].preExecResult
-                              }
-                              account={config.account}
-                              isReady={!!ctx.engineResults}
-                              session={config?.session}
-                            />
-                          </ApprovalUtilsProvider>
-                        ) : null}
-                        <SpeedUpCancelHeader
-                          isSpeedUp={isSpeedUp}
-                          isCancel={isCancel}
-                          originGasPrice={originGasPrice || '0'}
-                          currentGasPrice={
-                            txsResult?.[0]?.tx?.gasPrice ||
-                            txsResult?.[0]?.tx?.maxFeePerGas ||
-                            ''
-                          }
-                        />
-
-                        <Divide className="mt-auto w-[calc(100%+40px)] relative left-[-20px] bg-r-neutral-line" />
-                      </div>
-                    ) : null}
-                    <GasSelectorHeader
-                      tx={txs[0]}
-                      gasAccountCost={gasAccountCost}
-                      gasMethod={gasMethod}
-                      onChangeGasMethod={setGasMethod}
-                      pushType={pushType}
-                      disabled={false}
-                      isReady={isReady}
-                      gasLimit={gasLimit}
-                      noUpdate={false}
-                      gasList={gasList}
-                      selectedGas={selectedGas}
-                      version={
-                        txsResult?.[0]?.preExecResult?.pre_exec_version || 'v0'
-                      }
-                      recommendGasLimit={recommendGasLimit}
-                      recommendNonce={recommendNonce}
-                      chainId={chainId}
-                      onChange={handleGasChange}
-                      nonce={realNonce}
-                      disableNonce={true}
-                      isSpeedUp={isSpeedUp}
-                      isCancel={isCancel}
-                      is1559={support1559}
-                      isHardware={isHardware}
-                      manuallyChangeGasLimit={manuallyChangeGasLimit}
-                      errors={checkErrors}
-                      // engineResults={engineResults}
-                      nativeTokenBalance={nativeTokenBalance}
-                      gasPriceMedian={gasPriceMedian}
-                      gas={totalGasCost}
-                      gasCalcMethod={gasCalcMethod}
-                      // directSubmit={directSubmit}
-                      directSubmit={true}
-                      checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
-                      getContainer={desktopMiniSignerGetContainer}
-                    />
-                  </div>
+                          <Divide className="mt-auto w-[calc(100%+40px)] relative left-[-20px] bg-r-neutral-line" />
+                        </div>
+                      ) : (
+                        <div className="mt-auto" />
+                      )}
+                      <GasSelectorHeader
+                        tx={txs[0]}
+                        gasAccountCost={gasAccountCost}
+                        gasMethod={gasMethod}
+                        onChangeGasMethod={setGasMethod}
+                        pushType={pushType}
+                        disabled={false}
+                        isReady={isReady}
+                        gasLimit={gasLimit}
+                        noUpdate={false}
+                        gasList={gasList}
+                        selectedGas={selectedGas}
+                        version={
+                          txsResult?.[0]?.preExecResult?.pre_exec_version ||
+                          'v0'
+                        }
+                        recommendGasLimit={recommendGasLimit}
+                        recommendNonce={recommendNonce}
+                        chainId={chainId}
+                        onChange={handleGasChange}
+                        nonce={realNonce}
+                        disableNonce={true}
+                        isSpeedUp={isSpeedUp}
+                        isCancel={isCancel}
+                        is1559={support1559}
+                        isHardware={isHardware}
+                        manuallyChangeGasLimit={manuallyChangeGasLimit}
+                        errors={checkErrors}
+                        // engineResults={engineResults}
+                        nativeTokenBalance={nativeTokenBalance}
+                        gasPriceMedian={gasPriceMedian}
+                        gas={totalGasCost}
+                        gasCalcMethod={gasCalcMethod}
+                        // directSubmit={directSubmit}
+                        directSubmit={true}
+                        checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
+                        getContainer={desktopMiniSignerGetContainer}
+                      />
+                    </div>
+                    {directSubmit && (
+                      <div className="mt-auto flex-1 flex flex-col" />
+                    )}
+                  </>
                 }
                 noCustomRPC={noCustomRPC}
                 gasMethod={gasMethod}
