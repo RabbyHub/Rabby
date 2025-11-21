@@ -676,9 +676,9 @@
         "level": {
           "$unknown": "Bilinmeyen",
           "custom": "Özel",
-          "fast": "Anında",
-          "normal": "Hızlı",
-          "slow": "Standart"
+          "fast": "",
+          "normal": "",
+          "slow": ""
         },
         "popupDesc": "Ayarladığınız gas ücretine göre gas maliyeti transfer tutarından alınacaktır",
         "popupTitle": "Gas Ücretini Ayarla (Gwei)"
@@ -3429,9 +3429,9 @@
     "ReserveGasPopup": {
       "doNotReserve": "Gas ayırma",
       "title": "Rezerv Gaz",
-      "normal": "Normal",
-      "instant": "Anında",
-      "fast": "Hızlı"
+      "normal": "",
+      "instant": "",
+      "fast": ""
     },
     "OpenExternalWebsiteModal": {
       "button": "Devam Et",

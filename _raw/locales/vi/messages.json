@@ -674,9 +674,9 @@
         "level": {
           "$unknown": "Không xác định",
           "custom": "Tùy chỉnh",
-          "normal": "Nhanh",
-          "fast": "Ngay lập tức",
-          "slow": "Bình thường"
+          "normal": "",
+          "fast": "",
+          "slow": ""
         },
         "confirm": "Xác nhận",
         "popupTitle": "Đặt giá Gas (Gwei)",
@@ -3420,9 +3420,9 @@
       "desc": "Các dịch vụ sau sẽ được cung cấp trực tiếp bởi đối tác hệ sinh thái bên thứ ba. Ví Rabby không chịu trách nhiệm về sự an toàn của các dịch vụ này."
     },
     "ReserveGasPopup": {
-      "instant": "Ngay lập tức",
-      "fast": "Nhanh",
-      "normal": "Bình thường",
+      "instant": "",
+      "fast": "",
+      "normal": "",
       "title": "Dự trữ Gas",
       "doNotReserve": "Đừng dành Gas"
     },

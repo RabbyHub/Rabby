@@ -672,11 +672,11 @@
       },
       "GasSelector": {
         "level": {
-          "normal": "Cepat",
+          "normal": "",
           "$unknown": "Tidak Dikenal",
           "custom": "Kustom",
-          "slow": "Normal",
-          "fast": "Instan"
+          "slow": "",
+          "fast": ""
         },
         "confirm": "Konfirmasi",
         "popupTitle": "Atur Harga Gas (Gwei)",
@@ -3421,11 +3421,11 @@
       "desc": "Layanan berikut akan disediakan secara langsung oleh Mitra Ekosistem pihak ketiga. Rabby Wallet tidak bertanggung jawab atas keamanan layanan ini."
     },
     "ReserveGasPopup": {
-      "fast": "Cepat",
+      "fast": "",
       "title": "Cadangan Gas",
-      "normal": "Normal",
+      "normal": "",
       "doNotReserve": "Jangan cadangkan Gas",
-      "instant": "Instan"
+      "instant": ""
     },
     "OpenExternalWebsiteModal": {
       "button": "Lanjutkan",

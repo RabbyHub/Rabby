@@ -672,10 +672,10 @@
       },
       "GasSelector": {
         "level": {
-          "slow": "정상",
-          "fast": "즉시",
+          "slow": "",
+          "fast": "",
           "$unknown": "알 수 없음",
-          "normal": "빠른",
+          "normal": "",
           "custom": "맞춤형"
         },
         "confirm": "확인",
@@ -3421,11 +3421,11 @@
       "notRemind": "다시 나를 상기시키지 마세요"
     },
     "ReserveGasPopup": {
-      "instant": "즉시",
+      "instant": "",
       "title": "가스 예약",
       "doNotReserve": "Gas를 예약하지 마세요.",
-      "fast": "빠른",
-      "normal": "정상"
+      "fast": "",
+      "normal": ""
     },
     "OpenExternalWebsiteModal": {
       "title": "당신은 Rabby Wallet을 떠나고 있습니다.",

@@ -676,9 +676,9 @@
         "level": {
           "$unknown": "未知",
           "custom": "カスタム",
-          "fast": "即時",
-          "normal": "速い",
-          "slow": "標準"
+          "fast": "",
+          "normal": "",
+          "slow": ""
         },
         "popupDesc": "設定したガス価格に基づいて転送額からガス費用が予約されます",
         "popupTitle": "ガス価格（Gwei）を設定"
@@ -3423,10 +3423,10 @@
     },
     "ReserveGasPopup": {
       "title": "ガスを予約する",
-      "instant": "即時",
-      "normal": "ノーマル",
+      "instant": "",
+      "normal": "",
       "doNotReserve": "ガスを予約しない",
-      "fast": "速い"
+      "fast": ""
     },
     "OpenExternalWebsiteModal": {
       "title": "Rabby Wallet を離れようとしています",

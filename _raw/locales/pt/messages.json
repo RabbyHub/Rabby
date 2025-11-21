@@ -672,11 +672,11 @@
       },
       "GasSelector": {
         "level": {
-          "fast": "Instante",
+          "fast": "",
           "custom": "Personalizado",
-          "normal": "Rápido",
+          "normal": "",
           "$unknown": "Desconhecido",
-          "slow": "Normal"
+          "slow": ""
         },
         "confirm": "Confirmar",
         "popupTitle": "Definir Preço do Gás (Gwei)",
@@ -3421,9 +3421,9 @@
       "desc": "Os seguintes serviços serão fornecidos diretamente por parceiros do Ecossistema de terceiros. A Rabby Wallet não assume responsabilidade pela segurança desses serviços."
     },
     "ReserveGasPopup": {
-      "normal": "Normal",
-      "instant": "Instant",
-      "fast": "Rápido",
+      "normal": "",
+      "instant": "",
+      "fast": "",
       "doNotReserve": "Não reserve Gas",
       "title": "Reservar Gas"
     },
