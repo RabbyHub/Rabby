@@ -250,7 +250,8 @@
         "JS_SHA3_NO_COMMON_JS": "r",
         "JS_SHA3_NO_ARRAY_BUFFER": "r",
         "JS_SHA3_NO_NODE_JS": "r",
-        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r"
+        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r",
+        "JS_SHA3_NO_WINDOW": "r"
       },
       "disallow": []
     }
@@ -261,7 +262,16 @@
         "JS_SHA3_NO_COMMON_JS": "r",
         "JS_SHA3_NO_ARRAY_BUFFER": "r",
         "JS_SHA3_NO_NODE_JS": "r",
-        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r"
+        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r",
+        "JS_SHA3_NO_WINDOW": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@opensea/seaport-js/node_modules/ethers/lib.commonjs/crypto/crypto-browser.js": {
+    "global": {
+      "allow": {
+        "crypto": "r"
       },
       "disallow": []
     }
@@ -275,6 +285,14 @@
     }
   },
   "node_modules/gridplus-sdk/node_modules/ethers/lib.commonjs/providers/ws-browser.js": {
+    "global": {
+      "allow": {
+        "WebSocket": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@opensea/seaport-js/node_modules/ethers/lib.commonjs/providers/ws-browser.js": {
     "global": {
       "allow": {
         "WebSocket": "r"
@@ -312,7 +330,8 @@
         "JS_MD5_NO_COMMON_JS": "r",
         "JS_MD5_NO_ARRAY_BUFFER": "r",
         "JS_MD5_NO_NODE_JS": "r",
-        "JS_MD5_NO_ARRAY_BUFFER_IS_VIEW": "r"
+        "JS_MD5_NO_ARRAY_BUFFER_IS_VIEW": "r",
+        "JS_MD5_NO_WINDOW": "r"
       },
       "disallow": []
     }
@@ -364,7 +383,24 @@
       "disallow": []
     }
   },
+  "node_modules/protobufjs/src/util/minimal.js": {
+    "global": {
+      "allow": {
+        "dcodeIO": "r",
+        "Long": "r"
+      },
+      "disallow": []
+    }
+  },
   "node_modules/@onekeyfe/hd-transport/node_modules/protobufjs/src/util/longbits.js": {
+    "global": {
+      "allow": {
+        "process": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/protobufjs/src/util/longbits.js": {
     "global": {
       "allow": {
         "process": "r"
