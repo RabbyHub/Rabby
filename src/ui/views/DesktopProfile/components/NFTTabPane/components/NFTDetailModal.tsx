@@ -130,12 +130,26 @@ const Content: React.FC<Props> = (props) => {
       </h1>
       <div className="px-[20px] pb-[20px]">
         <div className="flex items-start gap-[16px]">
-          <NFTAvatar
-            className="w-[340px] h-[340px] flex-shrink-0"
-            type={nft?.content_type}
-            amount={nft?.amount}
-            content={nft?.content}
-          />
+          <div className="relative flex-shrink-0">
+            <NFTAvatar
+              className="w-[340px] h-[340px]"
+              type={nft?.content_type}
+              // amount={nft?.amount}
+              content={nft?.content}
+            />
+            {nft?.amount && nft?.amount > 1 ? (
+              <div
+                className={clsx(
+                  'absolute top-[8px] right-[8px]',
+                  'rounded-[4px] py-[3px] px-[10px]',
+                  'text-r-neutral-title2 font-medium text-[15px] leading-[18px]',
+                  'bg-[rgba(0,0,0,0.5)]'
+                )}
+              >
+                x{nft.amount}
+              </div>
+            ) : null}
+          </div>
           <div className="flex-1 min-w-0">
             <div className="border-[0.5px] border-solid border-rabby-neutral-line rounded-[8px]">
               <div className="flex items-center justify-between gap-[16px] p-[16px]">

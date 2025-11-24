@@ -246,7 +246,7 @@ export const DesktopProfile = () => {
                       />
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="NFTs" key="nft">
-                      <NFTTabPane />
+                      <NFTTabPane selectChainId={chainInfo?.serverId} />
                     </Tabs.TabPane>
                     <Tabs.TabPane
                       tab={t('page.desktopProfile.tabs.transactions')}

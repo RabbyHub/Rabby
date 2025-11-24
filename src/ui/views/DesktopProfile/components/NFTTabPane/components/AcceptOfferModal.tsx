@@ -99,6 +99,7 @@ const Content: React.FC<Props> = (props) => {
       total: 0,
       market: 0,
       custom: 0,
+      isCustomRequired: false,
     };
     if (!fees) {
       return res;
@@ -110,6 +111,10 @@ const Content: React.FC<Props> = (props) => {
           res.total += item.fee;
         } else if (key === 'custom_royalties') {
           res.custom += item.fee;
+          if (formValues.creatorFeeEnable || item.required) {
+            res.total += item.fee;
+          }
+          res.isCustomRequired = item.required || res.isCustomRequired;
         }
       });
     });
@@ -117,8 +122,9 @@ const Content: React.FC<Props> = (props) => {
       total: res.total / 10000,
       market: res.market / 10000,
       custom: res.custom / 10000,
+      isCustomRequired: res.isCustomRequired,
     };
-  }, [fees]);
+  }, [fees, formValues.creatorFeeEnable]);
 
   const bestOfferPrice = useMemo(() => {
     return calcBestOfferPrice(nftDetail);
@@ -442,12 +448,15 @@ const Content: React.FC<Props> = (props) => {
                   <RcIconInfoCC className="ml-[2px] mr-[4px]" />
                 </Tooltip>
                 <Switch
-                  checked={formValues.creatorFeeEnable}
+                  checked={
+                    formValues.creatorFeeEnable || feesRate.isCustomRequired
+                  }
                   onChange={(v) => {
                     setFormValues({
                       creatorFeeEnable: v,
                     });
                   }}
+                  disabled={feesRate.isCustomRequired}
                 ></Switch>
               </div>
               <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">

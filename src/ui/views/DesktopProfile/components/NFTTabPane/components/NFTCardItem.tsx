@@ -26,7 +26,7 @@ export const NFTCardItem: React.FC<{
         <NFTAvatar
           className="w-[198px] h-[198px] rounded-[4px]"
           type={item.nft.content_type}
-          amount={item.nft.amount}
+          // amount={item.nft.amount}
           content={item.nft.content}
         />
         <img

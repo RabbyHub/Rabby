@@ -21,7 +21,9 @@ import { NFTDetailModal } from './components/NFTDetailModal';
 import { ResultModal } from './components/ResultModal';
 import { useHistory } from 'react-router-dom';
 
-export const NFTTabPane = () => {
+export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
+  selectChainId,
+}) => {
   const wallet = useWallet();
   const [isAll, setIsAll] = React.useState(false);
 
@@ -58,6 +60,7 @@ export const NFTTabPane = () => {
       const collections = await wallet.openapi.collectionList({
         id: currentAccount?.address,
         isAll: isAll,
+        chainId: selectChainId,
       });
 
       const result: {
@@ -77,7 +80,7 @@ export const NFTTabPane = () => {
       return result;
     },
     {
-      refreshDeps: [isAll, currentAccount?.address],
+      refreshDeps: [isAll, currentAccount?.address, selectChainId],
     }
   );
 
