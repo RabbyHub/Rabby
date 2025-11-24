@@ -39,7 +39,7 @@ import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
 import { calcBestOfferPrice, generateRandomSalt } from '../utils';
-import { useNFTListSigner } from '@/ui/hooks/useMixedSigner';
+import { useNFTListSigner } from '@/ui/hooks/useNFTListingSigner';
 import { SignProcessButton } from '@/ui/component/SignProcessButton';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';

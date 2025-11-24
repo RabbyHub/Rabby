@@ -10,7 +10,7 @@ import type {
   GasSelectionOptions,
   SignerConfig,
 } from '../component/MiniSignV2/domain/types';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { SimpleSignConfig, useMiniSigner } from './useSigner';
 import { MINI_SIGN_ERROR } from '../component/MiniSignV2/state/SignatureManager';
 import { useCurrentAccount } from './backgroundState/useAccount';
@@ -69,12 +69,16 @@ export const useNFTListSigner = (
       for (let idx = 0; idx < steps.length; idx++) {
         const step = steps[idx];
         if (step.kind === 'tx') {
-          const hashes = await openUI({
-            ...options,
-            txs,
-            pauseAfter: 1,
-          });
-          results.push(...hashes);
+          try {
+            const hashes = await openUI({
+              ...options,
+              txs,
+              pauseAfter: 1,
+            });
+            results.push(...hashes);
+          } catch (error) {
+            //
+          }
         } else {
           const hashes = await typedDataSignatureStore.start(
             {
@@ -83,6 +87,7 @@ export const useNFTListSigner = (
                 account: params.account,
                 getContainer: options?.getContainer,
                 mode: 'UI',
+                title: options?.title,
               },
               wallet,
             },

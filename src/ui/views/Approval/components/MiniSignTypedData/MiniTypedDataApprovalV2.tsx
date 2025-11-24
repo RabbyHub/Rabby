@@ -160,6 +160,13 @@ export const MiniTypedDataApprovalV2: React.FC<{
                 getContainer={desktopMiniSignerGetContainer}
                 Header={
                   <>
+                    <div className={clsx('flex-1 flex flex-col')}>
+                      {request.config.title ? (
+                        <div className="flex-1 flex flex-col gap-[22px] mb-16">
+                          {request.config.title}
+                        </div>
+                      ) : null}
+                    </div>
                     <div className="mt-auto" />
                   </>
                 }
