@@ -5888,6 +5888,8 @@ export class WalletController extends BaseController {
       throw e;
     }
   };
+
+  getRpcTxReceipt = transactionHistoryService.getRpcTxReceipt;
 }
 
 const wallet = new WalletController();

@@ -18,15 +18,17 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { IconOpenSea } from '@/ui/assets';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { StepInput } from '@/ui/component/StepInput';
+import { last } from 'lodash';
+import { waitForTxCompleted } from '@/ui/utils/transaction';
 
 type Props = ModalProps & {
   nftDetail?: NFTDetail;
-  onSuccess?(): void;
-  onFailed?(): void;
+  onSigned?(p: Promise<any>): void;
 };
 
 const Content: React.FC<Props> = (props) => {
-  const { nftDetail, onSuccess, onFailed, ...rest } = props;
+  const { nftDetail, onSigned, ...rest } = props;
 
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
@@ -45,7 +47,6 @@ const Content: React.FC<Props> = (props) => {
     [currentAccount?.type]
   );
 
-  // todo remove this
   const [formValues, setFormValues] = useSetState<{
     listingPrice?: string;
     amount: number | null;
@@ -59,6 +60,10 @@ const Content: React.FC<Props> = (props) => {
   });
 
   const bestOffer = nftDetail?.best_offer_order;
+
+  const maxCount = useMemo(() => {
+    return Math.min(bestOffer?.remaining_quantity || 1, nftDetail?.amount || 1);
+  }, [bestOffer?.remaining_quantity, nftDetail?.amount]);
 
   const offerToken = useTokenInfo(
     {
@@ -209,12 +214,15 @@ const Content: React.FC<Props> = (props) => {
       txs.push((tx as unknown) as Tx);
 
       const runFallback = async () => {
+        const res: string[] = [];
         for (const tx of txs) {
-          await wallet.sendRequest<string>({
+          const hash = await wallet.sendRequest<string>({
             method: 'eth_sendTransaction',
             params: [tx],
           });
+          res.push(hash);
         }
+        return res;
       };
 
       if (canDirectSign && currentAccount) {
@@ -243,34 +251,32 @@ const Content: React.FC<Props> = (props) => {
           ga: {},
         } as const;
         try {
-          await openUI(signerConfig);
+          return await openUI(signerConfig);
         } catch (error) {
           console.log('openUI error', error);
           if (error !== MINI_SIGN_ERROR.USER_CANCELLED) {
             console.error('Dapp action direct sign error', error);
             return await runFallback();
-            // await runFallback().catch((fallbackError) => {
-            //   console.error('Dapp action fallback error', fallbackError);
-            //   const fallbackMsg =
-            //     typeof (fallbackError as any)?.message === 'string'
-            //       ? (fallbackError as any).message
-            //       : 'Transaction failed';
-            //   message.error(fallbackMsg);
-            // });
           }
           throw error;
         }
       } else {
-        await runFallback();
+        return await runFallback();
       }
     },
     {
       manual: true,
-      onSuccess() {
-        onSuccess?.();
-      },
-      onError() {
-        onFailed?.();
+      onSuccess(res) {
+        const hash = last(res);
+        if (chain && hash) {
+          onSigned?.(
+            waitForTxCompleted({
+              wallet,
+              hash: hash,
+              chainServerId: chain!.serverId,
+            })
+          );
+        }
       },
     }
   );
@@ -313,62 +319,102 @@ const Content: React.FC<Props> = (props) => {
         Accept Offer
       </h1>
       <div className="pt-[16px] px-[20px] pb-[24px]">
-        <div className="flex items-center justify-between">
-          <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
-            Offer
+        <div className="pb-[20px] border-b-[0.5px] border-solid border-rabby-neutral-line">
+          <div className="flex items-center justify-between">
+            <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
+              Offer
+            </div>
+            <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
+              Offer Price
+            </div>
           </div>
-          <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
-            Offer Price
-          </div>
-        </div>
-        <div className="flex items-center gap-[10px] pt-[12px] pb-[24px]">
-          <NFTAvatar
-            className="w-[36px] h-[36px]"
-            chain={nftDetail?.chain}
-            content={nftDetail?.content}
-            type={nftDetail?.content_type}
-          />
-          <div className="flex-1 min-w-0 flex justify-between gap-[4px]">
-            <div className="space-y-[4px]">
-              <div
-                className={clsx(
-                  'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate'
-                )}
-              >
-                {nftDetail?.name || '-'}
+          <div className="flex items-center gap-[10px] pt-[12px]">
+            <NFTAvatar
+              className="w-[36px] h-[36px]"
+              chain={nftDetail?.chain}
+              content={nftDetail?.content}
+              type={nftDetail?.content_type}
+            />
+            <div className="flex-1 min-w-0 flex justify-between gap-[4px]">
+              <div className="space-y-[4px]">
+                <div
+                  className={clsx(
+                    'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate'
+                  )}
+                >
+                  {nftDetail?.name || '-'}
+                </div>
+                <div
+                  className={clsx(
+                    'text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate'
+                  )}
+                >
+                  {nftDetail?.collection?.name || '-'}
+                </div>
               </div>
-              <div
-                className={clsx(
-                  'text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate'
+              <div className="space-y-[4px] text-right">
+                {offerToken ? (
+                  <>
+                    <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 text-right">
+                      {bestOfferPrice
+                        ? formatTokenAmount(bestOfferPrice.toString())
+                        : '-'}{' '}
+                      {bestOffer?.price.currency}
+                    </div>
+                    <div
+                      className={clsx(
+                        'text-[13px] leading-[16px] font-medium text-r-neutral-foot'
+                      )}
+                    >
+                      {bestOfferUsdPrice
+                        ? formatUsdValue(bestOfferUsdPrice.toString())
+                        : '-'}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
+                    -
+                  </div>
                 )}
-              >
-                {nftDetail?.collection?.name || '-'}
               </div>
             </div>
-            <div className="space-y-[4px] text-right">
-              {offerToken ? (
-                <>
-                  <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 text-right">
-                    {bestOfferPrice
-                      ? formatTokenAmount(bestOfferPrice.toString())
-                      : '-'}{' '}
-                    {bestOffer?.price.currency}
-                  </div>
-                  <div
-                    className={clsx(
-                      'text-[13px] leading-[16px] font-medium text-r-neutral-foot'
-                    )}
-                  >
-                    {bestOfferUsdPrice
-                      ? formatUsdValue(bestOfferUsdPrice.toString())
-                      : '-'}
-                  </div>
-                </>
-              ) : (
-                <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
-                  -
-                </div>
-              )}
+          </div>
+        </div>
+
+        <div className="py-[16px] space-y-[24px] border-b-[0.5px] border-solid border-rabby-neutral-line">
+          {maxCount > 1 ? (
+            <div className="flex items-center justify-between">
+              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
+                Quantity
+              </div>
+              <div>
+                <StepInput
+                  min={1}
+                  max={maxCount}
+                  value={formValues.amount}
+                  onChange={(v) => {
+                    setFormValues({
+                      amount: v,
+                    });
+                  }}
+                  // maxTooltip={
+                  //   (formValues.amount || 0) >= (nftDetail?.amount || 1)
+                  //     ? `Your balance is ${nftDetail?.amount || 1}`
+                  //     : undefined
+                  // }
+                />
+              </div>
+            </div>
+          ) : null}
+          <div className="flex items-center justify-between">
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
+              Platform
+            </div>
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
+              <div className="flex items-center gap-[4px]">
+                <img src={IconOpenSea} className="w-[16px] h-[16px]" alt="" />
+                OpenSea
+              </div>
             </div>
           </div>
         </div>
@@ -447,17 +493,19 @@ const Content: React.FC<Props> = (props) => {
                 >
                   <RcIconInfoCC className="ml-[2px] mr-[4px]" />
                 </Tooltip>
-                <Switch
-                  checked={
-                    formValues.creatorFeeEnable || feesRate.isCustomRequired
-                  }
-                  onChange={(v) => {
-                    setFormValues({
-                      creatorFeeEnable: v,
-                    });
-                  }}
-                  disabled={feesRate.isCustomRequired}
-                ></Switch>
+                {feesRate?.isCustomRequired ? null : (
+                  <Switch
+                    checked={
+                      formValues.creatorFeeEnable || feesRate.isCustomRequired
+                    }
+                    onChange={(v) => {
+                      setFormValues({
+                        creatorFeeEnable: v,
+                      });
+                    }}
+                    disabled={feesRate.isCustomRequired}
+                  ></Switch>
+                )}
               </div>
               <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
                 {formValues?.creatorFeeEnable && feesRate.custom ? (
@@ -552,7 +600,9 @@ export const AcceptOfferModal: React.FC<Props> = (props) => {
         backdropFilter: 'blur(8px)',
       }}
       className="modal-support-darkmode"
-      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      closeIcon={
+        <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
+      }
       destroyOnClose
     >
       <Content {...props} />

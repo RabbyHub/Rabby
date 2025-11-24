@@ -21,15 +21,16 @@ import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { findChain } from '@/utils/chain';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { IconOpenSea } from '@/ui/assets';
+import { last } from 'lodash';
+import { waitForTxCompleted } from '@/ui/utils/transaction';
 
 type Props = ModalProps & {
   nftDetail?: NFTDetail;
-  onSuccess?(): void;
-  onFailed?(): void;
+  onSigned?(p: Promise<any>): void;
 };
 
 const Content: React.FC<Props> = (props) => {
-  const { nftDetail, onSuccess, ...rest } = props;
+  const { nftDetail, onSigned, ...rest } = props;
 
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
@@ -96,12 +97,15 @@ const Content: React.FC<Props> = (props) => {
       const txs = [tx];
 
       const runFallback = async () => {
+        const res: string[] = [];
         for (const tx of txs) {
-          await wallet.sendRequest<string>({
+          const hash = await wallet.sendRequest<string>({
             method: 'eth_sendTransaction',
             params: [tx],
           });
+          res.push(hash);
         }
+        return res;
       };
 
       if (canDirectSign && currentAccount) {
@@ -130,7 +134,7 @@ const Content: React.FC<Props> = (props) => {
           ga: {},
         } as const;
         try {
-          await openUI(signerConfig);
+          return await openUI(signerConfig);
         } catch (error) {
           console.log('openUI error', error);
           if (error !== MINI_SIGN_ERROR.USER_CANCELLED) {
@@ -140,13 +144,22 @@ const Content: React.FC<Props> = (props) => {
           throw error;
         }
       } else {
-        await runFallback();
+        return await runFallback();
       }
     },
     {
       manual: true,
-      onSuccess() {
-        onSuccess?.();
+      onSuccess(res) {
+        const hash = last(res);
+        if (chain && hash) {
+          onSigned?.(
+            waitForTxCompleted({
+              wallet,
+              hash: hash,
+              chainServerId: chain!.serverId,
+            })
+          );
+        }
       },
     }
   );
@@ -260,7 +273,9 @@ export const CancelListingModal: React.FC<Props> = (props) => {
         backdropFilter: 'blur(8px)',
       }}
       className="modal-support-darkmode"
-      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      closeIcon={
+        <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
+      }
       destroyOnClose
     >
       <Content {...props} />

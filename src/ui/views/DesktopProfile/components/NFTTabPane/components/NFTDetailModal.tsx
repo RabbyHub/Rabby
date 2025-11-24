@@ -505,7 +505,9 @@ export const NFTDetailModal: React.FC<Props> = (props) => {
         backdropFilter: 'blur(8px)',
       }}
       className="modal-support-darkmode"
-      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      closeIcon={
+        <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
+      }
       destroyOnClose
     >
       <Content {...props}></Content>

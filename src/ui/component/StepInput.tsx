@@ -45,6 +45,7 @@ const Root = styled.div`
     height: 34px;
 
     border: 1px solid var(--r-neutral-line, #e0e5ec);
+    background-color: transparent;
 
     &:focus {
       outline: none;

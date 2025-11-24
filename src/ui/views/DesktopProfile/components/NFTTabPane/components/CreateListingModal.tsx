@@ -35,7 +35,7 @@ import {
 } from '@opensea/seaport-js/lib/constants';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { StepInput } from '@/ui/component/StepInput';
-import { RcIconInfoCC } from '@/ui/assets/desktop/common';
+import { RcIconArrowDownCC, RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
 import { calcBestOfferPrice, generateRandomSalt } from '../utils';
@@ -46,6 +46,7 @@ import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 const Container = styled.div`
   table {
+    th,
     td {
       padding: 12px 6px;
 
@@ -68,12 +69,14 @@ const Container = styled.div`
     border: 1px solid var(--r-blue-default, #4c65ff);
     height: 40px;
     width: 148px;
+    background-color: transparent;
 
     .ant-input {
       color: var(--r-neutral-title1, #192945);
       font-size: 13px;
       line-height: 16px;
       font-weight: 500;
+      background-color: transparent;
     }
 
     input::-webkit-outer-spin-button,
@@ -96,6 +99,7 @@ const Container = styled.div`
       border: 1px solid var(--r-neutral-line, #e0e5ec);
       width: 160px;
       height: 44px;
+      background-color: transparent;
 
       .ant-select-selection-item {
         line-height: 44px;
@@ -103,6 +107,12 @@ const Container = styled.div`
         font-size: 15px;
         font-weight: 500;
       }
+    }
+
+    .ant-select-arrow {
+      width: 16px;
+      height: 16px;
+      top: 50%;
     }
     &.ant-select-focused {
       .ant-select-selector {
@@ -233,6 +243,13 @@ export const Content: React.FC<Props> = (props) => {
       : '',
   });
 
+  const cost = useMemo(() => {
+    return nftDetail?.last_sale &&
+      isSameAddress(nftDetail?.last_sale.buyer, currentAccount?.address || '')
+      ? nftDetail?.last_sale
+      : null;
+  }, [nftDetail?.last_sale, currentAccount?.address]);
+
   const wallet = useWallet();
 
   const { data: fees } = useRequest(
@@ -312,7 +329,6 @@ export const Content: React.FC<Props> = (props) => {
       return total.plus(item.endAmount);
     }, new BigNumber(0));
 
-    // check this
     const duration =
       +(nftDetail?.listing_order?.protocol_data.parameters.endTime || 0) -
       Date.now() / 1000;
@@ -743,96 +759,134 @@ export const Content: React.FC<Props> = (props) => {
                   </div>
                 </td>
                 <td>
-                  <div
-                    className={clsx(
-                      'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
+                  <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
+                    {nftDetail?.collection?.opensea_floor_price ? (
+                      <>
+                        <div className={clsx('truncate mb-[4px] text-right')}>
+                          {formatTokenAmount(
+                            nftDetail?.collection?.opensea_floor_price?.price ||
+                              0
+                          )}{' '}
+                          {
+                            nftDetail?.collection?.opensea_floor_price?.token
+                              ?.symbol
+                          }
+                        </div>
+                        <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
+                          {formatUsdValue(
+                            new BigNumber(
+                              nftDetail?.collection?.opensea_floor_price
+                                ?.price || 0
+                            )
+                              .times(
+                                nftDetail?.collection?.opensea_floor_price
+                                  ?.token?.price || 0
+                              )
+                              .toString()
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      '-'
                     )}
-                  >
-                    {formatTokenAmount(
-                      nftDetail?.collection?.opensea_floor_price?.price || 0
-                    )}{' '}
-                    {nftDetail?.collection?.opensea_floor_price?.token?.symbol}
                   </div>
-                  <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
-                    {formatUsdValue(
-                      new BigNumber(
-                        nftDetail?.collection?.opensea_floor_price?.price || 0
-                      )
-                        .times(
-                          nftDetail?.collection?.opensea_floor_price?.token
-                            ?.price || 0
-                        )
-                        .toString()
+                </td>
+                <td>
+                  <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
+                    {nftDetail?.best_offer_order ? (
+                      <>
+                        <div
+                          className={clsx(
+                            'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
+                          )}
+                        >
+                          {bestOfferPrice
+                            ? formatTokenAmount(bestOfferPrice.toString())
+                            : '-'}{' '}
+                          {nftDetail?.best_offer_order?.price?.currency || '-'}
+                        </div>
+                        <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
+                          {bestOfferUsdPrice
+                            ? formatUsdValue(bestOfferUsdPrice.toString())
+                            : '-'}
+                        </div>
+                      </>
+                    ) : (
+                      '-'
                     )}
                   </div>
                 </td>
                 <td>
-                  {nftDetail?.best_offer_order ? (
-                    <>
-                      <div
-                        className={clsx(
-                          'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
-                        )}
-                      >
-                        {bestOfferPrice
-                          ? formatTokenAmount(bestOfferPrice.toString())
-                          : '-'}{' '}
-                        {nftDetail?.best_offer_order?.price?.currency || '-'}
-                      </div>
-                      <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
-                        {bestOfferUsdPrice
-                          ? formatUsdValue(bestOfferUsdPrice.toString())
-                          : '-'}
-                      </div>
-                    </>
-                  ) : (
-                    '-'
-                  )}
-                </td>
-                <td>
-                  <div
-                    className={clsx(
-                      'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
+                  <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
+                    {cost ? (
+                      <>
+                        <div
+                          className={clsx(
+                            'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
+                          )}
+                        >
+                          {formatTokenAmount(
+                            new BigNumber(cost.payment.quantity)
+                              .div(
+                                new BigNumber(10).exponentiatedBy(
+                                  cost.payment.decimals
+                                )
+                              )
+                              .toString()
+                          )}{' '}
+                          {cost.payment.symbol}{' '}
+                        </div>
+                        <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
+                          (
+                          {formatUsdValue(
+                            new BigNumber(cost.payment.quantity)
+                              .div(
+                                new BigNumber(10).exponentiatedBy(
+                                  cost.payment.decimals
+                                )
+                              )
+                              .times(cost.payment.price)
+                              .toString()
+                          )}
+                          )
+                        </div>
+                      </>
+                    ) : (
+                      '-'
                     )}
-                  >
-                    -
                   </div>
                 </td>
                 <td>
-                  {formValues.listingPrice ? (
-                    <>
-                      <div
-                        className={clsx(
-                          'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
-                        )}
-                      >
-                        {formatTokenAmount(
-                          new BigNumber(formValues.listingPrice)
-                            .times(1 - feesRate.total)
-                            .times(formValues?.amount || 0)
-                            .toString()
-                        )}{' '}
-                        {listingToken?.symbol}
-                      </div>
-                      <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
-                        {formatUsdValue(
-                          new BigNumber(formValues.listingPrice)
-                            .times(1 - feesRate.total)
-                            .times(formValues?.amount || 0)
-                            .times(listingToken?.price || 0)
-                            .toString()
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <div
-                      className={clsx(
-                        'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
-                      )}
-                    >
-                      -
-                    </div>
-                  )}
+                  <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
+                    {formValues.listingPrice ? (
+                      <>
+                        <div
+                          className={clsx(
+                            'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate mb-[4px] text-right'
+                          )}
+                        >
+                          {formatTokenAmount(
+                            new BigNumber(formValues.listingPrice)
+                              .times(1 - feesRate.total)
+                              .times(formValues?.amount || 0)
+                              .toString()
+                          )}{' '}
+                          {listingToken?.symbol}
+                        </div>
+                        <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
+                          {formatUsdValue(
+                            new BigNumber(formValues.listingPrice)
+                              .times(1 - feesRate.total)
+                              .times(formValues?.amount || 0)
+                              .times(listingToken?.price || 0)
+                              .toString()
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      '-'
+                    )}
+                  </div>
                 </td>
                 <td>
                   <Input
@@ -852,8 +906,9 @@ export const Content: React.FC<Props> = (props) => {
             </tbody>
           </table>
         </div>
-        {nftDetail?.amount && nftDetail?.amount > 1 ? (
-          <div className="py-[16px] space-y-[24px] border-b-[0.5px] border-solid border-rabby-neutral-line">
+
+        <div className="py-[16px] space-y-[24px] border-b-[0.5px] border-solid border-rabby-neutral-line">
+          {nftDetail?.amount && nftDetail?.amount > 1 ? (
             <div className="flex items-center justify-between">
               <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
                 Quantity
@@ -876,37 +931,37 @@ export const Content: React.FC<Props> = (props) => {
                 />
               </div>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
-                Total listing price
-              </div>
-              <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
-                {formValues?.listingPrice && formValues.amount ? (
-                  <>
-                    {formatTokenAmount(
+          ) : null}
+          <div className="flex items-center justify-between">
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
+              Total listing price
+            </div>
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
+              {formValues?.listingPrice && formValues.amount ? (
+                <>
+                  {formatTokenAmount(
+                    new BigNumber(formValues.listingPrice)
+                      .times(formValues.amount)
+                      .toString()
+                  )}{' '}
+                  {listingToken?.symbol}{' '}
+                  <span className="text-r-neutral-foot font-normal">
+                    (
+                    {formatUsdValue(
                       new BigNumber(formValues.listingPrice)
                         .times(formValues.amount)
+                        .times(listingToken?.price || 0)
                         .toString()
-                    )}{' '}
-                    {listingToken?.symbol}{' '}
-                    <span className="text-r-neutral-foot font-normal">
-                      (
-                      {formatUsdValue(
-                        new BigNumber(formValues.listingPrice)
-                          .times(formValues.amount)
-                          .times(listingToken?.price || 0)
-                          .toString()
-                      )}
-                      )
-                    </span>
-                  </>
-                ) : (
-                  '-'
-                )}
-              </div>
+                    )}
+                    )
+                  </span>
+                </>
+              ) : (
+                '-'
+              )}
             </div>
           </div>
-        ) : null}
+        </div>
         <div className="py-[16px] space-y-[16px] border-b-[0.5px] border-solid border-rabby-neutral-line">
           <div className="flex items-center justify-between">
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
@@ -981,17 +1036,19 @@ export const Content: React.FC<Props> = (props) => {
                 >
                   <RcIconInfoCC className="ml-[2px] mr-[4px]" />
                 </Tooltip>
-                <Switch
-                  checked={
-                    formValues.creatorFeeEnable || feesRate.isCustomRequired
-                  }
-                  onChange={(v) => {
-                    setFormValues({
-                      creatorFeeEnable: v,
-                    });
-                  }}
-                  disabled={feesRate.isCustomRequired}
-                ></Switch>
+                {feesRate?.isCustomRequired ? null : (
+                  <Switch
+                    checked={
+                      formValues.creatorFeeEnable || feesRate.isCustomRequired
+                    }
+                    onChange={(v) => {
+                      setFormValues({
+                        creatorFeeEnable: v,
+                      });
+                    }}
+                    disabled={feesRate.isCustomRequired}
+                  ></Switch>
+                )}
               </div>
               <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
                 {formValues?.creatorFeeEnable && feesRate.custom ? (
@@ -1066,6 +1123,7 @@ export const Content: React.FC<Props> = (props) => {
               }}
               className="custom-select"
               options={options}
+              suffixIcon={<RcIconArrowDownCC className="text-r-neutral-foot" />}
             ></Select>
             {currentAccount ? (
               <SignProcessButton
@@ -1109,7 +1167,9 @@ export const CreateListingModal: React.FC<Props> = (props) => {
         backdropFilter: 'blur(8px)',
       }}
       className="modal-support-darkmode"
-      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      closeIcon={
+        <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
+      }
       destroyOnClose
     >
       <Content {...props} />

@@ -1,19 +1,126 @@
 import { RcIconSuccessCC, RcIconWaringCC } from '@/ui/assets/desktop/common';
+import { RcIconSpinCC } from '@/ui/assets/desktop/profile';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { NFTDetail } from '@rabby-wallet/rabby-api/dist/types';
+import { useRequest } from 'ahooks';
 import { Button, Modal, ModalProps } from 'antd';
-import React from 'react';
+import clsx from 'clsx';
+import React, { useState } from 'react';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 
-export const ResultModal: React.FC<
-  ModalProps & {
-    nftDetail?: NFTDetail;
-    onOk?(): void;
-    desc?: React.ReactNode;
-    status?: 'success' | 'failed';
-  }
-> = (props) => {
-  const { nftDetail, title, desc, status, ...rest } = props;
+type Props = ModalProps & {
+  nftDetail?: NFTDetail;
+  status?: 'success' | 'failed' | 'pending';
+  pendingPromise?: Promise<any>;
+  successMessage?: {
+    title?: string;
+    desc?: string;
+  };
+  errorMessage?: {
+    title?: string;
+    desc?: string;
+  };
+};
+const Content: React.FC<Props> = (props) => {
+  const {
+    nftDetail,
+    title,
+    successMessage,
+    errorMessage,
+    status: _status,
+    pendingPromise,
+  } = props;
+
+  const [status, setStatus] = useState(_status);
+
+  useRequest(
+    async () => {
+      await pendingPromise;
+    },
+    {
+      onSuccess() {
+        setStatus('success');
+      },
+      onError() {
+        setStatus('failed');
+      },
+      refreshDeps: [pendingPromise],
+    }
+  );
+
+  return (
+    <div className="flex flex-col items-center py-[40px] px-[20px]">
+      <NFTAvatar
+        className="w-[160px] h-[160px]"
+        // chain={nftDetail?.chain}
+        content={nftDetail?.content}
+        type={nftDetail?.content_type}
+      />
+      <div className="mt-[20px] mb-[40px]">
+        <div className="mb-[8px] flex items-center justify-center gap-[6px]">
+          {status === 'success' ? (
+            <RcIconSuccessCC className="text-r-green-default" />
+          ) : status === 'failed' ? (
+            <RcIconWaringCC className="text-r-red-default" />
+          ) : status === 'pending' ? (
+            <RcIconSpinCC className="animate-spin text-r-orange-default" />
+          ) : null}
+          {status === 'pending' ? (
+            <div className="text-[20px] leading-[24px] font-medium text-r-orange-default">
+              Pending
+            </div>
+          ) : status === 'success' ? (
+            <div className="text-[20px] leading-[24px] font-medium">
+              {successMessage?.title}
+            </div>
+          ) : status === 'failed' ? (
+            <div className="text-[20px] leading-[24px] font-medium">
+              {errorMessage?.title}
+            </div>
+          ) : null}
+        </div>
+        {status === 'pending' ? (
+          <div className="text-[13] leading-[16px] text-r-neutral-body font-medium text-center">
+            Confirming your transaction
+          </div>
+        ) : status === 'success' ? (
+          <div className="text-[13] leading-[16px] text-r-neutral-body font-medium text-center">
+            {successMessage?.desc}
+          </div>
+        ) : status === 'failed' ? (
+          <div className="text-[13] leading-[16px] text-r-neutral-body font-medium text-center">
+            {errorMessage?.desc}
+          </div>
+        ) : null}
+      </div>
+      <footer>
+        {status === 'pending' ? (
+          <div
+            className={clsx(
+              'flex items-center justify-center',
+              'w-[280px] h-[44px] rounded-[6px] bg-r-neutral-card2',
+              'text-[15px] leading-[18px] font-medium text-r-neutral-foot'
+            )}
+            onClick={props.onCancel}
+          >
+            Close
+          </div>
+        ) : (
+          <Button
+            type="primary"
+            className="w-[280px] h-[44px] rounded-[6px] text-[15px] leading-[18px] font-medium"
+            onClick={props.onCancel}
+          >
+            OK
+          </Button>
+        )}
+      </footer>
+    </div>
+  );
+};
+
+export const ResultModal: React.FC<Props> = (props) => {
+  const { nftDetail, status, ...rest } = props;
 
   return (
     <Modal
@@ -34,38 +141,7 @@ export const ResultModal: React.FC<
       closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
       destroyOnClose
     >
-      <div className="flex flex-col items-center py-[40px] px-[20px]">
-        <NFTAvatar
-          className="w-[160px] h-[160px]"
-          // chain={nftDetail?.chain}
-          content={nftDetail?.content}
-          type={nftDetail?.content_type}
-        />
-        <div className="mt-[20px] mb-[40px]">
-          <div className="mb-[8px] flex items-center justify-center gap-[6px]">
-            {status === 'success' ? (
-              <RcIconSuccessCC className="text-r-green-default" />
-            ) : status === 'failed' ? (
-              <RcIconWaringCC className="text-r-red-default" />
-            ) : null}
-            <div className="text-[20px] leading-[24px] font-medium">
-              {title}
-            </div>
-          </div>
-          <div className="text-[13] leading-[16px] text-r-neutral-body font-medium text-center">
-            {desc}
-          </div>
-        </div>
-        <footer>
-          <Button
-            type="primary"
-            className="w-[280px] h-[44px] rounded-[6px] text-[15px] leading-[18px] font-medium"
-            onClick={props.onCancel}
-          >
-            OK
-          </Button>
-        </footer>
-      </div>
+      <Content {...props} />
     </Modal>
   );
 };
