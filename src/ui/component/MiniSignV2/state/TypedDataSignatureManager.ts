@@ -15,10 +15,8 @@ export type TypedDataSignerConfig = {
   account: Account;
   noShowModalLoading?: boolean;
   getContainer?: DrawerProps['getContainer'];
-  /**
-   * 静默模式，不展示全局弹层
-   */
-  silent?: boolean;
+  mode?: 'UI' | 'DIRECT';
+  title?: React.ReactNode;
 };
 
 export type TypedDataSignatureRequest = {
@@ -86,7 +84,6 @@ class TypedDataSignatureManager {
       getContainer?: ModalProps['getContainer'];
     } = {}
   ) {
-    const { getContainer } = config;
     if (!request.txs.length) {
       throw new Error('No typed data to sign');
     }
@@ -98,12 +95,19 @@ class TypedDataSignatureManager {
       this.pendingResult = { resolve, reject };
     });
     this.setState({
-      status: 'signing',
+      status: request.config.mode === 'UI' ? 'idle' : 'signing',
       request,
       error: undefined,
       progress: { current: 0, total: request.txs.length },
     });
-    this.runSigningFlow({ request, getContainer });
+    if (request.config.mode !== 'UI') {
+      void this.runSigningFlow({
+        request,
+        startIndex: 0,
+        existingResults: [],
+        getContainer: config.getContainer || request.config.getContainer,
+      });
+    }
     return promise;
   }
 

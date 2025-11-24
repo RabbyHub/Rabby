@@ -27,14 +27,15 @@ export type TypedStep = {
 
 export type MixedSignStep = TxStep | TypedStep;
 
-export const useMixedSigner = (params: Parameters<typeof useMiniSigner>[0]) => {
+export const useNFTListSigner = (
+  params: Parameters<typeof useMiniSigner>[0]
+) => {
   const wallet = useWallet();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [wip, setWip] = useState(true);
 
   const {
     prefetch,
-    openDirect,
     openUI,
     close: closeTxsSign,
     resetGasStore,
@@ -68,33 +69,20 @@ export const useMixedSigner = (params: Parameters<typeof useMiniSigner>[0]) => {
       for (let idx = 0; idx < steps.length; idx++) {
         const step = steps[idx];
         if (step.kind === 'tx') {
-          try {
-            const hashes = await openDirect({
-              ...options,
-              txs,
-              pauseAfter: 1,
-            });
-            results.push(...hashes);
-          } catch (error) {
-            console.log('mixed sign error', error);
-            if (error === MINI_SIGN_ERROR.CANT_PROCESS) {
-              const hashes = await openUI({
-                ...options,
-                txs,
-                pauseAfter: 1,
-              });
-              results.push(...hashes);
-            }
-            throw error;
-          }
+          const hashes = await openUI({
+            ...options,
+            txs,
+            pauseAfter: 1,
+          });
+          results.push(...hashes);
         } else {
           const hashes = await typedDataSignatureStore.start(
             {
               txs: step.txs,
               config: {
                 account: params.account,
-                silent: true,
                 getContainer: options?.getContainer,
+                mode: 'UI',
               },
               wallet,
             },
