@@ -69,16 +69,12 @@ export const useNFTListSigner = (
       for (let idx = 0; idx < steps.length; idx++) {
         const step = steps[idx];
         if (step.kind === 'tx') {
-          try {
-            const hashes = await openUI({
-              ...options,
-              txs,
-              pauseAfter: 1,
-            });
-            results.push(...hashes);
-          } catch (error) {
-            //
-          }
+          const hashes = await openUI({
+            ...options,
+            txs,
+            pauseAfter: 1,
+          });
+          results.push(...hashes);
         } else {
           const hashes = await typedDataSignatureStore.start(
             {
