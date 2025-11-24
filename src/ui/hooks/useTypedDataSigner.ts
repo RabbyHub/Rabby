@@ -13,7 +13,8 @@ type StartParams = {
   canUseDirectSubmitTx?: boolean;
   noShowModalLoading?: boolean;
   getContainer?: DrawerProps['getContainer'];
-  silent?: boolean;
+  mode?: 'UI' | 'DIRECT';
+  title?: React.ReactNode;
 };
 
 export const useTypedDataSigner = () => {

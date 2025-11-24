@@ -85,14 +85,18 @@ export const MiniTypedDataApprovalV2: React.FC<{
     total: total,
   } as any;
 
-  if (
-    !request ||
-    !request.config.account ||
-    status === 'idle' ||
-    (request.config.silent && !error)
-  ) {
+  if (!request || !request.config.account) {
     return null;
   }
+
+  if (request.config.mode !== 'UI') {
+    if (status === 'idle') {
+      return null;
+    }
+  }
+
+  const showPopup =
+    request.config.mode === 'UI' || status === 'signing' || !!error;
 
   if (isDesktop && !config?.getContainer) {
     const desktopPortalClassName = 'desktop-mini-signer-typed-data';
@@ -119,7 +123,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
           />
         </Popup>
         <Modal
-          visible={status === 'signing' || error}
+          visible={showPopup}
           onClose={() => handleClose()}
           maskClosable={false}
           closable={false}
@@ -156,6 +160,13 @@ export const MiniTypedDataApprovalV2: React.FC<{
                 getContainer={desktopMiniSignerGetContainer}
                 Header={
                   <>
+                    <div className={clsx('flex-1 flex flex-col')}>
+                      {request.config.title ? (
+                        <div className="flex-1 flex flex-col gap-[22px] mb-16">
+                          {request.config.title}
+                        </div>
+                      ) : null}
+                    </div>
                     <div className="mt-auto" />
                   </>
                 }
