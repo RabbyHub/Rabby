@@ -1587,14 +1587,11 @@ export const ApprovalsTabPane = ({
               {batchRevokeModal.node}
               {!isLoading && isDesktop && (
                 <div
-                  className="pt-[16px] text-center"
+                  className="py-[16px] text-center"
                   style={{
+                    width: 1078,
                     position: 'fixed',
-                    bottom: 0,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    paddingRight: 280,
-                    paddingBottom: 24,
+                    bottom: 32,
                   }}
                 >
                   {tab === 'eip-7702' ? (
