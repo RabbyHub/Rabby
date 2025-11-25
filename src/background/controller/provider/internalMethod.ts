@@ -11,7 +11,6 @@ import { appIsDev } from '@/utils/env';
 import wallet from '../wallet';
 import { metamaskModeService } from '@/background/service/metamaskModeService';
 import { ProviderRequest } from './type';
-import { isSameAddress } from '@/ui/utils';
 
 const networkIdMap: {
   [key: string]: string;
@@ -122,7 +121,10 @@ const openInDesktop = async (req: ProviderRequest) => {
 
   if (keyringService.isUnlocked() && params.address) {
     const account = await wallet.getAccountByAddress(params.address);
-    if (account && !isSameAddress(account.address, params.address)) {
+    if (
+      account &&
+      account.address?.toLowerCase() !== params.address.toLowerCase()
+    ) {
       preferenceService.setCurrentAccount(account);
     }
   }
