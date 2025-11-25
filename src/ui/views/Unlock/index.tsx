@@ -61,7 +61,13 @@ const Unlock = () => {
           resolveApproval();
         }
       } else if (UiType.isTab || UiType.isDesktop) {
-        history.replace(query.from && isString(query.from) ? query.from : '/');
+        history.replace(
+          query.from && isString(query.from)
+            ? query.from
+            : UiType.isDesktop
+            ? '/desktop/profile'
+            : '/'
+        );
       } else {
         history.replace('/');
       }
