@@ -20,6 +20,7 @@ import { NFTCardItem } from './components/NFTCardItem';
 import { NFTDetailModal } from './components/NFTDetailModal';
 import { ResultModal } from './components/ResultModal';
 import { useHistory } from 'react-router-dom';
+import { useListenTxReload } from '../../hooks/useListenTxReload';
 
 export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
   selectChainId,
@@ -59,7 +60,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
 
   const currentAccount = useCurrentAccount();
 
-  const { data: list, loading } = useRequest(
+  const { data: list, loading, runAsync } = useRequest(
     async () => {
       if (!currentAccount?.address) {
         return [];
@@ -90,6 +91,10 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
       refreshDeps: [isAll, currentAccount?.address, selectChainId],
     }
   );
+
+  useListenTxReload(() => {
+    runAsync();
+  });
 
   return (
     <div className="py-[16px] px-[20px]">

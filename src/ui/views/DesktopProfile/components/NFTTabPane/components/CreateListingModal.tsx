@@ -43,6 +43,7 @@ import { useNFTListSigner } from '@/ui/hooks/useNFTListingSigner';
 import { SignProcessButton } from '@/ui/component/SignProcessButton';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { IconOpenSea } from '@/ui/assets';
 
 const Container = styled.div`
   table {
@@ -260,6 +261,7 @@ export const Content: React.FC<Props> = (props) => {
       const res = await wallet.openapi.getNFTCollectionFees({
         chain_id: nftDetail?.chain || '',
         collection_id: nftDetail?.contract_id || '',
+        inner_id: nftDetail.inner_id,
       });
       return res;
     },
@@ -394,8 +396,6 @@ export const Content: React.FC<Props> = (props) => {
   });
 
   const [totalSteps, setTotalSteps] = useState(1);
-
-  console.log({ isSigning });
 
   const buildTxs = useMemoizedFn(async () => {
     if (
@@ -535,6 +535,21 @@ export const Content: React.FC<Props> = (props) => {
           hashes = await run(steps, {
             hiddenHardWareProcess: true,
             // getContainer: getContainer,
+            title: (
+              <div className="flex items-center justify-center gap-[8px]">
+                <div className="relative">
+                  <img src={IconOpenSea} alt="" className="w-[24px] h-[24px]" />
+                  <img
+                    src={chain?.logo}
+                    alt=""
+                    className="absolute top-[-2px] right-[-2px] w-[12px] h-[12px] rounded-full"
+                  />
+                </div>
+                <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
+                  Listing NFT
+                </div>
+              </div>
+            ),
           });
           console.log('hashes', hashes);
         } catch (error) {
@@ -1142,7 +1157,7 @@ export const Content: React.FC<Props> = (props) => {
                 currentIndex={currentIndex}
                 total={totalSteps}
               >
-                {isApproved ? 'Complete listing' : 'Approve and Listing'}
+                {isApproved ? 'List on OpenSea' : 'Approve and List'}
               </SignProcessButton>
             ) : null}
           </div>

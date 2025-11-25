@@ -16,7 +16,7 @@ import {
   NFTItem,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
-import { Button, Modal, ModalProps } from 'antd';
+import { Button, Modal, ModalProps, Skeleton, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
@@ -33,7 +33,7 @@ type Props = ModalProps & {
   nft?: NFTItem;
   collection?: Omit<CollectionList, 'nft_list'>;
   onCreateListing?: (nftDetail: NFTDetail) => void;
-  onSend?: (nftDetail: NFTDetail) => void;
+  onSend?: () => void;
   onAccept?: (nftDetail: NFTDetail) => void;
   onCancelListing?: (nftDetail: NFTDetail) => void;
   onEditListing?: (nftDetail: NFTDetail) => void;
@@ -176,30 +176,40 @@ const Content: React.FC<Props> = (props) => {
                   Collection floor
                 </div>
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
-                  {nftDetail?.collection?.opensea_floor_price ? (
-                    <>
-                      {formatTokenAmount(
-                        nftDetail?.collection?.opensea_floor_price?.price || 0
-                      )}{' '}
-                      {
-                        nftDetail?.collection?.opensea_floor_price?.token
-                          ?.symbol
-                      }{' '}
-                      (
-                      {formatUsdValue(
-                        new BigNumber(
-                          nftDetail?.collection?.opensea_floor_price?.price
-                        )
-                          .times(
-                            nftDetail?.collection?.opensea_floor_price?.token
-                              ?.price
-                          )
-                          .toString()
-                      )}
-                      )
-                    </>
+                  {loading ? (
+                    <Skeleton.Input
+                      active
+                      className="w-[120px] h-[16px] rounded-[4px] block"
+                    />
                   ) : (
-                    '-'
+                    <>
+                      {nftDetail?.collection?.opensea_floor_price ? (
+                        <>
+                          {formatTokenAmount(
+                            nftDetail?.collection?.opensea_floor_price?.price ||
+                              0
+                          )}{' '}
+                          {
+                            nftDetail?.collection?.opensea_floor_price?.token
+                              ?.symbol
+                          }{' '}
+                          (
+                          {formatUsdValue(
+                            new BigNumber(
+                              nftDetail?.collection?.opensea_floor_price?.price
+                            )
+                              .times(
+                                nftDetail?.collection?.opensea_floor_price
+                                  ?.token?.price
+                              )
+                              .toString()
+                          )}
+                          )
+                        </>
+                      ) : (
+                        '-'
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -208,9 +218,18 @@ const Content: React.FC<Props> = (props) => {
                   Rarity
                 </div>
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
-                  {nftDetail?.rarity?.rank
-                    ? `#${nftDetail?.rarity?.rank}`
-                    : '-'}
+                  {loading ? (
+                    <Skeleton.Input
+                      active
+                      className="w-[120px] h-[16px] rounded-[4px] block"
+                    />
+                  ) : (
+                    <>
+                      {nftDetail?.rarity?.rank
+                        ? `#${nftDetail?.rarity?.rank}`
+                        : '-'}
+                    </>
+                  )}
                 </div>
               </div>
               <div className="flex items-center justify-between gap-[16px] p-[16px]">
@@ -218,35 +237,46 @@ const Content: React.FC<Props> = (props) => {
                   Last sale
                 </div>
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
-                  {nftDetail?.last_sale ? (
-                    <>
-                      {formatTokenAmount(
-                        new BigNumber(nftDetail.last_sale.payment.quantity)
-                          .div(
-                            new BigNumber(10).exponentiatedBy(
-                              nftDetail.last_sale.payment.decimals
-                            )
-                          )
-                          .toString()
-                      )}{' '}
-                      {nftDetail.last_sale.payment.symbol}{' '}
-                      <span className="text-r-neutral-foot font-normal">
-                        (
-                        {formatUsdValue(
-                          new BigNumber(nftDetail.last_sale.payment.quantity)
-                            .div(
-                              new BigNumber(10).exponentiatedBy(
-                                nftDetail.last_sale.payment.decimals
-                              )
-                            )
-                            .times(nftDetail.last_sale.payment.price)
-                            .toString()
-                        )}
-                        )
-                      </span>
-                    </>
+                  {loading ? (
+                    <Skeleton.Input
+                      active
+                      className="w-[120px] h-[16px] rounded-[4px] block"
+                    />
                   ) : (
-                    '-'
+                    <>
+                      {nftDetail?.last_sale ? (
+                        <>
+                          {formatTokenAmount(
+                            new BigNumber(nftDetail.last_sale.payment.quantity)
+                              .div(
+                                new BigNumber(10).exponentiatedBy(
+                                  nftDetail.last_sale.payment.decimals
+                                )
+                              )
+                              .toString()
+                          )}{' '}
+                          {nftDetail.last_sale.payment.symbol}{' '}
+                          <span className="text-r-neutral-foot font-normal">
+                            (
+                            {formatUsdValue(
+                              new BigNumber(
+                                nftDetail.last_sale.payment.quantity
+                              )
+                                .div(
+                                  new BigNumber(10).exponentiatedBy(
+                                    nftDetail.last_sale.payment.decimals
+                                  )
+                                )
+                                .times(nftDetail.last_sale.payment.price)
+                                .toString()
+                            )}
+                            )
+                          </span>
+                        </>
+                      ) : (
+                        '-'
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -263,22 +293,32 @@ const Content: React.FC<Props> = (props) => {
                       Supported platforms:{' '}
                     </div>
                     <div>
-                      <img
-                        src={IconOpenSea}
-                        className="w-[16px] h-[16px]"
-                        alt="OpenSea"
-                      />
+                      <Tooltip title="OpenSea" overlayClassName="rectangle">
+                        <img
+                          src={IconOpenSea}
+                          className="w-[16px] h-[16px]"
+                          alt="OpenSea"
+                        />
+                      </Tooltip>
                     </div>
                   </div>
                 ) : null}
               </header>
-              {nftDetail?.best_offer_order ? (
-                <div
-                  className={clsx(
-                    'py-[13px] px-[12px] rounded-[8px]',
-                    'border-[0.5px] border-solid border-rabby-neutral-line'
-                  )}
-                >
+
+              <div
+                className={clsx(
+                  'py-[13px] px-[12px] rounded-[8px] h-[60px]',
+                  'border-[0.5px] border-solid border-rabby-neutral-line'
+                )}
+              >
+                {loading ? (
+                  <div className="flex items-center h-full">
+                    <Skeleton.Input
+                      active
+                      className="w-[120px] h-[16px] rounded-[4px] block"
+                    />
+                  </div>
+                ) : nftDetail?.best_offer_order ? (
                   <div className="flex items-center justify-between gap-[8px]">
                     <div className="space-y-[4px]">
                       <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
@@ -339,21 +379,15 @@ const Content: React.FC<Props> = (props) => {
                       </button>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div
-                  className={clsx(
-                    'py-[13px] px-[12px] rounded-[8px] h-[60px]',
-                    'border-[0.5px] border-solid border-rabby-neutral-line',
-                    'flex items-center justify-center gap-[4px]'
-                  )}
-                >
-                  <RcIconFindCC className="text-r-neutral-foot" />
-                  <div className="text-[11px] leading-[13px] text-r-neutral-foot">
-                    No offers yet
+                ) : (
+                  <div className="flex items-center justify-center gap-[4px] h-full">
+                    <RcIconFindCC className="text-r-neutral-foot" />
+                    <div className="text-[11px] leading-[13px] text-r-neutral-foot">
+                      No offers yet
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -423,7 +457,7 @@ const Content: React.FC<Props> = (props) => {
                   block
                   type="primary"
                   className="rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
-                  disabled={!collection?.is_tradable || loading}
+                  disabled={!nftDetail || !collection?.is_tradable || loading}
                   onClick={() => {
                     if (!nftDetail) {
                       return;
@@ -439,7 +473,7 @@ const Content: React.FC<Props> = (props) => {
                   size="large"
                   type="primary"
                   ghost
-                  disabled={!collection?.is_tradable || loading}
+                  disabled={!nftDetail || !collection?.is_tradable || loading}
                   className="hover:before:hidden rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
                   onClick={() => {
                     if (!nftDetail) {
@@ -456,7 +490,7 @@ const Content: React.FC<Props> = (props) => {
                 block
                 type="primary"
                 className="rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
-                disabled={!collection?.is_tradable || loading}
+                disabled={!nftDetail || !collection?.is_tradable || loading}
                 onClick={() => {
                   if (!nftDetail) {
                     return;
@@ -475,10 +509,7 @@ const Content: React.FC<Props> = (props) => {
               ghost
               className="hover:before:hidden rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
               onClick={() => {
-                if (!nftDetail) {
-                  return;
-                }
-                onSend?.(nftDetail);
+                onSend?.();
               }}
             >
               Send

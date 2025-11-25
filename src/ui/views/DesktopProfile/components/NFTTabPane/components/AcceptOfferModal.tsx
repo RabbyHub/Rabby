@@ -12,7 +12,7 @@ import { formatTokenAmount, formatUsdValue, useWallet } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { useMemoizedFn, useRequest, useSetState } from 'ahooks';
 import { findChain } from '@/utils/chain';
-import { RcIconInfoCC } from '@/ui/assets/desktop/common';
+import { RcIconInfoCC, RcIconWaringCC } from '@/ui/assets/desktop/common';
 import { calcBestOfferPrice } from '../utils';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -88,6 +88,7 @@ const Content: React.FC<Props> = (props) => {
       const res = await wallet.openapi.getNFTCollectionFees({
         chain_id: nftDetail?.chain || '',
         collection_id: nftDetail?.contract_id || '',
+        inner_id: nftDetail.inner_id,
       });
       return res;
     },
@@ -179,7 +180,7 @@ const Content: React.FC<Props> = (props) => {
     }
   );
 
-  const { runAsync: handleSubmit, loading: isSubmitting } = useRequest(
+  const { data: txs, loading: isBuildingTx, error } = useRequest(
     async () => {
       if (
         !currentAccount ||
@@ -189,8 +190,9 @@ const Content: React.FC<Props> = (props) => {
         !bestOffer ||
         !nftTradingConfig
       ) {
-        throw new Error('error');
+        throw new Error('Error');
       }
+
       const txs: Tx[] = [];
       const approveTx = isApproved
         ? null
@@ -214,6 +216,24 @@ const Content: React.FC<Props> = (props) => {
       }
       txs.push((tx as unknown) as Tx);
 
+      return txs;
+    },
+    {
+      refreshDeps: [
+        bestOffer,
+        formValues.amount,
+        nftDetail,
+        currentAccount?.address,
+        chain?.id,
+      ],
+    }
+  );
+
+  const { runAsync: handleSubmit, loading: isSubmitting } = useRequest(
+    async (txs?: Tx[]) => {
+      if (!txs?.length) {
+        throw new Error('empty tx');
+      }
       const runFallback = async () => {
         const res: string[] = [];
         for (const tx of txs) {
@@ -236,7 +256,7 @@ const Content: React.FC<Props> = (props) => {
               <div className="relative">
                 <img src={IconOpenSea} alt="" className="w-[24px] h-[24px]" />
                 <img
-                  src={chain.logo}
+                  src={chain?.logo}
                   alt=""
                   className="absolute top-[-2px] right-[-2px] w-[12px] h-[12px] rounded-full"
                 />
@@ -281,23 +301,6 @@ const Content: React.FC<Props> = (props) => {
       },
     }
   );
-
-  const handleSubmit1 = useMemoizedFn(async () => {
-    if (!nftDetail || !currentAccount || !chain || !bestOffer) {
-      return;
-    }
-    const tx = await wallet.buildAcceptNFTOfferTx({
-      address: currentAccount!.address,
-      chainId: chain!.id,
-      collectionId: nftDetail?.contract_id,
-      innerId: nftDetail?.inner_id,
-      order: bestOffer,
-    });
-    wallet.sendRequest({
-      method: 'eth_sendTransaction',
-      params: [tx],
-    });
-  });
 
   return (
     <Modal
@@ -504,12 +507,14 @@ const Content: React.FC<Props> = (props) => {
                         creatorFeeEnable: v,
                       });
                     }}
-                    disabled={feesRate.isCustomRequired}
+                    // todo 计算 fee
+                    disabled
                   ></Switch>
                 )}
               </div>
               <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
-                {formValues?.creatorFeeEnable && feesRate.custom ? (
+                {(formValues?.creatorFeeEnable || feesRate.isCustomRequired) &&
+                feesRate.custom ? (
                   <>
                     {formatTokenAmount(
                       new BigNumber(feesRate.custom)
@@ -569,13 +574,30 @@ const Content: React.FC<Props> = (props) => {
           </div>
         </div>
         <footer>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-end gap-[16px]">
+            {error ? (
+              <div
+                className={clsx(
+                  'flex items-center gap-[6px]',
+                  ' text-r-red-default text-[13px] leading-[16px] font-medium'
+                )}
+              >
+                <RcIconWaringCC
+                  viewBox="0 0 24 24"
+                  className="w-[16px] h-[16px]"
+                />
+                <div>{error?.message || 'Something wrong'}</div>
+              </div>
+            ) : null}
             <Button
               type="primary"
               size="large"
-              className="ml-auto"
+              className="min-w-[180px]"
               loading={isSubmitting}
-              onClick={handleSubmit}
+              disabled={isBuildingTx || !txs?.length}
+              onClick={() => {
+                handleSubmit(txs);
+              }}
             >
               Accept Offer
             </Button>

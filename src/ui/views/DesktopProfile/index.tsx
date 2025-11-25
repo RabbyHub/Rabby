@@ -149,8 +149,8 @@ export const DesktopProfile = () => {
   >([]);
 
   useListenTxReload(async () => {
-    if (!['approvals'].includes(activeTab)) {
-      // setRefreshKey((prev) => prev + 1);
+    if (['tokens', 'transactions'].includes(activeTab)) {
+      setRefreshKey((prev) => prev + 1);
     }
     await refreshBalance();
     await refreshCurve();
