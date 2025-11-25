@@ -1272,9 +1272,9 @@
         "level": {
           "$unknown": "未知",
           "custom": "自定義",
-          "fast": "立即",
-          "normal": "快速",
-          "slow": "標準"
+          "fast": "快速",
+          "normal": "正常",
+          "slow": "慢"
         },
         "popupDesc": "礦工費將根據你設置的 Gas Price 從轉賬金額中預留",
         "popupTitle": "設置 Gas Price (Gwei)"
@@ -2419,7 +2419,24 @@
       "duration": "{{duration}} 分鐘",
       "From": "從",
       "need-to-approve-token-before-bridge": "在进行桥接前需要批准 token",
-      "bridgeDbkBtn": "通過 DBK 官方服務橋接"
+      "bridgeDbkBtn": "通過 DBK 官方服務橋接",
+      "pendingItem": {
+        "estimatedTime": "預計時間",
+        "failed": "失敗",
+        "swap": "交換",
+        "bridgeStatus": "橋接狀態",
+        "completed": "完成",
+        "sendingFrom": "從 {{chain}} 發送",
+        "receivingTo": "在 {{chain}} 上接收",
+        "beReturnFailed": "橋接失敗。你的資產已被返還。",
+        "fromFailed": "交易未成功。請再試一次。",
+        "queued": "排队中",
+        "receivedDifferentTokenFromSource": "橋接失敗。在源鏈上返回了不同的代幣。",
+        "pending": "待處理",
+        "receivedDifferentTokenNeedSwap": "你收到了不同的代币。你可以将其交换为你选择的代币。",
+        "longTimeNoReceive": "網絡繁忙。這可能需要比平常更長的時間。請耐心等待。",
+        "BridgeStatusUnavailable": "橋接狀態不可用。請檢查您的交易記錄以確認資金是否已到達。"
+      }
     },
     "ecology": {
       "sonic": {
@@ -2877,9 +2894,9 @@
         "riskType": {
           "risks": {
             "scamAddress": "Rabby 標記的詐騙地址",
-            "noSend": "這個地址在180天內沒有進行任何轉帳",
             "dexNoDeposite": "並非 CEX 存款地址，資金可能會丟失",
-            "contractAddress": "檢測到合約地址，資金可能會丟失"
+            "contractAddress": "檢測到合約地址，資金可能會丟失",
+            "noSend": "您在180天内未向此地址发送过交易"
           }
         },
         "title": "發送到此地址",
@@ -3145,9 +3162,9 @@
         "riskType": {
           "risks": {
             "dexNoDeposite": "您正在向非托管交易所地址发送。",
-            "noSend": "180天内没有向此地址的转账",
             "scamAddress": "您正在发送到一个诈骗地址",
-            "contractAddress": "你正在发送到一个合约，资金可能会丢失"
+            "contractAddress": "你正在发送到一个合约，资金可能会丢失",
+            "noSend": "你在180天内没有向这个地址发送过交易"
           }
         },
         "TransferBeforeValue": "係",
@@ -3464,10 +3481,10 @@
       "desc": "以下服務將由第三方生態合作夥伴直接提供。Rabby Wallet 不承擔這些服務的安全性責任。"
     },
     "ReserveGasPopup": {
-      "fast": "快速",
-      "instant": "即時",
+      "fast": "正常",
+      "instant": "快速",
       "doNotReserve": "不要预留 Gas",
-      "normal": "普通",
+      "normal": "慢",
       "title": "預留 Gas"
     },
     "OpenExternalWebsiteModal": {

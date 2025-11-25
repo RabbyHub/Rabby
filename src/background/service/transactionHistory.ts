@@ -10,6 +10,7 @@ import openapiService, {
   TxRequest,
   TokenItem,
   NFTItem,
+  BridgeHistory,
 } from './openapi';
 import { INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
 import stats from '@/stats';
@@ -91,11 +92,15 @@ export interface BridgeTxHistoryItem {
   toToken: TokenItem;
   slippage: number;
   fromAmount: number;
-  toAmount: number;
+  toAmount: number; // quote est amount
   dexId: string;
-  status: 'pending' | 'fromSuccess' | 'allSuccess' | 'failed';
+  status: 'pending' | 'fromSuccess' | 'fromFailed' | 'allSuccess' | 'failed';
   hash: string;
+  estimatedDuration: number; // ms from server
   createdAt: number;
+  fromTxCompleteTs?: number;
+  actualToToken?: TokenItem; // actual token, may be not toToken
+  actualToAmount?: number; // actual amount
   completedAt?: number;
 }
 
@@ -458,7 +463,10 @@ class TxHistory {
         return isSameAddress(address, item.address);
       })
       .sort((a, b) => b.createdAt - a.createdAt)[0];
-    if (recentItem?.status === 'pending') {
+    if (
+      recentItem?.status === 'pending' ||
+      recentItem?.status === 'fromSuccess'
+    ) {
       return recentItem;
     } else {
       return null;
@@ -522,8 +530,8 @@ class TxHistory {
       if (item.fromChainId === chainId && hashArr.includes(item.hash)) {
         return {
           ...item,
-          status: status === 'success' ? 'fromSuccess' : 'failed',
-          completedAt,
+          status: status === 'success' ? 'fromSuccess' : 'fromFailed',
+          fromTxCompleteTs: completedAt,
         };
       }
       return item;
@@ -570,13 +578,16 @@ class TxHistory {
   completeBridgeTxHistory(
     from_tx_id: string,
     chainId: number,
-    status: BridgeTxHistoryItem['status']
+    status: BridgeTxHistoryItem['status'],
+    bridgeTx?: BridgeHistory
   ) {
     this.store.bridgeTxHistory = this.store.bridgeTxHistory.map((item) => {
       if (item.fromChainId === chainId && item.hash === from_tx_id) {
         return {
           ...item,
           status,
+          actualToToken: bridgeTx?.to_actual_token,
+          actualToAmount: bridgeTx?.actual.receive_token_amount,
           completedAt: Date.now(),
         };
       }

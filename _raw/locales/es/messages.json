@@ -676,9 +676,9 @@
         "level": {
           "$unknown": "Desconocido",
           "custom": "Personalizado",
-          "fast": "Instantáneo",
-          "normal": "Rápido",
-          "slow": "Estándar"
+          "fast": "Rápido",
+          "normal": "Normal",
+          "slow": "Lento"
         },
         "popupDesc": "El costo de gas se reservará del monto de la transferencia en función del precio de gas que establezcas",
         "popupTitle": "Establecer Precio de Gas (Gwei)"
@@ -2192,7 +2192,24 @@
       "Amount": "Monto",
       "loss-tips": "Está perdiendo {{usd}}. Intente con una cantidad diferente.",
       "tokenPairPlaceholder": "Seleccionar Token Pair",
-      "bridgeDbkBtn": "Puente a través del servicio oficial de DeBank"
+      "bridgeDbkBtn": "Puente a través del servicio oficial de DeBank",
+      "pendingItem": {
+        "swap": "Intercambiar",
+        "queued": "En cola",
+        "estimatedTime": "Tiempo estimado",
+        "beReturnFailed": "El puente falló. Sus activos han sido devueltos.",
+        "failed": "Fallido",
+        "completed": "Completado",
+        "fromFailed": "La transacción no se completó. Intenta de nuevo.",
+        "receivedDifferentTokenFromSource": "El puente falló. Se devolvió un token diferente en la cadena de origen.",
+        "receivingTo": "Recibiendo en {{chain}}",
+        "bridgeStatus": "Estado del puente",
+        "receivedDifferentTokenNeedSwap": "Recibiste un token diferente. Puedes intercambiarlo por el token que seleccionaste.",
+        "BridgeStatusUnavailable": "Estado del puente no disponible. Por favor, verifica tu historial de transacciones para confirmar que los fondos llegaron.",
+        "longTimeNoReceive": "La red está ocupada. Esto puede tardar más de lo habitual. Por favor, espera pacientemente.",
+        "pending": "Pendiente",
+        "sendingFrom": "Enviando desde {{chain}}"
+      }
     },
     "pendingDetail": {
       "Header": {
@@ -2838,10 +2855,10 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "Sin transferencias a esta dirección en 180 días",
             "contractAddress": "Dirección de contrato detectada, los fondos pueden perderse.",
             "scamAddress": "Dirección de estafa marcada por Rabby",
-            "dexNoDeposite": "No es una dirección de depósito CEX, los fondos pueden perderse."
+            "dexNoDeposite": "No es una dirección de depósito CEX, los fondos pueden perderse.",
+            "noSend": "No has enviado a esta dirección en 180 días."
           }
         },
         "title": "Enviar a esta Dirección",
@@ -3107,9 +3124,9 @@
         "riskType": {
           "risks": {
             "scamAddress": "Estás enviando a una dirección de estafa",
-            "noSend": "Sin transferencias a esta dirección en 180 días",
             "contractAddress": "Estás enviando a un contrato, los fondos pueden perderse.",
-            "dexNoDeposite": "Estás enviando a una dirección de intercambio no de depósito"
+            "dexNoDeposite": "Estás enviando a una dirección de intercambio no de depósito",
+            "noSend": "No has enviado a esta dirección en 180 días."
           }
         },
         "cexAddress": "{{cexName}} Dirección",
@@ -3427,9 +3444,9 @@
     },
     "ReserveGasPopup": {
       "title": "Reservar Gas",
-      "instant": "Instant",
-      "normal": "Normal",
-      "fast": "Rápido",
+      "instant": "Rápido",
+      "normal": "Lento",
+      "fast": "Normal",
       "doNotReserve": "No reserves de Gas"
     },
     "OpenExternalWebsiteModal": {

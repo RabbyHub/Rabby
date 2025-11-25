@@ -676,9 +676,9 @@
         "level": {
           "$unknown": "Unknown",
           "custom": "Custom",
-          "fast": "Instant",
-          "normal": "Fast",
-          "slow": "Normal"
+          "fast": "Fast",
+          "normal": "Normal",
+          "slow": "Slow"
         },
         "popupDesc": "The gas cost will be reserved from the transfer amount based on the gas price you set",
         "popupTitle": "Set Gas Price (Gwei)"
@@ -1079,10 +1079,10 @@
         "AddToWhitelist": "Add to Whitelist",
         "riskType": {
           "risks": {
-            "noSend": "No transfers to this address in 180 days",
             "dexNoDeposite": "Not a CEX deposit address, funds may be lost",
             "contractAddress": "Contract address detected, funds may be lost",
-            "scamAddress": "Scam address flagged by Rabby"
+            "scamAddress": "Scam address flagged by Rabby",
+            "noSend": "You haven’t sent to this address in 180 days"
           }
         }
       }
@@ -1463,6 +1463,23 @@
           "tip2": "2. Rabby is not liable for any risks arising from the contract of this aggregator",
           "i-understand-and-accept-it": "I understand and accept it"
         }
+      },
+      "pendingItem": {
+        "pending": "Pending",
+        "completed": "Completed",
+        "failed": "Failed",
+        "queued": "Queued",
+        "bridgeStatus": "Bridge Status",
+        "sendingFrom": "Sending from {{chain}}",
+        "swap": "Swap",
+        "beReturnFailed": "Bridge failed. Your assets have been returned.",
+        "receivedDifferentTokenNeedSwap" :"You received a different token. You can swap it to the token you selected.",
+        "receivedDifferentTokenFromSource" : "Bridge failed. A different token was returned on the source chain.",
+        "BridgeStatusUnavailable": "Bridge status unavailable. Please checkridyour transaction history to confirm the funds arrived.",
+        "fromFailed": "Transaction didn’t go through. Try again.",
+        "longTimeNoReceive": "Network is busy. This may take longer than usual. Please wait patiently.",
+        "receivingTo": "Receiving on {{chain}}",
+        "estimatedTime": "Estimated time"
       },
       "tokenPairDrawer": {
         "title": "Select from supported token pair",
@@ -3250,10 +3267,10 @@
         "AddToWhitelist": "Add to Whitelist",
         "riskType": {
           "risks": {
-            "noSend": "No transfers to this address in 180 days",
             "dexNoDeposite": "You're sending to a non-deposit exchange address",
             "contractAddress": "You're sending to a contract, funds may be lost",
-            "scamAddress": "You're sending to a scam address"
+            "scamAddress": "You're sending to a scam address",
+            "noSend": "You haven’t sent to this address in 180 days"
           }
         }
       },
@@ -3440,9 +3457,9 @@
     },
     "ReserveGasPopup": {
       "title": "Reserve Gas",
-      "instant": "Instant",
-      "fast": "Fast",
-      "normal": "Normal",
+      "instant": "Fast",
+      "fast": "Normal",
+      "normal": "Slow",
       "doNotReserve": "Don't reserve Gas"
     },
     "OpenExternalWebsiteModal": {

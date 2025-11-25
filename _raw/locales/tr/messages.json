@@ -676,9 +676,9 @@
         "level": {
           "$unknown": "Bilinmeyen",
           "custom": "Özel",
-          "fast": "Anında",
-          "normal": "Hızlı",
-          "slow": "Standart"
+          "fast": "Hızlı",
+          "normal": "Normal",
+          "slow": "Yavaş"
         },
         "popupDesc": "Ayarladığınız gas ücretine göre gas maliyeti transfer tutarından alınacaktır",
         "popupTitle": "Gas Ücretini Ayarla (Gwei)"
@@ -2195,7 +2195,24 @@
       "select-chain": "Zincir Seç",
       "pendingTip": "Tx gönderildi. Tx uzun saatler boyunca beklemede kalırsa, ayarlardan beklemeyi temizlemeyi deneyebilirsiniz.",
       "need-to-approve-token-before-bridge": "Bridge öncesinde token onayı gerekiyor",
-      "bridgeDbkBtn": "DBK Resmi Servisi Üzerinden Köprü"
+      "bridgeDbkBtn": "DBK Resmi Servisi Üzerinden Köprü",
+      "pendingItem": {
+        "queued": "Sıralı",
+        "pending": "Bekleyen",
+        "estimatedTime": "Tahmini süre",
+        "receivingTo": "{{chain}} üzerinde alma",
+        "sendingFrom": "{{chain}}'den Gönderme",
+        "failed": "Başarısız",
+        "swap": "Değiştir",
+        "completed": "Tamamlandı",
+        "bridgeStatus": "Köprü Durumu",
+        "beReturnFailed": "Köprü başarısız oldu. Varlıklarınız geri iade edildi.",
+        "receivedDifferentTokenFromSource": "Köprü başarısız oldu. Kaynak zincirinde farklı bir token döndürüldü.",
+        "fromFailed": "İşlem gerçekleşmedi. Lütfen tekrar deneyin.",
+        "longTimeNoReceive": "Ağ yoğun. Bu, normalden daha uzun sürebilir. Lütfen sabırlı olun.",
+        "receivedDifferentTokenNeedSwap": "Farklı bir token aldınız. Seçtiğiniz token ile takas edebilirsiniz.",
+        "BridgeStatusUnavailable": "Köprü durumu mevcut değil. Lütfen işlem geçmişinizi kontrol edin ve fonların ulaştığını doğrulayın."
+      }
     },
     "pendingDetail": {
       "Header": {
@@ -2842,9 +2859,9 @@
         "riskType": {
           "risks": {
             "contractAddress": "Kontrat adresi tespit edildi, fonlar kaybolabilir.",
-            "noSend": "Bu adrese 180 gün boyunca transfer yok.",
             "dexNoDeposite": "CEX depozit adresi değil, fonlar kaybolabilir",
-            "scamAddress": "Rabby tarafından işaretlenmiş dolandırıcılık adresi"
+            "scamAddress": "Rabby tarafından işaretlenmiş dolandırıcılık adresi",
+            "noSend": "Bu adrese son 180 gündür göndermediniz."
           }
         },
         "cexAddress": "{{cexName}} Adresi",
@@ -3111,8 +3128,8 @@
           "risks": {
             "scamAddress": "Kötü amaçlı bir adrese gönderiyorsunuz.",
             "contractAddress": "Bir sözleşmeye gönderim yapıyorsunuz, fonlar kaybolabilir.",
-            "noSend": "Bu adrese son 180 günde hiçbir transfer yapılmadı.",
-            "dexNoDeposite": "Gönderdiğiniz adres bir non-deposit borsa adresidir."
+            "dexNoDeposite": "Gönderdiğiniz adres bir non-deposit borsa adresidir.",
+            "noSend": "Bu adrese 180 gündür para göndermediniz."
           }
         },
         "cexAddress": "{{cexName}} Adresi",
@@ -3431,9 +3448,9 @@
     "ReserveGasPopup": {
       "doNotReserve": "Gas ayırma",
       "title": "Rezerv Gaz",
-      "normal": "Normal",
-      "instant": "Anında",
-      "fast": "Hızlı"
+      "normal": "Yavaş",
+      "instant": "Hızlı",
+      "fast": "Normal"
     },
     "OpenExternalWebsiteModal": {
       "button": "Devam Et",

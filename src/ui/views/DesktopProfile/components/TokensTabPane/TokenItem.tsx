@@ -7,10 +7,12 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { findChain } from '@/utils/chain';
 import { useHistory } from 'react-router-dom';
 import { DesktopTokenLabel } from '../TransactionsTabPane/DesktopTokenLabel';
-import clsx from 'clsx';
 import styled from 'styled-components';
 import { CustomTestnetToken } from '@/background/service/customTestnet';
 import { useTranslation } from 'react-i18next';
+import { getTokenSymbol } from 'ui/utils/token';
+import { isNil } from 'lodash';
+import clsx from 'clsx';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -73,7 +75,7 @@ export const TokenItemAsset: React.FC<Props> = ({
   }, [item._tokenId, item.chain]);
 
   return (
-    <TCell className="py-8 flex gap-10 flex-1 items-center overflow-hidden mr-4">
+    <TCell className="py-8 flex gap-10 flex-1 items-center overflow-hidden">
       <div className="relative h-[24px]">
         <Image
           className="w-24 h-24 rounded-full"
@@ -194,15 +196,26 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
 const TokenItemAmount: React.FC<Props> = ({ item }) => {
   return (
     <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 truncate">
-      {item._amountStr}
+      {`${item._amountStr} ${getTokenSymbol(item)}`}
     </TCell>
   );
 };
 
 const TokenItemPrice: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 truncate">
+    <TCell className="text-r-neutral-title1 text-14 flex-1 truncate flex items-center gap-4">
       <div>${item._priceStr}</div>
+      {isNil(item.price_24h_change) ? null : (
+        <div
+          className={clsx('font-normal text-12', {
+            'text-green': item.price_24h_change > 0,
+            'text-red-forbidden': item.price_24h_change < 0,
+          })}
+        >
+          {item.price_24h_change > 0 ? '+' : ''}
+          {(item.price_24h_change * 100).toFixed(2)}%
+        </div>
+      )}
     </TCell>
   );
 };
@@ -218,8 +231,8 @@ const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
 const TokenRowWrapper = styled(TRow)`
   border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
   height: 60px;
-  padding-left: 12px;
-  padding-right: 16px;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
   .swap-action-btn {
     display: none !important;
   }

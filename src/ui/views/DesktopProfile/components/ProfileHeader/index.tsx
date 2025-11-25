@@ -108,14 +108,14 @@ export const ProfileHeader: React.FC<{
     <>
       <GlobalStyle />
       <div className="px-[20px] py-[24px] relative">
-        <div className="mb-[16px] flex items-center gap-[12px]">
+        <div className="mb-[16px] flex items-center gap-[8px]">
           <div className="text-r-neutral-title1 text-[16px] leading-[19px] font-semibold">
             {alias}
           </div>
           <div className="text-rb-neutral-body text-[16px] leading-[19px]">
             {ellipsisAddress(currentAccount?.address || '', true)}
           </div>
-          <div className="flex items-center gap-[10px]">
+          <div className="flex items-center gap-[8px]">
             <div
               onClick={() => {
                 copyAddress(currentAccount?.address);

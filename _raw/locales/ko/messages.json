@@ -672,10 +672,10 @@
       },
       "GasSelector": {
         "level": {
-          "slow": "정상",
-          "fast": "즉시",
+          "slow": "느림",
+          "fast": "빠른",
           "$unknown": "알 수 없음",
-          "normal": "빠른",
+          "normal": "정상",
           "custom": "맞춤형"
         },
         "confirm": "확인",
@@ -1124,7 +1124,24 @@
       "price-impact": "가격 영향",
       "max-tips": "이 값은 브리지를 위한 가스 비용을 빼서 계산됩니다.",
       "loss-tips": "{{usd}}를 잃고 있습니다. 다른 금액을 시도해 보세요.",
-      "bridgeDbkBtn": "DBK 공식 서비스 통해 브리지"
+      "bridgeDbkBtn": "DBK 공식 서비스 통해 브리지",
+      "pendingItem": {
+        "failed": "실패했습니다",
+        "estimatedTime": "예상 시간",
+        "receivingTo": "{{chain}}에서 받기",
+        "queued": "대기 중",
+        "receivedDifferentTokenNeedSwap": "다른 토큰을 받았습니다. 선택한 토큰으로 교환할 수 있습니다.",
+        "completed": "완료됨",
+        "bridgeStatus": "브리지 상태",
+        "sendingFrom": "{{chain}}에서 보내는 중",
+        "longTimeNoReceive": "네트워크가 바쁩니다. 평소보다 더 오래 걸릴 수 있습니다. 잠시 기다려 주세요.",
+        "fromFailed": "트랜잭션이 통과하지 않았습니다. 다시 시도해 주세요.",
+        "BridgeStatusUnavailable": "브리지 상태를 사용할 수 없습니다. 거래 내역을 확인하여 자금이 도착했는지 확인하세요.",
+        "receivedDifferentTokenFromSource": "브릿지 실패. 소스 체인에서 다른 토큰이 반환되었습니다.",
+        "swap": "스왑",
+        "pending": "대기 중",
+        "beReturnFailed": "브리지에 실패했습니다. 귀하의 자산이 반환되었습니다."
+      }
     },
     "manageAddress": {
       "deleted": "삭제됨",
@@ -2835,10 +2852,10 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "이 주소로 180일 동안의 전송이 없습니다.",
             "contractAddress": "계약 주소가 감지되었습니다. 자금이 손실될 수 있습니다.",
             "dexNoDeposite": "CEX 예치 주소가 아닙니다, 자금이 손실될 수 있습니다",
-            "scamAddress": "Rabby에서 플래그된 사기 주소"
+            "scamAddress": "Rabby에서 플래그된 사기 주소",
+            "noSend": "이 주소로 180일 동안 전송하지 않았습니다."
           }
         },
         "cexAddress": "{{cexName}} 주소",
@@ -3105,8 +3122,8 @@
           "risks": {
             "dexNoDeposite": "비수탁 거래소 주소로 전송하고 있습니다.",
             "contractAddress": "계약에 전송 중입니다, 자금이 손실될 수 있습니다",
-            "noSend": "이 주소로 180일 동안의 전송이 없습니다.",
-            "scamAddress": "당신은 사기 주소로 전송하고 있습니다."
+            "scamAddress": "당신은 사기 주소로 전송하고 있습니다.",
+            "noSend": "이 주소로 180일 동안 전송하지 않았습니다."
           }
         },
         "title": "이 주소로 전송",
@@ -3423,11 +3440,11 @@
       "notRemind": "다시 나를 상기시키지 마세요"
     },
     "ReserveGasPopup": {
-      "instant": "즉시",
+      "instant": "빠른",
       "title": "가스 예약",
       "doNotReserve": "Gas를 예약하지 마세요.",
-      "fast": "빠른",
-      "normal": "정상"
+      "fast": "정상",
+      "normal": "느림"
     },
     "OpenExternalWebsiteModal": {
       "title": "당신은 Rabby Wallet을 떠나고 있습니다.",

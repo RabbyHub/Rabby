@@ -676,9 +676,9 @@
         "level": {
           "$unknown": "Unbekannt",
           "custom": "Benutzerdefiniert",
-          "fast": "Sofort",
-          "normal": "Schnell",
-          "slow": "Standard"
+          "fast": "Schnell",
+          "normal": "Normal",
+          "slow": "Langsam"
         },
         "popupDesc": "Die Gaskosten werden auf Grundlage des von Ihnen festgelegten Gaspreises vom Überweisungsbetrag abgezogen",
         "popupTitle": "Gaspreis festlegen (Gwei)"
@@ -2192,7 +2192,24 @@
       "pendingTip": "Tx eingereicht. Wenn die Tx über mehrere Stunden aussteht, können Sie versuchen, das Ausstehende in den Einstellungen zu löschen.",
       "rabby-fee": "Rabby-Gebühr",
       "max-tips": "Dieser Wert wird berechnet, indem die Gaskosten für die Brücke abgezogen werden.",
-      "bridgeDbkBtn": "Bridge über den DBK Official Service"
+      "bridgeDbkBtn": "Bridge über den DBK Official Service",
+      "pendingItem": {
+        "queued": "In der Warteschlange",
+        "sendingFrom": "Senden von {{chain}}",
+        "swap": "Tauschen",
+        "BridgeStatusUnavailable": "Bridge-Status nicht verfügbar. Bitte überprüfen Sie Ihre Transaktionshistorie, um zu bestätigen, dass die Gelder angekommen sind.",
+        "receivingTo": "Empfangen auf {{chain}}",
+        "fromFailed": "Transaktion wurde nicht durchgeführt. Versuche es erneut.",
+        "beReturnFailed": "Bridge fehlgeschlagen. Ihre Assets wurden zurückgegeben.",
+        "receivedDifferentTokenFromSource": "Bridge fehlgeschlagen. Ein anderer Token wurde auf der Quellkette zurückgegeben.",
+        "receivedDifferentTokenNeedSwap": "Sie haben einen anderen Token erhalten. Sie können ihn gegen den von Ihnen ausgewählten Token tauschen.",
+        "pending": "Ausstehend",
+        "failed": "Fehlgeschlagen",
+        "bridgeStatus": "Bridge Status",
+        "completed": "Abgeschlossen",
+        "longTimeNoReceive": "Das Netzwerk ist beschäftigt. Dies könnte länger als üblich dauern. Bitte haben Sie Geduld.",
+        "estimatedTime": "Geschätzte Zeit"
+      }
     },
     "pendingDetail": {
       "Header": {
@@ -2841,7 +2858,7 @@
             "scamAddress": "Scam-Adresse von Rabby markiert",
             "contractAddress": "Vertragsadresse erkannt, Gelder könnten verloren gehen",
             "dexNoDeposite": "Nicht eine CEX-Einzahlungsadresse, Gelder könnten verloren gehen",
-            "noSend": "Keine Überweisungen an diese Adresse in 180 Tagen"
+            "noSend": "Du hast in den letzten 180 Tagen an diese Adresse nichts gesendet."
           }
         },
         "cexAddress": "{{cexName}} Adresse",
@@ -3063,14 +3080,16 @@
           "description": "Ihre Position nähert sich dem Liquidationsrisiko. Der Abstand zum Liquidationspreis liegt zwischen 3% und 8%. Überwachen Sie Ihre Position sorgfältig und ziehen Sie in Betracht, Margin hinzuzufügen."
         },
         "safe": {
-          "description": "Ihre Position befindet sich auf einem sicheren Niveau. Der Abstand zum Liquidationspreis beträgt >8%. Behalten Sie die Marktbedingungen im Auge."
+          "description": "Ihre Position befindet sich auf einem sicheren Niveau. Der Abstand zum Liquidationspreis beträgt >8%. Behalten Sie die Marktbedingungen im Auge.",
+          "title": "Sicher"
         },
         "gotIt": "Verstanden",
         "liquidationPrice": "Liquidationspreis",
         "subTitle": "Echtzeit Liquidationsabstand (%)",
         "liquidationDistance": "Liquidationsdistanz",
         "title": "Risikostufe",
-        "liquidationDistanceTips": "Liquidation Distance (%) zeigt, wie weit der aktuelle Preis von Ihrem Liquidationspreis entfernt ist. Ein größerer Abstand zeigt eine sicherere Position an, während ein kleinerer Abstand ein höheres Liquidationsrisiko bedeutet."
+        "liquidationDistanceTips": "Liquidation Distance (%) zeigt, wie weit der aktuelle Preis von Ihrem Liquidationspreis entfernt ist. Ein größerer Abstand zeigt eine sicherere Position an, während ein kleinerer Abstand ein höheres Liquidationsrisiko bedeutet.",
+        "currentPrice": "Aktueller Preis"
       },
       "searchPerpsPopup": {
         "hasPosition": "Position",
@@ -3105,9 +3124,9 @@
         "riskType": {
           "risks": {
             "scamAddress": "Sie senden an eine Betrugsadresse",
-            "noSend": "Keine Überweisungen an diese Adresse in 180 Tagen",
             "dexNoDeposite": "Sie senden an eine Nicht-Einzahlungsbörse-Adresse",
-            "contractAddress": "Sie senden an einen Vertrag, Gelder könnten verloren gehen."
+            "contractAddress": "Sie senden an einen Vertrag, Gelder könnten verloren gehen.",
+            "noSend": "Sie haben an diese Adresse seit 180 Tagen nichts gesendet."
           }
         },
         "cexAddress": "{{cexName}} Adresse",
@@ -3211,7 +3230,8 @@
         "invalidNumber": "Ungültige Zahl",
         "stopLossWhenPriceAbove": "Stop-Loss, wenn der Preis über",
         "leverage": "Hebel",
-        "minimumOrderSize": "Die Mindestbestellgröße beträgt 10 $."
+        "minimumOrderSize": "Die Mindestbestellgröße beträgt 10 $.",
+        "maximumOrderSize": "Die maximale Bestellgröße beträgt {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "reduceMargin": "Margin reduzieren",
@@ -3423,11 +3443,11 @@
       "desc": "Die folgenden Dienstleistungen werden direkt von einem Drittanbieter-Ecosystem-Partner bereitgestellt. Rabby Wallet übernimmt keine Verantwortung für die Sicherheit dieser Dienstleistungen."
     },
     "ReserveGasPopup": {
-      "instant": "Sofort",
+      "instant": "Schnell",
       "title": "Reservieren Gas",
       "doNotReserve": "Reservieren Sie kein Gas",
-      "fast": "Schnell",
-      "normal": "Normal"
+      "fast": "Normal",
+      "normal": "Langsam"
     },
     "OpenExternalWebsiteModal": {
       "button": "Fortfahren",
