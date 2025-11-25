@@ -45,6 +45,7 @@ const Content: React.FC<Props> = (props) => {
         setStatus('failed');
       },
       refreshDeps: [pendingPromise],
+      ready: !!pendingPromise,
     }
   );
 

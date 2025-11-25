@@ -206,6 +206,7 @@ const Content: React.FC<Props> = (props) => {
         collectionId: nftDetail?.contract_id,
         innerId: nftDetail?.inner_id,
         order: bestOffer,
+        quantity: formValues.amount || 1,
       });
 
       if (approveTx) {

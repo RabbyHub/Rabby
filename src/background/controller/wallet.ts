@@ -5805,6 +5805,8 @@ export class WalletController extends BaseController {
     collectionId,
     innerId,
     quantity,
+    creatorFee,
+    acceptToken,
   }: {
     address: string;
     chainId: number;
@@ -5812,6 +5814,11 @@ export class WalletController extends BaseController {
     innerId: string;
     order: NonNullable<NFTDetail['best_offer_order']>;
     quantity?: number;
+    acceptToken?: TokenItem;
+    creatorFee?: {
+      recipient: string;
+      fee: number;
+    };
   }) => {
     const chain = findChain({
       id: chainId,
