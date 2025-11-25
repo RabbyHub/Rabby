@@ -98,7 +98,7 @@ const Content: React.FC<Props> = (props) => {
           <div
             className={clsx(
               'flex items-center justify-center',
-              'w-[280px] h-[44px] rounded-[6px] bg-r-neutral-card2',
+              'w-[280px] h-[44px] rounded-[6px] bg-r-neutral-card2 cursor-pointer',
               'text-[15px] leading-[18px] font-medium text-r-neutral-foot'
             )}
             onClick={props.onCancel}
