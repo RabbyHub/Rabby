@@ -590,6 +590,7 @@ export const BridgePendingTxItem = ({
 
     setData(historyData);
     if (
+      historyData &&
       historyData.hash &&
       (historyData.status === 'pending' || historyData.status === 'fromSuccess')
     ) {
