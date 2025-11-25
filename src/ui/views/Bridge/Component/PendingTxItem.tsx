@@ -47,7 +47,9 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { Popup } from '@/ui/component';
 import { ReactComponent as RcImgArrowCC } from '@/ui/assets/bridge/ImgArrowCC.svg';
 import { getChain } from '@/utils';
+import eventBus from '@/eventBus';
 import { ONE_DAY_MS, ONE_HOUR_MS, ONE_MINUTE_MS } from '../constants';
+import { EVENTS } from '@/constant';
 
 const isDesktop = getUiType().isDesktop;
 type PendingTxData = BridgeTxHistoryItem;
@@ -668,6 +670,68 @@ export const BridgePendingTxItem = ({
     }
   });
 
+  const handleBridgeHistoryUpdate = useMemoizedFn(
+    (bridgeHistoryList: BridgeHistory[]) => {
+      if (
+        !data?.hash ||
+        (data.status !== 'pending' && data.status !== 'fromSuccess')
+      ) {
+        return;
+      }
+
+      const recentlyTxHash = data?.hash;
+      const findTx = bridgeHistoryList.find(
+        (item) => item.from_tx?.tx_id === recentlyTxHash
+      );
+
+      if (!findTx) {
+        const currentTime = Date.now();
+        const txCreateTime = data?.createdAt;
+        if (currentTime - txCreateTime > ONE_HOUR_MS) {
+          // tx create time is more than 60 minutes, set this tx failed
+          wallet.completeBridgeTxHistory(
+            recentlyTxHash,
+            data?.fromChainId,
+            'failed'
+          );
+          setData(null);
+          return;
+        }
+      }
+
+      if (
+        findTx &&
+        (findTx.status === 'completed' || findTx.status === 'failed')
+      ) {
+        const status = findTx.status === 'completed' ? 'allSuccess' : 'failed';
+        const updateData = {
+          ...data,
+          status,
+          actualToToken: findTx.to_actual_token,
+          actualToAmount: findTx.actual.receive_token_amount,
+          completedAt: Date.now(),
+        };
+        setData(updateData as BridgeTxHistoryItem);
+        wallet.completeBridgeTxHistory(
+          recentlyTxHash,
+          data.fromChainId,
+          status,
+          findTx
+        );
+      }
+    }
+  );
+
+  useEffect(() => {
+    const listener = (list: BridgeHistory[]) => {
+      handleBridgeHistoryUpdate(list);
+    };
+    eventBus.addEventListener(EVENTS.BRIDGE_HISTORY_UPDATED, listener);
+    return () => {
+      eventBus.removeEventListener(EVENTS.BRIDGE_HISTORY_UPDATED, listener);
+    };
+  }, []);
+
   useInterval(async () => {
     const recentlyTxHash = data?.hash;
     if (
@@ -682,49 +746,10 @@ export const BridgePendingTxItem = ({
       });
       const bridgeHistoryList = res.history_list;
       if (bridgeHistoryList && bridgeHistoryList?.length > 0) {
-        const recentlyTxHash = data?.hash;
-        const findTx = bridgeHistoryList.find(
-          (item) => item.from_tx?.tx_id === recentlyTxHash
-        );
-        if (!findTx) {
-          const currentTime = Date.now();
-          const txCreateTime = data?.createdAt;
-          if (currentTime - txCreateTime > ONE_HOUR_MS) {
-            // tx create time is more than 60 minutes, set this tx failed
-            wallet.completeBridgeTxHistory(
-              recentlyTxHash,
-              data?.fromChainId,
-              'failed'
-            );
-            setData(null);
-            return;
-          }
-        }
-        if (
-          findTx &&
-          (findTx.status === 'completed' || findTx.status === 'failed') &&
-          data
-        ) {
-          const status =
-            findTx.status === 'completed' ? 'allSuccess' : 'failed';
-          const updateData = {
-            ...data,
-            status,
-            actualToToken: findTx.to_actual_token,
-            actualToAmount: findTx.actual.receive_token_amount,
-            completedAt: Date.now(),
-          };
-          setData(updateData as BridgeTxHistoryItem);
-          wallet.completeBridgeTxHistory(
-            recentlyTxHash,
-            data.fromChainId,
-            status,
-            findTx
-          );
-        }
+        handleBridgeHistoryUpdate(bridgeHistoryList);
       }
     }
-  }, 10 * 1000);
+  }, 3 * 1000);
 
   useInterval(async () => {
     if (data?.status === 'pending' || data?.status === 'fromSuccess') {
