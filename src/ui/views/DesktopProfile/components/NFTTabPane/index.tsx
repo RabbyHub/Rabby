@@ -269,31 +269,37 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             isEditListing: false,
           });
         }}
-        onSuccess={() => {
+        onSigned={(promise) => {
           setState({
             listingModalVisible: false,
             resultModalVisible: true,
             resultState: {
-              status: 'success',
+              status: 'pending',
               successMessage: {
                 title: 'Just listed!',
                 desc: `You've listed ${state.nftDetail?.name} on OpenSea`,
               },
-            },
-          });
-        }}
-        onFailed={() => {
-          setState({
-            resultModalVisible: true,
-            resultState: {
-              status: 'failed',
               errorMessage: {
                 title: 'Listing Failed',
                 desc: 'Please try again.',
               },
+              pendingPromise: promise,
             },
           });
         }}
+        // onSuccess={() => {}}
+        // onFailed={() => {
+        //   setState({
+        //     resultModalVisible: true,
+        //     resultState: {
+        //       status: 'failed',
+        //       errorMessage: {
+        //         title: 'Listing Failed',
+        //         desc: 'Please try again.',
+        //       },
+        //     },
+        //   });
+        // }}
       />
       <AcceptOfferModal
         visible={state.acceptModalVisible}

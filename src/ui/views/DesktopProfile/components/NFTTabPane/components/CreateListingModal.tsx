@@ -44,6 +44,7 @@ import { SignProcessButton } from '@/ui/component/SignProcessButton';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { IconOpenSea } from '@/ui/assets';
+import { waitForTxCompleted } from '@/ui/utils/transaction';
 
 const Container = styled.div`
   table {
@@ -201,13 +202,12 @@ function findClosestOption(inputMs: number) {
 
 type Props = ModalProps & {
   nftDetail?: NFTDetail;
-  onFailed?(): void;
-  onSuccess?(): void;
   isEdit?: boolean;
+  onSigned?(p?: Promise<any>): void;
 };
 
 export const Content: React.FC<Props> = (props) => {
-  const { nftDetail, onSuccess, onFailed, isEdit, ...rest } = props;
+  const { nftDetail, onSigned, isEdit, ...rest } = props;
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
 
@@ -480,6 +480,28 @@ export const Content: React.FC<Props> = (props) => {
     };
   });
 
+  const handleSignResult = useMemoizedFn(
+    async (params: Awaited<ReturnType<typeof handleListing>>) => {
+      handleListing;
+      const signature = last(params.hashes);
+      if (!nftDetail || !signature || !nftDetail?.chain) {
+        throw new Error('Error');
+      }
+      if (params.hashes.length > 1) {
+        await waitForTxCompleted({
+          hash: params.hashes[params.hashes.length - 2],
+          chainServerId: nftDetail.chain,
+          wallet,
+        });
+      }
+      const listingRes = await wallet.openapi.createListingNFT({
+        order: params.txsInfo.res.data.post.body.order,
+        signature,
+        chain_id: nftDetail.chain,
+      });
+    }
+  );
+
   const { runAsync: handleListing, loading: isSubmitting } = useRequest(
     async () => {
       if (
@@ -492,7 +514,7 @@ export const Content: React.FC<Props> = (props) => {
         !formValues.listingPrice ||
         !formValues.duration
       ) {
-        return;
+        throw new Error('Error');
       }
       const txsInfo = await buildTxs();
       if (!txsInfo?.steps) {
@@ -568,41 +590,37 @@ export const Content: React.FC<Props> = (props) => {
       if (!hashes.length) {
         throw new Error('sign failed');
       }
-      if (hashes.length > 1) {
-        const hash = hashes[0];
-        const txCompleted = await new Promise((resolve) => {
-          const handler = (res) => {
-            if (res?.hash === hash) {
-              eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-              resolve(res || {});
-            }
-          };
-          runCheckIsApproved().then((v) => {
-            if (v) {
-              resolve({});
-            }
-          });
-          eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
-        });
-      }
-      const signature = last(hashes);
-      if (!signature) {
-        throw new Error('Sign Failed');
-      }
-      const listingRes = await wallet.openapi.createListingNFT({
-        order: txsInfo.res.data.post.body.order,
-        signature,
-        chain_id: nftDetail.chain,
-      });
+      // if (hashes.length > 1) {
+      //   const hash = hashes[0];
+      //   const txCompleted = await new Promise((resolve) => {
+      //     const handler = (res) => {
+      //       if (res?.hash === hash) {
+      //         eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+      //         resolve(res || {});
+      //       }
+      //     };
+      //     runCheckIsApproved().then((v) => {
+      //       if (v) {
+      //         resolve({});
+      //       }
+      //     });
+      //     eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+      //   });
+      // }
+
+      return {
+        hashes,
+        txsInfo,
+      };
     },
     {
       manual: true,
       onError(e) {
         console.error(e);
-        onFailed?.();
+        // onFailed?.();
       },
-      onSuccess() {
-        onSuccess?.();
+      onSuccess(res) {
+        onSigned?.(handleSignResult(res));
       },
       onFinally() {
         setTotalSteps(1);
@@ -610,102 +628,102 @@ export const Content: React.FC<Props> = (props) => {
     }
   );
 
-  const { runAsync: handleListingBack } = useRequest(
-    async () => {
-      if (
-        !nftDetail ||
-        !fees ||
-        !chain ||
-        !currentAccount ||
-        !listingToken ||
-        !formValues.amount ||
-        !formValues.listingPrice ||
-        !formValues.duration
-      ) {
-        return;
-      }
-      const isApproved = await wallet.checkIsApprovedForAll({
-        chainId: chain.id,
-        owner: currentAccount!.address,
-        operator: OPENSEA_CONDUIT_ADDRESS,
-        contractAddress: nftDetail.contract_id,
-      });
-      const tx = await wallet.buildSetApprovedForAllTx({
-        from: currentAccount?.address,
-        chainId: chain.id,
-        operator: OPENSEA_CONDUIT_ADDRESS,
-        contractAddress: nftDetail.contract_id,
-      });
+  // const { runAsync: handleListingBack } = useRequest(
+  //   async () => {
+  //     if (
+  //       !nftDetail ||
+  //       !fees ||
+  //       !chain ||
+  //       !currentAccount ||
+  //       !listingToken ||
+  //       !formValues.amount ||
+  //       !formValues.listingPrice ||
+  //       !formValues.duration
+  //     ) {
+  //       return;
+  //     }
+  //     const isApproved = await wallet.checkIsApprovedForAll({
+  //       chainId: chain.id,
+  //       owner: currentAccount!.address,
+  //       operator: OPENSEA_CONDUIT_ADDRESS,
+  //       contractAddress: nftDetail.contract_id,
+  //     });
+  //     const tx = await wallet.buildSetApprovedForAllTx({
+  //       from: currentAccount?.address,
+  //       chainId: chain.id,
+  //       operator: OPENSEA_CONDUIT_ADDRESS,
+  //       contractAddress: nftDetail.contract_id,
+  //     });
 
-      if (!isApproved) {
-        await wallet.sendRequest({
-          method: 'eth_sendTransaction',
-          params: [tx],
-        });
-      }
+  //     if (!isApproved) {
+  //       await wallet.sendRequest({
+  //         method: 'eth_sendTransaction',
+  //         params: [tx],
+  //       });
+  //     }
 
-      const endTime = ((Date.now() + formValues.duration) / 1000).toFixed();
-      console.log(endTime);
-      const res = await wallet.openapi.prepareListingNFT({
-        chain_id: nftDetail.chain,
-        inner_id: nftDetail.inner_id,
-        wei_price: new BigNumber(formValues.listingPrice)
-          .times(new BigNumber(10).exponentiatedBy(listingToken?.decimals))
-          .toString(),
-        quantity: formValues.amount,
-        maker: currentAccount!.address,
-        collection_id: last(nftDetail.collection_id?.split(':')) || '',
-        salt: generateRandomSalt(),
-        marketplace_fees: fees.marketplace_fees,
-        custom_royalties: formValues.creatorFeeEnable
-          ? fees.custom_royalties
-          : [],
-        expiration_time_at: +endTime,
-        currency:
-          nftTradingConfig?.[nftDetail.chain].listing_currency.token_id || '',
-      });
+  //     const endTime = ((Date.now() + formValues.duration) / 1000).toFixed();
+  //     console.log(endTime);
+  //     const res = await wallet.openapi.prepareListingNFT({
+  //       chain_id: nftDetail.chain,
+  //       inner_id: nftDetail.inner_id,
+  //       wei_price: new BigNumber(formValues.listingPrice)
+  //         .times(new BigNumber(10).exponentiatedBy(listingToken?.decimals))
+  //         .toString(),
+  //       quantity: formValues.amount,
+  //       maker: currentAccount!.address,
+  //       collection_id: last(nftDetail.collection_id?.split(':')) || '',
+  //       salt: generateRandomSalt(),
+  //       marketplace_fees: fees.marketplace_fees,
+  //       custom_royalties: formValues.creatorFeeEnable
+  //         ? fees.custom_royalties
+  //         : [],
+  //       expiration_time_at: +endTime,
+  //       currency:
+  //         nftTradingConfig?.[nftDetail.chain].listing_currency.token_id || '',
+  //     });
 
-      const sign = res.data.sign;
-      const signature: string = await wallet.sendRequest({
-        method: 'eth_signTypedData_v4',
-        params: [
-          currentAccount?.address,
-          JSON.stringify({
-            domain: sign.domain,
-            message: sign.value,
-            primaryType: sign.primaryType,
-            types: sign.types,
-          }),
-        ],
-      });
+  //     const sign = res.data.sign;
+  //     const signature: string = await wallet.sendRequest({
+  //       method: 'eth_signTypedData_v4',
+  //       params: [
+  //         currentAccount?.address,
+  //         JSON.stringify({
+  //           domain: sign.domain,
+  //           message: sign.value,
+  //           primaryType: sign.primaryType,
+  //           types: sign.types,
+  //         }),
+  //       ],
+  //     });
 
-      // todo wait approved
-      // const txCompleted = await new Promise<{ gasUsed: number }>((resolve) => {
-      //   const handler = (res) => {
-      //     if (res?.hash === hash) {
-      //       eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-      //       resolve(res || {});
-      //     }
-      //   };
-      //   eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
-      // });
+  //     // todo wait approved
+  //     // const txCompleted = await new Promise<{ gasUsed: number }>((resolve) => {
+  //     //   const handler = (res) => {
+  //     //     if (res?.hash === hash) {
+  //     //       eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+  //     //       resolve(res || {});
+  //     //     }
+  //     //   };
+  //     //   eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+  //     // });
 
-      const listingRes = await wallet.openapi.createListingNFT({
-        order: res.data.post.body.order,
-        signature,
-        chain_id: nftDetail.chain,
-      });
-    },
-    {
-      manual: true,
-      onError() {
-        onFailed?.();
-      },
-      onSuccess() {
-        onSuccess?.();
-      },
-    }
-  );
+  //     const listingRes = await wallet.openapi.createListingNFT({
+  //       order: res.data.post.body.order,
+  //       signature,
+  //       chain_id: nftDetail.chain,
+  //     });
+  //   },
+  //   {
+  //     manual: true,
+  //     onError() {
+  //       onFailed?.();
+  //     },
+  //     onSuccess() {
+  //       onSuccess?.();
+  //     },
+  //   }
+  // );
 
   return (
     <Container>
@@ -1144,7 +1162,7 @@ export const Content: React.FC<Props> = (props) => {
               <SignProcessButton
                 type="primary"
                 size="large"
-                className="ml-[16px]"
+                className="ml-[16px] min-w-[180px]"
                 onClick={handleListing}
                 account={currentAccount}
                 isSigning={isSubmitting && isSigning}
@@ -1157,7 +1175,11 @@ export const Content: React.FC<Props> = (props) => {
                 currentIndex={currentIndex}
                 total={totalSteps}
               >
-                {isApproved ? 'List on OpenSea' : 'Approve and List'}
+                {isEdit
+                  ? 'Edit Listing'
+                  : isApproved
+                  ? 'List on OpenSea'
+                  : 'Approve and List'}
               </SignProcessButton>
             ) : null}
           </div>

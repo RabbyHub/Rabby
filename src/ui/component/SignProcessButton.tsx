@@ -67,7 +67,7 @@ export const SignProcessButton: React.FC<
 
   return (
     <Button onClick={handleClick} {...btnProps}>
-      <div className="flex items-center gap-[6px]">
+      <div className="flex items-center justify-center gap-[6px]">
         {loading || isSigning ? (
           <RcIconSpinCC className="animate-spin" />
         ) : null}
