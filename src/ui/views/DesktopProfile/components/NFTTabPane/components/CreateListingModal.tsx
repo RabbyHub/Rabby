@@ -314,7 +314,7 @@ export const Content: React.FC<Props> = (props) => {
     };
   }, [fees, formValues.creatorFeeEnable]);
 
-  useEffect(() => {
+  const currentOrder = useMemo(() => {
     if (!isEdit || !nftDetail?.listing_order || !fees || !listingToken) {
       return;
     }
@@ -344,15 +344,21 @@ export const Content: React.FC<Props> = (props) => {
       +(nftDetail?.listing_order?.protocol_data.parameters.endTime || 0) -
       Date.now() / 1000;
 
-    setFormValues({
+    return {
       listingPrice: totalPrice
         .div(new BigNumber(10).pow(listingToken.decimals))
         .toString(),
       amount: +amount || null,
       creatorFeeEnable,
       duration: findClosestOption(duration * 1000).value,
-    });
+    };
   }, [fees, nftDetail?.listing_order, listingToken, isEdit]);
+
+  useEffect(() => {
+    if (currentOrder) {
+      setFormValues(currentOrder);
+    }
+  }, [currentOrder]);
 
   const bestOfferPrice = useMemo(() => {
     return calcBestOfferPrice(nftDetail);
@@ -406,6 +412,17 @@ export const Content: React.FC<Props> = (props) => {
 
   const [totalSteps, setTotalSteps] = useState(1);
 
+  const checkNeedCancelFirst = useMemoizedFn(() => {
+    console.log(currentOrder, formValues);
+    return (
+      isEdit &&
+      currentOrder &&
+      !['amount', 'listingPrice', 'creatorFeeEnable'].every((key) => {
+        return currentOrder[key] === formValues[key];
+      })
+    );
+  });
+
   const buildTxs = useMemoizedFn(async () => {
     if (
       !nftDetail ||
@@ -419,8 +436,11 @@ export const Content: React.FC<Props> = (props) => {
     ) {
       return;
     }
+
+    const needCancelFirst = checkNeedCancelFirst();
+
     const tx = isApproved
-      ? isEdit && nftDetail?.listing_order?.protocol_data?.parameters
+      ? needCancelFirst && nftDetail?.listing_order?.protocol_data?.parameters
         ? await wallet.buildCancelNFTListTx({
             address: currentAccount?.address,
             chainId: chain?.id,
@@ -437,7 +457,7 @@ export const Content: React.FC<Props> = (props) => {
     const endTime = ((Date.now() + formValues.duration) / 1000).toFixed();
     console.log(endTime);
 
-    const typedData = buildCreateListingTypedData({
+    const typedData1 = buildCreateListingTypedData({
       chainId: chain.id,
       nftId: nftDetail.inner_id,
       nftAmount: formValues.amount,
@@ -459,35 +479,35 @@ export const Content: React.FC<Props> = (props) => {
       isErc721: (nftDetail?.collection as any).is_erc721,
     });
 
-    // const res = await wallet.openapi.prepareListingNFT({
-    //   chain_id: nftDetail.chain,
-    //   inner_id: nftDetail.inner_id,
-    //   wei_price: new BigNumber(formValues.listingPrice)
-    //     .times(new BigNumber(10).exponentiatedBy(listingToken?.decimals))
-    //     .toString(),
-    //   quantity: formValues.amount,
-    //   maker: currentAccount!.address,
-    //   collection_id: last(nftDetail.collection_id?.split(':')) || '',
-    //   salt: generateRandomSalt(),
-    //   marketplace_fees: fees.marketplace_fees,
-    //   custom_royalties:
-    //     formValues.creatorFeeEnable || feesRate.isCustomRequired
-    //       ? fees.custom_royalties
-    //       : [],
-    //   expiration_time_at: +endTime,
-    //   currency:
-    //     nftTradingConfig?.[nftDetail.chain].listing_currency.token_id || '',
-    // });
+    const res = await wallet.openapi.prepareListingNFT({
+      chain_id: nftDetail.chain,
+      inner_id: nftDetail.inner_id,
+      wei_price: new BigNumber(formValues.listingPrice)
+        .times(new BigNumber(10).exponentiatedBy(listingToken?.decimals))
+        .toString(),
+      quantity: formValues.amount,
+      maker: currentAccount!.address,
+      collection_id: last(nftDetail.collection_id?.split(':')) || '',
+      salt: generateRandomSalt(),
+      marketplace_fees: fees.marketplace_fees,
+      custom_royalties:
+        formValues.creatorFeeEnable || feesRate.isCustomRequired
+          ? fees.custom_royalties
+          : [],
+      expiration_time_at: +endTime,
+      currency:
+        nftTradingConfig?.[nftDetail.chain].listing_currency.token_id || '',
+    });
 
-    // const sign = res.data.sign;
+    const sign = res.data.sign;
 
-    // const typedData1 = {
-    //   domain: sign.domain,
-    //   message: sign.value,
-    //   primaryType: sign.primaryType,
-    //   types: sign.types,
-    // };
-    //
+    const typedData = {
+      domain: sign.domain,
+      message: sign.value,
+      primaryType: sign.primaryType,
+      types: sign.types,
+    };
+
     // console.log(JSON.parse(typedData), typedData1);
 
     const result: Parameters<typeof run>[0] = [];
@@ -501,7 +521,8 @@ export const Content: React.FC<Props> = (props) => {
       kind: 'typed',
       txs: [
         {
-          data: JSON.parse(typedData),
+          // data: JSON.parse(typedData),
+          data: typedData,
           from: currentAccount.address,
           version: 'V4',
         },
@@ -515,7 +536,7 @@ export const Content: React.FC<Props> = (props) => {
           post: {
             body: {
               order: {
-                data: JSON.parse(typedData).message,
+                data: typedData.message,
                 kind: 'seaport-v1.6',
               },
             },
@@ -527,7 +548,6 @@ export const Content: React.FC<Props> = (props) => {
 
   const handleSignResult = useMemoizedFn(
     async (params: Awaited<ReturnType<typeof handleListing>>) => {
-      handleListing;
       const signature = last(params.hashes);
       if (!nftDetail || !signature || !nftDetail?.chain) {
         throw new Error('Error');
@@ -597,40 +617,42 @@ export const Content: React.FC<Props> = (props) => {
 
       let hashes: string[] = [];
 
-      if (supportedDirectSign(currentAccount.type)) {
-        try {
-          hashes = await run(steps, {
-            hiddenHardWareProcess: true,
-            // getContainer: getContainer,
-            title: (
-              <div className="flex items-center justify-center gap-[8px]">
-                <div className="relative">
-                  <img src={IconOpenSea} alt="" className="w-[24px] h-[24px]" />
-                  <img
-                    src={chain?.logo}
-                    alt=""
-                    className="absolute top-[-2px] right-[-2px] w-[12px] h-[12px] rounded-full"
-                  />
-                </div>
-                <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
-                  Listing NFT
-                </div>
-              </div>
-            ),
-          });
-          console.log('hashes', hashes);
-        } catch (error) {
-          console.error('-------', error);
-          if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
-            //
-            throw new Error(MINI_SIGN_ERROR.USER_CANCELLED);
-          } else {
-            hashes = await runFallback();
-          }
-        }
-      } else {
-        hashes = await runFallback();
-      }
+      // if (supportedDirectSign(currentAccount.type)) {
+      //   try {
+      //     hashes = await run(steps, {
+      //       hiddenHardWareProcess: true,
+      //       // getContainer: getContainer,
+      //       title: (
+      //         <div className="flex items-center justify-center gap-[8px]">
+      //           <div className="relative">
+      //             <img src={IconOpenSea} alt="" className="w-[24px] h-[24px]" />
+      //             <img
+      //               src={chain?.logo}
+      //               alt=""
+      //               className="absolute top-[-2px] right-[-2px] w-[12px] h-[12px] rounded-full"
+      //             />
+      //           </div>
+      //           <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
+      //             Listing NFT
+      //           </div>
+      //         </div>
+      //       ),
+      //     });
+      //     console.log('hashes', hashes);
+      //   } catch (error) {
+      //     console.error('-------', error);
+      //     if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+      //       //
+      //       throw new Error(MINI_SIGN_ERROR.USER_CANCELLED);
+      //     } else {
+      //       hashes = await runFallback();
+      //     }
+      //   }
+      // } else {
+      //   hashes = await runFallback();
+      // }
+
+      hashes = await runFallback();
 
       if (!hashes.length) {
         throw new Error('sign failed');
@@ -1111,7 +1133,11 @@ export const Content: React.FC<Props> = (props) => {
               >
                 Creator fees ({+(feesRate.custom * 100).toFixed(2)}%)
                 <Tooltip
-                  title="Creator earnings will be paid by the seller."
+                  title={
+                    feesRate?.isCustomRequired
+                      ? 'Creator earnings will be paid by the seller. Creator earnings are enforced'
+                      : 'Creator earnings will be paid by the seller.'
+                  }
                   overlayClassName="rectangle"
                 >
                   <RcIconInfoCC className="ml-[2px] mr-[4px]" />
