@@ -311,24 +311,22 @@ const TokenSelect = forwardRef<
           {typeof tokenRender === 'function'
             ? tokenRender?.({ token, openTokenModal: handleSelectToken })
             : tokenRender}
-          {type === 'bridgeFrom' && !queryConds.chainServerId ? null : (
-            <TokenSelector
-              drawerHeight={drawerHeight}
-              visible={tokenSelectorVisible}
-              list={displayTokenList}
-              onConfirm={handleCurrentTokenChange}
-              onCancel={handleTokenSelectorClose}
-              onSearch={handleSearchTokens}
-              isLoading={isListLoading}
-              type={type}
-              placeholder={placeholder}
-              chainId={queryConds.chainServerId!}
-              disabledTips={disabledTips}
-              supportChains={supportChains}
-              excludeTokens={excludeTokens}
-              getContainer={getContainer}
-            />
-          )}
+          <TokenSelector
+            drawerHeight={drawerHeight}
+            visible={tokenSelectorVisible}
+            list={displayTokenList}
+            onConfirm={handleCurrentTokenChange}
+            onCancel={handleTokenSelectorClose}
+            onSearch={handleSearchTokens}
+            isLoading={isListLoading}
+            type={type}
+            placeholder={placeholder}
+            chainId={queryConds.chainServerId!}
+            disabledTips={disabledTips}
+            supportChains={supportChains}
+            excludeTokens={excludeTokens}
+            getContainer={getContainer}
+          />
         </>
       );
     }
@@ -379,23 +377,21 @@ const TokenSelect = forwardRef<
             />
           )}
         </Wrapper>
-        {type === 'bridgeFrom' && !queryConds.chainServerId ? null : (
-          <TokenSelector
-            visible={tokenSelectorVisible}
-            list={displayTokenList}
-            onConfirm={handleCurrentTokenChange}
-            onCancel={handleTokenSelectorClose}
-            onSearch={handleSearchTokens}
-            isLoading={isListLoading}
-            type={type}
-            placeholder={placeholder}
-            chainId={queryConds.chainServerId!}
-            disabledTips={disabledTips}
-            supportChains={supportChains}
-            drawerHeight={drawerHeight}
-            excludeTokens={excludeTokens}
-          />
-        )}
+        <TokenSelector
+          visible={tokenSelectorVisible}
+          list={displayTokenList}
+          onConfirm={handleCurrentTokenChange}
+          onCancel={handleTokenSelectorClose}
+          onSearch={handleSearchTokens}
+          isLoading={isListLoading}
+          type={type}
+          placeholder={placeholder}
+          chainId={queryConds.chainServerId!}
+          disabledTips={disabledTips}
+          supportChains={supportChains}
+          drawerHeight={drawerHeight}
+          excludeTokens={excludeTokens}
+        />
       </>
     );
   }
