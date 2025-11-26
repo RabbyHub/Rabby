@@ -225,6 +225,7 @@ const Content: React.FC<Props> = (props) => {
         nftDetail,
         currentAccount?.address,
         chain?.id,
+        isApproved,
       ],
     }
   );
@@ -465,18 +466,19 @@ const Content: React.FC<Props> = (props) => {
             </div>
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
               {formatTokenAmount(
-                feesRate.market *
-                  +(bestOfferUsdPrice || 0) *
-                  (formValues.amount || 0)
+                new BigNumber(feesRate.market)
+                  .times(bestOfferPrice || 0)
+                  .times(formValues?.amount || 0)
+                  .toString()
               )}{' '}
               {offerToken?.symbol}{' '}
               <span className="text-r-neutral-foot font-normal">
                 (
                 {formatUsdValue(
-                  feesRate.market *
-                    +(bestOfferUsdPrice || 0) *
-                    (formValues.amount || 0) *
-                    (offerToken?.price || 0)
+                  new BigNumber(feesRate.market)
+                    .times(bestOfferUsdPrice || 0)
+                    .times(formValues?.amount || 0)
+                    .toString()
                 )}
                 )
               </span>
@@ -519,6 +521,7 @@ const Content: React.FC<Props> = (props) => {
                     {formatTokenAmount(
                       new BigNumber(feesRate.custom)
                         .times(bestOfferPrice || 0)
+                        .times(formValues?.amount || 0)
                         .toString()
                     )}{' '}
                     {offerToken?.symbol}{' '}
@@ -527,6 +530,7 @@ const Content: React.FC<Props> = (props) => {
                       {formatUsdValue(
                         new BigNumber(feesRate.custom)
                           .times(bestOfferUsdPrice || 0)
+                          .times(formValues?.amount || 0)
                           .toString()
                       )}
                       )

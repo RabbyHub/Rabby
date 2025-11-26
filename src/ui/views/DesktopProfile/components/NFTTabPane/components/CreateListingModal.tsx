@@ -1082,18 +1082,20 @@ export const Content: React.FC<Props> = (props) => {
             </div>
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
               {formatTokenAmount(
-                feesRate.market *
-                  +(formValues.listingPrice || 0) *
-                  (formValues.amount || 0)
+                new BigNumber(feesRate.market)
+                  .times(formValues.listingPrice || 0)
+                  .times(formValues.amount || 0)
+                  .toString()
               )}{' '}
               {listingToken?.symbol}{' '}
               <span className="text-r-neutral-foot font-normal">
                 (
                 {formatUsdValue(
-                  feesRate.market *
-                    +(formValues.listingPrice || 0) *
-                    (formValues.amount || 0) *
-                    (listingToken?.price || 0)
+                  new BigNumber(feesRate.market)
+                    .times(formValues.listingPrice || 0)
+                    .times(formValues.amount || 0)
+                    .times(listingToken?.price || 0)
+                    .toString()
                 )}
                 )
               </span>
@@ -1132,18 +1134,20 @@ export const Content: React.FC<Props> = (props) => {
                 {formValues?.creatorFeeEnable && feesRate.custom ? (
                   <>
                     {formatTokenAmount(
-                      feesRate.custom *
-                        +(formValues.listingPrice || 0) *
-                        (formValues.amount || 0)
+                      new BigNumber(feesRate.custom)
+                        .times(formValues.listingPrice || 0)
+                        .times(formValues.amount || 0)
+                        .toString()
                     )}{' '}
                     {listingToken?.symbol}{' '}
                     <span className="text-r-neutral-foot font-normal">
                       (
                       {formatUsdValue(
-                        feesRate.custom *
-                          +(formValues.listingPrice || 0) *
-                          (formValues.amount || 0) *
-                          (listingToken?.price || 0)
+                        new BigNumber(feesRate.custom)
+                          .times(formValues.listingPrice || 0)
+                          .times(formValues.amount || 0)
+                          .times(listingToken?.price || 0)
+                          .toString()
                       )}
                       )
                     </span>
