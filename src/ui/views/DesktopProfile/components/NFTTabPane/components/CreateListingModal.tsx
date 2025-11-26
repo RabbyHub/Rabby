@@ -30,7 +30,10 @@ import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
 import NumberInput from '@/ui/component/NFTNumberInput';
 import {
   CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
+  ItemType,
   OPENSEA_CONDUIT_ADDRESS,
+  OPENSEA_CONDUIT_KEY,
+  OrderType,
   SEAPORT_CONTRACT_VERSION_V1_6,
 } from '@opensea/seaport-js/lib/constants';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
@@ -38,13 +41,19 @@ import { StepInput } from '@/ui/component/StepInput';
 import { RcIconArrowDownCC, RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
-import { calcBestOfferPrice, generateRandomSalt } from '../utils';
+import {
+  buildCreateListingTypedData,
+  calcBestOfferPrice,
+  generateRandomSalt,
+} from '../utils';
 import { useNFTListSigner } from '@/ui/hooks/useNFTListingSigner';
 import { SignProcessButton } from '@/ui/component/SignProcessButton';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { IconOpenSea } from '@/ui/assets';
 import { waitForTxCompleted } from '@/ui/utils/transaction';
+import { ethers } from 'ethers';
+import { off } from 'process';
 
 const Container = styled.div`
   table {
@@ -325,7 +334,7 @@ export const Content: React.FC<Props> = (props) => {
         });
     const amount =
       offer.find((i) => {
-        isSameAddress(i.token, nftDetail.contract_id);
+        return isSameAddress(i.token, nftDetail.contract_id);
       })?.endAmount || '1';
     const totalPrice = consideration.reduce((total, item) => {
       return total.plus(item.endAmount);
@@ -427,34 +436,59 @@ export const Content: React.FC<Props> = (props) => {
 
     const endTime = ((Date.now() + formValues.duration) / 1000).toFixed();
     console.log(endTime);
-    const res = await wallet.openapi.prepareListingNFT({
-      chain_id: nftDetail.chain,
-      inner_id: nftDetail.inner_id,
-      wei_price: new BigNumber(formValues.listingPrice)
-        .times(new BigNumber(10).exponentiatedBy(listingToken?.decimals))
+
+    const typedData = buildCreateListingTypedData({
+      chainId: chain.id,
+      nftId: nftDetail.inner_id,
+      nftAmount: formValues.amount,
+      nftContractId: nftDetail.contract_id,
+      tokenId: listingToken.id,
+      listingPriceInWei: new BigNumber(formValues.listingPrice)
+        .times(new BigNumber(10).exponentiatedBy(listingToken.decimals))
+        .integerValue()
         .toString(),
-      quantity: formValues.amount,
-      maker: currentAccount!.address,
-      collection_id: last(nftDetail.collection_id?.split(':')) || '',
-      salt: generateRandomSalt(),
-      marketplace_fees: fees.marketplace_fees,
-      custom_royalties:
+      sellerAddress: currentAccount.address,
+      marketFees: fees.marketplace_fees,
+      royaltyFees:
         formValues.creatorFeeEnable || feesRate.isCustomRequired
           ? fees.custom_royalties
           : [],
-      expiration_time_at: +endTime,
-      currency:
-        nftTradingConfig?.[nftDetail.chain].listing_currency.token_id || '',
+
+      endTime: endTime,
+      // todo fix any
+      isErc721: (nftDetail?.collection as any).is_erc721,
     });
 
-    const sign = res.data.sign;
+    // const res = await wallet.openapi.prepareListingNFT({
+    //   chain_id: nftDetail.chain,
+    //   inner_id: nftDetail.inner_id,
+    //   wei_price: new BigNumber(formValues.listingPrice)
+    //     .times(new BigNumber(10).exponentiatedBy(listingToken?.decimals))
+    //     .toString(),
+    //   quantity: formValues.amount,
+    //   maker: currentAccount!.address,
+    //   collection_id: last(nftDetail.collection_id?.split(':')) || '',
+    //   salt: generateRandomSalt(),
+    //   marketplace_fees: fees.marketplace_fees,
+    //   custom_royalties:
+    //     formValues.creatorFeeEnable || feesRate.isCustomRequired
+    //       ? fees.custom_royalties
+    //       : [],
+    //   expiration_time_at: +endTime,
+    //   currency:
+    //     nftTradingConfig?.[nftDetail.chain].listing_currency.token_id || '',
+    // });
 
-    const typedData = {
-      domain: sign.domain,
-      message: sign.value,
-      primaryType: sign.primaryType,
-      types: sign.types,
-    };
+    // const sign = res.data.sign;
+
+    // const typedData1 = {
+    //   domain: sign.domain,
+    //   message: sign.value,
+    //   primaryType: sign.primaryType,
+    //   types: sign.types,
+    // };
+    //
+    // console.log(JSON.parse(typedData), typedData1);
 
     const result: Parameters<typeof run>[0] = [];
     if (tx) {
@@ -467,7 +501,7 @@ export const Content: React.FC<Props> = (props) => {
       kind: 'typed',
       txs: [
         {
-          data: typedData,
+          data: JSON.parse(typedData),
           from: currentAccount.address,
           version: 'V4',
         },
@@ -476,7 +510,18 @@ export const Content: React.FC<Props> = (props) => {
 
     return {
       steps: result,
-      res,
+      res: {
+        data: {
+          post: {
+            body: {
+              order: {
+                data: JSON.parse(typedData).message,
+                kind: 'seaport-v1.6',
+              },
+            },
+          },
+        },
+      },
     };
   });
 
