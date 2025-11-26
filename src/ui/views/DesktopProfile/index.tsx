@@ -64,6 +64,12 @@ const Wrap = styled.div`
   .main-content {
     padding-left: 80px;
     flex-shrink: 0;
+
+    transition: padding 0.3s;
+
+    &.is-open {
+      padding-left: 0;
+    }
   }
 
   .layout-container {
@@ -203,7 +209,7 @@ export const DesktopProfile = () => {
   return (
     <>
       <Wrap
-        className="w-full h-full bg-rb-neutral-bg-1"
+        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element"
         ref={scrollContainerRef}
       >
         <div className="main-content">
