@@ -11,7 +11,7 @@ import { useRequest } from 'ahooks';
 import { message, Skeleton, Switch } from 'antd';
 import clsx from 'clsx';
 import { omit, range } from 'lodash';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSetState } from 'react-use';
 import { AcceptOfferModal } from './components/AcceptOfferModal';
 import { CancelListingModal } from './components/CancelListingModal';
@@ -53,7 +53,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
         title?: string;
         desc?: string;
       };
-    };
+    } | null;
   }>({
     current: null,
   });
@@ -95,6 +95,20 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
   useListenTxReload(() => {
     runAsync();
   });
+
+  useEffect(() => {
+    setState({
+      current: null,
+      nftDetail: undefined,
+      detailModalVisible: false,
+      listingModalVisible: false,
+      cancelModalVisible: false,
+      acceptModalVisible: false,
+      resultModalVisible: false,
+      isEditListing: false,
+      resultState: null,
+    });
+  }, [currentAccount?.address]);
 
   return (
     <div className="py-[16px] px-[20px]">

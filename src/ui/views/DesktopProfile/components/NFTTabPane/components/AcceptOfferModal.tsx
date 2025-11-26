@@ -494,7 +494,11 @@ const Content: React.FC<Props> = (props) => {
               >
                 Creator fees ({+(feesRate.custom * 100).toFixed(2)}%)
                 <Tooltip
-                  title="Creator earnings will be paid by the seller."
+                  title={
+                    feesRate?.isCustomRequired
+                      ? 'Creator earnings will be paid by the seller. Creator earnings are enforced'
+                      : 'Creator earnings will be paid by the seller.'
+                  }
                   overlayClassName="rectangle"
                 >
                   <RcIconInfoCC className="ml-[2px] mr-[4px]" />
