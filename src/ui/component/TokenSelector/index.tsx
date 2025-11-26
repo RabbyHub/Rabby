@@ -265,7 +265,7 @@ const TokenSelector = ({
   );
 
   const showChainFilter = useMemo(() => {
-    return !['swapTo', 'bridgeFrom', 'bridgeTo', 'send'].includes(type);
+    return !['swapTo', 'bridgeTo', 'send'].includes(type);
   }, [type]);
 
   const swapAndBridgeNoDataTip = useMemo(() => {
