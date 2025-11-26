@@ -352,21 +352,22 @@ export const BridgeShowMore = ({
       </div>
 
       <div className={clsx('overflow-hidden', !open && 'h-0')}>
-        {lostValueContentRender()}
         {!sourceAlwaysShow && sourceContentRender()}
-        <BridgeSlippage
-          autoSuggestSlippage={autoSuggestSlippage}
-          value={slippage}
-          displaySlippage={displaySlippage}
-          onChange={onSlippageChange}
-          autoSlippage={autoSlippage}
-          isCustomSlippage={isCustomSlippage}
-          setAutoSlippage={setAutoSlippage}
-          setIsCustomSlippage={setIsCustomSlippage}
-          type={type}
-          isWrapToken={isWrapToken}
-          recommendValue={recommendValue}
-        />
+        {!showSlippageError && (
+          <BridgeSlippage
+            autoSuggestSlippage={autoSuggestSlippage}
+            value={slippage}
+            displaySlippage={displaySlippage}
+            onChange={onSlippageChange}
+            autoSlippage={autoSlippage}
+            isCustomSlippage={isCustomSlippage}
+            setAutoSlippage={setAutoSlippage}
+            setIsCustomSlippage={setIsCustomSlippage}
+            type={type}
+            isWrapToken={isWrapToken}
+            recommendValue={recommendValue}
+          />
+        )}
 
         <ListItem name={t('page.swap.rabbyFee.title')} className="mt-12 h-18">
           <div
