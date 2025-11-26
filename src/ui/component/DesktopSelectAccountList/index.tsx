@@ -120,7 +120,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
     }
     const left = ref.current.getBoundingClientRect().left;
     const clientWidth = document.body.clientWidth;
-    setIsAbsolute(clientWidth - left > 248);
+    setIsAbsolute(clientWidth - left > 256);
   });
 
   useEffect(() => {
@@ -138,6 +138,14 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
       )}
       style={{ height, position: isAbsolute ? 'absolute' : undefined }}
       ref={ref}
+      onMouseEnter={() => {
+        if (!isAbsolute) {
+          document.querySelector('.main-content')?.classList?.add('is-open');
+        }
+      }}
+      onMouseLeave={() => {
+        document.querySelector('.main-content')?.classList?.remove('is-open');
+      }}
     >
       <Virtuoso
         ref={virtuosoRef}

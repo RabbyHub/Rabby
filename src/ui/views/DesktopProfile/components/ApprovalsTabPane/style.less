@@ -655,6 +655,18 @@
   padding-bottom: @sticky-btn-bottom-offset;
 }
 
+.sticky-footer-container {
+  height: 88px;
+  display: flex;
+  justify-content: center;
+  &.is-sticky {
+    .sticky-footer-inner {
+      position: fixed;
+      bottom: 0;
+    }
+  }
+}
+
 .modal-debug-row-item {
   .child-has-chromelike-scrollbar(6px);
 }
