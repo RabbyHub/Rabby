@@ -953,10 +953,12 @@ export const Main = () => {
             />
           </div>
         ) : null}
+        {/* for bottom padding */}
+        <div className={clsx('w-full', 'h-[40px]')} />
 
         <div
           className={clsx(
-            'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
+            'fixed z-10 w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
             'bg-r-neutral-bg-2 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
             'py-[13px]',
             isTab ? 'rounded-b-[16px]' : ''

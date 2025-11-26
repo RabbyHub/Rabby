@@ -177,8 +177,6 @@ export const BridgeShowMore = ({
     return 'text-r-blue-default';
   }, [showMinDuration]);
 
-  const [showGasFeeError, setShowGasFeeError] = useState(false);
-
   const sourceContentRender = useMemoizedFn(() => {
     return (
       <ListItem
@@ -249,7 +247,7 @@ export const BridgeShowMore = ({
     return (
       <>
         {data?.showLoss && !quoteLoading && (
-          <div className="leading-4 mb-12 text-12 text-r-neutral-foot">
+          <div className="leading-4 text-12 text-r-neutral-foot">
             <div className="flex justify-between">
               <span>{t('page.bridge.price-impact')}</span>
               <span
@@ -298,7 +296,38 @@ export const BridgeShowMore = ({
 
   return (
     <div className="mx-16">
-      {sourceAlwaysShow && sourceContentRender()}
+      <div className="space-y-16">
+        {sourceAlwaysShow && sourceContentRender()}
+
+        {lostValueContentRender()}
+
+        {fromToken && supportDirectSign ? (
+          <DirectSignGasInfo
+            supportDirectSign={supportDirectSign}
+            loading={!!quoteLoading}
+            openShowMore={noop}
+            noQuote={!sourceLogo && !sourceName}
+            chainServeId={fromToken?.chain}
+          />
+        ) : null}
+
+        {showSlippageError && (
+          <BridgeSlippage
+            autoSuggestSlippage={autoSuggestSlippage}
+            value={slippage}
+            displaySlippage={displaySlippage}
+            onChange={onSlippageChange}
+            autoSlippage={autoSlippage}
+            isCustomSlippage={isCustomSlippage}
+            setAutoSlippage={setAutoSlippage}
+            setIsCustomSlippage={setIsCustomSlippage}
+            type={type}
+            isWrapToken={isWrapToken}
+            recommendValue={recommendValue}
+          />
+        )}
+        <div />
+      </div>
 
       <div className="flex items-center justify-center gap-8 mb-8">
         <div
@@ -338,16 +367,6 @@ export const BridgeShowMore = ({
           isWrapToken={isWrapToken}
           recommendValue={recommendValue}
         />
-
-        {fromToken && supportDirectSign ? (
-          <DirectSignGasInfo
-            supportDirectSign={supportDirectSign}
-            loading={!!quoteLoading}
-            openShowMore={setShowGasFeeError}
-            noQuote={!sourceLogo && !sourceName}
-            chainServeId={fromToken?.chain}
-          />
-        ) : null}
 
         <ListItem name={t('page.swap.rabbyFee.title')} className="mt-12 h-18">
           <div
@@ -391,36 +410,6 @@ export const BridgeShowMore = ({
           </ListItem>
         ) : null}
       </div>
-
-      {!open && (
-        <>
-          {lostValueContentRender()}
-          {showSlippageError && (
-            <BridgeSlippage
-              autoSuggestSlippage={autoSuggestSlippage}
-              value={slippage}
-              displaySlippage={displaySlippage}
-              onChange={onSlippageChange}
-              autoSlippage={autoSlippage}
-              isCustomSlippage={isCustomSlippage}
-              setAutoSlippage={setAutoSlippage}
-              setIsCustomSlippage={setIsCustomSlippage}
-              type={type}
-              isWrapToken={isWrapToken}
-              recommendValue={recommendValue}
-            />
-          )}
-          {showGasFeeError && fromToken && supportDirectSign ? (
-            <DirectSignGasInfo
-              supportDirectSign={supportDirectSign}
-              loading={!!quoteLoading}
-              openShowMore={noop}
-              noQuote={!sourceLogo && !sourceName}
-              chainServeId={fromToken?.chain}
-            />
-          ) : null}
-        </>
-      )}
     </div>
   );
 };
