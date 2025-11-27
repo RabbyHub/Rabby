@@ -1,26 +1,26 @@
+import { IconOpenSea } from '@/ui/assets';
+import { RcIconInfoCC, RcIconWaringCC } from '@/ui/assets/desktop/common';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { StepInput } from '@/ui/component/StepInput';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { PopupContainer } from '@/ui/hooks/usePopupContainer';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
+import { formatTokenAmount, formatUsdValue, useWallet } from '@/ui/utils';
+import { waitForTxCompleted } from '@/ui/utils/transaction';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
+import { findChain } from '@/utils/chain';
+import { calcBestOfferPrice } from '@/utils/nft';
 import { NFTDetail, Tx } from '@rabby-wallet/rabby-api/dist/types';
-import { Button, message, Modal, ModalProps, Switch, Tooltip } from 'antd';
+import { useRequest, useSetState } from 'ahooks';
+import { Button, Modal, ModalProps, Switch, Tooltip } from 'antd';
+import BigNumber from 'bignumber.js';
+import clsx from 'clsx';
+import { last } from 'lodash';
 import React, { useMemo } from 'react';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
-import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
-import clsx from 'clsx';
-import { formatTokenAmount, formatUsdValue, useWallet } from '@/ui/utils';
-import BigNumber from 'bignumber.js';
-import { useMemoizedFn, useRequest, useSetState } from 'ahooks';
-import { findChain } from '@/utils/chain';
-import { RcIconInfoCC, RcIconWaringCC } from '@/ui/assets/desktop/common';
-import { calcBestOfferPrice } from '../utils';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
-import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { IconOpenSea } from '@/ui/assets';
-import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import { StepInput } from '@/ui/component/StepInput';
-import { last } from 'lodash';
-import { waitForTxCompleted } from '@/ui/utils/transaction';
+import { OPENSEA_CONDUIT_ADDRESS } from '@opensea/seaport-js/lib/constants';
 
 type Props = ModalProps & {
   nftDetail?: NFTDetail;
@@ -42,10 +42,12 @@ const Content: React.FC<Props> = (props) => {
     account: currentAccount!,
   });
 
-  const canDirectSign = useMemo(
-    () => supportedDirectSign(currentAccount?.type || ''),
-    [currentAccount?.type]
-  );
+  // const canDirectSign = useMemo(
+  //   () => supportedDirectSign(currentAccount?.type || ''),
+  //   [currentAccount?.type]
+  // );
+
+  const canDirectSign = false;
 
   const [formValues, setFormValues] = useSetState<{
     listingPrice?: string;
@@ -156,20 +158,19 @@ const Content: React.FC<Props> = (props) => {
     serverId: nftDetail?.chain,
   });
 
-  const { data: isApproved, runAsync: runCheckIsApproved } = useRequest(
+  const {
+    data: isApproved,
+    loading: isCheckingApproved,
+    runAsync: runCheckIsApproved,
+  } = useRequest(
     async () => {
-      if (
-        !chain?.id ||
-        !currentAccount?.address ||
-        !nftDetail ||
-        !nftTradingConfig
-      ) {
+      if (!chain?.id || !currentAccount?.address || !nftDetail) {
         return;
       }
       const isApproved = await wallet.checkIsApprovedForAll({
         chainId: chain.id,
         owner: currentAccount!.address,
-        operator: nftTradingConfig[nftDetail.chain].opensea_conduit_address!,
+        operator: OPENSEA_CONDUIT_ADDRESS,
         contractAddress: nftDetail.contract_id,
       });
 
@@ -187,8 +188,7 @@ const Content: React.FC<Props> = (props) => {
         !nftDetail ||
         !currentAccount ||
         !chain ||
-        !bestOffer ||
-        !nftTradingConfig
+        !bestOffer
       ) {
         throw new Error('Error');
       }
@@ -199,7 +199,7 @@ const Content: React.FC<Props> = (props) => {
         : await wallet.buildSetApprovedForAllTx({
             from: currentAccount?.address,
             chainId: chain.id,
-            operator: nftTradingConfig[nftDetail.chain].opensea_conduit_address,
+            operator: OPENSEA_CONDUIT_ADDRESS,
             contractAddress: nftDetail.contract_id,
           });
       const tx = await wallet.buildAcceptNFTOfferTx({
@@ -229,6 +229,7 @@ const Content: React.FC<Props> = (props) => {
         chain?.id,
         isApproved,
       ],
+      ready: !isCheckingApproved,
     }
   );
 
@@ -404,6 +405,7 @@ const Content: React.FC<Props> = (props) => {
                       amount: v,
                     });
                   }}
+                  disabled={isSubmitting}
                   // maxTooltip={
                   //   (formValues.amount || 0) >= (nftDetail?.amount || 1)
                   //     ? `Your balance is ${nftDetail?.amount || 1}`
@@ -515,6 +517,7 @@ const Content: React.FC<Props> = (props) => {
                         creatorFeeEnable: v,
                       });
                     }}
+                    disabled={isSubmitting}
                   ></Switch>
                 )}
               </div>

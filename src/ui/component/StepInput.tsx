@@ -29,6 +29,7 @@ const Root = styled.div`
     }
 
     &:disabled {
+      cursor: not-allowed;
       svg {
         opacity: 0.5;
       }
@@ -46,6 +47,10 @@ const Root = styled.div`
 
     border: 1px solid var(--r-neutral-line, #e0e5ec);
     background-color: transparent;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
 
     &:focus {
       outline: none;

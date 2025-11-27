@@ -1,30 +1,28 @@
-import { isSameAddress } from '@/ui/utils';
 import { randomBytes } from '@ethereumjs/util';
 import {
   CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
   EIP_712_ORDER_TYPE,
   ItemType,
-  OPENSEA_CONDUIT_ADDRESS,
   OPENSEA_CONDUIT_KEY,
   OrderType,
   SEAPORT_CONTRACT_NAME,
   SEAPORT_CONTRACT_VERSION_V1_6,
 } from '@opensea/seaport-js/lib/constants';
-import {
-  CreateOrderInput,
-  OrderComponents,
-} from '@opensea/seaport-js/lib/types';
+import { OrderComponents } from '@opensea/seaport-js/lib/types';
 import { NFTDetail } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import {
   concatHex,
   keccak256,
+  padHex,
+  serializeTypedData,
+  sliceHex,
   stringToHex,
   toHex,
-  padHex,
-  sliceHex,
-  serializeTypedData,
+  zeroAddress,
+  zeroHash,
 } from 'viem';
+const RESTRICTED_ZONE = '0x000056f7000000ece9003ca63978907a00ffd100';
 
 export const calcBestOfferPrice = (nftDetail?: NFTDetail | null) => {
   if (!nftDetail || !nftDetail?.best_offer_order) {
@@ -36,10 +34,10 @@ export const calcBestOfferPrice = (nftDetail?: NFTDetail | null) => {
   const total = new BigNumber(offer.price.value).div(
     new BigNumber(10).exponentiatedBy(offer.price.decimals)
   );
-  // todo 如果 startAmount 和 endAmount 不一样，应该怎么计算？
+
   const quantity = offer.protocol_data.parameters.consideration.find((item) => {
-    return isSameAddress(item.token, nftDetail.contract_id);
-  })?.endAmount;
+    return item.token.toLowerCase() === nftDetail.contract_id.toLowerCase();
+  })?.startAmount;
 
   if (!quantity) {
     return null;
@@ -61,8 +59,6 @@ export const generateRandomSalt = (domain?: string) => {
   return padHex(toHex(randomBytes(8)), { size: 32 }); // 8字节随机数填充到32字节
 };
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-
 export const buildCreateListingTypedData = (params: {
   chainId: number;
   nftId: string;
@@ -75,6 +71,7 @@ export const buildCreateListingTypedData = (params: {
   royaltyFees?: { recipient: string; fee: number; required: boolean }[];
   endTime: string;
   isErc721: boolean;
+  counter?: number;
 }) => {
   const {
     chainId,
@@ -88,6 +85,7 @@ export const buildCreateListingTypedData = (params: {
     royaltyFees,
     endTime,
     isErc721,
+    counter = 0,
   } = params;
 
   const priceWei = new BigNumber(listingPriceInWei);
@@ -103,7 +101,7 @@ export const buildCreateListingTypedData = (params: {
 
       return {
         itemType: tokenId.startsWith('0x') ? ItemType.ERC20 : ItemType.NATIVE,
-        token: tokenId.startsWith('0x') ? tokenId : ZERO_ADDRESS,
+        token: tokenId.startsWith('0x') ? tokenId : zeroAddress,
         identifierOrCriteria: '0',
         startAmount: feeAmount.toString(),
         endAmount: feeAmount.toString(),
@@ -136,20 +134,14 @@ export const buildCreateListingTypedData = (params: {
         endAmount: sellerAmount.toString(),
         itemType: tokenId.startsWith('0x') ? ItemType.ERC20 : ItemType.NATIVE,
         recipient: sellerAddress,
-        token: tokenId.startsWith('0x')
-          ? tokenId
-          : '0x0000000000000000000000000000000000000000',
+        token: tokenId.startsWith('0x') ? tokenId : zeroAddress,
         identifierOrCriteria: '0',
       },
       ...feeConsiderations,
     ],
-    zone: isCreatorFeeEnforced
-      ? '0x000056f7000000ece9003ca63978907a00ffd100'
-      : '0x0000000000000000000000000000000000000000',
-    zoneHash:
-      '0x0000000000000000000000000000000000000000000000000000000000000000',
-    // todo
-    counter: '0',
+    zone: isCreatorFeeEnforced ? RESTRICTED_ZONE : zeroAddress,
+    zoneHash: zeroHash,
+    counter: counter,
     offerer: sellerAddress,
     orderType: isCreatorFeeEnforced
       ? nftAmount > 1

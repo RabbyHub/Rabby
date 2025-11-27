@@ -28,6 +28,13 @@ export const NFTCardItem: React.FC<{
           type={item.nft.content_type}
           // amount={item.nft.amount}
           content={item.nft.content}
+          empty={
+            <div className="w-[198px] h-[198px] bg-r-neutral-line flex items-center justify-center rounded-[4px]">
+              <div className="text-[40px] leading-[48px] font-semibold text-r-neutral-foot">
+                NFT
+              </div>
+            </div>
+          }
         />
         <img
           src={chain?.logo}

@@ -172,6 +172,7 @@ import {
 import { Seaport } from '@opensea/seaport-js';
 import { OrderComponents } from '@opensea/seaport-js/lib/types';
 import { CROSS_CHAIN_SEAPORT_V1_6_ADDRESS } from '@opensea/seaport-js/lib/constants';
+import { buildCreateListingTypedData } from '@/utils/nft';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -5773,6 +5774,45 @@ export class WalletController extends BaseController {
     };
   };
 
+  getSeaportCounter = async ({
+    chainId,
+    address,
+  }: {
+    chainId: number;
+    address: string;
+  }) => {
+    const chain = findChain({ id: chainId });
+    if (!chain) {
+      throw new Error('wrong chain');
+    }
+    const data = encodeFunctionData({
+      abi: SeaportABI,
+      functionName: 'getCounter',
+      args: [address as `0x${string}`],
+    });
+
+    const res = await this.requestETHRpc(
+      {
+        method: 'eth_call',
+        params: [
+          {
+            data: data,
+            to: CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
+          },
+          'latest',
+        ],
+      },
+      chain.serverId
+    );
+
+    const value = decodeFunctionResult({
+      abi: SeaportABI,
+      functionName: 'getCounter',
+      data: res,
+    });
+    return Number(value);
+  };
+
   buildCancelNFTListTx = ({
     address,
     chainId,
@@ -5801,6 +5841,18 @@ export class WalletController extends BaseController {
     }
   };
 
+  buildCreateListingTypedData = async (
+    parmas: Parameters<typeof buildCreateListingTypedData>[0]
+  ) => {
+    const counter =
+      parmas.counter ||
+      (await this.getSeaportCounter({
+        chainId: parmas.chainId,
+        address: parmas.sellerAddress,
+      }));
+    return buildCreateListingTypedData({ ...parmas, counter });
+  };
+
   buildAcceptNFTOfferTx = async ({
     address,
     chainId,
@@ -5808,8 +5860,6 @@ export class WalletController extends BaseController {
     collectionId,
     innerId,
     quantity,
-    creatorFee,
-    acceptToken,
     isIncludeCreatorFee,
   }: {
     address: string;
@@ -5818,11 +5868,6 @@ export class WalletController extends BaseController {
     innerId: string;
     order: NonNullable<NFTDetail['best_offer_order']>;
     quantity?: number;
-    acceptToken?: TokenItem;
-    creatorFee?: {
-      recipient: string;
-      fee: number;
-    };
     isIncludeCreatorFee?: boolean;
   }) => {
     const chain = findChain({
