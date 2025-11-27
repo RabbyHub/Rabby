@@ -954,7 +954,7 @@ export const Main = () => {
           </div>
         ) : null}
         {/* for bottom padding */}
-        <div className={clsx('w-full', 'h-[40px]')} />
+        <div className={clsx('w-full', 'h-[20px]')} />
 
         <div
           className={clsx(
