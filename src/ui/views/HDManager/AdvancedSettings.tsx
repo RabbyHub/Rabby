@@ -284,6 +284,21 @@ export const AdvancedSettings: React.FC<Props> = ({
     });
 
   const HDPathTypeGroupRender = React.useCallback(() => {
+    if (
+      keyring === KEYRING_CLASS.HARDWARE.KEYSTONE &&
+      !isAvailable &&
+      hdPathType
+    ) {
+      return (
+        <HDPathTypeButton
+          type={hdPathType}
+          onClick={setHDPathType}
+          isOnChain={isOnChain(hdPathType)}
+          selected={true}
+          key={hdPathType}
+        />
+      );
+    }
     return (
       <>
         {HDPathTypeGroup[keyring].map((type) => (
