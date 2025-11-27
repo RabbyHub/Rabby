@@ -1,14 +1,24 @@
+import { RcIconArrowDownCC, RcIconInfoCC } from '@/ui/assets/desktop/common';
+import { SignProcessButton } from '@/ui/component/SignProcessButton';
+import { StepInput } from '@/ui/component/StepInput';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { PopupContainer } from '@/ui/hooks/usePopupContainer';
+import { useNFTListSigner } from '@/ui/hooks/useNFTListingSigner';
+import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
 import {
-  formatPrice,
   formatTokenAmount,
   formatUsdValue,
   isSameAddress,
   useWallet,
 } from '@/ui/utils';
+import { waitForTxCompleted } from '@/ui/utils/transaction';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { findChain } from '@/utils/chain';
+import {
+  buildCreateListingTypedData,
+  calcBestOfferPrice,
+  generateRandomSalt,
+} from '@/utils/nft';
+import { OPENSEA_CONDUIT_ADDRESS } from '@opensea/seaport-js/lib/constants';
 import { NFTDetail, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { useMemoizedFn, useRequest, useSetState } from 'ahooks';
 import {
@@ -22,38 +32,12 @@ import {
 } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import { last, sum, unescape } from 'lodash';
+import { last, sum } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
-import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
-import NumberInput from '@/ui/component/NFTNumberInput';
-import {
-  CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
-  ItemType,
-  OPENSEA_CONDUIT_ADDRESS,
-  OPENSEA_CONDUIT_KEY,
-  OrderType,
-  SEAPORT_CONTRACT_VERSION_V1_6,
-} from '@opensea/seaport-js/lib/constants';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import { StepInput } from '@/ui/component/StepInput';
-import { RcIconArrowDownCC, RcIconInfoCC } from '@/ui/assets/desktop/common';
-import { EVENTS } from '@/constant';
-import eventBus from '@/eventBus';
-import {
-  buildCreateListingTypedData,
-  calcBestOfferPrice,
-  generateRandomSalt,
-} from '../utils';
-import { useNFTListSigner } from '@/ui/hooks/useNFTListingSigner';
-import { SignProcessButton } from '@/ui/component/SignProcessButton';
-import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { IconOpenSea } from '@/ui/assets';
-import { waitForTxCompleted } from '@/ui/utils/transaction';
-import { ethers } from 'ethers';
-import { off } from 'process';
+import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
+import { useListenTxReload } from '../../../hooks/useListenTxReload';
 
 const Container = styled.div`
   table {
@@ -81,6 +65,10 @@ const Container = styled.div`
     height: 40px;
     width: 148px;
     background-color: transparent;
+
+    &.ant-input-affix-wrapper-disabled {
+      border-color: var(--r-neutral-line);
+    }
 
     .ant-input {
       color: var(--r-neutral-title1, #192945);
@@ -190,7 +178,6 @@ function findClosestOption(inputMs: number) {
     throw new Error('Input must be a non-negative number');
   }
 
-  // 如果输入为0，返回第一个选项
   if (inputMs === 0) {
     return options[0];
   }
@@ -406,6 +393,8 @@ export const Content: React.FC<Props> = (props) => {
     }
   );
 
+  useListenTxReload(runCheckIsApproved);
+
   const { currentIndex, isSigning, run } = useNFTListSigner({
     account: currentAccount!,
   });
@@ -455,9 +444,8 @@ export const Content: React.FC<Props> = (props) => {
         });
 
     const endTime = ((Date.now() + formValues.duration) / 1000).toFixed();
-    console.log(endTime);
 
-    const typedData = buildCreateListingTypedData({
+    const typedData = await wallet.buildCreateListingTypedData({
       chainId: chain.id,
       nftId: nftDetail.inner_id,
       nftAmount: formValues.amount,
@@ -478,34 +466,34 @@ export const Content: React.FC<Props> = (props) => {
       isErc721: !!nftDetail?.collection?.is_erc721,
     });
 
-    const res = await wallet.openapi.prepareListingNFT({
-      chain_id: nftDetail.chain,
-      inner_id: nftDetail.inner_id,
-      wei_price: new BigNumber(formValues.listingPrice)
-        .times(new BigNumber(10).exponentiatedBy(listingToken?.decimals))
-        .toString(),
-      quantity: formValues.amount,
-      maker: currentAccount!.address,
-      collection_id: last(nftDetail.collection_id?.split(':')) || '',
-      salt: generateRandomSalt(),
-      marketplace_fees: fees.marketplace_fees,
-      custom_royalties:
-        formValues.creatorFeeEnable || feesRate.isCustomRequired
-          ? fees.custom_royalties
-          : [],
-      expiration_time_at: +endTime,
-      currency:
-        nftTradingConfig?.[nftDetail.chain].listing_currency.token_id || '',
-    });
+    // const res = await wallet.openapi.prepareListingNFT({
+    //   chain_id: nftDetail.chain,
+    //   inner_id: nftDetail.inner_id,
+    //   wei_price: new BigNumber(formValues.listingPrice)
+    //     .times(new BigNumber(10).exponentiatedBy(listingToken?.decimals))
+    //     .toString(),
+    //   quantity: formValues.amount,
+    //   maker: currentAccount!.address,
+    //   collection_id: last(nftDetail.collection_id?.split(':')) || '',
+    //   salt: generateRandomSalt(),
+    //   marketplace_fees: fees.marketplace_fees,
+    //   custom_royalties:
+    //     formValues.creatorFeeEnable || feesRate.isCustomRequired
+    //       ? fees.custom_royalties
+    //       : [],
+    //   expiration_time_at: +endTime,
+    //   currency:
+    //     nftTradingConfig?.[nftDetail.chain].listing_currency.token_id || '',
+    // });
 
-    const sign = res.data.sign;
+    // const sign = res.data.sign;
 
-    const typedData1 = {
-      domain: sign.domain,
-      message: sign.value,
-      primaryType: sign.primaryType,
-      types: sign.types,
-    };
+    // const typedData = {
+    //   domain: sign.domain,
+    //   message: sign.value,
+    //   primaryType: sign.primaryType,
+    //   types: sign.types,
+    // };
 
     // console.log(JSON.parse(typedData), typedData1);
 
@@ -520,7 +508,6 @@ export const Content: React.FC<Props> = (props) => {
       kind: 'typed',
       txs: [
         {
-          // data: JSON.parse(typedData),
           data: typedData,
           from: currentAccount.address,
           version: 'V4',
@@ -530,17 +517,9 @@ export const Content: React.FC<Props> = (props) => {
 
     return {
       steps: result,
-      res: {
-        data: {
-          post: {
-            body: {
-              order: {
-                data: typedData.message,
-                kind: 'seaport-v1.6',
-              },
-            },
-          },
-        },
+      order: {
+        data: typedData.message,
+        kind: 'seaport-v1.6',
       },
     };
   });
@@ -558,8 +537,8 @@ export const Content: React.FC<Props> = (props) => {
           wallet,
         });
       }
-      const listingRes = await wallet.openapi.createListingNFT({
-        order: params.txsInfo.res.data.post.body.order,
+      await wallet.openapi.createListingNFT({
+        order: params.txsInfo.order,
         signature,
         chain_id: nftDetail.chain,
       });
@@ -656,23 +635,6 @@ export const Content: React.FC<Props> = (props) => {
       if (!hashes.length) {
         throw new Error('sign failed');
       }
-      // if (hashes.length > 1) {
-      //   const hash = hashes[0];
-      //   const txCompleted = await new Promise((resolve) => {
-      //     const handler = (res) => {
-      //       if (res?.hash === hash) {
-      //         eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-      //         resolve(res || {});
-      //       }
-      //     };
-      //     runCheckIsApproved().then((v) => {
-      //       if (v) {
-      //         resolve({});
-      //       }
-      //     });
-      //     eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
-      //   });
-      // }
 
       return {
         hashes,
@@ -999,6 +961,7 @@ export const Content: React.FC<Props> = (props) => {
                     type="number"
                     placeholder="0"
                     suffix={listingToken?.symbol}
+                    disabled={isSubmitting}
                   />
                 </td>
               </tr>
@@ -1027,6 +990,7 @@ export const Content: React.FC<Props> = (props) => {
                       ? `Your balance is ${nftDetail?.amount || 1}`
                       : undefined
                   }
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -1151,7 +1115,7 @@ export const Content: React.FC<Props> = (props) => {
                         creatorFeeEnable: v,
                       });
                     }}
-                    disabled={feesRate.isCustomRequired}
+                    disabled={feesRate.isCustomRequired || isSubmitting}
                   ></Switch>
                 )}
               </div>
@@ -1231,8 +1195,28 @@ export const Content: React.FC<Props> = (props) => {
               className="custom-select"
               options={options}
               suffixIcon={<RcIconArrowDownCC className="text-r-neutral-foot" />}
+              disabled={isSubmitting}
             ></Select>
-            {currentAccount ? (
+
+            <Button
+              type="primary"
+              size="large"
+              className="ml-[16px] min-w-[180px]"
+              onClick={handleListing}
+              loading={isSubmitting}
+              disabled={
+                !formValues.amount ||
+                !formValues.listingPrice ||
+                !formValues.duration
+              }
+            >
+              {isEdit
+                ? 'Edit Listing'
+                : isApproved
+                ? 'List on OpenSea'
+                : 'Approve and List'}
+            </Button>
+            {/* {currentAccount ? (
               <SignProcessButton
                 type="primary"
                 size="large"
@@ -1255,7 +1239,7 @@ export const Content: React.FC<Props> = (props) => {
                   ? 'List on OpenSea'
                   : 'Approve and List'}
               </SignProcessButton>
-            ) : null}
+            ) : null} */}
           </div>
         </footer>
       </div>

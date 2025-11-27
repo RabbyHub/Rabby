@@ -71,10 +71,12 @@ const Content: React.FC<Props> = (props) => {
   });
 
   const wallet = useWallet();
-  const canDirectSign = useMemo(
-    () => supportedDirectSign(currentAccount?.type || ''),
-    [currentAccount?.type]
-  );
+  // const canDirectSign = useMemo(
+  //   () => supportedDirectSign(currentAccount?.type || ''),
+  //   [currentAccount?.type]
+  // );
+
+  const canDirectSign = false;
 
   const chain = findChain({
     serverId: nftDetail?.chain,

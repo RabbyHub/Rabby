@@ -1,6 +1,8 @@
-import { PopupContainer } from '@/ui/hooks/usePopupContainer';
+import { IconOpenSea } from '@/ui/assets';
+import { RcIconFindCC } from '@/ui/assets/desktop/common';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
 import {
-  formatPrice,
   formatTokenAmount,
   formatUsdValue,
   isSameAddress,
@@ -8,10 +10,9 @@ import {
 } from '@/ui/utils';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { findChain } from '@/utils/chain';
-import { formatAmountWithDecimals } from '@debank/common';
+import { calcBestOfferPrice } from '@/utils/nft';
 import {
   CollectionList,
-  NFTCollection,
   NFTDetail,
   NFTItem,
 } from '@rabby-wallet/rabby-api/dist/types';
@@ -19,16 +20,11 @@ import { useRequest } from 'ahooks';
 import { Button, Modal, ModalProps, Skeleton, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
-import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
-import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import { IconOpenSea } from '@/ui/assets';
-import { RcIconFindCC, RcIconNftEmpty } from '@/ui/assets/desktop/common';
-import { calcBestOfferPrice } from '../utils';
+import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
 import { EndTime } from './EndTime';
+import IconDefaultNFT from '@/ui/assets/default-nft.svg';
 
 type Props = ModalProps & {
   nft?: NFTItem;
@@ -70,6 +66,7 @@ const Content: React.FC<Props> = (props) => {
     },
     {
       refreshDeps: [nft?.id, nft?.chain, currentAccount?.address],
+      ready: !!(nft?.chain && nftTradingConfig?.[nft?.chain]),
     }
   );
 
@@ -137,7 +134,15 @@ const Content: React.FC<Props> = (props) => {
               type={nft?.content_type}
               // amount={nft?.amount}
               content={nft?.content}
+              empty={
+                <div className="w-[340px] h-[340px] bg-r-neutral-line flex items-center justify-center rounded-[8px]">
+                  <div className="text-[40px] leading-[48px] font-semibold text-r-neutral-foot">
+                    NFT
+                  </div>
+                </div>
+              }
             />
+
             {nft?.amount && nft?.amount > 1 ? (
               <div
                 className={clsx(

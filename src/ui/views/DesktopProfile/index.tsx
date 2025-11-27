@@ -109,7 +109,13 @@ export const DesktopProfile = () => {
     history.replace(`/desktop/profile/${key}`);
   };
   const location = useLocation();
-  const action = new URLSearchParams(location.search).get('action');
+  const { action, sendPageType } = useMemo(() => {
+    const searchParams = new URLSearchParams(location.search);
+    return {
+      action: searchParams.get('action'),
+      sendPageType: searchParams.get('sendPageType'),
+    };
+  }, [location.search]);
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
   const dispatch = useRabbyDispatch();
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
@@ -164,8 +170,11 @@ export const DesktopProfile = () => {
       ) {
         history.replace(history.location.pathname);
       }
+      if (action === 'send' && sendPageType === 'sendNft') {
+        history.replace(history.location.pathname);
+      }
     }),
-    [currentAccount?.type]
+    [currentAccount?.type, currentAccount?.address]
   );
 
   useEventBusListener(EVENTS.DESKTOP.FOCUSED, () => {
