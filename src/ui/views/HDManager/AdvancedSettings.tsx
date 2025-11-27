@@ -312,7 +312,7 @@ export const AdvancedSettings: React.FC<Props> = ({
         ))}
       </>
     );
-  }, [keyring, hdPathType, HDPathTypeGroup, isOnChain]);
+  }, [keyring, hdPathType, isAvailable, HDPathTypeGroup, isOnChain]);
 
   return (
     <div className="AdvancedSettings widget-has-ant-input2">
