@@ -5810,6 +5810,7 @@ export class WalletController extends BaseController {
     quantity,
     creatorFee,
     acceptToken,
+    isIncludeCreatorFee,
   }: {
     address: string;
     chainId: number;
@@ -5822,6 +5823,7 @@ export class WalletController extends BaseController {
       recipient: string;
       fee: number;
     };
+    isIncludeCreatorFee?: boolean;
   }) => {
     const chain = findChain({
       id: chainId,
@@ -5836,6 +5838,7 @@ export class WalletController extends BaseController {
       collection_id: collectionId,
       inner_id: innerId,
       quantity,
+      include_optional_creator_fees: isIncludeCreatorFee,
     });
     const fulfillmentData = res.data;
     const transaction = fulfillmentData.fulfillment_data.transaction;

@@ -209,6 +209,7 @@ const Content: React.FC<Props> = (props) => {
         innerId: nftDetail?.inner_id,
         order: bestOffer,
         quantity: formValues.amount || 1,
+        isIncludeCreatorFee: formValues.creatorFeeEnable,
       });
 
       if (approveTx) {
@@ -222,6 +223,7 @@ const Content: React.FC<Props> = (props) => {
       refreshDeps: [
         bestOffer,
         formValues.amount,
+        formValues.creatorFeeEnable,
         nftDetail,
         currentAccount?.address,
         chain?.id,
@@ -513,8 +515,6 @@ const Content: React.FC<Props> = (props) => {
                         creatorFeeEnable: v,
                       });
                     }}
-                    // todo 计算 fee
-                    disabled
                   ></Switch>
                 )}
               </div>
