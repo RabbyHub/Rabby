@@ -15,6 +15,7 @@ import {
   CollectionList,
   NFTDetail,
   NFTItem,
+  NFTListingOrder,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
 import { Button, Modal, ModalProps, Skeleton, Tooltip } from 'antd';
@@ -25,15 +26,28 @@ import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.sv
 import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
 import { EndTime } from './EndTime';
 import IconDefaultNFT from '@/ui/assets/default-nft.svg';
+import { useNFTListingOrders } from '../hooks/useNFTListingOrders';
 
 type Props = ModalProps & {
   nft?: NFTItem;
   collection?: Omit<CollectionList, 'nft_list'>;
-  onCreateListing?: (nftDetail: NFTDetail) => void;
+  onCreateListing?: (args: {
+    nftDetail: NFTDetail;
+    listingOrders?: NFTListingOrder[];
+  }) => void;
   onSend?: () => void;
-  onAccept?: (nftDetail: NFTDetail) => void;
-  onCancelListing?: (nftDetail: NFTDetail) => void;
-  onEditListing?: (nftDetail: NFTDetail) => void;
+  onAccept?: (args: {
+    nftDetail: NFTDetail;
+    listingOrders?: NFTListingOrder[];
+  }) => void;
+  onCancelListing?: (args: {
+    nftDetail: NFTDetail;
+    listingOrders?: NFTListingOrder[];
+  }) => void;
+  onEditListing?: (args: {
+    nftDetail: NFTDetail;
+    listingOrders?: NFTListingOrder[];
+  }) => void;
 };
 
 const Content: React.FC<Props> = (props) => {
@@ -52,7 +66,11 @@ const Content: React.FC<Props> = (props) => {
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
 
-  const { data: nftDetail, loading, runAsync: runGetNFTDetail } = useRequest(
+  const {
+    data: nftDetail,
+    loading: isLoadingDetail,
+    runAsync: runGetNFTDetail,
+  } = useRequest(
     async () => {
       if (!nft?.id || !nft?.chain || !currentAccount) {
         return null;
@@ -70,6 +88,18 @@ const Content: React.FC<Props> = (props) => {
     }
   );
 
+  const {
+    data: listingOrdersRes,
+    loading: isLoadingListing,
+  } = useNFTListingOrders({
+    maker: currentAccount?.address,
+    chain_id: nftDetail?.chain,
+    collection_id: nftDetail?.contract_id,
+    inner_id: nftDetail?.inner_id,
+  });
+
+  const loading = isLoadingDetail || isLoadingListing;
+
   const offerToken = useTokenInfo(
     {
       address: currentAccount?.address,
@@ -84,17 +114,8 @@ const Content: React.FC<Props> = (props) => {
   );
 
   const listingOffer = useMemo(() => {
-    if (
-      nftDetail?.listing_order?.maker?.address &&
-      currentAccount?.address &&
-      isSameAddress(
-        nftDetail?.listing_order?.maker?.address,
-        currentAccount?.address
-      )
-    ) {
-      return nftDetail?.listing_order;
-    }
-  }, [nftDetail]);
+    return listingOrdersRes?.orders?.[0];
+  }, [listingOrdersRes]);
 
   const listingToken = useTokenInfo(
     {
@@ -120,7 +141,6 @@ const Content: React.FC<Props> = (props) => {
     return bestOfferPrice.times(offerToken.price);
   }, [offerToken, bestOfferPrice]);
 
-  console.log('nftDetail', nftDetail);
   return (
     <>
       <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
@@ -353,7 +373,6 @@ const Content: React.FC<Props> = (props) => {
                               +nftDetail.best_offer_order.protocol_data
                                 .parameters.endTime
                             }
-                            onEnd={runGetNFTDetail}
                           />
                         </div>
                         <div className="w-[0.5px] h-[10px] bg-r-neutral-line" />
@@ -379,7 +398,10 @@ const Content: React.FC<Props> = (props) => {
                           if (!nftDetail) {
                             return;
                           }
-                          onAccept?.(nftDetail);
+                          onAccept?.({
+                            nftDetail,
+                            listingOrders: listingOrdersRes?.orders,
+                          });
                         }}
                       >
                         Accept
@@ -461,20 +483,43 @@ const Content: React.FC<Props> = (props) => {
           <div className="mt-[24px] flex items-center gap-[12px] pl-[356px]">
             {listingOffer ? (
               <>
-                <Button
-                  block
-                  type="primary"
-                  className="rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
-                  disabled={!nftDetail || !collection?.is_tradable || loading}
-                  onClick={() => {
-                    if (!nftDetail) {
-                      return;
-                    }
-                    onEditListing?.(nftDetail);
-                  }}
-                >
-                  Edit Listing
-                </Button>
+                {nftDetail?.collection?.is_erc721 ? (
+                  <Button
+                    block
+                    type="primary"
+                    className="rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
+                    disabled={!nftDetail || !collection?.is_tradable || loading}
+                    onClick={() => {
+                      if (!nftDetail) {
+                        return;
+                      }
+                      onEditListing?.({
+                        nftDetail,
+                        listingOrders: listingOrdersRes?.orders,
+                      });
+                    }}
+                  >
+                    Edit Listing
+                  </Button>
+                ) : (
+                  <Button
+                    block
+                    type="primary"
+                    className="rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
+                    disabled={!nftDetail || !collection?.is_tradable || loading}
+                    onClick={() => {
+                      if (!nftDetail) {
+                        return;
+                      }
+                      onCreateListing?.({
+                        nftDetail,
+                        listingOrders: listingOrdersRes?.orders,
+                      });
+                    }}
+                  >
+                    List on OpenSea
+                  </Button>
+                )}
 
                 <Button
                   block
@@ -490,7 +535,10 @@ const Content: React.FC<Props> = (props) => {
                     if (!nftDetail) {
                       return;
                     }
-                    onCancelListing?.(nftDetail);
+                    onCancelListing?.({
+                      nftDetail,
+                      listingOrders: listingOrdersRes?.orders,
+                    });
                   }}
                 >
                   Cancel Listing
@@ -506,7 +554,10 @@ const Content: React.FC<Props> = (props) => {
                   if (!nftDetail) {
                     return;
                   }
-                  onCreateListing?.(nftDetail);
+                  onCreateListing?.({
+                    nftDetail,
+                    listingOrders: listingOrdersRes?.orders,
+                  });
                 }}
               >
                 List on OpenSea

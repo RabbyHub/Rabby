@@ -19,7 +19,11 @@ import {
   generateRandomSalt,
 } from '@/utils/nft';
 import { OPENSEA_CONDUIT_ADDRESS } from '@opensea/seaport-js/lib/constants';
-import { NFTDetail, Tx } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  NFTDetail,
+  NFTListingOrder,
+  Tx,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { useMemoizedFn, useRequest, useSetState } from 'ahooks';
 import {
   Button,
@@ -198,12 +202,13 @@ function findClosestOption(inputMs: number) {
 
 type Props = ModalProps & {
   nftDetail?: NFTDetail;
+  listingOrders?: NFTListingOrder[];
   isEdit?: boolean;
   onSigned?(p?: Promise<any>): void;
 };
 
 export const Content: React.FC<Props> = (props) => {
-  const { nftDetail, onSigned, isEdit, ...rest } = props;
+  const { nftDetail, onSigned, listingOrders, isEdit, ...rest } = props;
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
 
@@ -254,7 +259,7 @@ export const Content: React.FC<Props> = (props) => {
       if (!nftDetail?.chain || !nftDetail?.contract_id) {
         return null;
       }
-      const res = await wallet.openapi.getNFTCollectionFees({
+      const res = await wallet.openapi.getNFTFees({
         chain_id: nftDetail?.chain || '',
         collection_id: nftDetail?.contract_id || '',
         inner_id: nftDetail.inner_id,
@@ -302,7 +307,8 @@ export const Content: React.FC<Props> = (props) => {
   }, [fees, formValues.creatorFeeEnable]);
 
   const currentOrder = useMemo(() => {
-    if (!isEdit || !nftDetail?.listing_order || !fees || !listingToken) {
+    const listingOrder = listingOrders?.[0];
+    if (!isEdit || !listingOrder || !fees || !listingToken || !nftDetail) {
       return;
     }
     const creatorFeeReceiptList = fees.custom_royalties.map(
@@ -310,8 +316,8 @@ export const Content: React.FC<Props> = (props) => {
     );
 
     const consideration =
-      nftDetail.listing_order.protocol_data.parameters.consideration || [];
-    const offer = nftDetail.listing_order.protocol_data.parameters.offer || [];
+      listingOrder.protocol_data.parameters.consideration || [];
+    const offer = listingOrder.protocol_data.parameters.offer || [];
     const creatorFeeEnable = !creatorFeeReceiptList?.length
       ? false
       : !!consideration.find((item) => {
@@ -328,7 +334,7 @@ export const Content: React.FC<Props> = (props) => {
     }, new BigNumber(0));
 
     const duration =
-      +(nftDetail?.listing_order?.protocol_data.parameters.endTime || 0) -
+      +(listingOrder?.protocol_data.parameters.endTime || 0) -
       Date.now() / 1000;
 
     return {
@@ -339,7 +345,7 @@ export const Content: React.FC<Props> = (props) => {
       creatorFeeEnable,
       duration: findClosestOption(duration * 1000).value,
     };
-  }, [fees, nftDetail?.listing_order, listingToken, isEdit]);
+  }, [fees, listingOrders, nftDetail, listingToken, isEdit]);
 
   useEffect(() => {
     if (currentOrder) {
@@ -406,9 +412,9 @@ export const Content: React.FC<Props> = (props) => {
     return (
       isEdit &&
       currentOrder &&
-      !['amount', 'listingPrice', 'creatorFeeEnable'].every((key) => {
-        return currentOrder[key] === formValues[key];
-      })
+      (currentOrder.amount !== formValues.amount ||
+        currentOrder.listingPrice < (formValues.listingPrice || 0) ||
+        currentOrder.creatorFeeEnable !== formValues.creatorFeeEnable)
     );
   });
 
@@ -429,11 +435,11 @@ export const Content: React.FC<Props> = (props) => {
     const needCancelFirst = checkNeedCancelFirst();
 
     const tx = isApproved
-      ? needCancelFirst && nftDetail?.listing_order?.protocol_data?.parameters
+      ? needCancelFirst && listingOrders?.length
         ? await wallet.buildCancelNFTListTx({
             address: currentAccount?.address,
             chainId: chain?.id,
-            order: nftDetail?.listing_order?.protocol_data?.parameters,
+            orders: listingOrders.map((item) => item.protocol_data?.parameters),
           })
         : null
       : await wallet.buildSetApprovedForAllTx({

@@ -87,7 +87,7 @@ const Content: React.FC<Props> = (props) => {
       if (!nftDetail?.chain || !nftDetail?.contract_id) {
         return null;
       }
-      const res = await wallet.openapi.getNFTCollectionFees({
+      const res = await wallet.openapi.getNFTFees({
         chain_id: nftDetail?.chain || '',
         collection_id: nftDetail?.contract_id || '',
         inner_id: nftDetail.inner_id,

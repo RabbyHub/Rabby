@@ -6,6 +6,7 @@ import {
   CollectionList,
   NFTDetail,
   NFTItem,
+  NFTListingOrder,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
 import { message, Skeleton, Switch } from 'antd';
@@ -36,6 +37,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
       collection?: Omit<CollectionList, 'nft_list'>;
     } | null;
     nftDetail?: NFTDetail;
+    listingOrders?: NFTListingOrder[];
     detailModalVisible?: boolean;
     listingModalVisible?: boolean;
     cancelModalVisible?: boolean;
@@ -100,6 +102,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
     setState({
       current: null,
       nftDetail: undefined,
+      listingOrders: undefined,
       detailModalVisible: false,
       listingModalVisible: false,
       cancelModalVisible: false,
@@ -195,38 +198,42 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             current: null,
           });
         }}
-        onCreateListing={(nftDetail) => {
+        onCreateListing={({ nftDetail, listingOrders }) => {
           setState({
             detailModalVisible: false,
             current: null,
             nftDetail,
             listingModalVisible: true,
             isEditListing: false,
+            listingOrders,
           });
         }}
-        onEditListing={(nftDetail) => {
+        onEditListing={({ nftDetail, listingOrders }) => {
           setState({
             detailModalVisible: false,
             current: null,
             nftDetail,
             listingModalVisible: true,
             isEditListing: true,
+            listingOrders,
           });
         }}
-        onAccept={(nftDetail) => {
+        onAccept={({ nftDetail, listingOrders }) => {
           setState({
             detailModalVisible: false,
             current: null,
             nftDetail,
             acceptModalVisible: true,
+            listingOrders,
           });
         }}
-        onCancelListing={async (nftDetail) => {
+        onCancelListing={async ({ nftDetail, listingOrders }) => {
           setState({
             detailModalVisible: false,
             current: null,
             cancelModalVisible: true,
             nftDetail,
+            listingOrders,
           });
         }}
         nft={state.current?.nft}
@@ -247,6 +254,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
       <CancelListingModal
         visible={state.cancelModalVisible}
         nftDetail={state.nftDetail}
+        listingOrders={state.listingOrders}
         onCancel={() => {
           setState({
             nftDetail: undefined,
@@ -275,10 +283,12 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
       <CreateListingModal
         visible={state.listingModalVisible}
         nftDetail={state.nftDetail}
+        listingOrders={state.listingOrders}
         isEdit={state.isEditListing}
         onCancel={() => {
           setState({
             nftDetail: undefined,
+            listingOrders: undefined,
             listingModalVisible: false,
             isEditListing: false,
           });

@@ -1,7 +1,11 @@
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
-import { NFTDetail, Tx } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  NFTDetail,
+  NFTListingOrder,
+  Tx,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { Button, message, Modal, ModalProps } from 'antd';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
@@ -26,27 +30,19 @@ import { waitForTxCompleted } from '@/ui/utils/transaction';
 
 type Props = ModalProps & {
   nftDetail?: NFTDetail;
+  listingOrders?: NFTListingOrder[];
   onSigned?(p: Promise<any>): void;
 };
 
 const Content: React.FC<Props> = (props) => {
-  const { nftDetail, onSigned, ...rest } = props;
+  const { nftDetail, onSigned, listingOrders, ...rest } = props;
 
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
 
   const listingOffer = useMemo(() => {
-    if (
-      nftDetail?.listing_order?.maker?.address &&
-      currentAccount?.address &&
-      isSameAddress(
-        nftDetail?.listing_order?.maker?.address,
-        currentAccount?.address
-      )
-    ) {
-      return nftDetail?.listing_order;
-    }
-  }, [nftDetail]);
+    return listingOrders?.[0];
+  }, [listingOrders]);
 
   const listingToken = useTokenInfo(
     {
@@ -84,17 +80,18 @@ const Content: React.FC<Props> = (props) => {
 
   const { runAsync: handleSubmit, loading: isSubmitting } = useRequest(
     async () => {
-      if (
-        !currentAccount?.address ||
-        !chain?.id ||
-        !nftDetail?.listing_order?.protocol_data?.parameters
-      ) {
+      if (!currentAccount?.address || !chain?.id || !listingOrders?.length) {
         throw new Error('failed');
       }
       const tx = (await wallet.buildCancelNFTListTx({
         address: currentAccount?.address,
         chainId: chain?.id,
-        order: nftDetail?.listing_order?.protocol_data?.parameters,
+        // orders: nftDetail?.listing_order?.protocol_data?.parameters,
+        orders: nftDetail?.collection?.is_erc721
+          ? listingOrders.map((item) => item.protocol_data.parameters)
+          : listingOrders
+              .slice(0, 1)
+              .map((item) => item.protocol_data.parameters),
       })) as Tx;
       const txs = [tx];
 
