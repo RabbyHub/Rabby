@@ -28,6 +28,7 @@ import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.sv
 import { IconOpenSea } from '@/ui/assets';
 import { RcIconFindCC, RcIconNftEmpty } from '@/ui/assets/desktop/common';
 import { calcBestOfferPrice } from '../utils';
+import { EndTime } from './EndTime';
 
 type Props = ModalProps & {
   nft?: NFTItem;
@@ -55,7 +56,7 @@ const Content: React.FC<Props> = (props) => {
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
 
-  const { data: nftDetail, loading } = useRequest(
+  const { data: nftDetail, loading, runAsync: runGetNFTDetail } = useRequest(
     async () => {
       if (!nft?.id || !nft?.chain || !currentAccount) {
         return null;
@@ -342,12 +343,13 @@ const Content: React.FC<Props> = (props) => {
                       >
                         <div>
                           Ending:{' '}
-                          {dayjs
-                            .unix(
+                          <EndTime
+                            end={
                               +nftDetail.best_offer_order.protocol_data
                                 .parameters.endTime
-                            )
-                            .format('YYYY-MM-DD HH:mm')}{' '}
+                            }
+                            onEnd={runGetNFTDetail}
+                          />
                         </div>
                         <div className="w-[0.5px] h-[10px] bg-r-neutral-line" />
                         <div>Platform: </div>
@@ -442,10 +444,11 @@ const Content: React.FC<Props> = (props) => {
                   </div>
                 )}
                 <div className="ml-auto text-[15px] leading-[18px] text-r-neutral-foot">
-                  Ending in{' '}
-                  {dayjs
-                    .unix(+listingOffer.protocol_data.parameters.endTime)
-                    .format('YYYY-MM-DD HH:mm')}{' '}
+                  Ending:{' '}
+                  <EndTime
+                    onEnd={runGetNFTDetail}
+                    end={+listingOffer.protocol_data.parameters.endTime}
+                  />
                 </div>
               </div>
             </div>

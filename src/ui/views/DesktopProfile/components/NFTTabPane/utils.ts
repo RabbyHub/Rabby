@@ -71,8 +71,8 @@ export const buildCreateListingTypedData = (params: {
   tokenId: string;
   listingPriceInWei: string;
   sellerAddress: string;
-  marketFees: { recipient: string; fee: number }[];
-  royaltyFees?: { recipient: string; fee: number }[];
+  marketFees: { recipient: string; fee: number; required: boolean }[];
+  royaltyFees?: { recipient: string; fee: number; required: boolean }[];
   endTime: string;
   isErc721: boolean;
 }) => {
@@ -92,6 +92,7 @@ export const buildCreateListingTypedData = (params: {
 
   const priceWei = new BigNumber(listingPriceInWei);
   let totalFees = new BigNumber(0);
+  const isCreatorFeeEnforced = royaltyFees?.find((item) => item.required);
   const feeConsiderations = [...marketFees, ...(royaltyFees || [])].map(
     (item) => {
       const feeAmount = priceWei
@@ -142,18 +143,26 @@ export const buildCreateListingTypedData = (params: {
       },
       ...feeConsiderations,
     ],
-    zone: '0x0000000000000000000000000000000000000000',
+    zone: isCreatorFeeEnforced
+      ? '0x000056f7000000ece9003ca63978907a00ffd100'
+      : '0x0000000000000000000000000000000000000000',
     zoneHash:
       '0x0000000000000000000000000000000000000000000000000000000000000000',
     // todo
     counter: '0',
     offerer: sellerAddress,
-    orderType: nftAmount > 1 ? OrderType.PARTIAL_OPEN : OrderType.FULL_OPEN,
+    orderType: isCreatorFeeEnforced
+      ? nftAmount > 1
+        ? OrderType.PARTIAL_RESTRICTED
+        : OrderType.FULL_RESTRICTED
+      : nftAmount > 1
+      ? OrderType.PARTIAL_OPEN
+      : OrderType.FULL_OPEN,
     salt: generateRandomSalt(),
     conduitKey: OPENSEA_CONDUIT_KEY,
   };
 
-  return serializeTypedData({
+  const res = serializeTypedData({
     domain: {
       name: SEAPORT_CONTRACT_NAME,
       version: SEAPORT_CONTRACT_VERSION_V1_6,
@@ -184,4 +193,5 @@ export const buildCreateListingTypedData = (params: {
       ...EIP_712_ORDER_TYPE,
     },
   });
+  return JSON.parse(res);
 };

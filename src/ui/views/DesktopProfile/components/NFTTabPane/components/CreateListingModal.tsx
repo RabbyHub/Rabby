@@ -457,7 +457,7 @@ export const Content: React.FC<Props> = (props) => {
     const endTime = ((Date.now() + formValues.duration) / 1000).toFixed();
     console.log(endTime);
 
-    const typedData1 = buildCreateListingTypedData({
+    const typedData = buildCreateListingTypedData({
       chainId: chain.id,
       nftId: nftDetail.inner_id,
       nftAmount: formValues.amount,
@@ -475,8 +475,7 @@ export const Content: React.FC<Props> = (props) => {
           : [],
 
       endTime: endTime,
-      // todo fix any
-      isErc721: (nftDetail?.collection as any).is_erc721,
+      isErc721: !!nftDetail?.collection?.is_erc721,
     });
 
     const res = await wallet.openapi.prepareListingNFT({
@@ -501,7 +500,7 @@ export const Content: React.FC<Props> = (props) => {
 
     const sign = res.data.sign;
 
-    const typedData = {
+    const typedData1 = {
       domain: sign.domain,
       message: sign.value,
       primaryType: sign.primaryType,
