@@ -1386,7 +1386,11 @@ const GasSelectorHeader = ({
                   <div className="priority-slider-body">
                     <Input
                       onFocus={(e) => e.target.select()}
-                      value={maxPriorityFee}
+                      value={
+                        maxPriorityFee
+                          ? new BigNumber(maxPriorityFee).toFormat()
+                          : maxPriorityFee
+                      }
                       onChange={(e) =>
                         handleMaxPriorityFeeChange(e.target.value)
                       }
