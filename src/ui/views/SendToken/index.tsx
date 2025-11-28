@@ -1923,7 +1923,7 @@ const SendToken = () => {
         </PageHeader>
         <Form
           form={form}
-          className="send-token-form pt-[16px]"
+          className="send-token-form pt-[4px]"
           onFinish={handleSubmit}
           onValuesChange={handleFormValuesChange}
           initialValues={initialFormValues}
