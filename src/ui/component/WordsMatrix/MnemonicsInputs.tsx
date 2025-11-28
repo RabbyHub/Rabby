@@ -761,9 +761,7 @@ function MnemonicsInputs({
         >
           {invalidWords.length > 0 && (
             <div role="alert" className="mb-8">
-              {t('page.newAddress.seedPhrase.inputInvalidCount', {
-                count: invalidWords.length,
-              })}
+              {t('page.newAddress.seedPhrase.inputInvalid')}
             </div>
           )}
           {errMsgs?.[0] && <div role="alert">{errMsgs[0]}</div>}

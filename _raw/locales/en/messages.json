@@ -2029,7 +2029,8 @@
         "inputInvalidCount_one": "1 input do not conform to Seed Phrase norms, please check.",
         "inputInvalidCount_other": "{{count}} inputs do not conform to Seed Phrase norms, please check.",
         "passphrase": "Passphrase",
-        "showMoreOptions": "Show More Options"
+        "showMoreOptions": "Show More Options",
+        "inputInvalid": "Invalid words detected. Please review the highlighted ones."
       },
       "metamask": {
         "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
