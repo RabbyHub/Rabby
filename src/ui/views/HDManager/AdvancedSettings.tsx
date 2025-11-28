@@ -284,6 +284,21 @@ export const AdvancedSettings: React.FC<Props> = ({
     });
 
   const HDPathTypeGroupRender = React.useCallback(() => {
+    if (
+      keyring === KEYRING_CLASS.HARDWARE.KEYSTONE &&
+      !isAvailable &&
+      hdPathType
+    ) {
+      return (
+        <HDPathTypeButton
+          type={hdPathType}
+          onClick={setHDPathType}
+          isOnChain={isOnChain(hdPathType)}
+          selected={true}
+          key={hdPathType}
+        />
+      );
+    }
     return (
       <>
         {HDPathTypeGroup[keyring].map((type) => (
@@ -297,7 +312,7 @@ export const AdvancedSettings: React.FC<Props> = ({
         ))}
       </>
     );
-  }, [keyring, hdPathType, HDPathTypeGroup, isOnChain]);
+  }, [keyring, hdPathType, isAvailable, HDPathTypeGroup, isOnChain]);
 
   return (
     <div className="AdvancedSettings widget-has-ant-input2">
