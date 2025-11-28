@@ -22,10 +22,12 @@ import { NFTDetailModal } from './components/NFTDetailModal';
 import { ResultModal } from './components/ResultModal';
 import { useHistory } from 'react-router-dom';
 import { useListenTxReload } from '../../hooks/useListenTxReload';
+import { useTranslation } from 'react-i18next';
 
 export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
   selectChainId,
 }) => {
+  const { t } = useTranslation();
   const wallet = useWallet();
   const [isAll, setIsAll] = React.useState(false);
 
@@ -129,6 +131,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
                 'text-rb-neutral-InvertHighlight text-[12px] leading-[14px] font-medium'
               )}
             >
+              {t('page.desktopProfile.nft.all')}
               All ({list?.length || 0})
             </div>
           </div>
@@ -140,7 +143,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
               }}
             />
             <div className="text-rb-neutral-title-1 text-[14px] leading-[17px]">
-              Hide Low-Value NFTs
+              {t('page.desktopProfile.nft.hideLowValue')}
             </div>
           </label>
         </header>
@@ -184,7 +187,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             <div className="w-full py-[160px] flex flex-col items-center justify-center gap-[8px]">
               <ThemeIcon src={RcIconNftEmpty}></ThemeIcon>
               <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
-                No NFTs
+                {t('page.desktopProfile.nft.empty')}
               </div>
             </div>
           )}
@@ -268,12 +271,14 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             resultState: {
               status: 'pending',
               successMessage: {
-                title: 'Just Canceled!',
-                desc: `You've canceled listing ${state.nftDetail?.name} on OpenSea`,
+                title: t('page.desktopProfile.nft.message.cancelSuccess'),
+                desc: t('page.desktopProfile.nft.message.cancelSuccessDesc', {
+                  name: state.nftDetail?.name,
+                }),
               },
               errorMessage: {
-                title: 'Failed!',
-                desc: 'Please try again',
+                title: t('page.desktopProfile.nft.message.cancelFailed'),
+                desc: t('page.desktopProfile.nft.message.cancelFailedDesc'),
               },
               pendingPromise: promise,
             },
@@ -300,12 +305,14 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             resultState: {
               status: 'pending',
               successMessage: {
-                title: 'Just listed!',
-                desc: `You've listed ${state.nftDetail?.name} on OpenSea`,
+                title: t('page.desktopProfile.nft.message.listingSuccess'),
+                desc: t('page.desktopProfile.nft.message.listingSuccessDesc', {
+                  name: state.nftDetail?.name,
+                }),
               },
               errorMessage: {
-                title: 'Listing Failed',
-                desc: 'Please try again.',
+                title: t('page.desktopProfile.nft.message.listingFailed'),
+                desc: t('page.desktopProfile.nft.message.listingFailedDesc'),
               },
               pendingPromise: promise,
             },
@@ -340,12 +347,14 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             resultModalVisible: true,
             resultState: {
               successMessage: {
-                title: 'Sold Successfully',
-                desc: `You’ve successfully sold ${state.nftDetail?.name}`,
+                title: t('page.desktopProfile.nft.message.acceptSuccess'),
+                desc: t('page.desktopProfile.nft.message.acceptSuccessDesc', {
+                  name: state.nftDetail?.name,
+                }),
               },
               errorMessage: {
-                title: 'Sale Failed',
-                desc: 'Please try again',
+                title: t('page.desktopProfile.nft.message.acceptFailed'),
+                desc: t('page.desktopProfile.nft.message.acceptFailedDesc'),
               },
               status: 'pending',
               pendingPromise: p,

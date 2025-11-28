@@ -27,6 +27,7 @@ import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManage
 import { IconOpenSea } from '@/ui/assets';
 import { last } from 'lodash';
 import { waitForTxCompleted } from '@/ui/utils/transaction';
+import { useTranslation } from 'react-i18next';
 
 type Props = ModalProps & {
   nftDetail?: NFTDetail;
@@ -162,19 +163,20 @@ const Content: React.FC<Props> = (props) => {
       },
     }
   );
+  const { t } = useTranslation();
 
   return (
     <>
       <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
-        Cancel Listing
+        {t('page.desktopProfile.nft.cancelModal.title')}
       </h1>
       <div className="px-[20px] pb-[24px] pt-[12px]">
         <div className="flex items-center justify-between">
           <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
-            {listingOffer?.remaining_quantity} Listing
+            {t('page.desktopProfile.nft.cancelModal.listing')}
           </div>
           <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
-            Listing Price
+            {t('page.desktopProfile.nft.cancelModal.listingPrice')}
           </div>
         </div>
         <div className="flex items-center gap-[10px] pt-[12px] pb-[24px]">
@@ -249,7 +251,7 @@ const Content: React.FC<Props> = (props) => {
             onClick={handleSubmit}
             loading={isSubmitting}
           >
-            Cancel listing
+            {t('page.desktopProfile.nft.cancelModal.cancelListing')}
           </Button>
         </footer>
       </div>

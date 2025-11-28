@@ -6,6 +6,7 @@ import { useRequest } from 'ahooks';
 import { Button, Modal, ModalProps } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 
 type Props = ModalProps & {
@@ -32,6 +33,7 @@ const Content: React.FC<Props> = (props) => {
   } = props;
 
   const [status, setStatus] = useState(_status);
+  const { t } = useTranslation();
 
   useRequest(
     async () => {
@@ -68,7 +70,7 @@ const Content: React.FC<Props> = (props) => {
           ) : null}
           {status === 'pending' ? (
             <div className="text-[20px] leading-[24px] font-medium text-r-orange-default">
-              Pending
+              {t('page.desktopProfile.nft.pending')}
             </div>
           ) : status === 'success' ? (
             <div className="text-[20px] leading-[24px] font-medium">
@@ -82,7 +84,7 @@ const Content: React.FC<Props> = (props) => {
         </div>
         {status === 'pending' ? (
           <div className="text-[13] leading-[16px] text-r-neutral-body font-medium text-center">
-            Confirming your transaction
+            {t('page.desktopProfile.nft.confirmingTx')}
           </div>
         ) : status === 'success' ? (
           <div className="text-[13] leading-[16px] text-r-neutral-body font-medium text-center">
@@ -104,7 +106,7 @@ const Content: React.FC<Props> = (props) => {
             )}
             onClick={props.onCancel}
           >
-            Close
+            {t('global.closeButton')}
           </div>
         ) : (
           <Button
@@ -112,7 +114,7 @@ const Content: React.FC<Props> = (props) => {
             className="w-[280px] h-[44px] rounded-[6px] text-[15px] leading-[18px] font-medium"
             onClick={props.onCancel}
           >
-            OK
+            {t('global.ok')}
           </Button>
         )}
       </footer>
