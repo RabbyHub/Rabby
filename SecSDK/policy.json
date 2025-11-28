@@ -19896,7 +19896,7 @@
     "node_modules/@rabby-wallet/eth-trezor-keyring/dist/trezor-bridge.js": {
         "dependency": [
             "node_modules/@rabby-wallet/eth-trezor-keyring/dist/trezor-bridge.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/index.js",
+            "node_modules/@trezor/connect-web/lib/index.js",
             "node_modules/events/events.js"
         ],
         "global": {
@@ -21552,56 +21552,6 @@
         },
         "enable": true
     },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-common/lib/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-common/lib/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-common/lib/messageChannel/abstract.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-common/lib/storage.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-common/lib/systemInfo.js",
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-common/lib/messageChannel/abstract.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/index.js",
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r",
-            "setTimeout": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-common/lib/storage.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/index.js"
-        ],
-        "global": {
-            "console": "r",
-            "exports": "r",
-            "global": "r",
-            "localStorage": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-common/lib/systemInfo.js": {
-        "dependency": [
-            "node_modules/@trezor/env-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "navigator": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
     "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-plugin-ethereum/lib/index.js": {
         "dependency": [
             "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/dist/index.js",
@@ -21611,969 +21561,6 @@
         "global": {
             "exports": "r",
             "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/channels/serviceworker-window.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-common/lib/index.js"
-        ],
-        "global": {
-            "chrome": "r",
-            "exports": "r",
-            "origin": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/channels/window-window.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-common/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/connectSettings.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/connectSettings.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/data/connectSettings.js"
-        ],
-        "global": {
-            "URLSearchParams": "r",
-            "__TREZOR_CONNECT_SRC": "r",
-            "chrome": "r",
-            "exports": "r",
-            "global": "r",
-            "location": "r",
-            "navigator": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/iframe/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/iframe/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/iframe/inlineStyles.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/errors.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/utils/debug.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/utils/urlUtils.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/index.js",
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "btoa": "r",
-            "chrome": "r",
-            "clearTimeout": "r",
-            "console": "r",
-            "document": "r",
-            "exports": "r",
-            "navigator": "r",
-            "require": "r",
-            "setTimeout": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/iframe/inlineStyles.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/connectSettings.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/iframe/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/popup/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/webusb/button.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/errors.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/data/config.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/exports.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/factory.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/utils/debug.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/index.js",
-            "node_modules/events/events.js",
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "addEventListener": "r",
-            "exports": "r",
-            "navigator": "r",
-            "removeEventListener": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/popup/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/channels/serviceworker-window.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/channels/window-window.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/popup/showPopupRequest.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/utils/urlUtils.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/index.js",
-            "node_modules/events/events.js",
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "chrome": "r",
-            "clearInterval": "r",
-            "clearTimeout": "r",
-            "exports": "r",
-            "open": "r",
-            "require": "r",
-            "setInterval": "r",
-            "setTimeout": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/popup/showPopupRequest.js": {
-        "dependency": [],
-        "global": {
-            "document": "r",
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect-web/lib/webusb/button.js": {
-        "dependency": [],
-        "global": {
-            "document": "r",
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/cardano.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/errors.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/errors.js"
-        ],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/cardano.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/errors.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/nem.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/network.js",
-            "node_modules/@trezor/protobuf/lib/index.js",
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/nem.js": {
-        "dependency": [
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/network.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/data/config.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/transport/lib/constants.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/data/connectSettings.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/data/connectSettings.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/data/version.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/data/version.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/data/version.js"
-        ],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/blockchain.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/blockchain.js"
-        ],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/call.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/errors.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/call.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/core.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/device.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/device.js"
-        ],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/iframe.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/ui-request.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/blockchain.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/call.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/core.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/device.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/iframe.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/popup.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/transport.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/ui-promise.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/ui-request.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/ui-response.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/webextension.js",
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/popup.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/ui-request.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/transport.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/errors.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/transport.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/transport/lib/constants.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/ui-promise.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/ui-request.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/ui-request.js"
-        ],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/ui-response.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/ui-request.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/webextension.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/exports.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/data/connectSettings.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/exports.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/index.js",
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/factory.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/events/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/account.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/binance/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/binance/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js",
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/bitcoin/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js",
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/cardano/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/cardano/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js",
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/eos/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/eos/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js",
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/ethereum/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/ethereum/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js",
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/index.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/ripple/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/ripple/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js",
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/solana/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/solana/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js",
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/stellar/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/constants/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/stellar/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js",
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/tezos/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/tezos/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js",
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/coinInfo.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/coinInfo.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/fees.js",
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/device.js": {
-        "dependency": [
-            "node_modules/@trezor/protobuf/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/fees.js": {
-        "dependency": [
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/firmware.js": {
-        "dependency": [
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/account.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/binance/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/bitcoin/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/cardano/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/eos/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/ethereum/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/ripple/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/solana/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/stellar/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/api/tezos/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/coinInfo.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/device.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/fees.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/firmware.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/settings.js",
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/params.js",
-            "node_modules/@trezor/schema-utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/types/settings.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/utils/debug.js": {
-        "dependency": [],
-        "global": {
-            "console": "r",
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/connect/lib/utils/urlUtils.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/index.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/transport/lib/constants.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/addDashesToSpaces.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/arrayDistinct.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/arrayPartition.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/arrayShuffle.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/arrayToDictionary.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/bufferUtils.js": {
-        "dependency": [
-            "node_modules/buffer/index.js"
-        ],
-        "global": {
-            "Buffer": "r",
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/bytesToHumanReadable.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/capitalizeFirstLetter.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/cloneObject.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/countBytesInString.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/createCooldown.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/createDeferred.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/createDeferredManager.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/createDeferred.js"
-        ],
-        "global": {
-            "clearTimeout": "r",
-            "exports": "r",
-            "require": "r",
-            "setTimeout": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/createTimeoutPromise.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r",
-            "setTimeout": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/enumUtils.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/getLocaleSeparators.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/getNumberFromPixelString.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/getRandomNumberInRange.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/getSynchronize.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/getWeakRandomId.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/hasUppercaseLetter.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/addDashesToSpaces.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/arrayDistinct.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/arrayPartition.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/arrayShuffle.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/arrayToDictionary.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/bufferUtils.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/bytesToHumanReadable.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/capitalizeFirstLetter.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/cloneObject.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/countBytesInString.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/createCooldown.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/createDeferred.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/createDeferredManager.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/createTimeoutPromise.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/enumUtils.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/getLocaleSeparators.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/getNumberFromPixelString.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/getRandomNumberInRange.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/getSynchronize.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/getWeakRandomId.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/hasUppercaseLetter.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/index.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/isAscii.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/isHex.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/isNotUndefined.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/isUrl.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/mergeDeepObject.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/objectPartition.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/parseElectrumUrl.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/parseHostname.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/promiseAllSequence.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/redactUserPath.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/scheduleAction.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/splitStringEveryNCharacters.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/throwError.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/topologicalSort.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/truncateMiddle.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/typedEventEmitter.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/urlToOnion.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/versionUtils.js",
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/xssFilters.js",
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/isAscii.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/isHex.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/isNotUndefined.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/isUrl.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/mergeDeepObject.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/mergeDeepObject.js"
-        ],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/objectPartition.js": {
-        "dependency": [
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/parseElectrumUrl.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/parseHostname.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/promiseAllSequence.js": {
-        "dependency": [
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/redactUserPath.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/redactUserPath.js"
-        ],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/scheduleAction.js": {
-        "dependency": [
-            "node_modules/tslib/tslib.es6.js"
-        ],
-        "global": {
-            "AbortController": "r",
-            "clearTimeout": "r",
-            "exports": "r",
-            "require": "r",
-            "setTimeout": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/splitStringEveryNCharacters.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/throwError.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/topologicalSort.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/arrayPartition.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/truncateMiddle.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/typedEventEmitter.js": {
-        "dependency": [
-            "node_modules/events/events.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/urlToOnion.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/versionUtils.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/versionUtils.js"
-        ],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@trezor/utils/lib/xssFilters.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
         },
         "enable": true
     },
@@ -25067,347 +24054,6 @@
             "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/semver/internal/constants.js",
             "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/semver/internal/debug.js",
             "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/semver/internal/re.js"
-        ],
-        "global": {
-            "exports": "rw",
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/accessors.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.0.0/gnosis_safe.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.0.0/proxy_factory.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/default_callback_handler.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/gnosis_safe.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/multi_send.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/proxy_factory.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.2.0/gnosis_safe.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/create_call.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/multi_send.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/proxy_factory.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/simulate_tx_accessor.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/compatibility_fallback_handler.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/create_call.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/multi_send.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/multi_send_call_only.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_l2.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_migration.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_proxy_factory.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_to_l2_migration.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_to_l2_setup.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/sign_message_lib.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/simulate_tx_accessor.json",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/factories.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/handler.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/handler.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/index.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/accessors.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/factories.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/handler.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/index.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/libs.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/safes.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/types.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/libs.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/safes.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/types.js": {
-        "dependency": [],
-        "global": {
-            "exports": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/satisfies.js"
-        ],
-        "global": {
-            "exports": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/comparator.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/comparator.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/range.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/cmp.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/range.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/comparator.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/range.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/lrucache.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/identifiers.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/cmp.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/cmp.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/eq.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gt.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gte.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lt.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lte.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/neq.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/eq.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/eq.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gt.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gt.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gte.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gte.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lt.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lt.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lte.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lte.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/neq.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/neq.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/satisfies.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/range.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/satisfies.js"
-        ],
-        "global": {
-            "module": "r",
-            "require": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js"
-        ],
-        "global": {
-            "module": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
-            "node_modules/process/browser.js"
-        ],
-        "global": {
-            "console": "r",
-            "module": "r",
-            "process": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/identifiers.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/identifiers.js"
-        ],
-        "global": {
-            "module": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/lrucache.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/lrucache.js"
-        ],
-        "global": {
-            "module": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js"
-        ],
-        "global": {
-            "module": "r"
-        },
-        "enable": true
-    },
-    "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js": {
-        "dependency": [
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
-            "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js"
         ],
         "global": {
             "exports": "rw",
@@ -49377,6 +48023,347 @@
         },
         "enable": true
     },
+    "node_modules/@safe-global/safe-deployments/dist/accessors.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/dist/deployments.js",
+            "node_modules/@safe-global/safe-deployments/dist/utils.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/dist/deployments.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.0.0/gnosis_safe.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.0.0/proxy_factory.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/default_callback_handler.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/gnosis_safe.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/multi_send.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/proxy_factory.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.2.0/gnosis_safe.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/create_call.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/multi_send.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/proxy_factory.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/simulate_tx_accessor.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/compatibility_fallback_handler.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/create_call.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/multi_send.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/multi_send_call_only.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_l2.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_migration.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_proxy_factory.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_to_l2_migration.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_to_l2_setup.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/sign_message_lib.json",
+            "node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/simulate_tx_accessor.json",
+            "node_modules/@safe-global/safe-deployments/dist/deployments.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/dist/factories.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/dist/deployments.js",
+            "node_modules/@safe-global/safe-deployments/dist/utils.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/dist/handler.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/dist/deployments.js",
+            "node_modules/@safe-global/safe-deployments/dist/handler.js",
+            "node_modules/@safe-global/safe-deployments/dist/utils.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/dist/index.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/dist/accessors.js",
+            "node_modules/@safe-global/safe-deployments/dist/factories.js",
+            "node_modules/@safe-global/safe-deployments/dist/handler.js",
+            "node_modules/@safe-global/safe-deployments/dist/index.js",
+            "node_modules/@safe-global/safe-deployments/dist/libs.js",
+            "node_modules/@safe-global/safe-deployments/dist/safes.js",
+            "node_modules/@safe-global/safe-deployments/dist/types.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/dist/libs.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/dist/deployments.js",
+            "node_modules/@safe-global/safe-deployments/dist/utils.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/dist/safes.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/dist/deployments.js",
+            "node_modules/@safe-global/safe-deployments/dist/utils.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/dist/types.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/dist/utils.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/dist/utils.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/satisfies.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/comparator.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/comparator.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/range.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/cmp.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/range.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/comparator.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/range.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/lrucache.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/identifiers.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/cmp.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/cmp.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/eq.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gt.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gte.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lt.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lte.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/neq.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/eq.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/eq.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gt.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gt.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gte.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gte.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lt.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lt.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lte.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lte.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/neq.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/neq.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/satisfies.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/classes/range.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/functions/satisfies.js"
+        ],
+        "global": {
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js"
+        ],
+        "global": {
+            "module": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
+            "node_modules/process/browser.js"
+        ],
+        "global": {
+            "console": "r",
+            "module": "r",
+            "process": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/identifiers.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/identifiers.js"
+        ],
+        "global": {
+            "module": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/lrucache.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/lrucache.js"
+        ],
+        "global": {
+            "module": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js"
+        ],
+        "global": {
+            "module": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js": {
+        "dependency": [
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
+            "node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js"
+        ],
+        "global": {
+            "exports": "rw",
+            "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
     "node_modules/@safe-global/safe-modules-deployments/dist/allowance-module.js": {
         "dependency": [
             "node_modules/@safe-global/safe-modules-deployments/dist/allowance-module.js",
@@ -50867,6 +49854,1000 @@
         },
         "enable": true
     },
+    "node_modules/@trezor/connect-common/lib/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect-common/lib/index.js",
+            "node_modules/@trezor/connect-common/lib/map-releases.js",
+            "node_modules/@trezor/connect-common/lib/messageChannel/abstract.js",
+            "node_modules/@trezor/connect-common/lib/storage.js",
+            "node_modules/@trezor/connect-common/lib/systemInfo.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-common/lib/map-releases.js": {
+        "dependency": [
+            "node_modules/@trezor/connect-common/files/firmware/release/releases.v1.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.10.0-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.10.1-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.10.2-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.10.3-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.10.4-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.10.5-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.11.1-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.11.2-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.12.1-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.13.0-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.13.1-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.8.3-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.9.0-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.9.1-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.9.2-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.9.3-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/bitcoinonly/t1b1-1.9.4-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.10.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.10.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.10.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.10.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.10.4-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.10.5-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.11.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.11.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.12.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.13.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.13.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.3.6-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.4.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.4.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.4.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.5.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.5.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.5.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.6.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.6.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.6.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.6.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.7.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.7.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.7.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.8.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.8.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.8.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.8.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.9.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.9.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.9.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.9.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t1b1/universal/t1b1-1.9.4-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/bitcoinonly/t2b1-2.6.3-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/bitcoinonly/t2b1-2.6.4-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/bitcoinonly/t2b1-2.7.0-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/bitcoinonly/t2b1-2.7.2-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/bitcoinonly/t2b1-2.8.0-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/bitcoinonly/t2b1-2.8.10-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/bitcoinonly/t2b1-2.8.7-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/bitcoinonly/t2b1-2.8.9-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/universal/t2b1-2.6.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/universal/t2b1-2.6.4-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/universal/t2b1-2.7.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/universal/t2b1-2.7.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/universal/t2b1-2.8.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/universal/t2b1-2.8.10-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/universal/t2b1-2.8.7-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2b1/universal/t2b1-2.8.9-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.1.5-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.1.6-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.1.7-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.1.8-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.3.0-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.3.1-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.3.2-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.3.3-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.3.4-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.3.5-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.3.6-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.4.0-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.4.1-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.4.2-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.4.3-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.5.1-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.5.2-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.5.3-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.6.0-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.6.3-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.6.4-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.7.0-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.7.2-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.8.1-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.8.10-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.8.7-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.8.8-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/bitcoinonly/t2t1-2.8.9-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.0.10-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.0.5-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.0.6-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.0.7-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.0.8-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.0.9-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.1.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.1.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.1.4-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.1.5-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.1.6-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.1.7-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.1.8-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.3.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.3.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.3.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.3.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.3.4-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.3.5-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.3.6-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.4.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.4.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.4.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.4.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.5.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.5.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.5.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.6.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.6.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.6.4-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.7.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.7.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.8.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.8.10-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.8.7-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.8.8-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t2t1/universal/t2t1-2.8.9-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3b1/bitcoinonly/t3b1-2.8.10-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3b1/bitcoinonly/t3b1-2.8.3-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3b1/bitcoinonly/t3b1-2.8.7-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3b1/bitcoinonly/t3b1-2.8.9-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3b1/universal/t3b1-2.8.10-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3b1/universal/t3b1-2.8.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3b1/universal/t3b1-2.8.7-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3b1/universal/t3b1-2.8.9-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/bitcoinonly/t3t1-2.7.2-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/bitcoinonly/t3t1-2.8.0-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/bitcoinonly/t3t1-2.8.1-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/bitcoinonly/t3t1-2.8.10-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/bitcoinonly/t3t1-2.8.3-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/bitcoinonly/t3t1-2.8.7-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/bitcoinonly/t3t1-2.8.9-bitcoinonly.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/universal/t3t1-2.7.2-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/universal/t3t1-2.8.0-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/universal/t3t1-2.8.1-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/universal/t3t1-2.8.10-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/universal/t3t1-2.8.3-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/universal/t3t1-2.8.7-universal.json",
+            "node_modules/@trezor/connect-common/files/firmware/t3t1/universal/t3t1-2.8.9-universal.json"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-common/lib/messageChannel/abstract.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r",
+            "setTimeout": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-common/lib/storage.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/index.js"
+        ],
+        "global": {
+            "console": "r",
+            "exports": "r",
+            "global": "r",
+            "localStorage": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-common/lib/systemInfo.js": {
+        "dependency": [
+            "node_modules/@trezor/env-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "navigator": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/channels/serviceworker-window.js": {
+        "dependency": [
+            "node_modules/@trezor/connect-common/lib/index.js"
+        ],
+        "global": {
+            "chrome": "r",
+            "exports": "r",
+            "origin": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/channels/window-window.js": {
+        "dependency": [
+            "node_modules/@trezor/connect-common/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/connectSettings.js": {
+        "dependency": [
+            "node_modules/@trezor/connect-web/lib/connectSettings.js",
+            "node_modules/@trezor/connect/lib/data/connectSettings.js"
+        ],
+        "global": {
+            "__TREZOR_CONNECT_SRC": "r",
+            "chrome": "r",
+            "exports": "r",
+            "global": "r",
+            "navigator": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/iframe/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect-web/lib/iframe/index.js",
+            "node_modules/@trezor/connect-web/lib/iframe/inlineStyles.js",
+            "node_modules/@trezor/connect/lib/constants/errors.js",
+            "node_modules/@trezor/connect/lib/events/index.js",
+            "node_modules/@trezor/connect/lib/utils/debug.js",
+            "node_modules/@trezor/connect/lib/utils/urlUtils.js",
+            "node_modules/@trezor/utils/lib/index.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "btoa": "r",
+            "chrome": "r",
+            "clearTimeout": "r",
+            "document": "r",
+            "exports": "r",
+            "navigator": "r",
+            "require": "r",
+            "setTimeout": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/iframe/inlineStyles.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/impl/core-in-iframe.js": {
+        "dependency": [
+            "node_modules/@trezor/connect-web/lib/connectSettings.js",
+            "node_modules/@trezor/connect-web/lib/iframe/index.js",
+            "node_modules/@trezor/connect-web/lib/popup/index.js",
+            "node_modules/@trezor/connect-web/lib/webusb/button.js",
+            "node_modules/@trezor/connect/lib/constants/errors.js",
+            "node_modules/@trezor/connect/lib/data/config.js",
+            "node_modules/@trezor/connect/lib/events/index.js",
+            "node_modules/@trezor/connect/lib/factory.js",
+            "node_modules/@trezor/connect/lib/utils/debug.js",
+            "node_modules/@trezor/utils/lib/createDeferredManager.js",
+            "node_modules/events/events.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "addEventListener": "r",
+            "exports": "r",
+            "navigator": "r",
+            "removeEventListener": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/impl/core-in-popup.js": {
+        "dependency": [
+            "node_modules/@trezor/connect-web/lib/connectSettings.js",
+            "node_modules/@trezor/connect-web/lib/popup/index.js",
+            "node_modules/@trezor/connect/lib/constants/errors.js",
+            "node_modules/@trezor/connect/lib/events/index.js",
+            "node_modules/@trezor/connect/lib/factory.js",
+            "node_modules/@trezor/connect/lib/utils/debug.js",
+            "node_modules/@trezor/utils/lib/index.js",
+            "node_modules/events/events.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "exports": "r",
+            "location": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/impl/core-in-suite-desktop.js": {
+        "dependency": [
+            "node_modules/@trezor/connect-web/lib/connectSettings.js",
+            "node_modules/@trezor/connect/lib/constants/errors.js",
+            "node_modules/@trezor/connect/lib/events/index.js",
+            "node_modules/@trezor/connect/lib/factory.js",
+            "node_modules/@trezor/websocket-client/lib/client.js",
+            "node_modules/@trezor/websocket-client/lib/index.js",
+            "node_modules/events/events.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect-web/lib/connectSettings.js",
+            "node_modules/@trezor/connect-web/lib/impl/core-in-iframe.js",
+            "node_modules/@trezor/connect-web/lib/impl/core-in-popup.js",
+            "node_modules/@trezor/connect-web/lib/impl/core-in-suite-desktop.js",
+            "node_modules/@trezor/connect-web/lib/index.js",
+            "node_modules/@trezor/connect/lib/exports.js",
+            "node_modules/@trezor/connect/lib/factory.js",
+            "node_modules/@trezor/connect/lib/impl/dynamic.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "console": "r",
+            "exports": "r",
+            "navigator": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/popup/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect-web/lib/channels/serviceworker-window.js",
+            "node_modules/@trezor/connect-web/lib/channels/window-window.js",
+            "node_modules/@trezor/connect-web/lib/popup/showPopupRequest.js",
+            "node_modules/@trezor/connect/lib/data/version.js",
+            "node_modules/@trezor/connect/lib/events/index.js",
+            "node_modules/@trezor/connect/lib/utils/urlUtils.js",
+            "node_modules/@trezor/utils/lib/index.js",
+            "node_modules/events/events.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "URLSearchParams": "r",
+            "chrome": "r",
+            "clearInterval": "r",
+            "clearTimeout": "r",
+            "console": "r",
+            "exports": "r",
+            "open": "r",
+            "require": "r",
+            "setInterval": "r",
+            "setTimeout": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/popup/showPopupRequest.js": {
+        "dependency": [],
+        "global": {
+            "document": "r",
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect-web/lib/webusb/button.js": {
+        "dependency": [],
+        "global": {
+            "document": "r",
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/constants/cardano.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/constants/errors.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/constants/errors.js"
+        ],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/constants/firmware.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/constants/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/constants/cardano.js",
+            "node_modules/@trezor/connect/lib/constants/errors.js",
+            "node_modules/@trezor/connect/lib/constants/firmware.js",
+            "node_modules/@trezor/connect/lib/constants/nem.js",
+            "node_modules/@trezor/connect/lib/constants/network.js",
+            "node_modules/@trezor/connect/lib/constants/utxo.js",
+            "node_modules/@trezor/protobuf/lib/index.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/constants/nem.js": {
+        "dependency": [
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/constants/network.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/constants/utxo.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/data/config.js": {
+        "dependency": [
+            "node_modules/@trezor/transport/lib/constants.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/data/connectSettings.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/data/connectSettings.js",
+            "node_modules/@trezor/connect/lib/data/thpSettings.js",
+            "node_modules/@trezor/connect/lib/data/version.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/data/thpSettings.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/data/transportInfo.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/data/udevInfo.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/data/version.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/data/version.js"
+        ],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/blockchain.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/events/blockchain.js"
+        ],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/call.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/constants/errors.js",
+            "node_modules/@trezor/connect/lib/events/call.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/core.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/device.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/events/device.js",
+            "node_modules/@trezor/protocol/lib/protocol-tpn/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/iframe.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/events/ui-request.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/events/blockchain.js",
+            "node_modules/@trezor/connect/lib/events/call.js",
+            "node_modules/@trezor/connect/lib/events/core.js",
+            "node_modules/@trezor/connect/lib/events/device.js",
+            "node_modules/@trezor/connect/lib/events/iframe.js",
+            "node_modules/@trezor/connect/lib/events/index.js",
+            "node_modules/@trezor/connect/lib/events/popup.js",
+            "node_modules/@trezor/connect/lib/events/transport.js",
+            "node_modules/@trezor/connect/lib/events/ui-promise.js",
+            "node_modules/@trezor/connect/lib/events/ui-request.js",
+            "node_modules/@trezor/connect/lib/events/ui-response.js",
+            "node_modules/@trezor/connect/lib/events/webextension.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/popup.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/events/ui-request.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/transport.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/constants/errors.js",
+            "node_modules/@trezor/connect/lib/data/transportInfo.js",
+            "node_modules/@trezor/connect/lib/data/udevInfo.js",
+            "node_modules/@trezor/connect/lib/events/transport.js",
+            "node_modules/@trezor/transport/lib/constants.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/ui-promise.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/ui-request.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/events/ui-request.js"
+        ],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/ui-response.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/events/ui-request.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/events/webextension.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/exports.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/constants/index.js",
+            "node_modules/@trezor/connect/lib/data/connectSettings.js",
+            "node_modules/@trezor/connect/lib/events/index.js",
+            "node_modules/@trezor/connect/lib/exports.js",
+            "node_modules/@trezor/connect/lib/types/index.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/factory.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/events/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/impl/dynamic.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/constants/index.js",
+            "node_modules/@trezor/connect/lib/events/index.js",
+            "node_modules/@trezor/connect/lib/utils/proxy-event-emitter.js",
+            "node_modules/@trezor/utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/account.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/api/bitcoin/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/types/params.js",
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/api/cardano/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/constants/index.js",
+            "node_modules/@trezor/connect/lib/types/api/cardano/index.js",
+            "node_modules/@trezor/connect/lib/types/params.js",
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/api/eos/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/constants/index.js",
+            "node_modules/@trezor/connect/lib/types/api/eos/index.js",
+            "node_modules/@trezor/connect/lib/types/params.js",
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/api/ethereum/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/constants/index.js",
+            "node_modules/@trezor/connect/lib/types/api/ethereum/index.js",
+            "node_modules/@trezor/connect/lib/types/params.js",
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/api/index.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/api/ripple/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/types/api/ripple/index.js",
+            "node_modules/@trezor/connect/lib/types/params.js",
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/api/solana/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/types/api/solana/index.js",
+            "node_modules/@trezor/connect/lib/types/params.js",
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/api/stellar/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/constants/index.js",
+            "node_modules/@trezor/connect/lib/types/api/stellar/index.js",
+            "node_modules/@trezor/connect/lib/types/params.js",
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/api/tezos/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/types/api/tezos/index.js",
+            "node_modules/@trezor/connect/lib/types/params.js",
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/coinInfo.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/types/coinInfo.js",
+            "node_modules/@trezor/connect/lib/types/fees.js",
+            "node_modules/@trezor/device-utils/lib/index.js",
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/device.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/fees.js": {
+        "dependency": [
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/firmware.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/index.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/types/account.js",
+            "node_modules/@trezor/connect/lib/types/api/bitcoin/index.js",
+            "node_modules/@trezor/connect/lib/types/api/cardano/index.js",
+            "node_modules/@trezor/connect/lib/types/api/eos/index.js",
+            "node_modules/@trezor/connect/lib/types/api/ethereum/index.js",
+            "node_modules/@trezor/connect/lib/types/api/index.js",
+            "node_modules/@trezor/connect/lib/types/api/ripple/index.js",
+            "node_modules/@trezor/connect/lib/types/api/solana/index.js",
+            "node_modules/@trezor/connect/lib/types/api/stellar/index.js",
+            "node_modules/@trezor/connect/lib/types/api/tezos/index.js",
+            "node_modules/@trezor/connect/lib/types/coinInfo.js",
+            "node_modules/@trezor/connect/lib/types/device.js",
+            "node_modules/@trezor/connect/lib/types/fees.js",
+            "node_modules/@trezor/connect/lib/types/firmware.js",
+            "node_modules/@trezor/connect/lib/types/index.js",
+            "node_modules/@trezor/connect/lib/types/params.js",
+            "node_modules/@trezor/connect/lib/types/settings.js",
+            "node_modules/@trezor/device-utils/lib/index.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/params.js": {
+        "dependency": [
+            "node_modules/@trezor/connect/lib/types/params.js",
+            "node_modules/@trezor/schema-utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/types/settings.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/utils/debug.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/utils/proxy-event-emitter.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/connect/lib/utils/urlUtils.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/index.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/device-utils/lib/bootloaderUtils.js": {
+        "dependency": [
+            "node_modules/@trezor/device-utils/lib/modeUtils.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/device-utils/lib/deviceColorUtils.js": {
+        "dependency": [
+            "node_modules/@trezor/device-utils/lib/deviceColorUtils.js"
+        ],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/device-utils/lib/deviceModelInternal.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/device-utils/lib/deviceModelInternalUtils.js": {
+        "dependency": [
+            "node_modules/@trezor/device-utils/lib/deviceModelInternal.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/device-utils/lib/firmwareUtils.js": {
+        "dependency": [
+            "node_modules/@trezor/device-utils/lib/modeUtils.js",
+            "node_modules/@trezor/device-utils/lib/types.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/device-utils/lib/index.js": {
+        "dependency": [
+            "node_modules/@trezor/device-utils/lib/bootloaderUtils.js",
+            "node_modules/@trezor/device-utils/lib/deviceColorUtils.js",
+            "node_modules/@trezor/device-utils/lib/deviceModelInternal.js",
+            "node_modules/@trezor/device-utils/lib/deviceModelInternalUtils.js",
+            "node_modules/@trezor/device-utils/lib/firmwareUtils.js",
+            "node_modules/@trezor/device-utils/lib/index.js",
+            "node_modules/@trezor/device-utils/lib/modeUtils.js",
+            "node_modules/@trezor/device-utils/lib/models.js",
+            "node_modules/@trezor/device-utils/lib/types.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/device-utils/lib/modeUtils.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/device-utils/lib/models.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/device-utils/lib/types.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
     "node_modules/@trezor/env-utils/lib/envUtils.js": {
         "dependency": [
             "node_modules/@trezor/env-utils/lib/envUtils.js",
@@ -51398,6 +51379,43 @@
         ],
         "global": {
             "module": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/protocol/lib/errors.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/protocol/lib/protocol-tpn/constants.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/protocol/lib/protocol-tpn/decode.js": {
+        "dependency": [
+            "node_modules/@trezor/protocol/lib/errors.js",
+            "node_modules/@trezor/protocol/lib/protocol-tpn/constants.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/protocol/lib/protocol-tpn/index.js": {
+        "dependency": [
+            "node_modules/@trezor/protocol/lib/protocol-tpn/decode.js",
+            "node_modules/@trezor/protocol/lib/protocol-tpn/index.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "exports": "r",
             "require": "r"
         },
         "enable": true
@@ -54093,6 +54111,652 @@
             "node_modules/@trezor/schema-utils/node_modules/@sinclair/typebox/build/cjs/value/hash/index.js"
         ],
         "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/transport/lib/constants.js": {
+        "dependency": [
+            "node_modules/@trezor/transport/lib/constants.js"
+        ],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/addDashesToSpaces.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/arrayDistinct.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/arrayPartition.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/arrayShuffle.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/arrayToDictionary.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/asciiUtils.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/bigNumber.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/node_modules/bignumber.js/bignumber.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/bufferUtils.js": {
+        "dependency": [
+            "node_modules/buffer/index.js"
+        ],
+        "global": {
+            "Buffer": "r",
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/bytesToHumanReadable.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/cache.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/capitalizeFirstLetter.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/cloneObject.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/cloneObject.js"
+        ],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/comparison.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/comparison.js"
+        ],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/convertTaprootXpub.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/countBytesInString.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/createCooldown.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/createDeferred.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/createDeferredManager.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/createDeferred.js"
+        ],
+        "global": {
+            "clearTimeout": "r",
+            "exports": "r",
+            "require": "r",
+            "setTimeout": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/createLazy.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/createDeferred.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/enumUtils.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/extractUrlsFromText.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/getIntegerInRangeFromString.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/getLocaleSeparators.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/getMutex.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/getNumberFromPixelString.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/getRandomInt.js": {
+        "dependency": [],
+        "global": {
+            "crypto": "r",
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/getSynchronize.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/getMutex.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/getWeakRandomId.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/getWeakRandomInt.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/getWeakRandomNumberInRange.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/hasUppercaseLetter.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/hexToRgba.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/hexToRgbaArray.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/index.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/addDashesToSpaces.js",
+            "node_modules/@trezor/utils/lib/arrayDistinct.js",
+            "node_modules/@trezor/utils/lib/arrayPartition.js",
+            "node_modules/@trezor/utils/lib/arrayShuffle.js",
+            "node_modules/@trezor/utils/lib/arrayToDictionary.js",
+            "node_modules/@trezor/utils/lib/asciiUtils.js",
+            "node_modules/@trezor/utils/lib/bigNumber.js",
+            "node_modules/@trezor/utils/lib/bufferUtils.js",
+            "node_modules/@trezor/utils/lib/bytesToHumanReadable.js",
+            "node_modules/@trezor/utils/lib/cache.js",
+            "node_modules/@trezor/utils/lib/capitalizeFirstLetter.js",
+            "node_modules/@trezor/utils/lib/cloneObject.js",
+            "node_modules/@trezor/utils/lib/comparison.js",
+            "node_modules/@trezor/utils/lib/convertTaprootXpub.js",
+            "node_modules/@trezor/utils/lib/countBytesInString.js",
+            "node_modules/@trezor/utils/lib/createCooldown.js",
+            "node_modules/@trezor/utils/lib/createDeferred.js",
+            "node_modules/@trezor/utils/lib/createDeferredManager.js",
+            "node_modules/@trezor/utils/lib/createLazy.js",
+            "node_modules/@trezor/utils/lib/enumUtils.js",
+            "node_modules/@trezor/utils/lib/extractUrlsFromText.js",
+            "node_modules/@trezor/utils/lib/getIntegerInRangeFromString.js",
+            "node_modules/@trezor/utils/lib/getLocaleSeparators.js",
+            "node_modules/@trezor/utils/lib/getMutex.js",
+            "node_modules/@trezor/utils/lib/getNumberFromPixelString.js",
+            "node_modules/@trezor/utils/lib/getRandomInt.js",
+            "node_modules/@trezor/utils/lib/getSynchronize.js",
+            "node_modules/@trezor/utils/lib/getWeakRandomId.js",
+            "node_modules/@trezor/utils/lib/getWeakRandomInt.js",
+            "node_modules/@trezor/utils/lib/getWeakRandomNumberInRange.js",
+            "node_modules/@trezor/utils/lib/hasUppercaseLetter.js",
+            "node_modules/@trezor/utils/lib/hexToRgba.js",
+            "node_modules/@trezor/utils/lib/hexToRgbaArray.js",
+            "node_modules/@trezor/utils/lib/index.js",
+            "node_modules/@trezor/utils/lib/isApproximatelyEqual.js",
+            "node_modules/@trezor/utils/lib/isArrayMember.js",
+            "node_modules/@trezor/utils/lib/isFullPath.js",
+            "node_modules/@trezor/utils/lib/isHex.js",
+            "node_modules/@trezor/utils/lib/isInt.js",
+            "node_modules/@trezor/utils/lib/isNotUndefined.js",
+            "node_modules/@trezor/utils/lib/isUrl.js",
+            "node_modules/@trezor/utils/lib/isWhitelistedHost.js",
+            "node_modules/@trezor/utils/lib/logs.js",
+            "node_modules/@trezor/utils/lib/logsManager.js",
+            "node_modules/@trezor/utils/lib/mergeDeepObject.js",
+            "node_modules/@trezor/utils/lib/objectPartition.js",
+            "node_modules/@trezor/utils/lib/parseElectrumUrl.js",
+            "node_modules/@trezor/utils/lib/parseHostname.js",
+            "node_modules/@trezor/utils/lib/promiseAllSequence.js",
+            "node_modules/@trezor/utils/lib/redactUserPath.js",
+            "node_modules/@trezor/utils/lib/removeTrailingSlashes.js",
+            "node_modules/@trezor/utils/lib/resolveAfter.js",
+            "node_modules/@trezor/utils/lib/safeBigIntStringify.js",
+            "node_modules/@trezor/utils/lib/scheduleAction.js",
+            "node_modules/@trezor/utils/lib/serializeError.js",
+            "node_modules/@trezor/utils/lib/splitStringEveryNCharacters.js",
+            "node_modules/@trezor/utils/lib/throttler.js",
+            "node_modules/@trezor/utils/lib/throwError.js",
+            "node_modules/@trezor/utils/lib/topologicalSort.js",
+            "node_modules/@trezor/utils/lib/typedEventEmitter.js",
+            "node_modules/@trezor/utils/lib/typedObject.js",
+            "node_modules/@trezor/utils/lib/union.js",
+            "node_modules/@trezor/utils/lib/urlToOnion.js",
+            "node_modules/@trezor/utils/lib/versionUtils.js",
+            "node_modules/@trezor/utils/lib/xssFilters.js",
+            "node_modules/@trezor/utils/lib/zip.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/isApproximatelyEqual.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/bigNumber.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/isArrayMember.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/isFullPath.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/isHex.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/isInt.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/isNotUndefined.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/isUrl.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/isWhitelistedHost.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/logs.js": {
+        "dependency": [],
+        "global": {
+            "console": "r",
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/logsManager.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/logs.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/mergeDeepObject.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/mergeDeepObject.js"
+        ],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/objectPartition.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/parseElectrumUrl.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/parseHostname.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/promiseAllSequence.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/redactUserPath.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/redactUserPath.js"
+        ],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/removeTrailingSlashes.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/resolveAfter.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/createDeferred.js"
+        ],
+        "global": {
+            "clearTimeout": "r",
+            "exports": "r",
+            "require": "r",
+            "setTimeout": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/safeBigIntStringify.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/scheduleAction.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/scheduleAction.js"
+        ],
+        "global": {
+            "AbortController": "r",
+            "clearTimeout": "r",
+            "exports": "r",
+            "setTimeout": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/serializeError.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/splitStringEveryNCharacters.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/throttler.js": {
+        "dependency": [],
+        "global": {
+            "clearInterval": "r",
+            "exports": "r",
+            "setInterval": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/throwError.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/topologicalSort.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/arrayPartition.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/typedEventEmitter.js": {
+        "dependency": [
+            "node_modules/events/events.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/typedObject.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/union.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/urlToOnion.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/versionUtils.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/throwError.js",
+            "node_modules/@trezor/utils/lib/versionUtils.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/xssFilters.js": {
+        "dependency": [],
+        "global": {
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/lib/zip.js": {
+        "dependency": [],
+        "global": {
+            "Blob": "r",
+            "TextEncoder": "r",
+            "exports": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/utils/node_modules/bignumber.js/bignumber.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/node_modules/bignumber.js/bignumber.js"
+        ],
+        "global": {
+            "crypto": "r",
+            "define": "r",
+            "module": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/websocket-client/lib/client.js": {
+        "dependency": [
+            "node_modules/@trezor/utils/lib/index.js",
+            "node_modules/@trezor/websocket-client/lib/ws-browser.js",
+            "node_modules/tslib/tslib.es6.js"
+        ],
+        "global": {
+            "clearTimeout": "r",
+            "exports": "r",
+            "require": "r",
+            "setTimeout": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/websocket-client/lib/index.js": {
+        "dependency": [
+            "node_modules/@trezor/websocket-client/lib/client.js"
+        ],
+        "global": {
+            "exports": "r",
+            "require": "r"
+        },
+        "enable": true
+    },
+    "node_modules/@trezor/websocket-client/lib/ws-browser.js": {
+        "dependency": [
+            "node_modules/@trezor/websocket-client/lib/client.js",
+            "node_modules/events/events.js"
+        ],
+        "global": {
+            "WebSocket": "r",
             "exports": "r",
             "require": "r"
         },
