@@ -264,10 +264,12 @@ export const getPendingTxs = async ({
   recommendNonce,
   wallet,
   address,
+  chainId,
 }: {
   recommendNonce: string;
   wallet: WalletControllerType;
   address: string;
+  chainId: number;
 }) => {
   const { pendings } = await wallet.getTransactionHistory(address);
 
@@ -276,6 +278,7 @@ export const getPendingTxs = async ({
     .reduce((result, item) => {
       return result.concat(item.txs.map((tx) => tx.rawTx));
     }, [] as Tx[])
+    .filter((item) => item.chainId === chainId)
     .map((item) => ({
       from: item.from,
       to: item.to,
