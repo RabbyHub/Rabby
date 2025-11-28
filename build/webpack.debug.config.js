@@ -1,6 +1,5 @@
 const webpack = require('webpack');
 const path = require('path');
-const SecSDK = require('supplychain_security_sdk').default;
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const config = {
@@ -15,14 +14,6 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
       'process.env.DEBUG': true,
-    }),
-
-    new SecSDK({
-      dev: false,
-      disableProtoAssets: ['pageProvider.js'],
-      skipScuttleAssets: ['pageProvider.js'],
-      scuttle: true,
-      monkeyPatchGlobals: [{ expr: 'this._targetWindow' }],
     }),
   ],
 };
