@@ -16,6 +16,7 @@ export type SimpleSignConfig = {
   txs?: Tx[];
   buildTxs?: () => Promise<Tx[] | undefined>;
   gasSelection?: GasSelectionOptions;
+  pauseAfter?: number;
 } & Omit<SignerConfig, 'account'>;
 
 const useLocalMiniSignGasStore = () => {
@@ -179,7 +180,9 @@ export const useMiniSigner = ({
   });
 
   const openUI = useMemoizedFn(
-    async (cfg: SimpleSignConfig): Promise<string[]> => {
+    async (
+      cfg: SimpleSignConfig & { pauseAfter?: number }
+    ): Promise<string[]> => {
       const payload = await prepareSignerPayload(cfg);
       if (!payload) {
         throw new Error('No transactions to sign');
@@ -194,13 +197,16 @@ export const useMiniSigner = ({
           enableSecurityEngine: cfg.enableSecurityEngine,
           gasSelection: payload.gasSelection,
         },
-        wallet
+        wallet,
+        { pauseAfter: cfg.pauseAfter }
       );
     }
   );
 
   const openDirect = useMemoizedFn(
-    async (cfg: SimpleSignConfig): Promise<string[]> => {
+    async (
+      cfg: SimpleSignConfig & { pauseAfter?: number }
+    ): Promise<string[]> => {
       const payload = await prepareSignerPayload(cfg);
       if (!payload) {
         throw new Error('No transactions to sign');
@@ -212,7 +218,8 @@ export const useMiniSigner = ({
           enableSecurityEngine: false,
           gasSelection: payload.gasSelection,
         },
-        wallet
+        wallet,
+        { pauseAfter: cfg.pauseAfter }
       );
     }
   );
