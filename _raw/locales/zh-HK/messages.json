@@ -568,7 +568,8 @@
         "importQuestion2": "我的种子短语只存储在我的设备上。Rabby 无法访问它。",
         "importQuestion1": "如果我丟失或分享我的 seed phrase，我將永久失去對我的資產的訪問權限。",
         "importQuestion3": "如果我在没有备份我的 seed phrase 的情况下卸载 Rabby，Rabby 将无法恢复它。",
-        "showMoreOptions": "顯示更多選項"
+        "showMoreOptions": "顯示更多選項",
+        "inputInvalid": "檢測到無效的單詞。請檢查高亮顯示的單詞。"
       },
       "metamask": {
         "step1": "從 MetaMask 導出助記詞或私鑰  <br/><1>查看操作指南<1/></1>",

@@ -1671,7 +1671,8 @@
         "importQuestion1": "Se eu perder ou compartilhar minha seed phrase, perderei o acesso aos meus ativos permanentemente.",
         "importQuestion2": "Minha frase semente é armazenada apenas no meu dispositivo. Rabby não pode acessá-la.",
         "importQuestion3": "Se eu desinstalar o Rabby sem fazer backup da minha frase-semente, não poderá ser recuperado pelo Rabby.",
-        "showMoreOptions": "Mostrar Mais Opções"
+        "showMoreOptions": "Mostrar Mais Opções",
+        "inputInvalid": "Palavras inválidas detectadas. Por favor, revise aquelas destacadas."
       },
       "metamask": {
         "step": "Passo",

@@ -1671,7 +1671,8 @@
         "importQuestion2": "Câu gốc của tôi chỉ được lưu trữ trên thiết bị của tôi. Rabby không thể truy cập nó.",
         "importQuestion3": "Nếu tôi gỡ cài đặt Rabby mà không sao lưu cụm từ khôi phục của mình, nó sẽ không thể được phục hồi bởi Rabby.",
         "importQuestion1": "Nếu tôi mất hoặc chia sẻ cụm từ hạt giống của mình, tôi sẽ mất quyền truy cập vào tài sản của mình vĩnh viễn.",
-        "showMoreOptions": "Hiện thêm tùy chọn"
+        "showMoreOptions": "Hiện thêm tùy chọn",
+        "inputInvalid": "Các từ không hợp lệ đã được phát hiện. Vui lòng xem lại các từ được đánh dấu."
       },
       "metamask": {
         "tips": "Mẹo:",

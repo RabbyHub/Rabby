@@ -569,7 +569,8 @@
         "importQuestion1": "如果我丢失或分享我的种子短语，我将永久失去对我的资产的访问权限。",
         "importQuestion3": "如果我在没有备份我的种子短语的情况下卸载 Rabby，将无法通过 Rabby 恢复。",
         "importQuestion2": "我的助记词仅存储在我的设备上。Rabby 无法访问它。",
-        "showMoreOptions": "显示更多选项"
+        "showMoreOptions": "显示更多选项",
+        "inputInvalid": "检测到无效单词。请检查标记的单词。"
       },
       "metamask": {
         "step1": "从 MetaMask 导出助记词或私钥  <br/><1>查看操作指南<1/></1>",
