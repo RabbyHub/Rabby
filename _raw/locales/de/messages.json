@@ -1595,7 +1595,8 @@
         "importQuestion2": "Mein Seed-Phrase wird nur auf meinem Gerät gespeichert. Rabby kann nicht darauf zugreifen.",
         "importQuestion1": "Wenn ich meinen Seed-Phrase verliere oder teile, verliere ich den Zugriff auf meine Vermögenswerte dauerhaft.",
         "importQuestion3": "Wenn ich Rabby deinstalliere, ohne meinen Seed-Phrase zu sichern, kann er von Rabby nicht wiederhergestellt werden.",
-        "showMoreOptions": "Mehr Optionen anzeigen"
+        "showMoreOptions": "Mehr Optionen anzeigen",
+        "inputInvalid": "Ungültige Wörter erkannt. Bitte überprüfen Sie die hervorgehobenen."
       },
       "metamask": {
         "step1": "Seed Phrase oder Private Key aus MetaMask exportieren <br /> <1>Klicken Sie hier, um das Tutorial anzuzeigen <1/></1>",

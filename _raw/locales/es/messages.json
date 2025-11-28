@@ -1595,7 +1595,8 @@
         "importQuestion2": "Mi frase semilla solo se almacena en mi dispositivo. Rabby no puede acceder a ella.",
         "importQuestion3": "Si desinstalo Rabby sin hacer una copia de seguridad de mi frase semilla, no se podrá recuperar mediante Rabby.",
         "importQuestion1": "Si pierdo o comparto mi frase semilla, perderé el acceso a mis activos de forma permanente.",
-        "showMoreOptions": "Mostrar más opciones"
+        "showMoreOptions": "Mostrar más opciones",
+        "inputInvalid": "Se detectaron palabras inválidas. Por favor, revise las destacadas."
       },
       "metamask": {
         "step1": "Exporta la frase de semilla o la clave privada desde MetaMask <br/><1>Guía <1/></1>",

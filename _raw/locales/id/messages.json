@@ -1671,7 +1671,8 @@
         "importQuestion2": "Frasa seed saya hanya disimpan di perangkat saya. Rabby tidak dapat mengaksesnya.",
         "importQuestion3": "Jika saya mencopot pemasangan Rabby tanpa mencadangkan frase benih saya, itu tidak dapat dipulihkan oleh Rabby.",
         "importQuestion1": "Jika saya kehilangan atau membagikan seed phrase saya, saya akan kehilangan akses ke aset saya secara permanen.",
-        "showMoreOptions": "Tampilkan Lebih Banyak Opsi"
+        "showMoreOptions": "Tampilkan Lebih Banyak Opsi",
+        "inputInvalid": "Kata yang tidak valid terdeteksi. Harap tinjau yang disorot."
       },
       "metamask": {
         "tips": "Tips:",

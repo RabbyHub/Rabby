@@ -1671,7 +1671,8 @@
         "importQuestion1": "내 시드 구문을 잃어버리거나 공유하면, 자산에 대한 접근을 영구적으로 잃게 됩니다.",
         "importQuestion2": "내 시드 문구는 오직 내 기기에만 저장됩니다. Rabby는 이를 접근할 수 없습니다.",
         "importQuestion3": "Rabby를 백업하지 않고 제거하면 seed phrase를 복구할 수 없습니다.",
-        "showMoreOptions": "더 많은 옵션 보기"
+        "showMoreOptions": "더 많은 옵션 보기",
+        "inputInvalid": "잘못된 단어가 감지되었습니다. 강조된 단어를 확인해 주세요."
       },
       "metamask": {
         "tips": "팁:",

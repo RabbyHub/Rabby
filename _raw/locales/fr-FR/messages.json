@@ -1432,7 +1432,8 @@
         "importQuestion1": "Si je perds ou partage ma phrase secrète, je perdrai l'accès à mes actifs de manière permanente.",
         "importQuestion2": "Ma phrase de récupération est uniquement stockée sur mon appareil. Rabby ne peut pas y accéder.",
         "importQuestion3": "Si je désinstalle Rabby sans sauvegarder ma phrase de récupération, elle ne pourra pas être restaurée par Rabby.",
-        "showMoreOptions": "Afficher plus d'options"
+        "showMoreOptions": "Afficher plus d'options",
+        "inputInvalid": "Mots invalides détectés. Veuillez examiner ceux surlignés."
       },
       "selectImportMethod": "Sélectionner la méthode d'importation",
       "theSeedPhraseIsInvalidPleaseCheck": "La seed phrase n'est pas valide, veuillez vérifier !",
