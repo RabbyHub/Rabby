@@ -493,6 +493,7 @@ export class SignatureSteps {
             recommendNonce: baseRecommendNonce,
             wallet,
             address: account.address,
+            chainId: buildTx.chainId,
           })),
           ...tempTxs.slice(0, index),
         ],
