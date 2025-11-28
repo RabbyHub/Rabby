@@ -448,7 +448,9 @@ const SendToken = () => {
     forToAddress: false,
     forToken: false,
   });
-  const { loading: loadingRisks, risks } = useAddressRisks(toAddress || '', {
+  const { loading: loadingRisks, risks } = useAddressRisks({
+    toAddress: toAddress || '',
+    fromAddress: currentAccount?.address,
     onLoadFinished: useCallback(() => {
       setAgreeRequiredChecks((prev) => ({ ...prev, forToAddress: false }));
     }, []),
@@ -1895,6 +1897,7 @@ const SendToken = () => {
         <PageHeader
           onBack={handleClickBack}
           forceShowBack={!(isTab || isDesktop)}
+          isShowAccount
           canBack={!(isTab || isDesktop)}
           className="mb-[10px]"
           rightSlot={
@@ -1920,13 +1923,13 @@ const SendToken = () => {
         </PageHeader>
         <Form
           form={form}
-          className="send-token-form pt-[16px]"
+          className="send-token-form pt-[4px]"
           onFinish={handleSubmit}
           onValuesChange={handleFormValuesChange}
           initialValues={initialFormValues}
         >
           <div className="flex-1 overflow-auto pb-[32px]">
-            <AddressInfoFrom />
+            {/* <AddressInfoFrom /> */}
             <AddressInfoTo
               loadingToAddressDesc={loadingToAddressDesc}
               toAccount={targetAccount}
