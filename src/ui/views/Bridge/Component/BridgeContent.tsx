@@ -761,6 +761,9 @@ export const BridgeContent = () => {
           </div>
         )}
 
+        {/* for bottom padding */}
+        <div className={clsx('w-full', 'h-[40px]')} />
+
         <div
           className={clsx(
             'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
