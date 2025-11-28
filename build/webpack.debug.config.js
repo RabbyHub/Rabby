@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
-const SecSDK = require('supplychain_security_sdk').default;
+// const SecSDK = require('supplychain_security_sdk').default;
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const config = {
@@ -17,13 +17,13 @@ const config = {
       'process.env.DEBUG': true,
     }),
 
-    new SecSDK({
-      dev: false,
-      disableProtoAssets: ['pageProvider.js'],
-      skipScuttleAssets: ['pageProvider.js'],
-      scuttle: true,
-      monkeyPatchGlobals: [{ expr: 'this._targetWindow' }],
-    }),
+    // new SecSDK({
+    //   dev: false,
+    //   disableProtoAssets: ['pageProvider.js'],
+    //   skipScuttleAssets: ['pageProvider.js'],
+    //   scuttle: true,
+    //   monkeyPatchGlobals: [{ expr: 'this._targetWindow' }],
+    // }),
   ],
 };
 
