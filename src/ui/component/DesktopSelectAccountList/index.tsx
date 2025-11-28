@@ -15,40 +15,33 @@ import clsx from 'clsx';
 
 import { EVENTS, KEYRING_TYPE } from '@/constant';
 // import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
+import { RcIconCopyCC } from '@/ui/assets/desktop/common';
+import { RcIconAddWalletCC, RcIconMoreCC } from '@/ui/assets/desktop/profile';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useAccounts } from '@/ui/hooks/useAccounts';
+import { useApprovalDangerCount } from '@/ui/hooks/useApprovalDangerCount';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
+import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { isSameAddress, splitNumberByStep } from '@/ui/utils';
-import { isSameAccount } from '@/utils/account';
-import { flatten } from 'lodash';
-import { CopyChecked } from '../CopyChecked';
-import { useApprovalDangerCount } from '@/ui/hooks/useApprovalDangerCount';
-import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
-import { useEventListener, useMemoizedFn, useSize } from 'ahooks';
-import eventBus from '@/eventBus';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
-import { RcIconCopyCC } from '@/ui/assets/desktop/common';
-import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
-import { createPortal } from 'react-dom';
-import styled from 'styled-components';
-import './styles.less';
-import { RcIconAddWalletCC, RcIconMoreCC } from '@/ui/assets/desktop/profile';
-import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
-import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
-import ThemeIcon from '../ThemeMode/ThemeIcon';
-import qs from 'qs';
 import { obj2query } from '@/ui/utils/url';
+import { isSameAccount } from '@/utils/account';
+import { useMemoizedFn } from 'ahooks';
+import { flatten } from 'lodash';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
+import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
+import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
+import { CopyChecked } from '../CopyChecked';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
+import './styles.less';
 
 interface DesktopSelectAccountListProps {
-  shouldElevate?: boolean;
   isShowApprovalAlert?: boolean;
-  isInModal?: boolean;
 }
 
 export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> = ({
   isShowApprovalAlert = false,
-  isInModal,
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -57,6 +50,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   const currentAccount = useCurrentAccount();
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const shouldScrollRef = useRef(true);
+  const [isAbsolute, setIsAbsolute] = useState(true);
 
   const {
     sortedAccountsList,
@@ -115,42 +109,47 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
     shouldScrollRef.current = true;
   }, [currentAccount?.address]);
 
-  const isShowScroller = filteredAccounts?.length > 8;
+  const height = useMemo(() => {
+    return Math.min(filteredAccounts.length + 1, 8) * 74 - 12;
+  }, [filteredAccounts.length]);
 
-  // const Node = (
-  //   <>
+  const ref = useRef<HTMLDivElement>(null);
+  const handleResize = useMemoizedFn(() => {
+    if (!ref.current) {
+      return;
+    }
+    const left = ref.current.getBoundingClientRect().left;
+    const clientWidth = document.body.clientWidth;
+    setIsAbsolute(clientWidth - left > 256);
+  });
 
-  //     {/* {filteredAccounts.map((item) => {
-  //       const isSelected = currentAccount
-  //         ? isSameAccount(item, currentAccount)
-  //         : false;
-
-  //       return (
-  //         <AccountItem
-  //           key={`${item.address}-${item.type}-${item.brandName}`}
-  //           onClick={() => {
-  //             switchAccount(item);
-  //           }}
-  //           isSelected={isSelected}
-  //           item={item}
-  //           isShowApprovalCount={isShowApprovalAlert}
-  //         >
-  //           {item.address}
-  //         </AccountItem>
-  //       );
-  //     })} */}
-  //   </>
-  // );
+  useEffect(() => {
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
     <div
       className={clsx(
-        'desktop-select-account-list flex flex-col gap-[12px] h-[670px] rounded-[20px]'
+        'desktop-select-account-list flex flex-col gap-[12px] rounded-[20px]'
       )}
+      style={{ height, position: isAbsolute ? 'absolute' : undefined }}
+      ref={ref}
+      onMouseEnter={() => {
+        if (!isAbsolute) {
+          document.querySelector('.main-content')?.classList?.add('is-open');
+        }
+      }}
+      onMouseLeave={() => {
+        document.querySelector('.main-content')?.classList?.remove('is-open');
+      }}
     >
       <Virtuoso
         ref={virtuosoRef}
-        className={clsx('h-full', isShowScroller ? 'w-[270px]' : 'w-[260px]')}
+        className={clsx('h-full')}
         data={filteredAccounts}
         totalCount={filteredAccounts.length}
         defaultItemHeight={72 + 12}
@@ -174,7 +173,6 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
               isPined={isPined}
               item={item}
               isShowApprovalCount={isShowApprovalAlert}
-              isInModal={isInModal}
             >
               {item.address}
             </AccountItem>
@@ -186,10 +184,17 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
               onClick={() => {
                 history.replace(`${location.pathname}?action=add-address`);
               }}
-              className="bg-rb-neutral-bg-3 w-[260px] cursor-pointer rounded-[20px] h-[72px] p-[16px] flex items-center gap-[8px] text-r-blue-default"
+              className={clsx(
+                // 'bg-rb-neutral-bg-3',
+                'cursor-pointer rounded-[20px] h-[62px] p-[16px] flex items-center gap-[8px] text-r-blue-default',
+                'desktop-account-item'
+              )}
+              style={{
+                background: 'rgba(76, 101, 255, 0.08)',
+              }}
             >
-              <RcIconAddWalletCC />
-              <div className="text-[16px] leading-[19px] font-medium">
+              <RcIconAddWalletCC className="flex-shrink-0" />
+              <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
                 {t('component.DesktopSelectAccountList.addAddresses')}
               </div>
             </div>
@@ -206,16 +211,8 @@ const AccountItem: React.FC<{
   onClick?(): void;
   isSelected?: boolean;
   isShowApprovalCount?: boolean;
-  isInModal?: boolean;
   isPined?: boolean;
-}> = ({
-  item,
-  onClick,
-  isSelected,
-  isShowApprovalCount,
-  isInModal,
-  isPined,
-}) => {
+}> = ({ item, onClick, isSelected, isShowApprovalCount, isPined }) => {
   const dispatch = useRabbyDispatch();
   const history = useHistory();
   const addressTypeIcon = useBrandIcon({
@@ -231,12 +228,12 @@ const AccountItem: React.FC<{
     <div className="pb-[12px] group">
       <div
         className={clsx(
-          'rounded-[20px] pl-[16px] pr-[12px] cursor-pointer flex items-center gap-[8px] min-h-[72px] w-[260px]',
+          'rounded-[20px] px-[15px] py-[11px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
+          'border-solid border-[1px]',
+          'desktop-account-item',
           isSelected
-            ? 'py-[19px] border-solid border-[1px] bg-rb-neutral-card-1 border-rb-neutral-line'
-            : isInModal
-            ? 'pt-[18px] pb-[16px] bg-rb-neutral-bg-4'
-            : 'pt-[18px] pb-[16px] bg-rb-neutral-bg-3'
+            ? ' border-rb-neutral-line bg-rb-neutral-card-1'
+            : 'border-transparent bg-rb-neutral-bg-3'
         )}
         onClick={onClick}
       >
@@ -245,13 +242,13 @@ const AccountItem: React.FC<{
           className={clsx('w-[24px] h-[24px]', !isSelected ? 'opacity-40' : '')}
           alt=""
         />
-        <div className="flex flex-1 flex-col gap-[2px] min-w-0">
+        <div className="flex flex-1 flex-col gap-[2px] min-w-0 desktop-account-item-content">
           <div className="flex items-center gap-[4px]">
             <div
               className={clsx(
                 'truncate',
                 isSelected
-                  ? 'text-[20px] leading-[24px] font-bold text-rb-neutral-title-1'
+                  ? 'text-[16px] leading-[19px] font-bold text-rb-neutral-title-1'
                   : 'text-[16px] text-rb-neutral-body leading-[19px] font-medium'
               )}
             >
@@ -318,7 +315,7 @@ const AccountItem: React.FC<{
               showArrow={false}
               className={clsx(
                 isSelected
-                  ? 'text-[13px] leading-[16px] text-rb-neutral-title-1'
+                  ? 'text-[12px] leading-[14px] text-rb-neutral-title-1'
                   : 'text-[12px] leading-[14px] text-rb-neutral-foot'
               )}
             />
@@ -337,7 +334,7 @@ const AccountItem: React.FC<{
               className={clsx(
                 'ml-[10px] truncate flex-1 block',
                 isSelected
-                  ? 'text-[13px] leading-[16px] text-rb-neutral-title-1'
+                  ? 'text-[12px] leading-[14px] text-rb-neutral-title-1'
                   : 'text-[12px] leading-[14px]  text-rb-neutral-foot'
               )}
             >
