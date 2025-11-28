@@ -354,7 +354,10 @@ export const AddressRiskAlert = ({
   }, [inWhiteList, forWhitelist]);
 
   // disable detect risk when invisible
-  const riskInfos = useAddressRisks(visible ? address : '', { editCex });
+  const riskInfos = useAddressRisks({
+    toAddress: visible ? address : '',
+    editCex,
+  });
   const addressSplit = useMemo(() => {
     if (!address) {
       return [];

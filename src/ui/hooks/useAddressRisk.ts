@@ -45,15 +45,20 @@ export function sortRisksDesc(a: { type: RiskType }, b: { type: RiskType }) {
   );
 }
 export type RiskItem = { type: RiskType; value: string };
-export const useAddressRisks = (
-  address: string,
-  options?: {
-    onLoadFinished?: (/* ctx: { risks: Array<RiskItem> } */) => void;
-    editCex?: IExchange | null;
-    scene?: 'send-poly' | 'send-nft' | 'send-token';
-  }
-) => {
-  const { editCex, onLoadFinished, scene = 'send-poly' } = options || {};
+export const useAddressRisks = (options: {
+  toAddress: string;
+  fromAddress?: string;
+  onLoadFinished?: (/* ctx: { risks: Array<RiskItem> } */) => void;
+  editCex?: IExchange | null;
+  scene?: 'send-poly' | 'send-nft' | 'send-token';
+}) => {
+  const {
+    toAddress,
+    fromAddress,
+    editCex,
+    onLoadFinished,
+    scene = 'send-poly',
+  } = options || {};
 
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -144,15 +149,21 @@ export const useAddressRisks = (
     [accountsList]
   );
 
+  const caredAddresses = useMemo(() => {
+    if (fromAddress) return [fromAddress];
+
+    return myTop10AccountList.map((acc) => acc.address);
+  }, [fromAddress, myTop10AccountList]);
+
   useEffect(() => {
-    if (!isValidAddress(address)) {
+    if (!isValidAddress(toAddress)) {
       return;
     }
     dispatch.accountToDisplay.getAllAccountsToDisplay();
-  }, [address, dispatch.accountToDisplay]);
+  }, [toAddress, dispatch.accountToDisplay]);
 
   useLayoutEffect(() => {
-    if (address) {
+    if (toAddress) {
       riskGetRef.current = false;
       setAddressDesc(undefined);
       setLoadingAddrDesc(true);
@@ -160,17 +171,17 @@ export const useAddressRisks = (
       setHasError(false);
       setLoadingHasTransfer(true);
     }
-  }, [address]);
+  }, [toAddress]);
 
   useEffect(() => {
     (async () => {
-      if (!isValidAddress(address)) {
+      if (!isValidAddress(toAddress)) {
         return;
       }
       setLoadingAddrDesc(true);
       try {
-        const addrDescRes = await wallet.openapi.addrDesc(address);
-        const cexId = await wallet.getCexId(address);
+        const addrDescRes = await wallet.openapi.addrDesc(toAddress);
+        const cexId = await wallet.getCexId(toAddress);
         if (addrDescRes) {
           if (cexId) {
             const localCexInfo = exchanges.find(
@@ -201,13 +212,13 @@ export const useAddressRisks = (
         setLoadingAddrDesc(false);
       }
     })();
-  }, [address, dispatch, editCex, exchanges, wallet]);
+  }, [toAddress, dispatch, editCex, exchanges, wallet]);
 
   useEffect(() => {
     if (
       riskGetRef.current ||
-      !myTop10AccountList.length ||
-      !isValidAddress(address)
+      !caredAddresses.length ||
+      !isValidAddress(toAddress)
     ) {
       return;
     }
@@ -222,8 +233,8 @@ export const useAddressRisks = (
           setTimeout(() => reject(new Error('timeout')), 3000);
         });
         const checkTransferPromise = new Promise<void>((resolve) => {
-          myTop10AccountList.forEach((acc) => {
-            if (isSameAddress(acc.address, address)) {
+          caredAddresses.forEach((addr) => {
+            if (isSameAddress(addr, toAddress)) {
               return;
             }
             queue.add(async () => {
@@ -232,8 +243,8 @@ export const useAddressRisks = (
                   return;
                 }
                 const res = await wallet.openapi.hasTransferAllChain(
-                  acc.address,
-                  address
+                  addr,
+                  toAddress
                 );
                 if (res?.has_transfer) {
                   hasSent = true;
@@ -264,7 +275,7 @@ export const useAddressRisks = (
         setLoadingHasTransfer(false);
       }
     })();
-  }, [address, myTop10AccountList, onLoadFinished, wallet]);
+  }, [toAddress, caredAddresses, onLoadFinished, wallet]);
 
   return {
     risks,
