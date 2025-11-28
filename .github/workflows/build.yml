@@ -15,7 +15,7 @@ jobs:
     name: prepare build
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: '--max_old_space_size=12288'
+      NODE_OPTIONS: '--max_old_space_size=4096'
     steps:
       - name: checkout
         uses: actions/checkout@v3
