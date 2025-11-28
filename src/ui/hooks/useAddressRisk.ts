@@ -69,7 +69,6 @@ export const useAddressRisks = (options: {
     exchanges: s.exchange.exchanges,
   }));
 
-  const riskGetRef = useRef(false);
   const [addressDesc, setAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined
   >();
@@ -164,7 +163,6 @@ export const useAddressRisks = (options: {
 
   useLayoutEffect(() => {
     if (toAddress) {
-      riskGetRef.current = false;
       setAddressDesc(undefined);
       setLoadingAddrDesc(true);
       setHasNoSent(false);
@@ -214,34 +212,50 @@ export const useAddressRisks = (options: {
     })();
   }, [toAddress, dispatch, editCex, exchanges, wallet]);
 
+  const riskGetRef = useRef({
+    currentAddrs: [] as string[],
+    controller: null as AbortController | null,
+  });
   useEffect(() => {
     if (
-      riskGetRef.current ||
+      riskGetRef.current.currentAddrs.sort().join(',') ===
+        caredAddresses.sort().join(',') ||
       !caredAddresses.length ||
       !isValidAddress(toAddress)
     ) {
       return;
     }
-    riskGetRef.current = true;
+
+    riskGetRef.current.currentAddrs = caredAddresses;
+    const prevController = riskGetRef.current.controller;
+    if (prevController) prevController.abort();
+
+    riskGetRef.current.controller = new AbortController();
+    const currentController = riskGetRef.current.controller;
     (async () => {
       setLoadingHasTransfer(true);
       setHasError(false);
       let hasSent = false;
       let hasError = false;
       try {
+        const hasAborted = (resolveFunc: any) => {
+          if (currentController.signal.aborted) {
+            resolveFunc();
+            queue.clear();
+            return true;
+          }
+        };
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('timeout')), 3000);
         });
         const checkTransferPromise = new Promise<void>((resolve) => {
           caredAddresses.forEach((addr) => {
-            if (isSameAddress(addr, toAddress)) {
-              return;
-            }
+            if (hasAborted(resolve)) return;
+            if (isSameAddress(addr, toAddress)) return;
             queue.add(async () => {
               try {
-                if (hasSent || hasError) {
-                  return;
-                }
+                if (hasAborted(resolve)) return;
+                if (hasSent || hasError) return;
                 const res = await wallet.openapi.hasTransferAllChain(
                   addr,
                   toAddress
