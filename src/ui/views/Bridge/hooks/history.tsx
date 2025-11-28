@@ -7,6 +7,8 @@ import { useWallet } from '@/ui/utils';
 import { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
 import { ONE_DAY_MS, ONE_HOUR_MS } from '../constants';
 import { useInterval } from 'ahooks';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 export const useCheckBridgePendingItem = (timer = 5000) => {
   const wallet = useWallet();
@@ -176,6 +178,9 @@ export const useBridgeHistory = () => {
         limit: limit,
         is_all: true,
       });
+      if (data?.history_list && start === 0) {
+        eventBus.emit(EVENTS.BRIDGE_HISTORY_UPDATED, data.history_list);
+      }
       return {
         list: data?.history_list,
         last: data,
