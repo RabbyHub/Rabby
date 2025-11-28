@@ -35,7 +35,7 @@ const formatEndTime = (endTime: number) => {
     result = `${absDiffYears} year${absDiffYears !== 1 ? 's' : ''}`;
   }
 
-  return result;
+  return isFuture ? result : `${result} ago`;
 };
 
 export const EndTime: React.FC<{

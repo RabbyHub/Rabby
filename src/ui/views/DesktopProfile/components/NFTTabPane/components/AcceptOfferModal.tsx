@@ -21,6 +21,7 @@ import React, { useMemo } from 'react';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
 import { OPENSEA_CONDUIT_ADDRESS } from '@opensea/seaport-js/lib/constants';
+import { useTranslation } from 'react-i18next';
 
 type Props = ModalProps & {
   nftDetail?: NFTDetail;
@@ -32,6 +33,7 @@ const Content: React.FC<Props> = (props) => {
 
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
+  const { t } = useTranslation();
 
   const {
     openUI,
@@ -87,7 +89,7 @@ const Content: React.FC<Props> = (props) => {
       if (!nftDetail?.chain || !nftDetail?.contract_id) {
         return null;
       }
-      const res = await wallet.openapi.getNFTCollectionFees({
+      const res = await wallet.openapi.getNFTFees({
         chain_id: nftDetail?.chain || '',
         collection_id: nftDetail?.contract_id || '',
         inner_id: nftDetail.inner_id,
@@ -324,16 +326,16 @@ const Content: React.FC<Props> = (props) => {
       closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
     >
       <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
-        Accept Offer
+        {t('page.desktopProfile.nft.acceptModal.title')}
       </h1>
       <div className="pt-[16px] px-[20px] pb-[24px]">
         <div className="pb-[20px] border-b-[0.5px] border-solid border-rabby-neutral-line">
           <div className="flex items-center justify-between">
             <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
-              Offer
+              {t('page.desktopProfile.nft.acceptModal.offer')}
             </div>
             <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
-              Offer Price
+              {t('page.desktopProfile.nft.acceptModal.offerPrice')}
             </div>
           </div>
           <div className="flex items-center gap-[10px] pt-[12px]">
@@ -393,7 +395,7 @@ const Content: React.FC<Props> = (props) => {
           {maxCount > 1 ? (
             <div className="flex items-center justify-between">
               <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
-                Quantity
+                {t('page.desktopProfile.nft.acceptModal.quantity')}
               </div>
               <div>
                 <StepInput
@@ -417,7 +419,7 @@ const Content: React.FC<Props> = (props) => {
           ) : null}
           <div className="flex items-center justify-between">
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
-              Platform
+              {t('page.desktopProfile.nft.acceptModal.platform')}
             </div>
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
               <div className="flex items-center gap-[4px]">
@@ -431,7 +433,7 @@ const Content: React.FC<Props> = (props) => {
         <div className="py-[16px] space-y-[16px] border-b-[0.5px] border-solid border-rabby-neutral-line">
           <div className="flex items-center justify-between">
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
-              Floor difference
+              {t('page.desktopProfile.nft.acceptModal.floorDifference')}
             </div>
             <div
               className={clsx(
@@ -459,10 +461,11 @@ const Content: React.FC<Props> = (props) => {
                 'text-[13px] leading-[16px] font-medium text-r-neutral-foot'
               )}
             >
-              Opensea Platform fees ({+(feesRate.market * 100).toFixed(2)}
-              %)
+              {t('page.desktopProfile.nft.acceptModal.platformFee', {
+                fee: +(feesRate.market * 100).toFixed(2),
+              })}
               <Tooltip
-                title="This fee is OpenSea's service charge"
+                title={t('page.desktopProfile.nft.acceptModal.platformFeeTips')}
                 overlayClassName="rectangle"
               >
                 <RcIconInfoCC />
@@ -496,12 +499,14 @@ const Content: React.FC<Props> = (props) => {
                   'text-[13px] leading-[16px] font-medium text-r-neutral-foot'
                 )}
               >
-                Creator fees ({+(feesRate.custom * 100).toFixed(2)}%)
+                {t('page.desktopProfile.nft.acceptModal.creatorFee', {
+                  fee: +(feesRate.custom * 100).toFixed(2),
+                })}
                 <Tooltip
                   title={
                     feesRate?.isCustomRequired
-                      ? 'Creator earnings will be paid by the seller. Creator earnings are enforced'
-                      : 'Creator earnings will be paid by the seller.'
+                      ? t('page.desktopProfile.nft.acceptModal.creatorFeeTips1')
+                      : t('page.desktopProfile.nft.acceptModal.creatorFeeTips')
                   }
                   overlayClassName="rectangle"
                 >
@@ -551,7 +556,7 @@ const Content: React.FC<Props> = (props) => {
           ) : null}
           <div className="flex items-center justify-between">
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
-              Rabby fee (0%)
+              {t('page.desktopProfile.nft.acceptModal.rabbyFee')}
             </div>
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
               -
@@ -561,7 +566,7 @@ const Content: React.FC<Props> = (props) => {
         <div className="py-[16px] mb-[12px]">
           <div className="flex items-center justify-between">
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
-              Total est. proceeds
+              {t('page.desktopProfile.nft.acceptModal.totalEst')}
             </div>
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
               {formatTokenAmount(
@@ -610,7 +615,7 @@ const Content: React.FC<Props> = (props) => {
                 handleSubmit(txs);
               }}
             >
-              Accept Offer
+              {t('page.desktopProfile.nft.acceptModal.acceptOffer')}
             </Button>
           </div>
         </footer>

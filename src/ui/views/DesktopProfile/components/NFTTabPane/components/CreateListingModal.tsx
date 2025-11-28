@@ -19,7 +19,11 @@ import {
   generateRandomSalt,
 } from '@/utils/nft';
 import { OPENSEA_CONDUIT_ADDRESS } from '@opensea/seaport-js/lib/constants';
-import { NFTDetail, Tx } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  NFTDetail,
+  NFTListingOrder,
+  Tx,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { useMemoizedFn, useRequest, useSetState } from 'ahooks';
 import {
   Button,
@@ -38,6 +42,7 @@ import styled from 'styled-components';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
 import { useListenTxReload } from '../../../hooks/useListenTxReload';
+import { useTranslation } from 'react-i18next';
 
 const Container = styled.div`
   table {
@@ -198,14 +203,16 @@ function findClosestOption(inputMs: number) {
 
 type Props = ModalProps & {
   nftDetail?: NFTDetail;
+  listingOrders?: NFTListingOrder[];
   isEdit?: boolean;
   onSigned?(p?: Promise<any>): void;
 };
 
 export const Content: React.FC<Props> = (props) => {
-  const { nftDetail, onSigned, isEdit, ...rest } = props;
+  const { nftDetail, onSigned, listingOrders, isEdit, ...rest } = props;
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
+  const { t } = useTranslation();
 
   const [formValues, setFormValues] = useSetState<{
     listingPrice?: string;
@@ -254,7 +261,7 @@ export const Content: React.FC<Props> = (props) => {
       if (!nftDetail?.chain || !nftDetail?.contract_id) {
         return null;
       }
-      const res = await wallet.openapi.getNFTCollectionFees({
+      const res = await wallet.openapi.getNFTFees({
         chain_id: nftDetail?.chain || '',
         collection_id: nftDetail?.contract_id || '',
         inner_id: nftDetail.inner_id,
@@ -302,7 +309,8 @@ export const Content: React.FC<Props> = (props) => {
   }, [fees, formValues.creatorFeeEnable]);
 
   const currentOrder = useMemo(() => {
-    if (!isEdit || !nftDetail?.listing_order || !fees || !listingToken) {
+    const listingOrder = listingOrders?.[0];
+    if (!isEdit || !listingOrder || !fees || !listingToken || !nftDetail) {
       return;
     }
     const creatorFeeReceiptList = fees.custom_royalties.map(
@@ -310,8 +318,8 @@ export const Content: React.FC<Props> = (props) => {
     );
 
     const consideration =
-      nftDetail.listing_order.protocol_data.parameters.consideration || [];
-    const offer = nftDetail.listing_order.protocol_data.parameters.offer || [];
+      listingOrder.protocol_data.parameters.consideration || [];
+    const offer = listingOrder.protocol_data.parameters.offer || [];
     const creatorFeeEnable = !creatorFeeReceiptList?.length
       ? false
       : !!consideration.find((item) => {
@@ -328,7 +336,7 @@ export const Content: React.FC<Props> = (props) => {
     }, new BigNumber(0));
 
     const duration =
-      +(nftDetail?.listing_order?.protocol_data.parameters.endTime || 0) -
+      +(listingOrder?.protocol_data.parameters.endTime || 0) -
       Date.now() / 1000;
 
     return {
@@ -339,7 +347,7 @@ export const Content: React.FC<Props> = (props) => {
       creatorFeeEnable,
       duration: findClosestOption(duration * 1000).value,
     };
-  }, [fees, nftDetail?.listing_order, listingToken, isEdit]);
+  }, [fees, listingOrders, nftDetail, listingToken, isEdit]);
 
   useEffect(() => {
     if (currentOrder) {
@@ -406,9 +414,9 @@ export const Content: React.FC<Props> = (props) => {
     return (
       isEdit &&
       currentOrder &&
-      !['amount', 'listingPrice', 'creatorFeeEnable'].every((key) => {
-        return currentOrder[key] === formValues[key];
-      })
+      (currentOrder.amount !== formValues.amount ||
+        currentOrder.listingPrice < (formValues.listingPrice || 0) ||
+        currentOrder.creatorFeeEnable !== formValues.creatorFeeEnable)
     );
   });
 
@@ -429,11 +437,11 @@ export const Content: React.FC<Props> = (props) => {
     const needCancelFirst = checkNeedCancelFirst();
 
     const tx = isApproved
-      ? needCancelFirst && nftDetail?.listing_order?.protocol_data?.parameters
+      ? needCancelFirst && listingOrders?.length
         ? await wallet.buildCancelNFTListTx({
             address: currentAccount?.address,
             chainId: chain?.id,
-            order: nftDetail?.listing_order?.protocol_data?.parameters,
+            orders: listingOrders.map((item) => item.protocol_data?.parameters),
           })
         : null
       : await wallet.buildSetApprovedForAllTx({
@@ -756,7 +764,9 @@ export const Content: React.FC<Props> = (props) => {
   return (
     <Container>
       <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
-        {isEdit ? 'Edit Listing' : 'Create listing'}
+        {isEdit
+          ? t('page.desktopProfile.nft.listingModal.editListing')
+          : t('page.desktopProfile.nft.listingModal.createListing')}
       </h1>
       <div className="px-[20px] pb-[24px]">
         <div className="py-[12px] border-b-[0.5px] border-solid border-rabby-neutral-line">
@@ -772,22 +782,22 @@ export const Content: React.FC<Props> = (props) => {
             <thead>
               <tr>
                 <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
-                  NFT
+                  {t('page.desktopProfile.nft.listingModal.nft')}
                 </th>
                 <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
-                  Floor
+                  {t('page.desktopProfile.nft.listingModal.floor')}
                 </th>
                 <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
-                  Top Offer
+                  {t('page.desktopProfile.nft.listingModal.topOffer')}
                 </th>
                 <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
-                  Cost
+                  {t('page.desktopProfile.nft.listingModal.cost')}
                 </th>
                 <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
-                  Proceeds
+                  {t('page.desktopProfile.nft.listingModal.proceeds')}
                 </th>
                 <th className="text-[13px] leading-[16px] font-medium text-r-neutral-foot text-right">
-                  Listed as
+                  {t('page.desktopProfile.nft.listingModal.listedAs')}
                 </th>
               </tr>
             </thead>
@@ -973,7 +983,7 @@ export const Content: React.FC<Props> = (props) => {
           {nftDetail?.amount && nftDetail?.amount > 1 ? (
             <div className="flex items-center justify-between">
               <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
-                Quantity
+                {t('page.desktopProfile.nft.listingModal.quantity')}
               </div>
               <div>
                 <StepInput
@@ -997,7 +1007,7 @@ export const Content: React.FC<Props> = (props) => {
           ) : null}
           <div className="flex items-center justify-between">
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
-              Total listing price
+              {t('page.desktopProfile.nft.listingModal.total')}
             </div>
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
               {formValues?.listingPrice && formValues.amount ? (
@@ -1028,7 +1038,7 @@ export const Content: React.FC<Props> = (props) => {
         <div className="py-[16px] space-y-[16px] border-b-[0.5px] border-solid border-rabby-neutral-line">
           <div className="flex items-center justify-between">
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
-              Floor difference
+              {t('page.desktopProfile.nft.listingModal.floorDifference')}
             </div>
             <div
               className={clsx(
@@ -1056,10 +1066,14 @@ export const Content: React.FC<Props> = (props) => {
                 'text-[13px] leading-[16px] font-medium text-r-neutral-foot'
               )}
             >
-              Opensea Platform fees ({+(feesRate.market * 100).toFixed(2)}
-              %)
+              {t('page.desktopProfile.nft.listingModal.platformFee', {
+                fee: +(feesRate.market * 100).toFixed(2),
+              })}
+
               <Tooltip
-                title="This fee is OpenSea's service charge"
+                title={t(
+                  'page.desktopProfile.nft.listingModal.platformFeeTips'
+                )}
                 overlayClassName="rectangle"
               >
                 <RcIconInfoCC />
@@ -1094,12 +1108,16 @@ export const Content: React.FC<Props> = (props) => {
                   'text-[13px] leading-[16px] font-medium text-r-neutral-foot'
                 )}
               >
-                Creator fees ({+(feesRate.custom * 100).toFixed(2)}%)
+                {t('page.desktopProfile.nft.listingModal.creatorFee', {
+                  fee: +(feesRate.custom * 100).toFixed(2),
+                })}
                 <Tooltip
                   title={
                     feesRate?.isCustomRequired
-                      ? 'Creator earnings will be paid by the seller. Creator earnings are enforced'
-                      : 'Creator earnings will be paid by the seller.'
+                      ? t(
+                          'page.desktopProfile.nft.listingModal.creatorFeeTips1'
+                        )
+                      : t('page.desktopProfile.nft.listingModal.creatorFeeTips')
                   }
                   overlayClassName="rectangle"
                 >
@@ -1149,7 +1167,7 @@ export const Content: React.FC<Props> = (props) => {
           ) : null}
           <div className="flex items-center justify-between">
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot">
-              Rabby fee (0%)
+              {t('page.desktopProfile.nft.listingModal.rabbyFee')}
             </div>
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
               -
@@ -1159,7 +1177,7 @@ export const Content: React.FC<Props> = (props) => {
         <div className="py-[16px] mb-[12px]">
           <div className="flex items-center justify-between">
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
-              Total est. proceeds
+              {t('page.desktopProfile.nft.listingModal.totalEst')}
             </div>
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate">
               {formatTokenAmount(
@@ -1211,10 +1229,10 @@ export const Content: React.FC<Props> = (props) => {
               }
             >
               {isEdit
-                ? 'Edit Listing'
+                ? t('page.desktopProfile.nft.listingModal.editListing')
                 : isApproved
-                ? 'List on OpenSea'
-                : 'Approve and List'}
+                ? t('page.desktopProfile.nft.listingModal.listOn')
+                : t('page.desktopProfile.nft.listingModal.approveAndList')}
             </Button>
             {/* {currentAccount ? (
               <SignProcessButton

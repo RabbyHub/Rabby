@@ -5816,17 +5816,17 @@ export class WalletController extends BaseController {
   buildCancelNFTListTx = ({
     address,
     chainId,
-    order,
+    orders,
   }: {
     address: string;
     chainId: number;
-    order: OrderComponents;
+    orders: OrderComponents[];
   }) => {
     try {
       const data = encodeFunctionData({
         abi: SeaportABI,
         functionName: 'cancel',
-        args: [[order as any]],
+        args: [orders as any],
       });
 
       return {

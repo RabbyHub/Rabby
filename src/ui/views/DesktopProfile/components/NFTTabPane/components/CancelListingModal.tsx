@@ -1,7 +1,11 @@
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
-import { NFTDetail, Tx } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  NFTDetail,
+  NFTListingOrder,
+  Tx,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { Button, message, Modal, ModalProps } from 'antd';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
@@ -23,30 +27,23 @@ import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManage
 import { IconOpenSea } from '@/ui/assets';
 import { last } from 'lodash';
 import { waitForTxCompleted } from '@/ui/utils/transaction';
+import { useTranslation } from 'react-i18next';
 
 type Props = ModalProps & {
   nftDetail?: NFTDetail;
+  listingOrders?: NFTListingOrder[];
   onSigned?(p: Promise<any>): void;
 };
 
 const Content: React.FC<Props> = (props) => {
-  const { nftDetail, onSigned, ...rest } = props;
+  const { nftDetail, onSigned, listingOrders, ...rest } = props;
 
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
 
   const listingOffer = useMemo(() => {
-    if (
-      nftDetail?.listing_order?.maker?.address &&
-      currentAccount?.address &&
-      isSameAddress(
-        nftDetail?.listing_order?.maker?.address,
-        currentAccount?.address
-      )
-    ) {
-      return nftDetail?.listing_order;
-    }
-  }, [nftDetail]);
+    return listingOrders?.[0];
+  }, [listingOrders]);
 
   const listingToken = useTokenInfo(
     {
@@ -84,17 +81,18 @@ const Content: React.FC<Props> = (props) => {
 
   const { runAsync: handleSubmit, loading: isSubmitting } = useRequest(
     async () => {
-      if (
-        !currentAccount?.address ||
-        !chain?.id ||
-        !nftDetail?.listing_order?.protocol_data?.parameters
-      ) {
+      if (!currentAccount?.address || !chain?.id || !listingOrders?.length) {
         throw new Error('failed');
       }
       const tx = (await wallet.buildCancelNFTListTx({
         address: currentAccount?.address,
         chainId: chain?.id,
-        order: nftDetail?.listing_order?.protocol_data?.parameters,
+        // orders: nftDetail?.listing_order?.protocol_data?.parameters,
+        orders: nftDetail?.collection?.is_erc721
+          ? listingOrders.map((item) => item.protocol_data.parameters)
+          : listingOrders
+              .slice(0, 1)
+              .map((item) => item.protocol_data.parameters),
       })) as Tx;
       const txs = [tx];
 
@@ -165,19 +163,20 @@ const Content: React.FC<Props> = (props) => {
       },
     }
   );
+  const { t } = useTranslation();
 
   return (
     <>
       <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
-        Cancel Listing
+        {t('page.desktopProfile.nft.cancelModal.title')}
       </h1>
       <div className="px-[20px] pb-[24px] pt-[12px]">
         <div className="flex items-center justify-between">
           <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
-            {listingOffer?.remaining_quantity} Listing
+            {t('page.desktopProfile.nft.cancelModal.listing')}
           </div>
           <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
-            Listing Price
+            {t('page.desktopProfile.nft.cancelModal.listingPrice')}
           </div>
         </div>
         <div className="flex items-center gap-[10px] pt-[12px] pb-[24px]">
@@ -252,7 +251,7 @@ const Content: React.FC<Props> = (props) => {
             onClick={handleSubmit}
             loading={isSubmitting}
           >
-            Cancel listing
+            {t('page.desktopProfile.nft.cancelModal.cancelListing')}
           </Button>
         </footer>
       </div>

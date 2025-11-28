@@ -15,6 +15,7 @@ import {
   CollectionList,
   NFTDetail,
   NFTItem,
+  NFTListingOrder,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
 import { Button, Modal, ModalProps, Skeleton, Tooltip } from 'antd';
@@ -25,15 +26,29 @@ import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.sv
 import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
 import { EndTime } from './EndTime';
 import IconDefaultNFT from '@/ui/assets/default-nft.svg';
+import { useNFTListingOrders } from '../hooks/useNFTListingOrders';
+import { useTranslation } from 'react-i18next';
 
 type Props = ModalProps & {
   nft?: NFTItem;
   collection?: Omit<CollectionList, 'nft_list'>;
-  onCreateListing?: (nftDetail: NFTDetail) => void;
+  onCreateListing?: (args: {
+    nftDetail: NFTDetail;
+    listingOrders?: NFTListingOrder[];
+  }) => void;
   onSend?: () => void;
-  onAccept?: (nftDetail: NFTDetail) => void;
-  onCancelListing?: (nftDetail: NFTDetail) => void;
-  onEditListing?: (nftDetail: NFTDetail) => void;
+  onAccept?: (args: {
+    nftDetail: NFTDetail;
+    listingOrders?: NFTListingOrder[];
+  }) => void;
+  onCancelListing?: (args: {
+    nftDetail: NFTDetail;
+    listingOrders?: NFTListingOrder[];
+  }) => void;
+  onEditListing?: (args: {
+    nftDetail: NFTDetail;
+    listingOrders?: NFTListingOrder[];
+  }) => void;
 };
 
 const Content: React.FC<Props> = (props) => {
@@ -51,8 +66,13 @@ const Content: React.FC<Props> = (props) => {
   const chain = findChain({ serverId: nft?.chain });
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
+  const { t } = useTranslation();
 
-  const { data: nftDetail, loading, runAsync: runGetNFTDetail } = useRequest(
+  const {
+    data: nftDetail,
+    loading: isLoadingDetail,
+    runAsync: runGetNFTDetail,
+  } = useRequest(
     async () => {
       if (!nft?.id || !nft?.chain || !currentAccount) {
         return null;
@@ -70,6 +90,18 @@ const Content: React.FC<Props> = (props) => {
     }
   );
 
+  const {
+    data: listingOrdersRes,
+    loading: isLoadingListing,
+  } = useNFTListingOrders({
+    maker: currentAccount?.address,
+    chain_id: nftDetail?.chain,
+    collection_id: nftDetail?.contract_id,
+    inner_id: nftDetail?.inner_id,
+  });
+
+  const loading = isLoadingDetail || isLoadingListing;
+
   const offerToken = useTokenInfo(
     {
       address: currentAccount?.address,
@@ -84,17 +116,8 @@ const Content: React.FC<Props> = (props) => {
   );
 
   const listingOffer = useMemo(() => {
-    if (
-      nftDetail?.listing_order?.maker?.address &&
-      currentAccount?.address &&
-      isSameAddress(
-        nftDetail?.listing_order?.maker?.address,
-        currentAccount?.address
-      )
-    ) {
-      return nftDetail?.listing_order;
-    }
-  }, [nftDetail]);
+    return listingOrdersRes?.orders?.[0];
+  }, [listingOrdersRes]);
 
   const listingToken = useTokenInfo(
     {
@@ -120,7 +143,6 @@ const Content: React.FC<Props> = (props) => {
     return bestOfferPrice.times(offerToken.price);
   }, [offerToken, bestOfferPrice]);
 
-  console.log('nftDetail', nftDetail);
   return (
     <>
       <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
@@ -137,7 +159,7 @@ const Content: React.FC<Props> = (props) => {
               empty={
                 <div className="w-[340px] h-[340px] bg-r-neutral-line flex items-center justify-center rounded-[8px]">
                   <div className="text-[40px] leading-[48px] font-semibold text-r-neutral-foot">
-                    NFT
+                    {t('page.desktopProfile.nft.detail.nft')}
                   </div>
                 </div>
               }
@@ -160,7 +182,7 @@ const Content: React.FC<Props> = (props) => {
             <div className="border-[0.5px] border-solid border-rabby-neutral-line rounded-[8px]">
               <div className="flex items-center justify-between gap-[16px] p-[16px]">
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px]">
-                  Collection
+                  {t('page.desktopProfile.nft.detail.collection')}
                 </div>
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
                   {collection?.name || '-'}
@@ -168,7 +190,7 @@ const Content: React.FC<Props> = (props) => {
               </div>
               <div className="flex items-center justify-between gap-[16px] p-[16px]">
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px]">
-                  Chain
+                  {t('page.desktopProfile.nft.detail.chain')}
                 </div>
                 <div className="flex items-center gap-[6px]">
                   <img src={chain?.logo} className="w-[16px] h-[16px]" alt="" />
@@ -179,7 +201,7 @@ const Content: React.FC<Props> = (props) => {
               </div>
               <div className="flex items-center justify-between gap-[16px] p-[16px]">
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px]">
-                  Collection floor
+                  {t('page.desktopProfile.nft.detail.collectionFloor')}
                 </div>
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
                   {loading ? (
@@ -221,7 +243,7 @@ const Content: React.FC<Props> = (props) => {
               </div>
               <div className="flex items-center justify-between gap-[16px] p-[16px]">
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px]">
-                  Rarity
+                  {t('page.desktopProfile.nft.detail.rarity')}
                 </div>
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
                   {loading ? (
@@ -240,7 +262,7 @@ const Content: React.FC<Props> = (props) => {
               </div>
               <div className="flex items-center justify-between gap-[16px] p-[16px]">
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px]">
-                  Last sale
+                  {t('page.desktopProfile.nft.detail.lastSale')}
                 </div>
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium truncate">
                   {loading ? (
@@ -291,12 +313,12 @@ const Content: React.FC<Props> = (props) => {
             <div className="mt-[15px]">
               <header className="flex items-center justify-between mb-[8px]">
                 <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium">
-                  Top Offer
+                  {t('page.desktopProfile.nft.detail.topOffer')}
                 </div>
                 {collection?.is_tradable ? (
                   <div className="flex items-center gap-[6px]">
                     <div className="text-r-neutral-foot text-[12px] leading-[14px]">
-                      Supported platforms:{' '}
+                      {t('page.desktopProfile.nft.detail.supportPlatform')}{' '}
                     </div>
                     <div>
                       <Tooltip title="OpenSea" overlayClassName="rectangle">
@@ -347,17 +369,18 @@ const Content: React.FC<Props> = (props) => {
                         )}
                       >
                         <div>
-                          Ending:{' '}
+                          {t('page.desktopProfile.nft.detail.ending')}{' '}
                           <EndTime
                             end={
                               +nftDetail.best_offer_order.protocol_data
                                 .parameters.endTime
                             }
-                            onEnd={runGetNFTDetail}
                           />
                         </div>
                         <div className="w-[0.5px] h-[10px] bg-r-neutral-line" />
-                        <div>Platform: </div>
+                        <div>
+                          {t('page.desktopProfile.nft.detail.platform')}{' '}
+                        </div>
                         <div className="flex items-center gap-[2px]">
                           <img
                             src={IconOpenSea}
@@ -379,10 +402,13 @@ const Content: React.FC<Props> = (props) => {
                           if (!nftDetail) {
                             return;
                           }
-                          onAccept?.(nftDetail);
+                          onAccept?.({
+                            nftDetail,
+                            listingOrders: listingOrdersRes?.orders,
+                          });
                         }}
                       >
-                        Accept
+                        {t('page.desktopProfile.nft.detail.accept')}
                       </button>
                     </div>
                   </div>
@@ -390,7 +416,7 @@ const Content: React.FC<Props> = (props) => {
                   <div className="flex items-center justify-center gap-[4px] h-full">
                     <RcIconFindCC className="text-r-neutral-foot" />
                     <div className="text-[11px] leading-[13px] text-r-neutral-foot">
-                      No offers yet
+                      {t('page.desktopProfile.nft.detail.noOffer')}
                     </div>
                   </div>
                 )}
@@ -412,7 +438,7 @@ const Content: React.FC<Props> = (props) => {
                   className="w-[16px] h-[16px] rounded-full"
                 />
                 <div className="text-[13px] leading-[16px] font-medium text-r-green-default">
-                  Listing on Opensea
+                  {t('page.desktopProfile.nft.detail.listing')}
                 </div>
               </div>
               <div className="mt-[8px] flex items-center gap-[6px]">
@@ -449,7 +475,7 @@ const Content: React.FC<Props> = (props) => {
                   </div>
                 )}
                 <div className="ml-auto text-[15px] leading-[18px] text-r-neutral-foot">
-                  Ending:{' '}
+                  {t('page.desktopProfile.nft.detail.ending')}{' '}
                   <EndTime
                     onEnd={runGetNFTDetail}
                     end={+listingOffer.protocol_data.parameters.endTime}
@@ -461,20 +487,43 @@ const Content: React.FC<Props> = (props) => {
           <div className="mt-[24px] flex items-center gap-[12px] pl-[356px]">
             {listingOffer ? (
               <>
-                <Button
-                  block
-                  type="primary"
-                  className="rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
-                  disabled={!nftDetail || !collection?.is_tradable || loading}
-                  onClick={() => {
-                    if (!nftDetail) {
-                      return;
-                    }
-                    onEditListing?.(nftDetail);
-                  }}
-                >
-                  Edit Listing
-                </Button>
+                {nftDetail?.collection?.is_erc721 ? (
+                  <Button
+                    block
+                    type="primary"
+                    className="rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
+                    disabled={!nftDetail || !collection?.is_tradable || loading}
+                    onClick={() => {
+                      if (!nftDetail) {
+                        return;
+                      }
+                      onEditListing?.({
+                        nftDetail,
+                        listingOrders: listingOrdersRes?.orders,
+                      });
+                    }}
+                  >
+                    {t('page.desktopProfile.nft.detail.edit')}
+                  </Button>
+                ) : (
+                  <Button
+                    block
+                    type="primary"
+                    className="rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]"
+                    disabled={!nftDetail || !collection?.is_tradable || loading}
+                    onClick={() => {
+                      if (!nftDetail) {
+                        return;
+                      }
+                      onCreateListing?.({
+                        nftDetail,
+                        listingOrders: listingOrdersRes?.orders,
+                      });
+                    }}
+                  >
+                    {t('page.desktopProfile.nft.detail.listing')}
+                  </Button>
+                )}
 
                 <Button
                   block
@@ -490,10 +539,13 @@ const Content: React.FC<Props> = (props) => {
                     if (!nftDetail) {
                       return;
                     }
-                    onCancelListing?.(nftDetail);
+                    onCancelListing?.({
+                      nftDetail,
+                      listingOrders: listingOrdersRes?.orders,
+                    });
                   }}
                 >
-                  Cancel Listing
+                  {t('page.desktopProfile.nft.detail.cancel')}
                 </Button>
               </>
             ) : (
@@ -506,10 +558,13 @@ const Content: React.FC<Props> = (props) => {
                   if (!nftDetail) {
                     return;
                   }
-                  onCreateListing?.(nftDetail);
+                  onCreateListing?.({
+                    nftDetail,
+                    listingOrders: listingOrdersRes?.orders,
+                  });
                 }}
               >
-                List on OpenSea
+                {t('page.desktopProfile.nft.detail.listing')}
               </Button>
             )}
 
@@ -526,7 +581,7 @@ const Content: React.FC<Props> = (props) => {
                 onSend?.();
               }}
             >
-              Send
+              {t('page.desktopProfile.nft.detail.send')}
             </Button>
           </div>
         </footer>

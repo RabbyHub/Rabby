@@ -6,6 +6,7 @@ import {
   CollectionList,
   NFTDetail,
   NFTItem,
+  NFTListingOrder,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
 import { message, Skeleton, Switch } from 'antd';
@@ -21,10 +22,12 @@ import { NFTDetailModal } from './components/NFTDetailModal';
 import { ResultModal } from './components/ResultModal';
 import { useHistory } from 'react-router-dom';
 import { useListenTxReload } from '../../hooks/useListenTxReload';
+import { useTranslation } from 'react-i18next';
 
 export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
   selectChainId,
 }) => {
+  const { t } = useTranslation();
   const wallet = useWallet();
   const [isAll, setIsAll] = React.useState(false);
 
@@ -36,6 +39,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
       collection?: Omit<CollectionList, 'nft_list'>;
     } | null;
     nftDetail?: NFTDetail;
+    listingOrders?: NFTListingOrder[];
     detailModalVisible?: boolean;
     listingModalVisible?: boolean;
     cancelModalVisible?: boolean;
@@ -100,6 +104,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
     setState({
       current: null,
       nftDetail: undefined,
+      listingOrders: undefined,
       detailModalVisible: false,
       listingModalVisible: false,
       cancelModalVisible: false,
@@ -126,6 +131,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
                 'text-rb-neutral-InvertHighlight text-[12px] leading-[14px] font-medium'
               )}
             >
+              {t('page.desktopProfile.nft.all')}
               All ({list?.length || 0})
             </div>
           </div>
@@ -137,7 +143,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
               }}
             />
             <div className="text-rb-neutral-title-1 text-[14px] leading-[17px]">
-              Hide Low-Value NFTs
+              {t('page.desktopProfile.nft.hideLowValue')}
             </div>
           </label>
         </header>
@@ -181,7 +187,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             <div className="w-full py-[160px] flex flex-col items-center justify-center gap-[8px]">
               <ThemeIcon src={RcIconNftEmpty}></ThemeIcon>
               <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
-                No NFTs
+                {t('page.desktopProfile.nft.empty')}
               </div>
             </div>
           )}
@@ -195,38 +201,42 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             current: null,
           });
         }}
-        onCreateListing={(nftDetail) => {
+        onCreateListing={({ nftDetail, listingOrders }) => {
           setState({
             detailModalVisible: false,
             current: null,
             nftDetail,
             listingModalVisible: true,
             isEditListing: false,
+            listingOrders,
           });
         }}
-        onEditListing={(nftDetail) => {
+        onEditListing={({ nftDetail, listingOrders }) => {
           setState({
             detailModalVisible: false,
             current: null,
             nftDetail,
             listingModalVisible: true,
             isEditListing: true,
+            listingOrders,
           });
         }}
-        onAccept={(nftDetail) => {
+        onAccept={({ nftDetail, listingOrders }) => {
           setState({
             detailModalVisible: false,
             current: null,
             nftDetail,
             acceptModalVisible: true,
+            listingOrders,
           });
         }}
-        onCancelListing={async (nftDetail) => {
+        onCancelListing={async ({ nftDetail, listingOrders }) => {
           setState({
             detailModalVisible: false,
             current: null,
             cancelModalVisible: true,
             nftDetail,
+            listingOrders,
           });
         }}
         nft={state.current?.nft}
@@ -247,6 +257,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
       <CancelListingModal
         visible={state.cancelModalVisible}
         nftDetail={state.nftDetail}
+        listingOrders={state.listingOrders}
         onCancel={() => {
           setState({
             nftDetail: undefined,
@@ -260,12 +271,14 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             resultState: {
               status: 'pending',
               successMessage: {
-                title: 'Just Canceled!',
-                desc: `You've canceled listing ${state.nftDetail?.name} on OpenSea`,
+                title: t('page.desktopProfile.nft.message.cancelSuccess'),
+                desc: t('page.desktopProfile.nft.message.cancelSuccessDesc', {
+                  name: state.nftDetail?.name,
+                }),
               },
               errorMessage: {
-                title: 'Failed!',
-                desc: 'Please try again',
+                title: t('page.desktopProfile.nft.message.cancelFailed'),
+                desc: t('page.desktopProfile.nft.message.cancelFailedDesc'),
               },
               pendingPromise: promise,
             },
@@ -275,10 +288,12 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
       <CreateListingModal
         visible={state.listingModalVisible}
         nftDetail={state.nftDetail}
+        listingOrders={state.listingOrders}
         isEdit={state.isEditListing}
         onCancel={() => {
           setState({
             nftDetail: undefined,
+            listingOrders: undefined,
             listingModalVisible: false,
             isEditListing: false,
           });
@@ -290,12 +305,14 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             resultState: {
               status: 'pending',
               successMessage: {
-                title: 'Just listed!',
-                desc: `You've listed ${state.nftDetail?.name} on OpenSea`,
+                title: t('page.desktopProfile.nft.message.listingSuccess'),
+                desc: t('page.desktopProfile.nft.message.listingSuccessDesc', {
+                  name: state.nftDetail?.name,
+                }),
               },
               errorMessage: {
-                title: 'Listing Failed',
-                desc: 'Please try again.',
+                title: t('page.desktopProfile.nft.message.listingFailed'),
+                desc: t('page.desktopProfile.nft.message.listingFailedDesc'),
               },
               pendingPromise: promise,
             },
@@ -330,12 +347,14 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             resultModalVisible: true,
             resultState: {
               successMessage: {
-                title: 'Sold Successfully',
-                desc: `You’ve successfully sold ${state.nftDetail?.name}`,
+                title: t('page.desktopProfile.nft.message.acceptSuccess'),
+                desc: t('page.desktopProfile.nft.message.acceptSuccessDesc', {
+                  name: state.nftDetail?.name,
+                }),
               },
               errorMessage: {
-                title: 'Sale Failed',
-                desc: 'Please try again',
+                title: t('page.desktopProfile.nft.message.acceptFailed'),
+                desc: t('page.desktopProfile.nft.message.acceptFailedDesc'),
               },
               status: 'pending',
               pendingPromise: p,
