@@ -877,6 +877,7 @@ export const MiniSignTx = ({
               recommendNonce,
               wallet,
               address: currentAccount?.address,
+              chainId: tx.chainId,
             })),
             ...tempTxs.slice(0, index),
           ],

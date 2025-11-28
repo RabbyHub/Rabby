@@ -201,6 +201,7 @@ export const sendTransaction = async ({
         recommendNonce,
         wallet,
         address,
+        chainId: tx.chainId,
       }),
     }));
 
