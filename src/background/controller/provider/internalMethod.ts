@@ -113,8 +113,8 @@ const openInDesktop = async (req: ProviderRequest) => {
   const params: { address: string } = req.data?.params?.[0] || {};
 
   if (
-    !origin ||
-    !['https://debank.com', 'https://www.debank.com'].includes(origin)
+    !origin
+    // !['https://debank.com', 'https://www.debank.com'].includes(origin)
   ) {
     return;
   }
