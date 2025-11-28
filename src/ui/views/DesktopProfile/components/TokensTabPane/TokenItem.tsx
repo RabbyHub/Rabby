@@ -196,7 +196,16 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
 const TokenItemAmount: React.FC<Props> = ({ item }) => {
   return (
     <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 truncate">
-      {`${item._amountStr} ${getTokenSymbol(item)}`}
+      {`${item._amountStr} `}
+      <DesktopTokenLabel
+        token={{ ...item, id: item._tokenId }}
+        isNft={false}
+        textClassName={`
+            cursor-pointer no-underline
+            text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
+            hover:text-r-blue-default hover:underline 
+          `}
+      />
     </TCell>
   );
 };

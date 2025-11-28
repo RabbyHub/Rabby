@@ -19,7 +19,9 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const Wrapper = styled.div`
-  margin-left: 10px;
+  & > div {
+    margin-left: 10px;
+  }
 `;
 
 interface ActionButtonProps {
