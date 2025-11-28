@@ -1387,8 +1387,10 @@ const GasSelectorHeader = ({
                     <Input
                       onFocus={(e) => e.target.select()}
                       value={
-                        maxPriorityFee
-                          ? new BigNumber(maxPriorityFee).toFormat()
+                        maxPriorityFee && typeof maxPriorityFee === 'number'
+                          ? new BigNumber(maxPriorityFee).toFormat({
+                              decimalSeparator: '.',
+                            })
                           : maxPriorityFee
                       }
                       onChange={(e) =>
