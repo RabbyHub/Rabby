@@ -6,7 +6,7 @@ import {
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
 import { ethers, Contract } from 'ethers';
-import { groupBy, isEqual, pick, sortBy, truncate, uniq } from 'lodash';
+import { groupBy, isEqual, last, pick, sortBy, truncate, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
@@ -3307,10 +3307,20 @@ export class WalletController extends BaseController {
 
   getAccountByAddress = async (address: string) => {
     const addressList = await keyringService.getAllAdresses();
-    const account = addressList.find((item) => {
+    const accounts = addressList.filter((item) => {
       return isSameAddress(item.address, address);
     });
-    return account;
+    return last(
+      sortBy(accounts, (item) => {
+        if (item.type === KEYRING_TYPE.WatchAddressKeyring) {
+          return 0;
+        } else if (item.type === KEYRING_TYPE.WalletConnectKeyring) {
+          return 1;
+        } else {
+          return 2;
+        }
+      })
+    );
   };
 
   hasAddress = (address: string) => {
