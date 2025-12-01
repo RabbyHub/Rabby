@@ -131,8 +131,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
                 'text-rb-neutral-InvertHighlight text-[12px] leading-[14px] font-medium'
               )}
             >
-              {t('page.desktopProfile.nft.all')}
-              All ({list?.length || 0})
+              {t('page.desktopProfile.nft.all')} ({list?.length || 0})
             </div>
           </div>
           <label className="flex items-center gap-[6px] cursor-pointer">
