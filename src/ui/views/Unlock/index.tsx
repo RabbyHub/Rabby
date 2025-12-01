@@ -16,6 +16,7 @@ import styled from 'styled-components';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import qs from 'qs';
 import { isString } from 'lodash';
+import { useRabbyDispatch } from '@/ui/store';
 
 const InputFormStyled = styled(Form.Item)`
   .ant-form-item-explain {
@@ -46,6 +47,7 @@ const Unlock = () => {
       ignoreQueryPrefix: true,
     });
   }, [location.search]);
+  const dispatch = useRabbyDispatch();
 
   useEffect(() => {
     if (!inputEl.current) return;
@@ -54,6 +56,7 @@ const Unlock = () => {
 
   const [run] = useWalletRequest(wallet.unlock, {
     onSuccess() {
+      dispatch.account.getCurrentAccountAsync();
       if (UiType.isNotification) {
         if (query.from === '/connect-approval') {
           history.replace('/approval?ignoreOtherWallet=1');
