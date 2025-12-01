@@ -821,6 +821,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           recommendNonce,
           wallet,
           address,
+          chainId: tx.chainId,
         }),
         delegate_call: isGnosisAccount ? !!params?.data?.[0]?.operation : false,
       })

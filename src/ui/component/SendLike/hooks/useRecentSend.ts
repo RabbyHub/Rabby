@@ -1,6 +1,6 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { SendRequireData } from '@rabby-wallet/rabby-action';
 import { useRequest } from 'ahooks';
@@ -14,6 +14,8 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbyGetter, useRabbySelector } from '@/ui/store';
 import { findMaxGasTx } from '@/utils/tx';
 import { isValidAddress } from '@ethereumjs/util';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 interface DisplayHistoryItem {
   isDateStart?: boolean;
@@ -219,7 +221,7 @@ export const fetchLocalSendPendingTx = (
 };
 
 export function useRecentSendToHistoryFor(toAddress?: string) {
-  const { recentHistory } = useRecentSend({ useAllHistory: true });
+  const { recentHistory, runAsync } = useRecentSend({ useAllHistory: true });
 
   return {
     recentHistory:
@@ -228,6 +230,7 @@ export function useRecentSendToHistoryFor(toAddress?: string) {
             (item) => item.toAddress.toLowerCase() === toAddress.toLowerCase()
           )
         : [],
+    reFetch: runAsync,
   };
 }
 
@@ -251,12 +254,26 @@ export function useToAddressPositiveTips({
     return !!toAddress && whitelist?.some((w) => isSameAddress(w, toAddress));
   }, [toAddress, whitelist]);
 
-  const { recentHistory: recentSendToHistory } = useRecentSendToHistoryFor(
-    toAddress
-  );
+  const {
+    recentHistory: recentSendToHistory,
+    reFetch,
+  } = useRecentSendToHistoryFor(toAddress);
   const toAddressIsRecentlySend = recentSendToHistory.length > 0;
   const hasPositiveTips =
     toAddressIsRecentlySend || inWhitelist || !!isMyImported;
+
+  useEffect(() => {
+    const handler = (txDetail) => {
+      reFetch();
+      setTimeout(() => {
+        reFetch();
+      }, 5000);
+    };
+    eventBus.addEventListener(EVENTS.RELOAD_TX, handler);
+    return () => {
+      eventBus.removeEventListener(EVENTS.RELOAD_TX, handler);
+    };
+  }, [reFetch]);
 
   return {
     hasPositiveTips,

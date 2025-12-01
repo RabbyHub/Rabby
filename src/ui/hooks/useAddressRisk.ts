@@ -45,15 +45,20 @@ export function sortRisksDesc(a: { type: RiskType }, b: { type: RiskType }) {
   );
 }
 export type RiskItem = { type: RiskType; value: string };
-export const useAddressRisks = (
-  address: string,
-  options?: {
-    onLoadFinished?: (/* ctx: { risks: Array<RiskItem> } */) => void;
-    editCex?: IExchange | null;
-    scene?: 'send-poly' | 'send-nft' | 'send-token';
-  }
-) => {
-  const { editCex, onLoadFinished, scene = 'send-poly' } = options || {};
+export const useAddressRisks = (options: {
+  toAddress: string;
+  fromAddress?: string;
+  onLoadFinished?: (/* ctx: { risks: Array<RiskItem> } */) => void;
+  editCex?: IExchange | null;
+  scene?: 'send-poly' | 'send-nft' | 'send-token';
+}) => {
+  const {
+    toAddress,
+    fromAddress,
+    editCex,
+    onLoadFinished,
+    scene = 'send-poly',
+  } = options || {};
 
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -64,7 +69,6 @@ export const useAddressRisks = (
     exchanges: s.exchange.exchanges,
   }));
 
-  const riskGetRef = useRef(false);
   const [addressDesc, setAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined
   >();
@@ -144,33 +148,38 @@ export const useAddressRisks = (
     [accountsList]
   );
 
+  const caredAddresses = useMemo(() => {
+    if (fromAddress) return [fromAddress];
+
+    return myTop10AccountList.map((acc) => acc.address);
+  }, [fromAddress, myTop10AccountList]);
+
   useEffect(() => {
-    if (!isValidAddress(address)) {
+    if (!isValidAddress(toAddress)) {
       return;
     }
     dispatch.accountToDisplay.getAllAccountsToDisplay();
-  }, [address, dispatch.accountToDisplay]);
+  }, [toAddress, dispatch.accountToDisplay]);
 
   useLayoutEffect(() => {
-    if (address) {
-      riskGetRef.current = false;
+    if (toAddress) {
       setAddressDesc(undefined);
       setLoadingAddrDesc(true);
       setHasNoSent(false);
       setHasError(false);
       setLoadingHasTransfer(true);
     }
-  }, [address]);
+  }, [toAddress]);
 
   useEffect(() => {
     (async () => {
-      if (!isValidAddress(address)) {
+      if (!isValidAddress(toAddress)) {
         return;
       }
       setLoadingAddrDesc(true);
       try {
-        const addrDescRes = await wallet.openapi.addrDesc(address);
-        const cexId = await wallet.getCexId(address);
+        const addrDescRes = await wallet.openapi.addrDesc(toAddress);
+        const cexId = await wallet.getCexId(toAddress);
         if (addrDescRes) {
           if (cexId) {
             const localCexInfo = exchanges.find(
@@ -201,39 +210,55 @@ export const useAddressRisks = (
         setLoadingAddrDesc(false);
       }
     })();
-  }, [address, dispatch, editCex, exchanges, wallet]);
+  }, [toAddress, dispatch, editCex, exchanges, wallet]);
 
+  const riskGetRef = useRef({
+    currentAddrs: [] as string[],
+    controller: null as AbortController | null,
+  });
   useEffect(() => {
     if (
-      riskGetRef.current ||
-      !myTop10AccountList.length ||
-      !isValidAddress(address)
+      riskGetRef.current.currentAddrs.sort().join(',') ===
+        caredAddresses.sort().join(',') ||
+      !caredAddresses.length ||
+      !isValidAddress(toAddress)
     ) {
       return;
     }
-    riskGetRef.current = true;
+
+    riskGetRef.current.currentAddrs = caredAddresses;
+    const prevController = riskGetRef.current.controller;
+    if (prevController) prevController.abort();
+
+    riskGetRef.current.controller = new AbortController();
+    const currentController = riskGetRef.current.controller;
     (async () => {
       setLoadingHasTransfer(true);
       setHasError(false);
       let hasSent = false;
       let hasError = false;
       try {
+        const hasAborted = (resolveFunc: any) => {
+          if (currentController.signal.aborted) {
+            resolveFunc();
+            queue.clear();
+            return true;
+          }
+        };
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('timeout')), 3000);
         });
         const checkTransferPromise = new Promise<void>((resolve) => {
-          myTop10AccountList.forEach((acc) => {
-            if (isSameAddress(acc.address, address)) {
-              return;
-            }
+          caredAddresses.forEach((addr) => {
+            if (hasAborted(resolve)) return;
+            if (isSameAddress(addr, toAddress)) return;
             queue.add(async () => {
               try {
-                if (hasSent || hasError) {
-                  return;
-                }
+                if (hasAborted(resolve)) return;
+                if (hasSent || hasError) return;
                 const res = await wallet.openapi.hasTransferAllChain(
-                  acc.address,
-                  address
+                  addr,
+                  toAddress
                 );
                 if (res?.has_transfer) {
                   hasSent = true;
@@ -264,7 +289,7 @@ export const useAddressRisks = (
         setLoadingHasTransfer(false);
       }
     })();
-  }, [address, myTop10AccountList, onLoadFinished, wallet]);
+  }, [toAddress, caredAddresses, onLoadFinished, wallet]);
 
   return {
     risks,

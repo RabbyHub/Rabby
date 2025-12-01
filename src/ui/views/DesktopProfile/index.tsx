@@ -55,13 +55,28 @@ const Wrap = styled.div`
   width: 100%;
   overflow: auto;
   background: var(--rb-neutral-bg-1, #fff);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
 
-  .x-container {
-    padding-left: 20px;
-    padding-right: 20px;
-    max-width: 1440px;
-    margin-left: auto;
-    margin-right: auto;
+  .main-content {
+    padding-left: 80px;
+    flex-shrink: 0;
+
+    transition: padding 0.3s;
+
+    &.is-open {
+      padding-left: 0;
+    }
+  }
+
+  .layout-container {
+    /* max-width: 1440px; */
+    width: 1120px;
+    /* margin-left: auto; */
+    /* margin-right: auto; */
   }
 
   /* antd */
@@ -203,125 +218,126 @@ export const DesktopProfile = () => {
   return (
     <>
       <Wrap
-        className="w-full h-full bg-rb-neutral-bg-1"
+        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element"
         ref={scrollContainerRef}
       >
-        <div className="x-container sticky top-0 z-10 pt-[16px] bg-rb-neutral-bg-1">
-          <DesktopNav
-            balance={balance}
-            changePercent={curveChartData?.changePercent}
-            isLoss={curveChartData?.isLoss}
-            isLoading={isBalanceLoading || isCurveLoading}
-          />
-          <div
-            className="sticky top-[103px] z-10 pt-[16px] overflow-scroll flex-initial"
-            style={{ width: 0, scrollbarWidth: 'none' }}
-            id={TOP_SHORTCUT_SLOT_ID}
-          >
-            {cacheProjectOverviewList?.length > 0 && activeTab === 'tokens' && (
-              <TopShortcut projects={cacheProjectOverviewList || []} />
-            )}
-          </div>
-        </div>
-        <div className="x-container">
-          <div className="flex items-start gap-[20px]">
-            <main className="flex-1" id={PORTFOLIO_LIST_ID}>
-              <div
-                className={clsx(
-                  'bg-r-neutral-card-1 rounded-[20px]',
-                  'border-[1px] border-solid border-rb-neutral-line'
+        <div className="main-content">
+          <div className="layout-container sticky top-0 z-10 pt-[16px] bg-rb-neutral-bg-1">
+            <DesktopNav
+              balance={balance}
+              changePercent={curveChartData?.changePercent}
+              isLoss={curveChartData?.isLoss}
+              isLoading={isBalanceLoading || isCurveLoading}
+            />
+            <div
+              className="sticky top-[103px] z-10 pt-[16px] overflow-scroll flex-initial"
+              style={{ width: 0, scrollbarWidth: 'none' }}
+              id={TOP_SHORTCUT_SLOT_ID}
+            >
+              {cacheProjectOverviewList?.length > 0 &&
+                activeTab === 'tokens' && (
+                  <TopShortcut projects={cacheProjectOverviewList || []} />
                 )}
-              >
-                <ProfileHeader
-                  balance={balance}
-                  evmBalance={evmBalance}
-                  curveChartData={curveChartData}
-                  isLoading={isBalanceLoading || isCurveLoading}
-                  onRefresh={handleUpdate}
-                  appChainIds={appChainIds}
-                />
-                <div key={refreshKey}>
-                  <Tabs
-                    defaultActiveKey={activeTab}
-                    activeKey={activeTab}
-                    onChange={handleTabChange}
-                    tabBarExtraContent={{
-                      right: (
-                        <div className="flex items-center gap-[16px] pr-[20px]">
-                          <UpdateButton
-                            isUpdating={isUpdating}
-                            onUpdate={handleUpdate}
-                            updatedAt={updatedAt}
-                          />
-                          <DesktopChainSelector
-                            value={chain}
-                            onChange={(v) =>
-                              dispatch.desktopProfile.setField({ chain: v })
-                            }
-                          />
-                        </div>
-                      ),
+            </div>
+          </div>
+          <div className="layout-container">
+            <div className="flex items-start gap-[20px]">
+              <main className="flex-1" id={PORTFOLIO_LIST_ID}>
+                <div
+                  className={clsx(
+                    'bg-r-neutral-card-1 rounded-[20px]',
+                    'border-[1px] border-solid border-rb-neutral-line'
+                  )}
+                >
+                  <ProfileHeader
+                    balance={balance}
+                    evmBalance={evmBalance}
+                    curveChartData={curveChartData}
+                    isLoading={isBalanceLoading || isCurveLoading}
+                    onRefresh={handleUpdate}
+                    appChainIds={appChainIds}
+                  />
+                  <div key={refreshKey}>
+                    <Tabs
+                      defaultActiveKey={activeTab}
+                      activeKey={activeTab}
+                      onChange={handleTabChange}
+                      tabBarExtraContent={{
+                        right: (
+                          <div className="flex items-center gap-[16px] pr-[20px]">
+                            <UpdateButton
+                              isUpdating={isUpdating}
+                              onUpdate={handleUpdate}
+                              updatedAt={updatedAt}
+                            />
+                            <DesktopChainSelector
+                              value={chain}
+                              onChange={(v) =>
+                                dispatch.desktopProfile.setField({ chain: v })
+                              }
+                            />
+                          </div>
+                        ),
+                      }}
+                    >
+                      <Tabs.TabPane
+                        tab={t('page.desktopProfile.tabs.tokens')}
+                        key="tokens"
+                      >
+                        <TokensTabPane
+                          onProjectOverviewListChange={
+                            setCacheProjectOverviewList
+                          }
+                          selectChainId={chainInfo?.serverId}
+                        />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="NFTs" key="nft">
+                        <NFTTabPane selectChainId={chainInfo?.serverId} />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane
+                        tab={t('page.desktopProfile.tabs.transactions')}
+                        key="transactions"
+                      >
+                        <TransactionsTabPane
+                          selectChainId={chainInfo?.serverId}
+                          scrollContainerRef={scrollContainerRef}
+                        />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane
+                        tab={t('page.desktopProfile.tabs.approvals')}
+                        key="approvals"
+                      >
+                        <ApprovalsTabPane
+                          isDesktop={true}
+                          desktopChain={chain}
+                          key={`${currentAccount?.address}-${currentAccount?.type}`}
+                        />
+                      </Tabs.TabPane>
+                    </Tabs>
+                  </div>
+                </div>
+                <ReachedEnd />
+                <div className="flex justify-end px-[20px]">
+                  <BackTop
+                    target={() => scrollContainerRef.current || window}
+                    style={{
+                      bottom: 32,
+                      zIndex: 100,
+                      right: 'initial',
                     }}
                   >
-                    <Tabs.TabPane
-                      tab={t('page.desktopProfile.tabs.tokens')}
-                      key="tokens"
-                    >
-                      <TokensTabPane
-                        onProjectOverviewListChange={
-                          setCacheProjectOverviewList
-                        }
-                        selectChainId={chainInfo?.serverId}
-                      />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab="NFTs" key="nft">
-                      <NFTTabPane selectChainId={chainInfo?.serverId} />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane
-                      tab={t('page.desktopProfile.tabs.transactions')}
-                      key="transactions"
-                    >
-                      <TransactionsTabPane
-                        selectChainId={chainInfo?.serverId}
-                        scrollContainerRef={scrollContainerRef}
-                      />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane
-                      tab={t('page.desktopProfile.tabs.approvals')}
-                      key="approvals"
-                    >
-                      <ApprovalsTabPane
-                        isDesktop={true}
-                        desktopChain={chain}
-                        key={`${currentAccount?.address}-${currentAccount?.type}`}
-                      />
-                    </Tabs.TabPane>
-                  </Tabs>
+                    <ThemeIcon src={RcIconBackTop} />
+                  </BackTop>
                 </div>
-              </div>
-              <ReachedEnd />
-              <div className="flex justify-end px-[20px]">
-                <BackTop
-                  target={() => scrollContainerRef.current || window}
-                  style={{
-                    bottom: 32,
-                    zIndex: 100,
-                    right: 'initial',
-                  }}
-                >
-                  <ThemeIcon src={RcIconBackTop} />
-                </BackTop>
-              </div>
-            </main>
-            <aside
-              className={clsx(
-                'min-w-[260px] flex-shrink-0 overflow-auto sticky top-[103px] z-20'
-              )}
-            >
-              <DesktopSelectAccountList />
-            </aside>
+              </main>
+            </div>
           </div>
         </div>
+        <aside
+          className={clsx('min-w-[64px] flex-shrink-0 sticky top-[103px] z-20')}
+        >
+          <DesktopSelectAccountList />
+        </aside>
       </Wrap>
       <SendTokenModal
         visible={action === 'send'}

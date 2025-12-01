@@ -153,7 +153,9 @@ const SendNFT = () => {
   const [agreeRequiredChecks, setAgreeRequiredChecks] = useState({
     forToAddress: false,
   });
-  const { loading: loadingRisks, risks } = useAddressRisks(toAddress || '', {
+  const { loading: loadingRisks, risks } = useAddressRisks({
+    toAddress: toAddress || '',
+    fromAddress: currentAccount?.address,
     onLoadFinished: useCallback(() => {
       setAgreeRequiredChecks((prev) => ({ ...prev, forToAddress: false }));
     }, []),
