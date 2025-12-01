@@ -8,6 +8,7 @@ import {
   useWalletRequest,
   getUiType,
   openInternalPageInTab,
+  isSameAddress,
 } from 'ui/utils';
 import rabbyLogo from '@/ui/assets/unlock/rabby.svg';
 import { ReactComponent as BackgroundSVG } from '@/ui/assets/unlock/background.svg';
@@ -55,8 +56,7 @@ const Unlock = () => {
   }, []);
 
   const [run] = useWalletRequest(wallet.unlock, {
-    onSuccess() {
-      dispatch.account.getCurrentAccountAsync();
+    async onSuccess() {
       if (UiType.isNotification) {
         if (query.from === '/connect-approval') {
           history.replace('/approval?ignoreOtherWallet=1');
@@ -64,6 +64,21 @@ const Unlock = () => {
           resolveApproval();
         }
       } else if (UiType.isTab || UiType.isDesktop) {
+        const account = query.address
+          ? await wallet
+              .getAccountByAddress(query.address as string)
+              .catch(() => null)
+          : null;
+        const currentAccount = await wallet.getCurrentAccount();
+        if (
+          account &&
+          !isSameAddress(account?.address || '', currentAccount?.address || '')
+        ) {
+          dispatch.account.setCurrentAccount({ currentAccount: account });
+        } else {
+          dispatch.account.getCurrentAccountAsync();
+        }
+
         history.replace(
           query.from && isString(query.from)
             ? query.from
