@@ -74,7 +74,7 @@ const Unlock = () => {
           account &&
           !isSameAddress(account?.address || '', currentAccount?.address || '')
         ) {
-          dispatch.account.setCurrentAccount({ currentAccount: account });
+          dispatch.account.changeAccountAsync(account);
         } else {
           dispatch.account.getCurrentAccountAsync();
         }
