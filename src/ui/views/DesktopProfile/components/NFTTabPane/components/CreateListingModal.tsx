@@ -456,7 +456,7 @@ export const Content: React.FC<Props> = (props) => {
       ? (await refetchListingOrders().catch(() => null))?.orders
       : [];
 
-    const tx = isApproved
+    const tx = (await runCheckIsApproved())
       ? needCancelFirst && listingOrders?.length
         ? await wallet.buildCancelNFTListTx({
             address: currentAccount?.address,
