@@ -188,12 +188,29 @@ const Content: React.FC<Props> = (props) => {
           />
           <div className="flex-1 min-w-0 flex justify-between gap-[4px]">
             <div className="space-y-[4px]">
-              <div
-                className={clsx(
-                  'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate'
-                )}
-              >
-                {nftDetail?.name || '-'}
+              <div className="flex items-center gap-[6px]">
+                <div
+                  className={clsx(
+                    'text-[13px] leading-[16px] font-medium text-r-neutral-title1 truncate'
+                  )}
+                >
+                  {nftDetail?.name || '-'}
+                </div>
+                {+(
+                  listingOffer?.protocol_data?.parameters?.offer?.[0]
+                    ?.startAmount || 0
+                ) > 1 ? (
+                  <div
+                    className={clsx(
+                      'text-[11px] leading-[13px] font-medium text-r-neutral-foot',
+                      'px-[6px] py-[2px] border-[0.5px] border-rabby-neutral-line rounded-[4px] shrink-0'
+                    )}
+                  >
+                    x
+                    {listingOffer?.protocol_data?.parameters?.offer?.[0]
+                      ?.startAmount || 1}
+                  </div>
+                ) : null}
               </div>
               <div
                 className={clsx(
@@ -214,6 +231,10 @@ const Content: React.FC<Props> = (props) => {
                             listingToken?.decimals
                           )
                         )
+                        .div(
+                          listingOffer.protocol_data?.parameters?.offer?.[0]
+                            .startAmount || 1
+                        )
                         .toString()
                     )}{' '}
                     {listingToken?.symbol}
@@ -229,6 +250,10 @@ const Content: React.FC<Props> = (props) => {
                           new BigNumber(10).exponentiatedBy(
                             listingToken?.decimals
                           )
+                        )
+                        .div(
+                          listingOffer.protocol_data?.parameters?.offer?.[0]
+                            .startAmount || 1
                         )
                         .times(listingToken.price)
                         .toString()
