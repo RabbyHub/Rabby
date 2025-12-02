@@ -38,6 +38,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { ModalProps } from 'antd';
+import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
 
 const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const { t } = useTranslation();
@@ -82,6 +83,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const visible = useDebounceValue(_visible, 100);
   const loading =
     status === 'prefetching' || status === 'signing' || !ctx?.txsCalc.length;
+
+  useSetReportGasLevel(ctx?.selectedGas?.level);
 
   useGasAccountInfo();
   const { sig, accountId: gasAccountAddress } = useGasAccountSign();
