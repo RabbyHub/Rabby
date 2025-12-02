@@ -1,14 +1,20 @@
 import { useWallet } from '@/ui/utils';
 import { useRequest } from 'ahooks';
 
-export const useNFTListingOrders = (params: {
-  maker?: string;
-  chain_id?: string;
-  collection_id?: string;
-  inner_id?: string;
-  limit?: number;
-  cursor?: string;
-}) => {
+export const useNFTListingOrders = (
+  params: {
+    maker?: string;
+    chain_id?: string;
+    collection_id?: string;
+    inner_id?: string;
+    limit?: number;
+    cursor?: string;
+  },
+  options?: {
+    manual?: boolean;
+    ready?: boolean;
+  }
+) => {
   const wallet = useWallet();
   const { maker, chain_id, collection_id, inner_id, limit, cursor } = params;
   return useRequest(
@@ -29,6 +35,7 @@ export const useNFTListingOrders = (params: {
     {
       // cacheKey: `${maker}-${chain_id}-${collection_id}-${limit}-${cursor}`,
       refreshDeps: [maker, chain_id, collection_id, inner_id, limit, cursor],
+      ...options,
     }
   );
 };

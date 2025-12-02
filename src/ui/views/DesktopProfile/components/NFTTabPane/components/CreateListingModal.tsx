@@ -43,6 +43,7 @@ import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.sv
 import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
 import { useListenTxReload } from '../../../hooks/useListenTxReload';
 import { useTranslation } from 'react-i18next';
+import { useNFTListingOrders } from '../hooks/useNFTListingOrders';
 
 const Container = styled.div`
   table {
@@ -98,6 +99,11 @@ const Container = styled.div`
   }
 
   .custom-select {
+    &.ant-select-disabled {
+      .ant-select-selector {
+        background: transparent;
+      }
+    }
     .ant-select-selector {
       border-radius: 8px;
       border: 1px solid var(--r-neutral-line, #e0e5ec);
@@ -213,6 +219,17 @@ export const Content: React.FC<Props> = (props) => {
   const currentAccount = useCurrentAccount();
   const nftTradingConfig = useNFTTradingConfig();
   const { t } = useTranslation();
+  const { runAsync: refetchListingOrders } = useNFTListingOrders(
+    {
+      maker: currentAccount?.address,
+      chain_id: nftDetail?.chain,
+      collection_id: nftDetail?.contract_id,
+      inner_id: nftDetail?.inner_id,
+    },
+    {
+      ready: !!(currentAccount?.address && nftDetail && isEdit),
+    }
+  );
 
   const [formValues, setFormValues] = useSetState<{
     listingPrice?: string;
@@ -410,7 +427,6 @@ export const Content: React.FC<Props> = (props) => {
   const [totalSteps, setTotalSteps] = useState(1);
 
   const checkNeedCancelFirst = useMemoizedFn(() => {
-    console.log(currentOrder, formValues);
     return (
       isEdit &&
       currentOrder &&
@@ -435,6 +451,10 @@ export const Content: React.FC<Props> = (props) => {
     }
 
     const needCancelFirst = checkNeedCancelFirst();
+
+    const listingOrders = needCancelFirst
+      ? (await refetchListingOrders().catch(() => null))?.orders
+      : [];
 
     const tx = isApproved
       ? needCancelFirst && listingOrders?.length
