@@ -444,6 +444,19 @@ const Content: React.FC<Props> = (props) => {
               <div className="mt-[8px] flex items-center gap-[6px]">
                 {listingToken ? (
                   <>
+                    {+(
+                      listingOffer?.protocol_data?.parameters?.offer?.[0]
+                        ?.startAmount || 0
+                    ) > 1 ? (
+                      <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
+                        {t('page.desktopProfile.nft.detail.listedFor', {
+                          count: +(
+                            listingOffer?.protocol_data?.parameters?.offer?.[0]
+                              ?.startAmount || 1
+                          ),
+                        })}
+                      </div>
+                    ) : null}
                     <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
                       {formatTokenAmount(
                         new BigNumber(listingOffer.current_price)
