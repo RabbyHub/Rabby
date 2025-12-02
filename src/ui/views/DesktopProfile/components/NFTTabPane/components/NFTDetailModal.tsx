@@ -452,6 +452,10 @@ const Content: React.FC<Props> = (props) => {
                               listingToken?.decimals
                             )
                           )
+                          .div(
+                            listingOffer.protocol_data?.parameters?.offer?.[0]
+                              .startAmount || 1
+                          )
                           .toString()
                       )}{' '}
                       {listingToken?.symbol}
@@ -463,6 +467,10 @@ const Content: React.FC<Props> = (props) => {
                             new BigNumber(10).exponentiatedBy(
                               listingToken?.decimals
                             )
+                          )
+                          .div(
+                            listingOffer.protocol_data?.parameters?.offer?.[0]
+                              .startAmount || 1
                           )
                           .times(listingToken.price)
                           .toString()
