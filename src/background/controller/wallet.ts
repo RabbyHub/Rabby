@@ -32,6 +32,7 @@ import {
   uninstalledService,
   OfflineChainsService,
   perpsService,
+  miscService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -5958,6 +5959,8 @@ export class WalletController extends BaseController {
   };
 
   getRpcTxReceipt = transactionHistoryService.getRpcTxReceipt;
+  setReportGasLevel = miscService.setCurrentGasLevel;
+  getReportGasLevel = miscService.getCurrentGasLevel;
 }
 
 const wallet = new WalletController();

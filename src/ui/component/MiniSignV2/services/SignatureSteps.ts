@@ -778,6 +778,12 @@ export class SignatureSteps {
     } = params;
     let i = 0;
 
+    try {
+      await wallet.setReportGasLevel(params?.selectedGas?.level);
+    } catch (error) {
+      console.error('sendBatch setReportGasLevel error', error);
+    }
+
     const {
       getRetryTxType,
       retryTxReset,
