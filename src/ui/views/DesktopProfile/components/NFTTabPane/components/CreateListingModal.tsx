@@ -461,6 +461,7 @@ export const Content: React.FC<Props> = (props) => {
       tokenId: listingToken.id,
       listingPriceInWei: new BigNumber(formValues.listingPrice)
         .times(new BigNumber(10).exponentiatedBy(listingToken.decimals))
+        .times(formValues.amount || 1)
         .integerValue()
         .toString(),
       sellerAddress: currentAccount.address,
@@ -493,6 +494,7 @@ export const Content: React.FC<Props> = (props) => {
     //   currency:
     //     nftTradingConfig?.[nftDetail.chain].listing_currency.token_id || '',
     // });
+    // console.log('prepareListingNFT res', res);
 
     // const sign = res.data.sign;
 
