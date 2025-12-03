@@ -96,6 +96,7 @@ export interface BridgeTxHistoryItem {
   dexId: string;
   status: 'pending' | 'fromSuccess' | 'fromFailed' | 'allSuccess' | 'failed';
   hash: string;
+  acceleratedHash?: string;
   estimatedDuration: number; // ms from server
   createdAt: number;
   fromTxCompleteTs?: number;
@@ -490,7 +491,8 @@ class TxHistory {
   completeRecentTxHistory(
     txs: TransactionHistoryItem[],
     chainId: number,
-    status: SwapTxHistoryItem['status']
+    status: SwapTxHistoryItem['status'],
+    completedHash?: string
   ) {
     const hashArr = txs.map((item) => item.hash);
     const completedAt = Date.now();
@@ -531,6 +533,7 @@ class TxHistory {
         return {
           ...item,
           status: status === 'success' ? 'fromSuccess' : 'fromFailed',
+          acceleratedHash: completedHash || item.hash,
           fromTxCompleteTs: completedAt,
         };
       }
@@ -983,7 +986,8 @@ class TxHistory {
       this.completeRecentTxHistory(
         txs,
         chainId,
-        completed.status === 1 ? 'success' : 'failed'
+        completed.status === 1 ? 'success' : 'failed',
+        completedTx.hash
       );
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.RELOAD_TX,

@@ -724,7 +724,7 @@ const SendNFT = () => {
               ) : null}
               {!canSubmit && (
                 <div className="mt-16 mb-16">
-                  <PendingTxItem type="sendNft" />
+                  <PendingTxItem type="sendNft" getContainer={getContainer} />
                 </div>
               )}
             </div>
