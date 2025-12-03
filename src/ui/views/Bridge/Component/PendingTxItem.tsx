@@ -604,8 +604,9 @@ export const BridgePendingTxItem = ({
       });
       const bridgeHistoryList = res.history_list;
       if (bridgeHistoryList && bridgeHistoryList?.length > 0) {
+        const hash = historyData.acceleratedHash || historyData.hash;
         const findTx = bridgeHistoryList.find(
-          (item) => item.from_tx?.tx_id === historyData.hash
+          (item) => item.from_tx?.tx_id === hash
         );
         if (!findTx) {
           const currentTime = Date.now();
@@ -679,7 +680,7 @@ export const BridgePendingTxItem = ({
         return;
       }
 
-      const recentlyTxHash = data?.hash;
+      const recentlyTxHash = data?.acceleratedHash || data?.hash;
       const findTx = bridgeHistoryList.find(
         (item) => item.from_tx?.tx_id === recentlyTxHash
       );
