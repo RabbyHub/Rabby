@@ -1,5 +1,5 @@
 import { getTokenSymbol } from '@/ui/utils/token';
-import { Tooltip, message } from 'antd';
+import { DrawerProps, Tooltip, message } from 'antd';
 import { GasLevel, Tx, TxRequest } from 'background/service/openapi';
 import {
   TransactionGroup,
@@ -17,7 +17,7 @@ import { SvgPendingSpin } from 'ui/assets';
 import { ReactComponent as RcIconCancel } from 'ui/assets/cancel.svg';
 import IconQuestionMark from 'ui/assets/question-mark-black.svg';
 import { ReactComponent as RcIconSpeedup } from 'ui/assets/speedup.svg';
-import { isSameAddress, sinceTime, useWallet } from 'ui/utils';
+import { getUiType, isSameAddress, sinceTime, useWallet } from 'ui/utils';
 import { openInTab } from 'ui/utils/webapi';
 import { ChildrenTxText } from './ChildrenTxText';
 import { TransactionExplain } from './TransactionExplain';
@@ -35,6 +35,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+const isDesktop = getUiType().isDesktop;
 
 const ChildrenWrapper = styled.div`
   padding: 2px;
@@ -50,6 +51,7 @@ export const TransactionItem = ({
   onRetry,
   txRequests,
   onClearPending,
+  getContainer,
 }: {
   item: TransactionGroup;
   canCancel: boolean;
@@ -58,8 +60,10 @@ export const TransactionItem = ({
   onQuickCancel?(): void;
   onRetry?(): void;
   onClearPending?(): void;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
+  const desktopGetContainer = getContainer || '.activities';
   const wallet = useWallet();
   const [isShowCancelPopup, setIsShowCancelPopup] = useState(false);
   const chain = findChain({
@@ -267,7 +271,7 @@ export const TransactionItem = ({
           onPreExecError: () => {
             void sendViaRequest();
           },
-          getContainer,
+          getContainer: isDesktop ? desktopGetContainer : undefined,
         });
         setTimeout(() => {
           onClearPending?.();
@@ -374,7 +378,7 @@ export const TransactionItem = ({
           onPreExecError: () => {
             void sendViaRequest();
           },
-          getContainer,
+          getContainer: isDesktop ? desktopGetContainer : undefined,
         });
         setTimeout(() => {
           onClearPending?.();

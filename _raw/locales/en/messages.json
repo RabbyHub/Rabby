@@ -1466,6 +1466,8 @@
       },
       "pendingItem": {
         "pending": "Pending",
+        "swapStatus": "Swap Status",
+        "sendStatus": "Send Status",
         "completed": "Completed",
         "failed": "Failed",
         "queued": "Queued",

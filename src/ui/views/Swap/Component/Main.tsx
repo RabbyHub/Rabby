@@ -946,6 +946,7 @@ export const Main = () => {
         Boolean(!isShowMoreVisible && !activeProvider?.quote) ? (
           <div className="mx-20 mt-20">
             <PendingTxItem
+              getContainer={getContainer}
               type={
                 shouldTwoStepSwap && currentTxs?.length ? 'approveSwap' : 'swap'
               }

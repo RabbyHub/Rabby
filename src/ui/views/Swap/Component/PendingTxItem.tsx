@@ -33,18 +33,18 @@ import type {
   ApproveTokenTxHistoryItem,
 } from '@/background/service/transactionHistory';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { Image } from 'antd';
+import { DrawerProps, Image } from 'antd';
 import { BridgeHistory, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getUiType } from '@/ui/utils';
 import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
 import { UI_TYPE } from '@/constant/ui';
+import { PendingTxStatusPopup } from './PendingTxStatusPopup';
 
 const isDesktop = getUiType().isDesktop;
 type PendingTxData =
   | SwapTxHistoryItem
   | SendNftTxHistoryItem
   | SendTxHistoryItem
-  | BridgeTxHistoryItem
   | ApproveTokenTxHistoryItem;
 
 const StatusIcon = ({ status }: { status: string }) => {
@@ -103,332 +103,262 @@ const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
 export const PendingTxItem = forwardRef<
   { fetchHistory: () => void },
   {
-    type:
-      | 'send'
-      | 'swap'
-      | 'bridge'
-      | 'sendNft'
-      | 'approveSwap'
-      | 'approveBridge';
+    type: 'send' | 'swap' | 'sendNft' | 'approveSwap';
     bridgeHistoryList?: BridgeHistory[];
     openBridgeHistory?: () => void;
     onFulfilled?: () => void;
+    getContainer?: DrawerProps['getContainer'];
   }
->(({ type, bridgeHistoryList, openBridgeHistory, onFulfilled }, ref) => {
-  const { t } = useTranslation();
-  const wallet = useWallet();
-  const history = useHistory();
-  const [data, setData] = useState<PendingTxData | null>(null);
-  const { userAddress } = useRabbySelector((state) => ({
-    userAddress: state.account.currentAccount?.address || '',
-  }));
-  const preFulfilledRef = useRef<boolean>(true);
+>(
+  (
+    { type, bridgeHistoryList, openBridgeHistory, onFulfilled, getContainer },
+    ref
+  ) => {
+    const { t } = useTranslation();
+    const wallet = useWallet();
+    const history = useHistory();
+    const [data, setData] = useState<PendingTxData | null>(null);
+    const [visible, setVisible] = useState(false);
+    const { userAddress } = useRabbySelector((state) => ({
+      userAddress: state.account.currentAccount?.address || '',
+    }));
+    const preFulfilledRef = useRef<boolean>(true);
 
-  const fetchHistory = useCallback(async () => {
-    if (!userAddress) return;
-    const historyData = await wallet.getRecentPendingTxHistory(
-      userAddress,
-      type
-    );
-    setData(historyData);
-  }, [type, userAddress]);
-
-  useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory]);
-
-  const fetchRefreshLocalData = useMemoizedFn(
-    async (
-      data: PendingTxData,
-      type:
-        | 'send'
-        | 'swap'
-        | 'bridge'
-        | 'sendNft'
-        | 'approveSwap'
-        | 'approveBridge'
-    ) => {
-      if (data.status !== 'pending') {
-        // has done
-        return;
-      }
-
-      const address = data.address;
-      const chainId =
-        'chainId' in data
-          ? data.chainId
-          : 'fromChainId' in data
-          ? data.fromChainId
-          : null;
-      const hash = data.hash;
-      const newData = await wallet.getRecentTxHistory(
-        address,
-        hash,
-        chainId!,
+    const fetchHistory = useCallback(async () => {
+      if (!userAddress) return;
+      const historyData = await wallet.getRecentPendingTxHistory(
+        userAddress,
         type
       );
+      setData(historyData as PendingTxData);
+    }, [type, userAddress]);
 
-      if (newData?.status !== 'pending') {
-        return newData;
-      }
-    }
-  );
-
-  useInterval(async () => {
-    if (data) {
-      const refreshTx = await fetchRefreshLocalData(data, type);
-      if (refreshTx) {
-        setData(refreshTx);
-      }
-    }
-  }, 1000);
-
-  // not use in bridge, so no need
-  // useEffect(() => {
-  //   if (
-  //     bridgeHistoryList &&
-  //     bridgeHistoryList?.length > 0 &&
-  //     type === 'bridge'
-  //   ) {
-  //     const recentlyTxHash = data?.hash;
-  //     if (
-  //       recentlyTxHash &&
-  //       'fromChainId' in data && // only bridge logic
-  //       data.status !== 'allSuccess'
-  //     ) {
-  //       const findTx = bridgeHistoryList.find(
-  //         (item) => item.from_tx?.tx_id === recentlyTxHash
-  //       );
-  //       if (!findTx) {
-  //         const currentTime = Date.now();
-  //         const txCreateTime = data?.createdAt;
-  //         if (currentTime - txCreateTime > 1000 * 60 * 60) {
-  //           // tx create time is more than 60 minutes, set this tx failed
-  //           wallet.completeBridgeTxHistory(
-  //             recentlyTxHash,
-  //             data?.fromChainId,
-  //             'failed'
-  //           );
-  //           return;
-  //         }
-  //       }
-  //       if (
-  //         findTx &&
-  //         (findTx.status === 'completed' || findTx.status === 'failed') &&
-  //         data
-  //       ) {
-  //         const status =
-  //           findTx.status === 'completed' ? 'allSuccess' : 'failed';
-  //         setData({
-  //           ...data,
-  //           status,
-  //           completedAt: Date.now(),
-  //         });
-  //         wallet.completeBridgeTxHistory(
-  //           recentlyTxHash,
-  //           data.fromChainId,
-  //           status
-  //         );
-  //       }
-  //     }
-  //   }
-  // }, [bridgeHistoryList, data, type, wallet]);
-
-  const isPending =
-    data?.status === 'pending' || data?.status === 'fromSuccess';
-  const isFailed = data?.status === 'failed';
-  const isSuccess = data?.status === 'success' || data?.status === 'allSuccess';
-
-  useEffect(() => {
-    const isCurrentFulfilled = !isPending;
-    if (isCurrentFulfilled && !preFulfilledRef.current) {
-      onFulfilled?.();
-    }
-    preFulfilledRef.current = isCurrentFulfilled;
-  }, [isPending, onFulfilled]);
-
-  const handlePress = useMemoizedFn(async () => {
-    if (!isPending) {
-      setData(null);
-    }
-    if (type === 'bridge' && openBridgeHistory) {
-      openBridgeHistory();
-    } else {
-      if (isDesktop) {
-        history.push(
-          `${
-            history.location.pathname.startsWith('/desktop/profile')
-              ? history.location.pathname
-              : '/desktop/profile'
-          }?action=activities`
-        );
-      } else {
-        history.push('/activities');
-      }
-    }
-  });
-
-  const sendTitleTextStr = useMemo(() => {
-    if ((type === 'send' || type === 'sendNft') && data) {
-      const sendData = data as SendTxHistoryItem;
-      const sendAmount = formatTokenAmount(sendData?.amount);
-      if (type === 'sendNft') {
-        return `-${sendAmount} NFT`;
-      } else {
-        return `-${sendAmount} ${getTokenSymbol(sendData?.token as TokenItem)}`;
-      }
-    }
-    return '';
-  }, [type, data]);
-
-  const statusText = useMemo(() => {
-    if (isPending) {
-      return t('page.transactions.detail.Pending');
-    }
-    if (isFailed) {
-      return t('page.transactions.detail.Failed');
-    }
-    return t('page.transactions.detail.Succeeded');
-  }, [isPending, isFailed, t]);
-
-  const statusClassName = useMemo(() => {
-    if (isPending) {
-      return 'text-r-orange-default';
-    }
-    if (isFailed) {
-      return 'text-r-red-default';
-    }
-    return 'text-r-green-default';
-  }, [isPending, isFailed]);
-
-  useImperativeHandle(ref, () => ({
-    fetchHistory: () => {
+    useEffect(() => {
       fetchHistory();
-    },
-  }));
+    }, [fetchHistory]);
 
-  if (!data) {
-    return null;
-  }
+    const fetchRefreshLocalData = useMemoizedFn(
+      async (
+        data: PendingTxData,
+        type: 'send' | 'swap' | 'sendNft' | 'approveSwap'
+      ) => {
+        if (data.status !== 'pending') {
+          // has done
+          return;
+        }
 
-  const sendChainItem =
-    type === 'send' || type === 'sendNft'
-      ? findChain({
-          serverId: (data as SendTxHistoryItem)?.token?.chain || '',
-        })
-      : undefined;
+        const address = data.address;
+        const chainId = data.chainId;
+        const hash = data.hash;
+        const newData = await wallet.getRecentTxHistory(
+          address,
+          hash,
+          chainId!,
+          type
+        );
 
-  return (
-    <div>
-      <div
-        className={clsx(
-          'flex items-center justify-between cursor-pointer rounded-[8px] px-[16px] py-[14px]',
-          'hover:bg-blue-light hover:bg-opacity-[0.1] hover:border-rabby-blue-default border border-transparent',
-          'bg-r-neutral-card-1'
-        )}
-        onClick={handlePress}
-      >
-        <div className="flex items-center gap-12">
-          <div className="flex items-center gap-6">
-            {type === 'send' || type === 'sendNft' ? (
-              <>
-                {type === 'sendNft' ? (
-                  <div className="relative w-20 h-20">
-                    <NFTAvatar
-                      content={(data as SendNftTxHistoryItem)?.token?.content}
-                      type={(data as SendNftTxHistoryItem)?.token?.content_type}
-                      className="w-[20px] h-[20px]"
-                    />
-                    <TooltipWithMagnetArrow
-                      title={sendChainItem?.name}
-                      className="rectangle w-[max-content]"
-                    >
-                      <img
-                        className="w-12 h-12 absolute right-[-4px] top-[-4px] rounded-full"
-                        src={sendChainItem?.logo || IconUnknown}
-                        alt={sendChainItem?.name}
+        if (newData?.status !== 'pending') {
+          return newData;
+        }
+      }
+    );
+
+    useInterval(async () => {
+      if (data) {
+        const refreshTx = await fetchRefreshLocalData(data, type);
+        if (refreshTx) {
+          setData(refreshTx as PendingTxData);
+        }
+      }
+    }, 1000);
+
+    const isPending = data?.status === 'pending';
+    const isFailed = data?.status === 'failed';
+
+    useEffect(() => {
+      const isCurrentFulfilled = !isPending;
+      if (isCurrentFulfilled && !preFulfilledRef.current) {
+        onFulfilled?.();
+      }
+      preFulfilledRef.current = isCurrentFulfilled;
+    }, [isPending, onFulfilled]);
+
+    const handlePress = useMemoizedFn(async () => {
+      if (isPending) {
+        setVisible(true);
+        return;
+      } else {
+        setData(null);
+        if (isDesktop) {
+          history.push(
+            `${
+              history.location.pathname.startsWith('/desktop/profile')
+                ? history.location.pathname
+                : '/desktop/profile'
+            }?action=activities`
+          );
+        } else {
+          history.push('/activities');
+        }
+      }
+    });
+
+    const sendTitleTextStr = useMemo(() => {
+      if ((type === 'send' || type === 'sendNft') && data) {
+        const sendData = data as SendTxHistoryItem;
+        const sendAmount = formatTokenAmount(sendData?.amount);
+        if (type === 'sendNft') {
+          return `-${sendAmount} NFT`;
+        } else {
+          return `-${sendAmount} ${getTokenSymbol(
+            sendData?.token as TokenItem
+          )}`;
+        }
+      }
+      return '';
+    }, [type, data]);
+
+    const statusText = useMemo(() => {
+      if (isPending) {
+        return t('page.transactions.detail.Pending');
+      }
+      if (isFailed) {
+        return t('page.transactions.detail.Failed');
+      }
+      return t('page.transactions.detail.Succeeded');
+    }, [isPending, isFailed, t]);
+
+    const statusClassName = useMemo(() => {
+      if (isPending) {
+        return 'text-r-orange-default';
+      }
+      if (isFailed) {
+        return 'text-r-red-default';
+      }
+      return 'text-r-green-default';
+    }, [isPending, isFailed]);
+
+    useImperativeHandle(ref, () => ({
+      fetchHistory: () => {
+        fetchHistory();
+      },
+    }));
+
+    if (!data) {
+      return null;
+    }
+
+    const sendChainItem =
+      type === 'send' || type === 'sendNft'
+        ? findChain({
+            serverId: (data as SendTxHistoryItem)?.token?.chain || '',
+          })
+        : undefined;
+
+    return (
+      <div>
+        <div
+          className={clsx(
+            'flex items-center justify-between cursor-pointer rounded-[8px] px-[16px] py-[14px]',
+            'hover:bg-blue-light hover:bg-opacity-[0.1] hover:border-rabby-blue-default border border-transparent',
+            'bg-r-neutral-card-1'
+          )}
+          onClick={handlePress}
+        >
+          <div className="flex items-center gap-12">
+            <div className="flex items-center gap-6">
+              {type === 'send' || type === 'sendNft' ? (
+                <>
+                  {type === 'sendNft' ? (
+                    <div className="relative w-20 h-20">
+                      <NFTAvatar
+                        content={(data as SendNftTxHistoryItem)?.token?.content}
+                        type={
+                          (data as SendNftTxHistoryItem)?.token?.content_type
+                        }
+                        className="w-[20px] h-[20px]"
                       />
-                    </TooltipWithMagnetArrow>
-                  </div>
-                ) : (
+                      <TooltipWithMagnetArrow
+                        title={sendChainItem?.name}
+                        className="rectangle w-[max-content]"
+                      >
+                        <img
+                          className="w-12 h-12 absolute right-[-4px] top-[-4px] rounded-full"
+                          src={sendChainItem?.logo || IconUnknown}
+                          alt={sendChainItem?.name}
+                        />
+                      </TooltipWithMagnetArrow>
+                    </div>
+                  ) : (
+                    <TokenWithChain
+                      token={(data as SendTxHistoryItem)?.token?.logo_url || ''}
+                      chain={(data as SendTxHistoryItem)?.token?.chain || ''}
+                    />
+                  )}
+                  <span className="text-15 font-medium text-r-neutral-title-1">
+                    {sendTitleTextStr}
+                  </span>
+                </>
+              ) : ['approveSwap'].includes(type) ? (
+                <>
                   <TokenWithChain
-                    token={(data as SendTxHistoryItem)?.token?.logo_url || ''}
-                    chain={(data as SendTxHistoryItem)?.token?.chain || ''}
+                    token={(data as ApproveTokenTxHistoryItem)?.token?.logo_url}
+                    chain={
+                      (data as ApproveTokenTxHistoryItem)?.token?.chain || ''
+                    }
                   />
-                )}
-                <span className="text-15 font-medium text-r-neutral-title-1">
-                  {sendTitleTextStr}
-                </span>
-              </>
-            ) : ['approveBridge', 'approveSwap'].includes(type) ? (
-              <>
-                <TokenWithChain
-                  token={(data as ApproveTokenTxHistoryItem)?.token?.logo_url}
-                  chain={
-                    (data as ApproveTokenTxHistoryItem)?.token?.chain || ''
-                  }
-                />
-                <span className="text-15 font-medium text-r-neutral-title-1">
-                  {t('page.swap.approve-x-symbol', {
-                    symbol: `${
-                      (data as ApproveTokenTxHistoryItem).amount
-                    } ${getTokenSymbol(
-                      (data as ApproveTokenTxHistoryItem)?.token
-                    )}`,
-                  })}
-                </span>
-              </>
-            ) : type === 'swap' ? (
-              <>
-                <TokenWithChain
-                  token={(data as SwapTxHistoryItem)?.fromToken?.logo_url}
-                  chain={(data as SwapTxHistoryItem)?.fromToken?.chain || ''}
-                />
-                <span className="text-15 font-medium text-r-neutral-title-1">
-                  {getTokenSymbol((data as SwapTxHistoryItem)?.fromToken)}
-                </span>
-                <span className="text-15 font-medium text-r-neutral-foot mx-2">
-                  →
-                </span>
-                <TokenWithChain
-                  token={(data as SwapTxHistoryItem)?.toToken?.logo_url}
-                  chain={(data as SwapTxHistoryItem)?.toToken?.chain || ''}
-                />
-                <span className="text-15 font-medium text-r-neutral-title-1">
-                  {getTokenSymbol((data as SwapTxHistoryItem)?.toToken)}
-                </span>
-              </>
-            ) : (
-              <>
-                <TokenWithChain
-                  token={(data as BridgeTxHistoryItem)?.fromToken?.logo_url}
-                  chain={(data as BridgeTxHistoryItem)?.fromToken?.chain || ''}
-                />
-                <span className="text-15 font-medium text-r-neutral-title-1">
-                  {getTokenSymbol((data as BridgeTxHistoryItem)?.fromToken)}
-                </span>
-                <span className="text-15 font-medium text-r-neutral-foot mx-2">
-                  →
-                </span>
-                <TokenWithChain
-                  token={(data as BridgeTxHistoryItem)?.toToken?.logo_url}
-                  chain={(data as BridgeTxHistoryItem)?.toToken?.chain || ''}
-                />
-                <span className="text-15 font-medium text-r-neutral-title-1">
-                  {getTokenSymbol((data as BridgeTxHistoryItem)?.toToken)}
-                </span>
-              </>
-            )}
+                  <span className="text-15 font-medium text-r-neutral-title-1">
+                    {t('page.swap.approve-x-symbol', {
+                      symbol: `${
+                        (data as ApproveTokenTxHistoryItem).amount
+                      } ${getTokenSymbol(
+                        (data as ApproveTokenTxHistoryItem)?.token
+                      )}`,
+                    })}
+                  </span>
+                </>
+              ) : type === 'swap' ? (
+                <>
+                  <TokenWithChain
+                    token={(data as SwapTxHistoryItem)?.fromToken?.logo_url}
+                    chain={(data as SwapTxHistoryItem)?.fromToken?.chain || ''}
+                  />
+                  <span className="text-15 font-medium text-r-neutral-title-1">
+                    {getTokenSymbol((data as SwapTxHistoryItem)?.fromToken)}
+                  </span>
+                  <span className="text-15 font-medium text-r-neutral-foot mx-2">
+                    →
+                  </span>
+                  <TokenWithChain
+                    token={(data as SwapTxHistoryItem)?.toToken?.logo_url}
+                    chain={(data as SwapTxHistoryItem)?.toToken?.chain || ''}
+                  />
+                  <span className="text-15 font-medium text-r-neutral-title-1">
+                    {getTokenSymbol((data as SwapTxHistoryItem)?.toToken)}
+                  </span>
+                </>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <StatusIcon status={data.status} />
+            <span className={clsx('text-15 font-medium', statusClassName)}>
+              {statusText}
+            </span>
           </div>
         </div>
-
-        <div className="flex items-center gap-4">
-          <StatusIcon status={data.status} />
-          <span className={clsx('text-15 font-medium', statusClassName)}>
-            {statusText}
-          </span>
-        </div>
+        <PendingTxStatusPopup
+          visible={visible}
+          onClose={() => {
+            setVisible(false);
+          }}
+          type={type === 'approveSwap' || type === 'swap' ? 'swap' : 'send'}
+          txHash={data.hash}
+          chainId={data.chainId}
+          getContainer={getContainer}
+        />
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
