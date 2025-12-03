@@ -8,6 +8,7 @@ import { ModalCloseIcon } from '../TokenDetailModal';
 import SelectToAddress from '@/ui/views/SelectToAddress';
 import SendNFT from '@/ui/views/SendNFT';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
+import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 
 export const SendTokenModal: React.FC<ModalProps> = (props) => {
   const location = useLocation();
@@ -47,9 +48,11 @@ export const SendTokenModal: React.FC<ModalProps> = (props) => {
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
     >
-      <div className="h-full w-full rounded-[20px] overflow-hidden">
-        {SendPage}
-      </div>
+      <PopupContainer>
+        <div className="h-full w-full rounded-[20px] overflow-hidden">
+          {SendPage}
+        </div>
+      </PopupContainer>
     </Modal>
   );
 };
