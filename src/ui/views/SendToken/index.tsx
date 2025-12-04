@@ -89,11 +89,12 @@ import {
   sortRisksDesc,
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
-import { SendSlider } from '@/ui/component/SendLike/Slider';
+// import { SendSlider } from '@/ui/component/SendLike/Slider';
 import { appIsDebugPkg } from '@/utils/env';
 import { add, debounce } from 'lodash';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
+import { ChainSelectorInSend } from './components/ChainSelectorInSend';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -1535,7 +1536,6 @@ const SendToken = () => {
   //   }, 300),
   //   [handleMaxInfoChanged]
   // );
-
   const handleGasLevelChanged = useCallback(
     async (gl?: GasLevel | null) => {
       handleReserveGasClose();
@@ -1575,114 +1575,115 @@ const SendToken = () => {
     }
   };
 
-  // const handleChainChanged = useCallback(
-  //   async (val: CHAINS_ENUM) => {
-  //     setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
-  //     const gasList = await loadGasList();
-  //     if (gasList && Array.isArray(gasList) && gasList.length > 0) {
-  //       const foundLevel = gasList.find(
-  //           (gasLevel) => (gasLevel.level as GasLevelType) === 'normal'
-  //         ) || findInstanceLevel(gasList);
-  //       foundLevel && setSelectedGasLevel(foundLevel);
-  //     }
+  const handleChainChanged = useCallback(
+    async (val: CHAINS_ENUM) => {
+      setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
+      const gasList = await loadGasList();
+      if (gasList && Array.isArray(gasList) && gasList.length > 0) {
+        const foundLevel =
+          gasList.find(
+            (gasLevel) => (gasLevel.level as GasLevelType) === 'normal'
+          ) || findInstanceLevel(gasList);
+        foundLevel && setSelectedGasLevel(foundLevel);
+      }
 
-  //     const account = (await wallet.syncGetCurrentAccount())!;
-  //     const chain = findChain({
-  //       enum: val,
-  //     });
-  //     if (!chain) {
-  //       return;
-  //     }
-  //     form.setFieldsValue({
-  //       ...form.getFieldsValue(),
-  //       amount: '',
-  //     });
-  //     setChain(val);
-  //     if (addressDesc?.cex?.id && addressDesc.cex.is_deposit) {
-  //       try {
-  //         const isSupportRes = await wallet.openapi.depositCexSupport(
-  //           chain.nativeTokenAddress,
-  //           chain.serverId,
-  //           addressDesc.cex.id
-  //         );
-  //         if (isSupportRes && !isSupportRes.support) {
-  //           setCurrentToken(null);
-  //           setBalanceError(null);
-  //           setSelectedGasLevel(null);
-  //           setShowGasReserved(false);
-  //           // setEstimatedGas(0);
+      const account = (await wallet.syncGetCurrentAccount())!;
+      const chain = findChain({
+        enum: val,
+      });
+      if (!chain) {
+        return;
+      }
+      form.setFieldsValue({
+        ...form.getFieldsValue(),
+        amount: '',
+      });
+      setChain(val);
+      if (addressDesc?.cex?.id && addressDesc.cex.is_deposit) {
+        try {
+          const isSupportRes = await wallet.openapi.depositCexSupport(
+            chain.nativeTokenAddress,
+            chain.serverId,
+            addressDesc.cex.id
+          );
+          if (isSupportRes && !isSupportRes.support) {
+            setCurrentToken(null);
+            setBalanceError(null);
+            setSelectedGasLevel(null);
+            setShowGasReserved(false);
+            // setEstimatedGas(0);
 
-  //           setChainTokenGasFees((prev) => ({
-  //             ...prev,
-  //             gasLimit: 0,
-  //           }));
-  //           const values = form.getFieldsValue();
-  //           form.setFieldsValue({
-  //             ...values,
-  //             amount: '',
-  //           });
-  //           return;
-  //         }
-  //       } catch (error) {
-  //         console.error(error);
-  //       }
-  //     }
-  //     setCurrentToken({
-  //       id: chain.nativeTokenAddress,
-  //       decimals: chain.nativeTokenDecimals,
-  //       logo_url: chain.nativeTokenLogo,
-  //       symbol: chain.nativeTokenSymbol,
-  //       display_symbol: chain.nativeTokenSymbol,
-  //       optimized_symbol: chain.nativeTokenSymbol,
-  //       is_core: true,
-  //       is_verified: true,
-  //       is_wallet: true,
-  //       amount: 0,
-  //       price: 0,
-  //       name: chain.nativeTokenSymbol,
-  //       chain: chain.serverId,
-  //       time_at: 0,
-  //     });
+            setChainTokenGasFees((prev) => ({
+              ...prev,
+              gasLimit: 0,
+            }));
+            const values = form.getFieldsValue();
+            form.setFieldsValue({
+              ...values,
+              amount: '',
+            });
+            return;
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      setCurrentToken({
+        id: chain.nativeTokenAddress,
+        decimals: chain.nativeTokenDecimals,
+        logo_url: chain.nativeTokenLogo,
+        symbol: chain.nativeTokenSymbol,
+        display_symbol: chain.nativeTokenSymbol,
+        optimized_symbol: chain.nativeTokenSymbol,
+        is_core: true,
+        is_verified: true,
+        is_wallet: true,
+        amount: 0,
+        price: 0,
+        name: chain.nativeTokenSymbol,
+        chain: chain.serverId,
+        time_at: 0,
+      });
 
-  //     let nextToken: TokenItem | null = null;
-  //     try {
-  //       nextToken = await loadCurrentToken(
-  //         chain.nativeTokenAddress,
-  //         chain.serverId,
-  //         account.address
-  //       );
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
+      let nextToken: TokenItem | null = null;
+      try {
+        nextToken = await loadCurrentToken(
+          chain.nativeTokenAddress,
+          chain.serverId,
+          account.address
+        );
+      } catch (error) {
+        console.error(error);
+      }
 
-  //     const values = form.getFieldsValue();
-  //     form.setFieldsValue({
-  //       ...values,
-  //       amount: '',
-  //     });
-  //     setShowGasReserved(false);
-  //     handleFormValuesChange(
-  //       { amount: '' },
-  //       {
-  //         ...values,
-  //         amount: '',
-  //       },
-  //       {
-  //         ...(nextToken && { token: nextToken }),
-  //       }
-  //     );
-  //   },
-  //   [
-  //     loadGasList,
-  //     wallet,
-  //     addressDesc?.cex?.id,
-  //     addressDesc?.cex?.is_deposit,
-  //     form,
-  //     setShowGasReserved,
-  //     handleFormValuesChange,
-  //     loadCurrentToken,
-  //   ]
-  // );
+      const values = form.getFieldsValue();
+      form.setFieldsValue({
+        ...values,
+        amount: '',
+      });
+      setShowGasReserved(false);
+      handleFormValuesChange(
+        { amount: '' },
+        {
+          ...values,
+          amount: '',
+        },
+        {
+          ...(nextToken && { token: nextToken }),
+        }
+      );
+    },
+    [
+      loadGasList,
+      wallet,
+      addressDesc?.cex?.id,
+      addressDesc?.cex?.is_deposit,
+      form,
+      setShowGasReserved,
+      handleFormValuesChange,
+      loadCurrentToken,
+    ]
+  );
 
   const initByCache = async () => {
     try {
@@ -2071,6 +2072,9 @@ const SendToken = () => {
                       handleClickMaxButton={handleClickMaxButton}
                       isLoading={isLoading}
                       getContainer={getContainer}
+                      // onStartSelectChain={() => {
+                      //   chainSelectorRef.current?.toggleShow(true);
+                      // }}
                     />
                   </Form.Item>
                 </div>

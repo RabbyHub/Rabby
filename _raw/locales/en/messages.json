@@ -1473,8 +1473,8 @@
         "sendingFrom": "Sending from {{chain}}",
         "swap": "Swap",
         "beReturnFailed": "Bridge failed. Your assets have been returned.",
-        "receivedDifferentTokenNeedSwap" :"You received a different token. You can swap it to the token you selected.",
-        "receivedDifferentTokenFromSource" : "Bridge failed. A different token was returned on the source chain.",
+        "receivedDifferentTokenNeedSwap": "You received a different token. You can swap it to the token you selected.",
+        "receivedDifferentTokenFromSource": "Bridge failed. A different token was returned on the source chain.",
         "BridgeStatusUnavailable": "Bridge status unavailable. Please checkridyour transaction history to confirm the funds arrived.",
         "fromFailed": "Transaction didn’t go through. Try again.",
         "longTimeNoReceive": "Network is busy. This may take longer than usual. Please wait patiently.",
@@ -3431,7 +3431,10 @@
       "hot": "Hot",
       "common": "Common",
       "recent": "Recent",
-      "chainNotSupport": "This chain is not supported"
+      "chainNotSupport": "This chain is not supported",
+      "chainFilterLine": {
+        "filterAll": "All"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
