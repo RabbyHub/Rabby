@@ -17,6 +17,7 @@ import { Form, message, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
 import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
+import { globalSupportCexList } from '@/ui/models/exchange';
 
 import {
   CHAINS_ENUM,
@@ -344,7 +345,10 @@ const SendToken = () => {
       }
 
       const toCexId = addressDesc?.cex?.id;
-      if (toCexId) {
+      const isSupportCEX = globalSupportCexList.find(
+        (cex) => cex.id === toCexId
+      );
+      if (toCexId && isSupportCEX) {
         const cex_ids =
           token.cex_ids || token.identity?.cex_list?.map((item) => item.id);
         const noSupportToken = cex_ids?.every?.(
