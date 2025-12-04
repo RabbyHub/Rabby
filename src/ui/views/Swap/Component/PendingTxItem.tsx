@@ -37,7 +37,6 @@ import { DrawerProps, Image } from 'antd';
 import { BridgeHistory, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getUiType } from '@/ui/utils';
 import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
-import { UI_TYPE } from '@/constant/ui';
 import { PendingTxStatusPopup } from './PendingTxStatusPopup';
 
 const isDesktop = getUiType().isDesktop;
