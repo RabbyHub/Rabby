@@ -49,7 +49,7 @@ export const PendingTxStatusPopup = ({
       (item) =>
         item.chainId === chainId && item.txs.some((tx) => tx.hash === txHash)
     );
-  }, [pendingList, completeList, txHash]);
+  }, [pendingList, completeList, txHash, chainId]);
 
   const init = async () => {
     if (!account) {

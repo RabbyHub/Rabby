@@ -41,7 +41,6 @@ const ChildrenWrapper = styled.div`
   padding: 2px;
   padding-top: 0;
 `;
-const getContainer = '.activities';
 
 export const TransactionItem = ({
   item,
