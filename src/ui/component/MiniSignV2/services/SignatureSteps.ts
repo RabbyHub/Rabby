@@ -28,6 +28,7 @@ import type { Result } from '@rabby-wallet/rabby-security-engine';
 import { getTimeSpan } from '@/ui/utils/time';
 import {
   ALIAS_ADDRESS,
+  CAN_ESTIMATE_L1_FEE_CHAINS,
   CHAINS_ENUM,
   INTERNAL_REQUEST_ORIGIN,
   SUPPORT_1559_KEYRING_TYPE,
@@ -428,7 +429,7 @@ export class SignatureSteps {
       gasList,
       { median: gasPriceMedian },
       nativeTokenBalance,
-      noCustomRPC,
+      hasCustomChainRPC,
       baseRecommendNonce,
     ] = await Promise.all([
       wallet.syncDefaultRPC().catch(() => {}),
@@ -450,6 +451,8 @@ export class SignatureSteps {
         chainId: chain.id,
       }),
     ]);
+
+    const noCustomRPC = !hasCustomChainRPC;
 
     const selectedGas = selectInitialGas({
       gasList,
@@ -502,6 +505,22 @@ export class SignatureSteps {
       chainId: txs[0].chainId,
     });
 
+    let L1feePromises;
+
+    if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
+      L1feePromises = Promise.all(
+        tempTxs.map((tx) =>
+          wallet.fetchEstimatedL1Fee(
+            {
+              txParams: tx,
+            },
+            chain.enum,
+            account
+          )
+        )
+      );
+    }
+
     const preExecProcess = async (index: number) => {
       const buildTx = tempTxs[index];
 
@@ -515,6 +534,18 @@ export class SignatureSteps {
         },
         user_addr: buildTx.from,
       });
+
+      let L1feePromises;
+
+      if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
+        L1feePromises = wallet.fetchEstimatedL1Fee(
+          {
+            txParams: buildTx,
+          },
+          chain.enum,
+          account
+        );
+      }
 
       const preExecResult = await wallet.openapi.preExecTx({
         tx: buildTx,
@@ -571,6 +602,7 @@ export class SignatureSteps {
         tx: buildTx,
         gasLimit,
         account,
+        preparedL1Fee: L1feePromises,
       });
       nativeTokenPrice = preExecResult.native_token.price;
       const finalTx = { ...buildTx, gas: gasLimit } as Tx;
@@ -582,6 +614,7 @@ export class SignatureSteps {
         recommendGasLimitRatio,
         gasCost,
         preExecResult,
+        L1feeCache: L1feePromises ? await L1feePromises : undefined,
       };
     };
 

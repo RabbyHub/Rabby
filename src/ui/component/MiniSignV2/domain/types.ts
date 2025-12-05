@@ -23,6 +23,7 @@ export type CalcItem = {
   };
   preExecResult: ExplainTxResponse;
   hash?: string;
+  L1feeCache?: string;
 };
 
 export type SecurityResult = {

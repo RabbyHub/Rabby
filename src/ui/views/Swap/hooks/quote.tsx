@@ -218,7 +218,6 @@ export const useQuoteMethods = () => {
       }
 
       if (!isLinea) {
-        console.trace('Fetch gas market from network', quote?.tx.to, quote);
         const task = walletController.gasMarketV2({
           chainId: chainInfo.serverId,
         });

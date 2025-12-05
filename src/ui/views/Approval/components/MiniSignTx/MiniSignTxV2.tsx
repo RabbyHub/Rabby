@@ -160,6 +160,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
               tx,
               gasLimit: item.gasLimit,
               account: currentAccount!,
+              preparedL1Fee: item.L1feeCache,
             }),
           };
         })
