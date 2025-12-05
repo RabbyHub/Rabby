@@ -66,7 +66,7 @@ const useChains = ({ supportChains }: { supportChains?: Chain['enum'][] }) => {
 
 const SHOW_COUNT = 3;
 
-export function ChainMatrixLine({
+export function ChainFilterV2Line({
   selectedChain: propSelectedChain,
   onChange,
   onStartSelectChain,
@@ -134,7 +134,12 @@ export function ChainMatrixLine({
     >
       {selectedChain ? (
         <div
-          className="h-[32px] py-[4px] px-[8px] rounded-[8px] bg-r-neutral-card1 flex items-center justify-start cursor-pointer"
+          className={clsx(
+            'h-[32px] py-[4px] px-[8px] rounded-[8px] cursor-pointer',
+            'flex items-center justify-start',
+            'border-[1px] border-[solid] border-transparent bg-r-neutral-card1',
+            'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+          )}
           onClick={() => {
             onClearFilterChain?.();
           }}
@@ -164,7 +169,7 @@ export function ChainMatrixLine({
 
           <div className="ml-[4px]">
             <span className="text-[13px] text-r-neutral-body font-[600]">
-              {selectedChain.nativeTokenSymbol}
+              {selectedChain.name || selectedChain.nativeTokenSymbol}
             </span>
           </div>
 
@@ -185,14 +190,14 @@ export function ChainMatrixLine({
           >
             {top3Chains.map((data, index) => {
               const key = `${data.id}-${data.enum}-${index}`;
-              const isSelectedItem = index === selectedIndex;
 
               return (
                 <div
                   key={key}
                   className={clsx(
                     'flex justify-center items-center',
-                    'w-[16px] h-[16px] rounded-[100%]'
+                    'w-[16px] h-[16px] rounded-[100%]',
+                    'border-[1px] border-[solid] border-r-neutral-card1'
                   )}
                   style={{ left: index * -2, position: 'relative' }}
                   // onClick={() => {

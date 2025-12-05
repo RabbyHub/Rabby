@@ -48,7 +48,7 @@ import NetSwitchTabs, {
 import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useHistory } from 'react-router-dom';
 import { ExchangeLogos } from './CexLogos';
-import { ChainMatrixLine } from './ChainMatrixLine';
+import { ChainFilterV2Line } from './ChainFilterV2Line';
 
 const isTab = getUiType().isTab;
 
@@ -563,7 +563,7 @@ const TokenSelector = ({
         )}
         {showChainFilterV2 && (
           <div className="filters-wrapper">
-            <ChainMatrixLine
+            <ChainFilterV2Line
               selectedChain={chainItem}
               onStartSelectChain={onStartSelectChain}
               onClearFilterChain={() => {
