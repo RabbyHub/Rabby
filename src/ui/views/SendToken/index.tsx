@@ -2087,6 +2087,7 @@ const SendToken = () => {
             {!canSubmitBasic && (
               <div className="mt-20">
                 <PendingTxItem
+                  getContainer={getContainer}
                   onFulfilled={handleFulfilled}
                   type="send"
                   ref={pendingTxRef}

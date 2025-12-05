@@ -200,13 +200,13 @@ const PendingStatusDetail = ({
     // Fallback: calculate from create time if step 2 is loading
     if (step2Status === 'loading' && data.fromTxCompleteTs) {
       const elapsed = Date.now() - data.fromTxCompleteTs;
-      const estimatedDuration = data.estimatedDuration * 1000;
+      const estimatedDuration = Math.max(
+        data.estimatedDuration * 1000,
+        ONE_MINUTE_MS
+      );
       const remainingDuration = estimatedDuration - elapsed;
-      if (elapsed > estimatedDuration * 2 && elapsed > 2 * ONE_MINUTE_MS) {
-        return -1;
-      }
       if (remainingDuration <= 0) {
-        return null;
+        return -1;
       }
       const estimated = Math.max(Math.round(remainingDuration / 60000), 1);
       return estimated;
@@ -465,7 +465,11 @@ const PendingStatusDetail = ({
       {/* Step 2: Receiving on chain */}
       <div
         className={`flex flex-col bg-r-neutral-card-1 rounded-[8px] w-full ${
-          status === 'failed' ? 'mb-32' : ''
+          status === 'failed'
+            ? 'mb-32'
+            : status === 'fromSuccess'
+            ? 'mb-24'
+            : ''
         }`}
       >
         <div className="border-b-[0.5px] border-solid border-rabby-neutral-line">
@@ -604,8 +608,9 @@ export const BridgePendingTxItem = ({
       });
       const bridgeHistoryList = res.history_list;
       if (bridgeHistoryList && bridgeHistoryList?.length > 0) {
+        const hash = historyData.acceleratedHash || historyData.hash;
         const findTx = bridgeHistoryList.find(
-          (item) => item.from_tx?.tx_id === historyData.hash
+          (item) => item.from_tx?.tx_id === hash
         );
         if (!findTx) {
           const currentTime = Date.now();
@@ -679,7 +684,7 @@ export const BridgePendingTxItem = ({
         return;
       }
 
-      const recentlyTxHash = data?.hash;
+      const recentlyTxHash = data?.acceleratedHash || data?.hash;
       const findTx = bridgeHistoryList.find(
         (item) => item.from_tx?.tx_id === recentlyTxHash
       );
