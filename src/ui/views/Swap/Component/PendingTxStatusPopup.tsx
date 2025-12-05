@@ -146,12 +146,12 @@ export const PendingTxStatusPopup = ({
                   (i) => i.nonce
                 )?.nonce === item.nonce
               }
-              // onComplete={() => handleTxComplete()}
-              // onClearPending={() => {
-              //   init();
-              // }}
+              onComplete={() => handleTxComplete()}
+              onClearPending={() => {
+                init();
+              }}
               txRequests={txRequests}
-              // onQuickCancel={init}
+              onQuickCancel={init}
             />
           ))}
         </div>
