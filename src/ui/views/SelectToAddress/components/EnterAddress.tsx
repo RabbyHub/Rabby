@@ -26,7 +26,7 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 const StyledInputWrapper = styled.div<{ $hasError?: boolean }>`
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   .ant-input {
     font-size: 15px;
@@ -247,7 +247,7 @@ export const EnterAddress = ({
               spellCheck={false}
               rows={4}
               className={clsx(
-                'border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal pt-[14px] pl-[15px] h-[80px]'
+                'border-bright-on-active bg-r-neutral-card1 rounded-[12px] leading-normal pt-[14px] pl-[15px] h-[80px]'
               )}
             />
             <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
@@ -288,7 +288,7 @@ export const EnterAddress = ({
         )}
         {ensResult && (
           <div
-            className="mt-[12px] p-[12px] bg-r-neutral-card1 rounded-[8px] cursor-pointer"
+            className="mt-[12px] p-[12px] bg-r-neutral-card1 rounded-[12px] cursor-pointer"
             onClick={() => handleConfirmENS(ensResult.addr)}
           >
             <div className="flex items-center gap-[8px] break-all">

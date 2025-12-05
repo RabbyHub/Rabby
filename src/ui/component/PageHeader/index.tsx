@@ -29,6 +29,7 @@ const PageHeader = ({
   wrapperClassName = '',
   invertBack = false,
   keepBackLightVersion = false,
+  contentClassName,
   className = '',
   closeable = false,
   onClose,
@@ -48,6 +49,7 @@ const PageHeader = ({
   wrapperClassName?: string;
   invertBack?: boolean;
   keepBackLightVersion?: boolean;
+  contentClassName?: string;
   className?: string;
   closeable?: boolean;
   closeCn?: string;
@@ -65,7 +67,8 @@ const PageHeader = ({
       <div
         className={clsx(
           'page-header',
-          isShowAccount && 'switch-account',
+          isShowAccount && 'switch-account thin-header',
+          contentClassName,
           !fixed && className
         )}
       >
