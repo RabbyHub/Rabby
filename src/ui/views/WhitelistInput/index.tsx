@@ -271,7 +271,7 @@ const WhitelistInput = () => {
       >
         <PageHeader
           onBack={handleClickBack}
-          contentClassName='thin-header'
+          contentClassName="thin-header"
           forceShowBack
           canBack
           // rightSlot={
