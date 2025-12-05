@@ -208,10 +208,12 @@ const TokenSelect = forwardRef<
     const {
       isLoading: isSearchLoading,
       list: searchedTokenByQuery,
-    } = useSearchToken(currentAccount?.address, queryConds.keyword, {
-      chainServerId: queryConds.chainServerId,
-      withBalance: isSwapType || type === 'bridgeFrom' ? false : true,
-    });
+    } = useSearchToken(
+      currentAccount?.address,
+      queryConds.keyword,
+      queryConds.chainServerId,
+      isSwapType || type === 'bridgeFrom' ? false : true
+    );
 
     const isSwapTo = type === 'swapTo';
 
@@ -312,7 +314,7 @@ const TokenSelect = forwardRef<
           <TokenSelector
             drawerHeight={drawerHeight}
             visible={tokenSelectorVisible}
-            mainnetTokenList={displayTokenList}
+            list={displayTokenList}
             onConfirm={handleCurrentTokenChange}
             onCancel={handleTokenSelectorClose}
             onSearch={handleSearchTokens}
@@ -377,7 +379,7 @@ const TokenSelect = forwardRef<
         </Wrapper>
         <TokenSelector
           visible={tokenSelectorVisible}
-          mainnetTokenList={displayTokenList}
+          list={displayTokenList}
           onConfirm={handleCurrentTokenChange}
           onCancel={handleTokenSelectorClose}
           onSearch={handleSearchTokens}

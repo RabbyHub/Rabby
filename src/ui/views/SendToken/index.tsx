@@ -90,12 +90,11 @@ import {
   sortRisksDesc,
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
-// import { SendSlider } from '@/ui/component/SendLike/Slider';
+import { SendSlider } from '@/ui/component/SendLike/Slider';
 import { appIsDebugPkg } from '@/utils/env';
 import { add, debounce } from 'lodash';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
-import { ChainSelectorInSend } from './components/ChainSelectorInSend';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -1540,6 +1539,7 @@ const SendToken = () => {
   //   }, 300),
   //   [handleMaxInfoChanged]
   // );
+
   const handleGasLevelChanged = useCallback(
     async (gl?: GasLevel | null) => {
       handleReserveGasClose();
@@ -1584,8 +1584,7 @@ const SendToken = () => {
   //     setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
   //     const gasList = await loadGasList();
   //     if (gasList && Array.isArray(gasList) && gasList.length > 0) {
-  //       const foundLevel =
-  //         gasList.find(
+  //       const foundLevel = gasList.find(
   //           (gasLevel) => (gasLevel.level as GasLevelType) === 'normal'
   //         ) || findInstanceLevel(gasList);
   //       foundLevel && setSelectedGasLevel(foundLevel);
@@ -1889,8 +1888,6 @@ const SendToken = () => {
     }
   });
 
-  // const chainSelectorRef = useRef<ChainSelectorInSend>(null);
-
   return (
     <FullscreenContainer className={isDesktop ? 'h-[600px]' : 'h-[700px]'}>
       <div
@@ -2078,18 +2075,8 @@ const SendToken = () => {
                       handleClickMaxButton={handleClickMaxButton}
                       isLoading={isLoading}
                       getContainer={getContainer}
-                      // onStartSelectChain={() => {
-                      //   chainSelectorRef.current?.toggleShow(true);
-                      // }}
                     />
                   </Form.Item>
-                  {/* <ChainSelectorInSend
-                    ref={chainSelectorRef}
-                    hideTestnetTab
-                    onChange={(value) => {
-                      // setChainServerId(findChainByEnum(value)?.serverId || '');
-                    }}
-                  /> */}
                 </div>
               )}
             </div>

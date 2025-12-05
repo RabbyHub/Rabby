@@ -275,15 +275,9 @@ export function useFindCustomToken(input?: {
 const useSearchToken = (
   address: string | undefined,
   kw: string,
-  {
-    chainServerId,
-    withBalance = false,
-    isTestnet = false,
-  }: {
-    chainServerId?: string;
-    withBalance?: boolean;
-    isTestnet?: boolean;
-  }
+  chainServerId?: string,
+  withBalance = false,
+  isTestnet = false
 ) => {
   const wallet = useWallet();
   const [result, setResult] = useState<AbstractPortfolioToken[]>([]);

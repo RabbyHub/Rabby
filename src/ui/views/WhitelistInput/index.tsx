@@ -36,12 +36,12 @@ const getContainer =
 
 const SectionHeader = styled.div`
   font-size: 17px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--r-neutral-title1);
 `;
 
 const StyledInputWrapper = styled.div`
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   .ant-input {
     font-size: 16px !important;
@@ -265,13 +265,12 @@ const WhitelistInput = () => {
         className={clsx(
           'send-token',
           isDesktop || isTab
-            ? 'w-full h-full overflow-auto min-h-0 rounded-[12px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
+            ? 'w-full h-full overflow-auto min-h-0 rounded-[8px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
         )}
       >
         <PageHeader
           onBack={handleClickBack}
-          contentClassName="thin-header"
           forceShowBack
           canBack
           // rightSlot={
@@ -313,7 +312,7 @@ const WhitelistInput = () => {
                 onBlur={() => setIsFocusAddress(false)}
                 value={inputAddress}
                 onChange={(v) => handleInputChangeAddress(v.target.value)}
-                className="rounded-[12px] leading-normal"
+                className="rounded-[8px] leading-normal"
               />
               <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
                 <IconClearCC
@@ -339,7 +338,7 @@ const WhitelistInput = () => {
           </div>
           <div className="flex flex-col gap-[8px]">
             <SectionHeader>{t('page.whitelist.name')}</SectionHeader>
-            <AliasInputWrapper className="relative rounded-[12px] overflow-hidden">
+            <AliasInputWrapper className="relative rounded-[8px] overflow-hidden">
               <Input
                 placeholder={t('page.whitelist.nameYourAddress')}
                 allowClear={false}
@@ -349,7 +348,7 @@ const WhitelistInput = () => {
                 onFocus={() => setIsFocusAlias(true)}
                 onBlur={() => setIsFocusAlias(false)}
                 onChange={(v) => setInputAlias(v.target.value)}
-                className="border-bright-on-active bg-r-neutral-card1 rounded-[12px] leading-normal"
+                className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal"
               />
               <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
                 <IconClearCC
@@ -385,7 +384,7 @@ const WhitelistInput = () => {
             {isCex && selectedExchange && (
               <div
                 className={`
-                  h-[52px]  bg-r-neutral-card1 rounded-[12px] w-full pl-[16px] pr-[18px] 
+                  h-[52px]  bg-r-neutral-card1 rounded-[8px] w-full pl-[16px] pr-[18px] 
                   flex justify-between items-center cursor-pointer`}
                 onClick={() => {
                   setShowCexListModal(true);
