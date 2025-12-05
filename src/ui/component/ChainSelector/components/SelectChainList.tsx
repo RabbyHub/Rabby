@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import { CHAINS_ENUM } from '@debank/common';
 import {
   DndContext,
@@ -120,24 +122,22 @@ export const SelectChainList = (props: SelectChainListProps) => {
   return (
     <div className={clsx('select-chain-list', className)}>
       {items.map((item) => {
-        return (
-          <SortableSelectChainItem
-            key={item.id}
-            data={item}
-            value={value}
-            onStarChange={(v) => {
-              onStarChange?.(item.enum, v);
-            }}
-            stared={!!pinned.find((chain) => chain === item.enum)}
-            onChange={onChange}
-            disabled={
-              supportChains ? !supportChains.includes(item.enum) : false
-            }
-            disabledTips={disabledTips}
-            disableChainCheck={disableChainCheck}
-            showRPCStatus={showRPCStatus}
-          ></SortableSelectChainItem>
-        );
+        return <SortableSelectChainItem
+          key={item.id}
+          data={item}
+          value={value}
+          onStarChange={(v) => {
+            onStarChange?.(item.enum, v);
+          }}
+          stared={!!pinned.find((chain) => chain === item.enum)}
+          onChange={onChange}
+          disabled={
+            supportChains ? !supportChains.includes(item.enum) : false
+          }
+          disabledTips={disabledTips}
+          disableChainCheck={disableChainCheck}
+          showRPCStatus={showRPCStatus}
+        ></SortableSelectChainItem>
       })}
     </div>
   );
