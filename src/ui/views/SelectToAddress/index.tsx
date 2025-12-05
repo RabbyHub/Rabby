@@ -304,7 +304,6 @@ const SelectToAddress = () => {
         )}
       >
         <PageHeader
-          contentClassName="thin-header"
           onBack={handleClickBack}
           forceShowBack={!(isTab || isDesktop) || inputingAddress}
           canBack={!(isTab || isDesktop) || inputingAddress}
@@ -328,7 +327,7 @@ const SelectToAddress = () => {
           ) : (
             <OuterInput
               className={`
-                border border-r-neutral-line rounded-[12px] bg-r-neutral-card1
+                border border-r-neutral-line rounded-[8px] bg-r-neutral-card1
                 text-r-neutral-foot text-[15px] 
                 h-[52px] leading-[52px] px-[15px] justify-center items-center
                 hover:cursor-text hover:border-r-blue-default
@@ -356,7 +355,7 @@ const SelectToAddress = () => {
                   className={clsx(
                     'flex flex-row items-center justify-center',
                     focusTab === 'whitelist'
-                      ? 'text-r-neutral-title1 font-[600]'
+                      ? 'text-r-neutral-title1 font-bold'
                       : 'text-r-neutral-foot'
                   )}
                 >

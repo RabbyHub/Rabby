@@ -1,5 +1,3 @@
-/* eslint "react-hooks/exhaustive-deps": ["error"] */
-/* eslint-enable react-hooks/exhaustive-deps */
 import React, { useMemo, forwardRef, HTMLAttributes, useEffect } from 'react';
 import { CHAINS_ENUM, Chain } from '@debank/common';
 import { Tooltip } from 'antd';
@@ -70,7 +68,7 @@ export const SelectChainItem = forwardRef(
 
     useEffect(() => {
       dispatch.customRPC.getAllRPC();
-    }, [dispatch.customRPC]);
+    }, []);
 
     const finalDisabledTips = useMemo(() => {
       if (typeof disabledTips === 'function') {
@@ -78,14 +76,14 @@ export const SelectChainItem = forwardRef(
       }
 
       return disabledTips;
-    }, [disabledTips, data]);
+    }, [disabledTips]);
 
     const chainBalanceItem = useMemo(() => {
       return (
         cachedChainBalances.mainnet?.[data.serverId] ||
         cachedChainBalances.testnet?.[data.serverId]
       );
-    }, [cachedChainBalances, data.serverId]);
+    }, [cachedChainBalances]);
 
     const { disable: disableFromToAddress, shortReason } = useMemo(() => {
       return (

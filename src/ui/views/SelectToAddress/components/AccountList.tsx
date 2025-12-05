@@ -51,14 +51,14 @@ export const AccountList = ({
                 background: 'var(--r-neutral-card1, #FFF)',
                 ...(isGroupFirst
                   ? {
-                      borderTopLeftRadius: 12,
-                      borderTopRightRadius: 12,
+                      borderTopLeftRadius: 8,
+                      borderTopRightRadius: 8,
                     }
                   : {}),
                 ...(isGroupLast
                   ? {
-                      borderBottomLeftRadius: 12,
-                      borderBottomRightRadius: 12,
+                      borderBottomLeftRadius: 8,
+                      borderBottomRightRadius: 8,
                       marginBottom: 16,
                       borderBottom: 'none',
                     }

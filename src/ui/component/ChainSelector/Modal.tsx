@@ -1,13 +1,7 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
 import { Button, Drawer, DrawerProps, Input } from 'antd';
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
 import { Chain } from 'background/service/openapi';
@@ -160,16 +154,13 @@ const ChainSelectorModal = ({
   account,
   disableChainCheck,
 }: ChainSelectorModalProps) => {
-  const handleCancel = useCallback(() => {
+  const handleCancel = () => {
     onCancel();
-  }, [onCancel]);
+  };
 
-  const handleChange = useCallback(
-    (val: CHAINS_ENUM) => {
-      onChange(val);
-    },
-    [onChange]
-  );
+  const handleChange = (val: CHAINS_ENUM) => {
+    onChange(val);
+  };
 
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab({
     hideTestnetTab,
