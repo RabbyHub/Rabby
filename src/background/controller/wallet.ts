@@ -32,6 +32,7 @@ import {
   uninstalledService,
   OfflineChainsService,
   perpsService,
+  miscService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -5716,6 +5717,8 @@ export class WalletController extends BaseController {
     });
   };
 
+  setReportGasLevel = miscService.setCurrentGasLevel;
+  getReportGasLevel = miscService.getCurrentGasLevel;
   checkIsApprovedForAll = async ({
     owner,
     operator,
