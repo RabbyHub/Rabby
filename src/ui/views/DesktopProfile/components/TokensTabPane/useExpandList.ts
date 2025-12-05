@@ -9,7 +9,6 @@ import { useMemo } from 'react';
 // 4. 满足以上条件的小于 3 个，不折叠
 // 5. 特殊情况，200 个 1，全部折叠
 
-// 0.1%
 const MIN_ASSETS_THREADHOLD = 0.001;
 
 export const getExpandListSwitch = <
