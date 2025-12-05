@@ -56,10 +56,11 @@ import {
   DBK_NFT_CONTRACT_ADDRESS,
   CORE_KEYRING_TYPES,
 } from 'consts';
-import { ERC20ABI } from 'consts/abi';
+import { ERC20ABI, ERC721ABI, SeaportABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import {
+  NFTDetail,
   BridgeHistory,
   TokenItem,
   Tx,
@@ -102,7 +103,14 @@ import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
-import { fromHex, isAddress, zeroAddress } from 'viem';
+import {
+  decodeFunctionResult,
+  encodeFunctionData,
+  fromHex,
+  isAddress,
+  parseAbi,
+  zeroAddress,
+} from 'viem';
 import {
   ensureChainListValid,
   findChain,
@@ -115,7 +123,12 @@ import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { autoLockService } from '../service/autoLock';
 import { t } from 'i18next';
-import { broadcastChainChanged, getWeb3Provider, web3AbiCoder } from './utils';
+import {
+  broadcastChainChanged,
+  createWeb3Provider,
+  getWeb3Provider,
+  web3AbiCoder,
+} from './utils';
 import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
 import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
 import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
@@ -155,6 +168,11 @@ import {
   SendTxHistoryItem,
   SwapTxHistoryItem,
 } from '../service/transactionHistory';
+
+import { Seaport } from '@opensea/seaport-js';
+import { OrderComponents } from '@opensea/seaport-js/lib/types';
+import { CROSS_CHAIN_SEAPORT_V1_6_ADDRESS } from '@opensea/seaport-js/lib/constants';
+import { buildCreateListingTypedData } from '@/utils/nft';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -5687,6 +5705,249 @@ export class WalletController extends BaseController {
       params,
     });
   };
+
+  checkIsApprovedForAll = async ({
+    owner,
+    operator,
+    contractAddress,
+    chainId,
+  }: {
+    owner: string;
+    operator: string;
+    contractAddress: string;
+    chainId: number;
+  }) => {
+    const chain = findChain({ id: chainId });
+    if (!chain) {
+      throw new Error('wrong chain');
+    }
+    const encodedData = encodeFunctionData({
+      abi: ERC721ABI,
+      functionName: 'isApprovedForAll',
+      args: [owner as `0x${string}`, operator as `0x${string}`],
+    });
+    const res = await this.requestETHRpc(
+      {
+        method: 'eth_call',
+        params: [
+          {
+            data: encodedData,
+            to: contractAddress,
+          },
+          'latest',
+        ],
+      },
+      chain.serverId
+    );
+
+    const value = decodeFunctionResult({
+      abi: ERC721ABI,
+      functionName: 'isApprovedForAll',
+      data: res,
+    });
+
+    return value;
+  };
+
+  buildSetApprovedForAllTx = async ({
+    from,
+    chainId,
+    operator,
+    contractAddress,
+  }: {
+    from: string;
+    chainId: number;
+    operator: string;
+    contractAddress: string;
+  }) => {
+    const encodedData = encodeFunctionData({
+      abi: ERC721ABI,
+      functionName: 'setApprovalForAll',
+      args: [operator as `0x${string}`, true],
+    });
+
+    return {
+      from,
+      chainId,
+      data: encodedData,
+      to: contractAddress,
+    };
+  };
+
+  getSeaportCounter = async ({
+    chainId,
+    address,
+  }: {
+    chainId: number;
+    address: string;
+  }) => {
+    const chain = findChain({ id: chainId });
+    if (!chain) {
+      throw new Error('wrong chain');
+    }
+    const data = encodeFunctionData({
+      abi: SeaportABI,
+      functionName: 'getCounter',
+      args: [address as `0x${string}`],
+    });
+
+    const res = await this.requestETHRpc(
+      {
+        method: 'eth_call',
+        params: [
+          {
+            data: data,
+            to: CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
+          },
+          'latest',
+        ],
+      },
+      chain.serverId
+    );
+
+    const value = decodeFunctionResult({
+      abi: SeaportABI,
+      functionName: 'getCounter',
+      data: res,
+    });
+    return Number(value);
+  };
+
+  buildCancelNFTListTx = ({
+    address,
+    chainId,
+    orders,
+  }: {
+    address: string;
+    chainId: number;
+    orders: OrderComponents[];
+  }) => {
+    try {
+      const data = encodeFunctionData({
+        abi: SeaportABI,
+        functionName: 'cancel',
+        args: [orders as any],
+      });
+
+      return {
+        chainId,
+        from: address,
+        to: CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
+        data,
+      };
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
+
+  buildCreateListingTypedData = async (
+    parmas: Parameters<typeof buildCreateListingTypedData>[0]
+  ) => {
+    const counter =
+      parmas.counter ||
+      (await this.getSeaportCounter({
+        chainId: parmas.chainId,
+        address: parmas.sellerAddress,
+      }));
+    return buildCreateListingTypedData({ ...parmas, counter });
+  };
+
+  buildAcceptNFTOfferTx = async ({
+    address,
+    chainId,
+    order,
+    collectionId,
+    innerId,
+    quantity,
+    isIncludeCreatorFee,
+  }: {
+    address: string;
+    chainId: number;
+    collectionId: string;
+    innerId: string;
+    order: NonNullable<NFTDetail['best_offer_order']>;
+    quantity?: number;
+    isIncludeCreatorFee?: boolean;
+  }) => {
+    const chain = findChain({
+      id: chainId,
+    });
+    if (!chain) {
+      throw new Error('chain not found');
+    }
+    const res = await this.openapi.prepareAcceptNFTOffer({
+      chain_id: chain?.serverId,
+      order_hash: order.order_hash,
+      fulfiller: address,
+      collection_id: collectionId,
+      inner_id: innerId,
+      quantity,
+      include_optional_creator_fees: isIncludeCreatorFee,
+    });
+    const fulfillmentData = res.data;
+    const transaction = fulfillmentData.fulfillment_data.transaction;
+    const inputData = transaction.input_data;
+    const FULFILL_BASIC_ORDER_ALIAS = 'fulfillBasicOrder_efficient_6GL6yc';
+    // Extract function name and build parameters array in correct order
+    const rawFunctionName = transaction.function.split('(')[0];
+    const functionName =
+      rawFunctionName === FULFILL_BASIC_ORDER_ALIAS
+        ? 'fulfillBasicOrder'
+        : rawFunctionName;
+    let params: unknown[];
+
+    // Order parameters based on the function being called
+    if (
+      functionName === 'fulfillAdvancedOrder' &&
+      'advancedOrder' in inputData
+    ) {
+      params = [
+        inputData.advancedOrder,
+        inputData.criteriaResolvers || [],
+        inputData.fulfillerConduitKey ||
+          '0x0000000000000000000000000000000000000000000000000000000000000000',
+        inputData.recipient,
+      ];
+    } else if (
+      (functionName === 'fulfillBasicOrder' ||
+        rawFunctionName === FULFILL_BASIC_ORDER_ALIAS) &&
+      'basicOrderParameters' in inputData
+    ) {
+      params = [inputData.basicOrderParameters];
+    } else if (functionName === 'fulfillOrder' && 'order' in inputData) {
+      params = [
+        inputData.order,
+        inputData.fulfillerConduitKey ||
+          '0x0000000000000000000000000000000000000000000000000000000000000000',
+        inputData.recipient,
+      ];
+    } else {
+      // Fallback: try to use values in object order
+      params = Object.values(inputData);
+    }
+    try {
+      const encodedData = encodeFunctionData({
+        abi: SeaportABI,
+        functionName: functionName as any,
+        args: params as any,
+      });
+
+      // todo check this
+      return {
+        chainId,
+        from: address,
+        to: transaction.to,
+        value: transaction.value,
+        data: encodedData,
+      };
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
+
+  getRpcTxReceipt = transactionHistoryService.getRpcTxReceipt;
 }
 
 const wallet = new WalletController();

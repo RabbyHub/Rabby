@@ -10,7 +10,7 @@ import {
   sessionService,
 } from '../service';
 import { Account } from '../service/preference';
-import buildinProvider from '../utils/buildinProvider';
+import buildinProvider, { EthereumProvider } from '../utils/buildinProvider';
 import eventBus from '@/eventBus';
 
 export const web3AbiCoder = (_abiCoder as unknown) as AbiCoder;
@@ -41,6 +41,36 @@ export const getWeb3Provider = async ({
   const provider = new ethers.providers.Web3Provider(
     buildinProvider.currentProvider
   );
+
+  return provider;
+};
+
+export const createWeb3Provider = ({
+  chainServerId,
+  account,
+}: {
+  chainServerId: string;
+  account?: Account | null;
+}) => {
+  if (!account) {
+    account = preferenceService.getCurrentAccount();
+  }
+  if (!account) throw new Error(t('background.error.noCurrentAccount'));
+
+  const chainId = findChain({
+    serverId: chainServerId,
+  })?.id.toString();
+
+  if (!chainId) throw new Error(t('background.error.invalidChainId'));
+
+  const currentProvider = new EthereumProvider();
+
+  currentProvider.currentAccount = account.address;
+  currentProvider.currentAccountType = account.type;
+  currentProvider.currentAccountBrand = account.brandName;
+  currentProvider.chainId = chainId;
+
+  const provider = new ethers.providers.Web3Provider(currentProvider);
 
   return provider;
 };

@@ -749,6 +749,7 @@ export class SignatureSteps {
     onSendedTx: (prams: { hash: string; idx: number }) => void;
     account: Account;
     retry?: boolean;
+    shouldPause?: (idx: number, signedCount: number) => boolean;
   }): Promise<
     | { txHash: string }[]
     | {
@@ -757,6 +758,12 @@ export class SignatureSteps {
           content: string;
           description: string;
         };
+        paused?: false;
+      }
+    | {
+        paused: true;
+        partial: { txHash: string }[];
+        currentIndex: number;
       }
   > {
     const {
@@ -767,6 +774,7 @@ export class SignatureSteps {
       onSendedTx,
       retry: isRetry,
       account,
+      shouldPause,
     } = params;
     let i = 0;
 
@@ -789,6 +797,13 @@ export class SignatureSteps {
     try {
       const txHashes: { txHash: string }[] = [];
       for (; i < txsCalc.length; i++) {
+        if (shouldPause?.(i, txHashes.length)) {
+          return {
+            paused: true,
+            partial: txHashes,
+            currentIndex: i,
+          };
+        }
         if (txsCalc[i].hash) {
           continue;
         }
@@ -1042,6 +1057,7 @@ export class SignatureSteps {
     config: SignerConfig;
     onSendedTx: (prams: { hash: string; idx: number }) => void;
     retry?: boolean;
+    shouldPause?: (idx: number, signedCount: number) => boolean;
   }): Promise<
     | {
         txHash: string;
@@ -1052,7 +1068,9 @@ export class SignatureSteps {
           content: string;
           description: string;
         };
+        paused?: false;
       }
+    | { paused: true; partial: { txHash: string }[]; currentIndex: number }
   > {
     const { wallet, chainServerId, ctx, config, onSendedTx, retry } = params;
     const { txs, txsCalc, selectedGas, gasMethod, useGasless } = ctx;
@@ -1073,6 +1091,7 @@ export class SignatureSteps {
       onSendedTx,
       retry,
       account: config.account,
+      shouldPause: params.shouldPause,
     });
 
     return res;
