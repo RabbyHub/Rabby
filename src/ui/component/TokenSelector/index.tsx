@@ -61,7 +61,9 @@ export interface SearchCallbackCtx {
 }
 export interface TokenSelectorProps {
   visible: boolean;
-  list: TokenItem[];
+  // list: TokenItem[];
+  mainnetTokenList: TokenItem[];
+  // testnetTokenList: TokenItem[];
   isLoading?: boolean;
   onConfirm(item: TokenItem): void;
   onCancel(): void;
@@ -69,8 +71,8 @@ export interface TokenSelectorProps {
     ctx: SearchCallbackCtx & {
       keyword: string;
     }
-  );
-  onRemoveChainFilter?(ctx: SearchCallbackCtx);
+  ): any;
+  onRemoveChainFilter?(ctx: SearchCallbackCtx): any;
   onStartSelectChain?: () => void;
   type?: 'default' | 'swapFrom' | 'swapTo' | 'bridgeFrom' | 'bridgeTo' | 'send';
   placeholder?: string;
@@ -98,7 +100,8 @@ const defaultExcludeTokens = [];
 
 const TokenSelector = ({
   visible,
-  list,
+  mainnetTokenList,
+  // testnetTokenList,
   onConfirm,
   onCancel,
   onSearch,
@@ -169,9 +172,13 @@ const TokenSelector = ({
 
   useEffect(() => {
     if (!visible) {
-      onTabChange('mainnet');
+      onTabChange(
+        chainServerId && findChain({ serverId: chainServerId })?.isTestnet
+          ? 'testnet'
+          : 'mainnet'
+      );
     }
-  }, [visible, onTabChange]);
+  }, [visible, onTabChange, chainServerId]);
 
   const emptyTestnetTokenList = useMemo(() => {
     return (
@@ -195,13 +202,13 @@ const TokenSelector = ({
     }
 
     if (!supportChains?.length) {
-      const resultList = list || [];
+      const resultList = mainnetTokenList || [];
       if (!chainServerId) return resultList.filter(filterTestnetTokenItem);
 
       return resultList;
     }
 
-    const varied = (list || []).reduce(
+    const varied = (mainnetTokenList || []).reduce(
       (accu, token) => {
         const chainItem = findChainByServerID(token.chain);
         const disabled =
@@ -228,7 +235,7 @@ const TokenSelector = ({
 
     return [...varied.natural, ...varied.disabled];
   }, [
-    list,
+    mainnetTokenList,
     supportChains,
     chainServerId,
     selectedTab,
@@ -254,8 +261,13 @@ const TokenSelector = ({
     if (showCustomTestnetAssetList && selectedTab === 'testnet') {
       return customTestnetTokenList?.length <= 0;
     }
-    return list.length <= 0;
-  }, [list, showCustomTestnetAssetList, selectedTab, customTestnetTokenList]);
+    return mainnetTokenList.length <= 0;
+  }, [
+    mainnetTokenList,
+    showCustomTestnetAssetList,
+    selectedTab,
+    customTestnetTokenList,
+  ]);
 
   const isSwapType = isSwapTokenType(type);
 
@@ -581,7 +593,7 @@ const TokenSelector = ({
           </div>
         )}
 
-        {!isTestnet ? (
+        {selectedTab === 'mainnet' ? (
           <ul className={clsx('token-list', { empty: isEmpty })}>
             {recentDisplayToTokens.length ? (
               <div className="mb-12">
@@ -625,10 +637,6 @@ const TokenSelector = ({
           </ul>
         ) : (
           <ul className={clsx('token-list', { empty: isEmpty })}>
-            <li className="token-list__header">
-              <div>Token</div>
-              <div>Value</div>
-            </li>
             {isEmpty
               ? NoDataUI
               : displayList.map((token) => {
