@@ -2209,7 +2209,9 @@
         "BridgeStatusUnavailable": "Estado del puente no disponible. Por favor, verifica tu historial de transacciones para confirmar que los fondos llegaron.",
         "longTimeNoReceive": "La red está ocupada. Esto puede tardar más de lo habitual. Por favor, espera pacientemente.",
         "pending": "Pendiente",
-        "sendingFrom": "Enviando desde {{chain}}"
+        "sendingFrom": "Enviando desde {{chain}}",
+        "swapStatus": "Estado de intercambio",
+        "sendStatus": "Enviar Estado"
       }
     },
     "pendingDetail": {
@@ -3210,6 +3212,90 @@
         "tokens": "Tokens",
         "approvals": "Aprobaciones",
         "transactions": "Transacciones"
+      },
+      "nft": {
+        "message": {
+          "cancelFailed": "¡Fallido!",
+          "cancelSuccess": "Cancelación de listado exitosa",
+          "acceptFailed": "Venta fallida",
+          "cancelFailedDesc": "Por favor, inténtalo de nuevo.",
+          "acceptSuccess": "Vendido con éxito",
+          "acceptFailedDesc": "Por favor, inténtalo de nuevo.",
+          "listingSuccess": "¡Acabamos de listar!",
+          "listingFailedDesc": "Por favor, inténtalo de nuevo.",
+          "listingSuccessDesc": "Has listado {{name}} en OpenSea",
+          "listingFailed": "Listar fallido",
+          "cancelSuccessDesc": "Has cancelado con éxito la lista {{name}}",
+          "acceptSuccessDesc": "Has vendido con éxito {{name}}"
+        },
+        "detail": {
+          "collection": "Colección",
+          "supportPlatform": "Plataformas compatibles:",
+          "collectionFloor": "Colección mínima",
+          "rarity": "Rareza",
+          "topOffer": "Oferta Principal",
+          "chain": "Cadena",
+          "lastSale": "Última venta",
+          "noOffer": "Sin ofertas aún",
+          "ending": "Fin:",
+          "platform": "Plataforma:",
+          "nft": "NFT",
+          "cancel": "Cancelar listado",
+          "send": "Enviar",
+          "listedFor": "{{count}} listado para",
+          "accept": "Aceptar",
+          "listing": "Listando en Opensea",
+          "edit": "Editar listado"
+        },
+        "cancelModal": {
+          "cancelListing": "Cancelar listado",
+          "title": "Cancelar listado",
+          "listingPrice": "Precio de listado",
+          "listing": "Listado"
+        },
+        "listingModal": {
+          "editListing": "Editar listado",
+          "listOn": "Lista en OpenSea",
+          "floorDifference": "Diferencia de piso",
+          "approveAndList": "Aprobar y listar",
+          "quantity": "Cantidad",
+          "topOffer": "Mejor Oferta",
+          "floor": "Piso",
+          "listedAs": "Listado como",
+          "platformFeeTips": "Esta tarifa es el cargo por servicio de OpenSea",
+          "nft": "NFT",
+          "total": "Precio total de listado",
+          "createListing": "Crear listado",
+          "platformFee": "Tarifas de la plataforma Opensea ({{fee}}%)",
+          "creatorFeeTips": "Las ganancias del creador serán pagadas por el vendedor.",
+          "creatorFee": "Comisiones del creador ({{fee}}%)",
+          "proceeds": "Proporciona",
+          "rabbyFee": "Rabby tarifa (0%)",
+          "cost": "Costo",
+          "totalEst": "Total est. proceeds",
+          "creatorFeeTips1": "Las ganancias del creador serán pagadas por el vendedor. Las ganancias del creador están garantizadas."
+        },
+        "acceptModal": {
+          "offer": "Oferta",
+          "floorDifference": "Diferencia de piso",
+          "acceptOffer": "Aceptar oferta",
+          "quantity": "Cantidad",
+          "platform": "Plataforma",
+          "offerPrice": "Precio de Oferta",
+          "rabbyFee": "Rabby tarifa (0%)",
+          "creatorFeeTips": "Las ganancias del creador serán pagadas por el vendedor.",
+          "creatorFee": "Comisiones para creadores ({{fee}}%)",
+          "platformFee": "Comisiones de la plataforma Opensea ({{fee}}%)",
+          "title": "Aceptar oferta",
+          "creatorFeeTips1": "Las ganancias del creador serán pagadas por el vendedor. Las ganancias del creador están garantizadas.",
+          "totalEst": "Total est. proceeds",
+          "platformFeeTips": "Esta tarifa es el cargo por servicio de OpenSea."
+        },
+        "empty": "Sin NFTs",
+        "hideLowValue": "Ocultar NFTs de bajo valor",
+        "confirmingTx": "Confirmando tu transacción",
+        "pending": "Pendiente",
+        "all": "Todo"
       }
     },
     "perpsDetail": {
@@ -3418,7 +3504,10 @@
       "recent": "Reciente",
       "common": "Común",
       "hot": "Caliente",
-      "chainNotSupport": "Esta cadena no es compatible"
+      "chainNotSupport": "Esta cadena no es compatible",
+      "chainFilterLine": {
+        "filterAll": "Todas las cadenas"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

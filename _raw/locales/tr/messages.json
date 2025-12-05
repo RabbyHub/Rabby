@@ -2212,7 +2212,9 @@
         "fromFailed": "İşlem gerçekleşmedi. Lütfen tekrar deneyin.",
         "longTimeNoReceive": "Ağ yoğun. Bu, normalden daha uzun sürebilir. Lütfen sabırlı olun.",
         "receivedDifferentTokenNeedSwap": "Farklı bir token aldınız. Seçtiğiniz token ile takas edebilirsiniz.",
-        "BridgeStatusUnavailable": "Köprü durumu mevcut değil. Lütfen işlem geçmişinizi kontrol edin ve fonların ulaştığını doğrulayın."
+        "BridgeStatusUnavailable": "Köprü durumu mevcut değil. Lütfen işlem geçmişinizi kontrol edin ve fonların ulaştığını doğrulayın.",
+        "swapStatus": "Takasta Değiştir",
+        "sendStatus": "Gönderim Durumu"
       }
     },
     "pendingDetail": {
@@ -3213,6 +3215,90 @@
         "approvals": "Onaylar",
         "tokens": "Jetonlar",
         "transactions": "İşlemler"
+      },
+      "nft": {
+        "message": {
+          "acceptSuccessDesc": "{{name}} başarıyla satıldı.",
+          "acceptFailedDesc": "Lütfen tekrar deneyin.",
+          "listingSuccess": "Yeni listelendi!",
+          "acceptFailed": "Satış Başarısız",
+          "cancelSuccess": "Liste başarıyla iptal edildi",
+          "cancelFailed": "Başarısız!",
+          "listingFailedDesc": "Lütfen tekrar deneyin.",
+          "listingFailed": "Listeleme Başarısız",
+          "listingSuccessDesc": "{{name}}'i OpenSea'de listelediniz.",
+          "cancelSuccessDesc": "Başarıyla {{name}} listesini iptal ettiniz.",
+          "acceptSuccess": "",
+          "cancelFailedDesc": "Lütfen tekrar deneyin"
+        },
+        "detail": {
+          "lastSale": "Son satış",
+          "ending": "Sonlandırma:",
+          "noOffer": "Henüz teklif yok",
+          "topOffer": "En İyi Teklif",
+          "supportPlatform": "Desteklenen platformlar:",
+          "rarity": "Nadir",
+          "collection": "Koleksiyon",
+          "chain": "Zincir",
+          "nft": "NFT",
+          "collectionFloor": "Koleksiyon tabanı",
+          "platform": "Platform:",
+          "edit": "Listeyi Düzenle",
+          "cancel": "Listeyi İptal Et",
+          "listedFor": "{{count}} listelendi için",
+          "listing": "Opensea'de Listeleniyor",
+          "accept": "Kabul et",
+          "send": "Gönder"
+        },
+        "cancelModal": {
+          "cancelListing": "Listeyi iptal et",
+          "listingPrice": "Liste Fiyatı",
+          "listing": "Listeleme",
+          "title": "Listeyi İptal Et"
+        },
+        "listingModal": {
+          "nft": "NFT",
+          "cost": "Maliyet",
+          "createListing": "Liste oluşturun",
+          "floor": "Zemin",
+          "listedAs": "Listelenen olarak",
+          "floorDifference": "Taban farkı",
+          "rabbyFee": "Rabby ücreti (0%)",
+          "proceeds": "Gelirler",
+          "listOn": "OpenSea'de listele",
+          "creatorFee": "Yaratıcı ücretleri ({{fee}}%)",
+          "editListing": "Listeyi Düzenle",
+          "quantity": "Miktar",
+          "platformFee": "Opensea Platform ücretleri ({{fee}}%)",
+          "approveAndList": "Onayla ve Listele",
+          "total": "Toplam liste fiyatı",
+          "topOffer": "En iyi Teklif",
+          "creatorFeeTips1": "Yaratıcı kazançları satıcı tarafından ödenecek. Yaratıcı kazançları zorunludur.",
+          "creatorFeeTips": "Yaratıcı kazançları satıcı tarafından ödenecek.",
+          "totalEst": "Toplam tahmini gelir",
+          "platformFeeTips": "Bu ücret OpenSea'nın hizmet bedelidir."
+        },
+        "acceptModal": {
+          "platform": "Platform",
+          "creatorFee": "Yaratıcı ücretleri ({{fee}}%)",
+          "title": "Teklifi Kabul Et",
+          "platformFeeTips": "Bu ücret OpenSea'nin hizmet bedelidir.",
+          "platformFee": "Opensea Platform ücretleri ({{fee}}%)",
+          "quantity": "Miktar",
+          "offer": "Teklif",
+          "acceptOffer": "Teklifi Kabul Et",
+          "creatorFeeTips": "Yaratıcı kazançları satıcı tarafından ödenecek.",
+          "totalEst": "Toplam tahmini gelir",
+          "rabbyFee": "Rabby ücreti (0%)",
+          "floorDifference": "Kat farkı",
+          "offerPrice": "Teklif Fiyatı",
+          "creatorFeeTips1": "Yaratıcı kazançları satıcı tarafından ödenecek. Yaratıcı kazançlar zorunludur."
+        },
+        "empty": "Hayır, NFT'ler yok",
+        "pending": "Beklemede",
+        "hideLowValue": "Düşük Değerli NFT'leri Gizle",
+        "confirmingTx": "İşleminizi onaylama",
+        "all": "Tüm"
       }
     },
     "perpsDetail": {
@@ -3421,7 +3507,10 @@
       "hot": "Sıcak",
       "common": "Genel",
       "recent": "Son zamanlar",
-      "chainNotSupport": "Bu zincir desteklenmiyor."
+      "chainNotSupport": "Bu zincir desteklenmiyor.",
+      "chainFilterLine": {
+        "filterAll": "Tüm Zincirler"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
