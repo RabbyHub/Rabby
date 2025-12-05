@@ -28,7 +28,10 @@ export const customRPC = createModel<RootModel>()({
     async getAllRPC(_: void, store) {
       const rpcMap = await store.app.wallet.getAllCustomRPC();
       const prevValue = (store as any).customRPC.customRPC;
-      if (JSON.stringify(Object.keys(prevValue)) === JSON.stringify(Object.keys(rpcMap))) {
+      if (
+        JSON.stringify(Object.keys(prevValue)) ===
+        JSON.stringify(Object.keys(rpcMap))
+      ) {
         return prevValue;
       }
       dispatch.customRPC.setField({ customRPC: rpcMap });

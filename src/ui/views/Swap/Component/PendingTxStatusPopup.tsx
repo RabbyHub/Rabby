@@ -51,6 +51,8 @@ export const PendingTxStatusPopup = ({
     );
   }, [pendingList, completeList, txHash, chainId]);
 
+
+  
   const init = async () => {
     if (!account) {
       return;
