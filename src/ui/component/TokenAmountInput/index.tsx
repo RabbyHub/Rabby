@@ -137,15 +137,15 @@ const TokenAmountInput = ({
     mainnet: chainItemOfToken?.isTestnet ? '' : token?.chain || '',
     testnet: chainItemOfToken?.isTestnet ? token?.chain || '' : '',
   });
-  const testnetChainItem = useMemo(
-    () =>
-      !testnetChainServerId
-        ? null
-        : findChain({
-            serverId: testnetChainServerId,
-          }),
-    [testnetChainServerId]
-  );
+  // const testnetChainItem = useMemo(
+  //   () =>
+  //     !testnetChainServerId
+  //       ? null
+  //       : findChain({
+  //           serverId: testnetChainServerId,
+  //         }),
+  //   [testnetChainServerId]
+  // );
   const { t } = useTranslation();
 
   const setChainServerId = useCallback((chainServerId?: string) => {
@@ -430,7 +430,7 @@ const TokenAmountInput = ({
         disableItemCheck={disableItemCheck}
         showCustomTestnetAssetList
         placeholder={placeholder}
-        chainId={chainItemOfToken?.serverId}
+        chainId={mainnetChainServerId}
         getContainer={getContainer}
         onStartSelectChain={() => {
           chainSelectorRef.current?.toggleShow(true);
