@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { formatAppChain } from '@/ui/hooks/useAppChain';
 
 function shouldChainRevealed(chainItem: ChainItemType) {
-  return chainItem.percent >= 1 || chainItem.usd_value >= 1000;
+  return chainItem.percent >= 5 || chainItem.usd_value >= 1000;
 }
 
 export const ChainList = ({
@@ -55,14 +55,14 @@ export const ChainList = ({
       };
       res.allItems.push(chainItem);
 
-      if (chainCount <= 6 || shouldChainRevealed(chainItem)) {
+      if (chainCount <= 5 || shouldChainRevealed(chainItem)) {
         res.chainsToReveal.push(chainItem);
       } else {
         res.chainsToHide.push(chainItem);
       }
     });
 
-    if (res.chainsToHide.length <= 2) {
+    if (res.chainsToHide.length <= 1) {
       res.chainsToReveal = [...res.allItems];
       res.chainsToHide = [];
     }

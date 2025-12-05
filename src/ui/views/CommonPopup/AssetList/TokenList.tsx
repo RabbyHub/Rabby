@@ -82,7 +82,7 @@ export const HomeTokenList = ({
           <TokenLowValueItem list={lowValueList} className="h-[44px]" />
         )}
       </div>
-      {!isSearch && hasList && (
+      {/* {!isSearch && hasList && (
         <div className="flex gap-12 pt-12 mt-[1px]">
           <CustomizedButton
             onClickButton={onOpenAddEntryPopup}
@@ -95,7 +95,7 @@ export const HomeTokenList = ({
             selectChainId={selectChainId}
           />
         </div>
-      )}
+      )} */}
     </div>
   );
 };
