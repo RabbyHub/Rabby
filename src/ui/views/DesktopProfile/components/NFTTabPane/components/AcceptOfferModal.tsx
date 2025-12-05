@@ -295,7 +295,14 @@ const Content: React.FC<Props> = (props) => {
       manual: true,
       onSuccess(res) {
         const hash = last(res);
+        const tx = last(txs);
         if (chain && hash) {
+          if (tx) {
+            wallet.openapi.submitAcceptNFTOfferTx({
+              tx_id: hash,
+              data: tx,
+            });
+          }
           onSigned?.(
             waitForTxCompleted({
               wallet,
