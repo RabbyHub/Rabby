@@ -173,6 +173,7 @@ export const PendingTxItem = forwardRef<
 
     const isPending = data?.status === 'pending';
     const isFailed = data?.status === 'failed';
+    const isCanceled = data?.isCanceled;
 
     useEffect(() => {
       const isCurrentFulfilled = !isPending;
@@ -221,21 +222,24 @@ export const PendingTxItem = forwardRef<
       if (isPending) {
         return t('page.transactions.detail.Pending');
       }
+      if (isCanceled) {
+        return t('page.activities.signedTx.status.canceled');
+      }
       if (isFailed) {
         return t('page.transactions.detail.Failed');
       }
       return t('page.transactions.detail.Succeeded');
-    }, [isPending, isFailed, t]);
+    }, [isPending, isFailed, isCanceled, t]);
 
     const statusClassName = useMemo(() => {
       if (isPending) {
         return 'text-r-orange-default';
       }
-      if (isFailed) {
+      if (isFailed || isCanceled) {
         return 'text-r-red-default';
       }
       return 'text-r-green-default';
-    }, [isPending, isFailed]);
+    }, [isPending, isFailed, isCanceled]);
 
     useImperativeHandle(ref, () => ({
       fetchHistory: () => {
@@ -341,7 +345,7 @@ export const PendingTxItem = forwardRef<
           </div>
 
           <div className="flex items-center gap-4">
-            <StatusIcon status={data.status} />
+            {!isCanceled && <StatusIcon status={data.status} />}
             <span className={clsx('text-15 font-medium', statusClassName)}>
               {statusText}
             </span>
