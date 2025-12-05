@@ -8,6 +8,7 @@ import {
   useWalletRequest,
   getUiType,
   openInternalPageInTab,
+  isSameAddress,
 } from 'ui/utils';
 import rabbyLogo from '@/ui/assets/unlock/rabby.svg';
 import { ReactComponent as BackgroundSVG } from '@/ui/assets/unlock/background.svg';
@@ -16,6 +17,7 @@ import styled from 'styled-components';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import qs from 'qs';
 import { isString } from 'lodash';
+import { useRabbyDispatch } from '@/ui/store';
 
 const InputFormStyled = styled(Form.Item)`
   .ant-form-item-explain {
@@ -46,6 +48,7 @@ const Unlock = () => {
       ignoreQueryPrefix: true,
     });
   }, [location.search]);
+  const dispatch = useRabbyDispatch();
 
   useEffect(() => {
     if (!inputEl.current) return;
@@ -53,7 +56,7 @@ const Unlock = () => {
   }, []);
 
   const [run] = useWalletRequest(wallet.unlock, {
-    onSuccess() {
+    async onSuccess() {
       if (UiType.isNotification) {
         if (query.from === '/connect-approval') {
           history.replace('/approval?ignoreOtherWallet=1');
@@ -61,6 +64,21 @@ const Unlock = () => {
           resolveApproval();
         }
       } else if (UiType.isTab || UiType.isDesktop) {
+        const account = query.address
+          ? await wallet
+              .getAccountByAddress(query.address as string)
+              .catch(() => null)
+          : null;
+        const currentAccount = await wallet.getCurrentAccount();
+        if (
+          account &&
+          !isSameAddress(account?.address || '', currentAccount?.address || '')
+        ) {
+          dispatch.account.changeAccountAsync(account);
+        } else {
+          dispatch.account.getCurrentAccountAsync();
+        }
+
         history.replace(
           query.from && isString(query.from)
             ? query.from

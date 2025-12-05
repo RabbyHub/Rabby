@@ -119,7 +119,11 @@ const openInDesktop = async (req: ProviderRequest) => {
     return;
   }
 
-  if (keyringService.isUnlocked() && params.address) {
+  if (!keyringService.isUnlocked()) {
+    wallet.openInDesktop(`/unlock?address=${params.address || ''}`);
+    return;
+  }
+  if (params.address) {
     const account = await wallet.getAccountByAddress(params.address);
     const currentAccount = preferenceService.getCurrentAccount();
     if (
