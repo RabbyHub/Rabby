@@ -402,6 +402,7 @@ const TokenAmountInput = ({
       />
       <ChainSelectorInSend
         ref={chainSelectorRef}
+        hideTestnetTab
         onChange={(value) => {
           setChainServerId(findChainByEnum(value)?.serverId || '');
         }}

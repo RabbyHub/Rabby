@@ -274,8 +274,8 @@ const TokenSelector = ({
   }, [type]);
 
   const showChainFilterV2 = useMemo(() => {
-    return ['send'].includes(type);
-  }, [type]);
+    return ['send'].includes(type) && selectedTab !== 'testnet';
+  }, [type, selectedTab]);
 
   const swapAndBridgeNoDataTip = useMemo(() => {
     if (isSwapOrBridge) {
