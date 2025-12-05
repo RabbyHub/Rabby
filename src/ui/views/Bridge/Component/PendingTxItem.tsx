@@ -465,7 +465,7 @@ const PendingStatusDetail = ({
       {/* Step 2: Receiving on chain */}
       <div
         className={`flex flex-col bg-r-neutral-card-1 rounded-[8px] w-full ${
-          status === 'failed' ? 'mb-32' : ''
+          status === 'failed' ? 'mb-32' : 'mb-24'
         }`}
       >
         <div className="border-b-[0.5px] border-solid border-rabby-neutral-line">
