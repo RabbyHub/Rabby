@@ -2400,7 +2400,9 @@
         "beReturnFailed": "Мост не удался. Ваши активы были возвращены.",
         "longTimeNoReceive": "Сеть загружена. Это может занять больше времени, чем обычно. Пожалуйста, подождите терпеливо.",
         "BridgeStatusUnavailable": "Статус моста недоступен. Пожалуйста, проверьте вашу историю транзакций, чтобы подтвердить поступление средств.",
-        "receivedDifferentTokenFromSource": "Мост не сработал. На исходной цепи был возвращен другой токен."
+        "receivedDifferentTokenFromSource": "Мост не сработал. На исходной цепи был возвращен другой токен.",
+        "sendStatus": "Статус отправки",
+        "swapStatus": "Статус обмена"
       }
     },
     "ecology": {
@@ -3212,6 +3214,90 @@
         "approvals": "Подтверждения",
         "tokens": "Токены",
         "transactions": "Транзакции"
+      },
+      "nft": {
+        "message": {
+          "cancelFailedDesc": "Пожалуйста, попробуйте снова",
+          "listingSuccessDesc": "Вы добавили {{name}} на OpenSea",
+          "acceptFailed": "Продажа не удалась",
+          "listingFailed": "Список не удался",
+          "acceptSuccess": "Успешно продано",
+          "listingFailedDesc": "Пожалуйста, попробуйте еще раз.",
+          "listingSuccess": "Только что добавлено!",
+          "cancelSuccessDesc": "Вы успешно отменили листинг {{name}}",
+          "acceptSuccessDesc": "Вы успешно продали {{name}}",
+          "cancelFailed": "Не удалось!",
+          "cancelSuccess": "Список успешно отменен",
+          "acceptFailedDesc": "Пожалуйста, попробуйте снова."
+        },
+        "detail": {
+          "noOffer": "Еще нет предложений",
+          "collection": "Сборка",
+          "platform": "Платформа:",
+          "supportPlatform": "Поддерживаемые платформы:",
+          "ending": "Завершение:",
+          "rarity": "Редкость",
+          "collectionFloor": "Коллекция минимальная цена",
+          "topOffer": "Лучшее предложение",
+          "chain": "Цепочка",
+          "nft": "NFT",
+          "lastSale": "Последняя продажа",
+          "send": "Отправить",
+          "accept": "Принять",
+          "cancel": "Отменить листинг",
+          "listing": "Список на Opensea",
+          "edit": "Редактировать листинг",
+          "listedFor": "{{count}} указан для"
+        },
+        "cancelModal": {
+          "listing": "Список",
+          "listingPrice": "Цена листинга",
+          "title": "Отменить листинг",
+          "cancelListing": "Отменить листинг"
+        },
+        "listingModal": {
+          "nft": "NFT",
+          "proceeds": "Выручка",
+          "quantity": "Количество",
+          "platformFee": "Комиссии платформы Opensea ({{fee}}%)",
+          "topOffer": "Лучшее предложение",
+          "floorDifference": "Разница между этажами",
+          "cost": "Стоимость",
+          "listedAs": "Перечислено как",
+          "creatorFee": "Гонорары создателя ({{fee}}%)",
+          "listOn": "Список на OpenSea",
+          "createListing": "Создать список",
+          "floor": "Флор",
+          "platformFeeTips": "Этот сбор - это сервисный сбор OpenSea.",
+          "totalEst": "Общая предполагаемая прибыль",
+          "approveAndList": "Одобрить и списать",
+          "creatorFeeTips": "Заработок создателя будет выплачен продавцом.",
+          "total": "Общая цена листинга",
+          "creatorFeeTips1": "Заработок создателя будет выплачен продавцом. Заработок создателя обеспечивается.",
+          "editListing": "Редактировать список",
+          "rabbyFee": "Rabby комиссия (0%)"
+        },
+        "acceptModal": {
+          "acceptOffer": "Принять предложение",
+          "platform": "Платформа",
+          "offer": "Предложение",
+          "floorDifference": "Разница между уровнями",
+          "platformFee": "Платформенные сборы Opensea ({{fee}}%)",
+          "creatorFee": "Комиссия создателя ({{fee}}%)",
+          "quantity": "Количество",
+          "platformFeeTips": "Этот сбор является сервисным сбором OpenSea",
+          "title": "Принять предложение",
+          "creatorFeeTips": "Заработок создателя будет выплачиваться продавцом.",
+          "totalEst": "Общая предполагаемая выручка",
+          "creatorFeeTips1": "Платежи за вознаграждение создателей будут производиться продавцом. Вознаграждения создателей обеспечиваются.",
+          "rabbyFee": "Комиссия Rabby (0%)",
+          "offerPrice": "Цена предложения"
+        },
+        "pending": "Ожидает",
+        "confirmingTx": "Подтверждение вашей транзакции",
+        "hideLowValue": "Скрыть NFT низкой стоимости",
+        "all": "Все",
+        "empty": "Нет NFT"
       }
     },
     "perpsDetail": {
@@ -3420,7 +3506,10 @@
       "common": "Общее",
       "hot": "Горячий",
       "recent": "Недавние",
-      "chainNotSupport": "Эта цепочка не поддерживается"
+      "chainNotSupport": "Эта цепочка не поддерживается",
+      "chainFilterLine": {
+        "filterAll": "Все цепи"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

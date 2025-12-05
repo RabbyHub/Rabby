@@ -2475,7 +2475,9 @@
         "BridgeStatusUnavailable": "桥接状态不可用。请检查您的交易历史以确认资金是否到账。",
         "fromFailed": "交易未成功。请再试一次。",
         "receivedDifferentTokenNeedSwap": "您收到了不同的代币。您可以将其兑换为您选择的代币。",
-        "longTimeNoReceive": "网络繁忙。这可能会比平时花费更长的时间。请耐心等待。"
+        "longTimeNoReceive": "网络繁忙。这可能会比平时花费更长的时间。请耐心等待。",
+        "sendStatus": "发送状态",
+        "swapStatus": "交换状态"
       }
     },
     "ecology": {
@@ -3248,6 +3250,90 @@
         "tokens": "代币",
         "approvals": "授权",
         "transactions": "交易"
+      },
+      "nft": {
+        "message": {
+          "listingSuccess": "刚刚上架！",
+          "cancelFailed": "失败！",
+          "acceptFailed": "销售失败",
+          "cancelSuccessDesc": "您已成功取消了 '{{name}}' 的上架。",
+          "acceptSuccessDesc": "您已成功出售 {{name}}",
+          "cancelFailedDesc": "请再试一次",
+          "listingSuccessDesc": "您已在 OpenSea 上列出 {{name}}",
+          "listingFailedDesc": "请再试一次。",
+          "listingFailed": "列表失败",
+          "cancelSuccess": "成功取消上架",
+          "acceptFailedDesc": "请再试一次。",
+          "acceptSuccess": "成功出售"
+        },
+        "detail": {
+          "rarity": "稀有度",
+          "ending": "结束：",
+          "lastSale": "最后销售",
+          "collection": "集合",
+          "supportPlatform": "支持的平台：",
+          "platform": "平台：",
+          "chain": "链",
+          "topOffer": "最佳优惠",
+          "nft": "NFT",
+          "collectionFloor": "收藏品地板",
+          "noOffer": "尚无报价",
+          "accept": "接受",
+          "cancel": "取消上架",
+          "edit": "编辑列表",
+          "listedFor": "{{count}} 已列出用于",
+          "listing": "在 Opensea 上发布",
+          "send": "发送"
+        },
+        "cancelModal": {
+          "cancelListing": "取消列表",
+          "listing": "列表",
+          "title": "取消上架",
+          "listingPrice": "上架价格"
+        },
+        "listingModal": {
+          "quantity": "数量",
+          "floor": "地板",
+          "createListing": "创建列表",
+          "floorDifference": "底价差异",
+          "cost": "成本",
+          "total": "总挂牌价格",
+          "nft": "NFT",
+          "totalEst": "总预计收益",
+          "listedAs": "列出为",
+          "creatorFee": "创作者费用 ({{fee}}%)",
+          "platformFee": "Opensea 平台费用 ({{fee}}%)",
+          "rabbyFee": "Rabby 费用 (0%)",
+          "editListing": "编辑列表",
+          "creatorFeeTips": "",
+          "approveAndList": "批准并列出",
+          "listOn": "在 OpenSea 上列出",
+          "platformFeeTips": "此费用是OpenSea的服务费",
+          "topOffer": "优选提议",
+          "creatorFeeTips1": "创作者收入将由卖方支付。创作者收入是强制执行的。",
+          "proceeds": "收益"
+        },
+        "acceptModal": {
+          "totalEst": "总估计收益",
+          "offerPrice": "优惠价格",
+          "platform": "平台",
+          "acceptOffer": "接受报价",
+          "platformFeeTips": "这笔费用是 OpenSea 的服务费用",
+          "quantity": "数量",
+          "creatorFee": "创作者费用 ({{fee}}%)",
+          "creatorFeeTips": "",
+          "platformFee": "Opensea 平台费用 ({{fee}}%)",
+          "title": "接受报价",
+          "floorDifference": "地板差异",
+          "offer": "提供",
+          "creatorFeeTips1": "创作者收益将由卖方支付。创作者收益是强制执行的。",
+          "rabbyFee": "Rabby费用 (0%)"
+        },
+        "empty": "没有NFTs",
+        "pending": "待处理",
+        "confirmingTx": "确认您的交易",
+        "hideLowValue": "隐藏低价值NFT",
+        "all": "所有"
       }
     },
     "perpsDetail": {
@@ -3456,7 +3542,10 @@
       "recent": "最近",
       "hot": "热门",
       "common": "常用",
-      "chainNotSupport": "此链不受支持"
+      "chainNotSupport": "此链不受支持",
+      "chainFilterLine": {
+        "filterAll": "所有区块链"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
