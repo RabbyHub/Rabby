@@ -200,13 +200,13 @@ const PendingStatusDetail = ({
     // Fallback: calculate from create time if step 2 is loading
     if (step2Status === 'loading' && data.fromTxCompleteTs) {
       const elapsed = Date.now() - data.fromTxCompleteTs;
-      const estimatedDuration = data.estimatedDuration * 1000;
+      const estimatedDuration = Math.max(
+        data.estimatedDuration * 1000,
+        ONE_MINUTE_MS
+      );
       const remainingDuration = estimatedDuration - elapsed;
-      if (elapsed > estimatedDuration * 2 && elapsed > 2 * ONE_MINUTE_MS) {
-        return -1;
-      }
       if (remainingDuration <= 0) {
-        return null;
+        return -1;
       }
       const estimated = Math.max(Math.round(remainingDuration / 60000), 1);
       return estimated;
