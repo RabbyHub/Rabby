@@ -17,7 +17,7 @@ import type { Account } from '@/background/service/preference';
 const AccountItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
   position: relative;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-top: 12px;
   &:first-child {
     margin-top: 9px;
