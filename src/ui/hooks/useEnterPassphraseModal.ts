@@ -17,11 +17,11 @@ export const useEnterPassphraseModal = (type: 'address' | 'publickey') => {
         return '';
       }
 
-      const needPassphrase = await wallet.getMnemonicKeyringIfNeedPassphrase(
-        type,
-        value
-      );
-      passphrase = await wallet.getMnemonicKeyringPassphrase(type, value);
+      const [needPassphrase, existingPassphrase] = await Promise.all([
+        wallet.getMnemonicKeyringIfNeedPassphrase(type, value),
+        wallet.getMnemonicKeyringPassphrase(type, value),
+      ]);
+      passphrase = existingPassphrase;
 
       if (!needPassphrase || passphrase) {
         return passphrase;
