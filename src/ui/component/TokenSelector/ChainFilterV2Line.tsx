@@ -66,7 +66,7 @@ const useChains = ({ supportChains }: { supportChains?: Chain['enum'][] }) => {
 
 const SHOW_COUNT = 3;
 
-export function ChainMatrixLine({
+export function ChainFilterV2Line({
   selectedChain: propSelectedChain,
   onChange,
   onStartSelectChain,
@@ -134,7 +134,8 @@ export function ChainMatrixLine({
     >
       {selectedChain ? (
         <div
-          className={clsx("h-[32px] py-[4px] px-[8px] rounded-[8px] cursor-pointer",
+          className={clsx(
+            'h-[32px] py-[4px] px-[8px] rounded-[8px] cursor-pointer',
             'flex items-center justify-start',
             'border-[1px] border-[solid] border-transparent bg-r-neutral-card1',
             'hover:border-rabby-blue-default hover:bg-r-blue-light1'
