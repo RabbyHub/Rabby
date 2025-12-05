@@ -256,7 +256,7 @@ export const AccountItem = memo(
         className={clsx(
           className,
           'relative flex items-center px-[15px] py-[11px] gap-[8px]',
-          'border-[1px] border-solid border-transparent rounded-[8px]',
+          'border-[1px] border-solid border-transparent rounded-[12px]',
           disabled
             ? 'cursor-default'
             : 'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light1'

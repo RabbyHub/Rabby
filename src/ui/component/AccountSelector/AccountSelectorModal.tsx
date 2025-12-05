@@ -272,14 +272,14 @@ export const AccountSelectorModal = ({
                       background: 'var(--r-neutral-card1, #FFF)',
                       ...(isGroupFirst
                         ? {
-                            borderTopLeftRadius: 8,
-                            borderTopRightRadius: 8,
+                            borderTopLeftRadius: 12,
+                            borderTopRightRadius: 12,
                           }
                         : {}),
                       ...(isGroupLast
                         ? {
-                            borderBottomLeftRadius: 8,
-                            borderBottomRightRadius: 8,
+                            borderBottomLeftRadius: 12,
+                            borderBottomRightRadius: 12,
                             marginBottom: 16,
                             borderBottom: 'none',
                           }
