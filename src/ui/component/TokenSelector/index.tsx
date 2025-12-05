@@ -564,7 +564,7 @@ const TokenSelector = ({
         {showChainFilterV2 && (
           <div className="filters-wrapper">
             <ChainFilterV2Line
-              selectedChain={chainItem}
+              selectedChain={chainItem?.isTestnet ? null : chainItem || null}
               onStartSelectChain={onStartSelectChain}
               onClearFilterChain={() => {
                 onRemoveChainFilter?.({

@@ -32,6 +32,7 @@ import styled from 'styled-components';
 import { RiskWarningTitle } from '../RiskWarningTitle';
 import BigNumber from 'bignumber.js';
 import { ChainSelectorInSend } from '@/ui/views/SendToken/components/ChainSelectorInSend';
+import { Chain } from '@debank/common';
 
 interface TokenAmountInputProps {
   token: TokenItem | null;
@@ -83,6 +84,13 @@ const StyledInput = styled(Input)`
   }
 `;
 
+function isTestchain(chainServerId?: Chain['serverId']) {
+  if (!chainServerId) return false;
+
+  const chain = findChain({ serverId: chainServerId });
+  return chain?.isTestnet;
+}
+
 const TokenAmountInput = ({
   token,
   value,
@@ -112,12 +120,10 @@ const TokenAmountInput = ({
   );
   const wallet = useWallet();
   const [keyword, setKeyword] = useState('');
-  const [chainServerId, setChainServerId] = useState('');
+  const [chainServerId, setChainServerId] = useState(
+    (isTestchain(token?.chain) ? '' : token?.chain) || ''
+  );
   const { t } = useTranslation();
-
-  // useEffect(() => {
-  //   setChainServerId(token?.chain || '');
-  // }, [token?.chain]);
 
   const chainItem = useMemo(
     () =>
@@ -128,8 +134,6 @@ const TokenAmountInput = ({
           }),
     [chainServerId]
   );
-
-  const isTestnet = chainItem?.isTestnet;
 
   useLayoutEffect(() => {
     if (amountFocus && !tokenSelectorVisible) {
@@ -143,13 +147,13 @@ const TokenAmountInput = ({
       onTokenChange(token);
       setTokenSelectorVisible(false);
       tokenInputRef.current?.focus();
-      setChainServerId(token.chain);
+      setChainServerId(isTestchain(token?.chain) ? '' : token?.chain || '');
     },
     [onChange, onTokenChange]
   );
 
   const handleTokenSelectorClose = useCallback(() => {
-    setChainServerId(token?.chain || '');
+    setChainServerId(isTestchain(token?.chain) ? '' : token?.chain || '');
     setTokenSelectorVisible(false);
   }, [token?.chain]);
 
@@ -222,7 +226,7 @@ const TokenAmountInput = ({
     withBalance: true,
     chainId: chainItem?.id,
     q: keyword,
-    enabled: isTestnet,
+    enabled: chainItem?.isTestnet,
   });
 
   const availableToken = useMemo(() => {
@@ -245,7 +249,7 @@ const TokenAmountInput = ({
   const displayTokenList = useSortToken(availableToken);
 
   const isListLoading = useMemo(() => {
-    if (isTestnet) {
+    if (chainItem?.isTestnet) {
       return isSearchTestnetLoading;
     }
     return keyword ? isSearchLoading : isLoadingAllTokens;
@@ -254,7 +258,7 @@ const TokenAmountInput = ({
     isSearchLoading,
     isLoadingAllTokens,
     isSearchTestnetLoading,
-    isTestnet,
+    chainItem?.isTestnet,
   ]);
 
   const handleSearchTokens = React.useCallback<
@@ -384,7 +388,7 @@ const TokenAmountInput = ({
       </div>
       <TokenSelector
         visible={tokenSelectorVisible}
-        list={isTestnet ? testnetTokenList : displayTokenList}
+        list={chainItem?.isTestnet ? testnetTokenList : displayTokenList}
         onConfirm={checkBeforeConfirm}
         onCancel={handleTokenSelectorClose}
         onSearch={handleSearchTokens}
