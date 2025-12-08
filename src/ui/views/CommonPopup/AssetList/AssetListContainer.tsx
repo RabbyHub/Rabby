@@ -15,6 +15,7 @@ import { Input } from 'antd';
 import { useFilterProtocolList } from './useFilterProtocolList';
 import { useAppChain } from '@/ui/hooks/useAppChain';
 import { useCommonPopupView } from '@/ui/utils';
+import { useListenTxReload } from '../../DesktopProfile/hooks/useListenTxReload';
 
 interface Props {
   className?: string;
@@ -49,11 +50,18 @@ export const AssetListContainer: React.FC<Props> = ({
     blockedTokens,
     customizeTokens,
     removeProtocol,
+    refreshPositions,
   } = useQueryProjects(currentAccount?.address, false, visible, isTestnet);
   const {
     data: appPortfolios,
     isLoading: isAppPortfoliosLoading,
+    updateData,
   } = useAppChain(currentAccount?.address, visible, isTestnet);
+
+  useListenTxReload(() => {
+    updateData();
+    refreshPositions();
+  });
 
   const inputRef = React.useRef<Input>(null);
   const { isLoading: isSearching, list } = useSearchToken(

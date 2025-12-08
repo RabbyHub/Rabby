@@ -36,6 +36,7 @@ import type { Account } from '@/background/service/preference';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { OfflineChainNotify } from '../OfflineChainNotify';
 import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
+import { useListenTxReload } from '@/ui/views/DesktopProfile/hooks/useListenTxReload';
 
 export const BalanceView = ({
   currentAccount,
@@ -315,6 +316,14 @@ export const BalanceView = ({
   const showAppChainTips = useMemo(() => {
     return evmBalance !== balance;
   }, [evmBalance, balance]);
+
+  useListenTxReload(() => {
+    onRefresh({
+      balanceExpired: true,
+      curveExpired: true,
+      isManual: false,
+    });
+  });
 
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('w-full')}>
