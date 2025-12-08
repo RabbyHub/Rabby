@@ -18,6 +18,9 @@ import {
   useDappAction,
   useGetDappActions,
 } from './components/DappActions/hook';
+import { ProtocolLowValueItem } from './ProtocolLowValueItem';
+import BigNumber from 'bignumber.js';
+import { useExpandList } from '@/ui/utils/portfolio/expandList';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -101,7 +104,7 @@ const ProtocolItemWrapper = styled.div`
     }
   }
 `;
-const ProtocolItem = ({
+export const ProtocolItem = ({
   protocol: _protocol,
   enableDelayVisible,
   isAppChain,
@@ -300,11 +303,22 @@ const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
     return (list || []).length > 100;
   }, [list]);
 
+  const totalValue = React.useMemo(() => {
+    return list
+      ?.reduce((acc, item) => acc.plus(item.netWorth || 0), new BigNumber(0))
+      .toNumber();
+  }, [list]);
+  const { result: currentList } = useExpandList(list, totalValue);
+
+  const lowValueList = React.useMemo(() => {
+    return list?.filter((item) => currentList?.indexOf(item) === -1);
+  }, [currentList, list]);
+
   if (!list) return null;
 
   return (
     <ProtocolListWrapper>
-      {list.map((item) => (
+      {(isSearch ? list : currentList || []).map((item) => (
         <ProtocolItem
           protocol={item}
           key={item.id}
@@ -314,6 +328,13 @@ const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
           removeProtocol={removeProtocol}
         />
       ))}
+      {!isSearch && list?.length && lowValueList?.length ? (
+        <ProtocolLowValueItem
+          className="h-[48px]"
+          list={lowValueList}
+          appIds={appIds}
+        />
+      ) : null}
     </ProtocolListWrapper>
   );
 };

@@ -79,7 +79,7 @@ export const HomeTokenList = ({
           EmptyComponent={<div></div>}
         />
         {!isSearch && hasList && hasLowValueList && (
-          <TokenLowValueItem list={lowValueList} className="h-[44px]" />
+          <TokenLowValueItem list={lowValueList} className="h-[48px]" />
         )}
       </div>
       {/* {!isSearch && hasList && (

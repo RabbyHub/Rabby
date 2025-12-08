@@ -400,14 +400,14 @@ const TokenDetail = ({
         className={clsx('token-detail-body flex flex-col gap-12', 'pt-[0px]')}
       >
         <ScamTokenTips token={tokenWithAmount}></ScamTokenTips>
-        {variant === 'add' && !isDesktop && (
+        {/* {variant === 'add' && !isDesktop && (
           <BlockedTopTips
             token={token}
             isAdded={isAdded}
             onOpen={() => addToken(tokenWithAmount)}
             onClose={() => removeToken(tokenWithAmount)}
           ></BlockedTopTips>
-        )}
+        )} */}
         {!isCustomNetworkToken && <TokenCharts token={token}></TokenCharts>}
         <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
           <div className="balance-content flex flex-col gap-8 px-16 py-12">
@@ -415,7 +415,7 @@ const TokenDetail = ({
               <div className="balance-title text-r-neutral-body text-13">
                 {t('page.dashboard.tokenDetail.myBalance')}
               </div>
-              {variant === 'add' && !isDesktop ? (
+              {/* {variant === 'add' && !isDesktop ? (
                 token.is_core ? (
                   <BlockedButton
                     selected={isAdded}
@@ -428,7 +428,7 @@ const TokenDetail = ({
                 //   onClose={() => removeToken(tokenWithAmount)}
                 // />
                 null
-              ) : null}
+              ) : null} */}
             </div>
             <div className="flex flex-row justify-between w-full items-center">
               <div className="flex flex-row gap-8 items-center">

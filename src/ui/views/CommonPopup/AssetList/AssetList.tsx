@@ -15,7 +15,6 @@ import { SpecialTokenListPopup } from './components/TokenButton';
 import { TestnetChainList } from './TestnetChainList';
 import { useFilteredTokens } from './useFilteredTokens';
 import { RcIconExternal1CC, RcIconExternalCC } from '@/ui/assets/dashboard';
-import { useRabbySelector } from '@/ui/store';
 
 export const AssetList = ({
   visible,
