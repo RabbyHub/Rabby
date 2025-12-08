@@ -96,6 +96,7 @@ export interface BridgeTxHistoryItem {
   dexId: string;
   status: 'pending' | 'fromSuccess' | 'fromFailed' | 'allSuccess' | 'failed';
   hash: string;
+  acceleratedHash?: string;
   estimatedDuration: number; // ms from server
   createdAt: number;
   fromTxCompleteTs?: number;
@@ -113,6 +114,7 @@ export interface SwapTxHistoryItem {
   fromAmount: number;
   toAmount: number;
   dexId: string;
+  isCanceled?: boolean;
   status: 'pending' | 'success' | 'failed';
   hash: string;
   createdAt: number;
@@ -124,6 +126,7 @@ export interface SendTxHistoryItem {
   chainId: number;
   from: string;
   to: string;
+  isCanceled?: boolean;
   token: TokenItem;
   amount: number;
   status: 'pending' | 'success' | 'failed';
@@ -138,6 +141,7 @@ export interface SendNftTxHistoryItem {
   from: string;
   to: string;
   token: NFTItem;
+  isCanceled?: boolean;
   amount: number;
   status: 'pending' | 'success' | 'failed';
   hash: string;
@@ -149,6 +153,7 @@ export interface ApproveTokenTxHistoryItem {
   address: string;
   chainId: number;
   amount: number;
+  isCanceled?: boolean;
   token: TokenItem;
   status: 'pending' | 'success' | 'failed';
   hash: string;
@@ -490,11 +495,13 @@ class TxHistory {
   completeRecentTxHistory(
     txs: TransactionHistoryItem[],
     chainId: number,
-    status: SwapTxHistoryItem['status']
+    status: SwapTxHistoryItem['status'],
+    completedTx: TransactionHistoryItem
   ) {
     const hashArr = txs.map((item) => item.hash);
     const completedAt = Date.now();
-
+    const completedHash = completedTx.hash;
+    const isCancel = Boolean(completedTx.action?.actionData?.cancelTx?.nonce);
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.INNER_HISTORY_ITEM_COMPLETE,
       params: {
@@ -508,6 +515,7 @@ class TxHistory {
         return {
           ...item,
           status,
+          isCanceled: isCancel,
           completedAt,
         };
       }
@@ -519,6 +527,7 @@ class TxHistory {
         return {
           ...item,
           status,
+          isCanceled: isCancel,
           completedAt,
         };
       }
@@ -531,6 +540,7 @@ class TxHistory {
         return {
           ...item,
           status: status === 'success' ? 'fromSuccess' : 'fromFailed',
+          acceleratedHash: completedHash || item.hash,
           fromTxCompleteTs: completedAt,
         };
       }
@@ -542,6 +552,7 @@ class TxHistory {
         return {
           ...item,
           status,
+          isCanceled: isCancel,
           completedAt,
         };
       }
@@ -554,6 +565,7 @@ class TxHistory {
           return {
             ...item,
             status,
+            isCanceled: isCancel,
             completedAt,
           };
         }
@@ -983,7 +995,8 @@ class TxHistory {
       this.completeRecentTxHistory(
         txs,
         chainId,
-        completed.status === 1 ? 'success' : 'failed'
+        completed.status === 1 ? 'success' : 'failed',
+        completedTx
       );
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.RELOAD_TX,

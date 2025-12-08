@@ -72,14 +72,14 @@ export const RiskLevelPopup: React.FC<RiskLevelPopupProps> = ({
         title: t('page.perps.riskLevel.warning.title'),
         description: t('page.perps.riskLevel.warning.description'),
         color: 'text-rb-orange-default',
-        bgColor: 'bg-rb-orange-light-4',
+        bgColor: 'bg-rb-orange-light-1',
       },
       [PERPS_POSITION_RISK_LEVEL.SAFE]: {
         Icon: ImgSafe,
         title: t('page.perps.riskLevel.safe.title'),
         description: t('page.perps.riskLevel.safe.description'),
         color: 'text-rb-green-default',
-        bgColor: 'bg-rb-green-light-4',
+        bgColor: 'bg-rb-green-light-1',
       },
     };
     return configs[riskLevel];

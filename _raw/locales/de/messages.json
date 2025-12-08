@@ -2209,7 +2209,9 @@
         "bridgeStatus": "Bridge Status",
         "completed": "Abgeschlossen",
         "longTimeNoReceive": "Das Netzwerk ist beschäftigt. Dies könnte länger als üblich dauern. Bitte haben Sie Geduld.",
-        "estimatedTime": "Geschätzte Zeit"
+        "estimatedTime": "Geschätzte Zeit",
+        "sendStatus": "Send-Status",
+        "swapStatus": "Swap-Status"
       }
     },
     "pendingDetail": {
@@ -3210,6 +3212,90 @@
         "tokens": "Tokens",
         "transactions": "Transaktionen",
         "approvals": "Genehmigungen"
+      },
+      "nft": {
+        "message": {
+          "cancelFailedDesc": "Bitte erneut versuchen",
+          "listingFailed": "Auflistung fehlgeschlagen",
+          "cancelSuccess": "Auflistung erfolgreich abgebrochen",
+          "acceptSuccess": "Erfolgreich verkauft",
+          "cancelSuccessDesc": "Sie haben die Listung von {{name}} erfolgreich storniert.",
+          "listingSuccessDesc": "Du hast {{name}} auf OpenSea gelistet.",
+          "listingFailedDesc": "Bitte versuchen Sie es erneut.",
+          "listingSuccess": "Gerade gelistet!",
+          "acceptFailedDesc": "Bitte versuchen Sie es erneut.",
+          "acceptFailed": "Verkauf Fehlgeschlagen",
+          "cancelFailed": "Fehlgeschlagen!",
+          "acceptSuccessDesc": "Sie haben {{name}} erfolgreich verkauft."
+        },
+        "detail": {
+          "topOffer": "Top Angebot",
+          "rarity": "Seltenheit",
+          "noOffer": "Noch keine Angebote verfügbar",
+          "chain": "Kette",
+          "lastSale": "Letzte Verkauf",
+          "collectionFloor": "Sammlung Boden",
+          "supportPlatform": "Unterstützte Plattformen:",
+          "edit": "Liste bearbeiten",
+          "accept": "Akzeptieren",
+          "collection": "Sammlung",
+          "ending": "Ende:",
+          "platform": "Plattform:",
+          "nft": "NFT",
+          "cancel": "Listing abbrechen",
+          "listing": "Auflistung auf Opensea",
+          "send": "Senden",
+          "listedFor": "{{count}} gelistet für"
+        },
+        "cancelModal": {
+          "title": "Auflistung abbrechen",
+          "cancelListing": "Listung abbrechen",
+          "listing": "Auflistung",
+          "listingPrice": "Listenpreis"
+        },
+        "listingModal": {
+          "cost": "Kosten",
+          "nft": "NFT",
+          "createListing": "Erstelle Auflistung",
+          "floorDifference": "Bodenunterschied",
+          "topOffer": "Top Angebot",
+          "editListing": "Listing bearbeiten",
+          "approveAndList": "Genehmigen und Auflisten",
+          "creatorFee": "Creator-Gebühren ({{fee}}%)",
+          "rabbyFee": "Rabby Gebühr (0%)",
+          "platformFeeTips": "Diese Gebühr ist die Servicegebühr von OpenSea.",
+          "listedAs": "Gelistet als",
+          "creatorFeeTips1": "Die Einnahmen der Creator werden vom Verkäufer bezahlt. Die Einnahmen der Creator sind durchgesetzt.",
+          "floor": "Boden",
+          "quantity": "Menge",
+          "total": "Gesamtgelisteter Preis",
+          "platformFee": "Opensea Plattformgebühren ({{fee}}%)",
+          "proceeds": "Erlös",
+          "totalEst": "Gesamte geschätzte Erträge",
+          "listOn": "Auf OpenSea listen",
+          "creatorFeeTips": "Die Einnahmen der Creator werden vom Verkäufer bezahlt."
+        },
+        "acceptModal": {
+          "rabbyFee": "Rabby Gebühr (0%)",
+          "creatorFee": "Creator-Gebühren ({{fee}}%)",
+          "quantity": "Menge",
+          "acceptOffer": "Angebot annehmen",
+          "platformFeeTips": "Diese Gebühr ist die Servicegebühr von OpenSea.",
+          "platformFee": "Opensea Plattformgebühren ({{fee}}%)",
+          "totalEst": "Gesamte geschätzte Erträge",
+          "title": "Angebot annehmen",
+          "floorDifference": "Bodenunterschied",
+          "creatorFeeTips": "Die Einnahmen der Creator werden vom Verkäufer gezahlt.",
+          "offerPrice": "Angebotspreis",
+          "creatorFeeTips1": "Die Einnahmen der Creator werden vom Verkäufer bezahlt. Die Einnahmen der Creator sind durchgesetzt.",
+          "offer": "Angebot",
+          "platform": "Plattform"
+        },
+        "confirmingTx": "Bestätigen Sie Ihre Transaktion",
+        "hideLowValue": "Verstecke NFTs mit niedrigem Wert",
+        "pending": "Ausstehend",
+        "all": "Alle",
+        "empty": "Keine NFTs"
       }
     },
     "perpsDetail": {
@@ -3418,7 +3504,10 @@
       "common": "Allgemein",
       "recent": "Neueste",
       "hot": "Heiß",
-      "chainNotSupport": "Diese Kette wird nicht unterstützt"
+      "chainNotSupport": "Diese Kette wird nicht unterstützt",
+      "chainFilterLine": {
+        "filterAll": "Alle Chains"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

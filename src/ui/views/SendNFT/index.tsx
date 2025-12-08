@@ -237,9 +237,10 @@ const SendNFT = () => {
   };
 
   const getNFTTransferParams = useCallback(
-    (amount: number): Record<string, any> => {
+    (amount: number): Record<string, any> | null => {
       if (!nftItem || !chainInfo || !currentAccount) {
-        throw new Error('Missing required data for NFT transfer');
+        // throw new Error('Missing required data for NFT transfer');
+        return null;
       }
       const params: Record<string, any> = {
         chainId: chainInfo.id,
@@ -360,6 +361,9 @@ const SendNFT = () => {
         });
 
         const params = getNFTTransferParams(amount);
+        if (!params) {
+          throw new Error('Missing required data for NFT transfer');
+        }
         let shouldForceSignPage = !!forceSignPage;
         wallet.addCacheHistoryData(
           `${chain}-${params.data || '0x'}`,
@@ -720,7 +724,7 @@ const SendNFT = () => {
               ) : null}
               {!canSubmit && (
                 <div className="mt-16 mb-16">
-                  <PendingTxItem type="sendNft" />
+                  <PendingTxItem type="sendNft" getContainer={getContainer} />
                 </div>
               )}
             </div>

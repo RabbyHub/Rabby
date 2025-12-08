@@ -205,7 +205,7 @@ import LogoZerion, {
 import browser from 'webextension-polyfill';
 
 import Logo0X from 'ui/assets/swap/0xswap.png';
-import Logo1inch from 'ui/assets/swap/1inch.png';
+import Logo1inch from 'ui/assets/swap/1inch.svg';
 import LogoOdos from 'ui/assets/swap/odos.png';
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
 import LogoMagpie from 'ui/assets/swap/magpie.png';

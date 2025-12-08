@@ -2221,7 +2221,9 @@
         "receivedDifferentTokenNeedSwap": "Ви отримали інший токен. Ви можете обміняти його на токен, який ви вибрали.",
         "longTimeNoReceive": "Мережева активність висока. Це може зайняти більше часу, ніж зазвичай. Будь ласка, зачекайте терпляче.",
         "BridgeStatusUnavailable": "Статус мосту недоступний. Будь ласка, перевірте свою історію транзакцій, щоб підтвердити, що кошти надійшли.",
-        "swap": "Обмін"
+        "swap": "Обмін",
+        "sendStatus": "Відправити статус",
+        "swapStatus": "Статус обміну"
       }
     },
     "pendingDetail": {
@@ -3222,6 +3224,90 @@
         "tokens": "Токени",
         "transactions": "Транзакції",
         "approvals": "Схвалення"
+      },
+      "nft": {
+        "message": {
+          "cancelFailed": "Не вдалося!",
+          "listingSuccess": "Тільки що перераховано!",
+          "cancelFailedDesc": "Будь ласка, спробуйте знову",
+          "cancelSuccess": "Скасування списку виконано успішно",
+          "listingFailedDesc": "Будь ласка, спробуйте ще раз.",
+          "cancelSuccessDesc": "Ви успішно скасували листинг {{name}}",
+          "acceptFailed": "Продаж не вдалася",
+          "acceptSuccessDesc": "Ви успішно продали {{name}}",
+          "acceptSuccess": "Успішно продано",
+          "listingFailed": "Помилка списку",
+          "acceptFailedDesc": "Будь ласка, спробуйте ще раз.",
+          "listingSuccessDesc": "Ви розмістили {{name}} на OpenSea"
+        },
+        "detail": {
+          "lastSale": "Останній продаж",
+          "ending": "Завершення:",
+          "rarity": "Редкість",
+          "collection": "Колекція",
+          "platform": "Платформа:",
+          "nft": "NFT",
+          "chain": "Цепочка",
+          "supportPlatform": "Підтримувані платформи:",
+          "noOffer": "Ще немає пропозицій",
+          "topOffer": "Топова пропозиція",
+          "send": "Надіслати",
+          "accept": "Прийняти",
+          "edit": "Редагувати список",
+          "collectionFloor": "Колекційний мінімум",
+          "cancel": "Скасувати перелік",
+          "listedFor": "{{count}} перераховано для",
+          "listing": "Список на Opensea"
+        },
+        "cancelModal": {
+          "listingPrice": "Ціна на ліствання",
+          "cancelListing": "Скасувати список",
+          "listing": "Список",
+          "title": "Скасувати лістинг"
+        },
+        "listingModal": {
+          "nft": "NFT",
+          "listedAs": "Список як",
+          "quantity": "Кількість",
+          "total": "Загальна ціна上市",
+          "cost": "Вартість",
+          "createListing": "Створити список",
+          "editListing": "Редагувати список",
+          "topOffer": "Найкраща пропозиція",
+          "approveAndList": "Схвалити та перерахувати",
+          "platformFee": "Комісії платформи Opensea ({{fee}}%)",
+          "floorDifference": "Різниця між підлогами",
+          "totalEst": "Загальна оцінка доходів",
+          "creatorFeeTips": "Виплати творцям будуть здійснені продавцем.",
+          "rabbyFee": "Rabby комісія (0%)",
+          "creatorFee": "Винагорода творця ({{fee}}%)",
+          "proceeds": "Виручка",
+          "platformFeeTips": "Ця плата є сервісним збором OpenSea.",
+          "creatorFeeTips1": "Винагорода творців буде виплачена продавцем. Винагорода творців є обов'язковою.",
+          "listOn": "Список на OpenSea",
+          "floor": "Підлога"
+        },
+        "acceptModal": {
+          "offerPrice": "Ціна пропозиції",
+          "platform": "Платформа",
+          "quantity": "Кількість",
+          "acceptOffer": "Прийняти пропозицію",
+          "title": "Прийняти пропозицію",
+          "offer": "Пропозиція",
+          "totalEst": "Загальні оцінені надходження",
+          "rabbyFee": "Rabby комісія (0%)",
+          "floorDifference": "Різниця між підлогами",
+          "creatorFee": "Комісія творця ({{fee}}%)",
+          "creatorFeeTips": "Винагороди творців будуть сплачені продавцем.",
+          "platformFee": "Комісії платформи Opensea ({{fee}}%)",
+          "platformFeeTips": "Цей збір є комісією за послуги OpenSea.",
+          "creatorFeeTips1": "Винагорода творців буде сплачена продавцем. Винагорода творців є обов'язковою."
+        },
+        "empty": "Немає NFT",
+        "all": "Усе",
+        "pending": "Очікується",
+        "confirmingTx": "Підтвердження вашої транзакції",
+        "hideLowValue": "Сховати NFT з низькою вартістю"
       }
     },
     "perpsDetail": {
@@ -3430,7 +3516,10 @@
       "common": "Загальне",
       "hot": "Гаряче",
       "recent": "Останні",
-      "chainNotSupport": "Цей ланцюг не підтримується"
+      "chainNotSupport": "Цей ланцюг не підтримується",
+      "chainFilterLine": {
+        "filterAll": "Усі мережі"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

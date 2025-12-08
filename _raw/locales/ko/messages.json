@@ -1140,7 +1140,9 @@
         "receivedDifferentTokenFromSource": "브릿지 실패. 소스 체인에서 다른 토큰이 반환되었습니다.",
         "swap": "스왑",
         "pending": "대기 중",
-        "beReturnFailed": "브리지에 실패했습니다. 귀하의 자산이 반환되었습니다."
+        "beReturnFailed": "브리지에 실패했습니다. 귀하의 자산이 반환되었습니다.",
+        "sendStatus": "전송 상태",
+        "swapStatus": "스왑 상태"
       }
     },
     "manageAddress": {
@@ -3207,6 +3209,90 @@
         "approvals": "승인",
         "transactions": "거래",
         "tokens": "토큰"
+      },
+      "nft": {
+        "message": {
+          "listingSuccess": "방금 등록되었습니다!",
+          "acceptFailedDesc": "다시 시도해 주세요.",
+          "listingSuccessDesc": "{{name}}를 OpenSea에 나열했습니다.",
+          "cancelFailed": "실패!",
+          "cancelSuccessDesc": "{{name}}의 상장을 성공적으로 취소했습니다.",
+          "acceptSuccess": "성공적으로 판매됨",
+          "listingFailedDesc": "다시 시도해 주세요.",
+          "cancelSuccess": "리스트가 성공적으로 취소되었습니다.",
+          "acceptSuccessDesc": "{{name}} 을(를) 성공적으로 판매했습니다.",
+          "acceptFailed": "판매 실패",
+          "listingFailed": "리스트 실패",
+          "cancelFailedDesc": "다시 시도해 주세요"
+        },
+        "detail": {
+          "collection": "수집",
+          "chain": "체인",
+          "topOffer": "최고 제안",
+          "platform": "플랫폼:",
+          "ending": "종료:",
+          "noOffer": "아직 제공되지 않음",
+          "lastSale": "마지막 판매",
+          "collectionFloor": "컬렉션 바닥",
+          "supportPlatform": "지원 플랫폼:",
+          "send": "보내기",
+          "listing": "Opensea에 나열하기",
+          "cancel": "목록 취소",
+          "rarity": "희귀성",
+          "accept": "수락하십시오",
+          "listedFor": "{{count}}이(가) 등록되었습니다.",
+          "nft": "NFT",
+          "edit": "목록 편집"
+        },
+        "cancelModal": {
+          "cancelListing": "리스트 취소",
+          "listing": "목록",
+          "listingPrice": "상장 가격",
+          "title": "리스트 취소"
+        },
+        "listingModal": {
+          "editListing": "리스트 수정",
+          "nft": "NFT",
+          "createListing": "리스트 만들기",
+          "floorDifference": "바닥 차이",
+          "cost": "비용",
+          "listedAs": "리스트됨",
+          "quantity": "수량",
+          "rabbyFee": "Rabby 수수료 (0%)",
+          "floor": "바닥",
+          "totalEst": "총 예상 수익",
+          "listOn": "OpenSea에 목록 추가",
+          "creatorFee": "제작자 수수료 ({{fee}}%)",
+          "platformFeeTips": "이 수수료는 OpenSea의 서비스 요금입니다.",
+          "platformFee": "Opensea 플랫폼 수수료 ({{fee}}%)",
+          "creatorFeeTips": "제작자 수익은 판매자가 지급합니다.",
+          "topOffer": "최고 제안",
+          "proceeds": "수익",
+          "creatorFeeTips1": "판매자가 창작자 수익을 지급합니다. 창작자 수익은 강제됩니다.",
+          "total": "총 상장 가격",
+          "approveAndList": "승인 및 목록 추가"
+        },
+        "acceptModal": {
+          "floorDifference": "바닥 차이",
+          "title": "제안 수락",
+          "quantity": "수량",
+          "totalEst": "총 예상 수익",
+          "offerPrice": "제안 가격",
+          "platform": "플랫폼",
+          "acceptOffer": "제안 수락",
+          "creatorFeeTips": "크리에이터 수익은 판매자가 지급합니다.",
+          "creatorFee": "제작자 수수료 ({{fee}}%)",
+          "platformFee": "Opensea 플랫폼 수수료 ({{fee}}%)",
+          "platformFeeTips": "이 수수료는 OpenSea의 서비스 요금입니다.",
+          "rabbyFee": "Rabby 수수료 (0%)",
+          "creatorFeeTips1": "판매자가 크리에이터 수익을 지급합니다. 크리에이터 수익은 강제됩니다.",
+          "offer": "제안"
+        },
+        "empty": "NFT가 없음",
+        "confirmingTx": "거래를 확인하는 중",
+        "all": "모두",
+        "hideLowValue": "낮은 가치의 NFTs 숨기기",
+        "pending": "보류 중"
       }
     },
     "perpsDetail": {
@@ -3415,7 +3501,10 @@
       "noMatch": "일치하지 않음",
       "hot": "뜨거운",
       "noMatchSuggestion": "{{ chainName }}에서 계약 주소를 검색해 보세요.",
-      "chainNotSupport": "이 체인은 지원되지 않습니다."
+      "chainNotSupport": "이 체인은 지원되지 않습니다.",
+      "chainFilterLine": {
+        "filterAll": "모든 체인"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
