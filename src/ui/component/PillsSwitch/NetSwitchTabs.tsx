@@ -17,7 +17,10 @@ type OptionType = {
 type SwitchTabProps = Omit<PillsSwitchProps<OptionType[]>, 'options'>;
 
 export function useSwitchNetTab(options?: { hideTestnetTab?: boolean }) {
-  const isShowTestnet = useRabbySelector((s) => s.preference.isShowTestnet);
+  // const isShowTestnet = useRabbySelector((s) => s.preference.isShowTestnet);
+  const isShowTestnet = useRabbySelector(
+    (s) => s.chains.testnetList.length > 0
+  );
   const { hideTestnetTab = false } = options || {};
 
   const [selectedTab, setSelectedTab] = useState<OptionType['key']>('mainnet');
