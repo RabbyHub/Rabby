@@ -1797,17 +1797,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         }
       }
 
-      wallet.reportStats('createTransaction', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
-        chainId: chain.serverId,
-        createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-        source: params?.$ctx?.ga?.source || '',
-        trigger: params?.$ctx?.ga?.trigger || '',
-        networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-        swapUseSlider: params?.$ctx?.ga?.swapUseSlider ?? '',
-      });
-
       matomoRequestEvent({
         category: 'Transaction',
         action: 'init',
@@ -1877,6 +1866,19 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         chainId,
         isCancel || isSpeedUp
       );
+
+      wallet.reportStats('createTransaction', {
+        type: currentAccount.brandName,
+        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+        chainId: chain.serverId,
+        createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+        source: params?.$ctx?.ga?.source || '',
+        trigger: params?.$ctx?.ga?.trigger || '',
+        networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+        swapUseSlider: params?.$ctx?.ga?.swapUseSlider ?? '',
+        gasLevel: gas?.level || 'normal',
+      });
+
       setMaxPriorityFee(fee);
 
       setSelectedGas(gas);

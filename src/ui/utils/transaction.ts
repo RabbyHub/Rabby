@@ -3,6 +3,9 @@ import { ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
 import { ExplainTxResponse } from '@/background/service/openapi';
 import { hexToString, isHex, stringToHex } from 'viem';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
+import { WalletController, WalletControllerType } from './WalletContext';
 
 const hstInterface = new ethers.utils.Interface(abi);
 
@@ -225,3 +228,42 @@ export function formatTxExplainAbiData(abi?: ExplainTxResponse['abi'] | null) {
     ')',
   ].join('');
 }
+
+export const waitForTxCompleted = async ({
+  wallet,
+  hash,
+  chainServerId,
+}: {
+  hash: string;
+  chainServerId: string;
+  wallet: WalletControllerType;
+}) => {
+  return await new Promise((resolve, reject) => {
+    const handler = (res) => {
+      if (res?.hash === hash) {
+        if (res?.status) {
+          resolve(true);
+        } else {
+          reject(new Error('tx failed'));
+        }
+        unsubscribe();
+      }
+    };
+
+    eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+
+    const unsubscribe = () =>
+      eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+
+    wallet.getRpcTxReceipt(chainServerId, hash).then((res) => {
+      if (res.code === 0) {
+        if (res?.status) {
+          resolve(true);
+        } else {
+          reject(new Error('tx failed'));
+        }
+        unsubscribe();
+      }
+    });
+  });
+};
