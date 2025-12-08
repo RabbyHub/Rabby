@@ -756,7 +756,8 @@ class PreferenceService {
     this.store.addedToken[key] = tokenList;
   };
   getCustomizedToken = () => {
-    return this.store.customizedToken || [];
+    // return this.store.customizedToken || [];
+    return [] as Token[];
   };
   hasCustomizedToken = (token: Token) => {
     return !!this.store.customizedToken?.find(
@@ -781,7 +782,8 @@ class PreferenceService {
     );
   };
   getBlockedToken = () => {
-    return this.store.blockedToken || [];
+    // return this.store.blockedToken || [];
+    return [] as Token[];
   };
   addBlockedToken = (token: Token) => {
     if (

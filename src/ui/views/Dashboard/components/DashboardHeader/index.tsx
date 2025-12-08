@@ -21,6 +21,8 @@ import { getKRCategoryByType } from '@/utils/transaction';
 
 import {
   RcIconAddWalletCC,
+  RcIconFullscreen1CC,
+  RcIconFullscreenCC,
   RcIconQrCodeCC,
   RcIconSettingCC,
 } from '@/ui/assets/dashboard';
@@ -118,6 +120,21 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
     history.push('/add-address');
   });
 
+  const handleOpenDesktop = useMemoizedFn(() => {
+    // matomoRequestEvent({
+    //   category: 'Front Page Click',
+    //   action: 'Click',
+    //   label: 'Open Desktop App',
+    // });
+
+    // ga4.fireEvent('Click_OpenDesktopApp', {
+    //   event_category: 'Front Page Click',
+    // });
+
+    wallet.openInDesktop('/desktop/profile');
+    window.close();
+  });
+
   const brandIcon = useWalletConnectIcon(currentAccount);
   const { t } = useTranslation();
 
@@ -199,7 +216,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
           </div>
 
           <div className="ml-auto flex items-center gap-[8px]">
-            <div
+            {/* <div
               className={clsx(
                 'py-[6px] px-[8px] rounded-[5px] cursor-pointer text-r-neutral-title-2',
                 'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
@@ -207,11 +224,20 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
               onClick={handleAddAddress}
             >
               <RcIconAddWalletCC />
+            </div> */}
+            <div
+              className={clsx(
+                'p-[6px] rounded-[5px] cursor-pointer text-r-neutral-title-2',
+                'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
+              )}
+              onClick={handleOpenDesktop}
+            >
+              <RcIconFullscreen1CC />
             </div>
 
             <div
               className={clsx(
-                'py-[6px] px-[8px] rounded-[5px] cursor-pointer text-r-neutral-title-2',
+                'p-[6px] rounded-[5px] cursor-pointer text-r-neutral-title-2',
                 'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
               )}
               onClick={onSettingClick}

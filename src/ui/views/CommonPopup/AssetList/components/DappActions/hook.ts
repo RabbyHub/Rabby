@@ -1,3 +1,4 @@
+import { flatten, uniqBy } from 'lodash';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { Tx, WithdrawAction } from '@rabby-wallet/rabby-api/dist/types';
@@ -13,6 +14,11 @@ import { isValidAddress } from '@ethereumjs/util';
 import PQueue from 'p-queue';
 import { CHAINS_ENUM, ETH_USDT_CONTRACT } from '@/constant';
 import BigNumber from 'bignumber.js';
+import { DisplayedProject } from '@/ui/utils/portfolio/project';
+import { useRequest } from 'ahooks';
+import { Account } from '@/background/service/preference';
+import { ActionType } from './DappActionsForPopup';
+import { useTranslation } from 'react-i18next';
 
 const rpcQueue = new PQueue({
   concurrency: 20,
@@ -297,5 +303,121 @@ export const useDappAction = (
   return {
     valid,
     action,
+  };
+};
+
+const validateDappAction = async ({
+  currentAccount,
+  data,
+  chain,
+  isErc20Contract,
+}: {
+  currentAccount: Account;
+  data?: WithdrawAction;
+  chain?: string;
+  isErc20Contract: (
+    address: string,
+    serverId?: string
+  ) => Promise<boolean | undefined>;
+}) => {
+  if (!data || !chain || !currentAccount) {
+    return false;
+  }
+
+  const normalizedFunc = getMethodDesc(data.func);
+  const abi = parseAbiItem(normalizedFunc) as AbiFunction;
+  const isAddressArray = abi.inputs.map((item) => item.type === 'address');
+  const addresses = data.str_params
+    ? data.str_params
+        ?.map((item, index) => (isAddressArray[index] ? (item as string) : ''))
+        ?.filter((item) => !!item)
+    : [];
+
+  const validate = async (addr: string) => {
+    if (currentAccount?.address && isSameAddress(currentAccount.address, addr))
+      return true;
+    if (isWhitelistAddress(addr)) return true;
+    const isErc20 = await isErc20Contract(addr, chain);
+    return isErc20;
+  };
+
+  if (
+    data?.need_approve?.to &&
+    !isWhitelistSpender(data.need_approve?.to, chain)
+  ) {
+    return false;
+  }
+  const isValidMethod = !isBlacklistMethod(data.func);
+  if (!isValidMethod) {
+    return false;
+  }
+  if (!addresses?.length) {
+    return false;
+  }
+  const results = await Promise.all(addresses.map((addr) => validate(addr)));
+  const passed = results.every((item) => item);
+  return passed;
+};
+
+export const useGetDappActions = ({
+  protocol,
+}: {
+  protocol: DisplayedProject;
+}) => {
+  const currentAccount = useCurrentAccount();
+  const isErc20Contract = useIsContractBySymbol();
+  const { t } = useTranslation();
+
+  const { data } = useRequest(
+    async () => {
+      const res = await Promise.all(
+        flatten(
+          protocol._portfolios.map((item) => {
+            const data = item.withdrawActions;
+            const withdrawAction = data?.find(
+              (item) =>
+                item.type === ActionType.Withdraw ||
+                item.type === ActionType.Queue
+            );
+
+            const claimAction = data?.find(
+              (item) => item.type === ActionType.Claim
+            );
+
+            return [withdrawAction, claimAction].map(async (action) => {
+              return {
+                title:
+                  action?.type === ActionType.Withdraw ||
+                  action?.type === ActionType.Queue
+                    ? t('component.DappActions.withdraw')
+                    : action?.type === ActionType.Claim
+                    ? t('component.DappActions.claim')
+                    : '',
+                type: action?.type,
+                action,
+                valid: await validateDappAction({
+                  currentAccount: currentAccount!,
+                  data: action,
+                  chain: protocol.chain,
+                  isErc20Contract,
+                }),
+              };
+            });
+          })
+        )
+      );
+
+      return uniqBy(
+        res.filter((item) => item && item.valid && item.title),
+        (item) => item.title
+      );
+    },
+    {
+      refreshDeps: [protocol, currentAccount?.address],
+    }
+  );
+
+  return {
+    actions: data || [],
   };
 };

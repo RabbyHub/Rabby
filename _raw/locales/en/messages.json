@@ -1849,7 +1849,8 @@
           "lowValueDescription": "Low value assets will be shown here",
           "lowValueAssets_0": "{{count}} low value token",
           "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} low value tokens"
+          "lowValueAssets_other": "{{count}} low value tokens",
+          "lowValueDefis": "{{count}} low value defis"
         },
         "noAssets": "No assets",
         "blockLinkText": "Search address to block token",
