@@ -880,6 +880,7 @@ export const PerpsSingleCoin = () => {
           />
 
           <RiskLevelPopup
+            direction={positionData.direction as 'Long' | 'Short'}
             pxDecimals={currentAssetCtx?.pxDecimals || 2}
             visible={riskPopupVisible}
             liquidationPrice={Number(

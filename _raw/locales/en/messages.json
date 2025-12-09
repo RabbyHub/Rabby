@@ -954,7 +954,10 @@
           "title": "Safe",
           "description": "Your position is at a safe level. The distance to liquidation price is >8%. Continue to monitor market conditions."
         },
-        "gotIt": "Got it"
+        "gotIt": "Got it",
+        "distanceLabel": "Liquidation Distance",
+        "liqDistanceTipsShort": "Going up <1>{{distance}}</1> will trigger liquidation.",
+        "liqDistanceTipsLong": "Going down <1>{{distance}}</1> will trigger liquidation."
       },
       "searchPerpsPopup": {
         "openPosition": "Open Position",

@@ -221,6 +221,41 @@ export const Perps: React.FC = () => {
     return sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
   }, [marketData]);
 
+  // Calculate real-time popup data based on selected coin
+  const riskPopupData = useMemo(() => {
+    if (!riskPopupCoin) {
+      return null;
+    }
+
+    const selectedPosition = positionAndOpenOrders?.find(
+      (item) => item.position.coin === riskPopupCoin
+    );
+    if (!selectedPosition) {
+      return null;
+    }
+
+    const marketDataItem = marketDataMap[riskPopupCoin];
+    const markPrice = Number(marketDataItem?.markPx || 0);
+    const liquidationPrice = Number(
+      selectedPosition.position.liquidationPx || 0
+    );
+
+    // const distanceLiquidation = calculateDistanceToLiquidation(
+    //   selectedPosition.position.liquidationPx,
+    //   marketDataItem?.markPx
+    // );
+    return {
+      // distanceLiquidation,
+      direction:
+        Number(selectedPosition.position.szi || 0) > 0
+          ? 'Long'
+          : ('Short' as 'Long' | 'Short'),
+      currentPrice: markPrice,
+      pxDecimals: marketDataItem?.pxDecimals || 2,
+      liquidationPrice,
+    };
+  }, [riskPopupCoin, positionAndOpenOrders, marketDataMap]);
+
   const handleClosePosition = useMemoizedFn(
     async (params: {
       coin: string;
@@ -698,16 +733,12 @@ export const Perps: React.FC = () => {
         onConfirm={handleDeleteAgent}
       />
 
-      {riskPopupCoin && (
+      {riskPopupCoin && riskPopupData && (
         <RiskLevelPopup
           visible={riskPopupVisible}
-          pxDecimals={Number(
-            marketDataMap[riskPopupCoin.toUpperCase()]?.pxDecimals || 2
-          )}
-          liquidationPrice={Number(
-            positionAndOpenOrders.find((p) => p.position.coin === riskPopupCoin)
-              ?.position.liquidationPx || 0
-          )}
+          direction={riskPopupData.direction}
+          pxDecimals={riskPopupData?.pxDecimals || 2}
+          liquidationPrice={riskPopupData.liquidationPrice}
           markPrice={Number(
             marketDataMap[riskPopupCoin.toUpperCase()]?.markPx || 0
           )}
