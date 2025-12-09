@@ -1886,7 +1886,8 @@
         },
         "noTestnetAssets": "No Custom Network Assets",
         "addTokenEntryText": "Token",
-        "openInTab": "Open in tab"
+        "openInTab": "Open in tab",
+        "searchTokenPlaceholder": "Search Token"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",

@@ -44,7 +44,7 @@ export const TokenTable: React.FC<Props> = ({
         EmptyComponent
       ) : (
         <Table className="!w-full ml-0 mr-0">
-          <THeader>
+          {/* <THeader>
             <THeadCell className="w-[160px]">
               {t('page.dashboard.assets.table.assetAmount')}
             </THeadCell>
@@ -54,7 +54,7 @@ export const TokenTable: React.FC<Props> = ({
             <THeadCell className="w-[110px] text-right">
               {t('page.dashboard.assets.table.useValue')}
             </THeadCell>
-          </THeader>
+          </THeader> */}
           <TBody className="mt-0">
             {virtual ? (
               <FixedSizeList
