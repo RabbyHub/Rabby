@@ -926,7 +926,8 @@
       "singleCoin": {
         "fundingPaymentsTips": "This is the net funding payments since the position was opened. Funding is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token.",
         "openInterestTips": "The total outstanding position of all users on this contract.",
-        "fundingTips": "This is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token. lf positive, long pays short. lf negative, short pays long."
+        "fundingTips": "This is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token. lf positive, long pays short. lf negative, short pays long.",
+        "fundingGainsTips": "This is the net funding gains since the position was opened. Funding is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token."
       },
       "liquidation": "Liquidation",
       "accountSelector": {
@@ -967,7 +968,9 @@
         "searchPlaceholder": "Search perps",
         "empty": "No markets found",
         "hasPosition": "Position"
-      }
+      },
+      "fundingRate": "Funding Rate",
+      "fundingGains": "Funding Gains"
     },
     "perpsDetail": {
       "PerpsOpenPositionPopup": {

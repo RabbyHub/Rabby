@@ -44,6 +44,7 @@ import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import DistanceToLiquidationTag from '../components/DistanceToLiquidationTag';
 import { EditTpSlTag } from '../components/EditTpSlTag';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { ReactComponent as RcIconArrow } from '@/ui/assets/perps/polygon-cc.svg';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -366,6 +367,33 @@ export const PerpsSingleCoin = () => {
       }
     }
   );
+  // Calculate expected PNL for take profit
+  const takeProfitExpectedPnl = useMemo(() => {
+    if (!tpPrice || !positionData) {
+      return null;
+    }
+    const entryPrice = positionData.entryPrice;
+    const size = positionData.size;
+    const pnlUsdValue =
+      positionData.direction === 'Long'
+        ? (Number(tpPrice) - entryPrice) * size
+        : (entryPrice - Number(tpPrice)) * size;
+    return pnlUsdValue;
+  }, [tpPrice, positionData]);
+
+  // Calculate expected PNL for stop loss
+  const stopLossExpectedPnl = useMemo(() => {
+    if (!slPrice || !positionData) {
+      return null;
+    }
+    const entryPrice = positionData.entryPrice;
+    const size = positionData.size;
+    const pnlUsdValue =
+      positionData.direction === 'Long'
+        ? (Number(slPrice) - entryPrice) * size
+        : (entryPrice - Number(slPrice)) * size;
+    return pnlUsdValue;
+  }, [slPrice, positionData]);
 
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
@@ -433,15 +461,6 @@ export const PerpsSingleCoin = () => {
               <div className="text-13 font-medium text-r-neutral-title-1">
                 {t('page.perps.position')}
               </div>
-              <DistanceToLiquidationTag
-                liquidationPrice={Number(
-                  currentPosition?.position.liquidationPx || 0
-                )}
-                markPrice={markPrice}
-                onPress={() => {
-                  setRiskPopupVisible(true);
-                }}
-              />
             </div>
             <div className="bg-r-neutral-card1 rounded-[12px] px-16">
               <div className="flex justify-between text-13 py-16">
@@ -457,9 +476,7 @@ export const PerpsSingleCoin = () => {
                   )}
                 >
                   {positionData && positionData.pnl >= 0 ? '+' : '-'}$
-                  {Math.abs(positionData?.pnl || 0).toFixed(2)} (
-                  {positionData && positionData.pnl >= 0 ? '+' : ''}
-                  {positionData?.pnlPercent.toFixed(2)}%)
+                  {Math.abs(positionData?.pnl || 0).toFixed(2)}
                 </span>
               </div>
 
@@ -553,6 +570,33 @@ export const PerpsSingleCoin = () => {
                 />
               </div>
 
+              {tpPrice && takeProfitExpectedPnl !== null && (
+                <div className="relative bg-r-neutral-card-2 rounded-[6px] mt-[-6px]">
+                  <div className="absolute right-[28px] top-[-6px]">
+                    <RcIconArrow className="text-r-neutral-card-2" />
+                  </div>
+                  <div className="flex items-center justify-between p-[12px]">
+                    <div className="text-[12px] leading-[14px] text-r-neutral-body">
+                      {t(
+                        'page.perpsDetail.PerpsAutoCloseModal.takeProfitExpectedPNL'
+                      )}
+                      :
+                    </div>
+                    <div
+                      className={clsx(
+                        'text-[12px] leading-[14px] font-bold',
+                        takeProfitExpectedPnl >= 0
+                          ? 'text-r-green-default'
+                          : 'text-r-red-default'
+                      )}
+                    >
+                      {takeProfitExpectedPnl >= 0 ? '+' : '-'}
+                      {formatUsdValue(Math.abs(takeProfitExpectedPnl))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="flex justify-between text-13 py-16">
                 <div className="text-r-neutral-body">
                   <div className="text-13 text-r-neutral-body">
@@ -592,6 +636,33 @@ export const PerpsSingleCoin = () => {
                 />
               </div>
 
+              {slPrice && stopLossExpectedPnl !== null && (
+                <div className="relative bg-r-neutral-card-2 rounded-[6px] mt-[-6px]">
+                  <div className="absolute right-[28px] top-[-6px]">
+                    <RcIconArrow className="text-r-neutral-card-2" />
+                  </div>
+                  <div className="flex items-center justify-between p-[12px]">
+                    <div className="text-[12px] leading-[14px] text-r-neutral-body">
+                      {t(
+                        'page.perpsDetail.PerpsAutoCloseModal.stopLossExpectedPNL'
+                      )}
+                      :
+                    </div>
+                    <div
+                      className={clsx(
+                        'text-[12px] leading-[14px] font-bold',
+                        stopLossExpectedPnl >= 0
+                          ? 'text-r-green-default'
+                          : 'text-r-red-default'
+                      )}
+                    >
+                      {stopLossExpectedPnl >= 0 ? '+' : '-'}
+                      {formatUsdValue(Math.abs(stopLossExpectedPnl))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="flex justify-between text-13 py-16">
                 <span className="text-r-neutral-body">
                   {t('page.perps.direction')}
@@ -613,13 +684,15 @@ export const PerpsSingleCoin = () => {
               <div className="flex justify-between text-13 py-16">
                 <div className="text-r-neutral-body flex items-center gap-4 relative">
                   {t('page.perps.liquidationPrice')}
-                  <TooltipWithMagnetArrow
-                    overlayClassName="rectangle w-[max-content]"
-                    placement="top"
-                    title={t('page.perps.liquidationPriceTips')}
-                  >
-                    <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-                  </TooltipWithMagnetArrow>
+                  <DistanceToLiquidationTag
+                    liquidationPrice={Number(
+                      currentPosition?.position.liquidationPx || 0
+                    )}
+                    markPrice={markPrice}
+                    onPress={() => {
+                      setRiskPopupVisible(true);
+                    }}
+                  />
                 </div>
                 <span className="text-r-neutral-title-1 font-medium">
                   ${splitNumberByStep(positionData?.liquidationPrice || 0)}
@@ -628,11 +701,17 @@ export const PerpsSingleCoin = () => {
 
               <div className="flex justify-between text-13 py-16">
                 <div className="text-r-neutral-body flex items-center gap-4 relative">
-                  {t('page.perps.fundingPayments')}
+                  {Number(positionData?.fundingPayments || 0) > 0
+                    ? t('page.perps.fundingGains')
+                    : t('page.perps.fundingPayments')}
                   <TooltipWithMagnetArrow
                     overlayClassName="rectangle w-[max-content]"
                     placement="top"
-                    title={t('page.perps.singleCoin.fundingPaymentsTips')}
+                    title={
+                      Number(positionData?.fundingPayments || 0) > 0
+                        ? t('page.perps.singleCoin.fundingGainsTips')
+                        : t('page.perps.singleCoin.fundingPaymentsTips')
+                    }
                   >
                     <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
                   </TooltipWithMagnetArrow>
@@ -681,7 +760,7 @@ export const PerpsSingleCoin = () => {
 
           <div className="flex justify-between text-13 py-16">
             <div className="text-r-neutral-body flex items-center gap-4 relative">
-              {t('page.perps.funding')}
+              {t('page.perps.fundingRate')}
               <TooltipWithMagnetArrow
                 overlayClassName="rectangle w-[max-content]"
                 placement="top"
