@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Props as TokenItemProps } from '@/ui/views/CommonPopup/AssetList/TokenItem';
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
-import BigNumber from 'bignumber.js';
 import { TokenTable } from './TokenTable';
 import { useTranslation } from 'react-i18next';
-import { ReactComponent as RcWalletIconCC } from 'ui/assets/wallet-cc.svg';
-import { Switch } from 'antd';
+import { Input } from 'antd';
 import styled from 'styled-components';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import clsx from 'clsx';
@@ -62,25 +60,47 @@ export const TokenList = ({
   } = useExpandList(list, 0, false, true);
   const { t } = useTranslation();
 
+  const [searchValue, setSearchValue] = React.useState('');
+
+  const displayTokenList = useMemo(() => {
+    const list = allMode
+      ? (allOverZeroList as TokenItemProps['item'][])
+      : (currentList as TokenItemProps['item'][]);
+    const v = searchValue.trim().toLowerCase();
+    if (!v) {
+      return list;
+    }
+    return list.filter(
+      (item) =>
+        item.symbol.toLowerCase().includes(v) ||
+        item.name.toLowerCase().includes(v) ||
+        item.id.toLowerCase().includes(v)
+    );
+  }, [allMode, allOverZeroList, currentList, searchValue]);
+
+  React.useEffect(() => {
+    setSearchValue('');
+  }, [allMode, selectedTab]);
+
   return (
-    <div
-      className="mt-[26px] protocol-item-wrapper"
-      id={TOKEN_WALLET_ANCHOR_ID}
-    >
+    <div className="protocol-item-wrapper" id={TOKEN_WALLET_ANCHOR_ID}>
       <div className="flex items-center justify-between py-[14px] px-[20px]">
         <div className="flex items-center gap-[16px]">
-          <div className="flex items-center gap-[6px]">
-            <RcWalletIconCC className="w-[20px] h-[20px] text-r-blue-default" />
-            <div className="text-[20px] leading-[24px] font-semibold text-r-neutral-title1">
-              {t('page.desktopProfile.portfolio.headers.wallet')}
-            </div>
-          </div>
-          <AllModeSwitchWrapper className="flex items-center gap-[6px]">
-            <Switch checked={allMode} onChange={onAllModeChange} />
-            <div className="text-[14px] leading-[16px] font-normal text-rb-neutral-body">
-              {t('page.desktopProfile.portfolio.headers.allTokenMode')}
-            </div>
-          </AllModeSwitchWrapper>
+          <Input
+            autoCapitalize="off"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            className={clsx(
+              'w-[345px] h-[40px]',
+              'px-12 text-rb-neutral-title-1 text-[14px]',
+              'bg-rb-neutral-card-1',
+              'border border-rb-neutral-line focus-visible:border-rb-brand-default  rounded-[12px]'
+            )}
+            placeholder={t('page.dashboard.assets.table.searchToken')}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
         </div>
         {allMode ? (
           <MainnetTestnetSwitchTabs
@@ -100,11 +120,7 @@ export const TokenList = ({
           ) : (
             <>
               <TokenTable
-                list={
-                  allMode
-                    ? (allOverZeroList as TokenItemProps['item'][])
-                    : (currentList as TokenItemProps['item'][])
-                }
+                list={displayTokenList}
                 EmptyComponent={<div></div>}
               />
               {allMode

@@ -1850,7 +1850,8 @@
           "lowValueAssets_0": "{{count}} low value token",
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_other": "{{count}} low value tokens",
-          "lowValueDefis": "{{count}} low value defis"
+          "lowValueDefis": "{{count}} low value defis",
+          "searchToken": "Search Token"
         },
         "noAssets": "No assets",
         "blockLinkText": "Search address to block token",
@@ -3235,7 +3236,8 @@
       "tabs": {
         "tokens": "Tokens",
         "transactions": "Transactions",
-        "approvals": "Approvals"
+        "approvals": "Approvals",
+        "difi": "Defi"
       },
       "nft": {
         "all": "All",
@@ -3573,10 +3575,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
