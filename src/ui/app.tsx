@@ -41,7 +41,8 @@ Sentry.init({
 function initAppMeta() {
   const head = document.querySelector('head');
   const icon = document.createElement('link');
-  icon.href = 'https://rabby.io/assets/images/logo-128.png';
+  icon.href =
+    'https://static-assets.debank.com/files/10eaa959-f65a-4488-8b5a-976aa189bcc4.png';
   icon.rel = 'icon';
   head?.appendChild(icon);
   const name = document.createElement('meta');
