@@ -71,10 +71,7 @@ export const TopShortcut = memo(
       const scrollElement = document.getElementById('root')
         ?.firstChild as HTMLElement;
       const fn = (e: any) => {
-        console.log('fn', ref.current);
         if (!ref.current) return;
-        console.log('fn', scrollElement.scrollTop);
-
         if (scrollElement.scrollTop > 365) {
           const $parent = document.getElementById(
             TOP_SHORTCUT_SLOT_ID
