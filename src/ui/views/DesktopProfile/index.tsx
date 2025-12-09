@@ -20,8 +20,12 @@ import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useCurve } from '../Dashboard/components/BalanceView/useCurve';
 import { useDesktopBalanceView } from './hooks/useDesktopBalanceView';
-import { UpdateButton } from './components/UpdateButton';
-import { useDocumentVisibility, useMemoizedFn } from 'ahooks';
+import {
+  useDocumentVisibility,
+  useMemoizedFn,
+  useMutationObserver,
+  useSize,
+} from 'ahooks';
 import { NftTabModal } from './components/NftTabModal';
 import { SendNftModal } from './components/SendNftModal';
 import { ReceiveTokenModal } from './components/ReceiveTokenModal';
@@ -49,6 +53,11 @@ import { NFTTabPane } from './components/NFTTabPane';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
+import { DesktopPending } from './components/DesktopPending';
+import { TokenTab } from './components/TokensTabPane/TokenTab';
+import { DIFITab } from './components/TokensTabPane/DifiTab';
+import { useMeasure } from 'react-use';
+import { useTokenAndDIFIData } from './components/TokensTabPane/hook';
 
 const Wrap = styled.div`
   height: 100%;
@@ -77,14 +86,14 @@ const Wrap = styled.div`
     width: 1120px;
     /* margin-left: auto; */
     /* margin-right: auto; */
+    background-color: var(--rb-neutral-bg-1, #ffffff);
   }
 
   /* antd */
   .ant-tabs-tab {
     color: var(--r-neutral-foot, #6a7587);
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 400;
-    line-height: 19px;
 
     padding-top: 16px;
     padding-bottom: 13px;
@@ -98,16 +107,20 @@ const Wrap = styled.div`
   }
   .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
     color: var(--r-blue-default, #4c65ff);
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 18px;
     text-shadow: none;
   }
   .ant-tabs-top > .ant-tabs-nav .ant-tabs-ink-bar {
-    height: 3px;
-    border-radius: 2px 2px 0 0;
+    height: 4px;
+    border-radius: 4px 4px 0 0;
     background-color: var(--r-blue-default, #4c65ff);
   }
   .ant-tabs-top > .ant-tabs-nav {
     margin-bottom: 0;
+    position: sticky;
+    z-index: 10;
+    background: var(--rb-neutral-bg-1, #fff);
   }
   .ant-tabs-top > .ant-tabs-nav::before {
     border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
@@ -134,7 +147,7 @@ export const DesktopProfile = () => {
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
   const dispatch = useRabbyDispatch();
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
-
+  const profileHeaderBoxRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
     balance,
@@ -148,6 +161,8 @@ export const DesktopProfile = () => {
   } = useDesktopBalanceView({
     address: currentAccount?.address,
   });
+
+  const profileHeaderSize = useSize(profileHeaderBoxRef);
 
   const isUpdating = isBalanceLoading || isCurveLoading;
   const [updatedAt, setUpdatedAt] = useState(Date.now());
@@ -168,6 +183,30 @@ export const DesktopProfile = () => {
   const [cacheProjectOverviewList, setCacheProjectOverviewList] = useState<
     AbstractProject[]
   >([]);
+
+  const {
+    // useQueryProjects
+    isTokensLoading,
+    isPortfoliosLoading,
+    portfolios,
+    tokenList,
+    hasTokens,
+    removeProtocol,
+    portfolioNetWorth,
+    // useQueryProjects end
+    // useAppChain
+    appPortfolios,
+    appPortfolioNetWorth,
+    isAppPortfoliosLoading,
+    // useAppChain end
+    currentPortfolioNetWorth,
+    displayTokenList,
+    displayPortfolios,
+    sortTokens,
+    allMode,
+    appIds,
+    isNoResults,
+  } = useTokenAndDIFIData({ selectChainId: chainInfo?.serverId });
 
   useListenTxReload(async () => {
     if (['tokens', 'transactions'].includes(activeTab)) {
@@ -221,55 +260,74 @@ export const DesktopProfile = () => {
         className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element"
         ref={scrollContainerRef}
       >
-        <div className="main-content">
-          <div className="layout-container sticky top-0 z-10 pt-[16px] bg-rb-neutral-bg-1">
+        <div className="main-content is-open">
+          <div className="layout-container sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
             <DesktopNav
               balance={balance}
               changePercent={curveChartData?.changePercent}
               isLoss={curveChartData?.isLoss}
               isLoading={isBalanceLoading || isCurveLoading}
             />
+          </div>
+
+          <div className="layout-container">
             <div
-              className="sticky top-[103px] z-10 pt-[16px] overflow-scroll flex-initial"
-              style={{ width: 0, scrollbarWidth: 'none' }}
+              className="sticky z-10 pt-[0px] overflow-scroll flex-initial px-1 w-auto"
+              style={{
+                width: 0,
+                scrollbarWidth: 'none',
+                top: (profileHeaderSize?.height || 0) + 103 + 57,
+              }}
               id={TOP_SHORTCUT_SLOT_ID}
             >
-              {cacheProjectOverviewList?.length > 0 &&
-                activeTab === 'tokens' && (
-                  <TopShortcut projects={cacheProjectOverviewList || []} />
-                )}
+              {cacheProjectOverviewList?.length > 0 && activeTab === 'difi' && (
+                <TopShortcut projects={cacheProjectOverviewList || []} />
+              )}
             </div>
-          </div>
-          <div className="layout-container">
             <div className="flex items-start gap-[20px]">
               <main className="flex-1" id={PORTFOLIO_LIST_ID}>
                 <div
+                  className={clsx('sticky top-[103px] z-10 bg-rb-neutral-bg-1')}
+                  ref={profileHeaderBoxRef}
+                >
+                  <div
+                    className={clsx(
+                      'border border-b-0 border-solid border-rb-neutral-line',
+                      'rounded-[20px] rounded-b-none'
+                    )}
+                  >
+                    <ProfileHeader
+                      balance={balance}
+                      evmBalance={evmBalance}
+                      curveChartData={curveChartData}
+                      isLoading={isBalanceLoading || isCurveLoading}
+                      onRefresh={handleUpdate}
+                      appChainIds={appChainIds}
+                    />
+                  </div>
+                </div>
+
+                <div
+                  key={refreshKey}
                   className={clsx(
-                    'bg-r-neutral-card-1 rounded-[20px]',
-                    'border-[1px] border-solid border-rb-neutral-line'
+                    'border border-t-0 border-solid border-rb-neutral-line mt-1',
+                    'rounded-[20px] rounded-t-none'
                   )}
                 >
-                  <ProfileHeader
-                    balance={balance}
-                    evmBalance={evmBalance}
-                    curveChartData={curveChartData}
-                    isLoading={isBalanceLoading || isCurveLoading}
-                    onRefresh={handleUpdate}
-                    appChainIds={appChainIds}
-                  />
-                  <div key={refreshKey}>
-                    <Tabs
-                      defaultActiveKey={activeTab}
-                      activeKey={activeTab}
-                      onChange={handleTabChange}
-                      tabBarExtraContent={{
-                        right: (
+                  <Tabs
+                    tabBarStyle={{
+                      position: 'sticky',
+                      top: (profileHeaderSize?.height || 0) + 103,
+                    }}
+                    className="overflow-visible"
+                    defaultActiveKey={activeTab}
+                    activeKey={activeTab}
+                    onChange={handleTabChange}
+                    tabBarExtraContent={{
+                      right: (
+                        <>
                           <div className="flex items-center gap-[16px] pr-[20px]">
-                            <UpdateButton
-                              isUpdating={isUpdating}
-                              onUpdate={handleUpdate}
-                              updatedAt={updatedAt}
-                            />
+                            <DesktopPending />
                             <DesktopChainSelector
                               value={chain}
                               onChange={(v) =>
@@ -277,44 +335,67 @@ export const DesktopProfile = () => {
                               }
                             />
                           </div>
-                        ),
-                      }}
+                        </>
+                      ),
+                    }}
+                  >
+                    <Tabs.TabPane
+                      tab={t('page.desktopProfile.tabs.tokens')}
+                      key="tokens"
                     >
-                      <Tabs.TabPane
-                        tab={t('page.desktopProfile.tabs.tokens')}
-                        key="tokens"
-                      >
-                        <TokensTabPane
+                      <TokenTab
+                        isTokensLoading={!!isTokensLoading}
+                        isNoResults={isNoResults}
+                        sortTokens={sortTokens}
+                        hasTokens={hasTokens}
+                        allMode={allMode}
+                      />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane
+                      tab={t('page.desktopProfile.tabs.difi')}
+                      key="difi"
+                    >
+                      <>
+                        <DIFITab
                           onProjectOverviewListChange={
                             setCacheProjectOverviewList
                           }
-                          selectChainId={chainInfo?.serverId}
+                          appIds={appIds}
+                          displayPortfolios={displayPortfolios}
+                          currentPortfolioNetWorth={currentPortfolioNetWorth}
+                          isLoading={
+                            !!isTokensLoading ||
+                            !!isPortfoliosLoading ||
+                            !!isAppPortfoliosLoading
+                          }
+                          isNoResults={isNoResults}
+                          removeProtocol={removeProtocol}
                         />
-                      </Tabs.TabPane>
-                      <Tabs.TabPane tab="NFTs" key="nft">
-                        <NFTTabPane selectChainId={chainInfo?.serverId} />
-                      </Tabs.TabPane>
-                      <Tabs.TabPane
-                        tab={t('page.desktopProfile.tabs.transactions')}
-                        key="transactions"
-                      >
-                        <TransactionsTabPane
-                          selectChainId={chainInfo?.serverId}
-                          scrollContainerRef={scrollContainerRef}
-                        />
-                      </Tabs.TabPane>
-                      <Tabs.TabPane
-                        tab={t('page.desktopProfile.tabs.approvals')}
-                        key="approvals"
-                      >
-                        <ApprovalsTabPane
-                          isDesktop={true}
-                          desktopChain={chain}
-                          key={`${currentAccount?.address}-${currentAccount?.type}`}
-                        />
-                      </Tabs.TabPane>
-                    </Tabs>
-                  </div>
+                      </>
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="NFTs" key="nft">
+                      <NFTTabPane selectChainId={chainInfo?.serverId} />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane
+                      tab={t('page.desktopProfile.tabs.transactions')}
+                      key="transactions"
+                    >
+                      <TransactionsTabPane
+                        selectChainId={chainInfo?.serverId}
+                        scrollContainerRef={scrollContainerRef}
+                      />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane
+                      tab={t('page.desktopProfile.tabs.approvals')}
+                      key="approvals"
+                    >
+                      <ApprovalsTabPane
+                        isDesktop={true}
+                        desktopChain={chain}
+                        key={`${currentAccount?.address}-${currentAccount?.type}`}
+                      />
+                    </Tabs.TabPane>
+                  </Tabs>
                 </div>
                 <ReachedEnd />
                 <div className="flex justify-end px-[20px]">

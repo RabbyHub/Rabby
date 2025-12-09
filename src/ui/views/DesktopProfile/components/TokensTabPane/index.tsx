@@ -155,7 +155,7 @@ export const TokensTabPane: React.FC<Props> = ({
   if (isTokensLoading && !hasTokens) {
     return (
       <div className="mx-20">
-        <TokenListViewSkeleton />;
+        <TokenListViewSkeleton />
       </div>
     );
   }

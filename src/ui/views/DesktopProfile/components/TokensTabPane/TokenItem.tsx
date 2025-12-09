@@ -14,6 +14,15 @@ import { getTokenSymbol } from 'ui/utils/token';
 import { isNil } from 'lodash';
 import clsx from 'clsx';
 
+const PADDING = 8;
+
+const MAINNET_WIDTH_MAP = {
+  token: 360 - PADDING,
+  price: 280,
+  amount: 280,
+  usdValue: 'auto', //136 - PADDING,
+};
+
 export interface Props {
   item: AbstractPortfolioToken;
   style?: React.CSSProperties;
@@ -75,7 +84,12 @@ export const TokenItemAsset: React.FC<Props> = ({
   }, [item._tokenId, item.chain]);
 
   return (
-    <TCell className="py-8 flex gap-10 flex-1 items-center overflow-hidden">
+    <TCell
+      className="py-8 flex gap-10 items-center overflow-hidden"
+      style={{
+        width: MAINNET_WIDTH_MAP['token'],
+      }}
+    >
       <div className="relative h-[24px]">
         <Image
           className="w-24 h-24 rounded-full"
@@ -195,7 +209,12 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
 
 const TokenItemAmount: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 truncate">
+    <TCell
+      className="py-8 text-r-neutral-title1 text-14 truncate"
+      style={{
+        width: MAINNET_WIDTH_MAP['amount'],
+      }}
+    >
       {`${item._amountStr} `}
       <DesktopTokenLabel
         token={{ ...item, id: item._tokenId }}
@@ -212,7 +231,12 @@ const TokenItemAmount: React.FC<Props> = ({ item }) => {
 
 const TokenItemPrice: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="text-r-neutral-title1 text-14 flex-1 truncate flex items-center gap-4">
+    <TCell
+      className="text-r-neutral-title1 text-14  truncate flex items-center gap-4"
+      style={{
+        width: MAINNET_WIDTH_MAP['price'],
+      }}
+    >
       <div>${item._priceStr}</div>
       {isNil(item.price_24h_change) ? null : (
         <div
@@ -231,7 +255,12 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
 
 const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 text-right truncate">
+    <TCell
+      className="py-8 text-r-neutral-title1 text-14 flex-1 text-right truncate"
+      style={{
+        width: MAINNET_WIDTH_MAP['usdValue'],
+      }}
+    >
       {item._usdValueStr || '<$0.01'}
     </TCell>
   );
