@@ -3213,7 +3213,9 @@
           "hideSmall": "Hide tokens with small balances.",
           "hideSmallDesc": "Tokens with small balances are not displayed.",
           "hideProtocolsWithSmallDeposits": "Hide protocols with small deposits.",
-          "hideProtocolsWithSmallDepositsDesc": "Protocols with small deposits are not displayed."
+          "hideProtocolsWithSmallDepositsDesc": "Protocols with small deposits are not displayed.",
+          "hideDefiWithSmallDeposits": "Hide Defis with small deposits.",
+          "hideDefiWithSmallDepositsDesc": "Defis with small deposits are not displayed."
         },
         "table": {
           "token": "Token",
