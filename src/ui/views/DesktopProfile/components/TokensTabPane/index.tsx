@@ -1,3 +1,4 @@
+/** @deprecated */
 import React, { useEffect, useMemo } from 'react';
 import { useRabbySelector, useRabbyDispatch } from '@/ui/store';
 import useSortTokens from 'ui/hooks/useSortTokens';
@@ -180,8 +181,7 @@ export const TokensTabPane: React.FC<Props> = ({
         </div>
       ) : (
         <TokenList
-          allMode={allMode}
-          onAllModeChange={setAllMode}
+          lpTokenMode={false}
           list={sortTokens}
           isNoResults={isNoResults}
           totalValue={tokenListTotalValue}

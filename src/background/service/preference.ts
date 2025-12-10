@@ -145,7 +145,10 @@ export interface PreferenceStore {
 
   desktopTabId?: number;
 
+  /** @deprecated */
   desktopTokensAllMode?: boolean;
+
+  lpTokenMode?: boolean;
 }
 
 export interface AddressSortStore {
@@ -224,6 +227,7 @@ class PreferenceService {
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
         desktopTabId: undefined,
         desktopTokensAllMode: false,
+        lpTokenMode: false,
       },
     });
 
@@ -869,6 +873,9 @@ class PreferenceService {
   };
   setDesktopTokensAllMode = (value: boolean) => {
     this.store.desktopTokensAllMode = value;
+  };
+  setLpTokenMode = (value: boolean) => {
+    this.store.lpTokenMode = value;
   };
   saveCurrentCoboSafeAddress = async () => {
     this.currentCoboSafeAddress = await this.getCurrentAccount();

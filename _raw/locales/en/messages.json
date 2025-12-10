@@ -3201,6 +3201,7 @@
         "headers": {
           "wallet": "Wallet",
           "allTokenMode": "All Token Mode",
+          "lpToken": "LP-Token",
           "foldProtocols": "Fold {{count}} Protocols",
           "unfoldProtocols": "Unfold {{count}} Protocols"
         },

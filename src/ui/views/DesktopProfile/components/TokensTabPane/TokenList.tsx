@@ -3,11 +3,10 @@ import { Props as TokenItemProps } from '@/ui/views/CommonPopup/AssetList/TokenI
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
 import { TokenTable } from './TokenTable';
 import { useTranslation } from 'react-i18next';
-import { Input } from 'antd';
+import { Input, Switch } from 'antd';
 import styled from 'styled-components';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import clsx from 'clsx';
-import { numberWithCommasIsLtOne } from '@/ui/utils/number';
 import { TokenListEmpty } from './TokenListEmpty';
 import { TOKEN_WALLET_ANCHOR_ID } from './constant';
 import type { NetSwitchTabsKey } from '@/ui/component/PillsSwitch/NetSwitchTabs';
@@ -17,13 +16,13 @@ import { CustomTestnetAssetList } from './TestTokenlist';
 export interface Props {
   list?: TokenItemProps['item'][];
   isNoResults?: boolean;
-  allMode?: boolean;
-  onAllModeChange?: (allMode: boolean) => void;
+  lpTokenMode?: boolean;
+  onLpTokenModeChange?: (v: boolean) => void;
   totalValue?: number;
   selectedTab?: NetSwitchTabsKey;
   onTabChange?: (tab: NetSwitchTabsKey) => void;
 }
-const AllModeSwitchWrapper = styled.div`
+const LpTokenSwitchWrapper = styled.div`
   .ant-switch-checked {
     background-color: var(--r-green-default) !important;
   }
@@ -39,8 +38,8 @@ const ListContainer = styled.div`
 export const TokenList = ({
   list,
   isNoResults,
-  allMode,
-  onAllModeChange,
+  lpTokenMode,
+  onLpTokenModeChange,
   totalValue,
   selectedTab,
   onTabChange,
@@ -52,35 +51,26 @@ export const TokenList = ({
     hasExpandSwitch,
   } = useExpandList(list, totalValue);
 
-  const {
-    result: allOverZeroList,
-    isExpanded: allOverZeroExpanded,
-    toggleExpand: allOverZeroToggleExpand,
-    hasExpandSwitch: allOverZeroHasExpandSwitch,
-  } = useExpandList(list, 0, false, true);
   const { t } = useTranslation();
 
   const [searchValue, setSearchValue] = React.useState('');
 
   const displayTokenList = useMemo(() => {
-    const list = allMode
-      ? (allOverZeroList as TokenItemProps['item'][])
-      : (currentList as TokenItemProps['item'][]);
     const v = searchValue.trim().toLowerCase();
     if (!v) {
-      return list;
+      return currentList;
     }
-    return list.filter(
+    return currentList?.filter(
       (item) =>
         item.symbol.toLowerCase().includes(v) ||
         item.name.toLowerCase().includes(v) ||
         item.id.toLowerCase().includes(v)
     );
-  }, [allMode, allOverZeroList, currentList, searchValue]);
+  }, [searchValue, currentList]);
 
   React.useEffect(() => {
     setSearchValue('');
-  }, [allMode, selectedTab]);
+  }, [lpTokenMode, selectedTab]);
 
   return (
     <div className="protocol-item-wrapper" id={TOKEN_WALLET_ANCHOR_ID}>
@@ -102,19 +92,21 @@ export const TokenList = ({
             onChange={(e) => setSearchValue(e.target.value)}
           />
         </div>
-        {allMode ? (
+        <div className="flex items-center gap-[16px]">
+          <LpTokenSwitchWrapper className="flex items-center gap-[6px]">
+            <Switch checked={lpTokenMode} onChange={onLpTokenModeChange} />
+            <div className="text-[14px] leading-[16px] font-normal text-rb-neutral-body">
+              {t('page.desktopProfile.portfolio.headers.lpToken')}
+            </div>
+          </LpTokenSwitchWrapper>
           <MainnetTestnetSwitchTabs
             value={selectedTab}
             onTabChange={onTabChange}
           />
-        ) : (
-          <div className="text-[20px] text-r-neutral-title1 font-semibold">
-            ${numberWithCommasIsLtOne(totalValue || 0, 0)}
-          </div>
-        )}
+        </div>
       </div>
       <ListContainer>
-        {selectedTab === 'mainnet' || !allMode ? (
+        {selectedTab === 'mainnet' || !lpTokenMode ? (
           isNoResults ? (
             <TokenListEmpty text={t('page.dashboard.assets.table.noTokens')} />
           ) : (
@@ -123,61 +115,30 @@ export const TokenList = ({
                 list={displayTokenList}
                 EmptyComponent={<div></div>}
               />
-              {allMode
-                ? allOverZeroHasExpandSwitch && (
-                    <div
-                      onClick={allOverZeroToggleExpand}
-                      className="flex items-center justify-center gap-4 py-[16px]"
-                    >
-                      <div className="text-rb-neutral-secondary text-13 cursor-pointer">
-                        {allOverZeroExpanded
-                          ? t(
-                              'page.desktopProfile.portfolio.hidden.tokensWithZeroBalance'
-                            )
-                          : t(
-                              'page.desktopProfile.portfolio.hidden.tokensWithZeroBalanceDesc'
-                            )}
+              {hasExpandSwitch && (
+                <div
+                  onClick={toggleExpand}
+                  className="flex items-center justify-center gap-4 py-[16px]"
+                >
+                  <div className="text-rb-neutral-secondary text-13 cursor-pointer">
+                    {isExpanded
+                      ? t('page.desktopProfile.portfolio.hidden.hideSmall')
+                      : t('page.desktopProfile.portfolio.hidden.hideSmallDesc')}
+                  </div>
+                  <div className="flex items-center justify-center gap-[2px] cursor-pointer">
+                    {isExpanded ? null : (
+                      <div className="text-rb-neutral-secondary text-13 underline">
+                        {t('page.desktopProfile.portfolio.hidden.showAll')}
                       </div>
-                      <div className="flex items-center justify-center gap-[2px] cursor-pointer">
-                        {allOverZeroExpanded ? null : (
-                          <div className="text-rb-neutral-secondary text-13 underline">
-                            {t('page.desktopProfile.portfolio.hidden.showAll')}
-                          </div>
-                        )}
-                        <RcIconDropdown
-                          className={clsx('ml-0 text-rb-neutral-secondary', {
-                            'transform rotate-180': allOverZeroExpanded,
-                          })}
-                        />
-                      </div>
-                    </div>
-                  )
-                : hasExpandSwitch && (
-                    <div
-                      onClick={toggleExpand}
-                      className="flex items-center justify-center gap-4 py-[16px]"
-                    >
-                      <div className="text-rb-neutral-secondary text-13 cursor-pointer">
-                        {isExpanded
-                          ? t('page.desktopProfile.portfolio.hidden.hideSmall')
-                          : t(
-                              'page.desktopProfile.portfolio.hidden.hideSmallDesc'
-                            )}
-                      </div>
-                      <div className="flex items-center justify-center gap-[2px] cursor-pointer">
-                        {isExpanded ? null : (
-                          <div className="text-rb-neutral-secondary text-13 underline">
-                            {t('page.desktopProfile.portfolio.hidden.showAll')}
-                          </div>
-                        )}
-                        <RcIconDropdown
-                          className={clsx('ml-0 text-rb-neutral-secondary', {
-                            'transform rotate-180': isExpanded,
-                          })}
-                        />
-                      </div>
-                    </div>
-                  )}
+                    )}
+                    <RcIconDropdown
+                      className={clsx('ml-0 text-rb-neutral-secondary', {
+                        'transform rotate-180': isExpanded,
+                      })}
+                    />
+                  </div>
+                </div>
+              )}
             </>
           )
         ) : (

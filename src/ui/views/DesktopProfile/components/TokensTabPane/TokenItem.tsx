@@ -10,9 +10,10 @@ import { DesktopTokenLabel } from '../TransactionsTabPane/DesktopTokenLabel';
 import styled from 'styled-components';
 import { CustomTestnetToken } from '@/background/service/customTestnet';
 import { useTranslation } from 'react-i18next';
-import { getTokenSymbol } from 'ui/utils/token';
 import { isNil } from 'lodash';
 import clsx from 'clsx';
+import { ReactComponent as RCLpTokenIconCC } from '@/ui/assets/lpToken-cc.svg';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 
 const PADDING = 8;
 
@@ -110,15 +111,20 @@ export const TokenItemAsset: React.FC<Props> = ({
         </TooltipWithMagnetArrow>
       </div>
       <div className="flex flex-1 flex-row items-center gap-[12px] overflow-hidden">
-        <DesktopTokenLabel
-          token={{ ...item, id: item._tokenId }}
-          isNft={false}
-          textClassName={`
-            cursor-pointer no-underline
-            text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
-            hover:text-r-blue-default hover:underline 
-          `}
-        />
+        <div className="flex items-center gap-4">
+          <DesktopTokenLabel
+            token={{ ...item, id: item._tokenId }}
+            isNft={false}
+            textClassName={`
+              cursor-pointer no-underline
+              text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
+              hover:text-r-blue-default hover:underline 
+            `}
+          />
+          {isLpToken(item) && (
+            <RCLpTokenIconCC className="w-16 h-16 text-rb-neutral-secondary cursor-pointer" />
+          )}
+        </div>
         {!disableSwap && (
           <ActionBottom
             onClick={gotoSwap}

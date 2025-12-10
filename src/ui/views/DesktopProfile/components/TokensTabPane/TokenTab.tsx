@@ -14,11 +14,11 @@ interface Props {
   isNoResults: boolean;
   sortTokens: AbstractPortfolioToken[];
   hasTokens: boolean;
-  allMode: boolean;
+  lpTokenMode: boolean;
 }
 
 export const TokenTab = ({
-  allMode,
+  lpTokenMode,
   sortTokens,
   isTokensLoading,
   isNoResults,
@@ -26,8 +26,8 @@ export const TokenTab = ({
 }: Props) => {
   const dispatch = useRabbyDispatch();
 
-  const setAllMode = (value: boolean) => {
-    dispatch.preference.setDesktopTokensAllMode(value);
+  const setLpTokenMode = (value: boolean) => {
+    dispatch.preference.setLpTokenMode(value);
   };
 
   const { selectedTab, onTabChange } = useSwitchNetTab();
@@ -53,8 +53,8 @@ export const TokenTab = ({
         </div>
       ) : (
         <TokenList
-          allMode={allMode}
-          onAllModeChange={setAllMode}
+          lpTokenMode={lpTokenMode}
+          onLpTokenModeChange={setLpTokenMode}
           list={sortTokens}
           isNoResults={isNoResults}
           totalValue={tokenListTotalValue}
