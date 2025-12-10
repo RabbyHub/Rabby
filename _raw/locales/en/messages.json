@@ -992,7 +992,9 @@
         "rabbyFee": "Rabby Fee",
         "providerFee": "Hyperliquid Fee",
         "minimumOrderSize": "The minimum order size is $10",
-        "maximumOrderSize": "The maximum order size is {{amount}}"
+        "maximumOrderSize": "The maximum order size is {{amount}}",
+        "minMargin": "Minimum margin is {{amount}}",
+        "maxMargin": "Maximum margin is {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "margin": "Margin",
@@ -1010,7 +1012,10 @@
         "insufficientBalance": "Insufficient balance",
         "exceedMaxReduction": "Exceeds maximum reduction",
         "addMarginSuccess": "Margin added successfully",
-        "reduceMarginSuccess": "Margin reduced successfully"
+        "reduceMarginSuccess": "Margin reduced successfully",
+        "upto": "Up to",
+        "upTo": "Up to",
+        "liqDistance": "Liq.Distance"
       },
       "PerpsClosePositionPopup": {
         "title": "Close Position",

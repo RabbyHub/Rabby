@@ -5,9 +5,11 @@ import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import {
+  calculateDistanceToLiquidation,
   calLiquidationPrice,
   calTransferMarginRequired,
   formatPercent,
+  formatPerpsPct,
 } from '../utils';
 import { DistanceToLiquidationTag } from '../components/DistanceToLiquidationTag';
 import { TokenImg } from '../components/TokenImg';
@@ -18,6 +20,9 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { MarginInput } from '../components/MarginInput';
 import { MarketData } from '@/ui/models/perps';
 import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../constants';
+import { MarginEditInput } from '../components/MarginEditInput';
+import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';
+import { useRequest } from 'ahooks';
 
 export interface EditMarginPopupProps {
   visible: boolean;
@@ -59,22 +64,25 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
   const pxDecimals = currentAssetCtx?.pxDecimals || 2;
   const leverageMax = currentAssetCtx?.maxLeverage || 5;
   const { t } = useTranslation();
-  const [action, setAction] = React.useState<'add' | 'reduce'>('add');
   const [margin, setMargin] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
   const markPrice = useMemo(() => {
     return Number(activeAssetCtx?.markPx || currentAssetCtx?.markPx || 0);
   }, [activeAssetCtx]);
 
+  const marginNormalized = useMemo(() => {
+    const newMargin = margin.startsWith('$') ? margin.slice(1) : margin;
+    return Number(newMargin);
+  }, [margin]);
+
+  const noChangeMargin = useMemo(() => {
+    return marginNormalized.toFixed(2) === marginUsed.toFixed(2);
+  }, [marginNormalized, marginUsed]);
+
   const estimatedLiquidationPrice = React.useMemo(() => {
-    if (!margin || margin === '0') {
+    if (!margin || margin === '0' || noChangeMargin) {
       return '';
     }
-    const marginValue = Number(margin);
-    const newMargin =
-      action === 'add'
-        ? Number(marginUsed) + marginValue
-        : Number(marginUsed) - marginValue;
+    const newMargin = Number(marginNormalized);
     const nationalValue = positionSize * markPrice;
     return calLiquidationPrice(
       markPrice,
@@ -87,18 +95,34 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
   }, [
     marginUsed,
     markPrice,
-    action,
     leverage,
     leverageMax,
     margin,
     direction,
     positionSize,
     pxDecimals,
+    noChangeMargin,
   ]);
+
+  const minMargin = useMemo(() => {
+    const requiredMargin = calTransferMarginRequired(
+      markPrice,
+      positionSize,
+      leverage
+    );
+    return new BigNumber(Math.min(requiredMargin + 0.1, marginUsed))
+      .decimalPlaces(2, BigNumber.ROUND_UP)
+      .toNumber();
+  }, [markPrice, positionSize, leverage, marginUsed]);
+
+  const maxMargin = useMemo(() => {
+    const noHaveBalance = availableBalance < 0.01;
+    const max = noHaveBalance ? marginUsed : availableBalance + marginUsed;
+    return new BigNumber(max).decimalPlaces(2, BigNumber.ROUND_DOWN).toNumber();
+  }, [availableBalance, marginUsed]);
 
   const availableToReduce = useMemo(() => {
     const transferMarginRequired = calTransferMarginRequired(
-      entryPrice,
       markPrice,
       positionSize,
       leverage
@@ -108,18 +132,17 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
         PERPS_MARGIN_SIGNIFICANT_DIGITS
       )
     );
-  }, [entryPrice, markPrice, positionSize, leverage, marginUsed]);
+  }, [markPrice, positionSize, leverage, marginUsed]);
 
   // 验证 margin 输入
   const marginValidation = React.useMemo(() => {
     const marginValue = Number(margin) || 0;
-    const available = action === 'add' ? availableBalance : availableToReduce;
 
     if (marginValue === 0) {
       return { isValid: false, error: null };
     }
 
-    if (Number.isNaN(marginValue)) {
+    if (Number.isNaN(+marginValue)) {
       return {
         isValid: false,
         error: 'invalid_number',
@@ -129,45 +152,55 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
       };
     }
 
-    if (marginValue > available) {
+    if (marginValue < minMargin) {
       return {
         isValid: false,
-        error: 'insufficient_balance',
-        errorMessage: t(
-          'page.perpsDetail.PerpsOpenPositionPopup.insufficientBalance'
-        ),
+        error: 'invalid_margin',
+        errorMessage: t('page.perpsDetail.PerpsOpenPositionPopup.minMargin', {
+          amount: `$${minMargin}`,
+        }),
+      };
+    }
+
+    if (marginValue > maxMargin) {
+      return {
+        isValid: false,
+        error: 'invalid_margin',
+        errorMessage: t('page.perpsDetail.PerpsOpenPositionPopup.maxMargin', {
+          amount: `$${maxMargin}`,
+        }),
       };
     }
 
     return { isValid: true, error: null };
-  }, [margin, availableBalance, t, action, availableToReduce]);
+  }, [margin, t, minMargin, maxMargin]);
 
   React.useEffect(() => {
-    if (!visible) {
-      setMargin('');
-      setAction('add');
+    if (visible) {
+      setMargin(marginUsed.toFixed(2));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   const canReduce = useMemo(() => {
     return availableToReduce > 0.01;
   }, [availableToReduce]);
 
-  const handleConfirm = async () => {
-    setLoading(true);
-    try {
-      await onConfirm(action, Number(margin));
-    } catch (error) {
-      console.error('Failed to update margin:', error);
-    } finally {
-      setLoading(false);
+  const { runAsync: handleConfirm, loading } = useRequest(
+    async () => {
+      const action = Number(margin) > marginUsed ? 'add' : 'reduce';
+      const marginDiff = Math.abs(Number(margin) - marginUsed);
+      await onConfirm(action, marginDiff);
+    },
+    {
+      manual: true,
     }
-  };
+  );
 
   return (
     <Popup
       placement="bottom"
-      height={480}
+      height={564}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
@@ -188,37 +221,6 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
         />
 
         <div className="flex-1 mt-12 px-20 overflow-y-auto pb-24">
-          <div className="flex mb-12 bg-r-neutral-card1 rounded-[8px] p-4 h-[42px]">
-            <div
-              className={clsx(
-                'flex-1 h-[34px] rounded-[4px] text-16 cursor-pointer flex items-center justify-center',
-                action === 'add'
-                  ? 'bg-r-blue-light-1 text-r-blue-default font-bold'
-                  : 'text-rb-neutral-secondary font-medium'
-              )}
-              onClick={() => {
-                setAction('add');
-                setMargin('');
-              }}
-            >
-              {t('page.perpsDetail.PerpsEditMarginPopup.addMargin')}
-            </div>
-            <div
-              className={clsx(
-                'flex-1 h-[34px] rounded-[4px] text-16 cursor-pointer flex items-center justify-center',
-                action === 'reduce'
-                  ? 'bg-r-blue-light-1 text-r-blue-default font-bold'
-                  : 'text-rb-neutral-secondary font-medium'
-              )}
-              onClick={() => {
-                setAction('reduce');
-                setMargin('');
-              }}
-            >
-              {t('page.perpsDetail.PerpsEditMarginPopup.reduceMargin')}
-            </div>
-          </div>
-
           <div className="flex items-center justify-between p-12 mb-12 h-[78px] bg-r-neutral-card1 rounded-[8px]">
             <div className="flex flex-col gap-8">
               <div className="flex items-center gap-6">
@@ -232,8 +234,8 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
                   className={clsx(
                     'px-4 h-[18px] rounded-[4px] text-12 font-medium flex items-center justify-center',
                     direction === 'Long'
-                      ? 'bg-rb-green-light-4 text-rb-green-default'
-                      : 'bg-rb-red-light-1 text-rb-red-default'
+                      ? 'bg-r-green-light text-r-green-default'
+                      : 'bg-r-red-light text-r-red-default'
                   )}
                 >
                   {direction} {leverage}x
@@ -246,94 +248,97 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
               </div>
             </div>
             <div className="flex flex-col items-end gap-5">
-              <span className="text-[16px] font-bold text-r-neutral-title-1">
+              <span className="text-[15px] leading-[20px] font-bold text-r-neutral-title-1">
                 {formatUsdValue(marginUsed)}
               </span>
               <span
                 className={clsx(
-                  'text-[16px] font-medium',
-                  pnl >= 0 ? 'text-rb-green-default' : 'text-rb-red-default'
+                  'text-[13px] leading-[18px] font-medium',
+                  pnl >= 0 ? 'text-r-green-default' : 'text-r-red-default'
                 )}
               >
                 {pnl >= 0 ? '+' : '-'}$
-                {splitNumberByStep(Math.abs(pnl || 0).toFixed(2))} (
-                {pnl >= 0 ? '+' : '-'}
-                {Math.abs(pnlPercent).toFixed(2)}%)
+                {splitNumberByStep(Math.abs(pnl || 0).toFixed(2))}
               </span>
             </div>
           </div>
 
-          <MarginInput
+          <MarginEditInput
             title={t('page.perpsDetail.PerpsEditMarginPopup.margin')}
-            availableAmount={
-              action === 'add' ? availableBalance : availableToReduce
-            }
-            sliderDisabled={!canReduce && action === 'reduce'}
+            placeholder={`$${marginUsed.toFixed(2)}`}
+            minMargin={minMargin}
+            maxMargin={maxMargin}
+            sliderDisabled={maxMargin <= minMargin}
             margin={margin}
-            customAvailableText={
-              action === 'add'
-                ? t('page.perpsDetail.PerpsEditMarginPopup.perpsBalance')
-                : ''
-            }
             onMarginChange={setMargin}
             errorMessage={
               marginValidation.error ? marginValidation.errorMessage : null
             }
           />
 
-          <div className="flex items-center gap-6 text-16">
-            <span className="text-rb-neutral-secondary font-medium">
-              {t('page.perpsDetail.PerpsEditMarginPopup.liqPrice')}
-            </span>
-            <span className="text-r-neutral-title-1 font-bold">
-              ${splitNumberByStep(Number(liquidationPx).toFixed(pxDecimals))}
-            </span>
-            {margin && estimatedLiquidationPrice && (
-              <span className="text-r-neutral-title-1 font-bold">
-                → $
-                {splitNumberByStep(
-                  Number(estimatedLiquidationPrice).toFixed(pxDecimals)
-                )}
+          <div className="rounded-[8px] bg-r-neutral-card-1">
+            <div className="flex items-center justify-between px-[16px] py-[12px] min-[48px]">
+              <span className="text-r-neutral-body text-[13px] leading-[16px]">
+                {t('page.perpsDetail.PerpsEditMarginPopup.liqPrice')}
               </span>
-            )}
+              <div>
+                <span className="text-r-neutral-title-1 font-medium text-[13px] leading-[16px]">
+                  $
+                  {splitNumberByStep(Number(liquidationPx).toFixed(pxDecimals))}
+                </span>
+                {margin && estimatedLiquidationPrice && (
+                  <span className="text-r-neutral-title-1 font-medium text-[13px] leading-[16px]">
+                    {' '}
+                    → $
+                    {splitNumberByStep(
+                      Number(estimatedLiquidationPrice).toFixed(pxDecimals)
+                    )}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center justify-between px-[16px] py-[12px] min-[48px]">
+              <span className="text-r-neutral-body text-[13px] leading-[16px]">
+                {t('page.perpsDetail.PerpsEditMarginPopup.liqDistance')}
+              </span>
+              <div className="flex items-center">
+                <div className="flex items-center">
+                  <RcIconAlarmCC className="text-rb-neutral-info" />
+                  <span className="text-r-neutral-title-1 font-medium text-[13px] leading-[16px]">
+                    {formatPerpsPct(
+                      calculateDistanceToLiquidation(liquidationPx, markPrice)
+                    )}
+                  </span>
+                </div>
+                {margin && estimatedLiquidationPrice && (
+                  <span className="text-r-neutral-title-1 font-medium text-[13px] leading-[16px]">
+                    {' '}
+                    →{' '}
+                    {formatPerpsPct(
+                      calculateDistanceToLiquidation(
+                        estimatedLiquidationPrice,
+                        markPrice
+                      )
+                    )}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
-          {!canReduce && action === 'reduce' ? (
-            <TooltipWithMagnetArrow
-              placement="top"
-              overlayClassName={clsx('rectangle')}
-              title={t(
-                'page.perpsDetail.PerpsEditMarginPopup.reduceMarginTooltip'
-              )}
-            >
-              <Button
-                block
-                size="large"
-                type="primary"
-                className="h-[48px] text-15 font-medium"
-                disabled
-                onClick={handleConfirm}
-              >
-                {t('page.perpsDetail.PerpsEditMarginPopup.reduceMargin')}
-              </Button>
-            </TooltipWithMagnetArrow>
-          ) : (
-            <Button
-              block
-              size="large"
-              type="primary"
-              loading={loading}
-              className="h-[48px] text-15 font-medium"
-              disabled={!marginValidation.isValid || loading}
-              onClick={handleConfirm}
-            >
-              {action === 'add'
-                ? t('page.perpsDetail.PerpsEditMarginPopup.addMargin')
-                : t('page.perpsDetail.PerpsEditMarginPopup.reduceMargin')}
-            </Button>
-          )}
+          <Button
+            block
+            size="large"
+            type="primary"
+            loading={loading}
+            className="h-[48px] text-15 font-medium"
+            disabled={!marginValidation.isValid || noChangeMargin}
+            onClick={handleConfirm}
+          >
+            {t('global.confirm')}
+          </Button>
         </div>
       </div>
     </Popup>
