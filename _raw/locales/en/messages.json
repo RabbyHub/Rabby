@@ -3202,7 +3202,9 @@
           "wallet": "Wallet",
           "allTokenMode": "All Token Mode",
           "foldProtocols": "Fold {{count}} Protocols",
-          "unfoldProtocols": "Unfold {{count}} Protocols"
+          "unfoldProtocols": "Unfold {{count}} Protocols",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "Unfold {{count}} Defis"
         },
         "hidden": {
           "tokensWithZeroBalance": "Hide $0 tokens",

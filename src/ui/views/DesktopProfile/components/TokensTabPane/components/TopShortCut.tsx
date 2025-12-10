@@ -72,7 +72,7 @@ export const TopShortcut = memo(
         ?.firstChild as HTMLElement;
       const fn = (e: any) => {
         if (!ref.current) return;
-        if (scrollElement.scrollTop > 365) {
+        if (scrollElement.scrollTop > 103 + 57 + 110) {
           const $parent = document.getElementById(
             TOP_SHORTCUT_SLOT_ID
           ) as HTMLDivElement;
