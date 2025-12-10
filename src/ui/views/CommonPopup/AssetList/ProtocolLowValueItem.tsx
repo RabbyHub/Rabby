@@ -9,17 +9,24 @@ import { Popup } from '@/ui/component';
 import { TokenTable } from './components/TokenTable';
 import { TokenListEmpty } from './TokenListEmpty';
 import { useTranslation } from 'react-i18next';
+import { DisplayedProject } from '@/ui/utils/portfolio/project';
+import { ProtocolItem } from './ProtocolList';
 
 export interface Props {
   className?: string;
-  list?: AbstractPortfolioToken[];
+  list?: DisplayedProject[];
+  appIds?: string[];
 }
 
-export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
+export const ProtocolLowValueItem: React.FC<Props> = ({
+  className,
+  list,
+  appIds,
+}) => {
   const { t } = useTranslation();
   const totalValue = React.useMemo(() => {
     return list
-      ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
+      ?.reduce((acc, item) => acc.plus(item.netWorth || 0), new BigNumber(0))
       .toNumber();
   }, [list]);
   const [visible, setVisible] = React.useState(false);
@@ -44,7 +51,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
       <div className={clsx('text-r-neutral-foot text-13', 'flex items-center')}>
         <LowValueSVG className="mr-12" />
         <div className="text-r-neutral-foot">
-          {t('page.dashboard.assets.table.lowValueAssets', {
+          {t('page.dashboard.assets.table.lowValueDefis', {
             count: list?.length,
           })}
         </div>
@@ -56,7 +63,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
       <Popup
         title={
           <div className="font-medium text-20">
-            {t('page.dashboard.assets.table.lowValueAssets', {
+            {t('page.dashboard.assets.table.lowValueDefis', {
               count: list?.length,
             })}
           </div>
@@ -75,17 +82,23 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
         }}
         isSupportDarkMode
       >
-        {list?.length ? (
-          <TokenTable
-            list={list}
-            virtual={{
-              height: 403,
-              itemSize: 68,
-            }}
-          />
-        ) : (
-          <TokenListEmpty />
-        )}
+        {
+          list?.length ? (
+            <>
+              {list.map((item) => {
+                return (
+                  <ProtocolItem
+                    protocol={item}
+                    key={item.id}
+                    isAppChain={appIds?.includes(item.id)}
+                    enableDelayVisible={false}
+                  />
+                );
+              })}
+            </>
+          ) : null
+          // <TokenListEmpty />
+        }
       </Popup>
     </div>
   );
