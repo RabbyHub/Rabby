@@ -3200,7 +3200,9 @@
           "wallet": "Wallet",
           "allTokenMode": "All Token Mode",
           "foldProtocols": "Fold {{count}} Protocols",
-          "unfoldProtocols": "Unfold {{count}} Protocols"
+          "unfoldProtocols": "Unfold {{count}} Protocols",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "Unfold {{count}} Defis"
         },
         "hidden": {
           "tokensWithZeroBalance": "Hide $0 tokens",
@@ -3570,10 +3572,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."

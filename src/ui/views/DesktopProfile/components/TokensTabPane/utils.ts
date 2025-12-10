@@ -14,7 +14,7 @@ export const ScrollToDomById = (id: string, stickAnchor?: boolean) => {
 
   if (!scrollElement) return;
   scrollElement?.scrollTo({
-    top: scrollY + y - 103 - (stickAnchor ? 60 : 0), // 103 是stick header的高度
+    top: scrollY + y - 103 - (stickAnchor ? 60 + 57 : 0), // 103 是stick header的高度
     behavior: 'smooth',
   });
 };

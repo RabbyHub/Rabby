@@ -147,10 +147,10 @@ const ProjectOverview = ({
           >
             <div className="text-rb-neutral-secondary text-13 cursor-pointer">
               {isExpanded
-                ? t('page.desktopProfile.portfolio.headers.foldProtocols', {
+                ? t('page.desktopProfile.portfolio.headers.foldDifis', {
                     count: truncateLength,
                   })
-                : t('page.desktopProfile.portfolio.headers.unfoldProtocols', {
+                : t('page.desktopProfile.portfolio.headers.unfoldDifis', {
                     count: truncateLength,
                   })}
             </div>
