@@ -12,8 +12,8 @@ import { CustomTestnetToken } from '@/background/service/customTestnet';
 import { useTranslation } from 'react-i18next';
 import { isNil } from 'lodash';
 import clsx from 'clsx';
-import { ReactComponent as RCLpTokenIconCC } from '@/ui/assets/lpToken-cc.svg';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { LpTokenTag } from './components/LpTokenTag';
 
 const PADDING = 8;
 
@@ -75,14 +75,14 @@ export const TokenItemAsset: React.FC<Props> = ({
       history.location.pathname +
         `?action=swap&chain=${item.chain}&payTokenId=${item._tokenId}`
     );
-  }, [item._tokenId, item.chain]);
+  }, [history, item._tokenId, item.chain]);
 
   const gotoSend = useCallback(() => {
     history.replace(
       history.location.pathname +
         `?action=send&token=${item.chain}:${item._tokenId}`
     );
-  }, [item._tokenId, item.chain]);
+  }, [history, item._tokenId, item.chain]);
 
   return (
     <TCell
@@ -121,9 +121,7 @@ export const TokenItemAsset: React.FC<Props> = ({
               hover:text-r-blue-default hover:underline 
             `}
           />
-          {isLpToken(item) && (
-            <RCLpTokenIconCC className="w-16 h-16 text-rb-neutral-secondary cursor-pointer" />
-          )}
+          {isLpToken(item) && <LpTokenTag />}
         </div>
         {!disableSwap && (
           <ActionBottom
@@ -155,7 +153,7 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
       history.location.pathname +
         `?action=send&token=${chain?.serverId}:${item.id}`
     );
-  }, [chain?.serverId, item.id]);
+  }, [chain?.serverId, history, item.id]);
   return (
     <TCell className="py-8 flex gap-10 flex-1 items-center overflow-hidden">
       <div className="relative h-[24px]">
