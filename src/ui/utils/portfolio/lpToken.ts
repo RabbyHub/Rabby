@@ -25,6 +25,11 @@ export const includeLpTokensFilter = (token: AbstractPortfolioToken) => {
   return true;
 };
 
-export const isLpToken = (token: AbstractPortfolioToken) => {
+interface IsLpTokenProps {
+  is_verified?: boolean;
+  is_core?: boolean;
+  protocol_id?: string;
+}
+export const isLpToken = (token: IsLpTokenProps) => {
   return !!token.is_verified && !token.is_core && !!token.protocol_id;
 };

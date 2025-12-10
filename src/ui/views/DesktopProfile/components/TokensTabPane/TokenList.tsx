@@ -3,7 +3,7 @@ import { Props as TokenItemProps } from '@/ui/views/CommonPopup/AssetList/TokenI
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
 import { TokenTable } from './TokenTable';
 import { useTranslation } from 'react-i18next';
-import { Input, Switch } from 'antd';
+import { Input } from 'antd';
 import styled from 'styled-components';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import clsx from 'clsx';
@@ -12,6 +12,7 @@ import { TOKEN_WALLET_ANCHOR_ID } from './constant';
 import type { NetSwitchTabsKey } from '@/ui/component/PillsSwitch/NetSwitchTabs';
 import MainnetTestnetSwitchTabs from './components/switchTestTab';
 import { CustomTestnetAssetList } from './TestTokenlist';
+import { LpTokenSwitch } from './components/LpTokenSwitch';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -22,11 +23,6 @@ export interface Props {
   selectedTab?: NetSwitchTabsKey;
   onTabChange?: (tab: NetSwitchTabsKey) => void;
 }
-const LpTokenSwitchWrapper = styled.div`
-  .ant-switch-checked {
-    background-color: var(--r-green-default) !important;
-  }
-`;
 
 const ListContainer = styled.div`
   background-color: var(--rb-neutral-bg-3, #f9f9f9);
@@ -93,12 +89,12 @@ export const TokenList = ({
           />
         </div>
         <div className="flex items-center gap-[16px]">
-          <LpTokenSwitchWrapper className="flex items-center gap-[6px]">
-            <Switch checked={lpTokenMode} onChange={onLpTokenModeChange} />
-            <div className="text-[14px] leading-[16px] font-normal text-rb-neutral-body">
-              {t('page.desktopProfile.portfolio.headers.lpToken')}
-            </div>
-          </LpTokenSwitchWrapper>
+          {selectedTab === 'mainnet' && (
+            <LpTokenSwitch
+              lpTokenMode={lpTokenMode}
+              onLpTokenModeChange={onLpTokenModeChange}
+            />
+          )}
           <MainnetTestnetSwitchTabs
             value={selectedTab}
             onTabChange={onTabChange}

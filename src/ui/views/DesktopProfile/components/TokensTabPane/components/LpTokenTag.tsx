@@ -23,7 +23,7 @@ const Overlay = () => {
   );
 };
 
-export const LpTokenTag = () => {
+export const LpTokenTag = ({ className }: { className?: string }) => {
   return (
     <Tooltip
       overlayClassName={cx('rectangle addressType__tooltip')}
@@ -31,7 +31,7 @@ export const LpTokenTag = () => {
       overlayInnerStyle={{
         borderRadius: '12px',
       }}
-      className=""
+      className={className}
       overlay={<Overlay />}
       mouseEnterDelay={0}
     >

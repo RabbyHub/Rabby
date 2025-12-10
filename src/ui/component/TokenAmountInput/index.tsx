@@ -1,5 +1,5 @@
 import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { findChain } from '@/utils/chain';
 import { DrawerProps, Input, Modal, Skeleton } from 'antd';
@@ -103,13 +103,21 @@ const TokenAmountInput = ({
   const [updateNonce, setUpdateNonce] = useState(0);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const selectorOpened = useRef(false);
-  const currentAccount = useRabbySelector(
-    (state) => state.account.currentAccount
-  );
+  const dispatch = useRabbyDispatch();
+  const { currentAccount, lpTokenMode } = useRabbySelector((s) => ({
+    currentAccount: s.account.currentAccount,
+    lpTokenMode: s.preference.lpTokenMode ?? false,
+  }));
   const wallet = useWallet();
   const [keyword, setKeyword] = useState('');
   const [chainServerId, setChainServerId] = useState(chainId);
   const { t } = useTranslation();
+  const isFromMode = useMemo(() => {
+    return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
+  }, [type]);
+  useEffect(() => {
+    dispatch.preference.getPreference('lpTokenMode');
+  }, [dispatch]);
 
   const chainItem = useMemo(
     () =>
@@ -189,7 +197,9 @@ const TokenAmountInput = ({
     undefined,
     selectorOpened.current ? tokenSelectorVisible : true,
     updateNonce,
-    chainServerId
+    chainServerId,
+    undefined,
+    isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
   );
 
   const allDisplayTokens = useMemo(() => {
@@ -378,6 +388,8 @@ const TokenAmountInput = ({
         placeholder={placeholder}
         chainId={chainServerId}
         getContainer={getContainer}
+        lpTokenMode={lpTokenMode}
+        showLpTokenSwitch={isFromMode}
       />
     </div>
   );

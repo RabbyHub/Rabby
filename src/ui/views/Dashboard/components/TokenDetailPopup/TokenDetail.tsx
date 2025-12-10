@@ -35,6 +35,8 @@ import { Account } from '@/background/service/preference';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DbkButton } from '@/ui/views/Ecology/dbk-chain/components/DbkButton';
 import { DBK_CHAIN_ID } from '@/constant';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 const isDesktop = getUiType().isDesktop;
 const PAGE_COUNT = 10;
 
@@ -391,6 +393,7 @@ const TokenDetail = ({
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
+            {isLpToken(token) && <LpTokenTag className="ml-8" />}
           </div>
         </div>
       </div>
