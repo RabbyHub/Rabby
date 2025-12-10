@@ -45,6 +45,7 @@ import DistanceToLiquidationTag from '../components/DistanceToLiquidationTag';
 import { EditTpSlTag } from '../components/EditTpSlTag';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { ReactComponent as RcIconArrow } from '@/ui/assets/perps/polygon-cc.svg';
+import { AddPositionPopup } from '../popup/AddPositionPopup';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -78,6 +79,7 @@ export const PerpsSingleCoin = () => {
   >('Long');
   const [closePositionVisible, setClosePositionVisible] = React.useState(false);
   const [editMarginVisible, setEditMarginVisible] = useState(false);
+  const [addPositionVisible, setAddPositionVisible] = useState(false);
   const [riskPopupVisible, setRiskPopupVisible] = useState(false);
   const activeAssetCtxRef = useRef<(() => void) | null>(null);
 
@@ -797,19 +799,47 @@ export const PerpsSingleCoin = () => {
             <div className="h-[40px]"></div>
             <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
               {hasPosition ? (
-                <Button
-                  block
-                  type="primary"
-                  size="large"
-                  className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
-                  onClick={() => {
-                    setClosePositionVisible(true);
-                  }}
-                >
-                  {positionData?.direction === 'Long'
-                    ? t('page.perps.closeLong')
-                    : t('page.perps.closeShort')}
-                </Button>
+                hasPermission ? (
+                  <div className="flex gap-12 justify-center">
+                    <Button
+                      block
+                      size="large"
+                      className={clsx(
+                        'h-[48px] text-15 font-medium rounded-[8px] ',
+                        'flex-1 bg-transparent text-r-blue-default border border-rabby-blue-default',
+                        'before:content-none'
+                      )}
+                      onClick={() => {
+                        setAddPositionVisible(true);
+                      }}
+                    >
+                      {t('page.perps.add')}
+                    </Button>
+                    <Button
+                      block
+                      type="primary"
+                      size="large"
+                      className="flex-1 h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
+                      onClick={() => {
+                        setClosePositionVisible(true);
+                      }}
+                    >
+                      {t('page.perps.close')}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    block
+                    type="primary"
+                    size="large"
+                    className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
+                    onClick={() => {
+                      setClosePositionVisible(true);
+                    }}
+                  >
+                    {t('page.perps.close')}
+                  </Button>
+                )
               ) : hasPermission ? (
                 <div className="flex gap-12 justify-center">
                   <Button
@@ -967,6 +997,35 @@ export const PerpsSingleCoin = () => {
             )}
             markPrice={markPrice}
             onClose={() => setRiskPopupVisible(false)}
+          />
+
+          <AddPositionPopup
+            visible={addPositionVisible}
+            coin={coin}
+            currentAssetCtx={currentAssetCtx}
+            activeAssetCtx={activeAssetCtx}
+            direction={positionData.direction as 'Long' | 'Short'}
+            leverage={positionData.leverage}
+            availableBalance={Number(accountSummary?.withdrawable || 0)}
+            liquidationPx={Number(currentPosition?.position.liquidationPx || 0)}
+            positionSize={positionData.size}
+            marginUsed={positionData.marginUsed}
+            pnlPercent={positionData.pnlPercent}
+            pnl={positionData.pnl}
+            handlePressRiskTag={() => setRiskPopupVisible(true)}
+            onCancel={() => setAddPositionVisible(false)}
+            onConfirm={async (tradeSize) => {
+              await handleOpenPosition({
+                coin,
+                size: tradeSize,
+                leverage: positionData?.leverage || 1,
+                direction: positionData?.direction as 'Long' | 'Short',
+                midPx: activeAssetCtx?.markPx || '0',
+              });
+              setAddPositionVisible(false);
+            }}
+            leverageRange={[1, currentAssetCtx?.maxLeverage || 5]}
+            markPrice={markPrice}
           />
         </>
       )}

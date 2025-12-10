@@ -970,9 +970,19 @@
         "hasPosition": "Position"
       },
       "fundingRate": "Funding Rate",
-      "fundingGains": "Funding Gains"
+      "fundingGains": "Funding Gains",
+      "close": "Close",
+      "add": "Add"
     },
     "perpsDetail": {
+      "PerpsAddPositionPopup": {
+        "addToLong": "Add to Long",
+        "totalSize": "Total Size",
+        "addSize": "Add Size",
+        "addToShort": "Add to Short",
+        "liquidationPriceTips": "The price at which your position is automatically closed by the exchange to prevent further losses when your margin falls below the maintenance margin level.",
+        "sizeTips": "The total value or quantity of your trade, set by margin and leverage."
+      },
       "PerpsOpenPositionPopup": {
         "newPosition": "Open Position",
         "margin": "Margin",
