@@ -175,20 +175,19 @@ export const TokensTabPane: React.FC<Props> = ({
         />
       )}
 
-      {isTokensLoading ? (
+      {/*{isTokensLoading ? (
         <div className="mx-20">
           <TokenListSkeleton />
         </div>
       ) : (
         <TokenList
-          lpTokenMode={false}
           list={sortTokens}
           isNoResults={isNoResults}
           totalValue={tokenListTotalValue}
           selectedTab={selectedTab}
           onTabChange={onTabChange}
         />
-      )}
+      )}*/}
 
       {!allMode && (
         <div>

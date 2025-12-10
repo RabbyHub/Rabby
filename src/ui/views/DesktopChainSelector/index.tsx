@@ -38,7 +38,7 @@ export const DesktopChainSelector: React.FC<Props> = ({
             className={clsx(
               'bg-r-neutral-card1',
               'flex items-center gap-[8px] cursor-pointer',
-              'px-[10px] py-[8px]',
+              'px-[10px] h-[32px]',
               'rounded-[8px]',
               'border-[0.5px] border-solid border-rabby-neutral-line'
             )}
@@ -72,7 +72,7 @@ export const DesktopChainSelector: React.FC<Props> = ({
         ) : (
           <div
             className={clsx(
-              'flex items-center gap-[4px] cursor-pointer rounded-[8px] px-[6px] py-[4px] bg-rb-neutral-bg-3',
+              'flex items-center gap-[4px] cursor-pointer rounded-[8px] px-[6px] h-[32px] bg-rb-neutral-bg-3',
               'text-[14px] leading-[18px] text-r-neutral-foot',
               'hover:text-r-blue-default'
             )}

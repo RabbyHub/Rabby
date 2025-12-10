@@ -10,6 +10,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  RcIconBridgeCC,
   RcIconQueueCC,
   RcIconSendCC,
   RcIconSwapCC,
@@ -50,8 +51,8 @@ export const DesktopNav: React.FC<{
       },
       {
         key: 'bridge',
-        title: t('page.desktopProfile.button.send'),
-        Icon: RcIconSendCC,
+        title: t('page.desktopProfile.button.bridge'),
+        Icon: RcIconBridgeCC,
         onClick: () => {
           history.replace(history.location.pathname + '?action=bridge');
         },

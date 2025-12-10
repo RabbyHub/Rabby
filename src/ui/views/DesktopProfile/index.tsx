@@ -7,37 +7,23 @@ import { DesktopNav } from '@/ui/component/DesktopNav';
 import { ProfileHeader } from './components/ProfileHeader';
 import { BackTop, Tabs } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
-import { TokensTabPane } from './components/TokensTabPane';
 import { SendTokenModal } from './components/SendTokenModal';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
 import { SwapTokenModal } from './components/SwapTokenModal';
-import ApprovalManagePage from '../ApprovalManagePage';
 import { TransactionsTabPane } from './components/TransactionsTabPane';
 import { DesktopChainSelector } from '../DesktopChainSelector';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { findChainByEnum } from '@/utils/chain';
-import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useCurve } from '../Dashboard/components/BalanceView/useCurve';
 import { useDesktopBalanceView } from './hooks/useDesktopBalanceView';
-import {
-  useDocumentVisibility,
-  useMemoizedFn,
-  useMutationObserver,
-  useSize,
-} from 'ahooks';
-import { NftTabModal } from './components/NftTabModal';
+import { useMemoizedFn } from 'ahooks';
 import { SendNftModal } from './components/SendNftModal';
 import { ReceiveTokenModal } from './components/ReceiveTokenModal';
 import { SignatureRecordModal } from './components/SignatureRecordModal';
-import eventBus from '@/eventBus';
 import { EVENTS, KEYRING_TYPE } from '@/constant';
 import { useListenTxReload } from './hooks/useListenTxReload';
 import { GnosisQueueModal } from './components/GnosisQueueModal';
 import { ApprovalsTabPane } from './components/ApprovalsTabPane';
-import { createPortal } from 'react-dom';
-import { AddCustomNetworkModal } from './components/AddCustomNetworkModal';
-import { AddCustomTokenModal } from './components/AddCustomTokenModal';
 import { AddressDetailModal } from './components/AddressDetailModal';
 import { AddressBackupModal } from './components/AddressBackupModal';
 import { AddAddressModal } from './components/AddAddressModal';
@@ -56,7 +42,6 @@ import { ga4 } from '@/utils/ga4';
 import { DesktopPending } from './components/DesktopPending';
 import { TokenTab } from './components/TokensTabPane/TokenTab';
 import { DIFITab } from './components/TokensTabPane/DifiTab';
-import { useMeasure } from 'react-use';
 import { useTokenAndDIFIData } from './components/TokensTabPane/hook';
 
 const Wrap = styled.div`
@@ -147,7 +132,6 @@ export const DesktopProfile = () => {
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
   const dispatch = useRabbyDispatch();
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
-  const profileHeaderBoxRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
     balance,
@@ -161,8 +145,6 @@ export const DesktopProfile = () => {
   } = useDesktopBalanceView({
     address: currentAccount?.address,
   });
-
-  const profileHeaderSize = useSize(profileHeaderBoxRef);
 
   const isUpdating = isBalanceLoading || isCurveLoading;
   const [updatedAt, setUpdatedAt] = useState(Date.now());
@@ -276,7 +258,7 @@ export const DesktopProfile = () => {
               style={{
                 width: 0,
                 scrollbarWidth: 'none',
-                top: (profileHeaderSize?.height || 0) + 103 + 57,
+                top: 103 + 57,
               }}
               id={TOP_SHORTCUT_SLOT_ID}
             >
@@ -286,10 +268,7 @@ export const DesktopProfile = () => {
             </div>
             <div className="flex items-start gap-[20px]">
               <main className="flex-1" id={PORTFOLIO_LIST_ID}>
-                <div
-                  className={clsx('sticky top-[103px] z-10 bg-rb-neutral-bg-1')}
-                  ref={profileHeaderBoxRef}
-                >
+                <div className={clsx('bg-rb-neutral-bg-1')}>
                   <div
                     className={clsx(
                       'border border-b-0 border-solid border-rb-neutral-line',
@@ -317,7 +296,7 @@ export const DesktopProfile = () => {
                   <Tabs
                     tabBarStyle={{
                       position: 'sticky',
-                      top: (profileHeaderSize?.height || 0) + 103,
+                      top: 103,
                     }}
                     className="overflow-visible"
                     defaultActiveKey={activeTab}
@@ -349,6 +328,7 @@ export const DesktopProfile = () => {
                         sortTokens={sortTokens}
                         hasTokens={hasTokens}
                         lpTokenMode={lpTokenMode}
+                        selectChainId={chainInfo?.serverId}
                       />
                     </Tabs.TabPane>
                     <Tabs.TabPane
