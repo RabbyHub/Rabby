@@ -94,6 +94,7 @@ export interface TokenSelectorProps {
     shortReason: string;
   };
   lpTokenMode?: boolean;
+  setLpTokenMode?: (value: boolean) => void;
   showLpTokenSwitch?: boolean;
 }
 
@@ -124,6 +125,7 @@ const TokenSelector = ({
   disableItemCheck,
   showCustomTestnetAssetList,
   lpTokenMode,
+  setLpTokenMode,
   showLpTokenSwitch,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
@@ -131,16 +133,9 @@ const TokenSelector = ({
   const [isInputActive, setIsInputActive] = useState(false);
   const history = useHistory();
 
-  const dispatch = useRabbyDispatch();
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
-  const setLpTokenMode = useCallback(
-    (value: boolean) => {
-      dispatch.preference.setLpTokenMode(value);
-    },
-    [dispatch]
-  );
 
   const { chainItem, isTestnet } = useMemo(() => {
     const chain = !chainServerId

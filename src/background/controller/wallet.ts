@@ -1637,10 +1637,6 @@ export class WalletController extends BaseController {
     return preferenceService.setDesktopTokensAllMode(value);
   };
 
-  setLpTokenMode = (value: boolean) => {
-    return preferenceService.setLpTokenMode(value);
-  };
-
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);
   };
