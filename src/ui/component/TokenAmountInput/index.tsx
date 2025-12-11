@@ -1,7 +1,7 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
 import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { DrawerProps, Input, Modal, Skeleton } from 'antd';
@@ -115,9 +115,11 @@ const TokenAmountInput = ({
   const [updateNonce, setUpdateNonce] = useState(0);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const selectorOpened = useRef(false);
-  const currentAccount = useRabbySelector(
-    (state) => state.account.currentAccount
-  );
+  const dispatch = useRabbyDispatch();
+  const { currentAccount, lpTokenMode } = useRabbySelector((s) => ({
+    currentAccount: s.account.currentAccount,
+    lpTokenMode: s.preference.lpTokenMode ?? false,
+  }));
   const wallet = useWallet();
   const [keyword, setKeyword] = useState('');
 
@@ -147,6 +149,12 @@ const TokenAmountInput = ({
   //   [testnetChainServerId]
   // );
   const { t } = useTranslation();
+  const isFromMode = useMemo(() => {
+    return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
+  }, [type]);
+  useEffect(() => {
+    dispatch.preference.getPreference('lpTokenMode');
+  }, [dispatch]);
 
   const setChainServerId = useCallback((chainServerId?: string) => {
     const foundChainItem = !chainServerId
@@ -223,7 +231,9 @@ const TokenAmountInput = ({
     undefined,
     selectorOpened.current ? tokenSelectorVisible : true,
     updateNonce,
-    mainnetChainServerId
+    mainnetChainServerId,
+    undefined,
+    isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
   );
 
   const handleSelectToken = useCallback(() => {
@@ -436,6 +446,8 @@ const TokenAmountInput = ({
           chainSelectorRef.current?.toggleShow(true);
           onStartSelectChain?.();
         }}
+        lpTokenMode={lpTokenMode}
+        showLpTokenSwitch={isFromMode}
       />
       <ChainSelectorInSend
         ref={chainSelectorRef}

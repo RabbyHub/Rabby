@@ -12,14 +12,14 @@ export const useTokenAndDIFIData = ({
 }) => {
   const dispatch = useRabbyDispatch();
 
-  const { currentAccount, allMode } = useRabbySelector((s) => ({
+  const { currentAccount, lpTokenMode } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
-    allMode: s.preference.desktopTokensAllMode ?? false,
+    lpTokenMode: s.preference.lpTokenMode ?? false,
   }));
 
   const { setApps } = useCommonPopupView();
   useEffect(() => {
-    dispatch.preference.getPreference('desktopTokensAllMode');
+    dispatch.preference.getPreference('lpTokenMode');
   }, [dispatch]);
 
   const {
@@ -35,7 +35,7 @@ export const useTokenAndDIFIData = ({
     false,
     true,
     false,
-    allMode,
+    lpTokenMode,
     true
   );
 
@@ -113,7 +113,7 @@ export const useTokenAndDIFIData = ({
     displayTokenList,
     displayPortfolios,
     sortTokens,
-    allMode,
+    lpTokenMode,
     appIds,
     isNoResults,
   };

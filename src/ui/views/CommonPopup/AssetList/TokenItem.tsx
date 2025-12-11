@@ -8,6 +8,8 @@ import { Image } from 'antd';
 import { isNil } from 'lodash';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { LpTokenTag } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -45,8 +47,9 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
         <span className="text-r-neutral-title-1 text-13 font-medium leading-[15px] truncate">
           {item._amountStr}
         </span>
-        <span className="text-r-neutral-foot text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden">
+        <span className="text-r-neutral-foot text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center">
           {item.symbol}
+          {isLpToken(item) && <LpTokenTag className="ml-2" />}
         </span>
       </div>
     </TCell>

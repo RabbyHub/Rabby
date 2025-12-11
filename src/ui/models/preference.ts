@@ -40,7 +40,10 @@ interface PreferenceState {
   isEnabledDappAccount?: boolean;
   rateGuideLastExposure?: RateGuideLastExposure;
 
+  /** @deprecated */
   desktopTokensAllMode?: boolean;
+
+  lpTokenMode?: boolean;
 }
 
 export const preference = createModel<RootModel>()({
@@ -70,6 +73,7 @@ export const preference = createModel<RootModel>()({
     isEnabledDappAccount: false,
     rateGuideLastExposure: getDefaultRateGuideLastExposure(),
     desktopTokensAllMode: false,
+    lpTokenMode: false,
   } as PreferenceState,
 
   reducers: {
@@ -237,6 +241,13 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setDesktopTokensAllMode(value);
       dispatch.preference.getPreference('desktopTokensAllMode');
+    },
+    async setLpTokenMode(value: boolean, store) {
+      dispatch.preference.setField({
+        lpTokenMode: value,
+      });
+      await store.app.wallet.setLpTokenMode(value);
+      dispatch.preference.getPreference('lpTokenMode');
     },
 
     async switchLocale(locale: string, store) {

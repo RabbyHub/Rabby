@@ -15,7 +15,7 @@ import styled from 'styled-components';
 import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 import { useTokens } from '@/ui/utils/portfolio/token';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { uniqBy } from 'lodash';
 import { CHAINS_ENUM } from '@/constant';
 import useSearchToken from '@/ui/hooks/useSearchToken';
@@ -133,11 +133,19 @@ const TokenSelect = forwardRef<
     const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
     const [initLoading, setInitLoading] = useState(true);
     const [updateNonce, setUpdateNonce] = useState(0);
-    const currentAccount = useRabbySelector(
-      (state) => state.account.currentAccount
-    );
+    const dispatch = useRabbyDispatch();
+    const { currentAccount, lpTokenMode } = useRabbySelector((s) => ({
+      currentAccount: s.account.currentAccount,
+      lpTokenMode: s.preference.lpTokenMode ?? false,
+    }));
     const wallet = useWallet();
     const { t } = useTranslation();
+    const isFromMode = useMemo(() => {
+      return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
+    }, [type]);
+    useEffect(() => {
+      dispatch.preference.getPreference('lpTokenMode');
+    }, [dispatch]);
 
     useImperativeHandle(ref, () => ({
       openTokenModal: setTokenSelectorVisible,
@@ -179,7 +187,9 @@ const TokenSelect = forwardRef<
       undefined,
       tokenSelectorVisible,
       updateNonce,
-      queryConds.chainServerId
+      queryConds.chainServerId,
+      undefined,
+      isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
     );
 
     const {
@@ -324,6 +334,8 @@ const TokenSelect = forwardRef<
             supportChains={supportChains}
             excludeTokens={excludeTokens}
             getContainer={getContainer}
+            lpTokenMode={lpTokenMode}
+            showLpTokenSwitch={isFromMode}
           />
         </>
       );
@@ -389,6 +401,8 @@ const TokenSelect = forwardRef<
           supportChains={supportChains}
           drawerHeight={drawerHeight}
           excludeTokens={excludeTokens}
+          lpTokenMode={lpTokenMode}
+          showLpTokenSwitch={isFromMode}
         />
       </>
     );

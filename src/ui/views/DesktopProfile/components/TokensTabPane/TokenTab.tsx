@@ -15,12 +15,15 @@ import { useTranslation } from 'react-i18next';
 import MainnetTestnetSwitchTabs from './components/switchTestTab';
 import IconSearch from 'ui/assets/search.svg';
 import { TokenList } from './TokenList';
+import { useRabbyDispatch } from '@/ui/store';
+import { LpTokenSwitch } from './components/LpTokenSwitch';
 
 interface Props {
   isTokensLoading: boolean;
   isNoResults: boolean;
   sortTokens: AbstractPortfolioToken[];
   hasTokens: boolean;
+  lpTokenMode: boolean;
   selectChainId?: string;
 }
 
@@ -30,10 +33,12 @@ export const TokenTab = ({
   isNoResults,
   hasTokens,
   selectChainId,
+  lpTokenMode,
 }: Props) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
 
+  const dispatch = useRabbyDispatch();
   const [inputActive, setIsInputActive] = useState(false);
   const handleInputFocus = () => {
     setIsInputActive(true);
@@ -41,6 +46,9 @@ export const TokenTab = ({
 
   const handleInputBlur = () => {
     setIsInputActive(false);
+  };
+  const setLpTokenMode = (value: boolean) => {
+    dispatch.preference.setLpTokenMode(value);
   };
 
   const { selectedTab, onTabChange } = useSwitchNetTab();
@@ -104,10 +112,18 @@ export const TokenTab = ({
             onBlur={handleInputBlur}
           />
         </div>
-        <MainnetTestnetSwitchTabs
-          value={selectedTab}
-          onTabChange={onTabChange}
-        />
+        <div className="flex items-center gap-[16px]">
+          {selectedTab === 'mainnet' && (
+            <LpTokenSwitch
+              lpTokenMode={lpTokenMode}
+              onLpTokenModeChange={setLpTokenMode}
+            />
+          )}
+          <MainnetTestnetSwitchTabs
+            value={selectedTab}
+            onTabChange={onTabChange}
+          />
+        </div>
       </div>
 
       {isTokensLoading || isOnSearching ? (
