@@ -15,8 +15,8 @@ import { useTranslation } from 'react-i18next';
 import MainnetTestnetSwitchTabs from './components/switchTestTab';
 import IconSearch from 'ui/assets/search.svg';
 import { TokenList } from './TokenList';
-import { useRabbyDispatch } from '@/ui/store';
 import { LpTokenSwitch } from './components/LpTokenSwitch';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 
 interface Props {
   isTokensLoading: boolean;
@@ -73,7 +73,10 @@ export const TokenTab = ({
 
   const tokenListTotalValue = React.useMemo(() => {
     return sortTokens
-      ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
+      ?.reduce(
+        (acc, item) => acc.plus(isLpToken(item) ? 0 : item._usdValue || 0),
+        new BigNumber(0)
+      )
       .toNumber();
   }, [sortTokens]);
 
