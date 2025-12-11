@@ -41,7 +41,6 @@ export const AssetListContainer: React.FC<Props> = ({
     setSearch(value);
   }, []);
   const dispatch = useRabbyDispatch();
-  const [isFocus, setIsFocus] = React.useState<boolean>(false);
   const { currentAccount, lpTokenMode } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
     lpTokenMode: s.preference.lpTokenMode ?? false,
@@ -189,35 +188,10 @@ export const AssetListContainer: React.FC<Props> = ({
           <div className="relative w-[60%] leading-[1]">
             <TokenSearchInput
               ref={inputRef}
+              placeholder={t('page.dashboard.assets.searchTokenPlaceholder')}
               onSearch={handleOnSearch}
-              onFocus={() => {
-                setIsFocus(true);
-              }}
-              onBlur={() => {
-                setIsFocus(false);
-              }}
               className="w-full"
-              // className={isFocus || search ? 'w-[360px]' : 'w-[160px]'}
             />
-            {isFocus || search ? null : (
-              <div
-                className={clsx(
-                  'absolute top-0 left-0 w-full h-full z-10',
-                  'flex items-center justify-center gap-[6px]',
-                  'border-[0.5px] border-rabby-neutral-line rounded-[6px]',
-                  'bg-r-neutral-card1',
-                  'hover:border-rabby-blue-default'
-                )}
-                onClick={() => {
-                  inputRef.current?.focus();
-                }}
-              >
-                <SearchSVG className="w-[14px] h-[14px]" />
-                <div className="text-r-neutral-foot text-[12px] leading-[14px]">
-                  {t('page.dashboard.assets.searchTokenPlaceholder')}
-                </div>
-              </div>
-            )}
           </div>
           <LpTokenSwitch
             lpTokenMode={lpTokenMode}
