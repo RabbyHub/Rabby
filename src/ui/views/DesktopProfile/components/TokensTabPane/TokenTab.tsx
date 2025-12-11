@@ -24,6 +24,7 @@ interface Props {
   sortTokens: AbstractPortfolioToken[];
   hasTokens: boolean;
   lpTokenMode: boolean;
+  setLpTokenMode?: (value: boolean) => void;
   selectChainId?: string;
 }
 
@@ -34,11 +35,11 @@ export const TokenTab = ({
   hasTokens,
   selectChainId,
   lpTokenMode,
+  setLpTokenMode,
 }: Props) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
 
-  const dispatch = useRabbyDispatch();
   const [inputActive, setIsInputActive] = useState(false);
   const handleInputFocus = () => {
     setIsInputActive(true);
@@ -46,9 +47,6 @@ export const TokenTab = ({
 
   const handleInputBlur = () => {
     setIsInputActive(false);
-  };
-  const setLpTokenMode = (value: boolean) => {
-    dispatch.preference.setLpTokenMode(value);
   };
 
   const { selectedTab, onTabChange } = useSwitchNetTab();

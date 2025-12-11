@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
 import AddTokenEntry, { AddTokenEntryInst } from './AddTokenEntry';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
 import { HomeTokenList } from './TokenList';
 import useSortTokens from 'ui/hooks/useSortTokens';
 import useSearchToken from '@/ui/hooks/useSearchToken';
@@ -15,8 +15,6 @@ import { Input } from 'antd';
 import { useFilterProtocolList } from './useFilterProtocolList';
 import { useAppChain } from '@/ui/hooks/useAppChain';
 import { useCommonPopupView } from '@/ui/utils';
-import clsx from 'clsx';
-import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 import { useTranslation } from 'react-i18next';
 import { LpTokenSwitch } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenSwitch';
 
@@ -37,20 +35,13 @@ export const AssetListContainer: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const [search, setSearch] = React.useState<string>('');
+  const [lpTokenMode, setLpTokenMode] = React.useState(false);
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
   }, []);
-  const dispatch = useRabbyDispatch();
-  const { currentAccount, lpTokenMode } = useRabbySelector((s) => ({
+  const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
-    lpTokenMode: s.preference.lpTokenMode ?? false,
   }));
-  const setLpTokenMode = (value: boolean) => {
-    dispatch.preference.setLpTokenMode(value);
-  };
-  useEffect(() => {
-    dispatch.preference.getPreference('lpTokenMode');
-  }, [dispatch]);
 
   const { setApps } = useCommonPopupView();
   const {
@@ -147,6 +138,7 @@ export const AssetListContainer: React.FC<Props> = ({
       inputRef.current?.setValue('');
       inputRef.current?.focus();
       inputRef.current?.blur();
+      setLpTokenMode(false);
     }
   }, [visible]);
 

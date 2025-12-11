@@ -133,19 +133,15 @@ const TokenSelect = forwardRef<
     const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
     const [initLoading, setInitLoading] = useState(true);
     const [updateNonce, setUpdateNonce] = useState(0);
-    const dispatch = useRabbyDispatch();
-    const { currentAccount, lpTokenMode } = useRabbySelector((s) => ({
+    const [lpTokenMode, setLpTokenMode] = useState(false);
+    const { currentAccount } = useRabbySelector((s) => ({
       currentAccount: s.account.currentAccount,
-      lpTokenMode: s.preference.lpTokenMode ?? false,
     }));
     const wallet = useWallet();
     const { t } = useTranslation();
     const isFromMode = useMemo(() => {
       return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
     }, [type]);
-    useEffect(() => {
-      dispatch.preference.getPreference('lpTokenMode');
-    }, [dispatch]);
 
     useImperativeHandle(ref, () => ({
       openTokenModal: setTokenSelectorVisible,
@@ -170,6 +166,7 @@ const TokenSelect = forwardRef<
         ...prev,
         chainServerId: chainId,
       }));
+      setLpTokenMode(false);
     };
 
     const handleSelectToken = () => {
@@ -335,6 +332,7 @@ const TokenSelect = forwardRef<
             excludeTokens={excludeTokens}
             getContainer={getContainer}
             lpTokenMode={lpTokenMode}
+            setLpTokenMode={setLpTokenMode}
             showLpTokenSwitch={isFromMode}
           />
         </>
@@ -402,6 +400,7 @@ const TokenSelect = forwardRef<
           drawerHeight={drawerHeight}
           excludeTokens={excludeTokens}
           lpTokenMode={lpTokenMode}
+          setLpTokenMode={setLpTokenMode}
           showLpTokenSwitch={isFromMode}
         />
       </>

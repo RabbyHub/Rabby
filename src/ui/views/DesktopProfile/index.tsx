@@ -186,6 +186,7 @@ export const DesktopProfile = () => {
     displayPortfolios,
     sortTokens,
     lpTokenMode,
+    setLpTokenMode,
     appIds,
     isNoResults,
   } = useTokenAndDIFIData({ selectChainId: chainInfo?.serverId });
@@ -328,6 +329,7 @@ export const DesktopProfile = () => {
                         sortTokens={sortTokens}
                         hasTokens={hasTokens}
                         lpTokenMode={lpTokenMode}
+                        setLpTokenMode={setLpTokenMode}
                         selectChainId={chainInfo?.serverId}
                       />
                     </Tabs.TabPane>
