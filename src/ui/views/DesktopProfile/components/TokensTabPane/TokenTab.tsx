@@ -88,7 +88,14 @@ export const TokenTab = ({
   }
   return (
     <>
-      <div className="flex items-center justify-between py-[14px] px-[20px]">
+      <div
+        className={clsx(
+          'flex items-center justify-between py-[14px] px-[20px]',
+          'bg-rb-neutral-bg-1',
+          'sticky z-10'
+        )}
+        style={{ top: 103 + 57 }}
+      >
         <div className="flex items-center gap-[16px]">
           <Input
             prefix={<img src={IconSearch} />}
