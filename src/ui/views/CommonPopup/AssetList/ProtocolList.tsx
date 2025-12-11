@@ -218,13 +218,16 @@ export const ProtocolItem = ({
             hideChainIcon={isAppChain}
           />
           <div
-            className="ml-[8px] flex items-center border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot"
+            className={clsx(
+              'ml-[8px] flex items-center min-w-0',
+              'border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot'
+            )}
             onClick={(evt) => {
               evt.stopPropagation();
               openInTab(protocol.site_url, false);
             }}
           >
-            <span className="name inline-flex items-center">
+            <span className="name items-center truncate min-w-0">
               {protocol.name}
             </span>
             {!!isAppChain && (
@@ -234,12 +237,12 @@ export const ProtocolItem = ({
                   chain: protocol.name,
                 })}
               >
-                <div className="text-r-neutral-foot ml-[4px] mr-[2px]">
+                <div className="text-r-neutral-foot ml-[4px] mr-[2px] flex-shrink-0">
                   <RcIconInfoCC />
                 </div>
               </Tooltip>
             )}
-            <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot" />
+            <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot flex-shrink-0" />
           </div>
           {actions?.length ? (
             <div className="mx-[8px] flex items-center gap-[8px]">

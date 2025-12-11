@@ -352,7 +352,7 @@ const validateDappAction = async ({
     return false;
   }
   if (!addresses?.length) {
-    return false;
+    return true;
   }
   const results = await Promise.all(addresses.map((addr) => validate(addr)));
   const passed = results.every((item) => item);

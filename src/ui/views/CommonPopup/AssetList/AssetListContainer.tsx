@@ -177,8 +177,7 @@ export const AssetListContainer: React.FC<Props> = ({
             onBlur={() => {
               setIsFocus(false);
             }}
-            placeholder=""
-            className="w-full text-center"
+            className="w-full"
             // className={isFocus || search ? 'w-[360px]' : 'w-[160px]'}
           />
           {isFocus || search ? null : (
@@ -187,7 +186,8 @@ export const AssetListContainer: React.FC<Props> = ({
                 'absolute top-0 left-0 w-full h-full z-10',
                 'flex items-center justify-center gap-[6px]',
                 'border-[0.5px] border-rabby-neutral-line rounded-[6px]',
-                'bg-r-neutral-card1'
+                'bg-r-neutral-card1',
+                'hover:border-rabby-blue-default'
               )}
               onClick={() => {
                 inputRef.current?.focus();
