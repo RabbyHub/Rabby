@@ -46,6 +46,8 @@ import { EditTpSlTag } from '../components/EditTpSlTag';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { ReactComponent as RcIconArrow } from '@/ui/assets/perps/polygon-cc.svg';
 import { AddPositionPopup } from '../popup/AddPositionPopup';
+import usePerpsState from '../hooks/usePerpsState';
+import { MiniTypedDataApproval } from '../../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -156,15 +158,41 @@ export const PerpsSingleCoin = () => {
     isLogin,
     userFills,
     hasPermission,
+    handleActionApproveStatus,
+    miniSignTypeData,
+    clearMiniSignTypeData,
+    handleMiniSignResolve,
+    handleMiniSignReject,
+    accountNeedApproveAgent,
+    accountNeedApproveBuilderFee,
   } = usePerpsPosition({
     setCurrentTpOrSl,
   });
+
+  console.log('miniSignTypeData in SingleCoin', miniSignTypeData);
 
   const hasPosition = useMemo(() => {
     return !!currentPosition;
   }, [currentPosition]);
 
-  const canOpenPosition = isLogin && hasPermission && !hasPosition;
+  const needDepositFirst = useMemo(() => {
+    return (
+      Number(accountSummary?.accountValue || 0) === 0 &&
+      Number(accountSummary?.withdrawable || 0) === 0
+    );
+  }, [accountSummary]);
+
+  const accountNeedApprove = useMemo(() => {
+    return accountNeedApproveAgent || accountNeedApproveBuilderFee;
+  }, [accountNeedApproveAgent, accountNeedApproveBuilderFee]);
+
+  const canOpenPosition =
+    isLogin &&
+    hasPermission &&
+    !hasPosition &&
+    !needDepositFirst &&
+    !accountNeedApprove;
+
   const [openPositionVisible, setOpenPositionVisible] = React.useState(
     canOpenPosition
   );
@@ -809,7 +837,8 @@ export const PerpsSingleCoin = () => {
                         'flex-1 bg-transparent text-r-blue-default border border-rabby-blue-default',
                         'before:content-none'
                       )}
-                      onClick={() => {
+                      onClick={async () => {
+                        await handleActionApproveStatus();
                         setAddPositionVisible(true);
                       }}
                     >
@@ -820,7 +849,8 @@ export const PerpsSingleCoin = () => {
                       type="primary"
                       size="large"
                       className="flex-1 h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
-                      onClick={() => {
+                      onClick={async () => {
+                        await handleActionApproveStatus();
                         setClosePositionVisible(true);
                       }}
                     >
@@ -833,7 +863,8 @@ export const PerpsSingleCoin = () => {
                     type="primary"
                     size="large"
                     className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
-                    onClick={() => {
+                    onClick={async () => {
+                      await handleActionApproveStatus();
                       setClosePositionVisible(true);
                     }}
                   >
@@ -846,7 +877,8 @@ export const PerpsSingleCoin = () => {
                     size="large"
                     type="primary"
                     className="h-[48px] border-none text-15 font-medium rounded-[8px] flex-1 bg-r-green-default text-r-neutral-title-2"
-                    onClick={() => {
+                    onClick={async () => {
+                      await handleActionApproveStatus();
                       setPositionDirection('Long');
                       setOpenPositionVisible(true);
                     }}
@@ -857,7 +889,8 @@ export const PerpsSingleCoin = () => {
                     size="large"
                     type="primary"
                     className="h-[48px] border-none text-15 font-medium rounded-[8px] flex-1 bg-r-red-default text-r-neutral-title-2 "
-                    onClick={() => {
+                    onClick={async () => {
+                      await handleActionApproveStatus();
                       setPositionDirection('Short');
                       setOpenPositionVisible(true);
                     }}
@@ -874,6 +907,28 @@ export const PerpsSingleCoin = () => {
           </>
         )}
       </div>
+
+      {Boolean(miniSignTypeData.data.length) && (
+        <MiniTypedDataApproval
+          txs={miniSignTypeData.data}
+          account={miniSignTypeData.account || undefined}
+          noShowModalLoading={true}
+          onResolve={(txs) => {
+            handleMiniSignResolve(txs);
+          }}
+          onReject={() => {
+            handleMiniSignReject(new Error('User Rejected'));
+          }}
+          onClose={() => {
+            handleMiniSignReject(new Error('User closed'));
+          }}
+          onPreExecError={() => {
+            handleMiniSignReject(new Error('Pre execution error'));
+          }}
+          directSubmit
+          canUseDirectSubmitTx
+        />
+      )}
 
       <PerpsOpenPositionPopup
         currentAssetCtx={currentAssetCtx}
