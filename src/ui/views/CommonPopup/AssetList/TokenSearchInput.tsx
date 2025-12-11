@@ -16,11 +16,6 @@ export interface Props {
 }
 
 const InputStyled = styled(Input)`
-  &.text-center {
-    .ant-input {
-      text-align: center;
-    }
-  }
   background-color: var(--r-neutral-card1, #fff) !important;
   &.ant-input-affix-wrapper-focused {
     border-color: var(--r-blue-default, #7084ff) !important;
@@ -28,10 +23,15 @@ const InputStyled = styled(Input)`
   &:hover {
     border-color: var(--r-blue-default, #7084ff) !important;
   }
+
+  input::placeholder {
+    font-size: 12px;
+    color: var(--r-neutral-foot, #6a7587);
+  }
 `;
 
 export const TokenSearchInput = React.forwardRef<Input, Props>(
-  ({ onSearch, onBlur, onFocus, className, placeholder }, ref) => {
+  ({ onSearch, onBlur, onFocus, className }, ref) => {
     const [input, setInput] = React.useState<string>('');
     const { visible } = useCommonPopupView();
     const { t } = useTranslation();
@@ -54,11 +54,7 @@ export const TokenSearchInput = React.forwardRef<Input, Props>(
       <InputStyled
         ref={ref}
         onChange={(e) => setInput(e.target.value)}
-        placeholder={
-          typeof placeholder === 'string'
-            ? placeholder
-            : t('page.dashboard.assets.searchPlaceholder')
-        }
+        placeholder={t('page.dashboard.assets.searchPlaceholder')}
         onFocus={onFocus}
         onBlur={onBlur}
         allowClear
