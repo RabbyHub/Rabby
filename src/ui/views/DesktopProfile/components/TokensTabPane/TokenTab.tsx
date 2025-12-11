@@ -60,9 +60,11 @@ export const TokenTab = ({
   const { isLoading: isSearching, list: searchTokenList } = useSearchToken(
     currentAccount?.address,
     debouncedSearchValue,
-    selectChainId ? selectChainId : undefined,
-    true,
-    selectedTab === 'testnet'
+    {
+      chainServerId: selectChainId ? selectChainId : undefined,
+      withBalance: true,
+      isTestnet: selectedTab === 'testnet',
+    }
   );
 
   const searchList = selectChainId

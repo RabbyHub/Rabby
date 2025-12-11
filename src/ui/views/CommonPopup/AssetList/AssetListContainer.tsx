@@ -79,9 +79,11 @@ export const AssetListContainer: React.FC<Props> = ({
   const { isLoading: isSearching, list } = useSearchToken(
     currentAccount?.address,
     search,
-    selectChainId ? selectChainId : undefined,
-    true,
-    isTestnet
+    {
+      chainServerId: selectChainId ? selectChainId : undefined,
+      withBalance: true,
+      isTestnet: isTestnet,
+    }
   );
   const displayTokenList = useMemo(() => {
     const result = search ? list : tokenList;
