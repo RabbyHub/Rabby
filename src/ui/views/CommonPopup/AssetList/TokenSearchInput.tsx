@@ -31,7 +31,7 @@ const InputStyled = styled(Input)`
 `;
 
 export const TokenSearchInput = React.forwardRef<Input, Props>(
-  ({ onSearch, onBlur, onFocus, className }, ref) => {
+  ({ onSearch, onBlur, onFocus, className, placeholder }, ref) => {
     const [input, setInput] = React.useState<string>('');
     const { visible } = useCommonPopupView();
     const { t } = useTranslation();
@@ -54,7 +54,9 @@ export const TokenSearchInput = React.forwardRef<Input, Props>(
       <InputStyled
         ref={ref}
         onChange={(e) => setInput(e.target.value)}
-        placeholder={t('page.dashboard.assets.searchPlaceholder')}
+        placeholder={
+          placeholder || t('page.dashboard.assets.searchPlaceholder')
+        }
         onFocus={onFocus}
         onBlur={onBlur}
         allowClear
