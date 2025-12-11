@@ -1,26 +1,22 @@
 import { useAppChain } from '@/ui/hooks/useAppChain';
 import useSortTokens from '@/ui/hooks/useSortTokens';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
 import { useCommonPopupView } from '@/ui/utils';
 import { useQueryProjects } from '@/ui/utils/portfolio';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export const useTokenAndDIFIData = ({
   selectChainId,
 }: {
   selectChainId?: string;
 }) => {
-  const dispatch = useRabbyDispatch();
+  const [lpTokenMode, setLpTokenMode] = useState(false);
 
-  const { currentAccount, allMode } = useRabbySelector((s) => ({
+  const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
-    allMode: s.preference.desktopTokensAllMode ?? false,
   }));
 
   const { setApps } = useCommonPopupView();
-  useEffect(() => {
-    dispatch.preference.getPreference('desktopTokensAllMode');
-  }, [dispatch]);
 
   const {
     isTokensLoading,
@@ -35,7 +31,7 @@ export const useTokenAndDIFIData = ({
     false,
     true,
     false,
-    allMode,
+    lpTokenMode,
     true
   );
 
@@ -113,7 +109,8 @@ export const useTokenAndDIFIData = ({
     displayTokenList,
     displayPortfolios,
     sortTokens,
-    allMode,
+    lpTokenMode,
+    setLpTokenMode,
     appIds,
     isNoResults,
   };

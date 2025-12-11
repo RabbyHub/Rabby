@@ -16,9 +16,8 @@ import { useFilterProtocolList } from './useFilterProtocolList';
 import { useAppChain } from '@/ui/hooks/useAppChain';
 import { useCommonPopupView } from '@/ui/utils';
 import { useListenTxReload } from '../../DesktopProfile/hooks/useListenTxReload';
-import clsx from 'clsx';
-import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 import { useTranslation } from 'react-i18next';
+import { LpTokenSwitch } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenSwitch';
 
 interface Props {
   className?: string;
@@ -37,13 +36,14 @@ export const AssetListContainer: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const [search, setSearch] = React.useState<string>('');
+  const [lpTokenMode, setLpTokenMode] = React.useState(false);
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
   }, []);
-  const [isFocus, setIsFocus] = React.useState<boolean>(false);
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
+
   const { setApps } = useCommonPopupView();
   const {
     isTokensLoading,
@@ -55,7 +55,13 @@ export const AssetListContainer: React.FC<Props> = ({
     customizeTokens,
     removeProtocol,
     refreshPositions,
-  } = useQueryProjects(currentAccount?.address, false, visible, isTestnet);
+  } = useQueryProjects(
+    currentAccount?.address,
+    false,
+    visible,
+    isTestnet,
+    lpTokenMode
+  );
   const {
     data: appPortfolios,
     isLoading: isAppPortfoliosLoading,
@@ -140,6 +146,7 @@ export const AssetListContainer: React.FC<Props> = ({
       inputRef.current?.setValue('');
       inputRef.current?.focus();
       inputRef.current?.blur();
+      setLpTokenMode(false);
     }
   }, [visible]);
 
@@ -177,38 +184,19 @@ export const AssetListContainer: React.FC<Props> = ({
   return (
     <div className={className}>
       <div className="flex items-center justify-between gap-x-12 widget-has-ant-input">
-        <div className="relative w-full leading-[1]">
-          <TokenSearchInput
-            ref={inputRef}
-            onSearch={handleOnSearch}
-            onFocus={() => {
-              setIsFocus(true);
-            }}
-            onBlur={() => {
-              setIsFocus(false);
-            }}
-            className="w-full"
-            // className={isFocus || search ? 'w-[360px]' : 'w-[160px]'}
+        <div className="flex w-full items-center justify-between">
+          <div className="relative w-[60%] leading-[1]">
+            <TokenSearchInput
+              ref={inputRef}
+              placeholder={t('page.dashboard.assets.searchTokenPlaceholder')}
+              onSearch={handleOnSearch}
+              className="w-full"
+            />
+          </div>
+          <LpTokenSwitch
+            lpTokenMode={lpTokenMode}
+            onLpTokenModeChange={setLpTokenMode}
           />
-          {isFocus || search ? null : (
-            <div
-              className={clsx(
-                'absolute top-0 left-0 w-full h-full z-10',
-                'flex items-center justify-center gap-[6px]',
-                'border-[0.5px] border-rabby-neutral-line rounded-[6px]',
-                'bg-r-neutral-card1',
-                'hover:border-rabby-blue-default'
-              )}
-              onClick={() => {
-                inputRef.current?.focus();
-              }}
-            >
-              <SearchSVG className="w-[14px] h-[14px]" />
-              <div className="text-r-neutral-foot text-[12px] leading-[14px]">
-                {t('page.dashboard.assets.searchTokenPlaceholder')}
-              </div>
-            </div>
-          )}
         </div>
         {/* {isFocus || search ? null : <AddTokenEntry ref={addTokenEntryRef} />} */}
       </div>

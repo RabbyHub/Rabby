@@ -28,6 +28,7 @@ import {
 } from './tokenUtils';
 import { isSameAddress } from '..';
 import { Token } from 'background/service/preference';
+import { defaultTokenFilter, includeLpTokensFilter } from './lpToken';
 
 let lastResetTokenListAddr = '';
 // export const tokenChangeLoadingAtom = atom(false);
@@ -455,9 +456,9 @@ export const useTokens = (
   const tokens = useMemo(() => {
     const list = isTestnet ? testnetTokens.list : mainnetTokens.list;
     if (showAll) {
-      return list;
+      return list.filter(includeLpTokensFilter);
     }
-    return list.filter((token) => token.is_core);
+    return list.filter(defaultTokenFilter);
   }, [isTestnet, testnetTokens.list, mainnetTokens.list, showAll]);
 
   return {

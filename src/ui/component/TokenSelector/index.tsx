@@ -36,7 +36,7 @@ import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-emp
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/riskWarning-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { getUiType, useWallet } from '@/ui/utils';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { ExternalTokenRow } from './ExternalToken';
@@ -48,6 +48,9 @@ import NetSwitchTabs, {
 import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useHistory } from 'react-router-dom';
 import { ExchangeLogos } from './CexLogos';
+import { LpTokenSwitch } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenSwitch';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 import { ChainFilterV2Line } from './ChainFilterV2Line';
 
 const isTab = getUiType().isTab;
@@ -90,6 +93,9 @@ export interface TokenSelectorProps {
     reason: string;
     shortReason: string;
   };
+  lpTokenMode?: boolean;
+  setLpTokenMode?: (value: boolean) => void;
+  showLpTokenSwitch?: boolean;
 }
 
 const filterTestnetTokenItem = (token: TokenItem) => {
@@ -118,6 +124,9 @@ const TokenSelector = ({
   getContainer,
   disableItemCheck,
   showCustomTestnetAssetList,
+  lpTokenMode,
+  setLpTokenMode,
+  showLpTokenSwitch,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -543,7 +552,7 @@ const TokenSelector = ({
           />
         </div>
         {chainItem && showChainFilter && (
-          <div className="filters-wrapper">
+          <div className="filters-wrapper flex items-center justify-between">
             <div className="filter-item__chain px-10">
               <img
                 className="filter-item__chain-logo"
@@ -571,10 +580,17 @@ const TokenSelector = ({
                 />
               </div>
             </div>
+            {showLpTokenSwitch && (
+              <LpTokenSwitch
+                className="ml-auto"
+                lpTokenMode={lpTokenMode}
+                onLpTokenModeChange={setLpTokenMode}
+              />
+            )}
           </div>
         )}
         {showChainFilterV2 && (
-          <div className="filters-wrapper">
+          <div className="filters-wrapper flex items-center justify-between">
             <ChainFilterV2Line
               selectedChain={chainItem?.isTestnet ? null : chainItem || null}
               onStartSelectChain={onStartSelectChain}
@@ -590,6 +606,13 @@ const TokenSelector = ({
                 });
               }}
             />
+            {showLpTokenSwitch && (
+              <LpTokenSwitch
+                className="ml-auto"
+                lpTokenMode={lpTokenMode}
+                onLpTokenModeChange={setLpTokenMode}
+              />
+            )}
           </div>
         )}
 
@@ -837,12 +860,16 @@ function CommonTokenItem(props: {
                   >
                     {getTokenSymbol(token)}
                   </span>
+                  {isLpToken(token) && <LpTokenTag />}
                   <ExchangeLogos cexIds={token.cex_ids || []} />
                 </div>
               ) : (
-                <span className="symbol_click" onClick={onClickTokenSymbol}>
-                  {getTokenSymbol(token)}
-                </span>
+                <div className="flex items-center gap-4">
+                  <span className="symbol_click" onClick={onClickTokenSymbol}>
+                    {getTokenSymbol(token)}
+                  </span>
+                  {isLpToken(token) && <LpTokenTag />}
+                </div>
               )}
               <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
                 {isSwapTo
