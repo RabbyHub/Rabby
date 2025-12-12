@@ -13,10 +13,11 @@ import { Input } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import MainnetTestnetSwitchTabs from './components/switchTestTab';
-import IconSearch from 'ui/assets/search.svg';
 import { TokenList } from './TokenList';
 import { LpTokenSwitch } from './components/LpTokenSwitch';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import styled from 'styled-components';
+import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 
 interface Props {
   isTokensLoading: boolean;
@@ -27,6 +28,13 @@ interface Props {
   setLpTokenMode?: (value: boolean) => void;
   selectChainId?: string;
 }
+
+const StyledInput = styled(Input)`
+  .ant-input {
+    background: transparent;
+    color: var(--rb-neutral-title-1, #192945);
+  }
+`;
 
 export const TokenTab = ({
   sortTokens,
@@ -52,6 +60,8 @@ export const TokenTab = ({
   const { selectedTab, onTabChange, isShowTestnet } = useSwitchNetTab();
 
   const [searchValue, setSearchValue] = React.useState('');
+
+  const isMainnet = selectedTab === 'mainnet';
 
   const debouncedSearchValue = useDebounceValue(searchValue, 300);
 
@@ -80,7 +90,7 @@ export const TokenTab = ({
       .toNumber();
   }, [sortTokens]);
 
-  if (isTokensLoading && !hasTokens) {
+  if (isMainnet && isTokensLoading && !hasTokens) {
     return (
       <div className="mx-20">
         <TokenListViewSkeleton />
@@ -97,9 +107,9 @@ export const TokenTab = ({
         )}
         style={{ top: 103 + 57 }}
       >
-        <div className="flex items-center gap-[16px]">
-          <Input
-            prefix={<img src={IconSearch} />}
+        <div className="flex items-center gap-[16px] widget-has-ant-input">
+          <StyledInput
+            prefix={<SearchSVG className="w-[14px] h-[14px]" />}
             autoCapitalize="off"
             autoComplete="off"
             autoCorrect="off"
@@ -137,9 +147,11 @@ export const TokenTab = ({
       </div>
 
       {isTokensLoading || isOnSearching ? (
-        <div className="mx-20">
-          <TokenListSkeleton />
-        </div>
+        isMainnet ? (
+          <div className="mx-20">
+            <TokenListSkeleton />
+          </div>
+        ) : null
       ) : (
         <TokenList
           list={sortTokens}
@@ -148,6 +160,7 @@ export const TokenTab = ({
           selectedTab={selectedTab}
           searchList={searchList}
           isSearch={!!searchValue}
+          search={searchValue}
         />
       )}
     </>

@@ -20,6 +20,7 @@ export interface Props {
   selectedTab?: NetSwitchTabsKey;
   isSearch: boolean;
   searchList: AbstractPortfolioToken[];
+  search?: string;
 }
 
 const ListContainer = styled.div`
@@ -36,6 +37,7 @@ export const TokenList = ({
   selectedTab,
   isSearch,
   searchList,
+  search,
 }: Props) => {
   const {
     result: currentList,
@@ -98,7 +100,7 @@ export const TokenList = ({
             </>
           )
         ) : (
-          <CustomTestnetAssetList />
+          <CustomTestnetAssetList search={search} />
         )}
       </ListContainer>
     </div>
