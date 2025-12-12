@@ -24,15 +24,6 @@ const MAINNET_WIDTH_MAP = {
   usdValue: 'auto', //136 - PADDING,
 };
 
-const PADDING = 8;
-
-const MAINNET_WIDTH_MAP = {
-  token: 360 - PADDING,
-  price: 280,
-  amount: 280,
-  usdValue: 'auto', //136 - PADDING,
-};
-
 export interface Props {
   item: AbstractPortfolioToken;
   style?: React.CSSProperties;
