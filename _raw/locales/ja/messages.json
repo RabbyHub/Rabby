@@ -1410,7 +1410,9 @@
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_other": "{{count}} 個の低価値トークン",
           "review": "レビュー",
-          "noTokens": "トークンがありません"
+          "noTokens": "トークンがありません",
+          "searchToken": "トークンを検索",
+          "lowValueDefis": "{{count}} 低価値のデファイ"
         },
         "noAssets": "アセットなし",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
@@ -1449,7 +1451,8 @@
         "customButtonText": "カスタムトークンを追加",
         "side": "サイド",
         "price": "価格",
-        "openInTab": "タブで開く"
+        "openInTab": "タブで開く",
+        "searchTokenPlaceholder": "トークンを検索"
       },
       "hd": {
         "howToConnectLedger": "Ledgerとの接続方法",
@@ -3177,7 +3180,10 @@
           "wallet": "ウォレット",
           "unfoldProtocols": "{{count}} プロトコルを展開",
           "allTokenMode": "すべてのトークンモード",
-          "foldProtocols": "Fold {{count}} プロトコル"
+          "foldProtocols": "Fold {{count}} プロトコル",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "{{count}}のDefisを展開",
+          "lpToken": "LP-Token"
         },
         "hidden": {
           "showAll": "すべて表示",
@@ -3186,7 +3192,9 @@
           "tokensWithZeroBalanceDesc": "$0残高のトークンは非表示です。",
           "hideProtocolsWithSmallDepositsDesc": "小額入金のプロトコルは表示されません。",
           "hideSmall": "小さい残高のトークンを非表示にします。",
-          "hideSmallDesc": "小額残高のトークンは表示されません。"
+          "hideSmallDesc": "小額残高のトークンは表示されません。",
+          "hideDefiWithSmallDeposits": "少額の入金でDeFiを隠す。",
+          "hideDefiWithSmallDepositsDesc": "小額入金のDefisは表示されません。"
         },
         "table": {
           "tokenAddress": "トークンアドレス",
@@ -3211,7 +3219,8 @@
       "tabs": {
         "transactions": "取引",
         "tokens": "トークン",
-        "approvals": "承認"
+        "approvals": "承認",
+        "difi": "Defi"
       },
       "nft": {
         "message": {
@@ -3587,6 +3596,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "アドレスを追加"
+    },
+    "LpTokenTag": {
+      "title": "これは流動性プロバイダー(LP)トークンです。",
+      "description": "LPトークンは、あなたが資産を預けたDeFiプロトコルによって発行されます。これらはその資産の証明として機能しますが、あなたの総残高にはその価値が含まれていません。"
     }
   },
   "global": {

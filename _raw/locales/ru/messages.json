@@ -1411,7 +1411,9 @@
           "lowValueAssets_0": "{{count}} с низкой стоимостью token",
           "lowValueAssets_other": "{{count}} токенов с низкой стоимостью",
           "review": "Обзор",
-          "noTokens": "Нет токенов"
+          "noTokens": "Нет токенов",
+          "searchToken": "Поиск токена",
+          "lowValueDefis": "{{count}} низкоценные дефи"
         },
         "noAssets": "Нет активов",
         "blockLinkText": "Искать адрес, чтобы заблокировать токен",
@@ -1450,7 +1452,8 @@
         "customButtonText": "Добавить пользовательский токен",
         "price": "ЦЕНА",
         "side": "Сторона",
-        "openInTab": "Открыть в вкладке"
+        "openInTab": "Открыть в вкладке",
+        "searchTokenPlaceholder": "Поиск токена"
       },
       "hd": {
         "howToConnectLedger": "Как подключить Ledger",
@@ -3179,7 +3182,10 @@
           "foldProtocols": "Сложите {{count}} Протоколов",
           "allTokenMode": "Все токен режим",
           "wallet": "Кошелек",
-          "unfoldProtocols": "Развернуть {{count}} Protocols"
+          "unfoldProtocols": "Развернуть {{count}} Protocols",
+          "lpToken": "LP-Token",
+          "foldDifis": "Сложите {{count}} Defis",
+          "unfoldDifis": "Развернуть {{count}} Defis"
         },
         "hidden": {
           "showAll": "Показать все",
@@ -3188,7 +3194,9 @@
           "hideSmallDesc": "Токены с небольшими балансами не отображаются.",
           "tokensWithZeroBalanceDesc": "Токены с нулевыми баланса скрыты.",
           "hideProtocolsWithSmallDepositsDesc": "Протоколы с небольшими депозитами не отображаются.",
-          "hideSmall": "Скрыть токены с небольшими балансами."
+          "hideSmall": "Скрыть токены с небольшими балансами.",
+          "hideDefiWithSmallDepositsDesc": "Дефи с мелкими депозитами не отображаются.",
+          "hideDefiWithSmallDeposits": "Скрыть DeFi с небольшими депозитами."
         },
         "table": {
           "token": "Токен",
@@ -3213,7 +3221,8 @@
       "tabs": {
         "approvals": "Подтверждения",
         "tokens": "Токены",
-        "transactions": "Транзакции"
+        "transactions": "Транзакции",
+        "difi": "Дефи"
       },
       "nft": {
         "message": {
@@ -3589,6 +3598,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Добавить адрес"
+    },
+    "LpTokenTag": {
+      "title": "Это токен поставщика ликвидности (LP)",
+      "description": "Токены LP выдаются протоколами DeFi, в которые вы внесли свои активы. Они служат доказательством этих активов, но их стоимость не включена в ваш общий баланс."
     }
   },
   "global": {

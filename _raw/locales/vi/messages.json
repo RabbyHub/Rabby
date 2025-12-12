@@ -1499,7 +1499,9 @@
           "summaryDescription": "Tất cả tài sản trong các giao thức (ví dụ: LP tokens) đều được quy đổi thành tài sản cơ sở để thực hiện các phép tính thống kê.",
           "lowValueDescription": "Tài sản có giá trị thấp sẽ được hiển thị ở đây",
           "review": "Xem lại",
-          "noTokens": "Không có Token"
+          "noTokens": "Không có Token",
+          "lowValueDefis": "{{count}} defi giá thấp",
+          "searchToken": "Tìm kiếm Token"
         },
         "AddMainnetToken": {
           "title": "Thêm Token Tùy Chỉnh",
@@ -1539,7 +1541,8 @@
         "customButtonText": "Thêm token tùy chỉnh",
         "side": "BÊN",
         "price": "GIÁ",
-        "openInTab": "Mở trong tab"
+        "openInTab": "Mở trong tab",
+        "searchTokenPlaceholder": "Tìm kiếm Token"
       },
       "hd": {
         "ledger": {
@@ -3174,7 +3177,10 @@
           "wallet": "Ví 財布",
           "unfoldProtocols": "Mở {{count}} Giao thức",
           "foldProtocols": "Gấp {{count}} Protocols",
-          "allTokenMode": "Tất cả chế độ Token"
+          "allTokenMode": "Tất cả chế độ Token",
+          "lpToken": "LP-Token",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "Mở khóa {{count}} Defis"
         },
         "hidden": {
           "showAll": "Hiển thị tất cả",
@@ -3183,7 +3189,9 @@
           "hideSmallDesc": "Các token có số dư nhỏ không được hiển thị.",
           "hideProtocolsWithSmallDepositsDesc": "Các giao thức có khoản tiền gửi nhỏ không được hiển thị.",
           "hideProtocolsWithSmallDeposits": "Ẩn các giao thức có khoản nạp nhỏ.",
-          "tokensWithZeroBalanceDesc": "Các token có số dư $0 sẽ bị ẩn."
+          "tokensWithZeroBalanceDesc": "Các token có số dư $0 sẽ bị ẩn.",
+          "hideDefiWithSmallDepositsDesc": "Defis với số tiền gửi nhỏ không được hiển thị.",
+          "hideDefiWithSmallDeposits": "Ẩn Defis với các khoản tiền gửi nhỏ."
         },
         "table": {
           "chain": "Chuỗi",
@@ -3208,7 +3216,8 @@
       "tabs": {
         "tokens": "Tokens",
         "transactions": "Giao dịch",
-        "approvals": "Phê duyệt"
+        "approvals": "Phê duyệt",
+        "difi": "Defi"
       },
       "nft": {
         "message": {
@@ -3584,6 +3593,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Thêm địa chỉ"
+    },
+    "LpTokenTag": {
+      "title": "Đây là một token nhà cung cấp thanh khoản (LP)",
+      "description": "LP tokens được cấp bởi các giao thức DeFi nơi bạn đã gửi tài sản của mình. Chúng phục vụ như bằng chứng cho những tài sản đó, nhưng giá trị của chúng không được tính vào tổng số dư của bạn."
     }
   },
   "global": {

@@ -1410,7 +1410,9 @@
           "lowValueAssets_0": "{{count}} token de bajo valor",
           "lowValueAssets_one": "{{count}} low value token",
           "review": "Revisión",
-          "noTokens": "Sin tokens"
+          "noTokens": "Sin tokens",
+          "searchToken": "Buscar Token",
+          "lowValueDefis": "{{count}} defis de bajo valor"
         },
         "noAssets": "No hay activos",
         "blockLinkText": "Buscar dirección para bloquear token",
@@ -1449,7 +1451,8 @@
         "addTokenEntryText": "Token",
         "price": "PRECIO",
         "side": "LADO",
-        "openInTab": "Abrir en pestaña"
+        "openInTab": "Abrir en pestaña",
+        "searchTokenPlaceholder": "Buscar Token"
       },
       "hd": {
         "howToConnectLedger": "¿Cómo Conectar Ledger?",
@@ -3177,7 +3180,10 @@
           "wallet": "Billetera",
           "unfoldProtocols": "Desplegar {{count}} Protocolos",
           "foldProtocols": "Fold {{count}} Protocolos",
-          "allTokenMode": "Todos los modos de Token"
+          "allTokenMode": "Todos los modos de Token",
+          "lpToken": "Token LP",
+          "unfoldDifis": "Desplegar {{count}} Defis",
+          "foldDifis": "Fold {{count}} Defis"
         },
         "hidden": {
           "tokensWithZeroBalance": "Ocultar tokens de $0",
@@ -3186,7 +3192,9 @@
           "hideProtocolsWithSmallDepositsDesc": "No se muestran los protocolos con depósitos pequeños.",
           "hideProtocolsWithSmallDeposits": "Ocultar protocolos con depósitos pequeños.",
           "hideSmallDesc": "No se muestran los tokens con saldos pequeños.",
-          "hideSmall": "Ocultar tokens con saldos pequeños."
+          "hideSmall": "Ocultar tokens con saldos pequeños.",
+          "hideDefiWithSmallDepositsDesc": "Los Defis con depósitos pequeños no se muestran.",
+          "hideDefiWithSmallDeposits": "Ocultar Defis con depósitos pequeños."
         },
         "table": {
           "amount": "Cantidad",
@@ -3211,7 +3219,8 @@
       "tabs": {
         "tokens": "Tokens",
         "approvals": "Aprobaciones",
-        "transactions": "Transacciones"
+        "transactions": "Transacciones",
+        "difi": "Defi"
       },
       "nft": {
         "message": {
@@ -3587,6 +3596,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Agregar dirección"
+    },
+    "LpTokenTag": {
+      "title": "Este es un token de proveedor de liquidez (LP)",
+      "description": "Los tokens LP son emitidos por los protocolos DeFi donde has depositado tus activos. Sirven como prueba de esos activos, pero su valor no está incluido en tu saldo total."
     }
   },
   "global": {

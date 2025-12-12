@@ -1410,7 +1410,9 @@
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_0": "{{count}} Low-Value-Token",
           "review": "Überprüfung",
-          "noTokens": "Keine Token"
+          "noTokens": "Keine Token",
+          "searchToken": "Token suchen",
+          "lowValueDefis": "{{count}} Low-Value DeFi-Angebote"
         },
         "noAssets": "Keine Vermögenswerte",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",
@@ -1449,7 +1451,8 @@
         "addTokenEntryText": "Token",
         "price": "PREIS",
         "side": "SEITE",
-        "openInTab": "Im Tab öffnen"
+        "openInTab": "Im Tab öffnen",
+        "searchTokenPlaceholder": "Token suchen"
       },
       "hd": {
         "howToConnectLedger": "Wie man den Ledger verbindet",
@@ -3177,7 +3180,10 @@
           "wallet": "Wallet",
           "allTokenMode": "Alle Token-Modus",
           "foldProtocols": "Fold {{count}} Protokolle",
-          "unfoldProtocols": "Entfalten {{count}} Protokolle"
+          "unfoldProtocols": "Entfalten {{count}} Protokolle",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "Entfalten Sie {{count}} Defis",
+          "lpToken": "LP-Token"
         },
         "hidden": {
           "showAll": "Alle anzeigen",
@@ -3186,7 +3192,9 @@
           "tokensWithZeroBalance": "$0-Token ausblenden",
           "tokensWithZeroBalanceDesc": "Tokens mit $0 Salden sind ausgeblendet.",
           "hideProtocolsWithSmallDeposits": "Protokolle mit kleinen Einlagen ausblenden.",
-          "hideProtocolsWithSmallDepositsDesc": "Protokolle mit kleinen Einzahlungen werden nicht angezeigt."
+          "hideProtocolsWithSmallDepositsDesc": "Protokolle mit kleinen Einzahlungen werden nicht angezeigt.",
+          "hideDefiWithSmallDeposits": "Verstecke Defis mit kleinen Einlagen.",
+          "hideDefiWithSmallDepositsDesc": "Kleinere Einzahlungen in Defis werden nicht angezeigt."
         },
         "table": {
           "token": "Token",
@@ -3211,7 +3219,8 @@
       "tabs": {
         "tokens": "Tokens",
         "transactions": "Transaktionen",
-        "approvals": "Genehmigungen"
+        "approvals": "Genehmigungen",
+        "difi": "Defi"
       },
       "nft": {
         "message": {
@@ -3587,6 +3596,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adresse hinzufügen"
+    },
+    "LpTokenTag": {
+      "title": "Dies ist ein Liquiditätsanbieter (LP) Token.",
+      "description": "LP-Token werden von den DeFi-Protokollen ausgegeben, bei denen Sie Ihre Vermögenswerte hinterlegt haben. Sie dienen als Nachweis für diese Vermögenswerte, aber ihr Wert ist nicht in Ihrem Gesamtkontostand enthalten."
     }
   },
   "global": {
