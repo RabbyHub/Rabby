@@ -246,10 +246,6 @@ const TokenDetail = ({
     }
   }, [history, token, isSwap, handleInTokenSelect, desktopPathname]);
 
-  const isCustomizedNotAdded = useMemo(() => {
-    return !token.is_core && !isAdded && variant === 'add';
-  }, [token, variant, isAdded]);
-
   const BottomBtn = useMemo(() => {
     if (hideOperationButtons) {
       return null;
@@ -280,26 +276,6 @@ const TokenDetail = ({
               {t('global.confirm')}
             </Button>
           </TooltipWithMagnetArrow>
-        </div>
-      );
-    }
-
-    if (isCustomizedNotAdded && !isDesktop) {
-      return (
-        <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => addToken(tokenWithAmount)}
-            className="w-[360px] h-[40px] leading-[18px]"
-            style={{
-              width: 360,
-              height: 40,
-              lineHeight: '18px',
-            }}
-          >
-            {t('page.dashboard.tokenDetail.AddToMyTokenList')}
-          </Button>
         </div>
       );
     }

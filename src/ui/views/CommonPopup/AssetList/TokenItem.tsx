@@ -47,10 +47,12 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
         <span className="text-r-neutral-title-1 text-13 font-medium leading-[15px] truncate">
           {item._amountStr}
         </span>
-        <span className="text-r-neutral-foot text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center">
-          {item.symbol}
-          {isLpToken(item) && <LpTokenTag className="ml-2" />}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-r-neutral-foot text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden max-w-[80%]">
+            {item.symbol}
+          </span>
+          {isLpToken(item) && <LpTokenTag className="w-16 h-16" />}
+        </div>
       </div>
     </TCell>
   );

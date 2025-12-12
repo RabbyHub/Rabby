@@ -115,13 +115,12 @@ const TokenAmountInput = ({
   const [updateNonce, setUpdateNonce] = useState(0);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const selectorOpened = useRef(false);
-  const dispatch = useRabbyDispatch();
-  const { currentAccount, lpTokenMode } = useRabbySelector((s) => ({
+  const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
-    lpTokenMode: s.preference.lpTokenMode ?? false,
   }));
   const wallet = useWallet();
   const [keyword, setKeyword] = useState('');
+  const [lpTokenMode, setLpTokenMode] = useState(false);
 
   const chainItemOfToken = useMemo(
     () =>
@@ -152,9 +151,6 @@ const TokenAmountInput = ({
   const isFromMode = useMemo(() => {
     return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
   }, [type]);
-  useEffect(() => {
-    dispatch.preference.getPreference('lpTokenMode');
-  }, [dispatch]);
 
   const setChainServerId = useCallback((chainServerId?: string) => {
     const foundChainItem = !chainServerId
@@ -187,6 +183,7 @@ const TokenAmountInput = ({
   const handleTokenSelectorClose = useCallback(() => {
     setChainServerId(token?.chain);
     setTokenSelectorVisible(false);
+    setLpTokenMode(false);
   }, [token?.chain, setChainServerId]);
 
   const checkBeforeConfirm = useCallback(
@@ -447,6 +444,7 @@ const TokenAmountInput = ({
           onStartSelectChain?.();
         }}
         lpTokenMode={lpTokenMode}
+        setLpTokenMode={setLpTokenMode}
         showLpTokenSwitch={isFromMode}
       />
       <ChainSelectorInSend

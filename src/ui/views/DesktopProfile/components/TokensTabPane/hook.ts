@@ -1,26 +1,22 @@
 import { useAppChain } from '@/ui/hooks/useAppChain';
 import useSortTokens from '@/ui/hooks/useSortTokens';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
 import { useCommonPopupView } from '@/ui/utils';
 import { useQueryProjects } from '@/ui/utils/portfolio';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export const useTokenAndDIFIData = ({
   selectChainId,
 }: {
   selectChainId?: string;
 }) => {
-  const dispatch = useRabbyDispatch();
+  const [lpTokenMode, setLpTokenMode] = useState(false);
 
-  const { currentAccount, lpTokenMode } = useRabbySelector((s) => ({
+  const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
-    lpTokenMode: s.preference.lpTokenMode ?? false,
   }));
 
   const { setApps } = useCommonPopupView();
-  useEffect(() => {
-    dispatch.preference.getPreference('lpTokenMode');
-  }, [dispatch]);
 
   const {
     isTokensLoading,
@@ -114,6 +110,7 @@ export const useTokenAndDIFIData = ({
     displayPortfolios,
     sortTokens,
     lpTokenMode,
+    setLpTokenMode,
     appIds,
     isNoResults,
   };

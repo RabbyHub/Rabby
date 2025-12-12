@@ -30,12 +30,6 @@ export default (store: typeof import('@/ui/store').default) => {
         });
         break;
       }
-      case 'lpTokenMode': {
-        dispatch.preference.setField({
-          lpTokenMode: payload.partials.lpTokenMode,
-        });
-        break;
-      }
       // case 'curvePointsMap': {
       //   dispatch.account.setField({
       //     curvePointsMap: payload.partials.curvePointsMap,

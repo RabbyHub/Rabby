@@ -15,8 +15,8 @@ import { useTranslation } from 'react-i18next';
 import MainnetTestnetSwitchTabs from './components/switchTestTab';
 import IconSearch from 'ui/assets/search.svg';
 import { TokenList } from './TokenList';
-import { useRabbyDispatch } from '@/ui/store';
 import { LpTokenSwitch } from './components/LpTokenSwitch';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 
 interface Props {
   isTokensLoading: boolean;
@@ -24,6 +24,7 @@ interface Props {
   sortTokens: AbstractPortfolioToken[];
   hasTokens: boolean;
   lpTokenMode: boolean;
+  setLpTokenMode?: (value: boolean) => void;
   selectChainId?: string;
 }
 
@@ -34,11 +35,11 @@ export const TokenTab = ({
   hasTokens,
   selectChainId,
   lpTokenMode,
+  setLpTokenMode,
 }: Props) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
 
-  const dispatch = useRabbyDispatch();
   const [inputActive, setIsInputActive] = useState(false);
   const handleInputFocus = () => {
     setIsInputActive(true);
@@ -47,11 +48,8 @@ export const TokenTab = ({
   const handleInputBlur = () => {
     setIsInputActive(false);
   };
-  const setLpTokenMode = (value: boolean) => {
-    dispatch.preference.setLpTokenMode(value);
-  };
 
-  const { selectedTab, onTabChange } = useSwitchNetTab();
+  const { selectedTab, onTabChange, isShowTestnet } = useSwitchNetTab();
 
   const [searchValue, setSearchValue] = React.useState('');
 
@@ -75,7 +73,10 @@ export const TokenTab = ({
 
   const tokenListTotalValue = React.useMemo(() => {
     return sortTokens
-      ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
+      ?.reduce(
+        (acc, item) => acc.plus(isLpToken(item) ? 0 : item._usdValue || 0),
+        new BigNumber(0)
+      )
       .toNumber();
   }, [sortTokens]);
 
@@ -126,10 +127,12 @@ export const TokenTab = ({
               onLpTokenModeChange={setLpTokenMode}
             />
           )}
-          <MainnetTestnetSwitchTabs
-            value={selectedTab}
-            onTabChange={onTabChange}
-          />
+          {isShowTestnet && (
+            <MainnetTestnetSwitchTabs
+              value={selectedTab}
+              onTabChange={onTabChange}
+            />
+          )}
         </div>
       </div>
 

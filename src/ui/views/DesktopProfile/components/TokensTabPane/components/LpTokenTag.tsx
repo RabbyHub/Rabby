@@ -31,7 +31,7 @@ export const LpTokenTag = ({ className }: { className?: string }) => {
       overlayInnerStyle={{
         borderRadius: '12px',
       }}
-      className={className}
+      className={cx('w-16 h-16', className)}
       overlay={<Overlay />}
       mouseEnterDelay={0}
     >
