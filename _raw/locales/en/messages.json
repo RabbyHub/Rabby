@@ -3519,7 +3519,10 @@
       "hot": "Hot",
       "common": "Common",
       "recent": "Recent",
-      "chainNotSupport": "This chain is not supported"
+      "chainNotSupport": "This chain is not supported",
+      "chainFilterLine": {
+        "filterAll": "All Chains"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

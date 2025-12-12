@@ -1,6 +1,6 @@
 import React from 'react';
 import { searchByPrefix } from '../utils/smart-completion';
-import useDebounceValue from './useDebounceValue';
+import useSyncStaleValue from './useDebounceValue';
 
 function isStrEnglish(w: string) {
   return /^([a-z]|[A-Z])+$/.test(w);
@@ -21,7 +21,7 @@ export default function useTypingMnemonics({
   const [mnemonics, setMnemonics] = React.useState<string | null>('');
   const [currentHints, _setCurrentHints] = React.useState<string[]>([]);
 
-  const debouncedMnemonics = useDebounceValue(mnemonics, 250);
+  const debouncedMnemonics = useSyncStaleValue(mnemonics, 250);
   const { lastTypingWord } = React.useMemo(() => {
     const mnemonicsList = debouncedMnemonics?.split(' ') || [];
     const lastTypingWord = mnemonicsList.pop() || '';
