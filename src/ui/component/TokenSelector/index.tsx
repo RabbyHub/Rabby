@@ -615,6 +615,25 @@ const TokenSelector = ({
             )}
           </div>
         )}
+        {showChainFilterV2 && (
+          <div className="filters-wrapper">
+            <ChainFilterV2Line
+              selectedChain={chainItem?.isTestnet ? null : chainItem || null}
+              onStartSelectChain={onStartSelectChain}
+              onClearFilterChain={() => {
+                onRemoveChainFilter?.({
+                  chainServerId: chainServerId || '',
+                  // chainItem,
+                });
+                onSearch({
+                  // chainItem: null,
+                  chainServerId: '',
+                  keyword: query,
+                });
+              }}
+            />
+          </div>
+        )}
 
         {selectedTab === 'mainnet' ? (
           <ul className={clsx('token-list', { empty: isEmpty })}>

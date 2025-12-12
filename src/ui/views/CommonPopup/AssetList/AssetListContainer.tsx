@@ -17,6 +17,8 @@ import { useAppChain } from '@/ui/hooks/useAppChain';
 import { useCommonPopupView } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
 import { LpTokenSwitch } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenSwitch';
+import clsx from 'clsx';
+import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 
 interface Props {
   className?: string;

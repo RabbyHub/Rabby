@@ -122,6 +122,10 @@ const TokenAmountInput = ({
   const [keyword, setKeyword] = useState('');
   const [lpTokenMode, setLpTokenMode] = useState(false);
 
+  const isFromMode = useMemo(() => {
+    return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
+  }, [type]);
+
   const chainItemOfToken = useMemo(
     () =>
       !token?.chain
@@ -148,15 +152,11 @@ const TokenAmountInput = ({
   //   [testnetChainServerId]
   // );
   const { t } = useTranslation();
-  const isFromMode = useMemo(() => {
-    return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
-  }, [type]);
 
   const setChainServerId = useCallback((chainServerId?: string) => {
     const foundChainItem = !chainServerId
       ? null
       : findChainByServerID(chainServerId);
-
     setNetVariedChainServerId((prev) => ({
       mainnet: foundChainItem?.isTestnet ? '' : chainServerId || '',
       testnet: foundChainItem?.isTestnet ? chainServerId || '' : '',
