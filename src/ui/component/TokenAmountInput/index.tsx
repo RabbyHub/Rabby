@@ -1,7 +1,7 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
 import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { DrawerProps, Input, Modal, Skeleton } from 'antd';
@@ -115,11 +115,16 @@ const TokenAmountInput = ({
   const [updateNonce, setUpdateNonce] = useState(0);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const selectorOpened = useRef(false);
-  const currentAccount = useRabbySelector(
-    (state) => state.account.currentAccount
-  );
+  const { currentAccount } = useRabbySelector((s) => ({
+    currentAccount: s.account.currentAccount,
+  }));
   const wallet = useWallet();
   const [keyword, setKeyword] = useState('');
+  const [lpTokenMode, setLpTokenMode] = useState(false);
+
+  const isFromMode = useMemo(() => {
+    return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
+  }, [type]);
 
   const chainItemOfToken = useMemo(
     () =>
@@ -152,7 +157,6 @@ const TokenAmountInput = ({
     const foundChainItem = !chainServerId
       ? null
       : findChainByServerID(chainServerId);
-
     setNetVariedChainServerId((prev) => ({
       mainnet: foundChainItem?.isTestnet ? '' : chainServerId || '',
       testnet: foundChainItem?.isTestnet ? chainServerId || '' : '',
@@ -179,6 +183,7 @@ const TokenAmountInput = ({
   const handleTokenSelectorClose = useCallback(() => {
     setChainServerId(token?.chain);
     setTokenSelectorVisible(false);
+    setLpTokenMode(false);
   }, [token?.chain, setChainServerId]);
 
   const checkBeforeConfirm = useCallback(
@@ -223,7 +228,9 @@ const TokenAmountInput = ({
     undefined,
     selectorOpened.current ? tokenSelectorVisible : true,
     updateNonce,
-    mainnetChainServerId
+    mainnetChainServerId,
+    undefined,
+    isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
   );
 
   const handleSelectToken = useCallback(() => {
@@ -436,6 +443,9 @@ const TokenAmountInput = ({
           chainSelectorRef.current?.toggleShow(true);
           onStartSelectChain?.();
         }}
+        lpTokenMode={lpTokenMode}
+        setLpTokenMode={setLpTokenMode}
+        showLpTokenSwitch={isFromMode}
       />
       <ChainSelectorInSend
         ref={chainSelectorRef}

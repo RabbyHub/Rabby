@@ -14,6 +14,8 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import MainnetTestnetSwitchTabs from './components/switchTestTab';
 import { TokenList } from './TokenList';
+import { LpTokenSwitch } from './components/LpTokenSwitch';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import styled from 'styled-components';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 
@@ -22,6 +24,8 @@ interface Props {
   isNoResults: boolean;
   sortTokens: AbstractPortfolioToken[];
   hasTokens: boolean;
+  lpTokenMode: boolean;
+  setLpTokenMode?: (value: boolean) => void;
   selectChainId?: string;
 }
 
@@ -38,6 +42,8 @@ export const TokenTab = ({
   isNoResults,
   hasTokens,
   selectChainId,
+  lpTokenMode,
+  setLpTokenMode,
 }: Props) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
@@ -62,9 +68,11 @@ export const TokenTab = ({
   const { isLoading: isSearching, list: searchTokenList } = useSearchToken(
     currentAccount?.address,
     debouncedSearchValue,
-    selectChainId ? selectChainId : undefined,
-    true,
-    selectedTab === 'testnet'
+    {
+      chainServerId: selectChainId ? selectChainId : undefined,
+      withBalance: true,
+      isTestnet: selectedTab === 'testnet',
+    }
   );
 
   const searchList = selectChainId
@@ -75,7 +83,10 @@ export const TokenTab = ({
 
   const tokenListTotalValue = React.useMemo(() => {
     return sortTokens
-      ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
+      ?.reduce(
+        (acc, item) => acc.plus(isLpToken(item) ? 0 : item._usdValue || 0),
+        new BigNumber(0)
+      )
       .toNumber();
   }, [sortTokens]);
 
@@ -119,12 +130,20 @@ export const TokenTab = ({
             onBlur={handleInputBlur}
           />
         </div>
-        {isShowTestnet && (
-          <MainnetTestnetSwitchTabs
-            value={selectedTab}
-            onTabChange={onTabChange}
-          />
-        )}
+        <div className="flex items-center gap-[16px]">
+          {selectedTab === 'mainnet' && (
+            <LpTokenSwitch
+              lpTokenMode={lpTokenMode}
+              onLpTokenModeChange={setLpTokenMode}
+            />
+          )}
+          {isShowTestnet && (
+            <MainnetTestnetSwitchTabs
+              value={selectedTab}
+              onTabChange={onTabChange}
+            />
+          )}
+        </div>
       </div>
 
       {isTokensLoading || isOnSearching ? (

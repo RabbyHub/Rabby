@@ -3201,6 +3201,7 @@
         "headers": {
           "wallet": "Wallet",
           "allTokenMode": "All Token Mode",
+          "lpToken": "LP-Token",
           "foldProtocols": "Fold {{count}} Protocols",
           "unfoldProtocols": "Unfold {{count}} Protocols",
           "foldDifis": "Fold {{count}} Defis",
@@ -3595,6 +3596,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Add address"
+    },
+    "LpTokenTag": {
+      "title": "This is a liquidity provider(LP) token",
+      "description": "LP tokens are issued by the DeFi protocols where you've deposited your assets. They serve as the proof of those assets, but their value isn't included in your total balance"
     }
   },
   "global": {

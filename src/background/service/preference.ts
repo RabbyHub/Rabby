@@ -145,6 +145,7 @@ export interface PreferenceStore {
 
   desktopTabId?: number;
 
+  /** @deprecated */
   desktopTokensAllMode?: boolean;
 }
 

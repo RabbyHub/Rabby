@@ -35,6 +35,8 @@ import { Account } from '@/background/service/preference';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DbkButton } from '@/ui/views/Ecology/dbk-chain/components/DbkButton';
 import { DBK_CHAIN_ID } from '@/constant';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 const isDesktop = getUiType().isDesktop;
 const PAGE_COUNT = 10;
 
@@ -244,10 +246,6 @@ const TokenDetail = ({
     }
   }, [history, token, isSwap, handleInTokenSelect, desktopPathname]);
 
-  const isCustomizedNotAdded = useMemo(() => {
-    return !token.is_core && !isAdded && variant === 'add';
-  }, [token, variant, isAdded]);
-
   const BottomBtn = useMemo(() => {
     if (hideOperationButtons) {
       return null;
@@ -278,26 +276,6 @@ const TokenDetail = ({
               {t('global.confirm')}
             </Button>
           </TooltipWithMagnetArrow>
-        </div>
-      );
-    }
-
-    if (isCustomizedNotAdded && !isDesktop) {
-      return (
-        <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => addToken(tokenWithAmount)}
-            className="w-[360px] h-[40px] leading-[18px]"
-            style={{
-              width: 360,
-              height: 40,
-              lineHeight: '18px',
-            }}
-          >
-            {t('page.dashboard.tokenDetail.AddToMyTokenList')}
-          </Button>
         </div>
       );
     }
@@ -391,6 +369,7 @@ const TokenDetail = ({
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
+            {isLpToken(token) && <LpTokenTag className="ml-8" />}
           </div>
         </div>
       </div>
