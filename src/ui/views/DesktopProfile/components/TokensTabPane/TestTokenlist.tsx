@@ -149,17 +149,18 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
       return wallet.getCustomTestnetTokenList({
         address: currentAccount!.address,
         isRemote: true,
+        q: search,
       });
     },
     {
-      refreshDeps: [currentAccount],
+      refreshDeps: [currentAccount, search],
       onSuccess(data) {
         setIsFetched(true);
       },
     }
   );
 
-  const list = useMemo(() => {
+  const displayedList = useMemo(() => {
     if (!selectChainId) {
       return _list;
     }
@@ -167,17 +168,6 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
       return String(item.chainId) === selectChainId;
     });
   }, [_list, selectChainId]);
-
-  const displayedList = useMemo(() => {
-    if (search) {
-      const kw = search?.toLowerCase();
-      return list?.filter(
-        (token) =>
-          token.symbol?.toLowerCase()?.includes(kw) || token?.id?.includes(kw)
-      );
-    }
-    return list;
-  }, [search, list]);
 
   if (!isFetched) {
     return <TokenListSkeleton />;
