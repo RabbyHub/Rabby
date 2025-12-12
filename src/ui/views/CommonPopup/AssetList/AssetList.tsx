@@ -136,14 +136,14 @@ export const AssetList = ({
             />
           </div>
         </div>
-      </div>
-      <div className={clsx(selectedTab === 'testnet' ? 'block' : 'hidden')}>
-        <TestnetChainList onChange={handleTestnetSelectChainChange} />
-        <CustomTestnetAssetList
-          selectChainId={selectTestnetChainId}
-          visible={visible}
-          onClose={onClose}
-        />
+        <div className={clsx(selectedTab === 'testnet' ? 'block' : 'hidden')}>
+          <TestnetChainList onChange={handleTestnetSelectChainChange} />
+          <CustomTestnetAssetList
+            selectChainId={selectTestnetChainId}
+            visible={visible}
+            onClose={onClose}
+          />
+        </div>
       </div>
       <footer
         className={clsx('h-[69px] mt-[8px]', scroll?.top ? 'hidden' : '')}
