@@ -102,7 +102,7 @@ export function AddressInfoTo({
     <div className={clsx(className, 'overflow-auto')}>
       <div className="section relative">
         <div className="section-title justify-between items-center flex">
-          <span className="section-title__to font-bold text-[17px]">
+          <span className="section-title__to text-[17px]">
             {titleText || t('page.sendToken.sectionTo.title')}
           </span>
 
