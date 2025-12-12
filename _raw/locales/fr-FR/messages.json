@@ -171,7 +171,10 @@
       "hot": "Chaud",
       "common": "Commun",
       "recent": "Récent",
-      "chainNotSupport": "Cette chaîne n'est pas prise en charge"
+      "chainNotSupport": "Cette chaîne n'est pas prise en charge",
+      "chainFilterLine": {
+        "filterAll": "Toutes les chaînes"
+      }
     },
     "Uploader": {
       "placeholder": "Sélectionner un fichier JSON"
@@ -2592,7 +2595,9 @@
         "bridgeStatus": "État du Bridge",
         "receivedDifferentTokenNeedSwap": "Vous avez reçu un jeton différent. Vous pouvez l'échanger contre le jeton que vous avez sélectionné.",
         "BridgeStatusUnavailable": "Statut du pont indisponible. Veuillez vérifier votre historique de transactions pour confirmer que les fonds sont arrivés.",
-        "fromFailed": "La transaction n'a pas été effectuée. Essayez à nouveau."
+        "fromFailed": "La transaction n'a pas été effectuée. Essayez à nouveau.",
+        "swapStatus": "État de l'échange",
+        "sendStatus": "Envoyer le statut"
       }
     },
     "dappSearch": {
@@ -3514,6 +3519,90 @@
         "transactions": "Transactions",
         "tokens": "Jetons",
         "approvals": "Approbations"
+      },
+      "nft": {
+        "message": {
+          "listingFailed": "Échec de l'inscription",
+          "cancelFailedDesc": "Veuillez réessayer",
+          "acceptSuccessDesc": "Vous avez vendu avec succès {{name}}",
+          "listingSuccessDesc": "Vous avez inscrit {{name}} sur OpenSea.",
+          "acceptSuccess": "Vendu avec succès",
+          "acceptFailedDesc": "Veuillez réessayer.",
+          "listingSuccess": "Nouvellement répertorié !",
+          "acceptFailed": "Vente échouée",
+          "cancelSuccess": "Annulation de la liste réussie",
+          "cancelSuccessDesc": "Vous avez annulé avec succès l'inscription {{name}}.",
+          "cancelFailed": "Échoué !",
+          "listingFailedDesc": "Veuillez réessayer."
+        },
+        "detail": {
+          "ending": "Fin :",
+          "chain": "Chaîne",
+          "rarity": "Rareté",
+          "platform": "Plateforme :",
+          "noOffer": "Aucune offre encore",
+          "supportPlatform": "Plateformes prises en charge :",
+          "collection": "Collection",
+          "collectionFloor": "Plancher de collection",
+          "nft": "NFT",
+          "lastSale": "Dernière vente",
+          "cancel": "Annuler la liste",
+          "edit": "Modifier la liste",
+          "topOffer": "Offre principale",
+          "listing": "Liste sur Opensea",
+          "accept": "Accepter",
+          "send": "Envoyer",
+          "listedFor": "{{count}} répertorié pour"
+        },
+        "cancelModal": {
+          "listing": "Liste",
+          "title": "Annuler la liste",
+          "cancelListing": "Annuler la liste",
+          "listingPrice": "Prix de liste"
+        },
+        "listingModal": {
+          "proceeds": "Revenus",
+          "editListing": "Modifier la liste",
+          "cost": "Coût",
+          "quantity": "Quantité",
+          "nft": "NFT",
+          "totalEst": "Revenus totaux estimés",
+          "topOffer": "Offre Principale",
+          "total": "Prix total de l'inscription",
+          "listOn": "Liste sur OpenSea",
+          "creatorFee": "Frais de créateur ({{fee}}%)",
+          "rabbyFee": "Frais de Rabby (0%)",
+          "creatorFeeTips1": "Les revenus des créateurs seront payés par le vendeur. Les revenus des créateurs sont appliqués.",
+          "platformFee": "Frais de plateforme Opensea ({{fee}}%)",
+          "approveAndList": "Approuver et Lister",
+          "createListing": "Créer une liste",
+          "listedAs": "Répertorié comme",
+          "platformFeeTips": "Cette frais est la commission de service d'OpenSea",
+          "floorDifference": "Différence de prix minimum",
+          "creatorFeeTips": "Les revenus des créateurs seront payés par le vendeur.",
+          "floor": "Plancher"
+        },
+        "acceptModal": {
+          "platform": "Plateforme",
+          "title": "Accepter l'offre",
+          "acceptOffer": "Accepter l'offre",
+          "floorDifference": "Différence de plancher",
+          "offer": "Offre",
+          "totalEst": "Produits estimés totaux",
+          "platformFeeTips": "Cette taxe est le frais de service d'OpenSea.",
+          "platformFee": "Frais de plateforme Opensea ({{fee}}%)",
+          "offerPrice": "Prix d'offre",
+          "creatorFeeTips": "Les revenus des créateurs seront payés par le vendeur.",
+          "quantity": "Quantité",
+          "creatorFee": "Frais de créateur ({{fee}}%)",
+          "rabbyFee": "Frais de Rabby (0%)",
+          "creatorFeeTips1": "Les revenus des créateurs seront payés par le vendeur. Les revenus des créateurs sont appliqués."
+        },
+        "pending": "En attente",
+        "hideLowValue": "Masquer les NFTs de faible valeur",
+        "confirmingTx": "Confirmez votre transaction",
+        "empty": "Pas de NFT",
+        "all": "Tous"
       }
     },
     "perpsDetail": {

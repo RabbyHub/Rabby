@@ -1140,7 +1140,9 @@
         "BridgeStatusUnavailable": "Status da ponte indisponível. Por favor, verifique seu histórico de transações para confirmar se os fundos chegaram.",
         "longTimeNoReceive": "A rede está sobrecarregada. Isso pode levar mais tempo do que o habitual. Por favor, aguarde pacientemente.",
         "receivedDifferentTokenFromSource": "A ponte falhou. Um token diferente foi retornado na cadeia de origem.",
-        "queued": "Em espera"
+        "queued": "Em espera",
+        "sendStatus": "Enviar Status",
+        "swapStatus": "Status da Troca"
       }
     },
     "manageAddress": {
@@ -3207,6 +3209,90 @@
         "tokens": "Tokens",
         "transactions": "Transações",
         "approvals": "Aprovações"
+      },
+      "nft": {
+        "message": {
+          "acceptFailed": "Venda Falhou",
+          "cancelFailed": "Falhou!",
+          "listingFailedDesc": "Por favor, tente novamente.",
+          "cancelSuccessDesc": "Você cancelou com sucesso a listagem {{name}}",
+          "cancelFailedDesc": "Por favor, tente novamente",
+          "cancelSuccess": "Listagem cancelada com sucesso",
+          "acceptFailedDesc": "Por favor, tente novamente.",
+          "listingSuccessDesc": "Você listou {{name}} no OpenSea",
+          "listingSuccess": "Acabou de ser listado!",
+          "acceptSuccessDesc": "Você vendeu {{name}} com sucesso",
+          "listingFailed": "Listagem Falhou",
+          "acceptSuccess": "Vendido com Sucesso"
+        },
+        "detail": {
+          "chain": "Cadeia",
+          "supportPlatform": "Plataformas suportadas:",
+          "rarity": "Raridade",
+          "collectionFloor": "Piso da coleção",
+          "collection": "Coleção",
+          "topOffer": "Oferta Principal",
+          "lastSale": "Última venda",
+          "platform": "Plataforma:",
+          "nft": "NFT",
+          "noOffer": "Ainda não há ofertas",
+          "ending": "Finalizando:",
+          "cancel": "Cancelar Listagem",
+          "accept": "Aceitar",
+          "edit": "Editar Listagem",
+          "listedFor": "{{count}} listado para",
+          "send": "Enviar",
+          "listing": "Listagem no Opensea"
+        },
+        "cancelModal": {
+          "listing": "Listagem",
+          "title": "Cancelar Listagem",
+          "cancelListing": "Cancelar listagem",
+          "listingPrice": "Preço de Listagem"
+        },
+        "listingModal": {
+          "nft": "NFT",
+          "floor": "Andar",
+          "quantity": "Quantidade",
+          "approveAndList": "Aprovar e Listar",
+          "totalEst": "Total estimado de ganhos",
+          "rabbyFee": "Rabby taxa (0%)",
+          "createListing": "Criar lista",
+          "cost": "Custo",
+          "proceeds": "Rendimentos",
+          "floorDifference": "Diferença de piso",
+          "editListing": "Editar Listagem",
+          "listedAs": "Listados como",
+          "total": "Preço total de listagem",
+          "platformFeeTips": "Esta taxa é a cobrança de serviço da OpenSea",
+          "creatorFeeTips": "Os ganhos dos criadores serão pagos pelo vendedor.",
+          "creatorFee": "Taxas do criador ({{fee}}%)",
+          "platformFee": "Taxas da plataforma Opensea ({{fee}}%)",
+          "creatorFeeTips1": "Os ganhos do criador serão pagos pelo vendedor. Os ganhos do criador são aplicados.",
+          "listOn": "Liste no OpenSea",
+          "topOffer": "Oferta Principal"
+        },
+        "acceptModal": {
+          "offer": "Oferta",
+          "offerPrice": "Preço de Oferta",
+          "quantity": "Quantidade",
+          "title": "Aceitar Oferta",
+          "creatorFee": "Taxas do criador ({{fee}}%)",
+          "totalEst": "Proventos totais estimados",
+          "rabbyFee": "Taxa Rabby (0%)",
+          "floorDifference": "Diferença de Piso",
+          "creatorFeeTips": "Os ganhos do criador serão pagos pelo vendedor.",
+          "platformFee": "Taxas da plataforma Opensea ({{fee}}%)",
+          "acceptOffer": "Aceitar Oferta",
+          "platformFeeTips": "Essa taxa é a comissão de serviço da OpenSea",
+          "creatorFeeTips1": "Os ganhos dos criadores serão pagos pelo vendedor. Os ganhos dos criadores são aplicados.",
+          "platform": "Plataforma"
+        },
+        "pending": "Pendente",
+        "empty": "Sem NFTs",
+        "confirmingTx": "Confirmando sua transação",
+        "all": "Todos",
+        "hideLowValue": "Esconder NFTs de Baixo Valor"
       }
     },
     "perpsDetail": {
@@ -3415,7 +3501,10 @@
       "noMatch": "Sem correspondência",
       "noMatchSuggestion": "Tente procurar o endereço do contrato na {{ chainName }}",
       "hot": "Quente",
-      "chainNotSupport": "Esta cadeia não é suportada"
+      "chainNotSupport": "Esta cadeia não é suportada",
+      "chainFilterLine": {
+        "filterAll": "Todas as Chains"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

@@ -42,7 +42,7 @@ export const DistanceToLiquidationTag: React.FC<DistanceToLiquidationTagProps> =
         text: 'text-rb-orange-default',
       },
       [PERPS_POSITION_RISK_LEVEL.SAFE]: {
-        container: 'bg-rb-green-light-4 border-rb-green-disable',
+        container: 'bg-rb-green-light-1 border-rb-green-disable',
         dot: 'bg-rb-green-disable',
         innerDot: 'bg-rb-green-default',
         text: 'text-rb-green-default',

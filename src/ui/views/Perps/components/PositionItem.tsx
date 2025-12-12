@@ -120,7 +120,7 @@ export const PositionItem: React.FC<{
               className={clsx(
                 'text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px]',
                 isLong
-                  ? 'text-rb-green-default bg-rb-green-light-4'
+                  ? 'text-rb-green-default bg-rb-green-light-1'
                   : 'text-rb-red-default bg-rb-red-light-1'
               )}
             >

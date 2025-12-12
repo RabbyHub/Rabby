@@ -1140,7 +1140,9 @@
         "beReturnFailed": "Cầu nối không thành công. Tài sản của bạn đã được hoàn trả.",
         "receivedDifferentTokenFromSource": "Cầu nối thất bại. Một token khác đã được trả về trên chuỗi nguồn.",
         "longTimeNoReceive": "Mạng đang bận. Điều này có thể mất thời gian hơn bình thường. Vui lòng chờ đợi một cách kiên nhẫn.",
-        "receivedDifferentTokenNeedSwap": "Bạn đã nhận một mã thông báo khác. Bạn có thể trao đổi nó với mã thông báo mà bạn đã chọn."
+        "receivedDifferentTokenNeedSwap": "Bạn đã nhận một mã thông báo khác. Bạn có thể trao đổi nó với mã thông báo mà bạn đã chọn.",
+        "sendStatus": "Gửi trạng thái",
+        "swapStatus": "Trạng thái hoán đổi"
       }
     },
     "manageAddress": {
@@ -3207,6 +3209,90 @@
         "tokens": "Tokens",
         "transactions": "Giao dịch",
         "approvals": "Phê duyệt"
+      },
+      "nft": {
+        "message": {
+          "listingSuccess": "Vừa được niêm yết!",
+          "listingSuccessDesc": "Bạn đã liệt kê {{name}} trên OpenSea",
+          "cancelFailedDesc": "Vui lòng thử lại",
+          "cancelSuccessDesc": "Bạn đã hủy niêm yết {{name}} thành công.",
+          "acceptFailed": "Bán không thành công",
+          "listingFailedDesc": "Vui lòng thử lại.",
+          "cancelFailed": "Thất bại!",
+          "acceptFailedDesc": "Vui lòng thử lại.",
+          "listingFailed": "Đăng ký không thành công",
+          "acceptSuccessDesc": "Bạn đã bán {{name}} thành công",
+          "acceptSuccess": "Đã bán thành công",
+          "cancelSuccess": "Hủy niêm yết thành công"
+        },
+        "detail": {
+          "lastSale": "Bán cuối cùng",
+          "chain": "Chuỗi",
+          "ending": "Kết thúc:",
+          "platform": "Nền tảng:",
+          "nft": "NFT",
+          "topOffer": "Ưu đãi hàng đầu",
+          "noOffer": "Chưa có ưu đãi nào",
+          "collectionFloor": "Sàn giao dịch bộ sưu tập",
+          "supportPlatform": "Nền tảng được hỗ trợ:",
+          "rarity": "Rarity",
+          "collection": "Bộ sưu tập",
+          "edit": "Chỉnh sửa Danh sách",
+          "accept": "Chấp nhận",
+          "listing": "Liên kết trên Opensea",
+          "cancel": "Hủy Niêm Yết",
+          "send": "Gửi",
+          "listedFor": "{{count}} đã được liệt kê cho"
+        },
+        "cancelModal": {
+          "listing": "Danh sách",
+          "listingPrice": "Giá Niêm Yết",
+          "title": "Hủy niêm yết",
+          "cancelListing": "Hủy niêm yết"
+        },
+        "listingModal": {
+          "nft": "NFT",
+          "editListing": "Chỉnh sửa danh sách",
+          "total": "Giá niêm yết tổng cộng",
+          "totalEst": "Tổng ước tính thu nhập",
+          "cost": "Chi phí",
+          "floor": "Sàn",
+          "createListing": "Tạo danh sách",
+          "floorDifference": "Chênh lệch sàn",
+          "listedAs": "Được liệt kê là",
+          "approveAndList": "Phê duyệt và Liệt kê",
+          "creatorFeeTips": "Từ thiện của người sáng tạo sẽ được trả bởi người bán.",
+          "platformFeeTips": "Phí này là khoản phí dịch vụ của OpenSea.",
+          "creatorFeeTips1": "Người bán sẽ trả thu nhập cho người sáng tạo. Thu nhập của người sáng tạo được thực thi.",
+          "listOn": "Liên kết trên OpenSea",
+          "proceeds": "Tiền thu được",
+          "platformFee": "Phí nền tảng Opensea ({{fee}}%)",
+          "quantity": "Số lượng",
+          "rabbyFee": "Rabby phí (0%)",
+          "topOffer": "Ưu đãi hàng đầu",
+          "creatorFee": "Phí người tạo ({{fee}}%)"
+        },
+        "acceptModal": {
+          "totalEst": "Tổng ước tính thu nhập",
+          "platform": "Nền tảng",
+          "offerPrice": "Giá đề nghị",
+          "acceptOffer": "Chấp nhận Đề nghị",
+          "platformFeeTips": "Phí này là chi phí dịch vụ của OpenSea.",
+          "platformFee": "Phí nền tảng Opensea ({{fee}}%)",
+          "rabbyFee": "Rabby phí (0%)",
+          "floorDifference": "Chênh lệch sàn",
+          "creatorFee": "Phí người sáng tạo ({{fee}}%)",
+          "creatorFeeTips": "Thu nhập của người sáng tạo sẽ được thanh toán bởi người bán.",
+          "offer": "Cung cấp",
+          "title": "Chấp nhận đề xuất",
+          "creatorFeeTips1": "Thu nhập của người sáng tạo sẽ được thanh toán bởi người bán. Thu nhập của người sáng tạo được thi hành.",
+          "quantity": "Số lượng"
+        },
+        "all": "Tất cả",
+        "empty": "Không có NFTs",
+        "hideLowValue": "Ẩn NFT Giá Trị Thấp",
+        "pending": "Đang chờ xử lý",
+        "confirmingTx": "Xác nhận giao dịch của bạn"
       }
     },
     "perpsDetail": {
@@ -3415,7 +3501,10 @@
       "common": "Thông thường",
       "noMatchSuggestion": "Hãy cố gắng tìm địa chỉ hợp đồng trên {{ chainName }}",
       "noMatch": "Không khớp",
-      "chainNotSupport": "Chuỗi này không được hỗ trợ"
+      "chainNotSupport": "Chuỗi này không được hỗ trợ",
+      "chainFilterLine": {
+        "filterAll": "Tất cả các chuỗi"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

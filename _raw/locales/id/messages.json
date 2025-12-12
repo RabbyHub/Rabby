@@ -1140,7 +1140,9 @@
         "longTimeNoReceive": "Jaringan sedang sibuk. Ini mungkin memakan waktu lebih lama dari biasanya. Harap tunggu dengan sabar.",
         "receivedDifferentTokenNeedSwap": "Anda menerima token yang berbeda. Anda dapat menukarnya dengan token yang Anda pilih.",
         "receivingTo": "Menerima di {{chain}}",
-        "sendingFrom": "Mengirim dari {{chain}}"
+        "sendingFrom": "Mengirim dari {{chain}}",
+        "sendStatus": "Kirim Status",
+        "swapStatus": "Status Swap"
       }
     },
     "manageAddress": {
@@ -3207,6 +3209,90 @@
         "tokens": "Token",
         "approvals": "Persetujuan",
         "transactions": "Transaksi"
+      },
+      "nft": {
+        "message": {
+          "acceptSuccessDesc": "Anda telah berhasil menjual {{name}}",
+          "cancelFailedDesc": "Silakan coba lagi",
+          "listingFailed": "Listing Gagal",
+          "acceptFailed": "Penjualan Gagal",
+          "cancelFailed": "Gagal!",
+          "listingSuccess": "Baru terdaftar!",
+          "listingSuccessDesc": "Anda telah mencantumkan {{name}} di OpenSea",
+          "acceptSuccess": "Terjual Dengan Sukses",
+          "cancelSuccess": "Daftar berhasil dibatalkan",
+          "cancelSuccessDesc": "Anda telah berhasil membatalkan listing {{name}}",
+          "acceptFailedDesc": "Silakan coba lagi.",
+          "listingFailedDesc": "Silakan coba lagi."
+        },
+        "detail": {
+          "supportPlatform": "Platform yang didukung:",
+          "collection": "Koleksi",
+          "ending": "Akhir:",
+          "chain": "Rantai",
+          "lastSale": "Penjualan terakhir",
+          "noOffer": "Belum ada tawaran",
+          "platform": "Platform:",
+          "collectionFloor": "Collection floor",
+          "nft": "NFT",
+          "topOffer": "Penawaran Terbaik",
+          "rarity": "Keberagaman",
+          "edit": "Edit Listing",
+          "listing": "Listing di Opensea",
+          "send": "Kirim",
+          "listedFor": "{{count}} terdaftar untuk",
+          "accept": "Terima kasih",
+          "cancel": "Batalkan Daftar"
+        },
+        "cancelModal": {
+          "listing": "Daftar",
+          "cancelListing": "Batalakan listing",
+          "title": "Batalkan Daftar",
+          "listingPrice": "Harga Listing"
+        },
+        "listingModal": {
+          "floor": "Lantai",
+          "nft": "NFT",
+          "createListing": "Buat daftar",
+          "topOffer": "Penawaran Terbaik",
+          "editListing": "Edit Listing",
+          "floorDifference": "Perbedaan lantai",
+          "quantity": "Kuantitas",
+          "total": "Total listing price",
+          "totalEst": "Total est. proceeds",
+          "platformFee": "Biaya platform Opensea ({{fee}}%)",
+          "approveAndList": "Setujui dan Daftarkan",
+          "listedAs": "Terdaftar sebagai",
+          "listOn": "Daftarkan di OpenSea",
+          "creatorFeeTips": "Pendapatan kreator akan dibayarkan oleh penjual.",
+          "creatorFee": "Biaya penciptaan ({{fee}}%)",
+          "proceeds": "Hasil",
+          "cost": "Biaya",
+          "creatorFeeTips1": "Pendapatan kreator akan dibayar oleh penjual. Pendapatan kreator ditegakkan.",
+          "platformFeeTips": "Biaya ini adalah biaya layanan OpenSea.",
+          "rabbyFee": "Biaya Rabby (0%)"
+        },
+        "acceptModal": {
+          "title": "Terima Tawaran",
+          "quantity": "Kuantitas",
+          "offerPrice": "Harga Penawaran",
+          "floorDifference": "Perbedaan lantai",
+          "platformFee": "Biaya platform Opensea ({{fee}}%)",
+          "acceptOffer": "Terima Tawaran",
+          "offer": "Tawarkan",
+          "platformFeeTips": "Biaya ini adalah biaya layanan OpenSea.",
+          "creatorFeeTips": "Pendapatan kreator akan dibayar oleh penjual.",
+          "rabbyFee": "Rabby fee (0%)",
+          "totalEst": "Total est. proceeds",
+          "platform": "Platform",
+          "creatorFeeTips1": "Pendapatan kreator akan dibayar oleh penjual. Pendapatan kreator ditegakkan.",
+          "creatorFee": "Biaya pencipta ({{fee}}%)"
+        },
+        "empty": "Tidak ada NFT",
+        "all": "Semua",
+        "confirmingTx": "Mengonfirmasi transaksi Anda",
+        "hideLowValue": "Sembunyikan NFT Bernilai Rendah",
+        "pending": "Menunggu"
       }
     },
     "perpsDetail": {
@@ -3415,7 +3501,10 @@
       "noTokens": "Tidak Ada Token",
       "noMatchSuggestion": "Coba untuk mencari alamat kontrak di {{ chainName }}",
       "common": "Umum",
-      "chainNotSupport": "Rantai ini tidak didukung"
+      "chainNotSupport": "Rantai ini tidak didukung",
+      "chainFilterLine": {
+        "filterAll": "Semua Rantai"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

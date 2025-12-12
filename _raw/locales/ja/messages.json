@@ -2209,7 +2209,9 @@
         "longTimeNoReceive": "ネットワークが混雑しています。通常より時間がかかる場合があります。お待ちください。",
         "receivedDifferentTokenNeedSwap": "異なるトークンを受け取りました。選択したトークンにスワップできます。",
         "receivedDifferentTokenFromSource": "ブリッジに失敗しました。ソースチェーンで異なるトークンが返されました。",
-        "BridgeStatusUnavailable": "ブリッジステータスは利用できません。資金が到着したことを確認するために、transaction historyを確認してください。"
+        "BridgeStatusUnavailable": "ブリッジステータスは利用できません。資金が到着したことを確認するために、transaction historyを確認してください。",
+        "swapStatus": "スワップステータス",
+        "sendStatus": "送信状況"
       }
     },
     "pendingDetail": {
@@ -3210,6 +3212,90 @@
         "transactions": "取引",
         "tokens": "トークン",
         "approvals": "承認"
+      },
+      "nft": {
+        "message": {
+          "acceptSuccess": "販売に成功しました",
+          "acceptFailed": "販売失敗",
+          "cancelSuccess": "リストが正常にキャンセルされました",
+          "listingFailedDesc": "再試してください。",
+          "listingSuccess": "リストに追加されました！",
+          "listingSuccessDesc": "{{name}}をOpenSeaにリストしました。",
+          "cancelFailed": "失敗しました！",
+          "cancelFailedDesc": "もう一度お試しください",
+          "cancelSuccessDesc": "{{name}}のリストを正常にキャンセルしました。",
+          "acceptSuccessDesc": "{{name}}を正常に販売しました。",
+          "acceptFailedDesc": "もう一度お試しください。",
+          "listingFailed": "リスティングに失敗しました"
+        },
+        "detail": {
+          "collection": "コレクション",
+          "nft": "NFT",
+          "topOffer": "トップオファー",
+          "rarity": "希少性",
+          "chain": "チェーン",
+          "noOffer": "まだオファーはありません",
+          "platform": "プラットフォーム:",
+          "lastSale": "最後の販売",
+          "supportPlatform": "対応プラットフォーム：",
+          "collectionFloor": "コレクションのフロア",
+          "send": "送信",
+          "accept": "受け入れる",
+          "listedFor": "{{count}} のリストです",
+          "cancel": "リスティングをキャンセル",
+          "listing": "Openseaに上場",
+          "edit": "リストを編集",
+          "ending": "終了:"
+        },
+        "cancelModal": {
+          "cancelListing": "リストをキャンセル",
+          "title": "リストをキャンセル",
+          "listingPrice": "リスティング価格",
+          "listing": "リストing"
+        },
+        "listingModal": {
+          "listedAs": "リストされたとして",
+          "floor": "フロア",
+          "total": "合計リスティング価格",
+          "editListing": "リストを編集",
+          "totalEst": "合計推定収益",
+          "cost": "コスト",
+          "quantity": "数量",
+          "createListing": "リストを作成",
+          "topOffer": "トップオファー",
+          "platformFeeTips": "この手数料はOpenSeaのサービス料金です。",
+          "listOn": "OpenSeaにリストする",
+          "proceeds": "収益",
+          "creatorFee": "クリエイター手数料 ({{fee}}%)",
+          "floorDifference": "フロア差",
+          "rabbyFee": "Rabby 手数料 (0%)",
+          "approveAndList": "承認とリスト",
+          "platformFee": "Openseaプラットフォーム手数料 ({{fee}}%)",
+          "creatorFeeTips": "クリエイターの収益は販売者によって支払われます。",
+          "creatorFeeTips1": "クリエイターの収益は販売者によって支払われます。クリエイターの収益は強制されます。",
+          "nft": "NFT"
+        },
+        "acceptModal": {
+          "platform": "プラットフォーム",
+          "floorDifference": "フロア差",
+          "quantity": "数量",
+          "offerPrice": "オファー価格",
+          "offer": "オファー",
+          "title": "オファーを受け入れる",
+          "acceptOffer": "オファーを受け入れる",
+          "creatorFee": "クリエイター手数料（{{fee}}%）",
+          "rabbyFee": "Rabby手数料（0%）",
+          "totalEst": "合計見込み収益",
+          "creatorFeeTips": "クリエイターの収益は売り手から支払われます。",
+          "platformFeeTips": "この手数料はOpenSeaのサービス料金です。",
+          "platformFee": "Openseaプラットフォーム手数料（{{fee}}％）",
+          "creatorFeeTips1": "クリエイターの収益は売り手によって支払われます。クリエイターの収益は強制されます。"
+        },
+        "all": "すべて",
+        "hideLowValue": "低価値のNFTを非表示にする",
+        "confirmingTx": "トランザクションを確認中",
+        "pending": "保留中",
+        "empty": "NFTはありません"
       }
     },
     "perpsDetail": {
@@ -3418,7 +3504,10 @@
       "hot": "ホット",
       "recent": "最近",
       "common": "一般",
-      "chainNotSupport": "このチェーンはサポートされていません"
+      "chainNotSupport": "このチェーンはサポートされていません",
+      "chainFilterLine": {
+        "filterAll": "すべてのチェーン"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
