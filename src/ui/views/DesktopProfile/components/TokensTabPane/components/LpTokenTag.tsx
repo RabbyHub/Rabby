@@ -11,7 +11,7 @@ const Overlay = () => {
   return (
     <div className="flex flex-col gap-8 py-6">
       <div className="flex items-center gap-4">
-        <RCLpTokenIconCC className="w-16 h-16 text-rb-neutral-secondary cursor-pointer" />
+        <RCLpTokenIconCC className="w-16 h-16 text-r-neutral-title2 cursor-pointer" />
         <div className="text-12 text-white font-semibold">
           {t('component.LpTokenTag.title')}
         </div>
@@ -23,7 +23,15 @@ const Overlay = () => {
   );
 };
 
-export const LpTokenTag = ({ className }: { className?: string }) => {
+export const LpTokenTag = ({
+  iconClassName,
+  className,
+  size = 16,
+}: {
+  iconClassName?: string;
+  className?: string;
+  size?: number;
+}) => {
   return (
     <Tooltip
       overlayClassName={cx('rectangle addressType__tooltip')}
@@ -31,11 +39,20 @@ export const LpTokenTag = ({ className }: { className?: string }) => {
       overlayInnerStyle={{
         borderRadius: '12px',
       }}
-      className={cx('w-16 h-16', className)}
+      className={className}
+      style={{ width: size, height: size }}
       overlay={<Overlay />}
       mouseEnterDelay={0}
     >
-      <RCLpTokenIconCC className="w-16 h-16 text-rb-neutral-secondary cursor-pointer" />
+      <RCLpTokenIconCC
+        width={size}
+        height={size}
+        className={cx(
+          'text-rb-neutral-secondary cursor-pointer',
+          iconClassName
+        )}
+        style={{ width: size, height: size }}
+      />
     </Tooltip>
   );
 };
