@@ -88,6 +88,7 @@ export const BridgeShowMore = ({
   openFeePopup,
   supportDirectSign = false,
   autoSuggestSlippage,
+  insufficient = false,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -107,6 +108,7 @@ export const BridgeShowMore = ({
   slippageError?: boolean;
   autoSlippage: boolean;
   isCustomSlippage: boolean;
+  insufficient?: boolean;
   setAutoSlippage: (boolean: boolean) => void;
   setIsCustomSlippage: (boolean: boolean) => void;
   type: 'swap' | 'bridge';
@@ -301,7 +303,7 @@ export const BridgeShowMore = ({
 
         {lostValueContentRender()}
 
-        {fromToken && supportDirectSign ? (
+        {!insufficient && fromToken && supportDirectSign ? (
           <DirectSignGasInfo
             supportDirectSign={supportDirectSign}
             loading={!!quoteLoading}
