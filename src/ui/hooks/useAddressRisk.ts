@@ -1,6 +1,13 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import PQueue from 'p-queue';
 import { isValidAddress } from '@ethereumjs/util';
@@ -11,6 +18,7 @@ import { IExchange } from '../component/CexSelect';
 
 import { isSameAddress, useWallet } from '../utils';
 import { KEYRING_CLASS } from 'consts';
+import { useDebouncedValue } from './useDebounceValue';
 
 const queue = new PQueue({ intervalCap: 5, concurrency: 5, interval: 1000 });
 
@@ -29,13 +37,16 @@ export const enum RiskType {
   SCAM_ADDRESS = 2,
   CONTRACT_ADDRESS = 3,
   CEX_NO_DEPOSIT = 4,
+
+  FORBIDDEN_TIP = 5,
 }
 
 const riskTypePriority = {
-  [RiskType.CEX_NO_DEPOSIT]: 1,
-  [RiskType.NEVER_SEND]: 11,
-  [RiskType.CONTRACT_ADDRESS]: 111,
-  [RiskType.SCAM_ADDRESS]: 1111,
+  [RiskType.CEX_NO_DEPOSIT]: 10e-1,
+  [RiskType.NEVER_SEND]: 10,
+  [RiskType.CONTRACT_ADDRESS]: 10e1,
+  [RiskType.SCAM_ADDRESS]: 10e3,
+  [RiskType.FORBIDDEN_TIP]: 10e4,
 };
 
 export function sortRisksDesc(a: { type: RiskType }, b: { type: RiskType }) {
@@ -44,10 +55,18 @@ export function sortRisksDesc(a: { type: RiskType }, b: { type: RiskType }) {
     riskTypePriority[a.type as keyof typeof riskTypePriority]
   );
 }
+
 export type RiskItem = { type: RiskType; value: string };
+type ForBiddenCheckParams = {
+  user_addr: string;
+  id?: string;
+  chain_id?: string;
+  to_addr: string;
+};
 export const useAddressRisks = (options: {
   toAddress: string;
   fromAddress?: string;
+  forbiddenCheck?: ForBiddenCheckParams;
   onLoadFinished?: (/* ctx: { risks: Array<RiskItem> } */) => void;
   editCex?: IExchange | null;
   scene?: 'send-poly' | 'send-nft' | 'send-token';
@@ -55,6 +74,7 @@ export const useAddressRisks = (options: {
   const {
     toAddress,
     fromAddress,
+    forbiddenCheck: input_forbiddenCheck,
     editCex,
     onLoadFinished,
     scene = 'send-poly',
@@ -72,6 +92,7 @@ export const useAddressRisks = (options: {
   const [addressDesc, setAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined
   >();
+  const [forbiddenTip, setForbiddenTip] = useState<string>('');
   const [loadingAddrDesc, setLoadingAddrDesc] = useState(true);
   const [hasNoSent, setHasNoSent] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -86,6 +107,12 @@ export const useAddressRisks = (options: {
       }
     );
     return [
+      forbiddenTip
+        ? {
+            type: RiskType.FORBIDDEN_TIP,
+            value: forbiddenTip,
+          }
+        : null,
       addressDesc?.cex?.id && !addressDesc.cex.is_deposit
         ? {
             type: RiskType.CEX_NO_DEPOSIT,
@@ -129,7 +156,7 @@ export const useAddressRisks = (options: {
           }
         : null,
     ].filter((i) => !!i) as { type: RiskType; value: string }[];
-  }, [scene, addressDesc, hasNoSent, t]);
+  }, [forbiddenTip, scene, addressDesc, hasNoSent, t]);
 
   const myTop10AccountList = useMemo(
     () =>
@@ -211,6 +238,57 @@ export const useAddressRisks = (options: {
       }
     })();
   }, [toAddress, dispatch, editCex, exchanges, wallet]);
+
+  const memoForbiddenCheck = useMemo(() => {
+    return {
+      chain_id: input_forbiddenCheck?.chain_id,
+      id: input_forbiddenCheck?.id,
+      user_addr: input_forbiddenCheck?.user_addr,
+      to_addr: input_forbiddenCheck?.to_addr,
+    };
+  }, [
+    input_forbiddenCheck?.chain_id,
+    input_forbiddenCheck?.id,
+    input_forbiddenCheck?.user_addr,
+    input_forbiddenCheck?.to_addr,
+  ]);
+  const forbiddenCheck = useDebouncedValue(memoForbiddenCheck, 300);
+
+  const reqForbiddenTip = useCallback(async () => {
+    const allValuesSet =
+      forbiddenCheck?.chain_id &&
+      forbiddenCheck?.to_addr &&
+      forbiddenCheck?.user_addr &&
+      forbiddenCheck?.id;
+    if (allValuesSet) {
+      await wallet.openapi
+        .checkTokenDepositForbidden({
+          chain_id: forbiddenCheck?.chain_id || 'eth',
+          to_addr: forbiddenCheck?.to_addr || '',
+          user_addr: forbiddenCheck?.user_addr || '',
+          id: forbiddenCheck?.id || '',
+        })
+        .then((res) => {
+          setForbiddenTip(res?.msg || '');
+        })
+        .catch((error) => {
+          console.error('checkTokenDepositForbidden error', error);
+          setForbiddenTip('');
+        });
+    } else {
+      setForbiddenTip('');
+    }
+  }, [
+    wallet,
+    forbiddenCheck?.chain_id,
+    forbiddenCheck?.to_addr,
+    forbiddenCheck?.user_addr,
+    forbiddenCheck?.id,
+  ]);
+
+  useEffect(() => {
+    reqForbiddenTip();
+  }, [reqForbiddenTip]);
 
   const riskGetRef = useRef({
     currentAddrs: [] as string[],

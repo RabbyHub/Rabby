@@ -92,25 +92,25 @@ export function ChainFilterV2Line({
       : propSelectedChain;
   }, [propSelectedChain]);
 
-  const { chainList } = useChains({
-    supportChains,
-  });
+  // const { chainList } = useChains({
+  //   supportChains,
+  // });
 
-  const { top3Chains, selectedIndex } = useMemo(() => {
-    const ret = {
-      top3Items: chainList.slice(0, SHOW_COUNT),
-      selectedIndex: -1,
-      restChainCount: 0,
-    };
+  // const { top3Chains, selectedIndex } = useMemo(() => {
+  //   const ret = {
+  //     top3Items: chainList.slice(0, SHOW_COUNT),
+  //     selectedIndex: -1,
+  //     restChainCount: 0,
+  //   };
 
-    ret.top3Items = ret.top3Items.slice(0, SHOW_COUNT);
-    ret.restChainCount = Math.max(chainList.length - ret.top3Items.length, 0);
-    return {
-      ...ret,
-      top3Chains: ret.top3Items,
-      hasAddItem: ret.top3Items.length >= SHOW_COUNT - 1,
-    };
-  }, [chainList, selectedChain]);
+  //   ret.top3Items = ret.top3Items.slice(0, SHOW_COUNT);
+  //   ret.restChainCount = Math.max(chainList.length - ret.top3Items.length, 0);
+  //   return {
+  //     ...ret,
+  //     top3Chains: ret.top3Items,
+  //     hasAddItem: ret.top3Items.length >= SHOW_COUNT - 1,
+  //   };
+  // }, [chainList, selectedChain]);
 
   // const { customRPC } = useRabbySelector((s) => ({
   //   customRPC: s.customRPC.customRPC,
@@ -177,12 +177,17 @@ export function ChainFilterV2Line({
         </div>
       ) : (
         <div
-          className="h-[32px] py-[4px] px-[8px] rounded-[8px] bg-r-neutral-card1 flex items-center justify-start cursor-pointer"
+          className={clsx(
+            'h-[32px] py-[4px] px-[8px] rounded-[8px] cursor-pointer',
+            'flex items-center justify-start',
+            'border-[1px] border-[solid] border-transparent bg-r-neutral-card1',
+            'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+          )}
           onClick={() => {
             onStartSelectChain?.();
           }}
         >
-          <div
+          {/* <div
             style={{
               minWidth: 16 * top3Chains.length - 2 * (top3Chains.length - 1),
             }}
@@ -229,7 +234,7 @@ export function ChainFilterV2Line({
                 </div>
               );
             })}
-          </div>
+          </div> */}
 
           <div className="ml-[4px]">
             <span className="text-[13px] text-r-neutral-body font-[600]">

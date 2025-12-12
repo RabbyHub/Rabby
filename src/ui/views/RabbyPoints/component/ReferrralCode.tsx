@@ -7,7 +7,7 @@ import { ReactComponent as IconDice } from 'ui/assets/rabby-points/dice-cc.svg';
 import { useRabbyPointsInvitedCodeCheck } from '../hooks';
 import { customAlphabet } from 'nanoid';
 import { useTranslation } from 'react-i18next';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 
 const StyledInput = styled(Input)`
   border-radius: 8px;
@@ -43,7 +43,7 @@ export const SetReferralCode = ({
 
   const changedRef = useRef(false);
 
-  const debounceInput = useDebounceValue(input, 200);
+  const debounceInput = useSyncStaleValue(input, 200);
 
   const { codeStatus, codeLoading } = useRabbyPointsInvitedCodeCheck(
     debounceInput
