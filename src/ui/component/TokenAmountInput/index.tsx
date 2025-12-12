@@ -154,8 +154,8 @@ const TokenAmountInput = ({
       : findChainByServerID(chainServerId);
 
     setNetVariedChainServerId((prev) => ({
-      mainnet: foundChainItem?.isTestnet ? prev.mainnet : chainServerId || '',
-      testnet: foundChainItem?.isTestnet ? chainServerId || '' : prev.testnet,
+      mainnet: foundChainItem?.isTestnet ? '' : chainServerId || '',
+      testnet: foundChainItem?.isTestnet ? chainServerId || '' : '',
     }));
   }, []);
 
@@ -430,7 +430,7 @@ const TokenAmountInput = ({
         disableItemCheck={disableItemCheck}
         showCustomTestnetAssetList
         placeholder={placeholder}
-        chainId={mainnetChainServerId}
+        chainId={testnetChainServerId || mainnetChainServerId}
         getContainer={getContainer}
         onStartSelectChain={() => {
           chainSelectorRef.current?.toggleShow(true);
