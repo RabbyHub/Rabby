@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const tsImportPluginFactory = require('ts-import-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
@@ -13,6 +14,7 @@ const createStyledComponentsTransformer = require('typescript-plugin-styled-comp
   .default;
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
+const useForkTsChecker = process.env.FORK_TS_CHECKER === 'enable';
 
 const paths = require('./paths');
 
@@ -55,6 +57,16 @@ const config = {
     filename: '[name].js',
     publicPath: '/',
   },
+  ...(useForkTsChecker
+    ? {
+        cache: {
+          type: 'filesystem',
+          buildDependencies: {
+            config: [__filename],
+          },
+        },
+      }
+    : {}),
   module: {
     rules: [
       {
@@ -66,6 +78,13 @@ const config = {
             sideEffects: true,
             test: /[\\/]pageProvider[\\/]index.ts/,
             loader: 'ts-loader',
+            ...(useForkTsChecker
+              ? {
+                  options: {
+                    transpileOnly: true,
+                  },
+                }
+              : {}),
           },
           {
             test: /[\\/]ui[\\/]index.tsx/,
@@ -112,6 +131,7 @@ const config = {
           {
             loader: 'ts-loader',
             options: {
+              ...(useForkTsChecker ? { transpileOnly: true } : {}),
               getCustomTransformers: () => ({
                 before: [
                   // @see https://github.com/Igorbek/typescript-plugin-styled-components#ts-loader
@@ -202,7 +222,18 @@ const config = {
   plugins: [
     new ESLintWebpackPlugin({
       extensions: ['ts', 'tsx', 'js', 'jsx'],
+      ...(useForkTsChecker ? { lintDirtyModulesOnly: true } : {}),
     }),
+    ...(useForkTsChecker
+      ? [
+          new ForkTsCheckerWebpackPlugin({
+            async: isEnvDevelopment,
+            typescript: {
+              memoryLimit: 2048,
+            },
+          }),
+        ]
+      : []),
     // new AntdDayjsWebpackPlugin(),
     new HtmlWebpackPlugin({
       inject: true,
