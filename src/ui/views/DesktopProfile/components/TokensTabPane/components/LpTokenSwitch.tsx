@@ -9,6 +9,14 @@ const LpTokenSwitchWrapper = styled.div`
   .ant-switch-checked {
     background-color: var(--r-green-default) !important;
   }
+  .ant-switch:focus {
+    box-shadow: none !important;
+  }
+
+  .ant-switch:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 `;
 
 export const LpTokenSwitch = ({

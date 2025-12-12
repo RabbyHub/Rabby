@@ -860,7 +860,9 @@ function CommonTokenItem(props: {
                   >
                     {getTokenSymbol(token)}
                   </span>
-                  {isLpToken(token) && <LpTokenTag />}
+                  {isLpToken(token) && (
+                    <LpTokenTag size={14} iconClassName="text-r-neutral-foot" />
+                  )}
                   <ExchangeLogos cexIds={token.cex_ids || []} />
                 </div>
               ) : (
@@ -868,7 +870,9 @@ function CommonTokenItem(props: {
                   <span className="symbol_click" onClick={onClickTokenSymbol}>
                     {getTokenSymbol(token)}
                   </span>
-                  {isLpToken(token) && <LpTokenTag />}
+                  {isLpToken(token) && (
+                    <LpTokenTag size={14} iconClassName="text-r-neutral-foot" />
+                  )}
                 </div>
               )}
               <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
