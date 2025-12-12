@@ -12,6 +12,7 @@ export interface Props {
   onFocus?: () => void;
   onBlur?: () => void;
   className?: string;
+  placeholder?: string;
 }
 
 const InputStyled = styled(Input)`
@@ -21,6 +22,11 @@ const InputStyled = styled(Input)`
   }
   &:hover {
     border-color: var(--r-blue-default, #7084ff) !important;
+  }
+
+  input::placeholder {
+    font-size: 12px;
+    color: var(--r-neutral-foot, #6a7587);
   }
 `;
 
