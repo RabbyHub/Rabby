@@ -93,7 +93,7 @@ import {
 // import { SendSlider } from '@/ui/component/SendLike/Slider';
 import { appIsDebugPkg } from '@/utils/env';
 import { add, debounce } from 'lodash';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
 import { ChainSelectorInSend } from './components/ChainSelectorInSend';
 
@@ -456,6 +456,19 @@ const SendToken = () => {
   const { loading: loadingRisks, risks } = useAddressRisks({
     toAddress: toAddress || '',
     fromAddress: currentAccount?.address,
+    forbiddenCheck: useMemo(() => {
+      return {
+        user_addr: currentAccount?.address || '',
+        to_addr: toAddress || '',
+        chain_id: chainItem?.serverId,
+        id: currentToken?.id || '',
+      };
+    }, [
+      currentAccount?.address,
+      toAddress,
+      chainItem?.serverId,
+      currentToken?.id,
+    ]),
     onLoadFinished: useCallback(() => {
       setAgreeRequiredChecks((prev) => ({ ...prev, forToAddress: false }));
     }, []),
@@ -920,7 +933,7 @@ const SendToken = () => {
     to: toAddress,
     amount: paramAmount || '',
   };
-  const amount = useDebounceValue(form.getFieldValue('amount'), 300);
+  const amount = useSyncStaleValue(form.getFieldValue('amount'), 300);
   const address = form.getFieldValue('to');
 
   useEffect(() => {

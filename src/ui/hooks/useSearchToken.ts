@@ -11,7 +11,7 @@ import { isSameAddress } from '../utils';
 import { requestOpenApiWithChainId } from '../utils/openapi';
 import { findChainByServerID } from '@/utils/chain';
 import { Chain } from '@debank/common';
-import useDebounceValue from './useDebounceValue';
+import useSyncStaleValue from './useDebounceValue';
 import { useRefState } from './useRefState';
 import { safeBuildRegExp } from '@/utils/string';
 
@@ -159,7 +159,7 @@ export function useFindCustomToken(input?: {
     setRefState: setSearchKeyword,
     stateRef: skRef,
   } = useRefState('');
-  const debouncedSearchKeyword = useDebounceValue(searchKeyword, 150);
+  const debouncedSearchKeyword = useSyncStaleValue(searchKeyword, 150);
   const { customize, blocked } = useRabbySelector(
     (state) => state.account.tokens
   );

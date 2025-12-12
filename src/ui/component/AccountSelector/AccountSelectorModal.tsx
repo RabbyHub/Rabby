@@ -10,7 +10,7 @@ import IconSearch from 'ui/assets/search.svg';
 
 import { Account } from '@/background/service/preference';
 import { useAccounts } from '@/ui/hooks/useAccounts';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { isSameAccount } from '@/utils/account';
 import { flatten } from 'lodash';
@@ -107,7 +107,7 @@ export const AccountSelectorModal = ({
   const [searchKeyword, setSearchKeyword] = React.useState(
     addressSortStore?.search || ''
   );
-  const debouncedSearchKeyword = useDebounceValue(searchKeyword, 250);
+  const debouncedSearchKeyword = useSyncStaleValue(searchKeyword, 250);
 
   const {
     accountList,
