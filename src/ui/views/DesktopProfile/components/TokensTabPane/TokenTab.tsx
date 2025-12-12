@@ -49,7 +49,7 @@ export const TokenTab = ({
     setIsInputActive(false);
   };
 
-  const { selectedTab, onTabChange } = useSwitchNetTab();
+  const { selectedTab, onTabChange, isShowTestnet } = useSwitchNetTab();
 
   const [searchValue, setSearchValue] = React.useState('');
 
@@ -127,10 +127,12 @@ export const TokenTab = ({
               onLpTokenModeChange={setLpTokenMode}
             />
           )}
-          <MainnetTestnetSwitchTabs
-            value={selectedTab}
-            onTabChange={onTabChange}
-          />
+          {isShowTestnet && (
+            <MainnetTestnetSwitchTabs
+              value={selectedTab}
+              onTabChange={onTabChange}
+            />
+          )}
         </div>
       </div>
 
