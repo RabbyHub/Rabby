@@ -855,7 +855,7 @@ function CommonTokenItem(props: {
               {showExchangeLogos ? (
                 <div className="flex overflow-visible">
                   <span
-                    className="symbol_click overflow-visible"
+                    className="symbol_click overflow-visible flex-1"
                     onClick={onClickTokenSymbol}
                   >
                     {getTokenSymbol(token)}
@@ -867,7 +867,10 @@ function CommonTokenItem(props: {
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
-                  <span className="symbol_click" onClick={onClickTokenSymbol}>
+                  <span
+                    className="symbol_click flex-1"
+                    onClick={onClickTokenSymbol}
+                  >
                     {getTokenSymbol(token)}
                   </span>
                   {isLpToken(token) && (
