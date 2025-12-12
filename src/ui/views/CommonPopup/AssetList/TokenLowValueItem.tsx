@@ -79,7 +79,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
           <TokenTable
             list={list}
             virtual={{
-              height: 403,
+              height: 430,
               itemSize: 68,
             }}
           />
