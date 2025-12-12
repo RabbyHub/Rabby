@@ -1850,6 +1850,7 @@
           "lowValueAssets_0": "{{count}} low value token",
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_other": "{{count}} low value tokens",
+          "searchToken": "Search Token",
           "lowValueDefis": "{{count}} low value defis"
         },
         "noAssets": "No assets",
@@ -3201,7 +3202,9 @@
           "wallet": "Wallet",
           "allTokenMode": "All Token Mode",
           "foldProtocols": "Fold {{count}} Protocols",
-          "unfoldProtocols": "Unfold {{count}} Protocols"
+          "unfoldProtocols": "Unfold {{count}} Protocols",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "Unfold {{count}} Defis"
         },
         "hidden": {
           "tokensWithZeroBalance": "Hide $0 tokens",
@@ -3210,7 +3213,9 @@
           "hideSmall": "Hide tokens with small balances.",
           "hideSmallDesc": "Tokens with small balances are not displayed.",
           "hideProtocolsWithSmallDeposits": "Hide protocols with small deposits.",
-          "hideProtocolsWithSmallDepositsDesc": "Protocols with small deposits are not displayed."
+          "hideProtocolsWithSmallDepositsDesc": "Protocols with small deposits are not displayed.",
+          "hideDefiWithSmallDeposits": "Hide Defis with small deposits.",
+          "hideDefiWithSmallDepositsDesc": "Defis with small deposits are not displayed."
         },
         "table": {
           "token": "Token",
@@ -3235,7 +3240,8 @@
       "tabs": {
         "tokens": "Tokens",
         "transactions": "Transactions",
-        "approvals": "Approvals"
+        "approvals": "Approvals",
+        "difi": "Defi"
       },
       "nft": {
         "all": "All",
@@ -3573,10 +3579,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
