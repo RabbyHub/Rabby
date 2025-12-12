@@ -1499,7 +1499,9 @@
           "summaryDescription": "프로토콜의 모든 자산(예: LP tokens)은 통계 계산을 위해 기본 자산으로 해결됩니다.",
           "balanceValue": "잔액 / 가치",
           "review": "리뷰",
-          "noTokens": "토큰 없음"
+          "noTokens": "토큰 없음",
+          "searchToken": "토큰 검색",
+          "lowValueDefis": "{{count}} 저가 가치 디파이"
         },
         "AddMainnetToken": {
           "title": "맞춤형 토큰 추가",
@@ -1539,7 +1541,8 @@
         "searchPlaceholder": "토큰",
         "price": "가격",
         "side": "측면",
-        "openInTab": "탭에서 열기"
+        "openInTab": "탭에서 열기",
+        "searchTokenPlaceholder": "토큰 검색"
       },
       "hd": {
         "ledger": {
@@ -3174,7 +3177,10 @@
           "allTokenMode": "모든 토큰 모드",
           "wallet": "지갑",
           "unfoldProtocols": "{{count}} 프로토콜 펼치기",
-          "foldProtocols": "Fold {{count}} 프로토콜"
+          "foldProtocols": "Fold {{count}} 프로토콜",
+          "lpToken": "LP-Token",
+          "unfoldDifis": "Unfold {{count}} Defis",
+          "foldDifis": "Fold {{count}} Defis"
         },
         "hidden": {
           "showAll": "모두 보기",
@@ -3183,7 +3189,9 @@
           "hideProtocolsWithSmallDepositsDesc": "소액 예치가 있는 프로토콜은 표시되지 않습니다.",
           "tokensWithZeroBalance": "$0 토큰 숨기기",
           "hideSmall": "작은 잔액의 토큰 숨기기.",
-          "tokensWithZeroBalanceDesc": "$0 잔액의 토큰은 숨겨져 있습니다."
+          "tokensWithZeroBalanceDesc": "$0 잔액의 토큰은 숨겨져 있습니다.",
+          "hideDefiWithSmallDeposits": "작은 예치금으로 Defis 숨기기.",
+          "hideDefiWithSmallDepositsDesc": "소액 예치금이 있는 Defis는 표시되지 않습니다."
         },
         "table": {
           "token": "토큰",
@@ -3208,7 +3216,8 @@
       "tabs": {
         "approvals": "승인",
         "transactions": "거래",
-        "tokens": "토큰"
+        "tokens": "토큰",
+        "difi": "Defi"
       },
       "nft": {
         "message": {
@@ -3584,6 +3593,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "주소 추가"
+    },
+    "LpTokenTag": {
+      "title": "이는 유동성 공급자(LP) 토큰입니다.",
+      "description": "LP 토큰은 자산을 예치한 DeFi 프로토콜에서 발행됩니다. 이들은 해당 자산의 증명 역할을 하지만, 그 가치는 총 잔액에 포함되지 않습니다."
     }
   },
   "global": {
