@@ -64,11 +64,10 @@ export const AssetList = ({
   const [showCustomizedTokens, setShowCustomizedTokens] = React.useState(false);
   const wallet = useWallet();
   const scroll = useScroll(containerRef);
-  console.log(scroll);
 
   return (
     <div ref={containerRef} className="pt-[12px] h-full overflow-auto">
-      <div className="px-[20px]">
+      <div className="px-[20px] pb-[12px]">
         {isShowTestnet ? (
           <NetSwitchTabs
             value={selectedTab}
@@ -146,10 +145,12 @@ export const AssetList = ({
           onClose={onClose}
         />
       </div>
-      <footer className="h-[69px] mt-[8px]">
+      <footer
+        className={clsx('h-[69px] mt-[8px]', scroll?.top ? 'hidden' : '')}
+      >
         <div
           className={clsx(
-            scroll?.top ? 'static' : 'fixed bottom-0 left-0 right-0',
+            'fixed bottom-0 left-0 right-0',
             'px-[20px] py-[14px]',
             'border-t-[0.5px] border-solid border-rabby-neutral-line',
             'bg-r-neutral-bg-2'
