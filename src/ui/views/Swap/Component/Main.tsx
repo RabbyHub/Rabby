@@ -46,7 +46,7 @@ import { SwapTokenItem } from './Token';
 import { BridgeSwitchBtn } from '../../Bridge/Component/BridgeSwitchButton';
 import { BridgeShowMore } from '../../Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -668,7 +668,7 @@ export const Main = () => {
     ]
   );
 
-  const noQuote = useDebounceValue(noQuoteOrigin, 10);
+  const noQuote = useSyncStaleValue(noQuoteOrigin, 10);
 
   useEffect(() => {
     if (noQuote) {

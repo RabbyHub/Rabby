@@ -20,7 +20,7 @@ import { useRequest } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 // import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { SortInput } from './SortInput';
@@ -82,7 +82,7 @@ const AddressManagement = () => {
   const [searchKeyword, setSearchKeyword] = React.useState(
     addressSortStore?.search || ''
   );
-  const debouncedSearchKeyword = useDebounceValue(searchKeyword, 250);
+  const debouncedSearchKeyword = useSyncStaleValue(searchKeyword, 250);
   const wallet = useWallet();
 
   const {

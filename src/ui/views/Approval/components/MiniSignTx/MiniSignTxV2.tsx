@@ -35,7 +35,7 @@ import { signatureStore } from '@/ui/component/MiniSignV2/state';
 import { MiniSecurityHeader } from '@/ui/component/MiniSignV2/components';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { ModalProps } from 'antd';
 
@@ -66,7 +66,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     }
     return false;
   }, [status, ctx?.mode]);
-  const visible = useDebounceValue(_visible, 100);
+  const visible = useSyncStaleValue(_visible, 100);
   const loading =
     status === 'prefetching' || status === 'signing' || !ctx?.txsCalc.length;
 

@@ -31,7 +31,7 @@ import {
 import { groupBy, sortBy, flatten, debounce } from 'lodash';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import IconUnknownToken from 'ui/assets/token-default.svg';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { HandleClickTableRow } from './components/Table';
 import {
@@ -142,7 +142,7 @@ export function useApprovalsPage(options?: {
     [filterType, skContracts, skAssets]
   );
 
-  const debouncedSearchKw = useDebounceValue(searchKw, 250);
+  const debouncedSearchKw = useSyncStaleValue(searchKw, 250);
 
   useLayoutEffect(() => {
     const vGridRef =
