@@ -3,6 +3,7 @@ export { ReactComponent as RcIconJumpCC } from './jump-cc.svg';
 export { ReactComponent as RcIconExternalCC } from './external-cc.svg';
 export { ReactComponent as RcIconExternal1CC } from './external-1-cc.svg';
 export { ReactComponent as RcIconFullscreenCC } from './fullscreen-cc.svg';
+export { ReactComponent as RcIconFullscreen1CC } from './fullscreen-1-cc.svg';
 export { ReactComponent as RcIconQrCodeCC } from './qr-code-cc.svg';
 export { ReactComponent as RcIconSettingCC } from './setting.svg';
 export { ReactComponent as RcIconArrowRightCC } from './arrow-right-cc.svg';

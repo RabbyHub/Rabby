@@ -1850,7 +1850,8 @@
           "lowValueAssets_0": "{{count}} low value token",
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_other": "{{count}} low value tokens",
-          "searchToken": "Search Token"
+          "searchToken": "Search Token",
+          "lowValueDefis": "{{count}} low value defis"
         },
         "noAssets": "No assets",
         "blockLinkText": "Search address to block token",
@@ -1886,7 +1887,8 @@
         },
         "noTestnetAssets": "No Custom Network Assets",
         "addTokenEntryText": "Token",
-        "openInTab": "Open in tab"
+        "openInTab": "Open in tab",
+        "searchTokenPlaceholder": "Search Token"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",
@@ -3523,7 +3525,10 @@
       "hot": "Hot",
       "common": "Common",
       "recent": "Recent",
-      "chainNotSupport": "This chain is not supported"
+      "chainNotSupport": "This chain is not supported",
+      "chainFilterLine": {
+        "filterAll": "All Chains"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

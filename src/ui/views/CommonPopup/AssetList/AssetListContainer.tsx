@@ -15,6 +15,9 @@ import { Input } from 'antd';
 import { useFilterProtocolList } from './useFilterProtocolList';
 import { useAppChain } from '@/ui/hooks/useAppChain';
 import { useCommonPopupView } from '@/ui/utils';
+import clsx from 'clsx';
+import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   className?: string;
@@ -31,6 +34,7 @@ export const AssetListContainer: React.FC<Props> = ({
   onEmptyAssets,
   isTestnet = false,
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = React.useState<string>('');
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
@@ -59,9 +63,11 @@ export const AssetListContainer: React.FC<Props> = ({
   const { isLoading: isSearching, list } = useSearchToken(
     currentAccount?.address,
     search,
-    selectChainId ? selectChainId : undefined,
-    true,
-    isTestnet
+    {
+      chainServerId: selectChainId ? selectChainId : undefined,
+      withBalance: true,
+      isTestnet: isTestnet,
+    }
   );
   const displayTokenList = useMemo(() => {
     const result = search ? list : tokenList;
@@ -163,23 +169,45 @@ export const AssetListContainer: React.FC<Props> = ({
   return (
     <div className={className}>
       <div className="flex items-center justify-between gap-x-12 widget-has-ant-input">
-        <TokenSearchInput
-          ref={inputRef}
-          onSearch={handleOnSearch}
-          onFocus={() => {
-            setIsFocus(true);
-          }}
-          onBlur={() => {
-            setIsFocus(false);
-          }}
-          className={isFocus || search ? 'w-[360px]' : 'w-[160px]'}
-        />
-        {isFocus || search ? null : <AddTokenEntry ref={addTokenEntryRef} />}
+        <div className="relative w-full leading-[1]">
+          <TokenSearchInput
+            ref={inputRef}
+            onSearch={handleOnSearch}
+            onFocus={() => {
+              setIsFocus(true);
+            }}
+            onBlur={() => {
+              setIsFocus(false);
+            }}
+            className="w-full"
+            // className={isFocus || search ? 'w-[360px]' : 'w-[160px]'}
+          />
+          {isFocus || search ? null : (
+            <div
+              className={clsx(
+                'absolute top-0 left-0 w-full h-full z-10',
+                'flex items-center justify-center gap-[6px]',
+                'border-[0.5px] border-rabby-neutral-line rounded-[6px]',
+                'bg-r-neutral-card1',
+                'hover:border-rabby-blue-default'
+              )}
+              onClick={() => {
+                inputRef.current?.focus();
+              }}
+            >
+              <SearchSVG className="w-[14px] h-[14px]" />
+              <div className="text-r-neutral-foot text-[12px] leading-[14px]">
+                {t('page.dashboard.assets.searchTokenPlaceholder')}
+              </div>
+            </div>
+          )}
+        </div>
+        {/* {isFocus || search ? null : <AddTokenEntry ref={addTokenEntryRef} />} */}
       </div>
       {isTokensLoading || isSearching ? (
         <TokenListSkeleton />
       ) : (
-        <div className="mt-18">
+        <div className="mt-[12px]">
           <HomeTokenList
             list={sortTokens}
             onFocusInput={handleFocusInput}
