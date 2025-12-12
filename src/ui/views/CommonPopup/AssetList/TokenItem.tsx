@@ -23,7 +23,7 @@ const LpContainer = styled.div`
   align-items: center;
   gap: 2px;
   .inner-symbol {
-    max-width: calc(100% - 13.5px);
+    max-width: calc(100% - 24px);
   }
 `;
 
