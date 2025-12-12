@@ -42,11 +42,11 @@ export const enum RiskType {
 }
 
 const riskTypePriority = {
-  [RiskType.FORBIDDEN_TIP]: 10e-1,
-  [RiskType.CEX_NO_DEPOSIT]: 10,
-  [RiskType.NEVER_SEND]: 10e1,
-  [RiskType.CONTRACT_ADDRESS]: 10e3,
-  [RiskType.SCAM_ADDRESS]: 10e4,
+  [RiskType.CEX_NO_DEPOSIT]: 10e-1,
+  [RiskType.NEVER_SEND]: 10,
+  [RiskType.CONTRACT_ADDRESS]: 10e1,
+  [RiskType.SCAM_ADDRESS]: 10e3,
+  [RiskType.FORBIDDEN_TIP]: 10e4,
 };
 
 export function sortRisksDesc(a: { type: RiskType }, b: { type: RiskType }) {
