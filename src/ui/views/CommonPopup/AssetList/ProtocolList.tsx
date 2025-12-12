@@ -163,7 +163,7 @@ export const ProtocolItem = ({
     }
   }, [isExpand, refreshRealTimeProtocol]);
 
-  const { actions } = useGetDappActions({
+  const actions = useGetDappActions({
     protocol,
   });
 
@@ -252,9 +252,9 @@ export const ProtocolItem = ({
                     'border border-rabby-blue-default px-[3px] py-[1px]',
                     'text-r-blue-default text-[11px] leading-[13px] rounded-[4px]'
                   )}
-                  key={action.title}
+                  key={action}
                 >
-                  {action.title}
+                  {action}
                 </div>
               ))}
             </div>
