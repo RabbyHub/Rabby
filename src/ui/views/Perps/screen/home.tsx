@@ -87,6 +87,7 @@ export const Perps: React.FC = () => {
     perpFee,
 
     judgeIsUserAgentIsExpired,
+    handleActionApproveStatus,
   } = usePerpsState({
     setDeleteAgentModalVisible,
   });
@@ -330,6 +331,7 @@ export const Perps: React.FC = () => {
 
   const handleCloseAllPosition = useMemoizedFn(async () => {
     try {
+      await handleActionApproveStatus();
       const sdk = getPerpsSDK();
       for (const item of positionAndOpenOrders) {
         await handleClosePosition({
@@ -669,7 +671,7 @@ export const Perps: React.FC = () => {
         handleSignDepositDirect={handleSignDepositDirect}
       />
 
-      {Boolean(miniSignTypeData.data.length) && (
+      {/* {Boolean(miniSignTypeData.data.length) && (
         <MiniTypedDataApproval
           txs={miniSignTypeData.data}
           account={miniSignTypeData.account || undefined}
@@ -695,7 +697,7 @@ export const Perps: React.FC = () => {
           directSubmit
           canUseDirectSubmitTx
         />
-      )}
+      )} */}
 
       <NewUserProcessPopup
         visible={newUserProcessVisible}

@@ -18,9 +18,13 @@ import { useInterval, useMemoizedFn } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { message, Modal } from 'antd';
 import { MiniTypedData } from '../../Approval/components/MiniSignTypedData/useTypedDataTask';
-import { useStartDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import {
+  supportedDirectSign,
+  useStartDirectSigning,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 import { create, maxBy, minBy } from 'lodash';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
 type SignActionType = 'approveAgent' | 'approveBuilderFee';
 
 interface SignAction {
@@ -140,6 +144,9 @@ export const usePerpsState = ({
 }) => {
   const dispatch = useRabbyDispatch();
 
+  /**
+   * @deprecated
+   */
   const [
     miniSignTypeData,
     setMiniSignTypeData,
@@ -147,9 +154,16 @@ export const usePerpsState = ({
     data: [],
     account: null,
   });
+
+  /**
+   * @deprecated
+   */
   const startDirectSigning = useStartDirectSigning();
   const deleteAgentCbRef = useRef<(() => Promise<void>) | null>(null);
 
+  /**
+   * @deprecated
+   */
   const clearMiniSignTypeData = useMemoizedFn(() => {
     setMiniSignTypeData({
       data: [],
@@ -157,11 +171,17 @@ export const usePerpsState = ({
     });
   });
 
+  /**
+   * @deprecated
+   */
   const miniSignPromiseRef = useRef<{
     resolve: (result: string[]) => void;
     reject: (error: any) => void;
   } | null>(null);
 
+  /**
+   * @deprecated
+   */
   const waitForMiniSignResult = useMemoizedFn(
     (): Promise<string[]> => {
       return new Promise((resolve, reject) => {
@@ -170,6 +190,9 @@ export const usePerpsState = ({
     }
   );
 
+  /**
+   * @deprecated
+   */
   const handleMiniSignResolve = useMemoizedFn((result: string[]) => {
     if (miniSignPromiseRef.current) {
       clearMiniSignTypeData();
@@ -178,6 +201,9 @@ export const usePerpsState = ({
     }
   });
 
+  /**
+   * @deprecated
+   */
   const handleMiniSignReject = useMemoizedFn((error?: any) => {
     if (miniSignPromiseRef.current) {
       clearMiniSignTypeData();
@@ -185,6 +211,7 @@ export const usePerpsState = ({
       miniSignPromiseRef.current = null;
     }
   });
+
   const perpsState = useRabbySelector((state) => state.perps);
   const {
     isInitialized,
@@ -344,78 +371,56 @@ export const usePerpsState = ({
     }
   );
 
-  const invoke = useEnterPassphraseModal('address');
-
-  console.log('mini sign', miniSignTypeData);
-
-  const executeSignatures = useMemoizedFn(
-    async (signActions: SignAction[], account: Account): Promise<void> => {
-      console.log('executeSignatures', signActions, account);
-      if (!signActions || signActions.length === 0) {
+  const executeSignTypedData = useMemoizedFn(
+    async (actions: any[], account: Account) => {
+      if (!actions || actions.length === 0) {
         throw new Error('no signature, try later');
       }
 
+      let result: string[] = [];
       await dispatch.account.changeAccountAsync(account);
-      const isLocalWallet =
-        account.type === KEYRING_CLASS.PRIVATE_KEY ||
-        account.type === KEYRING_CLASS.MNEMONIC;
 
-      const useMiniApprovalSign =
-        account.type === KEYRING_CLASS.HARDWARE.ONEKEY ||
-        account.type === KEYRING_CLASS.HARDWARE.LEDGER;
-
-      console.log('useMiniApprovalSign', useMiniApprovalSign, isLocalWallet);
-
-      if (useMiniApprovalSign) {
-        setMiniSignTypeData({
-          data: signActions.map((item) => {
-            return {
-              data: item.action,
-              from: account.address,
-              version: 'V4',
-            };
-          }),
-          account,
-        });
-        console.log('startDirectSigning');
-        startDirectSigning();
-        // avoid the mini sign modal is not shown
-        setTimeout(() => {
-          startDirectSigning();
-        }, 500);
-        // await MiniTypedDataApproval in home page
-        console.log('waitForMiniSignResult start');
-        const result = await waitForMiniSignResult().catch((error) => {
-          console.log('Mini sign error', error);
-          throw error;
-        });
-        console.log('Mini sign result', result);
-        result.forEach((item, idx) => {
-          signActions[idx].signature = item;
-        });
+      if (supportedDirectSign(account.type)) {
+        // typedDataSignatureStore.close();
+        result = await typedDataSignatureStore.start(
+          {
+            txs: actions.map((item) => {
+              return {
+                data: item,
+                from: account.address,
+                version: 'V4',
+              };
+            }),
+            config: {
+              account: account,
+            },
+            wallet,
+          },
+          {}
+        );
+        typedDataSignatureStore.close();
       } else {
-        for (const actionObj of signActions) {
-          let signature = '';
-
-          if (isLocalWallet) {
-            if (account.type === KEYRING_TYPE.HdKeyring) {
-              await invoke(account.address);
-            }
-            signature = await wallet.signTypedData(
-              account.type,
-              account.address,
-              actionObj.action,
-              { version: 'V4' }
-            );
-          } else {
-            signature = await wallet.sendRequest({
-              method: 'eth_signTypedDataV4',
-              params: [account.address, JSON.stringify(actionObj.action)],
-            });
-          }
-          actionObj.signature = signature;
+        for (const actionObj of actions) {
+          const signature = await wallet.sendRequest<string>({
+            method: 'eth_signTypedDataV4',
+            params: [account.address, JSON.stringify(actionObj.action)],
+          });
+          result.push(signature);
         }
       }
+      return result;
+    }
+  );
+
+  const executeSignatures = useMemoizedFn(
+    async (signActions: SignAction[], account: Account): Promise<void> => {
+      const result = await executeSignTypedData(
+        signActions.map((item) => item.action),
+        account
+      );
+      signActions.forEach((item, idx) => {
+        item.signature = result[idx];
+      });
     }
   );
 
@@ -572,13 +577,9 @@ export const usePerpsState = ({
   const isHandlingApproveStatus = useRef(false);
 
   const handleActionApproveStatus = useMemoizedFn(async () => {
-    console.log(
-      'handleActionApproveStatus called',
-      isHandlingApproveStatus.current
-    );
     try {
       if (isHandlingApproveStatus.current) {
-        return;
+        throw new Error('Already handling approve status');
       }
       isHandlingApproveStatus.current = true;
 
@@ -612,7 +613,6 @@ export const usePerpsState = ({
         return;
       }
 
-      console.log('handleActionApproveStatus signActions', signActions);
       await executeSignatures(signActions, currentPerpsAccount);
 
       // try {
@@ -761,52 +761,12 @@ export const usePerpsState = ({
           destination: currentPerpsAccount.address,
         });
         console.log('withdraw action', action);
-        const useMiniApprovalSign =
-          currentPerpsAccount.type === KEYRING_CLASS.HARDWARE.ONEKEY ||
-          currentPerpsAccount.type === KEYRING_CLASS.HARDWARE.LEDGER;
-        let signature = '';
-        if (
-          currentPerpsAccount.type === KEYRING_CLASS.PRIVATE_KEY ||
-          currentPerpsAccount.type === KEYRING_CLASS.MNEMONIC
-        ) {
-          if (currentPerpsAccount.type === KEYRING_TYPE.HdKeyring) {
-            await invoke(currentPerpsAccount.address);
-          }
-          signature = await wallet.signTypedData(
-            currentPerpsAccount.type,
-            currentPerpsAccount.address.toLowerCase(),
-            action as any,
-            { version: 'V4' }
-          );
-        } else if (useMiniApprovalSign) {
-          setMiniSignTypeData({
-            data: [
-              {
-                data: action,
-                from: currentPerpsAccount.address,
-                version: 'V4',
-              },
-            ],
-            account: currentPerpsAccount,
-          });
-          startDirectSigning();
-          // avoid the mini sign modal is not shown
-          setTimeout(() => {
-            startDirectSigning();
-          }, 500);
-          try {
-            const result = await waitForMiniSignResult();
-            signature = result[0];
-          } catch (error) {
-            console.error('Failed to get mini sign result:', error);
-            return false;
-          }
-        } else {
-          signature = await wallet.sendRequest({
-            method: 'eth_signTypedDataV4',
-            params: [currentPerpsAccount.address, JSON.stringify(action)],
-          });
-        }
+
+        const [signature] = await executeSignTypedData(
+          [action],
+          currentPerpsAccount
+        );
+
         console.log('withdraw signature', signature);
         const res = await sdk.exchange.sendWithdraw({
           action: action.message as any,

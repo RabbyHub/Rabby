@@ -159,17 +159,11 @@ export const PerpsSingleCoin = () => {
     userFills,
     hasPermission,
     handleActionApproveStatus,
-    miniSignTypeData,
-    clearMiniSignTypeData,
-    handleMiniSignResolve,
-    handleMiniSignReject,
     accountNeedApproveAgent,
     accountNeedApproveBuilderFee,
   } = usePerpsPosition({
     setCurrentTpOrSl,
   });
-
-  console.log('miniSignTypeData in SingleCoin', miniSignTypeData);
 
   const hasPosition = useMemo(() => {
     return !!currentPosition;
@@ -907,28 +901,6 @@ export const PerpsSingleCoin = () => {
           </>
         )}
       </div>
-
-      {Boolean(miniSignTypeData.data.length) && (
-        <MiniTypedDataApproval
-          txs={miniSignTypeData.data}
-          account={miniSignTypeData.account || undefined}
-          noShowModalLoading={true}
-          onResolve={(txs) => {
-            handleMiniSignResolve(txs);
-          }}
-          onReject={() => {
-            handleMiniSignReject(new Error('User Rejected'));
-          }}
-          onClose={() => {
-            handleMiniSignReject(new Error('User closed'));
-          }}
-          onPreExecError={() => {
-            handleMiniSignReject(new Error('Pre execution error'));
-          }}
-          directSubmit
-          canUseDirectSubmitTx
-        />
-      )}
 
       <PerpsOpenPositionPopup
         currentAssetCtx={currentAssetCtx}
