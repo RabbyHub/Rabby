@@ -306,118 +306,37 @@ export const useDappAction = (
   };
 };
 
-const validateDappAction = async ({
-  currentAccount,
-  data,
-  chain,
-  isErc20Contract,
-}: {
-  currentAccount: Account;
-  data?: WithdrawAction;
-  chain?: string;
-  isErc20Contract: (
-    address: string,
-    serverId?: string
-  ) => Promise<boolean | undefined>;
-}) => {
-  if (!data || !chain || !currentAccount) {
-    return false;
-  }
-
-  const normalizedFunc = getMethodDesc(data.func);
-  const abi = parseAbiItem(normalizedFunc) as AbiFunction;
-  const isAddressArray = abi.inputs.map((item) => item.type === 'address');
-  const addresses = data.str_params
-    ? data.str_params
-        ?.map((item, index) => (isAddressArray[index] ? (item as string) : ''))
-        ?.filter((item) => !!item)
-    : [];
-
-  const validate = async (addr: string) => {
-    if (currentAccount?.address && isSameAddress(currentAccount.address, addr))
-      return true;
-    if (isWhitelistAddress(addr)) return true;
-    const isErc20 = await isErc20Contract(addr, chain);
-    return isErc20;
-  };
-
-  if (
-    data?.need_approve?.to &&
-    !isWhitelistSpender(data.need_approve?.to, chain)
-  ) {
-    return false;
-  }
-  const isValidMethod = !isBlacklistMethod(data.func);
-  if (!isValidMethod) {
-    return false;
-  }
-  if (!addresses?.length) {
-    return true;
-  }
-  const results = await Promise.all(addresses.map((addr) => validate(addr)));
-  const passed = results.every((item) => item);
-  return passed;
-};
-
 export const useGetDappActions = ({
   protocol,
 }: {
   protocol: DisplayedProject;
 }) => {
-  const currentAccount = useCurrentAccount();
-  const isErc20Contract = useIsContractBySymbol();
   const { t } = useTranslation();
 
-  const { data } = useRequest(
-    async () => {
-      const res = await Promise.all(
-        flatten(
-          protocol._portfolios.map((item) => {
-            const data = item.withdrawActions;
-            const withdrawAction = data?.find(
-              (item) =>
-                item.type === ActionType.Withdraw ||
-                item.type === ActionType.Queue
-            );
-
-            const claimAction = data?.find(
-              (item) => item.type === ActionType.Claim
-            );
-
-            return [withdrawAction, claimAction].map(async (action) => {
-              return {
-                title:
-                  action?.type === ActionType.Withdraw ||
-                  action?.type === ActionType.Queue
-                    ? t('component.DappActions.withdraw')
-                    : action?.type === ActionType.Claim
-                    ? t('component.DappActions.claim')
-                    : '',
-                type: action?.type,
-                action,
-                valid: await validateDappAction({
-                  currentAccount: currentAccount!,
-                  data: action,
-                  chain: protocol.chain,
-                  isErc20Contract,
-                }),
-              };
-            });
-          })
-        )
-      );
-
-      return uniqBy(
-        res.filter((item) => item && item.valid && item.title),
-        (item) => item.title
-      );
-    },
-    {
-      refreshDeps: [protocol, currentAccount?.address],
-    }
-  );
-
-  return {
-    actions: data || [],
-  };
+  return useMemo(() => {
+    const result: Set<string> = new Set();
+    protocol._portfolios.forEach((item) => {
+      const data = item.withdrawActions;
+      data?.forEach((action) => {
+        if (
+          action.need_approve?.to &&
+          !isWhitelistSpender(action.need_approve?.to, protocol.chain!)
+        ) {
+          return;
+        }
+        if (isBlacklistMethod(action.func)) {
+          return;
+        }
+        if (
+          action.type === ActionType.Withdraw ||
+          action.type === ActionType.Queue
+        ) {
+          result.add(t('component.DappActions.withdraw'));
+        } else if (action.type === ActionType.Claim) {
+          result.add(t('component.DappActions.claim'));
+        }
+      });
+    });
+    return Array.from(result);
+  }, [protocol]);
 };

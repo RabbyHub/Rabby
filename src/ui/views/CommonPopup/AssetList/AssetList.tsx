@@ -15,6 +15,7 @@ import { SpecialTokenListPopup } from './components/TokenButton';
 import { TestnetChainList } from './TestnetChainList';
 import { useFilteredTokens } from './useFilteredTokens';
 import { RcIconExternal1CC, RcIconExternalCC } from '@/ui/assets/dashboard';
+import { useScroll } from 'ahooks';
 
 export const AssetList = ({
   visible,
@@ -62,73 +63,78 @@ export const AssetList = ({
   const { sortedCustomize: tokens } = useFilteredTokens(selectChainId, false);
   const [showCustomizedTokens, setShowCustomizedTokens] = React.useState(false);
   const wallet = useWallet();
+  const scroll = useScroll(containerRef);
 
   return (
-    <div ref={containerRef}>
-      {isShowTestnet ? (
-        <NetSwitchTabs
-          value={selectedTab}
-          onTabChange={onTabChange}
-          // className="h-[28px] box-content mt-[20px] mb-[20px]"
-        />
-      ) : (
-        <div className="h-[8px]" />
-      )}
-      <div className={clsx(selectedTab === 'mainnet' ? 'block' : 'hidden')}>
-        <div className={clsx('mt-[120px]', isEmptyAssets ? 'block' : 'hidden')}>
-          <AssetEmptySVG className="m-auto" />
-          <div className="mt-0 text-r-neutral-foot text-[14px] text-center">
-            {t('page.dashboard.assets.noAssets')}
-          </div>
+    <div ref={containerRef} className="pt-[12px] h-full overflow-auto">
+      <div className="px-[20px] pb-[12px]">
+        {isShowTestnet ? (
+          <NetSwitchTabs
+            value={selectedTab}
+            onTabChange={onTabChange}
+            // className="h-[28px] box-content mt-[20px] mb-[20px]"
+          />
+        ) : (
+          <div className="h-[8px]" />
+        )}
+        <div className={clsx(selectedTab === 'mainnet' ? 'block' : 'hidden')}>
+          <div
+            className={clsx('mt-[120px]', isEmptyAssets ? 'block' : 'hidden')}
+          >
+            <AssetEmptySVG className="m-auto" />
+            <div className="mt-0 text-r-neutral-foot text-[14px] text-center">
+              {t('page.dashboard.assets.noAssets')}
+            </div>
 
-          {isEmptyAssets ? (
-            <div className="w-[100%] flex justify-center items-center">
-              <Button
-                type="primary"
-                className="w-[200px] h-[44px] mt-[50px]"
-                onClick={() => {
-                  setIsShowAddModal(true);
-                }}
-              >
-                {t('page.dashboard.assets.customButtonText')}
-              </Button>
-              <AddCustomTokenPopup
-                visible={isShowAddModal}
-                onClose={() => {
-                  setIsShowAddModal(false);
-                }}
-                onConfirm={(addedToken) => {
-                  setIsShowAddModal(false);
+            {isEmptyAssets ? (
+              <div className="w-[100%] flex justify-center items-center">
+                <Button
+                  type="primary"
+                  className="w-[200px] h-[44px] mt-[50px]"
+                  onClick={() => {
+                    setIsShowAddModal(true);
+                  }}
+                >
+                  {t('page.dashboard.assets.customButtonText')}
+                </Button>
+                <AddCustomTokenPopup
+                  visible={isShowAddModal}
+                  onClose={() => {
+                    setIsShowAddModal(false);
+                  }}
+                  onConfirm={(addedToken) => {
+                    setIsShowAddModal(false);
+                    setShowCustomizedTokens(true);
+                  }}
+                />
+              </div>
+            ) : (
+              <SpecialTokenListPopup
+                label={
+                  tokens?.length > 1
+                    ? t('page.dashboard.tokenDetail.customizedButtons')
+                    : t('page.dashboard.tokenDetail.customizedButton')
+                }
+                buttonText={t('page.dashboard.assets.customButtonText')}
+                description={t('page.dashboard.assets.customDescription')}
+                onClickButton={() => {
                   setShowCustomizedTokens(true);
                 }}
+                tokens={tokens}
+                visible={showCustomizedTokens}
+                onClose={() => setShowCustomizedTokens(false)}
               />
-            </div>
-          ) : (
-            <SpecialTokenListPopup
-              label={
-                tokens?.length > 1
-                  ? t('page.dashboard.tokenDetail.customizedButtons')
-                  : t('page.dashboard.tokenDetail.customizedButton')
-              }
-              buttonText={t('page.dashboard.assets.customButtonText')}
-              description={t('page.dashboard.assets.customDescription')}
-              onClickButton={() => {
-                setShowCustomizedTokens(true);
-              }}
-              tokens={tokens}
-              visible={showCustomizedTokens}
-              onClose={() => setShowCustomizedTokens(false)}
+            )}
+          </div>
+          <div className={clsx(isEmptyAssets ? 'hidden' : 'block')}>
+            <ChainList onChange={handleSelectChainChange} />
+            <AssetListContainer
+              className="mt-12"
+              selectChainId={selectChainId}
+              visible={visible}
+              onEmptyAssets={setIsEmptyAssets}
             />
-          )}
-        </div>
-        <div className={clsx(isEmptyAssets ? 'hidden' : 'block')}>
-          <ChainList onChange={handleSelectChainChange} />
-          <AssetListContainer
-            className="mt-12"
-            selectChainId={selectChainId}
-            visible={visible}
-            onEmptyAssets={setIsEmptyAssets}
-          />
+          </div>
         </div>
       </div>
       <div className={clsx(selectedTab === 'testnet' ? 'block' : 'hidden')}>
@@ -139,10 +145,13 @@ export const AssetList = ({
           onClose={onClose}
         />
       </div>
-      <footer className="h-[72px]">
+      <footer
+        className={clsx('h-[69px] mt-[8px]', scroll?.top ? 'hidden' : '')}
+      >
         <div
           className={clsx(
-            'fixed bottom-0 left-0 right-0 px-[20px] py-[14px]',
+            'fixed bottom-0 left-0 right-0',
+            'px-[20px] py-[14px]',
             'border-t-[0.5px] border-solid border-rabby-neutral-line',
             'bg-r-neutral-bg-2'
           )}
@@ -150,7 +159,7 @@ export const AssetList = ({
           <button
             type="button"
             className={clsx(
-              'w-full h-[44px] text-r-blue-default text-[15px] leading-[18px] font-medium',
+              'w-full h-[40px] text-r-blue-default text-[13px] leading-[16px] font-medium',
               'rounded-[8px]',
               'border-[1px] border-solid border-rabby-blue-default',
               'bg-r-neutral-bg-2 hover:bg-r-blue-light1'
@@ -162,7 +171,10 @@ export const AssetList = ({
           >
             <div className="flex items-center justify-center gap-[4px]">
               {t('page.dashboard.assets.openInTab')}
-              <RcIconExternalCC />
+              <RcIconExternalCC
+                viewBox="0 0 18 18"
+                className="w-[16px] h-[16px]"
+              />
             </div>
           </button>
         </div>
