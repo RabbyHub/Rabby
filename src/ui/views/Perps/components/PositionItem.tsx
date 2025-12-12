@@ -50,7 +50,7 @@ export const PositionItem: React.FC<{
   const absPnlPct = Math.abs(Number(returnOnEquity));
   const pnlText = `${isUp ? '+' : '-'}$${splitNumberByStep(
     absPnlUsd.toFixed(2)
-  )} (${isUp ? '+' : '-'}${formatPct(absPnlPct)})`;
+  )}`;
 
   const logoUrl = marketData?.logoUrl || '';
   const leverageText = `${leverage.value}x`;

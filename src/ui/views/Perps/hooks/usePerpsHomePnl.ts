@@ -1,41 +1,39 @@
-import { useMemoizedFn } from 'ahooks';
-import { useEffect, useState } from 'react';
-import { getPerpsSDK } from '../sdkManager';
-import { useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRequest } from 'ahooks';
+import { getPerpsSDK } from '../sdkManager';
 
 export const usePerpsHomePnl = () => {
-  const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const perpsState = useRabbySelector((state) => state.perps);
-  const [isFetching, setIsFetching] = useState(false);
+  const perpsAccount = perpsState.currentPerpsAccount;
 
-  const fetch = useMemoizedFn(async () => {
-    setIsFetching(true);
-    const sdk = getPerpsSDK();
-    const account = await wallet.getPerpsCurrentAccount();
-    if (account?.address) {
-      const res = await sdk.info.getClearingHouseState(account.address);
+  console.log('perps', perpsState);
 
-      const positionAndOpenOrders = res.assetPositions;
+  const { loading: isFetching } = useRequest(
+    async () => {
+      const sdk = getPerpsSDK();
+      const account = perpsAccount;
+      if (account?.address) {
+        const res = await sdk.info.getClearingHouseState(account.address);
 
-      if (!positionAndOpenOrders || positionAndOpenOrders.length === 0) {
-        dispatch.perps.setHomePositionPnl({ pnl: 0, show: false });
+        const positionAndOpenOrders = res.assetPositions;
+
+        if (!positionAndOpenOrders || positionAndOpenOrders.length === 0) {
+          dispatch.perps.setHomePositionPnl({ pnl: 0, show: false });
+        } else {
+          const pnl = positionAndOpenOrders.reduce((acc, asset) => {
+            return acc + Number(asset.position.unrealizedPnl);
+          }, 0);
+          dispatch.perps.setHomePositionPnl({ pnl, show: true });
+        }
       } else {
-        const pnl = positionAndOpenOrders.reduce((acc, asset) => {
-          return acc + Number(asset.position.unrealizedPnl);
-        }, 0);
-        dispatch.perps.setHomePositionPnl({ pnl, show: true });
+        dispatch.perps.setHomePositionPnl({ pnl: 0, show: false });
       }
-    } else {
-      dispatch.perps.setHomePositionPnl({ pnl: 0, show: false });
+    },
+    {
+      refreshDeps: [perpsAccount?.address],
     }
-    setIsFetching(false);
-  });
-
-  useEffect(() => {
-    fetch();
-  }, []);
+  );
 
   return {
     perpsPositionInfo: perpsState.homePositionPnl,

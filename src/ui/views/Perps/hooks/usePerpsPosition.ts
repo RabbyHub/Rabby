@@ -24,6 +24,13 @@ export const usePerpsPosition = ({
     hasPermission,
 
     judgeIsUserAgentIsExpired,
+    handleActionApproveStatus,
+    accountNeedApproveAgent,
+    accountNeedApproveBuilderFee,
+    miniSignTypeData,
+    clearMiniSignTypeData,
+    handleMiniSignResolve,
+    handleMiniSignReject,
   } = usePerpsState({});
 
   const logout = useMemoizedFn((address: string) => {
@@ -409,5 +416,12 @@ export const usePerpsPosition = ({
     isLogin,
     currentPerpsAccount,
     hasPermission,
+    handleActionApproveStatus,
+    accountNeedApproveAgent,
+    accountNeedApproveBuilderFee,
+    miniSignTypeData,
+    clearMiniSignTypeData,
+    handleMiniSignResolve,
+    handleMiniSignReject,
   };
 };

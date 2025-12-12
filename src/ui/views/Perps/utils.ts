@@ -144,14 +144,15 @@ export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
 };
 
+export const formatPerpsPct = (v: number) => `${(v * 100).toFixed(2)}%`;
+
 export const calTransferMarginRequired = (
-  entryPrice: number,
   markPrice: number,
   positionSize: number,
   leverage: number
 ) => {
   const nationalValue = Number(positionSize) * Number(markPrice);
-  const initialNationalValue = Number(positionSize) * Number(entryPrice);
+  const initialNationalValue = Number(positionSize) * Number(markPrice);
   const initialMarginRequired = initialNationalValue * (1 / leverage);
   const transferMarginRequired = Math.max(
     initialMarginRequired,
