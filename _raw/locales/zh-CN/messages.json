@@ -377,7 +377,9 @@
           "lowValueAssets_other": "{{count}} 个低价值代币",
           "lowValueAssets_0": "{{count}} 个低价值代币",
           "review": "审核",
-          "noTokens": "没有代币"
+          "noTokens": "没有代币",
+          "searchToken": "搜索 Token",
+          "lowValueDefis": "{{count}} 低价值 defis"
         },
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址，隐藏代币",
@@ -416,7 +418,8 @@
         "addTokenEntryText": "代币",
         "side": "侧边",
         "price": "价格",
-        "openInTab": "在新标签页中打开"
+        "openInTab": "在新标签页中打开",
+        "searchTokenPlaceholder": "搜索代币"
       },
       "hd": {
         "howToConnectLedger": "如何连接 Ledger",
@@ -3215,7 +3218,10 @@
           "allTokenMode": "全部代币模式",
           "wallet": "钱包",
           "foldProtocols": "折叠 {{count}} 协议",
-          "unfoldProtocols": "展开 {{count}} 个协议"
+          "unfoldProtocols": "展开 {{count}} 个协议",
+          "lpToken": "LP-Token",
+          "unfoldDifis": "展开 {{count}} 个 Defis",
+          "foldDifis": "折叠 {{count}} 个 DeFi"
         },
         "hidden": {
           "tokensWithZeroBalance": "隐藏 $0 代币",
@@ -3224,7 +3230,9 @@
           "hideProtocolsWithSmallDeposits": "隐藏存款少的协议。",
           "hideSmall": "隐藏小额余额的代币。",
           "tokensWithZeroBalanceDesc": "余额为 $0 的代币被隐藏。",
-          "hideProtocolsWithSmallDepositsDesc": "小额存款的协议不会显示。"
+          "hideProtocolsWithSmallDepositsDesc": "小额存款的协议不会显示。",
+          "hideDefiWithSmallDeposits": "使用小额存款隐藏 DeFi。",
+          "hideDefiWithSmallDepositsDesc": "小额存款的 DeFi 项目未显示。"
         },
         "table": {
           "token": "令牌",
@@ -3249,7 +3257,8 @@
       "tabs": {
         "tokens": "代币",
         "approvals": "授权",
-        "transactions": "交易"
+        "transactions": "交易",
+        "difi": "Defi"
       },
       "nft": {
         "message": {
@@ -3625,6 +3634,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "添加地址"
+    },
+    "LpTokenTag": {
+      "title": "这是一个流动性提供者(LP)代币",
+      "description": "LP 代币由您存入资产的 DeFi 协议发行。它们作为这些资产的证明，但其价值不包括在您的总余额中。"
     }
   },
   "background": {

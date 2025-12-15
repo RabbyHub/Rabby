@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useSwitch } from '../switch';
 
 // Logic of expand portfolios
-// 1. length of list more than 15
+// 1. length of list more than 3
 // 2. threshold of expand is 1% of portfolios
 // 3. portfolio will not expand if usd value is more than 1000
 // 4. only expand if expand count more than 3
@@ -29,7 +29,7 @@ export const getExpandListSwitch = <
     : -1;
 
   const hasExpandSwitch =
-    listLength >= 15 && thresholdIndex > -1 && thresholdIndex <= listLength - 4;
+    listLength >= 3 && thresholdIndex > -1 && thresholdIndex <= listLength - 4;
 
   return { thresholdIndex, hasExpandSwitch };
 };

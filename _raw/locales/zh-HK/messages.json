@@ -377,7 +377,9 @@
           "lowValueAssets_one": "{{count}} 低價值代幣",
           "lowValueAssets_0": "{{count}} 低價值代幣",
           "review": "審查",
-          "noTokens": "沒有 Tokens"
+          "noTokens": "沒有 Tokens",
+          "lowValueDefis": "{{count}} 低價值 defis",
+          "searchToken": "搜索令牌"
         },
         "noAssets": "沒有資產",
         "blockLinkText": "搜索代幣地址，隱藏代幣",
@@ -416,7 +418,8 @@
         "addTokenEntryText": "代幣",
         "side": "側邊",
         "price": "價格",
-        "openInTab": "在新标签页中打开"
+        "openInTab": "在新标签页中打开",
+        "searchTokenPlaceholder": "搜索 Token"
       },
       "hd": {
         "howToConnectLedger": "如何連接 Ledger",
@@ -3215,7 +3218,10 @@
           "wallet": "錢包",
           "unfoldProtocols": "展開 {{count}} Protocols",
           "allTokenMode": "所有代幣模式",
-          "foldProtocols": "Fold {{count}} 协议"
+          "foldProtocols": "Fold {{count}} 协议",
+          "lpToken": "LP-Token",
+          "unfoldDifis": "展開 {{count}} 個 Defis",
+          "foldDifis": "Fold {{count}} Defis"
         },
         "hidden": {
           "hideProtocolsWithSmallDepositsDesc": "小额存款的协议不会显示。",
@@ -3224,7 +3230,9 @@
           "hideSmallDesc": "餘額較少的代幣不會顯示。",
           "showAll": "顯示所有",
           "hideProtocolsWithSmallDeposits": "隱藏小額存款的協議。",
-          "tokensWithZeroBalance": "隱藏 $0 tokens"
+          "tokensWithZeroBalance": "隱藏 $0 tokens",
+          "hideDefiWithSmallDepositsDesc": "小额存款的 DeFi 不会被显示。",
+          "hideDefiWithSmallDeposits": "隱藏小額存款的 Defis。"
         },
         "table": {
           "chain": "鏈",
@@ -3249,7 +3257,8 @@
       "tabs": {
         "approvals": "批准",
         "transactions": "交易",
-        "tokens": "代幣"
+        "tokens": "代幣",
+        "difi": "Defi"
       },
       "nft": {
         "message": {
@@ -3625,6 +3634,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "添加地址"
+    },
+    "LpTokenTag": {
+      "title": "這是一個流動性提供者(LP)代幣",
+      "description": "LP 代幣是由你已存入資產的 DeFi 協議發行的。它們作為那些資產的證明，但其價值不包括在你的總餘額中。"
     }
   },
   "background": {

@@ -264,10 +264,10 @@ const ProjectOverview = ({
           <div className="text-r-neutral-foot text-13 cursor-pointer">
             {isExpanded
               ? t(
-                  'page.desktopProfile.portfolio.hidden.hideProtocolsWithSmallDeposits'
+                  'page.desktopProfile.portfolio.hidden.hideDefiWithSmallDeposits'
                 )
               : t(
-                  'page.desktopProfile.portfolio.hidden.hideProtocolsWithSmallDepositsDesc'
+                  'page.desktopProfile.portfolio.hidden.hideDefiWithSmallDepositsDesc'
                 )}
           </div>
           <div className="flex items-center justify-center gap-[2px] cursor-pointer">

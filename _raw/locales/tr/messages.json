@@ -1410,7 +1410,9 @@
           "lowValueAssets_one": "{{count}} düşük değerli token",
           "lowValueAssets_0": "{{count}} düşük değerli token",
           "review": "Gözden Geçir",
-          "noTokens": "No Tokens"
+          "noTokens": "No Tokens",
+          "lowValueDefis": "{{count}} düşük değerli defis",
+          "searchToken": "Token Ara"
         },
         "noAssets": "Varlık Yok",
         "blockLinkText": "Tokeni engellemek için adresi ara",
@@ -1449,7 +1451,8 @@
         "customButtonText": "Özel token ekle",
         "side": "YAN TARAF",
         "price": "FİYAT",
-        "openInTab": "Sekmede aç"
+        "openInTab": "Sekmede aç",
+        "searchTokenPlaceholder": "Token Ara"
       },
       "hd": {
         "howToConnectLedger": "Ledger Nasıl Bağlanır",
@@ -3180,7 +3183,10 @@
           "wallet": "Cüzdan",
           "foldProtocols": "Fold {{count}} Protokolü",
           "allTokenMode": "Tüm Token Modu",
-          "unfoldProtocols": "Aç {{count}} Protokolü"
+          "unfoldProtocols": "Aç {{count}} Protokolü",
+          "unfoldDifis": "Unfold {{count}} Defis",
+          "lpToken": "LP-Token",
+          "foldDifis": "Fold {{count}} Defis"
         },
         "hidden": {
           "tokensWithZeroBalance": "$0 token'ları gizle",
@@ -3189,7 +3195,9 @@
           "hideSmallDesc": "Küçük bakiyelere sahip tokenler görüntülenmez.",
           "showAll": "Hepsini göster",
           "hideProtocolsWithSmallDeposits": "Küçük bakiye ile protokolleri gizle.",
-          "tokensWithZeroBalanceDesc": "$0 bakiyesi olan tokenlar gizlenmiştir."
+          "tokensWithZeroBalanceDesc": "$0 bakiyesi olan tokenlar gizlenmiştir.",
+          "hideDefiWithSmallDeposits": "Küçük yatırımlarla Defi'leri gizle.",
+          "hideDefiWithSmallDepositsDesc": "Küçük yatırımlarla yapılan Defi'ler görüntülenmez."
         },
         "table": {
           "token": "Jeton",
@@ -3214,7 +3222,8 @@
       "tabs": {
         "approvals": "Onaylar",
         "tokens": "Jetonlar",
-        "transactions": "İşlemler"
+        "transactions": "İşlemler",
+        "difi": "Defi"
       },
       "nft": {
         "message": {
@@ -3590,6 +3599,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adres ekle"
+    },
+    "LpTokenTag": {
+      "title": "Bu bir likidite sağlayıcı (LP) tokenıdır.",
+      "description": "LP token’lar, varlıklarınızı yatırdığınız DeFi protokolleri tarafından verilmektedir. Bunlar, bu varlıkların kanıtı olarak hizmet eder, ancak değeri toplam bakiyenize dahil değildir."
     }
   },
   "global": {

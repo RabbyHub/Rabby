@@ -255,6 +255,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Ajouter une adresse"
+    },
+    "LpTokenTag": {
+      "title": "Ceci est un jeton de fournisseur de liquidité (LP)",
+      "description": "Les tokens LP sont émis par les protocoles DeFi où vous avez déposé vos actifs. Ils servent de preuve de ces actifs, mais leur valeur n'est pas incluse dans votre solde total."
     }
   },
   "constant": {
@@ -714,7 +718,9 @@
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_other": "{{count}} low value tokens",
           "review": "Revue",
-          "noTokens": "Aucun Token"
+          "noTokens": "Aucun Token",
+          "searchToken": "Recherche de Token",
+          "lowValueDefis": "{{count}} defis de faible valeur"
         },
         "tokenButton": {
           "subTitle": "Le token de cette liste ne sera pas ajouté au solde total"
@@ -750,7 +756,8 @@
         "addTokenEntryText": "Jeton",
         "price": "PRIX",
         "side": "CÔTÉ",
-        "openInTab": "Ouvrir dans un onglet"
+        "openInTab": "Ouvrir dans un onglet",
+        "searchTokenPlaceholder": "Rechercher Token"
       },
       "contacts": {
         "noData": "Pas de données",
@@ -3484,7 +3491,10 @@
           "wallet": "Portefeuille",
           "foldProtocols": "Pliez {{count}} Protocoles",
           "allTokenMode": "Tous les modes de jetons",
-          "unfoldProtocols": "Déplier {{count}} Protocoles"
+          "unfoldProtocols": "Déplier {{count}} Protocoles",
+          "lpToken": "LP-Token",
+          "unfoldDifis": "Déployez {{count}} Defis",
+          "foldDifis": "Plier {{count}} Defis"
         },
         "hidden": {
           "showAll": "Afficher tout",
@@ -3493,7 +3503,9 @@
           "hideSmallDesc": "Les tokens avec de petits soldes ne sont pas affichés.",
           "hideProtocolsWithSmallDepositsDesc": "Les protocoles avec de petits dépôts ne sont pas affichés.",
           "tokensWithZeroBalanceDesc": "Les tokens avec des soldes de $0 sont masqués.",
-          "tokensWithZeroBalance": "Cacher les jetons $0"
+          "tokensWithZeroBalance": "Cacher les jetons $0",
+          "hideDefiWithSmallDeposits": "Masquer les Defis avec de petits dépôts.",
+          "hideDefiWithSmallDepositsDesc": "Les Defis avec de petits dépôts ne sont pas affichés."
         },
         "table": {
           "token": "Jeton",
@@ -3518,7 +3530,8 @@
       "tabs": {
         "transactions": "Transactions",
         "tokens": "Jetons",
-        "approvals": "Approbations"
+        "approvals": "Approbations",
+        "difi": "Defi"
       },
       "nft": {
         "message": {

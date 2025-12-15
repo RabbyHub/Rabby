@@ -88,6 +88,7 @@ interface Props {
   toggleExpand?: () => void;
   hasExpandSwitch?: boolean;
   smallLength?: number;
+  filterWallet?: boolean;
 }
 
 const ProjectOverviewListWrapper = styled.div`
@@ -105,14 +106,19 @@ const ListWrapper = styled.div`
 const MAX_FOLD_LENGTH = 11; // 折叠情况下最多展示两行
 
 const ProjectOverview = ({
-  list,
+  list: originList,
   appIds,
   isExpanded,
   toggleExpand,
   smallLength,
   hasExpandSwitch,
+  filterWallet,
 }: Props) => {
   const { t } = useTranslation();
+  const list = filterWallet
+    ? originList?.filter((item) => item.id !== TOKEN_WALLET_ANCHOR_ID)
+    : originList;
+
   const truncateLength = useMemo(() => {
     const allLength = isExpanded
       ? list?.length || 0
@@ -141,10 +147,10 @@ const ProjectOverview = ({
           >
             <div className="text-rb-neutral-secondary text-13 cursor-pointer">
               {isExpanded
-                ? t('page.desktopProfile.portfolio.headers.foldProtocols', {
+                ? t('page.desktopProfile.portfolio.headers.foldDifis', {
                     count: truncateLength,
                   })
-                : t('page.desktopProfile.portfolio.headers.unfoldProtocols', {
+                : t('page.desktopProfile.portfolio.headers.unfoldDifis', {
                     count: truncateLength,
                   })}
             </div>

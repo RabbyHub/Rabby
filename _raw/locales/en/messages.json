@@ -1870,7 +1870,9 @@
           "lowValueDescription": "Low value assets will be shown here",
           "lowValueAssets_0": "{{count}} low value token",
           "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} low value tokens"
+          "lowValueAssets_other": "{{count}} low value tokens",
+          "searchToken": "Search Token",
+          "lowValueDefis": "{{count}} low value defis"
         },
         "noAssets": "No assets",
         "blockLinkText": "Search address to block token",
@@ -1906,7 +1908,8 @@
         },
         "noTestnetAssets": "No Custom Network Assets",
         "addTokenEntryText": "Token",
-        "openInTab": "Open in tab"
+        "openInTab": "Open in tab",
+        "searchTokenPlaceholder": "Search Token"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",
@@ -3219,8 +3222,11 @@
         "headers": {
           "wallet": "Wallet",
           "allTokenMode": "All Token Mode",
+          "lpToken": "LP-Token",
           "foldProtocols": "Fold {{count}} Protocols",
-          "unfoldProtocols": "Unfold {{count}} Protocols"
+          "unfoldProtocols": "Unfold {{count}} Protocols",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "Unfold {{count}} Defis"
         },
         "hidden": {
           "tokensWithZeroBalance": "Hide $0 tokens",
@@ -3229,7 +3235,9 @@
           "hideSmall": "Hide tokens with small balances.",
           "hideSmallDesc": "Tokens with small balances are not displayed.",
           "hideProtocolsWithSmallDeposits": "Hide protocols with small deposits.",
-          "hideProtocolsWithSmallDepositsDesc": "Protocols with small deposits are not displayed."
+          "hideProtocolsWithSmallDepositsDesc": "Protocols with small deposits are not displayed.",
+          "hideDefiWithSmallDeposits": "Hide Defis with small deposits.",
+          "hideDefiWithSmallDepositsDesc": "Defis with small deposits are not displayed."
         },
         "table": {
           "token": "Token",
@@ -3254,7 +3262,8 @@
       "tabs": {
         "tokens": "Tokens",
         "transactions": "Transactions",
-        "approvals": "Approvals"
+        "approvals": "Approvals",
+        "difi": "Defi"
       },
       "nft": {
         "all": "All",
@@ -3538,7 +3547,10 @@
       "hot": "Hot",
       "common": "Common",
       "recent": "Recent",
-      "chainNotSupport": "This chain is not supported"
+      "chainNotSupport": "This chain is not supported",
+      "chainFilterLine": {
+        "filterAll": "All Chains"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3589,10 +3601,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
@@ -3608,6 +3617,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Add address"
+    },
+    "LpTokenTag": {
+      "title": "This is a liquidity provider(LP) token",
+      "description": "LP tokens are issued by the DeFi protocols where you've deposited your assets. They serve as the proof of those assets, but their value isn't included in your total balance"
     }
   },
   "global": {

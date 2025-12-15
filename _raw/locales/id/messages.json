@@ -1499,7 +1499,9 @@
           "summaryTips": "Nilai aset dibagi dengan total kekayaan bersih",
           "price": "Harga",
           "review": "Tinjau",
-          "noTokens": "Tidak Ada Token"
+          "noTokens": "Tidak Ada Token",
+          "searchToken": "Cari Token",
+          "lowValueDefis": "{{count}} defis nilai rendah"
         },
         "AddMainnetToken": {
           "tokenAddress": "Alamat Token",
@@ -1539,7 +1541,8 @@
         "customDescription": "Token kustom yang ditambahkan oleh Anda akan ditampilkan di sini",
         "price": "HARGA",
         "side": "SISI",
-        "openInTab": "Buka di tab"
+        "openInTab": "Buka di tab",
+        "searchTokenPlaceholder": "Cari Token"
       },
       "hd": {
         "ledger": {
@@ -3174,7 +3177,10 @@
           "allTokenMode": "Semua Mode Token",
           "wallet": "Dompet",
           "foldProtocols": "Fold {{count}} Protokol",
-          "unfoldProtocols": "Buka {{count}} Protokol"
+          "unfoldProtocols": "Buka {{count}} Protokol",
+          "lpToken": "LP-Token",
+          "foldDifis": "Lipat {{count}} Defis",
+          "unfoldDifis": "Unfold {{count}} Defis"
         },
         "hidden": {
           "hideSmall": "Sembunyikan token dengan saldo kecil.",
@@ -3183,7 +3189,9 @@
           "hideProtocolsWithSmallDepositsDesc": "Protokol dengan deposit kecil tidak ditampilkan.",
           "hideSmallDesc": "Token dengan saldo kecil tidak ditampilkan.",
           "showAll": "Tampilkan semua",
-          "tokensWithZeroBalanceDesc": "Token dengan saldo $0 disembunyikan."
+          "tokensWithZeroBalanceDesc": "Token dengan saldo $0 disembunyikan.",
+          "hideDefiWithSmallDeposits": "Sembunyikan Defi dengan setoran kecil.",
+          "hideDefiWithSmallDepositsDesc": "Defis dengan setoran kecil tidak ditampilkan."
         },
         "table": {
           "token": "Token",
@@ -3208,7 +3216,8 @@
       "tabs": {
         "tokens": "Token",
         "approvals": "Persetujuan",
-        "transactions": "Transaksi"
+        "transactions": "Transaksi",
+        "difi": "Defi"
       },
       "nft": {
         "message": {
@@ -3584,6 +3593,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Tambah alamat"
+    },
+    "LpTokenTag": {
+      "title": "Ini adalah token penyedia likuiditas (LP)",
+      "description": "Token LP diterbitkan oleh protokol DeFi tempat Anda menyimpan aset Anda. Mereka berfungsi sebagai bukti aset tersebut, tetapi nilainya tidak termasuk dalam total saldo Anda."
     }
   },
   "global": {

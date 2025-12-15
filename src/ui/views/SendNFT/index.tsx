@@ -156,6 +156,14 @@ const SendNFT = () => {
   const { loading: loadingRisks, risks } = useAddressRisks({
     toAddress: toAddress || '',
     fromAddress: currentAccount?.address,
+    forbiddenCheck: useMemo(() => {
+      return {
+        user_addr: currentAccount?.address || '',
+        to_addr: toAddress || '',
+        chain_id: nftItem?.serverId,
+        id: nftItem?.id || '',
+      };
+    }, [currentAccount?.address, toAddress, nftItem?.serverId, nftItem?.id]),
     onLoadFinished: useCallback(() => {
       setAgreeRequiredChecks((prev) => ({ ...prev, forToAddress: false }));
     }, []),
