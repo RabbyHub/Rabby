@@ -5986,6 +5986,8 @@ export class WalletController extends BaseController {
   };
 
   getRpcTxReceipt = transactionHistoryService.getRpcTxReceipt;
+
+  resetPerpsStore = perpsService.resetStore;
 }
 
 const wallet = new WalletController();
