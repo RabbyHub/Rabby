@@ -2,6 +2,10 @@ import { last } from 'lodash';
 import React, { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import type {
+  TxAllHistoryResult,
+  TxHistoryResult,
+} from 'background/service/openapi';
 
 import { useAccount } from '@/ui/store-hooks';
 import { useInfiniteScroll } from 'ahooks';
@@ -20,7 +24,6 @@ export const HistoryList = ({
 }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-
   const ref = useRef<HTMLDivElement | null>(null);
   const [account] = useAccount();
 
@@ -39,17 +42,91 @@ export const HistoryList = ({
     });
   };
 
+  const buildDisplayData = React.useCallback(
+    (result?: TxHistoryResult | TxAllHistoryResult) => {
+      if (!result) {
+        return {
+          last: undefined,
+          list: [],
+        };
+      }
+      const tokenDict = (result as any).token_dict;
+      const tokenUUIDDict = (result as any).token_uuid_dict;
+      const historyList = (result.history_list || []).filter((item) => {
+        if (isFilterScam) {
+          return !item.is_scam;
+        }
+        return true;
+      });
+      const displayList = historyList
+        .map((item) => ({
+          ...item,
+          projectDict: result.project_dict,
+          cateDict: result.cate_dict,
+          tokenDict,
+          tokenUUIDDict,
+        }))
+        .sort((v1, v2) => v2.time_at - v1.time_at);
+      return {
+        last: last(displayList)?.time_at,
+        list: displayList,
+      };
+    },
+    [isFilterScam]
+  );
+
+  const [cachedDisplayData, setCachedDisplayData] = React.useState<ReturnType<
+    typeof buildDisplayData
+  > | null>(null);
+
   const fetchData = async (startTime = 0) => {
     const { address } = account!;
-    if (startTime) {
-      await sleep(500);
+    const shouldUseCache = !isFilterScam && startTime === 0;
+    let cachedResult: TxHistoryResult | undefined;
+    let hasCachedHistory = false;
+
+    if (shouldUseCache) {
+      cachedResult = await wallet.getTransactionsCache(address);
+      hasCachedHistory = !!cachedResult?.history_list?.length;
     }
+
     const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
-    if (apiLevel >= 1) {
+    const apiAvailable = apiLevel < 1;
+    let hasNewTx = false;
+
+    if (shouldUseCache && hasCachedHistory && cachedResult) {
+      if (!apiAvailable) {
+        return buildDisplayData(cachedResult);
+      }
+      const firstCachedTime = cachedResult.history_list?.[0]?.time_at;
+      try {
+        const { has_new_tx } = await wallet.openapi.hasNewTxFrom({
+          address,
+          startTime: firstCachedTime,
+        });
+        hasNewTx = has_new_tx;
+      } catch (e) {
+        hasNewTx = true;
+      }
+      if (!hasNewTx) {
+        return buildDisplayData(cachedResult);
+      }
+    }
+
+    if (!hasCachedHistory) {
+      hasNewTx = true;
+    }
+
+    if (!apiAvailable) {
       return {
         list: [],
       };
     }
+
+    if (startTime) {
+      await sleep(500);
+    }
+
     const getHistory = wallet.openapi.listTxHisotry;
 
     const res = isFilterScam
@@ -61,25 +138,14 @@ export const HistoryList = ({
           start_time: startTime,
           page_count: PAGE_COUNT,
         });
+    if (startTime === 0 && hasNewTx && !isFilterScam) {
+      await wallet.updateTransactionsCache(address, res as TxHistoryResult);
+    }
 
-    const { project_dict, cate_dict, history_list: list } = res;
-    const displayList = list
-      .map((item) => ({
-        ...item,
-        projectDict: project_dict,
-        cateDict: cate_dict,
-        tokenDict: 'token_dict' in res ? res.token_dict : undefined,
-        tokenUUIDDict:
-          'token_uuid_dict' in res ? res.token_uuid_dict : undefined,
-      }))
-      .sort((v1, v2) => v2.time_at - v1.time_at);
-    return {
-      last: last(displayList)?.time_at,
-      list: displayList,
-    };
+    return buildDisplayData(res);
   };
 
-  const { data, loading, loadingMore, loadMore } = useInfiniteScroll(
+  const { data, loading, loadingMore, loadMore, mutate } = useInfiniteScroll(
     (d) => fetchData(d?.last),
     {
       isNoMore: (d) => {
@@ -90,7 +156,34 @@ export const HistoryList = ({
     }
   );
 
-  const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
+  React.useEffect(() => {
+    let cancelled = false;
+    if (!account || isFilterScam) {
+      setCachedDisplayData(null);
+      return;
+    }
+    (async () => {
+      const cached = await wallet.getTransactionsCache(account.address);
+      if (cancelled) {
+        return;
+      }
+      if (cached?.history_list?.length) {
+        const displayData = buildDisplayData(cached);
+        setCachedDisplayData(displayData);
+        mutate(displayData);
+      } else {
+        setCachedDisplayData(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [account?.address, isFilterScam, buildDisplayData, wallet, mutate]);
+
+  const renderData = data || cachedDisplayData;
+  const listData = renderData?.list || [];
+  const showInitialLoading = loading && listData.length <= 0;
+  const isEmpty = listData.length <= 0 && !showInitialLoading;
 
   const [
     focusingHistoryItem,
@@ -114,7 +207,7 @@ export const HistoryList = ({
         </div>
       </Modal>
 
-      {loading ? (
+      {showInitialLoading ? (
         <div className={isFilterScam ? 'pt-[20px]' : ''}>
           {isFilterScam ? (
             <div className="filter-scam-loading-text">
@@ -145,7 +238,7 @@ export const HistoryList = ({
               style={{
                 height: '100%',
               }}
-              data={data?.list || []}
+              data={listData}
               itemContent={(_, item) => {
                 return (
                   <HistoryItem
