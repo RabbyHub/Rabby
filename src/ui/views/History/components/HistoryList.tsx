@@ -99,11 +99,15 @@ export const HistoryList = ({
         return buildDisplayData(cachedResult);
       }
       const firstCachedTime = cachedResult.history_list?.[0]?.time_at;
-      const { has_new_tx } = await wallet.openapi.hasNewTxFrom({
-        address,
-        startTime: firstCachedTime,
-      });
-      hasNewTx = has_new_tx;
+      try {
+        const { has_new_tx } = await wallet.openapi.hasNewTxFrom({
+          address,
+          startTime: firstCachedTime,
+        });
+        hasNewTx = has_new_tx;
+      } catch (e) {
+        hasNewTx = true;
+      }
       if (!hasNewTx) {
         return buildDisplayData(cachedResult);
       }
