@@ -132,11 +132,6 @@ export const usePerpsInitial = () => {
   };
 };
 
-interface MiniTypedDataWithAccount {
-  data: MiniTypedData[];
-  account: Account | null;
-}
-
 export const usePerpsState = ({
   setDeleteAgentModalVisible,
 }: {
@@ -144,73 +139,7 @@ export const usePerpsState = ({
 }) => {
   const dispatch = useRabbyDispatch();
 
-  /**
-   * @deprecated
-   */
-  const [
-    miniSignTypeData,
-    setMiniSignTypeData,
-  ] = useState<MiniTypedDataWithAccount>({
-    data: [],
-    account: null,
-  });
-
-  /**
-   * @deprecated
-   */
-  const startDirectSigning = useStartDirectSigning();
   const deleteAgentCbRef = useRef<(() => Promise<void>) | null>(null);
-
-  /**
-   * @deprecated
-   */
-  const clearMiniSignTypeData = useMemoizedFn(() => {
-    setMiniSignTypeData({
-      data: [],
-      account: null,
-    });
-  });
-
-  /**
-   * @deprecated
-   */
-  const miniSignPromiseRef = useRef<{
-    resolve: (result: string[]) => void;
-    reject: (error: any) => void;
-  } | null>(null);
-
-  /**
-   * @deprecated
-   */
-  const waitForMiniSignResult = useMemoizedFn(
-    (): Promise<string[]> => {
-      return new Promise((resolve, reject) => {
-        miniSignPromiseRef.current = { resolve, reject };
-      });
-    }
-  );
-
-  /**
-   * @deprecated
-   */
-  const handleMiniSignResolve = useMemoizedFn((result: string[]) => {
-    if (miniSignPromiseRef.current) {
-      clearMiniSignTypeData();
-      miniSignPromiseRef.current.resolve(result);
-      miniSignPromiseRef.current = null;
-    }
-  });
-
-  /**
-   * @deprecated
-   */
-  const handleMiniSignReject = useMemoizedFn((error?: any) => {
-    if (miniSignPromiseRef.current) {
-      clearMiniSignTypeData();
-      miniSignPromiseRef.current.reject(error || new Error('User rejected'));
-      miniSignPromiseRef.current = null;
-    }
-  });
 
   const perpsState = useRabbySelector((state) => state.perps);
   const {
@@ -884,12 +813,6 @@ export const usePerpsState = ({
     login,
     logout,
     handleWithdraw,
-
-    // hard ware sign typeData
-    miniSignTypeData,
-    clearMiniSignTypeData,
-    handleMiniSignResolve,
-    handleMiniSignReject,
 
     handleDeleteAgent,
 

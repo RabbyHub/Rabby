@@ -69,22 +69,15 @@ export const Perps: React.FC = () => {
     currentPerpsAccount,
     isLogin,
     marketData,
-    userFills,
     marketDataMap,
     isInitialized,
     logout,
     login,
     handleWithdraw,
-    homeHistoryList,
     hasPermission,
     localLoadingHistory,
-    miniSignTypeData,
-    clearMiniSignTypeData,
-    handleMiniSignResolve,
-    handleMiniSignReject,
 
     handleDeleteAgent,
-    perpFee,
 
     judgeIsUserAgentIsExpired,
     handleActionApproveStatus,
@@ -658,14 +651,12 @@ export const Perps: React.FC = () => {
         handleDeposit={handleDeposit}
         handleWithdraw={handleWithdraw}
         clearMiniSignTx={clearMiniSignTx}
-        clearMiniSignTypeData={clearMiniSignTypeData}
         updateMiniSignTx={updateMiniSignTx}
         accountValue={accountSummary?.accountValue || '0'}
         availableBalance={accountSummary?.withdrawable || '0'}
         onClose={() => {
           setAmountVisible(false);
           clearMiniSignTx();
-          clearMiniSignTypeData();
           setIsPreparingSign(false);
         }}
         handleSignDepositDirect={handleSignDepositDirect}
