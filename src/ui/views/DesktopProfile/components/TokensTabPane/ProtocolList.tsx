@@ -14,6 +14,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import * as PortfolioTemplate from './Protocols/template';
 import { RcIconExternal1CC } from '@/ui/assets/desktop/common';
+import { PERPS_INVITE_URL } from '@/ui/views/Perps/constants';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -182,18 +183,41 @@ const ProtocolItem = ({
             className="ml-[10px] flex items-center"
             onClick={(evt) => {
               evt.stopPropagation();
-              openInTab(protocol.site_url, false);
+              openInTab(
+                protocol.id === 'hyperliquid'
+                  ? PERPS_INVITE_URL
+                  : protocol.site_url,
+                false
+              );
             }}
           >
-            <span
-              className={`
+            {isAppChain && protocol.id === 'hyperliquid' ? (
+              <Tooltip
+                overlayClassName="app-chain-tooltip rectangle addressType__tooltip"
+                title={t('component.ChainItem.hyperliquidCode')}
+              >
+                <span
+                  className={`
                 name inline-flex items-center text-[20px] leading-[24px] font-semibold 
                 text-r-neutral-title1 hover:text-r-blue-default 
                 border-b-[1px] border-b-solid border-transparent hover:border-b-r-blue-default
               `}
-            >
-              {protocol.name}
-            </span>
+                >
+                  {protocol.name}
+                </span>
+              </Tooltip>
+            ) : (
+              <span
+                className={`
+                name inline-flex items-center text-[20px] leading-[24px] font-semibold 
+                text-r-neutral-title1 hover:text-r-blue-default 
+                border-b-[1px] border-b-solid border-transparent hover:border-b-r-blue-default
+              `}
+              >
+                {protocol.name}
+              </span>
+            )}
+
             {!!isAppChain && (
               <Tooltip
                 overlayClassName="app-chain-tooltip rectangle addressType__tooltip"

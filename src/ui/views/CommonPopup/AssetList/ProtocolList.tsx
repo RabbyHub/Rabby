@@ -21,6 +21,7 @@ import {
 import { ProtocolLowValueItem } from './ProtocolLowValueItem';
 import BigNumber from 'bignumber.js';
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
+import { PERPS_INVITE_URL } from '../../Perps/constants';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -224,7 +225,12 @@ export const ProtocolItem = ({
             )}
             onClick={(evt) => {
               evt.stopPropagation();
-              openInTab(protocol.site_url, false);
+              openInTab(
+                protocol.id === 'hyperliquid'
+                  ? PERPS_INVITE_URL
+                  : protocol.site_url,
+                false
+              );
             }}
           >
             <span className="name items-center truncate min-w-0">
@@ -242,7 +248,17 @@ export const ProtocolItem = ({
                 </div>
               </Tooltip>
             )}
-            <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot flex-shrink-0" />
+
+            {isAppChain && protocol.id === 'hyperliquid' ? (
+              <Tooltip
+                overlayClassName="app-chain-tooltip"
+                title={t('component.ChainItem.hyperliquidCode')}
+              >
+                <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot flex-shrink-0" />
+              </Tooltip>
+            ) : (
+              <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot flex-shrink-0" />
+            )}
           </div>
           {actions?.length ? (
             <div className="mx-[8px] flex items-center gap-[8px]">

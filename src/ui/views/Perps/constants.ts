@@ -753,3 +753,5 @@ export enum PERPS_POSITION_RISK_LEVEL {
 export const PERPS_MARGIN_SIGNIFICANT_DIGITS = 6;
 
 export const PERPS_MINI_USD_VALUE = 10; // $10
+
+export const PERPS_INVITE_URL = `https://app.hyperliquid.xyz/join/${PERPS_REFERENCE_CODE}`;
