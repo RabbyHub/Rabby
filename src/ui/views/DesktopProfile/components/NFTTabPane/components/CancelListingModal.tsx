@@ -235,7 +235,7 @@ const Content: React.FC<Props> = (props) => {
                           listingOffer.protocol_data?.parameters?.offer?.[0]
                             .startAmount || 1
                         )
-                        .toString()
+                        .toFixed()
                     )}{' '}
                     {listingToken?.symbol}
                   </div>
@@ -256,7 +256,7 @@ const Content: React.FC<Props> = (props) => {
                             .startAmount || 1
                         )
                         .times(listingToken.price)
-                        .toString()
+                        .toFixed()
                     )}
                   </div>
                 </>

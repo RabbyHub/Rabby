@@ -275,7 +275,7 @@ export const DbkChainBridge = () => {
                           payToken?.decimals || 18
                         )
                       )
-                      .toString()
+                      .toFixed()
                   );
                 }}
               >

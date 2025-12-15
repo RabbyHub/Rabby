@@ -1086,7 +1086,7 @@ class CustomTestnetService {
               decimals: chain.nativeTokenDecimals,
               id: chain.nativeTokenAddress,
               chainId: chain.id,
-              rawAmount: _value.toString(),
+              rawAmount: _value.toFixed(),
               logo: this.store.logos?.[chain.id]?.token_logo_url,
             }),
           },
