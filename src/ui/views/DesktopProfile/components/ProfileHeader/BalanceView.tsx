@@ -45,9 +45,9 @@ import { CurvePoint, CurveThumbnail } from './CurveThumbnail';
 import { CurveModal } from './CurveModal';
 import { useDebounce } from 'react-use';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { RcIconRefreshCC } from '@/ui/assets/desktop/profile';
 
 const Container = styled.div`
-  margin-bottom: 24px;
   .balance-view-content {
   }
 `;
@@ -61,6 +61,8 @@ export const BalanceView: React.FC<{
   balanceLoading?: boolean;
   curveLoading?: boolean;
   balanceFromCache?: boolean;
+  onRefresh?(): void;
+  appChainIds: string[];
 }> = ({
   balance,
   evmBalance,
@@ -70,6 +72,8 @@ export const BalanceView: React.FC<{
   balanceLoading,
   curveLoading,
   balanceFromCache,
+  onRefresh,
+  appChainIds,
 }) => {
   const { t } = useTranslation();
   const [isHover, setHover] = useState(false);
@@ -159,12 +163,12 @@ export const BalanceView: React.FC<{
   return (
     <>
       <Container onMouseLeave={onMouseLeave}>
-        <div className="balance-view-content relative">
+        <div className="balance-view-content">
           <div>
             <div className={clsx('group w-[100%] flex gap-[8px] items-end')}>
               <div
                 className={clsx(
-                  'text-[44px] leading-[53px] font-bold text-r-neutral-title1 max-w-full'
+                  'text-[48px] leading-[60px] font-bold text-r-neutral-title1 max-w-full'
                 )}
               >
                 {isLoading ? (
@@ -191,7 +195,7 @@ export const BalanceView: React.FC<{
                     currentIsLoss
                       ? 'text-rb-red-default'
                       : 'text-rb-green-default',
-                    'text-[20px] leading-[24px] font-medium',
+                    'text-[20px] font-medium',
                     {
                       hidden: shouldHidePercentChange,
                     }
@@ -206,6 +210,17 @@ export const BalanceView: React.FC<{
                   {currentChangeValue ? (
                     <span>({currentChangeValue})</span>
                   ) : null}
+                </div>
+                <div>
+                  <RcIconRefreshCC
+                    viewBox="0 0 16 16"
+                    className={clsx(
+                      'w-[24px] h-[24px] text-rb-neutral-foot cursor-pointer',
+                      'hover:text-r-blue-default',
+                      isLoading ? 'animate-spin' : ''
+                    )}
+                    onClick={onRefresh}
+                  />
                 </div>
                 {/* {missingList?.length ? (
                   <Tooltip
@@ -225,7 +240,9 @@ export const BalanceView: React.FC<{
             </div>
           </div>
           <div
-            className={clsx('w-[400px] h-[100px] absolute top-[-30px] right-0')}
+            className={clsx(
+              'w-[400px] h-[104px] absolute top-[12px] right-[20px]'
+            )}
             onMouseMove={onMouseMove}
             onMouseLeave={onMouseLeave}
           >
@@ -234,16 +251,17 @@ export const BalanceView: React.FC<{
                 isHover={currentHover}
                 data={curveChartData}
                 showAppChainTips={showAppChainTips}
+                appChainIds={appChainIds}
                 onHover={handleHoverCurve}
                 width={400}
-                height={100}
+                height={104}
               />
             )}
             {!!isLoading && (
               <div className="flex mt-[14px]">
                 <Skeleton.Input
                   active
-                  className="m-auto w-[400px] h-[80px] rounded block"
+                  className="m-auto w-[400px] h-[104px] rounded block"
                 />
               </div>
             )}

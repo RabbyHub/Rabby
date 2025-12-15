@@ -15,7 +15,7 @@ import styled from 'styled-components';
 import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 import { useTokens } from '@/ui/utils/portfolio/token';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { uniqBy } from 'lodash';
 import { CHAINS_ENUM } from '@/constant';
 import useSearchToken from '@/ui/hooks/useSearchToken';
@@ -133,11 +133,15 @@ const TokenSelect = forwardRef<
     const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
     const [initLoading, setInitLoading] = useState(true);
     const [updateNonce, setUpdateNonce] = useState(0);
-    const currentAccount = useRabbySelector(
-      (state) => state.account.currentAccount
-    );
+    const [lpTokenMode, setLpTokenMode] = useState(false);
+    const { currentAccount } = useRabbySelector((s) => ({
+      currentAccount: s.account.currentAccount,
+    }));
     const wallet = useWallet();
     const { t } = useTranslation();
+    const isFromMode = useMemo(() => {
+      return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
+    }, [type]);
 
     useImperativeHandle(ref, () => ({
       openTokenModal: setTokenSelectorVisible,
@@ -162,6 +166,7 @@ const TokenSelect = forwardRef<
         ...prev,
         chainServerId: chainId,
       }));
+      setLpTokenMode(false);
     };
 
     const handleSelectToken = () => {
@@ -179,7 +184,9 @@ const TokenSelect = forwardRef<
       undefined,
       tokenSelectorVisible,
       updateNonce,
-      queryConds.chainServerId
+      queryConds.chainServerId,
+      undefined,
+      isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
     );
 
     const {
@@ -208,12 +215,10 @@ const TokenSelect = forwardRef<
     const {
       isLoading: isSearchLoading,
       list: searchedTokenByQuery,
-    } = useSearchToken(
-      currentAccount?.address,
-      queryConds.keyword,
-      queryConds.chainServerId,
-      isSwapType || type === 'bridgeFrom' ? false : true
-    );
+    } = useSearchToken(currentAccount?.address, queryConds.keyword, {
+      chainServerId: queryConds.chainServerId,
+      withBalance: isSwapType || type === 'bridgeFrom' ? false : true,
+    });
 
     const isSwapTo = type === 'swapTo';
 
@@ -311,24 +316,25 @@ const TokenSelect = forwardRef<
           {typeof tokenRender === 'function'
             ? tokenRender?.({ token, openTokenModal: handleSelectToken })
             : tokenRender}
-          {type === 'bridgeFrom' && !queryConds.chainServerId ? null : (
-            <TokenSelector
-              drawerHeight={drawerHeight}
-              visible={tokenSelectorVisible}
-              list={displayTokenList}
-              onConfirm={handleCurrentTokenChange}
-              onCancel={handleTokenSelectorClose}
-              onSearch={handleSearchTokens}
-              isLoading={isListLoading}
-              type={type}
-              placeholder={placeholder}
-              chainId={queryConds.chainServerId!}
-              disabledTips={disabledTips}
-              supportChains={supportChains}
-              excludeTokens={excludeTokens}
-              getContainer={getContainer}
-            />
-          )}
+          <TokenSelector
+            drawerHeight={drawerHeight}
+            visible={tokenSelectorVisible}
+            mainnetTokenList={displayTokenList}
+            onConfirm={handleCurrentTokenChange}
+            onCancel={handleTokenSelectorClose}
+            onSearch={handleSearchTokens}
+            isLoading={isListLoading}
+            type={type}
+            placeholder={placeholder}
+            chainId={queryConds.chainServerId!}
+            disabledTips={disabledTips}
+            supportChains={supportChains}
+            excludeTokens={excludeTokens}
+            getContainer={getContainer}
+            lpTokenMode={lpTokenMode}
+            setLpTokenMode={setLpTokenMode}
+            showLpTokenSwitch={isFromMode}
+          />
         </>
       );
     }
@@ -379,23 +385,24 @@ const TokenSelect = forwardRef<
             />
           )}
         </Wrapper>
-        {type === 'bridgeFrom' && !queryConds.chainServerId ? null : (
-          <TokenSelector
-            visible={tokenSelectorVisible}
-            list={displayTokenList}
-            onConfirm={handleCurrentTokenChange}
-            onCancel={handleTokenSelectorClose}
-            onSearch={handleSearchTokens}
-            isLoading={isListLoading}
-            type={type}
-            placeholder={placeholder}
-            chainId={queryConds.chainServerId!}
-            disabledTips={disabledTips}
-            supportChains={supportChains}
-            drawerHeight={drawerHeight}
-            excludeTokens={excludeTokens}
-          />
-        )}
+        <TokenSelector
+          visible={tokenSelectorVisible}
+          mainnetTokenList={displayTokenList}
+          onConfirm={handleCurrentTokenChange}
+          onCancel={handleTokenSelectorClose}
+          onSearch={handleSearchTokens}
+          isLoading={isListLoading}
+          type={type}
+          placeholder={placeholder}
+          chainId={queryConds.chainServerId!}
+          disabledTips={disabledTips}
+          supportChains={supportChains}
+          drawerHeight={drawerHeight}
+          excludeTokens={excludeTokens}
+          lpTokenMode={lpTokenMode}
+          setLpTokenMode={setLpTokenMode}
+          showLpTokenSwitch={isFromMode}
+        />
       </>
     );
   }

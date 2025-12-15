@@ -41,21 +41,15 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
       )}
       onClick={() => setVisible(true)}
     >
-      <div
-        className={clsx(
-          'text-r-neutral-foot text-13',
-          'flex items-center',
-          'hover:opacity-60'
-        )}
-      >
+      <div className={clsx('text-r-neutral-foot text-13', 'flex items-center')}>
         <LowValueSVG className="mr-12" />
-        <div className="text-r-neutral-title1">
+        <div className="text-r-neutral-foot">
           {t('page.dashboard.assets.table.lowValueAssets', {
             count: list?.length,
           })}
         </div>
       </div>
-      <div className="text-13 text-r-neutral-title-1 font-medium">
+      <div className="text-13 text-r-neutral-foot font-medium">
         ${splitNumberByStep(totalValue?.toFixed(2) ?? '0')}
       </div>
 
@@ -68,7 +62,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
           </div>
         }
         isNew
-        height={494}
+        height={500}
         visible={visible}
         closable
         push={false}
@@ -85,7 +79,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
           <TokenTable
             list={list}
             virtual={{
-              height: 403,
+              height: 430,
               itemSize: 68,
             }}
           />

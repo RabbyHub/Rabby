@@ -378,7 +378,7 @@ const GnosisTransactionItem = ({
         },
       ],
     });
-    if (!(UI_TYPE.isDesktop || UI_TYPE.isTab)) {
+    if (UI_TYPE.isPop) {
       window.close();
     }
   };
@@ -546,6 +546,7 @@ export const GnosisTransactionQueueList = (props: {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadFaild, setIsLoadFaild] = useState(false);
   const [account] = useAccount();
+  const history = useHistory();
 
   const { data: safeInfo, loading: isSafeInfoLoading } = useGnosisSafeInfo({
     address: account?.address,
@@ -669,7 +670,15 @@ export const GnosisTransactionQueueList = (props: {
       );
       await wallet.execGnosisTransaction(account);
       setIsSubmitting(false);
-      window.close();
+      if (UI_TYPE.isDesktop) {
+        history.replace(
+          history.location.pathname.startsWith('/desktop/profile')
+            ? history.location.pathname
+            : '/desktop/profile'
+        );
+      } else {
+        window.close();
+      }
     } catch (e) {
       message.error(e.message || JSON.stringify(e));
       setIsSubmitting(false);

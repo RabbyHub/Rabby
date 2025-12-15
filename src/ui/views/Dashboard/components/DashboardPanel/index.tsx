@@ -2,7 +2,7 @@ import { CHAINS_ENUM, KEYRING_TYPE, ThemeIconType } from '@/constant';
 import RateModal from '@/ui/component/RateModal/RateModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useRabbySelector } from '@/ui/store';
-import { usePerpsHomePnl } from '@/ui/views/Perps/usePerpsHomePnl';
+import { usePerpsHomePnl } from '@/ui/views/Perps/hooks/usePerpsHomePnl';
 import { findChainByID } from '@/utils/chain';
 import { appIsDev } from '@/utils/env';
 import { ga4 } from '@/utils/ga4';
@@ -48,10 +48,11 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { EcologyPopup } from '../EcologyPopup';
 import { Settings } from '../index';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
-import { RcIconFullscreenCC } from '@/ui/assets/dashboard';
+import { RcIconExternal1CC, RcIconFullscreenCC } from '@/ui/assets/dashboard';
 import { RecentConnectionsPopup } from '../RecentConnections';
 import { useScroll, useSize } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
 
 const Container = styled.div`
   position: relative;
@@ -152,6 +153,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const { t } = useTranslation();
   const history = useHistory();
   const { perpsPositionInfo, isFetching } = usePerpsHomePnl();
+  // useCheckBridgePendingItem();
 
   const [badgeModalVisible, setBadgeModalVisible] = useState(false);
 
@@ -300,24 +302,30 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       eventKey: 'Approvals',
       content: t('page.dashboard.home.panel.approvals'),
       onClick: async (evt) => {
-        openInternalPageInTab('approval-manage');
+        // openInternalPageInTab('approval-manage');
+        await wallet.openInDesktop('/desktop/profile/approvals');
+        window.close();
       },
       badge: approvalRiskAlert,
       badgeAlert: approvalRiskAlert > 0,
+      isFullscreen: true,
     } as IPanelItem,
     more: {
       icon: RcIconSettingCC,
       eventKey: 'More',
-      content: t('page.dashboard.home.panel.setting'),
+      content: t('page.dashboard.home.panel.settings'),
       onClick: onSettingClick,
     } as IPanelItem,
     nft: {
       icon: RcIconNftCC,
       eventKey: 'NFT',
       content: t('page.dashboard.home.panel.nft'),
-      onClick: () => {
-        history.push('/nft');
+      onClick: async () => {
+        // history.push('/nft');
+        await wallet.openInDesktop('/desktop/profile/nft');
+        window.close();
       },
+      isFullscreen: true,
     } as IPanelItem,
     ecology: {
       icon: RcIconEco,
@@ -365,6 +373,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       onClick: () => {
         openInternalPageInTab('sync');
       },
+      isFullscreen: true,
     } as IPanelItem,
     perps: {
       icon: RcIconPerpsCC,
@@ -403,6 +412,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       onClick: () => {
         openInternalPageInTab('dapp-search');
       },
+      isFullscreen: true,
     } as IPanelItem,
     dapps: {
       icon: RcIconDappsCC,
@@ -556,8 +566,8 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
                     </div>
                   )}
                   {item.isFullscreen && (
-                    <div className="absolute top-[6px] right-[6px] text-r-neutral-foot hidden group-hover:block">
-                      <RcIconFullscreenCC className="w-[12px] h-[12px]" />
+                    <div className="absolute top-[6px] right-[6px] opacity-50 text-r-neutral-foot hidden group-hover:block">
+                      <RcIconExternal1CC />
                     </div>
                   )}
                 </div>

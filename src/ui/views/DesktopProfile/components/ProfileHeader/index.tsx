@@ -1,26 +1,16 @@
-import { EVENTS, KEYRING_TYPE } from '@/constant';
-import {
-  RcIconBridgeCC,
-  RcIconCopyCC,
-  RcIconQrCodeCC,
-  RcIconSendCC,
-  RcIconSpinCC,
-  RcIconSwapCC,
-} from '@/ui/assets/desktop/profile';
+import { RcIconCopyCC, RcIconQrCodeCC } from '@/ui/assets/desktop/profile';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
-import { useRabbyDispatch } from '@/ui/store';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { CurveChartData } from '@/ui/views/Dashboard/components/BalanceView/useCurve';
 import { useRequest } from 'ahooks';
 import { Popover } from 'antd';
-import clsx from 'clsx';
 import QRCode from 'qrcode.react';
-import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { BalanceView } from './BalanceView';
+import { useWallet } from '@/ui/utils';
+import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 
 const GlobalStyle = createGlobalStyle`
   .global-qr-code-popover {
@@ -42,32 +32,31 @@ export const ProfileHeader: React.FC<{
   balance?: number | null;
   evmBalance?: number | null;
   curveChartData?: CurveChartData;
+  appChainIds: string[];
   isLoading?: boolean;
+  onRefresh?(): void;
 }> = (props) => {
   const currentAccount = useCurrentAccount();
-  const history = useHistory();
-  const location = useLocation();
-  const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
-  const dispatch = useRabbyDispatch();
 
-  const { data: pendingTxCount, runAsync } = useRequest(
+  const wallet = useWallet();
+
+  const { data: alias, runAsync: runFetchAlias } = useRequest(
     async () => {
-      if (!currentAccount?.address || isGnosis) {
-        return;
+      if (!currentAccount?.address) {
+        return '';
       }
-      return dispatch.transactions.getPendingTxCountAsync(
-        currentAccount?.address
-      );
+      return wallet.getAlianName(currentAccount?.address || '');
     },
     {
-      refreshDeps: [currentAccount?.address, isGnosis],
-      refreshOnWindowFocus: true,
-      pollingInterval: 30_000,
+      refreshDeps: [currentAccount?.address],
     }
   );
 
-  useEventBusListener(EVENTS.TX_SUBMITTING, runAsync);
-  useEventBusListener(EVENTS.RELOAD_TX, runAsync);
+  useEffect(() => {
+    return onBackgroundStoreChanged('contactBook', (payload) => {
+      runFetchAlias();
+    });
+  }, [runFetchAlias]);
 
   if (!currentAccount) {
     return null;
@@ -76,12 +65,15 @@ export const ProfileHeader: React.FC<{
   return (
     <>
       <GlobalStyle />
-      <div className="px-[20px] py-[24px]">
-        <div className="mb-[16px] flex items-center gap-[12px]">
-          <div className="text-rb-neutral-body text-[16px] leading-[19px]">
+      <div className="px-[20px] py-[24px] relative">
+        <div className="mb-[16px] flex items-center gap-[8px]">
+          <div className="text-r-neutral-title1 text-[18px] font-semibold">
+            {alias}
+          </div>
+          <div className="text-rb-neutral-body text-[18px] ">
             {ellipsisAddress(currentAccount?.address || '', true)}
           </div>
-          <div className="flex items-center gap-[10px]">
+          <div className="flex items-center gap-[8px]">
             <div
               onClick={() => {
                 copyAddress(currentAccount?.address);
@@ -108,85 +100,6 @@ export const ProfileHeader: React.FC<{
         </div>
 
         <BalanceView {...props} />
-
-        <div className="flex items-center gap-[12px]">
-          <div
-            className={clsx(
-              'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
-              'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
-              // 'hover:bg-r-blue-light1'
-            )}
-            onClick={() => {
-              history.replace(history.location.pathname + '?action=swap');
-            }}
-          >
-            <RcIconSwapCC />
-            Swap
-          </div>
-          <div
-            className={clsx(
-              'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
-              'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
-              // 'hover:bg-r-blue-light1'
-            )}
-            onClick={() => {
-              history.replace(history.location.pathname + '?action=send');
-            }}
-          >
-            <RcIconSendCC />
-            Send
-          </div>
-          <div
-            className={clsx(
-              'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
-              'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
-              // 'hover:bg-r-blue-light1'
-            )}
-            onClick={() => {
-              history.replace(history.location.pathname + '?action=bridge');
-            }}
-          >
-            <RcIconBridgeCC />
-            Bridge
-          </div>
-          <div className="ml-auto">
-            {isGnosis ? (
-              <div
-                className={clsx(
-                  'p-[14px] rounded-[14px] bg-rb-brand-light-1',
-                  'flex items-center justify-center gap-[8px] cursor-pointer',
-                  'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
-                )}
-                onClick={() => {
-                  history.replace(
-                    history.location.pathname + '?action=gnosis-queue'
-                  );
-                }}
-              >
-                Queue
-              </div>
-            ) : pendingTxCount ? (
-              <div
-                className={clsx(
-                  'flex items-center gap-[8px] p-[12px] cursor-pointer'
-                )}
-                onClick={() => {
-                  history.replace(
-                    history.location.pathname + '?action=activities'
-                  );
-                }}
-              >
-                <RcIconSpinCC className="w-[16px] h-[16px] animate-spin text-r-orange-default" />
-                <div className="text-[13px] leading-[16px] font-medium text-r-orange-default">
-                  {pendingTxCount} pending
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </div>
       </div>
     </>
   );

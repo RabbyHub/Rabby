@@ -25,9 +25,9 @@ import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import Activities from './Activities';
 import { HistoryPage } from './History';
-import PerpsSingleCoin from './Perps/components/SingleCoin';
-import { HistoryPage as PerpsHistoryPage } from './Perps/components/HistoryPage';
-import ExploreMore from './Perps/components/ExploreMore';
+import PerpsSingleCoin from './Perps/screen/SingleCoin';
+import { HistoryPage as PerpsHistoryPage } from './Perps/screen/HistoryPage';
+import ExploreMore from './Perps/screen/ExploreMore';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
@@ -62,7 +62,7 @@ import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 import { GasAccount } from './GasAccount';
 import { GnosisQueue } from './GnosisQueue';
-import Perps from './Perps/home';
+import Perps from './Perps/screen/home';
 import { Guide } from './NewUserImport/Guide';
 import { ImportWalletList } from './NewUserImport/ImportList';
 import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
@@ -91,7 +91,10 @@ import { PreferenceStore } from '@/background/service/preference';
 import SendPoly from './SendPoly';
 import WhitelistInput from './WhitelistInput';
 import { PortalHost } from '../component/PortalHost';
-import { GlobalSignerPortal } from '../component/MiniSignV2/components/GlobalSignerPortal';
+import {
+  GlobalSignerPortal,
+  GlobalTypedDataSignerPortal,
+} from '../component/MiniSignV2/components';
 import SelectToAddress from './SelectToAddress';
 
 declare global {
@@ -464,6 +467,7 @@ const Main = () => {
       <CommonPopup />
       <PortalHost />
       <GlobalSignerPortal />
+      <GlobalTypedDataSignerPortal />
     </>
   );
 };

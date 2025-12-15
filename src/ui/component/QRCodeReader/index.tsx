@@ -3,6 +3,7 @@ import { BrowserQRCodeReader } from '@zxing/browser';
 import './style.less';
 import { openInternalPageInTab } from 'ui/utils';
 import clsx from 'clsx';
+import { message } from 'antd';
 
 interface QRCodeReaderProps {
   onSuccess(text: string): void;
@@ -40,6 +41,7 @@ const QRCodeReader = ({
       openInternalPageInTab('request-permission?type=camera', true, false);
     }
   };
+
   useEffect(() => {
     checkCameraPermission();
   }, []);
@@ -58,6 +60,15 @@ const QRCodeReader = ({
         }
       }
     );
+
+    promise.catch((e) => {
+      message.error(
+        e?.name === 'NotAllowedError'
+          ? 'Please Enable camera permissions. Then scan the QR code on your device using this camera view.'
+          : e?.message || 'Error'
+      );
+    });
+
     return () => {
       videoElem!.removeEventListener('canplay', canplayListener);
       promise

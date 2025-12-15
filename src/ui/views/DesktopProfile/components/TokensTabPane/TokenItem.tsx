@@ -7,15 +7,29 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { findChain } from '@/utils/chain';
 import { useHistory } from 'react-router-dom';
 import { DesktopTokenLabel } from '../TransactionsTabPane/DesktopTokenLabel';
-import clsx from 'clsx';
 import styled from 'styled-components';
 import { CustomTestnetToken } from '@/background/service/customTestnet';
+import { useTranslation } from 'react-i18next';
+import { isNil } from 'lodash';
+import clsx from 'clsx';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { LpTokenTag } from './components/LpTokenTag';
+
+const PADDING = 8;
+
+const MAINNET_WIDTH_MAP = {
+  token: 360 - PADDING,
+  price: 280,
+  amount: 280,
+  usdValue: 'auto', //136 - PADDING,
+};
 
 export interface Props {
   item: AbstractPortfolioToken;
   style?: React.CSSProperties;
   isLast?: boolean;
   disableSwap?: boolean;
+  disableSend?: boolean;
   onClick?: () => void;
 }
 
@@ -23,24 +37,35 @@ export interface TestnetTokenItemProps {
   item: CustomTestnetToken;
 }
 
-const SwapBottom = ({ onClick }: { onClick?: () => void }) => {
+const ActionBottom = ({
+  onClick,
+  text,
+}: {
+  onClick?: () => void;
+  text?: string;
+}) => {
   return (
     <div
       onClick={onClick}
       className={`
         swap-action-btn
         px-10 h-[24px] leading-[24px] 
-        text-r-blue-default text-12 font-medium rounded-[4px] 
+        text-r-blue-default text-12 font-medium rounded-[6px] 
         border-[0.5px] border-r-blue-default w-min cursor-pointer 
         hover:bg-r-blue-light1
       `}
     >
-      Swap
+      {text}
     </div>
   );
 };
 
-export const TokenItemAsset: React.FC<Props> = ({ item, disableSwap }) => {
+export const TokenItemAsset: React.FC<Props> = ({
+  item,
+  disableSwap,
+  disableSend,
+}) => {
+  const { t } = useTranslation();
   const chain = findChain({
     serverId: item.chain,
   });
@@ -50,10 +75,22 @@ export const TokenItemAsset: React.FC<Props> = ({ item, disableSwap }) => {
       history.location.pathname +
         `?action=swap&chain=${item.chain}&payTokenId=${item._tokenId}`
     );
-  }, [item._tokenId, item.chain]);
+  }, [history, item._tokenId, item.chain]);
+
+  const gotoSend = useCallback(() => {
+    history.replace(
+      history.location.pathname +
+        `?action=send&token=${item.chain}:${item._tokenId}`
+    );
+  }, [history, item._tokenId, item.chain]);
 
   return (
-    <TCell className="py-8 flex gap-10 flex-1 items-center overflow-hidden mr-4">
+    <TCell
+      className="py-8 flex gap-10 items-center overflow-hidden"
+      style={{
+        width: MAINNET_WIDTH_MAP['token'],
+      }}
+    >
       <div className="relative h-[24px]">
         <Image
           className="w-24 h-24 rounded-full"
@@ -74,16 +111,30 @@ export const TokenItemAsset: React.FC<Props> = ({ item, disableSwap }) => {
         </TooltipWithMagnetArrow>
       </div>
       <div className="flex flex-1 flex-row items-center gap-[12px] overflow-hidden">
-        <DesktopTokenLabel
-          token={{ ...item, id: item._tokenId }}
-          isNft={false}
-          textClassName={`
-            cursor-pointer no-underline
-            text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
-            hover:text-r-blue-default hover:underline 
-          `}
-        />
-        {!disableSwap && <SwapBottom onClick={gotoSwap} />}
+        <div className="flex items-center gap-4">
+          <DesktopTokenLabel
+            token={{ ...item, id: item._tokenId }}
+            isNft={false}
+            textClassName={`
+              cursor-pointer no-underline
+              text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
+              hover:text-r-blue-default hover:underline 
+            `}
+          />
+          {isLpToken(item) && <LpTokenTag />}
+        </div>
+        {!disableSwap && (
+          <ActionBottom
+            onClick={gotoSwap}
+            text={t('page.desktopProfile.portfolio.actions.swap')}
+          />
+        )}
+        {!disableSend && (
+          <ActionBottom
+            onClick={gotoSend}
+            text={t('page.desktopProfile.portfolio.actions.send')}
+          />
+        )}
       </div>
     </TCell>
   );
@@ -92,9 +143,17 @@ export const TokenItemAsset: React.FC<Props> = ({ item, disableSwap }) => {
 export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
   item,
 }) => {
+  const { t } = useTranslation();
   const chain = findChain({
     id: item.chainId,
   });
+  const history = useHistory();
+  const gotoSend = useCallback(() => {
+    history.replace(
+      history.location.pathname +
+        `?action=send&token=${chain?.serverId}:${item.id}`
+    );
+  }, [chain?.serverId, history, item.id]);
   return (
     <TCell className="py-8 flex gap-10 flex-1 items-center overflow-hidden">
       <div className="relative h-[24px]">
@@ -143,6 +202,10 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
             hover:text-r-blue-default hover:underline 
           `}
         />
+        <ActionBottom
+          onClick={gotoSend}
+          text={t('page.desktopProfile.portfolio.actions.send')}
+        />
       </div>
     </TCell>
   );
@@ -150,38 +213,73 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
 
 const TokenItemAmount: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 truncate">
-      {item._amountStr}
+    <TCell
+      className="py-8 text-r-neutral-title1 text-14 truncate"
+      style={{
+        width: MAINNET_WIDTH_MAP['amount'],
+      }}
+    >
+      {`${item._amountStr} `}
+      <DesktopTokenLabel
+        token={{ ...item, id: item._tokenId }}
+        isNft={false}
+        textClassName={`
+            cursor-pointer no-underline
+            text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
+            hover:text-r-blue-default hover:underline 
+          `}
+      />
     </TCell>
   );
 };
 
 const TokenItemPrice: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 truncate">
+    <TCell
+      className="text-r-neutral-title1 text-14  truncate flex items-center gap-4"
+      style={{
+        width: MAINNET_WIDTH_MAP['price'],
+      }}
+    >
       <div>${item._priceStr}</div>
+      {isNil(item.price_24h_change) ? null : (
+        <div
+          className={clsx('font-normal text-12', {
+            'text-green': item.price_24h_change > 0,
+            'text-red-forbidden': item.price_24h_change < 0,
+          })}
+        >
+          {item.price_24h_change > 0 ? '+' : ''}
+          {(item.price_24h_change * 100).toFixed(2)}%
+        </div>
+      )}
     </TCell>
   );
 };
 
 const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 text-right truncate">
+    <TCell
+      className="py-8 text-r-neutral-title1 text-14 flex-1 text-right truncate"
+      style={{
+        width: MAINNET_WIDTH_MAP['usdValue'],
+      }}
+    >
       {item._usdValueStr || '<$0.01'}
     </TCell>
   );
 };
 
 const TokenRowWrapper = styled(TRow)`
-  border-bottom: 1px solid var(--r-neutral-bg-4, #f2f4f7);
+  border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
   height: 60px;
-  padding-left: 12px;
-  padding-right: 16px;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
   .swap-action-btn {
     display: none !important;
   }
   &:hover {
-    background-color: var(--r-neutral-bg-2);
+    background-color: var(--rb-neutral-bg-2, #f2f4f7);
     .swap-action-btn {
       display: block !important;
     }

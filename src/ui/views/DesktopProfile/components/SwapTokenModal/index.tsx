@@ -6,8 +6,7 @@ import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { ModalCloseIcon } from '../TokenDetailModal';
 import { useHistory } from 'react-router-dom';
-import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
-import { useDebounce } from 'ahooks';
+import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 
 export const SwapTokenModal: React.FC<
   ModalProps & { action: 'swap' | 'bridge' }
@@ -27,8 +26,6 @@ export const SwapTokenModal: React.FC<
     history.replace(`/desktop/profile?${searchParams.toString()}`);
   };
 
-  // const visible = useDebounce(props.visible, { wait: 500 });
-
   return (
     <Modal
       {...modalProps}
@@ -37,6 +34,7 @@ export const SwapTokenModal: React.FC<
       title={null}
       bodyStyle={{ background: 'transparent', maxHeight: 'unset', padding: 0 }}
       maskClosable={true}
+      centered
       footer={null}
       zIndex={1000}
       closeIcon={ModalCloseIcon}
@@ -47,42 +45,34 @@ export const SwapTokenModal: React.FC<
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
     >
-      <div className="js-rabby-desktop-swap-container bg-r-neutral-bg-2 rounded-[20px]">
-        <div className="flex justify-center mt-12 mb-12 ">
-          <div className="inline-flex items-center bg-r-neutral-line rounded-[6px] border border-rabby-neutral-line">
-            {tabs.map((tab) => {
-              const isActive = tab.key === action;
-              return (
-                <div
-                  key={tab.key}
-                  onClick={() => handleTabChange(tab.key)}
-                  className={clsx(
-                    'cursor-pointer rounded-[6px]',
-                    'px-[28px] py-[8px] text-center',
-                    'text-15 font-medium',
-                    isActive
-                      ? 'bg-r-neutral-card-1 text-r-blue-default shadow-sm'
-                      : 'text-r-neutral-body hover:text-r-blue-default'
-                  )}
-                >
-                  {tab.label}
-                </div>
-              );
-            })}
+      <PopupContainer>
+        <div className="js-rabby-desktop-swap-container bg-r-neutral-bg-2 rounded-[20px]">
+          <div className="flex justify-center mt-12 mb-12 ">
+            <div className="inline-flex items-center bg-r-neutral-line rounded-[6px] border border-rabby-neutral-line">
+              {tabs.map((tab) => {
+                const isActive = tab.key === action;
+                return (
+                  <div
+                    key={tab.key}
+                    onClick={() => handleTabChange(tab.key)}
+                    className={clsx(
+                      'cursor-pointer rounded-[6px]',
+                      'px-[28px] py-[8px] text-center',
+                      'text-15 font-medium',
+                      isActive
+                        ? 'bg-r-neutral-card-1 text-r-blue-default shadow-sm'
+                        : 'text-r-neutral-body hover:text-r-blue-default'
+                    )}
+                  >
+                    {tab.label}
+                  </div>
+                );
+              })}
+            </div>
           </div>
+          {action === 'swap' ? <Swap /> : <Bridge />}
         </div>
-        {action === 'swap' ? <Swap /> : <Bridge />}
-      </div>
-
-      <div className="absolute top-0 left-[100%] pl-[20px]">
-        <DesktopSelectAccountList isInModal />
-      </div>
-
-      {/* {visible ? (
-        <div className="absolute top-0 left-[100%] pl-[20px]">
-          <DesktopSelectAccountList isInModal />
-        </div>
-      ) : null} */}
+      </PopupContainer>
     </Modal>
   );
 };

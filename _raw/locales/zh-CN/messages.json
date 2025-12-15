@@ -120,7 +120,8 @@
           "gasAccount": "GasAccount",
           "setting": "设置",
           "dapps": "Dapps",
-          "searchDapp": "搜索 Dapp"
+          "searchDapp": "搜索 Dapp",
+          "settings": "设置"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -144,7 +145,8 @@
         "missingDataTooltip": "由于 {{text}}的当前网络问题，地址余额可能无法更新。",
         "chain": " 链、",
         "chainEnd": " 链",
-        "appChainTips": "Hyperliquid 账户未包含"
+        "appChainTips": "Hyperliquid 账户未包含",
+        "slotAppChainTips": "{{appChainNames}} 账户未包含"
       },
       "recentConnection": {
         "disconnected": "已断开连接",
@@ -374,7 +376,10 @@
           "lowValueAssets_one": "{{count}} 个低价值代币",
           "lowValueAssets_other": "{{count}} 个低价值代币",
           "lowValueAssets_0": "{{count}} 个低价值代币",
-          "review": "审核"
+          "review": "审核",
+          "noTokens": "没有代币",
+          "searchToken": "搜索 Token",
+          "lowValueDefis": "{{count}} 低价值 defis"
         },
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址，隐藏代币",
@@ -405,12 +410,16 @@
         },
         "TestnetAssetListContainer": {
           "add": "代币",
-          "addTestnet": "网络"
+          "addTestnet": "网络",
+          "addToken": "添加 Token",
+          "addNetwork": "添加网络"
         },
         "noTestnetAssets": "没有自定义网络资产",
         "addTokenEntryText": "代币",
         "side": "侧边",
-        "price": "价格"
+        "price": "价格",
+        "openInTab": "在新标签页中打开",
+        "searchTokenPlaceholder": "搜索代币"
       },
       "hd": {
         "howToConnectLedger": "如何连接 Ledger",
@@ -562,7 +571,9 @@
         "passphrase": "密码",
         "importQuestion1": "如果我丢失或分享我的种子短语，我将永久失去对我的资产的访问权限。",
         "importQuestion3": "如果我在没有备份我的种子短语的情况下卸载 Rabby，将无法通过 Rabby 恢复。",
-        "importQuestion2": "我的助记词仅存储在我的设备上。Rabby 无法访问它。"
+        "importQuestion2": "我的助记词仅存储在我的设备上。Rabby 无法访问它。",
+        "showMoreOptions": "显示更多选项",
+        "inputInvalid": "检测到无效单词。请检查标记的单词。"
       },
       "metamask": {
         "step1": "从 MetaMask 导出助记词或私钥  <br/><1>查看操作指南<1/></1>",
@@ -1265,9 +1276,9 @@
         "level": {
           "$unknown": "未知",
           "custom": "自定义",
-          "fast": "立即",
-          "normal": "快速",
-          "slow": "标准"
+          "fast": "快速",
+          "normal": "正常",
+          "slow": "慢"
         },
         "popupDesc": "矿工费将根据你设置的 Gas Price 从转账金额中预留",
         "popupTitle": "设置 Gas Price (Gwei)"
@@ -2451,7 +2462,26 @@
       "duration": "{{duration}} 分钟",
       "recommendFromToken": "从 <1></1> 桥接以获取可用报价",
       "est-receiving": "预计接收：",
-      "bridgeDbkBtn": "通过 DeBank 官方服务进行桥接"
+      "bridgeDbkBtn": "通过 DeBank 官方服务进行桥接",
+      "pendingItem": {
+        "estimatedTime": "预计时间",
+        "completed": "已完成",
+        "sendingFrom": "从 {{chain}} 发送",
+        "receivingTo": "在 {{chain}} 上接收",
+        "pending": "待处理",
+        "failed": "失败",
+        "queued": "排队中",
+        "swap": "交换",
+        "beReturnFailed": "桥接失败。您的资产已被返回。",
+        "bridgeStatus": "桥接状态",
+        "receivedDifferentTokenFromSource": "桥接失败。源链返回了不同的代币。",
+        "BridgeStatusUnavailable": "桥接状态不可用。请检查您的交易历史以确认资金是否到账。",
+        "fromFailed": "交易未成功。请再试一次。",
+        "receivedDifferentTokenNeedSwap": "您收到了不同的代币。您可以将其兑换为您选择的代币。",
+        "longTimeNoReceive": "网络繁忙。这可能会比平时花费更长的时间。请耐心等待。",
+        "sendStatus": "发送状态",
+        "swapStatus": "交换状态"
+      }
     },
     "ecology": {
       "sonic": {
@@ -2869,10 +2899,10 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "180天内没有转账到此地址",
             "dexNoDeposite": "不是CEX存款地址，资金可能会丢失",
             "contractAddress": "检测到合约地址，资金可能会丢失。",
-            "scamAddress": "被Rabby标记的诈骗地址"
+            "scamAddress": "被Rabby标记的诈骗地址",
+            "noSend": "您在过去180天内没有发送到该地址。"
           }
         },
         "title": "发送到此地址",
@@ -3067,7 +3097,9 @@
       "toast": {
         "openPositionSuccess": "已开 {{direction}} {{coin}}-USD：数量 {{size}}，价格 ${{price}}",
         "setAutoCloseSuccess": "自动关闭头寸设置成功",
-        "closePositionSuccess": "已平仓 {{direction}} {{coin}}-USD：规模 {{size}}，价格 ${{price}}"
+        "closePositionSuccess": "已平仓 {{direction}} {{coin}}-USD：规模 {{size}}，价格 ${{price}}",
+        "takeProfitSuccess": "成功设置止盈",
+        "stopLossSuccess": "止损设置成功"
       },
       "closePositionPopup": {
         "closeShort": "平仓做空",
@@ -3077,7 +3109,43 @@
         "positionSize": "持仓规模"
       },
       "isolated": "逐仓",
-      "cross": "全仓"
+      "cross": "全仓",
+      "closeAllPopup": {
+        "title": "确认关闭所有仓位",
+        "description": "你所有的未平仓头寸将以市场价格平仓。"
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "危险",
+          "description": "您的头寸面临高风险清算。距离清算价格的距离为≤3%。请考虑追加保证金或平仓以避免清算。"
+        },
+        "warning": {
+          "title": "警告",
+          "description": "您的仓位接近清算风险。距离清算价格的区间为3%到8%。请谨慎监控您的仓位，并考虑追加保证金。"
+        },
+        "safe": {
+          "title": "安全",
+          "description": "您的头寸处于安全水平。距清算价的距离超过8%。继续关注市场情况。"
+        },
+        "title": "风险等级",
+        "liquidationPrice": "清算价格",
+        "gotIt": "明白了",
+        "subTitle": "实时清算距离 (%)",
+        "currentPrice": "当前价格",
+        "liquidationDistance": "清算距离",
+        "liquidationDistanceTips": "清算距离 (%) 显示当前价格与您的清算价格之间的距离。更大的距离表示更安全的头寸，而更小的距离则意味着更高的清算风险。"
+      },
+      "searchPerpsPopup": {
+        "searchPlaceholder": "搜索永续合约",
+        "searchPosition": "搜索头寸",
+        "empty": "未找到市场",
+        "hasPosition": "头寸",
+        "searchPerps": "搜索永续合约",
+        "openPosition": "开仓",
+        "onePosition": "1 头寸"
+      },
+      "position": "头寸",
+      "closeAll": "关闭所有"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3099,10 +3167,10 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "180天内没有转账到此地址",
             "contractAddress": "您正在发送到一个合约，资金可能会丢失。",
             "dexNoDeposite": "您正在发送到一个非托管的交易所地址",
-            "scamAddress": "您正在向一个欺诈地址发送交易"
+            "scamAddress": "您正在向一个欺诈地址发送交易",
+            "noSend": "您在过去180天内没有向该地址发送过。"
           }
         },
         "passwordPlaceholder": "输入密码以继续",
@@ -3132,6 +3200,229 @@
       "title": "地址",
       "selectImportedAddress": "选择导入的地址",
       "sendToImportedAddress": "发送到导入的地址"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "净资产",
+        "appChainTips": "Hyperliquid & Polymarket 账户不包括在内"
+      },
+      "UpdateButton": {
+        "updating": "更新数据",
+        "updatedAgo": "数据更新于 <1/> <2>{{timeText}}</2> <3/> 前"
+      },
+      "ReachedEnd": {
+        "content": "您已到达结束。"
+      },
+      "portfolio": {
+        "headers": {
+          "allTokenMode": "全部代币模式",
+          "wallet": "钱包",
+          "foldProtocols": "折叠 {{count}} 协议",
+          "unfoldProtocols": "展开 {{count}} 个协议",
+          "lpToken": "LP-Token",
+          "unfoldDifis": "展开 {{count}} 个 Defis",
+          "foldDifis": "折叠 {{count}} 个 DeFi"
+        },
+        "hidden": {
+          "tokensWithZeroBalance": "隐藏 $0 代币",
+          "showAll": "显示全部",
+          "hideSmallDesc": "余额较小的 Tokens 不会显示。",
+          "hideProtocolsWithSmallDeposits": "隐藏存款少的协议。",
+          "hideSmall": "隐藏小额余额的代币。",
+          "tokensWithZeroBalanceDesc": "余额为 $0 的代币被隐藏。",
+          "hideProtocolsWithSmallDepositsDesc": "小额存款的协议不会显示。",
+          "hideDefiWithSmallDeposits": "使用小额存款隐藏 DeFi。",
+          "hideDefiWithSmallDepositsDesc": "小额存款的 DeFi 项目未显示。"
+        },
+        "table": {
+          "token": "令牌",
+          "price": "价格",
+          "amount": "金额",
+          "chain": "链",
+          "tokenAddress": "代币地址",
+          "usdValue": "美元价值"
+        },
+        "actions": {
+          "send": "发送",
+          "swap": "交换"
+        }
+      },
+      "button": {
+        "queue": "队列",
+        "send": "发送",
+        "bridge": "桥接",
+        "swap": "兑换",
+        "pending": "{{pendingTxCount}} 待处理"
+      },
+      "tabs": {
+        "tokens": "代币",
+        "approvals": "授权",
+        "transactions": "交易",
+        "difi": "Defi"
+      },
+      "nft": {
+        "message": {
+          "listingSuccess": "刚刚上架！",
+          "cancelFailed": "失败！",
+          "acceptFailed": "销售失败",
+          "cancelSuccessDesc": "您已成功取消了 '{{name}}' 的上架。",
+          "acceptSuccessDesc": "您已成功出售 {{name}}",
+          "cancelFailedDesc": "请再试一次",
+          "listingSuccessDesc": "您已在 OpenSea 上列出 {{name}}",
+          "listingFailedDesc": "请再试一次。",
+          "listingFailed": "列表失败",
+          "cancelSuccess": "成功取消上架",
+          "acceptFailedDesc": "请再试一次。",
+          "acceptSuccess": "成功出售"
+        },
+        "detail": {
+          "rarity": "稀有度",
+          "ending": "结束：",
+          "lastSale": "最后销售",
+          "collection": "集合",
+          "supportPlatform": "支持的平台：",
+          "platform": "平台：",
+          "chain": "链",
+          "topOffer": "最佳优惠",
+          "nft": "NFT",
+          "collectionFloor": "收藏品地板",
+          "noOffer": "尚无报价",
+          "accept": "接受",
+          "cancel": "取消上架",
+          "edit": "编辑列表",
+          "listedFor": "{{count}} 已列出用于",
+          "listing": "在 Opensea 上发布",
+          "send": "发送"
+        },
+        "cancelModal": {
+          "cancelListing": "取消列表",
+          "listing": "列表",
+          "title": "取消上架",
+          "listingPrice": "上架价格"
+        },
+        "listingModal": {
+          "quantity": "数量",
+          "floor": "地板",
+          "createListing": "创建列表",
+          "floorDifference": "底价差异",
+          "cost": "成本",
+          "total": "总挂牌价格",
+          "nft": "NFT",
+          "totalEst": "总预计收益",
+          "listedAs": "列出为",
+          "creatorFee": "创作者费用 ({{fee}}%)",
+          "platformFee": "Opensea 平台费用 ({{fee}}%)",
+          "rabbyFee": "Rabby 费用 (0%)",
+          "editListing": "编辑列表",
+          "creatorFeeTips": "",
+          "approveAndList": "批准并列出",
+          "listOn": "在 OpenSea 上列出",
+          "platformFeeTips": "此费用是OpenSea的服务费",
+          "topOffer": "优选提议",
+          "creatorFeeTips1": "创作者收入将由卖方支付。创作者收入是强制执行的。",
+          "proceeds": "收益"
+        },
+        "acceptModal": {
+          "totalEst": "总估计收益",
+          "offerPrice": "优惠价格",
+          "platform": "平台",
+          "acceptOffer": "接受报价",
+          "platformFeeTips": "这笔费用是 OpenSea 的服务费用",
+          "quantity": "数量",
+          "creatorFee": "创作者费用 ({{fee}}%)",
+          "creatorFeeTips": "",
+          "platformFee": "Opensea 平台费用 ({{fee}}%)",
+          "title": "接受报价",
+          "floorDifference": "地板差异",
+          "offer": "提供",
+          "creatorFeeTips1": "创作者收益将由卖方支付。创作者收益是强制执行的。",
+          "rabbyFee": "Rabby费用 (0%)"
+        },
+        "empty": "没有NFTs",
+        "pending": "待处理",
+        "confirmingTx": "确认您的交易",
+        "hideLowValue": "隐藏低价值NFT",
+        "all": "所有"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "newPosition": "开仓",
+        "long": "做多",
+        "margin": "保证金",
+        "short": "做空",
+        "insufficientBalance": "余额不足",
+        "available": "可用",
+        "rabbyFee": "Rabby 费用",
+        "size": "规模",
+        "free": "免费",
+        "invalidNumber": "无效的数字",
+        "takeProfitWhenPriceAbove": "当价格高于时止盈",
+        "providerFee": "Hyperliquid 费用",
+        "stopLossWhenPriceBelow": "当价格低于时止损",
+        "minimumOrderSize": "最低订单金额为 $10",
+        "maximumOrderSize": "最大订单大小为 {{amount}}",
+        "stopLossWhenPriceAbove": "当价格高于时止损",
+        "sizeTips": "您的交易的总价值或数量，根据保证金和杠杆设置。",
+        "leverage": "杠杆",
+        "takeProfitWhenPriceBelow": "当价格低于时获利了结"
+      },
+      "PerpsEditMarginPopup": {
+        "margin": "保证金",
+        "title": "调整保证金",
+        "addMargin": "添加保证金",
+        "amountToReduce": "减少的数量",
+        "insufficientBalance": "余额不足",
+        "currentPrice": "当前价格",
+        "reduceMarginTooltip": "减少头寸的保证金不足。",
+        "liqPrice": "Liq. Price: 清算价格",
+        "addMarginSuccess": "保证金成功添加",
+        "available": "可用",
+        "confirm": "确认",
+        "exceedMaxReduction": "超过最大减免",
+        "reduceMargin": "减少保证金",
+        "perpsBalance": "永续合约余额",
+        "amountToAdd": "增加金额",
+        "reduceMarginSuccess": "保证金减少成功"
+      },
+      "PerpsClosePositionPopup": {
+        "confirm": "确认",
+        "receive": "接收",
+        "amount": "金额",
+        "closedPnl": "已实现盈亏",
+        "fee": "费用",
+        "title": "平仓",
+        "minimumWarning": "最低平仓额度为 {{percent}}%",
+        "total": "总计"
+      },
+      "PerpsAutoCloseModal": {
+        "priceAbove": "价格高于",
+        "youLoss": "你输了",
+        "stopLossWhen": "止损当",
+        "takeProfitWhen": "止盈条件",
+        "takeProfitExpectedPNL": "止盈预期收益",
+        "title": "自动平仓",
+        "takeProfit": "止盈",
+        "currentPrice": "当前价格：",
+        "stopLossWhenPriceAbove": "当价格高于时止损",
+        "youGain": "你获得",
+        "noPosition": "您必须先输入保证金",
+        "priceBelow": "价格低于",
+        "takeProfitTipsShort": "止盈价格必须低于当前价格",
+        "stopLossWhenPriceBelow": "止损价位低于",
+        "takeProfitWhenPriceBelow": "当价格低于时止盈",
+        "confirm": "确认",
+        "stopLoss": "止损",
+        "stopLossExpectedPNL": "止损预期PNL",
+        "takeProfitTipsLong": "止盈价格必须高于当前价格",
+        "EntryAndCurrentPrice": "入场: ${{entryPrice}} 当前: ${{currentPrice}}",
+        "takeProfitWhenPriceAbove": "当价格超过时获利了结",
+        "cancel": "取消",
+        "stopLossTipsShort": "止损价必须高于当前价格",
+        "stopLossTipsLongLiquidation": "价格低于清算价格 ({{price}})",
+        "stopLossTipsLong": "止损价格必须低于当前价格",
+        "stopLossTipsShortLiquidation": "价格高于清算价 ({{price}})"
+      }
     }
   },
   "component": {
@@ -3260,7 +3551,10 @@
       "recent": "最近",
       "hot": "热门",
       "common": "常用",
-      "chainNotSupport": "此链不受支持"
+      "chainNotSupport": "此链不受支持",
+      "chainFilterLine": {
+        "filterAll": "所有区块链"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3287,9 +3581,9 @@
     },
     "ReserveGasPopup": {
       "doNotReserve": "不要保留Gas",
-      "normal": "正常",
-      "instant": "即时",
-      "fast": "快速",
+      "normal": "慢",
+      "instant": "快速",
+      "fast": "正常",
       "title": "Reserve Gas"
     },
     "OpenExternalWebsiteModal": {
@@ -3328,6 +3622,22 @@
     },
     "DappActions": {
       "queueDescription": "当前提款将进入等待队列。一旦处理完成，可以提取到您的钱包。"
+    },
+    "DesktopChainSelector": {
+      "allChains": "所有链"
+    },
+    "DesktopNav": {
+      "perps": "永久合约",
+      "comingSoon": "即将推出",
+      "portfolio": "投资组合",
+      "lending": "借贷"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "添加地址"
+    },
+    "LpTokenTag": {
+      "title": "这是一个流动性提供者(LP)代币",
+      "description": "LP 代币由您存入资产的 DeFi 协议发行。它们作为这些资产的证明，但其价值不包括在您的总余额中。"
     }
   },
   "background": {

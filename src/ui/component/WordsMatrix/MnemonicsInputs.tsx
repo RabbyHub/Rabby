@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import styled, { css } from 'styled-components';
 import { Dropdown, Input, Menu, message } from 'antd';
+import type { MenuProps } from 'antd';
 import { wordlist } from '@scure/bip39/wordlists/english';
 
 import { styid } from 'ui/utils/styled';
@@ -303,6 +304,8 @@ function MnemonicsInputs({
     DEFAULT_MEMONICS_COUNT
   );
   const [needPassphrase, setNeedPassphrase] = React.useState<boolean>(false);
+  const [dropdownVisible, setDropdownVisible] = React.useState(false);
+  const [showAllMenuOptions, setShowAllMenuOptions] = React.useState(false);
 
   const [invalidWords, setInvalidWords] = React.useState<number[]>([]);
   const { wordPlaceHolders } = React.useMemo(() => {
@@ -431,13 +434,33 @@ function MnemonicsInputs({
 
   const clearClipboardToast = useClearClipboardToast();
 
+  const handleDropdownVisibleChange = (visible: boolean) => {
+    setDropdownVisible(visible);
+    if (!visible) {
+      setShowAllMenuOptions(false);
+    }
+  };
+
+  const handleToggleShowMore: MenuProps['onClick'] = (info) => {
+    info?.domEvent?.preventDefault();
+    info?.domEvent?.stopPropagation();
+    setShowAllMenuOptions(true);
+    setDropdownVisible(true);
+  };
+
+  React.useEffect(() => {
+    handleDropdownVisibleChange(false);
+  }, [mnemonicsCount]);
+
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
       <HeadToolbar className="mb-[20px] text-r-neutral-body">
         <Dropdown
           trigger={['click']}
+          visible={dropdownVisible}
+          onVisibleChange={handleDropdownVisibleChange}
           overlay={
-            <Menu className="mnemonics-input-menu py-8px rounded-[4px] bg-r-neutral-bg-1">
+            <Menu className="mnemonics-input-menu py-8px rounded-[8px] bg-r-neutral-bg-1">
               {MNEMONICS_COUNTS.map((count) => {
                 return (
                   <Menu.Item
@@ -465,64 +488,96 @@ function MnemonicsInputs({
                   </Menu.Item>
                 );
               })}
-              {NEED_PASSPHRASE_MNEMONICS_COUNTS.map((count) => {
-                return (
-                  <Menu.Item
-                    className="h-[38px] py-0 px-[8px] hover:bg-transparent"
-                    key={`countSelector-need-passphrase-${count}`}
-                    style={{ color: 'var(--r-neutral-body)' }}
-                    onClick={() => {
-                      setMnemonicsCount(count);
-                      setNeedPassphrase(true);
-                      onSlip39Change(false);
-                    }}
-                  >
-                    <div className="text-wrapper">
-                      <Trans
-                        t={t}
-                        i18nKey="page.newAddress.seedPhrase.wordPhraseAndPassphrase"
-                        values={{ count }}
-                      >
-                        I have a
-                        <b style={{ color: 'var(--r-blue-default, #7084ff)' }}>
-                          {{ count }}
-                        </b>
-                        -word phrase and Passphrase
-                      </Trans>
-                    </div>
-                  </Menu.Item>
-                );
-              })}
 
-              {SLIP39_MNEMONICS_COUNTS.map(({ passphrase }) => {
-                return (
-                  <Menu.Item
-                    className="h-[38px] py-0 px-[8px] hover:bg-transparent"
-                    key={`countSelector-need-passphrase-${passphrase}`}
-                    style={{ color: 'var(--r-neutral-body)' }}
-                    onClick={() => {
-                      onSlip39Change(true);
-                      setNeedPassphrase(passphrase);
-                    }}
-                  >
-                    <div className="text-wrapper">
-                      <Trans
-                        t={t}
-                        i18nKey={
-                          passphrase
-                            ? 'page.newAddress.seedPhrase.slip39SeedPhraseWithPassphrase'
-                            : 'page.newAddress.seedPhrase.slip39SeedPhrase'
-                        }
-                        values={{ SLIP39: 'SLIP 39' }}
+              {showAllMenuOptions && (
+                <>
+                  {NEED_PASSPHRASE_MNEMONICS_COUNTS.map((count) => {
+                    return (
+                      <Menu.Item
+                        className="h-[38px] py-0 px-[8px] hover:bg-transparent"
+                        key={`countSelector-need-passphrase-${count}`}
+                        style={{ color: 'var(--r-neutral-body)' }}
+                        onClick={() => {
+                          setMnemonicsCount(count);
+                          setNeedPassphrase(true);
+                          onSlip39Change(false);
+                        }}
                       >
-                        <b
-                          style={{ color: 'var(--r-blue-default, #7084ff)' }}
-                        ></b>
-                      </Trans>
-                    </div>
-                  </Menu.Item>
-                );
-              })}
+                        <div className="text-wrapper">
+                          <Trans
+                            t={t}
+                            i18nKey="page.newAddress.seedPhrase.wordPhraseAndPassphrase"
+                            values={{ count }}
+                          >
+                            I have a
+                            <b
+                              style={{
+                                color: 'var(--r-blue-default, #7084ff)',
+                              }}
+                            >
+                              {{ count }}
+                            </b>
+                            -word phrase and Passphrase
+                          </Trans>
+                        </div>
+                      </Menu.Item>
+                    );
+                  })}
+
+                  {SLIP39_MNEMONICS_COUNTS.map(({ passphrase }) => {
+                    return (
+                      <Menu.Item
+                        className="h-[38px] py-0 px-[8px] hover:bg-transparent"
+                        key={`countSelector-need-passphrase-${passphrase}`}
+                        style={{ color: 'var(--r-neutral-body)' }}
+                        onClick={() => {
+                          onSlip39Change(true);
+                          setNeedPassphrase(passphrase);
+                        }}
+                      >
+                        <div className="text-wrapper">
+                          <Trans
+                            t={t}
+                            i18nKey={
+                              passphrase
+                                ? 'page.newAddress.seedPhrase.slip39SeedPhraseWithPassphrase'
+                                : 'page.newAddress.seedPhrase.slip39SeedPhrase'
+                            }
+                            values={{ SLIP39: 'SLIP 39' }}
+                          >
+                            <b
+                              style={{
+                                color: 'var(--r-blue-default, #7084ff)',
+                              }}
+                            ></b>
+                          </Trans>
+                        </div>
+                      </Menu.Item>
+                    );
+                  })}
+                </>
+              )}
+
+              {!showAllMenuOptions && (
+                <Menu.Item
+                  key="mnemonics-menu-show-more"
+                  className="mnemonics-show-more-item h-auto py-0 px-[8px] hover:bg-transparent text-12"
+                  onClick={handleToggleShowMore}
+                >
+                  <div className="text-wrapper show-more flex items-center justify-center text-r-neutral-foot">
+                    <span>
+                      {t('page.newAddress.seedPhrase.showMoreOptions')}
+                    </span>
+                    <RcIconArrowCC
+                      className={clsx(
+                        'ml-[6px] w-[12px] h-[12px] text-r-neutral-foot transition-transform',
+                        showAllMenuOptions && 'rotate-180'
+                      )}
+                      viewBox="0 0 16 16"
+                    />
+                  </div>
+                </Menu.Item>
+              )}
             </Menu>
           }
         >
@@ -538,8 +593,11 @@ function MnemonicsInputs({
                   }
                   values={{ count: mnemonicsCount }}
                 >
-                  I have a <span>{{ mnemonicsCount }}</span>-word phrase and
-                  Passphrase
+                  I have a
+                  <b style={{ color: 'var(--r-blue-default, #7084ff)' }}>
+                    {{ mnemonicsCount }}
+                  </b>
+                  -word phrase and Passphrase
                 </Trans>
               ) : (
                 <Trans
@@ -703,9 +761,7 @@ function MnemonicsInputs({
         >
           {invalidWords.length > 0 && (
             <div role="alert" className="mb-8">
-              {t('page.newAddress.seedPhrase.inputInvalidCount', {
-                count: invalidWords.length,
-              })}
+              {t('page.newAddress.seedPhrase.inputInvalid')}
             </div>
           )}
           {errMsgs?.[0] && <div role="alert">{errMsgs[0]}</div>}

@@ -420,19 +420,23 @@ export const BalanceView = ({
                     matteredChainBalances={chainBalancesWithValue.slice(0)}
                     gnosisNetworks={gnosisNetworks}
                   />
-                  <RcIconArrowRightCC
-                    viewBox="0 0 14 14"
-                    className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50"
-                  />
+                  <RcIconArrowRightCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
                 </div>
               ) : (
                 <div
                   className={clsx(
-                    'text-[12px] leading-[14px] text-r-neutral-title-2',
-                    !currentHover && 'opacity-70'
+                    'w-full flex items-center gap-[4px]',
+                    !currentHover && 'opacity-80'
                   )}
                 >
-                  {t('page.dashboard.assets.noAssets')}
+                  <div
+                    className={clsx(
+                      'text-[12px] leading-[14px] text-r-neutral-title-2'
+                    )}
+                  >
+                    {t('page.dashboard.assets.noAssets')}
+                  </div>
+                  <RcIconArrowRightCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
                 </div>
               )}
             </div>

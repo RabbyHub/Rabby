@@ -676,9 +676,9 @@
         "level": {
           "$unknown": "Неизвестно",
           "custom": "Вручную",
-          "fast": "Мгновенно",
-          "normal": "Быстро",
-          "slow": "Стандарт"
+          "fast": "Быстро",
+          "normal": "Обычный",
+          "slow": "Медленно"
         },
         "popupDesc": "Стоимость газа будет зарезервирована из суммы перевода на основе установленной вами цены газа",
         "popupTitle": "Установите цену газа (Gwei)"
@@ -1123,7 +1123,8 @@
           "gasAccount": "GasAccount",
           "setting": "Настройки",
           "searchDapp": "Поиск Dapp",
-          "dapps": "Dapps"
+          "dapps": "Dapps",
+          "settings": "Настройки"
         },
         "comingSoon": "Скоро будет",
         "soon": "Скоро",
@@ -1147,7 +1148,8 @@
         "missingDataTooltip": "Баланс может быть не актуальным из за задержек в сети {{text}}.",
         "chain": " сети, ",
         "chainEnd": " сеть",
-        "appChainTips": "Hyperliquid Account не включен"
+        "appChainTips": "Hyperliquid Account не включен",
+        "slotAppChainTips": "{{appChainNames}} Аккаунт не включен"
       },
       "recentConnection": {
         "disconnected": "Отключено",
@@ -1408,7 +1410,10 @@
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_0": "{{count}} с низкой стоимостью token",
           "lowValueAssets_other": "{{count}} токенов с низкой стоимостью",
-          "review": "Обзор"
+          "review": "Обзор",
+          "noTokens": "Нет токенов",
+          "searchToken": "Поиск токена",
+          "lowValueDefis": "{{count}} низкоценные дефи"
         },
         "noAssets": "Нет активов",
         "blockLinkText": "Искать адрес, чтобы заблокировать токен",
@@ -1438,13 +1443,17 @@
         },
         "TestnetAssetListContainer": {
           "add": "Токен",
-          "addTestnet": "Сеть"
+          "addTestnet": "Сеть",
+          "addToken": "Добавить токен",
+          "addNetwork": "Добавить сеть"
         },
         "noTestnetAssets": "Нет активов пользовательской сети",
         "addTokenEntryText": "Токен",
         "customButtonText": "Добавить пользовательский токен",
         "price": "ЦЕНА",
-        "side": "Сторона"
+        "side": "Сторона",
+        "openInTab": "Открыть в вкладке",
+        "searchTokenPlaceholder": "Поиск токена"
       },
       "hd": {
         "howToConnectLedger": "Как подключить Ledger",
@@ -1589,7 +1598,9 @@
         "passphrase": "Пароль",
         "importQuestion1": "Если я потеряю или поделюсь своей seed-фразой, я навсегда потеряю доступ к своим активам.",
         "importQuestion3": "Если я удалю Rabby без резервного копирования своей сид-фразы, она не может быть восстановлена Rabby.",
-        "importQuestion2": "Моя seed-фраза хранится только на моем устройстве. Rabby не может получить к ней доступ."
+        "importQuestion2": "Моя seed-фраза хранится только на моем устройстве. Rabby не может получить к ней доступ.",
+        "showMoreOptions": "Показать больше опций",
+        "inputInvalid": "Обнаружены недопустимые слова. Пожалуйста, проверьте выделенные."
       },
       "metamask": {
         "step1": "Экспорт секретной фразы или приватного ключа из MetaMask <br /> <1>Нажмите, чтобы просмотреть руководство<1/></1>",
@@ -2376,7 +2387,26 @@
       "est-difference": "Оцениваемая разница:",
       "estimated-value": "≈ {{value}}",
       "best": "Лучший",
-      "bridgeDbkBtn": "Перенос через официальную службу DBK"
+      "bridgeDbkBtn": "Перенос через официальную службу DBK",
+      "pendingItem": {
+        "failed": "Не удалось",
+        "bridgeStatus": "Статус моста",
+        "swap": "Обмен",
+        "estimatedTime": "Оценочное время",
+        "sendingFrom": "Отправка из {{chain}}",
+        "receivingTo": "Получение на {{chain}}",
+        "queued": "В очереди",
+        "pending": "Ожидает",
+        "completed": "Завершено",
+        "fromFailed": "Транзакция не прошла. Попробуйте снова.",
+        "receivedDifferentTokenNeedSwap": "Вы получили другой токен. Вы можете обменять его на выбранный вами токен.",
+        "beReturnFailed": "Мост не удался. Ваши активы были возвращены.",
+        "longTimeNoReceive": "Сеть загружена. Это может занять больше времени, чем обычно. Пожалуйста, подождите терпеливо.",
+        "BridgeStatusUnavailable": "Статус моста недоступен. Пожалуйста, проверьте вашу историю транзакций, чтобы подтвердить поступление средств.",
+        "receivedDifferentTokenFromSource": "Мост не сработал. На исходной цепи был возвращен другой токен.",
+        "sendStatus": "Статус отправки",
+        "swapStatus": "Статус обмена"
+      }
     },
     "ecology": {
       "sonic": {
@@ -2836,7 +2866,7 @@
             "contractAddress": "Обнаружен адрес контракта, средства могут быть потеряны",
             "scamAddress": "Адрес мошенничества, отмеченный Rabby",
             "dexNoDeposite": "Не адрес депозитов CEX, средства могут быть потеряны",
-            "noSend": "Нет переводов на этот адрес в течение 180 дней"
+            "noSend": "Вы не отправляли на этот адрес в течение 180 дней"
           }
         },
         "title": "Отправить на этот адрес",
@@ -3031,7 +3061,9 @@
       "toast": {
         "setAutoCloseSuccess": "Автоматическое закрытие позиции успешно установлено",
         "closePositionSuccess": "Закрыто {{direction}} {{coin}}-USD: Размер {{size}} по цене ${{price}}",
-        "openPositionSuccess": "Открыта {{direction}} {{coin}}-USD: Размер {{size}} по цене ${{price}}"
+        "openPositionSuccess": "Открыта {{direction}} {{coin}}-USD: Размер {{size}} по цене ${{price}}",
+        "takeProfitSuccess": "Установка профита выполнена успешно",
+        "stopLossSuccess": "Стоп-лосс установлен успешно"
       },
       "closePositionPopup": {
         "closeLong": "Закрыть Long",
@@ -3041,7 +3073,43 @@
         "title": "Закрыть {{coin}}-USD {{direction}}"
       },
       "cross": "Кросс",
-      "isolated": "Изолированный"
+      "isolated": "Изолированный",
+      "closeAllPopup": {
+        "title": "Подтвердить закрытие всех позиций",
+        "description": "Все ваши открытые позиции будут закрыты по рыночной цене."
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Опасность",
+          "description": "Ваша позиция находится под высоким риском ликвидации. Расстояние до цены ликвидации ≤3%. Рассмотрите возможность добавления маржи или закрытия своей позиции, чтобы избежать ликвидации."
+        },
+        "warning": {
+          "title": "Предупреждение",
+          "description": "Ваша позиция приближается к риску ликвидации. Расстояние до цены ликвидации составляет от 3% до 8%. Внимательно следите за своей позицией и подумайте о добавлении маржи."
+        },
+        "safe": {
+          "title": "Безопасно",
+          "description": "Ваша позиция находится на безопасном уровне. Расстояние до цены ликвидации составляет >8%. Продолжайте следить за рыночными условиями."
+        },
+        "title": "Уровень риска",
+        "liquidationDistance": "Расстояние ликвидации",
+        "currentPrice": "Текущая цена",
+        "liquidationPrice": "Цена ликвидации",
+        "gotIt": "Понял",
+        "subTitle": "Расстояние ликвидирования в реальном времени (%)",
+        "liquidationDistanceTips": "Расстояние ликвидации (%) показывает, насколько текущая цена удалена от вашей цены ликвидации. Большое расстояние указывает на более безопасную позицию, тогда как маленькое расстояние означает более высокий риск ликвидации."
+      },
+      "searchPerpsPopup": {
+        "searchPosition": "Поиск позиции",
+        "empty": "Не найдено рынков",
+        "openPosition": "Открыть позицию",
+        "searchPerps": "Поиск Perps",
+        "searchPlaceholder": "Поиск перпсов",
+        "hasPosition": "Позиция",
+        "onePosition": "1 Позиция"
+      },
+      "closeAll": "Закрыть все",
+      "position": "позиция"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3064,9 +3132,9 @@
         "riskType": {
           "risks": {
             "scamAddress": "Вы отправляете на адрес мошенничества",
-            "noSend": "Нет переводов на этот адрес в течение 180 дней",
             "dexNoDeposite": "Вы отправляете на адрес неблокируемой биржи",
-            "contractAddress": "Вы отправляете на контракт, средства могут быть потеряны"
+            "contractAddress": "Вы отправляете на контракт, средства могут быть потеряны",
+            "noSend": "Вы не отправляли деньги на этот адрес в течение 180 дней"
           }
         },
         "TransferBefore": "Переведено ранее",
@@ -3096,6 +3164,229 @@
       "title": "Адрес",
       "selectImportedAddress": "Выберите импортированный адрес",
       "sendToImportedAddress": "Отправить на импортированный адрес"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "appChainTips": "Учётная запись Hyperliquid и Polymarket не включена",
+        "netWorth": "Чистые активы"
+      },
+      "UpdateButton": {
+        "updating": "Обновление данных",
+        "updatedAgo": "Данные обновлены <1/> <2>{{timeText}}</2> <3/> назад"
+      },
+      "ReachedEnd": {
+        "content": "Вы достигли конца"
+      },
+      "portfolio": {
+        "headers": {
+          "foldProtocols": "Сложите {{count}} Протоколов",
+          "allTokenMode": "Все токен режим",
+          "wallet": "Кошелек",
+          "unfoldProtocols": "Развернуть {{count}} Protocols",
+          "lpToken": "LP-Token",
+          "foldDifis": "Сложите {{count}} Defis",
+          "unfoldDifis": "Развернуть {{count}} Defis"
+        },
+        "hidden": {
+          "showAll": "Показать все",
+          "tokensWithZeroBalance": "Скрыть токены $0",
+          "hideProtocolsWithSmallDeposits": "Скрыть протоколы с небольшими депозитами.",
+          "hideSmallDesc": "Токены с небольшими балансами не отображаются.",
+          "tokensWithZeroBalanceDesc": "Токены с нулевыми баланса скрыты.",
+          "hideProtocolsWithSmallDepositsDesc": "Протоколы с небольшими депозитами не отображаются.",
+          "hideSmall": "Скрыть токены с небольшими балансами.",
+          "hideDefiWithSmallDepositsDesc": "Дефи с мелкими депозитами не отображаются.",
+          "hideDefiWithSmallDeposits": "Скрыть DeFi с небольшими депозитами."
+        },
+        "table": {
+          "token": "Токен",
+          "chain": "Цепочка",
+          "tokenAddress": "Адрес токена",
+          "price": "Цена",
+          "amount": "Сумма",
+          "usdValue": "USD Значение"
+        },
+        "actions": {
+          "swap": "Сwap",
+          "send": "Отправить"
+        }
+      },
+      "button": {
+        "queue": "Очередь",
+        "bridge": "Мост",
+        "swap": "Обмен",
+        "pending": "{{pendingTxCount}} В ожидании",
+        "send": "Отправить"
+      },
+      "tabs": {
+        "approvals": "Подтверждения",
+        "tokens": "Токены",
+        "transactions": "Транзакции",
+        "difi": "Дефи"
+      },
+      "nft": {
+        "message": {
+          "cancelFailedDesc": "Пожалуйста, попробуйте снова",
+          "listingSuccessDesc": "Вы добавили {{name}} на OpenSea",
+          "acceptFailed": "Продажа не удалась",
+          "listingFailed": "Список не удался",
+          "acceptSuccess": "Успешно продано",
+          "listingFailedDesc": "Пожалуйста, попробуйте еще раз.",
+          "listingSuccess": "Только что добавлено!",
+          "cancelSuccessDesc": "Вы успешно отменили листинг {{name}}",
+          "acceptSuccessDesc": "Вы успешно продали {{name}}",
+          "cancelFailed": "Не удалось!",
+          "cancelSuccess": "Список успешно отменен",
+          "acceptFailedDesc": "Пожалуйста, попробуйте снова."
+        },
+        "detail": {
+          "noOffer": "Еще нет предложений",
+          "collection": "Сборка",
+          "platform": "Платформа:",
+          "supportPlatform": "Поддерживаемые платформы:",
+          "ending": "Завершение:",
+          "rarity": "Редкость",
+          "collectionFloor": "Коллекция минимальная цена",
+          "topOffer": "Лучшее предложение",
+          "chain": "Цепочка",
+          "nft": "NFT",
+          "lastSale": "Последняя продажа",
+          "send": "Отправить",
+          "accept": "Принять",
+          "cancel": "Отменить листинг",
+          "listing": "Список на Opensea",
+          "edit": "Редактировать листинг",
+          "listedFor": "{{count}} указан для"
+        },
+        "cancelModal": {
+          "listing": "Список",
+          "listingPrice": "Цена листинга",
+          "title": "Отменить листинг",
+          "cancelListing": "Отменить листинг"
+        },
+        "listingModal": {
+          "nft": "NFT",
+          "proceeds": "Выручка",
+          "quantity": "Количество",
+          "platformFee": "Комиссии платформы Opensea ({{fee}}%)",
+          "topOffer": "Лучшее предложение",
+          "floorDifference": "Разница между этажами",
+          "cost": "Стоимость",
+          "listedAs": "Перечислено как",
+          "creatorFee": "Гонорары создателя ({{fee}}%)",
+          "listOn": "Список на OpenSea",
+          "createListing": "Создать список",
+          "floor": "Флор",
+          "platformFeeTips": "Этот сбор - это сервисный сбор OpenSea.",
+          "totalEst": "Общая предполагаемая прибыль",
+          "approveAndList": "Одобрить и списать",
+          "creatorFeeTips": "Заработок создателя будет выплачен продавцом.",
+          "total": "Общая цена листинга",
+          "creatorFeeTips1": "Заработок создателя будет выплачен продавцом. Заработок создателя обеспечивается.",
+          "editListing": "Редактировать список",
+          "rabbyFee": "Rabby комиссия (0%)"
+        },
+        "acceptModal": {
+          "acceptOffer": "Принять предложение",
+          "platform": "Платформа",
+          "offer": "Предложение",
+          "floorDifference": "Разница между уровнями",
+          "platformFee": "Платформенные сборы Opensea ({{fee}}%)",
+          "creatorFee": "Комиссия создателя ({{fee}}%)",
+          "quantity": "Количество",
+          "platformFeeTips": "Этот сбор является сервисным сбором OpenSea",
+          "title": "Принять предложение",
+          "creatorFeeTips": "Заработок создателя будет выплачиваться продавцом.",
+          "totalEst": "Общая предполагаемая выручка",
+          "creatorFeeTips1": "Платежи за вознаграждение создателей будут производиться продавцом. Вознаграждения создателей обеспечиваются.",
+          "rabbyFee": "Комиссия Rabby (0%)",
+          "offerPrice": "Цена предложения"
+        },
+        "pending": "Ожидает",
+        "confirmingTx": "Подтверждение вашей транзакции",
+        "hideLowValue": "Скрыть NFT низкой стоимости",
+        "all": "Все",
+        "empty": "Нет NFT"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "long": "Долгий",
+        "margin": "Маржа",
+        "newPosition": "Открыть позицию",
+        "short": "Короткая позиция",
+        "size": "Размер",
+        "rabbyFee": "Rabby Комиссия",
+        "free": "Свободно",
+        "available": "Доступно",
+        "insufficientBalance": "Недостаточно средств",
+        "invalidNumber": "Неверный номер",
+        "takeProfitWhenPriceAbove": "Зафиксируйте прибыль, когда цена выше",
+        "takeProfitWhenPriceBelow": "Фиксируйте прибыль, когда цена ниже",
+        "leverage": "Кредитное плечо",
+        "minimumOrderSize": "Минимальный размер заказа составляет 10 $.",
+        "stopLossWhenPriceBelow": "Стоп-лосс при цене ниже",
+        "sizeTips": "Общая стоимость или количество вашей сделки, установленное маржей и кредитным плечом.",
+        "stopLossWhenPriceAbove": "Стоп-лосс при цене выше",
+        "maximumOrderSize": "Максимальный размер заказа составляет {{amount}}",
+        "providerFee": "Гиперликвидная комиссия"
+      },
+      "PerpsEditMarginPopup": {
+        "liqPrice": "Liq. Цена:",
+        "amountToAdd": "Сумма для добавления",
+        "title": "Настроить маржу",
+        "available": "Доступно",
+        "insufficientBalance": "Недостаточно средств",
+        "perpsBalance": "Баланс перпсов",
+        "reduceMargin": "Сократить маржу",
+        "addMargin": "Добавить маржу",
+        "amountToReduce": "Сумма для снижения",
+        "currentPrice": "Текущая цена",
+        "margin": "Маржа",
+        "exceedMaxReduction": "Превышает максимальное снижение",
+        "reduceMarginTooltip": "Недостаточно маржи для сокращения позиции.",
+        "addMarginSuccess": "Маржа успешно добавлена",
+        "confirm": "Подтвердить",
+        "reduceMarginSuccess": "Маржа успешно уменьшена"
+      },
+      "PerpsClosePositionPopup": {
+        "receive": "Получить",
+        "amount": "Сумма",
+        "fee": "Комиссия",
+        "minimumWarning": "Минимальная сумма закрытия составляет {{percent}}%",
+        "confirm": "Подтвердить",
+        "closedPnl": "Закрытая PNL",
+        "title": "Закрыть позицию",
+        "total": "Итого"
+      },
+      "PerpsAutoCloseModal": {
+        "youLoss": "Вы проигрываете",
+        "takeProfitWhen": "Брать прибыль, когда",
+        "youGain": "Вы получаете",
+        "takeProfit": "Закрыть прибыль",
+        "priceAbove": "Цена выше",
+        "stopLoss": "Стоп-лосс",
+        "takeProfitWhenPriceAbove": "Заберите прибыль, когда цена выше",
+        "title": "Авто закройте позицию",
+        "priceBelow": "Цена ниже",
+        "stopLossWhen": "Стоп-лосс при",
+        "stopLossWhenPriceBelow": "Стоп-лосс при цене ниже",
+        "takeProfitWhenPriceBelow": "Зафиксируйте прибыль, когда цена ниже",
+        "currentPrice": "Текущая цена:",
+        "stopLossWhenPriceAbove": "Стоп-лосс, когда цена выше",
+        "EntryAndCurrentPrice": "Вход: ${{entryPrice}} Текущий: ${{currentPrice}}",
+        "confirm": "Подтвердить",
+        "takeProfitExpectedPNL": "Ожидаемая PNL от Take Profit",
+        "takeProfitTipsShort": "Цена тейк-профита должна быть ниже текущей цены.",
+        "noPosition": "Сначала вы должны ввести маржу",
+        "stopLossExpectedPNL": "Стоп-Лосс Ожидаемая Прибыль и Убытки",
+        "takeProfitTipsLong": "Цена для получения прибыли должна быть выше текущей цены.",
+        "cancel": "Отменить",
+        "stopLossTipsShort": "Цена стоп-лосса должна быть выше текущей цены.",
+        "stopLossTipsLongLiquidation": "Цена ниже ликвидационной цены ({{price}})",
+        "stopLossTipsShortLiquidation": "Цена выше ликвидационной цены ({{price}})",
+        "stopLossTipsLong": "Цена стоп-лосса должна быть ниже текущей цены"
+      }
     }
   },
   "component": {
@@ -3224,7 +3515,10 @@
       "common": "Общее",
       "hot": "Горячий",
       "recent": "Недавние",
-      "chainNotSupport": "Эта цепочка не поддерживается"
+      "chainNotSupport": "Эта цепочка не поддерживается",
+      "chainFilterLine": {
+        "filterAll": "Все цепи"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3251,10 +3545,10 @@
     },
     "ReserveGasPopup": {
       "doNotReserve": "Не резервировать Gas",
-      "instant": "Мгновенный",
+      "instant": "Быстро",
       "title": "Резервный Gas",
-      "fast": "Быстро",
-      "normal": "Нормальный"
+      "fast": "Нормально",
+      "normal": "Медленно"
     },
     "OpenExternalWebsiteModal": {
       "button": "Продолжить",
@@ -3292,6 +3586,22 @@
     },
     "DappActions": {
       "queueDescription": "Текущий вывод будет помещен в очередь ожидания. После обработки его можно будет вывести на ваш кошелек."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Все цепочки"
+    },
+    "DesktopNav": {
+      "lending": "Кредитование",
+      "perps": "Перпсы",
+      "comingSoon": "Скоро будет",
+      "portfolio": "Портфель"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Добавить адрес"
+    },
+    "LpTokenTag": {
+      "title": "Это токен поставщика ликвидности (LP)",
+      "description": "Токены LP выдаются протоколами DeFi, в которые вы внесли свои активы. Они служат доказательством этих активов, но их стоимость не включена в ваш общий баланс."
     }
   },
   "global": {

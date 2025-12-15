@@ -1,5 +1,21 @@
 import type { SignatureAction, SignatureFlowState } from './types';
 
+const deriveProgress = (state: SignatureFlowState) => {
+  const signInfo = state.ctx?.signInfo;
+  if (!signInfo) return undefined;
+  const status =
+    signInfo.status === 'signing'
+      ? 'signing'
+      : signInfo.status === 'signed'
+      ? 'signed'
+      : undefined;
+  return {
+    signed: signInfo.currentTxIndex,
+    total: signInfo.totalTxs,
+    status,
+  };
+};
+
 export const signatureReducer = (
   state: SignatureFlowState,
   action: SignatureAction
@@ -19,14 +35,15 @@ export const signatureReducer = (
         fingerprint: action.fingerprint,
         config: action.config,
         ctx: action.ctx,
+        progress: undefined,
       };
 
     case 'PREFETCH_SUCCESS':
       if (state.fingerprint !== action.fingerprint) return state;
       return {
         ...state,
-        status: 'ready',
-        ctx: { ...state.ctx, ...action.ctx },
+        status: state.status === 'ui-open' ? state.status : 'ready',
+        ctx: { ...state.ctx, ...action.ctx, open: !!state?.ctx?.open },
         error: undefined,
       };
 
@@ -45,6 +62,7 @@ export const signatureReducer = (
         status: 'ui-open',
         ctx: action.ctx,
         error: undefined,
+        progress: deriveProgress({ ...state, ctx: action.ctx }),
       };
 
     case 'OPEN_UI_SUCCESS':
@@ -69,6 +87,7 @@ export const signatureReducer = (
       return {
         ...state,
         ctx: action.ctx,
+        progress: deriveProgress({ ...state, ctx: action.ctx }),
       };
 
     case 'SEND_START': {
@@ -89,6 +108,7 @@ export const signatureReducer = (
         error: undefined,
         hashes: undefined,
         ctx: nextCtx,
+        progress: deriveProgress({ ...state, ctx: nextCtx }),
       };
     }
 
@@ -98,6 +118,7 @@ export const signatureReducer = (
         ...state,
         status: 'signing',
         ctx: action.ctx,
+        progress: deriveProgress({ ...state, ctx: action.ctx }),
       };
 
     case 'SEND_SUCCESS':
@@ -106,6 +127,11 @@ export const signatureReducer = (
         ...state,
         status: 'completed',
         hashes: action.hashes,
+        progress: {
+          signed: action.hashes.length,
+          total: action.hashes.length,
+          status: 'signed',
+        },
       };
 
     case 'SEND_FAILURE':
@@ -114,6 +140,14 @@ export const signatureReducer = (
         ...state,
         status: 'error',
         error: action.error,
+      };
+
+    case 'SEND_PAUSED':
+      if (state.fingerprint !== action.fingerprint) return state;
+      return {
+        ...state,
+        status: 'paused',
+        ctx: action.ctx,
       };
 
     default:

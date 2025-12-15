@@ -17,7 +17,7 @@ import type { Account } from '@/background/service/preference';
 const AccountItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
   position: relative;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-top: 12px;
   &:first-child {
     margin-top: 9px;
@@ -42,7 +42,9 @@ const AccountItemWrapper = styled.div`
 `;
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
 
 type RenderAccount = Account & {
   _inWhitelist: boolean;

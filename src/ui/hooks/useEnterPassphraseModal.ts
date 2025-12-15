@@ -2,10 +2,12 @@ import React from 'react';
 import AuthenticationModalPromise from '../component/AuthenticationModal';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from '../utils';
+import { usePopupContainer } from './usePopupContainer';
 
 export const useEnterPassphraseModal = (type: 'address' | 'publickey') => {
   const { t } = useTranslation();
   const wallet = useWallet();
+  const { getContainer } = usePopupContainer();
 
   const invoke = React.useCallback(
     async (value?: string) => {
@@ -15,11 +17,11 @@ export const useEnterPassphraseModal = (type: 'address' | 'publickey') => {
         return '';
       }
 
-      const needPassphrase = await wallet.getMnemonicKeyringIfNeedPassphrase(
-        type,
-        value
-      );
-      passphrase = await wallet.getMnemonicKeyringPassphrase(type, value);
+      const [needPassphrase, existingPassphrase] = await Promise.all([
+        wallet.getMnemonicKeyringIfNeedPassphrase(type, value),
+        wallet.getMnemonicKeyringPassphrase(type, value),
+      ]);
+      passphrase = existingPassphrase;
 
       if (!needPassphrase || passphrase) {
         return passphrase;
@@ -30,6 +32,7 @@ export const useEnterPassphraseModal = (type: 'address' | 'publickey') => {
         cancelText: t('global.Cancel'),
         placeholder: t('page.manageAddress.enterThePassphrase'),
         title: t('page.manageAddress.enterPassphraseTitle'),
+        getContainer,
         async validationHandler(input) {
           passphrase = input;
 

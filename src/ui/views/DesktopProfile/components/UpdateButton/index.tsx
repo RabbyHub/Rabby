@@ -3,6 +3,7 @@ import { formatTimeReadable } from '@/ui/utils';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import clsx from 'clsx';
 import React, { useMemo, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 export const UpdateButton: React.FC<{
   updatedAt?: number;
@@ -15,6 +16,7 @@ export const UpdateButton: React.FC<{
     }
     onUpdate?.();
   });
+  const { t } = useTranslation();
   const [elapseSecs, setElapseSecs] = useState(
     Math.ceil(Date.now() - (updatedAt || 0))
   );
@@ -33,19 +35,29 @@ export const UpdateButton: React.FC<{
     <div className="flex items-center gap-[4px]">
       {isUpdating ? (
         <div className="text-rb-neutral-secondary text-[13px] leading-[16px]">
-          Updating data
+          {t('page.desktopProfile.UpdateButton.updating')}
         </div>
       ) : updatedAt && elapseSecs ? (
         <div className="text-rb-neutral-secondary text-[13px] leading-[16px]">
-          Data updated{' '}
-          <span className="text-r-neutral-title1 font-medium">{timeText}</span>{' '}
-          ago
+          <Trans
+            t={t}
+            i18nKey="page.desktopProfile.UpdateButton.updatedAgo"
+            values={{
+              timeText,
+            }}
+          >
+            Data updated{' '}
+            <span className="text-r-neutral-title1 font-medium">
+              {timeText}
+            </span>{' '}
+            ago
+          </Trans>
         </div>
       ) : null}
       <RcIconRefreshCC
         onClick={handleClick}
         className={clsx(
-          'cursor-pointer text-r-neutral-foot',
+          'cursor-pointer text-rb-neutral-secondary',
           'hover:text-r-blue-default',
           isUpdating ? 'animate-spin' : ''
         )}

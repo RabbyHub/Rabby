@@ -19,7 +19,9 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const Wrapper = styled.div`
-  margin-left: 10px;
+  & > div {
+    margin-left: 10px;
+  }
 `;
 
 interface ActionButtonProps {
@@ -41,7 +43,7 @@ const ActionButton = ({ text, onClick, className }: ActionButtonProps) => {
         cursor-pointer text-r-blue-default font-medium text-[12px] text-center
         px-[12px] w-min
         h-[24px] leading-[24px]
-        border-[0.5px] border-r-blue-default rounded-[4px]
+        border-[0.5px] border-r-blue-default rounded-[6px]
         hover:bg-r-blue-light1
         ${className}
       `}

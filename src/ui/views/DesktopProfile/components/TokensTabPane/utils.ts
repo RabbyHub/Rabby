@@ -1,8 +1,8 @@
 import { DisplayedProject } from '@/ui/utils/portfolio/project';
 import { TOKEN_WALLET_ANCHOR_ID } from './constant';
-import { formatUsdValue, numberWithCommasIsLtOne } from '@/ui/utils';
+import { numberWithCommasIsLtOne } from '@/ui/utils';
 
-export const ScrollToDomById = (id: string) => {
+export const ScrollToDomById = (id: string, stickAnchor?: boolean) => {
   const dom = document.getElementById(id);
   // const bar = document.getElementById('_anchor');
   if (!dom) return;
@@ -10,20 +10,19 @@ export const ScrollToDomById = (id: string) => {
   const y = dom.getBoundingClientRect().y;
   const scrollElement = document.getElementById('root')
     ?.firstChild as HTMLElement;
+  const scrollY = scrollElement.scrollTop;
 
   if (!scrollElement) return;
   scrollElement?.scrollTo({
-    // 58 是顶部选择的高度
-    top: window.scrollY + y,
-    // - 80 + (bar?.style.display === 'none' ? 58 : 0),
+    top: scrollY + y - 103 - (stickAnchor ? 60 + 57 : 0), // 103 是stick header的高度
     behavior: 'smooth',
   });
 };
 
-export const getTokenWalletFakeProject = (netWorth: number) => {
+export const getTokenWalletFakeProject = (netWorth: number, name: string) => {
   const p = new DisplayedProject({
     id: TOKEN_WALLET_ANCHOR_ID,
-    name: 'Wallet',
+    name,
     chain: 'eth',
   });
   p.netWorth = netWorth;

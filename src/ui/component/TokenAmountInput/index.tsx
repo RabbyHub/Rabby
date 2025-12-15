@@ -1,12 +1,15 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useTokens } from '@/ui/utils/portfolio/token';
-import { findChain } from '@/utils/chain';
+import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { DrawerProps, Input, Modal, Skeleton } from 'antd';
 import { TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
 import uniqBy from 'lodash/uniqBy';
 import React, {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -24,11 +27,12 @@ import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { MaxButton } from '@/ui/views/SendToken/components/MaxButton';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
-import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import { ReactComponent as RcArrowDown } from './icons/arrow-down.svg';
 import styled from 'styled-components';
 import { RiskWarningTitle } from '../RiskWarningTitle';
 import BigNumber from 'bignumber.js';
+import { ChainSelectorInSend } from '@/ui/views/SendToken/components/ChainSelectorInSend';
+import { Chain } from '@debank/common';
 
 interface TokenAmountInputProps {
   token: TokenItem | null;
@@ -37,7 +41,7 @@ interface TokenAmountInputProps {
   initLoading?: boolean;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
-  chainId?: string;
+  onStartSelectChain?: () => void;
   amountFocus?: boolean;
   excludeTokens?: TokenItem['id'][];
   className?: string;
@@ -80,12 +84,20 @@ const StyledInput = styled(Input)`
   }
 `;
 
+function isTestchain(chainServerId?: Chain['serverId']) {
+  if (!chainServerId) return false;
+
+  const chain = findChain({ serverId: chainServerId });
+  return chain?.isTestnet;
+}
+
 const TokenAmountInput = ({
   token,
   value,
   onChange,
   onTokenChange,
-  chainId,
+  onStartSelectChain,
+  // chainId,
   amountFocus,
   excludeTokens = [],
   className,
@@ -102,23 +114,54 @@ const TokenAmountInput = ({
   const tokenInputRef = useRef<Input>(null);
   const [updateNonce, setUpdateNonce] = useState(0);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
-  const currentAccount = useRabbySelector(
-    (state) => state.account.currentAccount
-  );
+  const selectorOpened = useRef(false);
+  const { currentAccount } = useRabbySelector((s) => ({
+    currentAccount: s.account.currentAccount,
+  }));
   const wallet = useWallet();
   const [keyword, setKeyword] = useState('');
-  const [chainServerId, setChainServerId] = useState(chainId);
+  const [lpTokenMode, setLpTokenMode] = useState(false);
+
+  const isFromMode = useMemo(() => {
+    return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
+  }, [type]);
+
+  const chainItemOfToken = useMemo(
+    () =>
+      !token?.chain
+        ? null
+        : findChain({
+            serverId: token?.chain,
+          }),
+    [token?.chain]
+  );
+  const [
+    { mainnet: mainnetChainServerId, testnet: testnetChainServerId },
+    setNetVariedChainServerId,
+  ] = useState({
+    mainnet: chainItemOfToken?.isTestnet ? '' : token?.chain || '',
+    testnet: chainItemOfToken?.isTestnet ? token?.chain || '' : '',
+  });
+  // const testnetChainItem = useMemo(
+  //   () =>
+  //     !testnetChainServerId
+  //       ? null
+  //       : findChain({
+  //           serverId: testnetChainServerId,
+  //         }),
+  //   [testnetChainServerId]
+  // );
   const { t } = useTranslation();
 
-  const chainItem = useMemo(
-    () =>
-      findChain({
-        serverId: chainServerId,
-      }),
-    [chainServerId]
-  );
-
-  const isTestnet = chainItem?.isTestnet;
+  const setChainServerId = useCallback((chainServerId?: string) => {
+    const foundChainItem = !chainServerId
+      ? null
+      : findChainByServerID(chainServerId);
+    setNetVariedChainServerId((prev) => ({
+      mainnet: foundChainItem?.isTestnet ? '' : chainServerId || '',
+      testnet: foundChainItem?.isTestnet ? chainServerId || '' : '',
+    }));
+  }, []);
 
   useLayoutEffect(() => {
     if (amountFocus && !tokenSelectorVisible) {
@@ -126,67 +169,76 @@ const TokenAmountInput = ({
     }
   }, [amountFocus, tokenSelectorVisible]);
 
-  const checkBeforeConfirm = (token: TokenItem) => {
-    const { disable, reason, cexId } = disableItemCheck?.(token) || {};
-    if (disable) {
-      Modal.confirm({
-        width: 340,
-        closable: true,
-        closeIcon: <></>,
-        centered: true,
-        className: 'token-selector-disable-item-tips',
-        title: <RiskWarningTitle />,
-        content: reason,
-        okText: t('global.proceedButton'),
-        cancelText: t('global.cancelButton'),
-        cancelButtonProps: {
-          type: 'ghost',
-          className: 'text-r-blue-default border-r-blue-default',
-        },
-        onOk() {
-          if (cexId) {
-            wallet.openapi.checkCex({
-              chain_id: token.chain,
-              id: token.id,
-              cex_id: cexId,
-            });
-          }
-          handleCurrentTokenChange(token);
-        },
-      });
-      return;
-    }
-    handleCurrentTokenChange(token);
-  };
+  const handleCurrentTokenChange = useCallback(
+    (token: TokenItem) => {
+      onChange && onChange('');
+      onTokenChange(token);
+      setTokenSelectorVisible(false);
+      tokenInputRef.current?.focus();
+      setChainServerId(token?.chain);
+    },
+    [onChange, onTokenChange, setChainServerId]
+  );
 
-  const handleCurrentTokenChange = (token: TokenItem) => {
-    onChange && onChange('');
-    onTokenChange(token);
+  const handleTokenSelectorClose = useCallback(() => {
+    setChainServerId(token?.chain);
     setTokenSelectorVisible(false);
-    tokenInputRef.current?.focus();
-    setChainServerId(token.chain);
-  };
+    setLpTokenMode(false);
+  }, [token?.chain, setChainServerId]);
 
-  const handleTokenSelectorClose = () => {
-    setChainServerId(chainId);
-    setTokenSelectorVisible(false);
-  };
-
-  const handleSelectToken = () => {
-    if (allTokens.length > 0) {
-      setUpdateNonce(updateNonce + 1);
-    }
-    setTokenSelectorVisible(true);
-  };
+  const checkBeforeConfirm = useCallback(
+    (token: TokenItem) => {
+      const { disable, reason, cexId } = disableItemCheck?.(token) || {};
+      if (disable) {
+        Modal.confirm({
+          width: 340,
+          closable: true,
+          closeIcon: <></>,
+          centered: true,
+          className: 'token-selector-disable-item-tips',
+          title: <RiskWarningTitle />,
+          content: reason,
+          okText: t('global.proceedButton'),
+          cancelText: t('global.cancelButton'),
+          cancelButtonProps: {
+            type: 'ghost',
+            className: 'text-r-blue-default border-r-blue-default',
+          },
+          onOk() {
+            if (cexId) {
+              wallet.openapi.checkCex({
+                chain_id: token.chain,
+                id: token.id,
+                cex_id: cexId,
+              });
+            }
+            handleCurrentTokenChange(token);
+          },
+        });
+        return;
+      }
+      handleCurrentTokenChange(token);
+    },
+    [disableItemCheck, t, wallet, handleCurrentTokenChange]
+  );
 
   // when no any queryConds
   const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
     currentAccount?.address,
     undefined,
-    tokenSelectorVisible,
+    selectorOpened.current ? tokenSelectorVisible : true,
     updateNonce,
-    chainServerId
+    mainnetChainServerId,
+    undefined,
+    isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
   );
+
+  const handleSelectToken = useCallback(() => {
+    if (allTokens.length > 0) {
+      setUpdateNonce(updateNonce + 1);
+    }
+    setTokenSelectorVisible(true);
+  }, [allTokens, updateNonce]);
 
   const allDisplayTokens = useMemo(() => {
     return allTokens.map(abstractTokenToTokenItem);
@@ -195,23 +247,27 @@ const TokenAmountInput = ({
   const {
     isLoading: isSearchLoading,
     list: searchedTokenByQuery,
-  } = useSearchToken(currentAccount?.address, keyword, chainServerId, true);
-
-  const {
-    loading: isSearchTestnetLoading,
-    testnetTokenList,
-  } = useSearchTestnetToken({
-    address: currentAccount?.address,
+  } = useSearchToken(currentAccount?.address, keyword, {
+    chainServerId: mainnetChainServerId,
     withBalance: true,
-    chainId: chainItem?.id,
-    q: keyword,
-    enabled: isTestnet,
   });
 
+  // const {
+  //   loading: isSearchTestnetLoading,
+  //   testnetTokenList,
+  // } = useSearchTestnetToken({
+  //   address: currentAccount?.address,
+  //   withBalance: true,
+  //   chainId: testnetChainItem?.id,
+  //   q: keyword,
+  //   enabled: testnetChainItem?.isTestnet,
+  // });
+
   const availableToken = useMemo(() => {
-    const allTokens = chainServerId
-      ? allDisplayTokens.filter((token) => token.chain === chainServerId)
+    const allTokens = mainnetChainServerId
+      ? allDisplayTokens.filter((token) => token.chain === mainnetChainServerId)
       : allDisplayTokens;
+
     return uniqBy(
       keyword ? searchedTokenByQuery.map(abstractTokenToTokenItem) : allTokens,
       (token) => {
@@ -223,31 +279,36 @@ const TokenAmountInput = ({
     searchedTokenByQuery,
     excludeTokens,
     keyword,
-    chainServerId,
+    mainnetChainServerId,
   ]);
   const displayTokenList = useSortToken(availableToken);
 
   const isListLoading = useMemo(() => {
-    if (isTestnet) {
-      return isSearchTestnetLoading;
-    }
+    // if (chainItemOfToken?.isTestnet) {
+    //   return isSearchTestnetLoading;
+    // }
     return keyword ? isSearchLoading : isLoadingAllTokens;
   }, [
     keyword,
     isSearchLoading,
     isLoadingAllTokens,
-    isSearchTestnetLoading,
-    isTestnet,
+    // isSearchTestnetLoading,
+    // chainItemOfToken?.isTestnet,
   ]);
 
-  const handleSearchTokens = React.useCallback(async (ctx) => {
-    setKeyword(ctx.keyword);
-    setChainServerId(ctx.chainServerId);
-  }, []);
+  const handleSearchTokens = React.useCallback<
+    React.ComponentProps<typeof TokenSelector>['onSearch'] & object
+  >(
+    async (ctx) => {
+      setKeyword(ctx.keyword);
+      setChainServerId(ctx.chainServerId || '');
+    },
+    [setChainServerId]
+  );
 
   useEffect(() => {
-    setChainServerId(chainId);
-  }, [chainId]);
+    setChainServerId(token?.chain || '');
+  }, [token?.chain, setChainServerId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (INPUT_NUMBER_RE.test(e.target.value)) {
@@ -262,7 +323,9 @@ const TokenAmountInput = ({
       );
     }
     return '$0.00';
-  }, [token?.price, value]);
+  }, [token, value]);
+
+  const chainSelectorRef = useRef<ChainSelectorInSend>(null);
 
   return (
     <div className={clsx('token-amount-input', className)}>
@@ -354,16 +417,18 @@ const TokenAmountInput = ({
               </span>
             </div>
           )}
-          {/* {token && token.amount > 0 && !isLoading && (
+          {token && token.amount > 0 && !isLoading && (
             <MaxButton onClick={handleClickMaxButton}>
               {t('page.sendToken.max')}
             </MaxButton>
-          )} */}
+          )}
         </div>
       </div>
       <TokenSelector
         visible={tokenSelectorVisible}
-        list={isTestnet ? testnetTokenList : displayTokenList}
+        mainnetTokenList={displayTokenList}
+        // testnetTokenList={testnetTokenList}
+        // list={chainItem?.isTestnet ? testnetTokenList : displayTokenList}
         onConfirm={checkBeforeConfirm}
         onCancel={handleTokenSelectorClose}
         onSearch={handleSearchTokens}
@@ -372,8 +437,22 @@ const TokenAmountInput = ({
         disableItemCheck={disableItemCheck}
         showCustomTestnetAssetList
         placeholder={placeholder}
-        chainId={chainServerId}
+        chainId={testnetChainServerId || mainnetChainServerId}
         getContainer={getContainer}
+        onStartSelectChain={() => {
+          chainSelectorRef.current?.toggleShow(true);
+          onStartSelectChain?.();
+        }}
+        lpTokenMode={lpTokenMode}
+        setLpTokenMode={setLpTokenMode}
+        showLpTokenSwitch={isFromMode}
+      />
+      <ChainSelectorInSend
+        ref={chainSelectorRef}
+        hideTestnetTab
+        onChange={(value) => {
+          setChainServerId(findChainByEnum(value)?.serverId || '');
+        }}
       />
     </div>
   );

@@ -1,4 +1,6 @@
-import { useCallback, useMemo } from 'react';
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { SendRequireData } from '@rabby-wallet/rabby-action';
 import { useRequest } from 'ahooks';
@@ -6,12 +8,14 @@ import dayjs from 'dayjs';
 import { unionBy } from 'lodash';
 
 import { findChain } from '@/utils/chain';
-import { useWallet, WalletControllerType } from '@/ui/utils';
+import { isSameAddress, useWallet, WalletControllerType } from '@/ui/utils';
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useRabbyGetter } from '@/ui/store';
+import { useRabbyGetter, useRabbySelector } from '@/ui/store';
 import { findMaxGasTx } from '@/utils/tx';
 import { isValidAddress } from '@ethereumjs/util';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 interface DisplayHistoryItem {
   isDateStart?: boolean;
@@ -128,7 +132,7 @@ export const useRecentSend = ({
       list.push(...localTxs);
     }
     return list;
-  }, [accountList]);
+  }, [accountList, wallet]);
 
   const { data: historyList, runAsync } = useRequest(
     async () => {
@@ -217,7 +221,7 @@ export const fetchLocalSendPendingTx = (
 };
 
 export function useRecentSendToHistoryFor(toAddress?: string) {
-  const { recentHistory } = useRecentSend({ useAllHistory: true });
+  const { recentHistory, runAsync } = useRecentSend({ useAllHistory: true });
 
   return {
     recentHistory:
@@ -226,5 +230,55 @@ export function useRecentSendToHistoryFor(toAddress?: string) {
             (item) => item.toAddress.toLowerCase() === toAddress.toLowerCase()
           )
         : [],
+    reFetch: runAsync,
+  };
+}
+
+export type ToAddressPositiveTips = {
+  hasPositiveTips: boolean;
+  inWhitelist: boolean;
+  toAddressIsRecentlySend: boolean;
+  isMyImported?: boolean;
+};
+export function useToAddressPositiveTips({
+  toAddress,
+  isMyImported,
+}: {
+  toAddress?: string;
+  isMyImported?: boolean;
+}): ToAddressPositiveTips {
+  const { whitelist } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+  }));
+  const inWhitelist = useMemo(() => {
+    return !!toAddress && whitelist?.some((w) => isSameAddress(w, toAddress));
+  }, [toAddress, whitelist]);
+
+  const {
+    recentHistory: recentSendToHistory,
+    reFetch,
+  } = useRecentSendToHistoryFor(toAddress);
+  const toAddressIsRecentlySend = recentSendToHistory.length > 0;
+  const hasPositiveTips =
+    toAddressIsRecentlySend || inWhitelist || !!isMyImported;
+
+  useEffect(() => {
+    const handler = (txDetail) => {
+      reFetch();
+      setTimeout(() => {
+        reFetch();
+      }, 5000);
+    };
+    eventBus.addEventListener(EVENTS.RELOAD_TX, handler);
+    return () => {
+      eventBus.removeEventListener(EVENTS.RELOAD_TX, handler);
+    };
+  }, [reFetch]);
+
+  return {
+    hasPositiveTips,
+    inWhitelist,
+    toAddressIsRecentlySend,
+    isMyImported,
   };
 }

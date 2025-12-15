@@ -17,8 +17,12 @@ import { Slip39TextareaContainer } from './Slip39TextAreaContainer';
 import { Popup } from '@/ui/component';
 import QRCode from 'qrcode.react';
 import { ReactComponent as RcIconQrCode } from 'ui/assets/qrcode-cc.svg';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 
-const AddressBackup = () => {
+const AddressBackupMnemonics: React.FC<{
+  isInModal?: boolean;
+  onClose?(): void;
+}> = ({ isInModal, onClose }) => {
   const { t } = useTranslation();
 
   const history = useHistory();
@@ -29,6 +33,7 @@ const AddressBackup = () => {
 
   const data = state?.data;
   const [masked, setMasked] = useState(true);
+  const { getContainer } = usePopupContainer();
 
   const onCopyMnemonics = React.useCallback(() => {
     copyTextToClipboard(data).then(() => {
@@ -45,6 +50,7 @@ const AddressBackup = () => {
       title: t('page.backupSeedPhrase.qrCodePopupTitle'),
       height: 476,
       closable: true,
+      getContainer,
       content: (
         <div>
           <div className="flex items-start gap-8 px-[12px] py-[10px] rounded-[4px] bg-r-red-light text-r-red-default mb-[20px]">
@@ -64,21 +70,30 @@ const AddressBackup = () => {
   };
 
   const isSlip39 = React.useMemo(() => {
-    return data.split('\n').length > 1;
+    return data?.split('\n').length > 1;
   }, [data]);
 
   useEffect(() => {
     if (!data) {
-      history.goBack();
+      if (isInModal) {
+        onClose?.();
+      } else {
+        history.goBack();
+      }
     }
-  }, [data, history]);
+  }, [data, history, isInModal]);
 
   if (!data) {
     return null;
   }
 
   return (
-    <div className="page-address-backup">
+    <div
+      className={clsx(
+        'page-address-backup',
+        isInModal ? 'min-h-0 h-[600px]' : ''
+      )}
+    >
       <header className="relative">
         {!!state.goBack && (
           <img
@@ -163,4 +178,4 @@ const AddressBackup = () => {
   );
 };
 
-export default AddressBackup;
+export default AddressBackupMnemonics;

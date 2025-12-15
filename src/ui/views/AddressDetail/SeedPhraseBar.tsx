@@ -1,6 +1,7 @@
 import { KEYRING_CLASS } from '@/constant';
 import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { openInternalPageInTab, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import React from 'react';
@@ -15,6 +16,7 @@ export const SeedPhraseBar: React.FC<Props> = ({ address }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
+  const { getContainer } = usePopupContainer();
 
   const goToHDManager = async () => {
     AuthenticationModalPromise({
@@ -41,6 +43,7 @@ export const SeedPhraseBar: React.FC<Props> = ({ address }) => {
         // do nothing
       },
       wallet,
+      getContainer,
     });
   };
   return (

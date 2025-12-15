@@ -183,10 +183,14 @@
       width: 380px;
       border-width: 0;
       border-color: transparent !important;
+
+      .ant-input::placeholder {
+        color: var(--rb-neutral-info, #c5c5cf);
+      }
     }
 
     .search-input .ant-input-prefix {
-      margin-right: 12px;
+      margin-right: 6px;
     }
   }
 
@@ -312,7 +316,8 @@
       // padding-top: @cell-padding-y;
 
       .am-virtual-table-cell-inner {
-        border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
+        // border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
+        border: none;
         font-size: 14px;
         line-height: 17px;
         font-weight: 400;
@@ -325,13 +330,15 @@
       }
 
       &.is-first-cell > .am-virtual-table-cell-inner {
-        border-left: 1px solid transparent;
+        border: none;
+        // border-left: 1px solid transparent;
         // border-top-left-radius: @radius-value;
         // border-bottom-left-radius: @radius-value;
       }
 
       &.is-last-cell > .am-virtual-table-cell-inner {
-        border-right: 1px solid transparent;
+        border: none;
+        // border-right: 1px solid transparent;
         // border-top-right-radius: @radius-value;
         // border-bottom-right-radius: @radius-value;
 
@@ -344,41 +351,48 @@
 
       &.is-hovered-row-cell {
         .am-virtual-table-cell-inner {
-          border-top: 1px solid var(--r-blue-default, #7084ff);
-          border-bottom: 1px solid var(--r-blue-default, #7084ff);
+          border: none;
+          // border-top: 1px solid var(--r-blue-default, #7084ff);
+          // border-bottom: 1px solid var(--r-blue-default, #7084ff);
           background: rgba(134, 151, 255, 0.1);
         }
 
         &.is-first-cell > .am-virtual-table-cell-inner {
-          border-left: 1px solid var(--r-blue-default, #7084ff);
-          border-top-left-radius: @radius-value;
-          border-bottom-left-radius: @radius-value;
+          border: none;
+          // border-left: 1px solid var(--r-blue-default, #7084ff);
+          // border-top-left-radius: @radius-value;
+          // border-bottom-left-radius: @radius-value;
         }
 
         &.is-last-cell > .am-virtual-table-cell-inner {
-          border-right: 1px solid var(--r-blue-default, #7084ff);
-          border-top-right-radius: @radius-value;
-          border-bottom-right-radius: @radius-value;
+          border: none;
+          // border-right: 1px solid var(--r-blue-default, #7084ff);
+          // border-top-right-radius: @radius-value;
+          // border-bottom-right-radius: @radius-value;
         }
       }
 
       &.is-selected-row-cell {
         .am-virtual-table-cell-inner {
-          border-top: 1px solid var(--r-blue-default, #7084ff);
-          border-bottom: 1px solid var(--r-blue-default, #7084ff);
-          background: var(--r-blue-light1, #eef1ff);
+          border: none;
+          // border-top: 1px solid var(--r-blue-default, #7084ff);
+          // border-bottom: 1px solid var(--r-blue-default, #7084ff);
+          // background: var(--r-blue-light1, #eef1ff);
+          background: rgba(var(--r-blue-default-rgb), 0.04);
         }
 
         &.is-first-cell > .am-virtual-table-cell-inner {
-          border-left: 1px solid var(--r-blue-default, #7084ff);
-          border-top-left-radius: @radius-value;
-          border-bottom-left-radius: @radius-value;
+          border: none;
+          // border-left: 1px solid var(--r-blue-default, #7084ff);
+          // border-top-left-radius: @radius-value;
+          // border-bottom-left-radius: @radius-value;
         }
 
         &.is-last-cell > .am-virtual-table-cell-inner {
-          border-right: 1px solid var(--r-blue-default, #7084ff);
-          border-top-right-radius: @radius-value;
-          border-bottom-right-radius: @radius-value;
+          border: none;
+          // border-right: 1px solid var(--r-blue-default, #7084ff);
+          // border-top-right-radius: @radius-value;
+          // border-bottom-right-radius: @radius-value;
         }
       }
     }
@@ -639,6 +653,18 @@
   height: @sticky-footer-height;
   bottom: 0;
   padding-bottom: @sticky-btn-bottom-offset;
+}
+
+.sticky-footer-container {
+  height: 88px;
+  display: flex;
+  justify-content: center;
+  &.is-sticky {
+    .sticky-footer-inner {
+      position: fixed;
+      bottom: 0;
+    }
+  }
 }
 
 .modal-debug-row-item {

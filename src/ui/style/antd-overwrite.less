@@ -76,6 +76,10 @@
 .ant-message {
   top: 55px;
   z-index: 1500;
+  &:has(.toast-message-2025-center) {
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 .ant-message-notice-content {
   padding: 8px 12px;
@@ -551,6 +555,7 @@ textarea {
 .perps-bridge-swap-modal {
   .ant-modal-body {
     // border: transparent !important;
+    border-radius: 16px;
     background-color: var(--r-neutral-bg-2, #f5f6fa) !important;
   }
 
@@ -564,11 +569,30 @@ textarea {
   }
 }
 
+.perps-edit-tp-sl-modal,
+.perps-close-all-position-modal {
+  .ant-modal-content {
+    border-radius: 16px;
+  }
+
+  .ant-modal-body {
+    border-radius: 12px;
+  }
+
+  .ant-modal-confirm-content {
+    margin-top: 0;
+  }
+  
+}
+
+
+
+
 .desktop-swap-token-modal {
   .ant-modal-body {
     max-height: 600px;
     padding: 0;
-    width: 400px;
+    width: 100%;
     background: transparent;
     border-radius: 20px;
     overflow: visible;
@@ -585,7 +609,7 @@ textarea {
   .js-rabby-desktop-swap-container {
     position: relative;
     overflow: hidden;
-    width: 400px !important;
+    width: 100% !important;
     height: 600px;
     transform: translateX(0);
 
@@ -605,4 +629,18 @@ textarea {
 .whitelist-guard-bordered-view {
   bottom: -6px;
   right: -6px;
+}
+
+html[desktop] {
+  .ant-switch {
+    background: var(--r-neutral-line, #e0e5ec);
+
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+
+  .ant-switch-checked {
+    background: var(--r-green-default, #27c193);
+  }
 }

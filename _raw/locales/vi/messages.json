@@ -674,9 +674,9 @@
         "level": {
           "$unknown": "Không xác định",
           "custom": "Tùy chỉnh",
-          "normal": "Nhanh",
-          "fast": "Ngay lập tức",
-          "slow": "Bình thường"
+          "normal": "Bình thường",
+          "fast": "Nhanh",
+          "slow": "Chậm"
         },
         "confirm": "Xác nhận",
         "popupTitle": "Đặt giá Gas (Gwei)",
@@ -1124,7 +1124,26 @@
       "via-bridge": "qua {{bridge}}",
       "max-tips": "Giá trị này được tính bằng cách trừ chi phí gas cho cầu.",
       "completedTip": "Giao dịch trên chuỗi, giải mã dữ liệu để tạo bản ghi",
-      "bridgeDbkBtn": "Cầu nối qua Dịch vụ Chính thức của DeBank"
+      "bridgeDbkBtn": "Cầu nối qua Dịch vụ Chính thức của DeBank",
+      "pendingItem": {
+        "swap": "Hoán đổi",
+        "bridgeStatus": "Trạng thái cầu",
+        "pending": "Đang chờ xử lý",
+        "fromFailed": "Giao dịch không thành công. Vui lòng thử lại.",
+        "receivingTo": "Nhận trên {{chain}}",
+        "estimatedTime": "Thời gian ước tính",
+        "failed": "Thất bại",
+        "completed": "Đã hoàn thành",
+        "queued": "Đang xếp hàng",
+        "BridgeStatusUnavailable": "Trạng thái cầu không khả dụng. Vui lòng kiểm tra lịch sử giao dịch của bạn để xác nhận rằng tiền đã đến.",
+        "sendingFrom": "Gửi từ {{chain}}",
+        "beReturnFailed": "Cầu nối không thành công. Tài sản của bạn đã được hoàn trả.",
+        "receivedDifferentTokenFromSource": "Cầu nối thất bại. Một token khác đã được trả về trên chuỗi nguồn.",
+        "longTimeNoReceive": "Mạng đang bận. Điều này có thể mất thời gian hơn bình thường. Vui lòng chờ đợi một cách kiên nhẫn.",
+        "receivedDifferentTokenNeedSwap": "Bạn đã nhận một mã thông báo khác. Bạn có thể trao đổi nó với mã thông báo mà bạn đã chọn.",
+        "sendStatus": "Gửi trạng thái",
+        "swapStatus": "Trạng thái hoán đổi"
+      }
     },
     "manageAddress": {
       "no-match": "Không tìm thấy",
@@ -1195,7 +1214,8 @@
           "gasAccount": "GasAccount",
           "searchDapp": "Tìm kiếm Dapp",
           "setting": "Cài đặt",
-          "dapps": "Dapps"
+          "dapps": "Dapps",
+          "settings": "Cài đặt"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -1220,7 +1240,8 @@
         "chainEnd": "chuỗi",
         "chain": "chuỗi,",
         "pendingCountPlural": "{{countStr}} Đang chờ xử lý",
-        "appChainTips": "Tài khoản Hyperliquid không được bao gồm"
+        "appChainTips": "Tài khoản Hyperliquid không được bao gồm",
+        "slotAppChainTips": "{{appChainNames}} Tài khoản không được bao gồm"
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {
@@ -1477,7 +1498,10 @@
           "summaryTips": "Giá trị tài sản chia cho tổng giá trị ròng",
           "summaryDescription": "Tất cả tài sản trong các giao thức (ví dụ: LP tokens) đều được quy đổi thành tài sản cơ sở để thực hiện các phép tính thống kê.",
           "lowValueDescription": "Tài sản có giá trị thấp sẽ được hiển thị ở đây",
-          "review": "Xem lại"
+          "review": "Xem lại",
+          "noTokens": "Không có Token",
+          "lowValueDefis": "{{count}} defi giá thấp",
+          "searchToken": "Tìm kiếm Token"
         },
         "AddMainnetToken": {
           "title": "Thêm Token Tùy Chỉnh",
@@ -1498,7 +1522,9 @@
         },
         "TestnetAssetListContainer": {
           "addTestnet": "Mạng",
-          "add": "Token"
+          "add": "Token",
+          "addToken": "Thêm Token",
+          "addNetwork": "Thêm Mạng"
         },
         "amount": "SỐ TIỀN",
         "usdValue": "GIÁ TRỊ USD",
@@ -1514,7 +1540,9 @@
         "noTestnetAssets": "Không có Tài sản Mạng Tùy chỉnh",
         "customButtonText": "Thêm token tùy chỉnh",
         "side": "BÊN",
-        "price": "GIÁ"
+        "price": "GIÁ",
+        "openInTab": "Mở trong tab",
+        "searchTokenPlaceholder": "Tìm kiếm Token"
       },
       "hd": {
         "ledger": {
@@ -1647,7 +1675,9 @@
         "slip39SeedPhraseWithPassphrase": "Tôi có một cụm từ hạt giống <0>{{SLIP39}}</0> với mật khẩu.",
         "importQuestion2": "Câu gốc của tôi chỉ được lưu trữ trên thiết bị của tôi. Rabby không thể truy cập nó.",
         "importQuestion3": "Nếu tôi gỡ cài đặt Rabby mà không sao lưu cụm từ khôi phục của mình, nó sẽ không thể được phục hồi bởi Rabby.",
-        "importQuestion1": "Nếu tôi mất hoặc chia sẻ cụm từ hạt giống của mình, tôi sẽ mất quyền truy cập vào tài sản của mình vĩnh viễn."
+        "importQuestion1": "Nếu tôi mất hoặc chia sẻ cụm từ hạt giống của mình, tôi sẽ mất quyền truy cập vào tài sản của mình vĩnh viễn.",
+        "showMoreOptions": "Hiện thêm tùy chọn",
+        "inputInvalid": "Các từ không hợp lệ đã được phát hiện. Vui lòng xem lại các từ được đánh dấu."
       },
       "metamask": {
         "tips": "Mẹo:",
@@ -2830,8 +2860,8 @@
           "risks": {
             "dexNoDeposite": "Không phải địa chỉ gửi CEX, có thể mất tiền.",
             "scamAddress": "Địa chỉ lừa đảo đã được Rabby đánh dấu",
-            "noSend": "Không có giao dịch chuyển khoản đến địa chỉ này trong 180 ngày",
-            "contractAddress": "Địa chỉ hợp đồng được phát hiện, quỹ có thể bị mất."
+            "contractAddress": "Địa chỉ hợp đồng được phát hiện, quỹ có thể bị mất.",
+            "noSend": "Bạn chưa gửi đến địa chỉ này trong 180 ngày."
           }
         },
         "title": "Gửi đến địa chỉ này",
@@ -3026,7 +3056,9 @@
       "toast": {
         "setAutoCloseSuccess": "Đã thiết lập tự động đóng vị trí thành công.",
         "openPositionSuccess": "Mở {{direction}} {{coin}}-USD: Kích thước {{size}} tại giá ${{price}}",
-        "closePositionSuccess": "Đã đóng {{direction}} {{coin}}-USD: Kích thước {{size}} với giá ${{price}}"
+        "closePositionSuccess": "Đã đóng {{direction}} {{coin}}-USD: Kích thước {{size}} với giá ${{price}}",
+        "takeProfitSuccess": "Đặt lợi nhuận thành công",
+        "stopLossSuccess": "Đặt lệnh dừng lỗ thành công"
       },
       "closePositionPopup": {
         "closeLong": "Đóng Long",
@@ -3036,7 +3068,43 @@
         "title": "Đóng {{coin}}-USD {{direction}}"
       },
       "isolated": "Isolated",
-      "cross": "Giao thoa"
+      "cross": "Giao thoa",
+      "closeAllPopup": {
+        "description": "Tất cả các vị trí mở của bạn sẽ được đóng với giá thị trường.",
+        "title": "Xác nhận Đóng Tất Cả Các Vị Thế"
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Nguy hiểm",
+          "description": "Vị trí của bạn đang có nguy cơ bị thanh lý cao. Khoảng cách đến giá thanh lý là ≤3%. Xem xét việc thêm ký quỹ hoặc đóng vị trí của bạn để tránh thanh lý."
+        },
+        "warning": {
+          "title": "Cảnh báo",
+          "description": "Vị thế của bạn đang gần với nguy cơ thanh lý. Khoảng cách đến giá thanh lý nằm giữa 3% và 8%. Hãy theo dõi vị thế của bạn một cách cẩn thận và xem xét việc thêm ký quỹ."
+        },
+        "safe": {
+          "title": "An toàn",
+          "description": "Vị thế của bạn đang ở mức an toàn. Khoảng cách đến giá thanh lý là >8%. Tiếp tục theo dõi điều kiện thị trường."
+        },
+        "gotIt": "Hiểu rồi",
+        "title": "Mức độ rủi ro",
+        "liquidationPrice": "Giá thanh lý",
+        "liquidationDistance": "Khoảng cách Thanh lý",
+        "subTitle": "Khoảng cách thanh lý theo thời gian thực (%)",
+        "currentPrice": "Giá Hiện Tại",
+        "liquidationDistanceTips": "Khoảng Cách Thanh Lý (%) cho thấy giá hiện tại cách giá thanh lý của bạn bao xa. Khoảng cách lớn hơn thể hiện vị thế an toàn hơn, trong khi khoảng cách nhỏ hơn có nghĩa là rủi ro thanh lý cao hơn."
+      },
+      "searchPerpsPopup": {
+        "searchPerps": "Tìm kiếm Perps",
+        "searchPlaceholder": "Tìm kiếm perps",
+        "empty": "Không tìm thấy thị trường nào",
+        "onePosition": "1 Vị trí",
+        "searchPosition": "Tìm kiếm vị trí",
+        "hasPosition": "Vị trí",
+        "openPosition": "Mở Vị Trí"
+      },
+      "position": "Vị thế",
+      "closeAll": "Đóng tất cả"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3058,10 +3126,10 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "Không có chuyển khoản đến địa chỉ này trong 180 ngày",
             "scamAddress": "Bạn đang gửi đến một địa chỉ lừa đảo",
             "contractAddress": "Bạn đang gửi đến một hợp đồng, tiền có thể bị mất.",
-            "dexNoDeposite": "Bạn đang gửi đến một địa chỉ sàn giao dịch không phải là nơi gửi tiền"
+            "dexNoDeposite": "Bạn đang gửi đến một địa chỉ sàn giao dịch không phải là nơi gửi tiền",
+            "noSend": "Bạn chưa gửi đến địa chỉ này trong 180 ngày."
           }
         },
         "TransferBeforeValue": "Có",
@@ -3091,6 +3159,229 @@
       "title": "Địa chỉ",
       "selectImportedAddress": "Chọn địa chỉ đã nhập",
       "sendToImportedAddress": "Gửi đến địa chỉ đã nhập"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "Giá trị ròng",
+        "appChainTips": "Tài khoản Hyperliquid & Polymarket không được bao gồm"
+      },
+      "UpdateButton": {
+        "updating": "Cập nhật dữ liệu",
+        "updatedAgo": "Dữ liệu đã được cập nhật <1/> <2>{{timeText}}</2> <3/> trước"
+      },
+      "ReachedEnd": {
+        "content": "Bạn đã đến cuối cùng"
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "Ví 財布",
+          "unfoldProtocols": "Mở {{count}} Giao thức",
+          "foldProtocols": "Gấp {{count}} Protocols",
+          "allTokenMode": "Tất cả chế độ Token",
+          "lpToken": "LP-Token",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "Mở khóa {{count}} Defis"
+        },
+        "hidden": {
+          "showAll": "Hiển thị tất cả",
+          "tokensWithZeroBalance": "Ẩn $0 tokens",
+          "hideSmall": "Ẩn các token có số dư nhỏ.",
+          "hideSmallDesc": "Các token có số dư nhỏ không được hiển thị.",
+          "hideProtocolsWithSmallDepositsDesc": "Các giao thức có khoản tiền gửi nhỏ không được hiển thị.",
+          "hideProtocolsWithSmallDeposits": "Ẩn các giao thức có khoản nạp nhỏ.",
+          "tokensWithZeroBalanceDesc": "Các token có số dư $0 sẽ bị ẩn.",
+          "hideDefiWithSmallDepositsDesc": "Defis với số tiền gửi nhỏ không được hiển thị.",
+          "hideDefiWithSmallDeposits": "Ẩn Defis với các khoản tiền gửi nhỏ."
+        },
+        "table": {
+          "chain": "Chuỗi",
+          "price": "Giá",
+          "amount": "Số lượng",
+          "token": "Token",
+          "usdValue": "Giá trị USD",
+          "tokenAddress": "Địa chỉ Token"
+        },
+        "actions": {
+          "swap": "Đổi",
+          "send": "Gửi"
+        }
+      },
+      "button": {
+        "send": "Gửi",
+        "bridge": "Cầu",
+        "queue": "Hàng đợi",
+        "pending": "{{pendingTxCount}} Đang chờ",
+        "swap": "Hoán đổi"
+      },
+      "tabs": {
+        "tokens": "Tokens",
+        "transactions": "Giao dịch",
+        "approvals": "Phê duyệt",
+        "difi": "Defi"
+      },
+      "nft": {
+        "message": {
+          "listingSuccess": "Vừa được niêm yết!",
+          "listingSuccessDesc": "Bạn đã liệt kê {{name}} trên OpenSea",
+          "cancelFailedDesc": "Vui lòng thử lại",
+          "cancelSuccessDesc": "Bạn đã hủy niêm yết {{name}} thành công.",
+          "acceptFailed": "Bán không thành công",
+          "listingFailedDesc": "Vui lòng thử lại.",
+          "cancelFailed": "Thất bại!",
+          "acceptFailedDesc": "Vui lòng thử lại.",
+          "listingFailed": "Đăng ký không thành công",
+          "acceptSuccessDesc": "Bạn đã bán {{name}} thành công",
+          "acceptSuccess": "Đã bán thành công",
+          "cancelSuccess": "Hủy niêm yết thành công"
+        },
+        "detail": {
+          "lastSale": "Bán cuối cùng",
+          "chain": "Chuỗi",
+          "ending": "Kết thúc:",
+          "platform": "Nền tảng:",
+          "nft": "NFT",
+          "topOffer": "Ưu đãi hàng đầu",
+          "noOffer": "Chưa có ưu đãi nào",
+          "collectionFloor": "Sàn giao dịch bộ sưu tập",
+          "supportPlatform": "Nền tảng được hỗ trợ:",
+          "rarity": "Rarity",
+          "collection": "Bộ sưu tập",
+          "edit": "Chỉnh sửa Danh sách",
+          "accept": "Chấp nhận",
+          "listing": "Liên kết trên Opensea",
+          "cancel": "Hủy Niêm Yết",
+          "send": "Gửi",
+          "listedFor": "{{count}} đã được liệt kê cho"
+        },
+        "cancelModal": {
+          "listing": "Danh sách",
+          "listingPrice": "Giá Niêm Yết",
+          "title": "Hủy niêm yết",
+          "cancelListing": "Hủy niêm yết"
+        },
+        "listingModal": {
+          "nft": "NFT",
+          "editListing": "Chỉnh sửa danh sách",
+          "total": "Giá niêm yết tổng cộng",
+          "totalEst": "Tổng ước tính thu nhập",
+          "cost": "Chi phí",
+          "floor": "Sàn",
+          "createListing": "Tạo danh sách",
+          "floorDifference": "Chênh lệch sàn",
+          "listedAs": "Được liệt kê là",
+          "approveAndList": "Phê duyệt và Liệt kê",
+          "creatorFeeTips": "Từ thiện của người sáng tạo sẽ được trả bởi người bán.",
+          "platformFeeTips": "Phí này là khoản phí dịch vụ của OpenSea.",
+          "creatorFeeTips1": "Người bán sẽ trả thu nhập cho người sáng tạo. Thu nhập của người sáng tạo được thực thi.",
+          "listOn": "Liên kết trên OpenSea",
+          "proceeds": "Tiền thu được",
+          "platformFee": "Phí nền tảng Opensea ({{fee}}%)",
+          "quantity": "Số lượng",
+          "rabbyFee": "Rabby phí (0%)",
+          "topOffer": "Ưu đãi hàng đầu",
+          "creatorFee": "Phí người tạo ({{fee}}%)"
+        },
+        "acceptModal": {
+          "totalEst": "Tổng ước tính thu nhập",
+          "platform": "Nền tảng",
+          "offerPrice": "Giá đề nghị",
+          "acceptOffer": "Chấp nhận Đề nghị",
+          "platformFeeTips": "Phí này là chi phí dịch vụ của OpenSea.",
+          "platformFee": "Phí nền tảng Opensea ({{fee}}%)",
+          "rabbyFee": "Rabby phí (0%)",
+          "floorDifference": "Chênh lệch sàn",
+          "creatorFee": "Phí người sáng tạo ({{fee}}%)",
+          "creatorFeeTips": "Thu nhập của người sáng tạo sẽ được thanh toán bởi người bán.",
+          "offer": "Cung cấp",
+          "title": "Chấp nhận đề xuất",
+          "creatorFeeTips1": "Thu nhập của người sáng tạo sẽ được thanh toán bởi người bán. Thu nhập của người sáng tạo được thi hành.",
+          "quantity": "Số lượng"
+        },
+        "all": "Tất cả",
+        "empty": "Không có NFTs",
+        "hideLowValue": "Ẩn NFT Giá Trị Thấp",
+        "pending": "Đang chờ xử lý",
+        "confirmingTx": "Xác nhận giao dịch của bạn"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "newPosition": "Mở Vị Thế",
+        "long": "Mua vào",
+        "short": "Short",
+        "margin": "Margin",
+        "free": "Miễn phí",
+        "stopLossWhenPriceBelow": "Cắt lỗ khi giá dưới",
+        "leverage": "Đòn bẩy",
+        "size": "Kích thước",
+        "maximumOrderSize": "Kích thước đơn hàng tối đa là {{amount}}",
+        "takeProfitWhenPriceAbove": "Chốt Lợi Nhuận Khi Giá Trên",
+        "available": "Sẵn có",
+        "invalidNumber": "Số không hợp lệ",
+        "stopLossWhenPriceAbove": "Dừng lỗ khi giá trên",
+        "takeProfitWhenPriceBelow": "Chốt Lợi Nhuận Khi Giá Dưới",
+        "rabbyFee": "Phí Rabby",
+        "minimumOrderSize": "Kích thước đơn đặt hàng tối thiểu là $10",
+        "insufficientBalance": "Số dư không đủ",
+        "sizeTips": "Giá trị hoặc số lượng tổng của giao dịch của bạn, được thiết lập bởi ký quỹ và đòn bẩy.",
+        "providerFee": "Phí Hyperliquid"
+      },
+      "PerpsEditMarginPopup": {
+        "title": "Điều chỉnh Biên độ",
+        "amountToAdd": "Số tiền thêm vào",
+        "addMargin": "Thêm ký quỹ",
+        "available": "Có sẵn",
+        "currentPrice": "Giá hiện tại",
+        "insufficientBalance": "Số dư không đủ",
+        "perpsBalance": "Số dư Perps",
+        "liqPrice": "Giá thanh lý:",
+        "reduceMargin": "Giảm Ký Quỹ",
+        "confirm": "Xác nhận",
+        "exceedMaxReduction": "Vượt quá mức giảm tối đa",
+        "margin": "Ký quỹ",
+        "amountToReduce": "Số lượng để Giảm",
+        "reduceMarginTooltip": "Không đủ ký quỹ để giảm vị thế.",
+        "reduceMarginSuccess": "Biên độ đã được giảm thành công",
+        "addMarginSuccess": "Bỏ cọc đã được thêm thành công"
+      },
+      "PerpsClosePositionPopup": {
+        "total": "Tổng cộng",
+        "receive": "Nhận",
+        "title": "Đóng Vị Trí",
+        "closedPnl": "PNL đã đóng",
+        "amount": "Số lượng",
+        "confirm": "Xác nhận",
+        "fee": "Phí",
+        "minimumWarning": "Số tiền đóng tối thiểu là {{percent}}%"
+      },
+      "PerpsAutoCloseModal": {
+        "priceBelow": "Giá dưới",
+        "youGain": "Bạn kiếm được",
+        "stopLoss": "Cắt lỗ",
+        "noPosition": "Bạn phải nhập ký quỹ trước.",
+        "takeProfitWhenPriceAbove": "Chốt lời khi giá trên",
+        "title": "Đóng vị trí tự động",
+        "youLoss": "Bạn thua",
+        "stopLossWhenPriceAbove": "Dừng lỗ khi giá trên",
+        "currentPrice": "Giá hiện tại: ",
+        "takeProfitWhen": "Chốt lợi nhuận khi",
+        "takeProfitTipsLong": "Giá mục tiêu chốt lời phải cao hơn giá hiện tại.",
+        "stopLossWhenPriceBelow": "Dừng Lỗ Khi Giá Dưới",
+        "takeProfitWhenPriceBelow": "Chốt Lợi Nhuận Khi Giá Dưới",
+        "takeProfitTipsShort": "Giá chốt lời phải thấp hơn giá hiện tại.",
+        "EntryAndCurrentPrice": "Entry: ${{entryPrice}} Hiện tại: ${{currentPrice}}",
+        "priceAbove": "Giá trên",
+        "takeProfitExpectedPNL": "Lấy Lợi Nhuận PNL Dự Kiến",
+        "takeProfit": "Chốt Lợi Nhuận",
+        "stopLossWhen": "Dừng lỗ khi",
+        "confirm": "Xác nhận",
+        "stopLossExpectedPNL": "Dừng Lỗ Lợi Nhuận Mong Đợi",
+        "cancel": "Hủy bỏ",
+        "stopLossTipsLong": "Giá dừng lỗ phải thấp hơn giá hiện tại",
+        "stopLossTipsLongLiquidation": "Giá thấp hơn giá thanh lý ({{price}})",
+        "stopLossTipsShort": "Giá dừng lỗ phải cao hơn giá hiện tại.",
+        "stopLossTipsShortLiquidation": "Giá cao hơn giá thanh lý ({{price}})"
+      }
     }
   },
   "component": {
@@ -3219,7 +3510,10 @@
       "common": "Thông thường",
       "noMatchSuggestion": "Hãy cố gắng tìm địa chỉ hợp đồng trên {{ chainName }}",
       "noMatch": "Không khớp",
-      "chainNotSupport": "Chuỗi này không được hỗ trợ"
+      "chainNotSupport": "Chuỗi này không được hỗ trợ",
+      "chainFilterLine": {
+        "filterAll": "Tất cả các chuỗi"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3245,9 +3539,9 @@
       "desc": "Các dịch vụ sau sẽ được cung cấp trực tiếp bởi đối tác hệ sinh thái bên thứ ba. Ví Rabby không chịu trách nhiệm về sự an toàn của các dịch vụ này."
     },
     "ReserveGasPopup": {
-      "instant": "Ngay lập tức",
-      "fast": "Nhanh",
-      "normal": "Bình thường",
+      "instant": "Nhanh",
+      "fast": "Bình thường",
+      "normal": "Chậm",
       "title": "Dự trữ Gas",
       "doNotReserve": "Đừng dành Gas"
     },
@@ -3287,6 +3581,22 @@
     },
     "DappActions": {
       "queueDescription": "Rút tiền hiện tại sẽ vào hàng chờ. Khi được xử lý, nó có thể được rút về ví của bạn."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Tất cả các chuỗi"
+    },
+    "DesktopNav": {
+      "perps": "Perps",
+      "portfolio": "Danh mục đầu tư",
+      "lending": "Cho vay",
+      "comingSoon": "Sắp ra mắt"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Thêm địa chỉ"
+    },
+    "LpTokenTag": {
+      "title": "Đây là một token nhà cung cấp thanh khoản (LP)",
+      "description": "LP tokens được cấp bởi các giao thức DeFi nơi bạn đã gửi tài sản của mình. Chúng phục vụ như bằng chứng cho những tài sản đó, nhưng giá trị của chúng không được tính vào tổng số dư của bạn."
     }
   },
   "global": {

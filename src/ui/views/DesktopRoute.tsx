@@ -1,11 +1,14 @@
 import React from 'react';
-import { Switch } from 'react-router-dom';
+import { Switch, useLocation } from 'react-router-dom';
 import { PrivateRoute } from 'ui/component';
 
 import { PortalHost } from '../component/PortalHost';
 import { CommonPopup } from './CommonPopup';
 import { DesktopProfile } from './DesktopProfile';
-import { GlobalSignerPortal } from '../component/MiniSignV2/components/GlobalSignerPortal';
+import {
+  GlobalSignerPortal,
+  GlobalTypedDataSignerPortal,
+} from '../component/MiniSignV2/components';
 
 declare global {
   interface Window {
@@ -14,6 +17,7 @@ declare global {
 }
 
 const Main = () => {
+  const location = useLocation();
   return (
     <>
       <Switch>
@@ -22,9 +26,14 @@ const Main = () => {
         </PrivateRoute>
       </Switch>
 
-      <CommonPopup />
-      <PortalHost />
-      <GlobalSignerPortal isDesktop />
+      {location.pathname !== '/unlock' ? (
+        <>
+          <CommonPopup />
+          <PortalHost />
+          <GlobalSignerPortal isDesktop />
+          <GlobalTypedDataSignerPortal isDesktop />
+        </>
+      ) : null}
     </>
   );
 };

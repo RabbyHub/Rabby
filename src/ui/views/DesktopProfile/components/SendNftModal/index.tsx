@@ -27,7 +27,7 @@ export const SendNftModal: React.FC<ModalProps> = (props) => {
   return (
     <Modal
       {...props}
-      className="desktop-swap-token-modal"
+      className="modal-support-darkmode"
       width={400}
       title={null}
       bodyStyle={{ background: 'transparent', maxHeight: 'unset', padding: 0 }}

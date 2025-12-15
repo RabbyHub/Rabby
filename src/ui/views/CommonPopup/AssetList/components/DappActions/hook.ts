@@ -1,3 +1,4 @@
+import { flatten, uniqBy } from 'lodash';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { Tx, WithdrawAction } from '@rabby-wallet/rabby-api/dist/types';
@@ -13,6 +14,11 @@ import { isValidAddress } from '@ethereumjs/util';
 import PQueue from 'p-queue';
 import { CHAINS_ENUM, ETH_USDT_CONTRACT } from '@/constant';
 import BigNumber from 'bignumber.js';
+import { DisplayedProject } from '@/ui/utils/portfolio/project';
+import { useRequest } from 'ahooks';
+import { Account } from '@/background/service/preference';
+import { ActionType } from './DappActionsForPopup';
+import { useTranslation } from 'react-i18next';
 
 const rpcQueue = new PQueue({
   concurrency: 20,
@@ -38,9 +44,14 @@ export const isWhitelistSpender = (address: string, chain: string) => {
   );
 };
 
+const cacheMap = new Map<string, boolean>();
 export const useIsContractBySymbol = () => {
   const wallet = useWallet();
   return async (address: string, serverId?: string) => {
+    const key = `${address}-${serverId}`;
+    if (cacheMap.has(key)) {
+      return cacheMap.get(key);
+    }
     try {
       // symbol call
       if (!serverId) return false;
@@ -62,7 +73,9 @@ export const useIsContractBySymbol = () => {
         )
       );
 
-      return !!ret && ret !== '0x' && ret !== '0x0';
+      const result = !!ret && ret !== '0x' && ret !== '0x0';
+      cacheMap.set(key, result);
+      return result;
     } catch (e) {
       return false;
     }
@@ -291,4 +304,39 @@ export const useDappAction = (
     valid,
     action,
   };
+};
+
+export const useGetDappActions = ({
+  protocol,
+}: {
+  protocol: DisplayedProject;
+}) => {
+  const { t } = useTranslation();
+
+  return useMemo(() => {
+    const result: Set<string> = new Set();
+    protocol._portfolios.forEach((item) => {
+      const data = item.withdrawActions;
+      data?.forEach((action) => {
+        if (
+          action.need_approve?.to &&
+          !isWhitelistSpender(action.need_approve?.to, protocol.chain!)
+        ) {
+          return;
+        }
+        if (isBlacklistMethod(action.func)) {
+          return;
+        }
+        if (
+          action.type === ActionType.Withdraw ||
+          action.type === ActionType.Queue
+        ) {
+          result.add(t('component.DappActions.withdraw'));
+        } else if (action.type === ActionType.Claim) {
+          result.add(t('component.DappActions.claim'));
+        }
+      });
+    });
+    return Array.from(result);
+  }, [protocol]);
 };

@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import React, {
   useState,
   useEffect,
@@ -61,6 +63,7 @@ import {
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
 import BottomArea from './BottomArea';
+import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -150,11 +153,33 @@ const SendNFT = () => {
   const [agreeRequiredChecks, setAgreeRequiredChecks] = useState({
     forToAddress: false,
   });
-  const { loading: loadingRisks, risks } = useAddressRisks(toAddress || '', {
+  const { loading: loadingRisks, risks } = useAddressRisks({
+    toAddress: toAddress || '',
+    fromAddress: currentAccount?.address,
+    forbiddenCheck: useMemo(() => {
+      return {
+        user_addr: currentAccount?.address || '',
+        to_addr: toAddress || '',
+        chain_id: nftItem?.serverId,
+        id: nftItem?.id || '',
+      };
+    }, [currentAccount?.address, toAddress, nftItem?.serverId, nftItem?.id]),
     onLoadFinished: useCallback(() => {
       setAgreeRequiredChecks((prev) => ({ ...prev, forToAddress: false }));
     }, []),
     scene: 'send-nft',
+  });
+
+  const {
+    targetAccount,
+    isMyImported,
+    addressDesc,
+    loading: loadingToAddressDesc,
+  } = useAddressInfo(toAddress);
+
+  const toAddressPositiveTips = useToAddressPositiveTips({
+    toAddress,
+    isMyImported,
   });
 
   const { mostImportantRisks, hasRiskForToAddress } = React.useMemo(() => {
@@ -164,9 +189,10 @@ const SendNFT = () => {
       mostImportantRisks: [] as { value: string }[],
     };
     if (risks.length) {
-      const sorted = [...risks]
-        .filter((item) => item.type !== RiskType.NEVER_SEND)
-        .sort(sortRisksDesc);
+      const sorted = (!toAddressPositiveTips.hasPositiveTips
+        ? [...risks]
+        : [...risks].filter((item) => item.type !== RiskType.NEVER_SEND)
+      ).sort(sortRisksDesc);
 
       ret.risksForToAddress = sorted
         .slice(0, 1)
@@ -190,7 +216,7 @@ const SendNFT = () => {
       mostImportantRisks: ret.mostImportantRisks,
       hasRiskForToAddress: !!ret.risksForToAddress.length,
     };
-  }, [risks]);
+  }, [toAddressPositiveTips.hasPositiveTips, risks]);
 
   const agreeRequiredChecked =
     hasRiskForToAddress && agreeRequiredChecks.forToAddress;
@@ -219,9 +245,10 @@ const SendNFT = () => {
   };
 
   const getNFTTransferParams = useCallback(
-    (amount: number): Record<string, any> => {
+    (amount: number): Record<string, any> | null => {
       if (!nftItem || !chainInfo || !currentAccount) {
-        throw new Error('Missing required data for NFT transfer');
+        // throw new Error('Missing required data for NFT transfer');
+        return null;
       }
       const params: Record<string, any> = {
         chainId: chainInfo.id,
@@ -342,6 +369,9 @@ const SendNFT = () => {
         });
 
         const params = getNFTTransferParams(amount);
+        if (!params) {
+          throw new Error('Missing required data for NFT transfer');
+        }
         let shouldForceSignPage = !!forceSignPage;
         wallet.addCacheHistoryData(
           `${chain}-${params.data || '0x'}`,
@@ -404,21 +434,23 @@ const SendNFT = () => {
               },
             },
           });
-          if (isTab) {
+          if (isTab || isDesktop) {
             await promise;
             form.setFieldsValue({
               amount: 0,
             });
             updateUrlAmount(0);
-            wallet.setPageStateCache({
-              path: '/send-nft',
-              search: history.location.search,
-              params: {},
-              states: {
-                values: form.getFieldsValue(),
-                nftItem,
-              },
-            });
+            if (isTab) {
+              wallet.setPageStateCache({
+                path: '/send-nft',
+                search: history.location.search,
+                params: {},
+                states: {
+                  values: form.getFieldsValue(),
+                  nftItem,
+                },
+              });
+            }
             setRefreshId((e) => e + 1);
           } else {
             window.close();
@@ -456,7 +488,14 @@ const SendNFT = () => {
       });
       setRefreshId((e) => e + 1);
     }, 500);
-  }, [form, updateUrlAmount]);
+  }, [
+    form,
+    updateUrlAmount,
+    history.location.search,
+    nftItem,
+    prefetch,
+    wallet,
+  ]);
 
   const handleClickBack = () => {
     if (history.length > 1) {
@@ -466,7 +505,7 @@ const SendNFT = () => {
     }
   };
 
-  const initByCache = async () => {
+  const initByCache = useCallback(async () => {
     if (!nftItem) {
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
@@ -477,9 +516,9 @@ const SendNFT = () => {
         }
       }
     }
-  };
+  }, [nftItem, wallet, history.location.pathname, form]);
 
-  const init = async () => {
+  const init = useCallback(async () => {
     dispatch.whitelist.getWhitelistEnabled();
     dispatch.whitelist.getWhitelist();
     dispatch.contactBook.getContactBookAsync();
@@ -490,24 +529,19 @@ const SendNFT = () => {
       return;
     }
     setInited(true);
-  };
-
-  const {
-    targetAccount,
-    isMyImported,
-    addressDesc,
-    loading: loadingToAddressDesc,
-  } = useAddressInfo(toAddress);
+  }, [dispatch.contactBook, dispatch.whitelist, history, wallet]);
 
   useEffect(() => {
     init();
     return () => {
       wallet.clearPageStateCache();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (inited) initByCache();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inited]);
 
   useEffect(() => {
@@ -523,7 +557,7 @@ const SendNFT = () => {
         }
       }
     }
-  }, [nftItem, chain]);
+  }, [nftItem, chain, history]);
 
   useEffect(() => {
     if (toAddress) {
@@ -558,7 +592,13 @@ const SendNFT = () => {
               <div
                 className="text-r-neutral-title1 absolute right-0 cursor-pointer top-1/2 -translate-y-1/2"
                 onClick={() => {
-                  openInternalPageInTab(`send-nft${history.location.search}`);
+                  // openInternalPageInTab(`send-nft${history.location.search}`);
+                  wallet.openInDesktop(
+                    `/desktop/profile?action=send&sendPageType=sendNft&${history.location.search.slice(
+                      1
+                    )}`
+                  );
+                  window.close();
                 }}
               >
                 <RcIconFullscreen />
@@ -585,7 +625,7 @@ const SendNFT = () => {
                 titleText={t('page.sendNFT.sectionTo.title')}
                 loadingToAddressDesc={loadingToAddressDesc}
                 toAccount={targetAccount}
-                isMyImported={isMyImported}
+                toAddressPositiveTips={toAddressPositiveTips}
                 cexInfo={addressDesc?.cex}
                 onClick={() => {
                   const query = new URLSearchParams(search);
@@ -692,7 +732,7 @@ const SendNFT = () => {
               ) : null}
               {!canSubmit && (
                 <div className="mt-16 mb-16">
-                  <PendingTxItem type="sendNft" />
+                  <PendingTxItem type="sendNft" getContainer={getContainer} />
                 </div>
               )}
             </div>

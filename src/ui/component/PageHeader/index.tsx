@@ -15,7 +15,9 @@ import { AccountSelectorModal } from '../AccountSelector/AccountSelectorModal';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import './style.less';
 import { KEYRING_TYPE } from '@/constant';
-const isTab = getUiType().isTab;
+import { UI_TYPE } from '@/constant/ui';
+const isTab = UI_TYPE.isTab;
+const isDesktop = UI_TYPE.isDesktop;
 
 const PageHeader = ({
   children,
@@ -27,6 +29,7 @@ const PageHeader = ({
   wrapperClassName = '',
   invertBack = false,
   keepBackLightVersion = false,
+  contentClassName,
   className = '',
   closeable = false,
   onClose,
@@ -46,6 +49,7 @@ const PageHeader = ({
   wrapperClassName?: string;
   invertBack?: boolean;
   keepBackLightVersion?: boolean;
+  contentClassName?: string;
   className?: string;
   closeable?: boolean;
   closeCn?: string;
@@ -63,7 +67,8 @@ const PageHeader = ({
       <div
         className={clsx(
           'page-header',
-          isShowAccount && 'switch-account',
+          isShowAccount && 'switch-account thin-header',
+          contentClassName,
           !fixed && className
         )}
       >
@@ -200,7 +205,7 @@ const AccountSwitchInner = ({
           setIsShowModal(false);
         }}
         getContainer={
-          isTab
+          isTab || isDesktop
             ? (document.querySelector(
                 '.js-rabby-popup-container'
               ) as HTMLDivElement) || document.body

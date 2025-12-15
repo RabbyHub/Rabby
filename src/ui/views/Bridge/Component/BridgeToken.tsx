@@ -1,6 +1,6 @@
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import TokenSelect from '@/ui/component/TokenSelect';
-import { findChainByEnum } from '@/utils/chain';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { DrawerProps, Input } from 'antd';
@@ -147,6 +147,10 @@ export const BridgeToken = ({
 
   const handleChangeFromToken = React.useCallback(
     (t: TokenItem) => {
+      const chainEnum = findChainByServerID(t?.chain || '')?.enum;
+      if (t && chainEnum && chainEnum !== chain) {
+        changeChain(chainEnum);
+      }
       onChangeToken(t);
       if (t.id !== token?.id) {
         onInputChange?.('');

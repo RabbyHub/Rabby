@@ -1,4 +1,4 @@
-import { Drawer, Input, Modal } from 'antd';
+import { Drawer, Input, Modal, ModalProps } from 'antd';
 import React, {
   ReactNode,
   useCallback,
@@ -137,7 +137,8 @@ export const ChainSelectorLargeModal = ({
   hideTestnetTab = false,
   showRPCStatus = false,
   height = 494,
-}: ChainSelectorModalProps) => {
+  ...rest
+}: ModalProps & ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel?.();
   };
@@ -201,6 +202,7 @@ export const ChainSelectorLargeModal = ({
       closeIcon={closeIcon}
       centered
       destroyOnClose
+      {...rest}
     >
       <Warper>
         <header>

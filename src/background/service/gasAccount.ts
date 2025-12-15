@@ -1,3 +1,5 @@
+import { EVENTS } from '@/constant';
+import eventBus from '@/eventBus';
 import { createPersistStore } from 'background/utils';
 
 export type GasAccountRecord = {
@@ -59,6 +61,12 @@ class GasAccountService {
         type: account.type,
       };
     }
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method:
+        !sig || !account
+          ? EVENTS.GAS_ACCOUNT.LOG_OUT
+          : EVENTS.GAS_ACCOUNT.LOG_IN,
+    });
   };
 
   /**

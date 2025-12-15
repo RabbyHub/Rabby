@@ -672,11 +672,11 @@
       },
       "GasSelector": {
         "level": {
-          "fast": "Instante",
+          "fast": "Rápido",
           "custom": "Personalizado",
-          "normal": "Rápido",
+          "normal": "Normal",
           "$unknown": "Desconhecido",
-          "slow": "Normal"
+          "slow": "Lento"
         },
         "confirm": "Confirmar",
         "popupTitle": "Definir Preço do Gás (Gwei)",
@@ -1124,7 +1124,26 @@
       "price-impact": "Impacto de Preço",
       "loss-tips": "Você está perdendo {{usd}}. Tente um valor diferente.",
       "max-tips": "Este valor é calculado subtraindo o custo de gás para a bridge.",
-      "bridgeDbkBtn": "Atravesse via Serviço Oficial DBK"
+      "bridgeDbkBtn": "Atravesse via Serviço Oficial DBK",
+      "pendingItem": {
+        "pending": "Pendente",
+        "completed": "Concluído",
+        "estimatedTime": "Tempo estimado",
+        "bridgeStatus": "Status da Bridge",
+        "fromFailed": "A transação não foi concluída. Tente novamente.",
+        "sendingFrom": "Enviando de {{chain}}",
+        "receivingTo": "Recebendo em {{chain}}",
+        "swap": "Trocar",
+        "beReturnFailed": "A ponte falhou. Seus ativos foram devolvidos.",
+        "failed": "Falhou",
+        "receivedDifferentTokenNeedSwap": "Você recebeu um token diferente. Você pode trocá-lo pelo token que você selecionou.",
+        "BridgeStatusUnavailable": "Status da ponte indisponível. Por favor, verifique seu histórico de transações para confirmar se os fundos chegaram.",
+        "longTimeNoReceive": "A rede está sobrecarregada. Isso pode levar mais tempo do que o habitual. Por favor, aguarde pacientemente.",
+        "receivedDifferentTokenFromSource": "A ponte falhou. Um token diferente foi retornado na cadeia de origem.",
+        "queued": "Em espera",
+        "sendStatus": "Enviar Status",
+        "swapStatus": "Status da Troca"
+      }
     },
     "manageAddress": {
       "whitelisted-address": "Endereço na lista branca",
@@ -1195,7 +1214,8 @@
           "gasAccount": "GasAccount",
           "dapps": "Dapps",
           "setting": "Configurações",
-          "searchDapp": "Pesquisar Dapp"
+          "searchDapp": "Pesquisar Dapp",
+          "settings": "Configurações"
         },
         "queue": {
           "title": "Fila",
@@ -1220,7 +1240,8 @@
         "chainEnd": "cadeia",
         "missingDataTooltip": "O saldo pode não ser atualizado devido a problemas de rede atuais com {{text}}.",
         "importType": "Importado por {{type}}",
-        "appChainTips": "Hyperliquid Account não incluído"
+        "appChainTips": "Hyperliquid Account não incluído",
+        "slotAppChainTips": "{{appChainNames}} Conta não incluída"
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {
@@ -1477,7 +1498,10 @@
           "lowValueAssets_other": "{{count}} tokens de baixo valor",
           "side": "Lado",
           "tradePair": "Par de negociação",
-          "review": "Revisar"
+          "review": "Revisar",
+          "noTokens": "Sem Tokens",
+          "lowValueDefis": "{{count}} defis de baixo valor",
+          "searchToken": "Buscar Token"
         },
         "AddMainnetToken": {
           "title": "Adicionar Token Personalizado",
@@ -1498,7 +1522,9 @@
         },
         "TestnetAssetListContainer": {
           "addTestnet": "Rede",
-          "add": "Token"
+          "add": "Token",
+          "addToken": "Adicionar Token",
+          "addNetwork": "Adicionar Rede"
         },
         "amount": "VALOR",
         "usdValue": "VALOR EM USD",
@@ -1514,7 +1540,9 @@
         "addTokenEntryText": "Token",
         "noTestnetAssets": "Nenhum ativo de rede personalizado",
         "side": "LADO",
-        "price": "PREÇO"
+        "price": "PREÇO",
+        "openInTab": "Abrir em uma nova guia",
+        "searchTokenPlaceholder": "Buscar Token"
       },
       "hd": {
         "ledger": {
@@ -1647,7 +1675,9 @@
         "wordPhraseAndPassphrase": "Eu tenho uma frase de <1>{{count}}</1> palavras com Passphrase.",
         "importQuestion1": "Se eu perder ou compartilhar minha seed phrase, perderei o acesso aos meus ativos permanentemente.",
         "importQuestion2": "Minha frase semente é armazenada apenas no meu dispositivo. Rabby não pode acessá-la.",
-        "importQuestion3": "Se eu desinstalar o Rabby sem fazer backup da minha frase-semente, não poderá ser recuperado pelo Rabby."
+        "importQuestion3": "Se eu desinstalar o Rabby sem fazer backup da minha frase-semente, não poderá ser recuperado pelo Rabby.",
+        "showMoreOptions": "Mostrar Mais Opções",
+        "inputInvalid": "Palavras inválidas detectadas. Por favor, revise aquelas destacadas."
       },
       "metamask": {
         "step": "Passo",
@@ -2831,7 +2861,7 @@
             "scamAddress": "Endereço de golpe sinalizado pelo Rabby",
             "dexNoDeposite": "Não é um endereço de depósito CEX, os fundos podem ser perdidos",
             "contractAddress": "Endereço de contrato detectado, os fundos podem ser perdidos",
-            "noSend": "Nenhuma transferência para este endereço em 180 dias"
+            "noSend": "Você não enviou para este endereço nos últimos 180 dias"
           }
         },
         "title": "Enviar para este Endereço",
@@ -3026,7 +3056,9 @@
       "toast": {
         "setAutoCloseSuccess": "Posição de fechamento automático definida com sucesso",
         "closePositionSuccess": "Fechado {{direction}} {{coin}}-USD: Tamanho {{size}} a Preço ${{price}}",
-        "openPositionSuccess": "Aberto {{direction}} {{coin}}-USD: Tamanho {{size}} a Preço ${{price}}"
+        "openPositionSuccess": "Aberto {{direction}} {{coin}}-USD: Tamanho {{size}} a Preço ${{price}}",
+        "takeProfitSuccess": "Lucro definido com sucesso",
+        "stopLossSuccess": "Stop loss definido com sucesso"
       },
       "closePositionPopup": {
         "pnl": "P&L",
@@ -3036,7 +3068,43 @@
         "closeLong": "Fechar Longo"
       },
       "cross": "Cruz",
-      "isolated": "Isolado"
+      "isolated": "Isolado",
+      "closeAllPopup": {
+        "title": "Confirmar Fechar Todas as Posições",
+        "description": "Todas as suas posições em aberto serão fechadas ao preço de mercado."
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Perigo",
+          "description": "Sua posição está em alto risco de liquidação. A distância até o preço de liquidação é ≤3%. Considere adicionar margem ou fechar sua posição para evitar a liquidação."
+        },
+        "warning": {
+          "title": "Aviso",
+          "description": "Sua posição está se aproximando do risco de liquidação. A distância até o preço de liquidação está entre 3% e 8%. Monitore sua posição com atenção e considere adicionar margem."
+        },
+        "safe": {
+          "title": "Seguro",
+          "description": "Sua posição está em um nível seguro. A distância até o preço de liquidação é >8%. Continue monitorando as condições do mercado."
+        },
+        "liquidationDistance": "Distância de Liquidação",
+        "gotIt": "Entendi",
+        "currentPrice": "Preço Atual",
+        "liquidationPrice": "Preço de Liquidação",
+        "title": "Nível de Risco",
+        "subTitle": "Distância de liquidação em tempo real (%)",
+        "liquidationDistanceTips": "A distância de liquidação (%) mostra quão longe o preço atual está do seu preço de liquidação. Uma distância maior indica uma posição mais segura, enquanto uma distância menor significa maior risco de liquidação."
+      },
+      "searchPerpsPopup": {
+        "onePosition": "1 Posição",
+        "empty": "Nenhum mercado encontrado",
+        "searchPosition": "Procurar posição",
+        "searchPlaceholder": "Pesquisar perps",
+        "hasPosition": "Posição",
+        "openPosition": "Abrir Posição",
+        "searchPerps": "Buscar Perps"
+      },
+      "position": "Posição",
+      "closeAll": "Fechar Tudo"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3060,8 +3128,8 @@
           "risks": {
             "scamAddress": "Você está enviando para um endereço de golpe",
             "dexNoDeposite": "Você está enviando para um endereço de exchange não depositário",
-            "noSend": "Nenhuma transferência para este endereço nos últimos 180 dias",
-            "contractAddress": "Você está enviando para um contrato, os fundos podem ser perdidos"
+            "contractAddress": "Você está enviando para um contrato, os fundos podem ser perdidos",
+            "noSend": "Você não enviou para este endereço nos últimos 180 dias."
           }
         },
         "AddToWhitelist": "Adicionar à Lista Branca",
@@ -3091,6 +3159,229 @@
       "enterAddressOrENS": "Digite ou pesquise o endereço",
       "sendToImportedAddress": "Enviar para Endereço Importado",
       "selectImportedAddress": "Selecione o endereço importado"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "Valor Líquido",
+        "appChainTips": "Hyperliquid e Polymarket Conta não incluída"
+      },
+      "UpdateButton": {
+        "updating": "Atualizando dados",
+        "updatedAgo": "Dados atualizados <1/> <2>{{timeText}}</2> <3/> atrás"
+      },
+      "ReachedEnd": {
+        "content": "Você chegou ao final"
+      },
+      "portfolio": {
+        "headers": {
+          "wallet": "Carteira",
+          "unfoldProtocols": "Desdobrar {{count}} Protocolos",
+          "foldProtocols": "Fold {{count}} Protocols",
+          "allTokenMode": "Todos os Modos de Token",
+          "lpToken": "LP-Token",
+          "unfoldDifis": "Desdobrar {{count}} Defis",
+          "foldDifis": "Fold {{count}} Defis"
+        },
+        "hidden": {
+          "showAll": "Mostrar tudo",
+          "tokensWithZeroBalance": "Ocultar tokens de $0",
+          "hideSmall": "Ocultar tokens com pequenos saldos.",
+          "hideProtocolsWithSmallDepositsDesc": "Protocolos com depósitos pequenos não são exibidos.",
+          "hideSmallDesc": "Tokens com saldos baixos não são exibidos.",
+          "hideProtocolsWithSmallDeposits": "Oculte protocolos com pequenos depósitos.",
+          "tokensWithZeroBalanceDesc": "Tokens com saldos de $0 estão ocultos.",
+          "hideDefiWithSmallDeposits": "Oculte Defis com pequenos depósitos.",
+          "hideDefiWithSmallDepositsDesc": "Defis com depósitos pequenos não são exibidos."
+        },
+        "table": {
+          "amount": "Quantidade",
+          "tokenAddress": "Endereço do Token",
+          "price": "Preço",
+          "token": "Token",
+          "usdValue": "Valor em USD",
+          "chain": "Chain"
+        },
+        "actions": {
+          "swap": "Trocar",
+          "send": "Enviar"
+        }
+      },
+      "button": {
+        "send": "Enviar",
+        "swap": "Troca",
+        "queue": "Fila",
+        "bridge": "Ponte",
+        "pending": "{{pendingTxCount}} Pendente"
+      },
+      "tabs": {
+        "tokens": "Tokens",
+        "transactions": "Transações",
+        "approvals": "Aprovações",
+        "difi": "Defi"
+      },
+      "nft": {
+        "message": {
+          "acceptFailed": "Venda Falhou",
+          "cancelFailed": "Falhou!",
+          "listingFailedDesc": "Por favor, tente novamente.",
+          "cancelSuccessDesc": "Você cancelou com sucesso a listagem {{name}}",
+          "cancelFailedDesc": "Por favor, tente novamente",
+          "cancelSuccess": "Listagem cancelada com sucesso",
+          "acceptFailedDesc": "Por favor, tente novamente.",
+          "listingSuccessDesc": "Você listou {{name}} no OpenSea",
+          "listingSuccess": "Acabou de ser listado!",
+          "acceptSuccessDesc": "Você vendeu {{name}} com sucesso",
+          "listingFailed": "Listagem Falhou",
+          "acceptSuccess": "Vendido com Sucesso"
+        },
+        "detail": {
+          "chain": "Cadeia",
+          "supportPlatform": "Plataformas suportadas:",
+          "rarity": "Raridade",
+          "collectionFloor": "Piso da coleção",
+          "collection": "Coleção",
+          "topOffer": "Oferta Principal",
+          "lastSale": "Última venda",
+          "platform": "Plataforma:",
+          "nft": "NFT",
+          "noOffer": "Ainda não há ofertas",
+          "ending": "Finalizando:",
+          "cancel": "Cancelar Listagem",
+          "accept": "Aceitar",
+          "edit": "Editar Listagem",
+          "listedFor": "{{count}} listado para",
+          "send": "Enviar",
+          "listing": "Listagem no Opensea"
+        },
+        "cancelModal": {
+          "listing": "Listagem",
+          "title": "Cancelar Listagem",
+          "cancelListing": "Cancelar listagem",
+          "listingPrice": "Preço de Listagem"
+        },
+        "listingModal": {
+          "nft": "NFT",
+          "floor": "Andar",
+          "quantity": "Quantidade",
+          "approveAndList": "Aprovar e Listar",
+          "totalEst": "Total estimado de ganhos",
+          "rabbyFee": "Rabby taxa (0%)",
+          "createListing": "Criar lista",
+          "cost": "Custo",
+          "proceeds": "Rendimentos",
+          "floorDifference": "Diferença de piso",
+          "editListing": "Editar Listagem",
+          "listedAs": "Listados como",
+          "total": "Preço total de listagem",
+          "platformFeeTips": "Esta taxa é a cobrança de serviço da OpenSea",
+          "creatorFeeTips": "Os ganhos dos criadores serão pagos pelo vendedor.",
+          "creatorFee": "Taxas do criador ({{fee}}%)",
+          "platformFee": "Taxas da plataforma Opensea ({{fee}}%)",
+          "creatorFeeTips1": "Os ganhos do criador serão pagos pelo vendedor. Os ganhos do criador são aplicados.",
+          "listOn": "Liste no OpenSea",
+          "topOffer": "Oferta Principal"
+        },
+        "acceptModal": {
+          "offer": "Oferta",
+          "offerPrice": "Preço de Oferta",
+          "quantity": "Quantidade",
+          "title": "Aceitar Oferta",
+          "creatorFee": "Taxas do criador ({{fee}}%)",
+          "totalEst": "Proventos totais estimados",
+          "rabbyFee": "Taxa Rabby (0%)",
+          "floorDifference": "Diferença de Piso",
+          "creatorFeeTips": "Os ganhos do criador serão pagos pelo vendedor.",
+          "platformFee": "Taxas da plataforma Opensea ({{fee}}%)",
+          "acceptOffer": "Aceitar Oferta",
+          "platformFeeTips": "Essa taxa é a comissão de serviço da OpenSea",
+          "creatorFeeTips1": "Os ganhos dos criadores serão pagos pelo vendedor. Os ganhos dos criadores são aplicados.",
+          "platform": "Plataforma"
+        },
+        "pending": "Pendente",
+        "empty": "Sem NFTs",
+        "confirmingTx": "Confirmando sua transação",
+        "all": "Todos",
+        "hideLowValue": "Esconder NFTs de Baixo Valor"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "short": "Short",
+        "long": "Long",
+        "margin": "Margem",
+        "newPosition": "Abrir Posição",
+        "free": "Grátis",
+        "available": "Disponível",
+        "insufficientBalance": "Saldo insuficiente",
+        "size": "Tamanho",
+        "maximumOrderSize": "O tamanho máximo do pedido é {{amount}}",
+        "rabbyFee": "Taxa do Rabby",
+        "invalidNumber": "Número inválido",
+        "providerFee": "Hyperliquid Taxa",
+        "minimumOrderSize": "O tamanho mínimo do pedido é $10",
+        "sizeTips": "O valor total ou quantidade da sua operação, definido pela margem e pela alavancagem.",
+        "stopLossWhenPriceAbove": "Stop Loss Quando o Preço Estiver Acima",
+        "takeProfitWhenPriceBelow": "Levar Lucro Quando o Preço Estiver Abaixo",
+        "stopLossWhenPriceBelow": "Stop Loss Quando o Preço Abaixo",
+        "leverage": "Alavancagem",
+        "takeProfitWhenPriceAbove": "Tire Lucro Quando o Preço Estiver Acima"
+      },
+      "PerpsEditMarginPopup": {
+        "available": "Disponível",
+        "margin": "Margem",
+        "liqPrice": "Preço de Liquidez:",
+        "reduceMargin": "Reduzir Margem",
+        "currentPrice": "Preço Atual",
+        "addMargin": "Adicionar Margem",
+        "title": "Ajustar Margem",
+        "amountToReduce": "Quantidade a Reduzir",
+        "insufficientBalance": "Saldo insuficiente",
+        "amountToAdd": "Montante a Adicionar",
+        "addMarginSuccess": "Margem adicionada com sucesso",
+        "exceedMaxReduction": "Excede a redução máxima",
+        "perpsBalance": "Saldo de Perps",
+        "reduceMarginTooltip": "Margem insuficiente para reduzir a posição.",
+        "confirm": "Confirmar",
+        "reduceMarginSuccess": "Margem reduzida com sucesso"
+      },
+      "PerpsClosePositionPopup": {
+        "fee": "Taxa",
+        "confirm": "Confirmar",
+        "amount": "Quantidade",
+        "closedPnl": "PNL Fechado",
+        "receive": "Receber",
+        "total": "Total",
+        "title": "Fechar Posição",
+        "minimumWarning": "O valor mínimo de fechamento é {{percent}}%"
+      },
+      "PerpsAutoCloseModal": {
+        "youLoss": "Você perde",
+        "currentPrice": "Preço Atual:",
+        "stopLossWhen": "Stop Loss Quando",
+        "stopLoss": "Parar Perda",
+        "priceAbove": "Preço acima",
+        "confirm": "Confirmar",
+        "takeProfit": "Realizar Lucro",
+        "youGain": "Você ganha",
+        "stopLossExpectedPNL": "Stop Loss PNL Esperado",
+        "takeProfitWhen": "Levar Lucro Quando",
+        "stopLossWhenPriceBelow": "Stop Loss Quando o Preço Abaixo",
+        "priceBelow": "Preço abaixo",
+        "noPosition": "Você deve inserir a margem primeiro.",
+        "takeProfitWhenPriceAbove": "Realizar Lucro Quando o Preço Estiver Acima",
+        "EntryAndCurrentPrice": "Entrada: ${{entryPrice}} Atual: ${{currentPrice}}",
+        "takeProfitExpectedPNL": "Levar Lucro PNL Esperado",
+        "takeProfitWhenPriceBelow": "Levar Lucro Quando o Preço Estiver Abaixo",
+        "stopLossWhenPriceAbove": "Stop Loss Quando o Preço Estiver Acima",
+        "takeProfitTipsLong": "O preço de realização de lucro deve ser maior que o preço atual.",
+        "takeProfitTipsShort": "O preço de take profit deve ser inferior ao preço atual.",
+        "cancel": "Cancelar",
+        "stopLossTipsLong": "O preço de stop loss deve ser inferior ao preço atual.",
+        "stopLossTipsLongLiquidation": "O preço está abaixo do liq.price ({{price}})",
+        "stopLossTipsShort": "O preço de stop loss deve ser maior que o preço atual.",
+        "stopLossTipsShortLiquidation": "O preço é superior ao liq.price ({{price}})",
+        "title": "Fechar Posição Automaticamente"
+      }
     }
   },
   "component": {
@@ -3219,7 +3510,10 @@
       "noMatch": "Sem correspondência",
       "noMatchSuggestion": "Tente procurar o endereço do contrato na {{ chainName }}",
       "hot": "Quente",
-      "chainNotSupport": "Esta cadeia não é suportada"
+      "chainNotSupport": "Esta cadeia não é suportada",
+      "chainFilterLine": {
+        "filterAll": "Todas as Chains"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3245,9 +3539,9 @@
       "desc": "Os seguintes serviços serão fornecidos diretamente por parceiros do Ecossistema de terceiros. A Rabby Wallet não assume responsabilidade pela segurança desses serviços."
     },
     "ReserveGasPopup": {
-      "normal": "Normal",
-      "instant": "Instant",
-      "fast": "Rápido",
+      "normal": "Lento",
+      "instant": "Rápido",
+      "fast": "Normal",
       "doNotReserve": "Não reserve Gas",
       "title": "Reservar Gas"
     },
@@ -3287,6 +3581,22 @@
     },
     "DappActions": {
       "queueDescription": "A retirada atual entrará em uma fila de espera. Assim que processada, poderá ser retirada para sua wallet."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Todas as Chains"
+    },
+    "DesktopNav": {
+      "perps": "Perps",
+      "lending": "Empréstimo",
+      "portfolio": "Portfólio",
+      "comingSoon": "Em Breve"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Adicionar endereço"
+    },
+    "LpTokenTag": {
+      "title": "Este é um token de provedor de liquidez (LP)",
+      "description": "Os tokens LP são emitidos pelos protocolos DeFi onde você depositou seus ativos. Eles servem como prova desses ativos, mas seu valor não está incluído no seu saldo total."
     }
   },
   "global": {

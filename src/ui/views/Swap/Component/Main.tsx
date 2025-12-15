@@ -46,7 +46,7 @@ import { SwapTokenItem } from './Token';
 import { BridgeSwitchBtn } from '../../Bridge/Component/BridgeSwitchButton';
 import { BridgeShowMore } from '../../Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -668,7 +668,7 @@ export const Main = () => {
     ]
   );
 
-  const noQuote = useDebounceValue(noQuoteOrigin, 10);
+  const noQuote = useSyncStaleValue(noQuoteOrigin, 10);
 
   useEffect(() => {
     if (noQuote) {
@@ -729,21 +729,8 @@ export const Main = () => {
       <Header
         noShowHeader={isDesktop}
         onOpenInTab={async () => {
-          openInternalPageInTab(
-            `dex-swap?${obj2query({
-              chain:
-                findChain({
-                  enum: chain,
-                })?.serverId || '',
-              payTokenId: payToken?.id || '',
-              receiveTokenId: receiveToken?.id || '',
-              inputAmount,
-              isMax: slider >= 100 ? 'true' : '',
-              rbiSource,
-            })}`
-          );
-          // await wallet.openInDesktop(
-          //   `desktop/profile?${obj2query({
+          // openInternalPageInTab(
+          //   `dex-swap?${obj2query({
           //     chain:
           //       findChain({
           //         enum: chain,
@@ -753,10 +740,23 @@ export const Main = () => {
           //     inputAmount,
           //     isMax: slider >= 100 ? 'true' : '',
           //     rbiSource,
-          //     action: 'swap',
           //   })}`
           // );
-          // window.close();
+          await wallet.openInDesktop(
+            `desktop/profile?${obj2query({
+              chain:
+                findChain({
+                  enum: chain,
+                })?.serverId || '',
+              payTokenId: payToken?.id || '',
+              receiveTokenId: receiveToken?.id || '',
+              inputAmount,
+              isMax: slider >= 100 ? 'true' : '',
+              rbiSource,
+              action: 'swap',
+            })}`
+          );
+          window.close();
         }}
       />
       <div
@@ -861,6 +861,7 @@ export const Main = () => {
               }}
               dappList={externalDapps}
               loading={externalDappsLoading}
+              getContainer={getContainer}
             />
           </div>
         ) : null}
@@ -945,6 +946,7 @@ export const Main = () => {
         Boolean(!isShowMoreVisible && !activeProvider?.quote) ? (
           <div className="mx-20 mt-20">
             <PendingTxItem
+              getContainer={getContainer}
               type={
                 shouldTwoStepSwap && currentTxs?.length ? 'approveSwap' : 'swap'
               }
@@ -952,10 +954,12 @@ export const Main = () => {
             />
           </div>
         ) : null}
+        {/* for bottom padding */}
+        <div className={clsx('w-full', 'h-[20px]')} />
 
         <div
           className={clsx(
-            'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
+            'fixed z-10 w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
             'bg-r-neutral-bg-2 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
             'py-[13px]',
             isTab ? 'rounded-b-[16px]' : ''

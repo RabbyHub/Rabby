@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import clsx from 'clsx';
 import styled from 'styled-components';
 
 import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
-import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
+import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown-cc.svg';
 import { ScrollToDomById } from './utils';
 import { TOKEN_WALLET_ANCHOR_ID } from './constant';
 import { ReactComponent as RcWalletIconCC } from 'ui/assets/wallet-cc.svg';
+import { useTranslation } from 'react-i18next';
 
 const ProjectOverviewItemWrapper = styled.div`
   border-radius: 12px;
@@ -68,10 +69,10 @@ const ProjectOverviewItem = ({
         />
       )}
       <div className="flex flex-col">
-        <span className="name inline-flex items-center text-12 font-medium text-rb-neutral-foot truncate">
+        <span className="name inline-flex items-center text-12 text-rb-neutral-foot truncate">
           {protocol.name}
         </span>
-        <span className="text-[12px] text-rb-neutral-title-1 font-medium">
+        <span className="text-[12px] text-rb-neutral-title-1 font-semibold">
           {protocol._netWorth}
         </span>
       </div>
@@ -87,6 +88,7 @@ interface Props {
   toggleExpand?: () => void;
   hasExpandSwitch?: boolean;
   smallLength?: number;
+  filterWallet?: boolean;
 }
 
 const ProjectOverviewListWrapper = styled.div`
@@ -101,20 +103,37 @@ const ListWrapper = styled.div`
   gap: 12px;
 `;
 
+const MAX_FOLD_LENGTH = 11; // 折叠情况下最多展示两行
+
 const ProjectOverview = ({
-  list,
+  list: originList,
   appIds,
   isExpanded,
   toggleExpand,
   smallLength,
   hasExpandSwitch,
+  filterWallet,
 }: Props) => {
+  const { t } = useTranslation();
+  const list = filterWallet
+    ? originList?.filter((item) => item.id !== TOKEN_WALLET_ANCHOR_ID)
+    : originList;
+
+  const truncateLength = useMemo(() => {
+    const allLength = isExpanded
+      ? list?.length || 0
+      : (smallLength || 0) + (list?.length || 0);
+    if (allLength > MAX_FOLD_LENGTH) {
+      return allLength - MAX_FOLD_LENGTH;
+    }
+    return smallLength;
+  }, [isExpanded, smallLength, list]);
   if (!list) return null;
 
   return (
     <ProjectOverviewListWrapper>
       <ListWrapper>
-        {list?.map((item) => (
+        {(isExpanded ? list : list?.slice(0, MAX_FOLD_LENGTH))?.map((item) => (
           <ProjectOverviewItem
             protocol={item}
             key={item.id}
@@ -128,12 +147,16 @@ const ProjectOverview = ({
           >
             <div className="text-rb-neutral-secondary text-13 cursor-pointer">
               {isExpanded
-                ? `Fold ${smallLength} Protocols`
-                : `Unfold ${smallLength} Protocols`}
+                ? t('page.desktopProfile.portfolio.headers.foldDifis', {
+                    count: truncateLength,
+                  })
+                : t('page.desktopProfile.portfolio.headers.unfoldDifis', {
+                    count: truncateLength,
+                  })}
             </div>
             <div className="flex items-center justify-center gap-[2px] cursor-pointer">
               <RcIconDropdown
-                className={clsx('ml-0', {
+                className={clsx('ml-0 text-rb-neutral-secondary', {
                   'transform rotate-180': isExpanded,
                 })}
               />

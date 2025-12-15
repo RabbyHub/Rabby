@@ -137,7 +137,7 @@ const NameAndAddress = ({
               .slice(0, 6)}...${address?.toLowerCase().slice(-4)})`
           : `${address
               ?.toLowerCase()
-              .slice(0, 6)}...${address?.toLowerCase().slice(-4)}`}
+              .slice(0, 8)}...${address?.toLowerCase().slice(-6)}`}
       </div>
       {addressSuffix || null}
       {openExternal && (

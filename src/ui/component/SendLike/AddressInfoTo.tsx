@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +23,10 @@ import { ReactComponent as RcCheckRight } from '@/ui/assets/send-token/check-rig
 import { ReactComponent as RcIconAddressEntry } from '@/ui/views/SendToken/icons/address-entry.svg';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS } from '@/constant';
 import { AddressViewer } from '@/ui/component';
-import { useRecentSendToHistoryFor } from '@/ui/component/SendLike/hooks/useRecentSend';
+import {
+  ToAddressPositiveTips,
+  useRecentSendToHistoryFor,
+} from '@/ui/component/SendLike/hooks/useRecentSend';
 import MarkedHeadTailAddress from '../AddressViewer/MarkedHeadTailAddress';
 
 const isTab = getUiType().isTab;
@@ -30,7 +35,8 @@ export function AddressInfoTo({
   toAccount,
   titleText,
   loadingToAddressDesc,
-  isMyImported,
+  toAddressPositiveTips,
+  // isMyImported,
   cexInfo,
   className,
   onClick,
@@ -39,7 +45,8 @@ export function AddressInfoTo({
   toAccount?: Account;
   titleText?: string;
   loadingToAddressDesc?: boolean;
-  isMyImported: boolean | undefined;
+  toAddressPositiveTips?: ToAddressPositiveTips;
+  // isMyImported: boolean | undefined;
   cexInfo?: Cex;
   onClick?: () => void;
 }) {
@@ -57,16 +64,6 @@ export function AddressInfoTo({
   const [aliasName] = useAlias(toAccount?.address || '');
 
   const rDispatch = useRabbyDispatch();
-  const { whitelist } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-  }));
-
-  const inWhitelist = useMemo(() => {
-    return (
-      !!toAccount?.address &&
-      whitelist?.some((w) => isSameAddress(w, toAccount.address))
-    );
-  }, [toAccount?.address, whitelist]);
 
   const { showBorderdDesc, cexInfoText } = useMemo(() => {
     const ret = {
@@ -95,39 +92,32 @@ export function AddressInfoTo({
     ret.showBorderdDesc = false;
 
     return ret;
-  }, [cexInfo, toAccount?.type]);
+  }, [cexInfo, toAccount?.type, t]);
 
   useEffect(() => {
     rDispatch.accountToDisplay.getAllAccountsToDisplay();
   }, [rDispatch]);
 
-  const { recentHistory: recentSendToHistory } = useRecentSendToHistoryFor(
-    toAccount?.address
-  );
-  const toAddressIsRecentlySend = recentSendToHistory.length > 0;
-  const hasPositiveTips =
-    toAddressIsRecentlySend || inWhitelist || isMyImported;
-
   return (
     <div className={clsx(className, 'overflow-auto')}>
       <div className="section relative">
         <div className="section-title justify-between items-center flex">
-          <span className="section-title__to font-bold text-[17px]">
+          <span className="section-title__to text-[17px]">
             {titleText || t('page.sendToken.sectionTo.title')}
           </span>
 
-          {hasPositiveTips && (
+          {toAddressPositiveTips?.hasPositiveTips && (
             <div className="flex items-center justify-end font-medium text-[15px]">
               <RcCheckRight width={18} height={18} className="mr-[3px]" />
-              {inWhitelist ? (
+              {toAddressPositiveTips.inWhitelist ? (
                 <span className="text-r-green-default">
                   {t('page.selectToAddress.positiveTips.whitelistAddress')}
                 </span>
-              ) : isMyImported ? (
+              ) : toAddressPositiveTips.isMyImported ? (
                 <span className="text-r-green-default">
                   {t('page.selectToAddress.positiveTips.yourOwnAddress')}
                 </span>
-              ) : toAddressIsRecentlySend ? (
+              ) : toAddressPositiveTips.toAddressIsRecentlySend ? (
                 <span className="text-r-green-default">
                   {t('page.selectToAddress.positiveTips.sentBefore')}
                 </span>
@@ -149,8 +139,12 @@ export function AddressInfoTo({
             <div className="relative flex items-center justify-start">
               <Tooltip
                 overlayClassName="rounded-tooltip"
-                title={inWhitelist ? t('page.whitelist.tips.tooltip') : ''}
-                {...(!inWhitelist && {
+                title={
+                  toAddressPositiveTips?.inWhitelist
+                    ? t('page.whitelist.tips.tooltip')
+                    : ''
+                }
+                {...(!toAddressPositiveTips?.inWhitelist && {
                   visible: false,
                 })}
               >
@@ -175,7 +169,7 @@ export function AddressInfoTo({
                       style={{ padding: 0 }}
                     />
                   )}
-                  {inWhitelist && (
+                  {toAddressPositiveTips?.inWhitelist && (
                     <div className="absolute w-[18px] h-[18px] whitelist-guard-bordered-view text-r-blue-default">
                       <RcWhitelistGuardBordered
                         width={18}

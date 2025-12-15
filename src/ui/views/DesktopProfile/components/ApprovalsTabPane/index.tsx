@@ -1,6 +1,12 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+} from 'react';
 import { Alert, Tooltip } from 'antd';
 import type { ColumnType, TableProps } from 'antd/lib/table';
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -71,7 +77,7 @@ import NetSwitchTabs, {
 } from '@/ui/component/PillsSwitch/NetSwitchTabs';
 import { useTranslation } from 'react-i18next';
 import { useReloadPageOnCurrentAccountChanged } from '@/ui/hooks/backgroundState/useAccount';
-import { useTitle } from 'ahooks';
+import { useMemoizedFn, useTitle } from 'ahooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useConfirmRevokeModal } from './components/BatchRevoke/useConfirmRevokeModal';
@@ -1392,6 +1398,40 @@ export const ApprovalsTabPane = ({
     enableBatchRevoke,
   ]);
 
+  const stickyElRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = useMemoizedFn(() => {
+    if (!stickyElRef.current) {
+      return;
+    }
+    const rect = stickyElRef.current?.getBoundingClientRect();
+    const clientHeight = document.documentElement.clientHeight;
+    if (rect.bottom > clientHeight) {
+      stickyElRef.current.classList.add('is-sticky');
+    } else {
+      stickyElRef.current.classList.remove('is-sticky');
+    }
+  });
+
+  useEffect(() => {
+    if (!isLoading) {
+      handleScroll();
+    }
+  }, [handleScroll, isLoading]);
+
+  useEffect(() => {
+    const $scrollContainer = document.querySelector('.js-scroll-element');
+    if (!$scrollContainer) {
+      return;
+    }
+
+    $scrollContainer.addEventListener('scroll', handleScroll);
+
+    return () => {
+      $scrollContainer.removeEventListener('scroll', handleScroll);
+    };
+  }, [handleScroll]);
+
   return (
     <div
       className={clsx(
@@ -1585,24 +1625,24 @@ export const ApprovalsTabPane = ({
                 />
               ) : null}
               {batchRevokeModal.node}
-              {isDesktop && (
-                <div className="sticky-footer w-full static pt-[36[x] pb-[40px]]">
-                  {tab === 'eip-7702' ? (
-                    <>
-                      <div className="h-[36px]" />
-
-                      <RevokeEIP7702Button
-                        onRevoke={handleEIP7702Revoke}
-                        selectedCount={eip7702SelectedRows.length || 0}
+              {!isLoading && isDesktop && (
+                <div className="sticky-footer-container" ref={stickyElRef}>
+                  <div className="sticky-footer-inner py-[16px] text-center">
+                    {tab === 'eip-7702' ? (
+                      <>
+                        <RevokeEIP7702Button
+                          onRevoke={handleEIP7702Revoke}
+                          selectedCount={eip7702SelectedRows.length || 0}
+                        />
+                      </>
+                    ) : (
+                      <RevokeButton
+                        revokeSummary={revokeSummary}
+                        enableBatchRevoke={enableBatchRevoke}
+                        onRevoke={onRevoke}
                       />
-                    </>
-                  ) : (
-                    <RevokeButton
-                      revokeSummary={revokeSummary}
-                      enableBatchRevoke={enableBatchRevoke}
-                      onRevoke={onRevoke}
-                    />
-                  )}
+                    )}
+                  </div>
                 </div>
               )}
             </main>

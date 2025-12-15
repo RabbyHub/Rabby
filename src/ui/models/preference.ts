@@ -39,6 +39,9 @@ interface PreferenceState {
   isHideEcologyNoticeDict: Record<string | number, boolean>;
   isEnabledDappAccount?: boolean;
   rateGuideLastExposure?: RateGuideLastExposure;
+
+  /** @deprecated */
+  desktopTokensAllMode?: boolean;
 }
 
 export const preference = createModel<RootModel>()({
@@ -67,6 +70,7 @@ export const preference = createModel<RootModel>()({
     isHideEcologyNoticeDict: {},
     isEnabledDappAccount: false,
     rateGuideLastExposure: getDefaultRateGuideLastExposure(),
+    desktopTokensAllMode: false,
   } as PreferenceState,
 
   reducers: {
@@ -226,6 +230,14 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setIsShowTestnet(value);
       dispatch.preference.getPreference('isShowTestnet');
+    },
+
+    async setDesktopTokensAllMode(value: boolean, store) {
+      dispatch.preference.setField({
+        desktopTokensAllMode: value,
+      });
+      await store.app.wallet.setDesktopTokensAllMode(value);
+      dispatch.preference.getPreference('desktopTokensAllMode');
     },
 
     async switchLocale(locale: string, store) {

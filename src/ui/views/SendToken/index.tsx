@@ -1,3 +1,4 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
 import React, {
   useState,
@@ -16,6 +17,7 @@ import { Form, message, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
 import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
+import { globalSupportCexList } from '@/ui/models/exchange';
 
 import {
   CHAINS_ENUM,
@@ -88,10 +90,12 @@ import {
   sortRisksDesc,
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
-import { SendSlider } from '@/ui/component/SendLike/Slider';
+// import { SendSlider } from '@/ui/component/SendLike/Slider';
 import { appIsDebugPkg } from '@/utils/env';
-import { debounce } from 'lodash';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import { add, debounce } from 'lodash';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
+import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
+import { ChainSelectorInSend } from './components/ChainSelectorInSend';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -301,65 +305,6 @@ const SendToken = () => {
     maybeL1Fee: null,
   });
 
-  const fetchExtraGasFees = useCallback(
-    async (input: { gasPrice?: number }) => {
-      const ret = {
-        gasLimit: 0,
-        maybeL1Fee: new BigNumber(0),
-      };
-      const doReturn = (
-        gasLimit: number | BigNumber,
-        l1Value: number | BigNumber = 0
-      ) => {
-        // ret.gasLimit = new BigNumber(baseValue);
-        ret.maybeL1Fee = new BigNumber(l1Value);
-
-        setChainTokenGasFees((prev) => ({
-          ...prev,
-          maybeL1Fee: ret.maybeL1Fee,
-        }));
-
-        return ret;
-      };
-
-      if (!currentAccount) return doReturn(0, 0);
-      if (!currentToken || !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain))
-        return doReturn(0, 0);
-
-      const {
-        gasPrice = (await loadGasList().then(findInstanceLevel))?.price || 0,
-      } = input;
-
-      const l1GasFee = await wallet.fetchEstimatedL1Fee(
-        {
-          txParams: {
-            chainId: chainItem?.id,
-            from: currentAccount.address,
-            to:
-              toAddress && isValidAddress(toAddress)
-                ? toAddress
-                : zeroAddress(),
-            value: currentToken.raw_amount_hex_str,
-            gas: intToHex(DEFAULT_GAS_USED),
-            gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
-            data: '0x',
-          },
-        },
-        chain
-      );
-
-      return doReturn(0, new BigNumber(l1GasFee || 0));
-    },
-    [
-      chainItem?.id,
-      currentAccount?.address,
-      currentToken,
-      wallet,
-      chain,
-      toAddress,
-    ]
-  );
-
   const isGnosisSafe = useMemo(() => {
     return currentAccount?.type === KEYRING_CLASS.GNOSIS;
   }, [currentAccount?.type]);
@@ -401,7 +346,10 @@ const SendToken = () => {
       }
 
       const toCexId = addressDesc?.cex?.id;
-      if (toCexId) {
+      const isSupportCEX = globalSupportCexList.find(
+        (cex) => cex.id === toCexId
+      );
+      if (toCexId && isSupportCEX) {
         const cex_ids =
           token.cex_ids || token.identity?.cex_list?.map((item) => item.id);
         const noSupportToken = cex_ids?.every?.(
@@ -505,11 +453,31 @@ const SendToken = () => {
     forToAddress: false,
     forToken: false,
   });
-  const { loading: loadingRisks, risks } = useAddressRisks(toAddress || '', {
+  const { loading: loadingRisks, risks } = useAddressRisks({
+    toAddress: toAddress || '',
+    fromAddress: currentAccount?.address,
+    forbiddenCheck: useMemo(() => {
+      return {
+        user_addr: currentAccount?.address || '',
+        to_addr: toAddress || '',
+        chain_id: chainItem?.serverId,
+        id: currentToken?.id || '',
+      };
+    }, [
+      currentAccount?.address,
+      toAddress,
+      chainItem?.serverId,
+      currentToken?.id,
+    ]),
     onLoadFinished: useCallback(() => {
       setAgreeRequiredChecks((prev) => ({ ...prev, forToAddress: false }));
     }, []),
     scene: 'send-token',
+  });
+
+  const toAddressPositiveTips = useToAddressPositiveTips({
+    toAddress,
+    isMyImported,
   });
 
   const {
@@ -523,9 +491,10 @@ const SendToken = () => {
       mostImportantRisks: [] as { value: string }[],
     };
     if (risks.length) {
-      const sorted = [...risks]
-        .filter((item) => item.type !== RiskType.NEVER_SEND)
-        .sort(sortRisksDesc);
+      const sorted = (!toAddressPositiveTips.hasPositiveTips
+        ? [...risks]
+        : [...risks].filter((item) => item.type !== RiskType.NEVER_SEND)
+      ).sort(sortRisksDesc);
 
       ret.risksForToAddress = sorted
         .slice(0, 1)
@@ -558,7 +527,12 @@ const SendToken = () => {
       hasRiskForToAddress: !!ret.risksForToAddress.length,
       hasRiskForToken: !!ret.risksForToken.length,
     };
-  }, [currentToken, risks]);
+  }, [
+    toAddressPositiveTips.hasPositiveTips,
+    currentToken,
+    risks,
+    disableItemCheck,
+  ]);
 
   const agreeRequiredChecked =
     (hasRiskForToAddress && agreeRequiredChecks.forToAddress) ||
@@ -662,6 +636,66 @@ const SendToken = () => {
     }
   }, [clickedMax, loadGasList]);
 
+  const fetchExtraGasFees = useCallback(
+    async (input: { gasPrice?: number }) => {
+      const ret = {
+        gasLimit: 0,
+        maybeL1Fee: new BigNumber(0),
+      };
+      const doReturn = (
+        gasLimit: number | BigNumber,
+        l1Value: number | BigNumber = 0
+      ) => {
+        // ret.gasLimit = new BigNumber(baseValue);
+        ret.maybeL1Fee = new BigNumber(l1Value);
+
+        setChainTokenGasFees((prev) => ({
+          ...prev,
+          maybeL1Fee: ret.maybeL1Fee,
+        }));
+
+        return ret;
+      };
+
+      if (!currentAccount?.address) return doReturn(0, 0);
+      if (!currentToken || !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain))
+        return doReturn(0, 0);
+
+      const {
+        gasPrice = (await loadGasList().then(findInstanceLevel))?.price || 0,
+      } = input;
+
+      const l1GasFee = await wallet.fetchEstimatedL1Fee(
+        {
+          txParams: {
+            chainId: chainItem?.id,
+            from: currentAccount?.address,
+            to:
+              toAddress && isValidAddress(toAddress)
+                ? toAddress
+                : zeroAddress(),
+            value: currentToken.raw_amount_hex_str,
+            gas: intToHex(DEFAULT_GAS_USED),
+            gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
+            data: '0x',
+          },
+        },
+        chain
+      );
+
+      return doReturn(0, new BigNumber(l1GasFee || 0));
+    },
+    [
+      currentAccount?.address,
+      loadGasList,
+      chainItem?.id,
+      currentToken,
+      wallet,
+      chain,
+      toAddress,
+    ]
+  );
+
   const defaultGasLevel = useMemo(() => {
     return findInstanceLevel(gasList || []);
   }, [gasList]);
@@ -692,7 +726,7 @@ const SendToken = () => {
       !chainItem?.isTestnet &&
       !sendToOtherChainContract
     );
-  }, [canSubmitBasic, chainItem?.isTestnet, currentAccount?.type]);
+  }, [canSubmitBasic, chainItem, currentAccount?.type, addressDesc]);
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({
@@ -856,7 +890,7 @@ const SendToken = () => {
           },
         });
 
-        if (isTab) {
+        if (isTab || isDesktop) {
           await promise;
           form.setFieldsValue({
             amount: '',
@@ -899,7 +933,7 @@ const SendToken = () => {
     to: toAddress,
     amount: paramAmount || '',
   };
-  const amount = useDebounceValue(form.getFieldValue('amount'), 300);
+  const amount = useSyncStaleValue(form.getFieldValue('amount'), 300);
   const address = form.getFieldValue('to');
 
   useEffect(() => {
@@ -1018,6 +1052,7 @@ const SendToken = () => {
     refreshId,
     reserveGasOpen,
     isEstimatingGas,
+    isGnosisSafe,
     canSubmitBasic,
     canUseDirectSubmitTx,
     currentToken?.chain,
@@ -1056,7 +1091,7 @@ const SendToken = () => {
         }
       }, 500);
     });
-  }, [form]);
+  }, [form, prefetch, wallet]);
 
   const handleReceiveAddressChanged = useMemoizedFn(async (to: string) => {
     if (!to) return;
@@ -1162,6 +1197,7 @@ const SendToken = () => {
       form,
       handleReceiveAddressChanged,
       persistPageStateCache,
+      replaceHistorySearch,
       setShowGasReserved,
       showGasReserved,
       t,
@@ -1187,7 +1223,12 @@ const SendToken = () => {
         }
       );
     }
-  }, [previousAccountAddress, currentAccount?.address]);
+  }, [
+    previousAccountAddress,
+    currentAccount?.address,
+    form,
+    handleFormValuesChange,
+  ]);
 
   const estimateGasOnChain = useCallback(
     async (input?: {
@@ -1497,17 +1538,21 @@ const SendToken = () => {
       estimateGasOnChain,
       handleGasChange,
       isGnosisSafe,
+      chainItem,
+      chainTokenGasFees.maybeL1Fee,
+      currentAccount,
+      fetchExtraGasFees,
     ]
   );
   const [sliderPercentValue, setSliderPercentValue] = useState(0);
-  const onSliderValueChangeTo100 = useCallback(
-    debounce((value: number) => {
-      if (value !== 100) return;
+  // const onSliderValueChangeTo100 = useCallback(
+  //   debounce((value: number) => {
+  //     if (value !== 100) return;
 
-      handleMaxInfoChanged(undefined, { updateSliderValue: false });
-    }, 300),
-    [handleMaxInfoChanged]
-  );
+  //     handleMaxInfoChanged(undefined, { updateSliderValue: false });
+  //   }, 300),
+  //   [handleMaxInfoChanged]
+  // );
   const handleGasLevelChanged = useCallback(
     async (gl?: GasLevel | null) => {
       handleReserveGasClose();
@@ -1522,17 +1567,9 @@ const SendToken = () => {
       if (gasLevel) {
         setSelectedGasLevel(gasLevel);
       }
-      handleMaxInfoChanged(
-        { gasLevel },
-        { updateSliderValue: false /* sliderPercentValue !== 100 */ }
-      );
+      handleMaxInfoChanged({ gasLevel }, { updateSliderValue: false });
     },
-    [
-      handleReserveGasClose,
-      handleMaxInfoChanged,
-      loadGasList,
-      sliderPercentValue,
-    ]
+    [handleReserveGasClose, handleMaxInfoChanged, loadGasList]
   );
 
   const handleClickMaxButton = useCallback(async () => {
@@ -1560,7 +1597,8 @@ const SendToken = () => {
   //     setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
   //     const gasList = await loadGasList();
   //     if (gasList && Array.isArray(gasList) && gasList.length > 0) {
-  //       const foundLevel = gasList.find(
+  //       const foundLevel =
+  //         gasList.find(
   //           (gasLevel) => (gasLevel.level as GasLevelType) === 'normal'
   //         ) || findInstanceLevel(gasList);
   //       foundLevel && setSelectedGasLevel(foundLevel);
@@ -1864,6 +1902,8 @@ const SendToken = () => {
     }
   });
 
+  // const chainSelectorRef = useRef<ChainSelectorInSend>(null);
+
   return (
     <FullscreenContainer className={isDesktop ? 'h-[600px]' : 'h-[700px]'}>
       <div
@@ -1877,6 +1917,7 @@ const SendToken = () => {
         <PageHeader
           onBack={handleClickBack}
           forceShowBack={!(isTab || isDesktop)}
+          isShowAccount
           canBack={!(isTab || isDesktop)}
           className="mb-[10px]"
           rightSlot={
@@ -1884,7 +1925,13 @@ const SendToken = () => {
               <div
                 className="text-r-neutral-title1 cursor-pointer absolute right-0"
                 onClick={() => {
-                  openInternalPageInTab(`send-token${history.location.search}`);
+                  // openInternalPageInTab(`send-token${history.location.search}`);
+                  wallet.openInDesktop(
+                    `/desktop/profile?action=send&${history.location.search.slice(
+                      1
+                    )}`
+                  );
+                  window.close();
                 }}
               >
                 <RcIconFullscreen />
@@ -1896,17 +1943,17 @@ const SendToken = () => {
         </PageHeader>
         <Form
           form={form}
-          className="send-token-form pt-[16px]"
+          className="send-token-form pt-[4px]"
           onFinish={handleSubmit}
           onValuesChange={handleFormValuesChange}
           initialValues={initialFormValues}
         >
           <div className="flex-1 overflow-auto pb-[32px]">
-            <AddressInfoFrom />
+            {/* <AddressInfoFrom /> */}
             <AddressInfoTo
               loadingToAddressDesc={loadingToAddressDesc}
               toAccount={targetAccount}
-              isMyImported={isMyImported}
+              toAddressPositiveTips={toAddressPositiveTips}
               cexInfo={addressDesc?.cex}
               onClick={() => {
                 if (isDesktop) {
@@ -1946,7 +1993,7 @@ const SendToken = () => {
                   {t('page.sendToken.sectionBalance.title')}
                 </div>
 
-                <div className="token-balance-slider flex pl-[2px] w-[192px] pr-[8px] justify-between items-center">
+                {/* <div className="token-balance-slider flex pl-[2px] w-[192px] pr-[8px] justify-between items-center">
                   <SendSlider
                     min={0}
                     max={100}
@@ -2009,7 +2056,7 @@ const SendToken = () => {
                   <div className="ml-[8px] w-[42px] text-right text-[13px] text-r-blue-default">
                     {sliderPercentValue}%
                   </div>
-                </div>
+                </div> */}
               </div>
               {currentAccount && chainItem && (
                 <div className="bg-r-neutral-card1 rounded-[8px]">
@@ -2044,8 +2091,18 @@ const SendToken = () => {
                       handleClickMaxButton={handleClickMaxButton}
                       isLoading={isLoading}
                       getContainer={getContainer}
+                      // onStartSelectChain={() => {
+                      //   chainSelectorRef.current?.toggleShow(true);
+                      // }}
                     />
                   </Form.Item>
+                  {/* <ChainSelectorInSend
+                    ref={chainSelectorRef}
+                    hideTestnetTab
+                    onChange={(value) => {
+                      // setChainServerId(findChainByEnum(value)?.serverId || '');
+                    }}
+                  /> */}
                 </div>
               )}
             </div>
@@ -2060,6 +2117,7 @@ const SendToken = () => {
             {!canSubmitBasic && (
               <div className="mt-20">
                 <PendingTxItem
+                  getContainer={getContainer}
                   onFulfilled={handleFulfilled}
                   type="send"
                   ref={pendingTxRef}

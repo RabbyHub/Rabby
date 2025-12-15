@@ -2,12 +2,10 @@ import { useRef, useEffect, useMemo } from 'react';
 import produce from 'immer';
 import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { CHAINS } from '@debank/common';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import {
   findChainByEnum,
   isTestnet as checkIsTestnet,
-  findChainByServerID,
   findChain,
 } from '@/utils/chain';
 import { useWallet } from '../WalletContext';
@@ -30,6 +28,7 @@ import {
 } from './tokenUtils';
 import { isSameAddress } from '..';
 import { Token } from 'background/service/preference';
+import { defaultTokenFilter, includeLpTokensFilter } from './lpToken';
 
 let lastResetTokenListAddr = '';
 // export const tokenChangeLoadingAtom = atom(false);
@@ -61,7 +60,8 @@ export const useTokens = (
   isTestnet: boolean = chainServerId
     ? !!findChain({ serverId: chainServerId })?.isTestnet
     : false,
-  showAll = false
+  showAll = false,
+  showBlocked = false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
@@ -164,13 +164,15 @@ export const useTokens = (
     setData(_data);
     const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
 
-    const blocked = (await wallet.getBlockedToken()).filter((token) => {
-      if (isTestnet) {
-        return checkIsTestnet(token.chain);
-      } else {
-        return !checkIsTestnet(token.chain);
-      }
-    });
+    const blocked = showBlocked
+      ? []
+      : (await wallet.getBlockedToken()).filter((token) => {
+          if (isTestnet) {
+            return checkIsTestnet(token.chain);
+          } else {
+            return !checkIsTestnet(token.chain);
+          }
+        });
 
     if (!snapshot) {
       log('--Terminate-tokens-snapshot-', userAddr);
@@ -454,9 +456,9 @@ export const useTokens = (
   const tokens = useMemo(() => {
     const list = isTestnet ? testnetTokens.list : mainnetTokens.list;
     if (showAll) {
-      return list;
+      return list.filter(includeLpTokensFilter);
     }
-    return list.filter((token) => token.is_core);
+    return list.filter(defaultTokenFilter);
   }, [isTestnet, testnetTokens.list, mainnetTokens.list, showAll]);
 
   return {

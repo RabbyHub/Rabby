@@ -7,7 +7,7 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import clsx from 'clsx';
 import { useMedia } from 'react-use';
 
-const ImportJson = () => {
+const ImportJson: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
   const history = useHistory();
   const [form] = Form.useForm();
   const wallet = useWallet();
@@ -40,7 +40,10 @@ const ImportJson = () => {
   return (
     <StrayPageWithButton
       custom={isWide}
-      className={clsx(isWide && 'rabby-stray-page')}
+      className={clsx(
+        isWide && 'rabby-stray-page',
+        isInModal ? 'min-h-0 h-[600px] overflow-auto' : ''
+      )}
       onSubmit={({ keyStore, password }) => run(keyStore, password)}
       form={form}
       spinning={loading}

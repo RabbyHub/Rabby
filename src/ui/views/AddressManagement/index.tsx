@@ -15,12 +15,12 @@ import { ReactComponent as RcIconAddAddress } from '@/ui/assets/address/new-addr
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcNoMatchedAddress } from '@/ui/assets/address/no-matched-addr.svg';
 
-import { KEYRING_CLASS } from '@/constant';
-import { useRequest } from 'ahooks';
+import { EVENTS, KEYRING_CLASS } from '@/constant';
+import { useDebounceFn, useRequest } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 // import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { SortInput } from './SortInput';
@@ -28,6 +28,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBar';
 import dayjs from 'dayjs';
 import { useAccounts } from '@/ui/hooks/useAccounts';
+import { useWallet } from '@/ui/utils';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -81,7 +82,8 @@ const AddressManagement = () => {
   const [searchKeyword, setSearchKeyword] = React.useState(
     addressSortStore?.search || ''
   );
-  const debouncedSearchKeyword = useDebounceValue(searchKeyword, 250);
+  const debouncedSearchKeyword = useSyncStaleValue(searchKeyword, 250);
+  const wallet = useWallet();
 
   const {
     accountList,
@@ -270,6 +272,7 @@ const AddressManagement = () => {
                         address: account.address,
                         brandName: account.brandName,
                       });
+                      wallet.emitEvent(EVENTS.RELOAD_ACCOUNT_LIST);
                     }}
                   >
                     <ThemeIcon
@@ -347,14 +350,16 @@ const AddressManagement = () => {
     VList<IDisplayedAccountWithBalance[] | IDisplayedAccountWithBalance[][]>
   >(null);
 
-  const handleScroll = useCallback(
+  const { run: handleScroll } = useDebounceFn(
     (p: ListOnScrollProps) => {
       dispatch.preference.setAddressSortStoreValue({
         key: 'lastScrollOffset',
         value: p.scrollOffset,
       });
     },
-    [dispatch?.preference?.setAddressSortStoreValue]
+    {
+      wait: 500,
+    }
   );
 
   useEffect(() => {

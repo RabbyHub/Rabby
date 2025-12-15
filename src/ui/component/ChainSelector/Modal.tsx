@@ -1,7 +1,13 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
 import { Button, Drawer, DrawerProps, Input } from 'antd';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
 import { Chain } from 'background/service/openapi';
@@ -53,7 +59,7 @@ interface ChainSelectorModalProps {
   account?: Account | null;
 }
 
-const useChainSeletorList = ({
+const useChainSelectorList = ({
   supportChains,
   netTabKey,
 }: {
@@ -154,13 +160,16 @@ const ChainSelectorModal = ({
   account,
   disableChainCheck,
 }: ChainSelectorModalProps) => {
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     onCancel();
-  };
+  }, [onCancel]);
 
-  const handleChange = (val: CHAINS_ENUM) => {
-    onChange(val);
-  };
+  const handleChange = useCallback(
+    (val: CHAINS_ENUM) => {
+      onChange(val);
+    },
+    [onChange]
+  );
 
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab({
     hideTestnetTab,
@@ -178,7 +187,7 @@ const ChainSelectorModal = ({
     search,
     setSearch,
     pinned,
-  } = useChainSeletorList({
+  } = useChainSelectorList({
     supportChains,
     netTabKey: !hideMainnetTab ? selectedTab : 'testnet',
   });

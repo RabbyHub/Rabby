@@ -672,11 +672,11 @@
       },
       "GasSelector": {
         "level": {
-          "normal": "Cepat",
+          "normal": "Normal",
           "$unknown": "Tidak Dikenal",
           "custom": "Kustom",
-          "slow": "Normal",
-          "fast": "Instan"
+          "slow": "Lambat",
+          "fast": "Cepat"
         },
         "confirm": "Konfirmasi",
         "popupTitle": "Atur Harga Gas (Gwei)",
@@ -1124,7 +1124,26 @@
       "aggregator-not-enabled": "Aggregator ini tidak diaktifkan untuk diperdagangkan oleh Anda.",
       "pendingTip": "Tx terkirim. Jika tx tertunda selama berjam-jam, Anda dapat mencoba menghapus pending di pengaturan.",
       "price-expired-refresh-route": "Harga telah kedaluwarsa. Segarkan rute.",
-      "bridgeDbkBtn": "Bridge melalui Servis Resmi DBK"
+      "bridgeDbkBtn": "Bridge melalui Servis Resmi DBK",
+      "pendingItem": {
+        "bridgeStatus": "Status Jembatan",
+        "fromFailed": "Transaksi tidak berhasil. Coba lagi.",
+        "failed": "Gagal",
+        "queued": "Antrian",
+        "estimatedTime": "Waktu yang diperkirakan",
+        "beReturnFailed": "Jembatan gagal. Aset Anda telah dikembalikan.",
+        "BridgeStatusUnavailable": "Status jembatan tidak tersedia. Silakan periksa riwayat transaksi Anda untuk mengonfirmasi bahwa dana telah tiba.",
+        "completed": "Selesai",
+        "swap": "Tukar",
+        "pending": "Menunggu",
+        "receivedDifferentTokenFromSource": "Jembatan gagal. Token yang berbeda dikembalikan di rantai sumber.",
+        "longTimeNoReceive": "Jaringan sedang sibuk. Ini mungkin memakan waktu lebih lama dari biasanya. Harap tunggu dengan sabar.",
+        "receivedDifferentTokenNeedSwap": "Anda menerima token yang berbeda. Anda dapat menukarnya dengan token yang Anda pilih.",
+        "receivingTo": "Menerima di {{chain}}",
+        "sendingFrom": "Mengirim dari {{chain}}",
+        "sendStatus": "Kirim Status",
+        "swapStatus": "Status Swap"
+      }
     },
     "manageAddress": {
       "address-management": "Manajemen Alamat",
@@ -1195,7 +1214,8 @@
           "gasAccount": "GasAccount",
           "dapps": "Dapps",
           "searchDapp": "Cari Dapp",
-          "setting": "Pengaturan"
+          "setting": "Pengaturan",
+          "settings": "Pengaturan"
         },
         "queue": {
           "title": "Antrian",
@@ -1220,7 +1240,8 @@
         "pendingCountPlural": "{{countStr}} Pendings",
         "missingDataTooltip": "Saldo mungkin tidak diperbarui karena masalah jaringan saat ini dengan {{text}}.",
         "rejectAll": "Tolak Semua",
-        "appChainTips": "Akun Hyperliquid tidak termasuk"
+        "appChainTips": "Akun Hyperliquid tidak termasuk",
+        "slotAppChainTips": "{{appChainNames}} Akun tidak termasuk"
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {
@@ -1477,7 +1498,10 @@
           "lowValueAssets_other": "{{count}} token nilai rendah",
           "summaryTips": "Nilai aset dibagi dengan total kekayaan bersih",
           "price": "Harga",
-          "review": "Tinjau"
+          "review": "Tinjau",
+          "noTokens": "Tidak Ada Token",
+          "searchToken": "Cari Token",
+          "lowValueDefis": "{{count}} defis nilai rendah"
         },
         "AddMainnetToken": {
           "tokenAddress": "Alamat Token",
@@ -1498,7 +1522,9 @@
         },
         "TestnetAssetListContainer": {
           "addTestnet": "Jaringan",
-          "add": "Token"
+          "add": "Token",
+          "addToken": "Tambah Token",
+          "addNetwork": "Tambahkan Jaringan"
         },
         "amount": "JUMLAH",
         "usdValue": "NILAI USD",
@@ -1514,7 +1540,9 @@
         "blockLinkText": "Cari alamat untuk memblokir token",
         "customDescription": "Token kustom yang ditambahkan oleh Anda akan ditampilkan di sini",
         "price": "HARGA",
-        "side": "SISI"
+        "side": "SISI",
+        "openInTab": "Buka di tab",
+        "searchTokenPlaceholder": "Cari Token"
       },
       "hd": {
         "ledger": {
@@ -1647,7 +1675,9 @@
         "inputInvalidCount_other": "{{count}} input tidak sesuai dengan norma Seed Phrase, silakan periksa.",
         "importQuestion2": "Frasa seed saya hanya disimpan di perangkat saya. Rabby tidak dapat mengaksesnya.",
         "importQuestion3": "Jika saya mencopot pemasangan Rabby tanpa mencadangkan frase benih saya, itu tidak dapat dipulihkan oleh Rabby.",
-        "importQuestion1": "Jika saya kehilangan atau membagikan seed phrase saya, saya akan kehilangan akses ke aset saya secara permanen."
+        "importQuestion1": "Jika saya kehilangan atau membagikan seed phrase saya, saya akan kehilangan akses ke aset saya secara permanen.",
+        "showMoreOptions": "Tampilkan Lebih Banyak Opsi",
+        "inputInvalid": "Kata yang tidak valid terdeteksi. Harap tinjau yang disorot."
       },
       "metamask": {
         "tips": "Tips:",
@@ -2828,10 +2858,10 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "noSend": "Tidak ada transfer ke alamat ini dalam 180 hari",
             "contractAddress": "Alamat kontrak terdeteksi, dana mungkin hilang",
             "dexNoDeposite": "Bukan alamat deposit CEX, dana mungkin hilang",
-            "scamAddress": "Alamat penipuan ditandai oleh Rabby"
+            "scamAddress": "Alamat penipuan ditandai oleh Rabby",
+            "noSend": "Anda belum mengirim ke alamat ini dalam 180 hari"
           }
         },
         "title": "Kirim ke Alamat Ini",
@@ -3026,7 +3056,9 @@
       "toast": {
         "setAutoCloseSuccess": "Pengaturan penutupan posisi otomatis berhasil",
         "closePositionSuccess": "Tutup {{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
-        "openPositionSuccess": "Dibuka {{direction}} {{coin}}-USD: Ukuran {{size}} dengan Harga ${{price}}"
+        "openPositionSuccess": "Dibuka {{direction}} {{coin}}-USD: Ukuran {{size}} dengan Harga ${{price}}",
+        "stopLossSuccess": "Stop loss berhasil diatur",
+        "takeProfitSuccess": "Take profit telah disetel dengan sukses"
       },
       "closePositionPopup": {
         "positionSize": "Ukuran Posisi",
@@ -3036,7 +3068,43 @@
         "pnl": "P&L"
       },
       "cross": "Silang",
-      "isolated": "Terisolasi"
+      "isolated": "Terisolasi",
+      "closeAllPopup": {
+        "title": "Konfirmasi Tutup Semua Posisi",
+        "description": "Semua posisi terbuka Anda akan ditutup pada harga pasar."
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Bahaya",
+          "description": "Posisi Anda berisiko tinggi untuk dilikuidasi. Jarak ke harga likuidasi adalah ≤3%. Pertimbangkan untuk menambah margin atau menutup posisi Anda untuk menghindari likuidasi."
+        },
+        "warning": {
+          "title": "Peringatan",
+          "description": "Posisi Anda mendekati risiko likuidasi. Jarak ke harga likuidasi berada antara 3% dan 8%. Pantau posisi Anda dengan hati-hati dan pertimbangkan untuk menambah margin."
+        },
+        "safe": {
+          "title": "Aman",
+          "description": "Posisi Anda berada pada level yang aman. Jarak ke harga likuidasi adalah >8%. Terus pantau kondisi pasar."
+        },
+        "gotIt": "Mengerti",
+        "title": "Tingkat Risiko",
+        "liquidationDistance": "Jarak Likuidasi",
+        "liquidationPrice": "Harga Likuidasi",
+        "currentPrice": "Harga Saat Ini",
+        "subTitle": "Jarak likuidasi waktu nyata (%)",
+        "liquidationDistanceTips": "Jarak Likuidasi (%) menunjukkan seberapa jauh harga saat ini dari harga likuidasi Anda. Jarak yang lebih besar menunjukkan posisi yang lebih aman, sementara jarak yang lebih kecil berarti risiko likuidasi yang lebih tinggi."
+      },
+      "searchPerpsPopup": {
+        "searchPosition": "Cari posisi",
+        "searchPerps": "Cari Perps",
+        "hasPosition": "Posisi",
+        "searchPlaceholder": "Cari perps",
+        "openPosition": "Buka Posisi",
+        "empty": "Tidak ada pasar yang ditemukan",
+        "onePosition": "1 Posisi"
+      },
+      "position": "Posisi",
+      "closeAll": "Tutup Semua"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3060,8 +3128,8 @@
           "risks": {
             "scamAddress": "Anda mengirim ke alamat penipuan",
             "dexNoDeposite": "Anda mengirim ke alamat exchange non-deposit",
-            "noSend": "Tidak ada transfer ke alamat ini dalam 180 hari",
-            "contractAddress": "Anda mengirim ke kontrak, dana mungkin hilang"
+            "contractAddress": "Anda mengirim ke kontrak, dana mungkin hilang",
+            "noSend": "Anda belum mengirim ke alamat ini dalam 180 hari"
           }
         },
         "cexDepositAddress": "{{cexName}} Alamat Setoran",
@@ -3091,6 +3159,229 @@
       "selectExchangeSource": "Pilih Sumber Pertukaran",
       "selectImportedAddress": "Pilih alamat yang diimpor",
       "sendToImportedAddress": "Kirim ke Alamat yang Diimpor"
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "netWorth": "Kekayaan Bersih",
+        "appChainTips": "Akun Hyperliquid & Polymarket tidak termasuk"
+      },
+      "UpdateButton": {
+        "updating": "Memperbarui data",
+        "updatedAgo": "Data diperbarui <1/> <2>{{timeText}}</2> <3/> yang lalu"
+      },
+      "ReachedEnd": {
+        "content": "Anda telah mencapai akhir"
+      },
+      "portfolio": {
+        "headers": {
+          "allTokenMode": "Semua Mode Token",
+          "wallet": "Dompet",
+          "foldProtocols": "Fold {{count}} Protokol",
+          "unfoldProtocols": "Buka {{count}} Protokol",
+          "lpToken": "LP-Token",
+          "foldDifis": "Lipat {{count}} Defis",
+          "unfoldDifis": "Unfold {{count}} Defis"
+        },
+        "hidden": {
+          "hideSmall": "Sembunyikan token dengan saldo kecil.",
+          "tokensWithZeroBalance": "Sembunyikan token $0",
+          "hideProtocolsWithSmallDeposits": "Sembunyikan protokol dengan setoran kecil.",
+          "hideProtocolsWithSmallDepositsDesc": "Protokol dengan deposit kecil tidak ditampilkan.",
+          "hideSmallDesc": "Token dengan saldo kecil tidak ditampilkan.",
+          "showAll": "Tampilkan semua",
+          "tokensWithZeroBalanceDesc": "Token dengan saldo $0 disembunyikan.",
+          "hideDefiWithSmallDeposits": "Sembunyikan Defi dengan setoran kecil.",
+          "hideDefiWithSmallDepositsDesc": "Defis dengan setoran kecil tidak ditampilkan."
+        },
+        "table": {
+          "token": "Token",
+          "tokenAddress": "Alamat Token",
+          "price": "Harga",
+          "usdValue": "Nilai USD",
+          "chain": "Rantai",
+          "amount": "Jumlah"
+        },
+        "actions": {
+          "send": "Kirim",
+          "swap": "Tukar"
+        }
+      },
+      "button": {
+        "swap": "Tukar",
+        "bridge": "Jembatan",
+        "send": "Kirim",
+        "queue": "Antrian",
+        "pending": "{{pendingTxCount}} Menunggu"
+      },
+      "tabs": {
+        "tokens": "Token",
+        "approvals": "Persetujuan",
+        "transactions": "Transaksi",
+        "difi": "Defi"
+      },
+      "nft": {
+        "message": {
+          "acceptSuccessDesc": "Anda telah berhasil menjual {{name}}",
+          "cancelFailedDesc": "Silakan coba lagi",
+          "listingFailed": "Listing Gagal",
+          "acceptFailed": "Penjualan Gagal",
+          "cancelFailed": "Gagal!",
+          "listingSuccess": "Baru terdaftar!",
+          "listingSuccessDesc": "Anda telah mencantumkan {{name}} di OpenSea",
+          "acceptSuccess": "Terjual Dengan Sukses",
+          "cancelSuccess": "Daftar berhasil dibatalkan",
+          "cancelSuccessDesc": "Anda telah berhasil membatalkan listing {{name}}",
+          "acceptFailedDesc": "Silakan coba lagi.",
+          "listingFailedDesc": "Silakan coba lagi."
+        },
+        "detail": {
+          "supportPlatform": "Platform yang didukung:",
+          "collection": "Koleksi",
+          "ending": "Akhir:",
+          "chain": "Rantai",
+          "lastSale": "Penjualan terakhir",
+          "noOffer": "Belum ada tawaran",
+          "platform": "Platform:",
+          "collectionFloor": "Collection floor",
+          "nft": "NFT",
+          "topOffer": "Penawaran Terbaik",
+          "rarity": "Keberagaman",
+          "edit": "Edit Listing",
+          "listing": "Listing di Opensea",
+          "send": "Kirim",
+          "listedFor": "{{count}} terdaftar untuk",
+          "accept": "Terima kasih",
+          "cancel": "Batalkan Daftar"
+        },
+        "cancelModal": {
+          "listing": "Daftar",
+          "cancelListing": "Batalakan listing",
+          "title": "Batalkan Daftar",
+          "listingPrice": "Harga Listing"
+        },
+        "listingModal": {
+          "floor": "Lantai",
+          "nft": "NFT",
+          "createListing": "Buat daftar",
+          "topOffer": "Penawaran Terbaik",
+          "editListing": "Edit Listing",
+          "floorDifference": "Perbedaan lantai",
+          "quantity": "Kuantitas",
+          "total": "Total listing price",
+          "totalEst": "Total est. proceeds",
+          "platformFee": "Biaya platform Opensea ({{fee}}%)",
+          "approveAndList": "Setujui dan Daftarkan",
+          "listedAs": "Terdaftar sebagai",
+          "listOn": "Daftarkan di OpenSea",
+          "creatorFeeTips": "Pendapatan kreator akan dibayarkan oleh penjual.",
+          "creatorFee": "Biaya penciptaan ({{fee}}%)",
+          "proceeds": "Hasil",
+          "cost": "Biaya",
+          "creatorFeeTips1": "Pendapatan kreator akan dibayar oleh penjual. Pendapatan kreator ditegakkan.",
+          "platformFeeTips": "Biaya ini adalah biaya layanan OpenSea.",
+          "rabbyFee": "Biaya Rabby (0%)"
+        },
+        "acceptModal": {
+          "title": "Terima Tawaran",
+          "quantity": "Kuantitas",
+          "offerPrice": "Harga Penawaran",
+          "floorDifference": "Perbedaan lantai",
+          "platformFee": "Biaya platform Opensea ({{fee}}%)",
+          "acceptOffer": "Terima Tawaran",
+          "offer": "Tawarkan",
+          "platformFeeTips": "Biaya ini adalah biaya layanan OpenSea.",
+          "creatorFeeTips": "Pendapatan kreator akan dibayar oleh penjual.",
+          "rabbyFee": "Rabby fee (0%)",
+          "totalEst": "Total est. proceeds",
+          "platform": "Platform",
+          "creatorFeeTips1": "Pendapatan kreator akan dibayar oleh penjual. Pendapatan kreator ditegakkan.",
+          "creatorFee": "Biaya pencipta ({{fee}}%)"
+        },
+        "empty": "Tidak ada NFT",
+        "all": "Semua",
+        "confirmingTx": "Mengonfirmasi transaksi Anda",
+        "hideLowValue": "Sembunyikan NFT Bernilai Rendah",
+        "pending": "Menunggu"
+      }
+    },
+    "perpsDetail": {
+      "PerpsOpenPositionPopup": {
+        "long": "Long",
+        "short": "Pendek",
+        "margin": "Margin",
+        "newPosition": "Buka Posisi",
+        "available": "Tersedia",
+        "invalidNumber": "Nomor tidak valid",
+        "free": "Gratis",
+        "providerFee": "Hyperliquid Fee",
+        "sizeTips": "Nilai total atau kuantitas dari perdagangan Anda, ditentukan oleh margin dan leverage.",
+        "insufficientBalance": "Saldo tidak mencukupi",
+        "rabbyFee": "Rabby Biaya",
+        "stopLossWhenPriceBelow": "Stop Loss Saat Harga Di Bawah",
+        "size": "Ukuran",
+        "minimumOrderSize": "Ukuran pesanan minimum adalah $10",
+        "takeProfitWhenPriceAbove": "Ambil Untung Ketika Harga Di Atas",
+        "stopLossWhenPriceAbove": "Stop Loss Ketika Harga Di Atas",
+        "takeProfitWhenPriceBelow": "Ambil Untung Saat Harga Di Bawah",
+        "leverage": "Leverage",
+        "maximumOrderSize": "Ukuran pesanan maksimum adalah {{amount}}"
+      },
+      "PerpsEditMarginPopup": {
+        "confirm": "Konfirmasi",
+        "margin": "Margin",
+        "perpsBalance": "Saldo Perps",
+        "addMargin": "Tambahkan Margin",
+        "available": "Tersedia",
+        "currentPrice": "Harga Terkini",
+        "amountToReduce": "Jumlah untuk Dikurangi",
+        "addMarginSuccess": "Margin berhasil ditambahkan",
+        "liqPrice": "Harga Likuidasi:",
+        "title": "Sesuaikan Margin",
+        "reduceMargin": "Kurangi Margin",
+        "amountToAdd": "Jumlah yang Akan Ditambahkan",
+        "exceedMaxReduction": "Melebihi pengurangan maksimum",
+        "reduceMarginTooltip": "Margin tidak mencukupi untuk mengurangi posisi.",
+        "insufficientBalance": "Saldo tidak mencukupi",
+        "reduceMarginSuccess": "Margin berhasil dikurangi"
+      },
+      "PerpsClosePositionPopup": {
+        "fee": "Biaya",
+        "amount": "Jumlah",
+        "closedPnl": "Closed PNL",
+        "confirm": "Konfirmasi",
+        "title": "Tutup Posisi",
+        "receive": "Menerima",
+        "total": "Total",
+        "minimumWarning": "Jumlah penutupan minimum adalah {{percent}}%"
+      },
+      "PerpsAutoCloseModal": {
+        "confirm": "Konfirmasi",
+        "priceAbove": "Harga di atas",
+        "takeProfitWhenPriceBelow": "Ambil Keuntungan Saat Harga Dibawah",
+        "stopLoss": "Stop Loss",
+        "youGain": "Anda mendapatkan",
+        "youLoss": "Anda kalah",
+        "takeProfitWhen": "Ambil Keuntungan Saat",
+        "title": "Tutup Posisi Otomatis",
+        "takeProfit": "Ambil Untung",
+        "priceBelow": "Harga di bawah",
+        "takeProfitExpectedPNL": "Ambil Profit PNL yang Diharapkan",
+        "noPosition": "Anda harus memasukkan margin terlebih dahulu",
+        "stopLossWhen": "Stop Loss Ketika",
+        "currentPrice": "Harga Saat Ini:",
+        "takeProfitWhenPriceAbove": "Ambil Untung Ketika Harga Di Atas",
+        "takeProfitTipsShort": "Harga ambil untung harus lebih rendah dari harga saat ini",
+        "EntryAndCurrentPrice": "Entry: ${{entryPrice}} Current: ${{currentPrice}}",
+        "takeProfitTipsLong": "Harga take profit harus lebih tinggi dari harga saat ini.",
+        "stopLossWhenPriceBelow": "Stop Loss Saat Harga Di Bawah",
+        "stopLossExpectedPNL": "Stop Loss PNL yang Diharapkan",
+        "stopLossWhenPriceAbove": "Hentikan Kerugian Ketika Harga Di Atas",
+        "cancel": "Batalkan",
+        "stopLossTipsShortLiquidation": "Harga lebih tinggi dari liq.price ({{price}})",
+        "stopLossTipsShort": "Harga stop loss harus lebih tinggi dari harga saat ini",
+        "stopLossTipsLongLiquidation": "Harga lebih rendah dari liq.price ({{price}})",
+        "stopLossTipsLong": "Harga stop loss harus lebih rendah dari harga saat ini."
+      }
     }
   },
   "component": {
@@ -3219,7 +3510,10 @@
       "noTokens": "Tidak Ada Token",
       "noMatchSuggestion": "Coba untuk mencari alamat kontrak di {{ chainName }}",
       "common": "Umum",
-      "chainNotSupport": "Rantai ini tidak didukung"
+      "chainNotSupport": "Rantai ini tidak didukung",
+      "chainFilterLine": {
+        "filterAll": "Semua Rantai"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3245,11 +3539,11 @@
       "desc": "Layanan berikut akan disediakan secara langsung oleh Mitra Ekosistem pihak ketiga. Rabby Wallet tidak bertanggung jawab atas keamanan layanan ini."
     },
     "ReserveGasPopup": {
-      "fast": "Cepat",
+      "fast": "Normal",
       "title": "Cadangan Gas",
-      "normal": "Normal",
+      "normal": "Lambat",
       "doNotReserve": "Jangan cadangkan Gas",
-      "instant": "Instan"
+      "instant": "Cepat"
     },
     "OpenExternalWebsiteModal": {
       "button": "Lanjutkan",
@@ -3287,6 +3581,22 @@
     },
     "DappActions": {
       "queueDescription": "Penarikan saat ini akan masuk ke dalam antrean tunggu. Setelah diproses, itu dapat ditarik ke dompet Anda."
+    },
+    "DesktopChainSelector": {
+      "allChains": "Semua Rantai"
+    },
+    "DesktopNav": {
+      "perps": "Perps",
+      "portfolio": "Portofolio",
+      "comingSoon": "Segera Hadir",
+      "lending": "Peminjaman"
+    },
+    "DesktopSelectAccountList": {
+      "addAddresses": "Tambah alamat"
+    },
+    "LpTokenTag": {
+      "title": "Ini adalah token penyedia likuiditas (LP)",
+      "description": "Token LP diterbitkan oleh protokol DeFi tempat Anda menyimpan aset Anda. Mereka berfungsi sebagai bukti aset tersebut, tetapi nilainya tidak termasuk dalam total saldo Anda."
     }
   },
   "global": {
