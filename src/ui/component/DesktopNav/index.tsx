@@ -8,6 +8,7 @@ import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHistory, useLocation } from 'react-router-dom';
 
 export const DesktopNav: React.FC<{
   balance?: number | null;
@@ -16,6 +17,9 @@ export const DesktopNav: React.FC<{
   isLoading?: boolean;
 }> = ({ balance, changePercent, isLoss, isLoading }) => {
   const { t } = useTranslation();
+  const location = useLocation();
+  const isActive = (tab: string) => location.pathname.includes(tab);
+  const history = useHistory();
   return (
     <div className="flex">
       <div
@@ -28,13 +32,30 @@ export const DesktopNav: React.FC<{
         <div
           className={clsx(
             'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
-            'text-r-neutral-title2'
+            isActive('profile')
+              ? 'text-r-neutral-title2'
+              : 'text-rb-neutral-foot'
           )}
-          style={{
-            background: 'linear-gradient(267deg, #5A71FF 1.05%, #384ABA 98.9%)',
+          style={
+            isActive('profile')
+              ? {
+                  background:
+                    'linear-gradient(267deg, #5A71FF 1.05%, #384ABA 98.9%)',
+                }
+              : {}
+          }
+          onClick={() => {
+            history.push('/desktop/profile/');
           }}
         >
-          <RcIconHomeCC className="flex-shrink-0" />
+          <RcIconHomeCC
+            className={clsx(
+              'flex-shrink-0',
+              isActive('profile')
+                ? 'text-r-neutral-title2'
+                : 'text-rb-neutral-secondary'
+            )}
+          />
           <div className="min-w-0">
             <div className="text-[16px] leading-[19px] font-bold">
               {t('component.DesktopNav.portfolio')}
@@ -64,17 +85,35 @@ export const DesktopNav: React.FC<{
           </div>
         </div>
         <div
+          style={
+            isActive('perps')
+              ? {
+                  background:
+                    'linear-gradient(267deg, #5A71FF 1.05%, #384ABA 98.9%)',
+                }
+              : {}
+          }
+          onClick={() => {
+            history.push('/desktop/perps');
+          }}
           className={clsx(
-            'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer'
+            'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
+            isActive('perps')
+              ? 'text-r-neutral-title2'
+              : 'text-rb-neutral-secondary'
           )}
         >
           <RcIconPerpsCC className="text-rb-neutral-secondary" />
           <div>
-            <div className="text-rb-neutral-foot text-[16px] leading-[19px] font-bold">
+            <div
+              className={clsx(
+                'text-[16px] leading-[19px] font-bold',
+                isActive('perps')
+                  ? 'text-r-neutral-title2'
+                  : 'text-rb-neutral-foot'
+              )}
+            >
               {t('component.DesktopNav.perps')}
-            </div>
-            <div className="text-rb-neutral-secondary text-[12px] leading-[14px]">
-              {t('component.DesktopNav.comingSoon')}
             </div>
           </div>
         </div>
