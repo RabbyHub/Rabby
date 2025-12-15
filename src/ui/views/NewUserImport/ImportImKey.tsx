@@ -33,9 +33,7 @@ export const NewUserImportImKey = () => {
       await handleUnlock();
     } catch (e) {
       console.error(e);
-      message.error(
-        e?.message || t('page.newAddress.hd.tooltip.disconnected')
-      );
+      message.error(e?.message || t('page.newAddress.hd.tooltip.disconnected'));
     }
   });
 
