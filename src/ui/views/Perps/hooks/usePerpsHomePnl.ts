@@ -7,8 +7,6 @@ export const usePerpsHomePnl = () => {
   const perpsState = useRabbySelector((state) => state.perps);
   const perpsAccount = perpsState.currentPerpsAccount;
 
-  console.log('perps', perpsState);
-
   const { loading: isFetching } = useRequest(
     async () => {
       const sdk = getPerpsSDK();

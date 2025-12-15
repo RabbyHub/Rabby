@@ -364,6 +364,21 @@ class PerpsService {
 
     return preference;
   };
+
+  // only test use
+  resetStore = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store = {
+      agentVaults: '',
+      agentPreferences: {},
+      currentAccount: null,
+      lastUsedAccount: null,
+      hasDoneNewUserProcess: false,
+    };
+    this.memoryState.agentWallets = {};
+  };
 }
 
 export default new PerpsService();
