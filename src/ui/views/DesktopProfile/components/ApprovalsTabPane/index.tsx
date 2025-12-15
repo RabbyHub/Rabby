@@ -1406,7 +1406,7 @@ export const ApprovalsTabPane = ({
     }
     const rect = stickyElRef.current?.getBoundingClientRect();
     const clientHeight = document.documentElement.clientHeight;
-    if (rect.bottom > clientHeight) {
+    if (rect.bottom > clientHeight - 96) {
       stickyElRef.current.classList.add('is-sticky');
     } else {
       stickyElRef.current.classList.remove('is-sticky');
@@ -1415,7 +1415,9 @@ export const ApprovalsTabPane = ({
 
   useEffect(() => {
     if (!isLoading) {
-      handleScroll();
+      setTimeout(() => {
+        handleScroll();
+      }, 500);
     }
   }, [handleScroll, isLoading]);
 
@@ -1475,7 +1477,7 @@ export const ApprovalsTabPane = ({
 
         {selectedTab === 'mainnet' ? (
           <>
-            <main className="relative w-full max-w-full overflow-hidden">
+            <main className="relative w-full max-w-full">
               <div className="approvals-manager__table-tools">
                 <PillsSwitch
                   value={tab}

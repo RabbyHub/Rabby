@@ -50,7 +50,7 @@
 }
 
 .desktop-approvals-manager {
-  overflow: hidden;
+  // overflow: hidden;
   height: 100%;
   min-width: @main-w;
   width: @main-w;
@@ -656,9 +656,12 @@
 }
 
 .sticky-footer-container {
-  height: 88px;
   display: flex;
   justify-content: center;
+  .sticky-footer-inner {
+    position: absolute;
+    bottom: -96px;
+  }
   &.is-sticky {
     .sticky-footer-inner {
       position: fixed;

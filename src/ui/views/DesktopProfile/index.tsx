@@ -54,6 +54,7 @@ const Wrap = styled.div`
   align-items: flex-start;
   justify-content: center;
   gap: 16px;
+  padding-bottom: 120px;
 
   .main-content {
     padding-left: 80px;
@@ -347,7 +348,7 @@ export const DesktopProfile = () => {
                       />
                     </Tabs.TabPane>
                     <Tabs.TabPane
-                      tab={t('page.desktopProfile.tabs.difi')}
+                      tab={t('page.desktopProfile.tabs.defi')}
                       key="difi"
                     >
                       <>
@@ -392,7 +393,6 @@ export const DesktopProfile = () => {
                     </Tabs.TabPane>
                   </Tabs>
                 </div>
-                <ReachedEnd />
                 <div className="flex justify-end px-[20px]">
                   <BackTop
                     target={() => scrollContainerRef.current || window}
