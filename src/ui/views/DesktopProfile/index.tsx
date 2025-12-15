@@ -112,6 +112,28 @@ const Wrap = styled.div`
   }
 `;
 
+const StickyBorderTop = () => (
+  <div className="sticky top-[103px] h-0 z-50">
+    <div
+      className={clsx(
+        'overflow-hidden absolute w-full h-[40px] pointer-events-none',
+        'flex justify-between'
+      )}
+    >
+      <div className="relative left-[-10px] w-20 h-20 bg-rb-neutral-bg-1" />
+      <div className="relative right-[-10px] w-20 h-20 bg-rb-neutral-bg-1" />
+      <div
+        className={clsx(
+          'absolute top-0 left-0 border border-b-0 border-solid border-rb-neutral-line bg-transparent ',
+          'w-full',
+          'h-[100px]  rounded-b-none ',
+          'rounded-[20px]'
+        )}
+      />
+    </div>
+  </div>
+);
+
 export const DesktopProfile = () => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
@@ -267,33 +289,24 @@ export const DesktopProfile = () => {
                 <TopShortcut projects={cacheProjectOverviewList || []} />
               )}
             </div>
+            <StickyBorderTop />
             <div className="flex items-start gap-[20px]">
               <main className="flex-1" id={PORTFOLIO_LIST_ID}>
-                <div className={clsx('bg-rb-neutral-bg-1')}>
-                  <div
-                    className={clsx(
-                      'border border-b-0 border-solid border-rb-neutral-line',
-                      'rounded-[20px] rounded-b-none'
-                    )}
-                  >
-                    <ProfileHeader
-                      balance={balance}
-                      evmBalance={evmBalance}
-                      curveChartData={curveChartData}
-                      isLoading={isBalanceLoading || isCurveLoading}
-                      onRefresh={handleUpdate}
-                      appChainIds={appChainIds}
-                    />
-                  </div>
-                </div>
-
                 <div
                   key={refreshKey}
                   className={clsx(
-                    'border border-t-0 border-solid border-rb-neutral-line mt-1',
+                    'border border-t-0 border-solid border-rb-neutral-line',
                     'rounded-[20px] rounded-t-none'
                   )}
                 >
+                  <ProfileHeader
+                    balance={balance}
+                    evmBalance={evmBalance}
+                    curveChartData={curveChartData}
+                    isLoading={isBalanceLoading || isCurveLoading}
+                    onRefresh={handleUpdate}
+                    appChainIds={appChainIds}
+                  />
                   <Tabs
                     tabBarStyle={{
                       position: 'sticky',
