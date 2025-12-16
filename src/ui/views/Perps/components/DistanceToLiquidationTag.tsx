@@ -12,12 +12,14 @@ interface DistanceToLiquidationTagProps {
   liquidationPrice: string | number | undefined;
   markPrice: string | number | undefined;
   onPress?: () => void;
+  variant?: 'default' | 'compact';
 }
 
 export const DistanceToLiquidationTag: React.FC<DistanceToLiquidationTagProps> = ({
   liquidationPrice,
   markPrice,
   onPress,
+  variant = 'default',
 }) => {
   const distanceLiquidation = calculateDistanceToLiquidation(
     liquidationPrice,
@@ -27,8 +29,11 @@ export const DistanceToLiquidationTag: React.FC<DistanceToLiquidationTagProps> =
   return (
     <div
       className={clsx(
-        'flex items-center gap-[2px] rounded-[100px] px-[6px] h-[18px] border cursor-pointer',
-        'border border-rabby-neutral-line rounded-full text-r-neutral-foot'
+        'flex items-center gap-[2px] px-[6px] h-[18px] border cursor-pointer',
+        'border border-rabby-neutral-line rounded-full text-r-neutral-foot',
+        variant === 'compact'
+          ? 'rounded-[4px] hover:bg-r-blue-light2'
+          : 'rounded-[100px]'
       )}
       onClick={(e) => {
         e.stopPropagation();

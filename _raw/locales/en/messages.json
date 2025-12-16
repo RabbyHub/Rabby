@@ -972,7 +972,10 @@
       "fundingRate": "Funding Rate",
       "fundingGains": "Funding Gains",
       "close": "Close",
-      "add": "Add"
+      "add": "Add",
+      "invitePopup": {
+        "title": "Save on Hyperliquid Fees"
+      }
     },
     "perpsDetail": {
       "PerpsAddPositionPopup": {
@@ -3608,7 +3611,8 @@
       ],
       "withdraw": "Withdraw",
       "claim": "Claim",
-      "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
+      "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
+      "manage": "Manage"
     },
     "DesktopChainSelector": {
       "allChains": "All Chains"

@@ -311,13 +311,20 @@ interface Props {
   isSearch?: boolean;
   appIds?: string[];
   removeProtocol?: (id: string) => void;
+  className?: string;
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
+const ProtocolList = ({
+  list,
+  isSearch,
+  appIds,
+  removeProtocol,
+  className,
+}: Props) => {
   const enableDelayVisible = useMemo(() => {
     return (list || []).length > 100;
   }, [list]);
@@ -336,7 +343,7 @@ const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
   if (!list) return null;
 
   return (
-    <ProtocolListWrapper>
+    <ProtocolListWrapper className={className}>
       {(isSearch ? list : currentList || []).map((item) => (
         <ProtocolItem
           protocol={item}
