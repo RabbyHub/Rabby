@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import BigNumber from 'bignumber.js';
 import Views from './views';
 import { Message } from '@/utils/message';
-import { getUiType, getUITypeName, openInTab } from 'ui/utils';
+import { getUiType, getUITypeName } from 'ui/utils';
 import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
 import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
@@ -16,6 +17,8 @@ import store from './store';
 
 import { getSentryEnv, isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
+
+BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
 Sentry.init({
   dsn:
