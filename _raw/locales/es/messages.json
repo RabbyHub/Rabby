@@ -3338,7 +3338,7 @@
         "confirm": "Confirmar",
         "addMarginSuccess": "Margen añadida con éxito",
         "title": "Ajustar Margen",
-        "liqPrice": "Precio de Liquidación:",
+        "liqPrice": "Precio de Liquidación",
         "insufficientBalance": "Saldo insuficiente",
         "reduceMarginTooltip": "Margen insuficiente para reducir la posición.",
         "perpsBalance": "Saldo de Perps",

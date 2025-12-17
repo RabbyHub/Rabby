@@ -72,6 +72,8 @@ const getInterval = (candleMenuKey: CANDLE_MENU_KEY_V2) => {
       return CandlePeriod.FIFTEEN_MINUTES;
     case CANDLE_MENU_KEY_V2.ONE_HOUR:
       return CandlePeriod.ONE_HOUR;
+    case CANDLE_MENU_KEY_V2.FOUR_HOURS:
+      return CandlePeriod.FOUR_HOURS;
     case CANDLE_MENU_KEY_V2.ONE_DAY:
       return CandlePeriod.ONE_DAY;
     case CANDLE_MENU_KEY_V2.ONE_WEEK:

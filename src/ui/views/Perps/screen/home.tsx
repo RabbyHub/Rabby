@@ -275,7 +275,8 @@ export const Perps: React.FC = () => {
           // dispatch.perps.fetchClearinghouseState();
           const { totalSz, avgPx } = filled;
           message.success({
-            className: 'toast-message-2025-center',
+            // className: 'toast-message-2025-center',
+            duration: 2,
             content: t('page.perps.toast.closePositionSuccess', {
               direction,
               coin,
@@ -286,7 +287,8 @@ export const Perps: React.FC = () => {
         } else {
           const msg = res?.response?.data?.statuses[0]?.error;
           message.error({
-            className: 'toast-message-2025-center',
+            // className: 'toast-message-2025-center',
+            duration: 2,
             content: msg || 'close position error',
           });
           Sentry.captureException(
@@ -307,7 +309,8 @@ export const Perps: React.FC = () => {
         }
         console.error('close position error', e);
         message.error({
-          className: 'toast-message-2025-center',
+          // className: 'toast-message-2025-center',
+          duration: 2,
           content: e?.message || 'close position error',
         });
         Sentry.captureException(
@@ -341,7 +344,8 @@ export const Perps: React.FC = () => {
     } catch (error) {
       console.error('close all position error', error);
       message.error({
-        className: 'toast-message-2025-center',
+        // className: 'toast-message-2025-center',
+        duration: 2,
         content: error?.message || 'close all position error',
       });
       Sentry.captureException(
@@ -565,7 +569,9 @@ export const Perps: React.FC = () => {
                       setClosePositionVisible(true);
                     }}
                     handleNavigate={() => {
-                      history.push(`/perps/single-coin/${asset.position.coin}`);
+                      history.push(
+                        `/perps/single-coin/${asset.position.coin}?openPosition=true`
+                      );
                     }}
                     onShowRiskPopup={(coin) => {
                       setRiskPopupCoin(coin);
@@ -592,7 +598,9 @@ export const Perps: React.FC = () => {
                   key={item.name}
                   item={item}
                   onClick={() => {
-                    history.push(`/perps/single-coin/${item.name}`);
+                    history.push(
+                      `/perps/single-coin/${item.name}?openPosition=true`
+                    );
                   }}
                   hasPosition={positionCoinSet.has(item.name)}
                 />
@@ -714,7 +722,7 @@ export const Perps: React.FC = () => {
         marketData={marketData}
         positionAndOpenOrders={positionAndOpenOrders}
         onSelect={(coin) => {
-          history.push(`/perps/single-coin/${coin}`);
+          history.push(`/perps/single-coin/${coin}?openPosition=true`);
         }}
         openFromSource={openFromSource}
       />

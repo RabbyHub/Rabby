@@ -152,6 +152,8 @@ export const usePerpsState = ({
     accountNeedApproveBuilderFee,
   } = perpsState;
 
+  console.log('-----', isInitialized);
+
   const wallet = useWallet();
 
   const judgeIsUserAgentIsExpired = useMemoizedFn(
@@ -168,7 +170,8 @@ export const usePerpsState = ({
       if (agentAddress && errorMessage.includes(agentAddress)) {
         console.warn('handle action agent is expired, logout');
         message.error({
-          className: 'toast-message-2025-center',
+          // className: 'toast-message-2025-center',
+          duration: 2,
           content: 'Agent is expired, please login again',
         });
         dispatch.perps.setAccountNeedApproveAgent(true);
@@ -183,7 +186,8 @@ export const usePerpsState = ({
         await deleteAgentCbRef.current();
       } catch (error) {
         message.error({
-          className: 'toast-message-2025-center',
+          // className: 'toast-message-2025-center',
+          duration: 2,
           content: error.message || 'Delete agent failed',
         });
       }
@@ -310,7 +314,7 @@ export const usePerpsState = ({
       await dispatch.account.changeAccountAsync(account);
 
       if (supportedDirectSign(account.type)) {
-        // typedDataSignatureStore.close();
+        typedDataSignatureStore.close();
         result = await typedDataSignatureStore.start(
           {
             txs: actions.map((item) => {
@@ -332,7 +336,7 @@ export const usePerpsState = ({
         for (const actionObj of actions) {
           const signature = await wallet.sendRequest<string>({
             method: 'eth_signTypedDataV4',
-            params: [account.address, JSON.stringify(actionObj.action)],
+            params: [account.address, JSON.stringify(actionObj)],
           });
           result.push(signature);
         }
@@ -554,7 +558,7 @@ export const usePerpsState = ({
       isHandlingApproveStatus.current = false;
       console.error('Failed to handle action approve status:', error);
       // todo fixme maybe no need show toast in prod
-      message.error(String(error));
+      message.error('message' in error ? error.message : String(error));
       Sentry.captureException(
         new Error(
           `Failed to handle action approve status, address: ${currentPerpsAccount?.address} , account type: ${currentPerpsAccount?.type} , error: ${error}`
@@ -591,8 +595,14 @@ export const usePerpsState = ({
     ) {
       await executeSignatures(signActions, account);
 
-      const { role } = await sdk.info.getUserRole();
-      const isNeedDepositBeforeApprove = role === 'missing';
+      let isNeedDepositBeforeApprove = true;
+      const info = await sdk.info.getClearingHouseState(account.address);
+      if ((Number(info?.marginSummary.accountValue) || 0) > 0) {
+        isNeedDepositBeforeApprove = false;
+      } else {
+        const { role } = await sdk.info.getUserRole();
+        isNeedDepositBeforeApprove = role === 'missing';
+      }
 
       if (isNeedDepositBeforeApprove) {
         handleSetLaterApproveStatus(signActions);
@@ -602,7 +612,17 @@ export const usePerpsState = ({
         dispatch.perps.setAccountNeedApproveBuilderFee(false);
       }
     } else {
-      handleSetLaterApproveStatus(signActions);
+      let needApproveAgent = false;
+      let needApproveBuilderFee = false;
+      signActions.forEach((item) => {
+        if (item.type === 'approveAgent') {
+          needApproveAgent = true;
+        } else if (item.type === 'approveBuilderFee') {
+          needApproveBuilderFee = true;
+        }
+      });
+      dispatch.perps.setAccountNeedApproveAgent(needApproveAgent);
+      dispatch.perps.setAccountNeedApproveBuilderFee(needApproveBuilderFee);
     }
 
     await dispatch.perps.loginPerpsAccount(account);
@@ -650,7 +670,8 @@ export const usePerpsState = ({
     } catch (error: any) {
       console.error('Failed to login Perps account:', error);
       message.error({
-        className: 'toast-message-2025-center',
+        // className: 'toast-message-2025-center',
+        duration: 2,
         content: error.message || 'Login failed',
       });
       Sentry.captureException(
@@ -717,7 +738,8 @@ export const usePerpsState = ({
       } catch (error) {
         console.error('Failed to withdraw:', error);
         message.error({
-          className: 'toast-message-2025-center',
+          // className: 'toast-message-2025-center',
+          duration: 2,
           content: error.message || 'Withdraw failed',
         });
         Sentry.captureException(

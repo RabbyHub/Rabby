@@ -3338,7 +3338,7 @@
         "confirm": "確認",
         "perpsBalance": "永续合約残高",
         "addMargin": "マージンを追加",
-        "liqPrice": "Liq. 価格:",
+        "liqPrice": "Liq. 価格",
         "title": "マージンを調整する",
         "amountToReduce": "減少する金額",
         "exceedMaxReduction": "最大減少を超えています",
