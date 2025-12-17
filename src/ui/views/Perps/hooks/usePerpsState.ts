@@ -170,7 +170,8 @@ export const usePerpsState = ({
       if (agentAddress && errorMessage.includes(agentAddress)) {
         console.warn('handle action agent is expired, logout');
         message.error({
-          className: 'toast-message-2025-center',
+          // className: 'toast-message-2025-center',
+          duration: 2,
           content: 'Agent is expired, please login again',
         });
         dispatch.perps.setAccountNeedApproveAgent(true);
@@ -185,7 +186,8 @@ export const usePerpsState = ({
         await deleteAgentCbRef.current();
       } catch (error) {
         message.error({
-          className: 'toast-message-2025-center',
+          // className: 'toast-message-2025-center',
+          duration: 2,
           content: error.message || 'Delete agent failed',
         });
       }
@@ -312,7 +314,7 @@ export const usePerpsState = ({
       await dispatch.account.changeAccountAsync(account);
 
       if (supportedDirectSign(account.type)) {
-        // typedDataSignatureStore.close();
+        typedDataSignatureStore.close();
         result = await typedDataSignatureStore.start(
           {
             txs: actions.map((item) => {
@@ -334,7 +336,7 @@ export const usePerpsState = ({
         for (const actionObj of actions) {
           const signature = await wallet.sendRequest<string>({
             method: 'eth_signTypedDataV4',
-            params: [account.address, JSON.stringify(actionObj.action)],
+            params: [account.address, JSON.stringify(actionObj)],
           });
           result.push(signature);
         }
@@ -556,7 +558,7 @@ export const usePerpsState = ({
       isHandlingApproveStatus.current = false;
       console.error('Failed to handle action approve status:', error);
       // todo fixme maybe no need show toast in prod
-      message.error(String(error));
+      message.error('message' in error ? error.message : String(error));
       Sentry.captureException(
         new Error(
           `Failed to handle action approve status, address: ${currentPerpsAccount?.address} , account type: ${currentPerpsAccount?.type} , error: ${error}`
@@ -652,7 +654,8 @@ export const usePerpsState = ({
     } catch (error: any) {
       console.error('Failed to login Perps account:', error);
       message.error({
-        className: 'toast-message-2025-center',
+        // className: 'toast-message-2025-center',
+        duration: 2,
         content: error.message || 'Login failed',
       });
       Sentry.captureException(
@@ -719,7 +722,8 @@ export const usePerpsState = ({
       } catch (error) {
         console.error('Failed to withdraw:', error);
         message.error({
-          className: 'toast-message-2025-center',
+          // className: 'toast-message-2025-center',
+          duration: 2,
           content: error.message || 'Withdraw failed',
         });
         Sentry.captureException(

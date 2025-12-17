@@ -272,7 +272,8 @@ export const PerpsSingleCoin = () => {
         } else if (error !== 'User cancelled') {
           console.error('perps single coin direct sign error', error);
           message.error({
-            className: 'toast-message-2025-center',
+            // className: 'toast-message-2025-center',
+            duration: 2,
             content:
               typeof (error as any)?.message === 'string'
                 ? (error as any).message
@@ -372,7 +373,8 @@ export const PerpsSingleCoin = () => {
           await handleCancelOrder(tpOid, coin, 'tp');
         } else {
           message.error({
-            className: 'toast-message-2025-center',
+            // className: 'toast-message-2025-center',
+            duration: 2,
             content: 'Take profit not found',
           });
         }
@@ -384,7 +386,8 @@ export const PerpsSingleCoin = () => {
           await handleCancelOrder(slOid, coin, 'sl');
         } else {
           message.error({
-            className: 'toast-message-2025-center',
+            // className: 'toast-message-2025-center',
+            duration: 2,
             content: 'Stop loss not found',
           });
         }
@@ -446,7 +449,7 @@ export const PerpsSingleCoin = () => {
       <div className="flex-1 overflow-auto mx-20 pb-[40px]">
         {/* Price Chart Section */}
         <PerpsChart
-          key={coin}
+          // key={coin}
           lineTagInfo={{
             tpPrice: Number(currentTpOrSl.tpPrice || 0),
             slPrice: Number(currentTpOrSl.slPrice || 0),
@@ -533,7 +536,10 @@ export const PerpsSingleCoin = () => {
                 {positionData?.type === 'isolated' ? (
                   <div
                     className="flex items-center justify-center gap-6 bg-r-blue-light-1 rounded-[8px] px-6 h-[26px] cursor-pointer"
-                    onClick={() => setEditMarginVisible(true)}
+                    onClick={async () => {
+                      await handleActionApproveStatus();
+                      setEditMarginVisible(true);
+                    }}
                   >
                     <span className="text-r-blue-default font-bold text-13 font-medium">
                       $
@@ -568,6 +574,7 @@ export const PerpsSingleCoin = () => {
                   </div>
                 </div>
                 <EditTpSlTag
+                  handleActionApproveStatus={handleActionApproveStatus}
                   coin={coin}
                   markPrice={markPrice}
                   initTpOrSlPrice={currentTpOrSl.tpPrice || ''}
@@ -726,15 +733,15 @@ export const PerpsSingleCoin = () => {
               <div className="flex justify-between text-13 py-16">
                 <div className="text-r-neutral-body flex items-center gap-4 relative">
                   {Number(positionData?.fundingPayments || 0) > 0
-                    ? t('page.perps.fundingGains')
-                    : t('page.perps.fundingPayments')}
+                    ? t('page.perps.fundingPayments')
+                    : t('page.perps.fundingGains')}
                   <TooltipWithMagnetArrow
                     overlayClassName="rectangle w-[max-content]"
                     placement="top"
                     title={
                       Number(positionData?.fundingPayments || 0) > 0
-                        ? t('page.perps.singleCoin.fundingGainsTips')
-                        : t('page.perps.singleCoin.fundingPaymentsTips')
+                        ? t('page.perps.singleCoin.fundingPaymentsTips')
+                        : t('page.perps.singleCoin.fundingGainsTips')
                     }
                   >
                     <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
