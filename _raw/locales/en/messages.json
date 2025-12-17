@@ -974,7 +974,9 @@
       "close": "Close",
       "add": "Add",
       "invitePopup": {
-        "title": "Save on Hyperliquid Fees"
+        "title": "Save on Hyperliquid Fees",
+        "activatedSuccess": "4% Hyperliquid fee savings activated",
+        "activateFailed": "Failed"
       }
     },
     "perpsDetail": {
@@ -1067,7 +1069,8 @@
         "stopLossTipsLongLiquidation": "Price is lower than the liq.price ({{price}})",
         "stopLossTipsShortLiquidation": "Price is higher than the liq.price ({{price}})",
         "cancel": "Cancel"
-      }
+      },
+      "needDepositFirst": "You need to deposit funds first."
     },
     "sendPoly": {
       "title": "Send to",

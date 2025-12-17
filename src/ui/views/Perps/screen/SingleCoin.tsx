@@ -884,6 +884,10 @@ export const PerpsSingleCoin = () => {
                     type="primary"
                     className="h-[48px] border-none text-15 font-medium rounded-[8px] flex-1 bg-r-green-default text-r-neutral-title-2"
                     onClick={async () => {
+                      if (needDepositFirst) {
+                        message.error(t('page.perpsDetail.needDepositFirst'));
+                        return;
+                      }
                       await handleActionApproveStatus();
                       setPositionDirection('Long');
                       setOpenPositionVisible(true);
@@ -896,6 +900,10 @@ export const PerpsSingleCoin = () => {
                     type="primary"
                     className="h-[48px] border-none text-15 font-medium rounded-[8px] flex-1 bg-r-red-default text-r-neutral-title-2 "
                     onClick={async () => {
+                      if (needDepositFirst) {
+                        message.error(t('page.perpsDetail.needDepositFirst'));
+                        return;
+                      }
                       await handleActionApproveStatus();
                       setPositionDirection('Short');
                       setOpenPositionVisible(true);

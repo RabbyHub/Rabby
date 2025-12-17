@@ -83,6 +83,7 @@ export const Perps: React.FC = () => {
 
     judgeIsUserAgentIsExpired,
     handleActionApproveStatus,
+    handleSafeSetReference,
   } = usePerpsState({
     setDeleteAgentModalVisible,
   });
@@ -484,31 +485,33 @@ export const Perps: React.FC = () => {
                   visible={withdrawDisabled ? undefined : false}
                   title={t('page.gasAccount.noBalance')}
                 >
-                  <PerpsBlueBorderedButton
-                    block
-                    className={clsx(
-                      'h-[36px] text-[13px] leading-[16px]',
-                      withdrawDisabled && 'opacity-50 cursor-not-allowed'
-                    )}
-                    onClick={() => {
-                      if (currentPerpsAccount) {
-                        dispatch.account.changeAccountAsync(
-                          currentPerpsAccount
-                        );
-                      }
-                      setPopupType('withdraw');
-                      setAmountVisible(true);
-                    }}
-                    disabled={withdrawDisabled}
-                  >
-                    {t('page.gasAccount.withdraw')}
-                  </PerpsBlueBorderedButton>
+                  <div className="w-[158px]">
+                    <PerpsBlueBorderedButton
+                      block
+                      className={clsx(
+                        'h-[36px] text-[13px] leading-[16px]',
+                        withdrawDisabled && 'opacity-50 cursor-not-allowed'
+                      )}
+                      onClick={() => {
+                        if (currentPerpsAccount) {
+                          dispatch.account.changeAccountAsync(
+                            currentPerpsAccount
+                          );
+                        }
+                        setPopupType('withdraw');
+                        setAmountVisible(true);
+                      }}
+                      disabled={withdrawDisabled}
+                    >
+                      {t('page.gasAccount.withdraw')}
+                    </PerpsBlueBorderedButton>
+                  </div>
                 </TooltipWithMagnetArrow>
                 <Button
                   block
                   size="large"
                   type="primary"
-                  className="h-[36px] text-r-neutral-title2 text-[13px] leading-[16px] font-medium"
+                  className="h-[36px] text-r-neutral-title2 text-[13px] leading-[16px] font-medium w-[158px]"
                   onClick={() => {
                     if (currentPerpsAccount) {
                       dispatch.account.changeAccountAsync(currentPerpsAccount);
@@ -748,7 +751,13 @@ export const Perps: React.FC = () => {
           }}
         />
       )}
-      <PerpsInvitePopup />
+      <PerpsInvitePopup
+        onInvite={async () => {
+          // todo check need deposit first
+          await handleActionApproveStatus();
+          handleSafeSetReference();
+        }}
+      />
     </div>
   );
 };

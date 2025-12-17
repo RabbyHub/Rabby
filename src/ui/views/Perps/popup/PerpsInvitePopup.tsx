@@ -1,42 +1,67 @@
-import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { calculateDistanceToLiquidation } from '../utils';
-import Popup from '@/ui/component/Popup';
-import { splitNumberByStep } from '@/ui/utils';
-import clsx from 'clsx';
-import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import IconHyperliquid from '@/ui/assets/perps/icon-hyperliquid.svg';
 import IconRabbyWallet from '@/ui/assets/icon-rabby-circle.svg';
-import { Button } from 'antd';
+import IconHyperliquid from '@/ui/assets/perps/icon-hyperliquid.svg';
+import Popup from '@/ui/component/Popup';
 import { useRabbySelector } from '@/ui/store';
+import { useWallet } from '@/ui/utils';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { getPerpsSDK } from '../sdkManager';
+import { Button, message } from 'antd';
+import clsx from 'clsx';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import { checkPerpsReference } from '../utils';
+import { KEYRING_CLASS } from '@/constant';
 
-export const PerpsInvitePopup: React.FC = () => {
+export const PerpsInvitePopup: React.FC<{
+  onInvite?: () => void | Promise<void>;
+}> = ({ onInvite }) => {
   const { t } = useTranslation();
   const [visible, setVisible] = React.useState(false);
 
   const currentPerpsAccount = useRabbySelector(
     (store) => store.perps.currentPerpsAccount
   );
+  const wallet = useWallet();
 
   useRequest(
     async () => {
-      const sdk = getPerpsSDK();
+      if (
+        currentPerpsAccount?.type === KEYRING_CLASS.MNEMONIC ||
+        currentPerpsAccount?.type === KEYRING_CLASS.PRIVATE_KEY
+      ) {
+        return false;
+      }
+      return checkPerpsReference({
+        wallet,
+        account: currentPerpsAccount,
+      });
     },
     {
       refreshDeps: [currentPerpsAccount],
+      ready: !!currentPerpsAccount?.address,
+      onSuccess: (shouldShow) => {
+        if (shouldShow) {
+          setVisible(true);
+          wallet.setPerpsInviteConfig(currentPerpsAccount?.address || '', {
+            lastInvitedAt: Date.now(),
+          });
+        }
+      },
     }
   );
 
-  const handleActivate = useMemoizedFn(() => {});
+  const handleActivate = useMemoizedFn(async () => {
+    await onInvite?.();
+    setVisible(false);
+    message.success(t('page.perps.invitePopup.activatedSuccess'));
+  });
 
   return (
     <Popup
       closable
       placement="bottom"
       visible={visible}
-      onCancel={() => {
+      onCancel={async () => {
         setVisible(false);
       }}
       height={'fit-content'}
@@ -109,6 +134,7 @@ export const PerpsInvitePopup: React.FC = () => {
             type="primary"
             block
             className="mt-[24px] h-[44px] text-[15px] font-medium rounded-[8px]"
+            onClick={handleActivate}
           >
             Activate Now
           </Button>

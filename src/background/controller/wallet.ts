@@ -5723,6 +5723,9 @@ export class WalletController extends BaseController {
       };
     }
   };
+  getPerpsInviteConfig = perpsService.getInviteConfig;
+  setPerpsInviteConfig = perpsService.setInviteConfig;
+
   signTextCreateHistory = (
     params: Parameters<typeof signTextHistoryService.createHistory>[0]
   ) => {

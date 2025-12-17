@@ -31,6 +31,11 @@ export interface PerpsServiceStore {
       approveSignatures: ApproveSignatures;
     };
   };
+  inviteConfig: {
+    [address: string]: {
+      lastInvitedAt: number;
+    };
+  };
   currentAccount: StoreAccount | null;
   lastUsedAccount: StoreAccount | null;
   hasDoneNewUserProcess: boolean;
@@ -56,6 +61,7 @@ class PerpsService {
       template: {
         agentVaults: '',
         agentPreferences: {},
+        inviteConfig: {},
         currentAccount: null,
         // no clear account , just cache for last used
         lastUsedAccount: null,
@@ -365,6 +371,23 @@ class PerpsService {
     return preference;
   };
 
+  getInviteConfig = async (address: string) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.inviteConfig[address.toLowerCase()];
+  };
+
+  setInviteConfig = async (
+    address: string,
+    config: { lastInvitedAt: number }
+  ) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.inviteConfig[address.toLowerCase()] = config;
+  };
+
   // only test use
   resetStore = async () => {
     if (!this.store) {
@@ -376,6 +399,7 @@ class PerpsService {
       currentAccount: null,
       lastUsedAccount: null,
       hasDoneNewUserProcess: false,
+      inviteConfig: {},
     };
     this.memoryState.agentWallets = {};
   };
