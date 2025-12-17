@@ -395,7 +395,6 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                   {gainOrLoss === 'gain'
                     ? t('page.perpsDetail.PerpsAutoCloseModal.youGain')
                     : t('page.perpsDetail.PerpsAutoCloseModal.youLoss')}
-                  :
                 </span>
                 {priceValidation.error || priceIsEmptyValue ? (
                   <span className="text-17 font-bold text-r-neutral-info">
@@ -427,7 +426,6 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                     : t(
                         'page.perpsDetail.PerpsAutoCloseModal.stopLossExpectedPNL'
                       )}
-                  :
                 </span>
                 {priceValidation.error || priceIsEmptyValue ? (
                   <span className="text-17 font-extrabold text-r-neutral-info leading-[22px]">

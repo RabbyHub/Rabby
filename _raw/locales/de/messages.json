@@ -3341,7 +3341,7 @@
         "amountToReduce": "Betrag zur Reduzierung",
         "exceedMaxReduction": "Überschreitet die maximale Reduzierung",
         "confirm": "Bestätigen",
-        "liqPrice": "Liq. Preis:",
+        "liqPrice": "Liq. Preis",
         "available": "Verfügbar",
         "reduceMarginTooltip": "Unzureichende Margin, um die Position zu reduzieren.",
         "title": "Margin anpassen",

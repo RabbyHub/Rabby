@@ -3332,7 +3332,7 @@
         "providerFee": "Гиперликвидная комиссия"
       },
       "PerpsEditMarginPopup": {
-        "liqPrice": "Liq. Цена:",
+        "liqPrice": "Liq. Цена",
         "amountToAdd": "Сумма для добавления",
         "title": "Настроить маржу",
         "available": "Доступно",

@@ -1016,7 +1016,7 @@
         "amountToReduce": "Amount to Reduce",
         "perpsBalance": "Perps Balance",
         "available": "Available",
-        "liqPrice": "Liq. Price:",
+        "liqPrice": "Liq. Price",
         "reduceMarginTooltip": "Insufficient margin to reduce position.",
         "confirm": "Confirm",
         "insufficientBalance": "Insufficient balance",
@@ -1025,7 +1025,7 @@
         "reduceMarginSuccess": "Margin reduced successfully",
         "upto": "Up to",
         "upTo": "Up to",
-        "liqDistance": "Liq.Distance"
+        "liqDistance": "Liq. Distance"
       },
       "PerpsClosePositionPopup": {
         "title": "Close Position",
@@ -3601,7 +3601,10 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."

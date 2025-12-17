@@ -3373,7 +3373,7 @@
         "currentPrice": "當前價格",
         "perpsBalance": "Perps 余额",
         "insufficientBalance": "餘額不足",
-        "liqPrice": "清算价格：",
+        "liqPrice": "清算价格",
         "addMargin": "添加保证金",
         "exceedMaxReduction": "超出最大减幅",
         "amountToAdd": "添加数量",

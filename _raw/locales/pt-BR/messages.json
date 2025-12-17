@@ -3337,7 +3337,7 @@
         "title": "Ajustar Margem",
         "confirm": "Confirmar",
         "amountToAdd": "Quantidade a Adicionar",
-        "liqPrice": "Preço de Liq.:",
+        "liqPrice": "Preço de Liq.",
         "reduceMargin": "Reduzir Margem",
         "reduceMarginTooltip": " margem insuficiente para reduzir posição.",
         "insufficientBalance": "Saldo insuficiente",
