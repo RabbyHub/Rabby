@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { LpTokenSwitch } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenSwitch';
 import clsx from 'clsx';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
+import { HomePerpsPositionList } from './HomePerpsPositionList';
 
 interface Props {
   className?: string;
@@ -218,16 +219,21 @@ export const AssetListContainer: React.FC<Props> = ({
         style={{
           display: visible ? 'block' : 'none',
         }}
+        className="pt-[24px]"
       >
         {isPortfoliosLoading && isAppPortfoliosLoading ? (
           <TokenListSkeleton />
         ) : (
-          <ProtocolList
-            removeProtocol={removeProtocol}
-            appIds={appIds}
-            isSearch={!!search}
-            list={filteredPortfolios}
-          />
+          <>
+            {visible && !search ? <HomePerpsPositionList /> : null}
+            <ProtocolList
+              removeProtocol={removeProtocol}
+              appIds={appIds}
+              isSearch={!!search}
+              list={filteredPortfolios}
+              className="mt-0"
+            />
+          </>
         )}
       </div>
     </div>

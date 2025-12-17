@@ -40,6 +40,7 @@ import { useGasAccountInfo } from '@/ui/views/GasAccount/hooks';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import {
   formatGasAccountUsdValueV2,
+  formatUsdValue,
   openInternalPageInTab,
   splitNumberByStep,
   useWallet,
@@ -381,25 +382,29 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       icon: RcIconPerpsCC,
       eventKey: 'Perps',
       iconClassName: 'icon-perps',
-      subContent: perpsPositionInfo.show ? (
-        <div
-          className={clsx(
-            'absolute bottom-[4px] text-[11px] leading-[13px] font-medium',
-            perpsPositionInfo.pnl > 0
-              ? 'text-r-green-default'
-              : 'text-r-red-default'
-          )}
-        >
-          {perpsPositionInfo.pnl >= 0 ? '+' : '-'}$
-          {splitNumberByStep(Math.abs(perpsPositionInfo.pnl).toFixed(2))}
-        </div>
-      ) : isFetching ? (
+      subContent: isFetching ? (
         <div className="absolute bottom-[4px] text-[11px] font-medium">
           <Skeleton.Button
             active={true}
             className="h-[10px] block rounded-[2px]"
             style={{ width: 42 }}
           />
+        </div>
+      ) : perpsPositionInfo?.assetPositions?.length ? (
+        <div
+          className={clsx(
+            'absolute bottom-[4px] text-[11px] leading-[13px] font-medium text-r-blue-default'
+          )}
+        >
+          {perpsPositionInfo?.assetPositions?.length} Positions
+        </div>
+      ) : perpsPositionInfo?.marginSummary?.accountValue ? (
+        <div
+          className={clsx(
+            'absolute bottom-[4px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
+          )}
+        >
+          {formatUsdValue(perpsPositionInfo?.marginSummary.accountValue || 0)}
         </div>
       ) : null,
       content: t('page.dashboard.home.panel.perps'),
@@ -441,9 +446,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'send',
           'bridge',
           'receive',
+          'perps',
           'transactions',
           'security',
-          'perps',
           'points',
           'mobile',
           'nft',
@@ -458,9 +463,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'send',
           'bridge',
           'receive',
+          'perps',
           'transactions',
           'security',
-          'perps',
           'points',
           'mobile',
           'nft',

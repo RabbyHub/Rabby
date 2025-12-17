@@ -7,26 +7,16 @@ export const usePerpsHomePnl = () => {
   const perpsState = useRabbySelector((state) => state.perps);
   const perpsAccount = perpsState.currentPerpsAccount;
 
-  const { loading: isFetching } = useRequest(
+  const { data, loading: isFetching } = useRequest(
     async () => {
       const sdk = getPerpsSDK();
       const account = perpsAccount;
       if (account?.address) {
         const res = await sdk.info.getClearingHouseState(account.address);
 
-        const positionAndOpenOrders = res.assetPositions;
-
-        if (!positionAndOpenOrders || positionAndOpenOrders.length === 0) {
-          dispatch.perps.setHomePositionPnl({ pnl: 0, show: false });
-        } else {
-          const pnl = positionAndOpenOrders.reduce((acc, asset) => {
-            return acc + Number(asset.position.unrealizedPnl);
-          }, 0);
-          dispatch.perps.setHomePositionPnl({ pnl, show: true });
-        }
-      } else {
-        dispatch.perps.setHomePositionPnl({ pnl: 0, show: false });
+        return res;
       }
+      return null;
     },
     {
       refreshDeps: [perpsAccount?.address],
@@ -34,7 +24,7 @@ export const usePerpsHomePnl = () => {
   );
 
   return {
-    perpsPositionInfo: perpsState.homePositionPnl,
+    perpsPositionInfo: data,
     isFetching,
   };
 };

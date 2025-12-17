@@ -972,7 +972,12 @@
       "fundingRate": "Funding Rate",
       "fundingGains": "Funding Gains",
       "close": "Close",
-      "add": "Add"
+      "add": "Add",
+      "invitePopup": {
+        "title": "Save on Hyperliquid Fees",
+        "activatedSuccess": "4% Hyperliquid fee savings activated",
+        "activateFailed": "Failed"
+      }
     },
     "perpsDetail": {
       "PerpsAddPositionPopup": {
@@ -1064,7 +1069,8 @@
         "stopLossTipsLongLiquidation": "Price is lower than the liq.price ({{price}})",
         "stopLossTipsShortLiquidation": "Price is higher than the liq.price ({{price}})",
         "cancel": "Cancel"
-      }
+      },
+      "needDepositFirst": "You need to deposit funds first."
     },
     "sendPoly": {
       "title": "Send to",
@@ -3596,7 +3602,8 @@
       "selectAccount": "Select Address"
     },
     "ChainItem": {
-      "appChain": "On {{chain}} Account"
+      "appChain": "On {{chain}} Account",
+      "hyperliquidCode": "Save on Hyperliquid fees with Rabby’s referral code."
     },
     "RiskTip": {
       "title": "Risk Detected"
@@ -3608,7 +3615,8 @@
       ],
       "withdraw": "Withdraw",
       "claim": "Claim",
-      "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
+      "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
+      "manage": "Manage"
     },
     "DesktopChainSelector": {
       "allChains": "All Chains"
