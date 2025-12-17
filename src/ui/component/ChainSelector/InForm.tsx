@@ -1,4 +1,10 @@
-import React, { InsHTMLAttributes, useEffect, useMemo } from 'react';
+import React, {
+  InsHTMLAttributes,
+  PropsWithRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+} from 'react';
 import clsx from 'clsx';
 import { CHAINS_ENUM } from '@debank/common';
 
@@ -234,106 +240,129 @@ interface ChainSelectorProps {
   getContainer?: DrawerProps['getContainer'];
   disableChainCheck?: TDisableCheckChainFn;
   loading?: boolean;
+  zIndex?: number;
 }
-export default function ChainSelectorInForm({
-  value,
-  onChange,
-  readonly = false,
-  showModal = false,
-  disabledTips,
-  disableChainCheck,
-  title,
-  supportChains,
-  chainRenderClassName,
-  arrowDownComponent,
-  bridge,
-  hideTestnetTab = false,
-  excludeChains,
-  drawerHeight,
-  showClosableIcon,
-  swap,
-  loading,
-  getContainer,
-}: ChainSelectorProps) {
-  const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
-  const { t } = useTranslation();
-  const handleClickSelector = () => {
-    if (readonly) return;
-    setShowSelectorModal(true);
-  };
+export type ChainSelectorRef = {
+  toggleShow: (show: boolean) => void;
+};
+const ChainSelectorInForm = React.forwardRef<
+  ChainSelectorRef,
+  ChainSelectorProps
+>(
+  (
+    {
+      value,
+      onChange,
+      readonly = false,
+      showModal = false,
+      disabledTips,
+      disableChainCheck,
+      title,
+      supportChains,
+      chainRenderClassName,
+      arrowDownComponent,
+      bridge,
+      hideTestnetTab = false,
+      excludeChains,
+      drawerHeight,
+      showClosableIcon,
+      swap,
+      loading,
+      getContainer,
+      zIndex,
+    },
+    ref
+  ) => {
+    const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
-  const handleCancel = () => {
-    if (readonly) return;
-    setShowSelectorModal(false);
-  };
+    const { t } = useTranslation();
+    const handleClickSelector = () => {
+      if (readonly) return;
+      setShowSelectorModal(true);
+    };
 
-  const handleChange = (value: CHAINS_ENUM) => {
-    if (readonly) return;
-    onChange && onChange(value);
-    setShowSelectorModal(false);
-  };
-  const checkBeforeConfirm = (value: CHAINS_ENUM) => {
-    if (readonly) return;
-    const chainServerId = findChain({ enum: value })?.serverId;
-    if (chainServerId) {
-      const { disable, reason } = disableChainCheck?.(chainServerId) || {};
-      if (disable) {
-        Modal.confirm({
-          width: 340,
-          closable: true,
-          closeIcon: <></>,
-          centered: true,
-          className: 'chain-selector-disable-item-tips',
-          title: <RiskWarningTitle />,
-          content: reason,
-          okText: t('global.proceedButton'),
-          cancelText: t('global.cancelButton'),
-          cancelButtonProps: {
-            type: 'ghost',
-            className: 'text-r-blue-default border-r-blue-default',
-          },
-          onOk() {
-            handleChange(value);
-          },
-        });
-        return;
+    const handleCancel = () => {
+      if (readonly) return;
+      setShowSelectorModal(false);
+    };
+
+    const handleChange = (value: CHAINS_ENUM) => {
+      if (readonly) return;
+      onChange && onChange(value);
+      setShowSelectorModal(false);
+    };
+    const checkBeforeConfirm = (value: CHAINS_ENUM) => {
+      if (readonly) return;
+      const chainServerId = findChain({ enum: value })?.serverId;
+      if (chainServerId) {
+        const { disable, reason } = disableChainCheck?.(chainServerId) || {};
+        if (disable) {
+          Modal.confirm({
+            width: 340,
+            closable: true,
+            closeIcon: <></>,
+            centered: true,
+            className: 'chain-selector-disable-item-tips',
+            title: <RiskWarningTitle />,
+            content: reason,
+            okText: t('global.proceedButton'),
+            cancelText: t('global.cancelButton'),
+            cancelButtonProps: {
+              type: 'ghost',
+              className: 'text-r-blue-default border-r-blue-default',
+            },
+            onOk() {
+              handleChange(value);
+            },
+          });
+          return;
+        }
       }
-    }
-    handleChange(value);
-  };
+      handleChange(value);
+    };
 
-  return (
-    <>
-      <ChainRender
-        chain={value}
-        onClick={handleClickSelector}
-        readonly={readonly}
-        className={chainRenderClassName}
-        arrowDownComponent={arrowDownComponent}
-        bridge={bridge}
-        swap={swap}
-        loading={loading}
-      />
-      {!readonly && (
-        <ChainSelectorModal
-          height={drawerHeight}
-          excludeChains={excludeChains}
-          hideTestnetTab={hideTestnetTab}
-          value={value}
-          visible={showSelectorModal}
-          onChange={checkBeforeConfirm}
-          onCancel={handleCancel}
-          supportChains={supportChains}
-          disabledTips={disabledTips}
-          disableChainCheck={disableChainCheck}
-          title={title}
-          showClosableIcon={showClosableIcon}
-          showRPCStatus
-          getContainer={getContainer}
+    useImperativeHandle(ref, () => ({
+      toggleShow: (show: boolean) => {
+        setShowSelectorModal(show);
+      },
+    }));
+
+    return (
+      <>
+        <ChainRender
+          chain={value}
+          onClick={handleClickSelector}
+          readonly={readonly}
+          className={chainRenderClassName}
+          arrowDownComponent={arrowDownComponent}
+          bridge={bridge}
+          swap={swap}
+          loading={loading}
         />
-      )}
-      <ChainGlobalStyle />
-    </>
-  );
-}
+        {!readonly && (
+          <ChainSelectorModal
+            height={drawerHeight}
+            excludeChains={excludeChains}
+            hideTestnetTab={hideTestnetTab}
+            value={value}
+            visible={showSelectorModal}
+            onChange={checkBeforeConfirm}
+            onCancel={handleCancel}
+            supportChains={supportChains}
+            disabledTips={disabledTips}
+            disableChainCheck={disableChainCheck}
+            title={title}
+            showClosableIcon={showClosableIcon}
+            showRPCStatus
+            getContainer={getContainer}
+            zIndex={zIndex}
+          />
+        )}
+        <ChainGlobalStyle />
+      </>
+    );
+  }
+);
+
+export default ChainSelectorInForm;

@@ -290,12 +290,11 @@ const TokenSelector = ({
     [type]
   );
 
-  const showChainFilter = useMemo(() => {
-    return !['swapTo', 'bridgeTo', 'send'].includes(type);
-  }, [type]);
-
   const showChainFilterV2 = useMemo(() => {
-    return ['send'].includes(type) && selectedTab !== 'testnet';
+    return (
+      ['send', 'bridgeFrom', 'swapFrom'].includes(type) &&
+      selectedTab !== 'testnet'
+    );
   }, [type, selectedTab]);
 
   const swapAndBridgeNoDataTip = useMemo(() => {
@@ -551,44 +550,7 @@ const TokenSelector = ({
             onBlur={handleInputBlur}
           />
         </div>
-        {chainItem && showChainFilter && (
-          <div className="filters-wrapper flex items-center justify-between">
-            <div className="filter-item__chain px-10">
-              <img
-                className="filter-item__chain-logo"
-                src={chainItem.logo}
-                alt={chainItem.name}
-              />
-              <span className="ml-[4px]">{chainItem.name}</span>
-              <div
-                className="py-4 cursor-pointer"
-                onClick={() => {
-                  onRemoveChainFilter?.({
-                    chainServerId: chainServerId || '',
-                    // chainItem,
-                  });
-                  onSearch({
-                    // chainItem: null,
-                    chainServerId: '',
-                    keyword: query,
-                  });
-                }}
-              >
-                <RcIconChainFilterCloseCC
-                  viewBox="0 0 16 16"
-                  className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-foot hover:text-r-red-default"
-                />
-              </div>
-            </div>
-            {showLpTokenSwitch && (
-              <LpTokenSwitch
-                className="ml-auto"
-                lpTokenMode={lpTokenMode}
-                onLpTokenModeChange={setLpTokenMode}
-              />
-            )}
-          </div>
-        )}
+
         {showChainFilterV2 && (
           <div className="filters-wrapper flex items-center justify-between">
             <ChainFilterV2Line
