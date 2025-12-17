@@ -62,7 +62,7 @@ export const RiskLevelPopup: React.FC<RiskLevelPopupProps> = ({
         <div className="bg-r-neutral-card-1 rounded-[8px]">
           <div className="text-[13px] leading-[16px]  flex items-center justify-between p-16">
             <div className="text-r-neutral-body">
-              {t('page.perps.riskLevel.currentPrice')}:
+              {t('page.perps.riskLevel.currentPrice')}
             </div>
             <div className="text-r-neutral-title-1 font-medium">
               ${splitNumberByStep(markPrice.toFixed(pxDecimals))}
@@ -70,7 +70,7 @@ export const RiskLevelPopup: React.FC<RiskLevelPopupProps> = ({
           </div>
           <div className="text-[13px] leading-[16px]  flex items-center justify-between p-16">
             <div className="text-r-neutral-body">
-              {t('page.perps.riskLevel.liquidationPrice')}:
+              {t('page.perps.riskLevel.liquidationPrice')}
             </div>
             <div className="text-r-neutral-title-1 font-medium">
               ${splitNumberByStep(liquidationPrice.toFixed(pxDecimals))}

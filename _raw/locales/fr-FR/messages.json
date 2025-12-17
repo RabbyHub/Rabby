@@ -3652,7 +3652,7 @@
         "exceedMaxReduction": "Dépasse la réduction maximale",
         "available": "Disponible",
         "amountToAdd": "Montant à ajouter",
-        "liqPrice": "Prix de liquidation :",
+        "liqPrice": "Prix de liquidation",
         "reduceMarginTooltip": "Marge insuffisante pour réduire la position.",
         "insufficientBalance": "Solde insuffisant",
         "reduceMargin": "Réduire la marge",

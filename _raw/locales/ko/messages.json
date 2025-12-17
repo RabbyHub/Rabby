@@ -3340,7 +3340,7 @@
         "insufficientBalance": "잔액 부족",
         "addMarginSuccess": "마진이 성공적으로 추가되었습니다",
         "reduceMarginTooltip": "포지션을 줄이기에 충분한 마진이 아닙니다.",
-        "liqPrice": "Liq. 가격:",
+        "liqPrice": "Liq. 가격",
         "reduceMargin": "마진 축소",
         "reduceMarginSuccess": "마진이 성공적으로 감소되었습니다."
       },

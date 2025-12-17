@@ -3375,7 +3375,7 @@
         "insufficientBalance": "余额不足",
         "currentPrice": "当前价格",
         "reduceMarginTooltip": "减少头寸的保证金不足。",
-        "liqPrice": "Liq. Price: 清算价格",
+        "liqPrice": "清算价格",
         "addMarginSuccess": "保证金成功添加",
         "available": "可用",
         "confirm": "确认",

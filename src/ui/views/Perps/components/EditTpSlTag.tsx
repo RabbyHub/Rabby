@@ -16,6 +16,7 @@ import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 interface EditTpSlTagProps {
   coin: string;
+  handleActionApproveStatus?: () => Promise<void>;
   entryPrice?: number;
   markPrice: number;
   initTpOrSlPrice: string;
@@ -50,6 +51,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   currentAssetCtx,
   handleSetAutoClose,
   handleCancelAutoClose,
+  handleActionApproveStatus,
 }) => {
   const { t } = useTranslation();
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -249,6 +251,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
           disableEdit && 'opacity-50 cursor-not-allowed'
         )}
         onClick={async () => {
+          await handleActionApproveStatus?.();
           if (hasPrice) {
             await handleCancelAutoClose();
             return;
@@ -256,7 +259,8 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
 
           if (disableEdit) {
             message.error({
-              className: 'toast-message-2025-center',
+              // className: 'toast-message-2025-center',
+              duration: 2,
               content: t('page.perpsDetail.PerpsAutoCloseModal.noPosition'),
             });
             return;
@@ -395,7 +399,6 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                   {gainOrLoss === 'gain'
                     ? t('page.perpsDetail.PerpsAutoCloseModal.youGain')
                     : t('page.perpsDetail.PerpsAutoCloseModal.youLoss')}
-                  :
                 </span>
                 {priceValidation.error || priceIsEmptyValue ? (
                   <span className="text-17 font-bold text-r-neutral-info">
@@ -427,7 +430,6 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                     : t(
                         'page.perpsDetail.PerpsAutoCloseModal.stopLossExpectedPNL'
                       )}
-                  :
                 </span>
                 {priceValidation.error || priceIsEmptyValue ? (
                   <span className="text-17 font-extrabold text-r-neutral-info leading-[22px]">
