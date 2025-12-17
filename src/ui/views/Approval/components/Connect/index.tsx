@@ -9,6 +9,7 @@ import { sleep, useApproval, useWallet } from 'ui/utils';
 import { ConnectContent } from './ConnectContent';
 import { EIP6963ProviderInfo, SelectWallet } from './SelectWallet';
 import qs from 'qs';
+import { HyperliquidInviteContent } from './HyperliquidInviteContent';
 
 interface ConnectProps {
   params: any;
@@ -95,7 +96,7 @@ const Connect = (props: ConnectProps) => {
           providers={$ctx?.providers || []}
         />
       ) : (
-        <ConnectContent {...props} />
+        <HyperliquidInviteContent {...props} />
       )}
     </>
   );

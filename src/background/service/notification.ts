@@ -50,6 +50,8 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
   'PrivatekeyWaiting',
   'CoinbaseWaiting',
   'ImKeyHardwareWaiting',
+  // todo remove after refactor
+  'Connect',
 ];
 
 export type StatsData = {

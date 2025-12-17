@@ -270,7 +270,9 @@ export const PrivatekeyWaiting = ({
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        false,
+        // false,
+        // todo fix later
+        true,
         false,
         signFinishedData.approvalId
       );

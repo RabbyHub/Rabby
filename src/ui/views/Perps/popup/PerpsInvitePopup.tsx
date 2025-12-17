@@ -14,7 +14,7 @@ import { getPerpsSDK } from '../sdkManager';
 
 export const PerpsInvitePopup: React.FC = () => {
   const { t } = useTranslation();
-  const [visible, setVisible] = React.useState(true);
+  const [visible, setVisible] = React.useState(false);
 
   const currentPerpsAccount = useRabbySelector(
     (store) => store.perps.currentPerpsAccount
