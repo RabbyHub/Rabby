@@ -562,7 +562,9 @@ export const Perps: React.FC = () => {
                       setClosePositionVisible(true);
                     }}
                     handleNavigate={() => {
-                      history.push(`/perps/single-coin/${asset.position.coin}`);
+                      history.push(
+                        `/perps/single-coin/${asset.position.coin}?openPosition=true`
+                      );
                     }}
                     onShowRiskPopup={(coin) => {
                       setRiskPopupCoin(coin);
@@ -589,7 +591,9 @@ export const Perps: React.FC = () => {
                   key={item.name}
                   item={item}
                   onClick={() => {
-                    history.push(`/perps/single-coin/${item.name}`);
+                    history.push(
+                      `/perps/single-coin/${item.name}?openPosition=true`
+                    );
                   }}
                   hasPosition={positionCoinSet.has(item.name)}
                 />
@@ -717,7 +721,7 @@ export const Perps: React.FC = () => {
         marketData={marketData}
         positionAndOpenOrders={positionAndOpenOrders}
         onSelect={(coin) => {
-          history.push(`/perps/single-coin/${coin}`);
+          history.push(`/perps/single-coin/${coin}?openPosition=true`);
         }}
         openFromSource={openFromSource}
       />

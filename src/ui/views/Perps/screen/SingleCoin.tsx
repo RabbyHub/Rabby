@@ -180,12 +180,17 @@ export const PerpsSingleCoin = () => {
     return accountNeedApproveAgent || accountNeedApproveBuilderFee;
   }, [accountNeedApproveAgent, accountNeedApproveBuilderFee]);
 
+  const showOpenPosition = useMemo(() => {
+    return history.location.search.includes('openPosition=true');
+  }, []);
+
   const canOpenPosition =
     isLogin &&
     hasPermission &&
     !hasPosition &&
     !needDepositFirst &&
-    !accountNeedApprove;
+    !accountNeedApprove &&
+    showOpenPosition;
 
   const [openPositionVisible, setOpenPositionVisible] = React.useState(
     canOpenPosition

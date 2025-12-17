@@ -595,8 +595,14 @@ export const usePerpsState = ({
     ) {
       await executeSignatures(signActions, account);
 
-      const { role } = await sdk.info.getUserRole();
-      const isNeedDepositBeforeApprove = role === 'missing';
+      let isNeedDepositBeforeApprove = true;
+      const info = await sdk.info.getClearingHouseState(account.address);
+      if ((Number(info?.marginSummary.accountValue) || 0) > 0) {
+        isNeedDepositBeforeApprove = false;
+      } else {
+        const { role } = await sdk.info.getUserRole();
+        isNeedDepositBeforeApprove = role === 'missing';
+      }
 
       if (isNeedDepositBeforeApprove) {
         handleSetLaterApproveStatus(signActions);
@@ -606,7 +612,17 @@ export const usePerpsState = ({
         dispatch.perps.setAccountNeedApproveBuilderFee(false);
       }
     } else {
-      handleSetLaterApproveStatus(signActions);
+      let needApproveAgent = false;
+      let needApproveBuilderFee = false;
+      signActions.forEach((item) => {
+        if (item.type === 'approveAgent') {
+          needApproveAgent = true;
+        } else if (item.type === 'approveBuilderFee') {
+          needApproveBuilderFee = true;
+        }
+      });
+      dispatch.perps.setAccountNeedApproveAgent(needApproveAgent);
+      dispatch.perps.setAccountNeedApproveBuilderFee(needApproveBuilderFee);
     }
 
     await dispatch.perps.loginPerpsAccount(account);
