@@ -85,6 +85,7 @@ interface CommonProps {
   drawerHeight?: string | number;
   supportChains?: CHAINS_ENUM[];
   getContainer?: DrawerProps['getContainer'];
+  onStartSelectChain?: () => void;
 }
 
 interface BridgeFromProps extends CommonProps {
@@ -123,6 +124,7 @@ const TokenSelect = forwardRef<
       drawerHeight,
       supportChains,
       getContainer,
+      onStartSelectChain,
     },
     ref
   ) => {
@@ -334,6 +336,7 @@ const TokenSelect = forwardRef<
             lpTokenMode={lpTokenMode}
             setLpTokenMode={setLpTokenMode}
             showLpTokenSwitch={isFromMode}
+            onStartSelectChain={onStartSelectChain}
           />
         </>
       );
@@ -402,6 +405,7 @@ const TokenSelect = forwardRef<
           lpTokenMode={lpTokenMode}
           setLpTokenMode={setLpTokenMode}
           showLpTokenSwitch={isFromMode}
+          onStartSelectChain={onStartSelectChain}
         />
       </>
     );
