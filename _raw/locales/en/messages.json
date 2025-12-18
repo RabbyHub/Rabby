@@ -1589,7 +1589,9 @@
           "setting": "Setting",
           "searchDapp": "Search Dapp",
           "dapps": "Dapps",
-          "settings": "Settings"
+          "settings": "Settings",
+          "perpsPositions_one": "{{count}} Position",
+          "perpsPositions_other": "{{count}} Positions"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -3609,10 +3611,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",

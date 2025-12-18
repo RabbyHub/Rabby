@@ -396,9 +396,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
             'absolute bottom-[4px] text-[11px] leading-[13px] font-medium text-r-blue-default'
           )}
         >
-          {perpsPositionInfo?.assetPositions?.length} Positions
+          {t('page.dashboard.home.panel.perpsPositions', {
+            count: perpsPositionInfo?.assetPositions?.length,
+          })}
         </div>
-      ) : perpsPositionInfo?.marginSummary?.accountValue ? (
+      ) : +(perpsPositionInfo?.marginSummary?.accountValue || '') ? (
         <div
           className={clsx(
             'absolute bottom-[4px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
@@ -446,9 +448,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'send',
           'bridge',
           'receive',
-          'perps',
           'transactions',
           'security',
+          'perps',
           'points',
           'mobile',
           'nft',
@@ -463,9 +465,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'send',
           'bridge',
           'receive',
-          'perps',
           'transactions',
           'security',
+          'perps',
           'points',
           'mobile',
           'nft',

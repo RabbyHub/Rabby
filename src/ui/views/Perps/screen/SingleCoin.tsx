@@ -278,7 +278,7 @@ export const PerpsSingleCoin = () => {
           console.error('perps single coin direct sign error', error);
           message.error({
             // className: 'toast-message-2025-center',
-            duration: 2,
+            duration: 1.5,
             content:
               typeof (error as any)?.message === 'string'
                 ? (error as any).message
@@ -379,7 +379,7 @@ export const PerpsSingleCoin = () => {
         } else {
           message.error({
             // className: 'toast-message-2025-center',
-            duration: 2,
+            duration: 1.5,
             content: 'Take profit not found',
           });
         }
@@ -392,7 +392,7 @@ export const PerpsSingleCoin = () => {
         } else {
           message.error({
             // className: 'toast-message-2025-center',
-            duration: 2,
+            duration: 1.5,
             content: 'Stop loss not found',
           });
         }
@@ -646,6 +646,7 @@ export const PerpsSingleCoin = () => {
                   </div>
                 </div>
                 <EditTpSlTag
+                  handleActionApproveStatus={handleActionApproveStatus}
                   coin={coin}
                   markPrice={markPrice}
                   entryPrice={Number(positionData?.entryPrice || 0)}
@@ -738,23 +739,27 @@ export const PerpsSingleCoin = () => {
               <div className="flex justify-between text-13 py-16">
                 <div className="text-r-neutral-body flex items-center gap-4 relative">
                   {Number(positionData?.fundingPayments || 0) > 0
-                    ? t('page.perps.fundingPayments')
-                    : t('page.perps.fundingGains')}
+                    ? t('page.perps.fundingGains')
+                    : t('page.perps.fundingPayments')}
                   <TooltipWithMagnetArrow
                     overlayClassName="rectangle w-[max-content]"
                     placement="top"
                     title={
                       Number(positionData?.fundingPayments || 0) > 0
-                        ? t('page.perps.singleCoin.fundingPaymentsTips')
-                        : t('page.perps.singleCoin.fundingGainsTips')
+                        ? t('page.perps.singleCoin.fundingGainsTips')
+                        : t('page.perps.singleCoin.fundingPaymentsTips')
                     }
                   >
                     <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
                   </TooltipWithMagnetArrow>
                 </div>
                 <span className="text-r-neutral-title-1 font-medium">
-                  {Number(positionData?.fundingPayments || 0) > 0 ? '-' : '+'}$
-                  {Math.abs(Number(positionData?.fundingPayments || 0))}
+                  {Number(positionData?.fundingPayments || 0) === 0
+                    ? ''
+                    : Number(positionData?.fundingPayments || 0) > 0
+                    ? '+'
+                    : '-'}
+                  ${Math.abs(Number(positionData?.fundingPayments || 0))}
                 </span>
               </div>
             </div>

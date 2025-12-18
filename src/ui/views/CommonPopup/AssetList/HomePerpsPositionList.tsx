@@ -102,9 +102,7 @@ export const HomePerpsPositionList: React.FC = () => {
                 dispatch.perps.subscribeToUserData(currentAccount.address);
               }
               closePopup();
-              history.push(
-                `/perps/single-coin/${assetPosition.position.coin.toUpperCase()}`
-              );
+              history.push('/perps');
             }}
           />
         );
