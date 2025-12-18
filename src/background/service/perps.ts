@@ -1,3 +1,4 @@
+import { last } from 'lodash';
 import { createPersistStore } from 'background/utils';
 import { getRandomBytesSync } from 'ethereum-cryptography/random.js';
 import { secp256k1 } from 'ethereum-cryptography/secp256k1.js';
@@ -33,7 +34,8 @@ export interface PerpsServiceStore {
   };
   inviteConfig: {
     [address: string]: {
-      lastInvitedAt: number;
+      lastInvitedAt?: number;
+      lastConnectedAt?: number;
     };
   };
   currentAccount: StoreAccount | null;
@@ -380,12 +382,15 @@ class PerpsService {
 
   setInviteConfig = async (
     address: string,
-    config: { lastInvitedAt: number }
+    config: { lastConnectedAt?: number; lastInvitedAt?: number }
   ) => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
-    this.store.inviteConfig[address.toLowerCase()] = config;
+    this.store.inviteConfig[address.toLowerCase()] = {
+      ...this.store.inviteConfig[address.toLowerCase()],
+      ...config,
+    };
   };
 
   // only test use

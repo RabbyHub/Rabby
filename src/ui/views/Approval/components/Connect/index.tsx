@@ -102,7 +102,12 @@ const Connect = (props: ConnectProps) => {
       ) : (
         <ConnectContent
           {...props}
-          onPerpsInvite={() => setIsShowHyperliquidInvite(true)}
+          onPerpsInvite={(address) => {
+            wallet.setPerpsInviteConfig(address, {
+              lastConnectedAt: Date.now(),
+            });
+            setIsShowHyperliquidInvite(true);
+          }}
         />
       )}
     </>
