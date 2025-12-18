@@ -347,6 +347,17 @@ class PerpsService {
     const updatedMemoryWallets = { ...this.memoryState.agentWallets };
     delete updatedMemoryWallets[normalizedAddress];
     this.memoryState.agentWallets = updatedMemoryWallets;
+
+    if (
+      this.store.currentAccount?.address.toLowerCase() === normalizedAddress
+    ) {
+      this.store.currentAccount = null;
+    }
+    if (
+      this.store.lastUsedAccount?.address.toLowerCase() === normalizedAddress
+    ) {
+      this.store.lastUsedAccount = null;
+    }
   };
 
   hasAgentWallet = (address: string) => {
