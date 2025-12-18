@@ -359,7 +359,7 @@ export const Content: React.FC<Props> = (props) => {
     return {
       listingPrice: totalPrice
         .div(new BigNumber(10).pow(listingToken.decimals))
-        .toString(),
+        .toFixed(),
       amount: +amount || null,
       creatorFeeEnable,
       duration: findClosestOption(duration * 1000).value,
@@ -483,7 +483,7 @@ export const Content: React.FC<Props> = (props) => {
         .times(new BigNumber(10).exponentiatedBy(listingToken.decimals))
         .times(formValues.amount || 1)
         .integerValue()
-        .toString(),
+        .toFixed(),
       sellerAddress: currentAccount.address,
       marketFees: fees.marketplace_fees,
       royaltyFees:
@@ -875,7 +875,7 @@ export const Content: React.FC<Props> = (props) => {
                                 nftDetail?.collection?.opensea_floor_price
                                   ?.token?.price || 0
                               )
-                              .toString()
+                              .toFixed()
                           )}
                         </div>
                       </>
@@ -894,13 +894,13 @@ export const Content: React.FC<Props> = (props) => {
                           )}
                         >
                           {bestOfferPrice
-                            ? formatTokenAmount(bestOfferPrice.toString())
+                            ? formatTokenAmount(bestOfferPrice.toFixed())
                             : '-'}{' '}
                           {nftDetail?.best_offer_order?.price?.currency || '-'}
                         </div>
                         <div className="text-[13px] leading-[16px] font-medium text-r-neutral-foot truncate text-right">
                           {bestOfferUsdPrice
-                            ? formatUsdValue(bestOfferUsdPrice.toString())
+                            ? formatUsdValue(bestOfferUsdPrice.toFixed())
                             : '-'}
                         </div>
                       </>
@@ -925,7 +925,7 @@ export const Content: React.FC<Props> = (props) => {
                                   cost.payment.decimals
                                 )
                               )
-                              .toString()
+                              .toFixed()
                           )}{' '}
                           {cost.payment.symbol}{' '}
                         </div>
@@ -939,7 +939,7 @@ export const Content: React.FC<Props> = (props) => {
                                 )
                               )
                               .times(cost.payment.price)
-                              .toString()
+                              .toFixed()
                           )}
                           )
                         </div>
@@ -962,7 +962,7 @@ export const Content: React.FC<Props> = (props) => {
                             new BigNumber(formValues.listingPrice)
                               .times(1 - feesRate.total)
                               .times(formValues?.amount || 0)
-                              .toString()
+                              .toFixed()
                           )}{' '}
                           {listingToken?.symbol}
                         </div>
@@ -972,7 +972,7 @@ export const Content: React.FC<Props> = (props) => {
                               .times(1 - feesRate.total)
                               .times(formValues?.amount || 0)
                               .times(listingToken?.price || 0)
-                              .toString()
+                              .toFixed()
                           )}
                         </div>
                       </>
@@ -1037,7 +1037,7 @@ export const Content: React.FC<Props> = (props) => {
                   {formatTokenAmount(
                     new BigNumber(formValues.listingPrice)
                       .times(formValues.amount)
-                      .toString()
+                      .toFixed()
                   )}{' '}
                   {listingToken?.symbol}{' '}
                   <span className="text-r-neutral-foot font-normal">
@@ -1046,7 +1046,7 @@ export const Content: React.FC<Props> = (props) => {
                       new BigNumber(formValues.listingPrice)
                         .times(formValues.amount)
                         .times(listingToken?.price || 0)
-                        .toString()
+                        .toFixed()
                     )}
                     )
                   </span>
@@ -1106,7 +1106,7 @@ export const Content: React.FC<Props> = (props) => {
                 new BigNumber(feesRate.market)
                   .times(formValues.listingPrice || 0)
                   .times(formValues.amount || 0)
-                  .toString()
+                  .toFixed()
               )}{' '}
               {listingToken?.symbol}{' '}
               <span className="text-r-neutral-foot font-normal">
@@ -1116,7 +1116,7 @@ export const Content: React.FC<Props> = (props) => {
                     .times(formValues.listingPrice || 0)
                     .times(formValues.amount || 0)
                     .times(listingToken?.price || 0)
-                    .toString()
+                    .toFixed()
                 )}
                 )
               </span>
@@ -1166,7 +1166,7 @@ export const Content: React.FC<Props> = (props) => {
                       new BigNumber(feesRate.custom)
                         .times(formValues.listingPrice || 0)
                         .times(formValues.amount || 0)
-                        .toString()
+                        .toFixed()
                     )}{' '}
                     {listingToken?.symbol}{' '}
                     <span className="text-r-neutral-foot font-normal">
@@ -1176,7 +1176,7 @@ export const Content: React.FC<Props> = (props) => {
                           .times(formValues.listingPrice || 0)
                           .times(formValues.amount || 0)
                           .times(listingToken?.price || 0)
-                          .toString()
+                          .toFixed()
                       )}
                       )
                     </span>
@@ -1206,7 +1206,7 @@ export const Content: React.FC<Props> = (props) => {
                 new BigNumber(formValues.listingPrice || 0)
                   .times(1 - feesRate.total)
                   .times(formValues?.amount || 0)
-                  .toString()
+                  .toFixed()
               )}{' '}
               {listingToken?.symbol}{' '}
               <span className="text-r-neutral-foot font-normal">
@@ -1216,7 +1216,7 @@ export const Content: React.FC<Props> = (props) => {
                     .times(1 - feesRate.total)
                     .times(formValues?.amount || 0)
                     .times(listingToken?.price || 0)
-                    .toString()
+                    .toFixed()
                 )}
                 )
               </span>

@@ -374,7 +374,7 @@ const Content: React.FC<Props> = (props) => {
                   <>
                     <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1 text-right">
                       {bestOfferPrice
-                        ? formatTokenAmount(bestOfferPrice.toString())
+                        ? formatTokenAmount(bestOfferPrice.toFixed())
                         : '-'}{' '}
                       {bestOffer?.price.currency}
                     </div>
@@ -384,7 +384,7 @@ const Content: React.FC<Props> = (props) => {
                       )}
                     >
                       {bestOfferUsdPrice
-                        ? formatUsdValue(bestOfferUsdPrice.toString())
+                        ? formatUsdValue(bestOfferUsdPrice.toFixed())
                         : '-'}
                     </div>
                   </>
@@ -483,7 +483,7 @@ const Content: React.FC<Props> = (props) => {
                 new BigNumber(feesRate.market)
                   .times(bestOfferPrice || 0)
                   .times(formValues?.amount || 0)
-                  .toString()
+                  .toFixed()
               )}{' '}
               {offerToken?.symbol}{' '}
               <span className="text-r-neutral-foot font-normal">
@@ -492,7 +492,7 @@ const Content: React.FC<Props> = (props) => {
                   new BigNumber(feesRate.market)
                     .times(bestOfferUsdPrice || 0)
                     .times(formValues?.amount || 0)
-                    .toString()
+                    .toFixed()
                 )}
                 )
               </span>
@@ -541,7 +541,7 @@ const Content: React.FC<Props> = (props) => {
                       new BigNumber(feesRate.custom)
                         .times(bestOfferPrice || 0)
                         .times(formValues?.amount || 0)
-                        .toString()
+                        .toFixed()
                     )}{' '}
                     {offerToken?.symbol}{' '}
                     <span className="text-r-neutral-foot font-normal">
@@ -550,7 +550,7 @@ const Content: React.FC<Props> = (props) => {
                         new BigNumber(feesRate.custom)
                           .times(bestOfferUsdPrice || 0)
                           .times(formValues?.amount || 0)
-                          .toString()
+                          .toFixed()
                       )}
                       )
                     </span>
@@ -580,7 +580,7 @@ const Content: React.FC<Props> = (props) => {
                 new BigNumber(bestOfferPrice || 0)
                   .times(1 - feesRate.total)
                   .times(formValues?.amount || 0)
-                  .toString()
+                  .toFixed()
               )}{' '}
               {offerToken?.symbol}{' '}
               <span className="text-r-neutral-foot font-normal">
@@ -589,7 +589,7 @@ const Content: React.FC<Props> = (props) => {
                   new BigNumber(bestOfferUsdPrice || 0)
                     .times(1 - feesRate.total)
                     .times(formValues?.amount || 0)
-                    .toString()
+                    .toFixed()
                 )}
                 )
               </span>
