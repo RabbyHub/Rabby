@@ -486,13 +486,17 @@ export const usePerpsState = ({
           dispatch.perps.setAccountNeedApproveAgent(false);
           dispatch.perps.setAccountNeedApproveBuilderFee(false);
         } else {
+          let needApproveAgent = false;
+          let needApproveBuilderFee = false;
           signActions.forEach((item) => {
             if (item.type === 'approveAgent') {
-              dispatch.perps.setAccountNeedApproveAgent(true);
+              needApproveAgent = true;
             } else if (item.type === 'approveBuilderFee') {
-              dispatch.perps.setAccountNeedApproveBuilderFee(true);
+              needApproveBuilderFee = true;
             }
           });
+          dispatch.perps.setAccountNeedApproveAgent(needApproveAgent);
+          dispatch.perps.setAccountNeedApproveBuilderFee(needApproveBuilderFee);
         }
       } catch (e) {
         // showToast(String(e), 'error');
