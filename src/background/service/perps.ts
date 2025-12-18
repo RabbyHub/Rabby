@@ -34,6 +34,7 @@ export interface PerpsServiceStore {
   currentAccount: StoreAccount | null;
   lastUsedAccount: StoreAccount | null;
   hasDoneNewUserProcess: boolean;
+  favoritedCoins: string[];
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -60,6 +61,7 @@ class PerpsService {
         // no clear account , just cache for last used
         lastUsedAccount: null,
         hasDoneNewUserProcess: false,
+        favoritedCoins: ['BTC', 'ETH', 'SOL'],
       },
     });
 
@@ -363,6 +365,20 @@ class PerpsService {
     }
 
     return preference;
+  };
+
+  getPerpsFavoritedCoins = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.favoritedCoins || ['BTC', 'ETH', 'SOL'];
+  };
+
+  setPerpsFavoritedCoins = async (coins: string[]) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.favoritedCoins = coins;
   };
 }
 

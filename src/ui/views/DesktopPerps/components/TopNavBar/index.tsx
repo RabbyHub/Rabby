@@ -15,7 +15,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   isLoading,
 }) => {
   return (
-    <div className="flex items-center justify-between px-[20px] py-[16px] border-b border-solid border-rb-neutral-line bg-rb-neutral-bg-1">
+    <div className="flex items-center justify-between px-[20px] py-[16px]">
       <DesktopNav
         balance={balance}
         changePercent={changePercent}

@@ -11,17 +11,43 @@ import { AccountInfo } from './components/AccountInfo';
 import { StatusBar } from './components/StatusBar';
 import { RightAccountBar } from './components/RightAccountBar';
 import './resizable-panels.css';
+import usePerpsProState from './hooks/usePerpsProState';
 
 const Wrap = styled.div`
-  height: 100%;
   width: 100%;
-  overflow: hidden;
   background: var(--rb-neutral-bg-1, #fff);
   display: flex;
+  overflow-x: hidden;
+  overflow-y: auto;
   flex-direction: column;
 `;
 
 export const DesktopPerps: React.FC = () => {
+  const {
+    positionAndOpenOrders,
+    accountSummary,
+    currentPerpsAccount,
+    isLogin,
+    marketData,
+    userFills,
+    marketDataMap,
+    isInitialized,
+    logout,
+    login,
+    handleWithdraw,
+    homeHistoryList,
+    hasPermission,
+    localLoadingHistory,
+    miniSignTypeData,
+    clearMiniSignTypeData,
+    handleMiniSignResolve,
+    handleMiniSignReject,
+
+    handleDeleteAgent,
+    perpFee,
+
+    judgeIsUserAgentIsExpired,
+  } = usePerpsProState({});
   const balance = 355.65;
   const changePercent = null;
   const isLoss = false;
@@ -36,40 +62,44 @@ export const DesktopPerps: React.FC = () => {
         isLoading={isLoading}
       />
 
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex flex-col flex-1 min-w-0">
-          <PanelGroup direction="vertical">
-            <Panel defaultSize={70} minSize={50} maxSize={80}>
-              <div className="h-full border-b border-solid border-rb-neutral-line">
-                <PanelGroup direction="horizontal">
-                  <Panel defaultSize={60} minSize={40} maxSize={80}>
-                    <ChartArea />
-                  </Panel>
+      <div className="flex flex-1 overflow-hidden px-16 h-[1300px]">
+        <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] h-[1300px] overflow-hidden">
+          {/* <PanelGroup direction="vertical"> */}
+          {/* <Panel defaultSize={70} minSize={50} maxSize={80}> */}
+          <div className="h-[720px]">
+            <div className="h-full border-b border-solid border-rb-neutral-line">
+              <PanelGroup direction="horizontal">
+                <Panel defaultSize={60} minSize={40} maxSize={80}>
+                  <ChartArea />
+                </Panel>
 
-                  <PanelResizeHandle className="w-[1px] bg-rb-neutral-line hover:bg-r-blue-default transition-colors" />
+                <PanelResizeHandle className="w-[1px] bg-rb-neutral-line hover:bg-r-blue-default transition-colors" />
 
-                  <Panel defaultSize={20} minSize={15} maxSize={35}>
-                    <OrderBookTrades />
-                  </Panel>
+                <Panel defaultSize={20} minSize={15} maxSize={35}>
+                  <OrderBookTrades />
+                </Panel>
 
-                  <PanelResizeHandle className="w-[1px] bg-rb-neutral-line hover:bg-r-blue-default transition-colors" />
+                <PanelResizeHandle className="w-[1px] bg-rb-neutral-line hover:bg-r-blue-default transition-colors" />
 
-                  <Panel defaultSize={20} minSize={15} maxSize={35}>
-                    <TradingPanel />
-                  </Panel>
-                </PanelGroup>
-              </div>
-            </Panel>
+                <Panel defaultSize={20} minSize={15} maxSize={35}>
+                  <TradingPanel />
+                </Panel>
+              </PanelGroup>
+            </div>
+          </div>
+          {/* </Panel> */}
 
-            <PanelResizeHandle className="h-[0.5px] bg-rb-neutral-line hover:bg-r-blue-default transition-colors" />
+          {/* <PanelResizeHandle className="h-[0.5px] bg-rb-neutral-line hover:bg-r-blue-default transition-colors" /> */}
 
-            <Panel defaultSize={30} minSize={20} maxSize={50}>
-              <div className="h-full flex">
-                <UserInfoHistory />
-                <AccountInfo />
-              </div>
-            </Panel>
-          </PanelGroup>
+          {/* <Panel defaultSize={30} minSize={20} maxSize={50}> */}
+          <div className="h-[580px]">
+            <div className="h-full flex">
+              <UserInfoHistory />
+              <AccountInfo />
+            </div>
+          </div>
+          {/* </Panel> */}
+          {/* </PanelGroup> */}
         </div>
 
         <RightAccountBar />

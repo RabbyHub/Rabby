@@ -6,7 +6,7 @@ export const RightAccountBar: React.FC = () => {
   return (
     <aside
       className={clsx(
-        'min-w-[64px] flex-shrink-0 z-20 h-full overflow-auto border-l border-solid border-rb-neutral-line p-[16px]'
+        'min-w-[64px] flex-shrink-0 z-20 h-full overflow-auto px-[16px]'
       )}
     >
       <DesktopSelectAccountList />

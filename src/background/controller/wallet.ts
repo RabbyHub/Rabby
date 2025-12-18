@@ -5694,6 +5694,7 @@ export class WalletController extends BaseController {
   getAgentWalletPreference = async (masterWallet: string) => {
     return perpsService.getAgentWalletPreference(masterWallet);
   };
+  getPerpsFavoritedCoins = perpsService.getPerpsFavoritedCoins;
   updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
   setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;
   getSendApproveAfterDeposit = async (masterAddress: string) => {

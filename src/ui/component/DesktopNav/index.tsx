@@ -103,7 +103,14 @@ export const DesktopNav: React.FC<{
               : 'text-rb-neutral-secondary'
           )}
         >
-          <RcIconPerpsCC className="text-rb-neutral-secondary" />
+          <RcIconPerpsCC
+            className={clsx(
+              'flex-shrink-0',
+              isActive('perps')
+                ? 'text-rb-neutral-bg-1'
+                : 'text-rb-neutral-secondary'
+            )}
+          />
           <div>
             <div
               className={clsx(

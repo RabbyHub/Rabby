@@ -7,6 +7,7 @@ import {
   MarginSummary,
   OpenOrder,
   UserFill,
+  WsActiveAssetCtx,
   WsFill,
   WsUserFills,
 } from '@rabby-wallet/hyperliquid-sdk';
@@ -88,6 +89,11 @@ export interface PerpsState {
     pnl: number;
     show: boolean;
   };
+  // Desktop Pro fields
+  selectedCoin: string;
+  favoritedCoins: string[];
+  chartInterval: string;
+  wsActiveAssetCtx: WsActiveAssetCtx | null;
 }
 
 export const perps = createModel<RootModel>()({
@@ -113,6 +119,11 @@ export const perps = createModel<RootModel>()({
       show: false,
     },
     fillsOrderTpOrSl: {},
+    // Desktop Pro fields
+    selectedCoin: 'BTC',
+    favoritedCoins: [],
+    chartInterval: '15m',
+    wsActiveAssetCtx: null,
   } as PerpsState,
 
   reducers: {
@@ -366,6 +377,52 @@ export const perps = createModel<RootModel>()({
           pnl: 0,
           show: false,
         },
+      };
+    },
+
+    // Desktop Pro reducers
+    setSelectedCoin(state, payload: string) {
+      return {
+        ...state,
+        selectedCoin: payload,
+      };
+    },
+
+    setFavoritedCoins(state, payload: string[]) {
+      return {
+        ...state,
+        favoritedCoins: payload,
+      };
+    },
+
+    addFavoritedCoin(state, payload: string) {
+      if (state.favoritedCoins.includes(payload)) {
+        return state;
+      }
+      return {
+        ...state,
+        favoritedCoins: [...state.favoritedCoins, payload],
+      };
+    },
+
+    removeFavoritedCoin(state, payload: string) {
+      return {
+        ...state,
+        favoritedCoins: state.favoritedCoins.filter((coin) => coin !== payload),
+      };
+    },
+
+    setChartInterval(state, payload: string) {
+      return {
+        ...state,
+        chartInterval: payload,
+      };
+    },
+
+    setWsActiveAssetCtx(state, payload: WsActiveAssetCtx | null) {
+      return {
+        ...state,
+        wsActiveAssetCtx: payload,
       };
     },
   },
@@ -647,6 +704,43 @@ export const perps = createModel<RootModel>()({
       eventBus.addEventListener(EVENTS.PERPS.LOG_OUT, () => {
         dispatch.perps.logout();
       });
+    },
+
+    // Desktop Pro effects
+    async initFavoritedCoins(_, rootState) {
+      try {
+        const favoritedCoins = await rootState.app.wallet.getPerpsFavoritedCoins();
+        if (favoritedCoins && favoritedCoins.length > 0) {
+          dispatch.perps.setFavoritedCoins(favoritedCoins);
+        } else {
+          // Default favorited coins
+          dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
+        }
+      } catch (error) {
+        console.error('Failed to load favorited coins:', error);
+        // Fallback to default
+        dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
+      }
+    },
+
+    async toggleFavoriteCoin(coin: string, rootState) {
+      try {
+        const { favoritedCoins } = rootState.perps;
+
+        let newFavoritedCoins: string[];
+        if (favoritedCoins.includes(coin)) {
+          dispatch.perps.removeFavoritedCoin(coin);
+          newFavoritedCoins = favoritedCoins.filter((c) => c !== coin);
+        } else {
+          dispatch.perps.addFavoritedCoin(coin);
+          newFavoritedCoins = [...favoritedCoins, coin];
+        }
+
+        // Save to storage
+        await rootState.app.wallet.setPerpsFavoritedCoins(newFavoritedCoins);
+      } catch (error) {
+        console.error('Failed to toggle favorite coin:', error);
+      }
     },
   }),
 });

@@ -966,6 +966,34 @@
         "hasPosition": "Position"
       }
     },
+    "perpsPro": {
+      "chatArea": {
+        "symbol": "Symbol",
+        "searchMarkets": "Search markets",
+        "lastPrice": "Last Price",
+        "mark": "Mark",
+        "oracle": "Oracle",
+        "24hChange": "24h Change",
+        "openInterest": "Open Interest",
+        "24hVol": "24h Vol",
+        "volume": "Volume",
+        "fundingCountdown": "Funding / Countdown",
+        "8hrFunding": "8h Funding"
+      },
+      "orderBook": {
+        "title": "Order Book",
+        "trades": "Trades",
+        "price": "Price",
+        "amount": "Amount",
+        "total": "Total",
+        "markPrice": "Mark Price",
+        "time": "Time",
+        "noTrades": "No trades",
+        "viewBoth": "Both",
+        "viewBids": "Bids",
+        "viewAsks": "Asks"
+      }
+    },
     "perpsDetail": {
       "PerpsOpenPositionPopup": {
         "newPosition": "Open Position",
