@@ -976,7 +976,10 @@
       "invitePopup": {
         "title": "Save on Hyperliquid Fees",
         "activatedSuccess": "4% Hyperliquid fee savings activated",
-        "activateFailed": "Failed"
+        "activateFailed": "Failed",
+        "description": "Use Rabby’s code to enable",
+        "hyperliquidFee": "Hyperliquid trading fees.",
+        "activateNow": "Activate Now"
       }
     },
     "perpsDetail": {
@@ -2439,7 +2442,8 @@
         "title": "Select a Wallet to Connect",
         "desc": "Select from the wallets you have installed"
       },
-      "connectAddress": "Connect Address"
+      "connectAddress": "Connect Address",
+      "connected": "Connected"
     },
     "addressDetail": {
       "add-to-whitelist": "Add to Whitelist",
@@ -3610,7 +3614,10 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",

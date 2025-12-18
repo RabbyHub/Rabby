@@ -215,7 +215,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
           <div className="flex items-center gap-[4px] mt-[8px]">
             <RcIconSuccessCC className="text-r-green-default" />
             <div className="text-[15px] leading-[18px] font-medium text-r-green-default">
-              Connected
+              {t('page.connect.connected')}
             </div>
           </div>
           <div className="text-[13px] leading-[16px] text-r-neutral-foot mt-[4px]">
@@ -261,7 +261,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
               </div>
             </div>
             <div className="mt-[75px] text-[13px] leading-[16px] text-r-neutral-foot">
-              Use Rabby’s code to enable
+              {t('page.perps.invitePopup.description')}
             </div>
             <div className="relative mt-[10px] mb-[12px]">
               <div className="flex items-end gap-[6px] relative z-10 pl-[10px] pr-[6px]">
@@ -280,7 +280,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
               ></div>
             </div>
             <div className="text-[18px] leading-[21px] font-medium text-r-neutral-title-1">
-              Hyperliquid trading fees.
+              {t('page.perps.invitePopup.hyperliquidFee')}
             </div>
           </div>
           <ThemeIcon
@@ -302,7 +302,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
               className="text-r-green-default w-[20px] h-[20px]"
             />
             <div className="text-[15px] leading-[18px] font-medium text-r-green-default">
-              4% Hyperliquid fee savings activated
+              {t('page.perps.invitePopup.activatedSuccess')}
             </div>
           </div>
         ) : null}
@@ -317,7 +317,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
               className="h-[48px] text-[15px] font-medium rounded-[8px]"
               onClick={handleClose}
             >
-              Done
+              {t('global.Done')}
             </Button>
           </div>
         ) : (
@@ -338,7 +338,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
             </div>
             <div className="flex flex-col items-center gap-[16px]">
               <Button type="primary" size="large" onClick={handleInvite}>
-                Active Now
+                {t('page.perps.invitePopup.activateNow')}
               </Button>
 
               <Button
