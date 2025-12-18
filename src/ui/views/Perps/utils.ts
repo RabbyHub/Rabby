@@ -289,9 +289,11 @@ export const formatTpOrSlPrice = (
 export const checkPerpsReference = async ({
   wallet,
   account,
+  scene = 'invite',
 }: {
   wallet: ReturnType<typeof useWallet>;
   account?: Account | null;
+  scene?: 'invite' | 'connect';
 }) => {
   try {
     const address = account?.address;
@@ -306,9 +308,13 @@ export const checkPerpsReference = async ({
       return false;
     }
     const inviteConfig = await wallet.getPerpsInviteConfig(address);
-    if (inviteConfig?.lastInvitedAt) {
+    const lastTime =
+      scene === 'connect'
+        ? inviteConfig?.lastConnectedAt
+        : inviteConfig?.lastInvitedAt;
+    if (lastTime) {
       const now = Date.now();
-      const diff = now - inviteConfig.lastInvitedAt;
+      const diff = now - lastTime;
       const oneWeek = 7 * 24 * 60 * 60 * 1000;
       if (diff < oneWeek) {
         return false;

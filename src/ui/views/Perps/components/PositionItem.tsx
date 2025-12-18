@@ -110,10 +110,10 @@ export const PositionItem: React.FC<{
               withDirection={false}
               size={20}
             />
-            <span className="text-15 ml-4 font-medium text-rb-neutral-title-1">
+            <span className="text-15 ml-4 font-medium text-r-neutral-title-1">
               {coin}
             </span>
-            <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-title-1" />
+            <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-foot" />
           </div>
           <div className="flex items-center gap-6">
             <span
@@ -139,7 +139,7 @@ export const PositionItem: React.FC<{
           </div>
         </div>
         <div className="flex flex-col items-end gap-4">
-          <div className="text-15 font-bold text-rb-neutral-title-1">
+          <div className="text-15 font-medium text-r-neutral-title-1">
             {formatUsdValue(Number(marginUsed))}
           </div>
           <div

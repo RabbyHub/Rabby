@@ -209,7 +209,7 @@ const SecurityLevelTipColor = {
 
 export const ConnectContent = (
   props: ConnectProps & {
-    onPerpsInvite?(): void;
+    onPerpsInvite?(address: string): void;
   }
 ) => {
   const {
@@ -589,16 +589,21 @@ export const ConnectContent = (
 
   const checkSetPerpsReference = useMemoizedFn(async () => {
     if (origin === 'https://app.hyperliquid.xyz') {
+      const config = await wallet.fetchRemoteConfig().catch(() => null);
+      if (config?.switches?.isPerpsInviteDisabled) {
+        return false;
+      }
       return await checkPerpsReference({
         wallet,
         account: selectedAccount!,
+        scene: 'connect',
       });
     }
     return false;
   });
 
   const handleAllow = async () => {
-    const stay = await checkSetPerpsReference();
+    const stay = await checkSetPerpsReference().catch(() => false);
 
     resolveApproval(
       {
@@ -609,7 +614,7 @@ export const ConnectContent = (
     );
 
     if (stay) {
-      onPerpsInvite?.();
+      onPerpsInvite?.(selectedAccount!.address);
     }
   };
 

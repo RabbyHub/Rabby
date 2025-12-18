@@ -114,7 +114,7 @@ export const PerpsInvitePopup: React.FC<{
             </div>
           </div>
           <div className="mt-[20px] text-[13px] leading-[16px] text-r-neutral-foot">
-            Use Rabby’s code to enable
+            {t('page.perps.invitePopup.description')}
           </div>
           <div className="relative my-[8px]">
             <div className="flex items-end gap-[6px] relative z-10 pl-[10px] pr-[6px]">
@@ -128,7 +128,7 @@ export const PerpsInvitePopup: React.FC<{
             <div className="absolute left-0 right-0 bottom-[8px] h-[10px] bg-r-blue-light1"></div>
           </div>
           <div className="text-[18px] leading-[21px] font-medium text-r-neutral-title-1">
-            Hyperliquid trading fees.
+            {t('page.perps.invitePopup.hyperliquidFee')}
           </div>
           <Button
             type="primary"
@@ -136,7 +136,7 @@ export const PerpsInvitePopup: React.FC<{
             className="mt-[24px] h-[44px] text-[15px] font-medium rounded-[8px]"
             onClick={handleActivate}
           >
-            Activate Now
+            {t('page.perps.invitePopup.activateNow')}
           </Button>
         </div>
       </div>

@@ -177,6 +177,7 @@ import { Seaport } from '@opensea/seaport-js';
 import { OrderComponents } from '@opensea/seaport-js/lib/types';
 import { CROSS_CHAIN_SEAPORT_V1_6_ADDRESS } from '@opensea/seaport-js/lib/constants';
 import { buildCreateListingTypedData } from '@/utils/nft';
+import { http } from '../utils/http';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -5991,6 +5992,18 @@ export class WalletController extends BaseController {
   getRpcTxReceipt = transactionHistoryService.getRpcTxReceipt;
 
   resetPerpsStore = perpsService.resetStore;
+
+  fetchRemoteConfig = async (): Promise<{
+    switches?: {
+      isPerpsInviteDisabled?: boolean;
+    };
+  }> => {
+    const url = appIsProd
+      ? 'https://download.rabby.io/downloads/wallet-config/rabby-extension.json'
+      : 'https://download.rabby.io/downloads/wallet-config-reg/rabby-extension.json';
+
+    return http.get(url).then((res) => res.data);
+  };
 }
 
 const wallet = new WalletController();
