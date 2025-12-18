@@ -178,6 +178,7 @@ import { OrderComponents } from '@opensea/seaport-js/lib/types';
 import { CROSS_CHAIN_SEAPORT_V1_6_ADDRESS } from '@opensea/seaport-js/lib/constants';
 import { buildCreateListingTypedData } from '@/utils/nft';
 import { http } from '../utils/http';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -5732,6 +5733,33 @@ export class WalletController extends BaseController {
   };
   getPerpsInviteConfig = perpsService.getInviteConfig;
   setPerpsInviteConfig = perpsService.setInviteConfig;
+
+  signPerpsSendSetReferrer = async ({
+    address,
+    typedData,
+    nonce,
+    action,
+  }: {
+    address: string;
+    typedData: Record<string, any>;
+    action: Record<string, any>;
+    nonce: number;
+  }) => {
+    const signature = await wallet.sendRequest<string>({
+      method: 'eth_signTypedData_v4',
+      params: [address, JSON.stringify(typedData)],
+    });
+    if (!signature) {
+      throw new Error('User rejected signing');
+    }
+    const sdk = getPerpsSDK();
+    sdk.initAccount(address);
+    return sdk.exchange?.sendSetReferrer({
+      action: action,
+      nonce: nonce,
+      signature: signature,
+    });
+  };
 
   signTextCreateHistory = (
     params: Parameters<typeof signTextHistoryService.createHistory>[0]

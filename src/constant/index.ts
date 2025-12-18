@@ -567,6 +567,8 @@ export const EVENTS = {
   DESKTOP: {
     FOCUSED: 'DESKTOP_FOCUSED',
   },
+
+  RELOAD_APPROVAL: 'RELOAD_APPROVAL',
 };
 
 export const EVENTS_IN_BG = {

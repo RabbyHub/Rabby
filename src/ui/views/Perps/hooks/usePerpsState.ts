@@ -679,6 +679,9 @@ export const usePerpsState = ({
         // 不存在agent wallet,，需要创建新的，同时签名
         await handleLoginWithSignApprove(account);
       }
+      // todo 重构这里的逻辑
+      // 切换账号后，清空本地历史记录，避免数据错乱
+      dispatch.perps.clearLocalLoadingHistory();
       return true;
     } catch (error: any) {
       console.error('Failed to login Perps account:', error);

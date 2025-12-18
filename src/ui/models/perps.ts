@@ -148,6 +148,13 @@ export const perps = createModel<RootModel>()({
       };
     },
 
+    clearLocalLoadingHistory(state) {
+      return {
+        ...state,
+        localLoadingHistory: [],
+      };
+    },
+
     setUserAccountHistory(state, payload: AccountHistoryItem[]) {
       return {
         ...state,
