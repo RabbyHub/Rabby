@@ -4,10 +4,11 @@ import { DrawerProps, ModalProps } from 'antd';
 import { Account } from '@/background/service/preference';
 import { MINI_SIGN_ERROR } from './SignatureManager';
 import { MiniTypedData } from '@/ui/views/Approval/components/MiniSignTypedData/useTypedDataTask';
-import { WalletControllerType } from '@/ui/utils';
-import { KEYRING_TYPE } from '@/constant';
+import { hasConnectedLedgerDevice, WalletControllerType } from '@/ui/utils';
+import { EVENTS, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { sendSignTypedData } from '@/ui/utils/sendTypedData';
 import { SignatureSteps } from '../services';
+import eventBus from '@/eventBus';
 
 type Subscriber = (state: TypedDataSignatureState) => void;
 
@@ -78,6 +79,31 @@ class TypedDataSignatureManager {
     }
   }
 
+  private async checkHardWareConnected(cb: () => void) {
+    const account = this.state.request?.config.account;
+    if (!account) {
+      this.pendingResult?.reject(MINI_SIGN_ERROR.PREFETCH_FAILURE);
+      return;
+    }
+    if (account.type === KEYRING_CLASS.HARDWARE.LEDGER) {
+      try {
+        const isConnected = await hasConnectedLedgerDevice();
+        if (isConnected) {
+          cb();
+        } else {
+          eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
+        }
+      } catch {
+        this.pendingResult?.reject?.(MINI_SIGN_ERROR.USER_CANCELLED);
+      }
+
+      return;
+    }
+
+    cb();
+    return;
+  }
+
   public start(
     request: TypedDataSignatureRequest,
     config: {
@@ -101,11 +127,13 @@ class TypedDataSignatureManager {
       progress: { current: 0, total: request.txs.length },
     });
     if (request.config.mode !== 'UI') {
-      void this.runSigningFlow({
-        request,
-        startIndex: 0,
-        existingResults: [],
-        getContainer: config.getContainer || request.config.getContainer,
+      this.checkHardWareConnected(() => {
+        void this.runSigningFlow({
+          request,
+          startIndex: 0,
+          existingResults: [],
+          getContainer: config.getContainer || request.config.getContainer,
+        });
       });
     }
     return promise;
@@ -220,7 +248,14 @@ class TypedDataSignatureManager {
       error: undefined,
       progress: { current: startIndex, total: request.txs.length },
     });
-    this.runSigningFlow({ request, startIndex, existingResults, getContainer });
+    this.checkHardWareConnected(() => {
+      this.runSigningFlow({
+        request,
+        startIndex,
+        existingResults,
+        getContainer,
+      });
+    });
   }
 
   private reset() {
