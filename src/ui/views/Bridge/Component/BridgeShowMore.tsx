@@ -673,12 +673,12 @@ export const DirectSignGasInfo = ({
                       className={clsx(
                         'gas-cost-text',
                         'inline-flex items-center gap-[4px] ml-[8px]',
-                        'text-rb-blue-default',
+                        'text-r-blue-default',
                         'text-[14px] font-[700] leading-[18px]'
                       )}
                     >
                       {gasCostUsd}
-                      <IconGasCostArrowDownCC className="text-rb-blue-default" />
+                      <IconGasCostArrowDownCC className="text-r-blue-default" />
                     </span>
                   </div>
                 ) : (
