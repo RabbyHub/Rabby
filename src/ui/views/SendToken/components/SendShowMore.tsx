@@ -18,7 +18,7 @@ export const ShowMoreOnSend = ({
   const [showGasFeeError, setShowGasFeeError] = useState(false);
 
   return (
-    <div className="mx-0" style={{ marginTop: -12 }}>
+    <div className="mx-0">
       {/* <div className="flex items-center justify-center gap-8 mb-8">
         <div
           className={clsx(
@@ -41,13 +41,14 @@ export const ShowMoreOnSend = ({
         </div>
       </div> */}
 
-      <div className={clsx('overflow-hidden', !open && 'h-0')}>
+      <div className={clsx(!open && 'h-0')}>
         <DirectSignGasInfo
           supportDirectSign
           loading={false}
           openShowMore={setShowGasFeeError}
           chainServeId={chainServeId}
           noQuote={false}
+          type="send"
         />
       </div>
 
@@ -60,6 +61,7 @@ export const ShowMoreOnSend = ({
               openShowMore={noop}
               chainServeId={chainServeId}
               noQuote={false}
+              type="send"
             />
           ) : null}
         </>
