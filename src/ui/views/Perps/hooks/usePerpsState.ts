@@ -169,7 +169,7 @@ export const usePerpsState = ({
         console.warn('handle action agent is expired, logout');
         message.error({
           // className: 'toast-message-2025-center',
-          duration: 2,
+          duration: 1.5,
           content: 'Agent is expired, please login again',
         });
         dispatch.perps.setAccountNeedApproveAgent(true);
@@ -185,7 +185,7 @@ export const usePerpsState = ({
       } catch (error) {
         message.error({
           // className: 'toast-message-2025-center',
-          duration: 2,
+          duration: 1.5,
           content: error.message || 'Delete agent failed',
         });
       }
@@ -680,7 +680,7 @@ export const usePerpsState = ({
       console.error('Failed to login Perps account:', error);
       message.error({
         // className: 'toast-message-2025-center',
-        duration: 2,
+        duration: 1.5,
         content: error.message || 'Login failed',
       });
       Sentry.captureException(
@@ -748,7 +748,7 @@ export const usePerpsState = ({
         console.error('Failed to withdraw:', error);
         message.error({
           // className: 'toast-message-2025-center',
-          duration: 2,
+          duration: 1.5,
           content: error.message || 'Withdraw failed',
         });
         Sentry.captureException(

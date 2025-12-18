@@ -277,7 +277,7 @@ export const Perps: React.FC = () => {
           const { totalSz, avgPx } = filled;
           message.success({
             // className: 'toast-message-2025-center',
-            duration: 2,
+            duration: 1.5,
             content: t('page.perps.toast.closePositionSuccess', {
               direction,
               coin,
@@ -289,7 +289,7 @@ export const Perps: React.FC = () => {
           const msg = res?.response?.data?.statuses[0]?.error;
           message.error({
             // className: 'toast-message-2025-center',
-            duration: 2,
+            duration: 1.5,
             content: msg || 'close position error',
           });
           Sentry.captureException(
@@ -311,7 +311,7 @@ export const Perps: React.FC = () => {
         console.error('close position error', e);
         message.error({
           // className: 'toast-message-2025-center',
-          duration: 2,
+          duration: 1.5,
           content: e?.message || 'close position error',
         });
         Sentry.captureException(
@@ -346,7 +346,7 @@ export const Perps: React.FC = () => {
       console.error('close all position error', error);
       message.error({
         // className: 'toast-message-2025-center',
-        duration: 2,
+        duration: 1.5,
         content: error?.message || 'close all position error',
       });
       Sentry.captureException(

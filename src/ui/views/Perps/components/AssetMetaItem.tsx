@@ -57,7 +57,7 @@ export const AssetItem: React.FC<{
         </div>
       </div>
       <div className="text-right">
-        <div className="text-15 font-bold  text-r-neutral-title-1 mb-2">
+        <div className="text-15 font-medium text-r-neutral-title-1 mb-2">
           ${splitNumberByStep(item.markPx)}
         </div>
         <div
