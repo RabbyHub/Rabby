@@ -14,7 +14,7 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useEventListener, useRequest } from 'ahooks';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM, EVENTS, KEYRING_CLASS } from 'consts';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -23,6 +23,7 @@ import IconMetamask from 'ui/assets/metamask-mode-circle.svg';
 import { FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
 import { WaitingSignMessageComponent } from '../map';
+import eventBus from '@/eventBus';
 
 interface ConnectProps {
   params: any;
@@ -123,6 +124,19 @@ export const PerpsInviteContent = (props: ConnectProps) => {
       if (!resp) {
         throw new Error('Prepare set referrer failed');
       }
+
+      if (selectedAccount.type === KEYRING_CLASS.HARDWARE.TREZOR) {
+        const promise = wallet.signPerpsSendSetReferrer({
+          address: selectedAccount.address,
+          action: resp?.action,
+          nonce: resp?.nonce || 0,
+          typedData: resp?.typedData,
+        });
+        eventBus.emit(EVENTS.RELOAD_APPROVAL);
+        await promise;
+        return true;
+      }
+
       let signature = '';
       if (supportedDirectSign(selectedAccount.type)) {
         typedDataSignatureStore.close();
@@ -187,10 +201,10 @@ export const PerpsInviteContent = (props: ConnectProps) => {
       },
       onError(e) {
         console.error('activate invite failed', e);
-        message.error(t('page.perps.invitePopup.activateFailed'));
-        setTimeout(() => {
-          handleClose();
-        }, 3_000);
+        message.error(e?.message || t('page.perps.invitePopup.activateFailed'));
+        // setTimeout(() => {
+        //   handleClose();
+        // }, 3_000);
       },
     }
   );
