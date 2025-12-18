@@ -132,7 +132,7 @@ export function AddressInfoTo({
             className={clsx(
               'h-[58px] w-[100%] flex items-center justify-between p-[16px] ',
               isDarkTheme ? 'bg-r-neutral-card1' : 'bg-r-neutral-bg1',
-              'cursor-pointer border-[1px] border-transparent hover:border-rabby-blue-default hover:bg-r-blue-light1 rounded-[8px]'
+              'cursor-pointer border-[1px] border-transparent hover:border-rabby-blue-default rounded-[8px] group'
             )}
             onClick={onClick}
           >
@@ -229,7 +229,7 @@ export function AddressInfoTo({
                     </div>
                   </Tooltip>
                 ) : (
-                  <span className="text-[16px] font-medium leading-[20px] text-r-neutral-foot">
+                  <span className="text-[16px] font-medium leading-[20px] text-r-neutral-foot group-hover:text-rabby-blue-default">
                     {t('page.sendToken.sectionTo.placeholder')}
                   </span>
                 )}

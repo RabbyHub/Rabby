@@ -630,7 +630,10 @@ export const DirectSignGasInfo = ({
 
   return (
     <>
-      <ListItem name={<>{'Gas fee'}</>} className="mt-12">
+      <ListItem
+        name={<>{'Gas fee'}</>}
+        className={clsx(type !== 'send' && 'mt-12')}
+      >
         {showGasContent ? (
           <>
             <ShowMoreGasSelectModal
@@ -658,7 +661,7 @@ export const DirectSignGasInfo = ({
                       className={clsx(
                         'gas-level-text',
                         'rounded-[4px] height-[24px] bg-rb-brand-light-1 px-[6px] py-[2px]',
-                        'text-[12px] font-[500] leading-[16px]'
+                        'text-[12px] text-rb-brand-default font-[500] leading-[16px]'
                       )}
                     >
                       {ctx?.selectedGas?.level
@@ -669,9 +672,9 @@ export const DirectSignGasInfo = ({
                     <span
                       className={clsx(
                         'gas-cost-text',
+                        'inline-flex items-center gap-[4px] ml-[8px]',
                         'text-rb-blue-default',
-                        'text-[14px] font-[700] leading-[18px]',
-                        'inline-flex items-center gap-[4px]'
+                        'text-[14px] font-[700] leading-[18px]'
                       )}
                     >
                       {gasCostUsd}
