@@ -121,7 +121,9 @@
           "setting": "设置",
           "dapps": "Dapps",
           "searchDapp": "搜索 Dapp",
-          "settings": "设置"
+          "settings": "设置",
+          "perpsPositions_one": "{{count}} 头寸",
+          "perpsPositions_other": "{{count}} 头寸"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -1125,7 +1127,8 @@
         "desc": "从您已安装的钱包中选择"
       },
       "otherWalletBtn": "连接其他钱包",
-      "connectAddress": "连接地址\n"
+      "connectAddress": "连接地址\n",
+      "connected": "已连接"
     },
     "gasTopUp": {
       "Amount": "数量",
@@ -3011,7 +3014,8 @@
       "singleCoin": {
         "openInterestTips": "该合约上所有用户的总未平仓头寸。",
         "fundingPaymentsTips": "这是自仓位开启以来的净资金费用。资金费用是交易者每小时支付或接收的费用，用以保持永续合约的价格接近代币的实际价格。",
-        "fundingTips": "这是一项交易者支付或接收的小时费用，用以保持永续合约的价格接近实际代币的价格。如果为正值，做多方支付做空方。如果为负值，做空方支付做多方。"
+        "fundingTips": "这是一项交易者支付或接收的小时费用，用以保持永续合约的价格接近实际代币的价格。如果为正值，做多方支付做空方。如果为负值，做空方支付做多方。",
+        "fundingGainsTips": "这是自开仓以来的净资金收益。资金费率是交易者为保持永续合约价格接近代币的实际价格而支付或获得的每小时费用。"
       },
       "accountSelector": {
         "activatedAddress": "已激活",
@@ -3133,7 +3137,10 @@
         "subTitle": "实时清算距离 (%)",
         "currentPrice": "当前价格",
         "liquidationDistance": "清算距离",
-        "liquidationDistanceTips": "清算距离 (%) 显示当前价格与您的清算价格之间的距离。更大的距离表示更安全的头寸，而更小的距离则意味着更高的清算风险。"
+        "liquidationDistanceTips": "清算距离 (%) 显示当前价格与您的清算价格之间的距离。更大的距离表示更安全的头寸，而更小的距离则意味着更高的清算风险。",
+        "distanceLabel": "清算距离",
+        "liqDistanceTipsShort": "上涨 <1>{{distance}}</1> 将触发强制平仓。",
+        "liqDistanceTipsLong": "下跌 <1>{{distance}}</1> 将触发强制平仓。"
       },
       "searchPerpsPopup": {
         "searchPlaceholder": "搜索永续合约",
@@ -3145,7 +3152,19 @@
         "onePosition": "1 头寸"
       },
       "position": "头寸",
-      "closeAll": "关闭所有"
+      "closeAll": "关闭所有",
+      "invitePopup": {
+        "activateNow": "立即激活",
+        "title": "在 Hyperliquid 上节省费用",
+        "hyperliquidFee": "Hyperliquid 交易手续费。",
+        "activatedSuccess": "4% Hyperliquid 手续费优惠已激活",
+        "description": "使用 Rabby 的代码启用",
+        "activateFailed": "失败"
+      },
+      "add": "添加",
+      "fundingGains": "资金收益",
+      "close": "关闭",
+      "fundingRate": "资金费率"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3258,7 +3277,8 @@
         "tokens": "代币",
         "approvals": "授权",
         "transactions": "交易",
-        "difi": "Defi"
+        "difi": "Defi",
+        "defi": "去中心化金融"
       },
       "nft": {
         "message": {
@@ -3314,7 +3334,7 @@
           "platformFee": "Opensea 平台费用 ({{fee}}%)",
           "rabbyFee": "Rabby 费用 (0%)",
           "editListing": "编辑列表",
-          "creatorFeeTips": "",
+          "creatorFeeTips": "创作者收益将由卖方支付。",
           "approveAndList": "批准并列出",
           "listOn": "在 OpenSea 上列出",
           "platformFeeTips": "此费用是OpenSea的服务费",
@@ -3330,7 +3350,7 @@
           "platformFeeTips": "这笔费用是 OpenSea 的服务费用",
           "quantity": "数量",
           "creatorFee": "创作者费用 ({{fee}}%)",
-          "creatorFeeTips": "",
+          "creatorFeeTips": "创作者收入将由卖方支付。",
           "platformFee": "Opensea 平台费用 ({{fee}}%)",
           "title": "接受报价",
           "floorDifference": "地板差异",
@@ -3365,7 +3385,9 @@
         "stopLossWhenPriceAbove": "当价格高于时止损",
         "sizeTips": "您的交易的总价值或数量，根据保证金和杠杆设置。",
         "leverage": "杠杆",
-        "takeProfitWhenPriceBelow": "当价格低于时获利了结"
+        "takeProfitWhenPriceBelow": "当价格低于时获利了结",
+        "maxMargin": "最大保证金为 {{amount}}",
+        "minMargin": "最小保证金为 {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "margin": "保证金",
@@ -3383,7 +3405,10 @@
         "reduceMargin": "减少保证金",
         "perpsBalance": "永续合约余额",
         "amountToAdd": "增加金额",
-        "reduceMarginSuccess": "保证金减少成功"
+        "reduceMarginSuccess": "保证金减少成功",
+        "upto": "最多",
+        "upTo": "多达",
+        "liqDistance": "Liq. 距离"
       },
       "PerpsClosePositionPopup": {
         "confirm": "确认",
@@ -3422,7 +3447,16 @@
         "stopLossTipsLongLiquidation": "价格低于清算价格 ({{price}})",
         "stopLossTipsLong": "止损价格必须低于当前价格",
         "stopLossTipsShortLiquidation": "价格高于清算价 ({{price}})"
-      }
+      },
+      "PerpsAddPositionPopup": {
+        "totalSize": "总规模",
+        "addSize": "添加规模",
+        "addToShort": "添加至做空",
+        "addToLong": "加入做多",
+        "sizeTips": "您交易的总价值或数量由保证金和杠杆设置。",
+        "liquidationPriceTips": "在您的保证金跌至维持保证金水平以下时，交易所自动平仓以防止进一步损失的价格。"
+      },
+      "needDepositFirst": "您需要先存入资金。"
     }
   },
   "component": {
@@ -3615,13 +3649,15 @@
       "selectAccount": "选择地址"
     },
     "ChainItem": {
-      "appChain": "在 {{chain}} 账户"
+      "appChain": "在 {{chain}} 账户",
+      "hyperliquidCode": "使用Rabby的推荐码在Hyperliquid上节省手续费。"
     },
     "RiskTip": {
       "title": "风险已检测"
     },
     "DappActions": {
-      "queueDescription": "当前提款将进入等待队列。一旦处理完成，可以提取到您的钱包。"
+      "queueDescription": "当前提款将进入等待队列。一旦处理完成，可以提取到您的钱包。",
+      "manage": "管理"
     },
     "DesktopChainSelector": {
       "allChains": "所有链"

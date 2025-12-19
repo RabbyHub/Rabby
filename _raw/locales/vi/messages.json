@@ -1215,7 +1215,9 @@
           "searchDapp": "Tìm kiếm Dapp",
           "setting": "Cài đặt",
           "dapps": "Dapps",
-          "settings": "Cài đặt"
+          "settings": "Cài đặt",
+          "perpsPositions_other": "{{count}} Vị trí",
+          "perpsPositions_one": "{{count}} Vị trí"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -2063,7 +2065,8 @@
       "trusted": "Đáng tin cậy",
       "markRuleText": "Dấu của tôi",
       "removedFromAll": "Đã loại bỏ khỏi tất cả danh sách",
-      "connectAddress": "Kết nối địa chỉ\n"
+      "connectAddress": "Kết nối địa chỉ\n",
+      "connected": "Kết nối"
     },
     "addressDetail": {
       "backup-private-key": "Sao lưu Private Key",
@@ -2970,7 +2973,8 @@
       "singleCoin": {
         "openInterestTips": "Tổng vị thế chưa thanh toán của tất cả người dùng trên hợp đồng này.",
         "fundingPaymentsTips": "Đây là khoản thanh toán tài trợ ròng kể từ khi vị thế được mở. Tài trợ là một khoản phí theo giờ mà các nhà giao dịch phải trả hoặc nhận để giữ cho giá của hợp đồng perp gần với giá thực tế của token.",
-        "fundingTips": "Đây là một khoản phí theo giờ mà các trader phải trả hoặc nhận để giữ cho giá của hợp đồng perp gần với giá thực tế của token. Nếu dương, long sẽ trả cho short. Nếu âm, short sẽ trả cho long."
+        "fundingTips": "Đây là một khoản phí theo giờ mà các trader phải trả hoặc nhận để giữ cho giá của hợp đồng perp gần với giá thực tế của token. Nếu dương, long sẽ trả cho short. Nếu âm, short sẽ trả cho long.",
+        "fundingGainsTips": "Đây là lợi nhuận tài trợ ròng kể từ khi vị thế được mở. Tài trợ là một khoản phí mỗi giờ mà các nhà giao dịch phải trả hoặc nhận để giữ cho giá của hợp đồng perp gần với giá thực tế của token."
       },
       "accountSelector": {
         "hyperliquidBalance": "Số dư Perps",
@@ -3092,7 +3096,10 @@
         "liquidationDistance": "Khoảng cách Thanh lý",
         "subTitle": "Khoảng cách thanh lý theo thời gian thực (%)",
         "currentPrice": "Giá Hiện Tại",
-        "liquidationDistanceTips": "Khoảng Cách Thanh Lý (%) cho thấy giá hiện tại cách giá thanh lý của bạn bao xa. Khoảng cách lớn hơn thể hiện vị thế an toàn hơn, trong khi khoảng cách nhỏ hơn có nghĩa là rủi ro thanh lý cao hơn."
+        "liquidationDistanceTips": "Khoảng Cách Thanh Lý (%) cho thấy giá hiện tại cách giá thanh lý của bạn bao xa. Khoảng cách lớn hơn thể hiện vị thế an toàn hơn, trong khi khoảng cách nhỏ hơn có nghĩa là rủi ro thanh lý cao hơn.",
+        "distanceLabel": "Khoảng cách thanh lý",
+        "liqDistanceTipsShort": "Đi lên <1>{{distance}}</1> sẽ kích hoạt thanh lý.",
+        "liqDistanceTipsLong": "Đi xuống <1>{{distance}}</1> sẽ kích hoạt thanh lý."
       },
       "searchPerpsPopup": {
         "searchPerps": "Tìm kiếm Perps",
@@ -3104,7 +3111,19 @@
         "openPosition": "Mở Vị Trí"
       },
       "position": "Vị thế",
-      "closeAll": "Đóng tất cả"
+      "closeAll": "Đóng tất cả",
+      "invitePopup": {
+        "activateFailed": "Thất bại",
+        "activateNow": "Kích hoạt ngay bây giờ",
+        "description": "Sử dụng mã của Rabby để kích hoạt",
+        "title": "Tiết kiệm phí trên Hyperliquid",
+        "activatedSuccess": "Kích hoạt tiết kiệm phí Hyperliquid 4%",
+        "hyperliquidFee": "Phí giao dịch Hyperliquid."
+      },
+      "close": "Đóng",
+      "add": "Thêm",
+      "fundingRate": "Tỷ lệ funding",
+      "fundingGains": "Lợi nhuận từ Funding"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3217,7 +3236,8 @@
         "tokens": "Tokens",
         "transactions": "Giao dịch",
         "approvals": "Phê duyệt",
-        "difi": "Defi"
+        "difi": "Defi",
+        "defi": "DeFi"
       },
       "nft": {
         "message": {
@@ -3324,7 +3344,9 @@
         "minimumOrderSize": "Kích thước đơn đặt hàng tối thiểu là $10",
         "insufficientBalance": "Số dư không đủ",
         "sizeTips": "Giá trị hoặc số lượng tổng của giao dịch của bạn, được thiết lập bởi ký quỹ và đòn bẩy.",
-        "providerFee": "Phí Hyperliquid"
+        "providerFee": "Phí Hyperliquid",
+        "maxMargin": "Số tiền ký quỹ tối đa là {{amount}}",
+        "minMargin": "Tỷ lệ ký quỹ tối thiểu là {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "title": "Điều chỉnh Biên độ",
@@ -3342,7 +3364,10 @@
         "amountToReduce": "Số lượng để Giảm",
         "reduceMarginTooltip": "Không đủ ký quỹ để giảm vị thế.",
         "reduceMarginSuccess": "Biên độ đã được giảm thành công",
-        "addMarginSuccess": "Bỏ cọc đã được thêm thành công"
+        "addMarginSuccess": "Bỏ cọc đã được thêm thành công",
+        "upto": "Lên đến",
+        "upTo": "Lên đến",
+        "liqDistance": "Khoảng cách thanh lý"
       },
       "PerpsClosePositionPopup": {
         "total": "Tổng cộng",
@@ -3381,7 +3406,16 @@
         "stopLossTipsLongLiquidation": "Giá thấp hơn giá thanh lý ({{price}})",
         "stopLossTipsShort": "Giá dừng lỗ phải cao hơn giá hiện tại.",
         "stopLossTipsShortLiquidation": "Giá cao hơn giá thanh lý ({{price}})"
-      }
+      },
+      "PerpsAddPositionPopup": {
+        "addSize": "Thêm Kích Thước",
+        "totalSize": "Tổng Kích Thước",
+        "addToLong": "Thêm vào Long",
+        "addToShort": "Thêm vào Short",
+        "sizeTips": "Giá trị hoặc số lượng tổng của giao dịch của bạn, được thiết lập bởi ký quỹ và đòn bẩy.",
+        "liquidationPriceTips": "Giá mà vị thế của bạn sẽ tự động bị đóng bởi sàn giao dịch để ngăn chặn tổn thất thêm khi ký quỹ của bạn giảm xuống dưới mức ký quỹ duy trì."
+      },
+      "needDepositFirst": "Bạn cần phải gửi tiền trước."
     }
   },
   "component": {
@@ -3574,13 +3608,15 @@
       "selectAccount": "Chọn Địa chỉ"
     },
     "ChainItem": {
-      "appChain": "Trên tài khoản {{chain}}"
+      "appChain": "Trên tài khoản {{chain}}",
+      "hyperliquidCode": "Tiết kiệm phí Hyperliquid với mã giới thiệu của Rabby."
     },
     "RiskTip": {
       "title": "Rủi ro được phát hiện"
     },
     "DappActions": {
-      "queueDescription": "Rút tiền hiện tại sẽ vào hàng chờ. Khi được xử lý, nó có thể được rút về ví của bạn."
+      "queueDescription": "Rút tiền hiện tại sẽ vào hàng chờ. Khi được xử lý, nó có thể được rút về ví của bạn.",
+      "manage": "Quản lý"
     },
     "DesktopChainSelector": {
       "allChains": "Tất cả các chuỗi"

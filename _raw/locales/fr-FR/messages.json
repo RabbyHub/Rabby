@@ -236,13 +236,15 @@
       "selectAccount": "Sélectionner l'adresse"
     },
     "ChainItem": {
-      "appChain": "Sur le compte {{chain}}"
+      "appChain": "Sur le compte {{chain}}",
+      "hyperliquidCode": "Économisez sur les frais Hyperliquid avec le code de parrainage de Rabby."
     },
     "RiskTip": {
       "title": "Risque détecté"
     },
     "DappActions": {
-      "queueDescription": "Le retrait actuel sera mis dans une file d'attente. Une fois traité, il pourra être retiré vers votre wallet."
+      "queueDescription": "Le retrait actuel sera mis dans une file d'attente. Une fois traité, il pourra être retiré vers votre wallet.",
+      "manage": "Gérer"
     },
     "DesktopChainSelector": {
       "allChains": "Toutes les chaînes"
@@ -640,7 +642,8 @@
         "desc": "Choisissez parmi les portefeuilles que vous avez installés"
       },
       "otherWalletBtn": "Connect with Another Wallet",
-      "connectAddress": "Connect Address"
+      "connectAddress": "Connect Address",
+      "connected": "Connecté"
     },
     "createPassword": {
       "agree": "J'ai lu et j'accepte les<1/> <2>Conditions d'utilisation</2>",
@@ -839,7 +842,9 @@
           "setting": "Paramètres",
           "dapps": "Dapps",
           "searchDapp": "Rechercher Dapp",
-          "settings": "Paramètres"
+          "settings": "Paramètres",
+          "perpsPositions_one": "{{count}} Position",
+          "perpsPositions_other": "{{count}} Positions"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",
@@ -3284,7 +3289,8 @@
       "singleCoin": {
         "openInterestTips": "Le total des positions ouvertes de tous les utilisateurs sur ce contrat.",
         "fundingTips": "Ceci est un frais horaire que les traders paient ou reçoivent pour maintenir le prix du contrat perp proche du prix réel du token. S'il est positif, le long paie le short. S'il est négatif, le short paie le long.",
-        "fundingPaymentsTips": "Ceci est le montant net des paiements de financement depuis l'ouverture de la position. Le financement est un frais horaire que les traders paient ou reçoivent pour maintenir le prix du contrat perp près du prix réel du token."
+        "fundingPaymentsTips": "Ceci est le montant net des paiements de financement depuis l'ouverture de la position. Le financement est un frais horaire que les traders paient ou reçoivent pour maintenir le prix du contrat perp près du prix réel du token.",
+        "fundingGainsTips": "Ceci est le gain net de financement depuis l'ouverture de la position. Le financement est un frais horaire que les traders paient ou reçoivent pour maintenir le prix du contrat perp proche du prix réel du token."
       },
       "accountSelector": {
         "notActivatedAddress": "Non activé",
@@ -3406,7 +3412,10 @@
         "title": "Niveau de risque",
         "subTitle": "Distance de liquidation en temps réel (%)",
         "liquidationPrice": "Prix de liquidation",
-        "liquidationDistanceTips": "La distance de liquidation (%) indique à quelle distance le prix actuel se situe de votre prix de liquidation. Une distance plus grande indique une position plus sûre, tandis qu'une distance plus petite signifie un risque de liquidation plus élevé."
+        "liquidationDistanceTips": "La distance de liquidation (%) indique à quelle distance le prix actuel se situe de votre prix de liquidation. Une distance plus grande indique une position plus sûre, tandis qu'une distance plus petite signifie un risque de liquidation plus élevé.",
+        "distanceLabel": "Distance de liquidation",
+        "liqDistanceTipsShort": "Monter de <1>{{distance}}</1> déclenchera une liquidation.",
+        "liqDistanceTipsLong": "Une baisse de <1>{{distance}}</1> déclenchera la liquidation."
       },
       "searchPerpsPopup": {
         "searchPosition": "Rechercher une position",
@@ -3418,7 +3427,19 @@
         "searchPerps": "Rechercher des Perps"
       },
       "position": "Position",
-      "closeAll": "Fermer tout"
+      "closeAll": "Fermer tout",
+      "invitePopup": {
+        "activateNow": "Activez maintenant",
+        "title": "Économisez sur les frais Hyperliquid",
+        "activateFailed": "Échoué",
+        "hyperliquidFee": "Frais de trading Hyperliquid.",
+        "description": "Utilisez le code de Rabby pour activer",
+        "activatedSuccess": "4 % d'économies de frais Hyperliquid activées"
+      },
+      "fundingGains": "Gains de Financement",
+      "fundingRate": "Taux de financement",
+      "close": "Fermer",
+      "add": "Ajouter"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3531,7 +3552,8 @@
         "transactions": "Transactions",
         "tokens": "Jetons",
         "approvals": "Approbations",
-        "difi": "Defi"
+        "difi": "Defi",
+        "defi": "DeFi"
       },
       "nft": {
         "message": {
@@ -3638,7 +3660,9 @@
         "stopLossWhenPriceAbove": "Stop Loss Lorsque le Prix est Supérieur",
         "takeProfitWhenPriceBelow": "Prendre Profit Quand le Prix Est En Dessous",
         "maximumOrderSize": "La taille maximale de l'ordre est {{amount}}",
-        "sizeTips": "La valeur ou la quantité totale de votre trade, déterminée par la marge et l'effet de levier."
+        "sizeTips": "La valeur ou la quantité totale de votre trade, déterminée par la marge et l'effet de levier.",
+        "maxMargin": "La marge maximale est {{amount}}",
+        "minMargin": "La marge minimale est de {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "perpsBalance": "Solde Perps",
@@ -3656,7 +3680,10 @@
         "reduceMarginTooltip": "Marge insuffisante pour réduire la position.",
         "insufficientBalance": "Solde insuffisant",
         "reduceMargin": "Réduire la marge",
-        "reduceMarginSuccess": "Marge réduite avec succès"
+        "reduceMarginSuccess": "Marge réduite avec succès",
+        "upTo": "Jusqu'à",
+        "liqDistance": "Distance de Liq.",
+        "upto": "Jusqu'à"
       },
       "PerpsClosePositionPopup": {
         "total": "Total",
@@ -3695,7 +3722,16 @@
         "stopLossTipsLongLiquidation": "Le prix est inférieur au prix de liquidation ({{price}})",
         "stopLossTipsLong": "Le prix de stop-loss doit être inférieur au prix actuel.",
         "stopLossTipsShortLiquidation": "Le prix est supérieur au prix de liquidation ({{price}})"
-      }
+      },
+      "PerpsAddPositionPopup": {
+        "addToShort": "Ajouter à Short",
+        "addSize": "Ajouter la taille",
+        "addToLong": "Ajouter à Long",
+        "totalSize": "Taille Totale",
+        "liquidationPriceTips": "Le prix auquel votre position est automatiquement fermée par l'échange pour éviter d'autres pertes lorsque votre marge tombe en dessous du niveau de marge de maintenance.",
+        "sizeTips": "La valeur totale ou la quantité de votre trade, définie par la marge et l'effet de levier."
+      },
+      "needDepositFirst": "Vous devez d'abord déposer des fonds."
     }
   }
 }

@@ -1215,7 +1215,9 @@
           "dapps": "Dapps",
           "setting": "설정",
           "searchDapp": "Dapp 검색",
-          "settings": "설정"
+          "settings": "설정",
+          "perpsPositions_one": "{{count}} 포지션",
+          "perpsPositions_other": "{{count}} 포지션"
         },
         "queue": {
           "count": "{{count}} 에서",
@@ -2063,7 +2065,8 @@
       "addedToWhitelist": "화이트리스트에 추가됨",
       "removedFromAll": "모든 목록에서 제거됨",
       "title": "Dapp에 연결하기",
-      "connectAddress": "연결 주소\n"
+      "connectAddress": "연결 주소\n",
+      "connected": "연결됨"
     },
     "addressDetail": {
       "address-detail": "주소 세부정보",
@@ -2970,7 +2973,8 @@
       "singleCoin": {
         "openInterestTips": "이 계약에서 모든 사용자의 총 미결 포지션입니다.",
         "fundingPaymentsTips": "이것은 포지션이 열릴 때부터의 순 펀딩 지급액입니다. 펀딩은 트레이더가 영구 계약의 가격을 실제 토큰 가격에 가깝게 유지하기 위해 지불하거나 받는 시간당 수수료입니다.",
-        "fundingTips": "이것은 거래자들이 perp 계약의 가격을 토큰의 실제 가격에 가깝게 유지하기 위해 지불하거나 수령하는 시간당 수수료입니다. 긍정적일 경우, 롱은 숏에게 지급합니다. 부정적일 경우, 숏은 롱에게 지급합니다."
+        "fundingTips": "이것은 거래자들이 perp 계약의 가격을 토큰의 실제 가격에 가깝게 유지하기 위해 지불하거나 수령하는 시간당 수수료입니다. 긍정적일 경우, 롱은 숏에게 지급합니다. 부정적일 경우, 숏은 롱에게 지급합니다.",
+        "fundingGainsTips": "이는 포지션이 열릴 때부터의 순 자금 조달 이득입니다. 자금 조달은 트레이더가 영구 계약의 가격을 실제 토큰 가격에 가깝게 유지하기 위해 지불하거나 받는 시간당 수수료입니다."
       },
       "accountSelector": {
         "activatedAddress": "활성화됨",
@@ -3092,7 +3096,10 @@
         "title": "위험 수준",
         "subTitle": "실시간 청산 거리 (%)",
         "liquidationPrice": "청산 가격",
-        "liquidationDistanceTips": "청산 거리 (%)는 현재 가격이 청산 가격에서 얼마나 멀리 떨어져 있는지를 보여줍니다. 큰 거리는 더 안전한 포지션을 나타내고, 작은 거리는 더 높은 청산 위험을 의미합니다."
+        "liquidationDistanceTips": "청산 거리 (%)는 현재 가격이 청산 가격에서 얼마나 멀리 떨어져 있는지를 보여줍니다. 큰 거리는 더 안전한 포지션을 나타내고, 작은 거리는 더 높은 청산 위험을 의미합니다.",
+        "distanceLabel": "청산 거리",
+        "liqDistanceTipsShort": "상승 <1>{{distance}}</1> 는 청산을 촉발합니다.",
+        "liqDistanceTipsLong": "<1>{{distance}}</1> 만큼 떨어지면 청산이 시작됩니다."
       },
       "searchPerpsPopup": {
         "empty": "시장 없음",
@@ -3104,7 +3111,19 @@
         "hasPosition": "포지션"
       },
       "closeAll": "모두 닫기",
-      "position": "포지션"
+      "position": "포지션",
+      "invitePopup": {
+        "activateFailed": "실패했습니다",
+        "activateNow": "지금 활성화하세요",
+        "description": "Rabby의 코드를 사용하여 활성화하세요.",
+        "hyperliquidFee": "하이퍼리퀴드 거래 수수료.",
+        "activatedSuccess": "4% Hyperliquid 수수료 절약 활성화됨",
+        "title": "Hyperliquid 수수료 절약하기"
+      },
+      "add": "추가",
+      "close": "닫기",
+      "fundingRate": "펀딩 비율",
+      "fundingGains": "펀딩 수익"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3217,7 +3236,8 @@
         "approvals": "승인",
         "transactions": "거래",
         "tokens": "토큰",
-        "difi": "Defi"
+        "difi": "Defi",
+        "defi": "디파이"
       },
       "nft": {
         "message": {
@@ -3324,7 +3344,9 @@
         "rabbyFee": "Rabby 수수료",
         "takeProfitWhenPriceAbove": "가격이 상승할 때 이익 실현",
         "sizeTips": "거래의 총 가치 또는 수량으로, 마진 및 레버리지에 의해 설정됩니다.",
-        "maximumOrderSize": "최대 주문 크기는 {{amount}}입니다."
+        "maximumOrderSize": "최대 주문 크기는 {{amount}}입니다.",
+        "minMargin": "최소 마진은 {{amount}}입니다.",
+        "maxMargin": "최대 마진은 {{amount}}입니다."
       },
       "PerpsEditMarginPopup": {
         "margin": "마진",
@@ -3342,7 +3364,10 @@
         "reduceMarginTooltip": "포지션을 줄이기에 충분한 마진이 아닙니다.",
         "liqPrice": "Liq. 가격",
         "reduceMargin": "마진 축소",
-        "reduceMarginSuccess": "마진이 성공적으로 감소되었습니다."
+        "reduceMarginSuccess": "마진이 성공적으로 감소되었습니다.",
+        "upto": "최대",
+        "upTo": "최대",
+        "liqDistance": "Liq. 거리"
       },
       "PerpsClosePositionPopup": {
         "fee": "수수료",
@@ -3381,7 +3406,16 @@
         "stopLossTipsLongLiquidation": "가격이 청산가( {{price}} )보다 낮습니다.",
         "cancel": "취소",
         "takeProfit": "이익 실현"
-      }
+      },
+      "PerpsAddPositionPopup": {
+        "addToShort": "Short 추가",
+        "totalSize": "총 크기",
+        "addToLong": "Long 추가",
+        "addSize": "크기 추가",
+        "sizeTips": "거래의 총 가치 또는 수량으로, 마진 및 레버리지에 의해 설정됩니다.",
+        "liquidationPriceTips": "마진이 유지 마진 수준 이하로 떨어질 때, 추가 손실을 방지하기 위해 거래소가 자동으로 포지션을 종료하는 가격입니다."
+      },
+      "needDepositFirst": "먼저 자금을 입금해야 합니다."
     }
   },
   "component": {
@@ -3574,13 +3608,15 @@
       "selectAccount": "주소 선택"
     },
     "ChainItem": {
-      "appChain": "{{chain}} 계정에서"
+      "appChain": "{{chain}} 계정에서",
+      "hyperliquidCode": "Rabby의 추천 코드를 사용하여 Hyperliquid 수수료를 절약하세요."
     },
     "RiskTip": {
       "title": "위험 감지됨"
     },
     "DappActions": {
-      "queueDescription": "현재 인출은 대기 열에 들어갑니다. 처리되면 귀하의 지갑으로 인출할 수 있습니다."
+      "queueDescription": "현재 인출은 대기 열에 들어갑니다. 처리되면 귀하의 지갑으로 인출할 수 있습니다.",
+      "manage": "관리하다"
     },
     "DesktopChainSelector": {
       "allChains": "모든 체인"

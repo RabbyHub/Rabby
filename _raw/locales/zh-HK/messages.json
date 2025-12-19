@@ -121,7 +121,9 @@
           "searchDapp": "搜索 Dapp",
           "setting": "設定",
           "dapps": "Dapps",
-          "settings": "設置"
+          "settings": "設置",
+          "perpsPositions_other": "{{count}} 位置",
+          "perpsPositions_one": "{{count}} 头寸"
         },
         "comingSoon": "即將推出",
         "soon": "很快",
@@ -1125,7 +1127,8 @@
         "title": "選擇一個錢包來連接"
       },
       "otherWalletBtn": "連接其他錢包",
-      "connectAddress": "連接地址\n"
+      "connectAddress": "連接地址\n",
+      "connected": "已連接"
     },
     "gasTopUp": {
       "Amount": "數量",
@@ -3011,7 +3014,8 @@
       "singleCoin": {
         "openInterestTips": "所有用户在该合约上的总未平仓头寸。",
         "fundingTips": "這是交易者為了保持永續合約價格接近日幣價格而支付或接收的每小時費用。如果為正，做多支付做空。如果為負，做空支付做多。",
-        "fundingPaymentsTips": "這是自持倉開倉以來的淨資金支付。資金是交易者為了將永續合約的價格保持接近代幣的實際價格而支付或收到的每小時費用。"
+        "fundingPaymentsTips": "這是自持倉開倉以來的淨資金支付。資金是交易者為了將永續合約的價格保持接近代幣的實際價格而支付或收到的每小時費用。",
+        "fundingGainsTips": "這是自該頭寸開立以來的淨資金收益。資金是交易者為了保持永續合約價格接近代幣實際價格而每小時支付或接收的費用。"
       },
       "accountSelector": {
         "noPosition": "無頭寸",
@@ -3133,7 +3137,10 @@
         "title": "風險水平",
         "liquidationDistance": "清算距离",
         "subTitle": "實時平倉距離 (%)",
-        "liquidationDistanceTips": "清算距離 (%) 顯示當前價格距離您的清算價格有多遠。較大的距離表示更安全的持倉，而較小的距離則意味著較高的清算風險。"
+        "liquidationDistanceTips": "清算距離 (%) 顯示當前價格距離您的清算價格有多遠。較大的距離表示更安全的持倉，而較小的距離則意味著較高的清算風險。",
+        "liqDistanceTipsLong": "下跌 <1>{{distance}}</1> 将触发清算。",
+        "distanceLabel": "清算距离",
+        "liqDistanceTipsShort": "上升 <1>{{distance}}</1> 将触发清算。"
       },
       "searchPerpsPopup": {
         "openPosition": "開倉",
@@ -3145,7 +3152,19 @@
         "hasPosition": "持仓"
       },
       "closeAll": "關閉所有",
-      "position": "持倉"
+      "position": "持倉",
+      "invitePopup": {
+        "activateFailed": "失敗",
+        "activateNow": "立即激活",
+        "description": "使用 Rabby 的代码来启用",
+        "hyperliquidFee": "Hyperliquid 交易手續費。",
+        "activatedSuccess": "4% Hyperliquid 費用節省已啟動",
+        "title": "節省 Hyperliquid 費用"
+      },
+      "add": "添加",
+      "fundingRate": "資金費率",
+      "close": "關閉",
+      "fundingGains": "資金收益"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3258,7 +3277,8 @@
         "approvals": "批准",
         "transactions": "交易",
         "tokens": "代幣",
-        "difi": "Defi"
+        "difi": "Defi",
+        "defi": "去中心化金融"
       },
       "nft": {
         "message": {
@@ -3365,7 +3385,9 @@
         "minimumOrderSize": "最低订单金额为 $10",
         "providerFee": "Hyperliquid 費用",
         "stopLossWhenPriceBelow": "價格低於時停止損失",
-        "sizeTips": "您的交易的总价值或数量，由保证金和杠杆设定。"
+        "sizeTips": "您的交易的总价值或数量，由保证金和杠杆设定。",
+        "minMargin": "最小保证金为 {{amount}}",
+        "maxMargin": "最大保证金为 {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "available": "可用",
@@ -3383,7 +3405,10 @@
         "reduceMargin": "減少保證金",
         "reduceMarginTooltip": "減少持倉的邊際不足。",
         "addMarginSuccess": "保證金添加成功",
-        "reduceMarginSuccess": "保证金减少成功"
+        "reduceMarginSuccess": "保证金减少成功",
+        "upto": "高达",
+        "upTo": "最多",
+        "liqDistance": "流动性距离"
       },
       "PerpsClosePositionPopup": {
         "title": "平仓",
@@ -3422,7 +3447,16 @@
         "stopLossTipsLongLiquidation": "價格低於清算價格 ({{price}})",
         "stopLossTipsShort": "止损价格必须高于当前价格",
         "stopLossTipsShortLiquidation": "價格高於清算價格 ({{price}})"
-      }
+      },
+      "PerpsAddPositionPopup": {
+        "totalSize": "總規模",
+        "addToShort": "添加至做空",
+        "sizeTips": "您交易的总价值或数量，由保证金和杠杆设置。",
+        "addSize": "添加尺寸",
+        "addToLong": "加入做多",
+        "liquidationPriceTips": "当您的保证金低于维持保证金水平时，交易所会自动以该价格平仓以防止进一步亏损。"
+      },
+      "needDepositFirst": "您需要先存入资金。"
     }
   },
   "component": {
@@ -3615,13 +3649,15 @@
       "selectAccount": "選擇地址"
     },
     "ChainItem": {
-      "appChain": "在 {{chain}} 帐戶"
+      "appChain": "在 {{chain}} 帐戶",
+      "hyperliquidCode": "使用 Rabby 的推荐代码可节省 Hyperliquid 费用。"
     },
     "RiskTip": {
       "title": "風險檢測到"
     },
     "DappActions": {
-      "queueDescription": "當前提取將進入等待隊列。一旦處理完成，可以提取到您的錢包。"
+      "queueDescription": "當前提取將進入等待隊列。一旦處理完成，可以提取到您的錢包。",
+      "manage": "管理"
     },
     "DesktopChainSelector": {
       "allChains": "所有鏈"
