@@ -141,6 +141,8 @@ export const usePerpsProInitial = () => {
 
     const initIsLogin = async () => {
       try {
+        await dispatch.perps.fetchMarketData(undefined);
+
         const noLoginAction = async () => {
           wallet.setPerpsCurrentAccount(null);
           dispatch.perps.fetchPerpPermission('');
@@ -189,7 +191,6 @@ export const usePerpsProInitial = () => {
         setTimeout(() => {
           safeCheckBuilderFee();
         }, 200);
-        await dispatch.perps.fetchMarketData(undefined);
 
         checkIsNeedAutoLoginOut(
           currentAccount.address,

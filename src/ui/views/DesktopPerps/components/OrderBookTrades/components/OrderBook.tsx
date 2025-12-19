@@ -8,7 +8,7 @@ import { Select } from 'antd';
 import { ReactComponent as RcIconBuySell } from '@/ui/assets/perps/icon-buy-sell.svg';
 import { ReactComponent as RcIconBuy } from '@/ui/assets/perps/icon-buy.svg';
 import { ReactComponent as RcIconSell } from '@/ui/assets/perps/icon-sell.svg';
-
+import { Trade } from '../index';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
 
@@ -28,7 +28,9 @@ interface OrderBookLevel {
   total: number;
 }
 
-export const OrderBook: React.FC = () => {
+export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
+  latestTradePrice,
+}) => {
   const { t } = useTranslation();
   const { selectedCoin, marketDataMap, wsActiveAssetCtx } = useRabbySelector(
     (state) => state.perps
@@ -214,7 +216,7 @@ export const OrderBook: React.FC = () => {
           <span
             className={clsx(
               'font-medium min-w-[80px] text-left hover:font-bold cursor-pointer',
-              type === 'bid' ? 'text-r-green-default' : 'text-r-red-default'
+              type === 'bid' ? 'text-rb-green-default' : 'text-rb-red-default'
             )}
             onClick={() => handleClickPrice(order.price)}
           >
@@ -359,24 +361,24 @@ export const OrderBook: React.FC = () => {
           </div>
         )}
         <div className="flex items-center justify-between px-[12px] h-40">
-          <div className="flex items-center gap-[8px]">
+          <div className="flex items-center gap-[6px]">
             <span
               className={clsx(
                 'text-[20px] font-bold',
-                isPositive ? 'text-r-green-default' : 'text-r-red-default'
+                isPositive ? 'text-rb-green-default' : 'text-rb-red-default'
               )}
             >
               {splitNumberByStep(midPx)}
             </span>
-            <span
-              className={clsx(
-                'text-[14px]',
-                isPositive ? 'text-r-green-default' : 'text-r-red-default'
-              )}
-            >
-              {isPositive ? '+' : ''}
-              {priceChangePercent.toFixed(2)}%
-            </span>
+            {Boolean(latestTradePrice) && (
+              <span
+                className={clsx(
+                  'text-[16px] text-rb-neutral-secondary font-medium'
+                )}
+              >
+                {splitNumberByStep(latestTradePrice)}
+              </span>
+            )}
           </div>
         </div>
         {(viewMode === 'Both' || viewMode === 'Bids') && (

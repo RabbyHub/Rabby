@@ -12,6 +12,7 @@ import { StatusBar } from './components/StatusBar';
 import { RightAccountBar } from './components/RightAccountBar';
 import './resizable-panels.css';
 import usePerpsProState from './hooks/usePerpsProState';
+import './index.less';
 
 const Wrap = styled.div`
   width: 100%;
@@ -48,19 +49,10 @@ export const DesktopPerps: React.FC = () => {
 
     judgeIsUserAgentIsExpired,
   } = usePerpsProState({});
-  const balance = 355.65;
-  const changePercent = null;
-  const isLoss = false;
-  const isLoading = false;
 
   return (
     <Wrap>
-      <TopNavBar
-        balance={balance}
-        changePercent={changePercent}
-        isLoss={isLoss}
-        isLoading={isLoading}
-      />
+      <TopNavBar />
 
       <div className="flex flex-1 overflow-hidden px-16 h-[1300px]">
         <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] h-[1300px] overflow-hidden">

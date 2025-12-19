@@ -271,6 +271,10 @@ export const perps = createModel<RootModel>()({
     },
 
     updateMarketData(state, payload: AssetCtx[]) {
+      if (payload.length === 0 || state.marketData.length === 0) {
+        return;
+      }
+
       const list = payload || [];
       const newMarketData = state.marketData.map((item) => {
         return {
