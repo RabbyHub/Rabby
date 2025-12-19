@@ -713,6 +713,7 @@ export const BridgeContent = () => {
         <div className="mx-20 mt-20">
           {selectedBridgeQuote && (
             <BridgeShowMore
+              insufficient={inSufficient}
               supportDirectSign={canUseDirectSubmitTx}
               openFeePopup={openFeePopup}
               open={showMoreOpen}

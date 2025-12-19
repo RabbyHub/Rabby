@@ -899,6 +899,7 @@ export const Main = () => {
         {isShowMoreVisible && (
           <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
             <BridgeShowMore
+              insufficient={inSufficient}
               supportDirectSign={canUseDirectSubmitTx}
               autoSuggestSlippage={autoSuggestSlippage}
               openFeePopup={openFeePopup}
