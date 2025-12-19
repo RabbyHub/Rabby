@@ -9,6 +9,7 @@ import { EVENTS, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { sendSignTypedData } from '@/ui/utils/sendTypedData';
 import { SignatureSteps } from '../services';
 import eventBus from '@/eventBus';
+import { isLedgerLockError } from '@/ui/utils/ledger';
 
 type Subscriber = (state: TypedDataSignatureState) => void;
 
@@ -200,12 +201,14 @@ class TypedDataSignatureManager {
         txs.length - 1,
         Math.max(startIndex, this.state.progress?.current || startIndex)
       );
-      this.setState({
-        status: 'error',
-        request,
-        error: message,
-        progress: { current: this.resumeIndex, total: txs.length },
-      });
+      if (!isLedgerLockError(message)) {
+        this.setState({
+          status: 'error',
+          request,
+          error: message,
+          progress: { current: this.resumeIndex, total: txs.length },
+        });
+      }
     }
   }
 
