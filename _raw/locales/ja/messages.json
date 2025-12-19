@@ -1124,7 +1124,9 @@
           "dapps": "Dapps",
           "setting": "設定",
           "searchDapp": "Dappを検索",
-          "settings": "設定"
+          "settings": "設定",
+          "perpsPositions_other": "{{count}} ポジション",
+          "perpsPositions_one": "{{count}} ポジション"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -1974,7 +1976,8 @@
         "title": "ウォレットを選んで接続してください"
       },
       "otherWalletBtn": "別のウォレットに接続",
-      "connectAddress": "接続アドレス"
+      "connectAddress": "接続アドレス",
+      "connected": "接続済み"
     },
     "addressDetail": {
       "add-to-whitelist": "ホワイトリストに追加",
@@ -2973,7 +2976,8 @@
       "singleCoin": {
         "openInterestTips": "この契約における全ユーザーの総未決済ポジション。",
         "fundingPaymentsTips": "これはポジションがオープンしてからのネット資金決済です。ファンディングは、トレーダーが永続契約の価格をトークンの実際の価格に近づけるために支払ったり受け取ったりする時間単位の手数料です。",
-        "fundingTips": "これは、トレーダーが永続契約の価格をトークンの実際の価格に近づけるために支払うか受け取る時間ごとの手数料です。ポジティブな場合、ロングはショートに支払います。ネガティブな場合、ショートはロングに支払います。"
+        "fundingTips": "これは、トレーダーが永続契約の価格をトークンの実際の価格に近づけるために支払うか受け取る時間ごとの手数料です。ポジティブな場合、ロングはショートに支払います。ネガティブな場合、ショートはロングに支払います。",
+        "fundingGainsTips": "これはポジションがオープンして以来のネット資金利益です。資金は、トレーダーが永続契約の価格をトークンの実際の価格に近づけるために支払ったり受け取ったりする毎時の手数料です。"
       },
       "accountSelector": {
         "notActivatedAddress": "未アクティブ",
@@ -3095,7 +3099,10 @@
         "subTitle": "リアルタイム清算距離（％）",
         "liquidationDistance": "清算距離",
         "title": "リスクレベル",
-        "liquidationDistanceTips": "清算距離 (%) は現在の価格が清算価格からどれだけ離れているかを示します。距離が大きいほどポジションは安全ですが、距離が小さいほど清算リスクが高くなります。"
+        "liquidationDistanceTips": "清算距離 (%) は現在の価格が清算価格からどれだけ離れているかを示します。距離が大きいほどポジションは安全ですが、距離が小さいほど清算リスクが高くなります。",
+        "distanceLabel": "清算距離",
+        "liqDistanceTipsLong": "<1>{{distance}}</1> 下がると清算が発動します。",
+        "liqDistanceTipsShort": "{{distance}}の上昇は、清算を引き起こします。"
       },
       "searchPerpsPopup": {
         "onePosition": "1 ポジション",
@@ -3107,7 +3114,19 @@
         "openPosition": "ポジションを開く"
       },
       "position": "ポジション",
-      "closeAll": "すべて閉じる"
+      "closeAll": "すべて閉じる",
+      "invitePopup": {
+        "hyperliquidFee": "Hyperliquid トレーディング手数料。",
+        "description": "Rabbyのコードを使用して有効にします",
+        "activateFailed": "失敗しました",
+        "activateNow": "今すぐアクティブ化",
+        "title": "ハイパーリキッド手数料を節約する",
+        "activatedSuccess": "4% ハイパーリキッド手数料節約が有効化されました"
+      },
+      "fundingGains": "ファンディング利益",
+      "close": "閉じる",
+      "add": "追加",
+      "fundingRate": "資金調達率"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3220,7 +3239,8 @@
         "transactions": "取引",
         "tokens": "トークン",
         "approvals": "承認",
-        "difi": "Defi"
+        "difi": "Defi",
+        "defi": "DeFi"
       },
       "nft": {
         "message": {
@@ -3327,7 +3347,9 @@
         "minimumOrderSize": "最小注文サイズは$10です。",
         "stopLossWhenPriceBelow": "価格が以下のときにストップロス",
         "takeProfitWhenPriceBelow": "価格が下回ったときに利益を確定する",
-        "rabbyFee": "Rabby手数料"
+        "rabbyFee": "Rabby手数料",
+        "minMargin": "最小マージンは{{amount}}です",
+        "maxMargin": "最大マージンは{{amount}}です"
       },
       "PerpsEditMarginPopup": {
         "available": "利用可能",
@@ -3345,7 +3367,10 @@
         "reduceMarginTooltip": "ポジションを減少させるのに十分なマージンがありません。",
         "reduceMarginSuccess": "マージンが正常に削減されました",
         "insufficientBalance": "残高不足",
-        "addMarginSuccess": "マージンが正常に追加されました"
+        "addMarginSuccess": "マージンが正常に追加されました",
+        "upTo": "最大で",
+        "upto": "最大で",
+        "liqDistance": "Liq. 距離"
       },
       "PerpsClosePositionPopup": {
         "total": "合計",
@@ -3384,7 +3409,16 @@
         "stopLossTipsLongLiquidation": "価格は清算価格（{{price}}）よりも低くなっています。",
         "stopLossTipsShort": "ストップロス価格は現在の価格よりも高くなければなりません",
         "noPosition": "最初にマージンを入力する必要があります。"
-      }
+      },
+      "PerpsAddPositionPopup": {
+        "addToLong": "ロングに追加",
+        "totalSize": "合計サイズ",
+        "addSize": "サイズを追加",
+        "addToShort": "ショートに追加",
+        "sizeTips": "あなたの取引の総価値または数量で、マージンとレバレッジによって設定されます。",
+        "liquidationPriceTips": "維持証拠金レベルを下回ると、さらなる損失を防ぐために、取引所があなたのポジションを自動的にクローズする価格です。"
+      },
+      "needDepositFirst": "最初に資金を入金する必要があります。"
     }
   },
   "component": {
@@ -3577,13 +3611,15 @@
       "selectAccount": "アドレスを選択"
     },
     "ChainItem": {
-      "appChain": "{{chain}}アカウント"
+      "appChain": "{{chain}}アカウント",
+      "hyperliquidCode": "Rabbyの紹介コードを使ってHyperliquidの手数料を節約しましょう。"
     },
     "RiskTip": {
       "title": "リスクが検出されました"
     },
     "DappActions": {
-      "queueDescription": "現在の引き出しは待機キューに入ります。処理が完了すると、あなたのウォレットに引き出すことができます。"
+      "queueDescription": "現在の引き出しは待機キューに入ります。処理が完了すると、あなたのウォレットに引き出すことができます。",
+      "manage": "管理"
     },
     "DesktopChainSelector": {
       "allChains": "すべてのチェーン"

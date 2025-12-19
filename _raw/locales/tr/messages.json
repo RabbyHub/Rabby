@@ -1124,7 +1124,9 @@
           "setting": "Ayarlar",
           "dapps": "Dapps",
           "searchDapp": "Dapp Araştırın",
-          "settings": "Ayarlar"
+          "settings": "Ayarlar",
+          "perpsPositions_one": "{{count}} Pozisyon",
+          "perpsPositions_other": "{{count}} Pozisyonlar"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -1977,7 +1979,8 @@
         "desc": "Yüklediğiniz cüzdanlardan seçim yapın"
       },
       "otherWalletBtn": "Başka Bir Cüzdan ile Bağlan",
-      "connectAddress": "Bağlantı Adresi\n"
+      "connectAddress": "Bağlantı Adresi\n",
+      "connected": "Bağlandı"
     },
     "addressDetail": {
       "add-to-whitelist": "Beyaz Listeye Ekle",
@@ -2976,7 +2979,8 @@
       "singleCoin": {
         "openInterestTips": "Bu sözleşmedeki tüm kullanıcıların toplam açık pozisyonu.",
         "fundingTips": "Bu, tüccarların perp sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak için ödediği veya aldığı saatlik bir ücrettir. Eğer pozitifse, long short'a öder. Eğer negatifse, short long'a öder.",
-        "fundingPaymentsTips": "Bu, pozisyonun açıldığı tarihten itibaren net finansman ödemeleridir. Fonlama, türev sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak için yatırımcıların ödeyip veya aldığı saatlik bir ücrettir."
+        "fundingPaymentsTips": "Bu, pozisyonun açıldığı tarihten itibaren net finansman ödemeleridir. Fonlama, türev sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak için yatırımcıların ödeyip veya aldığı saatlik bir ücrettir.",
+        "fundingGainsTips": "Bu, pozisyon açıldığından beri elde edilen net finansman kazançlarıdır. Finansman, traderların perp sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak için ödediği veya aldığı saatlik bir ücrettir."
       },
       "accountSelector": {
         "hyperliquidBalance": "Perps Bakiyesi",
@@ -3098,7 +3102,10 @@
         "gotIt": "Anladım",
         "liquidationDistance": "Likidasyon Mesafesi",
         "subTitle": "Gerçek zamanlı likidasyon mesafesi (%)",
-        "liquidationDistanceTips": "Tasfiye Mesafesi (%) mevcut fiyatın tasfiye fiyatınızdan ne kadar uzakta olduğunu gösterir. Daha büyük bir mesafe daha güvenli bir pozisyonu belirtirken, daha küçük bir mesafe daha yüksek tasfiye riski anlamına gelir."
+        "liquidationDistanceTips": "Tasfiye Mesafesi (%) mevcut fiyatın tasfiye fiyatınızdan ne kadar uzakta olduğunu gösterir. Daha büyük bir mesafe daha güvenli bir pozisyonu belirtirken, daha küçük bir mesafe daha yüksek tasfiye riski anlamına gelir.",
+        "distanceLabel": "Tasfiye Mesafesi",
+        "liqDistanceTipsLong": "Aşağıdaki <1>{{distance}}</1> oranına inmek, likidasyon tetikleyecektir.",
+        "liqDistanceTipsShort": "Yukarı <1>{{distance}}</1> çıkmak likidasyonu tetikleyecektir."
       },
       "searchPerpsPopup": {
         "hasPosition": "Pozisyon",
@@ -3110,7 +3117,19 @@
         "searchPosition": "Pozisyon Ara"
       },
       "position": "Pozisyon",
-      "closeAll": "Tümünü Kapat"
+      "closeAll": "Tümünü Kapat",
+      "invitePopup": {
+        "hyperliquidFee": "Hyperliquid işlem ücretleri.",
+        "activateFailed": "Başarısız",
+        "title": "Hyperliquid Ücretlerinden Tasarruf Et",
+        "activateNow": "Şimdi Aktif Et",
+        "activatedSuccess": "%4 Hyperliquid ücret tasarrufu etkinleştirildi",
+        "description": "Rabby'nin kodunu etkinleştirin"
+      },
+      "close": "Kapama",
+      "add": "Ekle",
+      "fundingGains": "Finansman Kazançları",
+      "fundingRate": "Finansman Oranı"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3223,7 +3242,8 @@
         "approvals": "Onaylar",
         "tokens": "Jetonlar",
         "transactions": "İşlemler",
-        "difi": "Defi"
+        "difi": "Defi",
+        "defi": "DeFi"
       },
       "nft": {
         "message": {
@@ -3237,7 +3257,7 @@
           "listingFailed": "Listeleme Başarısız",
           "listingSuccessDesc": "{{name}}'i OpenSea'de listelediniz.",
           "cancelSuccessDesc": "Başarıyla {{name}} listesini iptal ettiniz.",
-          "acceptSuccess": "",
+          "acceptSuccess": "Başarıyla Satıldı",
           "cancelFailedDesc": "Lütfen tekrar deneyin"
         },
         "detail": {
@@ -3330,7 +3350,9 @@
         "minimumOrderSize": "Minimum sipariş büyüklüğü 10$'dır.",
         "stopLossWhenPriceAbove": "Fiyat Üstünde Stop Loss",
         "stopLossWhenPriceBelow": "Fiyat Aşağıda Olduğunda Zarar Durdur",
-        "sizeTips": "Ticaretinizin toplam değeri veya miktarı, teminat ve kaldıraç tarafından belirlenir."
+        "sizeTips": "Ticaretinizin toplam değeri veya miktarı, teminat ve kaldıraç tarafından belirlenir.",
+        "maxMargin": "Maksimum teminat {{amount}}'dır.",
+        "minMargin": "Minimum margin {{amount}}'dir."
       },
       "PerpsEditMarginPopup": {
         "title": "Marjini Ayarla",
@@ -3348,7 +3370,10 @@
         "reduceMarginTooltip": "Pozisyonu azaltmak için yetersiz marj.",
         "insufficientBalance": "Yetersiz bakiye",
         "exceedMaxReduction": "Maksimum azaltmayı aştı",
-        "reduceMarginSuccess": "Marjinal azaltma başarıyla gerçekleştirildi"
+        "reduceMarginSuccess": "Marjinal azaltma başarıyla gerçekleştirildi",
+        "upTo": "Yükselişe kadar",
+        "upto": "Yükseltilebilir",
+        "liqDistance": "Liq. Mesafe"
       },
       "PerpsClosePositionPopup": {
         "receive": "Alacak",
@@ -3387,7 +3412,16 @@
         "stopLossTipsShortLiquidation": "Fiyat likidasyon fiyatından ({{price}}) daha yüksek.",
         "stopLossTipsShort": "Stop loss fiyatı mevcut fiyatın üzerinde olmalıdır.",
         "stopLossWhenPriceBelow": "Fiyat Altında Zarar Durdur"
-      }
+      },
+      "PerpsAddPositionPopup": {
+        "addToShort": "Kısa Pozisyona Ekle",
+        "totalSize": "Toplam Boyut",
+        "addSize": "Boyut Ekle",
+        "addToLong": "Uzun Pozisyona Ekle",
+        "liquidationPriceTips": "Marjiniz bakım marj seviyesinin altına düştüğünde, pozisyonunuzun daha fazla kayıptan korunmak için borsa tarafından otomatik olarak kapandığı fiyat.",
+        "sizeTips": "Marjin ve kaldıraçla belirlenen işleminizin toplam değeri veya miktarı."
+      },
+      "needDepositFirst": "Öncelikle fon yatırmanız gerekiyor."
     }
   },
   "component": {
@@ -3580,13 +3614,15 @@
       "selectAccount": "Adres Seçin"
     },
     "ChainItem": {
-      "appChain": "{{chain}} Hesabı üzerinde"
+      "appChain": "{{chain}} Hesabı üzerinde",
+      "hyperliquidCode": "Rabby'nin referans kodu ile Hyperliquid ücretlerinden tasarruf edin."
     },
     "RiskTip": {
       "title": "Risk Tespit Edildi"
     },
     "DappActions": {
-      "queueDescription": "Mevcut çekim, bekleme kuyruğuna girecektir. İşlem tamamlandığında, cüzdanınıza çekilebilir."
+      "queueDescription": "Mevcut çekim, bekleme kuyruğuna girecektir. İşlem tamamlandığında, cüzdanınıza çekilebilir.",
+      "manage": "Yönetmek"
     },
     "DesktopChainSelector": {
       "allChains": "Tüm Zincirler"
