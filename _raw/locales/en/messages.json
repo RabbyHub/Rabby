@@ -3263,7 +3263,8 @@
         "tokens": "Tokens",
         "transactions": "Transactions",
         "approvals": "Approvals",
-        "difi": "Defi"
+        "difi": "Defi",
+        "defi": "DeFi"
       },
       "nft": {
         "all": "All",
