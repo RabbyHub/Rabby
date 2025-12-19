@@ -347,6 +347,7 @@ export const perps = createModel<RootModel>()({
     },
 
     setInitialized(state, payload: boolean) {
+      console.log('setInitialized', payload);
       return {
         ...state,
         isInitialized: payload,

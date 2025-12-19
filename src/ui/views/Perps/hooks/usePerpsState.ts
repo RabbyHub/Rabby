@@ -152,6 +152,8 @@ export const usePerpsState = ({
     accountNeedApproveBuilderFee,
   } = perpsState;
 
+  console.log('-----', isInitialized);
+
   const wallet = useWallet();
 
   const judgeIsUserAgentIsExpired = useMemoizedFn(
