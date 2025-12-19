@@ -132,7 +132,7 @@ export function AddressInfoTo({
             className={clsx(
               'h-[58px] w-[100%] flex items-center justify-between p-[16px] ',
               isDarkTheme ? 'bg-r-neutral-card1' : 'bg-r-neutral-bg1',
-              'cursor-pointer border-[1px] border-transparent hover:border-rabby-blue-default hover:bg-r-blue-light1 rounded-[8px]'
+              'cursor-pointer border-[1px] border-rabby-neutral-line hover:border-rabby-blue-default rounded-[12px] group'
             )}
             onClick={onClick}
           >
@@ -181,7 +181,7 @@ export function AddressInfoTo({
                 </div>
               </Tooltip>
 
-              <div className={clsx('flex flex-col items-center', 'ml-[8px]')}>
+              <div className={clsx('flex flex-col items-center', 'ml-[12px]')}>
                 {toAccount?.address ? (
                   <Tooltip
                     overlayClassName="address-tooltip address-tooltip-transparent rounded-tooltip"
@@ -207,7 +207,7 @@ export function AddressInfoTo({
                   >
                     <div className="flex flex-col justify-center items-start">
                       {aliasName ? (
-                        <span className="text-[14px] mb-[4px] font-medium leading-[20px] text-r-neutral-title-1">
+                        <span className="text-[16px] mb-[4px] font-bold leading-[20px] text-r-neutral-title-1">
                           {aliasName}
                         </span>
                       ) : (
@@ -215,7 +215,7 @@ export function AddressInfoTo({
                           headCount={8}
                           tailCount={4}
                           address={toAccount?.address || ''}
-                          className="text-[14px] mb-[4px]"
+                          className="text-[16px] mb-[4px] font-bold leading-[20px] text-r-neutral-title-1"
                         />
                       )}
                       <AddressViewer
@@ -223,24 +223,25 @@ export function AddressInfoTo({
                         showArrow={false}
                         longEllipsis
                         className={clsx(
-                          'text-[13px] text-r-neutral-body leading-[16px]'
+                          'text-[12px] text-r-neutral-foot font-normal leading-[16px]'
                         )}
                       />
                     </div>
                   </Tooltip>
                 ) : (
-                  <span className="text-[16px] font-medium leading-[20px] text-r-neutral-foot">
+                  <span className="text-[16px] font-medium leading-[20px] text-r-neutral-foot group-hover:text-rabby-blue-default">
                     {t('page.sendToken.sectionTo.placeholder')}
                   </span>
                 )}
               </div>
             </div>
 
-            {toAccount ? (
+            {/* {toAccount ? (
               <RcToSwitch width={24} height={24} />
             ) : (
-              <RcIconAddressEntry width={24} height={24} />
-            )}
+              <RcIconAddressEntry width={20} height={20} />
+            )} */}
+            <RcIconAddressEntry width={20} height={20} />
           </div>
         </div>
       </div>

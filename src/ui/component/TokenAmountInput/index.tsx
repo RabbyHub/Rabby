@@ -24,7 +24,7 @@ import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import TokenWithChain from '../TokenWithChain';
 import './style.less';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
-import { MaxButton } from '@/ui/views/SendToken/components/MaxButton';
+import { SendMaxButton } from '@/ui/views/SendToken/components/MaxButton';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
 import { ReactComponent as RcArrowDown } from './icons/arrow-down.svg';
@@ -409,7 +409,7 @@ const TokenAmountInput = ({
               <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
               <span
                 className={clsx(
-                  'truncate max-w-[90px] text-[13px] font-normal'
+                  'truncate max-w-[90px] text-[13px] font-normal text-r-neutral-foot'
                 )}
                 title={balanceNumText}
               >
@@ -418,9 +418,9 @@ const TokenAmountInput = ({
             </div>
           )}
           {token && token.amount > 0 && !isLoading && (
-            <MaxButton onClick={handleClickMaxButton}>
+            <SendMaxButton onClick={handleClickMaxButton}>
               {t('page.sendToken.max')}
-            </MaxButton>
+            </SendMaxButton>
           )}
         </div>
       </div>

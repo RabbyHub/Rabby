@@ -389,7 +389,7 @@ const SelectToAddress = () => {
                 <span
                   className={clsx(
                     focusTab === 'imported'
-                      ? 'text-r-neutral-title1 font-bold'
+                      ? 'text-r-neutral-title1 font-[600]'
                       : 'text-r-neutral-foot'
                   )}
                 >
