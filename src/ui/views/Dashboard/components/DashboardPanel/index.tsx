@@ -383,7 +383,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       eventKey: 'Perps',
       iconClassName: 'icon-perps',
       subContent: isFetching ? (
-        <div className="absolute bottom-[4px] text-[11px] font-medium">
+        <div className="absolute bottom-[6px] text-[11px] font-medium">
           <Skeleton.Button
             active={true}
             className="h-[10px] block rounded-[2px]"
@@ -393,7 +393,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       ) : perpsPositionInfo?.assetPositions?.length ? (
         <div
           className={clsx(
-            'absolute bottom-[4px] text-[11px] leading-[13px] font-medium text-r-blue-default'
+            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-blue-default'
           )}
         >
           {t('page.dashboard.home.panel.perpsPositions', {
@@ -403,7 +403,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       ) : +(perpsPositionInfo?.marginSummary?.accountValue || '') ? (
         <div
           className={clsx(
-            'absolute bottom-[4px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
+            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
           )}
         >
           {formatUsdValue(perpsPositionInfo?.marginSummary.accountValue || 0)}

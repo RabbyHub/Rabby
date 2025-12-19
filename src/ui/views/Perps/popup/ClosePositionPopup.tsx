@@ -137,7 +137,8 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                     {
                       percent: minClosePercent,
                     }
-                  )}
+                  )}{' '}
+                  (${PERPS_MINI_USD_VALUE})
                 </span>
               )}
             </div>
@@ -214,7 +215,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
               block
               size="large"
               type="primary"
-              className="h-[48px] text-15 font-medium bg-r-blue-default border-r-blue-default"
+              className="h-[48px] text-15 font-medium"
               onClick={closePosition}
               loading={loading}
               disabled={!isValidClosePercent}
