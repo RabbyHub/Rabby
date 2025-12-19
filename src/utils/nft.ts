@@ -103,8 +103,8 @@ export const buildCreateListingTypedData = (params: {
         itemType: tokenId.startsWith('0x') ? ItemType.ERC20 : ItemType.NATIVE,
         token: tokenId.startsWith('0x') ? tokenId : zeroAddress,
         identifierOrCriteria: '0',
-        startAmount: feeAmount.toString(),
-        endAmount: feeAmount.toString(),
+        startAmount: feeAmount.toFixed(),
+        endAmount: feeAmount.toFixed(),
         recipient: item.recipient,
       };
     }
@@ -123,15 +123,15 @@ export const buildCreateListingTypedData = (params: {
       {
         itemType: isErc721 ? ItemType.ERC721 : ItemType.ERC1155,
         identifierOrCriteria: nftId,
-        startAmount: nftAmount.toString(),
-        endAmount: nftAmount.toString(),
+        startAmount: nftAmount.toFixed(),
+        endAmount: nftAmount.toFixed(),
         token: nftContractId,
       },
     ],
     consideration: [
       {
-        startAmount: sellerAmount.toString(),
-        endAmount: sellerAmount.toString(),
+        startAmount: sellerAmount.toFixed(),
+        endAmount: sellerAmount.toFixed(),
         itemType: tokenId.startsWith('0x') ? ItemType.ERC20 : ItemType.NATIVE,
         recipient: sellerAddress,
         token: tokenId.startsWith('0x') ? tokenId : zeroAddress,

@@ -230,7 +230,7 @@ const Content: React.FC<Props> = (props) => {
                                 nftDetail?.collection?.opensea_floor_price
                                   ?.token?.price
                               )
-                              .toString()
+                              .toFixed()
                           )}
                           )
                         </>
@@ -281,7 +281,7 @@ const Content: React.FC<Props> = (props) => {
                                   nftDetail.last_sale.payment.decimals
                                 )
                               )
-                              .toString()
+                              .toFixed()
                           )}{' '}
                           {nftDetail.last_sale.payment.symbol}{' '}
                           <span className="text-r-neutral-foot font-normal">
@@ -296,7 +296,7 @@ const Content: React.FC<Props> = (props) => {
                                   )
                                 )
                                 .times(nftDetail.last_sale.payment.price)
-                                .toString()
+                                .toFixed()
                             )}
                             )
                           </span>
@@ -351,13 +351,13 @@ const Content: React.FC<Props> = (props) => {
                     <div className="space-y-[4px]">
                       <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
                         {bestOfferPrice
-                          ? formatTokenAmount(bestOfferPrice.toString())
+                          ? formatTokenAmount(bestOfferPrice.toFixed())
                           : '-'}{' '}
                         {nftDetail.best_offer_order.price.currency}
                         <span className="text-r-neutral-foot font-normal">
                           (
                           {bestOfferUsdPrice
-                            ? formatUsdValue(bestOfferUsdPrice.toString())
+                            ? formatUsdValue(bestOfferUsdPrice.toFixed())
                             : '-'}
                           )
                         </span>
@@ -469,7 +469,7 @@ const Content: React.FC<Props> = (props) => {
                             listingOffer.protocol_data?.parameters?.offer?.[0]
                               .startAmount || 1
                           )
-                          .toString()
+                          .toFixed()
                       )}{' '}
                       {listingToken?.symbol}
                     </div>
@@ -486,7 +486,7 @@ const Content: React.FC<Props> = (props) => {
                               .startAmount || 1
                           )
                           .times(listingToken.price)
-                          .toString()
+                          .toFixed()
                       )}
                     </div>
                   </>
