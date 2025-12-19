@@ -80,11 +80,11 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
             placeholder="0"
             value={value == null ? '' : value}
             onChange={handleChange}
-            onBlur={() => {
-              if ((value || 0) < min) {
-                onChange(min);
-              }
-            }}
+            // onBlur={() => {
+            //   if ((value || 0) < min) {
+            //     onChange(min);
+            //   }
+            // }}
           />
           <div
             className={clsx(

@@ -234,8 +234,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     return dayDelta >= 0;
   }, [dayDelta]);
 
-  const isValidAmount = marginValidation.isValid;
-
   const openPosition = useMemoizedFn(async () => {
     setLoading(true);
     const res = await handleOpenPosition({
@@ -417,7 +415,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         >
           <Button
             block
-            disabled={!isValidAmount}
+            disabled={
+              !marginValidation.isValid || leverageRangeValidation.error
+            }
             size="large"
             type="primary"
             className="h-[48px] text-15 font-medium"
