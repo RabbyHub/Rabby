@@ -48,6 +48,7 @@ import {
   whitelistService,
   OfflineChainsService,
   perpsService,
+  transactionsService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
@@ -124,6 +125,7 @@ async function restoreAppState() {
   await OfflineChainsService.init();
   await syncChainService.init();
   await perpsService.init();
+  await transactionsService.init();
 
   await walletController.tryUnlock();
 

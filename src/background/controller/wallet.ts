@@ -17,6 +17,7 @@ import {
   openapiService,
   pageStateCacheService,
   transactionHistoryService,
+  transactionsService,
   contactBookService,
   signTextHistoryService,
   whitelistService,
@@ -61,10 +62,11 @@ import { ERC20ABI, ERC721ABI, SeaportABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import {
-  NFTDetail,
-  BridgeHistory,
   TokenItem,
   Tx,
+  TxHistoryResult,
+  NFTDetail,
+  BridgeHistory,
   testnetOpenapiService,
 } from '../service/openapi';
 import {
@@ -1684,6 +1686,10 @@ export class WalletController extends BaseController {
   };
   clearPageStateCache = () => pageStateCacheService.clear();
   setPageStateCache = (cache: CacheState) => pageStateCacheService.set(cache);
+  getTransactionsCache = (address: string) =>
+    transactionsService.getTransactions(address);
+  updateTransactionsCache = (address: string, data: TxHistoryResult) =>
+    transactionsService.updateTransactions(address, data);
 
   getIndexByAddress = (address: string, type: string) => {
     const hasIndex = KEYRING_WITH_INDEX.includes(type as any);
