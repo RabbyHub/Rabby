@@ -107,6 +107,12 @@ class SignatureManager {
       : OTHER_GAS_USD_LIMIT;
   }
 
+  private isPreExecResultFailed() {
+    return this?.state.ctx?.txsCalc.some(
+      (r) => !r?.preExecResult?.pre_exec?.success
+    );
+  }
+
   private isGasFeeTooHighFor(
     ctx?: SignerCtx | null,
     config?: SignerConfig | null
@@ -602,6 +608,12 @@ class SignatureManager {
         this.pendingCtx.get(fingerprint) ||
         this.ensureContext(request, wallet, this.run?.id);
       await prepared;
+
+      if (this.isPreExecResultFailed()) {
+        this.rejectPending(MINI_SIGN_ERROR.PREFETCH_FAILURE);
+        return resultPromise;
+      }
+
       if (this.isGasFeeTooHighFor(this.state.ctx, this.state.config)) {
         this.rejectPending(MINI_SIGN_ERROR.GAS_FEE_TOO_HIGH);
         return resultPromise;
