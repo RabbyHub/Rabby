@@ -926,7 +926,8 @@
       "singleCoin": {
         "fundingPaymentsTips": "This is the net funding payments since the position was opened. Funding is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token.",
         "openInterestTips": "The total outstanding position of all users on this contract.",
-        "fundingTips": "This is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token. lf positive, long pays short. lf negative, short pays long."
+        "fundingTips": "This is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token. lf positive, long pays short. lf negative, short pays long.",
+        "fundingGainsTips": "This is the net funding gains since the position was opened. Funding is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token."
       },
       "liquidation": "Liquidation",
       "accountSelector": {
@@ -954,7 +955,10 @@
           "title": "Safe",
           "description": "Your position is at a safe level. The distance to liquidation price is >8%. Continue to monitor market conditions."
         },
-        "gotIt": "Got it"
+        "gotIt": "Got it",
+        "distanceLabel": "Liquidation Distance",
+        "liqDistanceTipsShort": "Going up <1>{{distance}}</1> will trigger liquidation.",
+        "liqDistanceTipsLong": "Going down <1>{{distance}}</1> will trigger liquidation."
       },
       "searchPerpsPopup": {
         "openPosition": "Open Position",
@@ -964,9 +968,21 @@
         "searchPlaceholder": "Search perps",
         "empty": "No markets found",
         "hasPosition": "Position"
-      }
+      },
+      "fundingRate": "Funding Rate",
+      "fundingGains": "Funding Gains",
+      "close": "Close",
+      "add": "Add"
     },
     "perpsDetail": {
+      "PerpsAddPositionPopup": {
+        "addToLong": "Add to Long",
+        "totalSize": "Total Size",
+        "addSize": "Add Size",
+        "addToShort": "Add to Short",
+        "liquidationPriceTips": "The price at which your position is automatically closed by the exchange to prevent further losses when your margin falls below the maintenance margin level.",
+        "sizeTips": "The total value or quantity of your trade, set by margin and leverage."
+      },
       "PerpsOpenPositionPopup": {
         "newPosition": "Open Position",
         "margin": "Margin",
@@ -986,7 +1002,9 @@
         "rabbyFee": "Rabby Fee",
         "providerFee": "Hyperliquid Fee",
         "minimumOrderSize": "The minimum order size is $10",
-        "maximumOrderSize": "The maximum order size is {{amount}}"
+        "maximumOrderSize": "The maximum order size is {{amount}}",
+        "minMargin": "Minimum margin is {{amount}}",
+        "maxMargin": "Maximum margin is {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "margin": "Margin",
@@ -998,13 +1016,16 @@
         "amountToReduce": "Amount to Reduce",
         "perpsBalance": "Perps Balance",
         "available": "Available",
-        "liqPrice": "Liq. Price:",
+        "liqPrice": "Liq. Price",
         "reduceMarginTooltip": "Insufficient margin to reduce position.",
         "confirm": "Confirm",
         "insufficientBalance": "Insufficient balance",
         "exceedMaxReduction": "Exceeds maximum reduction",
         "addMarginSuccess": "Margin added successfully",
-        "reduceMarginSuccess": "Margin reduced successfully"
+        "reduceMarginSuccess": "Margin reduced successfully",
+        "upto": "Up to",
+        "upTo": "Up to",
+        "liqDistance": "Liq. Distance"
       },
       "PerpsClosePositionPopup": {
         "title": "Close Position",
@@ -3580,7 +3601,10 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."

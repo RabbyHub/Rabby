@@ -3329,7 +3329,7 @@
       "PerpsEditMarginPopup": {
         "available": "Disponível",
         "margin": "Margem",
-        "liqPrice": "Preço de Liquidez:",
+        "liqPrice": "Preço de Liquidez",
         "reduceMargin": "Reduzir Margem",
         "currentPrice": "Preço Atual",
         "addMargin": "Adicionar Margem",

@@ -50,7 +50,7 @@ export const PositionItem: React.FC<{
   const absPnlPct = Math.abs(Number(returnOnEquity));
   const pnlText = `${isUp ? '+' : '-'}$${splitNumberByStep(
     absPnlUsd.toFixed(2)
-  )} (${isUp ? '+' : '-'}${formatPct(absPnlPct)})`;
+  )}`;
 
   const logoUrl = marketData?.logoUrl || '';
   const leverageText = `${leverage.value}x`;
@@ -156,22 +156,18 @@ export const PositionItem: React.FC<{
       {(hasTakeProfit || hasStopLoss) && (
         <div className="flex items-center gap-4 px-12 py-10 border-t-[0.5px] border-rabby-neutral-line">
           {hasTakeProfit && (
-            <div className="text-12 text-r-neutral-body">
+            <div className="text-[12px] leading-[16px] font-medium text-r-neutral-foot">
               {t('page.perpsDetail.PerpsAutoCloseModal.takeProfit')} :{' '}
-              <span className="text-r-neutral-title-1 font-medium">
-                ${splitNumberByStep(tpPrice)}
-              </span>
+              <span>${splitNumberByStep(tpPrice)}</span>
             </div>
           )}
           {hasTakeProfit && hasStopLoss && (
             <span className="text-12 text-r-neutral-foot">|</span>
           )}
           {hasStopLoss && (
-            <div className="text-12 text-r-neutral-body">
+            <div className="text-[12px] leading-[16px] font-medium text-r-neutral-foot">
               {t('page.perpsDetail.PerpsAutoCloseModal.stopLoss')} :{' '}
-              <span className="text-r-neutral-title-1 font-medium">
-                ${splitNumberByStep(slPrice)}
-              </span>
+              <span>${splitNumberByStep(slPrice)}</span>
             </div>
           )}
         </div>

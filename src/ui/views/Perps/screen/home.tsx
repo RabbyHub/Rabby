@@ -69,24 +69,18 @@ export const Perps: React.FC = () => {
     currentPerpsAccount,
     isLogin,
     marketData,
-    userFills,
     marketDataMap,
     isInitialized,
     logout,
     login,
     handleWithdraw,
-    homeHistoryList,
     hasPermission,
     localLoadingHistory,
-    miniSignTypeData,
-    clearMiniSignTypeData,
-    handleMiniSignResolve,
-    handleMiniSignReject,
 
     handleDeleteAgent,
-    perpFee,
 
     judgeIsUserAgentIsExpired,
+    handleActionApproveStatus,
   } = usePerpsState({
     setDeleteAgentModalVisible,
   });
@@ -221,6 +215,41 @@ export const Perps: React.FC = () => {
     return sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
   }, [marketData]);
 
+  // Calculate real-time popup data based on selected coin
+  const riskPopupData = useMemo(() => {
+    if (!riskPopupCoin) {
+      return null;
+    }
+
+    const selectedPosition = positionAndOpenOrders?.find(
+      (item) => item.position.coin === riskPopupCoin
+    );
+    if (!selectedPosition) {
+      return null;
+    }
+
+    const marketDataItem = marketDataMap[riskPopupCoin];
+    const markPrice = Number(marketDataItem?.markPx || 0);
+    const liquidationPrice = Number(
+      selectedPosition.position.liquidationPx || 0
+    );
+
+    // const distanceLiquidation = calculateDistanceToLiquidation(
+    //   selectedPosition.position.liquidationPx,
+    //   marketDataItem?.markPx
+    // );
+    return {
+      // distanceLiquidation,
+      direction:
+        Number(selectedPosition.position.szi || 0) > 0
+          ? 'Long'
+          : ('Short' as 'Long' | 'Short'),
+      currentPrice: markPrice,
+      pxDecimals: marketDataItem?.pxDecimals || 2,
+      liquidationPrice,
+    };
+  }, [riskPopupCoin, positionAndOpenOrders, marketDataMap]);
+
   const handleClosePosition = useMemoizedFn(
     async (params: {
       coin: string;
@@ -244,7 +273,8 @@ export const Perps: React.FC = () => {
           // dispatch.perps.fetchClearinghouseState();
           const { totalSz, avgPx } = filled;
           message.success({
-            className: 'toast-message-2025-center',
+            // className: 'toast-message-2025-center',
+            duration: 2,
             content: t('page.perps.toast.closePositionSuccess', {
               direction,
               coin,
@@ -255,7 +285,8 @@ export const Perps: React.FC = () => {
         } else {
           const msg = res?.response?.data?.statuses[0]?.error;
           message.error({
-            className: 'toast-message-2025-center',
+            // className: 'toast-message-2025-center',
+            duration: 2,
             content: msg || 'close position error',
           });
           Sentry.captureException(
@@ -276,7 +307,8 @@ export const Perps: React.FC = () => {
         }
         console.error('close position error', e);
         message.error({
-          className: 'toast-message-2025-center',
+          // className: 'toast-message-2025-center',
+          duration: 2,
           content: e?.message || 'close position error',
         });
         Sentry.captureException(
@@ -295,6 +327,7 @@ export const Perps: React.FC = () => {
 
   const handleCloseAllPosition = useMemoizedFn(async () => {
     try {
+      await handleActionApproveStatus();
       const sdk = getPerpsSDK();
       for (const item of positionAndOpenOrders) {
         await handleClosePosition({
@@ -309,7 +342,8 @@ export const Perps: React.FC = () => {
     } catch (error) {
       console.error('close all position error', error);
       message.error({
-        className: 'toast-message-2025-center',
+        // className: 'toast-message-2025-center',
+        duration: 2,
         content: error?.message || 'close all position error',
       });
       Sentry.captureException(
@@ -528,7 +562,9 @@ export const Perps: React.FC = () => {
                       setClosePositionVisible(true);
                     }}
                     handleNavigate={() => {
-                      history.push(`/perps/single-coin/${asset.position.coin}`);
+                      history.push(
+                        `/perps/single-coin/${asset.position.coin}?openPosition=true`
+                      );
                     }}
                     onShowRiskPopup={(coin) => {
                       setRiskPopupCoin(coin);
@@ -555,7 +591,9 @@ export const Perps: React.FC = () => {
                   key={item.name}
                   item={item}
                   onClick={() => {
-                    history.push(`/perps/single-coin/${item.name}`);
+                    history.push(
+                      `/perps/single-coin/${item.name}?openPosition=true`
+                    );
                   }}
                   hasPosition={positionCoinSet.has(item.name)}
                 />
@@ -621,20 +659,18 @@ export const Perps: React.FC = () => {
         handleDeposit={handleDeposit}
         handleWithdraw={handleWithdraw}
         clearMiniSignTx={clearMiniSignTx}
-        clearMiniSignTypeData={clearMiniSignTypeData}
         updateMiniSignTx={updateMiniSignTx}
         accountValue={accountSummary?.accountValue || '0'}
         availableBalance={accountSummary?.withdrawable || '0'}
         onClose={() => {
           setAmountVisible(false);
           clearMiniSignTx();
-          clearMiniSignTypeData();
           setIsPreparingSign(false);
         }}
         handleSignDepositDirect={handleSignDepositDirect}
       />
 
-      {Boolean(miniSignTypeData.data.length) && (
+      {/* {Boolean(miniSignTypeData.data.length) && (
         <MiniTypedDataApproval
           txs={miniSignTypeData.data}
           account={miniSignTypeData.account || undefined}
@@ -660,7 +696,7 @@ export const Perps: React.FC = () => {
           directSubmit
           canUseDirectSubmitTx
         />
-      )}
+      )} */}
 
       <NewUserProcessPopup
         visible={newUserProcessVisible}
@@ -685,7 +721,7 @@ export const Perps: React.FC = () => {
         marketData={marketData}
         positionAndOpenOrders={positionAndOpenOrders}
         onSelect={(coin) => {
-          history.push(`/perps/single-coin/${coin}`);
+          history.push(`/perps/single-coin/${coin}?openPosition=true`);
         }}
         openFromSource={openFromSource}
       />
@@ -698,16 +734,12 @@ export const Perps: React.FC = () => {
         onConfirm={handleDeleteAgent}
       />
 
-      {riskPopupCoin && (
+      {riskPopupCoin && riskPopupData && (
         <RiskLevelPopup
           visible={riskPopupVisible}
-          pxDecimals={Number(
-            marketDataMap[riskPopupCoin.toUpperCase()]?.pxDecimals || 2
-          )}
-          liquidationPrice={Number(
-            positionAndOpenOrders.find((p) => p.position.coin === riskPopupCoin)
-              ?.position.liquidationPx || 0
-          )}
+          direction={riskPopupData.direction}
+          pxDecimals={riskPopupData?.pxDecimals || 2}
+          liquidationPrice={riskPopupData.liquidationPrice}
           markPrice={Number(
             marketDataMap[riskPopupCoin.toUpperCase()]?.markPx || 0
           )}

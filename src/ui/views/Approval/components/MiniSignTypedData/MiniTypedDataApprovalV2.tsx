@@ -203,7 +203,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
         placement="bottom"
         height="fit-content"
         className="is-support-darkmode"
-        visible={status === 'signing'}
+        visible={showPopup}
         onClose={handleClose}
         maskClosable={false}
         closable={false}
@@ -222,7 +222,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
       >
         <MiniFooterBar
           // directSubmit={directSubmit}
-          directSubmit
+          directSubmit={config?.mode !== 'UI'}
           hasShadow={false}
           origin={INTERNAL_REQUEST_SESSION.origin}
           originLogo={INTERNAL_REQUEST_SESSION.icon}

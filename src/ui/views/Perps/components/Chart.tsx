@@ -19,7 +19,11 @@ import {
 } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-import { CANDLE_MENU_KEY } from '../constants';
+import {
+  CANDLE_MENU_KEY,
+  CANDLE_MENU_KEY_V2,
+  CandlePeriod,
+} from '../constants';
 import clsx from 'clsx';
 import { MarketData } from '@/ui/models/perps';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +35,7 @@ import { splitNumberByStep } from '@/ui/utils';
 
 export type ChartProps = {
   coin: string;
-  candleMenuKey: CANDLE_MENU_KEY;
+  candleMenuKey: CANDLE_MENU_KEY_V2;
   lineTagInfo: {
     tpPrice: number;
     slPrice: number;
@@ -60,22 +64,22 @@ const containerStyle: React.CSSProperties = {
   position: 'relative',
 };
 
-const getInterval = (candleMenuKey: CANDLE_MENU_KEY): string => {
+const getInterval = (candleMenuKey: CANDLE_MENU_KEY_V2) => {
   switch (candleMenuKey) {
-    case CANDLE_MENU_KEY.ONE_HOUR:
-      return '1m';
-    case CANDLE_MENU_KEY.ONE_DAY:
-      return '1h';
-    case CANDLE_MENU_KEY.ONE_WEEK:
-      return '4h';
-    case CANDLE_MENU_KEY.ONE_MONTH:
-      return '12h';
-    case CANDLE_MENU_KEY.YTD:
-      return '1d';
-    case CANDLE_MENU_KEY.ALL:
-      return '1d';
+    case CANDLE_MENU_KEY_V2.FIVE_MINUTES:
+      return CandlePeriod.FIVE_MINUTES;
+    case CANDLE_MENU_KEY_V2.FIFTEEN_MINUTES:
+      return CandlePeriod.FIFTEEN_MINUTES;
+    case CANDLE_MENU_KEY_V2.ONE_HOUR:
+      return CandlePeriod.ONE_HOUR;
+    case CANDLE_MENU_KEY_V2.FOUR_HOURS:
+      return CandlePeriod.FOUR_HOURS;
+    case CANDLE_MENU_KEY_V2.ONE_DAY:
+      return CandlePeriod.ONE_DAY;
+    case CANDLE_MENU_KEY_V2.ONE_WEEK:
+      return CandlePeriod.ONE_WEEK;
     default:
-      return '1d';
+      return CandlePeriod.FIVE_MINUTES;
   }
 };
 
@@ -190,7 +194,7 @@ const getThemeColors = (isDark: boolean) =>
 
 const LightweightKlineChart: React.FC<ChartProps> = ({
   coin = 'ETH',
-  candleMenuKey = CANDLE_MENU_KEY.ONE_DAY,
+  candleMenuKey = CANDLE_MENU_KEY_V2.ONE_DAY,
   lineTagInfo,
   pxDecimals,
   onHoverData,
@@ -417,23 +421,23 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       const interval = getInterval(candleMenuKey);
 
       switch (candleMenuKey) {
-        case CANDLE_MENU_KEY.ONE_HOUR:
-          start = end - 1 * 60 * 60 * 1000;
+        case CANDLE_MENU_KEY_V2.FIVE_MINUTES:
+          start = end - 1 * 24 * 60 * 60 * 1000; // 1 day
           break;
-        case CANDLE_MENU_KEY.ONE_DAY:
-          start = end - 1 * 24 * 60 * 60 * 1000;
+        case CANDLE_MENU_KEY_V2.FIFTEEN_MINUTES:
+          start = end - 7 * 24 * 60 * 60 * 1000; // 1 week
           break;
-        case CANDLE_MENU_KEY.ONE_WEEK:
-          start = end - 1 * 7 * 24 * 60 * 60 * 1000;
+        case CANDLE_MENU_KEY_V2.ONE_HOUR:
+          start = end - 1 * 30 * 24 * 60 * 60 * 1000; // 1 month
           break;
-        case CANDLE_MENU_KEY.ONE_MONTH:
-          start = end - 1 * 30 * 24 * 60 * 60 * 1000;
+        case CANDLE_MENU_KEY_V2.FOUR_HOURS:
+          start = end - 4 * 30 * 24 * 60 * 60 * 1000; // 4 months
           break;
-        case CANDLE_MENU_KEY.YTD:
-          start = new Date(new Date().getFullYear(), 0, 1).getTime();
+        case CANDLE_MENU_KEY_V2.ONE_DAY:
+          start = end - 12 * 30 * 24 * 60 * 60 * 1000; // 1 years;
           end = Date.now();
           break;
-        case CANDLE_MENU_KEY.ALL:
+        case CANDLE_MENU_KEY_V2.ONE_WEEK:
           start = 0;
           end = Date.now();
           break;
@@ -450,7 +454,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       const candles = parseCandles(snapshot);
       if (candles.length > 0 && seriesRef.current) {
         seriesRef.current.setData(candles);
-        chartRef.current?.timeScale().fitContent();
+        // chartRef.current?.timeScale().fitContent();
         // Update price lines after data is loaded
         updatePriceLines();
       }
@@ -548,7 +552,7 @@ export const PerpsChart = ({
   const [
     selectedInterval,
     setSelectedInterval,
-  ] = React.useState<CANDLE_MENU_KEY>(CANDLE_MENU_KEY.ONE_DAY);
+  ] = React.useState<CANDLE_MENU_KEY_V2>(CANDLE_MENU_KEY_V2.FIFTEEN_MINUTES);
 
   // 状态用于存储图表的悬停数据
   const [chartHoverData, setChartHoverData] = React.useState<ChartHoverData>({
@@ -557,31 +561,31 @@ export const PerpsChart = ({
   const CANDLE_MENU_ITEM = useMemo(
     () => [
       {
-        label: t('page.perps.candleMenuKey.oneHour'),
-        key: CANDLE_MENU_KEY.ONE_HOUR,
+        label: '5M',
+        key: CANDLE_MENU_KEY_V2.FIVE_MINUTES,
       },
       {
-        label: t('page.perps.candleMenuKey.oneDay'),
-        key: CANDLE_MENU_KEY.ONE_DAY,
+        label: '15M',
+        key: CANDLE_MENU_KEY_V2.FIFTEEN_MINUTES,
       },
       {
-        label: t('page.perps.candleMenuKey.oneWeek'),
-        key: CANDLE_MENU_KEY.ONE_WEEK,
+        label: '1H',
+        key: CANDLE_MENU_KEY_V2.ONE_HOUR,
       },
       {
-        label: t('page.perps.candleMenuKey.oneMonth'),
-        key: CANDLE_MENU_KEY.ONE_MONTH,
+        label: '4H',
+        key: CANDLE_MENU_KEY_V2.FOUR_HOURS,
       },
       {
-        label: t('page.perps.candleMenuKey.ytd'),
-        key: CANDLE_MENU_KEY.YTD,
+        label: '1D',
+        key: CANDLE_MENU_KEY_V2.ONE_DAY,
       },
       {
-        label: t('page.perps.candleMenuKey.all'),
-        key: CANDLE_MENU_KEY.ALL,
+        label: '1W',
+        key: CANDLE_MENU_KEY_V2.ONE_WEEK,
       },
     ],
-    [t]
+    []
   );
 
   const dayDelta = useMemo(() => {

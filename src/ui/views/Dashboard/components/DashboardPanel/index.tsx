@@ -53,6 +53,7 @@ import { RecentConnectionsPopup } from '../RecentConnections';
 import { useScroll, useSize } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
+import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
 
 const Container = styled.div`
   position: relative;
@@ -152,6 +153,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
+  usePerpsDefaultAccount();
   const { perpsPositionInfo, isFetching } = usePerpsHomePnl();
   // useCheckBridgePendingItem();
 

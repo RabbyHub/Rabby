@@ -7,24 +7,27 @@ import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../constants';
 import clsx from 'clsx';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 
-interface MarginInputProps {
+interface MarginEditInputProps {
   title: string;
-  availableAmount: number;
+  placeholder?: string;
   sliderDisabled?: boolean;
   margin: string;
+  minMargin: number;
+  maxMargin: number;
   onMarginChange: (value: string) => void;
   errorMessage?: string | null;
   customAvailableText?: string;
 }
 
-export const MarginInput: React.FC<MarginInputProps> = ({
+export const MarginEditInput: React.FC<MarginEditInputProps> = ({
   title,
-  availableAmount,
   sliderDisabled,
   margin,
   onMarginChange,
   errorMessage,
-  customAvailableText,
+  minMargin,
+  maxMargin,
+  placeholder,
 }) => {
   const { t } = useTranslation();
   const textColorClass =
@@ -35,7 +38,6 @@ export const MarginInput: React.FC<MarginInputProps> = ({
   // 保存 slider 的百分比值，用于在 availableAmount 改变时保持 slider 位置
   const sliderPercentageRef = React.useRef<number | null>(null);
   const isSliderChangingRef = React.useRef<boolean>(false);
-  const prevAvailableAmountRef = React.useRef<number>(availableAmount);
 
   // 当 margin 被外部重置为空时，清除 slider 百分比
   React.useEffect(() => {
@@ -43,31 +45,6 @@ export const MarginInput: React.FC<MarginInputProps> = ({
       sliderPercentageRef.current = null;
     }
   }, [margin]);
-
-  // 当 availableAmount 改变时，如果 slider 百分比已设置，重新计算 margin
-  React.useEffect(() => {
-    if (
-      sliderPercentageRef.current !== null &&
-      prevAvailableAmountRef.current !== availableAmount &&
-      !isSliderChangingRef.current
-    ) {
-      const newMargin = (availableAmount * sliderPercentageRef.current) / 100;
-      onMarginChange(Number(new BigNumber(newMargin).toFixed(6)).toString());
-    }
-    prevAvailableAmountRef.current = availableAmount;
-  }, [availableAmount, onMarginChange]);
-
-  // 计算 slider 百分比：如果 slider 百分比已设置，使用它；否则根据 margin 计算
-  const sliderPercentage = React.useMemo(() => {
-    const marginValue = Number(margin) || 0;
-    if (marginValue === 0 || availableAmount === 0) {
-      return 0;
-    }
-    if (sliderPercentageRef.current !== null) {
-      return sliderPercentageRef.current;
-    }
-    return Math.min(Math.ceil((marginValue / availableAmount) * 100), 100);
-  }, [margin, availableAmount]);
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     let value = e.target.value;
@@ -84,12 +61,7 @@ export const MarginInput: React.FC<MarginInputProps> = ({
   };
 
   const handleSliderChange = (value: number) => {
-    isSliderChangingRef.current = true;
-    sliderPercentageRef.current = value;
-    const newMargin = (availableAmount * value) / 100;
-    onMarginChange(
-      new BigNumber(newMargin).decimalPlaces(2, BigNumber.ROUND_DOWN).toFixed()
-    );
+    onMarginChange(value.toFixed(2));
   };
 
   return (
@@ -97,20 +69,28 @@ export const MarginInput: React.FC<MarginInputProps> = ({
       <div className="text-[16px] leading-[19px] font-medium text-r-blue-default">
         {title}
       </div>
-      <div className="flex items-center mb-[8px]">
-        <div className="flex items-end gap-[6px]">
-          <div className="text-[20px] leading-[24px] font-medium text-r-neutral-black">
-            {formatUsdValue(availableAmount, BigNumber.ROUND_DOWN)}
+      <div className="flex items-start mb-[8px]">
+        <div className="pt-[8px] flex flex-col items-center gap-[6px]">
+          <div
+            className={clsx(
+              'text-[14px] leading-[18px] font-bold text-rb-brand-default',
+              'px-[8px] py-[4px] rounded-[8px] bg-rb-brand-light-1',
+              'cursor-pointer'
+            )}
+            onClick={() => {
+              onMarginChange(minMargin.toString());
+            }}
+          >
+            Min
           </div>
-          <div className="text-[13px] leading-[16px] text-r-neutral-foot pb-[2px]">
-            {customAvailableText ||
-              t('page.perpsDetail.PerpsEditMarginPopup.available')}
+          <div className="text-rb-neutral-secondary text-[12px] leading-[16px] font-medium">
+            {formatUsdValue(minMargin, PERPS_MARGIN_SIGNIFICANT_DIGITS)}
           </div>
         </div>
         <input
           className={clsx(
             'flex-1',
-            'text-[32px] leading-[38px] font-bold bg-transparent border-none p-0 text-right',
+            'text-[32px] leading-[38px] font-bold bg-transparent border-none p-0 text-center',
             'w-full outline-none focus:outline-none',
             textColorClass
           )}
@@ -120,20 +100,37 @@ export const MarginInput: React.FC<MarginInputProps> = ({
             outline: 'none',
             boxShadow: 'none',
           }}
-          placeholder="$0"
+          placeholder={placeholder || '$0'}
           value={margin ? `$${margin}` : ''}
           onChange={handleChange}
         />
+        <div className="pt-[8px] flex flex-col items-center gap-[6px]">
+          <div
+            className={clsx(
+              'text-[14px] leading-[18px] font-bold text-rb-brand-default',
+              'px-[8px] py-[4px] rounded-[8px] bg-rb-brand-light-1',
+              'cursor-pointer'
+            )}
+            onClick={() => {
+              onMarginChange(maxMargin.toString());
+            }}
+          >
+            Max
+          </div>
+          <div className="text-rb-neutral-secondary text-[12px] leading-[16px] font-medium">
+            {formatUsdValue(maxMargin, PERPS_MARGIN_SIGNIFICANT_DIGITS)}
+          </div>
+        </div>
       </div>
 
       <PerpsSlider
         disabled={sliderDisabled}
-        value={sliderPercentage}
-        onAfterChange={() => {
-          isSliderChangingRef.current = false;
-        }}
+        value={Number(margin)}
         onValueChange={handleSliderChange}
         showPercentage={false}
+        min={Number(minMargin)}
+        max={maxMargin}
+        step={0.1}
       />
       {errorMessage ? (
         <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px] mt-[14px]">
