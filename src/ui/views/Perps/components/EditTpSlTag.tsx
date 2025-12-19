@@ -260,7 +260,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
           if (disableEdit) {
             message.error({
               // className: 'toast-message-2025-center',
-              duration: 2,
+              duration: 1.5,
               content: t('page.perpsDetail.PerpsAutoCloseModal.noPosition'),
             });
             return;

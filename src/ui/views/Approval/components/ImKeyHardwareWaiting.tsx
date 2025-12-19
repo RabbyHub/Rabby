@@ -48,6 +48,7 @@ interface ApprovalParams {
     message: string;
     chainId: number;
   };
+  stay?: boolean;
 }
 
 export const ImKeyHardwareWaiting = ({
@@ -274,12 +275,13 @@ export const ImKeyHardwareWaiting = ({
   //   showDueToStatusChangeRef.current = false;
   // }, [visible]);
 
+  const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        false,
+        stay,
         false,
         signFinishedData.approvalId
       );

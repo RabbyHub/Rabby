@@ -1,6 +1,6 @@
 import { KEYRING_TYPE } from '@/constant';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRequest } from 'ahooks';
 import { sortBy, uniqBy } from 'lodash';
 import { getPerpsSDK } from '../sdkManager';
@@ -11,7 +11,6 @@ export const usePerpsDefaultAccount = () => {
   const accounts = useRabbySelector(
     (state) => state.accountToDisplay.accountsList
   );
-  const hasAccounts = accounts.length > 0;
   const sdk = getPerpsSDK();
 
   return useRequest(
@@ -21,8 +20,15 @@ export const usePerpsDefaultAccount = () => {
         const currentAccount = await wallet.getPerpsCurrentAccount();
         const lastUsedAccount = await wallet.getPerpsLastUsedAccount();
         const recentlyAccount = currentAccount || lastUsedAccount;
+        const isExist =
+          recentlyAccount &&
+          accounts.find(
+            (item) =>
+              isSameAddress(item.address, recentlyAccount.address) &&
+              item.type === recentlyAccount.type
+          );
 
-        if (recentlyAccount) {
+        if (recentlyAccount && isExist) {
           dispatch.perps.setCurrentPerpsAccount(recentlyAccount);
 
           sdk.initAccount(recentlyAccount.address);
@@ -82,7 +88,7 @@ export const usePerpsDefaultAccount = () => {
       }
     },
     {
-      refreshDeps: [hasAccounts],
+      refreshDeps: [accounts.length],
     }
   );
 };

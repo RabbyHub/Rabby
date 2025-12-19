@@ -16,6 +16,7 @@ import {
 } from '@/ui/utils';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { ReactComponent as RcIconBackTopCC } from '@/ui/assets/perps/IconBackTopCC.svg';
+import perpsBg from '@/ui/assets/perps/perps-bg.svg';
 import { AssetPosition, HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
 import { Button, message, Modal } from 'antd';
 import { PerpsLoginPopup } from '../popup/LoginPopup';
@@ -55,6 +56,7 @@ import { PerpsHeaderRight } from '../components/PerpsHeaderRight';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
 import { BackToTopButton } from '../components/BackToTopButton';
+import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -81,6 +83,7 @@ export const Perps: React.FC = () => {
 
     judgeIsUserAgentIsExpired,
     handleActionApproveStatus,
+    handleSafeSetReference,
   } = usePerpsState({
     setDeleteAgentModalVisible,
   });
@@ -274,7 +277,7 @@ export const Perps: React.FC = () => {
           const { totalSz, avgPx } = filled;
           message.success({
             // className: 'toast-message-2025-center',
-            duration: 2,
+            duration: 1.5,
             content: t('page.perps.toast.closePositionSuccess', {
               direction,
               coin,
@@ -286,7 +289,7 @@ export const Perps: React.FC = () => {
           const msg = res?.response?.data?.statuses[0]?.error;
           message.error({
             // className: 'toast-message-2025-center',
-            duration: 2,
+            duration: 1.5,
             content: msg || 'close position error',
           });
           Sentry.captureException(
@@ -308,7 +311,7 @@ export const Perps: React.FC = () => {
         console.error('close position error', e);
         message.error({
           // className: 'toast-message-2025-center',
-          duration: 2,
+          duration: 1.5,
           content: e?.message || 'close position error',
         });
         Sentry.captureException(
@@ -343,7 +346,7 @@ export const Perps: React.FC = () => {
       console.error('close all position error', error);
       message.error({
         // className: 'toast-message-2025-center',
-        duration: 2,
+        duration: 1.5,
         content: error?.message || 'close all position error',
       });
       Sentry.captureException(
@@ -436,32 +439,39 @@ export const Perps: React.FC = () => {
         {t('page.perps.title')}
       </PageHeader>
       {!hasPermission ? <TopPermissionTips /> : null}
-
       <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
         {!isInitialized ? (
           <PerpsLoading />
         ) : isLogin ? (
           <div className="mx-20">
-            <div className="bg-r-neutral-card1 rounded-[12px] px-16 py-16 flex flex-col items-center">
-              <div className="text-[32px] font-bold text-r-neutral-title-1 mt-8">
-                {formatUsdValue(
-                  Number(accountSummary?.accountValue || 0),
-                  BigNumber.ROUND_DOWN
+            <div
+              className="bg-r-neutral-card1 rounded-[8px] p-[16px] "
+              style={{
+                background: `no-repeat top 16px right 16px url(${perpsBg})`,
+              }}
+            >
+              <div className="flex items-end gap-[4px]">
+                <div className="text-[28px] leading-[33px] font-bold text-r-neutral-title-1">
+                  {formatUsdValue(
+                    Number(accountSummary?.accountValue || 0),
+                    BigNumber.ROUND_DOWN
+                  )}
+                </div>
+                {Boolean(positionAndOpenOrders?.length) && (
+                  <div
+                    className={clsx(
+                      'text-[15px] leading-[18px] font-medium pb-[5px]',
+                      positionAllPnl >= 0
+                        ? 'text-r-green-default'
+                        : 'text-r-red-default'
+                    )}
+                  >
+                    {positionAllPnl >= 0 ? '+' : '-'}$
+                    {splitNumberByStep(Math.abs(positionAllPnl).toFixed(2))}
+                  </div>
                 )}
               </div>
-              {Boolean(positionAndOpenOrders?.length) && (
-                <div
-                  className={`text-15 font-medium ${
-                    positionAllPnl >= 0
-                      ? 'text-r-green-default'
-                      : 'text-r-red-default'
-                  }`}
-                >
-                  {positionAllPnl >= 0 ? '+' : '-'}$
-                  {splitNumberByStep(Math.abs(positionAllPnl).toFixed(2))}
-                </div>
-              )}
-              <div className="text-13 text-r-neutral-foot mt-10">
+              <div className="text-[13px] leading-[16px] text-r-neutral-foot mt-[4px]">
                 {t('page.perps.availableBalance', {
                   balance: formatUsdValue(
                     Number(accountSummary?.withdrawable || 0),
@@ -475,33 +485,33 @@ export const Perps: React.FC = () => {
                   visible={withdrawDisabled ? undefined : false}
                   title={t('page.gasAccount.noBalance')}
                 >
-                  <PerpsBlueBorderedButton
-                    block
-                    className={clsx(
-                      withdrawDisabled && 'opacity-50 cursor-not-allowed'
-                    )}
-                    onClick={() => {
-                      if (currentPerpsAccount) {
-                        dispatch.account.changeAccountAsync(
-                          currentPerpsAccount
-                        );
-                      }
-                      setPopupType('withdraw');
-                      setAmountVisible(true);
-                    }}
-                    disabled={withdrawDisabled}
-                  >
-                    {t('page.gasAccount.withdraw')}
-                  </PerpsBlueBorderedButton>
+                  <div className="w-[158px]">
+                    <PerpsBlueBorderedButton
+                      block
+                      className={clsx(
+                        'h-[36px] text-[13px] leading-[16px]',
+                        withdrawDisabled && 'opacity-50 cursor-not-allowed'
+                      )}
+                      onClick={() => {
+                        if (currentPerpsAccount) {
+                          dispatch.account.changeAccountAsync(
+                            currentPerpsAccount
+                          );
+                        }
+                        setPopupType('withdraw');
+                        setAmountVisible(true);
+                      }}
+                      disabled={withdrawDisabled}
+                    >
+                      {t('page.gasAccount.withdraw')}
+                    </PerpsBlueBorderedButton>
+                  </div>
                 </TooltipWithMagnetArrow>
                 <Button
                   block
                   size="large"
                   type="primary"
-                  className="h-[44px] text-r-neutral-title2 text-15 font-medium"
-                  style={{
-                    height: 44,
-                  }}
+                  className="h-[36px] text-r-neutral-title2 text-[13px] leading-[16px] font-medium w-[158px]"
                   onClick={() => {
                     if (currentPerpsAccount) {
                       dispatch.account.changeAccountAsync(currentPerpsAccount);
@@ -621,7 +631,6 @@ export const Perps: React.FC = () => {
           </div>
         )}
       </div>
-
       <PerpsLoginPopup
         visible={loginVisible}
         onLogin={async (account) => {
@@ -633,7 +642,6 @@ export const Perps: React.FC = () => {
         }}
         perpsAccount={currentPerpsAccount}
       />
-
       <PerpsLogoutPopup
         visible={logoutVisible}
         account={currentPerpsAccount}
@@ -645,7 +653,6 @@ export const Perps: React.FC = () => {
           setLogoutVisible(false);
         }}
       />
-
       <PerpsDepositAmountPopup
         resetBridgeQuoteLoading={resetBridgeQuoteLoading}
         visible={amountVisible}
@@ -669,7 +676,6 @@ export const Perps: React.FC = () => {
         }}
         handleSignDepositDirect={handleSignDepositDirect}
       />
-
       {/* {Boolean(miniSignTypeData.data.length) && (
         <MiniTypedDataApproval
           txs={miniSignTypeData.data}
@@ -697,7 +703,6 @@ export const Perps: React.FC = () => {
           canUseDirectSubmitTx
         />
       )} */}
-
       <NewUserProcessPopup
         visible={newUserProcessVisible}
         onCancel={async () => {
@@ -711,7 +716,6 @@ export const Perps: React.FC = () => {
           wallet.setHasDoneNewUserProcess(true);
         }}
       />
-
       <SearchPerpsPopup
         visible={searchPopupVisible}
         onCancel={() => {
@@ -725,7 +729,6 @@ export const Perps: React.FC = () => {
         }}
         openFromSource={openFromSource}
       />
-
       <PerpsModal
         visible={deleteAgentModalVisible}
         onClose={() => {
@@ -733,7 +736,6 @@ export const Perps: React.FC = () => {
         }}
         onConfirm={handleDeleteAgent}
       />
-
       {riskPopupCoin && riskPopupData && (
         <RiskLevelPopup
           visible={riskPopupVisible}
@@ -749,6 +751,13 @@ export const Perps: React.FC = () => {
           }}
         />
       )}
+      <PerpsInvitePopup
+        onInvite={async () => {
+          // todo check need deposit first
+          await handleActionApproveStatus();
+          handleSafeSetReference();
+        }}
+      />
     </div>
   );
 };

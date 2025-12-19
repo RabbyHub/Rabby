@@ -47,6 +47,7 @@ interface ApprovalParams {
     message: string;
     chainId: number;
   };
+  stay?: boolean;
 }
 
 export const CommonWaiting = ({
@@ -256,12 +257,13 @@ export const CommonWaiting = ({
     setPopupProps(params?.extra?.popupProps);
   }, [params?.extra?.popupProps]);
 
+  const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        false,
+        stay,
         false,
         signFinishedData.approvalId
       );

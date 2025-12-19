@@ -1,3 +1,4 @@
+import { last } from 'lodash';
 import { createPersistStore } from 'background/utils';
 import { getRandomBytesSync } from 'ethereum-cryptography/random.js';
 import { secp256k1 } from 'ethereum-cryptography/secp256k1.js';
@@ -31,6 +32,12 @@ export interface PerpsServiceStore {
       approveSignatures: ApproveSignatures;
     };
   };
+  inviteConfig: {
+    [address: string]: {
+      lastInvitedAt?: number;
+      lastConnectedAt?: number;
+    };
+  };
   currentAccount: StoreAccount | null;
   lastUsedAccount: StoreAccount | null;
   hasDoneNewUserProcess: boolean;
@@ -56,6 +63,7 @@ class PerpsService {
       template: {
         agentVaults: '',
         agentPreferences: {},
+        inviteConfig: {},
         currentAccount: null,
         // no clear account , just cache for last used
         lastUsedAccount: null,
@@ -339,6 +347,17 @@ class PerpsService {
     const updatedMemoryWallets = { ...this.memoryState.agentWallets };
     delete updatedMemoryWallets[normalizedAddress];
     this.memoryState.agentWallets = updatedMemoryWallets;
+
+    if (
+      this.store.currentAccount?.address.toLowerCase() === normalizedAddress
+    ) {
+      this.store.currentAccount = null;
+    }
+    if (
+      this.store.lastUsedAccount?.address.toLowerCase() === normalizedAddress
+    ) {
+      this.store.lastUsedAccount = null;
+    }
   };
 
   hasAgentWallet = (address: string) => {
@@ -365,6 +384,26 @@ class PerpsService {
     return preference;
   };
 
+  getInviteConfig = async (address: string) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.inviteConfig[address.toLowerCase()];
+  };
+
+  setInviteConfig = async (
+    address: string,
+    config: { lastConnectedAt?: number; lastInvitedAt?: number }
+  ) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.inviteConfig[address.toLowerCase()] = {
+      ...this.store.inviteConfig[address.toLowerCase()],
+      ...config,
+    };
+  };
+
   // only test use
   resetStore = async () => {
     if (!this.store) {
@@ -376,6 +415,7 @@ class PerpsService {
       currentAccount: null,
       lastUsedAccount: null,
       hasDoneNewUserProcess: false,
+      inviteConfig: {},
     };
     this.memoryState.agentWallets = {};
   };

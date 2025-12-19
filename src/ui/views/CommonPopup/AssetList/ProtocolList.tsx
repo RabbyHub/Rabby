@@ -21,6 +21,9 @@ import {
 import { ProtocolLowValueItem } from './ProtocolLowValueItem';
 import BigNumber from 'bignumber.js';
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
+import { PERPS_INVITE_URL } from '../../Perps/constants';
+import { useRequest } from 'ahooks';
+import { checkPerpsReference } from '../../Perps/utils';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -163,6 +166,20 @@ export const ProtocolItem = ({
     }
   }, [isExpand, refreshRealTimeProtocol]);
 
+  const { data: isShowPerpsInvite } = useRequest(
+    async () => {
+      return checkPerpsReference({
+        wallet,
+        account: currentAccount,
+        scene: 'protocol',
+      });
+    },
+    {
+      ready: protocol.id === 'hyperliquid',
+      cacheKey: `check-perps-reference-protocol-${currentAccount?.address}`,
+    }
+  );
+
   const actions = useGetDappActions({
     protocol,
   });
@@ -224,7 +241,12 @@ export const ProtocolItem = ({
             )}
             onClick={(evt) => {
               evt.stopPropagation();
-              openInTab(protocol.site_url, false);
+              openInTab(
+                protocol.id === 'hyperliquid' && isShowPerpsInvite
+                  ? PERPS_INVITE_URL
+                  : protocol.site_url,
+                false
+              );
             }}
           >
             <span className="name items-center truncate min-w-0">
@@ -242,7 +264,17 @@ export const ProtocolItem = ({
                 </div>
               </Tooltip>
             )}
-            <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot flex-shrink-0" />
+
+            {protocol.id === 'hyperliquid' && isShowPerpsInvite ? (
+              <Tooltip
+                overlayClassName="app-chain-tooltip"
+                title={t('component.ChainItem.hyperliquidCode')}
+              >
+                <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot flex-shrink-0" />
+              </Tooltip>
+            ) : (
+              <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot flex-shrink-0" />
+            )}
           </div>
           {actions?.length ? (
             <div className="mx-[8px] flex items-center gap-[8px]">
@@ -295,13 +327,20 @@ interface Props {
   isSearch?: boolean;
   appIds?: string[];
   removeProtocol?: (id: string) => void;
+  className?: string;
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
+const ProtocolList = ({
+  list,
+  isSearch,
+  appIds,
+  removeProtocol,
+  className,
+}: Props) => {
   const enableDelayVisible = useMemo(() => {
     return (list || []).length > 100;
   }, [list]);
@@ -320,7 +359,7 @@ const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
   if (!list) return null;
 
   return (
-    <ProtocolListWrapper>
+    <ProtocolListWrapper className={className}>
       {(isSearch ? list : currentList || []).map((item) => (
         <ProtocolItem
           protocol={item}

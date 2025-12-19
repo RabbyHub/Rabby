@@ -1,7 +1,11 @@
+import { Account } from 'background/service/preference';
 import { MarketData } from '@/ui/models/perps';
 import { Meta, AssetCtx, MarginTable } from '@rabby-wallet/hyperliquid-sdk';
 import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
 import { PERPS_MAX_NTL_VALUE, PERPS_POSITION_RISK_LEVEL } from './constants';
+import { useWallet, WalletController } from '@/ui/utils';
+import { KEYRING_CLASS } from '@/constant';
+import { getPerpsSDK } from './sdkManager';
 
 export const formatMarkData = (
   marketData: [Meta, AssetCtx[]],
@@ -280,4 +284,61 @@ export const formatTpOrSlPrice = (
     return `${integerPart}.${composedDecimal}`;
   }
   return `${integerPart}`;
+};
+
+export const checkPerpsReference = async ({
+  wallet,
+  account,
+  scene = 'invite',
+}: {
+  wallet: ReturnType<typeof useWallet>;
+  account?: Account | null;
+  scene?: 'invite' | 'connect' | 'protocol';
+}) => {
+  try {
+    const address = account?.address;
+    if (!address) {
+      return false;
+    }
+    if (
+      !Object.values(KEYRING_CLASS.HARDWARE)
+        .concat([KEYRING_CLASS.PRIVATE_KEY, KEYRING_CLASS.MNEMONIC])
+        .includes(account.type)
+    ) {
+      return false;
+    }
+    if (scene !== 'protocol') {
+      const inviteConfig = await wallet.getPerpsInviteConfig(address);
+      const lastTime =
+        scene === 'connect'
+          ? inviteConfig?.lastConnectedAt
+          : inviteConfig?.lastInvitedAt;
+      if (lastTime) {
+        const now = Date.now();
+        const diff = now - lastTime;
+        const oneWeek = 7 * 24 * 60 * 60 * 1000;
+        if (diff < oneWeek) {
+          return false;
+        }
+      }
+    }
+    const sdk = getPerpsSDK();
+    const info = await sdk.info.getClearingHouseState(address);
+    const needDepositFirst =
+      Number(info?.marginSummary?.accountValue || 0) === 0 &&
+      Number(info?.withdrawable || 0) === 0;
+    if (needDepositFirst) {
+      return false;
+    }
+    const data = await sdk.info.getReferral(account?.address || '');
+
+    if (data?.referredBy) {
+      return false;
+    }
+
+    return true;
+  } catch (e) {
+    console.error('checkPerpsReference error', e);
+    return false;
+  }
 };

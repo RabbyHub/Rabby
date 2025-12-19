@@ -171,7 +171,7 @@ export const usePerpsState = ({
         console.warn('handle action agent is expired, logout');
         message.error({
           // className: 'toast-message-2025-center',
-          duration: 2,
+          duration: 1.5,
           content: 'Agent is expired, please login again',
         });
         dispatch.perps.setAccountNeedApproveAgent(true);
@@ -187,7 +187,7 @@ export const usePerpsState = ({
       } catch (error) {
         message.error({
           // className: 'toast-message-2025-center',
-          duration: 2,
+          duration: 1.5,
           content: error.message || 'Delete agent failed',
         });
       }
@@ -409,9 +409,6 @@ export const usePerpsState = ({
         })
       );
 
-      setTimeout(() => {
-        handleSafeSetReference();
-      }, 500);
       const [approveAgentRes, approveBuilderFeeRes] = results;
       console.log('sendApproveAgentRes', approveAgentRes);
       console.log('sendApproveBuilderFeeRes', approveBuilderFeeRes);
@@ -483,6 +480,9 @@ export const usePerpsState = ({
             actionObj.signature = signature;
           }
           await handleDirectApprove(signActions);
+          setTimeout(() => {
+            handleSafeSetReference();
+          }, 500);
           dispatch.perps.setAccountNeedApproveAgent(false);
           dispatch.perps.setAccountNeedApproveBuilderFee(false);
         } else {
@@ -554,6 +554,14 @@ export const usePerpsState = ({
 
       // try {
       await handleDirectApprove(signActions);
+      if (
+        currentPerpsAccount.type === KEYRING_CLASS.PRIVATE_KEY ||
+        currentPerpsAccount.type === KEYRING_CLASS.MNEMONIC
+      ) {
+        setTimeout(() => {
+          handleSafeSetReference();
+        }, 500);
+      }
       // } catch (error) {}
       dispatch.perps.setAccountNeedApproveAgent(false);
       dispatch.perps.setAccountNeedApproveBuilderFee(false);
@@ -612,6 +620,9 @@ export const usePerpsState = ({
         handleSetLaterApproveStatus(signActions);
       } else {
         await handleDirectApprove(signActions);
+        setTimeout(() => {
+          handleSafeSetReference();
+        }, 500);
         dispatch.perps.setAccountNeedApproveAgent(false);
         dispatch.perps.setAccountNeedApproveBuilderFee(false);
       }
@@ -670,12 +681,15 @@ export const usePerpsState = ({
         // 不存在agent wallet,，需要创建新的，同时签名
         await handleLoginWithSignApprove(account);
       }
+      // todo 重构这里的逻辑
+      // 切换账号后，清空本地历史记录，避免数据错乱
+      dispatch.perps.clearLocalLoadingHistory();
       return true;
     } catch (error: any) {
       console.error('Failed to login Perps account:', error);
       message.error({
         // className: 'toast-message-2025-center',
-        duration: 2,
+        duration: 1.5,
         content: error.message || 'Login failed',
       });
       Sentry.captureException(
@@ -743,7 +757,7 @@ export const usePerpsState = ({
         console.error('Failed to withdraw:', error);
         message.error({
           // className: 'toast-message-2025-center',
-          duration: 2,
+          duration: 1.5,
           content: error.message || 'Withdraw failed',
         });
         Sentry.captureException(
@@ -844,6 +858,7 @@ export const usePerpsState = ({
 
     judgeIsUserAgentIsExpired,
     handleActionApproveStatus,
+    handleSafeSetReference,
   };
 };
 

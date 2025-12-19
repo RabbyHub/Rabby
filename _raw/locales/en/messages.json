@@ -972,7 +972,15 @@
       "fundingRate": "Funding Rate",
       "fundingGains": "Funding Gains",
       "close": "Close",
-      "add": "Add"
+      "add": "Add",
+      "invitePopup": {
+        "title": "Save on Hyperliquid Fees",
+        "activatedSuccess": "4% Hyperliquid fee savings activated",
+        "activateFailed": "Failed",
+        "description": "Use Rabby’s code to enable",
+        "hyperliquidFee": "Hyperliquid trading fees.",
+        "activateNow": "Activate Now"
+      }
     },
     "perpsDetail": {
       "PerpsAddPositionPopup": {
@@ -1064,7 +1072,8 @@
         "stopLossTipsLongLiquidation": "Price is lower than the liq.price ({{price}})",
         "stopLossTipsShortLiquidation": "Price is higher than the liq.price ({{price}})",
         "cancel": "Cancel"
-      }
+      },
+      "needDepositFirst": "You need to deposit funds first."
     },
     "sendPoly": {
       "title": "Send to",
@@ -1583,7 +1592,9 @@
           "setting": "Setting",
           "searchDapp": "Search Dapp",
           "dapps": "Dapps",
-          "settings": "Settings"
+          "settings": "Settings",
+          "perpsPositions_one": "{{count}} Position",
+          "perpsPositions_other": "{{count}} Positions"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -2431,7 +2442,8 @@
         "title": "Select a Wallet to Connect",
         "desc": "Select from the wallets you have installed"
       },
-      "connectAddress": "Connect Address"
+      "connectAddress": "Connect Address",
+      "connected": "Connected"
     },
     "addressDetail": {
       "add-to-whitelist": "Add to Whitelist",
@@ -3596,7 +3608,8 @@
       "selectAccount": "Select Address"
     },
     "ChainItem": {
-      "appChain": "On {{chain}} Account"
+      "appChain": "On {{chain}} Account",
+      "hyperliquidCode": "Save on Hyperliquid fees with Rabby’s referral code."
     },
     "RiskTip": {
       "title": "Risk Detected"
@@ -3608,7 +3621,8 @@
       ],
       "withdraw": "Withdraw",
       "claim": "Claim",
-      "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
+      "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
+      "manage": "Manage"
     },
     "DesktopChainSelector": {
       "allChains": "All Chains"
