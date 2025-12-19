@@ -74,6 +74,7 @@ interface SwapTokenItemProps {
   getContainer?: DrawerProps['getContainer'];
   skeletonLoading?: boolean;
   disabled?: boolean;
+  onFromSelectChain?: () => void;
 }
 
 export const SwapTokenItem = (props: SwapTokenItemProps) => {
@@ -93,6 +94,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     getContainer,
     skeletonLoading,
     disabled,
+    onFromSelectChain: onStartSelectChain,
   } = props;
 
   const openTokenModalRef = useRef<{
@@ -231,6 +233,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             useSwapTokenList={!isFrom}
             disabledTips={t('page.swap.insufficient-balance')}
             getContainer={getContainer}
+            onStartSelectChain={onStartSelectChain}
           />
         </div>
 

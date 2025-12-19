@@ -31,7 +31,9 @@ import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss, useDebounce } from 'react-use';
 import { DEX_WITH_WRAP } from '@/constant';
-import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import ChainSelectorInForm, {
+  ChainSelectorRef,
+} from '@/ui/component/ChainSelector/InForm';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import i18n from '@/i18n';
@@ -358,6 +360,8 @@ export const Main = () => {
   });
 
   const currentAccount = useCurrentAccount();
+
+  const chainSelectorRef = useRef<ChainSelectorRef>(null);
 
   const showLoss = useDetectLoss({
     payToken: payToken,
@@ -777,6 +781,8 @@ export const Main = () => {
             drawerHeight={540}
             showClosableIcon
             getContainer={getContainer}
+            ref={chainSelectorRef}
+            zIndex={1111}
           />
         </div>
 
@@ -803,6 +809,7 @@ export const Main = () => {
             excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
             getContainer={getContainer}
             disabled={!isSupportedChain}
+            onFromSelectChain={() => chainSelectorRef.current?.toggleShow(true)}
           />
 
           <div
