@@ -1417,7 +1417,7 @@
           "review": "Огляд",
           "noTokens": "Немає токенів",
           "searchToken": "Пошук токена",
-          "lowValueDefis": "{{count}} низьковартісних defi"
+          "lowValueDefis": ""
         },
         "noAssets": "Немає активів",
         "blockLinkText": "Адреса для пошуку токена блоку",

@@ -1502,7 +1502,7 @@
           "tradePair": "Par de negociação",
           "review": "Revisar",
           "noTokens": "Sem Tokens",
-          "lowValueDefis": "{{count}} defis de baixo valor",
+          "lowValueDefis": "",
           "searchToken": "Buscar Token"
         },
         "AddMainnetToken": {

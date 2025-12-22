@@ -1413,7 +1413,7 @@
           "lowValueAssets_0": "{{count}} düşük değerli token",
           "review": "Gözden Geçir",
           "noTokens": "No Tokens",
-          "lowValueDefis": "{{count}} düşük değerli defis",
+          "lowValueDefis": "",
           "searchToken": "Token Ara"
         },
         "noAssets": "Varlık Yok",

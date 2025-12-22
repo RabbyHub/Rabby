@@ -381,7 +381,7 @@
           "review": "审核",
           "noTokens": "没有代币",
           "searchToken": "搜索 Token",
-          "lowValueDefis": "{{count}} 低价值 defis"
+          "lowValueDefis": ""
         },
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址，隐藏代币",
