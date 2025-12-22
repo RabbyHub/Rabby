@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
-
+const SecSDK = require('supplychain_security_sdk').default;
 const sentrySourceMap = !!process.env.sourcemap || false;
 
 const config = {
@@ -17,20 +17,37 @@ const config = {
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
     }),
     sentrySourceMap &&
-      sentryWebpackPlugin({
-        include: './dist',
-        ignoreFile: '.sentrycliignore',
-        ignore: ['node_modules', 'webpack.config.js'],
-        configFile: 'sentry.properties',
-        release: {
-          name: process.env.VERSION,
-        },
-        org: process.env.SENTRY_ORG,
-        project: process.env.SENTRY_PROJECT,
+    sentryWebpackPlugin({
+      include: './dist',
+      ignoreFile: '.sentrycliignore',
+      ignore: ['node_modules', 'webpack.config.js'],
+      configFile: 'sentry.properties',
+      release: {
+        name: process.env.VERSION,
+      },
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
 
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-      }),
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    }),
     ,
+    new SecSDK({
+      dev: false,
+      disableProtoAssets: ['pageProvider.js'],
+      skipScuttleAssets: ['pageProvider.js'],
+      scuttle: true,
+      monkeyPatchGlobals: [{ expr: 'this._targetWindow' }],
+      scuttleFiles: [
+        "desktop.html",
+        "index.html",
+        "offscreen.html",
+        "popup.html",
+        "notification.html",
+        "background.html",
+        "vendor/bitbox02/bitbox02-pairing.html",
+        "sw.js"
+      ]
+    }),
   ].filter(Boolean),
 
   optimization: {
