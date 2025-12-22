@@ -242,7 +242,10 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
         collection={state.current?.collection}
         onSend={() => {
           const query = new URLSearchParams();
-          query.set('nftItem', JSON.stringify(state.current!.nft!));
+          query.set(
+            'nftItem',
+            encodeURIComponent(JSON.stringify(state.current!.nft))
+          );
           query.set('action', 'send');
           query.set('sendPageType', 'sendNft');
           history.replace(`${history.location.pathname}?${query.toString()}`);
