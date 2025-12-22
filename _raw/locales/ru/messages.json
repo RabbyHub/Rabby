@@ -1415,7 +1415,7 @@
           "review": "Обзор",
           "noTokens": "Нет токенов",
           "searchToken": "Поиск токена",
-          "lowValueDefis": "{{count}} низкоценные дефи"
+          "lowValueDefis": ""
         },
         "noAssets": "Нет активов",
         "blockLinkText": "Искать адрес, чтобы заблокировать токен",

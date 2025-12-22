@@ -1502,7 +1502,7 @@
           "lowValueDescription": "Tài sản có giá trị thấp sẽ được hiển thị ở đây",
           "review": "Xem lại",
           "noTokens": "Không có Token",
-          "lowValueDefis": "{{count}} defi giá thấp",
+          "lowValueDefis": "",
           "searchToken": "Tìm kiếm Token"
         },
         "AddMainnetToken": {

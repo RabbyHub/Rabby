@@ -1414,7 +1414,7 @@
           "review": "レビュー",
           "noTokens": "トークンがありません",
           "searchToken": "トークンを検索",
-          "lowValueDefis": "{{count}} 低価値のデファイ"
+          "lowValueDefis": ""
         },
         "noAssets": "アセットなし",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
