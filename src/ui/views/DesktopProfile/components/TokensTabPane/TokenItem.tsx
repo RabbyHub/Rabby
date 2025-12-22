@@ -104,7 +104,7 @@ export const TokenItemAsset: React.FC<Props> = ({
           className="rectangle w-[max-content]"
         >
           <img
-            className="w-14 h-14 absolute right-[-4px] top-[-4px] rounded-full"
+            className="w-14 h-14 absolute right-[-4px] bottom-[-4px] rounded-full"
             src={chain?.logo || IconUnknown}
             alt={item.chain}
           />
@@ -169,7 +169,7 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
           className="rectangle w-[max-content]"
         >
           <img
-            className="w-14 h-14 absolute right-[-4px] top-[-4px] rounded-full"
+            className="w-14 h-14 absolute right-[-4px] bottom-[-4px] rounded-full"
             src={chain?.logo || IconUnknown}
             alt={chain?.name}
           />
