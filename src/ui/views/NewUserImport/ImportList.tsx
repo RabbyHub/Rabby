@@ -59,6 +59,10 @@ export const ImportWalletList = () => {
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.GRIDPLUS].icon,
         },
         {
+          type: KEYRING_CLASS.HARDWARE.IMKEY,
+          logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.IMKEY].icon,
+        },
+        {
           type: KEYRING_CLASS.HARDWARE.BITBOX02,
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.BITBOX02].icon,
         },
@@ -92,6 +96,7 @@ export const ImportWalletList = () => {
       case KEYRING_CLASS.HARDWARE.TREZOR:
       case KEYRING_CLASS.HARDWARE.GRIDPLUS:
       case KEYRING_CLASS.HARDWARE.BITBOX02:
+      case KEYRING_CLASS.HARDWARE.IMKEY:
         history.push({
           pathname: `/new-user/import/${type}/set-password`,
           search: qs.stringify({
