@@ -13,6 +13,7 @@ import { RightAccountBar } from './components/RightAccountBar';
 import './resizable-panels.css';
 import usePerpsProState from './hooks/usePerpsProState';
 import './index.less';
+import { usePerpsDefaultAccount } from '../Perps/hooks/usePerpsDefaultAccount';
 
 const Wrap = styled.div`
   width: 100%;
@@ -24,6 +25,7 @@ const Wrap = styled.div`
 `;
 
 export const DesktopPerps: React.FC = () => {
+  usePerpsDefaultAccount();
   const {
     positionAndOpenOrders,
     accountSummary,
@@ -39,10 +41,6 @@ export const DesktopPerps: React.FC = () => {
     homeHistoryList,
     hasPermission,
     localLoadingHistory,
-    miniSignTypeData,
-    clearMiniSignTypeData,
-    handleMiniSignResolve,
-    handleMiniSignReject,
 
     handleDeleteAgent,
     perpFee,

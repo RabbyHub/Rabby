@@ -66,17 +66,6 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
     return Number(currentMarketData?.markPx || 0);
   }, [wsActiveAssetCtx, currentMarketData]);
 
-  const midPx = useMemo(() => {
-    if (
-      wsActiveAssetCtx &&
-      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
-    ) {
-      return Number(wsActiveAssetCtx.ctx.midPx || 0);
-    }
-
-    return Number(currentMarketData?.midPx || 0);
-  }, [wsActiveAssetCtx, currentMarketData]);
-
   // Six aggregation levels: from finest to coarsest
   // Based on szDecimals to determine appropriate tick size
   // For BTC (szDecimals=5): baseTickSize = 1 → 1, 2, 5, 10, 100, 1000
@@ -368,7 +357,7 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
                 isPositive ? 'text-rb-green-default' : 'text-rb-red-default'
               )}
             >
-              {splitNumberByStep(midPx)}
+              {splitNumberByStep(latestTradePrice)}
             </span>
             {Boolean(latestTradePrice) && (
               <span
@@ -376,7 +365,7 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
                   'text-[16px] text-rb-neutral-secondary font-medium'
                 )}
               >
-                {splitNumberByStep(latestTradePrice)}
+                {splitNumberByStep(markPx)}
               </span>
             )}
           </div>

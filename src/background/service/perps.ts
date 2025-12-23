@@ -432,6 +432,7 @@ class PerpsService {
       lastUsedAccount: null,
       hasDoneNewUserProcess: false,
       inviteConfig: {},
+      favoritedCoins: ['BTC', 'ETH', 'SOL'],
     };
     this.memoryState.agentWallets = {};
   };
