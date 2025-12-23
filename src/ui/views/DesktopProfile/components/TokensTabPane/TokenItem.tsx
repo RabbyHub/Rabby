@@ -121,7 +121,9 @@ export const TokenItemAsset: React.FC<Props> = ({
               hover:text-r-blue-default hover:underline 
             `}
           />
-          {isLpToken(item) && <LpTokenTag />}
+          {isLpToken(item) && (
+            <LpTokenTag protocolName={item.protocol_id || ''} />
+          )}
         </div>
         {!disableSwap && (
           <ActionBottom

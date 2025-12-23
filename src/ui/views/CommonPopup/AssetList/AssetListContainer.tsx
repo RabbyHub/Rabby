@@ -122,8 +122,8 @@ export const AssetListContainer: React.FC<Props> = ({
     !appPortfolios?.length;
 
   React.useEffect(() => {
-    onEmptyAssets(isEmptyAssets);
-  }, [isEmptyAssets, onEmptyAssets]);
+    onEmptyAssets(isEmptyAssets && !lpTokenMode);
+  }, [isEmptyAssets, onEmptyAssets, lpTokenMode]);
 
   const sortTokens = useSortTokens(displayTokenList);
   const filteredPortfolios = useFilterProtocolList({
@@ -206,6 +206,7 @@ export const AssetListContainer: React.FC<Props> = ({
               addTokenEntryRef.current?.startAddToken();
             }}
             isSearch={!!search}
+            lpTokenMode={lpTokenMode}
             isNoResults={isNoResults}
             blockedTokens={displayBlockedTokens}
             customizeTokens={displayCustomizeTokens}
