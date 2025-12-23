@@ -325,6 +325,7 @@ export class DisplayedToken implements AbstractPortfolioToken {
   low_credit_score?: boolean;
   raw_amount_hex_str?: string;
   cex_ids: string[];
+  protocol_id?: string;
   _amountStr?: string;
   _priceStr?: string;
   _amountChange?: number;
@@ -366,6 +367,7 @@ export class DisplayedToken implements AbstractPortfolioToken {
     this.low_credit_score = token.low_credit_score;
     this.raw_amount_hex_str = token.raw_amount_hex_str;
     this.cex_ids = token.cex_ids || [];
+    this.protocol_id = token.protocol_id;
 
     // 默认是它
     this._usdValueChangeStr = '-';

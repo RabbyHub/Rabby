@@ -15,7 +15,7 @@ import styled from 'styled-components';
 import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 import { useTokens } from '@/ui/utils/portfolio/token';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { uniqBy } from 'lodash';
 import { CHAINS_ENUM } from '@/constant';
 import useSearchToken from '@/ui/hooks/useSearchToken';
@@ -85,6 +85,7 @@ interface CommonProps {
   drawerHeight?: string | number;
   supportChains?: CHAINS_ENUM[];
   getContainer?: DrawerProps['getContainer'];
+  onStartSelectChain?: () => void;
 }
 
 interface BridgeFromProps extends CommonProps {
@@ -123,6 +124,7 @@ const TokenSelect = forwardRef<
       drawerHeight,
       supportChains,
       getContainer,
+      onStartSelectChain,
     },
     ref
   ) => {
@@ -133,11 +135,15 @@ const TokenSelect = forwardRef<
     const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
     const [initLoading, setInitLoading] = useState(true);
     const [updateNonce, setUpdateNonce] = useState(0);
-    const currentAccount = useRabbySelector(
-      (state) => state.account.currentAccount
-    );
+    const [lpTokenMode, setLpTokenMode] = useState(false);
+    const { currentAccount } = useRabbySelector((s) => ({
+      currentAccount: s.account.currentAccount,
+    }));
     const wallet = useWallet();
     const { t } = useTranslation();
+    const isFromMode = useMemo(() => {
+      return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
+    }, [type]);
 
     useImperativeHandle(ref, () => ({
       openTokenModal: setTokenSelectorVisible,
@@ -162,6 +168,7 @@ const TokenSelect = forwardRef<
         ...prev,
         chainServerId: chainId,
       }));
+      setLpTokenMode(false);
     };
 
     const handleSelectToken = () => {
@@ -179,7 +186,9 @@ const TokenSelect = forwardRef<
       undefined,
       tokenSelectorVisible,
       updateNonce,
-      queryConds.chainServerId
+      queryConds.chainServerId,
+      undefined,
+      isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
     );
 
     const {
@@ -208,12 +217,10 @@ const TokenSelect = forwardRef<
     const {
       isLoading: isSearchLoading,
       list: searchedTokenByQuery,
-    } = useSearchToken(
-      currentAccount?.address,
-      queryConds.keyword,
-      queryConds.chainServerId,
-      isSwapType || type === 'bridgeFrom' ? false : true
-    );
+    } = useSearchToken(currentAccount?.address, queryConds.keyword, {
+      chainServerId: queryConds.chainServerId,
+      withBalance: isSwapType || type === 'bridgeFrom' ? false : true,
+    });
 
     const isSwapTo = type === 'swapTo';
 
@@ -314,7 +321,7 @@ const TokenSelect = forwardRef<
           <TokenSelector
             drawerHeight={drawerHeight}
             visible={tokenSelectorVisible}
-            list={displayTokenList}
+            mainnetTokenList={displayTokenList}
             onConfirm={handleCurrentTokenChange}
             onCancel={handleTokenSelectorClose}
             onSearch={handleSearchTokens}
@@ -326,6 +333,10 @@ const TokenSelect = forwardRef<
             supportChains={supportChains}
             excludeTokens={excludeTokens}
             getContainer={getContainer}
+            lpTokenMode={lpTokenMode}
+            setLpTokenMode={setLpTokenMode}
+            showLpTokenSwitch={isFromMode}
+            onStartSelectChain={onStartSelectChain}
           />
         </>
       );
@@ -379,7 +390,7 @@ const TokenSelect = forwardRef<
         </Wrapper>
         <TokenSelector
           visible={tokenSelectorVisible}
-          list={displayTokenList}
+          mainnetTokenList={displayTokenList}
           onConfirm={handleCurrentTokenChange}
           onCancel={handleTokenSelectorClose}
           onSearch={handleSearchTokens}
@@ -391,6 +402,10 @@ const TokenSelect = forwardRef<
           supportChains={supportChains}
           drawerHeight={drawerHeight}
           excludeTokens={excludeTokens}
+          lpTokenMode={lpTokenMode}
+          setLpTokenMode={setLpTokenMode}
+          showLpTokenSwitch={isFromMode}
+          onStartSelectChain={onStartSelectChain}
         />
       </>
     );

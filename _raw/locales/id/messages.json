@@ -1215,7 +1215,9 @@
           "dapps": "Dapps",
           "searchDapp": "Cari Dapp",
           "setting": "Pengaturan",
-          "settings": "Pengaturan"
+          "settings": "Pengaturan",
+          "perpsPositions_other": "{{count}} Posisi",
+          "perpsPositions_one": "{{count}} Posisi"
         },
         "queue": {
           "title": "Antrian",
@@ -1499,7 +1501,9 @@
           "summaryTips": "Nilai aset dibagi dengan total kekayaan bersih",
           "price": "Harga",
           "review": "Tinjau",
-          "noTokens": "Tidak Ada Token"
+          "noTokens": "Tidak Ada Token",
+          "searchToken": "Cari Token",
+          "lowValueDefis": "{{count}} defis nilai rendah"
         },
         "AddMainnetToken": {
           "tokenAddress": "Alamat Token",
@@ -1539,7 +1543,8 @@
         "customDescription": "Token kustom yang ditambahkan oleh Anda akan ditampilkan di sini",
         "price": "HARGA",
         "side": "SISI",
-        "openInTab": "Buka di tab"
+        "openInTab": "Buka di tab",
+        "searchTokenPlaceholder": "Cari Token"
       },
       "hd": {
         "ledger": {
@@ -2060,7 +2065,8 @@
       "ignoreAll": "Abaikan semua",
       "otherWalletBtn": "Sambungkan dengan Dompet Lain",
       "manageWhiteBlackList": "Kelola whitelist/blacklist",
-      "connectAddress": "Sambungkan Alamat"
+      "connectAddress": "Sambungkan Alamat",
+      "connected": "Terkoneksi"
     },
     "addressDetail": {
       "manage-seed-phrase": "Kelola Seed Phrase",
@@ -2967,7 +2973,8 @@
       "singleCoin": {
         "openInterestTips": "Total outstanding position semua pengguna pada kontrak ini.",
         "fundingTips": "Ini adalah biaya per jam yang dibayar atau diterima trader untuk menjaga harga kontrak perp tetap dekat dengan harga sebenarnya dari token. Jika positif, long membayar short. Jika negatif, short membayar long.",
-        "fundingPaymentsTips": "Ini adalah pembayaran pendanaan neto sejak posisi dibuka. Pendanaan adalah biaya per jam yang dibayar atau diterima trader untuk mempertahankan harga kontrak perp tetap dekat dengan harga aktual token."
+        "fundingPaymentsTips": "Ini adalah pembayaran pendanaan neto sejak posisi dibuka. Pendanaan adalah biaya per jam yang dibayar atau diterima trader untuk mempertahankan harga kontrak perp tetap dekat dengan harga aktual token.",
+        "fundingGainsTips": "Ini adalah keuntungan pendanaan bersih sejak posisi dibuka. Pendanaan adalah biaya per jam yang dibayar atau diterima oleh trader untuk menjaga harga kontrak perp dekat dengan harga aktual token."
       },
       "accountSelector": {
         "noPosition": "Tidak Ada Posisi",
@@ -3089,7 +3096,10 @@
         "liquidationPrice": "Harga Likuidasi",
         "currentPrice": "Harga Saat Ini",
         "subTitle": "Jarak likuidasi waktu nyata (%)",
-        "liquidationDistanceTips": "Jarak Likuidasi (%) menunjukkan seberapa jauh harga saat ini dari harga likuidasi Anda. Jarak yang lebih besar menunjukkan posisi yang lebih aman, sementara jarak yang lebih kecil berarti risiko likuidasi yang lebih tinggi."
+        "liquidationDistanceTips": "Jarak Likuidasi (%) menunjukkan seberapa jauh harga saat ini dari harga likuidasi Anda. Jarak yang lebih besar menunjukkan posisi yang lebih aman, sementara jarak yang lebih kecil berarti risiko likuidasi yang lebih tinggi.",
+        "distanceLabel": "Jarak Likuidasi",
+        "liqDistanceTipsShort": "Naik <1>{{distance}}</1> akan memicu likuidasi.",
+        "liqDistanceTipsLong": "Menurun <1>{{distance}}</1> akan memicu likuidasi."
       },
       "searchPerpsPopup": {
         "searchPosition": "Cari posisi",
@@ -3101,7 +3111,19 @@
         "onePosition": "1 Posisi"
       },
       "position": "Posisi",
-      "closeAll": "Tutup Semua"
+      "closeAll": "Tutup Semua",
+      "invitePopup": {
+        "activateFailed": "Gagal",
+        "hyperliquidFee": "Biaya trading Hyperliquid.",
+        "activateNow": "Aktifkan Sekarang",
+        "activatedSuccess": "4% penghematan biaya Hyperliquid diaktifkan",
+        "description": "Gunakan kode Rabby untuk mengaktifkan",
+        "title": "Hemat Biaya Hyperliquid"
+      },
+      "add": "Tambahkan",
+      "close": "Tutup",
+      "fundingRate": "Tingkat Pendanaan",
+      "fundingGains": "Pendapatan Pembiayaan"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3174,7 +3196,10 @@
           "allTokenMode": "Semua Mode Token",
           "wallet": "Dompet",
           "foldProtocols": "Fold {{count}} Protokol",
-          "unfoldProtocols": "Buka {{count}} Protokol"
+          "unfoldProtocols": "Buka {{count}} Protokol",
+          "lpToken": "LP-Token",
+          "foldDifis": "Lipat {{count}} Defis",
+          "unfoldDifis": "Unfold {{count}} Defis"
         },
         "hidden": {
           "hideSmall": "Sembunyikan token dengan saldo kecil.",
@@ -3183,7 +3208,9 @@
           "hideProtocolsWithSmallDepositsDesc": "Protokol dengan deposit kecil tidak ditampilkan.",
           "hideSmallDesc": "Token dengan saldo kecil tidak ditampilkan.",
           "showAll": "Tampilkan semua",
-          "tokensWithZeroBalanceDesc": "Token dengan saldo $0 disembunyikan."
+          "tokensWithZeroBalanceDesc": "Token dengan saldo $0 disembunyikan.",
+          "hideDefiWithSmallDeposits": "Sembunyikan Defi dengan setoran kecil.",
+          "hideDefiWithSmallDepositsDesc": "Defis dengan setoran kecil tidak ditampilkan."
         },
         "table": {
           "token": "Token",
@@ -3208,7 +3235,9 @@
       "tabs": {
         "tokens": "Token",
         "approvals": "Persetujuan",
-        "transactions": "Transaksi"
+        "transactions": "Transaksi",
+        "difi": "Defi",
+        "defi": "DeFi"
       },
       "nft": {
         "message": {
@@ -3315,7 +3344,9 @@
         "stopLossWhenPriceAbove": "Stop Loss Ketika Harga Di Atas",
         "takeProfitWhenPriceBelow": "Ambil Untung Saat Harga Di Bawah",
         "leverage": "Leverage",
-        "maximumOrderSize": "Ukuran pesanan maksimum adalah {{amount}}"
+        "maximumOrderSize": "Ukuran pesanan maksimum adalah {{amount}}",
+        "maxMargin": "Margin maksimum adalah {{amount}}",
+        "minMargin": "Minimum margin adalah {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "confirm": "Konfirmasi",
@@ -3326,14 +3357,17 @@
         "currentPrice": "Harga Terkini",
         "amountToReduce": "Jumlah untuk Dikurangi",
         "addMarginSuccess": "Margin berhasil ditambahkan",
-        "liqPrice": "Harga Likuidasi:",
+        "liqPrice": "Harga Likuidasi",
         "title": "Sesuaikan Margin",
         "reduceMargin": "Kurangi Margin",
         "amountToAdd": "Jumlah yang Akan Ditambahkan",
         "exceedMaxReduction": "Melebihi pengurangan maksimum",
         "reduceMarginTooltip": "Margin tidak mencukupi untuk mengurangi posisi.",
         "insufficientBalance": "Saldo tidak mencukupi",
-        "reduceMarginSuccess": "Margin berhasil dikurangi"
+        "reduceMarginSuccess": "Margin berhasil dikurangi",
+        "upTo": "Hingga",
+        "liqDistance": "Jarak Likuiditas",
+        "upto": "Hingga"
       },
       "PerpsClosePositionPopup": {
         "fee": "Biaya",
@@ -3372,7 +3406,16 @@
         "stopLossTipsShort": "Harga stop loss harus lebih tinggi dari harga saat ini",
         "stopLossTipsLongLiquidation": "Harga lebih rendah dari liq.price ({{price}})",
         "stopLossTipsLong": "Harga stop loss harus lebih rendah dari harga saat ini."
-      }
+      },
+      "PerpsAddPositionPopup": {
+        "addToShort": "Tambahkan ke Short",
+        "totalSize": "Ukuran Total",
+        "addSize": "Tambahkan Ukuran",
+        "addToLong": "Tambahkan ke Long",
+        "sizeTips": "Total nilai atau jumlah perdagangan Anda, ditentukan oleh margin dan leverage.",
+        "liquidationPriceTips": "Harga di mana posisi Anda secara otomatis ditutup oleh bursa untuk mencegah kerugian lebih lanjut ketika margin Anda jatuh di bawah tingkat margin pemeliharaan."
+      },
+      "needDepositFirst": "Anda perlu menyetor dana terlebih dahulu."
     }
   },
   "component": {
@@ -3565,13 +3608,15 @@
       "selectAccount": "Pilih Alamat"
     },
     "ChainItem": {
-      "appChain": "Di Akun {{chain}}"
+      "appChain": "Di Akun {{chain}}",
+      "hyperliquidCode": "Hemat biaya Hyperliquid dengan kode referensi Rabby."
     },
     "RiskTip": {
       "title": "Risiko Terdeteksi"
     },
     "DappActions": {
-      "queueDescription": "Penarikan saat ini akan masuk ke dalam antrean tunggu. Setelah diproses, itu dapat ditarik ke dompet Anda."
+      "queueDescription": "Penarikan saat ini akan masuk ke dalam antrean tunggu. Setelah diproses, itu dapat ditarik ke dompet Anda.",
+      "manage": "Kelola"
     },
     "DesktopChainSelector": {
       "allChains": "Semua Rantai"
@@ -3584,6 +3629,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Tambah alamat"
+    },
+    "LpTokenTag": {
+      "title": "Ini adalah token penyedia likuiditas (LP)",
+      "description": "Token LP diterbitkan oleh protokol DeFi tempat Anda menyimpan aset Anda. Mereka berfungsi sebagai bukti aset tersebut, tetapi nilainya tidak termasuk dalam total saldo Anda."
     }
   },
   "global": {

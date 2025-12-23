@@ -31,7 +31,9 @@ import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss, useDebounce } from 'react-use';
 import { DEX_WITH_WRAP } from '@/constant';
-import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import ChainSelectorInForm, {
+  ChainSelectorRef,
+} from '@/ui/component/ChainSelector/InForm';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import i18n from '@/i18n';
@@ -46,7 +48,7 @@ import { SwapTokenItem } from './Token';
 import { BridgeSwitchBtn } from '../../Bridge/Component/BridgeSwitchButton';
 import { BridgeShowMore } from '../../Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -359,6 +361,8 @@ export const Main = () => {
 
   const currentAccount = useCurrentAccount();
 
+  const chainSelectorRef = useRef<ChainSelectorRef>(null);
+
   const showLoss = useDetectLoss({
     payToken: payToken,
     payAmount: inputAmount,
@@ -668,7 +672,7 @@ export const Main = () => {
     ]
   );
 
-  const noQuote = useDebounceValue(noQuoteOrigin, 10);
+  const noQuote = useSyncStaleValue(noQuoteOrigin, 10);
 
   useEffect(() => {
     if (noQuote) {
@@ -777,6 +781,8 @@ export const Main = () => {
             drawerHeight={540}
             showClosableIcon
             getContainer={getContainer}
+            ref={chainSelectorRef}
+            zIndex={1111}
           />
         </div>
 
@@ -803,6 +809,7 @@ export const Main = () => {
             excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
             getContainer={getContainer}
             disabled={!isSupportedChain}
+            onFromSelectChain={() => chainSelectorRef.current?.toggleShow(true)}
           />
 
           <div
@@ -899,6 +906,7 @@ export const Main = () => {
         {isShowMoreVisible && (
           <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
             <BridgeShowMore
+              insufficient={inSufficient}
               supportDirectSign={canUseDirectSubmitTx}
               autoSuggestSlippage={autoSuggestSlippage}
               openFeePopup={openFeePopup}

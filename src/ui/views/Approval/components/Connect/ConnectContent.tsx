@@ -29,6 +29,8 @@ import { AccountSelector } from '@/ui/component/AccountSelector';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbyGetter, useRabbySelector } from '@/ui/store';
 import { Account } from '@/background/service/preference';
+import { useMemoizedFn } from 'ahooks';
+import { checkPerpsReference } from '@/ui/views/Perps/utils';
 
 interface ConnectProps {
   params: any;
@@ -108,7 +110,7 @@ const Footer = styled.div`
   background: var(--r-neutral-card-1, #fff);
   .ant-btn {
     width: 100%;
-    height: 52px;
+    height: 48px;
     &:nth-child(1) {
       margin-bottom: 12px;
     }
@@ -205,9 +207,14 @@ const SecurityLevelTipColor = {
   },
 };
 
-export const ConnectContent = (props: ConnectProps) => {
+export const ConnectContent = (
+  props: ConnectProps & {
+    onPerpsInvite?(address: string): void;
+  }
+) => {
   const {
     params: { icon, origin, name, $ctx },
+    onPerpsInvite,
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const { state } = useLocation<{
@@ -580,11 +587,35 @@ export const ConnectContent = (props: ConnectProps) => {
     rejectApproval('User rejected the request.');
   };
 
+  const checkSetPerpsReference = useMemoizedFn(async () => {
+    if (origin === 'https://app.hyperliquid.xyz') {
+      const config = await wallet.fetchRemoteConfig().catch(() => null);
+      if (config?.switches?.isPerpsInviteDisabled) {
+        return false;
+      }
+      return await checkPerpsReference({
+        wallet,
+        account: selectedAccount!,
+        scene: 'connect',
+      });
+    }
+    return false;
+  });
+
   const handleAllow = async () => {
-    resolveApproval({
-      defaultChain,
-      defaultAccount: selectedAccount,
-    });
+    const stay = await checkSetPerpsReference().catch(() => false);
+
+    resolveApproval(
+      {
+        defaultChain,
+        defaultAccount: selectedAccount,
+      },
+      stay
+    );
+
+    if (stay) {
+      onPerpsInvite?.(selectedAccount!.address);
+    }
   };
 
   const handleRuleDrawerClose = (update: boolean) => {

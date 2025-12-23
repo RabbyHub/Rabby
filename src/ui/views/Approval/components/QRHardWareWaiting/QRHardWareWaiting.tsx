@@ -182,12 +182,13 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
     };
   }, [init]);
 
+  const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        false,
+        stay,
         false,
         signFinishedData.approvalId
       );

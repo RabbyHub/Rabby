@@ -1,4 +1,6 @@
-import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import ChainSelectorInForm, {
+  ChainSelectorRef,
+} from '@/ui/component/ChainSelector/InForm';
 import TokenSelect from '@/ui/component/TokenSelect';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
@@ -106,6 +108,8 @@ export const BridgeToken = ({
   const isMaxRef = useRef(false);
 
   const inputRef = useRef<Input>();
+
+  const chainSelectorRef = useRef<ChainSelectorRef>(null);
 
   const fromTokenIsNativeToken = useMemo(() => {
     if (isFromToken && token && chain) {
@@ -278,6 +282,8 @@ export const BridgeToken = ({
           drawerHeight={540}
           showClosableIcon
           getContainer={getContainer}
+          ref={chainSelectorRef}
+          zIndex={1111}
         />
       </div>
 
@@ -329,6 +335,9 @@ export const BridgeToken = ({
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
               // supportChains={supportedChains}
               getContainer={getContainer}
+              onStartSelectChain={() => {
+                chainSelectorRef.current?.toggleShow(true);
+              }}
             />
           )}
         </div>

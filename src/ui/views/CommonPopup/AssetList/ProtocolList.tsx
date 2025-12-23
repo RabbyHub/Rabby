@@ -14,6 +14,16 @@ import { ReactComponent as RcOpenExternalCC } from '@/ui/assets/open-external-cc
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import DappActionsForPopup from './components/DappActions/DappActionsForPopup';
+import {
+  useDappAction,
+  useGetDappActions,
+} from './components/DappActions/hook';
+import { ProtocolLowValueItem } from './ProtocolLowValueItem';
+import BigNumber from 'bignumber.js';
+import { useExpandList } from '@/ui/utils/portfolio/expandList';
+import { PERPS_INVITE_URL } from '../../Perps/constants';
+import { useRequest } from 'ahooks';
+import { checkPerpsReference } from '../../Perps/utils';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -97,7 +107,7 @@ const ProtocolItemWrapper = styled.div`
     }
   }
 `;
-const ProtocolItem = ({
+export const ProtocolItem = ({
   protocol: _protocol,
   enableDelayVisible,
   isAppChain,
@@ -156,6 +166,24 @@ const ProtocolItem = ({
     }
   }, [isExpand, refreshRealTimeProtocol]);
 
+  const { data: isShowPerpsInvite } = useRequest(
+    async () => {
+      return checkPerpsReference({
+        wallet,
+        account: currentAccount,
+        scene: 'protocol',
+      });
+    },
+    {
+      ready: protocol.id === 'hyperliquid',
+      cacheKey: `check-perps-reference-protocol-${currentAccount?.address}`,
+    }
+  );
+
+  const actions = useGetDappActions({
+    protocol,
+  });
+
   useEffect(() => {
     setIsExpand(!!isSearch);
   }, [isSearch]);
@@ -207,13 +235,21 @@ const ProtocolItem = ({
             hideChainIcon={isAppChain}
           />
           <div
-            className="ml-[8px] flex items-center border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot"
+            className={clsx(
+              'ml-[8px] flex items-center min-w-0',
+              'border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot'
+            )}
             onClick={(evt) => {
               evt.stopPropagation();
-              openInTab(protocol.site_url, false);
+              openInTab(
+                protocol.id === 'hyperliquid' && isShowPerpsInvite
+                  ? PERPS_INVITE_URL
+                  : protocol.site_url,
+                false
+              );
             }}
           >
-            <span className="name inline-flex items-center">
+            <span className="name items-center truncate min-w-0">
               {protocol.name}
             </span>
             {!!isAppChain && (
@@ -223,13 +259,38 @@ const ProtocolItem = ({
                   chain: protocol.name,
                 })}
               >
-                <div className="text-r-neutral-foot ml-[4px] mr-[2px]">
+                <div className="text-r-neutral-foot ml-[4px] mr-[2px] flex-shrink-0">
                   <RcIconInfoCC />
                 </div>
               </Tooltip>
             )}
-            <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot" />
+
+            {protocol.id === 'hyperliquid' && isShowPerpsInvite ? (
+              <Tooltip
+                overlayClassName="app-chain-tooltip"
+                title={t('component.ChainItem.hyperliquidCode')}
+              >
+                <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot flex-shrink-0" />
+              </Tooltip>
+            ) : (
+              <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot flex-shrink-0" />
+            )}
           </div>
+          {actions?.length ? (
+            <div className="mx-[8px] flex items-center gap-[8px]">
+              {actions.map((action) => (
+                <div
+                  className={clsx(
+                    'border border-rabby-blue-default px-[3px] py-[1px]',
+                    'text-r-blue-default text-[11px] leading-[13px] rounded-[4px]'
+                  )}
+                  key={action}
+                >
+                  {action}
+                </div>
+              ))}
+            </div>
+          ) : null}
           <div className="flex items-center justify-end flex-1">
             <span className="net-worth">{protocol._netWorth}</span>
             <RcIconDropdown
@@ -266,22 +327,40 @@ interface Props {
   isSearch?: boolean;
   appIds?: string[];
   removeProtocol?: (id: string) => void;
+  className?: string;
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
+const ProtocolList = ({
+  list,
+  isSearch,
+  appIds,
+  removeProtocol,
+  className,
+}: Props) => {
   const enableDelayVisible = useMemo(() => {
     return (list || []).length > 100;
   }, [list]);
 
+  const totalValue = React.useMemo(() => {
+    return list
+      ?.reduce((acc, item) => acc.plus(item.netWorth || 0), new BigNumber(0))
+      .toNumber();
+  }, [list]);
+  const { result: currentList } = useExpandList(list, totalValue);
+
+  const lowValueList = React.useMemo(() => {
+    return list?.filter((item) => currentList?.indexOf(item) === -1);
+  }, [currentList, list]);
+
   if (!list) return null;
 
   return (
-    <ProtocolListWrapper>
-      {list.map((item) => (
+    <ProtocolListWrapper className={className}>
+      {(isSearch ? list : currentList || []).map((item) => (
         <ProtocolItem
           protocol={item}
           key={item.id}
@@ -291,6 +370,13 @@ const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
           removeProtocol={removeProtocol}
         />
       ))}
+      {!isSearch && list?.length && lowValueList?.length ? (
+        <ProtocolLowValueItem
+          className="h-[48px]"
+          list={lowValueList}
+          appIds={appIds}
+        />
+      ) : null}
     </ProtocolListWrapper>
   );
 };

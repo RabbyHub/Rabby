@@ -75,7 +75,9 @@ export const ExploreMore: React.FC = () => {
               name={m.name}
               leverage={m.maxLeverage}
               volume={Number(m.dayNtlVlm || 0)}
-              onClick={() => history.push(`/perps/single-coin/${m.name}`)}
+              onClick={() =>
+                history.push(`/perps/single-coin/${m.name}?openPosition=true`)
+              }
             />
           ))}
         </div>

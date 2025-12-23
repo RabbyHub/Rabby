@@ -22,6 +22,7 @@ import { ethErrors } from 'eth-rpc-errors';
 import { groupBy, isNull } from 'lodash';
 import 'reflect-metadata';
 import browser from 'webextension-polyfill';
+import BigNumber from 'bignumber.js';
 import { providerController, walletController } from './controller';
 import createSubscription from './controller/provider/subscriptionManager';
 import {
@@ -47,6 +48,7 @@ import {
   whitelistService,
   OfflineChainsService,
   perpsService,
+  transactionsService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
@@ -60,6 +62,8 @@ import { metamaskModeService } from './service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
 import { ALARMS_SYNC_DEFAULT_RPC, ALARMS_USER_ENABLE } from './utils/alarms';
 import { subscribeTxCompleted } from './subscriptions/rateGuidance';
+
+BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
 Safe.adapter = fetchAdapter as any;
 Safe.apiKey = SAFE_API_KEY;
@@ -121,6 +125,7 @@ async function restoreAppState() {
   await OfflineChainsService.init();
   await syncChainService.init();
   await perpsService.init();
+  await transactionsService.init();
 
   await walletController.tryUnlock();
 

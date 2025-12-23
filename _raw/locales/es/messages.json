@@ -1124,7 +1124,9 @@
           "dapps": "Dapps",
           "searchDapp": "Buscar Dapp",
           "setting": "Configuración",
-          "settings": "Configuraciones"
+          "settings": "Configuraciones",
+          "perpsPositions_one": "{{count}} Posición",
+          "perpsPositions_other": "{{count}} Posiciones"
         },
         "comingSoon": "Próximamente",
         "soon": "Pronto",
@@ -1410,7 +1412,9 @@
           "lowValueAssets_0": "{{count}} token de bajo valor",
           "lowValueAssets_one": "{{count}} low value token",
           "review": "Revisión",
-          "noTokens": "Sin tokens"
+          "noTokens": "Sin tokens",
+          "searchToken": "Buscar Token",
+          "lowValueDefis": "{{count}} defis de bajo valor"
         },
         "noAssets": "No hay activos",
         "blockLinkText": "Buscar dirección para bloquear token",
@@ -1449,7 +1453,8 @@
         "addTokenEntryText": "Token",
         "price": "PRECIO",
         "side": "LADO",
-        "openInTab": "Abrir en pestaña"
+        "openInTab": "Abrir en pestaña",
+        "searchTokenPlaceholder": "Buscar Token"
       },
       "hd": {
         "howToConnectLedger": "¿Cómo Conectar Ledger?",
@@ -1971,7 +1976,8 @@
         "title": "Seleccione una billetera para conectar"
       },
       "otherWalletBtn": "Conectar con Otra Wallet",
-      "connectAddress": "Conectar Dirección"
+      "connectAddress": "Conectar Dirección",
+      "connected": "Conectado"
     },
     "addressDetail": {
       "add-to-whitelist": "Agregar a lista blanca",
@@ -2970,7 +2976,8 @@
       "singleCoin": {
         "openInterestTips": "La posición total pendiente de todos los usuarios en este contrato.",
         "fundingTips": "Esta es una tarifa horaria que los traders pagan o reciben para mantener el precio del contrato perp cerca del precio real del token. Si es positiva, long paga a short. Si es negativa, short paga a long.",
-        "fundingPaymentsTips": "Este es el pago neto de financiamiento desde que se abrió la posición. El financiamiento es una tarifa que los traders pagan o reciben cada hora para mantener el precio del contrato perp cerca del precio real del token."
+        "fundingPaymentsTips": "Este es el pago neto de financiamiento desde que se abrió la posición. El financiamiento es una tarifa que los traders pagan o reciben cada hora para mantener el precio del contrato perp cerca del precio real del token.",
+        "fundingGainsTips": "Este es el beneficio neto de financiación desde que se abrió la posición. La financiación es una tarifa que los traders pagan o reciben cada hora para mantener el precio del contrato perp cerca del precio real del token."
       },
       "accountSelector": {
         "hyperliquidBalance": "Saldo de Perps",
@@ -3092,7 +3099,9 @@
         "gotIt": "Entendido",
         "subTitle": "Distancia de liquidación en tiempo real (%)",
         "liquidationDistance": "Distancia de Liquidación",
-        "liquidationDistanceTips": "La Distancia de Liquidación (%) muestra qué tan lejos está el precio actual de tu precio de liquidación. Una mayor distancia indica una posición más segura, mientras que una distancia más pequeña significa un mayor riesgo de liquidación."
+        "liquidationDistanceTips": "La Distancia de Liquidación (%) muestra qué tan lejos está el precio actual de tu precio de liquidación. Una mayor distancia indica una posición más segura, mientras que una distancia más pequeña significa un mayor riesgo de liquidación.",
+        "distanceLabel": "Distancia de Liquidación",
+        "liqDistanceTipsShort": "Subiendo <1>{{distance}}</1> se activará la liquidación."
       },
       "searchPerpsPopup": {
         "onePosition": "1 Posición",
@@ -3104,7 +3113,16 @@
         "searchPlaceholder": "Buscar perps"
       },
       "closeAll": "Cerrar Todo",
-      "position": "Posición"
+      "position": "Posición",
+      "invitePopup": {
+        "title": "Ahorra en tarifas de Hyperliquid",
+        "description": "Utiliza el código de Rabby para habilitar",
+        "activateFailed": "Fallido",
+        "activatedSuccess": "Ahorros de tarifa del 4% de Hyperliquid activados",
+        "hyperliquidFee": "Comisiones de trading de Hyperliquid."
+      },
+      "close": "Cerrar",
+      "fundingRate": "Tasa de financiación"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3177,7 +3195,10 @@
           "wallet": "Billetera",
           "unfoldProtocols": "Desplegar {{count}} Protocolos",
           "foldProtocols": "Fold {{count}} Protocolos",
-          "allTokenMode": "Todos los modos de Token"
+          "allTokenMode": "Todos los modos de Token",
+          "lpToken": "Token LP",
+          "unfoldDifis": "Desplegar {{count}} Defis",
+          "foldDifis": "Fold {{count}} Defis"
         },
         "hidden": {
           "tokensWithZeroBalance": "Ocultar tokens de $0",
@@ -3186,7 +3207,9 @@
           "hideProtocolsWithSmallDepositsDesc": "No se muestran los protocolos con depósitos pequeños.",
           "hideProtocolsWithSmallDeposits": "Ocultar protocolos con depósitos pequeños.",
           "hideSmallDesc": "No se muestran los tokens con saldos pequeños.",
-          "hideSmall": "Ocultar tokens con saldos pequeños."
+          "hideSmall": "Ocultar tokens con saldos pequeños.",
+          "hideDefiWithSmallDepositsDesc": "Los Defis con depósitos pequeños no se muestran.",
+          "hideDefiWithSmallDeposits": "Ocultar Defis con depósitos pequeños."
         },
         "table": {
           "amount": "Cantidad",
@@ -3211,7 +3234,8 @@
       "tabs": {
         "tokens": "Tokens",
         "approvals": "Aprobaciones",
-        "transactions": "Transacciones"
+        "transactions": "Transacciones",
+        "difi": "Defi"
       },
       "nft": {
         "message": {
@@ -3318,7 +3342,9 @@
         "stopLossWhenPriceAbove": "Stop Loss Cuando el Precio Está por Encima",
         "takeProfitWhenPriceAbove": "Toma de Ganancias Cuando el Precio Está por Encima",
         "providerFee": "Tarifa de Hyperliquid",
-        "sizeTips": "El valor total o la cantidad de su operación, establecido por el margen y el apalancamiento."
+        "sizeTips": "El valor total o la cantidad de su operación, establecido por el margen y el apalancamiento.",
+        "minMargin": "El margen mínimo es {{amount}}",
+        "maxMargin": "El margen máximo es {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "addMargin": "Agregar margen",
@@ -3329,14 +3355,16 @@
         "confirm": "Confirmar",
         "addMarginSuccess": "Margen añadida con éxito",
         "title": "Ajustar Margen",
-        "liqPrice": "Precio de Liquidación:",
+        "liqPrice": "Precio de Liquidación",
         "insufficientBalance": "Saldo insuficiente",
         "reduceMarginTooltip": "Margen insuficiente para reducir la posición.",
         "perpsBalance": "Saldo de Perps",
         "amountToReduce": "Cantidad a Reducir",
         "exceedMaxReduction": "Excede la reducción máxima",
         "amountToAdd": "Cantidad a agregar",
-        "reduceMarginSuccess": "Margen reducida con éxito"
+        "reduceMarginSuccess": "Margen reducida con éxito",
+        "upto": "Hasta",
+        "upTo": "Hasta"
       },
       "PerpsClosePositionPopup": {
         "confirm": "Confirmar",
@@ -3375,6 +3403,13 @@
         "stopLossTipsLong": "El precio de stop loss debe ser inferior al precio actual.",
         "stopLossTipsShortLiquidation": "El precio es más alto que el liq.price ({{price}})",
         "stopLossTipsLongLiquidation": "El precio es inferior al liq.price ({{price}})"
+      },
+      "PerpsAddPositionPopup": {
+        "addToLong": "Agregar a Long",
+        "addToShort": "Agregar a Short",
+        "sizeTips": "El valor total o la cantidad de su operación, establecido por el margen y el apalancamiento.",
+        "addSize": "Agregar Tamaño",
+        "liquidationPriceTips": "El precio al cual tu posición se cierra automáticamente por el intercambio para prevenir pérdidas adicionales cuando tu margen cae por debajo del nivel de margen de mantenimiento."
       }
     }
   },
@@ -3568,13 +3603,15 @@
       "selectAccount": "Seleccionar Dirección"
     },
     "ChainItem": {
-      "appChain": "En la cuenta de {{chain}}"
+      "appChain": "En la cuenta de {{chain}}",
+      "hyperliquidCode": "Ahorra en las tarifas de Hyperliquid con el código de referido de Rabby."
     },
     "RiskTip": {
       "title": "Riesgo Detectado"
     },
     "DappActions": {
-      "queueDescription": "La retirada actual entrará en una cola de espera. Una vez procesada, se podrá retirar a su wallet."
+      "queueDescription": "La retirada actual entrará en una cola de espera. Una vez procesada, se podrá retirar a su wallet.",
+      "manage": "Administrar"
     },
     "DesktopChainSelector": {
       "allChains": "Todas las cadenas"
@@ -3587,6 +3624,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Agregar dirección"
+    },
+    "LpTokenTag": {
+      "title": "Este es un token de proveedor de liquidez (LP)",
+      "description": "Los tokens LP son emitidos por los protocolos DeFi donde has depositado tus activos. Sirven como prueba de esos activos, pero su valor no está incluido en tu saldo total."
     }
   },
   "global": {

@@ -142,7 +142,7 @@ export function makeTransactionId(
   return `${fromAddr}_${nonce}_${chainEnum}`;
 }
 
-interface BlockInfo {
+export interface BlockInfo {
   baseFeePerGas: string;
   difficulty: string;
   extraData: string;
@@ -175,6 +175,7 @@ export async function calcGasLimit({
   explainTx,
   needRatio,
   wallet,
+  preparedBlock,
 }: {
   chain: Chain;
   tx: Tx;
@@ -184,16 +185,19 @@ export async function calcGasLimit({
   explainTx: ExplainTxResponse;
   needRatio: boolean;
   wallet: WalletControllerType;
+  preparedBlock?: BlockInfo | Promise<BlockInfo | null>;
 }) {
-  let block: null | BlockInfo = null;
+  let block: null | BlockInfo = preparedBlock ? await preparedBlock : null;
   try {
-    block = await wallet.requestETHRpc<any>(
-      {
-        method: 'eth_getBlockByNumber',
-        params: ['latest', false],
-      },
-      chain.serverId
-    );
+    if (!block) {
+      block = await wallet.requestETHRpc<BlockInfo>(
+        {
+          method: 'eth_getBlockByNumber',
+          params: ['latest', false],
+        },
+        chain.serverId
+      );
+    }
   } catch (e) {
     // NOTHING
   }
@@ -302,6 +306,7 @@ export const explainGas = async ({
   wallet,
   gasLimit,
   account,
+  preparedL1Fee,
 }: {
   gasUsed: number | string;
   gasPrice: number | string;
@@ -311,6 +316,7 @@ export const explainGas = async ({
   wallet: WalletControllerType;
   gasLimit: string | undefined;
   account: Account;
+  preparedL1Fee?: string | Promise<string>;
 }) => {
   let gasCostTokenAmount = new BigNumber(gasUsed).times(gasPrice).div(1e18);
   let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
@@ -319,13 +325,19 @@ export const explainGas = async ({
   });
   if (!chain) throw new Error(`${chainId} is not found in supported chains`);
   if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
-    const res = await wallet.fetchEstimatedL1Fee(
-      {
-        txParams: tx,
-      },
-      chain.enum,
-      account
-    );
+    let res =
+      typeof preparedL1Fee === 'object' && 'then' in preparedL1Fee
+        ? await preparedL1Fee
+        : preparedL1Fee || undefined;
+    if (!res) {
+      res = await wallet.fetchEstimatedL1Fee(
+        {
+          txParams: tx,
+        },
+        chain.enum,
+        account
+      );
+    }
     gasCostTokenAmount = new BigNumber(res).div(1e18).plus(gasCostTokenAmount);
     maxGasCostAmount = new BigNumber(res).div(1e18).plus(maxGasCostAmount);
   }

@@ -137,7 +137,8 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                     {
                       percent: minClosePercent,
                     }
-                  )}
+                  )}{' '}
+                  (${PERPS_MINI_USD_VALUE})
                 </span>
               )}
             </div>
@@ -155,7 +156,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
             <div className="flex flex-col gap-12">
               <div className="flex justify-between items-center">
                 <span className="text-14 font-medium text-rb-neutral-body leading-[18px]">
-                  {t('page.perpsDetail.PerpsClosePositionPopup.receive')}:
+                  {t('page.perpsDetail.PerpsClosePositionPopup.receive')}
                 </span>
                 <span className="text-17 font-bold text-r-neutral-title-1 leading-[22px]">
                   +$
@@ -166,7 +167,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-14 font-medium text-rb-neutral-body leading-[18px]">
-                  {t('page.perpsDetail.PerpsClosePositionPopup.closedPnl')}:
+                  {t('page.perpsDetail.PerpsClosePositionPopup.closedPnl')}
                 </span>
                 <span
                   className={clsx(
@@ -185,7 +186,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
 
           <div className="flex items-center justify-center gap-4 text-13 text-r-neutral-foot mb-12">
             <span>
-              {t('page.perpsDetail.PerpsClosePositionPopup.fee')}:{' '}
+              {t('page.perpsDetail.PerpsClosePositionPopup.fee')}{' '}
               {formatPercent(bothFee, 4)}
             </span>
             <Tooltip
@@ -214,7 +215,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
               block
               size="large"
               type="primary"
-              className="h-[48px] text-15 font-medium bg-r-blue-default border-r-blue-default"
+              className="h-[48px] text-15 font-medium"
               onClick={closePosition}
               loading={loading}
               disabled={!isValidClosePercent}

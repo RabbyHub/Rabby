@@ -17,6 +17,7 @@ import {
   openapiService,
   pageStateCacheService,
   transactionHistoryService,
+  transactionsService,
   contactBookService,
   signTextHistoryService,
   whitelistService,
@@ -61,10 +62,11 @@ import { ERC20ABI, ERC721ABI, SeaportABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import {
-  NFTDetail,
-  BridgeHistory,
   TokenItem,
   Tx,
+  TxHistoryResult,
+  NFTDetail,
+  BridgeHistory,
   testnetOpenapiService,
 } from '../service/openapi';
 import {
@@ -116,6 +118,7 @@ import {
   ensureChainListValid,
   findChain,
   findChainByEnum,
+  findChainByID,
   findChainByServerID,
   getChainList,
 } from '@/utils/chain';
@@ -174,6 +177,8 @@ import { Seaport } from '@opensea/seaport-js';
 import { OrderComponents } from '@opensea/seaport-js/lib/types';
 import { CROSS_CHAIN_SEAPORT_V1_6_ADDRESS } from '@opensea/seaport-js/lib/constants';
 import { buildCreateListingTypedData } from '@/utils/nft';
+import { http } from '../utils/http';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1681,6 +1686,10 @@ export class WalletController extends BaseController {
   };
   clearPageStateCache = () => pageStateCacheService.clear();
   setPageStateCache = (cache: CacheState) => pageStateCacheService.set(cache);
+  getTransactionsCache = (address: string) =>
+    transactionsService.getTransactions(address);
+  updateTransactionsCache = (address: string, data: TxHistoryResult) =>
+    transactionsService.updateTransactions(address, data);
 
   getIndexByAddress = (address: string, type: string) => {
     const hasIndex = KEYRING_WITH_INDEX.includes(type as any);
@@ -5500,33 +5509,36 @@ export class WalletController extends BaseController {
     let tx: Tx | undefined;
 
     if ('tx' in params) {
-      if (params.tx.nonce === undefined) {
-        params.tx.nonce = await this.getRecommendNonce({
-          from: params.tx.from,
-          chainId: params.chain.id,
-        });
-      }
-
-      if (params.tx.gasPrice === undefined || params.tx.gasPrice === '') {
-        params.tx.gasPrice = '0x0';
-      }
-      if (params.tx.gas === undefined || params.tx.gas === '') {
-        params.tx.gas = '0x0';
-      }
-      if (params.tx.data === undefined || params.tx.data === '') {
-        params.tx.data = '0x';
-      }
       chainId = params.chain.serverId;
-      tx = {
-        chainId: params.tx.chainId,
-        data: params.tx.data,
-        from: params.tx.from,
-        gas: params.tx.gas,
-        nonce: params.tx.nonce,
-        to: params.tx.to,
-        value: params.tx.value,
-        gasPrice: params.tx.gasPrice,
-      };
+
+      if (params?.chain && params?.chain.enum === CHAINS_ENUM.LINEA) {
+        if (params.tx.nonce === undefined) {
+          params.tx.nonce = await this.getRecommendNonce({
+            from: params.tx.from,
+            chainId: params.chain.id,
+          });
+        }
+
+        if (params.tx.gasPrice === undefined || params.tx.gasPrice === '') {
+          params.tx.gasPrice = '0x0';
+        }
+        if (params.tx.gas === undefined || params.tx.gas === '') {
+          params.tx.gas = '0x0';
+        }
+        if (params.tx.data === undefined || params.tx.data === '') {
+          params.tx.data = '0x';
+        }
+        tx = {
+          chainId: params.tx.chainId,
+          data: params.tx.data,
+          from: params.tx.from,
+          gas: params.tx.gas,
+          nonce: params.tx.nonce,
+          to: params.tx.to,
+          value: params.tx.value,
+          gasPrice: params.tx.gasPrice,
+        };
+      }
     } else {
       chainId = params.chainId;
     }
@@ -5705,6 +5717,51 @@ export class WalletController extends BaseController {
   getPerpsAgentWallet = async (masterWallet: string) => {
     return perpsService.getAgentWallet(masterWallet);
   };
+  getOrCreatePerpsAgentWallet = async (masterWallet: string) => {
+    const res = await perpsService.getAgentWallet(masterWallet);
+    if (!res) {
+      const resp = await this.createPerpsAgentWallet(masterWallet);
+      return {
+        vault: resp.vault,
+        agentAddress: resp.agentAddress,
+      };
+    } else {
+      return {
+        vault: res.vault,
+        agentAddress: res.preference.agentAddress,
+      };
+    }
+  };
+  getPerpsInviteConfig = perpsService.getInviteConfig;
+  setPerpsInviteConfig = perpsService.setInviteConfig;
+
+  signPerpsSendSetReferrer = async ({
+    address,
+    typedData,
+    nonce,
+    action,
+  }: {
+    address: string;
+    typedData: Record<string, any>;
+    action: Record<string, any>;
+    nonce: number;
+  }) => {
+    const signature = await wallet.sendRequest<string>({
+      method: 'eth_signTypedData_v4',
+      params: [address, JSON.stringify(typedData)],
+    });
+    if (!signature) {
+      throw new Error('User rejected signing');
+    }
+    const sdk = getPerpsSDK();
+    sdk.initAccount(address);
+    return sdk.exchange?.sendSetReferrer({
+      action: action,
+      nonce: nonce,
+      signature: signature,
+    });
+  };
+
   signTextCreateHistory = (
     params: Parameters<typeof signTextHistoryService.createHistory>[0]
   ) => {
@@ -5962,6 +6019,20 @@ export class WalletController extends BaseController {
   };
 
   getRpcTxReceipt = transactionHistoryService.getRpcTxReceipt;
+
+  resetPerpsStore = perpsService.resetStore;
+
+  fetchRemoteConfig = async (): Promise<{
+    switches?: {
+      isPerpsInviteDisabled?: boolean;
+    };
+  }> => {
+    const url = appIsProd
+      ? 'https://download.rabby.io/downloads/wallet-config/rabby-extension.json'
+      : 'https://download.rabby.io/downloads/wallet-config-reg/rabby-extension.json';
+
+    return http.get(url).then((res) => res.data);
+  };
 }
 
 const wallet = new WalletController();

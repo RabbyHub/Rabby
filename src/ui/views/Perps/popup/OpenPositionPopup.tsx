@@ -18,6 +18,7 @@ import { AssetPriceInfo } from '../components/AssetPriceInfo';
 import { MarketData } from '@/ui/models/perps';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { MarginInput } from '../components/MarginInput';
+import { LeverageInput } from '../components/LeverageInput';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -75,9 +76,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     _direction
   );
   const [margin, setMargin] = React.useState<string>('');
-  const [leverage, setLeverage] = React.useState<number>(
-    Math.min(leverageRange[1], 5)
+  const [selectedLeverage, setLeverage] = React.useState<number | undefined>(
+    leverageRange[1]
   );
+  const leverage = selectedLeverage || 1;
   const [tpTriggerPx, setTpTriggerPx] = React.useState<string>('');
   const [slTriggerPx, setSlTriggerPx] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -114,10 +116,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       Number(margin),
       direction,
       Number(tradeSize),
-      tradeAmount,
+      Number(tradeSize) * markPrice,
       maxLeverage
     ).toFixed(pxDecimals);
-  }, [markPrice, leverage, leverageRange, margin, tradeSize, tradeAmount]);
+  }, [markPrice, leverage, leverageRange, margin, tradeSize]);
 
   const bothFee = React.useMemo(() => {
     return providerFee;
@@ -142,7 +144,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       };
     }
 
-    if (usdValue < 10 || sizeValue < 10) {
+    if (sizeValue < 10) {
       // 最小订单限制 $10
       return {
         isValid: false,
@@ -164,19 +166,50 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     return { isValid: true, error: null };
   }, [margin, availableBalance, t, leverage, maxNtlValue]);
 
+  const leverageRangeValidation = React.useMemo(() => {
+    if (selectedLeverage == null || Number.isNaN(+selectedLeverage)) {
+      return {
+        error: true,
+        errorMessage: t('page.perps.leverageRangeMinError', {
+          min: leverageRange[0],
+        }),
+      };
+    }
+    if (selectedLeverage > leverageRange[1]) {
+      return {
+        error: true,
+        errorMessage: t('page.perps.leverageRangeMaxError', {
+          max: leverageRange[1],
+        }),
+      };
+    }
+
+    if (selectedLeverage < leverageRange[0]) {
+      return {
+        error: true,
+        errorMessage: t('page.perps.leverageRangeMinError', {
+          min: leverageRange[0],
+        }),
+      };
+    }
+    return { error: false, errorMessage: '' };
+  }, [selectedLeverage, leverageRange, t]);
+
   const resetInitValues = useMemoizedFn(() => {
-    setLeverage(Math.min(leverageRange[1], 5));
     setTpTriggerPx('');
     setSlTriggerPx('');
   });
 
   React.useEffect(() => {
-    if (!visible) {
+    if (visible) {
+      availableBalance > 2
+        ? setMargin(Math.round(availableBalance / 2).toString())
+        : setMargin('');
+      setLeverage(leverageRange[1]);
       resetInitValues();
-      setMargin('');
       setIsReviewMode(false);
     }
-  }, [visible, resetInitValues]);
+  }, [visible]);
 
   React.useEffect(() => {
     setDirection(_direction);
@@ -200,8 +233,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const isPositiveChange = useMemo(() => {
     return dayDelta >= 0;
   }, [dayDelta]);
-
-  const isValidAmount = marginValidation.isValid;
 
   const openPosition = useMemoizedFn(async () => {
     setLoading(true);
@@ -273,63 +304,22 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           }
         />
 
+        <LeverageInput
+          value={selectedLeverage}
+          onChange={setLeverage}
+          min={leverageRange[0]}
+          max={leverageRange[1]}
+          step={1}
+          title={t('page.perps.leverage')}
+          errorMessage={
+            leverageRangeValidation.error &&
+            leverageRangeValidation.errorMessage
+              ? leverageRangeValidation.errorMessage
+              : undefined
+          }
+        />
+
         <div className="mb-20 bg-r-neutral-card1 rounded-[8px] flex items-center flex-col px-16">
-          <div className="flex w-full py-8 justify-between items-center">
-            <div className="text-14 text-r-neutral-foot">
-              {t('page.perps.leverage')}{' '}
-              <span className="text-r-neutral-foot">
-                ({leverageRange[0]} - {leverageRange[1]}x)
-              </span>
-            </div>
-            <div className="text-13 text-r-neutral-title-1 font-medium text-center flex items-center gap-6">
-              <div
-                className={clsx(
-                  'text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-6 py-4',
-                  leverageRange[0] === leverage
-                    ? 'opacity-50'
-                    : 'hover:bg-r-blue-light-1 hover:text-r-blue-default cursor-pointer'
-                )}
-                onClick={() => {
-                  setLeverage((v) => Math.max(v - 1, leverageRange[0]));
-                }}
-              >
-                <RcIconPerpsLeverageMinus />
-              </div>
-              <input
-                className="text-15 text-r-neutral-title-1 font-medium text-center w-[68px] h-[28px] bg-transparent border-[0.5px] border-solid border-rabby-neutral-line rounded-[4px] outline-none focus:border-blue"
-                value={leverage}
-                onBlur={() => {
-                  if (leverage < leverageRange[0]) {
-                    setLeverage(leverageRange[0]);
-                  }
-                }}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === '' || /^\d+$/.test(value)) {
-                    const num = value === '' ? 0 : parseInt(value);
-                    if (num >= leverageRange[1]) {
-                      setLeverage(leverageRange[1]);
-                    } else {
-                      setLeverage(num);
-                    }
-                  }
-                }}
-              />
-              <div
-                className={clsx(
-                  'text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-6 py-4',
-                  leverageRange[1] === leverage
-                    ? 'opacity-50'
-                    : 'hover:bg-r-blue-light-1 hover:text-r-blue-default cursor-pointer'
-                )}
-                onClick={() => {
-                  setLeverage((v) => Math.min(v + 1, leverageRange[1]));
-                }}
-              >
-                <RcIconPerpsLeveragePlus />
-              </div>
-            </div>
-          </div>
           <div className="flex w-full py-12 justify-between items-center">
             <div className="text-14 text-r-neutral-foot flex items-center gap-4 relative">
               {t('page.perps.size')}
@@ -416,10 +406,18 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           </div>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
+        <div
+          className={clsx(
+            'fixed bottom-0 left-0 right-0 ',
+            'border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16',
+            'bg-r-neutral-card-2'
+          )}
+        >
           <Button
             block
-            disabled={!isValidAmount}
+            disabled={
+              !marginValidation.isValid || leverageRangeValidation.error
+            }
             size="large"
             type="primary"
             className="h-[48px] text-15 font-medium"
@@ -604,7 +602,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         onCancel={onCancel}
         onClose={isReviewMode ? handleBackToEdit : onCancel}
       >
-        <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
+        <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px] overflow-auto pb-[80px]">
           {isReviewMode ? renderReviewMode() : renderEditMode()}
         </div>
       </Popup>

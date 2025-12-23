@@ -7,7 +7,7 @@ import { useClickAway } from 'react-use';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { KEYRING_CLASS } from '@/constant';
 import { sortAccountsByBalance } from '@/ui/utils/account';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import cx from 'clsx';
 
@@ -64,7 +64,7 @@ function useSearchAccount(searchKeyword?: string) {
     ];
   }, [accountsList, highlightedAddresses]);
 
-  const debouncedSearchKeyword = useDebounceValue(searchKeyword, 250);
+  const debouncedSearchKeyword = useSyncStaleValue(searchKeyword, 250);
 
   const {
     accountList,

@@ -138,14 +138,14 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
       )}
       style={{ height, position: isAbsolute ? 'absolute' : undefined }}
       ref={ref}
-      onMouseEnter={() => {
-        if (!isAbsolute) {
-          document.querySelector('.main-content')?.classList?.add('is-open');
-        }
-      }}
-      onMouseLeave={() => {
-        document.querySelector('.main-content')?.classList?.remove('is-open');
-      }}
+      // onMouseEnter={() => {
+      //   if (!isAbsolute) {
+      //     document.querySelector('.main-content')?.classList?.add('is-open');
+      //   }
+      // }}
+      // onMouseLeave={() => {
+      //   document.querySelector('.main-content')?.classList?.remove('is-open');
+      // }}
     >
       <Virtuoso
         ref={virtuosoRef}

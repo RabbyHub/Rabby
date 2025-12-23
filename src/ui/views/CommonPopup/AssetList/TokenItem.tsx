@@ -8,6 +8,9 @@ import { Image } from 'antd';
 import { isNil } from 'lodash';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { LpTokenTag } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenTag';
+import styled from 'styled-components';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -15,13 +18,22 @@ export interface Props {
   onClick?: () => void;
 }
 
+const LpContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  .inner-symbol {
+    max-width: calc(100% - 24px);
+  }
+`;
+
 const TokenItemAsset: React.FC<Props> = ({ item }) => {
   const chain = findChain({
     serverId: item.chain,
   });
 
   return (
-    <TCell className="py-8 flex gap-10 w-[160px] items-center">
+    <TCell className="py-8 flex gap-10 w-[146px] items-center flex-shrink-0">
       <div className="relative h-[32px]">
         <Image
           className="w-32 h-32 rounded-full"
@@ -45,9 +57,14 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
         <span className="text-r-neutral-title-1 text-13 font-medium leading-[15px] truncate">
           {item._amountStr}
         </span>
-        <span className="text-r-neutral-foot text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden">
-          {item.symbol}
-        </span>
+        <LpContainer>
+          <span className="text-r-neutral-foot text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden inner-symbol">
+            {item.symbol}
+          </span>
+          {isLpToken(item) && (
+            <LpTokenTag size={13.5} iconClassName="text-r-neutral-foot" />
+          )}
+        </LpContainer>
       </div>
     </TCell>
   );

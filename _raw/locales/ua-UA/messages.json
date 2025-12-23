@@ -1127,7 +1127,9 @@
           "dapps": "Dapps",
           "searchDapp": "Пошук Dapp",
           "setting": "Налаштування",
-          "settings": "Налаштування"
+          "settings": "Налаштування",
+          "perpsPositions_other": "{{count}} Позицій",
+          "perpsPositions_one": "{{count}} Позиція"
         },
         "comingSoon": "Скоро",
         "soon": "Незабаром",
@@ -1413,7 +1415,9 @@
           "lowValueAssets_one": "{{count}} токенів низької вартості",
           "lowValueAssets_other": "{{count}} низьковартісних токенів",
           "review": "Огляд",
-          "noTokens": "Немає токенів"
+          "noTokens": "Немає токенів",
+          "searchToken": "Пошук токена",
+          "lowValueDefis": "{{count}} низьковартісних defi"
         },
         "noAssets": "Немає активів",
         "blockLinkText": "Адреса для пошуку токена блоку",
@@ -1452,7 +1456,8 @@
         "noTestnetAssets": "Немає активів у користувацькій мережі",
         "price": "ЦІНА",
         "side": "БОКОВИЙ",
-        "openInTab": "Відкрити у вкладці"
+        "openInTab": "Відкрити у вкладці",
+        "searchTokenPlaceholder": "Пошук Токену"
       },
       "hd": {
         "howToConnectLedger": "Як підключити Ledger",
@@ -1983,7 +1988,8 @@
         "title": "Виберіть гаманець для підключення"
       },
       "otherWalletBtn": "Підключитися до іншого гаманця",
-      "connectAddress": "Підключити адресу\n"
+      "connectAddress": "Підключити адресу\n",
+      "connected": "З'єднано"
     },
     "addressDetail": {
       "add-to-whitelist": "Додати до білого списку",
@@ -2982,7 +2988,8 @@
       "singleCoin": {
         "fundingTips": "Це погодинний збір, який трейдери сплачують або отримують, щоб підтримувати ціну контракту perp ближче до фактичної ціни токена. Якщо позитивний, long сплачує short. Якщо негативний, short сплачує long.",
         "openInterestTips": "Загальна непогашена позиція всіх користувачів за цим контрактом.",
-        "fundingPaymentsTips": "Це чисті платежі за фінансування з моменту відкриття позиції. Фінансування — це щогодинна плата, яку трейдери сплачують або отримують, щоб підтримувати ціну контракту на перпетуації близькою до актуальної ціни токена."
+        "fundingPaymentsTips": "Це чисті платежі за фінансування з моменту відкриття позиції. Фінансування — це щогодинна плата, яку трейдери сплачують або отримують, щоб підтримувати ціну контракту на перпетуації близькою до актуальної ціни токена.",
+        "fundingGainsTips": "Це чистий прибуток від фінансування з моменту відкриття позиції. Фінансування — це погодинний збір, який трейдери сплачують або отримують, щоб утримувати ціну контракта на perpetual (perp) ближче до фактичної ціни токена."
       },
       "accountSelector": {
         "notActivatedAddress": "Не активовано",
@@ -3104,7 +3111,10 @@
         "gotIt": "Зрозуміло",
         "subTitle": "Відстань ліквідації в реальному часі (%)",
         "liquidationDistance": "Відстань ліквідації",
-        "liquidationDistanceTips": "Відстань ліквідації (%) показує, як далеко поточна ціна від вашої цінової ліквідації. Більша відстань вказує на безпечнішу позицію, тоді як менша відстань означає вищий ризик ліквідації."
+        "liquidationDistanceTips": "Відстань ліквідації (%) показує, як далеко поточна ціна від вашої цінової ліквідації. Більша відстань вказує на безпечнішу позицію, тоді як менша відстань означає вищий ризик ліквідації.",
+        "distanceLabel": "Відстань ліквідації",
+        "liqDistanceTipsShort": "Зростання на <1>{{distance}}</1> призведе до ліквідації.",
+        "liqDistanceTipsLong": "Зниження <1>{{distance}}</1> викличе ліквідацію."
       },
       "searchPerpsPopup": {
         "searchPlaceholder": "Пошук перпс",
@@ -3116,7 +3126,19 @@
         "searchPerps": "Пошук Perps"
       },
       "closeAll": "Закрити всі",
-      "position": "Позиція"
+      "position": "Позиція",
+      "invitePopup": {
+        "activateFailed": "Не вдалося",
+        "activateNow": "Активувати зараз",
+        "hyperliquidFee": "Комісії за торгівлю Hyperliquid.",
+        "activatedSuccess": "Активовано збереження комісії Hyperliquid 4%",
+        "description": "Використовуйте код Rabby для активації",
+        "title": "Економте на комісіях Hyperliquid"
+      },
+      "close": "Закрити",
+      "add": "Додати",
+      "fundingGains": "Фінансова вигода",
+      "fundingRate": "Ставка фінансування"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3189,7 +3211,10 @@
           "wallet": "Гаманець",
           "foldProtocols": "Fold {{count}} Протоколів",
           "allTokenMode": "Усі токен-режими",
-          "unfoldProtocols": "Розгорніть {{count}} Протоколів"
+          "unfoldProtocols": "Розгорніть {{count}} Протоколів",
+          "lpToken": "LP-Tокен",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "Розгорнути {{count}} Defis"
         },
         "hidden": {
           "showAll": "Показати все",
@@ -3198,7 +3223,9 @@
           "tokensWithZeroBalanceDesc": "Токени з балансом $0 приховані.",
           "hideProtocolsWithSmallDepositsDesc": "Протоколи з невеликими депозитами не відображаються.",
           "hideProtocolsWithSmallDeposits": "Сховати протоколи з невеликими депозитами.",
-          "hideSmallDesc": "Токени з невеликими залишками не відображаються."
+          "hideSmallDesc": "Токени з невеликими залишками не відображаються.",
+          "hideDefiWithSmallDepositsDesc": "Дефі з малими депозитами не відображаються.",
+          "hideDefiWithSmallDeposits": "Сховати DeFi з невеликими депозитами."
         },
         "table": {
           "tokenAddress": "Адрес токена",
@@ -3223,7 +3250,9 @@
       "tabs": {
         "tokens": "Токени",
         "transactions": "Транзакції",
-        "approvals": "Схвалення"
+        "approvals": "Схвалення",
+        "difi": "Defi",
+        "defi": "DeFi"
       },
       "nft": {
         "message": {
@@ -3330,7 +3359,9 @@
         "maximumOrderSize": "Максимальний розмір замовлення становить {{amount}}.",
         "minimumOrderSize": "Мінімальний розмір замовлення – 10 доларів США.",
         "sizeTips": "Загальна вартість або кількість вашої угоди, встановлена за рахунок маржі та важеля.",
-        "takeProfitWhenPriceAbove": "Візьміть прибуток, коли ціна вище"
+        "takeProfitWhenPriceAbove": "Візьміть прибуток, коли ціна вище",
+        "maxMargin": "Максимальна маржа складає {{amount}}",
+        "minMargin": "Мінімальний маржинальний вимога складає {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "available": "Доступно",
@@ -3340,7 +3371,7 @@
         "confirm": "Підтвердити",
         "margin": "Маржа",
         "insufficientBalance": "Недостатньо коштів",
-        "liqPrice": "Liq. Ціна:",
+        "liqPrice": "Liq. Ціна",
         "perpsBalance": "Баланс перпс",
         "currentPrice": "Поточна ціна",
         "amountToReduce": "Сума для зменшення",
@@ -3348,7 +3379,10 @@
         "reduceMarginTooltip": "Недостатньо маржі для зменшення позиції.",
         "title": "Регулювати маржу",
         "addMargin": "Додати маржу",
-        "reduceMarginSuccess": "Маржа успішно зменшена"
+        "reduceMarginSuccess": "Маржа успішно зменшена",
+        "liqDistance": "Ліквідність. Відстань",
+        "upTo": "До",
+        "upto": "До"
       },
       "PerpsClosePositionPopup": {
         "amount": "Сума",
@@ -3387,7 +3421,16 @@
         "stopLossTipsLongLiquidation": "Ціна нижча за ціну ліквідації ({{price}})",
         "stopLossTipsShortLiquidation": "Ціна вища за liq.price ({{price}})",
         "stopLossWhenPriceAbove": "Стоп-лос, коли ціна вище"
-      }
+      },
+      "PerpsAddPositionPopup": {
+        "addToLong": "Додати до Long",
+        "addToShort": "Додати до Short",
+        "totalSize": "Загальний розмір",
+        "sizeTips": "Загальна вартість або кількість вашої трейда, визначена маржею та кредитним плечем.",
+        "addSize": "Додати розмір",
+        "liquidationPriceTips": "Ціна, за якою ваша позиція автоматично закривається біржею, щоб запобігти подальшим збиткам, коли ваш маржинальний внесок падає нижче рівня підтримуючого маржі."
+      },
+      "needDepositFirst": "Вам спочатку потрібно внести кошти."
     }
   },
   "component": {
@@ -3580,13 +3623,15 @@
       "selectAccount": "Виберіть адресу"
     },
     "ChainItem": {
-      "appChain": "На акаунті {{chain}}"
+      "appChain": "На акаунті {{chain}}",
+      "hyperliquidCode": "Збережіть на комісіях Hyperliquid за допомогою реферального коду Rabby."
     },
     "RiskTip": {
       "title": "Виявлено ризик"
     },
     "DappActions": {
-      "queueDescription": "Поточне виведення​ потрапить у чергу очікування. Після обробки його можна буде ​вивести​ на ваш гаманець."
+      "queueDescription": "Поточне виведення​ потрапить у чергу очікування. Після обробки його можна буде ​вивести​ на ваш гаманець.",
+      "manage": "Керувати"
     },
     "DesktopChainSelector": {
       "allChains": "Усі ланцюги"
@@ -3599,6 +3644,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Додати адресу"
+    },
+    "LpTokenTag": {
+      "title": "Це токен постачальника ліквідності (LP)",
+      "description": "LP токени випускаються протоколами DeFi, куди ви внесли свої активи. Вони слугують доказом цих активів, але їхня вартість не включена у ваш загальний баланс."
     }
   },
   "global": {

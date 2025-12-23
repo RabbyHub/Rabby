@@ -37,6 +37,7 @@ import { AddCustomNetworkModal } from '../AddCustomNetworkModal';
 interface Props {
   className?: string;
   selectChainId?: string | null;
+  search?: string;
 }
 
 interface TokenItemProps {
@@ -128,6 +129,7 @@ const CustomTestnetTokenTable: React.FC<TableProps> = ({
 };
 
 export const CustomTestnetAssetList: React.FC<Props> = ({
+  search,
   className,
   selectChainId,
 }) => {
@@ -147,17 +149,18 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
       return wallet.getCustomTestnetTokenList({
         address: currentAccount!.address,
         isRemote: true,
+        q: search,
       });
     },
     {
-      refreshDeps: [currentAccount],
+      refreshDeps: [currentAccount, search],
       onSuccess(data) {
         setIsFetched(true);
       },
     }
   );
 
-  const list = useMemo(() => {
+  const displayedList = useMemo(() => {
     if (!selectChainId) {
       return _list;
     }
@@ -167,7 +170,7 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
   }, [_list, selectChainId]);
 
   if (!isFetched) {
-    return <TokenListViewSkeleton isTestnet />;
+    return <TokenListSkeleton />;
   }
 
   return (
@@ -177,7 +180,7 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
       ) : (
         <div className="mt-18">
           <CustomTestnetTokenTable
-            list={list || []}
+            list={displayedList || []}
             onAdd={(token) => {
               mutate((prev) => {
                 return (prev || []).find((item) => {

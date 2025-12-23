@@ -136,11 +136,15 @@ export const MiniLedgerAction: React.FC<Props> = ({
     [directSigning, disabledProcess, handleSubmit, isMiniSignTx, directSubmit]
   );
 
-  React.useEffect(() => {
-    if (task.status === 'active' && status === 'DISCONNECTED') {
-      eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
-    }
-  }, [task.status, status]);
+  useDebounce(
+    () => {
+      if (task.status === 'active' && status === 'DISCONNECTED') {
+        eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
+      }
+    },
+    300,
+    [task.status, status]
+  );
   const { t } = useTranslation();
 
   if (!directSubmit) {

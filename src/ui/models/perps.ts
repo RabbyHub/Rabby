@@ -72,6 +72,8 @@ export interface PerpsState {
   positionAndOpenOrders: PositionAndOpenOrder[];
   accountSummary: AccountSummary | null;
   currentPerpsAccount: Account | null;
+  accountNeedApproveAgent: boolean; // 账户是否需要重新approve agent
+  accountNeedApproveBuilderFee: boolean; // 账户是否需要重新approve builder fee
   marketData: MarketData[];
   marketDataMap: MarketDataMap;
   hasPermission: boolean;
@@ -104,6 +106,8 @@ export const perps = createModel<RootModel>()({
     hasPermission: true,
     perpFee: 0.00045,
     currentPerpsAccount: null,
+    accountNeedApproveAgent: false,
+    accountNeedApproveBuilderFee: false,
     marketData: [],
     userAccountHistory: [],
     localLoadingHistory: [],
@@ -152,6 +156,13 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         localLoadingHistory: [...payload, ...state.localLoadingHistory],
+      };
+    },
+
+    clearLocalLoadingHistory(state) {
+      return {
+        ...state,
+        localLoadingHistory: [],
       };
     },
 
@@ -351,6 +362,7 @@ export const perps = createModel<RootModel>()({
     },
 
     setInitialized(state, payload: boolean) {
+      console.log('setInitialized', payload);
       return {
         ...state,
         isInitialized: payload,
@@ -361,6 +373,20 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         approveSignatures: payload,
+      };
+    },
+
+    setAccountNeedApproveAgent(state, payload: boolean) {
+      return {
+        ...state,
+        accountNeedApproveAgent: payload,
+      };
+    },
+
+    setAccountNeedApproveBuilderFee(state, payload: boolean) {
+      return {
+        ...state,
+        accountNeedApproveBuilderFee: payload,
       };
     },
 
@@ -381,6 +407,8 @@ export const perps = createModel<RootModel>()({
           pnl: 0,
           show: false,
         },
+        accountNeedApproveAgent: false,
+        accountNeedApproveBuilderFee: false,
       };
     },
 
@@ -628,7 +656,7 @@ export const perps = createModel<RootModel>()({
     subscribeToUserData(address, rootState) {
       const sdk = getPerpsSDK();
       const subscriptions: (() => void)[] = [];
-
+      dispatch.perps.unsubscribeAll(undefined);
       const { unsubscribe: unsubscribeWebData2 } = sdk.ws.subscribeToWebData2(
         (data) => {
           const {
@@ -693,7 +721,11 @@ export const perps = createModel<RootModel>()({
 
     unsubscribeAll(_, rootState) {
       rootState.perps.wsSubscriptions.forEach((unsubscribe) => {
-        unsubscribe();
+        try {
+          unsubscribe();
+        } catch (e) {
+          console.error('unsubscribe error', e);
+        }
       });
       rootState.perps.wsSubscriptions = [];
     },

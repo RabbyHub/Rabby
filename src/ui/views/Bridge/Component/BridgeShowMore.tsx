@@ -38,6 +38,7 @@ import {
 } from '../../Approval/components/FooterBar/GasLessComponents';
 import { useGasAccountSign } from '../../GasAccount/hooks';
 import { useMemoizedFn } from 'ahooks';
+import { ReactComponent as IconGasCostArrowDownCC } from '../icons/gas-cost-arrow-down-cc.svg';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -88,6 +89,7 @@ export const BridgeShowMore = ({
   openFeePopup,
   supportDirectSign = false,
   autoSuggestSlippage,
+  insufficient = false,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -107,6 +109,7 @@ export const BridgeShowMore = ({
   slippageError?: boolean;
   autoSlippage: boolean;
   isCustomSlippage: boolean;
+  insufficient?: boolean;
   setAutoSlippage: (boolean: boolean) => void;
   setIsCustomSlippage: (boolean: boolean) => void;
   type: 'swap' | 'bridge';
@@ -301,7 +304,7 @@ export const BridgeShowMore = ({
 
         {lostValueContentRender()}
 
-        {fromToken && supportDirectSign ? (
+        {!insufficient && fromToken && supportDirectSign ? (
           <DirectSignGasInfo
             supportDirectSign={supportDirectSign}
             loading={!!quoteLoading}
@@ -440,12 +443,14 @@ export const DirectSignGasInfo = ({
   loading,
   openShowMore,
   noQuote,
+  type = 'bridge',
   chainServeId,
 }: {
   supportDirectSign: boolean;
   loading: boolean;
   openShowMore: (v: boolean) => void;
   noQuote?: boolean;
+  type?: 'send' | 'swap' | 'bridge';
   chainServeId: string;
 }) => {
   const { t } = useTranslation();
@@ -627,7 +632,10 @@ export const DirectSignGasInfo = ({
 
   return (
     <>
-      <ListItem name={<>{'Gas fee'}</>} className="mt-12">
+      <ListItem
+        name={<>{'Gas fee'}</>}
+        className={clsx(type !== 'send' && 'mt-12')}
+      >
         {showGasContent ? (
           <>
             <ShowMoreGasSelectModal
@@ -649,15 +657,41 @@ export const DirectSignGasInfo = ({
                   setGasModalVisible(true);
                 }}
               >
-                <div>
-                  {ctx?.selectedGas?.level
-                    ? t(getGasLevelI18nKey(ctx.selectedGas.level))
-                    : t(getGasLevelI18nKey('normal'))}
+                {type === 'send' ? (
+                  <div>
+                    <span
+                      className={clsx(
+                        'gas-level-text',
+                        'rounded-[4px] height-[24px] bg-rb-brand-light-1 px-[6px] py-[2px]',
+                        'text-[12px] text-rb-brand-default font-[500] leading-[16px]'
+                      )}
+                    >
+                      {ctx?.selectedGas?.level
+                        ? t(getGasLevelI18nKey(ctx.selectedGas.level))
+                        : t(getGasLevelI18nKey('normal'))}
+                    </span>
 
-                  {' · '}
-
-                  {gasCostUsd}
-                </div>
+                    <span
+                      className={clsx(
+                        'gas-cost-text',
+                        'inline-flex items-center gap-[4px] ml-[8px]',
+                        'text-r-blue-default',
+                        'text-[14px] font-[700] leading-[18px]'
+                      )}
+                    >
+                      {gasCostUsd}
+                      <IconGasCostArrowDownCC className="text-r-blue-default" />
+                    </span>
+                  </div>
+                ) : (
+                  <div>
+                    {ctx?.selectedGas?.level
+                      ? t(getGasLevelI18nKey(ctx.selectedGas.level))
+                      : t(getGasLevelI18nKey('normal'))}
+                    {' · '}
+                    {gasCostUsd}
+                  </div>
+                )}
                 {ctx.gasMethod === 'gasAccount' ? (
                   <Tooltip
                     align={{

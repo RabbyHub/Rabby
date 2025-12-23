@@ -10,9 +10,19 @@ import { DesktopTokenLabel } from '../TransactionsTabPane/DesktopTokenLabel';
 import styled from 'styled-components';
 import { CustomTestnetToken } from '@/background/service/customTestnet';
 import { useTranslation } from 'react-i18next';
-import { getTokenSymbol } from 'ui/utils/token';
 import { isNil } from 'lodash';
 import clsx from 'clsx';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { LpTokenTag } from './components/LpTokenTag';
+
+const PADDING = 8;
+
+const MAINNET_WIDTH_MAP = {
+  token: 360 - PADDING,
+  price: 280,
+  amount: 280,
+  usdValue: 'auto', //136 - PADDING,
+};
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -65,17 +75,22 @@ export const TokenItemAsset: React.FC<Props> = ({
       history.location.pathname +
         `?action=swap&chain=${item.chain}&payTokenId=${item._tokenId}`
     );
-  }, [item._tokenId, item.chain]);
+  }, [history, item._tokenId, item.chain]);
 
   const gotoSend = useCallback(() => {
     history.replace(
       history.location.pathname +
         `?action=send&token=${item.chain}:${item._tokenId}`
     );
-  }, [item._tokenId, item.chain]);
+  }, [history, item._tokenId, item.chain]);
 
   return (
-    <TCell className="py-8 flex gap-10 flex-1 items-center overflow-hidden">
+    <TCell
+      className="py-8 flex gap-10 items-center overflow-hidden"
+      style={{
+        width: MAINNET_WIDTH_MAP['token'],
+      }}
+    >
       <div className="relative h-[24px]">
         <Image
           className="w-24 h-24 rounded-full"
@@ -96,15 +111,18 @@ export const TokenItemAsset: React.FC<Props> = ({
         </TooltipWithMagnetArrow>
       </div>
       <div className="flex flex-1 flex-row items-center gap-[12px] overflow-hidden">
-        <DesktopTokenLabel
-          token={{ ...item, id: item._tokenId }}
-          isNft={false}
-          textClassName={`
-            cursor-pointer no-underline
-            text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
-            hover:text-r-blue-default hover:underline 
-          `}
-        />
+        <div className="flex items-center gap-4">
+          <DesktopTokenLabel
+            token={{ ...item, id: item._tokenId }}
+            isNft={false}
+            textClassName={`
+              cursor-pointer no-underline
+              text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
+              hover:text-r-blue-default hover:underline 
+            `}
+          />
+          {isLpToken(item) && <LpTokenTag />}
+        </div>
         {!disableSwap && (
           <ActionBottom
             onClick={gotoSwap}
@@ -135,7 +153,7 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
       history.location.pathname +
         `?action=send&token=${chain?.serverId}:${item.id}`
     );
-  }, [chain?.serverId, item.id]);
+  }, [chain?.serverId, history, item.id]);
   return (
     <TCell className="py-8 flex gap-10 flex-1 items-center overflow-hidden">
       <div className="relative h-[24px]">
@@ -195,7 +213,12 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
 
 const TokenItemAmount: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 truncate">
+    <TCell
+      className="py-8 text-r-neutral-title1 text-14 truncate"
+      style={{
+        width: MAINNET_WIDTH_MAP['amount'],
+      }}
+    >
       {`${item._amountStr} `}
       <DesktopTokenLabel
         token={{ ...item, id: item._tokenId }}
@@ -212,7 +235,12 @@ const TokenItemAmount: React.FC<Props> = ({ item }) => {
 
 const TokenItemPrice: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="text-r-neutral-title1 text-14 flex-1 truncate flex items-center gap-4">
+    <TCell
+      className="text-r-neutral-title1 text-14  truncate flex items-center gap-4"
+      style={{
+        width: MAINNET_WIDTH_MAP['price'],
+      }}
+    >
       <div>${item._priceStr}</div>
       {isNil(item.price_24h_change) ? null : (
         <div
@@ -231,7 +259,12 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
 
 const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 text-right truncate">
+    <TCell
+      className="py-8 text-r-neutral-title1 text-14 flex-1 text-right truncate"
+      style={{
+        width: MAINNET_WIDTH_MAP['usdValue'],
+      }}
+    >
       {item._usdValueStr || '<$0.01'}
     </TCell>
   );
