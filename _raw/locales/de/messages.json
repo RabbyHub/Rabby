@@ -1414,7 +1414,7 @@
           "review": "Überprüfung",
           "noTokens": "Keine Token",
           "searchToken": "Token suchen",
-          "lowValueDefis": "{{count}} Low-Value DeFi-Angebote"
+          "lowValueDefis": ""
         },
         "noAssets": "Keine Vermögenswerte",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",

@@ -1414,7 +1414,7 @@
           "review": "Revisión",
           "noTokens": "Sin tokens",
           "searchToken": "Buscar Token",
-          "lowValueDefis": "{{count}} defis de bajo valor"
+          "lowValueDefis": ""
         },
         "noAssets": "No hay activos",
         "blockLinkText": "Buscar dirección para bloquear token",

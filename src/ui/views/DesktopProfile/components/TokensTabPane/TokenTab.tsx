@@ -161,6 +161,7 @@ export const TokenTab = ({
           searchList={searchList}
           isSearch={!!searchValue}
           search={searchValue}
+          lpTokenMode={lpTokenMode}
         />
       )}
     </>

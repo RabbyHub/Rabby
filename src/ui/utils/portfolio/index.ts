@@ -13,7 +13,7 @@ export const useQueryProjects = (
   withHistory = false,
   visible: boolean,
   isTestnet = false,
-  isAll = false,
+  lpTokenMode = false,
   showBlocked = false
 ) => {
   const [time, setTime] = useSafeState(dayjs().subtract(1, 'day'));
@@ -45,7 +45,7 @@ export const useQueryProjects = (
     0,
     undefined,
     isTestnet,
-    isAll,
+    lpTokenMode,
     showBlocked
   );
 

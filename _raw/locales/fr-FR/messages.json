@@ -723,7 +723,7 @@
           "review": "Revue",
           "noTokens": "Aucun Token",
           "searchToken": "Recherche de Token",
-          "lowValueDefis": "{{count}} defis de faible valeur"
+          "lowValueDefis": ""
         },
         "tokenButton": {
           "subTitle": "Le token de cette liste ne sera pas ajouté au solde total"

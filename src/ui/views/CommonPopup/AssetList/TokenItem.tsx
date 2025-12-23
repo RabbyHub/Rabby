@@ -47,7 +47,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           className="rectangle w-[max-content]"
         >
           <img
-            className="w-16 h-16 absolute right-[-2px] top-[-2px] rounded-full"
+            className="w-16 h-16 absolute right-[-2px] bottom-[-2px] rounded-full"
             src={chain?.logo || IconUnknown}
             alt={item.chain}
           />
@@ -62,7 +62,11 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
             {item.symbol}
           </span>
           {isLpToken(item) && (
-            <LpTokenTag size={13.5} iconClassName="text-r-neutral-foot" />
+            <LpTokenTag
+              size={13.5}
+              iconClassName="text-r-neutral-foot"
+              protocolName={item.protocol_id || ''}
+            />
           )}
         </LpContainer>
       </div>

@@ -21,6 +21,7 @@ export interface Props {
   isSearch: boolean;
   searchList: AbstractPortfolioToken[];
   search?: string;
+  lpTokenMode?: boolean;
 }
 
 const ListContainer = styled.div`
@@ -38,6 +39,7 @@ export const TokenList = ({
   isSearch,
   searchList,
   search,
+  lpTokenMode,
 }: Props) => {
   const {
     result: currentList,
@@ -53,7 +55,13 @@ export const TokenList = ({
       <ListContainer>
         {selectedTab === 'mainnet' ? (
           isNoResults ? (
-            <TokenListEmpty text={t('page.dashboard.assets.table.noTokens')} />
+            <TokenListEmpty
+              text={
+                lpTokenMode
+                  ? t('page.dashboard.assets.table.noLpTokens')
+                  : t('page.dashboard.assets.table.noTokens')
+              }
+            />
           ) : (
             <>
               <TokenTable

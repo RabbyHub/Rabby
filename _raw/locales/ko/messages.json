@@ -1503,7 +1503,7 @@
           "review": "리뷰",
           "noTokens": "토큰 없음",
           "searchToken": "토큰 검색",
-          "lowValueDefis": "{{count}} 저가 가치 디파이"
+          "lowValueDefis": ""
         },
         "AddMainnetToken": {
           "title": "맞춤형 토큰 추가",

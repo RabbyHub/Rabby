@@ -1503,7 +1503,7 @@
           "review": "Tinjau",
           "noTokens": "Tidak Ada Token",
           "searchToken": "Cari Token",
-          "lowValueDefis": "{{count}} defis nilai rendah"
+          "lowValueDefis": ""
         },
         "AddMainnetToken": {
           "tokenAddress": "Alamat Token",

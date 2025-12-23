@@ -1879,12 +1879,16 @@
           "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
           "noMatch": "No Match",
           "noTokens": "No Tokens",
+          "noLpTokens": "No Liquidity Provider (LP) Token",
           "lowValueDescription": "Low value assets will be shown here",
           "lowValueAssets_0": "{{count}} low value token",
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_other": "{{count}} low value tokens",
           "searchToken": "Search Token",
-          "lowValueDefis": "{{count}} low value defis"
+          "lowValueDefis": "{{count}} low-value DeFi assets",
+          "lowValueTokens": "{{count}} low-value tokens",
+          "lowValueTokens_one": "{{count}} low-value token",
+          "lowValueTokens_other": "{{count}} low-value tokens"
         },
         "noAssets": "No assets",
         "blockLinkText": "Search address to block token",
@@ -3556,6 +3560,7 @@
         "title": "Select Token"
       },
       "noTokens": "No Tokens",
+      "noLpTokens": "No Liquidity Provider (LP) Token",
       "noMatch": "No Match",
       "noMatchSuggestion": "Try to search contract address on {{ chainName }}",
       "hot": "Hot",
@@ -3616,10 +3621,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
@@ -3640,6 +3642,7 @@
     },
     "LpTokenTag": {
       "title": "This is a liquidity provider(LP) token",
+      "descriptionFor": "This is a liquidity provider(LP) token for {{ protocolName }}",
       "description": "LP tokens are issued by the DeFi protocols where you've deposited your assets. They serve as the proof of those assets, but their value isn't included in your total balance"
     }
   },
