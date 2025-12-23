@@ -996,6 +996,10 @@
         "fundingCountdown": "Funding / Countdown",
         "8hrFunding": "8h Funding"
       },
+      "accountActions": {
+        "available": "Available:",
+        "deposit": "Deposit"
+      },
       "orderBook": {
         "title": "Order Book",
         "trades": "Trades",

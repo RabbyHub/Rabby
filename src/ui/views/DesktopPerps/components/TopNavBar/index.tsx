@@ -1,5 +1,6 @@
 import React from 'react';
 import { DesktopNav } from '@/ui/component/DesktopNav';
+import { AccountActions } from './components/AccountActions';
 
 interface TopNavBarProps {
   balance?: number | null;
@@ -22,12 +23,8 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
         isLoss={isLoss}
         isLoading={isLoading}
       />
-      {/* Right side: Account Management */}
-      <div className="flex items-center gap-[12px]">
-        <div className="text-r-neutral-foot text-[14px]">
-          Account Management Placeholder
-        </div>
-      </div>
+
+      <AccountActions />
     </div>
   );
 };

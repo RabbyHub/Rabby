@@ -35,19 +35,22 @@ import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
 import { CopyChecked } from '../CopyChecked';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import './styles.less';
+import { Account } from '@/background/service/preference';
 
 interface DesktopSelectAccountListProps {
   isShowApprovalAlert?: boolean;
+  currentAccount?: Account;
 }
 
 export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> = ({
+  currentAccount: currentAccountProp,
   isShowApprovalAlert = false,
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
   const dispatch = useRabbyDispatch();
-  const currentAccount = useCurrentAccount();
+  const currentAccount = currentAccountProp || useCurrentAccount();
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const shouldScrollRef = useRef(true);
   const [isAbsolute, setIsAbsolute] = useState(true);
