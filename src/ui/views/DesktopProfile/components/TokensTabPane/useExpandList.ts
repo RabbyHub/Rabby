@@ -3,13 +3,12 @@ import { useMemo } from 'react';
 
 // https://debankglobal.larksuite.com/docx/L48zdOFZQofLZ9xddN4uQIFMsnj
 // 折叠资产列表逻辑
-// 1. list 长度要大于 15
+// 1. list 长度要大于 3
 // 2. 折叠阈值为 list 总和的 {GROUP_MINI_THRESHOLD}
 // 3. 资产 > 1000 的不折叠
 // 4. 满足以上条件的小于 3 个，不折叠
 // 5. 特殊情况，200 个 1，全部折叠
 
-// 0.1%
 const MIN_ASSETS_THREADHOLD = 0.001;
 
 export const getExpandListSwitch = <
@@ -28,7 +27,7 @@ export const getExpandListSwitch = <
 
   // 条件 1，条件 4, 条件 5
   const hasExpandSwitch =
-    listLength >= 15 && thresholdIndex > -1 && thresholdIndex <= listLength - 4;
+    listLength >= 3 && thresholdIndex > -1 && thresholdIndex <= listLength - 4;
 
   return { thresholdIndex, hasExpandSwitch };
 };

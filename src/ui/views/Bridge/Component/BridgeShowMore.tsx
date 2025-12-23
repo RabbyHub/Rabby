@@ -38,6 +38,7 @@ import {
 } from '../../Approval/components/FooterBar/GasLessComponents';
 import { useGasAccountSign } from '../../GasAccount/hooks';
 import { useMemoizedFn } from 'ahooks';
+import { ReactComponent as IconGasCostArrowDownCC } from '../icons/gas-cost-arrow-down-cc.svg';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -88,6 +89,7 @@ export const BridgeShowMore = ({
   openFeePopup,
   supportDirectSign = false,
   autoSuggestSlippage,
+  insufficient = false,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -107,6 +109,7 @@ export const BridgeShowMore = ({
   slippageError?: boolean;
   autoSlippage: boolean;
   isCustomSlippage: boolean;
+  insufficient?: boolean;
   setAutoSlippage: (boolean: boolean) => void;
   setIsCustomSlippage: (boolean: boolean) => void;
   type: 'swap' | 'bridge';
@@ -176,8 +179,6 @@ export const BridgeShowMore = ({
     }
     return 'text-r-blue-default';
   }, [showMinDuration]);
-
-  const [showGasFeeError, setShowGasFeeError] = useState(false);
 
   const sourceContentRender = useMemoizedFn(() => {
     return (
@@ -249,7 +250,7 @@ export const BridgeShowMore = ({
     return (
       <>
         {data?.showLoss && !quoteLoading && (
-          <div className="leading-4 mb-12 text-12 text-r-neutral-foot">
+          <div className="leading-4 text-12 text-r-neutral-foot">
             <div className="flex justify-between">
               <span>{t('page.bridge.price-impact')}</span>
               <span
@@ -298,7 +299,38 @@ export const BridgeShowMore = ({
 
   return (
     <div className="mx-16">
-      {sourceAlwaysShow && sourceContentRender()}
+      <div className="space-y-16">
+        {sourceAlwaysShow && sourceContentRender()}
+
+        {lostValueContentRender()}
+
+        {!insufficient && fromToken && supportDirectSign ? (
+          <DirectSignGasInfo
+            supportDirectSign={supportDirectSign}
+            loading={!!quoteLoading}
+            openShowMore={noop}
+            noQuote={!sourceLogo && !sourceName}
+            chainServeId={fromToken?.chain}
+          />
+        ) : null}
+
+        {showSlippageError && (
+          <BridgeSlippage
+            autoSuggestSlippage={autoSuggestSlippage}
+            value={slippage}
+            displaySlippage={displaySlippage}
+            onChange={onSlippageChange}
+            autoSlippage={autoSlippage}
+            isCustomSlippage={isCustomSlippage}
+            setAutoSlippage={setAutoSlippage}
+            setIsCustomSlippage={setIsCustomSlippage}
+            type={type}
+            isWrapToken={isWrapToken}
+            recommendValue={recommendValue}
+          />
+        )}
+        <div />
+      </div>
 
       <div className="flex items-center justify-center gap-8 mb-8">
         <div
@@ -323,31 +355,22 @@ export const BridgeShowMore = ({
       </div>
 
       <div className={clsx('overflow-hidden', !open && 'h-0')}>
-        {lostValueContentRender()}
         {!sourceAlwaysShow && sourceContentRender()}
-        <BridgeSlippage
-          autoSuggestSlippage={autoSuggestSlippage}
-          value={slippage}
-          displaySlippage={displaySlippage}
-          onChange={onSlippageChange}
-          autoSlippage={autoSlippage}
-          isCustomSlippage={isCustomSlippage}
-          setAutoSlippage={setAutoSlippage}
-          setIsCustomSlippage={setIsCustomSlippage}
-          type={type}
-          isWrapToken={isWrapToken}
-          recommendValue={recommendValue}
-        />
-
-        {fromToken && supportDirectSign ? (
-          <DirectSignGasInfo
-            supportDirectSign={supportDirectSign}
-            loading={!!quoteLoading}
-            openShowMore={setShowGasFeeError}
-            noQuote={!sourceLogo && !sourceName}
-            chainServeId={fromToken?.chain}
+        {!showSlippageError && (
+          <BridgeSlippage
+            autoSuggestSlippage={autoSuggestSlippage}
+            value={slippage}
+            displaySlippage={displaySlippage}
+            onChange={onSlippageChange}
+            autoSlippage={autoSlippage}
+            isCustomSlippage={isCustomSlippage}
+            setAutoSlippage={setAutoSlippage}
+            setIsCustomSlippage={setIsCustomSlippage}
+            type={type}
+            isWrapToken={isWrapToken}
+            recommendValue={recommendValue}
           />
-        ) : null}
+        )}
 
         <ListItem name={t('page.swap.rabbyFee.title')} className="mt-12 h-18">
           <div
@@ -391,36 +414,6 @@ export const BridgeShowMore = ({
           </ListItem>
         ) : null}
       </div>
-
-      {!open && (
-        <>
-          {lostValueContentRender()}
-          {showSlippageError && (
-            <BridgeSlippage
-              autoSuggestSlippage={autoSuggestSlippage}
-              value={slippage}
-              displaySlippage={displaySlippage}
-              onChange={onSlippageChange}
-              autoSlippage={autoSlippage}
-              isCustomSlippage={isCustomSlippage}
-              setAutoSlippage={setAutoSlippage}
-              setIsCustomSlippage={setIsCustomSlippage}
-              type={type}
-              isWrapToken={isWrapToken}
-              recommendValue={recommendValue}
-            />
-          )}
-          {showGasFeeError && fromToken && supportDirectSign ? (
-            <DirectSignGasInfo
-              supportDirectSign={supportDirectSign}
-              loading={!!quoteLoading}
-              openShowMore={noop}
-              noQuote={!sourceLogo && !sourceName}
-              chainServeId={fromToken?.chain}
-            />
-          ) : null}
-        </>
-      )}
     </div>
   );
 };
@@ -450,12 +443,14 @@ export const DirectSignGasInfo = ({
   loading,
   openShowMore,
   noQuote,
+  type = 'bridge',
   chainServeId,
 }: {
   supportDirectSign: boolean;
   loading: boolean;
   openShowMore: (v: boolean) => void;
   noQuote?: boolean;
+  type?: 'send' | 'swap' | 'bridge';
   chainServeId: string;
 }) => {
   const { t } = useTranslation();
@@ -637,7 +632,10 @@ export const DirectSignGasInfo = ({
 
   return (
     <>
-      <ListItem name={<>{'Gas fee'}</>} className="mt-12">
+      <ListItem
+        name={<>{'Gas fee'}</>}
+        className={clsx(type !== 'send' && 'mt-12')}
+      >
         {showGasContent ? (
           <>
             <ShowMoreGasSelectModal
@@ -659,15 +657,41 @@ export const DirectSignGasInfo = ({
                   setGasModalVisible(true);
                 }}
               >
-                <div>
-                  {ctx?.selectedGas?.level
-                    ? t(getGasLevelI18nKey(ctx.selectedGas.level))
-                    : t(getGasLevelI18nKey('normal'))}
+                {type === 'send' ? (
+                  <div>
+                    <span
+                      className={clsx(
+                        'gas-level-text',
+                        'rounded-[4px] height-[24px] bg-rb-brand-light-1 px-[6px] py-[2px]',
+                        'text-[12px] text-rb-brand-default font-[500] leading-[16px]'
+                      )}
+                    >
+                      {ctx?.selectedGas?.level
+                        ? t(getGasLevelI18nKey(ctx.selectedGas.level))
+                        : t(getGasLevelI18nKey('normal'))}
+                    </span>
 
-                  {' · '}
-
-                  {gasCostUsd}
-                </div>
+                    <span
+                      className={clsx(
+                        'gas-cost-text',
+                        'inline-flex items-center gap-[4px] ml-[8px]',
+                        'text-r-blue-default',
+                        'text-[14px] font-[700] leading-[18px]'
+                      )}
+                    >
+                      {gasCostUsd}
+                      <IconGasCostArrowDownCC className="text-r-blue-default" />
+                    </span>
+                  </div>
+                ) : (
+                  <div>
+                    {ctx?.selectedGas?.level
+                      ? t(getGasLevelI18nKey(ctx.selectedGas.level))
+                      : t(getGasLevelI18nKey('normal'))}
+                    {' · '}
+                    {gasCostUsd}
+                  </div>
+                )}
                 {ctx.gasMethod === 'gasAccount' ? (
                   <Tooltip
                     align={{

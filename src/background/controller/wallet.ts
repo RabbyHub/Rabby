@@ -6,7 +6,7 @@ import {
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
 import { ethers, Contract } from 'ethers';
-import { groupBy, isEqual, pick, sortBy, truncate, uniq } from 'lodash';
+import { groupBy, isEqual, last, pick, sortBy, truncate, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
@@ -17,6 +17,7 @@ import {
   openapiService,
   pageStateCacheService,
   transactionHistoryService,
+  transactionsService,
   contactBookService,
   signTextHistoryService,
   whitelistService,
@@ -32,6 +33,7 @@ import {
   uninstalledService,
   OfflineChainsService,
   perpsService,
+  miscService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -56,13 +58,15 @@ import {
   DBK_NFT_CONTRACT_ADDRESS,
   CORE_KEYRING_TYPES,
 } from 'consts';
-import { ERC20ABI } from 'consts/abi';
+import { ERC20ABI, ERC721ABI, SeaportABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import {
-  BridgeHistory,
   TokenItem,
   Tx,
+  TxHistoryResult,
+  NFTDetail,
+  BridgeHistory,
   testnetOpenapiService,
 } from '../service/openapi';
 import {
@@ -102,11 +106,19 @@ import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
-import { fromHex, isAddress, zeroAddress } from 'viem';
+import {
+  decodeFunctionResult,
+  encodeFunctionData,
+  fromHex,
+  isAddress,
+  parseAbi,
+  zeroAddress,
+} from 'viem';
 import {
   ensureChainListValid,
   findChain,
   findChainByEnum,
+  findChainByID,
   findChainByServerID,
   getChainList,
 } from '@/utils/chain';
@@ -115,7 +127,12 @@ import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { autoLockService } from '../service/autoLock';
 import { t } from 'i18next';
-import { broadcastChainChanged, getWeb3Provider, web3AbiCoder } from './utils';
+import {
+  broadcastChainChanged,
+  createWeb3Provider,
+  getWeb3Provider,
+  web3AbiCoder,
+} from './utils';
 import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
 import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
 import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
@@ -155,6 +172,13 @@ import {
   SendTxHistoryItem,
   SwapTxHistoryItem,
 } from '../service/transactionHistory';
+
+import { Seaport } from '@opensea/seaport-js';
+import { OrderComponents } from '@opensea/seaport-js/lib/types';
+import { CROSS_CHAIN_SEAPORT_V1_6_ADDRESS } from '@opensea/seaport-js/lib/constants';
+import { buildCreateListingTypedData } from '@/utils/nft';
+import { http } from '../utils/http';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1662,6 +1686,10 @@ export class WalletController extends BaseController {
   };
   clearPageStateCache = () => pageStateCacheService.clear();
   setPageStateCache = (cache: CacheState) => pageStateCacheService.set(cache);
+  getTransactionsCache = (address: string) =>
+    transactionsService.getTransactions(address);
+  updateTransactionsCache = (address: string, data: TxHistoryResult) =>
+    transactionsService.updateTransactions(address, data);
 
   getIndexByAddress = (address: string, type: string) => {
     const hasIndex = KEYRING_WITH_INDEX.includes(type as any);
@@ -3307,10 +3335,20 @@ export class WalletController extends BaseController {
 
   getAccountByAddress = async (address: string) => {
     const addressList = await keyringService.getAllAdresses();
-    const account = addressList.find((item) => {
+    const accounts = addressList.filter((item) => {
       return isSameAddress(item.address, address);
     });
-    return account;
+    return last(
+      sortBy(accounts, (item) => {
+        if (item.type === KEYRING_TYPE.WatchAddressKeyring) {
+          return 0;
+        } else if (item.type === KEYRING_TYPE.WalletConnectKeyring) {
+          return 1;
+        } else {
+          return 2;
+        }
+      })
+    );
   };
 
   hasAddress = (address: string) => {
@@ -5471,33 +5509,36 @@ export class WalletController extends BaseController {
     let tx: Tx | undefined;
 
     if ('tx' in params) {
-      if (params.tx.nonce === undefined) {
-        params.tx.nonce = await this.getRecommendNonce({
-          from: params.tx.from,
-          chainId: params.chain.id,
-        });
-      }
-
-      if (params.tx.gasPrice === undefined || params.tx.gasPrice === '') {
-        params.tx.gasPrice = '0x0';
-      }
-      if (params.tx.gas === undefined || params.tx.gas === '') {
-        params.tx.gas = '0x0';
-      }
-      if (params.tx.data === undefined || params.tx.data === '') {
-        params.tx.data = '0x';
-      }
       chainId = params.chain.serverId;
-      tx = {
-        chainId: params.tx.chainId,
-        data: params.tx.data,
-        from: params.tx.from,
-        gas: params.tx.gas,
-        nonce: params.tx.nonce,
-        to: params.tx.to,
-        value: params.tx.value,
-        gasPrice: params.tx.gasPrice,
-      };
+
+      if (params?.chain && params?.chain.enum === CHAINS_ENUM.LINEA) {
+        if (params.tx.nonce === undefined) {
+          params.tx.nonce = await this.getRecommendNonce({
+            from: params.tx.from,
+            chainId: params.chain.id,
+          });
+        }
+
+        if (params.tx.gasPrice === undefined || params.tx.gasPrice === '') {
+          params.tx.gasPrice = '0x0';
+        }
+        if (params.tx.gas === undefined || params.tx.gas === '') {
+          params.tx.gas = '0x0';
+        }
+        if (params.tx.data === undefined || params.tx.data === '') {
+          params.tx.data = '0x';
+        }
+        tx = {
+          chainId: params.tx.chainId,
+          data: params.tx.data,
+          from: params.tx.from,
+          gas: params.tx.gas,
+          nonce: params.tx.nonce,
+          to: params.tx.to,
+          value: params.tx.value,
+          gasPrice: params.tx.gasPrice,
+        };
+      }
     } else {
       chainId = params.chainId;
     }
@@ -5675,6 +5716,51 @@ export class WalletController extends BaseController {
   getPerpsAgentWallet = async (masterWallet: string) => {
     return perpsService.getAgentWallet(masterWallet);
   };
+  getOrCreatePerpsAgentWallet = async (masterWallet: string) => {
+    const res = await perpsService.getAgentWallet(masterWallet);
+    if (!res) {
+      const resp = await this.createPerpsAgentWallet(masterWallet);
+      return {
+        vault: resp.vault,
+        agentAddress: resp.agentAddress,
+      };
+    } else {
+      return {
+        vault: res.vault,
+        agentAddress: res.preference.agentAddress,
+      };
+    }
+  };
+  getPerpsInviteConfig = perpsService.getInviteConfig;
+  setPerpsInviteConfig = perpsService.setInviteConfig;
+
+  signPerpsSendSetReferrer = async ({
+    address,
+    typedData,
+    nonce,
+    action,
+  }: {
+    address: string;
+    typedData: Record<string, any>;
+    action: Record<string, any>;
+    nonce: number;
+  }) => {
+    const signature = await wallet.sendRequest<string>({
+      method: 'eth_signTypedData_v4',
+      params: [address, JSON.stringify(typedData)],
+    });
+    if (!signature) {
+      throw new Error('User rejected signing');
+    }
+    const sdk = getPerpsSDK();
+    sdk.initAccount(address);
+    return sdk.exchange?.sendSetReferrer({
+      action: action,
+      nonce: nonce,
+      signature: signature,
+    });
+  };
+
   signTextCreateHistory = (
     params: Parameters<typeof signTextHistoryService.createHistory>[0]
   ) => {
@@ -5686,6 +5772,265 @@ export class WalletController extends BaseController {
       method: method,
       params,
     });
+  };
+
+  setReportGasLevel = miscService.setCurrentGasLevel;
+  getReportGasLevel = miscService.getCurrentGasLevel;
+  checkIsApprovedForAll = async ({
+    owner,
+    operator,
+    contractAddress,
+    chainId,
+  }: {
+    owner: string;
+    operator: string;
+    contractAddress: string;
+    chainId: number;
+  }) => {
+    const chain = findChain({ id: chainId });
+    if (!chain) {
+      throw new Error('wrong chain');
+    }
+    const encodedData = encodeFunctionData({
+      abi: ERC721ABI,
+      functionName: 'isApprovedForAll',
+      args: [owner as `0x${string}`, operator as `0x${string}`],
+    });
+    const res = await this.requestETHRpc(
+      {
+        method: 'eth_call',
+        params: [
+          {
+            data: encodedData,
+            to: contractAddress,
+          },
+          'latest',
+        ],
+      },
+      chain.serverId
+    );
+
+    const value = decodeFunctionResult({
+      abi: ERC721ABI,
+      functionName: 'isApprovedForAll',
+      data: res,
+    });
+
+    return value;
+  };
+
+  buildSetApprovedForAllTx = async ({
+    from,
+    chainId,
+    operator,
+    contractAddress,
+  }: {
+    from: string;
+    chainId: number;
+    operator: string;
+    contractAddress: string;
+  }) => {
+    const encodedData = encodeFunctionData({
+      abi: ERC721ABI,
+      functionName: 'setApprovalForAll',
+      args: [operator as `0x${string}`, true],
+    });
+
+    return {
+      from,
+      chainId,
+      data: encodedData,
+      to: contractAddress,
+    };
+  };
+
+  getSeaportCounter = async ({
+    chainId,
+    address,
+  }: {
+    chainId: number;
+    address: string;
+  }) => {
+    const chain = findChain({ id: chainId });
+    if (!chain) {
+      throw new Error('wrong chain');
+    }
+    const data = encodeFunctionData({
+      abi: SeaportABI,
+      functionName: 'getCounter',
+      args: [address as `0x${string}`],
+    });
+
+    const res = await this.requestETHRpc(
+      {
+        method: 'eth_call',
+        params: [
+          {
+            data: data,
+            to: CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
+          },
+          'latest',
+        ],
+      },
+      chain.serverId
+    );
+
+    const value = decodeFunctionResult({
+      abi: SeaportABI,
+      functionName: 'getCounter',
+      data: res,
+    });
+    return Number(value);
+  };
+
+  buildCancelNFTListTx = ({
+    address,
+    chainId,
+    orders,
+  }: {
+    address: string;
+    chainId: number;
+    orders: OrderComponents[];
+  }) => {
+    try {
+      const data = encodeFunctionData({
+        abi: SeaportABI,
+        functionName: 'cancel',
+        args: [orders as any],
+      });
+
+      return {
+        chainId,
+        from: address,
+        to: CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
+        data,
+      };
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
+
+  buildCreateListingTypedData = async (
+    parmas: Parameters<typeof buildCreateListingTypedData>[0]
+  ) => {
+    const counter =
+      parmas.counter ||
+      (await this.getSeaportCounter({
+        chainId: parmas.chainId,
+        address: parmas.sellerAddress,
+      }));
+    return buildCreateListingTypedData({ ...parmas, counter });
+  };
+
+  buildAcceptNFTOfferTx = async ({
+    address,
+    chainId,
+    order,
+    collectionId,
+    innerId,
+    quantity,
+    isIncludeCreatorFee,
+  }: {
+    address: string;
+    chainId: number;
+    collectionId: string;
+    innerId: string;
+    order: NonNullable<NFTDetail['best_offer_order']>;
+    quantity?: number;
+    isIncludeCreatorFee?: boolean;
+  }) => {
+    const chain = findChain({
+      id: chainId,
+    });
+    if (!chain) {
+      throw new Error('chain not found');
+    }
+    const res = await this.openapi.prepareAcceptNFTOffer({
+      chain_id: chain?.serverId,
+      order_hash: order.order_hash,
+      fulfiller: address,
+      collection_id: collectionId,
+      inner_id: innerId,
+      quantity,
+      include_optional_creator_fees: isIncludeCreatorFee,
+    });
+    const fulfillmentData = res.data;
+    const transaction = fulfillmentData.fulfillment_data.transaction;
+    const inputData = transaction.input_data;
+    const FULFILL_BASIC_ORDER_ALIAS = 'fulfillBasicOrder_efficient_6GL6yc';
+    // Extract function name and build parameters array in correct order
+    const rawFunctionName = transaction.function.split('(')[0];
+    const functionName =
+      rawFunctionName === FULFILL_BASIC_ORDER_ALIAS
+        ? 'fulfillBasicOrder'
+        : rawFunctionName;
+    let params: unknown[];
+
+    // Order parameters based on the function being called
+    if (
+      functionName === 'fulfillAdvancedOrder' &&
+      'advancedOrder' in inputData
+    ) {
+      params = [
+        inputData.advancedOrder,
+        inputData.criteriaResolvers || [],
+        inputData.fulfillerConduitKey ||
+          '0x0000000000000000000000000000000000000000000000000000000000000000',
+        inputData.recipient,
+      ];
+    } else if (
+      (functionName === 'fulfillBasicOrder' ||
+        rawFunctionName === FULFILL_BASIC_ORDER_ALIAS) &&
+      'basicOrderParameters' in inputData
+    ) {
+      params = [inputData.basicOrderParameters];
+    } else if (functionName === 'fulfillOrder' && 'order' in inputData) {
+      params = [
+        inputData.order,
+        inputData.fulfillerConduitKey ||
+          '0x0000000000000000000000000000000000000000000000000000000000000000',
+        inputData.recipient,
+      ];
+    } else {
+      // Fallback: try to use values in object order
+      params = Object.values(inputData);
+    }
+    try {
+      const encodedData = encodeFunctionData({
+        abi: SeaportABI,
+        functionName: functionName as any,
+        args: params as any,
+      });
+
+      // todo check this
+      return {
+        chainId,
+        from: address,
+        to: transaction.to,
+        value: transaction.value,
+        data: encodedData,
+      };
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
+
+  getRpcTxReceipt = transactionHistoryService.getRpcTxReceipt;
+
+  resetPerpsStore = perpsService.resetStore;
+
+  fetchRemoteConfig = async (): Promise<{
+    switches?: {
+      isPerpsInviteDisabled?: boolean;
+    };
+  }> => {
+    const url = appIsProd
+      ? 'https://download.rabby.io/downloads/wallet-config/rabby-extension.json'
+      : 'https://download.rabby.io/downloads/wallet-config-reg/rabby-extension.json';
+
+    return http.get(url).then((res) => res.data);
   };
 }
 

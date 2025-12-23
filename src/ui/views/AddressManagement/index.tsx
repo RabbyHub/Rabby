@@ -16,11 +16,11 @@ import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcNoMatchedAddress } from '@/ui/assets/address/no-matched-addr.svg';
 
 import { EVENTS, KEYRING_CLASS } from '@/constant';
-import { useRequest } from 'ahooks';
+import { useDebounceFn, useRequest } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 // import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { SortInput } from './SortInput';
@@ -82,7 +82,7 @@ const AddressManagement = () => {
   const [searchKeyword, setSearchKeyword] = React.useState(
     addressSortStore?.search || ''
   );
-  const debouncedSearchKeyword = useDebounceValue(searchKeyword, 250);
+  const debouncedSearchKeyword = useSyncStaleValue(searchKeyword, 250);
   const wallet = useWallet();
 
   const {
@@ -350,14 +350,16 @@ const AddressManagement = () => {
     VList<IDisplayedAccountWithBalance[] | IDisplayedAccountWithBalance[][]>
   >(null);
 
-  const handleScroll = useCallback(
+  const { run: handleScroll } = useDebounceFn(
     (p: ListOnScrollProps) => {
       dispatch.preference.setAddressSortStoreValue({
         key: 'lastScrollOffset',
         value: p.scrollOffset,
       });
     },
-    [dispatch?.preference?.setAddressSortStoreValue]
+    {
+      wait: 500,
+    }
   );
 
   useEffect(() => {

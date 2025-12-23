@@ -1,5 +1,22 @@
 import styled from 'styled-components';
 
+export const SendMaxButton = styled.div`
+  font-size: 12px;
+  font-weight: 600;
+  height: 18px;
+  line-height: 15px;
+  padding: 2px 8px;
+  cursor: pointer;
+  user-select: nonce;
+  margin-left: 6px;
+  background-color: var(--r-blue-light1);
+  color: var(--r-blue-default);
+  border-radius: 10px;
+  &:hover {
+    background-color: var(--r-blue-light2);
+  }
+`;
+
 export const MaxButton = styled.div`
   font-size: 11px;
   font-weight: 500;

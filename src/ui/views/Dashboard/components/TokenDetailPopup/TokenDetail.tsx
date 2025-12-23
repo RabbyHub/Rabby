@@ -35,6 +35,8 @@ import { Account } from '@/background/service/preference';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DbkButton } from '@/ui/views/Ecology/dbk-chain/components/DbkButton';
 import { DBK_CHAIN_ID } from '@/constant';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 const isDesktop = getUiType().isDesktop;
 const PAGE_COUNT = 10;
 
@@ -244,10 +246,6 @@ const TokenDetail = ({
     }
   }, [history, token, isSwap, handleInTokenSelect, desktopPathname]);
 
-  const isCustomizedNotAdded = useMemo(() => {
-    return !token.is_core && !isAdded && variant === 'add';
-  }, [token, variant, isAdded]);
-
   const BottomBtn = useMemo(() => {
     if (hideOperationButtons) {
       return null;
@@ -278,26 +276,6 @@ const TokenDetail = ({
               {t('global.confirm')}
             </Button>
           </TooltipWithMagnetArrow>
-        </div>
-      );
-    }
-
-    if (isCustomizedNotAdded && !isDesktop) {
-      return (
-        <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => addToken(tokenWithAmount)}
-            className="w-[360px] h-[40px] leading-[18px]"
-            style={{
-              width: 360,
-              height: 40,
-              lineHeight: '18px',
-            }}
-          >
-            {t('page.dashboard.tokenDetail.AddToMyTokenList')}
-          </Button>
         </div>
       );
     }
@@ -391,6 +369,7 @@ const TokenDetail = ({
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
+            {isLpToken(token) && <LpTokenTag className="ml-8" />}
           </div>
         </div>
       </div>
@@ -400,14 +379,14 @@ const TokenDetail = ({
         className={clsx('token-detail-body flex flex-col gap-12', 'pt-[0px]')}
       >
         <ScamTokenTips token={tokenWithAmount}></ScamTokenTips>
-        {variant === 'add' && !isDesktop && (
+        {/* {variant === 'add' && !isDesktop && (
           <BlockedTopTips
             token={token}
             isAdded={isAdded}
             onOpen={() => addToken(tokenWithAmount)}
             onClose={() => removeToken(tokenWithAmount)}
           ></BlockedTopTips>
-        )}
+        )} */}
         {!isCustomNetworkToken && <TokenCharts token={token}></TokenCharts>}
         <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
           <div className="balance-content flex flex-col gap-8 px-16 py-12">
@@ -415,7 +394,7 @@ const TokenDetail = ({
               <div className="balance-title text-r-neutral-body text-13">
                 {t('page.dashboard.tokenDetail.myBalance')}
               </div>
-              {variant === 'add' && !isDesktop ? (
+              {/* {variant === 'add' && !isDesktop ? (
                 token.is_core ? (
                   <BlockedButton
                     selected={isAdded}
@@ -428,7 +407,7 @@ const TokenDetail = ({
                 //   onClose={() => removeToken(tokenWithAmount)}
                 // />
                 null
-              ) : null}
+              ) : null} */}
             </div>
             <div className="flex flex-row justify-between w-full items-center">
               <div className="flex flex-row gap-8 items-center">

@@ -713,6 +713,7 @@ export const BridgeContent = () => {
         <div className="mx-20 mt-20">
           {selectedBridgeQuote && (
             <BridgeShowMore
+              insufficient={inSufficient}
               supportDirectSign={canUseDirectSubmitTx}
               openFeePopup={openFeePopup}
               open={showMoreOpen}
@@ -760,6 +761,9 @@ export const BridgeContent = () => {
             <BridgePendingTxItem getContainer={getContainer} />
           </div>
         )}
+
+        {/* for bottom padding */}
+        <div className={clsx('w-full', 'h-[40px]')} />
 
         <div
           className={clsx(

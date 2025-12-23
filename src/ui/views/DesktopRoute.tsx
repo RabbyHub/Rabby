@@ -5,7 +5,10 @@ import { PrivateRoute } from 'ui/component';
 import { PortalHost } from '../component/PortalHost';
 import { CommonPopup } from './CommonPopup';
 import { DesktopProfile } from './DesktopProfile';
-import { GlobalSignerPortal } from '../component/MiniSignV2/components/GlobalSignerPortal';
+import {
+  GlobalSignerPortal,
+  GlobalTypedDataSignerPortal,
+} from '../component/MiniSignV2/components';
 
 declare global {
   interface Window {
@@ -28,6 +31,7 @@ const Main = () => {
           <CommonPopup />
           <PortalHost />
           <GlobalSignerPortal isDesktop />
+          <GlobalTypedDataSignerPortal isDesktop />
         </>
       ) : null}
     </>

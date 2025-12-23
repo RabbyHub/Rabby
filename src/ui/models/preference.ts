@@ -40,6 +40,7 @@ interface PreferenceState {
   isEnabledDappAccount?: boolean;
   rateGuideLastExposure?: RateGuideLastExposure;
 
+  /** @deprecated */
   desktopTokensAllMode?: boolean;
 }
 

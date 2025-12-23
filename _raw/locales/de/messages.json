@@ -1124,7 +1124,9 @@
           "searchDapp": "Dapp suchen",
           "setting": "Einstellungen",
           "dapps": "Dapps",
-          "settings": "Einstellungen"
+          "settings": "Einstellungen",
+          "perpsPositions_one": "{{count}} Position",
+          "perpsPositions_other": "{{count}} Positionen"
         },
         "comingSoon": "Demnächst",
         "soon": "Bald",
@@ -1410,7 +1412,9 @@
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_0": "{{count}} Low-Value-Token",
           "review": "Überprüfung",
-          "noTokens": "Keine Token"
+          "noTokens": "Keine Token",
+          "searchToken": "Token suchen",
+          "lowValueDefis": "{{count}} Low-Value DeFi-Angebote"
         },
         "noAssets": "Keine Vermögenswerte",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",
@@ -1449,7 +1453,8 @@
         "addTokenEntryText": "Token",
         "price": "PREIS",
         "side": "SEITE",
-        "openInTab": "Im Tab öffnen"
+        "openInTab": "Im Tab öffnen",
+        "searchTokenPlaceholder": "Token suchen"
       },
       "hd": {
         "howToConnectLedger": "Wie man den Ledger verbindet",
@@ -1595,7 +1600,8 @@
         "importQuestion2": "Mein Seed-Phrase wird nur auf meinem Gerät gespeichert. Rabby kann nicht darauf zugreifen.",
         "importQuestion1": "Wenn ich meinen Seed-Phrase verliere oder teile, verliere ich den Zugriff auf meine Vermögenswerte dauerhaft.",
         "importQuestion3": "Wenn ich Rabby deinstalliere, ohne meinen Seed-Phrase zu sichern, kann er von Rabby nicht wiederhergestellt werden.",
-        "showMoreOptions": "Mehr Optionen anzeigen"
+        "showMoreOptions": "Mehr Optionen anzeigen",
+        "inputInvalid": "Ungültige Wörter erkannt. Bitte überprüfen Sie die hervorgehobenen."
       },
       "metamask": {
         "step1": "Seed Phrase oder Private Key aus MetaMask exportieren <br /> <1>Klicken Sie hier, um das Tutorial anzuzeigen <1/></1>",
@@ -2208,7 +2214,9 @@
         "bridgeStatus": "Bridge Status",
         "completed": "Abgeschlossen",
         "longTimeNoReceive": "Das Netzwerk ist beschäftigt. Dies könnte länger als üblich dauern. Bitte haben Sie Geduld.",
-        "estimatedTime": "Geschätzte Zeit"
+        "estimatedTime": "Geschätzte Zeit",
+        "sendStatus": "Send-Status",
+        "swapStatus": "Swap-Status"
       }
     },
     "pendingDetail": {
@@ -2967,7 +2975,8 @@
       "singleCoin": {
         "openInterestTips": "Die insgesamt ausstehenden Positionen aller Benutzer in diesem Vertrag.",
         "fundingTips": "Dies ist eine stündliche Gebühr, die Händler zahlen oder erhalten, um den Preis des Perpetual Contracts nahe am tatsächlichen Preis des Tokens zu halten. Ist sie positiv, zahlt Long an Short. Ist sie negativ, zahlt Short an Long.",
-        "fundingPaymentsTips": "Dies sind die Nettofinanzierungszahlungen seit der Eröffnung der Position. Die Finanzierung ist eine stündliche Gebühr, die Trader zahlen oder erhalten, um den Preis des Perp-Vertrags nahe am tatsächlichen Preis des Tokens zu halten."
+        "fundingPaymentsTips": "Dies sind die Nettofinanzierungszahlungen seit der Eröffnung der Position. Die Finanzierung ist eine stündliche Gebühr, die Trader zahlen oder erhalten, um den Preis des Perp-Vertrags nahe am tatsächlichen Preis des Tokens zu halten.",
+        "fundingGainsTips": "Dies sind die Nettogewinne aus der Finanzierung seit der Eröffnung der Position. Die Finanzierung ist eine stündliche Gebühr, die Trader zahlen oder erhalten, um den Preis des Perpetual-Contracts nahe am tatsächlichen Preis des Tokens zu halten."
       },
       "accountSelector": {
         "noPosition": "Keine Position",
@@ -3089,7 +3098,10 @@
         "liquidationDistance": "Liquidationsdistanz",
         "title": "Risikostufe",
         "liquidationDistanceTips": "Liquidation Distance (%) zeigt, wie weit der aktuelle Preis von Ihrem Liquidationspreis entfernt ist. Ein größerer Abstand zeigt eine sicherere Position an, während ein kleinerer Abstand ein höheres Liquidationsrisiko bedeutet.",
-        "currentPrice": "Aktueller Preis"
+        "currentPrice": "Aktueller Preis",
+        "distanceLabel": "Liquidationsdistanz",
+        "liqDistanceTipsLong": "Ein Rückgang um <1>{{distance}}</1> wird die Liquidation auslösen.",
+        "liqDistanceTipsShort": "Ein Anstieg um <1>{{distance}}</1> wird die Liquidation auslösen."
       },
       "searchPerpsPopup": {
         "hasPosition": "Position",
@@ -3101,7 +3113,19 @@
         "onePosition": "1 Position"
       },
       "position": "Position",
-      "closeAll": "Alle schließen"
+      "closeAll": "Alle schließen",
+      "invitePopup": {
+        "activateNow": "Aktivieren Sie jetzt",
+        "title": "Sparen Sie bei Hyperliquid Gebühren",
+        "activateFailed": "Fehlgeschlagen",
+        "hyperliquidFee": "Hyperliquid Handelsgebühren.",
+        "activatedSuccess": "4% Hyperliquid Gebühreneinsparungen aktiviert",
+        "description": "Verwenden Sie den Code von Rabby, um zu aktivieren"
+      },
+      "fundingRate": "Finanzierungsrate",
+      "close": "Schließen",
+      "add": "Hinzufügen",
+      "fundingGains": "Finanzierungsgewinne"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3174,7 +3198,10 @@
           "wallet": "Wallet",
           "allTokenMode": "Alle Token-Modus",
           "foldProtocols": "Fold {{count}} Protokolle",
-          "unfoldProtocols": "Entfalten {{count}} Protokolle"
+          "unfoldProtocols": "Entfalten {{count}} Protokolle",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "Entfalten Sie {{count}} Defis",
+          "lpToken": "LP-Token"
         },
         "hidden": {
           "showAll": "Alle anzeigen",
@@ -3183,7 +3210,9 @@
           "tokensWithZeroBalance": "$0-Token ausblenden",
           "tokensWithZeroBalanceDesc": "Tokens mit $0 Salden sind ausgeblendet.",
           "hideProtocolsWithSmallDeposits": "Protokolle mit kleinen Einlagen ausblenden.",
-          "hideProtocolsWithSmallDepositsDesc": "Protokolle mit kleinen Einzahlungen werden nicht angezeigt."
+          "hideProtocolsWithSmallDepositsDesc": "Protokolle mit kleinen Einzahlungen werden nicht angezeigt.",
+          "hideDefiWithSmallDeposits": "Verstecke Defis mit kleinen Einlagen.",
+          "hideDefiWithSmallDepositsDesc": "Kleinere Einzahlungen in Defis werden nicht angezeigt."
         },
         "table": {
           "token": "Token",
@@ -3208,7 +3237,93 @@
       "tabs": {
         "tokens": "Tokens",
         "transactions": "Transaktionen",
-        "approvals": "Genehmigungen"
+        "approvals": "Genehmigungen",
+        "difi": "Defi",
+        "defi": "DeFi"
+      },
+      "nft": {
+        "message": {
+          "cancelFailedDesc": "Bitte erneut versuchen",
+          "listingFailed": "Auflistung fehlgeschlagen",
+          "cancelSuccess": "Auflistung erfolgreich abgebrochen",
+          "acceptSuccess": "Erfolgreich verkauft",
+          "cancelSuccessDesc": "Sie haben die Listung von {{name}} erfolgreich storniert.",
+          "listingSuccessDesc": "Du hast {{name}} auf OpenSea gelistet.",
+          "listingFailedDesc": "Bitte versuchen Sie es erneut.",
+          "listingSuccess": "Gerade gelistet!",
+          "acceptFailedDesc": "Bitte versuchen Sie es erneut.",
+          "acceptFailed": "Verkauf Fehlgeschlagen",
+          "cancelFailed": "Fehlgeschlagen!",
+          "acceptSuccessDesc": "Sie haben {{name}} erfolgreich verkauft."
+        },
+        "detail": {
+          "topOffer": "Top Angebot",
+          "rarity": "Seltenheit",
+          "noOffer": "Noch keine Angebote verfügbar",
+          "chain": "Kette",
+          "lastSale": "Letzte Verkauf",
+          "collectionFloor": "Sammlung Boden",
+          "supportPlatform": "Unterstützte Plattformen:",
+          "edit": "Liste bearbeiten",
+          "accept": "Akzeptieren",
+          "collection": "Sammlung",
+          "ending": "Ende:",
+          "platform": "Plattform:",
+          "nft": "NFT",
+          "cancel": "Listing abbrechen",
+          "listing": "Auflistung auf Opensea",
+          "send": "Senden",
+          "listedFor": "{{count}} gelistet für"
+        },
+        "cancelModal": {
+          "title": "Auflistung abbrechen",
+          "cancelListing": "Listung abbrechen",
+          "listing": "Auflistung",
+          "listingPrice": "Listenpreis"
+        },
+        "listingModal": {
+          "cost": "Kosten",
+          "nft": "NFT",
+          "createListing": "Erstelle Auflistung",
+          "floorDifference": "Bodenunterschied",
+          "topOffer": "Top Angebot",
+          "editListing": "Listing bearbeiten",
+          "approveAndList": "Genehmigen und Auflisten",
+          "creatorFee": "Creator-Gebühren ({{fee}}%)",
+          "rabbyFee": "Rabby Gebühr (0%)",
+          "platformFeeTips": "Diese Gebühr ist die Servicegebühr von OpenSea.",
+          "listedAs": "Gelistet als",
+          "creatorFeeTips1": "Die Einnahmen der Creator werden vom Verkäufer bezahlt. Die Einnahmen der Creator sind durchgesetzt.",
+          "floor": "Boden",
+          "quantity": "Menge",
+          "total": "Gesamtgelisteter Preis",
+          "platformFee": "Opensea Plattformgebühren ({{fee}}%)",
+          "proceeds": "Erlös",
+          "totalEst": "Gesamte geschätzte Erträge",
+          "listOn": "Auf OpenSea listen",
+          "creatorFeeTips": "Die Einnahmen der Creator werden vom Verkäufer bezahlt."
+        },
+        "acceptModal": {
+          "rabbyFee": "Rabby Gebühr (0%)",
+          "creatorFee": "Creator-Gebühren ({{fee}}%)",
+          "quantity": "Menge",
+          "acceptOffer": "Angebot annehmen",
+          "platformFeeTips": "Diese Gebühr ist die Servicegebühr von OpenSea.",
+          "platformFee": "Opensea Plattformgebühren ({{fee}}%)",
+          "totalEst": "Gesamte geschätzte Erträge",
+          "title": "Angebot annehmen",
+          "floorDifference": "Bodenunterschied",
+          "creatorFeeTips": "Die Einnahmen der Creator werden vom Verkäufer gezahlt.",
+          "offerPrice": "Angebotspreis",
+          "creatorFeeTips1": "Die Einnahmen der Creator werden vom Verkäufer bezahlt. Die Einnahmen der Creator sind durchgesetzt.",
+          "offer": "Angebot",
+          "platform": "Plattform"
+        },
+        "confirmingTx": "Bestätigen Sie Ihre Transaktion",
+        "hideLowValue": "Verstecke NFTs mit niedrigem Wert",
+        "pending": "Ausstehend",
+        "all": "Alle",
+        "empty": "Keine NFTs"
       }
     },
     "perpsDetail": {
@@ -3231,7 +3346,9 @@
         "stopLossWhenPriceAbove": "Stop-Loss, wenn der Preis über",
         "leverage": "Hebel",
         "minimumOrderSize": "Die Mindestbestellgröße beträgt 10 $.",
-        "maximumOrderSize": "Die maximale Bestellgröße beträgt {{amount}}"
+        "maximumOrderSize": "Die maximale Bestellgröße beträgt {{amount}}",
+        "minMargin": "Die Mindestmargin beträgt {{amount}}",
+        "maxMargin": "Die maximale Margin beträgt {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "reduceMargin": "Margin reduzieren",
@@ -3245,11 +3362,14 @@
         "amountToReduce": "Betrag zur Reduzierung",
         "exceedMaxReduction": "Überschreitet die maximale Reduzierung",
         "confirm": "Bestätigen",
-        "liqPrice": "Liq. Preis:",
+        "liqPrice": "Liq. Preis",
         "available": "Verfügbar",
         "reduceMarginTooltip": "Unzureichende Margin, um die Position zu reduzieren.",
         "title": "Margin anpassen",
-        "reduceMarginSuccess": "Margin erfolgreich reduziert"
+        "reduceMarginSuccess": "Margin erfolgreich reduziert",
+        "upTo": "Bis zu",
+        "liqDistance": "Liq. Abstand",
+        "upto": "Bis zu"
       },
       "PerpsClosePositionPopup": {
         "total": "Gesamt",
@@ -3288,7 +3408,16 @@
         "stopLossTipsLong": "Der Stop-Loss-Preis muss unter dem aktuellen Preis liegen.",
         "stopLossTipsLongLiquidation": "Der Preis liegt unter dem liq.price ({{price}})",
         "stopLossTipsShort": "Der Stop-Loss-Preis muss über dem aktuellen Preis liegen."
-      }
+      },
+      "PerpsAddPositionPopup": {
+        "totalSize": "Gesamtgröße",
+        "addToShort": "Short hinzufügen",
+        "addSize": "Größe hinzufügen",
+        "addToLong": "Zu Long hinzufügen",
+        "liquidationPriceTips": "Der Preis, zu dem Ihre Position automatisch von der Börse geschlossen wird, um weitere Verluste zu verhindern, wenn Ihr Margin unter das Niveau der Wartungsmargin fällt.",
+        "sizeTips": "Der Gesamtwert oder die Menge Ihres Handels, festgelegt durch Margin und Hebel."
+      },
+      "needDepositFirst": "Sie müssen zuerst Geld einzahlen."
     }
   },
   "component": {
@@ -3417,7 +3546,10 @@
       "common": "Allgemein",
       "recent": "Neueste",
       "hot": "Heiß",
-      "chainNotSupport": "Diese Kette wird nicht unterstützt"
+      "chainNotSupport": "Diese Kette wird nicht unterstützt",
+      "chainFilterLine": {
+        "filterAll": "Alle Chains"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3478,13 +3610,15 @@
       "selectAccount": "Adresse auswählen"
     },
     "ChainItem": {
-      "appChain": "Auf {{chain}} Konto"
+      "appChain": "Auf {{chain}} Konto",
+      "hyperliquidCode": "Sparen Sie Gebühren auf Hyperliquid mit Rabbys Empfehlungs-Code."
     },
     "RiskTip": {
       "title": "Risiko erkannt"
     },
     "DappActions": {
-      "queueDescription": "Aktuelle Abhebungen gelangen in eine Warteschlange. Sobald sie bearbeitet sind, können sie in Ihr Wallet abgehoben werden."
+      "queueDescription": "Aktuelle Abhebungen gelangen in eine Warteschlange. Sobald sie bearbeitet sind, können sie in Ihr Wallet abgehoben werden.",
+      "manage": "Verwalten"
     },
     "DesktopChainSelector": {
       "allChains": "Alle Chains"
@@ -3497,6 +3631,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adresse hinzufügen"
+    },
+    "LpTokenTag": {
+      "title": "Dies ist ein Liquiditätsanbieter (LP) Token.",
+      "description": "LP-Token werden von den DeFi-Protokollen ausgegeben, bei denen Sie Ihre Vermögenswerte hinterlegt haben. Sie dienen als Nachweis für diese Vermögenswerte, aber ihr Wert ist nicht in Ihrem Gesamtkontostand enthalten."
     }
   },
   "global": {

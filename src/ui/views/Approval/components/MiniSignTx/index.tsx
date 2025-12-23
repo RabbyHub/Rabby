@@ -77,6 +77,7 @@ import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPop
 import { Divide } from '../Divide';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { BalanceChangeLoading } from './BalanceChangeLoanding';
+import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
 
 interface MiniSignTxProps {
   txs: Tx[];
@@ -877,6 +878,7 @@ export const MiniSignTx = ({
               recommendNonce,
               wallet,
               address: currentAccount?.address,
+              chainId: tx.chainId,
             })),
             ...tempTxs.slice(0, index),
           ],
@@ -1168,6 +1170,8 @@ export const MiniSignTx = ({
       !!checkErrors.find((item) => item.level === 'forbidden');
     return isDisabled || disableSignBtn;
   }, [isReady, selectedGas, canProcess, checkErrors, disableSignBtn]);
+
+  useSetReportGasLevel(selectedGas?.level);
 
   return (
     <>

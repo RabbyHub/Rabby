@@ -50,7 +50,7 @@ export const PositionItem: React.FC<{
   const absPnlPct = Math.abs(Number(returnOnEquity));
   const pnlText = `${isUp ? '+' : '-'}$${splitNumberByStep(
     absPnlUsd.toFixed(2)
-  )} (${isUp ? '+' : '-'}${formatPct(absPnlPct)})`;
+  )}`;
 
   const logoUrl = marketData?.logoUrl || '';
   const leverageText = `${leverage.value}x`;
@@ -110,17 +110,17 @@ export const PositionItem: React.FC<{
               withDirection={false}
               size={20}
             />
-            <span className="text-15 ml-4 font-medium text-rb-neutral-title-1">
+            <span className="text-15 ml-4 font-medium text-r-neutral-title-1">
               {coin}
             </span>
-            <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-title-1" />
+            <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-foot" />
           </div>
           <div className="flex items-center gap-6">
             <span
               className={clsx(
                 'text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px]',
                 isLong
-                  ? 'text-rb-green-default bg-rb-green-light-4'
+                  ? 'text-rb-green-default bg-rb-green-light-1'
                   : 'text-rb-red-default bg-rb-red-light-1'
               )}
             >
@@ -139,7 +139,7 @@ export const PositionItem: React.FC<{
           </div>
         </div>
         <div className="flex flex-col items-end gap-4">
-          <div className="text-15 font-bold text-rb-neutral-title-1">
+          <div className="text-15 font-medium text-r-neutral-title-1">
             {formatUsdValue(Number(marginUsed))}
           </div>
           <div
@@ -156,22 +156,18 @@ export const PositionItem: React.FC<{
       {(hasTakeProfit || hasStopLoss) && (
         <div className="flex items-center gap-4 px-12 py-10 border-t-[0.5px] border-rabby-neutral-line">
           {hasTakeProfit && (
-            <div className="text-12 text-r-neutral-body">
+            <div className="text-[12px] leading-[16px] font-medium text-r-neutral-foot">
               {t('page.perpsDetail.PerpsAutoCloseModal.takeProfit')} :{' '}
-              <span className="text-r-neutral-title-1 font-medium">
-                ${splitNumberByStep(tpPrice)}
-              </span>
+              <span>${splitNumberByStep(tpPrice)}</span>
             </div>
           )}
           {hasTakeProfit && hasStopLoss && (
             <span className="text-12 text-r-neutral-foot">|</span>
           )}
           {hasStopLoss && (
-            <div className="text-12 text-r-neutral-body">
+            <div className="text-[12px] leading-[16px] font-medium text-r-neutral-foot">
               {t('page.perpsDetail.PerpsAutoCloseModal.stopLoss')} :{' '}
-              <span className="text-r-neutral-title-1 font-medium">
-                ${splitNumberByStep(slPrice)}
-              </span>
+              <span>${splitNumberByStep(slPrice)}</span>
             </div>
           )}
         </div>

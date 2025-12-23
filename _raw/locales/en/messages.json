@@ -926,7 +926,8 @@
       "singleCoin": {
         "fundingPaymentsTips": "This is the net funding payments since the position was opened. Funding is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token.",
         "openInterestTips": "The total outstanding position of all users on this contract.",
-        "fundingTips": "This is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token. lf positive, long pays short. lf negative, short pays long."
+        "fundingTips": "This is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token. lf positive, long pays short. lf negative, short pays long.",
+        "fundingGainsTips": "This is the net funding gains since the position was opened. Funding is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token."
       },
       "liquidation": "Liquidation",
       "accountSelector": {
@@ -954,7 +955,10 @@
           "title": "Safe",
           "description": "Your position is at a safe level. The distance to liquidation price is >8%. Continue to monitor market conditions."
         },
-        "gotIt": "Got it"
+        "gotIt": "Got it",
+        "distanceLabel": "Liquidation Distance",
+        "liqDistanceTipsShort": "Going up <1>{{distance}}</1> will trigger liquidation.",
+        "liqDistanceTipsLong": "Going down <1>{{distance}}</1> will trigger liquidation."
       },
       "searchPerpsPopup": {
         "openPosition": "Open Position",
@@ -964,9 +968,29 @@
         "searchPlaceholder": "Search perps",
         "empty": "No markets found",
         "hasPosition": "Position"
+      },
+      "fundingRate": "Funding Rate",
+      "fundingGains": "Funding Gains",
+      "close": "Close",
+      "add": "Add",
+      "invitePopup": {
+        "title": "Save on Hyperliquid Fees",
+        "activatedSuccess": "4% Hyperliquid fee savings activated",
+        "activateFailed": "Failed",
+        "description": "Use Rabby’s code to enable",
+        "hyperliquidFee": "Hyperliquid trading fees.",
+        "activateNow": "Activate Now"
       }
     },
     "perpsDetail": {
+      "PerpsAddPositionPopup": {
+        "addToLong": "Add to Long",
+        "totalSize": "Total Size",
+        "addSize": "Add Size",
+        "addToShort": "Add to Short",
+        "liquidationPriceTips": "The price at which your position is automatically closed by the exchange to prevent further losses when your margin falls below the maintenance margin level.",
+        "sizeTips": "The total value or quantity of your trade, set by margin and leverage."
+      },
       "PerpsOpenPositionPopup": {
         "newPosition": "Open Position",
         "margin": "Margin",
@@ -986,7 +1010,9 @@
         "rabbyFee": "Rabby Fee",
         "providerFee": "Hyperliquid Fee",
         "minimumOrderSize": "The minimum order size is $10",
-        "maximumOrderSize": "The maximum order size is {{amount}}"
+        "maximumOrderSize": "The maximum order size is {{amount}}",
+        "minMargin": "Minimum margin is {{amount}}",
+        "maxMargin": "Maximum margin is {{amount}}"
       },
       "PerpsEditMarginPopup": {
         "margin": "Margin",
@@ -998,13 +1024,16 @@
         "amountToReduce": "Amount to Reduce",
         "perpsBalance": "Perps Balance",
         "available": "Available",
-        "liqPrice": "Liq. Price:",
+        "liqPrice": "Liq. Price",
         "reduceMarginTooltip": "Insufficient margin to reduce position.",
         "confirm": "Confirm",
         "insufficientBalance": "Insufficient balance",
         "exceedMaxReduction": "Exceeds maximum reduction",
         "addMarginSuccess": "Margin added successfully",
-        "reduceMarginSuccess": "Margin reduced successfully"
+        "reduceMarginSuccess": "Margin reduced successfully",
+        "upto": "Up to",
+        "upTo": "Up to",
+        "liqDistance": "Liq. Distance"
       },
       "PerpsClosePositionPopup": {
         "title": "Close Position",
@@ -1043,7 +1072,8 @@
         "stopLossTipsLongLiquidation": "Price is lower than the liq.price ({{price}})",
         "stopLossTipsShortLiquidation": "Price is higher than the liq.price ({{price}})",
         "cancel": "Cancel"
-      }
+      },
+      "needDepositFirst": "You need to deposit funds first."
     },
     "sendPoly": {
       "title": "Send to",
@@ -1466,6 +1496,8 @@
       },
       "pendingItem": {
         "pending": "Pending",
+        "swapStatus": "Swap Status",
+        "sendStatus": "Send Status",
         "completed": "Completed",
         "failed": "Failed",
         "queued": "Queued",
@@ -1473,8 +1505,8 @@
         "sendingFrom": "Sending from {{chain}}",
         "swap": "Swap",
         "beReturnFailed": "Bridge failed. Your assets have been returned.",
-        "receivedDifferentTokenNeedSwap" :"You received a different token. You can swap it to the token you selected.",
-        "receivedDifferentTokenFromSource" : "Bridge failed. A different token was returned on the source chain.",
+        "receivedDifferentTokenNeedSwap": "You received a different token. You can swap it to the token you selected.",
+        "receivedDifferentTokenFromSource": "Bridge failed. A different token was returned on the source chain.",
         "BridgeStatusUnavailable": "Bridge status unavailable. Please checkridyour transaction history to confirm the funds arrived.",
         "fromFailed": "Transaction didn’t go through. Try again.",
         "longTimeNoReceive": "Network is busy. This may take longer than usual. Please wait patiently.",
@@ -1560,7 +1592,9 @@
           "setting": "Setting",
           "searchDapp": "Search Dapp",
           "dapps": "Dapps",
-          "settings": "Settings"
+          "settings": "Settings",
+          "perpsPositions_one": "{{count}} Position",
+          "perpsPositions_other": "{{count}} Positions"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -1847,7 +1881,9 @@
           "lowValueDescription": "Low value assets will be shown here",
           "lowValueAssets_0": "{{count}} low value token",
           "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} low value tokens"
+          "lowValueAssets_other": "{{count}} low value tokens",
+          "searchToken": "Search Token",
+          "lowValueDefis": "{{count}} low value defis"
         },
         "noAssets": "No assets",
         "blockLinkText": "Search address to block token",
@@ -1883,7 +1919,8 @@
         },
         "noTestnetAssets": "No Custom Network Assets",
         "addTokenEntryText": "Token",
-        "openInTab": "Open in tab"
+        "openInTab": "Open in tab",
+        "searchTokenPlaceholder": "Search Token"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",
@@ -2029,7 +2066,8 @@
         "inputInvalidCount_one": "1 input do not conform to Seed Phrase norms, please check.",
         "inputInvalidCount_other": "{{count}} inputs do not conform to Seed Phrase norms, please check.",
         "passphrase": "Passphrase",
-        "showMoreOptions": "Show More Options"
+        "showMoreOptions": "Show More Options",
+        "inputInvalid": "Invalid words detected. Please review the highlighted ones."
       },
       "metamask": {
         "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
@@ -2404,7 +2442,8 @@
         "title": "Select a Wallet to Connect",
         "desc": "Select from the wallets you have installed"
       },
-      "connectAddress": "Connect Address"
+      "connectAddress": "Connect Address",
+      "connected": "Connected"
     },
     "addressDetail": {
       "add-to-whitelist": "Add to Whitelist",
@@ -3195,8 +3234,11 @@
         "headers": {
           "wallet": "Wallet",
           "allTokenMode": "All Token Mode",
+          "lpToken": "LP-Token",
           "foldProtocols": "Fold {{count}} Protocols",
-          "unfoldProtocols": "Unfold {{count}} Protocols"
+          "unfoldProtocols": "Unfold {{count}} Protocols",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "Unfold {{count}} Defis"
         },
         "hidden": {
           "tokensWithZeroBalance": "Hide $0 tokens",
@@ -3205,7 +3247,9 @@
           "hideSmall": "Hide tokens with small balances.",
           "hideSmallDesc": "Tokens with small balances are not displayed.",
           "hideProtocolsWithSmallDeposits": "Hide protocols with small deposits.",
-          "hideProtocolsWithSmallDepositsDesc": "Protocols with small deposits are not displayed."
+          "hideProtocolsWithSmallDepositsDesc": "Protocols with small deposits are not displayed.",
+          "hideDefiWithSmallDeposits": "Hide Defis with small deposits.",
+          "hideDefiWithSmallDepositsDesc": "Defis with small deposits are not displayed."
         },
         "table": {
           "token": "Token",
@@ -3230,7 +3274,93 @@
       "tabs": {
         "tokens": "Tokens",
         "transactions": "Transactions",
-        "approvals": "Approvals"
+        "approvals": "Approvals",
+        "difi": "Defi",
+        "defi": "DeFi"
+      },
+      "nft": {
+        "all": "All",
+        "hideLowValue": "Hide Low-Value NFTs",
+        "empty": "No NFTs",
+        "message": {
+          "cancelSuccess": "Listing successfully canceled",
+          "cancelSuccessDesc": "You've successfully canceled listing {{name}}",
+          "cancelFailed": "Failed!",
+          "cancelFailedDesc": "Please try again",
+          "listingSuccess": "Just listed!",
+          "listingSuccessDesc": "You've listed {{name}} on OpenSea",
+          "listingFailed": "Listing Failed",
+          "listingFailedDesc": "Please try again.",
+          "acceptSuccess": "Sold Successfully",
+          "acceptSuccessDesc": "You’ve successfully sold {{name}}",
+          "acceptFailed": "Sale Failed",
+          "acceptFailedDesc": "Please try again."
+        },
+        "pending": "Pending",
+        "confirmingTx": "Confirming your transaction",
+        "detail": {
+          "nft": "NFT",
+          "collection": "Collection",
+          "chain": "Chain",
+          "collectionFloor": "Collection floor",
+          "rarity": "Rarity",
+          "lastSale": "Last sale",
+          "topOffer": "Top Offer",
+          "supportPlatform": "Supported platforms:",
+          "ending": "Ending:",
+          "platform": "Platform:",
+          "noOffer": "No offers yet",
+          "accept": "Accept",
+          "listing": "Listing on Opensea",
+          "edit": "Edit Listing",
+          "cancel": "Cancel Listing",
+          "send": "Send",
+          "listedFor": "{{count}} listed for"
+        },
+        "cancelModal": {
+          "title": "Cancel Listing",
+          "listing": "Listing",
+          "listingPrice": "Listing Price",
+          "cancelListing": "Cancel listing"
+        },
+        "listingModal": {
+          "editListing": "Edit Listing",
+          "createListing": "Create listing",
+          "nft": "NFT",
+          "floor": "Floor",
+          "topOffer": "Top Offer",
+          "cost": "Cost",
+          "proceeds": "Proceeds",
+          "listedAs": "Listed as",
+          "quantity": "Quantity",
+          "total": "Total listing price",
+          "floorDifference": "Floor difference",
+          "platformFee": " Opensea Platform fees ({{fee}}%)",
+          "creatorFee": "Creator fees ({{fee}}%)",
+          "platformFeeTips": "This fee is OpenSea's service charge",
+          "creatorFeeTips1": "Creator earnings will be paid by the seller. Creator earnings are enforced",
+          "creatorFeeTips": "Creator earnings will be paid by the seller.",
+          "rabbyFee": "Rabby fee (0%)",
+          "totalEst": "Total est. proceeds",
+          "listOn": "List on OpenSea",
+          "approveAndList": "Approve and List"
+        },
+        "acceptModal": {
+          "title": "Accept Offer",
+          "offer": "Offer",
+          "offerPrice": "Offer Price",
+          "quantity": "Quantity",
+          "platform": "Platform",
+          "floorDifference": "Floor difference",
+          "platformFee": " Opensea Platform fees ({{fee}}%)",
+          "creatorFee": "Creator fees ({{fee}}%)",
+          "platformFeeTips": "This fee is OpenSea's service charge",
+          "creatorFeeTips1": "Creator earnings will be paid by the seller. Creator earnings are enforced",
+          "creatorFeeTips": "Creator earnings will be paid by the seller.",
+          "rabbyFee": "Rabby fee (0%)",
+          "totalEst": "Total est. proceeds",
+          "acceptOffer": "Accept Offer"
+        }
       }
     },
     "selectToAddress": {
@@ -3430,7 +3560,10 @@
       "hot": "Hot",
       "common": "Common",
       "recent": "Recent",
-      "chainNotSupport": "This chain is not supported"
+      "chainNotSupport": "This chain is not supported",
+      "chainFilterLine": {
+        "filterAll": "All Chains"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3475,7 +3608,8 @@
       "selectAccount": "Select Address"
     },
     "ChainItem": {
-      "appChain": "On {{chain}} Account"
+      "appChain": "On {{chain}} Account",
+      "hyperliquidCode": "Save on Hyperliquid fees with Rabby’s referral code."
     },
     "RiskTip": {
       "title": "Risk Detected"
@@ -3487,7 +3621,8 @@
       ],
       "withdraw": "Withdraw",
       "claim": "Claim",
-      "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
+      "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
+      "manage": "Manage"
     },
     "DesktopChainSelector": {
       "allChains": "All Chains"
@@ -3500,6 +3635,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Add address"
+    },
+    "LpTokenTag": {
+      "title": "This is a liquidity provider(LP) token",
+      "description": "LP tokens are issued by the DeFi protocols where you've deposited your assets. They serve as the proof of those assets, but their value isn't included in your total balance"
     }
   },
   "global": {

@@ -23,6 +23,7 @@ export type CalcItem = {
   };
   preExecResult: ExplainTxResponse;
   hash?: string;
+  L1feeCache?: string;
 };
 
 export type SecurityResult = {
@@ -58,6 +59,7 @@ export type SignerConfig = {
   showCheck?: boolean;
   synGasHeaderInfo?: boolean;
   autoUseGasFree?: boolean;
+  hiddenHardWareProcess?: boolean;
 };
 
 export type PreparedContext = {

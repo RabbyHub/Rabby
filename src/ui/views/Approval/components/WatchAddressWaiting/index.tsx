@@ -37,6 +37,7 @@ interface ApprovalParams {
     message: string;
     chainId: number;
   };
+  stay?: boolean;
 }
 
 const WatchAddressWaiting = ({
@@ -313,12 +314,13 @@ const WatchAddressWaiting = ({
     setHeight('fit-content');
   }, []);
 
+  const { stay = false } = params || {};
   useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        false,
+        stay,
         false,
         signFinishedData.approvalId
       );

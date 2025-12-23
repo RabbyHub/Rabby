@@ -1,6 +1,13 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import PQueue from 'p-queue';
 import { isValidAddress } from '@ethereumjs/util';
@@ -11,6 +18,7 @@ import { IExchange } from '../component/CexSelect';
 
 import { isSameAddress, useWallet } from '../utils';
 import { KEYRING_CLASS } from 'consts';
+import { useDebouncedValue } from './useDebounceValue';
 
 const queue = new PQueue({ intervalCap: 5, concurrency: 5, interval: 1000 });
 
@@ -29,13 +37,16 @@ export const enum RiskType {
   SCAM_ADDRESS = 2,
   CONTRACT_ADDRESS = 3,
   CEX_NO_DEPOSIT = 4,
+
+  FORBIDDEN_TIP = 5,
 }
 
 const riskTypePriority = {
-  [RiskType.CEX_NO_DEPOSIT]: 1,
-  [RiskType.NEVER_SEND]: 11,
-  [RiskType.CONTRACT_ADDRESS]: 111,
-  [RiskType.SCAM_ADDRESS]: 1111,
+  [RiskType.CEX_NO_DEPOSIT]: 10e-1,
+  [RiskType.NEVER_SEND]: 10,
+  [RiskType.CONTRACT_ADDRESS]: 10e1,
+  [RiskType.SCAM_ADDRESS]: 10e3,
+  [RiskType.FORBIDDEN_TIP]: 10e4,
 };
 
 export function sortRisksDesc(a: { type: RiskType }, b: { type: RiskType }) {
@@ -44,16 +55,30 @@ export function sortRisksDesc(a: { type: RiskType }, b: { type: RiskType }) {
     riskTypePriority[a.type as keyof typeof riskTypePriority]
   );
 }
+
 export type RiskItem = { type: RiskType; value: string };
-export const useAddressRisks = (
-  address: string,
-  options?: {
-    onLoadFinished?: (/* ctx: { risks: Array<RiskItem> } */) => void;
-    editCex?: IExchange | null;
-    scene?: 'send-poly' | 'send-nft' | 'send-token';
-  }
-) => {
-  const { editCex, onLoadFinished, scene = 'send-poly' } = options || {};
+type ForBiddenCheckParams = {
+  user_addr: string;
+  id?: string;
+  chain_id?: string;
+  to_addr: string;
+};
+export const useAddressRisks = (options: {
+  toAddress: string;
+  fromAddress?: string;
+  forbiddenCheck?: ForBiddenCheckParams;
+  onLoadFinished?: (/* ctx: { risks: Array<RiskItem> } */) => void;
+  editCex?: IExchange | null;
+  scene?: 'send-poly' | 'send-nft' | 'send-token';
+}) => {
+  const {
+    toAddress,
+    fromAddress,
+    forbiddenCheck: input_forbiddenCheck,
+    editCex,
+    onLoadFinished,
+    scene = 'send-poly',
+  } = options || {};
 
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -64,10 +89,10 @@ export const useAddressRisks = (
     exchanges: s.exchange.exchanges,
   }));
 
-  const riskGetRef = useRef(false);
   const [addressDesc, setAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined
   >();
+  const [forbiddenTip, setForbiddenTip] = useState<string>('');
   const [loadingAddrDesc, setLoadingAddrDesc] = useState(true);
   const [hasNoSent, setHasNoSent] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -82,6 +107,12 @@ export const useAddressRisks = (
       }
     );
     return [
+      forbiddenTip
+        ? {
+            type: RiskType.FORBIDDEN_TIP,
+            value: forbiddenTip,
+          }
+        : null,
       addressDesc?.cex?.id && !addressDesc.cex.is_deposit
         ? {
             type: RiskType.CEX_NO_DEPOSIT,
@@ -125,7 +156,7 @@ export const useAddressRisks = (
           }
         : null,
     ].filter((i) => !!i) as { type: RiskType; value: string }[];
-  }, [scene, addressDesc, hasNoSent, t]);
+  }, [forbiddenTip, scene, addressDesc, hasNoSent, t]);
 
   const myTop10AccountList = useMemo(
     () =>
@@ -144,33 +175,38 @@ export const useAddressRisks = (
     [accountsList]
   );
 
+  const caredAddresses = useMemo(() => {
+    if (fromAddress) return [fromAddress];
+
+    return myTop10AccountList.map((acc) => acc.address);
+  }, [fromAddress, myTop10AccountList]);
+
   useEffect(() => {
-    if (!isValidAddress(address)) {
+    if (!isValidAddress(toAddress)) {
       return;
     }
     dispatch.accountToDisplay.getAllAccountsToDisplay();
-  }, [address, dispatch.accountToDisplay]);
+  }, [toAddress, dispatch.accountToDisplay]);
 
   useLayoutEffect(() => {
-    if (address) {
-      riskGetRef.current = false;
+    if (toAddress) {
       setAddressDesc(undefined);
       setLoadingAddrDesc(true);
       setHasNoSent(false);
       setHasError(false);
       setLoadingHasTransfer(true);
     }
-  }, [address]);
+  }, [toAddress]);
 
   useEffect(() => {
     (async () => {
-      if (!isValidAddress(address)) {
+      if (!isValidAddress(toAddress)) {
         return;
       }
       setLoadingAddrDesc(true);
       try {
-        const addrDescRes = await wallet.openapi.addrDesc(address);
-        const cexId = await wallet.getCexId(address);
+        const addrDescRes = await wallet.openapi.addrDesc(toAddress);
+        const cexId = await wallet.getCexId(toAddress);
         if (addrDescRes) {
           if (cexId) {
             const localCexInfo = exchanges.find(
@@ -201,39 +237,106 @@ export const useAddressRisks = (
         setLoadingAddrDesc(false);
       }
     })();
-  }, [address, dispatch, editCex, exchanges, wallet]);
+  }, [toAddress, dispatch, editCex, exchanges, wallet]);
+
+  const memoForbiddenCheck = useMemo(() => {
+    return {
+      chain_id: input_forbiddenCheck?.chain_id,
+      id: input_forbiddenCheck?.id,
+      user_addr: input_forbiddenCheck?.user_addr,
+      to_addr: input_forbiddenCheck?.to_addr,
+    };
+  }, [
+    input_forbiddenCheck?.chain_id,
+    input_forbiddenCheck?.id,
+    input_forbiddenCheck?.user_addr,
+    input_forbiddenCheck?.to_addr,
+  ]);
+  const forbiddenCheck = useDebouncedValue(memoForbiddenCheck, 300);
+
+  const reqForbiddenTip = useCallback(async () => {
+    const allValuesSet =
+      forbiddenCheck?.chain_id &&
+      forbiddenCheck?.to_addr &&
+      forbiddenCheck?.user_addr &&
+      forbiddenCheck?.id;
+    if (allValuesSet) {
+      await wallet.openapi
+        .checkTokenDepositForbidden({
+          chain_id: forbiddenCheck?.chain_id || 'eth',
+          to_addr: forbiddenCheck?.to_addr || '',
+          user_addr: forbiddenCheck?.user_addr || '',
+          id: forbiddenCheck?.id || '',
+        })
+        .then((res) => {
+          setForbiddenTip(res?.msg || '');
+        })
+        .catch((error) => {
+          console.error('checkTokenDepositForbidden error', error);
+          setForbiddenTip('');
+        });
+    } else {
+      setForbiddenTip('');
+    }
+  }, [
+    wallet,
+    forbiddenCheck?.chain_id,
+    forbiddenCheck?.to_addr,
+    forbiddenCheck?.user_addr,
+    forbiddenCheck?.id,
+  ]);
 
   useEffect(() => {
+    reqForbiddenTip();
+  }, [reqForbiddenTip]);
+
+  const riskGetRef = useRef({
+    currentAddrs: [] as string[],
+    controller: null as AbortController | null,
+  });
+  useEffect(() => {
     if (
-      riskGetRef.current ||
-      !myTop10AccountList.length ||
-      !isValidAddress(address)
+      riskGetRef.current.currentAddrs.sort().join(',') ===
+        caredAddresses.sort().join(',') ||
+      !caredAddresses.length ||
+      !isValidAddress(toAddress)
     ) {
       return;
     }
-    riskGetRef.current = true;
+
+    riskGetRef.current.currentAddrs = caredAddresses;
+    const prevController = riskGetRef.current.controller;
+    if (prevController) prevController.abort();
+
+    riskGetRef.current.controller = new AbortController();
+    const currentController = riskGetRef.current.controller;
     (async () => {
       setLoadingHasTransfer(true);
       setHasError(false);
       let hasSent = false;
       let hasError = false;
       try {
+        const hasAborted = (resolveFunc: any) => {
+          if (currentController.signal.aborted) {
+            resolveFunc();
+            queue.clear();
+            return true;
+          }
+        };
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('timeout')), 3000);
         });
         const checkTransferPromise = new Promise<void>((resolve) => {
-          myTop10AccountList.forEach((acc) => {
-            if (isSameAddress(acc.address, address)) {
-              return;
-            }
+          caredAddresses.forEach((addr) => {
+            if (hasAborted(resolve)) return;
+            if (isSameAddress(addr, toAddress)) return;
             queue.add(async () => {
               try {
-                if (hasSent || hasError) {
-                  return;
-                }
+                if (hasAborted(resolve)) return;
+                if (hasSent || hasError) return;
                 const res = await wallet.openapi.hasTransferAllChain(
-                  acc.address,
-                  address
+                  addr,
+                  toAddress
                 );
                 if (res?.has_transfer) {
                   hasSent = true;
@@ -264,7 +367,7 @@ export const useAddressRisks = (
         setLoadingHasTransfer(false);
       }
     })();
-  }, [address, myTop10AccountList, onLoadFinished, wallet]);
+  }, [toAddress, caredAddresses, onLoadFinished, wallet]);
 
   return {
     risks,

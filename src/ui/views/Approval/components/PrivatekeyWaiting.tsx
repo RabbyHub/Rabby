@@ -52,6 +52,7 @@ interface ApprovalParams {
     message: string;
     chainId: number;
   };
+  stay?: boolean;
 }
 
 export const PrivatekeyWaiting = ({
@@ -265,12 +266,13 @@ export const PrivatekeyWaiting = ({
     setPopupProps(params?.extra?.popupProps);
   }, [params?.extra?.popupProps]);
 
+  const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        false,
+        stay,
         false,
         signFinishedData.approvalId
       );

@@ -1,6 +1,8 @@
-import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import ChainSelectorInForm, {
+  ChainSelectorRef,
+} from '@/ui/component/ChainSelector/InForm';
 import TokenSelect from '@/ui/component/TokenSelect';
-import { findChainByEnum } from '@/utils/chain';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { DrawerProps, Input } from 'antd';
@@ -107,6 +109,8 @@ export const BridgeToken = ({
 
   const inputRef = useRef<Input>();
 
+  const chainSelectorRef = useRef<ChainSelectorRef>(null);
+
   const fromTokenIsNativeToken = useMemo(() => {
     if (isFromToken && token && chain) {
       return isSameAddress(
@@ -147,6 +151,10 @@ export const BridgeToken = ({
 
   const handleChangeFromToken = React.useCallback(
     (t: TokenItem) => {
+      const chainEnum = findChainByServerID(t?.chain || '')?.enum;
+      if (t && chainEnum && chainEnum !== chain) {
+        changeChain(chainEnum);
+      }
       onChangeToken(t);
       if (t.id !== token?.id) {
         onInputChange?.('');
@@ -274,6 +282,8 @@ export const BridgeToken = ({
           drawerHeight={540}
           showClosableIcon
           getContainer={getContainer}
+          ref={chainSelectorRef}
+          zIndex={1111}
         />
       </div>
 
@@ -325,6 +335,9 @@ export const BridgeToken = ({
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
               // supportChains={supportedChains}
               getContainer={getContainer}
+              onStartSelectChain={() => {
+                chainSelectorRef.current?.toggleShow(true);
+              }}
             />
           )}
         </div>

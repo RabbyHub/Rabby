@@ -64,6 +64,10 @@ class SignatureManager {
     resolve: (hashes: string[]) => void;
     reject: (reason: any) => void;
   } | null = null;
+  private pauseRequested = false;
+  private signedHashes: string[] = [];
+  private pausedIndex = 0;
+  private pauseAfterThreshold: number | null = null;
 
   private dispatch(action: SignatureAction) {
     const next = signatureReducer(this.state, action);
@@ -101,6 +105,12 @@ class SignatureManager {
     return chainInfo?.enum === CHAINS_ENUM.ETH
       ? ETH_GAS_USD_LIMIT
       : OTHER_GAS_USD_LIMIT;
+  }
+
+  private isPreExecResultFailed() {
+    return this?.state.ctx?.txsCalc.some(
+      (r) => !r?.preExecResult?.pre_exec?.success
+    );
   }
 
   private isGasFeeTooHighFor(
@@ -394,11 +404,15 @@ class SignatureManager {
     wallet,
     retry,
     getContainer,
+    pauseAfter,
   }: {
     wallet: WalletControllerType;
     retry?: boolean;
     getContainer?: ModalProps['getContainer'];
+    pauseAfter?: number;
   }) {
+    this.pauseAfterThreshold =
+      typeof pauseAfter === 'number' ? pauseAfter : this.pauseAfterThreshold;
     const { ctx, config, fingerprint } = this.state;
     if (!ctx || !config || !fingerprint) {
       throw new Error('Signature is not ready');
@@ -407,6 +421,9 @@ class SignatureManager {
       this.rejectPending(MINI_SIGN_ERROR.CANT_PROCESS);
       throw MINI_SIGN_ERROR.CANT_PROCESS;
     }
+    this.pauseRequested = false;
+    this.pausedIndex = 0;
+    this.signedHashes = [];
     const opId = this.markRun(fingerprint);
     if (config.account.type === KEYRING_TYPE.HdKeyring) {
       try {
@@ -427,6 +444,11 @@ class SignatureManager {
         ctx,
         config,
         retry,
+        shouldPause: (idx, signedCount) =>
+          this.pauseRequested ||
+          (typeof this.pauseAfterThreshold === 'number' &&
+            this.pauseAfterThreshold >= 0 &&
+            signedCount >= this.pauseAfterThreshold),
         onProgress: (nextCtx) => {
           if (!this.isActive(opId, fingerprint)) return;
           this.dispatch({ type: 'SEND_PROGRESS', fingerprint, ctx: nextCtx });
@@ -439,12 +461,35 @@ class SignatureManager {
         this.resolvePending(hashes);
         return hashes;
       }
-      if (res.error) {
+      if ((res as any).paused) {
+        const paused = res as {
+          paused: true;
+          partial: { txHash: string }[];
+          currentIndex: number;
+        };
+        this.signedHashes = paused.partial.map((p) => p.txHash);
+        this.pausedIndex = paused.currentIndex;
+        this.dispatch({
+          type: 'SEND_PAUSED',
+          fingerprint,
+          ctx: {
+            ...(this.state.ctx || ctx),
+            signInfo: {
+              currentTxIndex: this.pausedIndex,
+              totalTxs: ctx.txs.length,
+              status: 'signing',
+            },
+          } as SignerCtx,
+        });
+        return this.signedHashes;
+      }
+      if ((res as any).error) {
         this.dispatch({
           type: 'SEND_FAILURE',
           fingerprint,
-          error: res.error,
+          error: (res as any).error,
         });
+        // this.rejectPending((res as any).error.description);
         return res;
       }
 
@@ -470,6 +515,10 @@ class SignatureManager {
   // }
 
   public reset() {
+    this.pauseRequested = false;
+    this.signedHashes = [];
+    this.pausedIndex = 0;
+    this.pauseAfterThreshold = null;
     this.clearRunState();
     this.seq++;
     if (this.pendingResult) {
@@ -485,6 +534,25 @@ class SignatureManager {
 
   public close() {
     this.reset();
+  }
+
+  public pause() {
+    this.pauseRequested = true;
+  }
+
+  public async resume({
+    wallet,
+    getContainer,
+  }: {
+    wallet: WalletControllerType;
+    getContainer?: ModalProps['getContainer'];
+  }) {
+    const { ctx, config, fingerprint } = this.state;
+    if (!ctx || !config || !fingerprint) {
+      throw new Error('Signature is not ready');
+    }
+    this.pauseRequested = false;
+    return this.send({ wallet, getContainer });
   }
 
   private async checkHardWareConnected(cb: () => void) {
@@ -515,8 +583,12 @@ class SignatureManager {
 
   public async openDirect(
     request: SignatureRequest,
-    wallet: WalletControllerType
+    wallet: WalletControllerType,
+    opts?: { pauseAfter?: number }
   ) {
+    if (opts?.pauseAfter !== undefined) {
+      this.pauseAfterThreshold = opts.pauseAfter;
+    }
     const fingerprint = this.getFingerprint(request.txs);
     const resultPromise = this.createResultPromise();
     if (this.state.status === 'prefetch_failure') {
@@ -536,6 +608,12 @@ class SignatureManager {
         this.pendingCtx.get(fingerprint) ||
         this.ensureContext(request, wallet, this.run?.id);
       await prepared;
+
+      if (this.isPreExecResultFailed()) {
+        this.rejectPending(MINI_SIGN_ERROR.PREFETCH_FAILURE);
+        return resultPromise;
+      }
+
       if (this.isGasFeeTooHighFor(this.state.ctx, this.state.config)) {
         this.rejectPending(MINI_SIGN_ERROR.GAS_FEE_TOO_HIGH);
         return resultPromise;
@@ -587,8 +665,12 @@ class SignatureManager {
 
   public async startUI(
     request: SignatureRequest,
-    wallet: WalletControllerType
+    wallet: WalletControllerType,
+    opts?: { pauseAfter?: number }
   ): Promise<string[]> {
+    if (opts?.pauseAfter !== undefined) {
+      this.pauseAfterThreshold = opts.pauseAfter;
+    }
     const resultPromise = this.createResultPromise();
 
     this.openUI(request, wallet).catch((error) => {

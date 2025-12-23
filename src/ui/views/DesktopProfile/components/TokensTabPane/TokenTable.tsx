@@ -35,16 +35,16 @@ export const TokenTable: React.FC<Props> = ({
             className="w-full justify-between bg-rb-neutral-bg-1 rounded-[6px] py-8"
             rowClassName="px-8"
           >
-            <THeadCell className="flex-1">
+            <THeadCell className="w-[352px]">
               {t('page.desktopProfile.portfolio.table.token')}
             </THeadCell>
-            <THeadCell className="flex-1">
+            <THeadCell className="flex-1 max-w-[280px]">
               {t('page.desktopProfile.portfolio.table.price')}
             </THeadCell>
-            <THeadCell className="flex-1">
+            <THeadCell className="flex-1 max-w-[280px]">
               {t('page.desktopProfile.portfolio.table.amount')}
             </THeadCell>
-            <THeadCell className="flex-1 text-right">
+            <THeadCell className="w-[118px] text-right">
               {t('page.desktopProfile.portfolio.table.usdValue')}
             </THeadCell>
           </THeader>

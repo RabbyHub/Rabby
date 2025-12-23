@@ -17,6 +17,7 @@ import { Form, message, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
 import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
+import { globalSupportCexList } from '@/ui/models/exchange';
 
 import {
   CHAINS_ENUM,
@@ -89,11 +90,12 @@ import {
   sortRisksDesc,
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
-import { SendSlider } from '@/ui/component/SendLike/Slider';
+// import { SendSlider } from '@/ui/component/SendLike/Slider';
 import { appIsDebugPkg } from '@/utils/env';
 import { add, debounce } from 'lodash';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
+import { ChainSelectorInSend } from './components/ChainSelectorInSend';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -344,7 +346,10 @@ const SendToken = () => {
       }
 
       const toCexId = addressDesc?.cex?.id;
-      if (toCexId) {
+      const isSupportCEX = globalSupportCexList.find(
+        (cex) => cex.id === toCexId
+      );
+      if (toCexId && isSupportCEX) {
         const cex_ids =
           token.cex_ids || token.identity?.cex_list?.map((item) => item.id);
         const noSupportToken = cex_ids?.every?.(
@@ -448,7 +453,22 @@ const SendToken = () => {
     forToAddress: false,
     forToken: false,
   });
-  const { loading: loadingRisks, risks } = useAddressRisks(toAddress || '', {
+  const { loading: loadingRisks, risks } = useAddressRisks({
+    toAddress: toAddress || '',
+    fromAddress: currentAccount?.address,
+    forbiddenCheck: useMemo(() => {
+      return {
+        user_addr: currentAccount?.address || '',
+        to_addr: toAddress || '',
+        chain_id: chainItem?.serverId,
+        id: currentToken?.id || '',
+      };
+    }, [
+      currentAccount?.address,
+      toAddress,
+      chainItem?.serverId,
+      currentToken?.id,
+    ]),
     onLoadFinished: useCallback(() => {
       setAgreeRequiredChecks((prev) => ({ ...prev, forToAddress: false }));
     }, []),
@@ -913,7 +933,7 @@ const SendToken = () => {
     to: toAddress,
     amount: paramAmount || '',
   };
-  const amount = useDebounceValue(form.getFieldValue('amount'), 300);
+  const amount = useSyncStaleValue(form.getFieldValue('amount'), 300);
   const address = form.getFieldValue('to');
 
   useEffect(() => {
@@ -1533,7 +1553,6 @@ const SendToken = () => {
   //   }, 300),
   //   [handleMaxInfoChanged]
   // );
-
   const handleGasLevelChanged = useCallback(
     async (gl?: GasLevel | null) => {
       handleReserveGasClose();
@@ -1578,7 +1597,8 @@ const SendToken = () => {
   //     setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
   //     const gasList = await loadGasList();
   //     if (gasList && Array.isArray(gasList) && gasList.length > 0) {
-  //       const foundLevel = gasList.find(
+  //       const foundLevel =
+  //         gasList.find(
   //           (gasLevel) => (gasLevel.level as GasLevelType) === 'normal'
   //         ) || findInstanceLevel(gasList);
   //       foundLevel && setSelectedGasLevel(foundLevel);
@@ -1882,6 +1902,8 @@ const SendToken = () => {
     }
   });
 
+  // const chainSelectorRef = useRef<ChainSelectorInSend>(null);
+
   return (
     <FullscreenContainer className={isDesktop ? 'h-[600px]' : 'h-[700px]'}>
       <div
@@ -1895,6 +1917,7 @@ const SendToken = () => {
         <PageHeader
           onBack={handleClickBack}
           forceShowBack={!(isTab || isDesktop)}
+          isShowAccount
           canBack={!(isTab || isDesktop)}
           className="mb-[10px]"
           rightSlot={
@@ -1920,13 +1943,13 @@ const SendToken = () => {
         </PageHeader>
         <Form
           form={form}
-          className="send-token-form pt-[16px]"
+          className="send-token-form pt-[4px]"
           onFinish={handleSubmit}
           onValuesChange={handleFormValuesChange}
           initialValues={initialFormValues}
         >
           <div className="flex-1 overflow-auto pb-[32px]">
-            <AddressInfoFrom />
+            {/* <AddressInfoFrom /> */}
             <AddressInfoTo
               loadingToAddressDesc={loadingToAddressDesc}
               toAccount={targetAccount}
@@ -2068,8 +2091,18 @@ const SendToken = () => {
                       handleClickMaxButton={handleClickMaxButton}
                       isLoading={isLoading}
                       getContainer={getContainer}
+                      // onStartSelectChain={() => {
+                      //   chainSelectorRef.current?.toggleShow(true);
+                      // }}
                     />
                   </Form.Item>
+                  {/* <ChainSelectorInSend
+                    ref={chainSelectorRef}
+                    hideTestnetTab
+                    onChange={(value) => {
+                      // setChainServerId(findChainByEnum(value)?.serverId || '');
+                    }}
+                  /> */}
                 </div>
               )}
             </div>
@@ -2084,6 +2117,7 @@ const SendToken = () => {
             {!canSubmitBasic && (
               <div className="mt-20">
                 <PendingTxItem
+                  getContainer={getContainer}
                   onFulfilled={handleFulfilled}
                   type="send"
                   ref={pendingTxRef}

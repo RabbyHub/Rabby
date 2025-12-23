@@ -4,6 +4,8 @@ import { formatUsdValue } from '@/ui/utils';
 import { PerpsSlider } from '../components/PerpsSlider';
 import { useTranslation } from 'react-i18next';
 import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../constants';
+import clsx from 'clsx';
+import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 
 interface MarginInputProps {
   title: string;
@@ -86,40 +88,43 @@ export const MarginInput: React.FC<MarginInputProps> = ({
     sliderPercentageRef.current = value;
     const newMargin = (availableAmount * value) / 100;
     onMarginChange(
-      Number(
-        new BigNumber(newMargin).toFixed(PERPS_MARGIN_SIGNIFICANT_DIGITS)
-      ).toString()
+      new BigNumber(newMargin).decimalPlaces(2, BigNumber.ROUND_DOWN).toFixed()
     );
   };
 
   return (
-    <div className="bg-r-neutral-card1 rounded-[8px] h-[120px] flex flex-col items-center justify-center mb-10 px-16">
-      <div className="text-16 font-bold text-r-neutral-title-1 text-center">
+    <div className="bg-r-neutral-card1 rounded-[8px] mb-[12px] px-[16px] py-[16px]">
+      <div className="text-[16px] leading-[19px] font-medium text-r-blue-default">
         {title}
       </div>
-      <input
-        className={`text-[24px] font-bold bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${textColorClass}`}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          outline: 'none',
-          boxShadow: 'none',
-        }}
-        placeholder="$0"
-        value={margin ? `$${margin}` : ''}
-        onChange={handleChange}
-      />
-      {errorMessage ? (
-        <div className="text-center text-13 text-r-red-default">
-          {errorMessage}
+      <div className="flex items-center mb-[8px]">
+        <div className="flex items-end gap-[6px]">
+          <div className="text-[20px] leading-[24px] font-medium text-r-neutral-black">
+            {formatUsdValue(availableAmount, BigNumber.ROUND_DOWN)}
+          </div>
+          <div className="text-[13px] leading-[16px] text-r-neutral-foot pb-[2px]">
+            {customAvailableText ||
+              t('page.perpsDetail.PerpsEditMarginPopup.available')}
+          </div>
         </div>
-      ) : (
-        <div className="text-center text-13 text-r-neutral-body">
-          {customAvailableText ||
-            t('page.perpsDetail.PerpsEditMarginPopup.available')}
-          : {formatUsdValue(availableAmount, BigNumber.ROUND_DOWN)}
-        </div>
-      )}
+        <input
+          className={clsx(
+            'flex-1',
+            'text-[32px] leading-[38px] font-bold bg-transparent border-none p-0 text-right',
+            'w-full outline-none focus:outline-none',
+            textColorClass
+          )}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            boxShadow: 'none',
+          }}
+          placeholder="$0"
+          value={margin ? `$${margin}` : ''}
+          onChange={handleChange}
+        />
+      </div>
 
       <PerpsSlider
         disabled={sliderDisabled}
@@ -128,8 +133,16 @@ export const MarginInput: React.FC<MarginInputProps> = ({
           isSliderChangingRef.current = false;
         }}
         onValueChange={handleSliderChange}
-        showPercentage
+        showPercentage={false}
       />
+      {errorMessage ? (
+        <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px] mt-[14px]">
+          <RcIconInfoCC className="text-r-orange-default" />
+          <div className="text-center text-[12px] leading-[14px] text-r-orange-default">
+            {errorMessage}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

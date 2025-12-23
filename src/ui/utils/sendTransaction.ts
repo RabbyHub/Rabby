@@ -172,6 +172,16 @@ export const sendTransaction = async ({
 
   const signingTxId = await wallet.addSigningTx(tx);
 
+  let reportGasLevel = normalGas.level;
+  if (!reportGasLevel) {
+    reportGasLevel = 'normal';
+    try {
+      reportGasLevel = await wallet.getReportGasLevel();
+    } catch (error) {
+      console.error('getReportGasLevel error', error);
+    }
+  }
+
   wallet.reportStats('createTransaction', {
     type: currentAccount.brandName,
     category: KEYRING_CATEGORY_MAP[currentAccount.type],
@@ -181,6 +191,7 @@ export const sendTransaction = async ({
     trigger: ga?.trigger || '',
     networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     swapUseSlider: ga?.swapUseSlider ?? '',
+    gasLevel: reportGasLevel,
   });
 
   // pre exec tx
@@ -201,6 +212,7 @@ export const sendTransaction = async ({
         recommendNonce,
         wallet,
         address,
+        chainId: tx.chainId,
       }),
     }));
 
@@ -644,6 +656,13 @@ export const sendTransactionByMiniSignV2 = async ({
 
   const signingTxId = await wallet.addSigningTx(tx);
 
+  let reportGasLevel = 'normal';
+  try {
+    reportGasLevel = await wallet.getReportGasLevel();
+  } catch (error) {
+    console.error('getReportGasLevel error', error);
+  }
+
   wallet.reportStats('createTransaction', {
     type: currentAccount.brandName,
     category: KEYRING_CATEGORY_MAP[currentAccount.type],
@@ -653,6 +672,7 @@ export const sendTransactionByMiniSignV2 = async ({
     trigger: ga?.trigger || '',
     networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     swapUseSlider: ga?.swapUseSlider ?? '',
+    gasLevel: reportGasLevel,
   });
 
   const transaction: Tx = {

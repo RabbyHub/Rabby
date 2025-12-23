@@ -1124,7 +1124,9 @@
           "dapps": "Dapps",
           "setting": "設定",
           "searchDapp": "Dappを検索",
-          "settings": "設定"
+          "settings": "設定",
+          "perpsPositions_other": "{{count}} ポジション",
+          "perpsPositions_one": "{{count}} ポジション"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -1410,7 +1412,9 @@
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_other": "{{count}} 個の低価値トークン",
           "review": "レビュー",
-          "noTokens": "トークンがありません"
+          "noTokens": "トークンがありません",
+          "searchToken": "トークンを検索",
+          "lowValueDefis": "{{count}} 低価値のデファイ"
         },
         "noAssets": "アセットなし",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
@@ -1449,7 +1453,8 @@
         "customButtonText": "カスタムトークンを追加",
         "side": "サイド",
         "price": "価格",
-        "openInTab": "タブで開く"
+        "openInTab": "タブで開く",
+        "searchTokenPlaceholder": "トークンを検索"
       },
       "hd": {
         "howToConnectLedger": "Ledgerとの接続方法",
@@ -1595,7 +1600,8 @@
         "importQuestion2": "私のシードフレーズは私のデバイスのみに保存されています。Rabbyはそれにアクセスできません。",
         "importQuestion1": "もし私がシードフレーズを失ったり共有したりすると、資産へのアクセスを永久に失うことになります。",
         "importQuestion3": "Rabbyをアンインストールしてシードフレーズをバックアップしなかった場合、Rabbyでは回復できません。",
-        "showMoreOptions": "オプションをさらに表示"
+        "showMoreOptions": "オプションをさらに表示",
+        "inputInvalid": "無効な単語が検出されました。ハイライトされたものを確認してください。"
       },
       "metamask": {
         "step1": "MetaMaskからシードフレーズまたはプライベートキーをエクスポートします <br /> <1>チュートリアルを表示するにはここをクリック<1/></1>",
@@ -1970,7 +1976,8 @@
         "title": "ウォレットを選んで接続してください"
       },
       "otherWalletBtn": "別のウォレットに接続",
-      "connectAddress": "接続アドレス"
+      "connectAddress": "接続アドレス",
+      "connected": "接続済み"
     },
     "addressDetail": {
       "add-to-whitelist": "ホワイトリストに追加",
@@ -2208,7 +2215,9 @@
         "longTimeNoReceive": "ネットワークが混雑しています。通常より時間がかかる場合があります。お待ちください。",
         "receivedDifferentTokenNeedSwap": "異なるトークンを受け取りました。選択したトークンにスワップできます。",
         "receivedDifferentTokenFromSource": "ブリッジに失敗しました。ソースチェーンで異なるトークンが返されました。",
-        "BridgeStatusUnavailable": "ブリッジステータスは利用できません。資金が到着したことを確認するために、transaction historyを確認してください。"
+        "BridgeStatusUnavailable": "ブリッジステータスは利用できません。資金が到着したことを確認するために、transaction historyを確認してください。",
+        "swapStatus": "スワップステータス",
+        "sendStatus": "送信状況"
       }
     },
     "pendingDetail": {
@@ -2967,7 +2976,8 @@
       "singleCoin": {
         "openInterestTips": "この契約における全ユーザーの総未決済ポジション。",
         "fundingPaymentsTips": "これはポジションがオープンしてからのネット資金決済です。ファンディングは、トレーダーが永続契約の価格をトークンの実際の価格に近づけるために支払ったり受け取ったりする時間単位の手数料です。",
-        "fundingTips": "これは、トレーダーが永続契約の価格をトークンの実際の価格に近づけるために支払うか受け取る時間ごとの手数料です。ポジティブな場合、ロングはショートに支払います。ネガティブな場合、ショートはロングに支払います。"
+        "fundingTips": "これは、トレーダーが永続契約の価格をトークンの実際の価格に近づけるために支払うか受け取る時間ごとの手数料です。ポジティブな場合、ロングはショートに支払います。ネガティブな場合、ショートはロングに支払います。",
+        "fundingGainsTips": "これはポジションがオープンして以来のネット資金利益です。資金は、トレーダーが永続契約の価格をトークンの実際の価格に近づけるために支払ったり受け取ったりする毎時の手数料です。"
       },
       "accountSelector": {
         "notActivatedAddress": "未アクティブ",
@@ -3089,7 +3099,10 @@
         "subTitle": "リアルタイム清算距離（％）",
         "liquidationDistance": "清算距離",
         "title": "リスクレベル",
-        "liquidationDistanceTips": "清算距離 (%) は現在の価格が清算価格からどれだけ離れているかを示します。距離が大きいほどポジションは安全ですが、距離が小さいほど清算リスクが高くなります。"
+        "liquidationDistanceTips": "清算距離 (%) は現在の価格が清算価格からどれだけ離れているかを示します。距離が大きいほどポジションは安全ですが、距離が小さいほど清算リスクが高くなります。",
+        "distanceLabel": "清算距離",
+        "liqDistanceTipsLong": "<1>{{distance}}</1> 下がると清算が発動します。",
+        "liqDistanceTipsShort": "{{distance}}の上昇は、清算を引き起こします。"
       },
       "searchPerpsPopup": {
         "onePosition": "1 ポジション",
@@ -3101,7 +3114,19 @@
         "openPosition": "ポジションを開く"
       },
       "position": "ポジション",
-      "closeAll": "すべて閉じる"
+      "closeAll": "すべて閉じる",
+      "invitePopup": {
+        "hyperliquidFee": "Hyperliquid トレーディング手数料。",
+        "description": "Rabbyのコードを使用して有効にします",
+        "activateFailed": "失敗しました",
+        "activateNow": "今すぐアクティブ化",
+        "title": "ハイパーリキッド手数料を節約する",
+        "activatedSuccess": "4% ハイパーリキッド手数料節約が有効化されました"
+      },
+      "fundingGains": "ファンディング利益",
+      "close": "閉じる",
+      "add": "追加",
+      "fundingRate": "資金調達率"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3174,7 +3199,10 @@
           "wallet": "ウォレット",
           "unfoldProtocols": "{{count}} プロトコルを展開",
           "allTokenMode": "すべてのトークンモード",
-          "foldProtocols": "Fold {{count}} プロトコル"
+          "foldProtocols": "Fold {{count}} プロトコル",
+          "foldDifis": "Fold {{count}} Defis",
+          "unfoldDifis": "{{count}}のDefisを展開",
+          "lpToken": "LP-Token"
         },
         "hidden": {
           "showAll": "すべて表示",
@@ -3183,7 +3211,9 @@
           "tokensWithZeroBalanceDesc": "$0残高のトークンは非表示です。",
           "hideProtocolsWithSmallDepositsDesc": "小額入金のプロトコルは表示されません。",
           "hideSmall": "小さい残高のトークンを非表示にします。",
-          "hideSmallDesc": "小額残高のトークンは表示されません。"
+          "hideSmallDesc": "小額残高のトークンは表示されません。",
+          "hideDefiWithSmallDeposits": "少額の入金でDeFiを隠す。",
+          "hideDefiWithSmallDepositsDesc": "小額入金のDefisは表示されません。"
         },
         "table": {
           "tokenAddress": "トークンアドレス",
@@ -3208,7 +3238,93 @@
       "tabs": {
         "transactions": "取引",
         "tokens": "トークン",
-        "approvals": "承認"
+        "approvals": "承認",
+        "difi": "Defi",
+        "defi": "DeFi"
+      },
+      "nft": {
+        "message": {
+          "acceptSuccess": "販売に成功しました",
+          "acceptFailed": "販売失敗",
+          "cancelSuccess": "リストが正常にキャンセルされました",
+          "listingFailedDesc": "再試してください。",
+          "listingSuccess": "リストに追加されました！",
+          "listingSuccessDesc": "{{name}}をOpenSeaにリストしました。",
+          "cancelFailed": "失敗しました！",
+          "cancelFailedDesc": "もう一度お試しください",
+          "cancelSuccessDesc": "{{name}}のリストを正常にキャンセルしました。",
+          "acceptSuccessDesc": "{{name}}を正常に販売しました。",
+          "acceptFailedDesc": "もう一度お試しください。",
+          "listingFailed": "リスティングに失敗しました"
+        },
+        "detail": {
+          "collection": "コレクション",
+          "nft": "NFT",
+          "topOffer": "トップオファー",
+          "rarity": "希少性",
+          "chain": "チェーン",
+          "noOffer": "まだオファーはありません",
+          "platform": "プラットフォーム:",
+          "lastSale": "最後の販売",
+          "supportPlatform": "対応プラットフォーム：",
+          "collectionFloor": "コレクションのフロア",
+          "send": "送信",
+          "accept": "受け入れる",
+          "listedFor": "{{count}} のリストです",
+          "cancel": "リスティングをキャンセル",
+          "listing": "Openseaに上場",
+          "edit": "リストを編集",
+          "ending": "終了:"
+        },
+        "cancelModal": {
+          "cancelListing": "リストをキャンセル",
+          "title": "リストをキャンセル",
+          "listingPrice": "リスティング価格",
+          "listing": "リストing"
+        },
+        "listingModal": {
+          "listedAs": "リストされたとして",
+          "floor": "フロア",
+          "total": "合計リスティング価格",
+          "editListing": "リストを編集",
+          "totalEst": "合計推定収益",
+          "cost": "コスト",
+          "quantity": "数量",
+          "createListing": "リストを作成",
+          "topOffer": "トップオファー",
+          "platformFeeTips": "この手数料はOpenSeaのサービス料金です。",
+          "listOn": "OpenSeaにリストする",
+          "proceeds": "収益",
+          "creatorFee": "クリエイター手数料 ({{fee}}%)",
+          "floorDifference": "フロア差",
+          "rabbyFee": "Rabby 手数料 (0%)",
+          "approveAndList": "承認とリスト",
+          "platformFee": "Openseaプラットフォーム手数料 ({{fee}}%)",
+          "creatorFeeTips": "クリエイターの収益は販売者によって支払われます。",
+          "creatorFeeTips1": "クリエイターの収益は販売者によって支払われます。クリエイターの収益は強制されます。",
+          "nft": "NFT"
+        },
+        "acceptModal": {
+          "platform": "プラットフォーム",
+          "floorDifference": "フロア差",
+          "quantity": "数量",
+          "offerPrice": "オファー価格",
+          "offer": "オファー",
+          "title": "オファーを受け入れる",
+          "acceptOffer": "オファーを受け入れる",
+          "creatorFee": "クリエイター手数料（{{fee}}%）",
+          "rabbyFee": "Rabby手数料（0%）",
+          "totalEst": "合計見込み収益",
+          "creatorFeeTips": "クリエイターの収益は売り手から支払われます。",
+          "platformFeeTips": "この手数料はOpenSeaのサービス料金です。",
+          "platformFee": "Openseaプラットフォーム手数料（{{fee}}％）",
+          "creatorFeeTips1": "クリエイターの収益は売り手によって支払われます。クリエイターの収益は強制されます。"
+        },
+        "all": "すべて",
+        "hideLowValue": "低価値のNFTを非表示にする",
+        "confirmingTx": "トランザクションを確認中",
+        "pending": "保留中",
+        "empty": "NFTはありません"
       }
     },
     "perpsDetail": {
@@ -3231,7 +3347,9 @@
         "minimumOrderSize": "最小注文サイズは$10です。",
         "stopLossWhenPriceBelow": "価格が以下のときにストップロス",
         "takeProfitWhenPriceBelow": "価格が下回ったときに利益を確定する",
-        "rabbyFee": "Rabby手数料"
+        "rabbyFee": "Rabby手数料",
+        "minMargin": "最小マージンは{{amount}}です",
+        "maxMargin": "最大マージンは{{amount}}です"
       },
       "PerpsEditMarginPopup": {
         "available": "利用可能",
@@ -3242,14 +3360,17 @@
         "confirm": "確認",
         "perpsBalance": "永续合約残高",
         "addMargin": "マージンを追加",
-        "liqPrice": "Liq. 価格:",
+        "liqPrice": "Liq. 価格",
         "title": "マージンを調整する",
         "amountToReduce": "減少する金額",
         "exceedMaxReduction": "最大減少を超えています",
         "reduceMarginTooltip": "ポジションを減少させるのに十分なマージンがありません。",
         "reduceMarginSuccess": "マージンが正常に削減されました",
         "insufficientBalance": "残高不足",
-        "addMarginSuccess": "マージンが正常に追加されました"
+        "addMarginSuccess": "マージンが正常に追加されました",
+        "upTo": "最大で",
+        "upto": "最大で",
+        "liqDistance": "Liq. 距離"
       },
       "PerpsClosePositionPopup": {
         "total": "合計",
@@ -3288,7 +3409,16 @@
         "stopLossTipsLongLiquidation": "価格は清算価格（{{price}}）よりも低くなっています。",
         "stopLossTipsShort": "ストップロス価格は現在の価格よりも高くなければなりません",
         "noPosition": "最初にマージンを入力する必要があります。"
-      }
+      },
+      "PerpsAddPositionPopup": {
+        "addToLong": "ロングに追加",
+        "totalSize": "合計サイズ",
+        "addSize": "サイズを追加",
+        "addToShort": "ショートに追加",
+        "sizeTips": "あなたの取引の総価値または数量で、マージンとレバレッジによって設定されます。",
+        "liquidationPriceTips": "維持証拠金レベルを下回ると、さらなる損失を防ぐために、取引所があなたのポジションを自動的にクローズする価格です。"
+      },
+      "needDepositFirst": "最初に資金を入金する必要があります。"
     }
   },
   "component": {
@@ -3417,7 +3547,10 @@
       "hot": "ホット",
       "recent": "最近",
       "common": "一般",
-      "chainNotSupport": "このチェーンはサポートされていません"
+      "chainNotSupport": "このチェーンはサポートされていません",
+      "chainFilterLine": {
+        "filterAll": "すべてのチェーン"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3478,13 +3611,15 @@
       "selectAccount": "アドレスを選択"
     },
     "ChainItem": {
-      "appChain": "{{chain}}アカウント"
+      "appChain": "{{chain}}アカウント",
+      "hyperliquidCode": "Rabbyの紹介コードを使ってHyperliquidの手数料を節約しましょう。"
     },
     "RiskTip": {
       "title": "リスクが検出されました"
     },
     "DappActions": {
-      "queueDescription": "現在の引き出しは待機キューに入ります。処理が完了すると、あなたのウォレットに引き出すことができます。"
+      "queueDescription": "現在の引き出しは待機キューに入ります。処理が完了すると、あなたのウォレットに引き出すことができます。",
+      "manage": "管理"
     },
     "DesktopChainSelector": {
       "allChains": "すべてのチェーン"
@@ -3497,6 +3632,10 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "アドレスを追加"
+    },
+    "LpTokenTag": {
+      "title": "これは流動性プロバイダー(LP)トークンです。",
+      "description": "LPトークンは、あなたが資産を預けたDeFiプロトコルによって発行されます。これらはその資産の証明として機能しますが、あなたの総残高にはその価値が含まれていません。"
     }
   },
   "global": {

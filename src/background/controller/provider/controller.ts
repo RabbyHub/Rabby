@@ -144,18 +144,19 @@ const signTypedDataVlidation = ({
   } catch (e) {
     throw ethErrors.rpc.invalidParams('data is not a validate JSON string');
   }
-  const currentChain = permissionService.isInternalOrigin(session!.origin)
-    ? findChain({ id: jsonData.domain.chainId })?.enum
-    : permissionService.getConnectedSite(session!.origin)?.chain;
-  if (jsonData.domain.chainId) {
-    const chainItem = findChainByEnum(currentChain);
-    if (
-      !currentChain ||
-      (chainItem && Number(jsonData.domain.chainId) !== chainItem.id)
-    ) {
-      throw ethErrors.rpc.invalidParams(
-        'chainId should be same as current chainId'
-      );
+  if (!permissionService.isInternalOrigin(session!.origin)) {
+    const currentChain = permissionService.getConnectedSite(session!.origin)
+      ?.chain;
+    if (jsonData.domain.chainId) {
+      const chainItem = findChainByEnum(currentChain);
+      if (
+        !currentChain ||
+        (chainItem && Number(jsonData.domain.chainId) !== chainItem.id)
+      ) {
+        throw ethErrors.rpc.invalidParams(
+          'chainId should be same as current chainId'
+        );
+      }
     }
   }
   const currentAddress = account?.address.toLowerCase();

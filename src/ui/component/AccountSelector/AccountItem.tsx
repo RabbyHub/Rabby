@@ -256,7 +256,7 @@ export const AccountItem = memo(
         className={clsx(
           className,
           'relative flex items-center px-[15px] py-[11px] gap-[8px]',
-          'border-[1px] border-solid border-transparent rounded-[8px]',
+          'border-[1px] border-solid border-transparent rounded-[12px]',
           disabled
             ? 'cursor-default'
             : 'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light1'
@@ -302,47 +302,42 @@ export const AccountItem = memo(
         </Tooltip>
 
         <div className={clsx('min-w-0')}>
-          {
-            <div
-              className="flex items-center gap-[4px] mb-[2px]"
-              ref={titleRef}
-            >
-              {
-                <>
-                  <div
-                    className={clsx(
-                      'text-r-neutral-title1 font-medium leading-[18px] text-[15px]'
-                    )}
-                    title={alias}
-                  >
-                    {alias}
-                  </div>
-                  {allowEditAlias && (
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEditMemo();
-                      }}
-                      className={`
-                        edit-pen
-                        text-r-neutral-body transition-opacity duration-100 cursor-pointer
-                        hover:text-r-blue-default
-                      `}
-                    >
-                      <IconEditPen />
-                    </div>
+          <div className="flex items-center mb-[4px]" ref={titleRef}>
+            {
+              <>
+                <div
+                  className={clsx(
+                    'text-r-neutral-title1 font-bold leading-[20px] text-[16px]'
                   )}
-                  {extra}
-                </>
-              }
-            </div>
-          }
+                  title={alias}
+                >
+                  {alias}
+                </div>
+                {allowEditAlias && (
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditMemo();
+                    }}
+                    className={`
+                      edit-pen
+                      text-r-neutral-body transition-opacity duration-100 cursor-pointer
+                      hover:text-r-blue-default
+                    `}
+                  >
+                    <IconEditPen />
+                  </div>
+                )}
+                {extra}
+              </>
+            }
+          </div>
           <div className="flex items-center">
             <AddressViewer
               address={address?.toLowerCase()}
               showArrow={false}
               longEllipsis={longEllipsis}
-              className={clsx('text-[13px] text-r-neutral-body leading-[16px]')}
+              className={clsx('text-[12px] text-r-neutral-foot leading-[16px]')}
             />
 
             <CopyChecked
@@ -350,7 +345,7 @@ export const AccountItem = memo(
               className={clsx('copy-icon w-[14px] h-[14px] ml-4 text-14')}
             />
             {!hideBalance && (
-              <span className="ml-[12px] text-13 text-r-neutral-body leading-[16px] truncate flex-1 block">
+              <span className="ml-[12px] text-[12px] text-r-neutral-foot leading-[16px] truncate flex-1 block">
                 ${splitNumberByStep(balance?.toFixed(2))}
               </span>
             )}

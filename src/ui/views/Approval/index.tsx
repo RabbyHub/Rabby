@@ -8,6 +8,8 @@ import * as ApprovalComponent from './components';
 
 import './style.less';
 import clsx from 'clsx';
+import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
+import { EVENTS } from '@/constant';
 
 const Approval: React.FC<{
   className?: string;
@@ -40,6 +42,8 @@ const Approval: React.FC<{
   useEffect(() => {
     init();
   }, []);
+
+  useEventBusListener(EVENTS.RELOAD_APPROVAL, init);
 
   if (!approval) return <></>;
   const { data } = approval;

@@ -40,6 +40,7 @@ import { useGasAccountInfo } from '@/ui/views/GasAccount/hooks';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import {
   formatGasAccountUsdValueV2,
+  formatUsdValue,
   openInternalPageInTab,
   splitNumberByStep,
   useWallet,
@@ -53,6 +54,7 @@ import { RecentConnectionsPopup } from '../RecentConnections';
 import { useScroll, useSize } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
+import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
 
 const Container = styled.div`
   position: relative;
@@ -152,6 +154,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
+  usePerpsDefaultAccount();
   const { perpsPositionInfo, isFetching } = usePerpsHomePnl();
   // useCheckBridgePendingItem();
 
@@ -320,9 +323,12 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       icon: RcIconNftCC,
       eventKey: 'NFT',
       content: t('page.dashboard.home.panel.nft'),
-      onClick: () => {
-        history.push('/nft');
+      onClick: async () => {
+        // history.push('/nft');
+        await wallet.openInDesktop('/desktop/profile/nft');
+        window.close();
       },
+      isFullscreen: true,
     } as IPanelItem,
     ecology: {
       icon: RcIconEco,
@@ -376,25 +382,31 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       icon: RcIconPerpsCC,
       eventKey: 'Perps',
       iconClassName: 'icon-perps',
-      subContent: perpsPositionInfo.show ? (
-        <div
-          className={clsx(
-            'absolute bottom-[4px] text-[11px] leading-[13px] font-medium',
-            perpsPositionInfo.pnl > 0
-              ? 'text-r-green-default'
-              : 'text-r-red-default'
-          )}
-        >
-          {perpsPositionInfo.pnl >= 0 ? '+' : '-'}$
-          {splitNumberByStep(Math.abs(perpsPositionInfo.pnl).toFixed(2))}
-        </div>
-      ) : isFetching ? (
-        <div className="absolute bottom-[4px] text-[11px] font-medium">
+      subContent: isFetching ? (
+        <div className="absolute bottom-[6px] text-[11px] font-medium">
           <Skeleton.Button
             active={true}
             className="h-[10px] block rounded-[2px]"
             style={{ width: 42 }}
           />
+        </div>
+      ) : perpsPositionInfo?.assetPositions?.length ? (
+        <div
+          className={clsx(
+            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-blue-default'
+          )}
+        >
+          {t('page.dashboard.home.panel.perpsPositions', {
+            count: perpsPositionInfo?.assetPositions?.length,
+          })}
+        </div>
+      ) : +(perpsPositionInfo?.marginSummary?.accountValue || '') ? (
+        <div
+          className={clsx(
+            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
+          )}
+        >
+          {formatUsdValue(perpsPositionInfo?.marginSummary.accountValue || 0)}
         </div>
       ) : null,
       content: t('page.dashboard.home.panel.perps'),

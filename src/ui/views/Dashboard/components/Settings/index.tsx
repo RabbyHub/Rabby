@@ -1143,6 +1143,17 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
             message.success('sendPersonalMessage result: ' + result.txHash);
           },
         },
+        {
+          leftIcon: RcIconSettingsGitForkCC,
+          content: 'Reset Perps Store',
+          onClick: async () => {
+            await wallet.resetPerpsStore();
+            message.success('Perps Store reset successfully');
+            setTimeout(() => {
+              window.close();
+            }, 1500);
+          },
+        },
       ] as SettingItem[],
     },
     about: {

@@ -50,7 +50,7 @@
 }
 
 .desktop-approvals-manager {
-  overflow: hidden;
+  // overflow: hidden;
   height: 100%;
   min-width: @main-w;
   width: @main-w;
@@ -653,6 +653,21 @@
   height: @sticky-footer-height;
   bottom: 0;
   padding-bottom: @sticky-btn-bottom-offset;
+}
+
+.sticky-footer-container {
+  display: flex;
+  justify-content: center;
+  .sticky-footer-inner {
+    position: absolute;
+    bottom: -96px;
+  }
+  &.is-sticky {
+    .sticky-footer-inner {
+      position: fixed;
+      bottom: 0;
+    }
+  }
 }
 
 .modal-debug-row-item {

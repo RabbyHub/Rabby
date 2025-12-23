@@ -205,7 +205,7 @@ import LogoZerion, {
 import browser from 'webextension-polyfill';
 
 import Logo0X from 'ui/assets/swap/0xswap.png';
-import Logo1inch from 'ui/assets/swap/1inch.png';
+import Logo1inch from 'ui/assets/swap/1inch.svg';
 import LogoOdos from 'ui/assets/swap/odos.png';
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
 import LogoMagpie from 'ui/assets/swap/magpie.png';
@@ -511,6 +511,7 @@ export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';
 export const INITIAL_TESTNET_OPENAPI_URL = 'https://api.testnet.rabby.io';
 
 export const EVENTS = {
+  BRIDGE_HISTORY_UPDATED: 'BRIDGE_HISTORY_UPDATED',
   broadcastToUI: 'broadcastToUI',
   broadcastToBackground: 'broadcastToBackground',
   TX_COMPLETED: 'TX_COMPLETED',
@@ -566,6 +567,8 @@ export const EVENTS = {
   DESKTOP: {
     FOCUSED: 'DESKTOP_FOCUSED',
   },
+
+  RELOAD_APPROVAL: 'RELOAD_APPROVAL',
 };
 
 export const EVENTS_IN_BG = {

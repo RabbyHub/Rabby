@@ -140,7 +140,7 @@ class TransactionWatcher {
 
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.TX_COMPLETED,
-      params: { address, hash, gasUsed },
+      params: { address, hash, gasUsed, status: txReceipt.status },
     });
 
     eventBus.emit(EVENTS_IN_BG.ON_TX_COMPLETED, {
