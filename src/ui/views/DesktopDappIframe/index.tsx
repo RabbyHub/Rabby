@@ -230,8 +230,8 @@ export const DesktopDappIframe = () => {
 
   return (
     <>
-      <DesktopPageWrap className="w-full h-full bg-rb-neutral-bg-1">
-        <div className="main-content is-open">
+      <DesktopPageWrap className="w-full h-full bg-rb-neutral-bg-1 px-[20px]">
+        <div className="main-content flex-1 pl-0">
           <div className="layout-container sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
             <DesktopNav
               balance={balance}
@@ -243,7 +243,7 @@ export const DesktopDappIframe = () => {
             />
           </div>
           <div className="layout-container">
-            <div className="mt-[16px]">
+            <div className="">
               <div
                 className={clsx(
                   'border border-solid border-rb-neutral-line',
@@ -255,10 +255,8 @@ export const DesktopDappIframe = () => {
             </div>
           </div>
         </div>
-        <aside
-          className={clsx('min-w-[64px] flex-shrink-0 sticky top-[103px] z-20')}
-        >
-          <DesktopSelectAccountList />
+        <aside className={clsx('aside-list sticky top-[103px] z-20')}>
+          <DesktopSelectAccountList autoCollapse />
         </aside>
       </DesktopPageWrap>
     </>
