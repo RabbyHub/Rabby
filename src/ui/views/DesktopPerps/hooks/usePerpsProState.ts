@@ -48,9 +48,41 @@ export const usePerpsProState = ({
     hasPermission,
     accountNeedApproveAgent,
     accountNeedApproveBuilderFee,
+    selectedCoin,
   } = perpsState;
 
   console.log('----- isInitialized', isInitialized);
+
+  useEffect(() => {
+    const sdk = getPerpsSDK();
+    const { unsubscribe } = sdk.ws.subscribeToActiveAssetCtx(
+      selectedCoin,
+      (data) => {
+        dispatch.perps.setWsActiveAssetCtx(data);
+      }
+    );
+    return () => {
+      unsubscribe();
+    };
+  }, [selectedCoin]);
+
+  useEffect(() => {
+    if (!selectedCoin || !currentPerpsAccount?.address) {
+      return;
+    }
+
+    const sdk = getPerpsSDK();
+    const { unsubscribe } = sdk.ws.subscribeToActiveAssetData(
+      selectedCoin,
+      currentPerpsAccount?.address,
+      (data) => {
+        dispatch.perps.setWsActiveAssetData(data);
+      }
+    );
+    return () => {
+      unsubscribe();
+    };
+  }, [selectedCoin, currentPerpsAccount?.address]);
 
   const wallet = useWallet();
 

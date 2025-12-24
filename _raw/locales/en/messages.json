@@ -996,6 +996,42 @@
         "fundingCountdown": "Funding / Countdown",
         "8hrFunding": "8h Funding"
       },
+      "tradingPanel": {
+        "marginIsolated": "Isolated",
+        "marginCross": "Cross",
+        "buyLong": "Buy / Long",
+        "sellShort": "Sell / Short",
+        "availableFunds": "Available Funds",
+        "currentPosition": "Current Position",
+        "tpSl": "TP / SL",
+        "placeOrder": "Place Order",
+        "type": "Type",
+        "enterAmount": "Please enter amount",
+        "insufficientBalance": "Insufficient balance",
+        "minimumOrderSize": "Minimum order size is $10",
+        "maximumOrderSize": "Maximum order size is {{amount}}",
+        "invalidTpPrice": "Invalid take profit price",
+        "invalidSlPrice": "Invalid stop loss price",
+        "tpMustBeHigherThanMarkPrice": "Take profit price must be higher than mark price",
+        "slMustBeLowerThanMarkPrice": "Stop loss price must be lower than mark price",
+        "tpMustBeLowerThanMarkPrice": "Take profit price must be lower than mark price",
+        "slMustBeHigherThanMarkPrice": "Stop loss price must be higher than mark price"
+      },
+      "marginMode": {
+        "title": "Margin Mode",
+        "cross": "Cross",
+        "crossDescription": "All cross positions share the same cross margin as collateral. In the event of liquidation, your margin balance and any remaining open positions under cross in this mode may be forfeited.",
+        "isolated": "Isolated",
+        "isolatedDescription": "Manage your risk on individual positions by allocating the amount of margin allocated to each. If the margin ratio of an isolated position reaches 100%, the position will be liquidated. Margin can be added or removed to individual positions in this mode.",
+        "confirm": "Confirm"
+      },
+      "leverage": {
+        "title": "Leverage",
+        "upTo": "Up to",
+        "minError": "Minimum leverage is 1x",
+        "maxError": "Maximum leverage is {{max}}x",
+        "confirm": "Confirm"
+      },
       "accountActions": {
         "available": "Available:",
         "deposit": "Deposit"
@@ -3647,10 +3683,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",

@@ -31,7 +31,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
     return marketDataMap[coin.toUpperCase()];
   }, [marketDataMap, wsActiveAssetCtx, coin]);
 
-  if (!currentMarketData) {
+  if (!currentMarketData && !marketDataMap[coin.toUpperCase()]) {
     return null;
   }
 

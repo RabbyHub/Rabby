@@ -8,6 +8,7 @@ import {
   OpenOrder,
   UserFill,
   WsActiveAssetCtx,
+  WsActiveAssetData,
   WsFill,
   WsUserFills,
 } from '@rabby-wallet/hyperliquid-sdk';
@@ -96,6 +97,7 @@ export interface PerpsState {
   favoritedCoins: string[];
   chartInterval: string;
   wsActiveAssetCtx: WsActiveAssetCtx | null;
+  wsActiveAssetData: WsActiveAssetData | null;
 }
 
 export const perps = createModel<RootModel>()({
@@ -128,6 +130,7 @@ export const perps = createModel<RootModel>()({
     favoritedCoins: [],
     chartInterval: '15m',
     wsActiveAssetCtx: null,
+    wsActiveAssetData: null,
   } as PerpsState,
 
   reducers: {
@@ -283,7 +286,9 @@ export const perps = createModel<RootModel>()({
 
     updateMarketData(state, payload: AssetCtx[]) {
       if (payload.length === 0 || state.marketData.length === 0) {
-        return;
+        return {
+          ...state,
+        };
       }
 
       const list = payload || [];
@@ -455,6 +460,13 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         wsActiveAssetCtx: payload,
+      };
+    },
+
+    setWsActiveAssetData(state, payload: WsActiveAssetData | null) {
+      return {
+        ...state,
+        wsActiveAssetData: payload,
       };
     },
   },
