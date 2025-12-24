@@ -44,13 +44,15 @@ export const DesktopNav: React.FC<{
 
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
 
+  const currentPathname = history.location.pathname;
+
   const handleActionClick = useCallback(
     (nextAction: DesktopNavAction) => {
       if (onActionSelect) {
         onActionSelect(nextAction);
         return;
       }
-      history.replace(`${history.location.pathname}?action=${nextAction}`);
+      history.replace(`${currentPathname}?action=${nextAction}`);
     },
     [history, onActionSelect]
   );
@@ -82,8 +84,6 @@ export const DesktopNav: React.FC<{
     [handleActionClick, t, showRightItems]
   );
 
-  console.log('history.location.pathname', history, history.location.pathname);
-
   return (
     <div className="flex items-center justify-between">
       <div className="flex">
@@ -97,12 +97,12 @@ export const DesktopNav: React.FC<{
           <div
             className={clsx(
               'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
-              history.location.pathname === '/desktop/profile'
+              currentPathname === '/desktop/profile'
                 ? 'text-r-neutral-title2'
-                : 'text-rb-neutral-foot'
+                : 'text-rb-neutral-foot hover:bg-rb-brand-light-1 group'
             )}
             style={
-              history.location.pathname === '/desktop/profile'
+              currentPathname === '/desktop/profile'
                 ? {
                     background:
                       'linear-gradient(267deg, #5A71FF 1.05%, #384ABA 98.9%)',
@@ -110,17 +110,26 @@ export const DesktopNav: React.FC<{
                 : undefined
             }
             onClick={() => {
-              if (history.location.pathname !== '/desktop/profile') {
+              if (currentPathname !== '/desktop/profile') {
                 history.push('/desktop/profile');
               }
             }}
           >
-            {history.location.pathname === '/desktop/profile' ? (
-              <RcIconHomeCC className="flex-shrink-0" />
+            {currentPathname === '/desktop/profile' ? (
+              <RcIconHomeCC className="flex-shrink-0 " />
             ) : (
-              <RcIconHomeInActiveCC className="text-rb-neutral-secondary" />
+              <>
+                <RcIconHomeCC className="flex-shrink-0 hidden group-hover:flex group-hover:text-r-neutral-title2" />
+                <RcIconHomeInActiveCC className="text-rb-neutral-secondary group-hover:hidden" />
+              </>
             )}
-            <div className="min-w-0">
+            <div
+              className={clsx(
+                'min-w-0',
+                currentPathname !== '/desktop/profile' &&
+                  'group-hover:text-rb-brand-default'
+              )}
+            >
               <div className="text-[16px] leading-[19px] font-bold">
                 {t('component.DesktopNav.portfolio')}
               </div>
@@ -182,12 +191,12 @@ export const DesktopNav: React.FC<{
           <div
             className={clsx(
               'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
-              history.location.pathname === '/desktop/dapp-iframe'
+              currentPathname === '/desktop/dapp-iframe'
                 ? 'text-r-neutral-title2'
-                : ''
+                : 'text-rb-neutral-foot hover:bg-rb-brand-light-1 group'
             )}
             style={
-              history.location.pathname === '/desktop/dapp-iframe'
+              currentPathname === '/desktop/dapp-iframe'
                 ? {
                     background:
                       'linear-gradient(267deg, #5A71FF 1.05%, #384ABA 98.9%)',
@@ -195,24 +204,24 @@ export const DesktopNav: React.FC<{
                 : undefined
             }
             onClick={() => {
-              if (history.location.pathname !== '/desktop/dapp-iframe') {
+              if (currentPathname !== '/desktop/dapp-iframe') {
                 history.push('/desktop/dapp-iframe');
               }
             }}
           >
             <RcIconPredictionCC
               className={clsx(
-                history.location.pathname === '/desktop/dapp-iframe'
+                currentPathname === '/desktop/dapp-iframe'
                   ? 'text-rb-neutral-InvertHighlight'
-                  : 'text-rb-neutral-secondary'
+                  : 'text-rb-neutral-secondary group-hover:text-rb-brand-default'
               )}
             />
             <div>
               <div
                 className={clsx(
-                  history.location.pathname === '/desktop/dapp-iframe'
+                  currentPathname === '/desktop/dapp-iframe'
                     ? ''
-                    : 'text-rb-neutral-foot',
+                    : 'text-rb-neutral-foot group-hover:text-rb-brand-default',
 
                   'text-[16px] leading-[19px] font-bold'
                 )}

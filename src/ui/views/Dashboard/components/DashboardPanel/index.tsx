@@ -461,6 +461,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'transactions',
           'security',
           'perps',
+          'prediction',
           'points',
           'mobile',
           'nft',
@@ -468,7 +469,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'searchDapp',
           'dapps',
           // 'manageAddress',
-          'prediction',
           'more',
         ]
       : [
@@ -479,6 +479,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'transactions',
           'security',
           'perps',
+          'prediction',
           'points',
           'mobile',
           'nft',
@@ -486,7 +487,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'searchDapp',
           'dapps',
           // 'manageAddress',
-          'prediction',
           'more',
         ];
   }, [isGnosis]);
