@@ -356,7 +356,7 @@ const SelectToAddress = () => {
                   className={clsx(
                     'flex flex-row items-center justify-center',
                     focusTab === 'whitelist'
-                      ? 'text-r-neutral-title1 font-[600]'
+                      ? 'text-r-neutral-title1 font-semibold'
                       : 'text-r-neutral-foot'
                   )}
                 >
@@ -389,7 +389,7 @@ const SelectToAddress = () => {
                 <span
                   className={clsx(
                     focusTab === 'imported'
-                      ? 'text-r-neutral-title1 font-[600]'
+                      ? 'text-r-neutral-title1 font-semibold'
                       : 'text-r-neutral-foot'
                   )}
                 >

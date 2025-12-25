@@ -185,7 +185,7 @@ export default function RateModal() {
               }}
             >
               <ChromeLogo width={18} height={18} className="mr-[8px]" />
-              <span className="text-r-neutral-title-2 text-[16px] font-[500]">
+              <span className="text-r-neutral-title-2 text-[16px] font-medium">
                 {t('page.dashboard.settings.rateModal.rateOnChromeStoreButton')}
               </span>
             </Button>
@@ -284,7 +284,7 @@ export default function RateModal() {
                   });
               }}
             >
-              <span className="text-r-neutral-title-2 text-[16px] font-[500]">
+              <span className="text-r-neutral-title-2 text-[16px] font-medium">
                 {t('page.dashboard.settings.rateModal.submitFeedbackButton')}
               </span>
             </Button>
