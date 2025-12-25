@@ -663,7 +663,7 @@ export const DirectSignGasInfo = ({
                       className={clsx(
                         'gas-level-text',
                         'rounded-[4px] height-[24px] bg-rb-brand-light-1 px-[6px] py-[2px]',
-                        'text-[12px] text-rb-brand-default font-[500] leading-[16px]'
+                        'text-[12px] text-rb-brand-default font-medium leading-[16px]'
                       )}
                     >
                       {ctx?.selectedGas?.level

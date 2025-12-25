@@ -307,7 +307,7 @@ export const AccountItem = memo(
               <>
                 <div
                   className={clsx(
-                    'text-r-neutral-title1 font-[600] leading-[20px] text-[16px]'
+                    'text-r-neutral-title1 font-semibold leading-[20px] text-[16px]'
                   )}
                   title={alias}
                 >
