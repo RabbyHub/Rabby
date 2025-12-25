@@ -10,3 +10,4 @@ export { ReactComponent as RcIconMinusCC } from './minus-cc.svg';
 export { ReactComponent as RcIconInfoCC } from './info-cc.svg';
 export { ReactComponent as RcIconWaringCC } from './warning-cc.svg';
 export { ReactComponent as RcIconSuccessCC } from './success-cc.svg';
+export { ReactComponent as RcIconEditCC } from './edit-cc.svg';

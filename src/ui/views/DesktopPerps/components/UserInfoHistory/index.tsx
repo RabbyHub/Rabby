@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
+import { PositionsInfo } from '../PositionsInfo';
+import { TradeHistory } from '../TradeHistory';
 
 export const UserInfoHistory: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
@@ -45,11 +47,11 @@ export const UserInfoHistory: React.FC = () => {
         </button>
       </div>
       {/* Content */}
-      <div className="flex-1 overflow-auto p-[12px]">
+      <div className="flex-1 overflow-auto">
         <div className="text-r-neutral-foot text-[12px]">
-          {activeTab === 'positions' && 'Positions Content'}
+          {activeTab === 'positions' && <PositionsInfo />}
           {activeTab === 'orders' && 'Open Orders Content'}
-          {activeTab === 'history' && 'Trade History Content'}
+          {activeTab === 'history' && <TradeHistory />}
         </div>
       </div>
     </div>
