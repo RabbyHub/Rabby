@@ -156,6 +156,7 @@ const TokenSelect = forwardRef<
     const handleCurrentTokenChange = (token: TokenItem) => {
       onChange && onChange('');
       onTokenChange(token);
+      setLpTokenMode(false);
       setTokenSelectorVisible(false);
 
       // const chainItem = findChainByServerID(token.chain);

@@ -1411,13 +1411,9 @@
           "noMatch": "Немає збігів",
           "lowValueDescription": "Тут будуть показані активи з низькою вартістю",
           "lowValueAssets": "{{count}} малоцінні активи",
-          "lowValueAssets_0": "{{count}} токен з низькою вартістю",
-          "lowValueAssets_one": "{{count}} токенів низької вартості",
-          "lowValueAssets_other": "{{count}} низьковартісних токенів",
           "review": "Огляд",
           "noTokens": "Немає токенів",
-          "searchToken": "Пошук токена",
-          "lowValueDefis": ""
+          "searchToken": "Пошук токена"
         },
         "noAssets": "Немає активів",
         "blockLinkText": "Адреса для пошуку токена блоку",
@@ -1456,7 +1452,6 @@
         "noTestnetAssets": "Немає активів у користувацькій мережі",
         "price": "ЦІНА",
         "side": "БОКОВИЙ",
-        "openInTab": "Відкрити у вкладці",
         "searchTokenPlaceholder": "Пошук Токену"
       },
       "hd": {

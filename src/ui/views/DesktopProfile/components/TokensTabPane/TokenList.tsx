@@ -72,6 +72,10 @@ export const TokenList = ({
                       // className="mt-[92px]"
                       text={t('page.dashboard.assets.table.noMatch')}
                     />
+                  ) : lpTokenMode ? (
+                    <TokenListEmpty
+                      text={t('page.dashboard.assets.table.noLpTokens')}
+                    />
                   ) : (
                     <div></div>
                   )

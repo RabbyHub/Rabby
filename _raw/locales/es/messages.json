@@ -1408,13 +1408,9 @@
           "noMatch": "Sin coincidencias",
           "lowValueDescription": "Los activos de bajo valor se mostrarán aquí",
           "lowValueAssets": "{{count}} activos de bajo valor",
-          "lowValueAssets_other": "{{count}} low value tokens",
-          "lowValueAssets_0": "{{count}} token de bajo valor",
-          "lowValueAssets_one": "{{count}} low value token",
           "review": "Revisión",
           "noTokens": "Sin tokens",
-          "searchToken": "Buscar Token",
-          "lowValueDefis": ""
+          "searchToken": "Buscar Token"
         },
         "noAssets": "No hay activos",
         "blockLinkText": "Buscar dirección para bloquear token",
@@ -1453,7 +1449,6 @@
         "addTokenEntryText": "Token",
         "price": "PRECIO",
         "side": "LADO",
-        "openInTab": "Abrir en pestaña",
         "searchTokenPlaceholder": "Buscar Token"
       },
       "hd": {

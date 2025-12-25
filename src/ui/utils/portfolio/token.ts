@@ -66,6 +66,7 @@ export const useTokens = (
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
   const [isLoading, setLoading] = useSafeState(true);
+  const [isAllTokenLoading, setIsAllTokenLoading] = useSafeState(true);
   const historyTime = useRef<number>();
   const historyLoad = useRef<boolean>(false);
   const wallet = useWallet();
@@ -134,6 +135,7 @@ export const useTokens = (
     const abortedFn = () => {
       if (callCount === callCountRef.current) {
         setLoading(false);
+        setIsAllTokenLoading(false);
       }
     };
 
@@ -151,6 +153,7 @@ export const useTokens = (
     historyLoad.current = false;
 
     setLoading(true);
+    setIsAllTokenLoading(true);
     log('======Start-Tokens======', userAddr);
     let _data = produce(walletProject, (draft) => {
       draft.netWorth = 0;
@@ -177,6 +180,7 @@ export const useTokens = (
     if (!snapshot) {
       log('--Terminate-tokens-snapshot-', userAddr);
       setLoading(false);
+      setIsAllTokenLoading(false);
       return;
     }
 
@@ -220,6 +224,7 @@ export const useTokens = (
     if (!tokenRes) {
       log('--Terminate-tokens- no tokenRes', userAddr);
       setLoading(false);
+      setIsAllTokenLoading(false);
     }
 
     if (currentAbort.signal.aborted) {
@@ -331,7 +336,7 @@ export const useTokens = (
       ]);
     }
     setLoading(false);
-
+    setIsAllTokenLoading(false);
     loadHistory(_data, currentAbort);
 
     log('<<==Tokens-end==>>', userAddr);
@@ -464,6 +469,7 @@ export const useTokens = (
   return {
     netWorth: data?.netWorth || 0,
     isLoading,
+    isAllTokenLoading,
     tokens,
     customizeTokens: isTestnet
       ? testnetTokens.customize

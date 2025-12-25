@@ -375,13 +375,9 @@
           "noMatch": "没有匹配",
           "lowValueDescription": "低价值资产将显示在这里",
           "lowValueAssets": "{{count}} 个低价值资产",
-          "lowValueAssets_one": "{{count}} 个低价值代币",
-          "lowValueAssets_other": "{{count}} 个低价值代币",
-          "lowValueAssets_0": "{{count}} 个低价值代币",
           "review": "审核",
           "noTokens": "没有代币",
-          "searchToken": "搜索 Token",
-          "lowValueDefis": ""
+          "searchToken": "搜索 Token"
         },
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址，隐藏代币",
@@ -420,7 +416,6 @@
         "addTokenEntryText": "代币",
         "side": "侧边",
         "price": "价格",
-        "openInTab": "在新标签页中打开",
         "searchTokenPlaceholder": "搜索代币"
       },
       "hd": {

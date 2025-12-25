@@ -49,6 +49,7 @@ export const AssetListContainer: React.FC<Props> = ({
   const { setApps } = useCommonPopupView();
   const {
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     portfolios,
     tokens: tokenList,
@@ -195,7 +196,7 @@ export const AssetListContainer: React.FC<Props> = ({
         </div>
         {/* {isFocus || search ? null : <AddTokenEntry ref={addTokenEntryRef} />} */}
       </div>
-      {isTokensLoading || isSearching ? (
+      {isTokensLoading || isSearching || (lpTokenMode && isAllTokenLoading) ? (
         <TokenListSkeleton />
       ) : (
         <div className="mt-[12px]">

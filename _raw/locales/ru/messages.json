@@ -1409,13 +1409,9 @@
           "noMatch": "Нет совпадений",
           "lowValueDescription": "Активы с низкой стоимостью будут показаны здесь",
           "lowValueAssets": "{{count}} активов с низкой стоимостью",
-          "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_0": "{{count}} с низкой стоимостью token",
-          "lowValueAssets_other": "{{count}} токенов с низкой стоимостью",
           "review": "Обзор",
           "noTokens": "Нет токенов",
-          "searchToken": "Поиск токена",
-          "lowValueDefis": ""
+          "searchToken": "Поиск токена"
         },
         "noAssets": "Нет активов",
         "blockLinkText": "Искать адрес, чтобы заблокировать токен",
@@ -1454,7 +1450,6 @@
         "customButtonText": "Добавить пользовательский токен",
         "price": "ЦЕНА",
         "side": "Сторона",
-        "openInTab": "Открыть в вкладке",
         "searchTokenPlaceholder": "Поиск токена"
       },
       "hd": {

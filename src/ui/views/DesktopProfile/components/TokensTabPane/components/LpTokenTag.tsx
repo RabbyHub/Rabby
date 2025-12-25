@@ -14,7 +14,8 @@ const Overlay = ({ protocolName }: { protocolName: string }) => {
         <RCLpTokenIconCC className="w-16 h-16 text-r-neutral-title2 cursor-pointer" />
         <div className="text-12 text-white font-semibold">
           {t('component.LpTokenTag.descriptionFor', {
-            protocolName,
+            protocolName:
+              protocolName?.charAt(0).toUpperCase() + protocolName?.slice(1),
           })}
         </div>
       </div>
@@ -33,16 +34,20 @@ export const LpTokenTag = ({
   size?: number;
   protocolName: string;
 }) => {
+  const { t } = useTranslation();
   return (
     <Tooltip
-      overlayClassName={cx('rectangle addressType__tooltip')}
-      overlayStyle={{ maxWidth: '320px' }}
+      overlayClassName={cx('rectangle')}
+      overlayStyle={{ maxWidth: '250px' }}
       overlayInnerStyle={{
         borderRadius: '12px',
       }}
       className={className}
       style={{ width: size, height: size }}
-      overlay={<Overlay protocolName={protocolName} />}
+      title={t('component.LpTokenTag.descriptionFor', {
+        protocolName:
+          protocolName?.charAt(0).toUpperCase() + protocolName?.slice(1),
+      })}
       mouseEnterDelay={0}
     >
       <RCLpTokenIconCC
