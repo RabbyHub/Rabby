@@ -192,6 +192,7 @@ export const DesktopProfile = () => {
   const {
     // useQueryProjects
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     portfolios,
     tokenList,
@@ -338,7 +339,10 @@ export const DesktopProfile = () => {
                       key="tokens"
                     >
                       <TokenTab
-                        isTokensLoading={!!isTokensLoading}
+                        isTokensLoading={
+                          !!isTokensLoading ||
+                          (!!lpTokenMode && !!isAllTokenLoading)
+                        }
                         isNoResults={isNoResults}
                         sortTokens={sortTokens}
                         hasTokens={hasTokens}
