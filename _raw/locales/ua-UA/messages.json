@@ -1413,7 +1413,12 @@
           "lowValueAssets": "{{count}} малоцінні активи",
           "review": "Огляд",
           "noTokens": "Немає токенів",
-          "searchToken": "Пошук токена"
+          "searchToken": "Пошук токена",
+          "lowValueAssets_one": "{{count}} токен низької вартості",
+          "noLpTokens": "Немає токена забезпечення ліквідності (LP)",
+          "lowValueAssets_0": "{{count}} токен з низькою вартістю",
+          "lowValueAssets_other": "{{count}} токенів з низькою вартістю",
+          "lowValueDefis": "{{count}} низьковартісних DeFi активів"
         },
         "noAssets": "Немає активів",
         "blockLinkText": "Адреса для пошуку токена блоку",
@@ -1452,7 +1457,8 @@
         "noTestnetAssets": "Немає активів у користувацькій мережі",
         "price": "ЦІНА",
         "side": "БОКОВИЙ",
-        "searchTokenPlaceholder": "Пошук Токену"
+        "searchTokenPlaceholder": "Пошук Токену",
+        "openInTab": "Відкрити в Rabby Tab"
       },
       "hd": {
         "howToConnectLedger": "Як підключити Ledger",
@@ -3557,7 +3563,8 @@
       "chainNotSupport": "Цей ланцюг не підтримується",
       "chainFilterLine": {
         "filterAll": "Усі мережі"
-      }
+      },
+      "noLpTokens": "Немає токена постачальника ліквідності (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3642,7 +3649,8 @@
     },
     "LpTokenTag": {
       "title": "Це токен постачальника ліквідності (LP)",
-      "description": "LP токени випускаються протоколами DeFi, куди ви внесли свої активи. Вони слугують доказом цих активів, але їхня вартість не включена у ваш загальний баланс."
+      "description": "LP токени випускаються протоколами DeFi, куди ви внесли свої активи. Вони слугують доказом цих активів, але їхня вартість не включена у ваш загальний баланс.",
+      "descriptionFor": "Це токен постачальника ліквідності (LP) для {{ protocolName }}"
     }
   },
   "global": {

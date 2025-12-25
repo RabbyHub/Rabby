@@ -1410,7 +1410,12 @@
           "lowValueAssets": "{{count}} ativos de baixo valor",
           "review": "Revisar",
           "noTokens": "Sem Tokens",
-          "searchToken": "Buscar Token"
+          "searchToken": "Buscar Token",
+          "lowValueAssets_one": "{{count}} token de baixo valor",
+          "lowValueDefis": "{{count}} ativos DeFi de baixo valor",
+          "lowValueAssets_other": "{{count}} tokens de baixo valor",
+          "lowValueAssets_0": "{{count}} token de baixo valor",
+          "noLpTokens": "Nenhum Token de Provedor de Liquidez (LP)"
         },
         "noAssets": "Sem ativos",
         "blockLinkText": "Pesquise o endereço para bloquear o token",
@@ -1449,7 +1454,8 @@
         "noTestnetAssets": "Nenhum ativo da rede personalizada",
         "price": "PREÇO",
         "side": "LADO",
-        "searchTokenPlaceholder": "Pesquisar Token"
+        "searchTokenPlaceholder": "Pesquisar Token",
+        "openInTab": "Abra na aba Rabby"
       },
       "hd": {
         "howToConnectLedger": "Como Conectar o Ledger",
@@ -3545,7 +3551,8 @@
       "chainNotSupport": "Esta cadeia não é suportada",
       "chainFilterLine": {
         "filterAll": "Todas as Redes"
-      }
+      },
+      "noLpTokens": "Sem Token de Provedor de Liquidez (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3631,7 +3638,8 @@
     },
     "LpTokenTag": {
       "title": "Este é um token de provedor de liquidez (LP)",
-      "description": "Os tokens LP são emitidos pelos protocolos DeFi nos quais você depositou seus ativos. Eles servem como prova desses ativos, mas seu valor não está incluído no seu saldo total."
+      "description": "Os tokens LP são emitidos pelos protocolos DeFi nos quais você depositou seus ativos. Eles servem como prova desses ativos, mas seu valor não está incluído no seu saldo total.",
+      "descriptionFor": "Este é um Token de Provedor de Liquidez (LP) para {{ protocolName }}"
     }
   },
   "global": {

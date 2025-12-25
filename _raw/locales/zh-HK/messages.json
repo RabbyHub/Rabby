@@ -377,7 +377,12 @@
           "lowValueAssets": "{{count}} 個低價值資產",
           "review": "審查",
           "noTokens": "沒有 Tokens",
-          "searchToken": "搜索令牌"
+          "searchToken": "搜索令牌",
+          "lowValueAssets_0": "{{count}} 低價值代幣",
+          "lowValueAssets_other": "{{count}} 低價值的 tokens",
+          "noLpTokens": "沒有流動性提供者 (LP) 代幣",
+          "lowValueDefis": "{{count}} 低價值 DeFi 資產",
+          "lowValueAssets_one": "{{count}} 低價值代幣"
         },
         "noAssets": "沒有資產",
         "blockLinkText": "搜索代幣地址，隱藏代幣",
@@ -416,7 +421,8 @@
         "addTokenEntryText": "代幣",
         "side": "側邊",
         "price": "價格",
-        "searchTokenPlaceholder": "搜索 Token"
+        "searchTokenPlaceholder": "搜索 Token",
+        "openInTab": "在 Rabby 标签中打开"
       },
       "hd": {
         "howToConnectLedger": "如何連接 Ledger",
@@ -3583,7 +3589,8 @@
       "chainNotSupport": "此链不受支持",
       "chainFilterLine": {
         "filterAll": "所有链"
-      }
+      },
+      "noLpTokens": "無流動性提供者（LP）代幣"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3668,7 +3675,8 @@
     },
     "LpTokenTag": {
       "title": "這是一個流動性提供者(LP)代幣",
-      "description": "LP 代幣是由你已存入資產的 DeFi 協議發行的。它們作為那些資產的證明，但其價值不包括在你的總餘額中。"
+      "description": "LP 代幣是由你已存入資產的 DeFi 協議發行的。它們作為那些資產的證明，但其價值不包括在你的總餘額中。",
+      "descriptionFor": "這是一個 {{ protocolName }} 的流動性提供者 (LP) 代幣"
     }
   },
   "background": {
