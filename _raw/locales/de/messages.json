@@ -1408,13 +1408,9 @@
           "noMatch": "Keine Übereinstimmung",
           "lowValueDescription": "Vermögenswerte mit geringem Wert werden hier angezeigt",
           "lowValueAssets": "{{count}} Vermögenswerte mit geringem Wert",
-          "lowValueAssets_other": "{{count}} niedrigwertige Token",
-          "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_0": "{{count}} Low-Value-Token",
           "review": "Überprüfung",
           "noTokens": "Keine Token",
-          "searchToken": "Token suchen",
-          "lowValueDefis": "{{count}} Low-Value DeFi-Angebote"
+          "searchToken": "Token suchen"
         },
         "noAssets": "Keine Vermögenswerte",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",
@@ -1453,7 +1449,6 @@
         "addTokenEntryText": "Token",
         "price": "PREIS",
         "side": "SEITE",
-        "openInTab": "Im Tab öffnen",
         "searchTokenPlaceholder": "Token suchen"
       },
       "hd": {
