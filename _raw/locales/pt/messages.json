@@ -1487,22 +1487,18 @@
           "PL": "P&L",
           "dailyUnlock": "Desbloqueio diário",
           "endAt": "Terminar em",
-          "lowValueAssets_0": "{{count}} token de baixo valor",
           "type": "Tipo",
           "noMatch": "Sem correspondência",
           "leverage": "Alavancar",
           "balanceValue": "Saldo / Valor",
           "token": "Token",
-          "lowValueAssets_one": "{{count}} token de baixo valor",
           "exerciseEnd": "Exercício encerrado",
           "summaryDescription": "Todos os ativos nos protocolos (por exemplo, tokens LP) são resolvidos para os ativos subjacentes para cálculos estatísticos.",
           "lowValueDescription": "Ativos de baixo valor serão exibidos aqui",
-          "lowValueAssets_other": "{{count}} tokens de baixo valor",
           "side": "Lado",
           "tradePair": "Par de negociação",
           "review": "Revisar",
           "noTokens": "Sem Tokens",
-          "lowValueDefis": "{{count}} defis de baixo valor",
           "searchToken": "Buscar Token"
         },
         "AddMainnetToken": {
@@ -1543,7 +1539,6 @@
         "noTestnetAssets": "Nenhum ativo de rede personalizado",
         "side": "LADO",
         "price": "PREÇO",
-        "openInTab": "Abrir em uma nova guia",
         "searchTokenPlaceholder": "Buscar Token"
       },
       "hd": {

@@ -66,14 +66,13 @@ export const HomeTokenList = ({
   }
   if (lpTokenMode && !list?.length) {
     return (
-      <div className="no-token w-full flex flex-col items-center justify-center">
+      <div className="no-token w-full flex flex-col items-center justify-center h-[154px] bg-r-neutral-card1 rounded-[8px]">
         <img
-          className="w-[100px] h-[100px]"
+          className="w-[72px] h-[72px]"
           src="/images/nodata-tx.png"
           alt="no site"
         />
-
-        <p className="text-r-neutral-foot text-14 mt-12 text-center mb-0">
+        <p className="text-r-neutral-foot text-13 mt-2 text-center mb-0">
           {t('component.TokenSelector.noLpTokens')}
         </p>
       </div>

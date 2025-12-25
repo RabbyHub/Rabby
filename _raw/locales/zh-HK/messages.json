@@ -375,12 +375,8 @@
           "noMatch": "沒有匹配",
           "lowValueDescription": "低價值資產將顯示在這里",
           "lowValueAssets": "{{count}} 個低價值資產",
-          "lowValueAssets_other": "{{count}} 低價值代幣",
-          "lowValueAssets_one": "{{count}} 低價值代幣",
-          "lowValueAssets_0": "{{count}} 低價值代幣",
           "review": "審查",
           "noTokens": "沒有 Tokens",
-          "lowValueDefis": "{{count}} 低價值 defis",
           "searchToken": "搜索令牌"
         },
         "noAssets": "沒有資產",
@@ -420,7 +416,6 @@
         "addTokenEntryText": "代幣",
         "side": "側邊",
         "price": "價格",
-        "openInTab": "在新标签页中打开",
         "searchTokenPlaceholder": "搜索 Token"
       },
       "hd": {

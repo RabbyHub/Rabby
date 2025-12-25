@@ -1486,14 +1486,11 @@
           "percent": "퍼센트",
           "tradePair": "거래 쌍",
           "side": "측면",
-          "lowValueAssets_other": "{{count}} 저가 토큰",
           "dailyUnlock": "일일 잠금 해제",
           "claimable": "청구 가능",
           "pool": "POOL",
-          "lowValueAssets_0": "{{count}} 저가 토큰",
           "type": "유형",
           "exerciseEnd": "운동 종료",
-          "lowValueAssets_one": "{{count}} 저가 토큰",
           "noMatch": "일치하지 않음",
           "lowValueDescription": "여기에는 저가 자산이 표시됩니다.",
           "summaryTips": "자산 가치는 총 순자산으로 나뉩니다.",
@@ -1502,8 +1499,7 @@
           "balanceValue": "잔액 / 가치",
           "review": "리뷰",
           "noTokens": "토큰 없음",
-          "searchToken": "토큰 검색",
-          "lowValueDefis": "{{count}} 저가 가치 디파이"
+          "searchToken": "토큰 검색"
         },
         "AddMainnetToken": {
           "title": "맞춤형 토큰 추가",
@@ -1543,7 +1539,6 @@
         "searchPlaceholder": "토큰",
         "price": "가격",
         "side": "측면",
-        "openInTab": "탭에서 열기",
         "searchTokenPlaceholder": "토큰 검색"
       },
       "hd": {

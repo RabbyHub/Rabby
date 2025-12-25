@@ -1485,7 +1485,6 @@
           "dailyUnlock": "Pembukaan harian",
           "unlockAt": "Buka di",
           "exerciseEnd": "Latihan selesai",
-          "lowValueAssets_0": "{{count}} token nilai rendah",
           "assetAmount": "Aset / Jumlah",
           "claimable": "Dapat Diklaim",
           "strikePrice": "Harga pelaksanaan",
@@ -1496,14 +1495,11 @@
           "noMatch": "Tidak Cocok",
           "tradePair": "Pasangan perdagangan",
           "summaryDescription": "Semua aset dalam protokol (misalnya token LP) diselesaikan ke aset dasar untuk perhitungan statistik.",
-          "lowValueAssets_one": "{{count}} token bernilai rendah",
-          "lowValueAssets_other": "{{count}} token nilai rendah",
           "summaryTips": "Nilai aset dibagi dengan total kekayaan bersih",
           "price": "Harga",
           "review": "Tinjau",
           "noTokens": "Tidak Ada Token",
-          "searchToken": "Cari Token",
-          "lowValueDefis": "{{count}} defis nilai rendah"
+          "searchToken": "Cari Token"
         },
         "AddMainnetToken": {
           "tokenAddress": "Alamat Token",
@@ -1543,7 +1539,6 @@
         "customDescription": "Token kustom yang ditambahkan oleh Anda akan ditampilkan di sini",
         "price": "HARGA",
         "side": "SISI",
-        "openInTab": "Buka di tab",
         "searchTokenPlaceholder": "Cari Token"
       },
       "hd": {

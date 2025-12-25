@@ -717,13 +717,9 @@
           "unlockAt": "Débloquer à",
           "unsupportedPoolType": "Type de pool non pris en charge",
           "useValue": "Valeur en USD",
-          "lowValueAssets_0": "{{count}} jeton de faible valeur",
-          "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} low value tokens",
           "review": "Revue",
           "noTokens": "Aucun Token",
-          "searchToken": "Recherche de Token",
-          "lowValueDefis": "{{count}} defis de faible valeur"
+          "searchToken": "Recherche de Token"
         },
         "tokenButton": {
           "subTitle": "Le token de cette liste ne sera pas ajouté au solde total"
@@ -759,7 +755,6 @@
         "addTokenEntryText": "Jeton",
         "price": "PRIX",
         "side": "CÔTÉ",
-        "openInTab": "Ouvrir dans un onglet",
         "searchTokenPlaceholder": "Rechercher Token"
       },
       "contacts": {

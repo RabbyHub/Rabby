@@ -1408,12 +1408,8 @@
           "noMatch": "Eşleşme Yok",
           "lowValueDescription": "Düşük değerdeki varlıklar burada gösterilecek",
           "lowValueAssets": "{{count}} düşük değerli varlık",
-          "lowValueAssets_other": "{{count}} düşük değerli tokenlar",
-          "lowValueAssets_one": "{{count}} düşük değerli token",
-          "lowValueAssets_0": "{{count}} düşük değerli token",
           "review": "Gözden Geçir",
           "noTokens": "No Tokens",
-          "lowValueDefis": "{{count}} düşük değerli defis",
           "searchToken": "Token Ara"
         },
         "noAssets": "Varlık Yok",
@@ -1453,7 +1449,6 @@
         "customButtonText": "Özel token ekle",
         "side": "YAN TARAF",
         "price": "FİYAT",
-        "openInTab": "Sekmede aç",
         "searchTokenPlaceholder": "Token Ara"
       },
       "hd": {

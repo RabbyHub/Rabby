@@ -1408,13 +1408,9 @@
           "noMatch": "Sem Correspondência",
           "lowValueDescription": "Ativos de baixo valor serão exibidos aqui",
           "lowValueAssets": "{{count}} ativos de baixo valor",
-          "lowValueAssets_0": "{{count}} low value token",
-          "lowValueAssets_one": "{{count}} token de baixo valor",
-          "lowValueAssets_other": "{{count}} tokens de baixo valor",
           "review": "Revisar",
           "noTokens": "Sem Tokens",
-          "searchToken": "Buscar Token",
-          "lowValueDefis": "{{count}} defis de baixo valor"
+          "searchToken": "Buscar Token"
         },
         "noAssets": "Sem ativos",
         "blockLinkText": "Pesquise o endereço para bloquear o token",
@@ -1453,7 +1449,6 @@
         "noTestnetAssets": "Nenhum ativo da rede personalizada",
         "price": "PREÇO",
         "side": "LADO",
-        "openInTab": "Abrir na aba",
         "searchTokenPlaceholder": "Pesquisar Token"
       },
       "hd": {
