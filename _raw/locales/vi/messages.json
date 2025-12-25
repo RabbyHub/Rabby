@@ -1499,7 +1499,12 @@
           "lowValueDescription": "Tài sản có giá trị thấp sẽ được hiển thị ở đây",
           "review": "Xem lại",
           "noTokens": "Không có Token",
-          "searchToken": "Tìm kiếm Token"
+          "searchToken": "Tìm kiếm Token",
+          "lowValueDefis": "{{count}} tài sản DeFi giá trị thấp",
+          "lowValueAssets_one": "{{count}} token giá trị thấp",
+          "lowValueAssets_0": "{{count}} token giá trị thấp",
+          "noLpTokens": "Không có Token Nhà Cung Cấp Thanh Khoản (LP)",
+          "lowValueAssets_other": "{{count}} token giá trị thấp"
         },
         "AddMainnetToken": {
           "title": "Thêm Token Tùy Chỉnh",
@@ -1539,7 +1544,8 @@
         "customButtonText": "Thêm token tùy chỉnh",
         "side": "BÊN",
         "price": "GIÁ",
-        "searchTokenPlaceholder": "Tìm kiếm Token"
+        "searchTokenPlaceholder": "Tìm kiếm Token",
+        "openInTab": "Mở trong Rabby Tab"
       },
       "hd": {
         "ledger": {
@@ -3542,7 +3548,8 @@
       "chainNotSupport": "Chuỗi này không được hỗ trợ",
       "chainFilterLine": {
         "filterAll": "Tất cả các chuỗi"
-      }
+      },
+      "noLpTokens": "Không có Token Nhà cung cấp thanh khoản (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3627,7 +3634,8 @@
     },
     "LpTokenTag": {
       "title": "Đây là một token nhà cung cấp thanh khoản (LP)",
-      "description": "LP tokens được cấp bởi các giao thức DeFi nơi bạn đã gửi tài sản của mình. Chúng phục vụ như bằng chứng cho những tài sản đó, nhưng giá trị của chúng không được tính vào tổng số dư của bạn."
+      "description": "LP tokens được cấp bởi các giao thức DeFi nơi bạn đã gửi tài sản của mình. Chúng phục vụ như bằng chứng cho những tài sản đó, nhưng giá trị của chúng không được tính vào tổng số dư của bạn.",
+      "descriptionFor": "Đây là một Token Cung cấp tính thanh khoản (LP) cho {{ protocolName }}"
     }
   },
   "global": {

@@ -1499,7 +1499,12 @@
           "balanceValue": "잔액 / 가치",
           "review": "리뷰",
           "noTokens": "토큰 없음",
-          "searchToken": "토큰 검색"
+          "searchToken": "토큰 검색",
+          "lowValueDefis": "{{count}} 저가 DeFi 자산",
+          "lowValueAssets_one": "{{count}} 저가 토큰",
+          "lowValueAssets_other": "{{count}} 저가 토큰",
+          "noLpTokens": "유동성 제공자 (LP) 토큰 없음",
+          "lowValueAssets_0": "{{count}} 저가 토큰"
         },
         "AddMainnetToken": {
           "title": "맞춤형 토큰 추가",
@@ -1539,7 +1544,8 @@
         "searchPlaceholder": "토큰",
         "price": "가격",
         "side": "측면",
-        "searchTokenPlaceholder": "토큰 검색"
+        "searchTokenPlaceholder": "토큰 검색",
+        "openInTab": "Rabby 탭에서 열기"
       },
       "hd": {
         "ledger": {
@@ -3542,7 +3548,8 @@
       "chainNotSupport": "이 체인은 지원되지 않습니다.",
       "chainFilterLine": {
         "filterAll": "모든 체인"
-      }
+      },
+      "noLpTokens": "유동성 공급자 (LP) 토큰 없음"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3627,7 +3634,8 @@
     },
     "LpTokenTag": {
       "title": "이는 유동성 공급자(LP) 토큰입니다.",
-      "description": "LP 토큰은 자산을 예치한 DeFi 프로토콜에서 발행됩니다. 이들은 해당 자산의 증명 역할을 하지만, 그 가치는 총 잔액에 포함되지 않습니다."
+      "description": "LP 토큰은 자산을 예치한 DeFi 프로토콜에서 발행됩니다. 이들은 해당 자산의 증명 역할을 하지만, 그 가치는 총 잔액에 포함되지 않습니다.",
+      "descriptionFor": "이것은 {{ protocolName }}의 유동성 공급자(LP) 토큰입니다."
     }
   },
   "global": {

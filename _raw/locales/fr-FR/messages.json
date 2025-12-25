@@ -174,7 +174,8 @@
       "chainNotSupport": "Cette chaîne n'est pas prise en charge",
       "chainFilterLine": {
         "filterAll": "Toutes les chaînes"
-      }
+      },
+      "noLpTokens": "Aucun jeton de fournisseur de liquidité (LP)"
     },
     "Uploader": {
       "placeholder": "Sélectionner un fichier JSON"
@@ -260,7 +261,8 @@
     },
     "LpTokenTag": {
       "title": "Ceci est un jeton de fournisseur de liquidité (LP)",
-      "description": "Les tokens LP sont émis par les protocoles DeFi où vous avez déposé vos actifs. Ils servent de preuve de ces actifs, mais leur valeur n'est pas incluse dans votre solde total."
+      "description": "Les tokens LP sont émis par les protocoles DeFi où vous avez déposé vos actifs. Ils servent de preuve de ces actifs, mais leur valeur n'est pas incluse dans votre solde total.",
+      "descriptionFor": "Ceci est un jeton de Fournisseur de Liquidité (LP) pour {{ protocolName }}"
     }
   },
   "constant": {
@@ -719,7 +721,12 @@
           "useValue": "Valeur en USD",
           "review": "Revue",
           "noTokens": "Aucun Token",
-          "searchToken": "Recherche de Token"
+          "searchToken": "Recherche de Token",
+          "lowValueAssets_one": "{{count}} jeton de faible valeur",
+          "lowValueDefis": "{{count}} actifs DeFi de faible valeur",
+          "noLpTokens": "Aucun jeton de fournisseur de liquidité (LP)",
+          "lowValueAssets_other": "{{count}} tokens de faible valeur",
+          "lowValueAssets_0": "{{count}} jeton de faible valeur"
         },
         "tokenButton": {
           "subTitle": "Le token de cette liste ne sera pas ajouté au solde total"
@@ -755,7 +762,8 @@
         "addTokenEntryText": "Jeton",
         "price": "PRIX",
         "side": "CÔTÉ",
-        "searchTokenPlaceholder": "Rechercher Token"
+        "searchTokenPlaceholder": "Rechercher Token",
+        "openInTab": "Ouvrir dans l'onglet Rabby"
       },
       "contacts": {
         "noData": "Pas de données",

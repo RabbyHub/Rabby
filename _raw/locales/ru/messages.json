@@ -1411,7 +1411,12 @@
           "lowValueAssets": "{{count}} активов с низкой стоимостью",
           "review": "Обзор",
           "noTokens": "Нет токенов",
-          "searchToken": "Поиск токена"
+          "searchToken": "Поиск токена",
+          "lowValueAssets_other": "{{count}} токенов низкой стоимости",
+          "noLpTokens": "Нет токена поставщика ликвидности (LP)",
+          "lowValueAssets_one": "{{count}} токен с низкой стоимостью",
+          "lowValueDefis": "{{count}} низкоценные DeFi активы",
+          "lowValueAssets_0": "{{count}} токен с низкой ценностью"
         },
         "noAssets": "Нет активов",
         "blockLinkText": "Искать адрес, чтобы заблокировать токен",
@@ -1450,7 +1455,8 @@
         "customButtonText": "Добавить пользовательский токен",
         "price": "ЦЕНА",
         "side": "Сторона",
-        "searchTokenPlaceholder": "Поиск токена"
+        "searchTokenPlaceholder": "Поиск токена",
+        "openInTab": "Открыть в Rabby Tab"
       },
       "hd": {
         "howToConnectLedger": "Как подключить Ledger",
@@ -3547,7 +3553,8 @@
       "chainNotSupport": "Эта цепочка не поддерживается",
       "chainFilterLine": {
         "filterAll": "Все цепи"
-      }
+      },
+      "noLpTokens": "Нет токена поставщика ликвидности (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3632,7 +3639,8 @@
     },
     "LpTokenTag": {
       "title": "Это токен поставщика ликвидности (LP)",
-      "description": "Токены LP выдаются протоколами DeFi, в которые вы внесли свои активы. Они служат доказательством этих активов, но их стоимость не включена в ваш общий баланс."
+      "description": "Токены LP выдаются протоколами DeFi, в которые вы внесли свои активы. Они служат доказательством этих активов, но их стоимость не включена в ваш общий баланс.",
+      "descriptionFor": "Это токен провайдера ликвидности (LP) для {{ protocolName }}"
     }
   },
   "global": {
