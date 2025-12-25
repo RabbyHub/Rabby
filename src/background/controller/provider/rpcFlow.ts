@@ -268,6 +268,7 @@ const flowContext = flow
           origin,
           method: ctx.request.data.method,
           account: ctx.request.account,
+          msgParams: ctx.request.data.params,
         })
       ) {
         ctx.approvalRes = await notificationService.requestApproval(
@@ -309,6 +310,7 @@ const flowContext = flow
       origin,
       method: ctx.request.data.method,
       account: ctx.request.account,
+      msgParams: ctx.request.data.params,
     });
 
     const createRequestDeferFn = (
