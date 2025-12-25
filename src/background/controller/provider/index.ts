@@ -68,7 +68,7 @@ export default async <T = void>(req: ProviderRequest): Promise<T> => {
     const hasVault = keyringService.hasVault();
     if (!hasVault) {
       throw ethErrors.provider.userRejectedRequest({
-        message: 'wallet must has at least one account',
+        message: 'wallet must have at least one account',
       });
     }
   }
