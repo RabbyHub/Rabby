@@ -174,6 +174,7 @@ const TokenAmountInput = ({
       onChange && onChange('');
       onTokenChange(token);
       setTokenSelectorVisible(false);
+      setLpTokenMode(false);
       tokenInputRef.current?.focus();
       setChainServerId(token?.chain);
     },
@@ -182,8 +183,8 @@ const TokenAmountInput = ({
 
   const handleTokenSelectorClose = useCallback(() => {
     setChainServerId(token?.chain);
-    setTokenSelectorVisible(false);
     setLpTokenMode(false);
+    setTokenSelectorVisible(false);
   }, [token?.chain, setChainServerId]);
 
   const checkBeforeConfirm = useCallback(
@@ -223,7 +224,11 @@ const TokenAmountInput = ({
   );
 
   // when no any queryConds
-  const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
+  const {
+    tokens: allTokens,
+    isLoading: isLoadingAllTokens,
+    isAllTokenLoading, // 包含lpToken
+  } = useTokens(
     currentAccount?.address,
     undefined,
     selectorOpened.current ? tokenSelectorVisible : true,
@@ -432,7 +437,7 @@ const TokenAmountInput = ({
         onConfirm={checkBeforeConfirm}
         onCancel={handleTokenSelectorClose}
         onSearch={handleSearchTokens}
-        isLoading={isListLoading}
+        isLoading={isListLoading || (lpTokenMode && isAllTokenLoading)}
         type={type}
         disableItemCheck={disableItemCheck}
         showCustomTestnetAssetList

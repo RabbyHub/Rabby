@@ -1480,7 +1480,6 @@
           "debtRatio": "Tỷ lệ nợ",
           "type": "Loại",
           "unlockAt": "Mở khóa tại",
-          "lowValueAssets_0": "{{count}} token giá trị thấp",
           "PL": "P&L",
           "pool": "POOL",
           "side": "Bên",
@@ -1492,17 +1491,14 @@
           "dailyUnlock": "Mở khóa hàng ngày",
           "tradePair": "Cặp giao dịch",
           "noMatch": "Không khớp",
-          "lowValueAssets_other": "{{count}} token giá trị thấp",
           "claimable": "Có thể yêu cầu",
           "endAt": "Kết thúc tại",
           "percent": "Phần trăm",
-          "lowValueAssets_one": "{{count}} token giá thấp",
           "summaryTips": "Giá trị tài sản chia cho tổng giá trị ròng",
           "summaryDescription": "Tất cả tài sản trong các giao thức (ví dụ: LP tokens) đều được quy đổi thành tài sản cơ sở để thực hiện các phép tính thống kê.",
           "lowValueDescription": "Tài sản có giá trị thấp sẽ được hiển thị ở đây",
           "review": "Xem lại",
           "noTokens": "Không có Token",
-          "lowValueDefis": "",
           "searchToken": "Tìm kiếm Token"
         },
         "AddMainnetToken": {
@@ -1543,7 +1539,6 @@
         "customButtonText": "Thêm token tùy chỉnh",
         "side": "BÊN",
         "price": "GIÁ",
-        "openInTab": "Mở trong tab",
         "searchTokenPlaceholder": "Tìm kiếm Token"
       },
       "hd": {

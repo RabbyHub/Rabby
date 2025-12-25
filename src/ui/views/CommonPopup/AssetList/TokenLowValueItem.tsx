@@ -44,7 +44,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
       <div className={clsx('text-r-neutral-foot text-13', 'flex items-center')}>
         <LowValueSVG className="mr-12" />
         <div className="text-r-neutral-foot">
-          {t('page.dashboard.assets.table.lowValueTokens', {
+          {t('page.dashboard.assets.table.lowValueAssets', {
             count: list?.length,
           })}
         </div>
@@ -56,7 +56,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
       <Popup
         title={
           <div className="font-medium text-20">
-            {t('page.dashboard.assets.table.lowValueTokens', {
+            {t('page.dashboard.assets.table.lowValueAssets', {
               count: list?.length,
             })}
           </div>

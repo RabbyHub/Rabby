@@ -369,7 +369,12 @@ const TokenDetail = ({
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
-            {isLpToken(token) && <LpTokenTag className="ml-8" />}
+            {isLpToken(token) && (
+              <LpTokenTag
+                className="ml-8"
+                protocolName={token.protocol_id || ''}
+              />
+            )}
           </div>
         </div>
       </div>
