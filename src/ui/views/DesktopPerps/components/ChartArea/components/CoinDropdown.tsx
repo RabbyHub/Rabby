@@ -338,7 +338,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
     >
       <div className="flex items-center gap-[8px] cursor-pointer hover:bg-rb-neutral-bg-2 transition-colors px-[8px] py-[4px] rounded-[6px]">
         <TokenImg
-          logoUrl={marketItem.logoUrl}
+          logoUrl={marketItem?.logoUrl || ''}
           withDirection={false}
           size={24}
         />
