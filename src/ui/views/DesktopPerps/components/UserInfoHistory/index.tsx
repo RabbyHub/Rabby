@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import { PositionsInfo } from '../PositionsInfo';
+import { OrderHistory } from '../OrderHistory';
 import { TradeHistory } from '../TradeHistory';
 
 export const UserInfoHistory: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
     'positions' | 'orders' | 'history'
-  >('positions');
+  >('history');
 
   return (
     <div className="flex-1 h-full border-r border-solid border-rb-neutral-line bg-rb-neutral-bg-1 flex flex-col min-w-0 overflow-hidden">

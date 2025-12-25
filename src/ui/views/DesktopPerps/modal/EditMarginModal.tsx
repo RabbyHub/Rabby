@@ -229,64 +229,74 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
           {'Manage Margin'}
         </div>
 
-        <div className="flex-1 mt-12 px-20 overflow-y-auto pb-24">
-          <div className="flex items-center justify-between p-12 mb-12 h-[78px] bg-r-neutral-card1 rounded-[8px]">
-            <div className="flex flex-col gap-8">
-              <div className="flex items-center gap-6">
-                <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={28} />
-                <span className="text-[16px] font-medium text-r-neutral-title-1">
-                  {coin}
-                </span>
+        <div className="flex-1 px-20 overflow-y-auto pb-24">
+          <section className="mb-[12px]">
+            <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
+              Current position
+            </div>
+            <div className="flex items-center justify-between p-12 mb-12 h-[78px] bg-r-neutral-card1 rounded-[8px]">
+              <div className="flex flex-col gap-8">
+                <div className="flex items-center gap-6">
+                  <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={28} />
+                  <span className="text-[16px] font-medium text-r-neutral-title-1">
+                    {coin}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div
+                    className={clsx(
+                      'px-4 h-[18px] rounded-[4px] text-12 font-medium flex items-center justify-center',
+                      direction === 'Long'
+                        ? 'bg-r-green-light text-r-green-default'
+                        : 'bg-r-red-light text-r-red-default'
+                    )}
+                  >
+                    {direction} {leverage}x
+                  </div>
+                  <DistanceToLiquidationTag
+                    liquidationPrice={liquidationPx}
+                    markPrice={markPrice}
+                    onPress={handlePressRiskTag}
+                  />
+                </div>
               </div>
-              <div className="flex items-center gap-4">
-                <div
+              <div className="flex flex-col items-end gap-5">
+                <span className="text-[15px] leading-[20px] font-bold text-r-neutral-title-1">
+                  {formatUsdValue(marginUsed)}
+                </span>
+                <span
                   className={clsx(
-                    'px-4 h-[18px] rounded-[4px] text-12 font-medium flex items-center justify-center',
-                    direction === 'Long'
-                      ? 'bg-r-green-light text-r-green-default'
-                      : 'bg-r-red-light text-r-red-default'
+                    'text-[13px] leading-[18px] font-medium',
+                    pnl >= 0 ? 'text-r-green-default' : 'text-r-red-default'
                   )}
                 >
-                  {direction} {leverage}x
-                </div>
-                <DistanceToLiquidationTag
-                  liquidationPrice={liquidationPx}
-                  markPrice={markPrice}
-                  onPress={handlePressRiskTag}
-                />
+                  {pnl >= 0 ? '+' : '-'}$
+                  {splitNumberByStep(Math.abs(pnl || 0).toFixed(2))}
+                </span>
               </div>
             </div>
-            <div className="flex flex-col items-end gap-5">
-              <span className="text-[15px] leading-[20px] font-bold text-r-neutral-title-1">
-                {formatUsdValue(marginUsed)}
-              </span>
-              <span
-                className={clsx(
-                  'text-[13px] leading-[18px] font-medium',
-                  pnl >= 0 ? 'text-r-green-default' : 'text-r-red-default'
-                )}
-              >
-                {pnl >= 0 ? '+' : '-'}$
-                {splitNumberByStep(Math.abs(pnl || 0).toFixed(2))}
-              </span>
+          </section>
+
+          <section>
+            <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
+              Configure Margin
             </div>
-          </div>
+            <MarginEditInput
+              title={t('page.perpsDetail.PerpsEditMarginPopup.margin')}
+              placeholder={`$${marginUsed.toFixed(2)}`}
+              minMargin={minMargin}
+              maxMargin={maxMargin}
+              sliderDisabled={maxMargin <= minMargin}
+              margin={margin}
+              onMarginChange={setMargin}
+              errorMessage={
+                marginValidation.error ? marginValidation.errorMessage : null
+              }
+            />
+          </section>
 
-          <MarginEditInput
-            title={t('page.perpsDetail.PerpsEditMarginPopup.margin')}
-            placeholder={`$${marginUsed.toFixed(2)}`}
-            minMargin={minMargin}
-            maxMargin={maxMargin}
-            sliderDisabled={maxMargin <= minMargin}
-            margin={margin}
-            onMarginChange={setMargin}
-            errorMessage={
-              marginValidation.error ? marginValidation.errorMessage : null
-            }
-          />
-
-          <div className="rounded-[8px] bg-r-neutral-card-1">
-            <div className="flex items-center justify-between px-[16px] py-[12px] min-[48px]">
+          <section className="space-y-[12px]">
+            <div className="flex items-center justify-between">
               <span className="text-r-neutral-body text-[13px] leading-[16px]">
                 {t('page.perpsDetail.PerpsEditMarginPopup.liqPrice')}
               </span>
@@ -306,7 +316,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
                 )}
               </div>
             </div>
-            <div className="flex items-center justify-between px-[16px] py-[12px] min-[48px]">
+            <div className="flex items-center justify-between">
               <span className="text-r-neutral-body text-[13px] leading-[16px]">
                 {t('page.perpsDetail.PerpsEditMarginPopup.liqDistance')}
               </span>
@@ -333,21 +343,38 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
                 )}
               </div>
             </div>
-          </div>
+          </section>
         </div>
 
         <div className="bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
-          <Button
-            block
-            size="large"
-            type="primary"
-            loading={loading}
-            className="h-[48px] text-15 font-medium"
-            disabled={!marginValidation.isValid || noChangeMargin}
-            onClick={handleConfirm}
-          >
-            {t('global.confirm')}
-          </Button>
+          <div className="flex items-center gap-[16px]">
+            <Button
+              block
+              size="large"
+              type="ghost"
+              onClick={onCancel}
+              className={clsx(
+                'h-[44px]',
+                'text-blue-light',
+                'border-blue-light',
+                'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                'before:content-none'
+              )}
+            >
+              {t('global.Cancel')}
+            </Button>
+            <Button
+              block
+              size="large"
+              type="primary"
+              loading={loading}
+              className="h-[44px] text-15 font-medium"
+              disabled={!marginValidation.isValid || noChangeMargin}
+              onClick={handleConfirm}
+            >
+              {t('global.confirm')}
+            </Button>
+          </div>
         </div>
       </div>
     </Modal>

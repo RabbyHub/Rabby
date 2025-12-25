@@ -15,6 +15,8 @@ import {
 } from '@/ui/views/Perps/utils';
 import { RcIconEditCC } from '@/ui/assets/desktop/common';
 import { EditMarginModal } from '../../modal/EditMarginModal';
+import { EditTpSlModal } from '../../modal/EditTpSLModal';
+import { set } from 'lodash';
 
 export const PositionsInfo: React.FC = () => {
   const {
@@ -26,6 +28,7 @@ export const PositionsInfo: React.FC = () => {
   console.log('positionAndOpenOrders', positionAndOpenOrders);
 
   const [editMarginVisible, setEditMarginVisible] = useState(false);
+  const [editTpSlVisible, setEditTpSlVisible] = useState(false);
   const [currentAssetCtx, setCurrentAssetCtx] = useState<MarketData | null>(
     null
   );
@@ -370,7 +373,14 @@ export const PositionsInfo: React.FC = () => {
                   )}
                 </div>
               </div>
-              <RcIconEditCC className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default" />
+              <RcIconEditCC
+                className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default"
+                onClick={() => {
+                  setCurrentPosition(record);
+                  setCurrentAssetCtx(marketDataMap[record.position.coin]);
+                  setEditTpSlVisible(true);
+                }}
+              />
             </div>
           );
         },
@@ -395,31 +405,43 @@ export const PositionsInfo: React.FC = () => {
         pagination={false}
         bordered={false}
       ></CommonTable>
-      {currentAssetCtx && positionData && (
-        <EditMarginModal
-          visible={editMarginVisible}
-          coin={currentPosition?.position?.coin || ''}
-          currentAssetCtx={currentAssetCtx}
-          activeAssetCtx={currentAssetCtx}
-          direction={positionData.direction as 'Long' | 'Short'}
-          entryPrice={positionData.entryPrice}
-          leverage={positionData.leverage}
-          availableBalance={Number(accountSummary?.withdrawable || 0)}
-          liquidationPx={Number(currentPosition?.position.liquidationPx || 0)}
-          positionSize={positionData.size}
-          marginUsed={positionData.marginUsed}
-          pnlPercent={positionData.pnlPercent}
-          pnl={positionData.pnl}
-          // handlePressRiskTag={() => setRiskPopupVisible(true)}
-          onCancel={() => setEditMarginVisible(false)}
-          onConfirm={async (action: 'add' | 'reduce', margin: number) => {
-            // await handleUpdateMargin(coin, action, margin);
-            setEditMarginVisible(false);
-          }}
-          handlePressRiskTag={function (): void {
-            throw new Error('Function not implemented.');
-          }}
-        />
+      {currentAssetCtx && positionData && currentPosition && (
+        <>
+          <EditMarginModal
+            visible={editMarginVisible}
+            coin={currentPosition?.position?.coin || ''}
+            currentAssetCtx={currentAssetCtx}
+            activeAssetCtx={currentAssetCtx}
+            direction={positionData.direction as 'Long' | 'Short'}
+            entryPrice={positionData.entryPrice}
+            leverage={positionData.leverage}
+            availableBalance={Number(accountSummary?.withdrawable || 0)}
+            liquidationPx={Number(currentPosition?.position.liquidationPx || 0)}
+            positionSize={positionData.size}
+            marginUsed={positionData.marginUsed}
+            pnlPercent={positionData.pnlPercent}
+            pnl={positionData.pnl}
+            // handlePressRiskTag={() => setRiskPopupVisible(true)}
+            onCancel={() => setEditMarginVisible(false)}
+            onConfirm={async (action: 'add' | 'reduce', margin: number) => {
+              // await handleUpdateMargin(coin, action, margin);
+              setEditMarginVisible(false);
+            }}
+            handlePressRiskTag={function (): void {
+              throw new Error('Function not implemented.');
+            }}
+          />
+          <EditTpSlModal
+            position={currentPosition.position}
+            marketData={currentAssetCtx}
+            visible={editTpSlVisible}
+            onCancel={() => setEditTpSlVisible(false)}
+            onConfirm={async (action: 'add' | 'reduce', margin: number) => {
+              // await handleUpdateMargin(coin, action, margin);
+              setEditTpSlVisible(false);
+            }}
+          />
+        </>
       )}
     </>
   );
