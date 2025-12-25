@@ -35,7 +35,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
   const wsActiveAssetData = useRabbySelector(
     (state) => state.perps.wsActiveAssetData
   );
-  const leverage = wsActiveAssetData?.leverage.value || 0;
+  const leverage = wsActiveAssetData?.leverage.value || maxLeverage;
   const marginMode =
     wsActiveAssetData?.leverage.type === 'cross'
       ? MarginMode.CROSS

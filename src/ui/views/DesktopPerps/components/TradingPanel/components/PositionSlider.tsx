@@ -8,6 +8,12 @@ interface PositionSliderProps {
 
 const PRESET_POINTS = [0, 25, 50, 75, 100];
 
+// Create marks for the slider
+const SLIDER_MARKS = PRESET_POINTS.reduce((acc, point) => {
+  acc[point] = '';
+  return acc;
+}, {} as Record<number, string>);
+
 export const PositionSlider: React.FC<PositionSliderProps> = ({
   percentage,
   onChange,
@@ -61,22 +67,24 @@ export const PositionSlider: React.FC<PositionSliderProps> = ({
   return (
     <div className="flex items-start gap-[20px]">
       {/* Slider with preset points */}
-      <div className="flex-1 space-y-[6px]">
+      <div className="flex-1 space-y-[6px] px-4">
         <DesktopPerpsSlider
           min={0}
           max={100}
           value={percentage}
           onChange={handleSliderChange}
           step={1}
+          marks={SLIDER_MARKS}
           tooltipVisible={false}
         />
         {/* Preset Points */}
-        <div className="flex items-center justify-between">
+        <div className="relative">
           {PRESET_POINTS.map((point) => (
             <button
               key={point}
               onClick={() => handlePresetClick(point)}
-              className="text-[11px] text-r-neutral-foot transition-colors hover:text-r-blue-default"
+              className="absolute text-[11px] text-r-neutral-foot transition-colors hover:text-r-blue-default -translate-x-1/2"
+              style={{ left: `${point}%` }}
             >
               {point}%
             </button>

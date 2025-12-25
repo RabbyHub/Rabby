@@ -1008,14 +1008,15 @@
         "type": "Type",
         "enterAmount": "Please enter amount",
         "insufficientBalance": "Insufficient balance",
+        "reduceOnlyTooLarge": "Reduce Only Too Large",
         "minimumOrderSize": "Minimum order size is $10",
         "maximumOrderSize": "Maximum order size is {{amount}}",
         "invalidTpPrice": "Invalid take profit price",
         "invalidSlPrice": "Invalid stop loss price",
-        "tpMustBeHigherThanMarkPrice": "Take profit price must be higher than mark price",
-        "slMustBeLowerThanMarkPrice": "Stop loss price must be lower than mark price",
-        "tpMustBeLowerThanMarkPrice": "Take profit price must be lower than mark price",
-        "slMustBeHigherThanMarkPrice": "Stop loss price must be higher than mark price"
+        "tpMustBeHigherThanCurrentPrice": "Take profit price must be higher than current price",
+        "slMustBeLowerThanCurrentPrice": "Stop loss price must be lower than current price",
+        "tpMustBeLowerThanCurrentPrice": "Take profit price must be lower than current price",
+        "slMustBeHigherThanCurrentPrice": "Stop loss price must be higher than current price"
       },
       "marginMode": {
         "title": "Margin Mode",
@@ -1026,8 +1027,10 @@
         "confirm": "Confirm"
       },
       "leverage": {
-        "title": "Leverage",
-        "upTo": "Up to",
+        "title": "Adjust Leverage",
+        "controlPositionLeverage" : "Control the leverage used for {{coin}} positions. The maximum leverage is {{max}}x.",
+        "maxPositionSize": "Max position size decreases the higher your leverage.",
+        "higherLeverageRisk": "Higher leverage increases the risk of liquidation.",
         "minError": "Minimum leverage is 1x",
         "maxError": "Maximum leverage is {{max}}x",
         "confirm": "Confirm"

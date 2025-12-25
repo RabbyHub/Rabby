@@ -15,7 +15,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   slExpectedPnL,
 }) => {
   return (
-    <div className="space-y-[6px]">
+    <div className="space-y-[6px] font-medium">
       {/* TP/SL Expected PnL */}
       {showTPSLExpected && (
         <>
@@ -62,7 +62,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       <div className="flex items-center justify-between">
         <span className="text-r-neutral-foot text-[13px]">Margin Required</span>
         <span className="text-r-neutral-title-1 text-[13px]">
-          {data.marginUsage}
+          {data.marginRequired}
         </span>
       </div>
 
