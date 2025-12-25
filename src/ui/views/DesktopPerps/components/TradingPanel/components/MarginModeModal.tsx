@@ -66,7 +66,7 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
       }}
       closeIcon={ModalCloseIcon}
       destroyOnClose
-      className="desktop-perps-margin-mode-modal modal-support-darkmode"
+      className="desktop-perps-margin-mode-modal"
     >
       <div className="flex flex-col h-full">
         <div className="px-20 pt-16 flex-1">

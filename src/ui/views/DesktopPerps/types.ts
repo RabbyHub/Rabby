@@ -19,11 +19,6 @@ export enum OrderSide {
   SELL = 'sell',
 }
 
-export enum TPSLInputMode {
-  PRICE = 'price',
-  PERCENTAGE = 'percentage',
-}
-
 export interface OrderSettings {
   marginMode: MarginMode;
   leverage: number;
@@ -37,14 +32,15 @@ export interface PositionSize {
 
 export interface TPSLConfig {
   enabled: boolean;
-  inputMode: TPSLInputMode;
   takeProfit: {
     price: string;
     percentage: string;
     expectedPnL: string;
+    error: string;
   };
   stopLoss: {
     price: string;
+    error: string;
     percentage: string;
     expectedPnL: string;
   };
@@ -54,6 +50,7 @@ export interface OrderSummaryData {
   liquidationPrice: string;
   liquidationDistance: string;
   orderValue: string;
+  marginRequired: string;
   marginUsage: string;
   slippage: string;
 }

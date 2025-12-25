@@ -1,37 +1,50 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRabbySelector } from '@/ui/store';
 import { formatUsdValue } from '@/ui/utils';
-import { calLiquidationPrice } from '@/ui/views/Perps/utils';
+import { calLiquidationPrice, formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import {
   OrderSide,
   OrderSummaryData,
   PositionSize,
   TPSLConfig,
-  TPSLInputMode,
   TradingContainerProps,
 } from '../../../types';
 import { PositionSizeInput } from '../components/PositionSizeInput';
 import { PositionSlider } from '../components/PositionSlider';
-import { ReduceOnlyToggle } from '../components/ReduceOnlyToggle';
 import { TPSLSettings } from '../components/TPSLSettings';
 import { OrderSummary } from '../components/OrderSummary';
+import BigNumber from 'bignumber.js';
+import {
+  calcAssetAmountByNotional,
+  calcAssetNotionalByAmount,
+  calculatePnL,
+  calculateTargetPrice,
+  formatPnL,
+} from '../utils';
+import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { Button } from 'antd';
+import clsx from 'clsx';
 
 export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
 
   // Get data from perpsState
-  const perpsState = useRabbySelector((state) => state.perps);
   const {
     accountSummary,
     positionAndOpenOrders,
+    wsActiveAssetCtx,
     selectedCoin = 'ETH',
-  } = perpsState;
-
+    marketDataMap,
+    wsActiveAssetData,
+  } = useRabbySelector((state) => state.perps);
   // Get current market data for selected coin
   const currentMarketData = React.useMemo(() => {
-    return perpsState.marketDataMap?.[selectedCoin] || null;
-  }, [perpsState.marketDataMap, selectedCoin]);
+    return marketDataMap?.[selectedCoin] || null;
+  }, [marketDataMap, selectedCoin]);
+
+  console.log('wsActiveAssetData', wsActiveAssetData);
 
   // Get current position for selected coin
   const currentPosition = React.useMemo(() => {
@@ -52,24 +65,42 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     };
   }, [positionAndOpenOrders, selectedCoin]);
 
+  useEffect(() => {
+    if (!currentPosition) {
+      setReduceOnly(false);
+    }
+  }, [currentPosition?.side]);
+
   // Mark price from market data
   const markPrice = React.useMemo(() => {
-    return Number(currentMarketData?.markPx || 0);
-  }, [currentMarketData]);
+    if (
+      wsActiveAssetCtx &&
+      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
+    ) {
+      return Number(wsActiveAssetCtx.ctx.markPx || 0);
+    }
 
-  // Available balance
-  const availableBalance = React.useMemo(() => {
-    return Number(accountSummary?.withdrawable || 0);
-  }, [accountSummary]);
+    return Number(currentMarketData?.markPx || 0);
+  }, [wsActiveAssetCtx, currentMarketData]);
+
+  const midPrice = React.useMemo(() => {
+    if (
+      wsActiveAssetCtx &&
+      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
+    ) {
+      return Number(wsActiveAssetCtx.ctx.midPx || 0);
+    }
+    return Number(currentMarketData?.midPx || 0);
+  }, [wsActiveAssetCtx, currentMarketData]);
 
   // Asset decimals
   const szDecimals = currentMarketData?.szDecimals || 4;
   const pxDecimals = currentMarketData?.pxDecimals || 2;
   const maxLeverage = currentMarketData?.maxLeverage || 25;
+  const leverage = wsActiveAssetData?.leverage.value || maxLeverage;
 
   // Local state
   const [orderSide, setOrderSide] = React.useState<OrderSide>(OrderSide.BUY);
-  const [leverage, setLeverage] = React.useState(maxLeverage);
   const [positionSize, setPositionSize] = React.useState<PositionSize>({
     amount: '',
     notionalValue: '',
@@ -78,38 +109,52 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   const [reduceOnly, setReduceOnly] = React.useState(false);
   const [tpslConfig, setTpslConfig] = React.useState<TPSLConfig>({
     enabled: false,
-    inputMode: TPSLInputMode.PRICE,
-    takeProfit: { price: '', percentage: '', expectedPnL: '' },
-    stopLoss: { price: '', percentage: '', expectedPnL: '' },
+    takeProfit: { price: '', percentage: '', expectedPnL: '', error: '' },
+    stopLoss: { price: '', percentage: '', expectedPnL: '', error: '' },
   });
 
-  // Update leverage when maxLeverage changes
-  React.useEffect(() => {
-    if (maxLeverage > 0 && leverage > maxLeverage) {
-      setLeverage(maxLeverage);
-    }
-  }, [maxLeverage, leverage]);
+  // Available balance
+  const availableBalance = React.useMemo(() => {
+    const account = Number(accountSummary?.withdrawable || 0);
+    return Number(
+      orderSide === OrderSide.BUY
+        ? wsActiveAssetData?.availableToTrade[0] || account
+        : wsActiveAssetData?.availableToTrade[1] || account
+    );
+  }, [
+    accountSummary,
+    wsActiveAssetData?.availableToTrade[0],
+    wsActiveAssetData?.availableToTrade[1],
+    orderSide,
+  ]);
+
+  const maxBuyTradeSize = wsActiveAssetData?.maxTradeSzs[0];
+  const maxSellTradeSize = wsActiveAssetData?.maxTradeSzs[1];
 
   // Calculate trade amount (notional value)
-  const tradeAmount = React.useMemo(() => {
+  const tradeUsdAmount = React.useMemo(() => {
     const notional = Number(positionSize.notionalValue) || 0;
     return notional;
   }, [positionSize.notionalValue]);
 
   // Calculate margin required
   const marginRequired = React.useMemo(() => {
-    return tradeAmount / leverage;
-  }, [tradeAmount, leverage]);
+    return tradeUsdAmount / leverage;
+  }, [tradeUsdAmount, leverage]);
 
   // Calculate trade size (in base asset)
   const tradeSize = React.useMemo(() => {
-    if (!markPrice || !tradeAmount) return '0';
-    return (tradeAmount / markPrice).toFixed(szDecimals);
-  }, [tradeAmount, markPrice, szDecimals]);
+    if (!markPrice || !tradeUsdAmount) return '0';
+    return positionSize.amount;
+  }, [positionSize.amount, markPrice, tradeUsdAmount]);
+
+  const noSizeTradeAmount = React.useMemo(() => {
+    return Number(tradeSize) === 0;
+  }, [tradeSize]);
 
   // Calculate liquidation price
   const estimatedLiquidationPrice = React.useMemo(() => {
-    if (!markPrice || !leverage || !tradeAmount) return '';
+    if (!markPrice || !leverage || !tradeUsdAmount) return '';
     const direction = orderSide === OrderSide.BUY ? 'Long' : 'Short';
     const size = Number(tradeSize);
     if (size === 0) return '';
@@ -119,19 +164,35 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       marginRequired,
       direction,
       size,
-      tradeAmount,
+      tradeUsdAmount,
       maxLeverage
     );
     return `$${liqPrice.toFixed(pxDecimals)}`;
   }, [
     markPrice,
     leverage,
-    tradeAmount,
+    tradeUsdAmount,
     orderSide,
     tradeSize,
     marginRequired,
     maxLeverage,
     pxDecimals,
+  ]);
+
+  const maxTradeSize = useMemo(() => {
+    const isBuy = orderSide === OrderSide.BUY;
+    if (reduceOnly && currentPosition) {
+      const currentSide =
+        currentPosition.side === 'Long' ? OrderSide.BUY : OrderSide.SELL;
+      return currentSide === orderSide ? '0' : currentPosition.size.toString();
+    }
+    return isBuy ? maxBuyTradeSize : maxSellTradeSize;
+  }, [
+    orderSide,
+    maxBuyTradeSize,
+    maxSellTradeSize,
+    currentPosition,
+    reduceOnly,
   ]);
 
   // Calculate margin usage percentage
@@ -143,42 +204,59 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
 
   // Form validation
   const validation = React.useMemo(() => {
-    const errors: string[] = [];
+    let error: string = '';
     const notionalNum = Number(positionSize.notionalValue) || 0;
+    const tradeSize = Number(positionSize.amount) || 0;
 
     if (notionalNum === 0) {
-      return { isValid: false, errors: [] };
+      return {
+        isValid: false,
+        error:
+          reduceOnly && percentage > 0
+            ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
+            : '',
+      };
     }
 
     // Check minimum order size ($10)
     if (notionalNum < 10) {
-      errors.push(
-        t('page.perps.minimumOrderSize') || 'Minimum order size is $10'
-      );
+      error = t('page.perpsPro.tradingPanel.minimumOrderSize');
+      return { isValid: false, error };
     }
 
-    // Check available balance
-    if (marginRequired > availableBalance) {
-      errors.push(
-        t('page.perps.insufficientBalance') || 'Insufficient balance'
-      );
+    if (maxTradeSize && tradeSize > Number(maxTradeSize)) {
+      error = reduceOnly
+        ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
+        : t('page.perpsPro.tradingPanel.insufficientBalance');
+      return { isValid: false, error };
     }
+
+    // no use because reverser is calc in
+    // // Check available balance
+    // if (marginRequired > availableBalance) {
+    //   error = t('page.perpsPro.tradingPanel.insufficientBalance');
+    //   return { isValid: false, error };
+    // }
 
     // Check maximum position size
     const maxUsdValue = Number(currentMarketData?.maxUsdValueSize || 1000000);
     if (notionalNum > maxUsdValue) {
-      errors.push(
-        t('page.perps.maximumOrderSize', { amount: `$${maxUsdValue}` }) ||
-          `Maximum order size is $${maxUsdValue}`
-      );
+      error =
+        t('page.perpsPro.tradingPanel.maximumOrderSize', {
+          amount: `$${maxUsdValue}`,
+        }) || `Maximum order size is $${maxUsdValue}`;
+      return { isValid: false, error };
     }
 
     return {
-      isValid: errors.length === 0,
-      errors,
+      isValid: error === '',
+      error,
     };
   }, [
     positionSize.notionalValue,
+    maxTradeSize,
+    reduceOnly,
+    tradeSize,
     marginRequired,
     availableBalance,
     currentMarketData,
@@ -186,7 +264,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   ]);
 
   // Handlers
-  const handleAmountChange = (amount: string) => {
+  const handleAmountChange = useMemoizedFn((amount: string) => {
     if (!markPrice) {
       setPositionSize({ amount, notionalValue: '' });
       return;
@@ -206,152 +284,253 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       const pct = Math.min((marginNeeded / availableBalance) * 100, 100);
       setPercentage(Math.round(pct));
     }
-  };
+  });
 
-  const handleNotionalChange = (notional: string) => {
+  const handleNotionalChange = useMemoizedFn((notional: string) => {
     if (!markPrice) {
       setPositionSize({ amount: '', notionalValue: notional });
       return;
     }
 
-    const notionalNum = Number(notional) || 0;
-    const amount = notionalNum / markPrice;
-    const amountStr = amount > 0 ? amount.toFixed(szDecimals) : '';
-
+    let newNotional = notional;
+    const notionalNum = new BigNumber(notional || 0);
+    let amount = calcAssetAmountByNotional(notional, markPrice, szDecimals);
+    if (maxTradeSize && Number(amount) > Number(maxTradeSize)) {
+      amount = maxTradeSize;
+      newNotional = calcAssetNotionalByAmount(amount, markPrice);
+    }
     setPositionSize({
-      amount: amountStr,
-      notionalValue: notional,
+      amount,
+      notionalValue: newNotional,
     });
 
     if (availableBalance > 0) {
-      const marginNeeded = notionalNum / leverage;
-      const pct = Math.min((marginNeeded / availableBalance) * 100, 100);
-      setPercentage(Math.round(pct));
+      const marginNeeded = notionalNum.div(leverage);
+      const pct = Math.min(
+        Math.round(
+          marginNeeded
+            .div(new BigNumber(availableBalance))
+            .multipliedBy(100)
+            .toNumber()
+        ),
+        100
+      );
+      setPercentage(maxTradeSize === amount ? 100 : pct);
     }
-  };
+  });
 
-  const handlePercentageChange = (newPercentage: number) => {
+  const handlePercentageChange = useMemoizedFn((newPercentage: number) => {
     setPercentage(newPercentage);
 
-    const margin = (availableBalance * newPercentage) / 100;
-    const notionalValue = margin * leverage;
+    const orderSize = new BigNumber(maxTradeSize || 0)
+      .multipliedBy(newPercentage)
+      .div(100);
+    const notionalValue = orderSize
+      .multipliedBy(new BigNumber(markPrice))
+      .toNumber();
 
     if (notionalValue === 0 || !markPrice) {
       setPositionSize({ amount: '', notionalValue: '' });
       return;
     }
 
-    const amount = notionalValue / markPrice;
+    let amount = calcAssetAmountByNotional(
+      notionalValue,
+      markPrice,
+      szDecimals
+    );
+    let newNotionalValue = calcAssetNotionalByAmount(amount, markPrice);
+    if (
+      maxTradeSize &&
+      (Number(amount) > Number(maxTradeSize) || percentage === 100)
+    ) {
+      amount = maxTradeSize;
+      newNotionalValue = calcAssetNotionalByAmount(maxTradeSize, markPrice);
+    }
     setPositionSize({
-      amount: amount.toFixed(szDecimals),
-      notionalValue: notionalValue.toFixed(2),
+      amount,
+      notionalValue: newNotionalValue,
     });
-  };
+  });
 
-  const handleTPSLEnabledChange = (enabled: boolean) => {
+  const handleTPSLEnabledChange = useMemoizedFn((enabled: boolean) => {
     if (!enabled) {
       setTpslConfig({
         ...tpslConfig,
         enabled: false,
-        takeProfit: { price: '', percentage: '', expectedPnL: '' },
-        stopLoss: { price: '', percentage: '', expectedPnL: '' },
+        takeProfit: { price: '', percentage: '', expectedPnL: '', error: '' },
+        stopLoss: { price: '', percentage: '', expectedPnL: '', error: '' },
       });
     } else {
       setTpslConfig({ ...tpslConfig, enabled: true });
     }
-  };
+  });
 
-  const handleTPSLInputModeChange = (mode: TPSLInputMode) => {
-    setTpslConfig({ ...tpslConfig, inputMode: mode });
-  };
-
-  const handleTakeProfitChange = (
-    field: 'price' | 'percentage',
-    value: string
-  ) => {
-    const newConfig = {
-      ...tpslConfig.takeProfit,
-      [field]: value,
-    };
-
-    if (field === 'price' && value && markPrice && tradeSize) {
-      const tpPrice = Number(value);
-      const size = Number(tradeSize);
+  const handleTPSLConfigValidation = useMemoizedFn(
+    (
+      type: 'takeProfit' | 'stopLoss',
+      currentConfig: {
+        price: string;
+        percentage: string;
+        expectedPnL: string;
+        error: string;
+      }
+    ) => {
       const direction = orderSide === OrderSide.BUY ? 'Long' : 'Short';
-      const priceDiff =
-        direction === 'Long' ? tpPrice - markPrice : markPrice - tpPrice;
-      const pnl = priceDiff * size;
-      newConfig.expectedPnL =
-        pnl >= 0 ? `+${formatUsdValue(pnl)}` : formatUsdValue(pnl);
+      const currentPrice = Number(currentConfig.price);
+      // init error
+      currentConfig.error = '';
+      if (type === 'takeProfit' && currentPrice) {
+        if (direction === 'Long' && currentPrice <= midPrice) {
+          currentConfig.error = t(
+            'page.perpsPro.tradingPanel.tpMustBeHigherThanCurrentPrice'
+          );
+        }
+        if (direction === 'Short' && currentPrice >= midPrice) {
+          currentConfig.error = t(
+            'page.perpsPro.tradingPanel.tpMustBeLowerThanCurrentPrice'
+          );
+        }
+      } else if (type === 'stopLoss' && currentPrice) {
+        if (direction === 'Long' && currentPrice >= midPrice) {
+          currentConfig.error = t(
+            'page.perpsPro.tradingPanel.slMustBeLowerThanCurrentPrice'
+          );
+        }
+        if (direction === 'Short' && currentPrice <= midPrice) {
+          currentConfig.error = t(
+            'page.perpsPro.tradingPanel.slMustBeHigherThanCurrentPrice'
+          );
+        }
+      }
+      return currentConfig;
+    }
+  );
 
-      if (marginRequired > 0) {
+  const tpslConfigHasError = useMemo(() => {
+    return Boolean(tpslConfig.takeProfit.error || tpslConfig.stopLoss.error);
+  }, [tpslConfig.takeProfit.error, tpslConfig.stopLoss.error]);
+
+  // Common TPSL change handler
+  const createTPSLChangeHandler = useMemoizedFn(
+    (type: 'takeProfit' | 'stopLoss') => (
+      field: 'price' | 'percentage',
+      value: string
+    ) => {
+      const currentConfig = tpslConfig[type];
+      const newConfig = {
+        ...currentConfig,
+        [field]: value,
+      };
+
+      const direction = orderSide === OrderSide.BUY ? 'Long' : 'Short';
+      const size = Number(tradeSize);
+
+      if (field === 'price' && value && markPrice && size) {
+        // Price → Percentage
+        const targetPrice = Number(value);
+        const pnl = calculatePnL(targetPrice, direction, size, markPrice);
+        newConfig.expectedPnL = formatPnL(pnl);
+
         const pnlPercent = (pnl / marginRequired) * 100;
         newConfig.percentage = pnlPercent.toFixed(2);
+      } else if (field === 'percentage' && value && markPrice && size) {
+        // Percentage → Price
+        const pnlPercent = Number(value);
+        const pnl = (pnlPercent * marginRequired) / 100;
+        const targetPrice = calculateTargetPrice(
+          pnl,
+          direction,
+          size,
+          markPrice
+        );
+
+        newConfig.price =
+          targetPrice > 0 ? formatTpOrSlPrice(targetPrice, szDecimals) : '';
+        newConfig.expectedPnL = formatPnL(pnl);
       }
-    }
 
-    setTpslConfig({
-      ...tpslConfig,
-      takeProfit: newConfig,
-    });
-  };
-
-  const handleStopLossChange = (
-    field: 'price' | 'percentage',
-    value: string
-  ) => {
-    const newConfig = {
-      ...tpslConfig.stopLoss,
-      [field]: value,
-    };
-
-    if (field === 'price' && value && markPrice && tradeSize) {
-      const slPrice = Number(value);
-      const size = Number(tradeSize);
-      const direction = orderSide === OrderSide.BUY ? 'Long' : 'Short';
-      const priceDiff =
-        direction === 'Long' ? slPrice - markPrice : markPrice - slPrice;
-      const pnl = priceDiff * size;
-      newConfig.expectedPnL =
-        pnl >= 0 ? `+${formatUsdValue(pnl)}` : formatUsdValue(pnl);
-
-      if (marginRequired > 0) {
-        const pnlPercent = (pnl / marginRequired) * 100;
-        newConfig.percentage = pnlPercent.toFixed(2);
+      if (value === '') {
+        newConfig.error = '';
+        newConfig.price = '';
+        newConfig.percentage = '';
+        newConfig.expectedPnL = '';
       }
+
+      setTpslConfig({
+        ...tpslConfig,
+        [type]: handleTPSLConfigValidation(type, newConfig),
+      });
     }
+  );
 
+  const handleTakeProfitChange = useMemoizedFn(
+    createTPSLChangeHandler('takeProfit')
+  );
+
+  const handleStopLossChange = useMemoizedFn(
+    createTPSLChangeHandler('stopLoss')
+  );
+
+  const resetForm = () => {
+    setPositionSize({ amount: '', notionalValue: '' });
+    setPercentage(0);
+    setReduceOnly(false);
     setTpslConfig({
-      ...tpslConfig,
-      stopLoss: newConfig,
+      enabled: false,
+      takeProfit: { price: '', percentage: '', expectedPnL: '', error: '' },
+      stopLoss: { price: '', percentage: '', expectedPnL: '', error: '' },
     });
   };
 
-  const handlePlaceOrder = () => {
-    console.log('Place order', {
-      orderSide,
-      positionSize,
-      reduceOnly,
-      tpslConfig,
-    });
-  };
+  const { handleOpenMarketOrder } = usePerpsProPosition();
+
+  const {
+    run: handleOpenMarketOrderRequest,
+    loading: handleOpenMarketOrderLoading,
+  } = useRequest(
+    async () => {
+      await handleOpenMarketOrder({
+        coin: selectedCoin,
+        isBuy: orderSide === OrderSide.BUY,
+        size: tradeSize,
+        midPx: markPrice.toString(),
+        tpTriggerPx: tpslConfig.takeProfit.price,
+        slTriggerPx: tpslConfig.stopLoss.price,
+        reduceOnly,
+      });
+    },
+    {
+      manual: true,
+      onSuccess: () => {
+        resetForm();
+      },
+      onError: (error) => {},
+    }
+  );
 
   const orderSummary: OrderSummaryData = React.useMemo(() => {
     return {
       liquidationPrice: estimatedLiquidationPrice,
       liquidationDistance: '',
-      orderValue: tradeAmount > 0 ? formatUsdValue(tradeAmount) : '$0.00',
+      orderValue: tradeUsdAmount > 0 ? formatUsdValue(tradeUsdAmount) : '$0.00',
+      marginRequired: formatUsdValue(marginRequired),
       marginUsage,
-      slippage: '0.01% / Max 8%',
+      slippage: '8%',
     };
-  }, [estimatedLiquidationPrice, tradeAmount, marginUsage]);
+  }, [estimatedLiquidationPrice, tradeUsdAmount, marginUsage]);
+
+  const switchOrderSide = (side: OrderSide) => {
+    setOrderSide(side);
+    resetForm();
+  };
 
   return (
     <div className="space-y-[16px]">
       {/* Buy/Sell Tabs */}
       <div className="flex items-center gap-[8px]">
         <button
-          onClick={() => setOrderSide(OrderSide.BUY)}
+          onClick={() => switchOrderSide(OrderSide.BUY)}
           className={`flex-1 h-[32px] rounded-[8px] font-medium text-[12px] transition-colors ${
             orderSide === OrderSide.BUY
               ? 'bg-rb-green-default text-rb-neutral-InvertHighlight '
@@ -361,7 +540,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           {t('page.perpsPro.tradingPanel.buyLong')}
         </button>
         <button
-          onClick={() => setOrderSide(OrderSide.SELL)}
+          onClick={() => switchOrderSide(OrderSide.SELL)}
           className={`flex-1 h-[32px] rounded-[8px] font-medium text-[12px] transition-colors ${
             orderSide === OrderSide.SELL
               ? 'bg-rb-red-default text-rb-neutral-InvertHighlight '
@@ -386,9 +565,17 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[12px] font-medium">
             {t('page.perpsPro.tradingPanel.currentPosition')}
           </span>
-          <span className="text-r-neutral-title-1 text-[12px] font-medium">
+          <span
+            className={clsx(
+              'text-r-neutral-title-1 text-[12px] font-medium',
+              {
+                Long: 'text-rb-green-default',
+                Short: 'text-rb-red-default',
+              }[currentPosition?.side || '']
+            )}
+          >
             {currentPosition
-              ? `${currentPosition.size.toFixed(szDecimals)} ${selectedCoin}`
+              ? `${currentPosition.size} ${selectedCoin}`
               : `0 ${selectedCoin}`}
           </span>
         </div>
@@ -411,68 +598,80 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       />
 
       {/* TP/SL and Reduce Only */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-16">
         <label className="flex items-center gap-[8px] cursor-pointer">
           <input
             type="checkbox"
             checked={tpslConfig.enabled}
             onChange={(e) => handleTPSLEnabledChange(e.target.checked)}
-            className="w-[16px] h-[16px] rounded-[4px] accent-blue-600"
+            className="w-[16px] h-[16px] rounded-[4px] accent-blue-600 cursor-pointer"
           />
           <span className="text-r-neutral-title-1 text-[13px]">
             {t('page.perpsPro.tradingPanel.tpSl')}
           </span>
         </label>
 
-        <ReduceOnlyToggle
-          checked={reduceOnly}
-          disabled={!currentPosition}
-          onChange={setReduceOnly}
-        />
+        <label
+          className={`flex items-center gap-[8px] ${
+            !currentPosition
+              ? 'cursor-not-allowed opacity-50'
+              : 'cursor-pointer'
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={!currentPosition ? false : reduceOnly}
+            disabled={!currentPosition}
+            onChange={(e) => setReduceOnly(e.target.checked)}
+            className="w-[16px] h-[16px] rounded-[4px] accent-blue-600 cursor-pointer"
+          />
+          <span className="text-r-neutral-title-1 text-[13px]">
+            Reduce Only
+          </span>
+        </label>
       </div>
 
       {/* TP/SL Settings Expanded */}
       {tpslConfig.enabled && (
         <TPSLSettings
+          szDecimals={szDecimals}
           config={tpslConfig}
-          hasPosition={!!currentPosition}
-          onEnabledChange={handleTPSLEnabledChange}
-          onInputModeChange={handleTPSLInputModeChange}
+          noSizeTradeAmount={noSizeTradeAmount}
           onTakeProfitChange={handleTakeProfitChange}
           onStopLossChange={handleStopLossChange}
         />
       )}
 
       {/* Error Messages */}
-      {validation.errors.length > 0 && (
+      {/* {Boolean(validation.error) && (
         <div className="space-y-[8px]">
-          {validation.errors.map((error, index) => (
-            <div
-              key={index}
-              className="px-[12px] py-[8px] rounded-[8px] bg-r-orange-light text-r-orange-default text-[12px]"
-            >
-              {error}
-            </div>
-          ))}
+          <div className="px-[12px] py-[8px] rounded-[8px] bg-rb-orange-light-1 text-rb-orange-default text-[12px]">
+            {validation.error}
+          </div>
         </div>
-      )}
+      )} */}
 
       {/* Place Order Button */}
-      <button
-        onClick={handlePlaceOrder}
-        disabled={!validation.isValid}
-        className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 transition-opacity ${
+      <Button
+        loading={handleOpenMarketOrderLoading}
+        onClick={handleOpenMarketOrderRequest}
+        disabled={!validation.isValid || tpslConfigHasError}
+        className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
           validation.isValid
             ? orderSide === OrderSide.BUY
               ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
               : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
+            : validation.error
+            ? 'bg-rb-orange-light-1 text-rb-orange-default cursor-not-allowed'
             : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
         }`}
       >
-        {orderSide === OrderSide.BUY
+        {validation.error
+          ? validation.error
+          : orderSide === OrderSide.BUY
           ? t('page.perpsPro.tradingPanel.buyLong')
           : t('page.perpsPro.tradingPanel.sellShort')}
-      </button>
+      </Button>
 
       {/* Order Summary */}
       <OrderSummary

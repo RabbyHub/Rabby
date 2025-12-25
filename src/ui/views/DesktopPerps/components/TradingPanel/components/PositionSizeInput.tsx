@@ -43,6 +43,10 @@ export const PositionSizeInput: React.FC<PositionSizeInputProps> = ({
     }
   };
 
+  const handleAmountBlur = () => {
+    onAmountChange(formatNumber(positionSize.amount, precision.amount));
+  };
+
   return (
     <div className="flex items-center gap-[8px]">
       {/* Amount Input */}
@@ -52,6 +56,7 @@ export const PositionSizeInput: React.FC<PositionSizeInputProps> = ({
             type="text"
             value={positionSize.amount}
             onChange={handleAmountChange}
+            onBlur={handleAmountBlur}
             placeholder="0"
             className="w-full h-[40px] p-12 rounded-[8px] bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line text-r-neutral-title-1 text-[13px] focus:outline-none  font-medium"
           />

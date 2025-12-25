@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { DesktopPerpsSlider } from '../../DesktopPerpsSlider';
 import clsx from 'clsx';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
+import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 
 interface LeverageModalProps {
   visible: boolean;
@@ -89,6 +90,12 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
     }
   };
 
+  const handlePresetClick = (value: number) => {
+    setLeverage(value);
+    setInputValue(value.toString());
+    setError(validateLeverage(value));
+  };
+
   const handleInputBlur = () => {
     if (inputValue === '' || isNaN(Number(inputValue))) {
       setInputValue(currentLeverage.toString());
@@ -104,6 +111,12 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
     }
   };
 
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    }
+  };
+
   return (
     <Modal
       visible={visible}
@@ -111,6 +124,10 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
       footer={null}
       width={400}
       centered
+      bodyStyle={{
+        padding: 0,
+        height: '520px',
+      }}
       maskStyle={{
         zIndex: 1000,
         backdropFilter: 'blur(8px)',
@@ -118,97 +135,88 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
       }}
       closeIcon={ModalCloseIcon}
       destroyOnClose
-      className="desktop-perps-leverage-modal modal-support-darkmode"
+      className="desktop-perps-margin-mode-modal"
     >
-      <div className="px-20">
-        {/* Title */}
-        <h3 className="text-[16px] font-medium text-rb-neutral-title-1 text-center mb-16">
-          {coinSymbol} {t('page.perpsPro.leverage.title') || 'Leverage'}
-        </h3>
+      <div className="flex flex-col h-full">
+        <div className="px-20 pt-16 flex-1">
+          {/* Title */}
+          <h3 className="text-[16px] font-medium text-rb-neutral-title-1 text-center mb-16">
+            {t('page.perpsPro.leverage.title')}
+          </h3>
 
-        {/* Leverage Input Area */}
-        <div className="bg-rb-neutral-bg-1 rounded-[8px] p-[16px]">
-          {/* Max Leverage Display */}
-          <div className="flex items-center mb-[12px]">
-            <div className="flex items-end gap-[6px]">
-              <div className="text-[13px] text-rb-neutral-foot">
-                {t('page.perpsPro.leverage.upTo') || 'Up to'}
-              </div>
-              <div className="text-[20px] font-medium text-rb-neutral-title-1">
-                {maxLeverage}x
-              </div>
+          <div className="text-[13px] text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px] gap-16 flex flex-col px-20 py-16">
+            <div className="text-[13px] text-rb-neutral-body">
+              {t('page.perpsPro.leverage.controlPositionLeverage', {
+                coin: coinSymbol,
+                max: maxLeverage,
+              })}
+            </div>
+            <div className="text-[13px] text-rb-neutral-body">
+              {t('page.perpsPro.leverage.maxPositionSize')}
             </div>
 
-            {/* Large Input */}
-            <div className="flex-1 flex items-center justify-end">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={handleInputChange}
-                onBlur={handleInputBlur}
-                className={clsx(
-                  'text-[32px] font-bold text-right bg-transparent border-none outline-none w-[120px]',
-                  error ? 'text-r-red-default' : 'text-rb-neutral-title-1',
-                  'placeholder-rb-neutral-foot'
-                )}
-                placeholder="0"
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  boxShadow: 'none',
-                }}
-              />
-              <span
-                className={clsx(
-                  'text-[32px] font-bold ml-[4px]',
-                  inputValue === ''
-                    ? 'text-rb-neutral-foot'
-                    : error
-                    ? 'text-r-red-default'
-                    : 'text-rb-neutral-title-1'
-                )}
-              >
-                x
-              </span>
+            <div className="flex items-center gap-[20px]">
+              <div className="flex-1 space-y-[6px]">
+                <DesktopPerpsSlider
+                  min={1}
+                  max={maxLeverage}
+                  value={leverage}
+                  onChange={handleSliderChange}
+                  step={1}
+                  tooltipVisible={false}
+                />
+                {/* Preset Points */}
+                <div className="flex items-center justify-between">
+                  {[0, 5, 10, 25].map((point) => (
+                    <button
+                      key={point}
+                      onClick={() => handlePresetClick(point)}
+                      className="text-[11px] text-r-neutral-foot transition-colors hover:text-r-blue-default"
+                    >
+                      {point}x
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-8 gap-[2px] h-[28px] w-[52px] shrink-0 border border-solid border-rb-neutral-line rounded-[8px] ">
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onBlur={handleInputBlur}
+                  onKeyDown={handleInputKeyDown}
+                  className="w-[24px] text-[12px] text-rb-neutral-title-1 font-medium text-left bg-transparent border-none outline-none focus:outline-none px-0"
+                />
+                <span className="text-[12px] text-rb-neutral-foot font-medium">
+                  x
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center justify-center gap-4 bg-rb-orange-light-1 rounded-[8px] px-12 py-10">
+              <RcIconInfoCC className="text-rb-orange-default" />
+              <div className=" text-[12px]  text-rb-orange-default font-medium">
+                {t('page.perpsPro.leverage.higherLeverageRisk')}
+              </div>
             </div>
           </div>
-
-          {/* Slider */}
-          <DesktopPerpsSlider
-            min={1}
-            max={maxLeverage}
-            value={leverage}
-            onChange={handleSliderChange}
-            step={1}
-            tooltipVisible={false}
-          />
-
-          {/* Error Message */}
-          {error && (
-            <div className="mt-[12px] text-[12px] text-r-red-default">
-              {error}
-            </div>
-          )}
         </div>
-      </div>
-      <div
-        className={clsx(
-          'border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16'
-        )}
-      >
-        <Button
-          loading={isConfirming}
-          onClick={handleConfirm}
-          disabled={!!error || leverage < 1 || leverage > maxLeverage}
-          size="large"
-          type="primary"
+        <div
           className={clsx(
-            'w-full h-[44px] rounded-[8px] text-[14px] font-medium'
+            'border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16'
           )}
         >
-          {t('page.perpsPro.leverage.confirm')}
-        </Button>
+          <Button
+            loading={isConfirming}
+            onClick={handleConfirm}
+            size="large"
+            type="primary"
+            className={clsx(
+              'w-full h-[44px] rounded-[8px] text-[14px] font-medium'
+            )}
+          >
+            {t('page.perpsPro.marginMode.confirm')}
+          </Button>
+        </div>
       </div>
     </Modal>
   );

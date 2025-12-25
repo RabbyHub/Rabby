@@ -51,8 +51,6 @@ export const usePerpsProState = ({
     selectedCoin,
   } = perpsState;
 
-  console.log('----- isInitialized', isInitialized);
-
   useEffect(() => {
     const sdk = getPerpsSDK();
     const { unsubscribe } = sdk.ws.subscribeToActiveAssetCtx(
