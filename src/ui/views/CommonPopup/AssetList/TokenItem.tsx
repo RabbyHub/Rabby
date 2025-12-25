@@ -64,7 +64,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           {isLpToken(item) && (
             <LpTokenTag
               size={13.5}
-              maxWidth={250}
+              inModal
               iconClassName="text-r-neutral-foot"
               protocolName={item.protocol_id || ''}
             />

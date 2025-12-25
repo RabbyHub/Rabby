@@ -20,6 +20,7 @@ export const useTokenAndDIFIData = ({
 
   const {
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     portfolios,
     tokens: tokenList,
@@ -93,6 +94,7 @@ export const useTokenAndDIFIData = ({
   return {
     // useQueryProjects
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     portfolios,
     tokenList,
