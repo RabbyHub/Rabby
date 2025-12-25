@@ -68,6 +68,26 @@ const StyledSlider = styled(Slider)`
       }
     }
   }
+
+  .ant-slider-dot {
+    width: 12px;
+    height: 12px;
+    border: 6px solid var(--r-neutral-line);
+    background-color: transparent;
+    top: -4px;
+  }
+
+  .ant-slider-dot-active {
+    border-color: var(--r-blue-default, #7084ff);
+  }
+
+  &:hover .ant-slider-dot {
+    border-color: var(--r-blue-light-2);
+  }
+
+  &:hover .ant-slider-dot-active {
+    border-color: var(--r-blue-default, #7084ff);
+  }
 `;
 
 export const DesktopPerpsSlider = (props: SliderSingleProps) => {
