@@ -10,7 +10,7 @@ const Overlay = ({ protocolName }: { protocolName: string }) => {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-8 py-6">
-      <div className="flex items-center gap-4">
+      <div className="flex gap-4">
         <RCLpTokenIconCC className="w-16 h-16 text-r-neutral-title2 cursor-pointer" />
         <div className="text-12 text-white font-semibold">
           {t('component.LpTokenTag.descriptionFor', {
@@ -28,26 +28,24 @@ export const LpTokenTag = ({
   className,
   size = 16,
   protocolName,
+  maxWidth = 400,
 }: {
   iconClassName?: string;
   className?: string;
   size?: number;
   protocolName: string;
+  maxWidth?: number;
 }) => {
-  const { t } = useTranslation();
   return (
     <Tooltip
-      overlayClassName={cx('rectangle')}
-      overlayStyle={{ maxWidth: '250px' }}
+      overlayClassName="rectangle"
+      overlayStyle={{ maxWidth }}
       overlayInnerStyle={{
         borderRadius: '12px',
       }}
       className={className}
       style={{ width: size, height: size }}
-      title={t('component.LpTokenTag.descriptionFor', {
-        protocolName:
-          protocolName?.charAt(0).toUpperCase() + protocolName?.slice(1),
-      })}
+      overlay={<Overlay protocolName={protocolName} />}
       mouseEnterDelay={0}
     >
       <RCLpTokenIconCC

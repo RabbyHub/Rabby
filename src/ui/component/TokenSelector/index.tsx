@@ -830,6 +830,7 @@ function CommonTokenItem(props: {
                   {isLpToken(token) && (
                     <LpTokenTag
                       size={14}
+                      maxWidth={250}
                       iconClassName="text-r-neutral-foot"
                       protocolName={token.protocol_id || ''}
                     />
@@ -847,6 +848,7 @@ function CommonTokenItem(props: {
                   {isLpToken(token) && (
                     <LpTokenTag
                       size={14}
+                      maxWidth={250}
                       iconClassName="text-r-neutral-foot"
                       protocolName={token.protocol_id || ''}
                     />
