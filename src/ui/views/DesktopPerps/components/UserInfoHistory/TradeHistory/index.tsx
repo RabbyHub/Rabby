@@ -11,13 +11,13 @@ import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
 import { sortBy } from 'lodash';
+import { formatPercent } from '@/ui/views/Perps/utils';
 
 export const TradeHistory: React.FC = () => {
   const { userFills } = useRabbySelector((store) => {
     return store.perps;
   });
 
-  console.log('userFills', userFills);
   const list = useMemo<WsFill[]>(() => {
     return sortBy(userFills, (item) => -item.time);
   }, [userFills]);
@@ -27,6 +27,7 @@ export const TradeHistory: React.FC = () => {
       {
         title: 'Time',
         width: 180,
+        sorter: (a, b) => a.time - b.time,
         render: (_, record) => {
           return (
             <div className="text-[13px] leading-[16px] font-semibold text-rb-neutral-title1">
@@ -74,7 +75,7 @@ export const TradeHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
-              {record.px}
+              ${splitNumberByStep(record.px)}
             </div>
           );
         },
@@ -84,10 +85,18 @@ export const TradeHistory: React.FC = () => {
         width: 180,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
-              {new BigNumber(record.px)
-                .times(new BigNumber(record.sz).abs())
-                .toFixed(2)}
+            <div className="space-y-[4px]">
+              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+                {splitNumberByStep(
+                  new BigNumber(record.px)
+                    .times(new BigNumber(record.sz).abs())
+                    .toFixed(2)
+                )}{' '}
+                USDC
+              </div>
+              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+                {Math.abs(Number(record.sz || 0))} {record.coin}
+              </div>
             </div>
           );
         },
@@ -97,8 +106,41 @@ export const TradeHistory: React.FC = () => {
         width: 180,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
-              {record.closedPnl}
+            <div
+              className={clsx(
+                'space-y-[4px]',
+                'text-[12px] leading-[14px] font-medium',
+                Number(record.closedPnl) === 0
+                  ? 'text-rb-neutral-foot'
+                  : Number(record.closedPnl) > 0
+                  ? 'text-rb-green-default'
+                  : 'text-rb-red-default'
+              )}
+            >
+              {Number(record.closedPnl) === 0 ? (
+                <>
+                  <div>-</div>
+                  <div>-</div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    {Number(record.closedPnl) > 0 ? '+' : '-'}$
+                    {splitNumberByStep(Math.abs(Number(record.closedPnl)))}
+                  </div>
+                  <div>
+                    {Number(record.closedPnl) > 0 ? '+' : '-'}$
+                    {formatPercent(
+                      new BigNumber(record.closedPnl)
+                        .div(record.sz)
+                        .div(record.px)
+                        .abs()
+                        .toNumber(),
+                      2
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           );
         },
@@ -109,7 +151,7 @@ export const TradeHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
-              {record.fee}
+              ${splitNumberByStep(record.fee)}
             </div>
           );
         },

@@ -14,9 +14,8 @@ import {
   formatPerpsPct,
 } from '@/ui/views/Perps/utils';
 import { RcIconEditCC } from '@/ui/assets/desktop/common';
-import { EditMarginModal } from '../../modal/EditMarginModal';
-import { EditTpSlModal } from '../../modal/EditTpSLModal';
-import { set } from 'lodash';
+import { EditMarginModal } from '../../../modal/EditMarginModal';
+import { EditTpSlModal } from '../../../modal/EditTpSLModal';
 
 export const PositionsInfo: React.FC = () => {
   const {

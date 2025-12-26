@@ -7,6 +7,8 @@ import {
   MarginSummary,
   OpenOrder,
   UserFill,
+  UserFunding,
+  UserHistoricalOrders,
   WsActiveAssetCtx,
   WsActiveAssetData,
   WsFill,
@@ -98,6 +100,9 @@ export interface PerpsState {
   chartInterval: string;
   wsActiveAssetCtx: WsActiveAssetCtx | null;
   wsActiveAssetData: WsActiveAssetData | null;
+
+  historicalOrders: UserHistoricalOrders[];
+  userFunding: UserFunding[];
 }
 
 export const perps = createModel<RootModel>()({
@@ -131,9 +136,17 @@ export const perps = createModel<RootModel>()({
     chartInterval: '15m',
     wsActiveAssetCtx: null,
     wsActiveAssetData: null,
+    historicalOrders: [],
+    userFunding: [],
   } as PerpsState,
 
   reducers: {
+    patchState(state, payload: Partial<PerpsState>) {
+      return {
+        ...state,
+        ...payload,
+      };
+    },
     setFillsOrderTpOrSl(state, payload: Record<string, 'tp' | 'sl'>) {
       return {
         ...state,
@@ -494,6 +507,7 @@ export const perps = createModel<RootModel>()({
           sdk.info.getFrontendOpenOrders(),
         ]);
 
+        console.log('clearinghouseState', clearinghouseState);
         dispatch.perps.setPositionAndOpenOrders(clearinghouseState, openOrders);
 
         dispatch.perps.setAccountSummary({
@@ -616,7 +630,25 @@ export const perps = createModel<RootModel>()({
           }
         });
 
+        dispatch.perps.patchState({ historicalOrders: res });
         dispatch.perps.setFillsOrderTpOrSl(listOrderTpOrSl);
+      } catch (error) {
+        console.error('Failed to fetch user historical orders:', error);
+      }
+    },
+
+    async fetchUserFunding(_, rootState) {
+      try {
+        const sdk = getPerpsSDK();
+        console.log('??', rootState.perps.currentPerpsAccount?.address || '');
+        const res = await sdk.info.getUserFunding(
+          rootState.perps.currentPerpsAccount?.address || ''
+          // undefined // use sdk inner address
+          // Date.now() - 1000 * 60 * 60 * 24 * 7, // 7 days ago
+          // 0
+        );
+
+        dispatch.perps.patchState({ userFunding: res });
       } catch (error) {
         console.error('Failed to fetch user historical orders:', error);
       }
