@@ -1408,13 +1408,14 @@
           "noMatch": "一致なし",
           "lowValueDescription": "低価値アセットがここに表示されます",
           "lowValueAssets": "{{count}}の低価値アセット",
-          "lowValueAssets_0": "{{count}} 個の low value token",
-          "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} 個の低価値トークン",
           "review": "レビュー",
           "noTokens": "トークンがありません",
           "searchToken": "トークンを検索",
-          "lowValueDefis": "{{count}} 低価値のデファイ"
+          "lowValueAssets_one": "{{count}} 低価値トークン",
+          "lowValueAssets_other": "{{count}} 低価値トークン",
+          "lowValueAssets_0": "{{count}} 低価値トークン",
+          "noLpTokens": "流動性提供者 (LP) トークンはありません",
+          "lowValueDefis": "{{count}} 低価値のDeFiアセット"
         },
         "noAssets": "アセットなし",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
@@ -1453,8 +1454,8 @@
         "customButtonText": "カスタムトークンを追加",
         "side": "サイド",
         "price": "価格",
-        "openInTab": "タブで開く",
-        "searchTokenPlaceholder": "トークンを検索"
+        "searchTokenPlaceholder": "トークンを検索",
+        "openInTab": "Rabbyタブで開く"
       },
       "hd": {
         "howToConnectLedger": "Ledgerとの接続方法",
@@ -3550,7 +3551,8 @@
       "chainNotSupport": "このチェーンはサポートされていません",
       "chainFilterLine": {
         "filterAll": "すべてのチェーン"
-      }
+      },
+      "noLpTokens": "流動性提供者 (LP) トークンがありません"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3635,7 +3637,8 @@
     },
     "LpTokenTag": {
       "title": "これは流動性プロバイダー(LP)トークンです。",
-      "description": "LPトークンは、あなたが資産を預けたDeFiプロトコルによって発行されます。これらはその資産の証明として機能しますが、あなたの総残高にはその価値が含まれていません。"
+      "description": "LPトークンは、あなたが資産を預けたDeFiプロトコルによって発行されます。これらはその資産の証明として機能しますが、あなたの総残高にはその価値が含まれていません。",
+      "descriptionFor": "これは{{ protocolName }}の流動性プロバイダー（LP）トークンです"
     }
   },
   "global": {

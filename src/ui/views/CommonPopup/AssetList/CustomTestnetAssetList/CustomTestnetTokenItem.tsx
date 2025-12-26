@@ -39,7 +39,7 @@ export const TokenItemAsset: React.FC<Props> = ({ item, hideChain }) => {
           className="rectangle w-[max-content]"
         >
           <img
-            className="w-16 h-16 absolute right-[-2px] top-[-2px] rounded-full"
+            className="w-16 h-16 absolute right-[-2px] bottom-[-2px] rounded-full"
             src={chain?.logo || IconUnknown}
             alt={chain?.name}
           />

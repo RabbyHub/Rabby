@@ -1485,7 +1485,6 @@
           "dailyUnlock": "Pembukaan harian",
           "unlockAt": "Buka di",
           "exerciseEnd": "Latihan selesai",
-          "lowValueAssets_0": "{{count}} token nilai rendah",
           "assetAmount": "Aset / Jumlah",
           "claimable": "Dapat Diklaim",
           "strikePrice": "Harga pelaksanaan",
@@ -1496,14 +1495,16 @@
           "noMatch": "Tidak Cocok",
           "tradePair": "Pasangan perdagangan",
           "summaryDescription": "Semua aset dalam protokol (misalnya token LP) diselesaikan ke aset dasar untuk perhitungan statistik.",
-          "lowValueAssets_one": "{{count}} token bernilai rendah",
-          "lowValueAssets_other": "{{count}} token nilai rendah",
           "summaryTips": "Nilai aset dibagi dengan total kekayaan bersih",
           "price": "Harga",
           "review": "Tinjau",
           "noTokens": "Tidak Ada Token",
           "searchToken": "Cari Token",
-          "lowValueDefis": "{{count}} defis nilai rendah"
+          "lowValueAssets_one": "{{count}} token nilai rendah",
+          "lowValueAssets_other": "{{count}} token bernilai rendah",
+          "lowValueAssets_0": "{{count}} token bernilai rendah",
+          "noLpTokens": "Tidak Ada Token Penyedia Likuiditas (LP)",
+          "lowValueDefis": "{{count}} aset DeFi bernilai rendah"
         },
         "AddMainnetToken": {
           "tokenAddress": "Alamat Token",
@@ -1543,8 +1544,8 @@
         "customDescription": "Token kustom yang ditambahkan oleh Anda akan ditampilkan di sini",
         "price": "HARGA",
         "side": "SISI",
-        "openInTab": "Buka di tab",
-        "searchTokenPlaceholder": "Cari Token"
+        "searchTokenPlaceholder": "Cari Token",
+        "openInTab": "Buka di Rabby Tab"
       },
       "hd": {
         "ledger": {
@@ -3547,7 +3548,8 @@
       "chainNotSupport": "Rantai ini tidak didukung",
       "chainFilterLine": {
         "filterAll": "Semua Rantai"
-      }
+      },
+      "noLpTokens": "Tidak ada Token Penyedia Likuiditas (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3632,7 +3634,8 @@
     },
     "LpTokenTag": {
       "title": "Ini adalah token penyedia likuiditas (LP)",
-      "description": "Token LP diterbitkan oleh protokol DeFi tempat Anda menyimpan aset Anda. Mereka berfungsi sebagai bukti aset tersebut, tetapi nilainya tidak termasuk dalam total saldo Anda."
+      "description": "Token LP diterbitkan oleh protokol DeFi tempat Anda menyimpan aset Anda. Mereka berfungsi sebagai bukti aset tersebut, tetapi nilainya tidak termasuk dalam total saldo Anda.",
+      "descriptionFor": "Ini adalah Token Penyedia Likuiditas (LP) untuk {{ protocolName }}"
     }
   },
   "global": {

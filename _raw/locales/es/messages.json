@@ -1408,13 +1408,14 @@
           "noMatch": "Sin coincidencias",
           "lowValueDescription": "Los activos de bajo valor se mostrarán aquí",
           "lowValueAssets": "{{count}} activos de bajo valor",
-          "lowValueAssets_other": "{{count}} low value tokens",
-          "lowValueAssets_0": "{{count}} token de bajo valor",
-          "lowValueAssets_one": "{{count}} low value token",
           "review": "Revisión",
           "noTokens": "Sin tokens",
           "searchToken": "Buscar Token",
-          "lowValueDefis": "{{count}} defis de bajo valor"
+          "noLpTokens": "Sin Token de Proveedor de Liquidez (LP)",
+          "lowValueAssets_0": "{{count}} token de bajo valor",
+          "lowValueAssets_other": "{{count}} tokens de bajo valor",
+          "lowValueAssets_one": "{{count}} token de bajo valor",
+          "lowValueDefis": "{{count}} activos DeFi de bajo valor"
         },
         "noAssets": "No hay activos",
         "blockLinkText": "Buscar dirección para bloquear token",
@@ -1453,8 +1454,8 @@
         "addTokenEntryText": "Token",
         "price": "PRECIO",
         "side": "LADO",
-        "openInTab": "Abrir en pestaña",
-        "searchTokenPlaceholder": "Buscar Token"
+        "searchTokenPlaceholder": "Buscar Token",
+        "openInTab": "Abrir en Rabby Tab"
       },
       "hd": {
         "howToConnectLedger": "¿Cómo Conectar Ledger?",
@@ -3101,7 +3102,8 @@
         "liquidationDistance": "Distancia de Liquidación",
         "liquidationDistanceTips": "La Distancia de Liquidación (%) muestra qué tan lejos está el precio actual de tu precio de liquidación. Una mayor distancia indica una posición más segura, mientras que una distancia más pequeña significa un mayor riesgo de liquidación.",
         "distanceLabel": "Distancia de Liquidación",
-        "liqDistanceTipsShort": "Subiendo <1>{{distance}}</1> se activará la liquidación."
+        "liqDistanceTipsShort": "Subiendo <1>{{distance}}</1> se activará la liquidación.",
+        "liqDistanceTipsLong": "Bajar <1>{{distance}}</1> activará la liquidación."
       },
       "searchPerpsPopup": {
         "onePosition": "1 Posición",
@@ -3119,10 +3121,13 @@
         "description": "Utiliza el código de Rabby para habilitar",
         "activateFailed": "Fallido",
         "activatedSuccess": "Ahorros de tarifa del 4% de Hyperliquid activados",
-        "hyperliquidFee": "Comisiones de trading de Hyperliquid."
+        "hyperliquidFee": "Comisiones de trading de Hyperliquid.",
+        "activateNow": "Activa Ahora"
       },
       "close": "Cerrar",
-      "fundingRate": "Tasa de financiación"
+      "fundingRate": "Tasa de financiación",
+      "add": "Añadir",
+      "fundingGains": "Ganancias de financiamiento"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3235,7 +3240,8 @@
         "tokens": "Tokens",
         "approvals": "Aprobaciones",
         "transactions": "Transacciones",
-        "difi": "Defi"
+        "difi": "Defi",
+        "defi": "DeFi"
       },
       "nft": {
         "message": {
@@ -3364,7 +3370,8 @@
         "amountToAdd": "Cantidad a agregar",
         "reduceMarginSuccess": "Margen reducida con éxito",
         "upto": "Hasta",
-        "upTo": "Hasta"
+        "upTo": "Hasta",
+        "liqDistance": "Liq. Distancia"
       },
       "PerpsClosePositionPopup": {
         "confirm": "Confirmar",
@@ -3409,8 +3416,10 @@
         "addToShort": "Agregar a Short",
         "sizeTips": "El valor total o la cantidad de su operación, establecido por el margen y el apalancamiento.",
         "addSize": "Agregar Tamaño",
-        "liquidationPriceTips": "El precio al cual tu posición se cierra automáticamente por el intercambio para prevenir pérdidas adicionales cuando tu margen cae por debajo del nivel de margen de mantenimiento."
-      }
+        "liquidationPriceTips": "El precio al cual tu posición se cierra automáticamente por el intercambio para prevenir pérdidas adicionales cuando tu margen cae por debajo del nivel de margen de mantenimiento.",
+        "totalSize": "Tamaño Total"
+      },
+      "needDepositFirst": "Primero necesitas depositar fondos."
     }
   },
   "component": {
@@ -3542,7 +3551,8 @@
       "chainNotSupport": "Esta cadena no es compatible",
       "chainFilterLine": {
         "filterAll": "Todas las cadenas"
-      }
+      },
+      "noLpTokens": "No hay Token de Proveedor de Liquidez (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3627,7 +3637,8 @@
     },
     "LpTokenTag": {
       "title": "Este es un token de proveedor de liquidez (LP)",
-      "description": "Los tokens LP son emitidos por los protocolos DeFi donde has depositado tus activos. Sirven como prueba de esos activos, pero su valor no está incluido en tu saldo total."
+      "description": "Los tokens LP son emitidos por los protocolos DeFi donde has depositado tus activos. Sirven como prueba de esos activos, pero su valor no está incluido en tu saldo total.",
+      "descriptionFor": "Este es un token de Proveedor de Liquidez (LP) para {{ protocolName }}"
     }
   },
   "global": {

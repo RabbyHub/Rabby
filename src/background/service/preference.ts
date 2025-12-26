@@ -253,7 +253,7 @@ class PreferenceService {
     if (!this.store.gasCache) {
       this.store.gasCache = {};
     }
-    if (!this.store.pinnedChain) {
+    if (!this.store.pinnedChain || !Array.isArray(this.store.pinnedChain)) {
       this.store.pinnedChain = [];
     }
     if (!this.store.addedToken) {

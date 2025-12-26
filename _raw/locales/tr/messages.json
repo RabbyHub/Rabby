@@ -1408,13 +1408,14 @@
           "noMatch": "Eşleşme Yok",
           "lowValueDescription": "Düşük değerdeki varlıklar burada gösterilecek",
           "lowValueAssets": "{{count}} düşük değerli varlık",
-          "lowValueAssets_other": "{{count}} düşük değerli tokenlar",
-          "lowValueAssets_one": "{{count}} düşük değerli token",
-          "lowValueAssets_0": "{{count}} düşük değerli token",
           "review": "Gözden Geçir",
           "noTokens": "No Tokens",
-          "lowValueDefis": "{{count}} düşük değerli defis",
-          "searchToken": "Token Ara"
+          "searchToken": "Token Ara",
+          "lowValueAssets_one": "{{count}} düşük değerli token",
+          "lowValueDefis": "{{count}} düşük değerli DeFi varlıkları",
+          "noLpTokens": "Likidite Sağlayıcı (LP) Token Yok",
+          "lowValueAssets_0": "{{count}} düşük değerli token",
+          "lowValueAssets_other": "{{count}} düşük değerli token"
         },
         "noAssets": "Varlık Yok",
         "blockLinkText": "Tokeni engellemek için adresi ara",
@@ -1453,8 +1454,8 @@
         "customButtonText": "Özel token ekle",
         "side": "YAN TARAF",
         "price": "FİYAT",
-        "openInTab": "Sekmede aç",
-        "searchTokenPlaceholder": "Token Ara"
+        "searchTokenPlaceholder": "Token Ara",
+        "openInTab": "Rabby Sekmesinde Açın"
       },
       "hd": {
         "howToConnectLedger": "Ledger Nasıl Bağlanır",
@@ -3553,7 +3554,8 @@
       "chainNotSupport": "Bu zincir desteklenmiyor.",
       "chainFilterLine": {
         "filterAll": "Tüm Zincirler"
-      }
+      },
+      "noLpTokens": "LP Token Yok"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3638,7 +3640,8 @@
     },
     "LpTokenTag": {
       "title": "Bu bir likidite sağlayıcı (LP) tokenıdır.",
-      "description": "LP token’lar, varlıklarınızı yatırdığınız DeFi protokolleri tarafından verilmektedir. Bunlar, bu varlıkların kanıtı olarak hizmet eder, ancak değeri toplam bakiyenize dahil değildir."
+      "description": "LP token’lar, varlıklarınızı yatırdığınız DeFi protokolleri tarafından verilmektedir. Bunlar, bu varlıkların kanıtı olarak hizmet eder, ancak değeri toplam bakiyenize dahil değildir.",
+      "descriptionFor": "Bu, {{ protocolName }} için bir Likidite Sağlayıcı (LP) Token'dır."
     }
   },
   "global": {

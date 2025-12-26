@@ -1487,23 +1487,24 @@
           "PL": "P&L",
           "dailyUnlock": "Desbloqueio diário",
           "endAt": "Terminar em",
-          "lowValueAssets_0": "{{count}} token de baixo valor",
           "type": "Tipo",
           "noMatch": "Sem correspondência",
           "leverage": "Alavancar",
           "balanceValue": "Saldo / Valor",
           "token": "Token",
-          "lowValueAssets_one": "{{count}} token de baixo valor",
           "exerciseEnd": "Exercício encerrado",
           "summaryDescription": "Todos os ativos nos protocolos (por exemplo, tokens LP) são resolvidos para os ativos subjacentes para cálculos estatísticos.",
           "lowValueDescription": "Ativos de baixo valor serão exibidos aqui",
-          "lowValueAssets_other": "{{count}} tokens de baixo valor",
           "side": "Lado",
           "tradePair": "Par de negociação",
           "review": "Revisar",
           "noTokens": "Sem Tokens",
-          "lowValueDefis": "{{count}} defis de baixo valor",
-          "searchToken": "Buscar Token"
+          "searchToken": "Buscar Token",
+          "lowValueAssets_one": "{{count}} token de baixo valor",
+          "noLpTokens": "Nenhum Token de Fornecedor de Liquidez (LP)",
+          "lowValueAssets_0": "{{count}} token de baixo valor",
+          "lowValueDefis": "{{count}} ativos DeFi de baixo valor",
+          "lowValueAssets_other": "{{count}} tokens de baixo valor"
         },
         "AddMainnetToken": {
           "title": "Adicionar Token Personalizado",
@@ -1543,8 +1544,8 @@
         "noTestnetAssets": "Nenhum ativo de rede personalizado",
         "side": "LADO",
         "price": "PREÇO",
-        "openInTab": "Abrir em uma nova guia",
-        "searchTokenPlaceholder": "Buscar Token"
+        "searchTokenPlaceholder": "Buscar Token",
+        "openInTab": "Abra na guia Rabby"
       },
       "hd": {
         "ledger": {
@@ -3547,7 +3548,8 @@
       "chainNotSupport": "Esta cadeia não é suportada",
       "chainFilterLine": {
         "filterAll": "Todas as Chains"
-      }
+      },
+      "noLpTokens": "Sem Token de Provedor de Liquidez (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3632,7 +3634,8 @@
     },
     "LpTokenTag": {
       "title": "Este é um token de provedor de liquidez (LP)",
-      "description": "Os tokens LP são emitidos pelos protocolos DeFi onde você depositou seus ativos. Eles servem como prova desses ativos, mas seu valor não está incluído no seu saldo total."
+      "description": "Os tokens LP são emitidos pelos protocolos DeFi onde você depositou seus ativos. Eles servem como prova desses ativos, mas seu valor não está incluído no seu saldo total.",
+      "descriptionFor": "Este é um Token de Provedor de Liquidez (LP) para {{ protocolName }}"
     }
   },
   "global": {

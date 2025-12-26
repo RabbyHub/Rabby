@@ -1408,13 +1408,14 @@
           "noMatch": "Keine Übereinstimmung",
           "lowValueDescription": "Vermögenswerte mit geringem Wert werden hier angezeigt",
           "lowValueAssets": "{{count}} Vermögenswerte mit geringem Wert",
-          "lowValueAssets_other": "{{count}} niedrigwertige Token",
-          "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_0": "{{count}} Low-Value-Token",
           "review": "Überprüfung",
           "noTokens": "Keine Token",
           "searchToken": "Token suchen",
-          "lowValueDefis": "{{count}} Low-Value DeFi-Angebote"
+          "lowValueAssets_one": "{{count}} geringwertige Token",
+          "noLpTokens": "Kein Liquiditätsanbieter (LP) Token",
+          "lowValueAssets_0": "{{count}} Token mit niedrigem Wert",
+          "lowValueAssets_other": "{{count}} Niedrigwertige Token",
+          "lowValueDefis": "{{count}} geringwertige DeFi-Vermögenswerte"
         },
         "noAssets": "Keine Vermögenswerte",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",
@@ -1453,8 +1454,8 @@
         "addTokenEntryText": "Token",
         "price": "PREIS",
         "side": "SEITE",
-        "openInTab": "Im Tab öffnen",
-        "searchTokenPlaceholder": "Token suchen"
+        "searchTokenPlaceholder": "Token suchen",
+        "openInTab": "Im Rabby Tab öffnen"
       },
       "hd": {
         "howToConnectLedger": "Wie man den Ledger verbindet",
@@ -1976,7 +1977,8 @@
         "desc": "Wählen Sie aus den Wallets, die Sie installiert haben"
       },
       "otherWalletBtn": "Mit einer anderen Wallet verbinden",
-      "connectAddress": "Adresse verbinden"
+      "connectAddress": "Adresse verbinden",
+      "connected": "Verbunden"
     },
     "addressDetail": {
       "add-to-whitelist": "Zur Whitelist hinzufügen",
@@ -3549,7 +3551,8 @@
       "chainNotSupport": "Diese Kette wird nicht unterstützt",
       "chainFilterLine": {
         "filterAll": "Alle Chains"
-      }
+      },
+      "noLpTokens": "Kein Liquiditätsanbieter (LP) Token"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3634,7 +3637,8 @@
     },
     "LpTokenTag": {
       "title": "Dies ist ein Liquiditätsanbieter (LP) Token.",
-      "description": "LP-Token werden von den DeFi-Protokollen ausgegeben, bei denen Sie Ihre Vermögenswerte hinterlegt haben. Sie dienen als Nachweis für diese Vermögenswerte, aber ihr Wert ist nicht in Ihrem Gesamtkontostand enthalten."
+      "description": "LP-Token werden von den DeFi-Protokollen ausgegeben, bei denen Sie Ihre Vermögenswerte hinterlegt haben. Sie dienen als Nachweis für diese Vermögenswerte, aber ihr Wert ist nicht in Ihrem Gesamtkontostand enthalten.",
+      "descriptionFor": "Dies ist ein Liquiditätsanbieter (LP) Token für {{ protocolName }}."
     }
   },
   "global": {
