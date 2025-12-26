@@ -22,7 +22,7 @@ const AuthFormItemWrapper = styled.div`
   }
   .ant-input.ant-input-lg.popup-input {
     border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
-    background: transparent !important;
+    background: var(--r-neutral-card1, #fff) !important;
     &::placeholder {
       color: var(--r-neutral-foot, #6a7587) !important;
     }
@@ -155,7 +155,7 @@ const AuthenticationPopup = ({
   const height = useMemo(() => {
     if (!description && checklist.length <= 0) return 240;
     if (description && checklist.length <= 0) return 280;
-    return 480;
+    return 446;
   }, [description, checklist]);
 
   const [force, setForceRender] = useState(!!forceRender);
@@ -199,6 +199,7 @@ const AuthenticationPopup = ({
     <Popup
       className={clsx(
         'input-password-popup',
+        'custom-popup is-support-darkmode is-new',
         { 'has-desc': !!description },
         containerClassName
       )}
@@ -221,6 +222,7 @@ const AuthenticationPopup = ({
             };
             return (
               <Field
+                className="bg-r-neutral-card-1 text-[13px] px-12 py-[13px]"
                 key={`item-${q.index}`}
                 leftIcon={
                   <Checkbox

@@ -332,26 +332,27 @@ const ManageAddress = () => {
             <div className="flex-1 flex flex-col items-center justify-center gap-[30px] min-h-[300px]">
               <Empty
                 desc={
-                  <div className="text-r-neutral-body text-14 max-w-[296px] mt-12">
-                    {t('page.manageAddress.no-address-under-seed-phrase')}
+                  <div className="text-r-neutral-body text-14 max-w-[352px] mt-12">
+                    {t('page.manageAddress.noSeedPhraseAddress')}
                   </div>
                 }
               />
               <div>
                 <Button
                   type="primary"
-                  className="w-[140px] h-[36px] rounder-[4px] flex items-center justify-center gap-4 text-13 font-medium"
+                  className="w-[186px] h-[44px] rounder-[4px] flex items-center justify-center gap-4 text-15 font-medium"
                   icon={<IconPlus />}
                   onClick={handleAddSeedPhraseAddress}
                 >
                   {t('page.manageAddress.add-address')}
                 </Button>
-                <div
-                  className="mt-20 cursor-pointer underline text-r-neutral-body text-14 text-center"
+                <Button
+                  type="ghost"
+                  className="w-[186px] h-[44px] rounder-[4px] mt-12 text-r-red-default text-15 font-medium  border-rabby-red-default"
                   onClick={handleDeleteEmptySeedPhrase}
                 >
                   {t('page.manageAddress.delete-seed-phrase')}
-                </div>
+                </Button>
               </div>
             </div>
           ) : null}
