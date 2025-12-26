@@ -75,12 +75,14 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       </div>
 
       {/* Slippage */}
-      <div className="flex items-center justify-between">
-        <span className="text-r-neutral-foot text-[13px]">Slippage</span>
-        <span className="text-r-neutral-title-1 text-[13px]">
-          {data.slippage}
-        </span>
-      </div>
+      {data.slippage && (
+        <div className="flex items-center justify-between">
+          <span className="text-r-neutral-foot text-[13px]">Slippage</span>
+          <span className="text-r-neutral-title-1 text-[13px]">
+            {data.slippage}
+          </span>
+        </div>
+      )}
     </div>
   );
 };

@@ -96,6 +96,7 @@ export interface PerpsState {
   selectedCoin: string;
   favoritedCoins: string[];
   chartInterval: string;
+  currentBestAskPrice: string;
   wsActiveAssetCtx: WsActiveAssetCtx | null;
   wsActiveAssetData: WsActiveAssetData | null;
 }
@@ -131,9 +132,17 @@ export const perps = createModel<RootModel>()({
     chartInterval: '15m',
     wsActiveAssetCtx: null,
     wsActiveAssetData: null,
+    currentBestAskPrice: '',
   } as PerpsState,
 
   reducers: {
+    setCurrentBestAskPrice(state, payload: string) {
+      return {
+        ...state,
+        currentBestAskPrice: payload,
+      };
+    },
+
     setFillsOrderTpOrSl(state, payload: Record<string, 'tp' | 'sl'>) {
       return {
         ...state,

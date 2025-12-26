@@ -8,8 +8,10 @@ export enum MarginMode {
 export enum OrderType {
   MARKET = 'market',
   LIMIT = 'limit',
-  STOP_MARKET = 'stop_market',
   STOP_LIMIT = 'stop_limit',
+  STOP_MARKET = 'stop_market',
+  TAKE_LIMIT = 'take_limit',
+  TAKE_MARKET = 'take_market',
   SCALE = 'scale',
   TWAP = 'twap',
 }
@@ -30,6 +32,17 @@ export interface PositionSize {
   notionalValue: string;
 }
 
+export type LimitOrderType = 'Gtc' | 'Alo' | 'Ioc';
+
+export interface Position {
+  size: number;
+  side: 'Long' | 'Short';
+  entryPrice: number;
+  leverage: number;
+  marginUsed: number;
+  liquidationPrice: number;
+  unrealizedPnl: number;
+}
 export interface TPSLConfig {
   enabled: boolean;
   takeProfit: {
@@ -52,7 +65,7 @@ export interface OrderSummaryData {
   orderValue: string;
   marginRequired: string;
   marginUsage: string;
-  slippage: string;
+  slippage?: string;
 }
 
 // Trading container components don't need props

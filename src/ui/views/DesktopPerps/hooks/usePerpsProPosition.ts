@@ -7,6 +7,8 @@ import * as Sentry from '@sentry/browser';
 import { useMemoizedFn } from 'ahooks';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
+import { LimitOrderType } from '../types';
+import { removeTrailingZeros } from '../components/TradingPanel/utils';
 
 const formatTriggerPx = (px?: string) => {
   // avoid '.15' input error from hy validator
@@ -148,7 +150,276 @@ export const usePerpsProPosition = () => {
     }
   );
 
+  const handleOpenLimitOrder = useMemoizedFn(
+    async (params: {
+      coin: string;
+      isBuy: boolean;
+      size: string;
+      limitPx: string;
+      tpTriggerPx?: string;
+      slTriggerPx?: string;
+      reduceOnly?: boolean;
+      orderType?: LimitOrderType;
+    }) => {
+      try {
+        const sdk = getPerpsSDK();
+        const {
+          coin,
+          isBuy,
+          size,
+          limitPx,
+          tpTriggerPx,
+          slTriggerPx,
+          reduceOnly,
+          orderType = 'Gtc',
+        } = params;
+        const promises = [
+          sdk.exchange?.placeOrder({
+            coin,
+            isBuy,
+            sz: removeTrailingZeros(size),
+            limitPx: removeTrailingZeros(limitPx),
+            reduceOnly,
+            orderType: {
+              limit: {
+                tif: orderType,
+              },
+            },
+            builder: PERPS_BUILDER_INFO,
+          }),
+        ];
+
+        const formattedTpTriggerPx = formatTriggerPx(tpTriggerPx);
+        const formattedSlTriggerPx = formatTriggerPx(slTriggerPx);
+
+        if (tpTriggerPx || slTriggerPx) {
+          promises.push(
+            (async () => {
+              await sleep(10); // little delay to ensure nonce is correct
+
+              const result = await sdk.exchange?.bindTpslByOrderId({
+                coin,
+                isBuy,
+                tpTriggerPx: formattedTpTriggerPx,
+                slTriggerPx: formattedSlTriggerPx,
+                builder: PERPS_BUILDER_INFO,
+              });
+              return result as OrderResponse;
+            })()
+          );
+        }
+
+        const results = await Promise.all(promises);
+        const res = results[0];
+        const resting = res?.response?.data?.statuses[0]?.resting;
+        if (resting?.oid) {
+          message.success({
+            duration: 1.5,
+            content: t('page.perps.toast.openLimitOrderSuccess', {
+              direction: isBuy ? 'Long' : 'Short',
+              coin,
+              size: size,
+              price: limitPx,
+            }),
+          });
+          return resting?.oid;
+        } else {
+          const msg = res?.response?.data?.statuses[0]?.error;
+          message.error({
+            // className: 'toast-message-2025-center',
+            duration: 1.5,
+            content: msg || 'open limit order error',
+          });
+          Sentry.captureException(
+            new Error(
+              'PERPS open limit order error' +
+                'params: ' +
+                JSON.stringify(params) +
+                'res: ' +
+                JSON.stringify(res)
+            )
+          );
+        }
+      } catch (error) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) {
+          return;
+        }
+        console.error(error);
+        message.error({
+          // className: 'toast-message-2025-center',
+          duration: 1.5,
+          content: error?.message || 'open limit order error',
+        });
+        Sentry.captureException(
+          new Error(
+            'PERPS open limit order error' +
+              'params: ' +
+              JSON.stringify(params) +
+              'error: ' +
+              JSON.stringify(error)
+          )
+        );
+      }
+    }
+  );
+
+  const handleOpenTPSlMarketOrder = useMemoizedFn(
+    async (params: {
+      coin: string;
+      isBuy: boolean;
+      size: string;
+      triggerPx: string;
+      reduceOnly: boolean;
+      tpsl: 'tp' | 'sl';
+    }) => {
+      try {
+        const sdk = getPerpsSDK();
+        const { coin, isBuy, size, triggerPx, reduceOnly } = params;
+        const res = await sdk.exchange?.placeTPSlMarketOrder({
+          coin,
+          isBuy,
+          size,
+          triggerPx,
+          reduceOnly,
+          tpsl: params.tpsl,
+          builder: PERPS_BUILDER_INFO,
+        });
+        const resting = res?.response?.data?.statuses[0]?.resting;
+        if (resting?.oid) {
+          message.success({
+            duration: 1.5,
+            content: t('page.perps.toast.openTPSlMarketOrderSuccess', {
+              tpsl: params.tpsl === 'tp' ? 'Take profit' : 'Stop loss',
+              direction: isBuy ? 'Long' : 'Short',
+              coin,
+              size: size,
+              price: triggerPx,
+            }),
+          });
+          return resting?.oid;
+        } else {
+          const msg = res?.response?.data?.statuses[0]?.error;
+          message.error({
+            // className: 'toast-message-2025-center',
+            duration: 1.5,
+            content: msg || 'open tp or sl market order error',
+          });
+          Sentry.captureException(
+            new Error(
+              'PERPS open tp or sl market order error' +
+                'params: ' +
+                JSON.stringify(params) +
+                'res: ' +
+                JSON.stringify(res)
+            )
+          );
+        }
+      } catch (error) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) {
+          return;
+        }
+        console.error(error);
+        message.error({
+          // className: 'toast-message-2025-center',
+          duration: 1.5,
+          content: error?.message || 'open tp or sl market order error',
+        });
+        Sentry.captureException(
+          new Error(
+            'PERPS open tp or sl market order error' +
+              'params: ' +
+              JSON.stringify(params) +
+              'error: ' +
+              JSON.stringify(error)
+          )
+        );
+      }
+    }
+  );
+
+  const handleOpenTPSlLimitOrder = useMemoizedFn(
+    async (params: {
+      coin: string;
+      isBuy: boolean;
+      size: string;
+      triggerPx: string;
+      reduceOnly: boolean;
+      limitPx: string;
+      tpsl: 'tp' | 'sl';
+    }) => {
+      try {
+        const sdk = getPerpsSDK();
+        const { coin, isBuy, size, triggerPx, reduceOnly, limitPx } = params;
+        const res = await sdk.exchange?.placeTPSlLimitOrder({
+          coin,
+          isBuy,
+          size,
+          limitPx,
+          reduceOnly,
+          triggerPx,
+          tpsl: params.tpsl,
+          builder: PERPS_BUILDER_INFO,
+        });
+        const resting = res?.response?.data?.statuses[0]?.resting;
+        if (resting?.oid) {
+          message.success({
+            duration: 1.5,
+            content: t('page.perps.toast.openTPSlLimitOrderSuccess', {
+              tpsl: params.tpsl === 'tp' ? 'Take profit' : 'Stop loss',
+              direction: isBuy ? 'Long' : 'Short',
+              coin,
+              size: size,
+              price: triggerPx,
+            }),
+          });
+          return resting?.oid;
+        } else {
+          const msg = res?.response?.data?.statuses[0]?.error;
+          message.error({
+            // className: 'toast-message-2025-center',
+            duration: 1.5,
+            content: msg || 'open tp or sl limit order error',
+          });
+          Sentry.captureException(
+            new Error(
+              'PERPS open tp or sl limit order error' +
+                'params: ' +
+                JSON.stringify(params) +
+                'res: ' +
+                JSON.stringify(res)
+            )
+          );
+        }
+      } catch (error) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) {
+          return;
+        }
+        console.error(error);
+        message.error({
+          // className: 'toast-message-2025-center',
+          duration: 1.5,
+          content: error?.message || 'open tp or sl limit order error',
+        });
+        Sentry.captureException(
+          new Error(
+            'PERPS open tp or sl limit order error' +
+              'params: ' +
+              JSON.stringify(params) +
+              'error: ' +
+              JSON.stringify(error)
+          )
+        );
+      }
+    }
+  );
+
   return {
     handleOpenMarketOrder,
+    handleOpenLimitOrder,
+    handleOpenTPSlMarketOrder,
+    handleOpenTPSlLimitOrder,
   };
 };

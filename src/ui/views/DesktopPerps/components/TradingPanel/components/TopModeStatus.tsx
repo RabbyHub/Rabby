@@ -18,6 +18,8 @@ const ORDER_TYPE_OPTIONS = [
   { value: OrderType.LIMIT, label: 'Limit' },
   { value: OrderType.STOP_MARKET, label: 'Stop Market' },
   { value: OrderType.STOP_LIMIT, label: 'Stop Limit' },
+  { value: OrderType.TAKE_MARKET, label: 'Take Market' },
+  { value: OrderType.TAKE_LIMIT, label: 'Take Limit' },
   { value: OrderType.SCALE, label: 'Scale' },
   { value: OrderType.TWAP, label: 'TWAP' },
 ];

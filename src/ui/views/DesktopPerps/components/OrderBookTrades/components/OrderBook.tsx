@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
@@ -9,6 +9,8 @@ import { ReactComponent as RcIconBuySell } from '@/ui/assets/perps/icon-buy-sell
 import { ReactComponent as RcIconBuy } from '@/ui/assets/perps/icon-buy.svg';
 import { ReactComponent as RcIconSell } from '@/ui/assets/perps/icon-sell.svg';
 import { Trade } from '../index';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
 
@@ -35,6 +37,7 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
   const { selectedCoin, marketDataMap, wsActiveAssetCtx } = useRabbySelector(
     (state) => state.perps
   );
+  const dispatch = useRabbyDispatch();
   const [viewMode, setViewMode] = useState<ViewMode>('Both');
   const [quoteUnit, setQuoteUnit] = useState<QuoteUnit>('base');
   const [aggregationIndex, setAggregationIndex] = useState<number>(0);
@@ -153,6 +156,7 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
             });
           }
 
+          dispatch.perps.setCurrentBestAskPrice(data.levels[1]?.[0]?.px || '');
           setBids(processedBids);
           setAsks(processedAsks);
         }
@@ -177,7 +181,7 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
   );
 
   const handleClickPrice = useCallback((price: number) => {
-    console.log(price);
+    eventBus.emit(EVENTS.PERPS.HANDLE_CLICK_PRICE, price.toString());
   }, []);
 
   const renderOrderRow = (
