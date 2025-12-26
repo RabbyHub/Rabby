@@ -7,6 +7,8 @@ import {
   MarginSummary,
   OpenOrder,
   UserFill,
+  UserFunding,
+  UserHistoricalOrders,
   WsActiveAssetCtx,
   WsActiveAssetData,
   WsFill,
@@ -98,6 +100,9 @@ export interface PerpsState {
   chartInterval: string;
   wsActiveAssetCtx: WsActiveAssetCtx | null;
   wsActiveAssetData: WsActiveAssetData | null;
+
+  historicalOrders: UserHistoricalOrders[];
+  userFunding: UserFunding[];
 }
 
 export const perps = createModel<RootModel>()({
@@ -131,9 +136,25 @@ export const perps = createModel<RootModel>()({
     chartInterval: '15m',
     wsActiveAssetCtx: null,
     wsActiveAssetData: null,
+    historicalOrders: [],
+    userFunding: [],
   } as PerpsState,
 
   reducers: {
+    patchState(state, payload: Partial<PerpsState>) {
+      return {
+        ...state,
+        ...payload,
+      };
+    },
+
+    setCurrentBestAskPrice(state, payload: string) {
+      return {
+        ...state,
+        currentBestAskPrice: payload,
+      };
+    },
+
     setFillsOrderTpOrSl(state, payload: Record<string, 'tp' | 'sl'>) {
       return {
         ...state,
@@ -494,6 +515,7 @@ export const perps = createModel<RootModel>()({
           sdk.info.getFrontendOpenOrders(),
         ]);
 
+        console.log('clearinghouseState', clearinghouseState);
         dispatch.perps.setPositionAndOpenOrders(clearinghouseState, openOrders);
 
         dispatch.perps.setAccountSummary({
@@ -616,7 +638,19 @@ export const perps = createModel<RootModel>()({
           }
         });
 
+        dispatch.perps.patchState({ historicalOrders: res });
         dispatch.perps.setFillsOrderTpOrSl(listOrderTpOrSl);
+      } catch (error) {
+        console.error('Failed to fetch user historical orders:', error);
+      }
+    },
+
+    async fetchUserFunding() {
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.info.getUserFunding();
+
+        dispatch.perps.patchState({ userFunding: res });
       } catch (error) {
         console.error('Failed to fetch user historical orders:', error);
       }
@@ -626,6 +660,8 @@ export const perps = createModel<RootModel>()({
       await dispatch.perps.fetchPositionAndOpenOrders();
       dispatch.perps.fetchUserNonFundingLedgerUpdates();
       dispatch.perps.fetchUserHistoricalOrders();
+      // todo
+      dispatch.perps.fetchUserFunding();
     },
 
     async fetchMarketData(_, rootState) {
