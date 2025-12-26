@@ -29,9 +29,10 @@ export const OrderHistory: React.FC = () => {
       {
         title: 'Time',
         width: 180,
+        sorter: (a, b) => a.order.timestamp - b.order.timestamp,
         render: (_, record) => {
           return (
-            <div className="text-[13px] leading-[16px] font-semibold text-rb-neutral-title1">
+            <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1">
               {dayjs(record.order.timestamp).format('DD/MM/YYYY-HH:mm:ss')}
             </div>
           );
@@ -40,9 +41,10 @@ export const OrderHistory: React.FC = () => {
       {
         title: 'Type',
         width: 180,
+        sorter: (a, b) => a.order.orderType.localeCompare(b.order.orderType),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {record.order.orderType}
             </div>
           );
@@ -51,9 +53,10 @@ export const OrderHistory: React.FC = () => {
       {
         title: 'Coin',
         width: 100,
+        sorter: (a, b) => a.order.coin.localeCompare(b.order.coin),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {record.order.coin}
             </div>
           );
@@ -62,12 +65,13 @@ export const OrderHistory: React.FC = () => {
       {
         title: 'Side',
         width: 180,
+        sorter: (a, b) => a.order.side.localeCompare(b.order.side),
         render: (_, record) => {
           const isTpSL =
             record.order.orderType.includes('Take Profit') ||
             record.order.orderType.includes('Stop');
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {record.order.side === 'B'
                 ? isTpSL
                   ? 'Close Short'
@@ -82,9 +86,10 @@ export const OrderHistory: React.FC = () => {
       {
         title: 'Size',
         width: 180,
+        sorter: (a, b) => Number(a.order.sz) - Number(b.order.sz),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {Math.abs(Number(record.order.sz || 0))} {record.order.coin}
             </div>
           );
@@ -94,10 +99,11 @@ export const OrderHistory: React.FC = () => {
       {
         title: 'Filled',
         width: 120,
+        // sorter: (a, b) => Number(a.order.origSz) - Number(b.order.origSz),
         render: (_, record) => {
           // todo
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {Number(record.order.origSz) === 0 ? (
                 '-'
               ) : (
@@ -118,10 +124,17 @@ export const OrderHistory: React.FC = () => {
       {
         title: 'Value',
         width: 180,
+        sorter: (a, b) =>
+          new BigNumber(a.order.triggerPx)
+            .times(new BigNumber(a.order.sz).abs())
+            .toNumber() -
+          new BigNumber(b.order.triggerPx)
+            .times(new BigNumber(b.order.sz).abs())
+            .toNumber(),
         render: (_, record) => {
           return (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
                 $
                 {splitNumberByStep(
                   new BigNumber(record.order.triggerPx)
@@ -137,9 +150,10 @@ export const OrderHistory: React.FC = () => {
       {
         title: 'Price',
         width: 120,
+        // sorter: (a, b) => Number(a.order.limitPx) - Number(b.order.limitPx),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {record.order.orderType.includes('Market')
                 ? 'Market'
                 : `$${splitNumberByStep(record.order.limitPx)}`}
@@ -152,7 +166,7 @@ export const OrderHistory: React.FC = () => {
         width: 100,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {record.order.reduceOnly ? 'Yes' : 'No'}
             </div>
           );
@@ -163,7 +177,7 @@ export const OrderHistory: React.FC = () => {
         width: 180,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {record.order.triggerCondition}
             </div>
           );
@@ -175,7 +189,7 @@ export const OrderHistory: React.FC = () => {
         render: (_, record) => {
           // todo
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {record.status}
             </div>
           );
@@ -190,6 +204,7 @@ export const OrderHistory: React.FC = () => {
       columns={columns}
       pagination={false}
       bordered={false}
+      showSorterTooltip={false}
     ></CommonTable>
   );
 };

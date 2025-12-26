@@ -74,13 +74,14 @@ export const PositionsInfo: React.FC = () => {
           return (
             <div
               className={clsx(
-                'mx-[-8px] my-[-8px]',
-                'px-[16px] py-[8px]',
+                'absolute top-0 left-0 right-0 bottom-0',
+                'flex flex-col justify-center',
+                'pl-[16px] py-[8px]',
                 Number(record.position.szi) > 0 ? 'is-long-bg' : 'is-short-bg'
               )}
             >
               <div>
-                <div className="text-[13px] leading-[16px] font-semibold text-rb-neutral-title1 mb-[2px]">
+                <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 mb-[2px]">
                   {record.position?.coin}
                 </div>
                 <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
@@ -98,7 +99,7 @@ export const PositionsInfo: React.FC = () => {
         render: (_, record) => {
           return (
             <div>
-              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1 mb-[4px]">
+              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1 mb-[4px]">
                 $
                 {splitNumberByStep(
                   Number(record.position?.positionValue || 0).toFixed(2)
@@ -119,7 +120,7 @@ export const PositionsInfo: React.FC = () => {
           const marketData = marketDataMap[record.position.coin || ''] || {};
           return (
             <div>
-              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1 mb-[4px]">
+              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1 mb-[4px]">
                 $
                 {splitNumberByStep(
                   Number(marketData.markPx).toFixed(marketData.pxDecimals || 0)
@@ -184,7 +185,7 @@ export const PositionsInfo: React.FC = () => {
           const isLong = Number(record.position.szi) > 0;
           return (
             <div className="flex items-center gap-[4px]">
-              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
                 $
                 {splitNumberByStep(
                   Number(record.position.liquidationPx || 0).toFixed(2)
@@ -217,7 +218,7 @@ export const PositionsInfo: React.FC = () => {
           return (
             <div className="flex items-center gap-[12px]">
               <div>
-                <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1 mb-[4px]">
+                <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1 mb-[4px]">
                   {formatUsdValue(Number(record.position.marginUsed || 0))}
                 </div>
                 <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
@@ -325,7 +326,7 @@ export const PositionsInfo: React.FC = () => {
           return (
             <div className="flex items-center gap-[12px]">
               <div className="flex flex-col gap-[4px]">
-                <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+                <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
                   {tpPrice ? (
                     <div>
                       ${splitNumberByStep(tpPrice)}{' '}
@@ -348,7 +349,7 @@ export const PositionsInfo: React.FC = () => {
                     </div>
                   )}
                 </div>
-                <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+                <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
                   {slPrice ? (
                     <div>
                       ${splitNumberByStep(slPrice)}{' '}

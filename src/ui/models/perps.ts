@@ -637,16 +637,10 @@ export const perps = createModel<RootModel>()({
       }
     },
 
-    async fetchUserFunding(_, rootState) {
+    async fetchUserFunding() {
       try {
         const sdk = getPerpsSDK();
-        console.log('??', rootState.perps.currentPerpsAccount?.address || '');
-        const res = await sdk.info.getUserFunding(
-          rootState.perps.currentPerpsAccount?.address || ''
-          // undefined // use sdk inner address
-          // Date.now() - 1000 * 60 * 60 * 24 * 7, // 7 days ago
-          // 0
-        );
+        const res = await sdk.info.getUserFunding();
 
         dispatch.perps.patchState({ userFunding: res });
       } catch (error) {
@@ -658,6 +652,8 @@ export const perps = createModel<RootModel>()({
       await dispatch.perps.fetchPositionAndOpenOrders();
       dispatch.perps.fetchUserNonFundingLedgerUpdates();
       dispatch.perps.fetchUserHistoricalOrders();
+      // todo
+      dispatch.perps.fetchUserFunding();
     },
 
     async fetchMarketData(_, rootState) {

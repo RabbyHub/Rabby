@@ -8,15 +8,15 @@ import { FundingHistory } from './FundingHistory';
 
 const tabs = [
   { key: 'positions', label: 'Positions', content: PositionsInfo },
-  { key: 'orders', label: 'Open Orders', content: OpenOrders },
-  { key: 'history', label: 'Trade History', content: TradeHistory },
+  { key: 'openOrders', label: 'Open Orders', content: OpenOrders },
+  { key: 'tradeHistory', label: 'Trade History', content: TradeHistory },
   { key: 'orderHistory', label: 'Order History', content: OrderHistory },
   { key: 'fundingHistory', label: 'Funding History', content: FundingHistory },
 ] as const;
 
 export const UserInfoHistory: React.FC = () => {
   const [activeTab, setActiveTab] = useState<typeof tabs[number]['key']>(
-    'fundingHistory'
+    'openOrders'
   );
 
   const ActiveComponent = useMemo(

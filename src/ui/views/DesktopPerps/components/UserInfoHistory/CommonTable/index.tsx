@@ -4,6 +4,9 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
+  .ant-table {
+    background-color: transparent;
+  }
   .ant-table-thead > tr > th {
     color: var(--rb-neutral-foot, #6a7587);
     font-size: 12px;
@@ -13,6 +16,23 @@ const Wrapper = styled.div`
 
     /* padding: 12px 16px; */
     padding: 12px 8px;
+
+    &:first-child {
+      padding-left: 16px;
+    }
+
+    &:last-child {
+      padding-right: 16px;
+    }
+
+    &.ant-table-column-has-sorters {
+      padding-top: 0;
+      padding-bottom: 0;
+
+      .ant-table-column-sorters {
+        padding: 12px 0;
+      }
+    }
   }
 
   .ant-table-tbody > tr > td {
@@ -20,6 +40,14 @@ const Wrapper = styled.div`
 
     /* padding: 8px 16px; */
     padding: 8px;
+
+    &:first-child {
+      padding-left: 16px;
+    }
+
+    &:last-child {
+      padding-right: 16px;
+    }
 
     .is-long-bg {
       background: linear-gradient(to right, #58c66920, #58c66900);
@@ -29,6 +57,11 @@ const Wrapper = styled.div`
       background: linear-gradient(to right, #ff453a20, #ff453a00);
       border-left: 2px solid var(--rb-red-default, #ff453a);
     }
+  }
+
+  .ant-table-tbody > tr.ant-table-row:hover > td {
+    // todo
+    background-color: transparent;
   }
 `;
 

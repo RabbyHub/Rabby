@@ -32,7 +32,7 @@ export const AccountInfo: React.FC = () => {
             type="button"
             className={clsx(
               'w-full bg-rb-neutral-bg-4 rounded-[8px] py-[9px]',
-              'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+              'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
             )}
           >
             Deposit
@@ -41,7 +41,7 @@ export const AccountInfo: React.FC = () => {
             type="button"
             className={clsx(
               'w-full bg-rb-neutral-bg-4 rounded-[8px] py-[9px]',
-              'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+              'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
             )}
           >
             Withdraw
@@ -49,8 +49,8 @@ export const AccountInfo: React.FC = () => {
         </div>
         <div className="space-y-[8px] text-[12px] leading-[14px] font-medium">
           <div className="flex items-center justify-between">
-            <div className="text-rb-neutral-title1">Total Balance</div>
-            <div className="text-rb-neutral-title1">
+            <div className="text-r-neutral-title-1">Total Balance</div>
+            <div className="text-r-neutral-title-1">
               {formatUsdValue(
                 Number(accountSummary?.accountValue || 0),
                 BigNumber.ROUND_DOWN
@@ -58,8 +58,8 @@ export const AccountInfo: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-rb-neutral-title1">Available Balance</div>
-            <div className="text-rb-neutral-title1">
+            <div className="text-r-neutral-title-1">Available Balance</div>
+            <div className="text-r-neutral-title-1">
               {formatUsdValue(
                 Number(accountSummary?.withdrawable || 0),
                 BigNumber.ROUND_DOWN
@@ -81,15 +81,15 @@ export const AccountInfo: React.FC = () => {
           </div>
           <div className="flex items-center justify-between">
             <div className="text-rb-neutral-foot">Liquidation risk</div>
-            <div className="text-rb-neutral-title1">//todo</div>
+            <div className="text-r-neutral-title-1">//todo</div>
           </div>
           <div className="flex items-center justify-between">
             <div className="text-rb-neutral-foot">Maintenance margin</div>
-            <div className="text-rb-neutral-title1">//todo</div>
+            <div className="text-r-neutral-title-1">//todo</div>
           </div>
           <div className="flex items-center justify-between">
             <div className="text-rb-neutral-foot">Cross account leverage</div>
-            <div className="text-rb-neutral-title1">
+            <div className="text-r-neutral-title-1">
               {(
                 Number(accountSummary?.totalNtlPos || 0) /
                 Number(accountSummary?.accountValue || 1)

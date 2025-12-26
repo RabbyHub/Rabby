@@ -1,79 +1,72 @@
-import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
-import { useRabbySelector } from '@/ui/store';
-import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { Button, Table, Tooltip } from 'antd';
+import { MarketData } from '@/ui/models/perps';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { splitNumberByStep } from '@/ui/utils';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { CancelOrderParams, OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
+import { useMemoizedFn } from 'ahooks';
+import { message } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import clsx from 'clsx';
-import React, { useMemo, useState } from 'react';
-import styled from 'styled-components';
-import { CommonTable } from '../CommonTable';
 import BigNumber from 'bignumber.js';
-import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';
-import {
-  calculateDistanceToLiquidation,
-  formatPerpsPct,
-} from '@/ui/views/Perps/utils';
-import { RcIconEditCC } from '@/ui/assets/desktop/common';
-import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
+import clsx from 'clsx';
 import dayjs from 'dayjs';
+import React, { useMemo, useState } from 'react';
+import { CommonTable } from '../CommonTable';
 
 export const OpenOrders: React.FC = () => {
-  const {
-    positionAndOpenOrders,
-    marketDataMap,
-    accountSummary,
-  } = useRabbySelector((store) => store.perps);
+  const { positionAndOpenOrders, marketDataMap } = useRabbySelector(
+    (store) => store.perps
+  );
 
   const orders = useMemo(() => {
     return positionAndOpenOrders.flatMap((item) => item.openOrders || []);
   }, [positionAndOpenOrders]);
 
-  console.log('orders', orders);
+  const dispatch = useRabbyDispatch();
 
-  const [editMarginVisible, setEditMarginVisible] = useState(false);
-  const [editTpSlVisible, setEditTpSlVisible] = useState(false);
-  const [currentAssetCtx, setCurrentAssetCtx] = useState<MarketData | null>(
-    null
+  const handleCancelOrder = useMemoizedFn(
+    async (params: CancelOrderParams[]) => {
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.exchange?.cancelOrder(params);
+        if (
+          res?.response.data.statuses.every(
+            (item) => ((item as unknown) as string) === 'success'
+          )
+        ) {
+          message.success({
+            duration: 1.5,
+            content: 'canceled successfully',
+          });
+          setTimeout(() => {
+            dispatch.perps.fetchPositionOpenOrders();
+          }, 1000);
+        } else {
+          message.error({
+            duration: 1.5,
+            content: 'cancel error',
+          });
+        }
+      } catch (error) {
+        message.error({
+          content: 'cancel error',
+        });
+      }
+    }
   );
-  const [
-    currentPosition,
-    setCurrentPosition,
-  ] = useState<PositionAndOpenOrder | null>(null);
 
-  // Position data if exists
-  const positionData = useMemo(
-    () =>
-      currentPosition
-        ? {
-            pnl: Number(currentPosition.position.unrealizedPnl || 0),
-            positionValue: Number(currentPosition.position.positionValue || 0),
-            size: Math.abs(Number(currentPosition.position.szi || 0)),
-            marginUsed: Number(currentPosition.position.marginUsed || 0),
-            side:
-              Number(currentPosition.position.szi || 0) > 0 ? 'Long' : 'Short',
-            type: currentPosition.position.leverage.type,
-            leverage: Number(currentPosition.position.leverage.value || 1),
-            entryPrice: Number(currentPosition.position.entryPx || 0),
-            liquidationPrice: Number(
-              currentPosition.position.liquidationPx || 0
-            ).toFixed(currentAssetCtx?.pxDecimals || 2),
-            autoClose: false, // This would come from SDK
-            direction:
-              Number(currentPosition.position.szi || 0) > 0 ? 'Long' : 'Short',
-            pnlPercent:
-              Number(currentPosition.position.returnOnEquity || 0) * 100,
-            fundingPayments: currentPosition.position.cumFunding.sinceOpen,
-          }
-        : null,
-    [currentPosition, currentAssetCtx]
-  );
+  const handleCloseAll = useMemoizedFn(async () => {
+    await handleCancelOrder(
+      orders.map((order) => ({ oid: order.oid, coin: order.coin }))
+    );
+  });
 
   const columns = useMemo<ColumnType<OpenOrder>[]>(
     () => [
       {
         title: 'Order',
-        width: 180,
+        width: 130,
         className: 'relative',
+        sorter: (a, b) => a.side.localeCompare(b.side),
         render: (_, record) => {
           const isTpSL =
             record.orderType.includes('Take Profit') ||
@@ -83,11 +76,11 @@ export const OpenOrders: React.FC = () => {
               className={clsx(
                 'absolute top-0 left-0 right-0 bottom-0',
                 'flex flex-col justify-center',
-                'px-[16px] py-[8px]',
+                'pl-[16px] py-[8px]',
                 record.side === 'B' ? 'is-long-bg' : 'is-short-bg'
               )}
             >
-              <div className="text-[13px] leading-[16px] font-semibold text-rb-neutral-title1 mb-[2px]">
+              <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 mb-[2px]">
                 {record.coin}{' '}
                 {record.side === 'B'
                   ? isTpSL
@@ -104,10 +97,11 @@ export const OpenOrders: React.FC = () => {
       {
         title: 'Time',
         width: 160,
+        sorter: (a, b) => a.timestamp - b.timestamp,
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
-              {dayjs(record.timestamp).format('YYYY/MM/DD-HH:mm:ss')}
+              {dayjs(record.timestamp).format('DD/MM/YYYY-HH:mm:ss')}
             </div>
           );
         },
@@ -115,6 +109,7 @@ export const OpenOrders: React.FC = () => {
       {
         title: 'Type',
         width: 130,
+        sorter: (a, b) => a.orderType.localeCompare(b.orderType),
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
@@ -126,10 +121,11 @@ export const OpenOrders: React.FC = () => {
       {
         title: 'Order Value / Size',
         width: 180,
+        sorter: (a, b) => Number(a.origSz) - Number(b.origSz),
         render: (_, record) => {
           return Number(record.origSz) === 0 ? (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
                 -
               </div>
               <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
@@ -138,7 +134,7 @@ export const OpenOrders: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
                 $
                 {splitNumberByStep(
                   new BigNumber(record.origSz).times(record.limitPx).toFixed(2)
@@ -157,7 +153,7 @@ export const OpenOrders: React.FC = () => {
         render: (_, record) => {
           // todo
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {Number(record.origSz) === 0 ? (
                 '-'
               ) : (
@@ -177,7 +173,7 @@ export const OpenOrders: React.FC = () => {
         width: 120,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {record.orderType.includes('Market')
                 ? 'Market'
                 : `$${splitNumberByStep(record.limitPx)}`}
@@ -188,9 +184,10 @@ export const OpenOrders: React.FC = () => {
       {
         title: 'Reduce Only',
         width: 100,
+        sorter: (a, b) => Number(a.reduceOnly) - Number(b.reduceOnly),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {record.reduceOnly ? 'Yes' : 'No'}
             </div>
           );
@@ -212,14 +209,14 @@ export const OpenOrders: React.FC = () => {
         width: 180,
         render: (_, record) => {
           // todo
-          const tpItem = ((record as any).children as OpenOrder[])?.find(
+          const tpItem = record.children?.find(
             (order) =>
               order.orderType === 'Take Profit Market' &&
               order.isTrigger &&
               order.reduceOnly
           );
 
-          const slItem = ((record as any).children as OpenOrder[])?.find(
+          const slItem = record.children?.find(
             (order) =>
               order.orderType === 'Stop Market' &&
               order.isTrigger &&
@@ -227,13 +224,13 @@ export const OpenOrders: React.FC = () => {
           );
           return (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
                 {tpItem?.triggerPx
                   ? `$${splitNumberByStep(tpItem.triggerPx)}`
                   : '-'}
               </div>
 
-              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
                 {slItem?.triggerPx
                   ? `$${splitNumberByStep(slItem.triggerPx)}`
                   : '-'}
@@ -244,14 +241,30 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: (
-          <div className="text-r-blue-default cursor-pointer underline">
+          <div
+            className="text-r-blue-default cursor-pointer underline"
+            onClick={handleCloseAll}
+          >
             Cancel All
           </div>
         ),
         align: 'center',
         width: 120,
         render: (_, record) => {
-          return <Button>Cancel</Button>;
+          return (
+            <button
+              type="button"
+              className={clsx(
+                'bg-rb-neutral-bg-4 rounded-[8px] py-[9px] px-[12px] min-w-[88px]',
+                'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
+              )}
+              onClick={() => {
+                handleCancelOrder([{ oid: record.oid, coin: record.coin }]);
+              }}
+            >
+              Cancel
+            </button>
+          );
         },
       },
     ],
@@ -267,6 +280,7 @@ export const OpenOrders: React.FC = () => {
         expandable={{
           childrenColumnName: '__not_exist__',
         }}
+        showSorterTooltip={false}
       ></CommonTable>
     </>
   );
