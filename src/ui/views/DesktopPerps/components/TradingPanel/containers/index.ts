@@ -1,6 +1,6 @@
 export { MarketTradingContainer } from './MarketTradingContainer';
 export { LimitTradingContainer } from './LimitTradingContainer';
-export { StopMarketTradingContainer } from './StopMarketTradingContainer';
-export { StopLimitTradingContainer } from './StopLimitTradingContainer';
+export { TakeOrStopMarketTradingContainer } from './TakeOrStopMarketTradingContainer';
+export { TakeOrStopLimitTradingContainer } from './TakeOrStopLimitTradingContainer';
 export { ScaleTradingContainer } from './ScaleTradingContainer';
 export { TWAPTradingContainer } from './TWAPTradingContainer';

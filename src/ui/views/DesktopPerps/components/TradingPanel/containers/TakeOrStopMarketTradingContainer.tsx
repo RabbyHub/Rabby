@@ -22,12 +22,15 @@ import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 
-export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
+interface TakeOrStopMarketTradingContainerProps {
+  takeOrStop: 'tp' | 'sl';
+}
+
+export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingContainerProps> = ({
+  takeOrStop,
+}) => {
   const { t } = useTranslation();
 
-  const currentBestAskPrice = useRabbySelector(
-    (state) => state.perps.currentBestAskPrice
-  );
   // Get data from perpsState
   const {
     selectedCoin,
@@ -59,11 +62,9 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     handleTPSLEnabledChange,
     resetForm,
   } = usePerpsTradingState();
-  const [limitPrice, setLimitPrice] = React.useState(
-    formatTpOrSlPrice(midPrice, szDecimals)
-  );
-  const [limitOrderType, setLimitOrderType] = React.useState<LimitOrderType>(
-    'Gtc'
+  const [triggerPrice, setTriggerPrice] = React.useState(
+    // formatTpOrSlPrice(midPrice, szDecimals)
+    ''
   );
 
   // Form validation
@@ -88,19 +89,46 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       return { isValid: false, error };
     }
 
-    // post-only order price must be lower than the best ask price to avoid immediately matching
-    if (
-      limitOrderType === 'Alo' &&
-      Number(limitPrice) >= Number(currentBestAskPrice || midPrice)
-    ) {
-      error = t('page.perpsPro.tradingPanel.aloTooLarge');
-      return { isValid: false, error };
-    }
-
     if (maxTradeSize && tradeSize > Number(maxTradeSize)) {
       error = reduceOnly
         ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
         : t('page.perpsPro.tradingPanel.insufficientBalance');
+      return { isValid: false, error };
+    }
+
+    if (
+      takeOrStop === 'sl' &&
+      orderSide === OrderSide.BUY &&
+      Number(triggerPrice) < Number(midPrice)
+    ) {
+      error = t('page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice');
+      return { isValid: false, error };
+    }
+
+    if (
+      takeOrStop === 'sl' &&
+      orderSide === OrderSide.SELL &&
+      Number(triggerPrice) > Number(midPrice)
+    ) {
+      error = t('page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice');
+      return { isValid: false, error };
+    }
+
+    if (
+      takeOrStop === 'tp' &&
+      orderSide === OrderSide.BUY &&
+      Number(triggerPrice) > Number(midPrice)
+    ) {
+      error = t('page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice');
+      return { isValid: false, error };
+    }
+
+    if (
+      takeOrStop === 'tp' &&
+      orderSide === OrderSide.SELL &&
+      Number(triggerPrice) < Number(midPrice)
+    ) {
+      error = t('page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice');
       return { isValid: false, error };
     }
 
@@ -122,33 +150,32 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     positionSize.notionalValue,
     maxTradeSize,
     reduceOnly,
-    limitOrderType,
-    limitPrice,
     percentage,
+    orderSide,
     tradeSize,
     marginRequired,
     availableBalance,
     currentMarketData,
-    currentBestAskPrice,
+    midPrice,
+    takeOrStop,
+    triggerPrice,
     t,
   ]);
 
-  const { handleOpenLimitOrder } = usePerpsProPosition();
+  const { handleOpenTPSlMarketOrder } = usePerpsProPosition();
 
   const {
     run: handleOpenOrderRequest,
     loading: handleOpenOrderLoading,
   } = useRequest(
     async () => {
-      await handleOpenLimitOrder({
+      await handleOpenTPSlMarketOrder({
         coin: selectedCoin,
         isBuy: orderSide === OrderSide.BUY,
         size: tradeSize,
-        limitPx: limitPrice,
-        tpTriggerPx: tpslConfig.takeProfit.price,
-        slTriggerPx: tpslConfig.stopLoss.price,
+        triggerPx: triggerPrice,
         reduceOnly,
-        orderType: limitOrderType,
+        tpsl: takeOrStop,
       });
     },
     {
@@ -171,31 +198,13 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     };
   }, [estimatedLiquidationPrice, tradeUsdAmount, marginUsage]);
 
-  const limitOrderTypeOptions = [
-    {
-      label: 'GTC',
-      value: 'Gtc',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Gtc'),
-    },
-    {
-      label: 'ALO',
-      value: 'Alo',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Alo'),
-    },
-    {
-      label: 'IOC',
-      value: 'Ioc',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Ioc'),
-    },
-  ];
-
   const handleMidClick = () => {
-    setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
+    setTriggerPrice(formatTpOrSlPrice(midPrice, szDecimals));
   };
 
   useEffect(() => {
     const handleClickPrice = (price: string) => {
-      setLimitPrice(price.toString());
+      setTriggerPrice(price.toString());
     };
     eventBus.addEventListener(
       EVENTS.PERPS.HANDLE_CLICK_PRICE,
@@ -210,10 +219,10 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     };
   }, []);
 
-  const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTriggerPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (validatePriceInput(value, szDecimals)) {
-      setLimitPrice(value);
+      setTriggerPrice(value);
     }
   };
 
@@ -231,13 +240,13 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         <div className="relative flex-1">
           <input
             type="text"
-            value={limitPrice}
-            onChange={handleLimitPriceChange}
+            value={triggerPrice}
+            onChange={handleTriggerPriceChange}
             placeholder=""
             className="w-full h-[40px] pl-[44px] pr-[40px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line text-r-neutral-title-1 text-[13px] focus:outline-none font-medium text-right"
           />
           <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.limitPrice')}
+            {t('page.perpsPro.tradingPanel.triggerPrice')}
           </div>
           <div className="absolute right-[8px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
             USD
@@ -253,7 +262,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
-        price={limitPrice}
+        price={triggerPrice}
         maxTradeSize={maxTradeSize}
         availableBalance={availableBalance}
         leverage={leverage}
@@ -268,18 +277,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-16">
-          <label className="flex items-center gap-[8px] cursor-pointer">
-            <input
-              type="checkbox"
-              checked={tpslConfig.enabled}
-              onChange={(e) => handleTPSLEnabledChange(e.target.checked)}
-              className="w-[16px] h-[16px] rounded-[4px] accent-blue-600 cursor-pointer"
-            />
-            <span className="text-r-neutral-title-1 text-[13px]">
-              {t('page.perpsPro.tradingPanel.tpSl')}
-            </span>
-          </label>
-
           <label
             className={`flex items-center gap-[8px] ${
               !currentPosition
@@ -299,28 +296,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
             </span>
           </label>
         </div>
-        <div className="flex items-center gap-4">
-          <Select
-            options={limitOrderTypeOptions}
-            value={limitOrderType}
-            onChange={(value) => setLimitOrderType(value)}
-            listItemHeight={28}
-          />
-        </div>
       </div>
-
-      {/* TP/SL Settings Expanded */}
-      {tpslConfig.enabled && (
-        <TPSLSettings
-          szDecimals={szDecimals}
-          config={tpslConfig}
-          setConfig={setTpslConfig}
-          orderSide={orderSide}
-          tradeSize={tradeSize}
-          price={limitPrice}
-          marginRequired={marginRequired}
-        />
-      )}
 
       {/* Place Order Button */}
       <Button

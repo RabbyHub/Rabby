@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { splitNumberByStep } from '@/ui/utils';
 import dayjs from 'dayjs';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 interface Trade {
   time: number;
   price: string;
@@ -23,7 +25,7 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
   };
 
   const handleClickPrice = (price: string) => {
-    console.log(price);
+    eventBus.emit(EVENTS.PERPS.HANDLE_CLICK_PRICE, price);
   };
 
   return (

@@ -46,3 +46,11 @@ export const calculatePnL = (
     direction === 'Long' ? targetPrice - markPrice : markPrice - targetPrice;
   return priceDiff * size;
 };
+
+export function removeTrailingZeros(value: string): string {
+  if (!value.includes('.')) return value;
+
+  const normalized = value.replace(/\.?0+$/, '');
+  if (normalized === '-0') return '0';
+  return normalized;
+}

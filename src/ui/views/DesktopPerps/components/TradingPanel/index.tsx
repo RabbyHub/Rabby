@@ -5,10 +5,10 @@ import { TopModeStatus, MarginModeModal, LeverageModal } from './components';
 import {
   MarketTradingContainer,
   LimitTradingContainer,
-  StopMarketTradingContainer,
-  StopLimitTradingContainer,
   ScaleTradingContainer,
   TWAPTradingContainer,
+  TakeOrStopMarketTradingContainer,
+  TakeOrStopLimitTradingContainer,
 } from './containers';
 
 export const TradingPanel: React.FC = () => {
@@ -26,10 +26,14 @@ export const TradingPanel: React.FC = () => {
         return <MarketTradingContainer />;
       case OrderType.LIMIT:
         return <LimitTradingContainer />;
+      case OrderType.TAKE_MARKET:
+        return <TakeOrStopMarketTradingContainer takeOrStop="tp" />;
       case OrderType.STOP_MARKET:
-        return <StopMarketTradingContainer />;
+        return <TakeOrStopMarketTradingContainer takeOrStop="sl" />;
       case OrderType.STOP_LIMIT:
-        return <StopLimitTradingContainer />;
+        return <TakeOrStopLimitTradingContainer takeOrStop="sl" />;
+      case OrderType.TAKE_LIMIT:
+        return <TakeOrStopLimitTradingContainer takeOrStop="tp" />;
       case OrderType.SCALE:
         return <ScaleTradingContainer />;
       case OrderType.TWAP:
