@@ -13,3 +13,4 @@ export { ReactComponent as RcIconSearchCC } from './search-cc.svg';
 export { ReactComponent as RcIconDappsCC } from './dapps-cc.svg';
 export { ReactComponent as RcIconManageCC } from './address-manage-cc.svg';
 export { ReactComponent as RcIconSettingCC } from './setting-cc.svg';
+export { ReactComponent as RcIconPrediction } from './prediction.svg';

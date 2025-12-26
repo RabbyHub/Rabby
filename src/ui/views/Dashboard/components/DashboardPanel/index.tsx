@@ -34,6 +34,7 @@ import {
   RcIconSearchCC,
   RcIconDappsCC,
   RcIconManageCC,
+  RcIconPrediction,
 } from 'ui/assets/dashboard/panel';
 
 import { useGasAccountInfo } from '@/ui/views/GasAccount/hooks';
@@ -439,6 +440,15 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         history.push('/settings/address');
       },
     } as IPanelItem,
+    prediction: {
+      icon: RcIconPrediction,
+      eventKey: 'Prediction',
+      content: t('page.dashboard.home.panel.prediction'),
+      onClick: async () => {
+        await wallet.openInDesktop('/desktop/dapp-iframe');
+        window.close();
+      },
+    } as IPanelItem,
   };
 
   const pickedPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
@@ -451,13 +461,14 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'transactions',
           'security',
           'perps',
+          'prediction',
           'points',
           'mobile',
           'nft',
           'gasAccount',
           'searchDapp',
           'dapps',
-          'manageAddress',
+          // 'manageAddress',
           'more',
         ]
       : [
@@ -468,13 +479,14 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'transactions',
           'security',
           'perps',
+          'prediction',
           'points',
           'mobile',
           'nft',
           'gasAccount',
           'searchDapp',
           'dapps',
-          'manageAddress',
+          // 'manageAddress',
           'more',
         ];
   }, [isGnosis]);

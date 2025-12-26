@@ -38,10 +38,12 @@ import './styles.less';
 
 interface DesktopSelectAccountListProps {
   isShowApprovalAlert?: boolean;
+  autoCollapse?: boolean;
 }
 
 export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> = ({
   isShowApprovalAlert = false,
+  autoCollapse = false,
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -134,18 +136,31 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   return (
     <div
       className={clsx(
-        'desktop-select-account-list flex flex-col gap-[12px] rounded-[20px]'
+        'desktop-select-account-list flex flex-col gap-[12px] rounded-[20px]',
+        autoCollapse && 'auto-narrow'
       )}
       style={{ height, position: isAbsolute ? 'absolute' : undefined }}
       ref={ref}
-      // onMouseEnter={() => {
-      //   if (!isAbsolute) {
-      //     document.querySelector('.main-content')?.classList?.add('is-open');
-      //   }
-      // }}
-      // onMouseLeave={() => {
-      //   document.querySelector('.main-content')?.classList?.remove('is-open');
-      // }}
+      onMouseEnter={
+        autoCollapse
+          ? () => {
+              if (!isAbsolute) {
+                document
+                  .querySelector('.main-content')
+                  ?.classList?.add('is-open');
+              }
+            }
+          : undefined
+      }
+      onMouseLeave={
+        autoCollapse
+          ? () => {
+              document
+                .querySelector('.main-content')
+                ?.classList?.remove('is-open');
+            }
+          : undefined
+      }
     >
       <Virtuoso
         ref={virtuosoRef}
