@@ -1,5 +1,6 @@
 import React from 'react';
 import { OrderSummaryData } from '../../../types';
+import { useTranslation } from 'react-i18next';
 
 interface OrderSummaryProps {
   data: OrderSummaryData;
@@ -14,6 +15,8 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   tpExpectedPnL,
   slExpectedPnL,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-[6px] font-medium">
       {/* TP/SL Expected PnL */}
@@ -22,7 +25,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           {tpExpectedPnL && (
             <div className="flex items-center justify-between">
               <span className="text-r-neutral-foot text-[13px]">
-                Take profit expected PnL
+                {t('page.perpsPro.tradingPanel.takeProfitExpectedPnL')}
               </span>
               <span className="text-r-green-default text-[13px]">
                 {tpExpectedPnL}
@@ -32,7 +35,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           {slExpectedPnL && (
             <div className="flex items-center justify-between">
               <span className="text-r-neutral-foot text-[13px]">
-                Stop loss expected PnL
+                {t('page.perpsPro.tradingPanel.stopLossExpectedPnL')}
               </span>
               <span className="text-r-red-default text-[13px]">
                 {slExpectedPnL}
@@ -44,7 +47,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       {/* Est. Liq. Price */}
       <div className="flex items-center justify-between">
-        <span className="text-r-neutral-foot text-[13px]">Est. Liq. Price</span>
+        <span className="text-r-neutral-foot text-[13px]">
+          {t('page.perpsPro.tradingPanel.liquidationPrice')}
+        </span>
         <span className="text-r-neutral-title-1 text-[13px]">
           {data.liquidationPrice}
         </span>
@@ -52,7 +57,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       {/* Order Value */}
       <div className="flex items-center justify-between">
-        <span className="text-r-neutral-foot text-[13px]">Order Value</span>
+        <span className="text-r-neutral-foot text-[13px]">
+          {t('page.perpsPro.tradingPanel.orderValue')}
+        </span>
         <span className="text-r-neutral-title-1 text-[13px]">
           {data.orderValue}
         </span>
@@ -60,7 +67,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       {/* Margin Required */}
       <div className="flex items-center justify-between">
-        <span className="text-r-neutral-foot text-[13px]">Margin Required</span>
+        <span className="text-r-neutral-foot text-[13px]">
+          {t('page.perpsPro.tradingPanel.marginRequired')}
+        </span>
         <span className="text-r-neutral-title-1 text-[13px]">
           {data.marginRequired}
         </span>
@@ -68,7 +77,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       {/* Margin Usage */}
       <div className="flex items-center justify-between">
-        <span className="text-r-neutral-foot text-[13px]">Margin Usage</span>
+        <span className="text-r-neutral-foot text-[13px]">
+          {t('page.perpsPro.tradingPanel.marginUsage')}
+        </span>
         <span className="text-r-neutral-title-1 text-[13px]">
           {data.marginUsage}
         </span>
@@ -77,7 +88,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       {/* Slippage */}
       {data.slippage && (
         <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[13px]">Slippage</span>
+          <span className="text-r-neutral-foot text-[13px]">
+            {t('page.perpsPro.tradingPanel.slippage')}
+          </span>
           <span className="text-r-neutral-title-1 text-[13px]">
             {data.slippage}
           </span>

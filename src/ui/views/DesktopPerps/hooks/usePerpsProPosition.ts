@@ -1,6 +1,9 @@
 import { sleep, useWallet } from '@/ui/utils';
 import { getPerpsSDK } from '../../Perps/sdkManager';
-import { PERPS_BUILDER_INFO } from '../../Perps/constants';
+import {
+  PERPS_BUILDER_INFO,
+  PERPS_BUILDER_INFO_PRO,
+} from '../../Perps/constants';
 import { OrderResponse } from '@rabby-wallet/hyperliquid-sdk';
 import { message } from 'antd';
 import * as Sentry from '@sentry/browser';
@@ -60,39 +63,29 @@ export const usePerpsProPosition = () => {
     }) => {
       try {
         const sdk = getPerpsSDK();
-        const { coin, isBuy, size, midPx, tpTriggerPx, slTriggerPx } = params;
-        const promises = [
-          sdk.exchange?.marketOrderOpen({
-            coin,
-            isBuy,
-            size,
-            midPx,
-          }),
-        ];
-
+        const {
+          coin,
+          isBuy,
+          size,
+          midPx,
+          tpTriggerPx,
+          slTriggerPx,
+          reduceOnly,
+        } = params;
         const formattedTpTriggerPx = formatTriggerPx(tpTriggerPx);
         const formattedSlTriggerPx = formatTriggerPx(slTriggerPx);
 
-        if (tpTriggerPx || slTriggerPx) {
-          promises.push(
-            (async () => {
-              await sleep(10); // little delay to ensure nonce is correct
-
-              const result = await sdk.exchange?.bindTpslByOrderId({
-                coin,
-                isBuy,
-                tpTriggerPx: formattedTpTriggerPx,
-                slTriggerPx: formattedSlTriggerPx,
-                builder: PERPS_BUILDER_INFO,
-              });
-              return result as OrderResponse;
-            })()
-          );
-        }
-
-        const results = await Promise.all(promises);
-        const res = results[0];
-        const filled = res?.response?.data?.statuses[0]?.filled;
+        const results = await sdk.exchange?.marketOrderOpen({
+          coin,
+          isBuy,
+          size,
+          midPx,
+          reduceOnly,
+          tpTriggerPx: formattedTpTriggerPx,
+          slTriggerPx: formattedSlTriggerPx,
+          builder: PERPS_BUILDER_INFO_PRO,
+        });
+        const filled = results?.response?.data?.statuses[0]?.filled;
         if (filled) {
           const { totalSz, avgPx } = filled;
           message.success({
@@ -104,13 +97,13 @@ export const usePerpsProPosition = () => {
               price: avgPx,
             }),
           });
-          return res?.response?.data?.statuses[0]?.filled as {
+          return results?.response?.data?.statuses[0]?.filled as {
             totalSz: string;
             avgPx: string;
             oid: number;
           };
         } else {
-          const msg = res?.response?.data?.statuses[0]?.error;
+          const msg = results?.response?.data?.statuses[0]?.error;
           message.error({
             // className: 'toast-message-2025-center',
             duration: 1.5,
@@ -122,7 +115,7 @@ export const usePerpsProPosition = () => {
                 'params: ' +
                 JSON.stringify(params) +
                 'res: ' +
-                JSON.stringify(res)
+                JSON.stringify(results)
             )
           );
         }
@@ -185,7 +178,7 @@ export const usePerpsProPosition = () => {
                 tif: orderType,
               },
             },
-            builder: PERPS_BUILDER_INFO,
+            builder: PERPS_BUILDER_INFO_PRO,
           }),
         ];
 
@@ -202,7 +195,7 @@ export const usePerpsProPosition = () => {
                 isBuy,
                 tpTriggerPx: formattedTpTriggerPx,
                 slTriggerPx: formattedSlTriggerPx,
-                builder: PERPS_BUILDER_INFO,
+                builder: PERPS_BUILDER_INFO_PRO,
               });
               return result as OrderResponse;
             })()
@@ -283,7 +276,7 @@ export const usePerpsProPosition = () => {
           triggerPx,
           reduceOnly,
           tpsl: params.tpsl,
-          builder: PERPS_BUILDER_INFO,
+          builder: PERPS_BUILDER_INFO_PRO,
         });
         const resting = res?.response?.data?.statuses[0]?.resting;
         if (resting?.oid) {
@@ -360,7 +353,7 @@ export const usePerpsProPosition = () => {
           reduceOnly,
           triggerPx,
           tpsl: params.tpsl,
-          builder: PERPS_BUILDER_INFO,
+          builder: PERPS_BUILDER_INFO_PRO,
         });
         const resting = res?.response?.data?.statuses[0]?.resting;
         if (resting?.oid) {
@@ -416,10 +409,90 @@ export const usePerpsProPosition = () => {
     }
   );
 
+  const handleOpenTWAPOrder = useMemoizedFn(
+    async (params: {
+      coin: string;
+      isBuy: boolean;
+      size: string;
+      reduceOnly: boolean;
+      durationMins: number;
+      randomizeDelay: boolean;
+    }) => {
+      try {
+        const sdk = getPerpsSDK();
+        const {
+          coin,
+          isBuy,
+          size,
+          reduceOnly,
+          durationMins,
+          randomizeDelay,
+        } = params;
+        const res = await sdk.exchange?.placeTwapOrder({
+          coin,
+          isBuy,
+          sz: removeTrailingZeros(size),
+          reduceOnly,
+          durationMins,
+          randomizeDelay,
+          // builder: PERPS_BUILDER_INFO_PRO,
+          // add builder params is error by hyperliquid backend
+        });
+        const twapId = res?.response?.data?.statuses?.running?.twapId;
+        if (twapId) {
+          message.success({
+            duration: 1.5,
+            content: t('page.perps.toast.openTWAPOrderSuccess', {
+              direction: isBuy ? 'Long' : 'Short',
+              coin,
+              size: size,
+            }),
+          });
+          return twapId;
+        } else {
+          const msg = res?.response?.data?.error || 'open twap order error';
+          message.error({
+            duration: 1.5,
+            content: String(msg) || 'open twap order error',
+          });
+          Sentry.captureException(
+            new Error(
+              'PERPS open twap order error' +
+                'params: ' +
+                JSON.stringify(params) +
+                'res: ' +
+                JSON.stringify(res)
+            )
+          );
+        }
+      } catch (error) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) {
+          return;
+        }
+        console.error(error);
+        message.error({
+          duration: 1.5,
+          content: error?.message || 'open twap order error',
+        });
+        Sentry.captureException(
+          new Error(
+            'PERPS open twap order error' +
+              'params: ' +
+              JSON.stringify(params) +
+              'error: ' +
+              JSON.stringify(error)
+          )
+        );
+      }
+    }
+  );
+
   return {
     handleOpenMarketOrder,
     handleOpenLimitOrder,
     handleOpenTPSlMarketOrder,
     handleOpenTPSlLimitOrder,
+    handleOpenTWAPOrder,
   };
 };

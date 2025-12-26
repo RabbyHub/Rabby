@@ -25,9 +25,6 @@ import { EVENTS } from '@/constant';
 export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
 
-  const currentBestAskPrice = useRabbySelector(
-    (state) => state.perps.currentBestAskPrice
-  );
   // Get data from perpsState
   const {
     selectedCoin,
@@ -38,6 +35,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     currentPosition,
     markPrice,
     midPrice,
+    currentBestAskPrice,
     szDecimals,
     pxDecimals,
     leverage,
@@ -130,6 +128,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     availableBalance,
     currentMarketData,
     currentBestAskPrice,
+    midPrice,
     t,
   ]);
 

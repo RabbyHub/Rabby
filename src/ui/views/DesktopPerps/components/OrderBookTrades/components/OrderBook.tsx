@@ -156,7 +156,6 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
             });
           }
 
-          dispatch.perps.setCurrentBestAskPrice(data.levels[1]?.[0]?.px || '');
           setBids(processedBids);
           setAsks(processedAsks);
         }
@@ -166,7 +165,7 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
     return () => {
       unsubscribe();
     };
-  }, [selectedCoin, aggregationIndex, aggregationLevels]);
+  }, [selectedCoin, aggregationIndex]);
 
   const formatValue = useCallback(
     (value: number) => {
