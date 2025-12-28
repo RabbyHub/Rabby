@@ -1,7 +1,7 @@
 import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
-import { useRabbySelector } from '@/ui/store';
-import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { Table, Tooltip } from 'antd';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { formatUsdValue, sleep, splitNumberByStep } from '@/ui/utils';
+import { Button, Dropdown, Menu, message, Modal, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
 import React, { useMemo, useState } from 'react';
@@ -13,9 +13,18 @@ import {
   calculateDistanceToLiquidation,
   formatPerpsPct,
 } from '@/ui/views/Perps/utils';
-import { RcIconEditCC } from '@/ui/assets/desktop/common';
+import { RcIconArrowDownCC, RcIconEditCC } from '@/ui/assets/desktop/common';
 import { EditMarginModal } from '../../../modal/EditMarginModal';
 import { EditTpSlModal } from '../../../modal/EditTpSLModal';
+import { useMemoizedFn } from 'ahooks';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { useTranslation } from 'react-i18next';
+import { usePerpsPosition } from '@/ui/views/Perps/hooks/usePerpsPosition';
+import { noop, set } from 'lodash';
+import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBorderedButton';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import * as Sentry from '@sentry/browser';
+import { ClosePositionModal } from '../../../modal/ClosePositionModal';
 
 export const PositionsInfo: React.FC = () => {
   const {
@@ -25,9 +34,15 @@ export const PositionsInfo: React.FC = () => {
   } = useRabbySelector((store) => store.perps);
 
   console.log('positionAndOpenOrders', positionAndOpenOrders);
+  const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
 
   const [editMarginVisible, setEditMarginVisible] = useState(false);
   const [editTpSlVisible, setEditTpSlVisible] = useState(false);
+  const [closePositionVisible, setClosePositionVisible] = useState(false);
+  const [closePositionType, setClosePositionType] = useState<
+    'limit' | 'market' | 'reverse'
+  >('market');
   const [currentAssetCtx, setCurrentAssetCtx] = useState<MarketData | null>(
     null
   );
@@ -35,6 +50,92 @@ export const PositionsInfo: React.FC = () => {
     currentPosition,
     setCurrentPosition,
   ] = useState<PositionAndOpenOrder | null>(null);
+
+  const { handleUpdateMargin, handleClosePosition } = usePerpsPosition({
+    setCurrentTpOrSl: noop,
+  });
+
+  const { isDarkTheme } = useThemeMode();
+
+  const handleCloseAllPosition = useMemoizedFn(async () => {
+    try {
+      const sdk = getPerpsSDK();
+      for (const item of positionAndOpenOrders) {
+        await handleClosePosition({
+          coin: item.position.coin,
+          size: Math.abs(Number(item.position.szi || 0)).toString() || '0',
+          direction: Number(item.position.szi || 0) > 0 ? 'Long' : 'Short',
+          price: marketDataMap[item.position.coin.toUpperCase()]?.markPx || '0',
+        });
+        await sleep(10);
+      }
+      dispatch.perps.fetchClearinghouseState();
+    } catch (error) {
+      console.error('close all position error', error);
+      message.error({
+        // className: 'toast-message-2025-center',
+        duration: 1.5,
+        content: error?.message || 'close all position error',
+      });
+      Sentry.captureException(
+        new Error(
+          'PERPS close all position error' + 'error: ' + JSON.stringify(error)
+        )
+      );
+    }
+  });
+
+  const handleClickCloseAll = useMemoizedFn(async () => {
+    const modal = Modal.info({
+      width: 360,
+      closable: false,
+      maskClosable: true,
+      centered: true,
+      title: null,
+      bodyStyle: {
+        padding: 0,
+      },
+      className: clsx(
+        'perps-bridge-swap-modal perps-close-all-position-modal',
+        isDarkTheme
+          ? 'perps-bridge-swap-modal-dark'
+          : 'perps-bridge-swap-modal-light'
+      ),
+      content: (
+        <>
+          <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
+            <div className="text-[17px] font-bold text-r-neutral-title-1 text-center">
+              {t('page.perps.closeAllPopup.title')}
+            </div>
+            <div className="text-15 font-medium text-r-neutral-title-1 text-center">
+              {t('page.perps.closeAllPopup.description')}
+            </div>
+            <div className="flex items-center justify-center w-full gap-12 mt-20">
+              <PerpsBlueBorderedButton
+                block
+                onClick={() => {
+                  modal.destroy();
+                }}
+              >
+                {t('page.manageAddress.cancel')}
+              </PerpsBlueBorderedButton>
+              <Button
+                size="large"
+                block
+                type="primary"
+                onClick={async () => {
+                  handleCloseAllPosition();
+                  modal.destroy();
+                }}
+              >
+                {t('page.manageAddress.confirm')}
+              </Button>
+            </div>
+          </div>
+        </>
+      ),
+    });
+  });
 
   // Position data if exists
   const positionData = useMemo(
@@ -387,16 +488,55 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: (
-          <div className="text-r-blue-default cursor-pointer underline">
+          <div
+            className="text-r-blue-default cursor-pointer underline"
+            onClick={handleClickCloseAll}
+          >
             Close All
           </div>
         ),
         align: 'center',
         width: 160,
+        render: (_, record) => {
+          return (
+            <Dropdown
+              overlay={
+                <Menu
+                  onClick={(info) => {
+                    setCurrentPosition(record);
+                    setCurrentAssetCtx(marketDataMap[record.position.coin]);
+                    setClosePositionType(
+                      info.key as 'limit' | 'market' | 'reverse'
+                    );
+                    setClosePositionVisible(true);
+                  }}
+                >
+                  <Menu.Item key="reverse">Reverse</Menu.Item>
+                  <Menu.Item key="limit">Close limit</Menu.Item>
+                  <Menu.Item key="market">Close market</Menu.Item>
+                </Menu>
+              }
+            >
+              <button
+                type="button"
+                className={clsx(
+                  'inline-flex items-center justify-between',
+                  'pl-[8px] pr-[4px] py-[8px] w-[88px]',
+                  'border border-rb-neutral-line rounded-[6px]',
+                  'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+                )}
+              >
+                Close
+                <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+              </button>
+            </Dropdown>
+          );
+        },
       },
     ],
     [marketDataMap]
   );
+
   return (
     <>
       <CommonTable
@@ -421,10 +561,13 @@ export const PositionsInfo: React.FC = () => {
             marginUsed={positionData.marginUsed}
             pnlPercent={positionData.pnlPercent}
             pnl={positionData.pnl}
-            // handlePressRiskTag={() => setRiskPopupVisible(true)}
             onCancel={() => setEditMarginVisible(false)}
             onConfirm={async (action: 'add' | 'reduce', margin: number) => {
-              // await handleUpdateMargin(coin, action, margin);
+              await handleUpdateMargin(
+                currentPosition.position.coin,
+                action,
+                margin
+              );
               setEditMarginVisible(false);
             }}
             handlePressRiskTag={function (): void {
@@ -436,9 +579,16 @@ export const PositionsInfo: React.FC = () => {
             marketData={currentAssetCtx}
             visible={editTpSlVisible}
             onCancel={() => setEditTpSlVisible(false)}
-            onConfirm={async (action: 'add' | 'reduce', margin: number) => {
-              // await handleUpdateMargin(coin, action, margin);
-              setEditTpSlVisible(false);
+            onConfirm={() => setEditTpSlVisible(false)}
+          />
+          <ClosePositionModal
+            type={closePositionType}
+            position={currentPosition.position}
+            marketData={currentAssetCtx}
+            visible={closePositionVisible}
+            onCancel={() => setClosePositionVisible(false)}
+            onConfirm={() => {
+              setClosePositionVisible(false);
             }}
           />
         </>

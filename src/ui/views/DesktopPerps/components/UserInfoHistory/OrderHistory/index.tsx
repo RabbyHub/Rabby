@@ -67,16 +67,14 @@ export const OrderHistory: React.FC = () => {
         width: 180,
         sorter: (a, b) => a.order.side.localeCompare(b.order.side),
         render: (_, record) => {
-          const isTpSL =
-            record.order.orderType.includes('Take Profit') ||
-            record.order.orderType.includes('Stop');
+          const isReduceOnly = record.order.reduceOnly;
           return (
             <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
               {record.order.side === 'B'
-                ? isTpSL
+                ? isReduceOnly
                   ? 'Close Short'
                   : 'Long'
-                : isTpSL
+                : isReduceOnly
                 ? 'Close Long'
                 : 'Short'}
             </div>

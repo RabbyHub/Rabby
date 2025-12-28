@@ -1,35 +1,22 @@
-import { Button, Input, Modal } from 'antd';
+import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
+import { formatUsdValue } from '@/ui/utils';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { Button, Modal } from 'antd';
+import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
+import { noop } from 'lodash';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-// import {
-//   calculateDistanceToLiquidation,
-//   calLiquidationPrice,
-//   calTransferMarginRequired,
-//   formatPercent,
-//   formatPerpsPct,
-// } from '../utils';
-// import { DistanceToLiquidationTag } from '../components/DistanceToLiquidationTag';
-// import { TokenImg } from '../components/TokenImg';
-// import Popup from '@/ui/component/Popup';
-// import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
-// import { AssetPriceInfo } from '../components/AssetPriceInfo';
-// import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-// import { MarginInput } from '../components/MarginInput';
-// import { MarketData } from '@/ui/models/perps';
-// import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../constants';
-// import { MarginEditInput } from '../components/MarginEditInput';
-import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import { PerpsPositionCard } from '../components/PerpsPositionCard';
-import { useMemoizedFn } from 'ahooks';
+import { usePerpsPosition } from '../../Perps/hooks/usePerpsPosition';
 import { validatePriceInput } from '../../Perps/utils';
-import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
+import { DesktopPerpsInput } from '../components/DesktopPerpsInput';
+import { PerpsPositionCard } from '../components/PerpsPositionCard';
 
-export interface EditMarginPopupProps {
+export interface Props {
   visible: boolean;
   onCancel: () => void;
-  onConfirm: (action: 'add' | 'reduce', margin: number) => Promise<void>;
+  onConfirm?: () => void;
 
   position: PositionAndOpenOrder['position'];
   marketData: MarketData;
@@ -48,14 +35,16 @@ const calculatePnl = ({
   return { pnl, percent };
 };
 
-export const EditTpSlModal: React.FC<EditMarginPopupProps> = ({
+export const EditTpSlModal: React.FC<Props> = ({
   visible,
   onCancel,
   position,
   marketData,
+  onConfirm,
 }) => {
   const { t } = useTranslation();
 
+  // todo tp sl from props
   const [tpPrice, setTpPrice] = React.useState<string>('');
   const [slPrice, setSlPrice] = React.useState<string>('');
   const [gainPct, setGainPct] = React.useState<string>('');
@@ -118,105 +107,32 @@ export const EditTpSlModal: React.FC<EditMarginPopupProps> = ({
     }).pnl.toFixed(2);
   }, [slPrice, position]);
 
-  // const calculatedPnl = React.useMemo(() => {
-  //   if (!autoClosePrice) {
-  //     return '';
-  //   }
-  //   const costPrice =
-  //     type === 'openPosition' ? markPrice : entryPrice || markPrice;
-  //   const pnlUsdValue =
-  //     direction === 'Long'
-  //       ? (Number(autoClosePrice) - costPrice) * size
-  //       : (costPrice - Number(autoClosePrice)) * size;
-  //   return pnlUsdValue;
-  // }, [autoClosePrice, markPrice, size, type, direction, entryPrice]);
+  // todo validate input
 
-  // const gainOrLoss = useMemo(() => {
-  //   return Number(calculatedPnl) >= 0 ? 'gain' : 'loss';
-  // }, [calculatedPnl]);
+  // todo use perps desktop hook
+  const { handleSetAutoClose } = usePerpsPosition({
+    setCurrentTpOrSl: noop,
+  });
 
-  // const gainPct = useMemo(() => {
-  //   return Number(calculatedPnl) / margin;
-  // }, [calculatedPnl, margin]);
-
-  // 验证价格输入
-  // const priceValidation = React.useMemo(() => {
-  //   const autoCloseValue = Number(autoClosePrice) || 0;
-  //   const resObj = {
-  //     isValid: true,
-  //     error: '',
-  //     errorMessage: '',
-  //   };
-
-  //   if (!autoCloseValue) {
-  //     resObj.isValid = false;
-  //     return resObj;
-  //   }
-
-  //   // 验证止盈价格
-  //   if (actionType === 'tp') {
-  //     if (direction === 'Long' && autoCloseValue <= markPrice) {
-  //       resObj.isValid = false;
-  //       resObj.error = 'invalid_tp_long';
-  //       resObj.errorMessage = t(
-  //         'page.perpsDetail.PerpsAutoCloseModal.takeProfitTipsLong'
-  //       );
-  //     }
-  //     if (direction === 'Short' && autoCloseValue >= markPrice) {
-  //       resObj.isValid = false;
-  //       resObj.error = 'invalid_tp_short';
-  //       resObj.errorMessage = t(
-  //         'page.perpsDetail.PerpsAutoCloseModal.takeProfitTipsShort'
-  //       );
-  //     }
-  //   }
-
-  //   // 验证止损价格
-  //   if (actionType === 'sl') {
-  //     if (direction === 'Long' && autoCloseValue >= markPrice) {
-  //       resObj.isValid = false;
-  //       resObj.error = 'invalid_sl_long';
-  //       resObj.errorMessage = t(
-  //         'page.perpsDetail.PerpsAutoCloseModal.stopLossTipsLong'
-  //       );
-  //     } else if (direction === 'Long' && autoCloseValue < liqPrice) {
-  //       resObj.isValid = false;
-  //       resObj.error = 'invalid_sl_liquidation';
-  //       resObj.errorMessage = t(
-  //         'page.perpsDetail.PerpsAutoCloseModal.stopLossTipsLongLiquidation',
-  //         {
-  //           price: `$${splitNumberByStep(liqPrice.toFixed(pxDecimals))}`,
-  //         }
-  //       );
-  //     }
-  //     if (direction === 'Short' && autoCloseValue <= markPrice) {
-  //       resObj.isValid = false;
-  //       resObj.error = 'invalid_sl_short';
-  //       resObj.errorMessage = t(
-  //         'page.perpsDetail.PerpsAutoCloseModal.stopLossTipsShort'
-  //       );
-  //     } else if (direction === 'Short' && autoCloseValue > liqPrice) {
-  //       resObj.isValid = false;
-  //       resObj.error = 'invalid_sl_liquidation';
-  //       resObj.errorMessage = t(
-  //         'page.perpsDetail.PerpsAutoCloseModal.stopLossTipsShortLiquidation',
-  //         {
-  //           price: `$${splitNumberByStep(liqPrice.toFixed(pxDecimals))}`,
-  //         }
-  //       );
-  //     }
-  //   }
-
-  //   return resObj;
-  // }, [
-  //   autoClosePrice,
-  //   direction,
-  //   markPrice,
-  //   t,
-  //   liqPrice,
-  //   pxDecimals,
-  //   actionType,
-  // ]);
+  const { loading, runAsync: runSubmit } = useRequest(
+    async () => {
+      // todo modify sl tp
+      await handleSetAutoClose({
+        coin: position.coin,
+        tpTriggerPx: new BigNumber(tpPrice).isNaN() ? '' : tpPrice,
+        slTriggerPx: new BigNumber(slPrice).isNaN() ? '' : slPrice,
+        direction: new BigNumber(position.szi).isGreaterThan(0)
+          ? 'Long'
+          : 'Short',
+      });
+    },
+    {
+      manual: true,
+      onSuccess: () => {
+        onConfirm?.();
+      },
+    }
+  );
 
   return (
     <Modal
@@ -250,7 +166,7 @@ export const EditTpSlModal: React.FC<EditMarginPopupProps> = ({
             </div>
             <div className="space-y-[8px]">
               <div className="flex items-center gap-[8px]">
-                <Input
+                <DesktopPerpsInput
                   prefix={
                     <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                       TP
@@ -262,7 +178,7 @@ export const EditTpSlModal: React.FC<EditMarginPopupProps> = ({
                   }}
                   className="text-right"
                 />
-                <Input
+                <DesktopPerpsInput
                   prefix={
                     <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                       Gain
@@ -282,7 +198,7 @@ export const EditTpSlModal: React.FC<EditMarginPopupProps> = ({
                 />
               </div>
               <div className="flex items-center gap-[8px]">
-                <Input
+                <DesktopPerpsInput
                   prefix={
                     <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                       SL
@@ -294,7 +210,7 @@ export const EditTpSlModal: React.FC<EditMarginPopupProps> = ({
                   }}
                   className="text-right"
                 />
-                <Input
+                <DesktopPerpsInput
                   prefix={
                     <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                       Loss
@@ -372,6 +288,10 @@ export const EditTpSlModal: React.FC<EditMarginPopupProps> = ({
               size="large"
               type="primary"
               className="h-[44px] text-15 font-medium"
+              loading={loading}
+              onClick={async () => {
+                await runSubmit();
+              }}
             >
               {t('global.confirm')}
             </Button>
