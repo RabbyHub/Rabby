@@ -770,6 +770,7 @@
         "description": "All your open positions will be closed at market price."
       },
       "toast": {
+        "openScaleOrderSuccess": "Scale order opened {{direction}} {{coin}}-USD: Size {{size}}",
         "takeProfitSuccess": "Take profit set successfully",
         "stopLossSuccess": "Stop loss set successfully",
         "openTWAPOrderSuccess": "TWAP order opened {{direction}} {{coin}}-USD: Size {{size}}",
@@ -1001,6 +1002,12 @@
         "8hrFunding": "8h Funding"
       },
       "tradingPanel": {
+        "startPrice": "Start Price",
+        "endPrice": "End Price",
+        "start": "Start",
+        "end": "End",
+        "totalOrders": "Total Orders",
+        "sizeSkew": "Size skew",
         "takeProfitExpectedPnL": "Take profit expected PnL",
         "stopLossExpectedPnL": "Stop loss expected PnL",
         "liquidationPrice": "Liquidation Price",
@@ -1026,6 +1033,7 @@
         "insufficientBalance": "Insufficient balance",
         "reduceOnlyTooLarge": "Reduce Only Too Large",
         "minimumSuborderSize": "The minimum TWAP suborder size is $10",
+        "startAndEndPriceMustBeDifferent": "Start price and end price must be different",
         "minimumOrderSize": "Minimum order size is $10",
         "maximumOrderSize": "Maximum order size is {{amount}}",
         "invalidTpPrice": "Invalid take profit price",
