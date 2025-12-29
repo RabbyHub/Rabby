@@ -5,14 +5,17 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { TokenImg } from '../../Perps/components/TokenImg';
 import { getPositionDirection } from '../utils';
+import BigNumber from 'bignumber.js';
 
 interface PerpsPositionCardProps {
   position: PositionAndOpenOrder['position'];
   marketData: MarketData;
+  isShowPnl?: boolean;
 }
 export const PerpsPositionCard: React.FC<PerpsPositionCardProps> = ({
   position,
   marketData,
+  isShowPnl = true,
 }) => {
   const { t } = useTranslation();
 
@@ -45,22 +48,33 @@ export const PerpsPositionCard: React.FC<PerpsPositionCardProps> = ({
         </div>
       </div>
       <div className="flex flex-col items-end gap-5">
-        <span className="text-[15px] leading-[20px] font-bold text-r-neutral-title-1">
-          {formatUsdValue(position.marginUsed || 0)}
-        </span>
-        <span
-          className={clsx(
-            'text-[13px] leading-[18px] font-medium',
-            Number(position.unrealizedPnl) >= 0
-              ? 'text-r-green-default'
-              : 'text-r-red-default'
-          )}
-        >
-          {Number(position.unrealizedPnl) >= 0 ? '+' : '-'}$
-          {splitNumberByStep(
-            Math.abs(Number(position.unrealizedPnl || 0)).toFixed(2)
-          )}
-        </span>
+        <div>
+          <span className="text-[15px] leading-[20px] font-bold text-r-neutral-title-1">
+            {formatUsdValue(position.marginUsed || 0)}
+          </span>
+          <span>
+            (
+            {splitNumberByStep(
+              new BigNumber(position.szi || '0').abs().toFixed()
+            )}{' '}
+            {position.coin})
+          </span>
+        </div>
+        {isShowPnl ? (
+          <span
+            className={clsx(
+              'text-[13px] leading-[18px] font-medium',
+              Number(position.unrealizedPnl) >= 0
+                ? 'text-r-green-default'
+                : 'text-r-red-default'
+            )}
+          >
+            {Number(position.unrealizedPnl) >= 0 ? '+' : '-'}$
+            {splitNumberByStep(
+              Math.abs(Number(position.unrealizedPnl || 0)).toFixed(2)
+            )}
+          </span>
+        ) : null}
       </div>
     </div>
   );

@@ -721,7 +721,91 @@ export const usePerpsProPosition = () => {
     }
   );
 
+  // todo
+  const handleCloseWithLimitOrder = handleOpenLimitOrder;
+
+  const handleCloseWithMarketOrder = useMemoizedFn(
+    async (params: {
+      coin: string;
+      size: string;
+      midPx: string;
+      isBuy: boolean;
+      reduceOnly?: boolean;
+    }) => {
+      try {
+        const sdk = getPerpsSDK();
+        const { coin, isBuy, midPx, size, reduceOnly } = params;
+        const res = await sdk.exchange?.marketOrderClose({
+          coin,
+          isBuy,
+          size,
+          midPx: midPx,
+          builder: PERPS_BUILDER_INFO,
+          reduceOnly: reduceOnly,
+        });
+
+        const filled = res?.response?.data?.statuses[0]?.filled;
+        if (filled) {
+          const { totalSz, avgPx } = filled;
+          message.success({
+            // className: 'toast-message-2025-center',
+            duration: 1.5,
+            content: t('page.perps.toast.closePositionSuccess', {
+              direction: isBuy ? 'Long' : 'Short',
+              coin,
+              size: totalSz,
+              price: avgPx,
+            }),
+          });
+          return res?.response?.data?.statuses[0]?.filled as {
+            totalSz: string;
+            avgPx: string;
+            oid: number;
+          };
+        } else {
+          const msg = res?.response?.data?.statuses[0]?.error;
+          message.error({
+            // className: 'toast-message-2025-center',
+            duration: 1.5,
+            content: msg || 'close position error',
+          });
+          Sentry.captureException(
+            new Error(
+              'PERPS close position noFills' +
+                'params: ' +
+                JSON.stringify(params) +
+                'res: ' +
+                JSON.stringify(res)
+            )
+          );
+        }
+      } catch (error) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) {
+          return;
+        }
+        console.error(error);
+        message.error({
+          duration: 1.5,
+          content: error?.message || 'open scale order error',
+        });
+        Sentry.captureException(
+          new Error(
+            'PERPS open scale order error' +
+              'params: ' +
+              JSON.stringify(params) +
+              'error: ' +
+              JSON.stringify(error)
+          )
+        );
+        return null;
+      }
+    }
+  );
+
   return {
+    handleCloseWithLimitOrder,
+    handleCloseWithMarketOrder,
     handleOpenMarketOrder,
     handleOpenLimitOrder,
     handleOpenTPSlMarketOrder,

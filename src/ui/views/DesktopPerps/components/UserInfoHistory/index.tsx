@@ -16,7 +16,7 @@ const tabs = [
 
 export const UserInfoHistory: React.FC = () => {
   const [activeTab, setActiveTab] = useState<typeof tabs[number]['key']>(
-    'openOrders'
+    'positions'
   );
 
   const ActiveComponent = useMemo(
