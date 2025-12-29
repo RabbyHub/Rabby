@@ -640,7 +640,10 @@ export const usePerpsState = ({
       dispatch.perps.setAccountNeedApproveBuilderFee(needApproveBuilderFee);
     }
 
-    await dispatch.perps.loginPerpsAccount(account);
+    await dispatch.perps.loginPerpsAccount({
+      account,
+      isPro: false,
+    });
   });
 
   const login = useMemoizedFn(async (account: Account) => {
@@ -668,7 +671,10 @@ export const usePerpsState = ({
             PERPS_AGENT_NAME
           );
           // 未到过期时间无需签名直接登录即可
-          await dispatch.perps.loginPerpsAccount(account);
+          await dispatch.perps.loginPerpsAccount({
+            account,
+            isPro: false,
+          });
           dispatch.perps.setAccountNeedApproveAgent(false);
           dispatch.perps.setAccountNeedApproveBuilderFee(false);
           // safeCheckBuilderFee();
@@ -816,7 +822,10 @@ export const usePerpsState = ({
           agentAddress,
           PERPS_AGENT_NAME
         );
-        await dispatch.perps.loginPerpsAccount(initAccount);
+        await dispatch.perps.loginPerpsAccount({
+          account: initAccount,
+          isPro: false,
+        });
         dispatch.perps.fetchMarketData(undefined);
 
         // checkIsNeedAutoLoginOut(initAccount.address, agentAddress);

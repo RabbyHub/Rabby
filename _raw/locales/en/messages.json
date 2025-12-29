@@ -1077,6 +1077,7 @@
       },
       "accountActions": {
         "available": "Available:",
+        "positionCount": "{{count}} positions",
         "deposit": "Deposit"
       },
       "orderBook": {

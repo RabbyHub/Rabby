@@ -154,7 +154,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
-  usePerpsDefaultAccount();
+  usePerpsDefaultAccount({
+    isPro: false,
+  });
   const { perpsPositionInfo, isFetching } = usePerpsHomePnl();
   // useCheckBridgePendingItem();
 

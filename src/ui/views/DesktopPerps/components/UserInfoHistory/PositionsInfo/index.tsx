@@ -31,6 +31,7 @@ export const PositionsInfo: React.FC = () => {
     positionAndOpenOrders,
     marketDataMap,
     accountSummary,
+    wsActiveAssetCtx,
   } = useRabbySelector((store) => store.perps);
 
   console.log('positionAndOpenOrders', positionAndOpenOrders);
@@ -169,8 +170,11 @@ export const PositionsInfo: React.FC = () => {
     () => [
       {
         title: 'Coin',
-        width: 160,
+        width: 120,
         className: 'relative',
+        key: 'coin',
+        dataIndex: 'coin',
+        sorter: (a, b) => a.position.coin.localeCompare(b.position.coin),
         render: (_, record) => {
           return (
             <div
@@ -197,6 +201,10 @@ export const PositionsInfo: React.FC = () => {
       {
         title: 'Size',
         width: 160,
+        key: 'positionValue',
+        dataIndex: 'positionValue',
+        sorter: (a, b) =>
+          Number(a.position.positionValue) - Number(b.position.positionValue),
         render: (_, record) => {
           return (
             <div>
@@ -216,6 +224,10 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: 'Mark / Entry',
+        key: 'entryPx',
+        dataIndex: 'entryPx',
+        sorter: (a, b) =>
+          Number(a.position.entryPx) - Number(b.position.entryPx),
         width: 160,
         render: (_, record) => {
           const marketData = marketDataMap[record.position.coin || ''] || {};
@@ -241,6 +253,10 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: 'Unrealized PnL',
+        key: 'unrealizedPnl',
+        dataIndex: 'unrealizedPnl',
+        sorter: (a, b) =>
+          Number(a.position.unrealizedPnl) - Number(b.position.unrealizedPnl),
         width: 160,
         render: (_, record) => {
           const isUp = Number(record.position.unrealizedPnl) >= 0;
@@ -276,6 +292,10 @@ export const PositionsInfo: React.FC = () => {
       {
         title: 'Liq.price',
         width: 160,
+        key: 'liquidationPx',
+        dataIndex: 'liquidationPx',
+        sorter: (a, b) =>
+          Number(a.position.liquidationPx) - Number(b.position.liquidationPx),
         render: (_, record) => {
           const percent = formatPerpsPct(
             calculateDistanceToLiquidation(
@@ -315,6 +335,10 @@ export const PositionsInfo: React.FC = () => {
       {
         title: 'Margin',
         width: 160,
+        key: 'marginUsed',
+        dataIndex: 'marginUsed',
+        sorter: (a, b) =>
+          Number(a.position.marginUsed) - Number(b.position.marginUsed),
         render: (_, record) => {
           return (
             <div className="flex items-center gap-[12px]">
@@ -343,6 +367,11 @@ export const PositionsInfo: React.FC = () => {
       {
         title: 'Funding',
         width: 160,
+        key: 'fundingPayments',
+        dataIndex: 'fundingPayments',
+        sorter: (a, b) =>
+          Number(a.position.cumFunding.sinceOpen) -
+          Number(b.position.cumFunding.sinceOpen),
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
@@ -359,6 +388,8 @@ export const PositionsInfo: React.FC = () => {
       {
         title: 'TP/SL',
         width: 160,
+        key: 'children',
+        dataIndex: 'children',
         render: (_, record) => {
           const currentPosition = record;
           const { tpPrice, slPrice, tpOid, slOid } = (() => {
@@ -495,6 +526,8 @@ export const PositionsInfo: React.FC = () => {
             Close All
           </div>
         ),
+        key: 'oid',
+        dataIndex: 'oid',
         align: 'center',
         width: 160,
         render: (_, record) => {
@@ -544,6 +577,7 @@ export const PositionsInfo: React.FC = () => {
         columns={columns}
         pagination={false}
         bordered={false}
+        showSorterTooltip={false}
       ></CommonTable>
       {currentAssetCtx && positionData && currentPosition && (
         <>
@@ -551,7 +585,7 @@ export const PositionsInfo: React.FC = () => {
             visible={editMarginVisible}
             coin={currentPosition?.position?.coin || ''}
             currentAssetCtx={currentAssetCtx}
-            activeAssetCtx={currentAssetCtx}
+            activeAssetCtx={wsActiveAssetCtx?.ctx || null}
             direction={positionData.direction as 'Long' | 'Short'}
             entryPrice={positionData.entryPrice}
             leverage={positionData.leverage}

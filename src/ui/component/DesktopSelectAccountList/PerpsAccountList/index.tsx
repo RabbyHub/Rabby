@@ -10,20 +10,18 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { AddressViewer } from 'ui/component';
 
 // import './style.less';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 
 import { EVENTS, KEYRING_TYPE } from '@/constant';
 // import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
 import { RcIconCopyCC } from '@/ui/assets/desktop/common';
 import { RcIconAddWalletCC, RcIconMoreCC } from '@/ui/assets/desktop/profile';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useAccounts } from '@/ui/hooks/useAccounts';
-import { useApprovalDangerCount } from '@/ui/hooks/useApprovalDangerCount';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
-import { isSameAddress, splitNumberByStep } from '@/ui/utils';
+import { formatUsdValue, isSameAddress, splitNumberByStep } from '@/ui/utils';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 import { obj2query } from '@/ui/utils/url';
 import { isSameAccount } from '@/utils/account';
@@ -32,26 +30,40 @@ import { flatten } from 'lodash';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
 import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
-import { CopyChecked } from '../CopyChecked';
-import ThemeIcon from '../ThemeMode/ThemeIcon';
+import { CopyChecked } from '../../CopyChecked';
+import ThemeIcon from '../../ThemeMode/ThemeIcon';
 import './styles.less';
 import { Account } from '@/background/service/preference';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 
-interface DesktopSelectAccountListProps {
-  isShowApprovalAlert?: boolean;
+interface DesktopPerpsSelectAccountListProps {
+  currentAccount: Account | null;
+  switchPerpsAccount: (account: Account) => Promise<boolean | undefined>;
 }
 
-export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> = ({
-  isShowApprovalAlert = false,
+// 10 minutes
+const CLEARINGHOUSE_STATE_EXPIRE_TIME = 1000 * 60 * 10;
+
+export const DesktopPerpsSelectAccountList: React.FC<DesktopPerpsSelectAccountListProps> = ({
+  currentAccount: currentAccountProp,
+  switchPerpsAccount,
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
   const dispatch = useRabbyDispatch();
-  const currentAccount = useCurrentAccount();
+  const clearinghouseStateMap = useRabbySelector(
+    (s) => s.perps.clearinghouseStateMap
+  );
+  const clearinghouseState = useRabbySelector(
+    (s) => s.perps.clearinghouseState
+  );
+  const currentAccount = currentAccountProp;
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const shouldScrollRef = useRef(true);
   const [isAbsolute, setIsAbsolute] = useState(true);
+  const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
 
   const {
     sortedAccountsList,
@@ -66,7 +78,9 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
 
   const filteredAccounts = useMemo(() => {
     return flatten(sortedAccountsList).filter(
-      (item) => item.type !== KEYRING_TYPE.WatchAddressKeyring
+      (item) =>
+        item.type !== KEYRING_TYPE.WatchAddressKeyring &&
+        item.type !== KEYRING_TYPE.GnosisKeyring
     );
   }, [sortedAccountsList]);
 
@@ -74,12 +88,59 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
     fetchAllAccounts();
   }, []);
 
+  useEffect(() => {
+    if (filteredAccounts.length > 0) {
+      const currentTs = Date.now();
+      const sdk = getPerpsSDK();
+
+      // Filter accounts that need to be fetched
+      const accountsToFetch = filteredAccounts.slice(0, 10).filter((item) => {
+        const clearinghouseState =
+          clearinghouseStateMap[item.address.toLowerCase()];
+        return (
+          !clearinghouseState ||
+          (clearinghouseState?.time &&
+            currentTs - clearinghouseState.time >
+              CLEARINGHOUSE_STATE_EXPIRE_TIME)
+        );
+      });
+
+      if (accountsToFetch.length === 0) {
+        return;
+      }
+
+      // Execute all requests concurrently
+      const newMap: Record<string, ClearinghouseState | null> = {};
+      const promises = accountsToFetch.map(async (item) => {
+        try {
+          const res = await sdk.info.getClearingHouseState(item.address);
+          newMap[item.address.toLowerCase()] = res;
+        } catch (error) {
+          console.error(
+            `Failed to fetch clearinghouse state for ${item.address}:`,
+            error
+          );
+        }
+      });
+
+      // Wait for all requests to complete, then batch update
+      Promise.all(promises)
+        .then(() => {
+          dispatch.perps.setClearinghouseStateMap(newMap);
+        })
+        .catch((error) => {
+          dispatch.perps.setClearinghouseStateMap(newMap);
+          console.error('Failed to fetch clearinghouse state:', error);
+        });
+    }
+  }, [filteredAccounts]);
+
   const switchAccount = useCallback(
     async (account: typeof accountsList[number]) => {
       shouldScrollRef.current = false;
-      await dispatch.account.changeAccountAsync(account);
+      await switchPerpsAccount(account);
     },
-    [dispatch?.account?.changeAccountAsync]
+    [switchPerpsAccount]
   );
 
   useEventBusListener(EVENTS.PERSIST_KEYRING, fetchAllAccounts);
@@ -87,12 +148,6 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
     await dispatch.preference.getPreference('addressSortStore');
     fetchAllAccounts();
   });
-
-  useEffect(() => {
-    return onBackgroundStoreChanged('contactBook', (payload) => {
-      fetchAllAccounts();
-    });
-  }, [fetchAllAccounts]);
 
   const scrollToCurrent = useMemoizedFn(() => {
     const index = filteredAccounts.findIndex(
@@ -111,7 +166,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   }, [currentAccount?.address]);
 
   const height = useMemo(() => {
-    return Math.min(filteredAccounts.length + 1, 8) * 74 - 12;
+    return Math.min(filteredAccounts.length + 1, 10) * 74 - 12;
   }, [filteredAccounts.length]);
 
   const ref = useRef<HTMLDivElement>(null);
@@ -139,14 +194,14 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
       )}
       style={{ height, position: isAbsolute ? 'absolute' : undefined }}
       ref={ref}
-      // onMouseEnter={() => {
-      //   if (!isAbsolute) {
-      //     document.querySelector('.main-content')?.classList?.add('is-open');
-      //   }
-      // }}
-      // onMouseLeave={() => {
-      //   document.querySelector('.main-content')?.classList?.remove('is-open');
-      // }}
+      onMouseEnter={() => {
+        if (!isAbsolute) {
+          document.querySelector('.main-content')?.classList?.add('is-open');
+        }
+      }}
+      onMouseLeave={() => {
+        document.querySelector('.main-content')?.classList?.remove('is-open');
+      }}
     >
       <Virtuoso
         ref={virtuosoRef}
@@ -159,70 +214,63 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
             ? isSameAccount(item, currentAccount)
             : false;
 
-          const isPined = highlightedAddresses.some(
-            (highlighted) =>
-              isSameAddress(item.address, highlighted.address) &&
-              item.brandName === highlighted.brandName
-          );
           return (
-            <AccountItem
+            <PerpsAccountItem
               key={`${item.address}-${item.type}-${item.brandName}`}
               onClick={() => {
                 switchAccount(item);
               }}
+              clearinghouseState={
+                isSelected
+                  ? clearinghouseState
+                  : clearinghouseStateMap[item.address.toLowerCase()]
+              }
               isSelected={isSelected}
-              isPined={isPined}
               item={item}
-              isShowApprovalCount={isShowApprovalAlert}
             >
               {item.address}
-            </AccountItem>
+            </PerpsAccountItem>
           );
         }}
-        components={{
-          Footer: () => (
-            <div
-              onClick={() => {
-                history.replace(`${location.pathname}?action=add-address`);
-              }}
-              className={clsx(
-                // 'bg-rb-neutral-bg-3',
-                'cursor-pointer rounded-[20px] h-[62px] p-[16px] flex items-center gap-[8px] text-r-blue-default',
-                'desktop-account-item'
-              )}
-              style={{
-                background: 'rgba(76, 101, 255, 0.08)',
-              }}
-            >
-              <RcIconAddWalletCC className="flex-shrink-0" />
-              <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
-                {t('component.DesktopSelectAccountList.addAddresses')}
-              </div>
-            </div>
-          ),
-        }}
+        // components={{
+        //   Footer: () => (
+        //     <div
+        //       onClick={() => {
+        //         history.replace(`${location.pathname}?action=add-address`);
+        //       }}
+        //       className={clsx(
+        //         // 'bg-rb-neutral-bg-3',
+        //         'cursor-pointer rounded-[20px] h-[62px] p-[16px] flex items-center gap-[8px] text-r-blue-default',
+        //         'desktop-account-item'
+        //       )}
+        //       style={{
+        //         background: 'rgba(76, 101, 255, 0.08)',
+        //       }}
+        //     >
+        //       <RcIconAddWalletCC className="flex-shrink-0" />
+        //       <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
+        //         {t('component.DesktopSelectAccountList.addAddresses')}
+        //       </div>
+        //     </div>
+        //   ),
+        // }}
         // increaseViewportBy={100}
       />
     </div>
   );
 };
 
-const AccountItem: React.FC<{
+const PerpsAccountItem: React.FC<{
   item: IDisplayedAccountWithBalance;
   onClick?(): void;
   isSelected?: boolean;
-  isShowApprovalCount?: boolean;
-  isPined?: boolean;
-}> = ({ item, onClick, isSelected, isShowApprovalCount, isPined }) => {
-  const dispatch = useRabbyDispatch();
+  clearinghouseState: ClearinghouseState | null;
+}> = ({ item, onClick, isSelected, clearinghouseState }) => {
   const history = useHistory();
+  const { t } = useTranslation();
   const addressTypeIcon = useBrandIcon({
     ...item,
     // forceLight: isSelected,
-  });
-
-  const approvalCount = useApprovalDangerCount({
-    address: isShowApprovalCount ? item.address : undefined,
   });
 
   return (
@@ -244,7 +292,7 @@ const AccountItem: React.FC<{
           alt=""
         />
         <div className="flex flex-1 flex-col gap-[2px] min-w-0 desktop-account-item-content">
-          <div className="flex items-center gap-[4px]">
+          <div className="flex items-center gap-[4px] justify-between">
             <div
               className={clsx(
                 'truncate',
@@ -255,7 +303,7 @@ const AccountItem: React.FC<{
             >
               {item.alianName}
             </div>
-            <div
+            {/* <div
               className={isPined ? '' : 'opacity-0 group-hover:opacity-100'}
               onClick={(e) => {
                 e.stopPropagation();
@@ -269,9 +317,9 @@ const AccountItem: React.FC<{
                 className="w-[16px] h-[16px]"
                 src={isPined ? RcIconPinnedFill : RcIconPinned}
               />
-            </div>
+            </div> */}
 
-            <div
+            {/* <div
               className="ml-auto opacity-0 group-hover:opacity-100 text-r-neutral-body cursor-pointer"
               onClick={(e) => {
                 e.preventDefault();
@@ -290,57 +338,61 @@ const AccountItem: React.FC<{
               }}
             >
               <RcIconMoreCC />
-            </div>
+            </div> */}
 
-            {/* {approvalCount ? (
-            <div className="ml-auto">
+            {Number(clearinghouseState?.marginSummary.accountValue) > 0 ? (
               <div
                 className={clsx(
-                  'text-r-neutral-title-2 text-[13px] leading-[16px] font-medium text-center',
-                  'px-[1px] min-w-[20px] rounded-[4px]',
-                  'bg-r-red-default',
-                  'border-[1px] border-solid',
+                  'ml-[10px] truncate flex-1 block text-right',
                   isSelected
-                    ? 'border-rabby-neutral-title2'
-                    : 'border-transparent'
+                    ? 'text-[14px] font-bold text-rb-neutral-title-1'
+                    : 'text-[14px] font-medium text-rb-neutral-body'
                 )}
               >
-                {approvalCount}
+                {formatUsdValue(
+                  Number(clearinghouseState?.marginSummary.accountValue)
+                )}
               </div>
-            </div>
-          ) : null} */}
+            ) : null}
           </div>
-          <div className="flex items-center">
-            <AddressViewer
-              address={item.address?.toLowerCase()}
-              showArrow={false}
-              className={clsx(
-                isSelected
-                  ? 'text-[12px] leading-[14px] text-rb-neutral-title-1'
-                  : 'text-[12px] leading-[14px] text-rb-neutral-foot'
-              )}
-            />
-            <CopyChecked
-              copyIcon={RcIconCopyCC}
-              addr={item.address}
-              className={clsx('w-[16px] h-[16px] ml-[2px] text-14')}
-              copyClassName={clsx(
-                isSelected
-                  ? 'text-rb-neutral-foot'
-                  : 'text-rb-neutral-secondary'
-              )}
-              checkedClassName={clsx('text-rb-green-default')}
-            />
-            <div
-              className={clsx(
-                'ml-[10px] truncate flex-1 block',
-                isSelected
-                  ? 'text-[12px] leading-[14px] text-rb-neutral-title-1'
-                  : 'text-[12px] leading-[14px]  text-rb-neutral-foot'
-              )}
-            >
-              ${splitNumberByStep(item.balance?.toFixed(2))}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <AddressViewer
+                address={item.address?.toLowerCase()}
+                showArrow={false}
+                className={clsx(
+                  isSelected
+                    ? 'text-[12px] leading-[14px] text-rb-neutral-title-1'
+                    : 'text-[12px] leading-[14px] text-rb-neutral-foot'
+                )}
+              />
+              <CopyChecked
+                copyIcon={RcIconCopyCC}
+                addr={item.address}
+                className={clsx('w-[16px] h-[16px] ml-[2px] text-14')}
+                copyClassName={clsx(
+                  isSelected
+                    ? 'text-rb-neutral-foot'
+                    : 'text-rb-neutral-secondary'
+                )}
+                checkedClassName={clsx('text-rb-green-default')}
+              />
             </div>
+
+            {clearinghouseState?.assetPositions?.length ? (
+              <div
+                className={clsx(
+                  'ml-[10px] truncate flex-1 block text-right',
+                  isSelected
+                    ? 'text-[12px] text-rb-neutral-foot'
+                    : 'text-[12px] text-rb-neutral-foot'
+                )}
+              >
+                {t('page.perpsPro.accountActions.positionCount', {
+                  count: Number(clearinghouseState?.assetPositions?.length),
+                })}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

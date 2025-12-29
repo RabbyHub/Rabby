@@ -14,32 +14,36 @@ import { sortBy } from 'lodash';
 import { formatPercent } from '@/ui/views/Perps/utils';
 
 export const OrderHistory: React.FC = () => {
-  const { userFills, historicalOrders } = useRabbySelector((store) => {
-    return store.perps;
+  const historicalOrders = useRabbySelector((store) => {
+    return store.perps.historicalOrders;
   });
 
-  const list = useMemo<WsFill[]>(() => {
-    return sortBy(userFills, (item) => -item.time);
-  }, [userFills]);
+  const list = useMemo<UserHistoricalOrders[]>(() => {
+    return sortBy(historicalOrders, (item) => -item.statusTimestamp);
+  }, [historicalOrders]);
 
-  console.log('historicalOrders', historicalOrders);
+  console.log('historicalOrders', list);
 
   const columns = useMemo<ColumnType<UserHistoricalOrders>[]>(
     () => [
       {
         title: 'Time',
+        key: 'statusTimestamp',
+        dataIndex: 'statusTimestamp',
         width: 180,
-        sorter: (a, b) => a.order.timestamp - b.order.timestamp,
+        sorter: (a, b) => a.statusTimestamp - b.statusTimestamp,
         render: (_, record) => {
           return (
             <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1">
-              {dayjs(record.order.timestamp).format('DD/MM/YYYY-HH:mm:ss')}
+              {dayjs(record.statusTimestamp).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
         },
       },
       {
         title: 'Type',
+        key: 'orderType',
+        dataIndex: 'orderType',
         width: 180,
         sorter: (a, b) => a.order.orderType.localeCompare(b.order.orderType),
         render: (_, record) => {
@@ -52,6 +56,8 @@ export const OrderHistory: React.FC = () => {
       },
       {
         title: 'Coin',
+        key: 'coin',
+        dataIndex: 'coin',
         width: 100,
         sorter: (a, b) => a.order.coin.localeCompare(b.order.coin),
         render: (_, record) => {
@@ -64,7 +70,9 @@ export const OrderHistory: React.FC = () => {
       },
       {
         title: 'Side',
-        width: 180,
+        key: 'side',
+        dataIndex: 'side',
+        width: 120,
         sorter: (a, b) => a.order.side.localeCompare(b.order.side),
         render: (_, record) => {
           const isReduceOnly = record.order.reduceOnly;
@@ -83,7 +91,9 @@ export const OrderHistory: React.FC = () => {
       },
       {
         title: 'Size',
-        width: 180,
+        key: 'sz',
+        dataIndex: 'sz',
+        width: 120,
         sorter: (a, b) => Number(a.order.sz) - Number(b.order.sz),
         render: (_, record) => {
           return (
@@ -96,6 +106,8 @@ export const OrderHistory: React.FC = () => {
 
       {
         title: 'Filled',
+        key: 'origSz',
+        dataIndex: 'origSz',
         width: 120,
         // sorter: (a, b) => Number(a.order.origSz) - Number(b.order.origSz),
         render: (_, record) => {
@@ -121,24 +133,27 @@ export const OrderHistory: React.FC = () => {
 
       {
         title: 'Value',
-        width: 180,
-        sorter: (a, b) =>
-          new BigNumber(a.order.triggerPx)
-            .times(new BigNumber(a.order.sz).abs())
-            .toNumber() -
-          new BigNumber(b.order.triggerPx)
-            .times(new BigNumber(b.order.sz).abs())
-            .toNumber(),
+        key: 'limitPx',
+        dataIndex: 'limitPx',
+        width: 120,
+        // sorter: (a, b) =>
+        //   new BigNumber(a.order.limitPx)
+        //     .times(new BigNumber(a.order.sz).abs())
+        //     .toNumber() -
+        //   new BigNumber(b.order.limitPx)
+        //     .times(new BigNumber(b.order.sz).abs())
+        //     .toNumber(),
         render: (_, record) => {
           return (
             <div className="space-y-[4px]">
               <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
-                $
-                {splitNumberByStep(
-                  new BigNumber(record.order.triggerPx)
-                    .times(new BigNumber(record.order.sz).abs())
-                    .toFixed(2)
-                )}{' '}
+                {record.order.orderType.includes('Market')
+                  ? 'Market'
+                  : `$${splitNumberByStep(
+                      new BigNumber(record.order.limitPx)
+                        .times(new BigNumber(record.order.sz).abs())
+                        .toFixed(2)
+                    )} USD`}
               </div>
             </div>
           );
@@ -147,6 +162,8 @@ export const OrderHistory: React.FC = () => {
 
       {
         title: 'Price',
+        key: 'limitPx',
+        dataIndex: 'limitPx',
         width: 120,
         // sorter: (a, b) => Number(a.order.limitPx) - Number(b.order.limitPx),
         render: (_, record) => {
@@ -161,6 +178,8 @@ export const OrderHistory: React.FC = () => {
       },
       {
         title: 'Reduce Only',
+        key: 'reduceOnly',
+        dataIndex: 'reduceOnly',
         width: 100,
         render: (_, record) => {
           return (
@@ -172,6 +191,8 @@ export const OrderHistory: React.FC = () => {
       },
       {
         title: 'Trigger',
+        key: 'triggerCondition',
+        dataIndex: 'triggerCondition',
         width: 180,
         render: (_, record) => {
           return (
@@ -183,7 +204,9 @@ export const OrderHistory: React.FC = () => {
       },
       {
         title: 'Status',
-        width: 180,
+        key: 'status',
+        dataIndex: 'status',
+        width: 100,
         render: (_, record) => {
           // todo
           return (
@@ -198,7 +221,7 @@ export const OrderHistory: React.FC = () => {
   );
   return (
     <CommonTable
-      dataSource={historicalOrders}
+      dataSource={list}
       columns={columns}
       pagination={false}
       bordered={false}

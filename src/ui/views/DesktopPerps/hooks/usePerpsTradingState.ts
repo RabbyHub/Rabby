@@ -24,8 +24,7 @@ export const usePerpsTradingState = () => {
   const [reduceOnly, setReduceOnly] = React.useState(false);
 
   const {
-    accountSummary,
-    positionAndOpenOrders,
+    clearinghouseState,
     wsActiveAssetCtx,
     selectedCoin = 'ETH',
     marketDataMap,
@@ -38,7 +37,7 @@ export const usePerpsTradingState = () => {
 
   // Get current position for selected coin
   const currentPosition: Position | null = React.useMemo(() => {
-    const position = positionAndOpenOrders?.find(
+    const position = clearinghouseState?.assetPositions?.find(
       (item) => item.position.coin === selectedCoin
     );
     if (!position) return null;
@@ -53,7 +52,7 @@ export const usePerpsTradingState = () => {
       liquidationPrice: Number(p.liquidationPx || 0),
       unrealizedPnl: Number(p.unrealizedPnl || 0),
     };
-  }, [positionAndOpenOrders, selectedCoin]);
+  }, [clearinghouseState, selectedCoin]);
 
   const markPrice = React.useMemo(() => {
     if (
@@ -81,8 +80,7 @@ export const usePerpsTradingState = () => {
       wsActiveAssetCtx &&
       wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
     ) {
-      const impactPxs = ((wsActiveAssetCtx?.ctx as unknown) as any)
-        .impactPxs as [string, string];
+      const impactPxs = wsActiveAssetCtx?.ctx.impactPxs;
       return Number(impactPxs[1] || 0);
     }
     return markPrice;
@@ -94,14 +92,14 @@ export const usePerpsTradingState = () => {
   const leverage = wsActiveAssetData?.leverage.value || maxLeverage;
 
   const availableBalance = React.useMemo(() => {
-    const account = Number(accountSummary?.withdrawable || 0);
+    const account = Number(clearinghouseState?.withdrawable || 0);
     return Number(
       orderSide === OrderSide.BUY
         ? wsActiveAssetData?.availableToTrade[0] || account
         : wsActiveAssetData?.availableToTrade[1] || account
     );
   }, [
-    accountSummary,
+    clearinghouseState,
     wsActiveAssetData?.availableToTrade[0],
     wsActiveAssetData?.availableToTrade[1],
     orderSide,

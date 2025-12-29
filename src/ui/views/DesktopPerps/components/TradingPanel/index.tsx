@@ -12,14 +12,12 @@ import {
 } from './containers';
 
 export const TradingPanel: React.FC = () => {
-  // Get market data to determine max leverage
   const [orderType, setOrderType] = React.useState<OrderType>(OrderType.MARKET);
 
   const handleOrderTypeChange = (type: OrderType) => {
     setOrderType(type);
   };
 
-  // Render the appropriate trading container based on order type
   const renderTradingContainer = () => {
     switch (orderType) {
       case OrderType.MARKET:
@@ -45,17 +43,14 @@ export const TradingPanel: React.FC = () => {
 
   return (
     <>
-      <div className="h-full w-full bg-white flex flex-col overflow-hidden">
-        {/* Content */}
+      <div className="h-full w-full bg-white flex flex-col overflow-hidden rounded-[16px]">
         <div className="flex-1 overflow-auto px-[16px] py-[16px] min-h-0">
           <div className="space-y-[16px]">
-            {/* Top Settings: Margin Mode | Leverage | Order Type */}
             <TopModeStatus
               orderType={orderType}
               onOrderTypeChange={handleOrderTypeChange}
             />
 
-            {/* Trading Container based on order type */}
             {renderTradingContainer()}
           </div>
         </div>

@@ -10,8 +10,8 @@ const tabs = [
   { key: 'positions', label: 'Positions', content: PositionsInfo },
   { key: 'openOrders', label: 'Open Orders', content: OpenOrders },
   { key: 'tradeHistory', label: 'Trade History', content: TradeHistory },
-  { key: 'orderHistory', label: 'Order History', content: OrderHistory },
   { key: 'fundingHistory', label: 'Funding History', content: FundingHistory },
+  { key: 'orderHistory', label: 'Order History', content: OrderHistory },
 ] as const;
 
 export const UserInfoHistory: React.FC = () => {

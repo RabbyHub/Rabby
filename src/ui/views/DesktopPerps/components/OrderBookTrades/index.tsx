@@ -55,7 +55,7 @@ export const OrderBookTrades: React.FC = () => {
   }, [trades]);
 
   return (
-    <div className="h-full w-full bg-rb-neutral-bg-1 flex flex-col overflow-hidden">
+    <div className="h-full w-full bg-rb-neutral-bg-1 flex flex-col overflow-hidden border-r border-solid border-rb-neutral-line">
       {/* Tabs */}
       <div className="flex border-b border-solid border-rb-neutral-line flex-shrink-0 h-40">
         <button

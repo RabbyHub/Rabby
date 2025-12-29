@@ -16,17 +16,12 @@ import { useTranslation } from 'react-i18next';
 import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBorderedButton';
 
 export const OpenOrders: React.FC = () => {
-  const { positionAndOpenOrders, marketDataMap } = useRabbySelector(
+  const { openOrders: orders, marketDataMap } = useRabbySelector(
     (store) => store.perps
   );
 
   const { isDarkTheme } = useThemeMode();
   const { t } = useTranslation();
-
-  const orders = useMemo(() => {
-    return positionAndOpenOrders.flatMap((item) => item.openOrders || []);
-  }, [positionAndOpenOrders]);
-
   const dispatch = useRabbyDispatch();
 
   const handleCancelOrder = useMemoizedFn(
@@ -122,8 +117,10 @@ export const OpenOrders: React.FC = () => {
     () => [
       {
         title: 'Order',
-        width: 130,
+        width: 100,
         className: 'relative',
+        key: 'side',
+        dataIndex: 'side',
         sorter: (a, b) => a.side.localeCompare(b.side),
         render: (_, record) => {
           // const isTpSL =
@@ -156,11 +153,13 @@ export const OpenOrders: React.FC = () => {
       {
         title: 'Time',
         width: 160,
+        key: 'timestamp',
+        dataIndex: 'timestamp',
         sorter: (a, b) => a.timestamp - b.timestamp,
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
-              {dayjs(record.timestamp).format('DD/MM/YYYY-HH:mm:ss')}
+              {dayjs(record.timestamp).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
         },
@@ -168,6 +167,8 @@ export const OpenOrders: React.FC = () => {
       {
         title: 'Type',
         width: 130,
+        key: 'orderType',
+        dataIndex: 'orderType',
         sorter: (a, b) => a.orderType.localeCompare(b.orderType),
         render: (_, record) => {
           return (
@@ -180,6 +181,8 @@ export const OpenOrders: React.FC = () => {
       {
         title: 'Order Value / Size',
         width: 180,
+        key: 'origSz',
+        dataIndex: 'origSz',
         sorter: (a, b) => Number(a.origSz) - Number(b.origSz),
         render: (_, record) => {
           return Number(record.origSz) === 0 ? (
@@ -209,6 +212,9 @@ export const OpenOrders: React.FC = () => {
       {
         title: 'Filled',
         width: 120,
+        key: 'sz',
+        dataIndex: 'sz',
+        sorter: (a, b) => Number(a.sz) - Number(b.sz),
         render: (_, record) => {
           // todo
           return (
@@ -230,6 +236,8 @@ export const OpenOrders: React.FC = () => {
       {
         title: 'Price',
         width: 120,
+        key: 'limitPx',
+        dataIndex: 'limitPx',
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
@@ -244,6 +252,8 @@ export const OpenOrders: React.FC = () => {
         title: 'Reduce Only',
         width: 100,
         sorter: (a, b) => Number(a.reduceOnly) - Number(b.reduceOnly),
+        key: 'reduceOnly',
+        dataIndex: 'reduceOnly',
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
@@ -255,6 +265,8 @@ export const OpenOrders: React.FC = () => {
       {
         title: 'Trigger Conditions',
         width: 180,
+        key: 'triggerCondition',
+        dataIndex: 'triggerCondition',
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
@@ -266,6 +278,8 @@ export const OpenOrders: React.FC = () => {
       {
         title: 'TP/SL',
         width: 180,
+        key: 'children',
+        dataIndex: 'children',
         render: (_, record) => {
           // todo
           const tpItem = record.children?.find(
@@ -281,11 +295,26 @@ export const OpenOrders: React.FC = () => {
               order.isTrigger &&
               order.reduceOnly
           );
+
+          const tpExpectedPnL = tpItem?.triggerPx
+            ? new BigNumber(tpItem.triggerPx)
+                .minus(record.limitPx)
+                .times(record.origSz)
+                .toFixed(2)
+            : '';
+
+          const slExpectedPnL = slItem?.triggerPx
+            ? new BigNumber(slItem.triggerPx)
+                .minus(record.limitPx)
+                .times(record.origSz)
+                .toFixed(2)
+            : '';
+
           return (
             <div className="space-y-[4px]">
               <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
                 {tpItem?.triggerPx
-                  ? `$${splitNumberByStep(tpItem.triggerPx)}`
+                  ? `$${splitNumberByStep(tpItem.triggerPx)} `
                   : '-'}
               </div>
 
@@ -309,6 +338,8 @@ export const OpenOrders: React.FC = () => {
         ),
         align: 'center',
         width: 120,
+        key: 'oid',
+        dataIndex: 'oid',
         render: (_, record) => {
           return (
             <button

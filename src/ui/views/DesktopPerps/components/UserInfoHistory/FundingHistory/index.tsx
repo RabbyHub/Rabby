@@ -1,28 +1,35 @@
 import { useRabbySelector } from '@/ui/store';
 import { splitNumberByStep } from '@/ui/utils';
-import { UserFunding } from '@rabby-wallet/hyperliquid-sdk';
+import { UserFunding, WsUserFunding } from '@rabby-wallet/hyperliquid-sdk';
 import { ColumnType } from 'antd/lib/table';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { CommonTable } from '../CommonTable';
+import { sortBy } from 'lodash';
 
 export const FundingHistory: React.FC = () => {
   const { userFunding } = useRabbySelector((store) => {
     return store.perps;
   });
 
-  const columns = useMemo<ColumnType<UserFunding>[]>(
+  const list = useMemo(() => {
+    return sortBy(userFunding, (item) => -item.time);
+  }, [userFunding]);
+
+  const columns = useMemo<ColumnType<WsUserFunding['fundings'][number]>[]>(
     () => [
       {
         title: 'Time',
+        dataIndex: 'time',
+        key: 'time',
         width: 160,
         sorter: (a, b) => dayjs(a.time).unix() - dayjs(b.time).unix(),
         render: (_, record) => {
           return (
             <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1">
-              {dayjs(record.time).format('DD/MM/YYYY-HH:mm:ss')}
+              {dayjs(record.time).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
         },
@@ -30,12 +37,14 @@ export const FundingHistory: React.FC = () => {
 
       {
         title: 'Market',
+        dataIndex: 'coin',
+        key: 'coin',
         width: 100,
-        sorter: (a, b) => a.delta.coin.localeCompare(b.delta.coin),
+        sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
-              {record.delta.coin}
+              {record.coin}
             </div>
           );
         },
@@ -43,62 +52,66 @@ export const FundingHistory: React.FC = () => {
 
       {
         title: 'Size',
+        dataIndex: 'szi',
+        key: 'szi',
         width: 100,
-        sorter: (a, b) => Number(a.delta.szi) - Number(b.delta.szi),
+        sorter: (a, b) => Number(a.szi) - Number(b.szi),
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
-              {splitNumberByStep(record.delta.szi)} {record.delta.coin}
+              {splitNumberByStep(Math.abs(Number(record.szi)))} {record.coin}
             </div>
           );
         },
       },
       {
         title: 'Side',
+        key: 'side',
+        dataIndex: 'side',
         width: 100,
         sorter: (a, b) =>
-          (Number(a.delta.szi) >= 0 ? 1 : -1) -
-          (Number(b.delta.szi) >= 0 ? 1 : -1),
+          (Number(a.szi) >= 0 ? 1 : -1) - (Number(b.szi) >= 0 ? 1 : -1),
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
-              {Number(record.delta.szi) >= 0 ? 'Long' : 'Short'}
+              {Number(record.szi) >= 0 ? 'Long' : 'Short'}
             </div>
           );
         },
       },
       {
         title: 'Payment',
+        dataIndex: 'usdc',
+        key: 'usdc',
         width: 100,
-        sorter: (a, b) => Number(a.delta.usdc) - Number(b.delta.usdc),
+        sorter: (a, b) => Number(a.usdc) - Number(b.usdc),
         render: (_, record) => {
           return (
             <div
               className={clsx(
                 'text-[12px] leading-[14px] font-medium',
-                Number(record.delta.usdc) >= 0
+                Number(record.usdc) >= 0
                   ? 'text-rb-green-default'
                   : 'text-rb-red-default'
               )}
             >
-              {Number(record.delta.usdc) >= 0 ? '+' : '-'}$
-              {splitNumberByStep(
-                new BigNumber(record.delta.usdc).abs().toFixed(4)
-              )}
+              {Number(record.usdc) >= 0 ? '+' : '-'}$
+              {splitNumberByStep(new BigNumber(record.usdc).abs().toFixed(4))}
             </div>
           );
         },
       },
       {
         title: 'Rate',
+        dataIndex: 'fundingRate',
+        key: 'fundingRate',
         width: 100,
-        sorter: (a, b) =>
-          Number(a.delta.fundingRate) - Number(b.delta.fundingRate),
+        sorter: (a, b) => Number(a.fundingRate) - Number(b.fundingRate),
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
-              {Number(record.delta.usdc) >= 0 ? '' : '-'}
-              {new BigNumber(record.delta.fundingRate).times(100).toFixed(4)}%
+              {Number(record.usdc) < 0 ? '' : '-'}
+              {new BigNumber(record.fundingRate).times(100).toFixed(5)}%
             </div>
           );
         },
@@ -108,11 +121,11 @@ export const FundingHistory: React.FC = () => {
   );
   return (
     <CommonTable
-      dataSource={userFunding}
+      dataSource={list}
       columns={columns}
       pagination={false}
       bordered={false}
       showSorterTooltip={false}
-    ></CommonTable>
+    />
   );
 };

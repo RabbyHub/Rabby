@@ -18,6 +18,10 @@ export const TradeHistory: React.FC = () => {
     return store.perps;
   });
 
+  const marketDataMap = useRabbySelector((store) => {
+    return store.perps.marketDataMap;
+  });
+
   const list = useMemo<WsFill[]>(() => {
     return sortBy(userFills, (item) => -item.time);
   }, [userFills]);
@@ -26,18 +30,22 @@ export const TradeHistory: React.FC = () => {
     () => [
       {
         title: 'Time',
+        key: 'time',
+        dataIndex: 'time',
         width: 180,
         sorter: (a, b) => a.time - b.time,
         render: (_, record) => {
           return (
             <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1">
-              {dayjs(record.time).format('DD/MM/YYYY-HH:mm:ss')}
+              {dayjs(record.time).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
         },
       },
       {
         title: 'Market',
+        key: 'coin',
+        dataIndex: 'coin',
         width: 80,
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
@@ -50,6 +58,8 @@ export const TradeHistory: React.FC = () => {
       },
       {
         title: 'Size',
+        key: 'sz',
+        dataIndex: 'sz',
         width: 100,
         sorter: (a, b) => Number(a.sz) - Number(b.sz),
         render: (_, record) => {
@@ -62,6 +72,8 @@ export const TradeHistory: React.FC = () => {
       },
       {
         title: 'Trade',
+        key: 'dir',
+        dataIndex: 'dir',
         width: 100,
         sorter: (a, b) => a.dir.localeCompare(b.dir),
         render: (_, record) => {
@@ -74,18 +86,25 @@ export const TradeHistory: React.FC = () => {
       },
       {
         title: 'Avg Price',
+        key: 'px',
+        dataIndex: 'px',
         width: 180,
         sorter: (a, b) => Number(a.px) - Number(b.px),
         render: (_, record) => {
+          const pxDecimals =
+            marketDataMap[record.coin.toUpperCase()]?.pxDecimals || 2;
+          const px = new BigNumber(record.px).toFixed(pxDecimals);
           return (
             <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
-              ${splitNumberByStep(record.px)}
+              ${splitNumberByStep(px)}
             </div>
           );
         },
       },
       {
         title: 'Trade Value',
+        key: 'tradeValue',
+        dataIndex: 'tradeValue',
         width: 180,
         sorter: (a, b) =>
           new BigNumber(a.px).times(new BigNumber(a.sz).abs()).toNumber() -
@@ -110,6 +129,8 @@ export const TradeHistory: React.FC = () => {
       },
       {
         title: 'Closed Pnl',
+        key: 'closedPnl',
+        dataIndex: 'closedPnl',
         width: 180,
         sorter: (a, b) => Number(a.closedPnl) - Number(b.closedPnl),
         render: (_, record) => {
@@ -134,7 +155,9 @@ export const TradeHistory: React.FC = () => {
                 <>
                   <div>
                     {Number(record.closedPnl) > 0 ? '+' : '-'}$
-                    {splitNumberByStep(Math.abs(Number(record.closedPnl)))}
+                    {splitNumberByStep(
+                      Math.abs(Number(record.closedPnl)).toFixed(2)
+                    )}
                   </div>
                   <div>
                     {Number(record.closedPnl) > 0 ? '+' : '-'}$
@@ -155,6 +178,8 @@ export const TradeHistory: React.FC = () => {
       },
       {
         title: 'Fee',
+        key: 'fee',
+        dataIndex: 'fee',
         width: 180,
         sorter: (a, b) => Number(a.fee) - Number(b.fee),
         render: (_, record) => {
@@ -166,7 +191,7 @@ export const TradeHistory: React.FC = () => {
         },
       },
     ],
-    []
+    [marketDataMap]
   );
   return (
     <CommonTable

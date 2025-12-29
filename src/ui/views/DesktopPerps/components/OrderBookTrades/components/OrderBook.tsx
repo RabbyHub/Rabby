@@ -352,17 +352,18 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
             {displayAsks.map((ask) => renderOrderRow(ask, 'ask', maxTotal))}
           </div>
         )}
-        <div className="flex items-center justify-between px-[12px] h-40">
-          <div className="flex items-center gap-[6px]">
-            <span
-              className={clsx(
-                'text-[20px] font-bold',
-                isPositive ? 'text-rb-green-default' : 'text-rb-red-default'
-              )}
-            >
-              {splitNumberByStep(latestTradePrice)}
-            </span>
-            {Boolean(latestTradePrice) && (
+        {Boolean(latestTradePrice) && (
+          <div className="flex items-center justify-between px-[12px] h-40">
+            <div className="flex items-center gap-[6px]">
+              <span
+                className={clsx(
+                  'text-[20px] font-bold',
+                  isPositive ? 'text-rb-green-default' : 'text-rb-red-default'
+                )}
+              >
+                {splitNumberByStep(latestTradePrice)}
+              </span>
+
               <span
                 className={clsx(
                   'text-[16px] text-rb-neutral-secondary font-medium'
@@ -370,9 +371,9 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
               >
                 {splitNumberByStep(markPx)}
               </span>
-            )}
+            </div>
           </div>
-        </div>
+        )}
         {(viewMode === 'Both' || viewMode === 'Bids') && (
           <div
             className={clsx('overflow-y-auto', {
