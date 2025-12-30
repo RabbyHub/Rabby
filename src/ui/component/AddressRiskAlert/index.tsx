@@ -15,7 +15,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
-import { padWatchAccount } from '@/ui/views/SendPoly/util';
+import { padWatchAccount } from '@/ui/views/SelectToAddress/util';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { findAccountByPriority, pickKeyringThemeIcon } from '@/utils/account';
 import {

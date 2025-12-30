@@ -1,7 +1,6 @@
 import { Modal, ModalProps } from 'antd';
 import React, { useMemo } from 'react';
 import SendToken from '../../../SendToken';
-import SendPoly from '../../../SendPoly';
 import WhitelistInput from '../../../WhitelistInput';
 import { useLocation } from 'react-router-dom';
 import { ModalCloseIcon } from '../TokenDetailModal';
@@ -25,8 +24,7 @@ export const SendTokenModal: React.FC<ModalProps> = (props) => {
     } else if (sendPageType === 'whitelistInput') {
       return <WhitelistInput />;
     }
-    // 默认返回 SendPoly 组件，避免返回 undefined
-    return <SendPoly />;
+    return <SendToken />;
   }, [sendPageType]);
 
   return (
