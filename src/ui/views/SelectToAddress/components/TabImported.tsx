@@ -87,7 +87,7 @@ export default function TabImported({
       const targetList =
         isMyImported || isGnosis ? ret.myImportedAccounts : ret.otherAccounts;
 
-      if (!isMyImported && !targetList.length) {
+      if (!(isMyImported || isGnosis) && !targetList.length) {
         value._isFirstOtherAccount = true;
       }
 
