@@ -582,7 +582,13 @@ type SettingItem = {
   onClick?: (...args: any[]) => any;
 };
 
-const SettingsInner = ({ visible, onClose }: SettingsProps) => {
+const SettingsInner = ({
+  visible,
+  onClose,
+  onPopupToggleShow,
+}: SettingsProps & {
+  onPopupToggleShow: (type: 'nonWhitelistedTxPwdModal') => void;
+}) => {
   const wallet = useWallet();
   const history = useHistory();
   const { t } = useTranslation();
@@ -595,10 +601,6 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
   const [contactsVisible, setContactsVisible] = useState(false);
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
-  const [
-    isShowNonWhitelistedTxPwdModal,
-    setIsShowNonWhitelistedTxPwdModal,
-  ] = useState(false);
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
 
   const autoLockTime = useRabbySelector(
@@ -635,7 +637,7 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
     return LANGS.find((item) => item.code === locale)?.name;
   }, [locale]);
 
-  const handleEnablePwdForNonWhitelistedTx = useMemoizedFn(() => {
+  const handleTogglePwdForNonWhitelistedTx = useMemoizedFn(() => {
     matomoRequestEvent({
       category: 'Setting',
       action: 'clickToUse',
@@ -648,11 +650,12 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
 
     reportSettings('PasswordForNonWhitelistedTx');
 
-    if (isEnabledPwdForNonWhitelistedTx) {
-      dispatch.preference.enablePwdForNonWhitelistedTx(false);
-    } else {
-      setIsShowNonWhitelistedTxPwdModal(true);
-    }
+    // if (isEnabledPwdForNonWhitelistedTx) {
+    //   dispatch.preference.enablePwdForNonWhitelistedTx(false);
+    // } else {
+    //   setIsShowNonWhitelistedTxPwdModal(true);
+    // }
+    onPopupToggleShow('nonWhitelistedTxPwdModal');
   });
 
   const handleEnableDappAccount = useMemoizedFn(() => {
@@ -879,7 +882,7 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
           rightIcon: (
             <Switch
               checked={isEnabledPwdForNonWhitelistedTx}
-              onChange={handleEnablePwdForNonWhitelistedTx}
+              onChange={handleTogglePwdForNonWhitelistedTx}
             />
           ),
         },
@@ -1469,13 +1472,6 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
           setContactsVisible(false);
         }}
       />
-      <PwdForNonWhitelistedTxModal
-        visible={isShowNonWhitelistedTxPwdModal}
-        onFinish={() => {
-          setIsShowNonWhitelistedTxPwdModal(false);
-        }}
-        onCancel={() => setIsShowNonWhitelistedTxPwdModal(false)}
-      />
       <DappAccountModal
         visible={isShowDappAccountModal}
         onFinish={() => {
@@ -1541,18 +1537,41 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
 
 const Settings = (props: SettingsProps) => {
   const { visible, onClose } = props;
+
+  const [
+    isShowNonWhitelistedTxPwdModal,
+    setIsShowNonWhitelistedTxPwdModal,
+  ] = useState(false);
+
   return (
-    <Popup
-      visible={visible}
-      onClose={onClose}
-      height={488}
-      bodyStyle={{ height: '100%', padding: '20px 20px 0 20px' }}
-      destroyOnClose
-      className="settings-popup-wrapper"
-      isSupportDarkMode
-    >
-      <SettingsInner {...props} />
-    </Popup>
+    <>
+      <Popup
+        visible={visible}
+        onClose={onClose}
+        height={488}
+        bodyStyle={{ height: '100%', padding: '20px 20px 0 20px' }}
+        destroyOnClose
+        className="settings-popup-wrapper"
+        isSupportDarkMode
+      >
+        <SettingsInner
+          {...props}
+          onPopupToggleShow={(type) => {
+            if (type === 'nonWhitelistedTxPwdModal') {
+              setIsShowNonWhitelistedTxPwdModal(true);
+            }
+          }}
+        />
+      </Popup>
+
+      <PwdForNonWhitelistedTxModal
+        visible={isShowNonWhitelistedTxPwdModal}
+        onFinish={() => {
+          setIsShowNonWhitelistedTxPwdModal(false);
+        }}
+        onCancel={() => setIsShowNonWhitelistedTxPwdModal(false)}
+      />
+    </>
   );
 };
 

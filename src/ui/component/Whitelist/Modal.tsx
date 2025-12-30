@@ -14,7 +14,6 @@ import './style.less';
 import { useWallet } from '@/ui/utils';
 
 export const PwdForNonWhitelistedTxModal = ({
-  height = 195,
   visible: propVisible,
   onFinish,
   onCancel,
@@ -37,6 +36,8 @@ export const PwdForNonWhitelistedTxModal = ({
     (state) => state.preference.isEnabledPwdForNonWhitelistedTx
   );
   const needPwdCheck = isEnabledPwdForNonWhitelistedTx;
+  const height = needPwdCheck ? 291 : 195;
+
   const disableSubmit = needPwdCheck && !passwordText;
   const handleSubmit = useCallback(async () => {
     if (disableSubmit) return;
@@ -106,14 +107,11 @@ export const PwdForNonWhitelistedTxModal = ({
           }
         )}
       >
-        <PageHeader
-          closeable
-          onClose={handleCancel}
-          className="text-[16px] leading-[19px] mb-[20px]"
-          closeCn={'top-[-1px]'}
-        >
-          {t('page.dashboard.settings.PwdForNonWhitelistedTx.title')}
-        </PageHeader>
+        <div className="page-header text-[16px] leading-[19px] mb-[20px]">
+          <div className="header-content">
+            {t('page.dashboard.settings.PwdForNonWhitelistedTx.title')}
+          </div>
+        </div>
         {!needPwdCheck ? (
           <div className="flex-1">
             <div className="text-r-neutral-body text-[13px] leading-[18px] text-center mb-[20px]">
@@ -222,20 +220,9 @@ export const VerifyPwdForNonWhitelisted = ({
       }
     }
 
-    dispatch.preference.enablePwdForNonWhitelistedTx(
-      !isEnabledPwdForNonWhitelistedTx
-    );
     setFormState({ passwordText: '', errorText: '' });
     onFinish?.();
-  }, [
-    disableSubmit,
-    passwordText,
-    dispatch,
-    onFinish,
-    t,
-    wallet,
-    isEnabledPwdForNonWhitelistedTx,
-  ]);
+  }, [disableSubmit, passwordText, onFinish, t, wallet]);
 
   const handleCancel = useCallback(() => {
     setFormState({ passwordText: '', errorText: '' });
@@ -270,14 +257,11 @@ export const VerifyPwdForNonWhitelisted = ({
           }
         )}
       >
-        <PageHeader
-          closeable
-          onClose={handleCancel}
-          className="text-[16px] leading-[19px] mb-[20px]"
-          closeCn={'top-[-1px]'}
-        >
-          {t('page.whitelist.verifyPwd.title')}
-        </PageHeader>
+        <div className="page-header text-[16px] leading-[19px] mb-[20px]">
+          <div className="header-content">
+            {t('page.whitelist.verifyPwd.title')}
+          </div>
+        </div>
         <div className="flex-1">
           <Input
             ref={inputRef}

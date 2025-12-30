@@ -163,7 +163,6 @@ export default function TabWhitelist({
       )}
 
       <PwdForNonWhitelistedTxModal
-        height={291}
         visible={isShowNonWhitelistedTxPwdModal}
         onFinish={() => {
           setIsShowNonWhitelistedTxPwdModal(false);
