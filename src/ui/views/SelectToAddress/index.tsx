@@ -213,7 +213,6 @@ const SelectToAddress = () => {
 
   const handleConfirmAccount = useCallback(
     (account?: { address: string; type?: string } | null) => {
-      console.debug('[feat] account', account);
       if (!account) return;
       const { address, type } = account;
       setItemToConfirm(null);
@@ -234,13 +233,16 @@ const SelectToAddress = () => {
   const handleSelectAccount = useCallback(
     (account: { address: string; type?: string }) => {
       if (isEnabledPwdForNonWhitelistedTx) {
-        setItemToConfirm(account);
-        return;
+        const inWhitelist = dispatch.whitelist.isInWhitelist(account.address);
+        if (!inWhitelist) {
+          setItemToConfirm(account);
+          return;
+        }
       }
 
       handleConfirmAccount(account);
     },
-    [isEnabledPwdForNonWhitelistedTx, handleConfirmAccount]
+    [isEnabledPwdForNonWhitelistedTx, handleConfirmAccount, dispatch.whitelist]
   );
 
   useEffect(() => {
@@ -423,7 +425,7 @@ const SelectToAddress = () => {
             >
               <TabWhitelist
                 unimportedBalances={unimportedBalances}
-                handleChange={handleSelectAccount}
+                handleChange={handleConfirmAccount}
                 onManagePwdForNonWhitelistedTx={() => {
                   setIsShowNonWhitelistedTxPwdModal(true);
                 }}
