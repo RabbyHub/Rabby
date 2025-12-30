@@ -2818,7 +2818,6 @@
     "search": {
       "sectionHeader": {
         "NFT": "NFT",
-        "Defi": "DeFi",
         "token": "Token",
         "AllChains": "Semua Rantai"
       },
@@ -3236,9 +3235,7 @@
       "tabs": {
         "tokens": "Token",
         "approvals": "Persetujuan",
-        "transactions": "Transaksi",
-        "difi": "Defi",
-        "defi": "DeFi"
+        "transactions": "Transaksi"
       },
       "nft": {
         "message": {

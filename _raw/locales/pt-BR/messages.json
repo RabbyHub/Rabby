@@ -2821,7 +2821,6 @@
     "search": {
       "sectionHeader": {
         "NFT": "NFT",
-        "Defi": "DeFi",
         "token": "Tokens",
         "AllChains": "Todas as Chains"
       },
@@ -3241,7 +3240,7 @@
         "transactions": "Transações",
         "tokens": "Tokens",
         "difi": "Defi",
-        "defi": "DeFi"
+        "defi": ""
       },
       "nft": {
         "message": {

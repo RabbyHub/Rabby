@@ -3194,6 +3194,7 @@
     },
     "search": {
       "sectionHeader": {
+        "__skip_translation": ["Defi"],
         "token": "Tokens",
         "Defi": "DeFi",
         "NFT": "NFT",
@@ -3273,10 +3274,10 @@
         "pending": "{{pendingTxCount}} Pending"
       },
       "tabs": {
+        "__skip_translation": ["defi"],
         "tokens": "Tokens",
         "transactions": "Transactions",
         "approvals": "Approvals",
-        "difi": "Defi",
         "defi": "DeFi"
       },
       "nft": {
