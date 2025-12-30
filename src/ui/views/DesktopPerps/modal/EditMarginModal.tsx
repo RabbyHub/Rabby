@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { Modal, Button } from 'antd';
+import { Modal, Button, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
@@ -42,7 +42,6 @@ export interface EditMarginPopupProps {
   visible: boolean;
   direction: 'Long' | 'Short';
   coin: string;
-  activeAssetCtx: WsActiveAssetCtx['ctx'] | null;
   currentAssetCtx: MarketData;
   entryPrice: number;
   leverage: number;
@@ -50,9 +49,7 @@ export interface EditMarginPopupProps {
   liquidationPx: number;
   positionSize: number;
   marginUsed: number;
-  pnlPercent: number;
   pnl: number;
-  handlePressRiskTag: () => void;
   onCancel: () => void;
   onConfirm: (action: 'add' | 'reduce', margin: number) => Promise<void>;
 }
@@ -69,19 +66,16 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
   liquidationPx,
   positionSize,
   marginUsed,
-  pnlPercent,
   pnl,
-  activeAssetCtx,
   currentAssetCtx,
-  handlePressRiskTag,
 }) => {
   const pxDecimals = currentAssetCtx?.pxDecimals || 2;
   const leverageMax = currentAssetCtx?.maxLeverage || 5;
   const { t } = useTranslation();
   const [margin, setMargin] = React.useState('');
   const markPrice = useMemo(() => {
-    return Number(activeAssetCtx?.markPx || currentAssetCtx?.markPx || 0);
-  }, [activeAssetCtx]);
+    return Number(currentAssetCtx?.markPx || 0);
+  }, [currentAssetCtx?.markPx]);
 
   const marginNormalized = useMemo(() => {
     const newMargin = margin.startsWith('$') ? margin.slice(1) : margin;
@@ -196,6 +190,13 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
+  const currentDistanceToLiquidationPercent = useMemo(() => {
+    const percent = formatPerpsPct(
+      calculateDistanceToLiquidation(liquidationPx, markPrice)
+    );
+    return percent;
+  }, [liquidationPx, markPrice]);
+
   const canReduce = useMemo(() => {
     return availableToReduce > 0.01;
   }, [availableToReduce]);
@@ -253,11 +254,21 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
                   >
                     {direction} {leverage}x
                   </div>
-                  <DistanceToLiquidationTag
-                    liquidationPrice={liquidationPx}
-                    markPrice={markPrice}
-                    onPress={handlePressRiskTag}
-                  />
+                  <Tooltip
+                    overlayClassName="rectangle"
+                    title={
+                      direction === 'Long'
+                        ? `Going down ${currentDistanceToLiquidationPercent} will trigger liquidation`
+                        : `Going up ${currentDistanceToLiquidationPercent} will trigger liquidation`
+                    }
+                  >
+                    <div className="flex items-center gap-[2px] border border-rb-neutral-line rounded-[4px] px-[4px]">
+                      <RcIconAlarmCC className="text-rb-neutral-info" />
+                      <div className="text-rb-neutral-foot font-medium text-[12px] leading-[16px]">
+                        {currentDistanceToLiquidationPercent}
+                      </div>
+                    </div>
+                  </Tooltip>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-5">
@@ -324,9 +335,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
                 <div className="flex items-center">
                   <RcIconAlarmCC className="text-rb-neutral-info" />
                   <span className="text-r-neutral-title-1 font-medium text-[13px] leading-[16px]">
-                    {formatPerpsPct(
-                      calculateDistanceToLiquidation(liquidationPx, markPrice)
-                    )}
+                    {currentDistanceToLiquidationPercent}
                   </span>
                 </div>
                 {margin && estimatedLiquidationPrice && (

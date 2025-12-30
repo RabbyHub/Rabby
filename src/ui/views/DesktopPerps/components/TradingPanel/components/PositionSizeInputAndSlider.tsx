@@ -4,6 +4,7 @@ import { DesktopPerpsSlider } from '../../DesktopPerpsSlider';
 import { useMemoizedFn } from 'ahooks';
 import BigNumber from 'bignumber.js';
 import { calcAssetAmountByNotional, calcAssetNotionalByAmount } from '../utils';
+import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 const PRESET_POINTS = [0, 25, 50, 75, 100];
 
 // Create marks for the slider
@@ -15,8 +16,6 @@ const SLIDER_MARKS = PRESET_POINTS.reduce((acc, point) => {
 interface PositionSizeInputAndSliderProps {
   price: number | string;
   maxTradeSize: string | undefined;
-  availableBalance: number;
-  leverage: number;
   positionSize: PositionSize;
   setPositionSize: (positionSize: PositionSize) => void;
   baseAsset: string;
@@ -32,8 +31,6 @@ interface PositionSizeInputAndSliderProps {
 export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProps> = ({
   price,
   maxTradeSize,
-  availableBalance,
-  leverage,
   positionSize,
   setPositionSize,
   baseAsset,
@@ -97,9 +94,14 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
       notionalValue: notionalStr,
     });
 
-    if (availableBalance > 0) {
-      const marginNeeded = notionalValue / leverage;
-      const pct = Math.min((marginNeeded / availableBalance) * 100, 100);
+    if (maxTradeSize && Number(maxTradeSize) > 0) {
+      const pct = Math.min(
+        new BigNumber(amount)
+          .div(new BigNumber(maxTradeSize))
+          .multipliedBy(100)
+          .toNumber(),
+        100
+      );
       setPercentage(Math.round(pct));
     }
   });
@@ -111,7 +113,6 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     }
 
     let newNotional = notional;
-    const notionalNum = new BigNumber(notional || 0);
     let amount = calcAssetAmountByNotional(notional, price, precision.amount);
     if (maxTradeSize && Number(amount) > Number(maxTradeSize)) {
       amount = maxTradeSize;
@@ -122,12 +123,11 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
       notionalValue: newNotional,
     });
 
-    if (availableBalance > 0) {
-      const marginNeeded = notionalNum.div(leverage);
+    if (maxTradeSize && Number(maxTradeSize) > 0) {
       const pct = Math.min(
         Math.round(
-          marginNeeded
-            .div(new BigNumber(availableBalance))
+          new BigNumber(amount)
+            .div(new BigNumber(maxTradeSize))
             .multipliedBy(100)
             .toNumber()
         ),
@@ -177,13 +177,6 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     }
   };
 
-  const formatNumber = (value: string, decimals: number): string => {
-    if (!value || value === '') return '';
-    const num = parseFloat(value);
-    if (isNaN(num)) return value;
-    return num.toFixed(decimals);
-  };
-
   const handleAmountChangeFormatted = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -204,44 +197,44 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   };
 
   const handleAmountBlur = () => {
-    handleAmountChange(formatNumber(positionSize.amount, precision.amount));
+    const value = positionSize.amount;
+    if (!value || value === '') {
+      setPositionSize({ amount: '', notionalValue: '' });
+      return;
+    }
+    const num = parseFloat(value);
+    if (isNaN(num)) {
+      setPositionSize({ amount: '', notionalValue: '' });
+      return;
+    }
+    handleAmountChange(num.toFixed(precision.amount));
   };
 
   return (
     <>
       <div className="flex items-center gap-[8px]">
-        {/* Amount Input */}
-        <div className="flex-1">
-          <div className="relative">
-            <input
-              type="text"
-              value={positionSize.amount}
-              onChange={handleAmountChangeFormatted}
-              onBlur={handleAmountBlur}
-              placeholder="0"
-              className="w-full h-[40px] p-12 rounded-[8px] bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line text-r-neutral-title-1 text-[13px] focus:outline-none  font-medium"
-            />
-            <div className="absolute right-[8px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
+        <DesktopPerpsInput
+          className="flex-1"
+          value={positionSize.amount}
+          onChange={handleAmountChangeFormatted}
+          onBlur={handleAmountBlur}
+          suffix={
+            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
               {baseAsset}
-            </div>
-          </div>
-        </div>
+            </span>
+          }
+        />
 
-        {/* Notional Value Input */}
-        <div className="flex-1">
-          <div className="relative">
-            <input
-              type="text"
-              value={positionSize.notionalValue}
-              onChange={handleNotionalChangeFormatted}
-              placeholder="0"
-              className="w-full h-[40px] p-12 rounded-[8px] bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line text-r-neutral-title-1 text-[13px] focus:outline-none font-medium"
-            />
-            <div className="absolute right-[8px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
+        <DesktopPerpsInput
+          className="flex-1"
+          value={positionSize.notionalValue}
+          onChange={handleNotionalChangeFormatted}
+          suffix={
+            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
               {quoteAsset}
-            </div>
-          </div>
-        </div>
+            </span>
+          }
+        />
       </div>
       <div className="flex items-start gap-[20px]">
         {/* Slider with preset points */}
@@ -271,7 +264,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
         </div>
 
         {/* Percentage input */}
-        <div className="flex items-center justify-between p-8 gap-[2px] h-[28px] w-[52px] shrink-0 border border-solid border-rb-neutral-line rounded-[8px] ">
+        {/* <div className="flex items-center justify-between p-8 gap-[2px] h-[28px] w-[52px] shrink-0 border border-solid border-rb-neutral-line rounded-[8px] ">
           <input
             type="text"
             value={inputValue}
@@ -283,7 +276,19 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
           <span className="text-[12px] text-rb-neutral-foot font-medium">
             %
           </span>
-        </div>
+        </div> */}
+        <DesktopPerpsInput
+          className="w-[60px] p-[8px]"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
+          onKeyDown={handleInputKeyDown}
+          suffix={
+            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
+              %
+            </span>
+          }
+        />
       </div>
     </>
   );

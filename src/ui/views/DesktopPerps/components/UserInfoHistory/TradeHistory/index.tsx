@@ -200,6 +200,7 @@ export const TradeHistory: React.FC = () => {
       pagination={false}
       bordered={false}
       showSorterTooltip={false}
+      rowKey="hash"
     ></CommonTable>
   );
 };

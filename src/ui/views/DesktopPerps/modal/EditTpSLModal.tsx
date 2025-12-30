@@ -12,13 +12,15 @@ import { usePerpsPosition } from '../../Perps/hooks/usePerpsPosition';
 import { validatePriceInput } from '../../Perps/utils';
 import { DesktopPerpsInput } from '../components/DesktopPerpsInput';
 import { PerpsPositionCard } from '../components/PerpsPositionCard';
+import { PositionFormatData } from '../components/UserInfoHistory/PositionsInfo';
+import { usePerpsProPosition } from '../hooks/usePerpsProPosition';
 
 export interface Props {
   visible: boolean;
   onCancel: () => void;
   onConfirm?: () => void;
 
-  position: PositionAndOpenOrder['position'];
+  position: PositionFormatData;
   marketData: MarketData;
 }
 
@@ -26,11 +28,11 @@ const calculatePnl = ({
   position,
   extPrice,
 }: {
-  position: PositionAndOpenOrder['position'];
+  position: PositionFormatData;
   extPrice: number;
 }) => {
   const pnl =
-    (Number(extPrice) - Number(position.entryPx)) * Number(position.szi);
+    (Number(extPrice) - Number(position.entryPx)) * Number(position.size);
   const percent = (pnl / Number(position.marginUsed)) * 100;
   return { pnl, percent };
 };
@@ -109,10 +111,7 @@ export const EditTpSlModal: React.FC<Props> = ({
 
   // todo validate input
 
-  // todo use perps desktop hook
-  const { handleSetAutoClose } = usePerpsPosition({
-    setCurrentTpOrSl: noop,
-  });
+  const { handleSetAutoClose } = usePerpsProPosition();
 
   const { loading, runAsync: runSubmit } = useRequest(
     async () => {
@@ -121,7 +120,7 @@ export const EditTpSlModal: React.FC<Props> = ({
         coin: position.coin,
         tpTriggerPx: new BigNumber(tpPrice).isNaN() ? '' : tpPrice,
         slTriggerPx: new BigNumber(slPrice).isNaN() ? '' : slPrice,
-        direction: new BigNumber(position.szi).isGreaterThan(0)
+        direction: new BigNumber(position.size).isGreaterThan(0)
           ? 'Long'
           : 'Short',
       });

@@ -203,8 +203,6 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
       <PositionSizeInputAndSlider
         price={midPrice}
         maxTradeSize={maxTradeSize}
-        availableBalance={availableBalance}
-        leverage={leverage}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
         percentage={percentage}

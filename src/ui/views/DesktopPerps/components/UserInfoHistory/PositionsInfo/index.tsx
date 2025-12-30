@@ -25,18 +25,43 @@ import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBordere
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import * as Sentry from '@sentry/browser';
 import { ClosePositionModal } from '../../../modal/ClosePositionModal';
+import { DistanceRiskTag } from './DistanceRiskTag';
+import { calculatePnL } from '../../TradingPanel/utils';
+import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
+
+export interface PositionFormatData {
+  direction: 'Long' | 'Short';
+  type: 'cross' | 'isolated';
+  coin: string;
+  size: string;
+  positionValue: string;
+  leverage: number;
+  markPx: string;
+  entryPx: string;
+  liquidationPx: string;
+  marginUsed: string;
+  unrealizedPnl: string;
+  returnOnEquity: string;
+  liquidationDistancePercent: string;
+  sinceOpenFunding: string;
+  tpPrice: string | undefined;
+  slPrice: string | undefined;
+}
 
 export const PositionsInfo: React.FC = () => {
   const {
+    // pro no use this
     positionAndOpenOrders,
+
+    clearinghouseState,
+    openOrders,
+
     marketDataMap,
     accountSummary,
     wsActiveAssetCtx,
   } = useRabbySelector((store) => store.perps);
-
-  console.log('positionAndOpenOrders', positionAndOpenOrders);
-  const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   const [editMarginVisible, setEditMarginVisible] = useState(false);
   const [editTpSlVisible, setEditTpSlVisible] = useState(false);
@@ -44,46 +69,80 @@ export const PositionsInfo: React.FC = () => {
   const [closePositionType, setClosePositionType] = useState<
     'limit' | 'market' | 'reverse'
   >('market');
-  const [currentAssetCtx, setCurrentAssetCtx] = useState<MarketData | null>(
-    null
-  );
-  const [
-    currentPosition,
-    setCurrentPosition,
-  ] = useState<PositionAndOpenOrder | null>(null);
 
-  const { handleUpdateMargin, handleClosePosition } = usePerpsPosition({
-    setCurrentTpOrSl: noop,
-  });
+  const positionFormatData = useMemo(() => {
+    const resArr = [] as PositionFormatData[];
+
+    clearinghouseState?.assetPositions.forEach((item) => {
+      const isLong = Number(item.position.szi || 0) > 0;
+      const marketData = marketDataMap[item.position.coin.toUpperCase()] || {};
+
+      const tpItem = openOrders.find(
+        (order) =>
+          order.coin === item.position.coin &&
+          order.orderType === 'Take Profit Market' &&
+          order.isTrigger &&
+          order.reduceOnly
+      );
+      const slItem = openOrders.find(
+        (order) =>
+          order.coin === item.position.coin &&
+          order.orderType === 'Stop Market' &&
+          order.isTrigger &&
+          order.reduceOnly
+      );
+
+      const pxDecimals = marketData.pxDecimals || 2;
+
+      const liquidationDistance = calculateDistanceToLiquidation(
+        item.position.liquidationPx,
+        marketData.markPx
+      );
+
+      resArr.push({
+        direction: isLong ? 'Long' : 'Short',
+        type: item.position.leverage.type,
+        coin: item.position.coin,
+        size: isLong ? item.position.szi : item.position.szi.slice(1),
+        leverage: item.position.leverage.value,
+        positionValue: item.position.positionValue,
+        markPx: marketData.markPx || '0',
+        entryPx: item.position.entryPx || '0',
+        liquidationPx:
+          Number(item.position.liquidationPx || 0).toFixed(pxDecimals) || '0',
+        marginUsed: item.position.marginUsed || '0',
+        unrealizedPnl: item.position.unrealizedPnl,
+        returnOnEquity: item.position.returnOnEquity,
+        liquidationDistancePercent: formatPerpsPct(liquidationDistance),
+        sinceOpenFunding: item.position.cumFunding.sinceOpen || '0',
+        tpPrice: tpItem?.triggerPx,
+        slPrice: slItem?.triggerPx,
+      });
+    });
+
+    return resArr;
+  }, [clearinghouseState, openOrders, marketDataMap]);
+
+  const [selectedCoin, setSelectedCoin] = useState<string>('');
+  const currentPosition = useMemo(() => {
+    return (
+      positionFormatData.find((item) => item.coin === selectedCoin) || null
+    );
+  }, [positionFormatData, selectedCoin]);
+
+  const { handleUpdateMargin, handleCloseAllPositions } = usePerpsProPosition();
 
   const { isDarkTheme } = useThemeMode();
 
   const handleCloseAllPosition = useMemoizedFn(async () => {
-    try {
-      const sdk = getPerpsSDK();
-      for (const item of positionAndOpenOrders) {
-        await handleClosePosition({
-          coin: item.position.coin,
-          size: Math.abs(Number(item.position.szi || 0)).toString() || '0',
-          direction: Number(item.position.szi || 0) > 0 ? 'Long' : 'Short',
-          price: marketDataMap[item.position.coin.toUpperCase()]?.markPx || '0',
-        });
-        await sleep(10);
-      }
-      dispatch.perps.fetchClearinghouseState();
-    } catch (error) {
-      console.error('close all position error', error);
-      message.error({
-        // className: 'toast-message-2025-center',
-        duration: 1.5,
-        content: error?.message || 'close all position error',
-      });
-      Sentry.captureException(
-        new Error(
-          'PERPS close all position error' + 'error: ' + JSON.stringify(error)
-        )
-      );
+    if (!clearinghouseState) {
+      return;
     }
+
+    await handleCloseAllPositions(clearinghouseState);
+    setTimeout(() => {
+      dispatch.perps.fetchClearinghouseState();
+    }, 100);
   });
 
   const handleClickCloseAll = useMemoizedFn(async () => {
@@ -138,35 +197,7 @@ export const PositionsInfo: React.FC = () => {
     });
   });
 
-  // Position data if exists
-  const positionData = useMemo(
-    () =>
-      currentPosition
-        ? {
-            pnl: Number(currentPosition.position.unrealizedPnl || 0),
-            positionValue: Number(currentPosition.position.positionValue || 0),
-            size: Math.abs(Number(currentPosition.position.szi || 0)),
-            marginUsed: Number(currentPosition.position.marginUsed || 0),
-            side:
-              Number(currentPosition.position.szi || 0) > 0 ? 'Long' : 'Short',
-            type: currentPosition.position.leverage.type,
-            leverage: Number(currentPosition.position.leverage.value || 1),
-            entryPrice: Number(currentPosition.position.entryPx || 0),
-            liquidationPrice: Number(
-              currentPosition.position.liquidationPx || 0
-            ).toFixed(currentAssetCtx?.pxDecimals || 2),
-            autoClose: false, // This would come from SDK
-            direction:
-              Number(currentPosition.position.szi || 0) > 0 ? 'Long' : 'Short',
-            pnlPercent:
-              Number(currentPosition.position.returnOnEquity || 0) * 100,
-            fundingPayments: currentPosition.position.cumFunding.sinceOpen,
-          }
-        : null,
-    [currentPosition, currentAssetCtx]
-  );
-
-  const columns = useMemo<ColumnType<PositionAndOpenOrder>[]>(
+  const columns = useMemo<ColumnType<PositionFormatData>[]>(
     () => [
       {
         title: 'Coin',
@@ -174,7 +205,7 @@ export const PositionsInfo: React.FC = () => {
         className: 'relative',
         key: 'coin',
         dataIndex: 'coin',
-        sorter: (a, b) => a.position.coin.localeCompare(b.position.coin),
+        sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
           return (
             <div
@@ -182,16 +213,16 @@ export const PositionsInfo: React.FC = () => {
                 'absolute top-0 left-0 right-0 bottom-0',
                 'flex flex-col justify-center',
                 'pl-[16px] py-[8px]',
-                Number(record.position.szi) > 0 ? 'is-long-bg' : 'is-short-bg'
+                record.direction === 'Long' ? 'is-long-bg' : 'is-short-bg'
               )}
             >
               <div>
                 <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 mb-[2px]">
-                  {record.position?.coin}
+                  {record.coin}
                 </div>
                 <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
-                  {record.position.leverage.value}x{' '}
-                  {Number(record.position.szi) > 0 ? 'Long' : 'Short'}
+                  {record.leverage}x{' '}
+                  {record.direction === 'Long' ? 'Long' : 'Short'}
                 </div>
               </div>
             </div>
@@ -203,20 +234,15 @@ export const PositionsInfo: React.FC = () => {
         width: 160,
         key: 'positionValue',
         dataIndex: 'positionValue',
-        sorter: (a, b) =>
-          Number(a.position.positionValue) - Number(b.position.positionValue),
+        sorter: (a, b) => Number(a.positionValue) - Number(b.positionValue),
         render: (_, record) => {
           return (
             <div>
               <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1 mb-[4px]">
-                $
-                {splitNumberByStep(
-                  Number(record.position?.positionValue || 0).toFixed(2)
-                )}
+                {formatUsdValue(record.positionValue || 0)}
               </div>
               <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
-                {Math.abs(Number(record.position.szi || 0))}{' '}
-                {record.position?.coin}
+                {Number(record.size)} {record.coin}
               </div>
             </div>
           );
@@ -226,26 +252,16 @@ export const PositionsInfo: React.FC = () => {
         title: 'Mark / Entry',
         key: 'entryPx',
         dataIndex: 'entryPx',
-        sorter: (a, b) =>
-          Number(a.position.entryPx) - Number(b.position.entryPx),
+        sorter: (a, b) => Number(a.entryPx) - Number(b.entryPx),
         width: 160,
         render: (_, record) => {
-          const marketData = marketDataMap[record.position.coin || ''] || {};
           return (
             <div>
               <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1 mb-[4px]">
-                $
-                {splitNumberByStep(
-                  Number(marketData.markPx).toFixed(marketData.pxDecimals || 0)
-                )}
+                ${splitNumberByStep(record.markPx)}
               </div>
               <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
-                $
-                {splitNumberByStep(
-                  Number(record.position.entryPx).toFixed(
-                    marketData.pxDecimals || 0
-                  )
-                )}
+                ${splitNumberByStep(record.entryPx || 0)}
               </div>
             </div>
           );
@@ -255,11 +271,10 @@ export const PositionsInfo: React.FC = () => {
         title: 'Unrealized PnL',
         key: 'unrealizedPnl',
         dataIndex: 'unrealizedPnl',
-        sorter: (a, b) =>
-          Number(a.position.unrealizedPnl) - Number(b.position.unrealizedPnl),
+        sorter: (a, b) => Number(a.unrealizedPnl) - Number(b.unrealizedPnl),
         width: 160,
         render: (_, record) => {
-          const isUp = Number(record.position.unrealizedPnl) >= 0;
+          const isUp = Number(record.unrealizedPnl) >= 0;
           return (
             <div>
               <div
@@ -270,7 +285,7 @@ export const PositionsInfo: React.FC = () => {
               >
                 {isUp ? '+' : '-'}$
                 {splitNumberByStep(
-                  Math.abs(Number(record.position.unrealizedPnl)).toFixed(2)
+                  Math.abs(Number(record.unrealizedPnl)).toFixed(2)
                 )}{' '}
               </div>
               <div
@@ -280,10 +295,7 @@ export const PositionsInfo: React.FC = () => {
                 )}
               >
                 {isUp ? '+' : '-'}
-                {Math.abs(Number(record.position.returnOnEquity) * 100).toFixed(
-                  2
-                )}
-                %
+                {Math.abs(Number(record.returnOnEquity) * 100).toFixed(2)}%
               </div>
             </div>
           );
@@ -294,40 +306,17 @@ export const PositionsInfo: React.FC = () => {
         width: 160,
         key: 'liquidationPx',
         dataIndex: 'liquidationPx',
-        sorter: (a, b) =>
-          Number(a.position.liquidationPx) - Number(b.position.liquidationPx),
+        sorter: (a, b) => Number(a.liquidationPx) - Number(b.liquidationPx),
         render: (_, record) => {
-          const percent = formatPerpsPct(
-            calculateDistanceToLiquidation(
-              record.position.liquidationPx,
-              marketDataMap[record.position.coin || '']?.markPx || 0
-            )
-          );
-          const isLong = Number(record.position.szi) > 0;
           return (
             <div className="flex items-center gap-[4px]">
               <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
-                $
-                {splitNumberByStep(
-                  Number(record.position.liquidationPx || 0).toFixed(2)
-                )}
+                ${splitNumberByStep(record.liquidationPx)}
               </div>
-
-              <Tooltip
-                overlayClassName="rectangle"
-                title={
-                  isLong
-                    ? `Going down ${percent} will trigger liquidation`
-                    : `Going up ${percent} will trigger liquidation`
-                }
-              >
-                <div className="flex items-center gap-[2px] border border-rb-neutral-line rounded-[4px] px-[4px]">
-                  <RcIconAlarmCC className="text-rb-neutral-info" />
-                  <div className="text-rb-neutral-foot font-medium text-[12px] leading-[16px]">
-                    {percent}
-                  </div>
-                </div>
-              </Tooltip>
+              <DistanceRiskTag
+                isLong={record.direction === 'Long'}
+                percent={record.liquidationDistancePercent}
+              />
             </div>
           );
         },
@@ -337,26 +326,22 @@ export const PositionsInfo: React.FC = () => {
         width: 160,
         key: 'marginUsed',
         dataIndex: 'marginUsed',
-        sorter: (a, b) =>
-          Number(a.position.marginUsed) - Number(b.position.marginUsed),
+        sorter: (a, b) => Number(a.marginUsed) - Number(b.marginUsed),
         render: (_, record) => {
           return (
             <div className="flex items-center gap-[12px]">
               <div>
                 <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1 mb-[4px]">
-                  {formatUsdValue(Number(record.position.marginUsed || 0))}
+                  {formatUsdValue(Number(record.marginUsed || 0))}
                 </div>
                 <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
-                  {record.position.leverage.type === 'cross'
-                    ? 'Cross'
-                    : 'Isolated'}
+                  {record.type === 'cross' ? 'Cross' : 'Isolated'}
                 </div>
               </div>
               <RcIconEditCC
                 className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default"
                 onClick={() => {
-                  setCurrentAssetCtx(marketDataMap[record.position.coin]);
-                  setCurrentPosition(record);
+                  setSelectedCoin(record.coin);
                   setEditMarginVisible(true);
                 }}
               />
@@ -370,17 +355,16 @@ export const PositionsInfo: React.FC = () => {
         key: 'fundingPayments',
         dataIndex: 'fundingPayments',
         sorter: (a, b) =>
-          Number(a.position.cumFunding.sinceOpen) -
-          Number(b.position.cumFunding.sinceOpen),
+          Number(a.sinceOpenFunding) - Number(b.sinceOpenFunding),
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
-              {Number(record.position.cumFunding.sinceOpen || 0) === 0
+              {Number(record.sinceOpenFunding || 0) === 0
                 ? ''
-                : Number(record.position.cumFunding.sinceOpen || 0) > 0
+                : Number(record.sinceOpenFunding || 0) > 0
                 ? '+'
                 : '-'}
-              ${Math.abs(Number(record.position.cumFunding.sinceOpen || 0))}
+              ${Math.abs(Number(record.sinceOpenFunding || 0))}
             </div>
           );
         },
@@ -391,69 +375,28 @@ export const PositionsInfo: React.FC = () => {
         key: 'children',
         dataIndex: 'children',
         render: (_, record) => {
-          const currentPosition = record;
-          const { tpPrice, slPrice, tpOid, slOid } = (() => {
-            if (
-              !currentPosition ||
-              !currentPosition.openOrders ||
-              !currentPosition.openOrders.length
-            ) {
-              return {
-                tpPrice: undefined,
-                slPrice: undefined,
-                tpOid: undefined,
-                slOid: undefined,
-              };
-            }
+          const tpPrice = record.tpPrice;
+          const slPrice = record.slPrice;
 
-            const tpItem = currentPosition.openOrders.find(
-              (order) =>
-                order.orderType === 'Take Profit Market' &&
-                order.isTrigger &&
-                order.reduceOnly
-            );
+          const entryPrice = Number(record.entryPx);
+          const size = Math.abs(Number(record.size || 0));
 
-            const slItem = currentPosition.openOrders.find(
-              (order) =>
-                order.orderType === 'Stop Market' &&
-                order.isTrigger &&
-                order.reduceOnly
-            );
-
-            return {
-              tpPrice: tpItem?.triggerPx,
-              slPrice: slItem?.triggerPx,
-              tpOid: tpItem?.oid,
-              slOid: slItem?.oid,
-            };
-          })();
-
-          const positionData = record.position;
-          const entryPrice = Number(positionData.entryPx);
-          const size = Math.abs(Number(currentPosition.position.szi || 0));
-
-          const isLong = (+positionData.szi || 0) > 0;
+          const isLong = record.direction === 'Long';
           // Calculate expected PNL for take profit
-          const takeProfitExpectedPnl = (() => {
-            if (!tpPrice || !positionData) {
-              return null;
-            }
-            const pnlUsdValue = isLong
-              ? (Number(tpPrice) - entryPrice) * size
-              : (entryPrice - Number(tpPrice)) * size;
-            return pnlUsdValue;
-          })();
+          const takeProfitExpectedPnl = calculatePnL(
+            Number(tpPrice || 0),
+            isLong ? 'Long' : 'Short',
+            size,
+            entryPrice
+          );
 
           // Calculate expected PNL for stop loss
-          const stopLossExpectedPnl = (() => {
-            if (!slPrice || !positionData) {
-              return null;
-            }
-            const pnlUsdValue = isLong
-              ? (Number(slPrice) - entryPrice) * size
-              : (entryPrice - Number(slPrice)) * size;
-            return pnlUsdValue;
-          })();
+          const stopLossExpectedPnl = calculatePnL(
+            Number(slPrice || 0),
+            isLong ? 'Long' : 'Short',
+            size,
+            entryPrice
+          );
 
           return (
             <div className="flex items-center gap-[12px]">
@@ -508,8 +451,7 @@ export const PositionsInfo: React.FC = () => {
               <RcIconEditCC
                 className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default"
                 onClick={() => {
-                  setCurrentPosition(record);
-                  setCurrentAssetCtx(marketDataMap[record.position.coin]);
+                  setSelectedCoin(record.coin);
                   setEditTpSlVisible(true);
                 }}
               />
@@ -536,8 +478,7 @@ export const PositionsInfo: React.FC = () => {
               overlay={
                 <Menu
                   onClick={(info) => {
-                    setCurrentPosition(record);
-                    setCurrentAssetCtx(marketDataMap[record.position.coin]);
+                    setSelectedCoin(record.coin);
                     setClosePositionType(
                       info.key as 'limit' | 'market' | 'reverse'
                     );
@@ -573,52 +514,46 @@ export const PositionsInfo: React.FC = () => {
   return (
     <>
       <CommonTable
-        dataSource={positionAndOpenOrders}
+        dataSource={positionFormatData}
         columns={columns}
         pagination={false}
         bordered={false}
         showSorterTooltip={false}
+        rowKey="coin"
       ></CommonTable>
-      {currentAssetCtx && positionData && currentPosition && (
+      {currentPosition && (
         <>
           <EditMarginModal
             visible={editMarginVisible}
-            coin={currentPosition?.position?.coin || ''}
-            currentAssetCtx={currentAssetCtx}
-            activeAssetCtx={wsActiveAssetCtx?.ctx || null}
-            direction={positionData.direction as 'Long' | 'Short'}
-            entryPrice={positionData.entryPrice}
-            leverage={positionData.leverage}
+            coin={currentPosition?.coin || ''}
+            currentAssetCtx={
+              marketDataMap[currentPosition.coin.toUpperCase()] || {}
+            }
+            direction={currentPosition.direction}
+            entryPrice={Number(currentPosition.entryPx || 0)}
+            leverage={currentPosition.leverage}
             availableBalance={Number(accountSummary?.withdrawable || 0)}
-            liquidationPx={Number(currentPosition?.position.liquidationPx || 0)}
-            positionSize={positionData.size}
-            marginUsed={positionData.marginUsed}
-            pnlPercent={positionData.pnlPercent}
-            pnl={positionData.pnl}
+            liquidationPx={Number(currentPosition?.liquidationPx || 0)}
+            positionSize={Number(currentPosition.size || 0)}
+            marginUsed={Number(currentPosition.marginUsed || 0)}
+            pnl={Number(currentPosition.unrealizedPnl || 0)}
             onCancel={() => setEditMarginVisible(false)}
             onConfirm={async (action: 'add' | 'reduce', margin: number) => {
-              await handleUpdateMargin(
-                currentPosition.position.coin,
-                action,
-                margin
-              );
+              await handleUpdateMargin(currentPosition.coin, action, margin);
               setEditMarginVisible(false);
-            }}
-            handlePressRiskTag={function (): void {
-              throw new Error('Function not implemented.');
             }}
           />
           <EditTpSlModal
-            position={currentPosition.position}
-            marketData={currentAssetCtx}
+            position={currentPosition}
+            marketData={marketDataMap[currentPosition.coin.toUpperCase()] || {}}
             visible={editTpSlVisible}
             onCancel={() => setEditTpSlVisible(false)}
             onConfirm={() => setEditTpSlVisible(false)}
           />
           <ClosePositionModal
             type={closePositionType}
-            position={currentPosition.position}
-            marketData={currentAssetCtx}
+            position={currentPosition}
+            marketData={marketDataMap[currentPosition.coin.toUpperCase()] || {}}
             visible={closePositionVisible}
             onCancel={() => setClosePositionVisible(false)}
             onConfirm={() => {

@@ -158,8 +158,6 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       <PositionSizeInputAndSlider
         price={markPrice}
         maxTradeSize={maxTradeSize}
-        availableBalance={availableBalance}
-        leverage={leverage}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
         percentage={percentage}

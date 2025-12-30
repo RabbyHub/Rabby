@@ -6,6 +6,7 @@ import { Button, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
+import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';
 import { useTranslation } from 'react-i18next';
 import { useSetState } from 'react-use';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
@@ -13,11 +14,21 @@ import { DesktopPerpsInput } from '../components/DesktopPerpsInput';
 import { DesktopPerpsSlider } from '../components/DesktopPerpsSlider';
 import { PerpsPositionCard } from '../components/PerpsPositionCard';
 import { usePerpsProPosition } from '../hooks/usePerpsProPosition';
+import { PositionFormatData } from '../components/UserInfoHistory/PositionsInfo';
+import {
+  calculateDistanceToLiquidation,
+  calLiquidationPrice,
+  formatPerpsPct,
+  formatTpOrSlPrice,
+  validatePriceInput,
+} from '../../Perps/utils';
+import { PositionSizeInputAndSlider } from '../components/TradingPanel/components/PositionSizeInputAndSlider';
+import { PositionSize } from '../types';
 
 export interface Props {
   visible: boolean;
   onCancel: () => void;
-  position: PositionAndOpenOrder['position'];
+  position: PositionFormatData;
   marketData: MarketData;
   type: 'limit' | 'market' | 'reverse';
   onConfirm?: () => void;
@@ -34,36 +45,33 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   const dispatch = useRabbyDispatch();
 
   const marketPrice = marketData.markPx;
-
-  const [formValues, setFormValues] = useSetState<{
-    limitPrice: string;
-    percentage: number;
-    size: string;
-    sizeUsd: string;
-  }>({
-    limitPrice: '',
-    percentage: 0,
-    size: '',
-    sizeUsd: '',
+  const [positionSize, setPositionSize] = React.useState<PositionSize>({
+    amount: '',
+    notionalValue: '',
   });
+  const [percentage, setPercentage] = React.useState(0);
+  const [limitPrice, setLimitPrice] = React.useState('');
 
   const { desc, btnText } = useMemo(() => {
     switch (type) {
       case 'limit':
         return {
-          desc: 'This will attempt to close at your chosen limit price.',
-          btnText: 'Limit',
+          desc: t('page.perpsPro.userInfo.positionInfo.closePositionTips'),
+          btnText: t('page.perpsPro.userInfo.positionInfo.limitClose'),
         };
       case 'market':
         return {
-          desc: 'This will close immediately at the current market price',
-          btnText: 'Close position',
+          desc: t(
+            'page.perpsPro.userInfo.positionInfo.closePositionMarketTips'
+          ),
+          btnText: t('page.perpsPro.userInfo.positionInfo.closePosition'),
         };
       case 'reverse':
         return {
-          desc:
-            'This will immediately close your position at the current market price and open a position of equal size in the opposite direction.',
-          btnText: 'Confirm',
+          desc: t(
+            'page.perpsPro.userInfo.positionInfo.closePositionReverseTips'
+          ),
+          btnText: t('page.perpsPro.userInfo.positionInfo.confirm'),
         };
     }
   }, [type, t]);
@@ -71,79 +79,34 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   // todo valid formValues
 
   const handleLimitPriceChange = useMemoizedFn((value: string) => {
-    setFormValues({ limitPrice: value });
+    if (validatePriceInput(value, marketData.szDecimals)) {
+      setLimitPrice(value);
+    }
   });
 
-  const handleSizeChange = useMemoizedFn(
-    <T extends Exclude<keyof typeof formValues, 'limitPrice'>>({
-      key,
-      value,
-    }: {
-      key: T;
-      value: typeof formValues[T];
-    }) => {
-      const price =
-        type === 'limit' ? formValues.limitPrice || marketPrice : marketPrice;
-
-      if (key === 'percentage') {
-        const size = new BigNumber(position.szi || 0)
-          .abs()
-          .times(value)
-          .div(100);
-        setFormValues({
-          percentage: +value,
-          size: size.toFixed(),
-          sizeUsd: size.times(price).toFixed(2),
-        });
-      } else if (key === 'size') {
-        const percentage = new BigNumber(value)
-          .div(new BigNumber(position.szi || 0).abs())
-          .times(100);
-
-        const sizeUsd = new BigNumber(value).times(price);
-
-        setFormValues({
-          size: value as string,
-          percentage: percentage.toNumber(),
-          sizeUsd: sizeUsd.isNaN() ? '' : sizeUsd.toFixed(2),
-        });
-      } else if (key === 'sizeUsd') {
-        const size = new BigNumber(value).dividedBy(price);
-        const percentage = size
-          .div(new BigNumber(position.szi || 0).abs())
-          .times(100);
-        setFormValues({
-          sizeUsd: value as string,
-          size: size.isNaN() ? '' : size.toFixed(),
-          percentage: percentage.toNumber(),
-        });
-      }
-    }
-  );
-
   const receiveAmount = useMemo(() => {
-    const size = new BigNumber(formValues.size || 0);
+    const size = new BigNumber(positionSize.amount || 0);
     const price =
       type === 'limit'
-        ? new BigNumber(formValues.limitPrice || 0)
+        ? new BigNumber(limitPrice || 0)
         : new BigNumber(marketPrice);
     return size.times(price);
-  }, [formValues.size, formValues.limitPrice, marketPrice, type]);
+  }, [positionSize.amount, limitPrice, marketPrice, type]);
 
   const closedPnl = useMemo(() => {
-    const size = new BigNumber(formValues.size || 0);
+    const size = new BigNumber(positionSize.amount || 0);
     const entryPrice = new BigNumber(position.entryPx || 0);
     const exitPrice =
       type === 'limit'
-        ? new BigNumber(formValues.limitPrice || 0)
+        ? new BigNumber(limitPrice || 0)
         : new BigNumber(marketPrice);
     return exitPrice.minus(entryPrice).times(size);
   }, [
-    formValues.size,
-    formValues.limitPrice,
+    positionSize.amount,
+    limitPrice,
     marketPrice,
     position.entryPx,
-    position.szi,
+    position.size,
     type,
   ]);
 
@@ -151,42 +114,46 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     if (type !== 'reverse') {
       return null;
     }
-    const szi = new BigNumber(position.szi || 0).times(-1);
+    const szi = new BigNumber(position.size || 0).times(-1);
     return {
       ...position,
       szi: szi.toFixed(),
     };
-  }, [position.szi, formValues.size]);
+  }, [position.size, positionSize.amount]);
 
   const {
-    handleCloseWithLimitOrder,
+    handleOpenLimitOrder,
     handleCloseWithMarketOrder,
   } = usePerpsProPosition();
 
   const { loading, runAsync: runSubmit } = useRequest(
     async () => {
       if (type === 'limit') {
-        await handleCloseWithLimitOrder({
+        await handleOpenLimitOrder({
           coin: position.coin,
-          isBuy: new BigNumber(position.szi || 0).isLessThan(0) ? true : false,
-          size: new BigNumber(formValues.size).toFixed(marketData.szDecimals),
-          limitPx: new BigNumber(formValues.limitPrice).toFixed(
-            marketData.pxDecimals
+          isBuy: new BigNumber(position.size || 0).isLessThan(0) ? true : false,
+          size: new BigNumber(positionSize.amount).toFixed(
+            marketData.szDecimals
           ),
+          limitPx: new BigNumber(limitPrice).toFixed(marketData.pxDecimals),
+          reduceOnly: true,
         });
       } else if (type === 'market') {
         await handleCloseWithMarketOrder({
           coin: position.coin,
-          isBuy: new BigNumber(position.szi || 0).isLessThan(0) ? true : false,
-          size: new BigNumber(formValues.size).toFixed(marketData.szDecimals),
+          isBuy: new BigNumber(position.size || 0).isLessThan(0) ? true : false,
+          size: new BigNumber(positionSize.amount).toFixed(
+            marketData.szDecimals
+          ),
           midPx: marketPrice,
+          reduceOnly: true,
         });
       } else if (type === 'reverse') {
         await handleCloseWithMarketOrder({
           coin: position.coin,
-          isBuy: new BigNumber(position.szi || 0).isLessThan(0) ? true : false,
-          size: new BigNumber(position.szi || 0)
-            .times(-2)
+          isBuy: new BigNumber(position.size || 0).isLessThan(0) ? true : false,
+          size: new BigNumber(position.size || 0)
+            .times(2)
             .toFixed(marketData.szDecimals),
           midPx: marketPrice,
           reduceOnly: false,
@@ -203,10 +170,51 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     }
   );
 
+  const handleMidClick = () => {
+    setLimitPrice(
+      formatTpOrSlPrice(
+        Number(marketData?.midPx || marketData?.markPx || 0),
+        marketData.szDecimals
+      )
+    );
+  };
+
+  const reverseEstimatedLiquidationPrice = useMemo(() => {
+    const markPrice = Number(marketData.markPx);
+    if (!markPrice) return 0;
+    const maxLeverage = marketData.maxLeverage;
+    return calLiquidationPrice(
+      markPrice,
+      Number(position.marginUsed),
+      position.direction === 'Long' ? 'Short' : 'Long',
+      Number(position.size),
+      Number(position.size) * markPrice,
+      maxLeverage
+    ).toFixed(marketData.pxDecimals);
+  }, [
+    marketData.pxDecimals,
+    marketData.markPx,
+    position.marginUsed,
+    position.size,
+    position.direction,
+    marketData.maxLeverage,
+  ]);
+
+  const liquidationDistance = useMemo(
+    () =>
+      calculateDistanceToLiquidation(
+        reverseEstimatedLiquidationPrice,
+        marketData.markPx
+      ),
+    [reverseEstimatedLiquidationPrice, marketData.markPx]
+  );
+
   return (
     <div className="flex flex-col min-h-[520px] bg-r-neutral-bg2">
-      <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-2">
-        Close Position
+      <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-12">
+        {type === 'reverse'
+          ? t('page.perpsPro.userInfo.positionInfo.reversePosition')
+          : t('page.perpsPro.userInfo.positionInfo.closePosition')}
       </div>
 
       <div className="flex-1 px-20 overflow-y-auto pb-24">
@@ -215,7 +223,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
         </div>
         <section className="mb-[12px]">
           <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-            Current position
+            {t('page.perpsPro.userInfo.positionInfo.currentPosition')}
           </div>
           <PerpsPositionCard position={position} marketData={marketData} />
         </section>
@@ -223,7 +231,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
           <>
             <section className="mb-[12px]">
               <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-                Configure
+                {t('page.perpsPro.userInfo.positionInfo.configure')}
               </div>
               <div>
                 {type === 'limit' ? (
@@ -232,10 +240,10 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                       className="flex-1 text-right"
                       prefix={
                         <span className="text-[13px] leading-[16px] text-r-neutral-foot font-medium">
-                          Limit price
+                          {t('page.perpsPro.userInfo.positionInfo.limitPrice')}
                         </span>
                       }
-                      value={formValues.limitPrice}
+                      value={limitPrice}
                       onChange={(e) => {
                         handleLimitPriceChange(e.target.value);
                       }}
@@ -252,15 +260,13 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                         'rounded-[8px] bg-rb-neutral-bg-1',
                         'text-center text-[13px] leading-[16px] font-medium text-rb-neutral-title-1'
                       )}
-                      onClick={() => {
-                        handleLimitPriceChange(marketPrice);
-                      }}
+                      onClick={handleMidClick}
                     >
-                      Mid
+                      {t('page.perpsPro.userInfo.positionInfo.mid')}
                     </div>
                   </div>
                 ) : null}
-                <div className="flex items-center gap-[12px] mb-[16px]">
+                {/* <div className="flex items-center gap-[12px] mb-[16px]">
                   <DesktopPerpsInput
                     className="flex-1"
                     value={formValues.size}
@@ -337,13 +343,30 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                       handleSizeChange({ key: 'percentage', value: num });
                     }}
                   />
+                </div> */}
+
+                <div className="space-y-[16px]">
+                  <PositionSizeInputAndSlider
+                    price={marketPrice}
+                    maxTradeSize={position.size}
+                    positionSize={positionSize}
+                    setPositionSize={setPositionSize}
+                    percentage={percentage}
+                    setPercentage={setPercentage}
+                    baseAsset={position.coin}
+                    quoteAsset="USDC"
+                    precision={{
+                      amount: marketData.szDecimals,
+                      price: marketData.pxDecimals,
+                    }}
+                  />
                 </div>
               </div>
             </section>
             <section className="space-y-[8px]">
               <div className="flex items-center justify-between">
                 <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                  Receive:
+                  {t('page.perpsPro.userInfo.positionInfo.receive')}
                 </div>
                 <div className={clsx('font-medium text-[12px] leading-[14px]')}>
                   +$
@@ -352,7 +375,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
               </div>
               <div className="flex items-center justify-between">
                 <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                  Closed PNL:
+                  {t('page.perpsPro.userInfo.positionInfo.closedPnl')}
                 </div>
                 <div
                   className={clsx(
@@ -372,7 +395,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
           <>
             <section className="mb-[12px]">
               <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-                New position
+                {t('page.perpsPro.userInfo.positionInfo.newPosition')}
               </div>
               <PerpsPositionCard
                 position={newPosition}
@@ -383,18 +406,28 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
             <section className="space-y-[8px]">
               <div className="flex items-center justify-between">
                 <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                  Liq. Price: :
+                  {t('page.perpsDetail.PerpsEditMarginPopup.liqPrice')}
                 </div>
-                <div className={clsx('font-medium text-[12px] leading-[14px]')}>
-                  // todo
+                <div
+                  className={clsx(
+                    'font-medium text-rb-neutral-title-1 text-[12px] leading-[14px]'
+                  )}
+                >
+                  ${splitNumberByStep(reverseEstimatedLiquidationPrice)}
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                  Liq. Distance:
+                  {t('page.perpsDetail.PerpsEditMarginPopup.liqDistance')}
                 </div>
-                <div className={clsx('font-medium text-[12px] leading-[14px]')}>
-                  // todo
+                <div
+                  className={clsx(
+                    'font-medium flex items-center flex-row text-[12px] leading-[14px] gap-4',
+                    'text-rb-neutral-title-1'
+                  )}
+                >
+                  <RcIconAlarmCC className="text-rb-neutral-info" />
+                  {formatPerpsPct(liquidationDistance)}
                 </div>
               </div>
             </section>

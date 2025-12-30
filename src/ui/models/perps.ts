@@ -16,6 +16,9 @@ import {
   wsUserNonFundingLedgerUpdates,
   WsUserFunding,
   UserNonFundingLedgerUpdates,
+  WsTwapStates,
+  UserTwapHistory,
+  UserTwapSliceFill,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
 import { RootModel } from '.';
@@ -109,6 +112,9 @@ export interface PerpsState {
   historicalOrders: UserHistoricalOrders[];
   userFunding: WsUserFunding['fundings'];
   nonFundingLedgerUpdates: UserNonFundingLedgerUpdates[];
+  twapStates: WsTwapStates['states'];
+  twapHistory: UserTwapHistory[];
+  twapSliceFills: UserTwapSliceFill[];
 }
 
 export const perps = createModel<RootModel>()({
@@ -148,6 +154,9 @@ export const perps = createModel<RootModel>()({
     historicalOrders: [],
     userFunding: [],
     nonFundingLedgerUpdates: [],
+    twapStates: [],
+    twapHistory: [],
+    twapSliceFills: [],
   } as PerpsState,
 
   reducers: {
@@ -162,11 +171,15 @@ export const perps = createModel<RootModel>()({
       state,
       payload: {
         listName:
+          | 'twapSliceFills'
+          | 'twapHistory'
           | 'userFunding'
           | 'historicalOrders'
           | 'nonFundingLedgerUpdates'
           | 'userFills';
         list:
+          | UserTwapSliceFill[]
+          | UserTwapHistory[]
           | WsUserFunding['fundings']
           | UserHistoricalOrders[]
           | UserNonFundingLedgerUpdates[]
@@ -886,6 +899,47 @@ export const perps = createModel<RootModel>()({
           });
         });
         subscriptions.push(unsubscribeUserNonFundingLedgerUpdates);
+
+        const {
+          unsubscribe: unsubscribeTwapStates,
+        } = sdk.ws.subscribeToTwapStates((data) => {
+          const { states, user } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+          dispatch.perps.patchState({ twapStates: states });
+        });
+        subscriptions.push(unsubscribeTwapStates);
+
+        const {
+          unsubscribe: unsubscribeUserTwapHistory,
+        } = sdk.ws.subscribeToUserTwapHistory((data) => {
+          const { history, user, isSnapshot } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+          dispatch.perps.patchStatsListBySnapshot({
+            listName: 'twapHistory',
+            list: history,
+            isSnapshot: isSnapshot || false,
+          });
+        });
+        subscriptions.push(unsubscribeUserTwapHistory);
+
+        const {
+          unsubscribe: unsubscribeUserTwapSliceFills,
+        } = sdk.ws.subscribeToUserTwapSliceFills((data) => {
+          const { twapSliceFills, user, isSnapshot } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+          dispatch.perps.patchStatsListBySnapshot({
+            listName: 'twapSliceFills',
+            list: twapSliceFills,
+            isSnapshot: isSnapshot || false,
+          });
+        });
+        subscriptions.push(unsubscribeUserTwapSliceFills);
       }
 
       const { unsubscribe: unsubscribeFills } = sdk.ws.subscribeToUserFills(

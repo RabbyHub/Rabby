@@ -773,11 +773,13 @@
         "openScaleOrderSuccess": "Scale order opened {{direction}} {{coin}}-USD: Size {{size}}",
         "takeProfitSuccess": "Take profit set successfully",
         "stopLossSuccess": "Stop loss set successfully",
+        "setAutoCloseSuccess": "Auto close set successfully",
         "openTWAPOrderSuccess": "TWAP order opened {{direction}} {{coin}}-USD: Size {{size}}",
         "openTPSlMarketOrderSuccess": "{{tpsl}} market order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
         "openTPSlLimitOrderSuccess": "{{tpsl}} limit order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
         "openLimitOrderSuccess": "limit order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
         "closePositionSuccess": "Closed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
+        "closeAllPositionsSuccess": "All positions closed successfully",
         "openPositionSuccess": "Opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}"
       },
       "closePositionPopup": {
@@ -1000,6 +1002,39 @@
         "volume": "Volume",
         "fundingCountdown": "Funding / Countdown",
         "8hrFunding": "8h Funding"
+      },
+      "userInfo": {
+        "positionInfo": {
+          "currentPosition": "Current Position",
+          "reversePosition": "Reverse Position",
+          "configure": "Configure",
+          "limitPrice": "Limit Price",
+          "closePosition": "Close Position",
+          "closePositionTips": "This will attempt to close at your chosen limit price.",
+          "limitClose": "Limit Close",
+          "closePositionMarketTips": "This will close immediately at the current market price",
+          "mid": "Mid",
+          "receive": "Receive",
+          "closedPnl": "Closed PNL",
+          "newPosition": "New Position",
+          "closePositionReverseTips": "This will immediately close your position at the current market price and open a position of equal size in the opposite direction.",
+          "confirm": "Confirm"
+        },
+        "distanceRiskTag": {
+          "goingDown": "Going down {{percent}} will trigger liquidation",
+          "goingUp": "Going up {{percent}} will trigger liquidation"
+        },
+        "twap": {
+          "activated": "Activated",
+          "completed": "Completed",
+          "terminated": "Terminated"
+        },
+        "history": "History",
+        "active": "Active",
+        "terminate": "Terminate",
+        "yes": "Yes",
+        "no": "No",
+        "randomized": "(randomized)"
       },
       "tradingPanel": {
         "startPrice": "Start Price",

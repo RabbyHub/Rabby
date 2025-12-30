@@ -5,19 +5,17 @@ import clsx from 'clsx';
 import React, { useMemo } from 'react';
 
 export const AccountInfo: React.FC = () => {
-  const { accountSummary, positionAndOpenOrders } = useRabbySelector(
-    (store) => {
-      return store.perps;
-    }
+  const clearinghouseState = useRabbySelector(
+    (store) => store.perps.clearinghouseState
   );
 
-  console.log('accountSummary', accountSummary);
-
   const positionAllPnl = useMemo(() => {
-    return positionAndOpenOrders.reduce((acc, asset) => {
-      return acc + Number(asset.position.unrealizedPnl || 0);
-    }, 0);
-  }, [positionAndOpenOrders]);
+    return (
+      clearinghouseState?.assetPositions.reduce((acc, asset) => {
+        return acc + Number(asset.position.unrealizedPnl || 0);
+      }, 0) || 0
+    );
+  }, [clearinghouseState]);
 
   return (
     <div className="w-full h-full flex flex-col flex-shrink-0 overflow-hidden">
@@ -47,7 +45,7 @@ export const AccountInfo: React.FC = () => {
             <div className="text-r-neutral-title-1">Total Balance</div>
             <div className="text-r-neutral-title-1">
               {formatUsdValue(
-                Number(accountSummary?.accountValue || 0),
+                Number(clearinghouseState?.marginSummary?.accountValue || 0),
                 BigNumber.ROUND_DOWN
               )}
             </div>
@@ -56,7 +54,7 @@ export const AccountInfo: React.FC = () => {
             <div className="text-r-neutral-title-1">Available Balance</div>
             <div className="text-r-neutral-title-1">
               {formatUsdValue(
-                Number(accountSummary?.withdrawable || 0),
+                Number(clearinghouseState?.withdrawable || 0),
                 BigNumber.ROUND_DOWN
               )}
             </div>
@@ -86,8 +84,8 @@ export const AccountInfo: React.FC = () => {
             <div className="text-rb-neutral-foot">Cross account leverage</div>
             <div className="text-r-neutral-title-1">
               {(
-                Number(accountSummary?.totalNtlPos || 0) /
-                Number(accountSummary?.accountValue || 1)
+                Number(clearinghouseState?.marginSummary?.totalNtlPos || 0) /
+                Number(clearinghouseState?.marginSummary?.accountValue || 1)
               ).toFixed(2)}
               x
             </div>

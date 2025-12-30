@@ -124,6 +124,7 @@ export const FundingHistory: React.FC = () => {
       dataSource={list}
       columns={columns}
       pagination={false}
+      rowKey={(record) => `${record.time}-${record.coin}`}
       bordered={false}
       showSorterTooltip={false}
     />

@@ -226,6 +226,7 @@ export const OrderHistory: React.FC = () => {
       pagination={false}
       bordered={false}
       showSorterTooltip={false}
+      rowKey={(record) => `${record.order.oid}-${record.status}`}
     ></CommonTable>
   );
 };

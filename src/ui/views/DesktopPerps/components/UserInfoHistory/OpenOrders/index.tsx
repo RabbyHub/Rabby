@@ -367,6 +367,7 @@ export const OpenOrders: React.FC = () => {
         columns={columns}
         pagination={false}
         bordered={false}
+        rowKey="oid"
         expandable={{
           childrenColumnName: '__not_exist__',
         }}

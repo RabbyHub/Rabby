@@ -5,10 +5,12 @@ import { OrderHistory } from './OrderHistory';
 import { TradeHistory } from './TradeHistory';
 import { OpenOrders } from './OpenOrders';
 import { FundingHistory } from './FundingHistory';
+import { Twap } from './Twap';
 
 const tabs = [
   { key: 'positions', label: 'Positions', content: PositionsInfo },
   { key: 'openOrders', label: 'Open Orders', content: OpenOrders },
+  { key: 'twap', label: 'TWAP', content: Twap },
   { key: 'tradeHistory', label: 'Trade History', content: TradeHistory },
   { key: 'fundingHistory', label: 'Funding History', content: FundingHistory },
   { key: 'orderHistory', label: 'Order History', content: OrderHistory },

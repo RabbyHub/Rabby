@@ -304,8 +304,6 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       <PositionSizeInputAndSlider
         price={triggerPrice}
         maxTradeSize={maxTradeSize}
-        availableBalance={availableBalance}
-        leverage={leverage}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
         percentage={percentage}
