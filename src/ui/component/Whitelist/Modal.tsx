@@ -109,7 +109,9 @@ export const PwdForNonWhitelistedTxModal = ({
       >
         <div className="page-header text-[16px] leading-[19px] mb-[20px]">
           <div className="header-content">
-            {t('page.dashboard.settings.PwdForNonWhitelistedTx.title')}
+            {isEnabledPwdForNonWhitelistedTx
+              ? t('page.dashboard.settings.PwdForNonWhitelistedTx.titleDisable')
+              : t('page.dashboard.settings.PwdForNonWhitelistedTx.titleEnable')}
           </div>
         </div>
         {!needPwdCheck ? (

@@ -1799,7 +1799,8 @@
           "feedbackSuccess": "Thank you for your feedback!"
         },
         "PwdForNonWhitelistedTx": {
-          "title": "Enable password check?",
+          "titleEnable": "Enable password check?",
+          "titleDisable": "Enter Password to Disable",
           "descEnable": "Once enabled, transferring to a non-whitelisted address in this extension will require your password.",
           "descDisable": "Once disabled, password verification will no longer be required for non-whitelisted addresses.",
           "inputPlaceholder": "Enter the Password to Confirm",
