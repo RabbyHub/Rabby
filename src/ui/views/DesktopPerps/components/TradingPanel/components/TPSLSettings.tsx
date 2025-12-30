@@ -7,6 +7,7 @@ import { calculatePnL } from '../utils';
 import { formatPnL } from '../utils';
 import { calculateTargetPrice } from '../utils';
 import { useTranslation } from 'react-i18next';
+import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 
 interface TPSLSettingsProps {
   config: TPSLConfig;
@@ -171,44 +172,33 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
       {/* TP Row */}
       <div className="space-y-[4px]">
         <div className="flex items-center gap-[8px]">
-          <div className="flex-1">
-            <div className="relative">
-              <input
-                disabled={noSizeTradeAmount}
-                type="text"
-                value={config.takeProfit.price}
-                onChange={handleTPPriceChange}
-                placeholder=""
-                className={clsx(
-                  'w-full h-[40px] pl-[32px] pr-[12px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid text-[13px] focus:outline-none font-medium text-right',
-                  config.takeProfit.error
-                    ? 'border-rb-red-default text-rb-red-default'
-                    : 'border-rb-neutral-line text-r-neutral-title-1'
-                )}
-              />
-              <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
+          <DesktopPerpsInput
+            disabled={noSizeTradeAmount}
+            prefix={
+              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                 TP
-              </div>
-            </div>
-          </div>
-          <div className="flex-1">
-            <div className="relative">
-              <input
-                disabled={noSizeTradeAmount}
-                type="text"
-                value={config.takeProfit.percentage}
-                onChange={handleTPPercentageChange}
-                placeholder=""
-                className="w-full h-[40px] pl-[44px] pr-[24px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line text-r-neutral-title-1 text-[13px] focus:outline-none font-medium text-right"
-              />
-              <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
+              </span>
+            }
+            value={config.takeProfit.price}
+            onChange={handleTPPriceChange}
+            className="text-right"
+          />
+          <DesktopPerpsInput
+            disabled={noSizeTradeAmount}
+            prefix={
+              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                 Gain
-              </div>
-              <div className="absolute right-[8px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
+              </span>
+            }
+            suffix={
+              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                 %
-              </div>
-            </div>
-          </div>
+              </span>
+            }
+            value={config.takeProfit.percentage}
+            onChange={handleTPPercentageChange}
+            className="text-right"
+          />
         </div>
         {config.takeProfit.error && (
           <div className="text-[12px] text-rb-red-default px-[4px]">
@@ -220,44 +210,33 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
       {/* SL Row */}
       <div className="space-y-[4px]">
         <div className="flex items-center gap-[8px]">
-          <div className="flex-1">
-            <div className="relative">
-              <input
-                disabled={noSizeTradeAmount}
-                type="text"
-                value={config.stopLoss.price}
-                onChange={handleSLPriceChange}
-                placeholder=""
-                className={clsx(
-                  'w-full h-[40px] pl-[32px] pr-[12px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid text-[13px] focus:outline-none font-medium text-right',
-                  config.stopLoss.error
-                    ? 'border-rb-red-default text-rb-red-default'
-                    : 'border-rb-neutral-line text-r-neutral-title-1'
-                )}
-              />
-              <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
+          <DesktopPerpsInput
+            disabled={noSizeTradeAmount}
+            prefix={
+              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                 SL
-              </div>
-            </div>
-          </div>
-          <div className="flex-1">
-            <div className="relative">
-              <input
-                disabled={noSizeTradeAmount}
-                type="text"
-                value={config.stopLoss.percentage}
-                onChange={handleSLPercentageChange}
-                placeholder=""
-                className="w-full h-[40px] pl-[44px] pr-[24px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line text-r-neutral-title-1 text-[13px] focus:outline-none font-medium text-right"
-              />
-              <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
+              </span>
+            }
+            value={config.stopLoss.price}
+            onChange={handleSLPriceChange}
+            className="text-right"
+          />
+          <DesktopPerpsInput
+            disabled={noSizeTradeAmount}
+            prefix={
+              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                 Loss
-              </div>
-              <div className="absolute right-[8px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
+              </span>
+            }
+            suffix={
+              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                 %
-              </div>
-            </div>
-          </div>
+              </span>
+            }
+            value={config.stopLoss.percentage}
+            onChange={handleSLPercentageChange}
+            className="text-right"
+          />
         </div>
         {config.stopLoss.error && (
           <div className="text-[12px] text-rb-red-default px-[4px]">

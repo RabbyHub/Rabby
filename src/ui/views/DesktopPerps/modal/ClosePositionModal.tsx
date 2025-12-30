@@ -2,7 +2,7 @@ import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
 import { useRabbyDispatch } from '@/ui/store';
 import { splitNumberByStep } from '@/ui/utils';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { Button, Modal } from 'antd';
+import { Button, Modal, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
@@ -110,17 +110,6 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     type,
   ]);
 
-  const newPosition = useMemo(() => {
-    if (type !== 'reverse') {
-      return null;
-    }
-    const szi = new BigNumber(position.size || 0).times(-1);
-    return {
-      ...position,
-      szi: szi.toFixed(),
-    };
-  }, [position.size, positionSize.amount]);
-
   const {
     handleOpenLimitOrder,
     handleCloseWithMarketOrder,
@@ -209,6 +198,57 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     [reverseEstimatedLiquidationPrice, marketData.markPx]
   );
 
+  const validation = React.useMemo(() => {
+    let error: string = '';
+    const notionalNum = Number(positionSize.notionalValue) || 0;
+    const tradeSize = Number(positionSize.amount) || 0;
+
+    if (notionalNum === 0) {
+      return {
+        isValid: false,
+        error: '',
+      };
+    }
+
+    // // Check minimum order size ($10)
+    // if (notionalNum < 10) {
+    //   error = t('page.perpsPro.tradingPanel.minimumOrderSize');
+    //   return { isValid: false, error };
+    // }
+
+    const maxTradeSize = Number(position.size) || 0;
+    if (maxTradeSize && tradeSize > maxTradeSize) {
+      error = t('page.perpsPro.tradingPanel.insufficientBalance');
+      return { isValid: false, error };
+    }
+
+    return {
+      isValid: error === '',
+      error,
+    };
+  }, [
+    positionSize.notionalValue,
+    limitPrice,
+    position.size,
+    positionSize.amount,
+    marketData.maxUsdValueSize,
+    t,
+  ]);
+
+  const newPosition = useMemo(() => {
+    if (type !== 'reverse') {
+      return null;
+    }
+
+    return {
+      ...position,
+      direction:
+        position.direction === 'Long' ? 'Short' : ('Long' as 'Long' | 'Short'),
+      entryPx: marketPrice,
+      liquidationDistancePercent: formatPerpsPct(liquidationDistance),
+    };
+  }, [position.size, positionSize.amount, marketPrice, liquidationDistance]);
+
   return (
     <div className="flex flex-col min-h-[520px] bg-r-neutral-bg2">
       <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-12">
@@ -266,85 +306,6 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                     </div>
                   </div>
                 ) : null}
-                {/* <div className="flex items-center gap-[12px] mb-[16px]">
-                  <DesktopPerpsInput
-                    className="flex-1"
-                    value={formValues.size}
-                    onChange={(e) => {
-                      handleSizeChange({
-                        key: 'size',
-                        value: e.target.value,
-                      });
-                    }}
-                    suffix={
-                      <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-                        {position.coin}
-                      </span>
-                    }
-                  />
-
-                  <DesktopPerpsInput
-                    className="flex-1"
-                    value={formValues.sizeUsd}
-                    onChange={(e) => {
-                      handleSizeChange({
-                        key: 'sizeUsd',
-                        value: e.target.value,
-                      });
-                    }}
-                    suffix={
-                      <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-                        USD
-                      </span>
-                    }
-                  />
-                </div>
-                <div className="flex items-center gap-[16px]">
-                  <DesktopPerpsSlider
-                    className="flex-1"
-                    min={0}
-                    max={100}
-                    step={1}
-                    marks={{
-                      25: '',
-                      50: '',
-                      75: '',
-                      100: '',
-                    }}
-                    tooltipVisible={false}
-                    value={formValues.percentage}
-                    onChange={(v) => {
-                      handleSizeChange({ key: 'percentage', value: v });
-                    }}
-                  />
-                  <DesktopPerpsInput
-                    suffix={
-                      <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-                        %
-                      </span>
-                    }
-                    type="number"
-                    className="w-[60px] p-[8px]"
-                    min={0}
-                    max={100}
-                    value={formValues.percentage}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      let num = Number(val);
-                      if (isNaN(num)) {
-                        num = 0;
-                      }
-                      if (num < 0) {
-                        num = 0;
-                      }
-                      if (num > 100) {
-                        num = 100;
-                      }
-                      handleSizeChange({ key: 'percentage', value: num });
-                    }}
-                  />
-                </div> */}
-
                 <div className="space-y-[16px]">
                   <PositionSizeInputAndSlider
                     price={marketPrice}
@@ -364,30 +325,50 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
               </div>
             </section>
             <section className="space-y-[8px]">
-              <div className="flex items-center justify-between">
-                <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                  {t('page.perpsPro.userInfo.positionInfo.receive')}
+              {type === 'market' && (
+                <div className="flex items-center justify-between">
+                  <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
+                    {t('page.perpsPro.userInfo.positionInfo.receive')}
+                  </div>
+                  {validation.isValid ? (
+                    <div
+                      className={clsx('font-medium text-[12px] leading-[14px]')}
+                    >
+                      +$
+                      {splitNumberByStep(receiveAmount.toFixed(2))}
+                    </div>
+                  ) : (
+                    <div
+                      className={clsx('font-medium text-[12px] leading-[14px]')}
+                    >
+                      -
+                    </div>
+                  )}
                 </div>
-                <div className={clsx('font-medium text-[12px] leading-[14px]')}>
-                  +$
-                  {splitNumberByStep(receiveAmount.toFixed(2))}
-                </div>
-              </div>
+              )}
               <div className="flex items-center justify-between">
                 <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
                   {t('page.perpsPro.userInfo.positionInfo.closedPnl')}
                 </div>
-                <div
-                  className={clsx(
-                    'font-medium text-[12px] leading-[14px]',
-                    closedPnl.isLessThan(0)
-                      ? 'text-r-red-default'
-                      : 'text-r-green-default'
-                  )}
-                >
-                  {closedPnl.isGreaterThanOrEqualTo(0) ? '+' : '-'}$
-                  {splitNumberByStep(closedPnl.abs().toFixed(2))}
-                </div>
+                {validation.isValid ? (
+                  <div
+                    className={clsx(
+                      'font-medium text-[12px] leading-[14px]',
+                      closedPnl.isLessThan(0)
+                        ? 'text-r-red-default'
+                        : 'text-r-green-default'
+                    )}
+                  >
+                    {closedPnl.isGreaterThanOrEqualTo(0) ? '+' : '-'}$
+                    {splitNumberByStep(closedPnl.abs().toFixed(2))}
+                  </div>
+                ) : (
+                  <div
+                    className={clsx('font-medium text-[12px] leading-[14px]')}
+                  >
+                    -
+                  </div>
+                )}
               </div>
             </section>
           </>
@@ -452,18 +433,23 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
           >
             {t('global.Cancel')}
           </Button>
-          <Button
-            block
-            size="large"
-            type="primary"
-            className="h-[44px] text-15 font-medium"
-            // todo
-            // disabled={!isValidForm}
-            loading={loading}
-            onClick={runSubmit}
+          <Tooltip
+            title={validation.error}
+            placement="top"
+            overlayClassName={clsx('rectangle')}
           >
-            {btnText}
-          </Button>
+            <Button
+              block
+              size="large"
+              type="primary"
+              className="h-[44px] text-15 font-medium"
+              disabled={!validation.isValid}
+              loading={loading}
+              onClick={runSubmit}
+            >
+              {btnText}
+            </Button>
+          </Tooltip>
         </div>
       </div>
     </div>
