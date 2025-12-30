@@ -39,6 +39,7 @@ export const PwdForNonWhitelistedTxModal = ({
   const needPwdCheck = isEnabledPwdForNonWhitelistedTx;
   const disableSubmit = needPwdCheck && !passwordText;
   const handleSubmit = useCallback(async () => {
+    if (disableSubmit) return;
     if (needPwdCheck) {
       try {
         await wallet.verifyPassword(passwordText);
@@ -62,6 +63,7 @@ export const PwdForNonWhitelistedTxModal = ({
     setFormState({ passwordText: '', errorText: '' });
     onFinish?.();
   }, [
+    disableSubmit,
     passwordText,
     dispatch,
     onFinish,
@@ -129,6 +131,11 @@ export const PwdForNonWhitelistedTxModal = ({
               className="whitelist-pwd-input h-[56px] p-[18px]"
               type="password"
               value={passwordText}
+              onKeyDown={(evt) => {
+                if (evt.key === 'Enter') {
+                  handleSubmit();
+                }
+              }}
               onChange={(evt) => {
                 setFormState((s) => ({
                   ...s,
@@ -197,7 +204,9 @@ export const VerifyPwdForNonWhitelisted = ({
   const isEnabledPwdForNonWhitelistedTx = useRabbySelector(
     (state) => state.preference.isEnabledPwdForNonWhitelistedTx
   );
+  const disableSubmit = !passwordText;
   const handleSubmit = useCallback(async () => {
+    if (disableSubmit) return;
     try {
       await wallet.verifyPassword(passwordText);
     } catch (err) {
@@ -219,6 +228,7 @@ export const VerifyPwdForNonWhitelisted = ({
     setFormState({ passwordText: '', errorText: '' });
     onFinish?.();
   }, [
+    disableSubmit,
     passwordText,
     dispatch,
     onFinish,
@@ -274,6 +284,11 @@ export const VerifyPwdForNonWhitelisted = ({
             className="whitelist-pwd-input h-[56px] p-[18px]"
             type="password"
             value={passwordText}
+            onKeyDown={(evt) => {
+              if (evt.key === 'Enter') {
+                handleSubmit();
+              }
+            }}
             onChange={(evt) => {
               setFormState((s) => ({
                 ...s,
@@ -303,7 +318,7 @@ export const VerifyPwdForNonWhitelisted = ({
             {t('global.Cancel')}
           </Button>
           <Button
-            disabled={!passwordText}
+            disabled={disableSubmit}
             type="primary"
             block
             className="h-[48px] rounded-[8px] text-[16px]"
