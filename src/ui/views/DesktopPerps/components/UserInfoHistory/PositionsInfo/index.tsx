@@ -28,6 +28,8 @@ import { ClosePositionModal } from '../../../modal/ClosePositionModal';
 import { DistanceRiskTag } from './DistanceRiskTag';
 import { calculatePnL } from '../../TradingPanel/utils';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
+import { LeverageModal } from '../../TradingPanel/components';
+import { MarginMode } from '../../../types';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -36,6 +38,7 @@ export interface PositionFormatData {
   size: string;
   positionValue: string;
   leverage: number;
+  maxLeverage: number;
   markPx: string;
   entryPx: string;
   liquidationPx: string;
@@ -69,6 +72,8 @@ export const PositionsInfo: React.FC = () => {
   const [closePositionType, setClosePositionType] = useState<
     'limit' | 'market' | 'reverse'
   >('market');
+
+  const [showLeverageModal, setShowLeverageModal] = React.useState(false);
 
   const positionFormatData = useMemo(() => {
     const resArr = [] as PositionFormatData[];
@@ -105,6 +110,7 @@ export const PositionsInfo: React.FC = () => {
         coin: item.position.coin,
         size: isLong ? item.position.szi : item.position.szi.slice(1),
         leverage: item.position.leverage.value,
+        maxLeverage: marketData.maxLeverage || 25,
         positionValue: item.position.positionValue,
         markPx: marketData.markPx || '0',
         entryPx: item.position.entryPx || '0',
@@ -130,7 +136,11 @@ export const PositionsInfo: React.FC = () => {
     );
   }, [positionFormatData, selectedCoin]);
 
-  const { handleUpdateMargin, handleCloseAllPositions } = usePerpsProPosition();
+  const {
+    handleUpdateMargin,
+    handleCloseAllPositions,
+    handleUpdateMarginModeLeverage,
+  } = usePerpsProPosition();
 
   const { isDarkTheme } = useThemeMode();
 
@@ -140,6 +150,26 @@ export const PositionsInfo: React.FC = () => {
     }
 
     await handleCloseAllPositions(clearinghouseState);
+    setTimeout(() => {
+      dispatch.perps.fetchClearinghouseState();
+    }, 100);
+  });
+
+  const handleClickLeverage = useMemoizedFn(
+    (coin: string, leverage: number) => {
+      setSelectedCoin(coin);
+      setShowLeverageModal(true);
+    }
+  );
+
+  const handleLeverageConfirm = useMemoizedFn(async (newLeverage: number) => {
+    const marginMode =
+      currentPosition?.type === 'cross'
+        ? MarginMode.CROSS
+        : MarginMode.ISOLATED;
+    await handleUpdateMarginModeLeverage(selectedCoin, newLeverage, marginMode);
+    message.success('Leverage changed to: ' + newLeverage);
+    setShowLeverageModal(false);
     setTimeout(() => {
       dispatch.perps.fetchClearinghouseState();
     }, 100);
@@ -217,11 +247,23 @@ export const PositionsInfo: React.FC = () => {
               )}
             >
               <div>
-                <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 mb-[2px]">
+                <div
+                  className="text-[13px] leading-[16px] font-semibold text-rb-neutral-title-1 mb-[2px] cursor-pointer hover:font-bold hover:text-rb-neutral-body"
+                  onClick={() => {
+                    dispatch.perps.setSelectedCoin(record.coin);
+                  }}
+                >
                   {record.coin}
                 </div>
                 <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
-                  {record.leverage}x{' '}
+                  <span
+                    className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot hover:font-bold hover:text-rb-neutral-title-1 cursor-pointer"
+                    onClick={(e) =>
+                      handleClickLeverage(record.coin, record.leverage)
+                    }
+                  >
+                    {record.leverage}x{' '}
+                  </span>
                   {record.direction === 'Long' ? 'Long' : 'Short'}
                 </div>
               </div>
@@ -559,6 +601,15 @@ export const PositionsInfo: React.FC = () => {
             onConfirm={() => {
               setClosePositionVisible(false);
             }}
+          />
+          {/* Leverage Modal */}
+          <LeverageModal
+            visible={showLeverageModal}
+            currentLeverage={currentPosition?.leverage || 1}
+            maxLeverage={currentPosition?.maxLeverage || 25}
+            coinSymbol={currentPosition?.coin || ''}
+            onConfirm={handleLeverageConfirm}
+            onCancel={() => setShowLeverageModal(false)}
           />
         </>
       )}

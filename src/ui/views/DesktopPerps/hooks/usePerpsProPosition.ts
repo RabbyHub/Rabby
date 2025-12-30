@@ -14,7 +14,7 @@ import * as Sentry from '@sentry/browser';
 import { useMemoizedFn } from 'ahooks';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
-import { LimitOrderType } from '../types';
+import { LimitOrderType, MarginMode } from '../types';
 import { removeTrailingZeros } from '../components/TradingPanel/utils';
 import BigNumber from 'bignumber.js';
 import { formatTpOrSlPrice } from '../../Perps/utils';
@@ -706,6 +706,24 @@ export const usePerpsProPosition = () => {
     }
   );
 
+  const handleUpdateMarginModeLeverage = useMemoizedFn(
+    async (coin: string, leverage: number, mode: MarginMode) => {
+      return withErrorHandler(
+        async () => {
+          const sdk = getPerpsSDK();
+          await sdk.exchange?.updateLeverage({
+            coin,
+            leverage: leverage,
+            isCross: mode === MarginMode.CROSS,
+          });
+          return true;
+        },
+        { coin, leverage, mode },
+        'update margin mode leverage error'
+      );
+    }
+  );
+
   const handleSetAutoClose = useMemoizedFn(
     async (params: {
       coin: string;
@@ -749,5 +767,7 @@ export const usePerpsProPosition = () => {
     handleUpdateMargin,
     handleSetAutoClose,
     handleCloseAllPositions,
+
+    handleUpdateMarginModeLeverage,
   };
 };

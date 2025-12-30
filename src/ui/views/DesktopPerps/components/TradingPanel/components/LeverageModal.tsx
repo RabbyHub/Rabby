@@ -167,7 +167,7 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
                 />
                 {/* Preset Points */}
                 <div className="flex items-center justify-between">
-                  {[0, maxLeverage].map((point) => (
+                  {[1, maxLeverage].map((point) => (
                     <button
                       key={point}
                       onClick={() => handlePresetClick(point)}

@@ -7,6 +7,7 @@ import { MarginModeModal } from './MarginModeModal';
 import { LeverageModal } from './LeverageModal';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useMemoizedFn } from 'ahooks';
+import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 
 interface TopModeStatusProps {
   orderType: OrderType;
@@ -47,13 +48,10 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
   const [showLeverageModal, setShowLeverageModal] = React.useState(false);
   const { t } = useTranslation();
 
+  const { handleUpdateMarginModeLeverage } = usePerpsProPosition();
+
   const handleLeverageConfirm = useMemoizedFn(async (newLeverage: number) => {
-    const sdk = getPerpsSDK();
-    await sdk.exchange?.updateLeverage({
-      coin: selectedCoin,
-      leverage: newLeverage,
-      isCross: marginMode === MarginMode.CROSS,
-    });
+    await handleUpdateMarginModeLeverage(selectedCoin, newLeverage, marginMode);
     message.success('Leverage changed to: ' + newLeverage);
     setShowLeverageModal(false);
   });
@@ -68,12 +66,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
   };
 
   const handleMarginModeConfirm = useMemoizedFn(async (mode: MarginMode) => {
-    const sdk = getPerpsSDK();
-    await sdk.exchange?.updateLeverage({
-      coin: selectedCoin,
-      leverage: leverage,
-      isCross: mode === MarginMode.CROSS,
-    });
+    await handleUpdateMarginModeLeverage(selectedCoin, leverage, mode);
     message.success('Margin mode changed to: ' + mode);
     setShowMarginModeModal(false);
   });
