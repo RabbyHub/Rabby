@@ -11,6 +11,7 @@ import Popup from '../Popup';
 
 import './style.less';
 import { getContainerByScreen, useWallet } from '@/ui/utils';
+import { UI_TYPE } from '@/constant/ui';
 
 export const PwdForNonWhitelistedTxModal = ({
   visible: propVisible,
@@ -94,7 +95,11 @@ export const PwdForNonWhitelistedTxModal = ({
       height={height}
       // bodyStyle={{ height: '100%', padding: '14px 20px 0 20px' }}
       destroyOnClose
-      className="pwd-for-non-whitelisted-tx-popup-wrapper"
+      forceRender={UI_TYPE.isDesktop}
+      className={clsx(
+        'pwd-for-non-whitelisted-tx-popup-wrapper',
+        !propVisible && 'hidden'
+      )}
       getContainer={getContainerByScreen}
       isSupportDarkMode
     >
@@ -247,7 +252,11 @@ export const VerifyPwdForNonWhitelisted = ({
       height={230}
       // bodyStyle={{ height: '100%', padding: '14px 20px 0 20px' }}
       destroyOnClose
-      className="verify-whitelisted-item-popup-wrapper"
+      forceRender={UI_TYPE.isDesktop}
+      className={clsx(
+        'verify-whitelisted-item-popup-wrapper',
+        !propVisible && 'hidden'
+      )}
       getContainer={getContainerByScreen}
       isSupportDarkMode
     >
