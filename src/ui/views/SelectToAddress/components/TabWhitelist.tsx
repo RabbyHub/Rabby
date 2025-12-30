@@ -24,12 +24,13 @@ import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.
 import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import qs from 'qs';
-import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
+import { Account } from '@rabby-wallet/eth-walletconnect-keyring/type';
 
 const WhitelistItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
   position: relative;
   border-radius: 12px;
+  margin-top: 12px;
 
   &:first-child {
     margin-top: 0;
@@ -62,9 +63,11 @@ const getContainer =
 export default function TabWhitelist({
   unimportedBalances = {},
   handleChange,
+  onManagePwdForNonWhitelistedTx,
 }: {
   unimportedBalances: Record<string, number>;
-  handleChange: (address: string, type?: string) => void;
+  handleChange: (account: Account) => void;
+  onManagePwdForNonWhitelistedTx: () => void;
 }) {
   const history = useHistory();
   const { search } = useLocation();
@@ -133,10 +136,6 @@ export default function TabWhitelist({
     });
   };
 
-  const [
-    isShowNonWhitelistedTxPwdModal,
-    setIsShowNonWhitelistedTxPwdModal,
-  ] = useState(false);
   const isEnabledPwdForNonWhitelistedTx = useRabbySelector(
     (state) => state.preference.isEnabledPwdForNonWhitelistedTx
   );
@@ -155,20 +154,13 @@ export default function TabWhitelist({
             <Switch
               checked={isEnabledPwdForNonWhitelistedTx}
               onChange={() => {
-                setIsShowNonWhitelistedTxPwdModal(true);
+                onManagePwdForNonWhitelistedTx();
               }}
             />
           </div>
         </div>
       )}
 
-      <PwdForNonWhitelistedTxModal
-        visible={isShowNonWhitelistedTxPwdModal}
-        onFinish={() => {
-          setIsShowNonWhitelistedTxPwdModal(false);
-        }}
-        onCancel={() => setIsShowNonWhitelistedTxPwdModal(false)}
-      />
       {/* WhiteList or Imported Addresses List */}
       <div
         className="flex-1 overflow-y-auto px-[20px]"
@@ -203,7 +195,7 @@ export default function TabWhitelist({
                   type={item.type}
                   brandName={item.brandName}
                   onClick={() => {
-                    handleChange(item.address, item.type);
+                    handleChange(item);
                   }}
                 />
               </WhitelistItemWrapper>

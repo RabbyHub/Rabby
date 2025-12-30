@@ -54,7 +54,7 @@ type RenderAccount = Account & {
 export default function TabImported({
   handleChange,
 }: {
-  handleChange: (address: string, type?: string) => void;
+  handleChange: (account: Account) => void;
 }) {
   const { accountsList, whitelist } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
@@ -102,14 +102,6 @@ export default function TabImported({
     return ret;
   }, [accountsList, whitelist]);
 
-  const [itemToConfirm, setItemToConfirm] = useState<RenderAccount | null>(
-    null
-  );
-
-  const isEnabledPwdForNonWhitelistedTx = useRabbySelector(
-    (state) => state.preference.isEnabledPwdForNonWhitelistedTx
-  );
-
   return (
     <div className="h-full static">
       <div
@@ -136,25 +128,11 @@ export default function TabImported({
                   type={item.type}
                   brandName={item.brandName}
                   onClick={() => {
-                    if (isEnabledPwdForNonWhitelistedTx) {
-                      setItemToConfirm(item);
-                    } else {
-                      handleChange(item.address, item.type);
-                    }
+                    handleChange(item);
                   }}
                 />
               </AccountItemWrapper>
             ))}
-
-          <VerifyPwdForNonWhitelisted
-            visible={!!itemToConfirm}
-            onFinish={() => {
-              if (!itemToConfirm) return;
-              handleChange(itemToConfirm.address, itemToConfirm.type);
-              setItemToConfirm(null);
-            }}
-            onCancel={() => setItemToConfirm(null)}
-          />
         </div>
       </div>
     </div>

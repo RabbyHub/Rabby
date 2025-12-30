@@ -8,10 +8,9 @@ import clsx from 'clsx';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import Popup from '../Popup';
-import PageHeader from '../PageHeader';
 
 import './style.less';
-import { useWallet } from '@/ui/utils';
+import { getContainerByScreen, useWallet } from '@/ui/utils';
 
 export const PwdForNonWhitelistedTxModal = ({
   visible: propVisible,
@@ -107,10 +106,12 @@ export const PwdForNonWhitelistedTxModal = ({
           }
         )}
       >
-        <div className="page-header text-[16px] leading-[19px] mb-[20px]">
-          <div className="header-content">
-            {t('page.dashboard.settings.PwdForNonWhitelistedTx.title')}
-          </div>
+        <div className="page-header leading-[19px] mb-[20px]">
+          <span className="header-content text-[20px]">
+            {isEnabledPwdForNonWhitelistedTx
+              ? t('page.dashboard.settings.PwdForNonWhitelistedTx.titleDisable')
+              : t('page.dashboard.settings.PwdForNonWhitelistedTx.titleEnable')}
+          </span>
         </div>
         {!needPwdCheck ? (
           <div className="flex-1">
@@ -160,7 +161,7 @@ export const PwdForNonWhitelistedTxModal = ({
             type="primary"
             ghost
             block
-            className="h-[48px] rounded-[8px] text-[16px]"
+            className="rabby-btn-ghost h-[48px] rounded-[8px] text-[16px]"
             onClick={handleCancel}
           >
             {t('global.Cancel')}
@@ -246,6 +247,7 @@ export const VerifyPwdForNonWhitelisted = ({
       // bodyStyle={{ height: '100%', padding: '14px 20px 0 20px' }}
       destroyOnClose
       className="verify-whitelisted-item-popup-wrapper"
+      getContainer={getContainerByScreen}
       isSupportDarkMode
     >
       <div
@@ -257,10 +259,10 @@ export const VerifyPwdForNonWhitelisted = ({
           }
         )}
       >
-        <div className="page-header text-[16px] leading-[19px] mb-[20px]">
-          <div className="header-content">
+        <div className="page-header leading-[19px] mb-[20px]">
+          <span className="header-content text-[20px]">
             {t('page.whitelist.verifyPwd.title')}
-          </div>
+          </span>
         </div>
         <div className="flex-1">
           <Input
@@ -296,7 +298,7 @@ export const VerifyPwdForNonWhitelisted = ({
             type="primary"
             ghost
             block
-            className="h-[48px] rounded-[8px] text-[16px]"
+            className="rabby-btn-ghost h-[48px] rounded-[8px] text-[16px]"
             onClick={handleCancel}
           >
             {t('global.Cancel')}

@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -30,6 +32,11 @@ import './style.less';
 import TabImported from './components/TabImported';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { query2obj } from '@/ui/utils/url';
+import {
+  PwdForNonWhitelistedTxModal,
+  VerifyPwdForNonWhitelisted,
+} from '@/ui/component/Whitelist/Modal';
+import { Account } from '@rabby-wallet/eth-walletconnect-keyring/type';
 
 const OuterInput = styled.div`
   border: 1px solid var(--r-neutral-line);
@@ -75,6 +82,27 @@ function getDefaultState() {
   };
 }
 
+const handleGotoSendToken = (
+  history: ReturnType<typeof useHistory>,
+  address: string,
+  type?: string
+) => {
+  const query = new URLSearchParams(history.location.search);
+  query.set('to', address);
+  if (type) {
+    query.set('type', type);
+  } else {
+    query.delete('type');
+  }
+  if (isDesktop) {
+    query.set('action', 'send');
+    query.set('sendPageType', 'sendToken');
+    history.replace(`${history.location.pathname}?${query.toString()}`);
+  } else {
+    history.replace(`/send-token?${query.toString()}`);
+  }
+};
+
 const SelectToAddress = () => {
   const history = useHistory();
   const { search } = useLocation();
@@ -116,41 +144,10 @@ const SelectToAddress = () => {
       .map((w) => padWatchAccount(w));
   }, [importedWhitelistAccounts, whitelist]);
 
-  const fetchData = async () => {
-    dispatch.accountToDisplay.getAllAccountsToDisplay();
-    dispatch.whitelist.getWhitelistEnabled();
-    dispatch.whitelist.getWhitelist();
-  };
-
   const nftItem = useMemo(() => {
     const query = new URLSearchParams(search);
     return query.get('nftItem') || null;
   }, [search]);
-
-  const handleGotoSend = (address: string, type?: string) => {
-    if (nftItem) {
-      handleGotoSendNFT(address);
-    } else {
-      handleGotoSendToken(address, type);
-    }
-  };
-
-  const handleGotoSendToken = (address: string, type?: string) => {
-    const query = new URLSearchParams(history.location.search);
-    query.set('to', address);
-    if (type) {
-      query.set('type', type);
-    } else {
-      query.delete('type');
-    }
-    if (isDesktop) {
-      query.set('action', 'send');
-      query.set('sendPageType', 'sendToken');
-      history.replace(`${history.location.pathname}?${query.toString()}`);
-    } else {
-      history.replace(`/send-token?${query.toString()}`);
-    }
-  };
 
   const handleGotoSendNFT = useCallback(
     (address: string) => {
@@ -169,6 +166,17 @@ const SelectToAddress = () => {
     [history, nftItem]
   );
 
+  const handleGotoSend = useCallback(
+    (address: string, type?: string) => {
+      if (nftItem) {
+        handleGotoSendNFT(address);
+      } else {
+        handleGotoSendToken(history, address, type);
+      }
+    },
+    [nftItem, handleGotoSendNFT, history]
+  );
+
   const handleClickBack = useCallback(() => {
     // if (inputingAddress) {
     //   setInputingAddress(false);
@@ -179,16 +187,7 @@ const SelectToAddress = () => {
     } else {
       handleGotoSendNFT('');
     }
-  }, [/* inputingAddress,  */ history, handleGotoSendNFT]);
-
-  const handleChange = (address: string, type?: string) => {
-    if (!isValidAddress(address)) {
-      return;
-    }
-    forceUpdateUnimportedBalances(address);
-
-    handleGotoSend(address, type);
-  };
+  }, [/* inputingAddress,  */ nftItem, history, handleGotoSendNFT]);
 
   const forceUpdateUnimportedBalances = useCallback(
     async (address: string) => {
@@ -212,9 +211,43 @@ const SelectToAddress = () => {
     [wallet]
   );
 
+  const handleConfirmAccount = useCallback(
+    (account?: { address: string; type?: string } | null) => {
+      console.debug('[feat] account', account);
+      if (!account) return;
+      const { address, type } = account;
+      setItemToConfirm(null);
+
+      if (!isValidAddress(address)) {
+        return;
+      }
+      forceUpdateUnimportedBalances(address);
+
+      handleGotoSend(address, type);
+    },
+    [forceUpdateUnimportedBalances, handleGotoSend]
+  );
+
+  const isEnabledPwdForNonWhitelistedTx = useRabbySelector(
+    (state) => state.preference.isEnabledPwdForNonWhitelistedTx
+  );
+  const handleSelectAccount = useCallback(
+    (account: { address: string; type?: string }) => {
+      if (isEnabledPwdForNonWhitelistedTx) {
+        setItemToConfirm(account);
+        return;
+      }
+
+      handleConfirmAccount(account);
+    },
+    [isEnabledPwdForNonWhitelistedTx, handleConfirmAccount]
+  );
+
   useEffect(() => {
-    fetchData();
-  }, []);
+    dispatch.accountToDisplay.getAllAccountsToDisplay();
+    dispatch.whitelist.getWhitelistEnabled();
+    dispatch.whitelist.getWhitelist();
+  }, [dispatch]);
 
   useEffect(() => {
     let cancelled = false;
@@ -291,6 +324,16 @@ const SelectToAddress = () => {
     return t('page.selectToAddress.title');
   }, [history.location.search, t]);
 
+  const [
+    isShowNonWhitelistedTxPwdModal,
+    setIsShowNonWhitelistedTxPwdModal,
+  ] = useState(false);
+
+  const [itemToConfirm, setItemToConfirm] = useState<{
+    address: string;
+    type?: string;
+  } | null>(null);
+
   return (
     <FullscreenContainer
       className={clsx(isDesktop ? 'h-[600px]' : 'h-[700px]')}
@@ -323,7 +366,9 @@ const SelectToAddress = () => {
               onCancel={() => {
                 setInputingAddress(false);
               }}
-              onNext={handleChange}
+              onNext={(account, type) =>
+                handleSelectAccount({ address: account, type })
+              }
             />
           ) : (
             <OuterInput
@@ -378,7 +423,10 @@ const SelectToAddress = () => {
             >
               <TabWhitelist
                 unimportedBalances={unimportedBalances}
-                handleChange={handleChange}
+                handleChange={handleSelectAccount}
+                onManagePwdForNonWhitelistedTx={() => {
+                  setIsShowNonWhitelistedTxPwdModal(true);
+                }}
               />
             </Tabs.TabPane>
 
@@ -397,11 +445,23 @@ const SelectToAddress = () => {
                 </span>
               }
             >
-              <TabImported handleChange={handleChange} />
+              <TabImported handleChange={handleSelectAccount} />
             </Tabs.TabPane>
           </Tabs>
         )}
       </div>
+      <PwdForNonWhitelistedTxModal
+        visible={isShowNonWhitelistedTxPwdModal}
+        onFinish={() => {
+          setIsShowNonWhitelistedTxPwdModal(false);
+        }}
+        onCancel={() => setIsShowNonWhitelistedTxPwdModal(false)}
+      />
+      <VerifyPwdForNonWhitelisted
+        visible={!!itemToConfirm}
+        onFinish={() => handleConfirmAccount(itemToConfirm)}
+        onCancel={() => setItemToConfirm(null)}
+      />
       <AddressRiskAlert
         type={selectedAddrInfo.addressType}
         address={selectedAddrInfo.address}
