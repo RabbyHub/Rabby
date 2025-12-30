@@ -42,6 +42,13 @@ export default (store: typeof import('@/ui/store').default) => {
         });
         break;
       }
+      case 'isEnabledPwdForNonWhitelistedTx': {
+        dispatch.preference.setField({
+          isEnabledPwdForNonWhitelistedTx:
+            payload.partials.isEnabledPwdForNonWhitelistedTx,
+        });
+        break;
+      }
     }
   });
 

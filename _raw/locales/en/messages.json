@@ -1133,6 +1133,10 @@
         "added": "Address added to whitelist",
         "repeated": "The current address is already on the whitelist.",
         "tooltip": "Whitelist address"
+      },
+      "verifyPwd": {
+        "title": "Non-Whitelisted Address",
+        "inputPlaceholder": "Enter your password to confirm this transfer"
       }
     },
     "sendTokenComponents": {
@@ -1765,7 +1769,8 @@
           "themeMode": "Theme Mode",
           "customTestnet": "Add Custom Network",
           "metamaskMode": "Connect Rabby by Disguising as MetaMask",
-          "enableDappAccount": "Switch Dapp Address Independently"
+          "enableDappAccount": "Switch Dapp Address Independently",
+          "switchPasswordForNonWhitelistedTx": "Password for non-whitelisted transfers"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -1792,6 +1797,13 @@
           "submitFeedbackButton": "Submit",
           "feedbackPlaceholder": "Rabby values your feedback!",
           "feedbackSuccess": "Thank you for your feedback!"
+        },
+        "PwdForNonWhitelistedTx": {
+          "title": "Enable password check?",
+          "descEnable": "Once enabled, transferring to a non-whitelisted address in this extension will require your password.",
+          "descDisable": "Once disabled, password verification will no longer be required for non-whitelisted addresses.",
+          "inputPlaceholder": "Enter the Password to Confirm",
+          "wrongPassword": "Wrong password"
         }
       },
       "tokenDetail": {
@@ -3379,7 +3391,10 @@
         "addWhitelistDesc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time",
         "addWhitelist": "Add address to whitelist",
         "removeFromWhitelist": "Remove from whitelist",
-        "notWhitelist": "Not a whitelist Address"
+        "notWhitelist": "Not a whitelist Address",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Password for non-whitelisted transfers"
+        }
       },
       "sendToImportedAddress": "Send to Imported Address",
       "selectImportedAddress": "Select Imported address",
@@ -3617,7 +3632,10 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",

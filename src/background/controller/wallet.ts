@@ -1872,6 +1872,12 @@ export class WalletController extends BaseController {
   setReserveGasOnSendToken = (val: boolean) =>
     preferenceService.setPreferencePartials({ reserveGasOnSendToken: val });
 
+  enablePwdForNonWhitelistedTx = (enabled: boolean) => {
+    preferenceService.setPreferencePartials({
+      isEnabledPwdForNonWhitelistedTx: enabled,
+    });
+  };
+
   enableDappAccount = (enabled: boolean) => {
     preferenceService.setPreferencePartials({ isEnabledDappAccount: enabled });
     const currentAccount = preferenceService.getCurrentAccount();

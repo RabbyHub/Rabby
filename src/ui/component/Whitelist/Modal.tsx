@@ -1,0 +1,318 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
+import React, { useCallback, useEffect } from 'react';
+
+import { Button, Form, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
+
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import Popup from '../Popup';
+import PageHeader from '../PageHeader';
+
+import './style.less';
+import { useWallet } from '@/ui/utils';
+
+export const PwdForNonWhitelistedTxModal = ({
+  height = 195,
+  visible: propVisible,
+  onFinish,
+  onCancel,
+}: {
+  height?: number;
+  visible: boolean;
+  onFinish(): void;
+  onCancel(): void;
+}) => {
+  const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
+
+  const [{ passwordText, errorText }, setFormState] = React.useState<{
+    passwordText: string;
+    errorText: string;
+  }>({ passwordText: '', errorText: '' });
+  const wallet = useWallet();
+
+  const isEnabledPwdForNonWhitelistedTx = useRabbySelector(
+    (state) => state.preference.isEnabledPwdForNonWhitelistedTx
+  );
+  const needPwdCheck = isEnabledPwdForNonWhitelistedTx;
+  const disableSubmit = needPwdCheck && !passwordText;
+  const handleSubmit = useCallback(async () => {
+    if (needPwdCheck) {
+      try {
+        await wallet.verifyPassword(passwordText);
+      } catch (err) {
+        const message = (err as Error)?.message || '';
+        if (message) {
+          setFormState((s) => ({
+            ...s,
+            errorText:
+              message ||
+              t('page.dashboard.settings.PwdForNonWhitelistedTx.wrongPassword'),
+          }));
+          return;
+        }
+      }
+    }
+
+    dispatch.preference.enablePwdForNonWhitelistedTx(
+      !isEnabledPwdForNonWhitelistedTx
+    );
+    setFormState({ passwordText: '', errorText: '' });
+    onFinish?.();
+  }, [
+    passwordText,
+    dispatch,
+    onFinish,
+    t,
+    wallet,
+    needPwdCheck,
+    isEnabledPwdForNonWhitelistedTx,
+  ]);
+
+  const handleCancel = useCallback(() => {
+    setFormState({ passwordText: '', errorText: '' });
+    onCancel();
+  }, [onCancel]);
+
+  const inputRef = React.useRef<Input>(null);
+  useEffect(() => {
+    setTimeout(() => {
+      if (propVisible && isEnabledPwdForNonWhitelistedTx) {
+        inputRef.current?.focus();
+      }
+    }, 100);
+  }, [propVisible, isEnabledPwdForNonWhitelistedTx]);
+
+  return (
+    <Popup
+      visible={propVisible}
+      onClose={handleCancel}
+      height={height}
+      // bodyStyle={{ height: '100%', padding: '14px 20px 0 20px' }}
+      destroyOnClose
+      className="pwd-for-non-whitelisted-tx-popup-wrapper"
+      isSupportDarkMode
+    >
+      <div
+        className={clsx(
+          'non-whitelisted-tx-modal h-full flex flex-col justify-between',
+          {
+            show: propVisible,
+            // hidden: !propVisible,
+          }
+        )}
+      >
+        <PageHeader
+          closeable
+          onClose={handleCancel}
+          className="text-[16px] leading-[19px] mb-[20px]"
+          closeCn={'top-[-1px]'}
+        >
+          {t('page.dashboard.settings.PwdForNonWhitelistedTx.title')}
+        </PageHeader>
+        {!needPwdCheck ? (
+          <div className="flex-1">
+            <div className="text-r-neutral-body text-[13px] leading-[18px] text-center mb-[20px]">
+              {t('page.dashboard.settings.PwdForNonWhitelistedTx.descEnable')}
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1">
+            <div className="text-r-neutral-body text-[13px] leading-[18px] text-center mb-[20px]">
+              {t('page.dashboard.settings.PwdForNonWhitelistedTx.descDisable')}
+            </div>
+
+            <Input
+              ref={inputRef}
+              className="whitelist-pwd-input h-[56px] p-[18px]"
+              type="password"
+              value={passwordText}
+              onChange={(evt) => {
+                setFormState((s) => ({
+                  ...s,
+                  errorText: '',
+                  passwordText: evt.target.value || '',
+                }));
+              }}
+              placeholder={t(
+                'page.dashboard.settings.PwdForNonWhitelistedTx.inputPlaceholder'
+              )}
+            />
+
+            {errorText && (
+              <div className="mt-[6px]">
+                <span className="text-r-red-default text-[13px] font-normal">
+                  {errorText}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+        <footer className="fixed-footer flex justify-between items-center gap-[16px]">
+          <Button
+            type="primary"
+            ghost
+            block
+            className="h-[48px] rounded-[8px] text-[16px]"
+            onClick={handleCancel}
+          >
+            {t('global.Cancel')}
+          </Button>
+          <Button
+            disabled={disableSubmit}
+            type="primary"
+            block
+            className="h-[48px] rounded-[8px] text-[16px]"
+            onClick={handleSubmit}
+          >
+            {t('global.Confirm')}
+          </Button>
+        </footer>
+      </div>
+    </Popup>
+  );
+};
+
+export const VerifyPwdForNonWhitelisted = ({
+  visible: propVisible,
+  onFinish,
+  onCancel,
+}: {
+  height?: number;
+  visible: boolean;
+  onFinish(): void;
+  onCancel(): void;
+}) => {
+  const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
+
+  const [{ passwordText, errorText }, setFormState] = React.useState<{
+    passwordText: string;
+    errorText: string;
+  }>({ passwordText: '', errorText: '' });
+  const wallet = useWallet();
+
+  const isEnabledPwdForNonWhitelistedTx = useRabbySelector(
+    (state) => state.preference.isEnabledPwdForNonWhitelistedTx
+  );
+  const handleSubmit = useCallback(async () => {
+    try {
+      await wallet.verifyPassword(passwordText);
+    } catch (err) {
+      const message = (err as Error)?.message || '';
+      if (message) {
+        setFormState((s) => ({
+          ...s,
+          errorText:
+            message ||
+            t('page.dashboard.settings.PwdForNonWhitelistedTx.wrongPassword'),
+        }));
+        return;
+      }
+    }
+
+    dispatch.preference.enablePwdForNonWhitelistedTx(
+      !isEnabledPwdForNonWhitelistedTx
+    );
+    setFormState({ passwordText: '', errorText: '' });
+    onFinish?.();
+  }, [
+    passwordText,
+    dispatch,
+    onFinish,
+    t,
+    wallet,
+    isEnabledPwdForNonWhitelistedTx,
+  ]);
+
+  const handleCancel = useCallback(() => {
+    setFormState({ passwordText: '', errorText: '' });
+    onCancel();
+  }, [onCancel]);
+
+  const inputRef = React.useRef<Input>(null);
+  useEffect(() => {
+    setTimeout(() => {
+      if (propVisible && isEnabledPwdForNonWhitelistedTx) {
+        inputRef.current?.focus();
+      }
+    }, 100);
+  }, [propVisible, isEnabledPwdForNonWhitelistedTx]);
+
+  return (
+    <Popup
+      visible={propVisible}
+      onClose={handleCancel}
+      height={230}
+      // bodyStyle={{ height: '100%', padding: '14px 20px 0 20px' }}
+      destroyOnClose
+      className="verify-whitelisted-item-popup-wrapper"
+      isSupportDarkMode
+    >
+      <div
+        className={clsx(
+          'non-whitelisted-tx-modal h-full flex flex-col justify-between',
+          {
+            show: propVisible,
+            // hidden: !propVisible,
+          }
+        )}
+      >
+        <PageHeader
+          closeable
+          onClose={handleCancel}
+          className="text-[16px] leading-[19px] mb-[20px]"
+          closeCn={'top-[-1px]'}
+        >
+          {t('page.whitelist.verifyPwd.title')}
+        </PageHeader>
+        <div className="flex-1">
+          <Input
+            ref={inputRef}
+            className="whitelist-pwd-input h-[56px] p-[18px]"
+            type="password"
+            value={passwordText}
+            onChange={(evt) => {
+              setFormState((s) => ({
+                ...s,
+                errorText: '',
+                passwordText: evt.target.value || '',
+              }));
+            }}
+            placeholder={t('page.whitelist.verifyPwd.inputPlaceholder')}
+          />
+
+          {errorText && (
+            <div className="mt-[6px]">
+              <span className="text-r-red-default text-[13px] font-normal">
+                {errorText}
+              </span>
+            </div>
+          )}
+        </div>
+        <footer className="fixed-footer flex justify-between items-center gap-[16px]">
+          <Button
+            type="primary"
+            ghost
+            block
+            className="h-[48px] rounded-[8px] text-[16px]"
+            onClick={handleCancel}
+          >
+            {t('global.Cancel')}
+          </Button>
+          <Button
+            disabled={!passwordText}
+            type="primary"
+            block
+            className="h-[48px] rounded-[8px] text-[16px]"
+            onClick={handleSubmit}
+          >
+            {t('global.Confirm')}
+          </Button>
+        </footer>
+      </div>
+    </Popup>
+  );
+};

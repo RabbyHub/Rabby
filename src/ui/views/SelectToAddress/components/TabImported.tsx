@@ -13,6 +13,7 @@ import { groupBy } from 'lodash';
 import { findAccountByPriority, filterMyAccounts } from '@/utils/account';
 
 import type { Account } from '@/background/service/preference';
+import { VerifyPwdForNonWhitelisted } from '@/ui/component/Whitelist/Modal';
 
 const AccountItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
@@ -20,7 +21,7 @@ const AccountItemWrapper = styled.div`
   border-radius: 12px;
   margin-top: 12px;
   &:first-child {
-    margin-top: 9px;
+    margin-top: 0;
   }
   .whitelist-item {
     gap: 12px !important;
@@ -101,6 +102,14 @@ export default function TabImported({
     return ret;
   }, [accountsList, whitelist]);
 
+  const [itemToConfirm, setItemToConfirm] = useState<RenderAccount | null>(
+    null
+  );
+
+  const isEnabledPwdForNonWhitelistedTx = useRabbySelector(
+    (state) => state.preference.isEnabledPwdForNonWhitelistedTx
+  );
+
   return (
     <div className="h-full static">
       <div
@@ -127,11 +136,25 @@ export default function TabImported({
                   type={item.type}
                   brandName={item.brandName}
                   onClick={() => {
-                    handleChange(item.address, item.type);
+                    if (isEnabledPwdForNonWhitelistedTx) {
+                      setItemToConfirm(item);
+                    } else {
+                      handleChange(item.address, item.type);
+                    }
                   }}
                 />
               </AccountItemWrapper>
             ))}
+
+          <VerifyPwdForNonWhitelisted
+            visible={!!itemToConfirm}
+            onFinish={() => {
+              if (!itemToConfirm) return;
+              handleChange(itemToConfirm.address, itemToConfirm.type);
+              setItemToConfirm(null);
+            }}
+            onCancel={() => setItemToConfirm(null)}
+          />
         </div>
       </div>
     </div>

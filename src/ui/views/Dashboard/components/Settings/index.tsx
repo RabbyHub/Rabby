@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Button, DrawerProps, Form, Input, message, Modal, Switch } from 'antd';
 import clsx from 'clsx';
@@ -22,6 +24,7 @@ import { ReactComponent as RcIconCustomTestnet } from 'ui/assets/dashboard/icon-
 import { ReactComponent as RcIconPreferMetamask } from 'ui/assets/dashboard/icon-prefer-metamask.svg';
 import { ReactComponent as RcIconAutoLock } from 'ui/assets/dashboard/settings/icon-auto-lock.svg';
 import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings/lock.svg';
+import { ReactComponent as RcIconSwitchPwdForNonWhitelistedTx } from 'ui/assets/dashboard/settings/switch-password-non-whitelisted-tx.svg';
 import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/dapp-switch-address.svg';
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
 import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
@@ -67,6 +70,7 @@ import { EcosystemBanner } from './components/EcosystemBanner';
 import { useMemoizedFn } from 'ahooks';
 import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
+import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -591,10 +595,18 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
   const [contactsVisible, setContactsVisible] = useState(false);
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const [
+    isShowNonWhitelistedTxPwdModal,
+    setIsShowNonWhitelistedTxPwdModal,
+  ] = useState(false);
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
 
   const autoLockTime = useRabbySelector(
     (state) => state.preference.autoLockTime || 0
+  );
+
+  const isEnabledPwdForNonWhitelistedTx = useRabbySelector(
+    (state) => state.preference.isEnabledPwdForNonWhitelistedTx
   );
 
   const isEnabledDappAccount = useRabbySelector(
@@ -622,6 +634,26 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
   const langLabel = useMemo(() => {
     return LANGS.find((item) => item.code === locale)?.name;
   }, [locale]);
+
+  const handleEnablePwdForNonWhitelistedTx = useMemoizedFn(() => {
+    matomoRequestEvent({
+      category: 'Setting',
+      action: 'clickToUse',
+      label: 'PasswordForNonWhitelistedTx',
+    });
+
+    ga4.fireEvent('Password_For_NonWhitelisted_Tx', {
+      event_category: 'Click More',
+    });
+
+    reportSettings('PasswordForNonWhitelistedTx');
+
+    if (isEnabledPwdForNonWhitelistedTx) {
+      dispatch.preference.enablePwdForNonWhitelistedTx(false);
+    } else {
+      setIsShowNonWhitelistedTxPwdModal(true);
+    }
+  });
 
   const handleEnableDappAccount = useMemoizedFn(() => {
     matomoRequestEvent({
@@ -838,6 +870,19 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
     settings: {
       label: t('page.dashboard.settings.settings.label'),
       items: [
+        {
+          leftIcon: RcIconSwitchPwdForNonWhitelistedTx,
+          // Password for non-whitelisted transfers
+          content: t(
+            'page.dashboard.settings.settings.switchPasswordForNonWhitelistedTx'
+          ),
+          rightIcon: (
+            <Switch
+              checked={isEnabledPwdForNonWhitelistedTx}
+              onChange={handleEnablePwdForNonWhitelistedTx}
+            />
+          ),
+        },
         {
           leftIcon: RcIconDappSwitchAddress,
           content: t('page.dashboard.settings.settings.enableDappAccount'),
@@ -1356,7 +1401,7 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
   useEffect(() => {
     dispatch.openapi.getHost();
     dispatch.openapi.getTestnetHost();
-  }, []);
+  }, [dispatch.openapi]);
 
   const [isShowEcology, setIsShowEcologyModal] = React.useState(false);
 
@@ -1423,6 +1468,13 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
         onCancel={() => {
           setContactsVisible(false);
         }}
+      />
+      <PwdForNonWhitelistedTxModal
+        visible={isShowNonWhitelistedTxPwdModal}
+        onFinish={() => {
+          setIsShowNonWhitelistedTxPwdModal(false);
+        }}
+        onCancel={() => setIsShowNonWhitelistedTxPwdModal(false)}
       />
       <DappAccountModal
         visible={isShowDappAccountModal}

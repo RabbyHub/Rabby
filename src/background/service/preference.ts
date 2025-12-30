@@ -139,6 +139,7 @@ export interface PreferenceStore {
   reserveGasOnSendToken?: boolean;
   isHideEcologyNoticeDict?: Record<string | number, boolean>;
 
+  isEnabledPwdForNonWhitelistedTx?: boolean;
   isEnabledDappAccount?: boolean;
 
   rateGuideLastExposure?: RateGuideLastExposure;
@@ -220,6 +221,7 @@ class PreferenceService {
         reserveGasOnSendToken: true,
         isHideEcologyNoticeDict: {},
         safeSelfHostConfirm: {},
+        isEnabledPwdForNonWhitelistedTx: false,
         isEnabledDappAccount: false,
         ga4EventTime: 0,
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
