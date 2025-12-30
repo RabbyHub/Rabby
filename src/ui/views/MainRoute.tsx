@@ -89,7 +89,6 @@ import { ConnectApproval } from './Approval/components/Connect/SelectWalletAppro
 import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
 import dayjs from 'dayjs';
 import { PreferenceStore } from '@/background/service/preference';
-import SendPoly from './SendPoly';
 import WhitelistInput from './WhitelistInput';
 import { PortalHost } from '../component/PortalHost';
 import {
@@ -394,9 +393,6 @@ const Main = () => {
         <PrivateRoute exact path="/send-token">
           <SendToken />
         </PrivateRoute>
-        {/* <PrivateRoute exact path="/send-poly">
-          <SendPoly />
-        </PrivateRoute> */}
         <PrivateRoute exact path="/select-to-address">
           <SelectToAddress />
         </PrivateRoute>
