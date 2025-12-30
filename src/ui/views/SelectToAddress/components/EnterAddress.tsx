@@ -115,11 +115,11 @@ export const EnterAddress = ({
     }
     return flattenedAccounts.filter((account) => {
       const address = account.address.toLowerCase();
-      const brandName = account.brandName?.toLowerCase() || '';
+      // const brandName = account.brandName?.toLowerCase() || '';
       const aliasName = account.alianName?.toLowerCase() || '';
       return (
         address.includes(lowerFilterText) ||
-        brandName.includes(lowerFilterText) ||
+        // brandName.includes(lowerFilterText) ||
         aliasName.includes(lowerFilterText)
       );
     });
