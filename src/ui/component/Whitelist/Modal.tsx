@@ -95,6 +95,7 @@ export const PwdForNonWhitelistedTxModal = ({
       // bodyStyle={{ height: '100%', padding: '14px 20px 0 20px' }}
       destroyOnClose
       className="pwd-for-non-whitelisted-tx-popup-wrapper"
+      getContainer={getContainerByScreen}
       isSupportDarkMode
     >
       <div
