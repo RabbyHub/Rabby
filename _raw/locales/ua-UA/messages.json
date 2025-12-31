@@ -2832,7 +2832,6 @@
     },
     "search": {
       "sectionHeader": {
-        "Defi": "DeFi",
         "NFT": "NFT",
         "AllChains": "Усі ланцюги",
         "token": "Токени"
@@ -3251,9 +3250,7 @@
       "tabs": {
         "tokens": "Токени",
         "transactions": "Транзакції",
-        "approvals": "Схвалення",
-        "difi": "Defi",
-        "defi": "DeFi"
+        "approvals": "Схвалення"
       },
       "nft": {
         "message": {

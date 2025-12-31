@@ -2825,8 +2825,7 @@
       "sectionHeader": {
         "AllChains": "Tüm Zincirler",
         "token": "Jetonlar",
-        "NFT": "NFT",
-        "Defi": "DeFi"
+        "NFT": "NFT"
       },
       "header": {
         "placeHolder": "Araştırma",
@@ -3242,9 +3241,7 @@
       "tabs": {
         "approvals": "Onaylar",
         "tokens": "Jetonlar",
-        "transactions": "İşlemler",
-        "difi": "Defi",
-        "defi": "DeFi"
+        "transactions": "İşlemler"
       },
       "nft": {
         "message": {

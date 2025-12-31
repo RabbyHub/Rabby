@@ -3,7 +3,7 @@ import { isValidAddress } from '@ethereumjs/util';
 import { AddrDescResponse } from '@rabby-wallet/rabby-api/dist/types';
 
 import { useRabbyDispatch, useRabbySelector } from '../store';
-import { padWatchAccount } from '../views/SendPoly/util';
+import { padWatchAccount } from '../views/SelectToAddress/util';
 import { isSameAddress, useAlias, useWallet } from '../utils';
 import { KEYRING_CLASS } from '@/constant';
 import { findAccountByPriority } from '@/utils/account';

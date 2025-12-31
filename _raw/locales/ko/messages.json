@@ -2817,7 +2817,6 @@
     },
     "search": {
       "sectionHeader": {
-        "Defi": "DeFi",
         "token": "토큰",
         "NFT": "NFT",
         "AllChains": "모든 체인"
@@ -3236,9 +3235,7 @@
       "tabs": {
         "approvals": "승인",
         "transactions": "거래",
-        "tokens": "토큰",
-        "difi": "Defi",
-        "defi": "디파이"
+        "tokens": "토큰"
       },
       "nft": {
         "message": {

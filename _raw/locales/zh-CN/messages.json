@@ -2860,8 +2860,7 @@
       "sectionHeader": {
         "NFT": "NFT",
         "token": "代币",
-        "AllChains": "所有链",
-        "Defi": "DeFi"
+        "AllChains": "所有链"
       },
       "header": {
         "placeHolder": "搜索",
@@ -3277,9 +3276,7 @@
       "tabs": {
         "tokens": "代币",
         "approvals": "授权",
-        "transactions": "交易",
-        "difi": "Defi",
-        "defi": "去中心化金融"
+        "transactions": "交易"
       },
       "nft": {
         "message": {

@@ -59,6 +59,7 @@ const Wrap = styled.div`
   .main-content {
     padding-left: 80px;
     flex-shrink: 0;
+    min-height: 766px;
 
     transition: padding 0.3s;
 
