@@ -2859,7 +2859,6 @@
     "search": {
       "sectionHeader": {
         "NFT": "NFT",
-        "Defi": "DeFi",
         "token": "代幣",
         "AllChains": "所有鏈"
       },
@@ -3277,9 +3276,7 @@
       "tabs": {
         "approvals": "批准",
         "transactions": "交易",
-        "tokens": "代幣",
-        "difi": "Defi",
-        "defi": "去中心化金融"
+        "tokens": "代幣"
       },
       "nft": {
         "message": {

@@ -2818,7 +2818,6 @@
     "search": {
       "sectionHeader": {
         "AllChains": "Tất cả Các Chuỗi",
-        "Defi": "DeFi",
         "token": "Token",
         "NFT": "NFT"
       },
@@ -3236,9 +3235,7 @@
       "tabs": {
         "tokens": "Tokens",
         "transactions": "Giao dịch",
-        "approvals": "Phê duyệt",
-        "difi": "Defi",
-        "defi": "DeFi"
+        "approvals": "Phê duyệt"
       },
       "nft": {
         "message": {

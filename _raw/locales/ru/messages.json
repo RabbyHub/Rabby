@@ -2824,7 +2824,6 @@
       "sectionHeader": {
         "NFT": "NFT",
         "AllChains": "Все цепочки",
-        "Defi": "DeFi",
         "token": "Токены"
       },
       "header": {
@@ -3241,9 +3240,7 @@
       "tabs": {
         "approvals": "Подтверждения",
         "tokens": "Токены",
-        "transactions": "Транзакции",
-        "difi": "Дефи",
-        "defi": "DeFi"
+        "transactions": "Транзакции"
       },
       "nft": {
         "message": {

@@ -2821,7 +2821,6 @@
     "search": {
       "sectionHeader": {
         "NFT": "NFT",
-        "Defi": "DeFi",
         "token": "トークン",
         "AllChains": "すべてのチェーン"
       },
@@ -3239,9 +3238,7 @@
       "tabs": {
         "transactions": "取引",
         "tokens": "トークン",
-        "approvals": "承認",
-        "difi": "Defi",
-        "defi": "DeFi"
+        "approvals": "承認"
       },
       "nft": {
         "message": {
