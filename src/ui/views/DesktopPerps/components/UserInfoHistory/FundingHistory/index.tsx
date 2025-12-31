@@ -8,12 +8,14 @@ import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { CommonTable } from '../CommonTable';
 import { sortBy } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 export const FundingHistory: React.FC = () => {
   const { userFunding } = useRabbySelector((store) => {
     return store.perps;
   });
 
+  const { t } = useTranslation();
   const list = useMemo(() => {
     return sortBy(userFunding, (item) => -item.time);
   }, [userFunding]);
@@ -21,7 +23,7 @@ export const FundingHistory: React.FC = () => {
   const columns = useMemo<ColumnType<WsUserFunding['fundings'][number]>[]>(
     () => [
       {
-        title: 'Time',
+        title: t('page.perpsPro.userInfo.tab.time'),
         dataIndex: 'time',
         key: 'time',
         width: 160,
@@ -36,7 +38,7 @@ export const FundingHistory: React.FC = () => {
       },
 
       {
-        title: 'Market',
+        title: t('page.perpsPro.userInfo.tab.coin'),
         dataIndex: 'coin',
         key: 'coin',
         width: 100,
@@ -51,7 +53,7 @@ export const FundingHistory: React.FC = () => {
       },
 
       {
-        title: 'Size',
+        title: t('page.perpsPro.userInfo.tab.size'),
         dataIndex: 'szi',
         key: 'szi',
         width: 100,
@@ -65,7 +67,7 @@ export const FundingHistory: React.FC = () => {
         },
       },
       {
-        title: 'Side',
+        title: t('page.perpsPro.userInfo.tab.side'),
         key: 'side',
         dataIndex: 'side',
         width: 100,
@@ -80,7 +82,7 @@ export const FundingHistory: React.FC = () => {
         },
       },
       {
-        title: 'Payment',
+        title: t('page.perpsPro.userInfo.tab.payment'),
         dataIndex: 'usdc',
         key: 'usdc',
         width: 100,
@@ -102,7 +104,7 @@ export const FundingHistory: React.FC = () => {
         },
       },
       {
-        title: 'Rate',
+        title: t('page.perpsPro.userInfo.tab.rate'),
         dataIndex: 'fundingRate',
         key: 'fundingRate',
         width: 100,

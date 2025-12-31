@@ -160,7 +160,7 @@ export const Twap: React.FC = () => {
   const columns = useMemo<ColumnType<TwapOrder>[]>(
     () => [
       {
-        title: 'Coin',
+        title: t('page.perpsPro.userInfo.tab.coin'),
         dataIndex: 'coin',
         key: 'coin',
         width: 200,
@@ -211,7 +211,7 @@ export const Twap: React.FC = () => {
         },
       },
       {
-        title: 'Size',
+        title: t('page.perpsPro.userInfo.tab.size'),
         dataIndex: 'sz',
         key: 'sz',
         width: 150,
@@ -240,7 +240,7 @@ export const Twap: React.FC = () => {
         },
       },
       {
-        title: 'Average Price',
+        title: t('page.perpsPro.userInfo.tab.averagePrice'),
         key: 'avgPrice',
         width: 130,
         render: (_, record) => {
@@ -252,7 +252,7 @@ export const Twap: React.FC = () => {
         },
       },
       {
-        title: 'Running Time / Total',
+        title: t('page.perpsPro.userInfo.tab.runningTimeTotal'),
         key: 'runningTime',
         width: 180,
         render: (_, record) => {
@@ -264,7 +264,7 @@ export const Twap: React.FC = () => {
         },
       },
       {
-        title: 'Status',
+        title: t('page.perpsPro.userInfo.tab.status'),
         dataIndex: 'status',
         key: 'status',
         width: 120,
@@ -297,7 +297,7 @@ export const Twap: React.FC = () => {
         },
       },
       {
-        title: 'Reduce Only',
+        title: t('page.perpsPro.userInfo.tab.reduceOnly'),
         dataIndex: 'reduceOnly',
         key: 'reduceOnly',
         width: 100,
@@ -313,7 +313,7 @@ export const Twap: React.FC = () => {
         },
       },
       {
-        title: 'Creation Time',
+        title: t('page.perpsPro.userInfo.tab.creationTime'),
         key: 'creationTime',
         width: 180,
         sorter: (a, b) => a.timestamp - b.timestamp,
@@ -338,7 +338,7 @@ export const Twap: React.FC = () => {
       //   },
       // },
       {
-        title: 'Terminate',
+        title: t('page.perpsPro.userInfo.tab.terminate'),
         key: 'terminate',
         width: 100,
         render: (_, record) => {
@@ -371,7 +371,7 @@ export const Twap: React.FC = () => {
   const expandedRowRender = (record: TwapOrder) => {
     const sliceColumns: ColumnType<UserTwapSliceFill>[] = [
       {
-        title: 'Slice',
+        title: t('page.perpsPro.userInfo.tab.slice'),
         key: 'index',
         width: 200,
         render: (_, __, index) => (
@@ -381,7 +381,7 @@ export const Twap: React.FC = () => {
         ),
       },
       {
-        title: 'Size',
+        title: t('page.perpsPro.userInfo.tab.size'),
         width: 150,
         render: (_, slice) => (
           <div className="text-[12px] leading-[14px] text-rb-neutral-foot">
@@ -390,7 +390,7 @@ export const Twap: React.FC = () => {
         ),
       },
       {
-        title: 'Average Price',
+        title: t('page.perpsPro.userInfo.tab.averagePrice'),
         width: 130,
         render: (_, slice) => (
           <div className="text-[12px] leading-[14px] text-rb-neutral-foot">
@@ -399,7 +399,7 @@ export const Twap: React.FC = () => {
         ),
       },
       {
-        title: 'Running Time / Total',
+        title: t('page.perpsPro.userInfo.tab.runningTimeTotal'),
         width: 180,
         render: (_, slice) => {
           const sliceTime = dayjs(slice.fill.time).format('HH:mm:ss');
@@ -411,7 +411,7 @@ export const Twap: React.FC = () => {
         },
       },
       {
-        title: 'Status',
+        title: t('page.perpsPro.userInfo.tab.status'),
         width: 120,
         render: () => (
           <div className="text-[12px] leading-[14px] text-rb-neutral-foot">
@@ -420,7 +420,7 @@ export const Twap: React.FC = () => {
         ),
       },
       {
-        title: 'Reduce Only',
+        title: t('page.perpsPro.userInfo.tab.reduceOnly'),
         width: 100,
         render: () => (
           <div className="text-[12px] leading-[14px] text-rb-neutral-foot">
@@ -429,7 +429,7 @@ export const Twap: React.FC = () => {
         ),
       },
       {
-        title: 'Creation Time',
+        title: t('page.perpsPro.userInfo.tab.creationTime'),
         width: 180,
         render: (_, slice) => (
           <div className="text-[12px] leading-[14px] text-rb-neutral-foot">

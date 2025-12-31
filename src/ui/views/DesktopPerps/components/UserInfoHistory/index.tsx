@@ -7,6 +7,7 @@ import { OpenOrders } from './OpenOrders';
 import { FundingHistory } from './FundingHistory';
 import { Twap } from './Twap';
 import { useRabbySelector } from '@/ui/store';
+import { useTranslation } from 'react-i18next';
 
 interface Tab {
   key: string;
@@ -19,6 +20,7 @@ export const UserInfoHistory: React.FC = () => {
   const { clearinghouseState, openOrders, twapStates } = useRabbySelector(
     (store) => store.perps
   );
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<typeof tabs[number]['key']>(
     'positions'
   );
@@ -31,24 +33,37 @@ export const UserInfoHistory: React.FC = () => {
     return [
       {
         key: 'positions',
-        label: 'Positions',
+        label: t('page.perpsPro.userInfo.tab.positions'),
         content: PositionsInfo,
         number: assetPositionNum,
       },
       {
         key: 'openOrders',
-        label: 'Open Orders',
+        label: t('page.perpsPro.userInfo.tab.openOrders'),
         content: OpenOrders,
         number: openOrdersNum,
       },
-      { key: 'twap', label: 'TWAP', content: Twap, number: twapNum },
-      { key: 'tradeHistory', label: 'Trade History', content: TradeHistory },
+      {
+        key: 'twap',
+        label: t('page.perpsPro.userInfo.tab.twap'),
+        content: Twap,
+        number: twapNum,
+      },
+      {
+        key: 'tradeHistory',
+        label: t('page.perpsPro.userInfo.tab.tradeHistory'),
+        content: TradeHistory,
+      },
       {
         key: 'fundingHistory',
-        label: 'Funding History',
+        label: t('page.perpsPro.userInfo.tab.fundingHistory'),
         content: FundingHistory,
       },
-      { key: 'orderHistory', label: 'Order History', content: OrderHistory },
+      {
+        key: 'orderHistory',
+        label: t('page.perpsPro.userInfo.tab.orderHistory'),
+        content: OrderHistory,
+      },
     ];
   }, [clearinghouseState, openOrders, twapStates, activeTab]);
 

@@ -28,12 +28,8 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
     ) {
       return wsActiveAssetCtx.ctx;
     }
-    return marketDataMap[coin.toUpperCase()];
+    return marketDataMap[coin.toUpperCase()] || {};
   }, [marketDataMap, wsActiveAssetCtx, coin]);
-
-  if (!currentMarketData && !marketDataMap[coin.toUpperCase()]) {
-    return null;
-  }
 
   const priceChange = currentMarketData.prevDayPx
     ? Number(currentMarketData.markPx) - Number(currentMarketData.prevDayPx)

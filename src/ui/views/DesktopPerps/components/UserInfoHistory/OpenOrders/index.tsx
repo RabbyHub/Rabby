@@ -88,7 +88,7 @@ export const OpenOrders: React.FC = () => {
   const columns = useMemo<ColumnType<OpenOrder>[]>(
     () => [
       {
-        title: 'Order',
+        title: t('page.perpsPro.userInfo.openOrders.order'),
         width: 100,
         className: 'relative',
         key: 'side',
@@ -123,7 +123,7 @@ export const OpenOrders: React.FC = () => {
         },
       },
       {
-        title: 'Time',
+        title: t('page.perpsPro.userInfo.openOrders.time'),
         width: 160,
         key: 'timestamp',
         dataIndex: 'timestamp',
@@ -137,7 +137,7 @@ export const OpenOrders: React.FC = () => {
         },
       },
       {
-        title: 'Type',
+        title: t('page.perpsPro.userInfo.openOrders.type'),
         width: 130,
         key: 'orderType',
         dataIndex: 'orderType',
@@ -151,7 +151,7 @@ export const OpenOrders: React.FC = () => {
         },
       },
       {
-        title: 'Order Value / Size',
+        title: t('page.perpsPro.userInfo.openOrders.orderValueSize'),
         width: 180,
         key: 'origSz',
         dataIndex: 'origSz',
@@ -182,7 +182,7 @@ export const OpenOrders: React.FC = () => {
         },
       },
       {
-        title: 'Filled',
+        title: t('page.perpsPro.userInfo.openOrders.filled'),
         width: 120,
         key: 'sz',
         dataIndex: 'sz',
@@ -206,7 +206,7 @@ export const OpenOrders: React.FC = () => {
         },
       },
       {
-        title: 'Price',
+        title: t('page.perpsPro.userInfo.openOrders.price'),
         width: 120,
         key: 'limitPx',
         dataIndex: 'limitPx',
@@ -221,7 +221,7 @@ export const OpenOrders: React.FC = () => {
         },
       },
       {
-        title: 'Reduce Only',
+        title: t('page.perpsPro.userInfo.openOrders.reduceOnly'),
         width: 100,
         sorter: (a, b) => Number(a.reduceOnly) - Number(b.reduceOnly),
         key: 'reduceOnly',
@@ -235,7 +235,7 @@ export const OpenOrders: React.FC = () => {
         },
       },
       {
-        title: 'Trigger Conditions',
+        title: t('page.perpsPro.userInfo.openOrders.triggerConditions'),
         width: 180,
         key: 'triggerCondition',
         dataIndex: 'triggerCondition',
@@ -248,7 +248,7 @@ export const OpenOrders: React.FC = () => {
         },
       },
       {
-        title: 'TP/SL',
+        title: t('page.perpsPro.userInfo.openOrders.tpSl'),
         width: 180,
         key: 'children',
         dataIndex: 'children',
@@ -305,7 +305,7 @@ export const OpenOrders: React.FC = () => {
             className="text-r-blue-default cursor-pointer underline"
             onClick={handleClickCloseAll}
           >
-            Cancel All
+            {t('page.perpsPro.userInfo.openOrders.cancelAll')}
           </div>
         ),
         align: 'center',
@@ -324,7 +324,7 @@ export const OpenOrders: React.FC = () => {
                 handleCancelOrder([{ oid: record.oid, coin: record.coin }]);
               }}
             >
-              Cancel
+              {t('page.perpsPro.userInfo.openOrders.cancel')}
             </button>
           );
         },

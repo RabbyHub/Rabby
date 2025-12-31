@@ -231,7 +231,7 @@ export const PositionsInfo: React.FC = () => {
   const columns = useMemo<ColumnType<PositionFormatData>[]>(
     () => [
       {
-        title: 'Coin',
+        title: t('page.perpsPro.userInfo.tab.coin'),
         width: 120,
         className: 'relative',
         key: 'coin',
@@ -273,7 +273,7 @@ export const PositionsInfo: React.FC = () => {
         },
       },
       {
-        title: 'Size',
+        title: t('page.perpsPro.userInfo.tab.size'),
         width: 160,
         key: 'positionValue',
         dataIndex: 'positionValue',
@@ -292,7 +292,7 @@ export const PositionsInfo: React.FC = () => {
         },
       },
       {
-        title: 'Mark / Entry',
+        title: t('page.perpsPro.userInfo.tab.markEntry'),
         key: 'entryPx',
         dataIndex: 'entryPx',
         sorter: (a, b) => Number(a.entryPx) - Number(b.entryPx),
@@ -311,7 +311,7 @@ export const PositionsInfo: React.FC = () => {
         },
       },
       {
-        title: 'Unrealized PnL',
+        title: t('page.perpsPro.userInfo.tab.unrealizedPnl'),
         key: 'unrealizedPnl',
         dataIndex: 'unrealizedPnl',
         sorter: (a, b) => Number(a.unrealizedPnl) - Number(b.unrealizedPnl),
@@ -345,7 +345,7 @@ export const PositionsInfo: React.FC = () => {
         },
       },
       {
-        title: 'Liq.price',
+        title: t('page.perpsPro.userInfo.tab.liqPrice'),
         width: 160,
         key: 'liquidationPx',
         dataIndex: 'liquidationPx',
@@ -365,7 +365,7 @@ export const PositionsInfo: React.FC = () => {
         },
       },
       {
-        title: 'Margin',
+        title: t('page.perpsPro.userInfo.tab.margin'),
         width: 160,
         key: 'marginUsed',
         dataIndex: 'marginUsed',
@@ -393,7 +393,7 @@ export const PositionsInfo: React.FC = () => {
         },
       },
       {
-        title: 'Funding',
+        title: t('page.perpsPro.userInfo.tab.funding'),
         width: 160,
         key: 'fundingPayments',
         dataIndex: 'fundingPayments',
@@ -413,7 +413,7 @@ export const PositionsInfo: React.FC = () => {
         },
       },
       {
-        title: 'TP/SL',
+        title: t('page.perpsPro.userInfo.tab.tpSl'),
         width: 160,
         key: 'children',
         dataIndex: 'children',
@@ -508,7 +508,7 @@ export const PositionsInfo: React.FC = () => {
             className="text-r-blue-default cursor-pointer underline"
             onClick={handleClickCloseAll}
           >
-            Close All
+            {t('page.perpsPro.userInfo.positionInfo.closeAll')}
           </div>
         ),
         key: 'oid',
@@ -528,9 +528,15 @@ export const PositionsInfo: React.FC = () => {
                     setClosePositionVisible(true);
                   }}
                 >
-                  <Menu.Item key="reverse">Reverse</Menu.Item>
-                  <Menu.Item key="limit">Close limit</Menu.Item>
-                  <Menu.Item key="market">Close market</Menu.Item>
+                  <Menu.Item key="reverse">
+                    {t('page.perpsPro.userInfo.positionInfo.reverse')}
+                  </Menu.Item>
+                  <Menu.Item key="limit">
+                    {t('page.perpsPro.userInfo.positionInfo.closeLimit')}
+                  </Menu.Item>
+                  <Menu.Item key="market">
+                    {t('page.perpsPro.userInfo.positionInfo.closeMarket')}
+                  </Menu.Item>
                 </Menu>
               }
             >
@@ -543,7 +549,7 @@ export const PositionsInfo: React.FC = () => {
                   'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
                 )}
               >
-                Close
+                {t('page.perpsPro.userInfo.positionInfo.close')}
                 <RcIconArrowDownCC className="text-rb-neutral-secondary" />
               </button>
             </Dropdown>

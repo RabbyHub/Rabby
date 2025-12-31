@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
 import { sortBy } from 'lodash';
 import { formatPercent } from '@/ui/views/Perps/utils';
+import { useTranslation } from 'react-i18next';
 
 export const TradeHistory: React.FC = () => {
   const { userFills } = useRabbySelector((store) => {
@@ -21,6 +22,8 @@ export const TradeHistory: React.FC = () => {
   const marketDataMap = useRabbySelector((store) => {
     return store.perps.marketDataMap;
   });
+  
+  const { t } = useTranslation();
 
   const list = useMemo<WsFill[]>(() => {
     return sortBy(userFills, (item) => -item.time);
@@ -29,7 +32,7 @@ export const TradeHistory: React.FC = () => {
   const columns = useMemo<ColumnType<WsFill>[]>(
     () => [
       {
-        title: 'Time',
+        title: t('page.perpsPro.userInfo.tab.time'),
         key: 'time',
         dataIndex: 'time',
         width: 180,
@@ -43,7 +46,7 @@ export const TradeHistory: React.FC = () => {
         },
       },
       {
-        title: 'Market',
+        title: t('page.perpsPro.userInfo.tab.coin'),
         key: 'coin',
         dataIndex: 'coin',
         width: 80,
@@ -57,7 +60,7 @@ export const TradeHistory: React.FC = () => {
         },
       },
       {
-        title: 'Size',
+        title: t('page.perpsPro.userInfo.tab.size'),
         key: 'sz',
         dataIndex: 'sz',
         width: 100,
@@ -71,7 +74,7 @@ export const TradeHistory: React.FC = () => {
         },
       },
       {
-        title: 'Trade',
+        title: t('page.perpsPro.userInfo.tab.trade'),
         key: 'dir',
         dataIndex: 'dir',
         width: 100,
@@ -85,7 +88,7 @@ export const TradeHistory: React.FC = () => {
         },
       },
       {
-        title: 'Avg Price',
+        title: t('page.perpsPro.userInfo.tab.averagePrice'),
         key: 'px',
         dataIndex: 'px',
         width: 180,
@@ -102,7 +105,7 @@ export const TradeHistory: React.FC = () => {
         },
       },
       {
-        title: 'Trade Value',
+        title: t('page.perpsPro.userInfo.tab.tradeValue'),
         key: 'tradeValue',
         dataIndex: 'tradeValue',
         width: 180,
@@ -128,7 +131,7 @@ export const TradeHistory: React.FC = () => {
         },
       },
       {
-        title: 'Closed Pnl',
+        title: t('page.perpsPro.userInfo.tab.closedPnl'),
         key: 'closedPnl',
         dataIndex: 'closedPnl',
         width: 180,
@@ -177,7 +180,7 @@ export const TradeHistory: React.FC = () => {
         },
       },
       {
-        title: 'Fee',
+        title: t('page.perpsPro.userInfo.tab.fee'),
         key: 'fee',
         dataIndex: 'fee',
         width: 180,

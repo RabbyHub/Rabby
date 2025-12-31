@@ -12,11 +12,14 @@ import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
 import { sortBy } from 'lodash';
 import { formatPercent } from '@/ui/views/Perps/utils';
+import { useTranslation } from 'react-i18next';
 
 export const OrderHistory: React.FC = () => {
   const historicalOrders = useRabbySelector((store) => {
     return store.perps.historicalOrders;
   });
+
+  const { t } = useTranslation();
 
   const list = useMemo<UserHistoricalOrders[]>(() => {
     return sortBy(historicalOrders, (item) => -item.statusTimestamp);
@@ -27,7 +30,7 @@ export const OrderHistory: React.FC = () => {
   const columns = useMemo<ColumnType<UserHistoricalOrders>[]>(
     () => [
       {
-        title: 'Time',
+        title: t('page.perpsPro.userInfo.tab.time'),
         key: 'statusTimestamp',
         dataIndex: 'statusTimestamp',
         width: 180,
@@ -41,7 +44,7 @@ export const OrderHistory: React.FC = () => {
         },
       },
       {
-        title: 'Type',
+        title: t('page.perpsPro.userInfo.tab.type'),
         key: 'orderType',
         dataIndex: 'orderType',
         width: 180,
@@ -55,7 +58,7 @@ export const OrderHistory: React.FC = () => {
         },
       },
       {
-        title: 'Coin',
+        title: t('page.perpsPro.userInfo.tab.coin'),
         key: 'coin',
         dataIndex: 'coin',
         width: 100,
@@ -69,7 +72,7 @@ export const OrderHistory: React.FC = () => {
         },
       },
       {
-        title: 'Side',
+        title: t('page.perpsPro.userInfo.tab.side'),
         key: 'side',
         dataIndex: 'side',
         width: 120,
@@ -90,7 +93,28 @@ export const OrderHistory: React.FC = () => {
         },
       },
       {
-        title: 'Size',
+        title: t('page.perpsPro.userInfo.tab.size'),
+        key: 'origSz',
+        dataIndex: 'origSz',
+        width: 120,
+        sorter: (a, b) => Number(a.order.origSz) - Number(b.order.origSz),
+        render: (_, record) => {
+          return (
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+              {Number(record.order.origSz) === 0 ? (
+                '-'
+              ) : (
+                <>
+                  {splitNumberByStep(record.order.origSz)} {record.order.coin}
+                </>
+              )}
+            </div>
+          );
+        },
+      },
+
+      {
+        title: t('page.perpsPro.userInfo.tab.filled'),
         key: 'sz',
         dataIndex: 'sz',
         width: 120,
@@ -98,31 +122,11 @@ export const OrderHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
-              {Math.abs(Number(record.order.sz || 0))} {record.order.coin}
-            </div>
-          );
-        },
-      },
-
-      {
-        title: 'Filled',
-        key: 'origSz',
-        dataIndex: 'origSz',
-        width: 120,
-        // sorter: (a, b) => Number(a.order.origSz) - Number(b.order.origSz),
-        render: (_, record) => {
-          // todo
-          return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
-              {Number(record.order.origSz) === 0 ? (
+              {Number(record.order.sz) === 0 ? (
                 '-'
               ) : (
                 <>
-                  {splitNumberByStep(
-                    new BigNumber(record.order.origSz)
-                      .minus(record.order.sz)
-                      .toString()
-                  )}{' '}
+                  {splitNumberByStep(new BigNumber(record.order.sz).toString())}{' '}
                   {record.order.coin}
                 </>
               )}
@@ -132,7 +136,7 @@ export const OrderHistory: React.FC = () => {
       },
 
       {
-        title: 'Value',
+        title: t('page.perpsPro.userInfo.tab.value'),
         key: 'limitPx',
         dataIndex: 'limitPx',
         width: 120,
@@ -148,7 +152,7 @@ export const OrderHistory: React.FC = () => {
             <div className="space-y-[4px]">
               <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
                 {record.order.orderType.includes('Market')
-                  ? 'Market'
+                  ? '-'
                   : `$${splitNumberByStep(
                       new BigNumber(record.order.limitPx)
                         .times(new BigNumber(record.order.sz).abs())
@@ -161,7 +165,7 @@ export const OrderHistory: React.FC = () => {
       },
 
       {
-        title: 'Price',
+        title: t('page.perpsPro.userInfo.tab.price'),
         key: 'limitPx',
         dataIndex: 'limitPx',
         width: 120,
@@ -177,7 +181,7 @@ export const OrderHistory: React.FC = () => {
         },
       },
       {
-        title: 'Reduce Only',
+        title: t('page.perpsPro.userInfo.tab.reduceOnly'),
         key: 'reduceOnly',
         dataIndex: 'reduceOnly',
         width: 100,
@@ -190,7 +194,7 @@ export const OrderHistory: React.FC = () => {
         },
       },
       {
-        title: 'Trigger',
+        title: t('page.perpsPro.userInfo.tab.trigger'),
         key: 'triggerCondition',
         dataIndex: 'triggerCondition',
         width: 180,
@@ -203,7 +207,7 @@ export const OrderHistory: React.FC = () => {
         },
       },
       {
-        title: 'Status',
+        title: t('page.perpsPro.userInfo.tab.status'),
         key: 'status',
         dataIndex: 'status',
         width: 100,
