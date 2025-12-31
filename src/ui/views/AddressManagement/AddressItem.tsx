@@ -352,7 +352,9 @@ const AddressItem = memo(
           {children}
         </div>
 
-        {renderDelete()}
+        {renderDelete(() => {
+          dispatch.accountToDisplay.getAllAccountsToDisplay();
+        })}
       </div>
     );
   }

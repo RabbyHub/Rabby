@@ -284,25 +284,29 @@ export const useHandleDeleteHdKeyringAndSimpleKeyringAccount = () => {
     [wallet?.removeAddress]
   );
 
-  const renderDelete = useCallback(() => {
-    if (!deletedProps) {
-      return null;
-    }
-    if (deletedProps?.type !== KEYRING_CLASS.MNEMONIC) {
-      return null;
-    }
+  const renderDelete = useCallback(
+    (onDeleted?: () => void) => {
+      if (!deletedProps) {
+        return null;
+      }
+      if (deletedProps?.type !== KEYRING_CLASS.MNEMONIC) {
+        return null;
+      }
 
-    return (
-      <AddressHdKeyringOrSimpleKeyringDelete
-        key={nonce}
-        {...deletedProps}
-        onFinished={() => {
-          deletedProps.onFinished?.();
-          handleReset();
-        }}
-      />
-    );
-  }, [nonce, deletedProps]);
+      return (
+        <AddressHdKeyringOrSimpleKeyringDelete
+          key={nonce}
+          {...deletedProps}
+          onFinished={() => {
+            deletedProps.onFinished?.();
+            handleReset();
+            onDeleted?.();
+          }}
+        />
+      );
+    },
+    [nonce, deletedProps]
+  );
 
   return {
     renderDelete,
