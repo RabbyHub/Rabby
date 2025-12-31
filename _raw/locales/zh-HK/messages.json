@@ -260,7 +260,8 @@
           "themeMode": "主題模式",
           "customTestnet": "添加自定义网络",
           "metamaskMode": "以偽裝成 MetaMask 的方式連接 Rabby",
-          "enableDappAccount": "獨立切換 Dapp 地址\n"
+          "enableDappAccount": "獨立切換 Dapp 地址\n",
+          "switchPasswordForNonWhitelistedTx": "非白名单转账的密碼"
         },
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "更新版本",
@@ -291,6 +292,14 @@
           "feedbackDesc": "有反馈吗？我们在聆听。",
           "thxTitle": "謝謝您！",
           "feedbackSuccess": "感謝你的反饋！"
+        },
+        "PwdForNonWhitelistedTx": {
+          "titleDisable": "輸入密碼以禁用",
+          "inputPlaceholder": "輸入密碼以確認",
+          "wrongPassword": "錯誤的密碼",
+          "titleEnable": "啟用密碼檢查？",
+          "descDisable": "一旦禁用，非白名单地址将不再需要密码验证。",
+          "descEnable": "啟用後，向此擴展中的非白名單地址轉帳將需要您的密碼。"
         }
       },
       "tokenDetail": {
@@ -816,7 +825,8 @@
           "switchAnother": "切換到另一個{{0}}"
         },
         "manageImKey": "管理 imKey",
-        "importBtn": "匯入 ({{count}})"
+        "importBtn": "匯入 ({{count}})",
+        "nonAddr": "此种子短语尚未添加任何地址。您可以在 Rabby Extension > 管理地址 中删除此短语。"
       },
       "importYourKeystore": "導入你的 KeyStore",
       "incorrectPassword": "密碼錯誤",
@@ -1198,7 +1208,8 @@
       "addNewAddress": "新增地址",
       "CurrentDappAddress": {
         "desc": "切換 Dapp 地址\n"
-      }
+      },
+      "noSeedPhraseAddress": "此种子短语尚未添加任何地址。您可以添加一个地址或删除该种子短语。"
     },
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
@@ -2042,7 +2053,25 @@
       "coboSafeErrorModule": "地址已過期，請刪除並重新導入地址。",
       "importedDelegatedAddress": "已導入的委託地址",
       "safeModuleAddress": "安全模組地址",
-      "manage-addresses-under": "在此 {{brand}} 下管理地址"
+      "manage-addresses-under": "在此 {{brand}} 下管理地址",
+      "deleteSeedPhrase": {
+        "title2": "刪除地址？",
+        "option2": "刪除地址和種子短語",
+        "option1": "刪除地址，保留助記詞",
+        "remainSeedPhrase": "您的种子短语保留在您的设备上。",
+        "keepSeedPhrase": "這是唯一與這個種子短語連結的地址。你想保留這個種子短語嗎？",
+        "check2": "我确认我已经备份了我的 Private Key 或 Seed Phrase，并且我准备删除它。",
+        "check1": "我明白，删除这个地址也会删除它的私钥和种子短语。Rabby 不能为我恢复它们。",
+        "onlyDeleteAddr": "只有此地址将被移除。您的种子短语不受影响，因为您的其他地址仍在使用它。",
+        "title": "刪除地址和助記詞？",
+        "sub-title": "此操作是永久性的。请查看以下内容以保护您的资产："
+      },
+      "deletePrivateKey": {
+        "title": "刪除地址和私鑰？",
+        "sub-title": "此操作是永久性的。请检查以下内容以保护您的资产：",
+        "check1": "我明白删除这个地址也会移除它的 Private Key。Rabby 不能为我恢复它们。",
+        "check2": "我確認我已經備份了我的 Private Key 或 Seed Phrase，並且我已準備好刪除它。"
+      }
     },
     "preferMetamaskDapps": {
       "title": "優先使用MetaMask連接的Dapp",
@@ -2940,7 +2969,11 @@
       "exchangeAddress": "交易地址",
       "riskTitle": "添加白名單地址",
       "address": "地址",
-      "title": "將地址添加到白名單"
+      "title": "將地址添加到白名單",
+      "verifyPwd": {
+        "title": "非白名单地址",
+        "inputPlaceholder": "輸入您的密碼以確認此轉賬"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3177,7 +3210,10 @@
         "removeFromWhitelist": "從白名單中移除",
         "notWhitelist": "不是一个 whitelist 地址",
         "addWhitelistDesc": "將信任的地址添加到白名單，以便快速轉賬---下次無需確認",
-        "addWhitelist": "將地址添加到白名單"
+        "addWhitelist": "將地址添加到白名單",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "非白名單轉賬的密碼"
+        }
       },
       "addWhitelist": {
         "title": "將地址添加到白名單",

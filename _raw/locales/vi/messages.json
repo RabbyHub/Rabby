@@ -1190,7 +1190,8 @@
       "delete-seed-phrase": "Xóa cụm từ hạt giống",
       "CurrentDappAddress": {
         "desc": "Đổi địa chỉ Dapp\n"
-      }
+      },
+      "noSeedPhraseAddress": "Không có địa chỉ nào được thêm cho cụm từ hạt giống này. Bạn có thể thêm một địa chỉ hoặc xóa cụm từ hạt giống."
     },
     "dashboard": {
       "home": {
@@ -1365,7 +1366,8 @@
           "enableWhitelistForSendingAssets": "Kích hoạt Danh sách Trắng Để Gửi Tài sản",
           "metamaskPreferredDapps": "MetaMask Dapps Ưa Thích",
           "themeMode": "Chế độ chủ đề",
-          "enableDappAccount": "Thay đổi địa chỉ Dapp độc lập\n"
+          "enableDappAccount": "Thay đổi địa chỉ Dapp độc lập\n",
+          "switchPasswordForNonWhitelistedTx": "Mật khẩu cho các giao dịch không nằm trong danh sách trắng"
         },
         "1Hour": "1 giờ",
         "7Days": "7 ngày",
@@ -1416,6 +1418,14 @@
           "feedbackDesc": "Có ý kiến phản hồi? Chúng tôi đang lắng nghe.",
           "thxDesc": "Nếu bạn thích Rabby, một đánh giá nhanh trên Chrome Store sẽ có ý nghĩa rất nhiều.",
           "feedbackSuccess": "Cảm ơn bạn đã góp ý!"
+        },
+        "PwdForNonWhitelistedTx": {
+          "wrongPassword": "Mật khẩu sai",
+          "titleDisable": "Nhập mật khẩu để tắt",
+          "titleEnable": "Bật kiểm tra mật khẩu?",
+          "inputPlaceholder": "Nhập Mật khẩu để Xác nhận",
+          "descDisable": "Một khi bị tắt, xác minh mật khẩu sẽ không còn được yêu cầu đối với các địa chỉ không được đưa vào danh sách trắng.",
+          "descEnable": "Khi đã được bật, việc chuyển tài sản đến một địa chỉ không có trong danh sách trắng trong tiện ích mở rộng này sẽ yêu cầu mật khẩu của bạn."
         }
       },
       "tokenDetail": {
@@ -1924,7 +1934,8 @@
         "manageGridplus": "Quản lý GridPlus",
         "manageBitbox02": "Quản lý BitBox02",
         "importBtn": "Nhập ({{count}})",
-        "addressesIn": "Địa chỉ trong {{0}}"
+        "addressesIn": "Địa chỉ trong {{0}}",
+        "nonAddr": "Chưa có địa chỉ nào được thêm cho cụm từ hạt giống này. Bạn có thể xóa cụm từ này trong Rabby Extension > Quản lý Địa chỉ."
       },
       "keystore": {
         "password": {
@@ -2093,7 +2104,25 @@
       "coboSafeErrorModule": "Địa chỉ đã hết hạn, vui lòng xóa và nhập lại địa chỉ.",
       "delete-desc": "Trước khi bạn xóa, hãy lưu ý những điểm sau để hiểu cách bảo vệ tài sản của bạn.",
       "address": "Địa chỉ",
-      "direct-delete-desc": "Địa chỉ này là địa chỉ {{renderBrand}}, Rabby không lưu trữ khóa riêng hoặc cụm từ hạt giống cho địa chỉ này, bạn có thể xóa nó."
+      "direct-delete-desc": "Địa chỉ này là địa chỉ {{renderBrand}}, Rabby không lưu trữ khóa riêng hoặc cụm từ hạt giống cho địa chỉ này, bạn có thể xóa nó.",
+      "deleteSeedPhrase": {
+        "title": "Xóa Địa Chỉ và Cụm Từ Khôi Phục?",
+        "title2": "Xóa địa chỉ?",
+        "option2": "Xóa địa chỉ và cụm từ hạt giống",
+        "option1": "Xóa Địa Chỉ, Giữ Câu Chuyện Hạt Giống",
+        "remainSeedPhrase": "Những cụm từ khôi phục của bạn vẫn được lưu trữ trên thiết bị của bạn.",
+        "keepSeedPhrase": "Đây là địa chỉ duy nhất liên kết với cụm từ hạt giống này. Bạn có muốn giữ cụm từ hạt giống không?",
+        "sub-title": "Hành động này là vĩnh viễn. Vui lòng xem xét các điều sau để bảo vệ tài sản của bạn:",
+        "onlyDeleteAddr": "Chỉ địa chỉ này sẽ bị xóa. Câu bí mật của bạn không bị ảnh hưởng, vì các địa chỉ khác của bạn vẫn sử dụng nó.",
+        "check2": "Tôi xác nhận rằng tôi đã sao lưu Khóa Riêng hoặc Cụm Hạt giống của mình và tôi đã sẵn sàng để xóa nó.",
+        "check1": "Tôi hiểu rằng xóa địa chỉ này cũng sẽ xóa cả Khóa Riêng và Câu Câu Gốc của nó. Rabby không thể khôi phục chúng cho tôi."
+      },
+      "deletePrivateKey": {
+        "check1": "Tôi hiểu rằng việc xóa địa chỉ này cũng sẽ xóa Khóa Riêng của nó. Rabby không thể khôi phục cho tôi.",
+        "sub-title": "Hành động này là vĩnh viễn. Vui lòng xem xét những điều sau để bảo vệ tài sản của bạn:",
+        "check2": "Tôi xác nhận rằng tôi đã sao lưu Khóa Riêng hoặc Câu Gốc của mình và tôi sẵn sàng xóa nó.",
+        "title": "Xóa địa chỉ và khóa riêng tư?"
+      }
     },
     "preferMetamaskDapps": {
       "howToAdd": "Cách thêm",
@@ -2899,7 +2928,11 @@
       "exchangeAddress": "Địa chỉ Sàn giao dịch",
       "riskTitle": "Thêm Địa chỉ Danh sách Trắng",
       "addSuccess": "Thêm thành công",
-      "title": "Thêm địa chỉ vào danh sách trắng"
+      "title": "Thêm địa chỉ vào danh sách trắng",
+      "verifyPwd": {
+        "title": "Địa chỉ không trong danh sách trắng",
+        "inputPlaceholder": "Nhập mật khẩu của bạn để xác nhận giao dịch này"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3136,7 +3169,10 @@
         "title": "Danh sách trắng",
         "addWhitelist": "Thêm địa chỉ vào danh sách trắng",
         "addWhitelistDesc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển tiền nhanh chóng—không cần xác nhận lần sau.",
-        "notWhitelist": "Không phải địa chỉ trong danh sách trắng"
+        "notWhitelist": "Không phải địa chỉ trong danh sách trắng",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Mật khẩu cho các giao dịch không nằm trong danh sách trắng"
+        }
       },
       "addWhitelist": {
         "title": "Thêm địa chỉ vào danh sách trắng",

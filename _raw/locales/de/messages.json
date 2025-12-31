@@ -1098,7 +1098,8 @@
       "enterPassphraseTitle": "Geben Sie die Passphrase zum Signieren ein",
       "CurrentDappAddress": {
         "desc": "Wechseln Sie die Dapp-Adresse"
-      }
+      },
+      "noSeedPhraseAddress": "Es wurden keine Adressen für diesen Seed-Phrase hinzugefügt. Sie können eine Adresse hinzufügen oder den Seed-Phrase löschen."
     },
     "dashboard": {
       "home": {
@@ -1297,7 +1298,8 @@
           "themeMode": "Themenmodus",
           "customTestnet": "Benutzerdefiniertes Netzwerk hinzufügen",
           "metamaskMode": "Verbinden Sie Rabby, indem Sie sich als MetaMask ausgeben",
-          "enableDappAccount": "DApps-Adressen unabhängig wechseln\n"
+          "enableDappAccount": "DApps-Adressen unabhängig wechseln\n",
+          "switchPasswordForNonWhitelistedTx": "Passwort für nicht genehmigte Überweisungen"
         },
         "aboutUs": "Über uns",
         "currentVersion": "Aktuelle Version",
@@ -1324,6 +1326,14 @@
           "submitFeedbackButton": "Einreichen",
           "thxTitle": "Danke!",
           "rateOnChromeStoreButton": "Bewertung im Chrome Web Store"
+        },
+        "PwdForNonWhitelistedTx": {
+          "titleDisable": "Passwort eingeben, um zu deaktivieren",
+          "inputPlaceholder": "Geben Sie das Passwort zur Bestätigung ein",
+          "descEnable": "Sobald es aktiviert ist, erfordert das Übertragen an eine nicht genehmigte Adresse in dieser Erweiterung Ihr Passwort.",
+          "descDisable": "Sobald deaktiviert, ist die Passwortüberprüfung für nicht auf der Whitelist befindliche Adressen nicht mehr erforderlich.",
+          "titleEnable": "Passwortüberprüfung aktivieren?",
+          "wrongPassword": "Falsches Passwort"
         }
       },
       "tokenDetail": {
@@ -1823,7 +1833,8 @@
         },
         "importBtn": "Importieren ({{count}})",
         "manageImtokenOffline": "Verwalten Sie imToken",
-        "manageImKey": "Verwalten Sie imKey"
+        "manageImKey": "Verwalten Sie imKey",
+        "nonAddr": "Es wurden keine Adressen für diesen Seed-Satz hinzugefügt. Sie können diesen Satz in Rabby Extension > Adresse verwalten löschen."
       },
       "importYourKeystore": "Importieren Sie Ihren KeyStore",
       "incorrectPassword": "Falsches Passwort",
@@ -2004,7 +2015,25 @@
       "safeModuleAddress": "Sichere Modul-Adresse",
       "coboSafeErrorModule": "Adresse ist abgelaufen. Bitte löschen und erneut importieren.",
       "importedDelegatedAddress": "Importierte Delegated-Adresse",
-      "manage-addresses-under": "Verwalte Adressen unter diesem {{brand}}"
+      "manage-addresses-under": "Verwalte Adressen unter diesem {{brand}}",
+      "deleteSeedPhrase": {
+        "title": "Adresse und Seed Phrase löschen?",
+        "title2": "Adresse löschen?",
+        "option1": "Adresse löschen, Seed-Phrase behalten",
+        "remainSeedPhrase": "Ihr Seed-Phrase bleibt auf Ihrem Gerät.",
+        "sub-title": "Diese Aktion ist dauerhaft. Bitte überprüfen Sie Folgendes, um Ihre Vermögenswerte zu schützen:",
+        "onlyDeleteAddr": "Nur diese Adresse wird entfernt. Ihr Seed-Phrase bleibt unbeeinträchtigt, da Ihre anderen Adressen sie weiterhin verwenden.",
+        "check2": "Ich bestätige, dass ich meinen Private Key oder Seed Phrase gesichert habe und bereit bin, ihn zu löschen.",
+        "keepSeedPhrase": "Dies ist die einzige Adresse, die mit diesem Seed-Phrase verknüpft ist. Möchten Sie die Seed-Phrase aufbewahren?",
+        "check1": "Ich verstehe, dass das Löschen dieser Adresse auch ihren Private Key und Seed Phrase entfernt. Rabby kann sie nicht für mich wiederherstellen.",
+        "option2": "Adresse und Seed Phrase löschen"
+      },
+      "deletePrivateKey": {
+        "title": "Adresse und privaten Schlüssel löschen?",
+        "sub-title": "Diese Aktion ist dauerhaft. Bitte überprüfen Sie Folgendes, um Ihre Vermögenswerte zu schützen:",
+        "check1": "Ich verstehe, dass das Löschen dieser Adresse auch ihren privaten Schlüssel entfernt. Rabby kann sie mir nicht wiederherstellen.",
+        "check2": "Ich bestätige, dass ich meinen Private Key oder Seed Phrase gesichert habe und bereit bin, ihn zu löschen."
+      }
     },
     "preferMetamaskDapps": {
       "title": "Bevorzugte Dapps von MetaMask",
@@ -2902,7 +2931,11 @@
       "addSuccess": "Erfolgreich hinzugefügt",
       "nameYourAddress": "Benennen Sie Ihre Adresse",
       "enterAddress": "Adresse eingeben",
-      "title": "Adresse zur Whitelist hinzufügen"
+      "title": "Adresse zur Whitelist hinzufügen",
+      "verifyPwd": {
+        "title": "Nicht-Whitelist-Adresse",
+        "inputPlaceholder": "Geben Sie Ihr Passwort ein, um diese Übertragung zu bestätigen."
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3139,7 +3172,10 @@
         "addWhitelist": "Adresse zur Whitelist hinzufügen",
         "title": "Whitelist",
         "notWhitelist": "Nicht eine Whitelist-Adresse",
-        "addWhitelistDesc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Überweisungen – beim nächsten Mal sind keine Bestätigungen erforderlich."
+        "addWhitelistDesc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Überweisungen – beim nächsten Mal sind keine Bestätigungen erforderlich.",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Passwort für nicht whitelisted Überweisungen"
+        }
       },
       "addWhitelist": {
         "title": "Adresse zur Whitelist hinzufügen",

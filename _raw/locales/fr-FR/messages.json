@@ -458,7 +458,25 @@
       "safeModuleAddress": "Adresse du module sécurisé",
       "source": "Source",
       "tx-requires": "Toute transaction nécessite <2>{{num}}</2> confirmations",
-      "manage-addresses-under": "Gérer les adresses sous ce {{brand}}"
+      "manage-addresses-under": "Gérer les adresses sous ce {{brand}}",
+      "deleteSeedPhrase": {
+        "option2": "Supprimer l'adresse et la phrase de récupération",
+        "remainSeedPhrase": "Votre phrase de récupération reste sur votre appareil.",
+        "sub-title": "Cette action est permanente. Veuillez examiner ce qui suit pour protéger vos actifs :",
+        "title2": "Supprimer l'adresse ?",
+        "keepSeedPhrase": "C'est la seule adresse liée à cette phrase de récupération. Souhaitez-vous conserver la phrase de récupération ?",
+        "check1": "Je comprends que supprimer cette adresse supprime également sa clé privée et sa phrase de récupération. Rabby ne peut pas les restaurer pour moi.",
+        "onlyDeleteAddr": "Seule cette adresse sera supprimée. Votre phrase de récupération n'est pas affectée, car vos autres adresses l'utilisent toujours.",
+        "title": "Supprimer l'adresse et la phrase de récupération ?",
+        "option1": "Supprimer l'adresse, conserver la phrase de récupération",
+        "check2": "Je confirme que j'ai sauvegardé ma Private Key ou Seed Phrase et je suis prêt à la supprimer."
+      },
+      "deletePrivateKey": {
+        "title": "Supprimer l'adresse et la clé privée ?",
+        "sub-title": "Cette action est permanente. Veuillez examiner ce qui suit pour protéger vos actifs :",
+        "check2": "Je confirme que j'ai sauvegardé ma clé privée ou ma phrase secrète et que je suis prêt à la supprimer.",
+        "check1": "Je comprends que la suppression de cette adresse supprime également sa clé privée. Rabby ne peut pas les récupérer pour moi."
+      }
     },
     "approvals": {
       "RevokeApprovalModal": {
@@ -995,7 +1013,8 @@
           "toggleThemeMode": "Thème",
           "customTestnet": "Ajouter un réseau personnalisé",
           "metamaskMode": "Connectez Rabby en se faisant passer pour MetaMask",
-          "enableDappAccount": "Changer indépendamment l'adresse du DApp\n"
+          "enableDappAccount": "Changer indépendamment l'adresse du DApp\n",
+          "switchPasswordForNonWhitelistedTx": "Mot de passe pour les transferts non autorisés"
         },
         "supportedChains": "Chaînes prises en charge",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -1024,6 +1043,14 @@
           "rateOnChromeStoreButton": "Évaluez sur le Chrome Web Store",
           "feedbackPlaceholder": "Rabby apprécie vos retours !",
           "thxDesc": "Si vous aimez Rabby, un rapide avis sur le Chrome Store serait très apprécié."
+        },
+        "PwdForNonWhitelistedTx": {
+          "wrongPassword": "Mot de passe incorrect",
+          "inputPlaceholder": "Entrez le mot de passe pour confirmer",
+          "titleEnable": "Activer la vérification du mot de passe ?",
+          "descEnable": "Une fois activée, le transfert vers une adresse non blanche dans cette extension nécessitera votre mot de passe.",
+          "titleDisable": "Entrez le mot de passe pour désactiver",
+          "descDisable": "Une fois désactivée, la vérification du mot de passe ne sera plus requise pour les adresses non-blanchies."
         }
       },
       "tokenDetail": {
@@ -1187,7 +1214,8 @@
       "addNewAddress": "Ajouter une nouvelle adresse",
       "CurrentDappAddress": {
         "desc": "Changer l'adresse Dapp"
-      }
+      },
+      "noSeedPhraseAddress": "Aucune adresse n'a été ajoutée pour cette phrase de récupération. Vous pouvez ajouter une adresse ou supprimer la phrase de récupération."
     },
     "newAddress": {
       "addContacts": {
@@ -1345,7 +1373,8 @@
         "waiting": "En attente",
         "manageImtokenOffline": "Gérer imToken",
         "importBtn": "Importer ({{count}})",
-        "manageImKey": "Gérer imKey"
+        "manageImKey": "Gérer imKey",
+        "nonAddr": "Aucune adresse n'a été ajoutée pour cette phrase de récupération. Vous pouvez supprimer cette phrase dans Rabby Extension > Gérer l'adresse."
       },
       "importKeystore": "Importer un \"keystore\"",
       "importMyMetamaskAccount": "Importer mon compte MetaMask",
@@ -3217,7 +3246,11 @@
       "confirmPassword": "Confirmer le mot de passe",
       "enterAddress": "Entrez l'adresse",
       "name": "Nom",
-      "title": "Ajouter l'adresse à la liste blanche"
+      "title": "Ajouter l'adresse à la liste blanche",
+      "verifyPwd": {
+        "title": "Adresse non autorisée",
+        "inputPlaceholder": "Entrez votre mot de passe pour confirmer ce transfert"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3454,7 +3487,10 @@
         "addWhitelist": "Ajouter l'adresse à la liste blanche",
         "title": "Liste blanche",
         "removeFromWhitelist": "Retirer de la liste blanche",
-        "addWhitelistDesc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides---aucune confirmation nécessaire la prochaine fois"
+        "addWhitelistDesc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides---aucune confirmation nécessaire la prochaine fois",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Mot de passe pour les transferts non autorisés"
+        }
       },
       "addWhitelist": {
         "title": "Ajouter l'adresse à la liste blanche",
