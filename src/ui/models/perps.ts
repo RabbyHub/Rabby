@@ -7,8 +7,18 @@ import {
   MarginSummary,
   OpenOrder,
   UserFill,
+  UserFunding,
+  UserHistoricalOrders,
+  WsActiveAssetCtx,
+  WsActiveAssetData,
   WsFill,
   WsUserFills,
+  wsUserNonFundingLedgerUpdates,
+  WsUserFunding,
+  UserNonFundingLedgerUpdates,
+  WsTwapStates,
+  UserTwapHistory,
+  UserTwapSliceFill,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
 import { RootModel } from '.';
@@ -20,6 +30,7 @@ import { maxBy } from 'lodash';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { isSameAddress } from '../utils';
+import { IDisplayedAccountWithBalance } from './accountToDisplay';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -67,7 +78,6 @@ export interface AccountHistoryItem {
 }
 
 export interface PerpsState {
-  // clearinghouseState: ClearinghouseState | null;
   positionAndOpenOrders: PositionAndOpenOrder[];
   accountSummary: AccountSummary | null;
   currentPerpsAccount: Account | null;
@@ -90,6 +100,21 @@ export interface PerpsState {
     pnl: number;
     show: boolean;
   };
+  // Desktop Pro fields
+  selectedCoin: string;
+  favoritedCoins: string[];
+  chartInterval: string;
+  wsActiveAssetCtx: WsActiveAssetCtx | null;
+  wsActiveAssetData: WsActiveAssetData | null;
+  clearinghouseState: ClearinghouseState | null;
+  openOrders: OpenOrder[];
+  clearinghouseStateMap: Record<string, ClearinghouseState | null>;
+  historicalOrders: UserHistoricalOrders[];
+  userFunding: WsUserFunding['fundings'];
+  nonFundingLedgerUpdates: UserNonFundingLedgerUpdates[];
+  twapStates: WsTwapStates['states'];
+  twapHistory: UserTwapHistory[];
+  twapSliceFills: UserTwapSliceFill[];
 }
 
 export const perps = createModel<RootModel>()({
@@ -117,9 +142,96 @@ export const perps = createModel<RootModel>()({
       show: false,
     },
     fillsOrderTpOrSl: {},
+    // Desktop Pro fields
+    selectedCoin: 'BTC',
+    favoritedCoins: [],
+    chartInterval: '15m',
+    wsActiveAssetCtx: null,
+    wsActiveAssetData: null,
+    clearinghouseState: null,
+    clearinghouseStateMap: {},
+    openOrders: [],
+    historicalOrders: [],
+    userFunding: [],
+    nonFundingLedgerUpdates: [],
+    twapStates: [],
+    twapHistory: [],
+    twapSliceFills: [],
   } as PerpsState,
 
   reducers: {
+    patchState(state, payload: Partial<PerpsState>) {
+      return {
+        ...state,
+        ...payload,
+      };
+    },
+
+    patchStatsListBySnapshot(
+      state,
+      payload: {
+        listName:
+          | 'twapSliceFills'
+          | 'twapHistory'
+          | 'userFunding'
+          | 'historicalOrders'
+          | 'nonFundingLedgerUpdates'
+          | 'userFills';
+        list:
+          | UserTwapSliceFill[]
+          | UserTwapHistory[]
+          | WsUserFunding['fundings']
+          | UserHistoricalOrders[]
+          | UserNonFundingLedgerUpdates[]
+          | WsFill[];
+        isSnapshot: boolean;
+      }
+    ) {
+      const { listName, list, isSnapshot } = payload;
+      if (isSnapshot) {
+        return {
+          ...state,
+          [listName]: list.reverse().slice(0, 2000),
+        };
+      } else {
+        return {
+          ...state,
+          [listName]: [...list, ...state[listName]],
+        };
+      }
+    },
+
+    setClearinghouseStateMap(
+      state,
+      payload: Record<string, ClearinghouseState | null>
+    ) {
+      return {
+        ...state,
+        clearinghouseStateMap: {
+          ...state.clearinghouseStateMap,
+          ...payload,
+        },
+      };
+    },
+
+    patchClearinghouseState(state, payload: ClearinghouseState) {
+      const currentStateTime = state.clearinghouseState?.time || 0;
+      if (payload.time <= currentStateTime) {
+        return state;
+      }
+      return {
+        ...state,
+        clearinghouseState: payload,
+      };
+    },
+
+    setCurrentBestAskPrice(state, payload: string) {
+      return {
+        ...state,
+        currentBestAskPrice: payload,
+      };
+    },
+
     setFillsOrderTpOrSl(state, payload: Record<string, 'tp' | 'sl'>) {
       return {
         ...state,
@@ -271,6 +383,12 @@ export const perps = createModel<RootModel>()({
     },
 
     updateMarketData(state, payload: AssetCtx[]) {
+      if (payload.length === 0 || state.marketData.length === 0) {
+        return {
+          ...state,
+        };
+      }
+
       const list = payload || [];
       const newMarketData = state.marketData.map((item) => {
         return {
@@ -396,6 +514,59 @@ export const perps = createModel<RootModel>()({
         accountNeedApproveBuilderFee: false,
       };
     },
+
+    // Desktop Pro reducers
+    setSelectedCoin(state, payload: string) {
+      return {
+        ...state,
+        selectedCoin: payload,
+      };
+    },
+
+    setFavoritedCoins(state, payload: string[]) {
+      return {
+        ...state,
+        favoritedCoins: payload,
+      };
+    },
+
+    addFavoritedCoin(state, payload: string) {
+      if (state.favoritedCoins.includes(payload)) {
+        return state;
+      }
+      return {
+        ...state,
+        favoritedCoins: [...state.favoritedCoins, payload],
+      };
+    },
+
+    removeFavoritedCoin(state, payload: string) {
+      return {
+        ...state,
+        favoritedCoins: state.favoritedCoins.filter((coin) => coin !== payload),
+      };
+    },
+
+    setChartInterval(state, payload: string) {
+      return {
+        ...state,
+        chartInterval: payload,
+      };
+    },
+
+    setWsActiveAssetCtx(state, payload: WsActiveAssetCtx | null) {
+      return {
+        ...state,
+        wsActiveAssetCtx: payload,
+      };
+    },
+
+    setWsActiveAssetData(state, payload: WsActiveAssetData | null) {
+      return {
+        ...state,
+        wsActiveAssetData: payload,
+      };
+    },
   },
 
   effects: (dispatch) => ({
@@ -421,6 +592,7 @@ export const perps = createModel<RootModel>()({
           sdk.info.getFrontendOpenOrders(),
         ]);
 
+        console.log('clearinghouseState', clearinghouseState);
         dispatch.perps.setPositionAndOpenOrders(clearinghouseState, openOrders);
 
         dispatch.perps.setAccountSummary({
@@ -439,22 +611,37 @@ export const perps = createModel<RootModel>()({
       dispatch.perps.setHasPermission(has_permission);
     },
 
-    async loginPerpsAccount(payload: Account, rootState) {
-      await rootState.app.wallet.setPerpsCurrentAccount(payload);
-      dispatch.perps.setCurrentPerpsAccount(payload);
-      await dispatch.perps.refreshData();
+    async loginPerpsAccount(
+      payload: {
+        account: Account;
+        isPro: boolean;
+      },
+      rootState
+    ) {
+      const { account, isPro } = payload;
+      await rootState.app.wallet.setPerpsCurrentAccount(account);
+      dispatch.perps.setCurrentPerpsAccount(account);
+      // await dispatch.perps.refreshData();
+      if (isPro) {
+        await dispatch.perps.fetchClearinghouseState();
+        // other use subscribe to data
+      } else {
+        await dispatch.perps.fetchPositionAndOpenOrders();
+        dispatch.perps.fetchUserNonFundingLedgerUpdates();
+        dispatch.perps.fetchUserHistoricalOrders();
+      }
 
       // 订阅实时数据更新
-      dispatch.perps.subscribeToUserData(payload.address);
+      dispatch.perps.subscribeToUserData({ address: account.address, isPro });
 
       // dispatch.perps.startPolling(undefined);
 
-      dispatch.perps.fetchPerpPermission(payload.address);
+      dispatch.perps.fetchPerpPermission(account.address);
       setTimeout(() => {
         // avoid 429 error
         dispatch.perps.fetchPerpFee();
       }, 1000);
-      console.log('loginPerpsAccount success', payload.address);
+      console.log('loginPerpsAccount success', account.address);
     },
 
     async fetchClearinghouseState() {
@@ -463,12 +650,15 @@ export const perps = createModel<RootModel>()({
       const clearinghouseState = await sdk.info.getClearingHouseState();
 
       dispatch.perps.updatePositionsWithClearinghouse(clearinghouseState);
+
+      dispatch.perps.patchClearinghouseState(clearinghouseState);
     },
 
     async fetchPositionOpenOrders() {
       const sdk = getPerpsSDK();
       const openOrders = await sdk.info.getFrontendOpenOrders();
       dispatch.perps.updateOpenOrders(openOrders);
+      dispatch.perps.patchState({ openOrders });
     },
 
     async fetchUserNonFundingLedgerUpdates() {
@@ -543,11 +733,23 @@ export const perps = createModel<RootModel>()({
           }
         });
 
+        dispatch.perps.patchState({ historicalOrders: res });
         dispatch.perps.setFillsOrderTpOrSl(listOrderTpOrSl);
       } catch (error) {
         console.error('Failed to fetch user historical orders:', error);
       }
     },
+
+    // async fetchUserFunding() {
+    //   try {
+    //     const sdk = getPerpsSDK();
+    //     const res = await sdk.info.getUserFunding();
+
+    //     dispatch.perps.patchState({ userFunding: res });
+    //   } catch (error) {
+    //     console.error('Failed to fetch user historical orders:', error);
+    //   }
+    // },
 
     async refreshData() {
       await dispatch.perps.fetchPositionAndOpenOrders();
@@ -592,7 +794,11 @@ export const perps = createModel<RootModel>()({
       return Number(fee);
     },
 
-    subscribeToUserData(address, rootState) {
+    subscribeToUserData(
+      payload: { address: string; isPro: boolean },
+      rootState
+    ) {
+      const { address, isPro } = payload;
       const sdk = getPerpsSDK();
       const subscriptions: (() => void)[] = [];
       dispatch.perps.unsubscribeAll(undefined);
@@ -617,6 +823,124 @@ export const perps = createModel<RootModel>()({
           dispatch.perps.updateMarketData(assetCtxs);
         }
       );
+      subscriptions.push(unsubscribeWebData2);
+
+      if (isPro) {
+        const {
+          unsubscribe: unsubscribeClearinghouseState,
+        } = sdk.ws.subscribeToClearinghouseState(address, (data) => {
+          const { clearinghouseState, user } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+          dispatch.perps.patchClearinghouseState(clearinghouseState);
+          dispatch.perps.setClearinghouseStateMap({
+            [address.toLowerCase()]: clearinghouseState,
+          });
+        });
+        subscriptions.push(unsubscribeClearinghouseState);
+
+        const {
+          unsubscribe: unsubscribeOpenOrders,
+        } = sdk.ws.subscribeToOpenOrders((data) => {
+          const { orders, user } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+
+          dispatch.perps.patchState({ openOrders: orders || [] });
+        });
+        subscriptions.push(unsubscribeOpenOrders);
+
+        const {
+          unsubscribe: unsubscribeUserFunding,
+        } = sdk.ws.subscribeToUserFunding((data) => {
+          const { fundings, user, isSnapshot } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+
+          dispatch.perps.patchStatsListBySnapshot({
+            listName: 'userFunding',
+            list: fundings,
+            isSnapshot: isSnapshot || false,
+          });
+        });
+        subscriptions.push(unsubscribeUserFunding);
+
+        const {
+          unsubscribe: unsubscribeUserHistoricalOrders,
+        } = sdk.ws.subscribeToUserHistoricalOrders((data) => {
+          const { orderHistory, user, isSnapshot } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+
+          dispatch.perps.patchStatsListBySnapshot({
+            listName: 'historicalOrders',
+            list: orderHistory,
+            isSnapshot: isSnapshot || false,
+          });
+        });
+        subscriptions.push(unsubscribeUserHistoricalOrders);
+
+        const {
+          unsubscribe: unsubscribeUserNonFundingLedgerUpdates,
+        } = sdk.ws.subscribeToUserNonFundingLedgerUpdates((data) => {
+          const { nonFundingLedgerUpdates, user, isSnapshot } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+
+          dispatch.perps.patchStatsListBySnapshot({
+            listName: 'nonFundingLedgerUpdates',
+            list: nonFundingLedgerUpdates,
+            isSnapshot: isSnapshot || false,
+          });
+        });
+        subscriptions.push(unsubscribeUserNonFundingLedgerUpdates);
+
+        const {
+          unsubscribe: unsubscribeTwapStates,
+        } = sdk.ws.subscribeToTwapStates((data) => {
+          const { states, user } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+          dispatch.perps.patchState({ twapStates: states });
+        });
+        subscriptions.push(unsubscribeTwapStates);
+
+        const {
+          unsubscribe: unsubscribeUserTwapHistory,
+        } = sdk.ws.subscribeToUserTwapHistory((data) => {
+          const { history, user, isSnapshot } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+          dispatch.perps.patchStatsListBySnapshot({
+            listName: 'twapHistory',
+            list: history,
+            isSnapshot: isSnapshot || false,
+          });
+        });
+        subscriptions.push(unsubscribeUserTwapHistory);
+
+        const {
+          unsubscribe: unsubscribeUserTwapSliceFills,
+        } = sdk.ws.subscribeToUserTwapSliceFills((data) => {
+          const { twapSliceFills, user, isSnapshot } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+          dispatch.perps.patchStatsListBySnapshot({
+            listName: 'twapSliceFills',
+            list: twapSliceFills,
+            isSnapshot: isSnapshot || false,
+          });
+        });
+        subscriptions.push(unsubscribeUserTwapSliceFills);
+      }
 
       const { unsubscribe: unsubscribeFills } = sdk.ws.subscribeToUserFills(
         (data) => {
@@ -626,14 +950,13 @@ export const perps = createModel<RootModel>()({
             return;
           }
 
-          dispatch.perps.addUserFills({
-            fills,
+          dispatch.perps.patchStatsListBySnapshot({
+            listName: 'userFills',
+            list: fills,
             isSnapshot: isSnapshot || false,
-            user,
           });
         }
       );
-      subscriptions.push(unsubscribeWebData2);
       subscriptions.push(unsubscribeFills);
 
       rootState.perps.wsSubscriptions.push(...subscriptions);
@@ -679,6 +1002,43 @@ export const perps = createModel<RootModel>()({
       eventBus.addEventListener(EVENTS.PERPS.LOG_OUT, () => {
         dispatch.perps.logout();
       });
+    },
+
+    // Desktop Pro effects
+    async initFavoritedCoins(_, rootState) {
+      try {
+        const favoritedCoins = await rootState.app.wallet.getPerpsFavoritedCoins();
+        if (favoritedCoins && favoritedCoins.length > 0) {
+          dispatch.perps.setFavoritedCoins(favoritedCoins);
+        } else {
+          // Default favorited coins
+          dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
+        }
+      } catch (error) {
+        console.error('Failed to load favorited coins:', error);
+        // Fallback to default
+        dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
+      }
+    },
+
+    async toggleFavoriteCoin(coin: string, rootState) {
+      try {
+        const { favoritedCoins } = rootState.perps;
+
+        let newFavoritedCoins: string[];
+        if (favoritedCoins.includes(coin)) {
+          dispatch.perps.removeFavoritedCoin(coin);
+          newFavoritedCoins = favoritedCoins.filter((c) => c !== coin);
+        } else {
+          dispatch.perps.addFavoritedCoin(coin);
+          newFavoritedCoins = [...favoritedCoins, coin];
+        }
+
+        // Save to storage
+        await rootState.app.wallet.setPerpsFavoritedCoins(newFavoritedCoins);
+      } catch (error) {
+        console.error('Failed to toggle favorite coin:', error);
+      }
     },
   }),
 });

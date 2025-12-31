@@ -770,9 +770,17 @@
         "description": "All your open positions will be closed at market price."
       },
       "toast": {
+        "openScaleOrderSuccess": "Scale order opened {{direction}} {{coin}}-USD: Size {{size}}",
         "takeProfitSuccess": "Take profit set successfully",
         "stopLossSuccess": "Stop loss set successfully",
+        "setAutoCloseSuccess": "Auto close set successfully",
+        "openTWAPOrderSuccess": "TWAP order opened {{direction}} {{coin}}-USD: Size {{size}}",
+        "cancelTWAPOrderSuccess": "TWAP order canceled successfully",
+        "openTPSlMarketOrderSuccess": "{{tpsl}} market order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
+        "openTPSlLimitOrderSuccess": "{{tpsl}} limit order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
+        "openLimitOrderSuccess": "limit order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
         "closePositionSuccess": "Closed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
+        "closeAllPositionsSuccess": "All positions closed successfully",
         "openPositionSuccess": "Opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}"
       },
       "closePositionPopup": {
@@ -980,6 +988,146 @@
         "description": "Use Rabby’s code to enable",
         "hyperliquidFee": "Hyperliquid trading fees.",
         "activateNow": "Activate Now"
+      }
+    },
+    "perpsPro": {
+      "chatArea": {
+        "symbol": "Symbol",
+        "searchMarkets": "Search markets",
+        "lastPrice": "Last Price",
+        "mark": "Mark",
+        "oracle": "Oracle",
+        "24hChange": "24h Change",
+        "openInterest": "Open Interest",
+        "24hVol": "24h Vol",
+        "volume": "Volume",
+        "fundingCountdown": "Funding / Countdown",
+        "8hrFunding": "8h Funding"
+      },
+      "userInfo": {
+        "positionInfo": {
+          "currentPosition": "Current Position",
+          "reversePosition": "Reverse Position",
+          "configure": "Configure",
+          "limitPrice": "Limit Price",
+          "closePosition": "Close Position",
+          "closePositionTips": "This will attempt to close at your chosen limit price.",
+          "limitClose": "Limit Close",
+          "closePositionMarketTips": "This will close immediately at the current market price",
+          "mid": "Mid",
+          "receive": "Receive",
+          "closedPnl": "Closed PNL",
+          "newPosition": "New Position",
+          "closePositionReverseTips": "This will immediately close your position at the current market price and open a position of equal size in the opposite direction.",
+          "confirm": "Confirm"
+        },
+        "distanceRiskTag": {
+          "goingDown": "Going down {{percent}} will trigger liquidation",
+          "goingUp": "Going up {{percent}} will trigger liquidation"
+        },
+        "twap": {
+          "activated": "Activated",
+          "completed": "Completed",
+          "terminated": "Terminated"
+        },
+        "history": "History",
+        "active": "Active",
+        "terminate": "Terminate",
+        "yes": "Yes",
+        "no": "No",
+        "randomized": "(randomized)"
+      },
+      "tradingPanel": {
+        "startPrice": "Start Price",
+        "endPrice": "End Price",
+        "start": "Start",
+        "end": "End",
+        "totalOrders": "Total Orders",
+        "sizeSkew": "Size skew",
+        "takeProfitExpectedPnL": "Take profit expected PnL",
+        "stopLossExpectedPnL": "Stop loss expected PnL",
+        "liquidationPrice": "Liquidation Price",
+        "orderValue": "Order Value",
+        "slippage": "Slippage",
+        "frequency": "Frequency",
+        "numberOfOrders": "Number of Orders",
+        "sizePerSuborder": "Size per Suborder",
+        "marginRequired": "Margin Required",
+        "marginUsage": "Margin Usage",
+        "marginIsolated": "Isolated",
+        "marginCross": "Cross",
+        "buyLong": "Buy / Long",
+        "sellShort": "Sell / Short",
+        "availableFunds": "Available Funds",
+        "currentPosition": "Current Position",
+        "tpSl": "TP / SL",
+        "placeOrder": "Place Order",
+        "type": "Type",
+        "limitPrice": "Limit Price",
+        "triggerPrice": "Trigger Price",
+        "enterAmount": "Please enter amount",
+        "insufficientBalance": "Insufficient balance",
+        "reduceOnlyTooLarge": "Reduce Only Too Large",
+        "minimumSuborderSize": "The minimum TWAP suborder size is $10",
+        "startAndEndPriceMustBeDifferent": "Start price and end price must be different",
+        "minimumOrderSize": "Minimum order size is $10",
+        "maximumOrderSize": "Maximum order size is {{amount}}",
+        "invalidTpPrice": "Invalid take profit price",
+        "limitOrderTypeOptions": {
+          "Gtc": "GTC (Good Til Cancel):Order will rest until filled or canceled",
+          "Ioc": "IOC (Immediate Or Cancel):Any portion that is not immediately filled will be canceled",
+          "Alo": "ALO (Add Liquidity Only):Order will exist only as a limit order on the book. Also known as post-only."
+        },
+        "aloTooLarge" : "Alo order price must be lower than best ask price",
+        "runtime": "Runtime",
+        "randomize": "Randomize",
+        "runtimeTips": "(5m-24h)",
+        "hours": "Hours",
+        "minutes": "Minutes",
+        "invalidSlPrice": "Invalid stop loss price",
+        "slBuyMustBeHigherThanMidPrice": "Stop buy order price must be higher than mid",
+        "slSellMustBeLowerThanMidPrice": "Stop sell order price must be lower than mid",
+        "tpBuyMustBeLowerThanMidPrice": "Take buy order price must be lower than mid",
+        "tpSellMustBeHigherThanMidPrice": "Take sell order price must be higher than mid",
+        "tpMustBeHigherThanCurrentPrice": "Take profit price must be higher than current price",
+        "slMustBeLowerThanCurrentPrice": "Stop loss price must be lower than current price",
+        "tpMustBeLowerThanCurrentPrice": "Take profit price must be lower than current price",
+        "slMustBeHigherThanCurrentPrice": "Stop loss price must be higher than current price"
+      },
+      "marginMode": {
+        "title": "Margin Mode",
+        "cross": "Cross",
+        "crossDescription": "All cross positions share the same cross margin as collateral. In the event of liquidation, your margin balance and any remaining open positions under cross in this mode may be forfeited.",
+        "isolated": "Isolated",
+        "isolatedDescription": "Manage your risk on individual positions by allocating the amount of margin allocated to each. If the margin ratio of an isolated position reaches 100%, the position will be liquidated. Margin can be added or removed to individual positions in this mode.",
+        "confirm": "Confirm"
+      },
+      "leverage": {
+        "title": "Adjust Leverage",
+        "controlPositionLeverage" : "Control the leverage used for {{coin}} positions. The maximum leverage is {{max}}x.",
+        "maxPositionSize": "Max position size decreases the higher your leverage.",
+        "higherLeverageRisk": "Higher leverage increases the risk of liquidation.",
+        "minError": "Minimum leverage is 1x",
+        "maxError": "Maximum leverage is {{max}}x",
+        "confirm": "Confirm"
+      },
+      "accountActions": {
+        "available": "Available:",
+        "positionCount": "{{count}} positions",
+        "deposit": "Deposit"
+      },
+      "orderBook": {
+        "title": "Order Book",
+        "trades": "Trades",
+        "price": "Price",
+        "amount": "Amount",
+        "total": "Total",
+        "markPrice": "Mark Price",
+        "time": "Time",
+        "noTrades": "No trades",
+        "viewBoth": "Both",
+        "viewBids": "Bids",
+        "viewAsks": "Asks"
       }
     },
     "perpsDetail": {
@@ -3654,10 +3802,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",

@@ -35,6 +35,7 @@ import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
 import { CopyChecked } from '../CopyChecked';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import './styles.less';
+import { Account } from '@/background/service/preference';
 
 interface DesktopSelectAccountListProps {
   isShowApprovalAlert?: boolean;
