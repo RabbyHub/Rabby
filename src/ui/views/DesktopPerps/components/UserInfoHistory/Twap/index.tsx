@@ -15,6 +15,7 @@ import { ReactComponent as RcIconArrowDown } from '@/ui/assets/perps/icon-arrow-
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
+import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 
 type TwapOrder = {
   twapId: number;
@@ -106,16 +107,7 @@ export const Twap: React.FC = () => {
     return historyTwapOrders;
   }, [activeTwapOrders, historyTwapOrders, activeTab]);
 
-  const handleTerminate = useMemoizedFn(
-    async (coin: string, twapId: number) => {
-      try {
-        const sdk = getPerpsSDK();
-        await sdk.exchange?.cancelTwapOrder({ coin, twapId });
-      } catch (error) {
-        console.error('Failed to terminate TWAP order:', error);
-      }
-    }
-  );
+  const { handleCancelTWAPOrder } = usePerpsProPosition();
 
   const calculateAveragePrice = (order: TwapOrder) => {
     if (!order.slices.length || Number(order.executedSz) === 0) {
@@ -355,18 +347,24 @@ export const Twap: React.FC = () => {
           }
 
           return (
-            <Button
-              size="small"
-              className="text-[12px] h-[28px] bg-rb-red-light-1 text-rb-red-default"
-              onClick={() => handleTerminate(record.coin, record.twapId)}
-            >
-              {t('page.perpsPro.userInfo.terminate')}
-            </Button>
+            <div className="flex items-center">
+              <div
+                className="text-[12px] px-[16px] h-[28px] flex items-center justify-center bg-rb-red-light-1 text-rb-red-default cursor-pointer rounded-[8px]"
+                onClick={() =>
+                  handleCancelTWAPOrder({
+                    coin: record.coin,
+                    twapId: record.twapId,
+                  })
+                }
+              >
+                {t('page.perpsPro.userInfo.terminate')}
+              </div>
+            </div>
           );
         },
       },
     ],
-    [expandedRowKeys, handleTerminate, activeTab]
+    [expandedRowKeys, handleCancelTWAPOrder, activeTab]
   );
 
   // Expanded row render

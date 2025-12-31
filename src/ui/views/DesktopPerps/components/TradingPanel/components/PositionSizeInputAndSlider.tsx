@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PositionSize } from '../../../types';
 import { DesktopPerpsSlider } from '../../DesktopPerpsSlider';
 import { useMemoizedFn } from 'ahooks';
@@ -18,6 +18,7 @@ const SLIDER_MARKS = PRESET_POINTS.reduce((acc, point) => {
 }, {} as Record<number, string>);
 
 interface PositionSizeInputAndSliderProps {
+  defaultMax?: boolean;
   price: number | string;
   maxTradeSize: string | undefined;
   positionSize: PositionSize;
@@ -33,6 +34,7 @@ interface PositionSizeInputAndSliderProps {
 }
 
 export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProps> = ({
+  defaultMax,
   price,
   maxTradeSize,
   positionSize,
@@ -278,6 +280,12 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     const formatted = num.toFixed(2);
     handleNotionalChange(formatted);
   };
+
+  useEffect(() => {
+    if (defaultMax) {
+      handlePercentageChange(100);
+    }
+  }, [defaultMax]);
 
   return (
     <>

@@ -1,7 +1,7 @@
 import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
-import { formatUsdValue, sleep } from '@/ui/utils';
+import { formatUsdValue, sleep, splitNumberByStep } from '@/ui/utils';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { Button, Modal } from 'antd';
+import { Button, message, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { noop } from 'lodash';
@@ -9,7 +9,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { usePerpsPosition } from '../../Perps/hooks/usePerpsPosition';
-import { validatePriceInput } from '../../Perps/utils';
+import { formatTpOrSlPrice, validatePriceInput } from '../../Perps/utils';
 import { DesktopPerpsInput } from '../components/DesktopPerpsInput';
 import { PerpsPositionCard } from '../components/PerpsPositionCard';
 import { PositionFormatData } from '../components/UserInfoHistory/PositionsInfo';
@@ -31,8 +31,11 @@ const calculatePnl = ({
   position: PositionFormatData;
   extPrice: number;
 }) => {
+  const withSize = position.direction === 'Long' ? 1 : -1;
   const pnl =
-    (Number(extPrice) - Number(position.entryPx)) * Number(position.size);
+    (Number(extPrice) - Number(position.entryPx)) *
+    Number(position.size) *
+    withSize;
   const percent = (pnl / Number(position.marginUsed)) * 100;
   return { pnl, percent };
 };
@@ -59,10 +62,21 @@ export const EditTpSlModal: React.FC<Props> = ({
   });
 
   useEffect(() => {
-    return () => {
+    if (visible) {
+      // Initialize with existing prices if available
+      const existingTpPrice = position.tpItem?.triggerPx || '';
+      const existingSlPrice = position.slItem?.triggerPx || '';
+
+      if (existingTpPrice && Number(existingTpPrice) > 0) {
+        handlePriceChange(existingTpPrice, 'tp');
+      }
+      if (existingSlPrice && Number(existingSlPrice) > 0) {
+        handlePriceChange(existingSlPrice, 'sl');
+      }
+    } else {
       resetForm();
-    };
-  }, []);
+    }
+  }, [visible]);
 
   const handlePriceChange = useMemoizedFn(
     (price: string, type: 'tp' | 'sl') => {
@@ -76,18 +90,85 @@ export const EditTpSlModal: React.FC<Props> = ({
       ) {
         if (type === 'tp') {
           setTpPrice(value);
-          const { pnl, percent } = calculatePnl({
-            position,
-            extPrice: Number(value),
-          });
-          setGainPct(percent ? percent.toFixed(2) : '');
+          if (value && Number(value) > 0) {
+            const { pnl, percent } = calculatePnl({
+              position,
+              extPrice: Number(value),
+            });
+            // Gain %: positive = profit, negative = loss
+            setGainPct(percent ? percent.toFixed(2) : '');
+          } else {
+            setGainPct('');
+          }
         } else {
           setSlPrice(value);
-          const { pnl, percent } = calculatePnl({
-            position,
-            extPrice: Number(value),
-          });
-          setLossPct(percent ? (percent * -1).toFixed(2) : '');
+          if (value && Number(value) > 0) {
+            const { pnl, percent } = calculatePnl({
+              position,
+              extPrice: Number(value),
+            });
+            // Loss %: positive = loss, negative = profit (invert the sign)
+            setLossPct(percent ? (-percent).toFixed(2) : '');
+          } else {
+            setLossPct('');
+          }
+        }
+      }
+    }
+  );
+
+  const handlePercentChange = useMemoizedFn(
+    (percent: string, type: 'tp' | 'sl') => {
+      // Allow numbers, decimal point, and negative sign
+      if (/^-?\d*\.?\d*$/.test(percent) || percent === '' || percent === '-') {
+        if (type === 'tp') {
+          setGainPct(percent);
+        } else {
+          setLossPct(percent);
+        }
+
+        // Calculate price from percentage
+        if (percent && percent !== '-' && Number(percent) !== 0) {
+          let pctValue = Number(percent) / 100;
+
+          // For Loss %: positive means loss, negative means profit
+          // So we need to invert the sign for calculation
+          if (type === 'sl') {
+            pctValue = -pctValue;
+          }
+
+          const costValue = Number(position.marginUsed);
+          const pnlUsdValue = costValue * pctValue;
+          const size = Number(position.size);
+          const priceDifference = pnlUsdValue / size;
+          const entryPrice = Number(position.entryPx);
+
+          let newPrice: number;
+          // Calculate based on the actual pnl direction
+          if (position.direction === 'Long') {
+            // Long: higher price = profit, lower price = loss
+            newPrice = entryPrice + priceDifference;
+          } else {
+            // Short: lower price = profit, higher price = loss
+            newPrice = entryPrice - priceDifference;
+          }
+
+          const newPriceStr = formatTpOrSlPrice(
+            newPrice,
+            marketData.szDecimals
+          );
+          if (type === 'tp') {
+            setTpPrice(newPriceStr);
+          } else {
+            setSlPrice(newPriceStr);
+          }
+        } else {
+          // Clear price if percent is empty or just '-'
+          if (type === 'tp') {
+            setTpPrice('');
+          } else {
+            setSlPrice('');
+          }
         }
       }
     }
@@ -115,9 +196,94 @@ export const EditTpSlModal: React.FC<Props> = ({
     }).pnl.toFixed(2);
   }, [slPrice, position]);
 
-  // todo validate input
+  // Validate TP price
+  const tpValidation = useMemo(() => {
+    const resObj = {
+      isValid: true,
+      error: '',
+      errorMessage: '',
+    };
 
-  const { handleSetAutoClose, handleModifyTpSlOrders } = usePerpsProPosition();
+    if (!tpPrice || Number(tpPrice) === 0) {
+      return resObj;
+    }
+
+    const tpValue = Number(tpPrice);
+    const markPrice = Number(position.markPx);
+
+    if (position.direction === 'Long' && tpValue <= markPrice) {
+      resObj.isValid = false;
+      resObj.error = 'invalid_tp_long';
+      resObj.errorMessage = t(
+        'page.perpsDetail.PerpsAutoCloseModal.takeProfitTipsLong'
+      );
+    }
+    if (position.direction === 'Short' && tpValue >= markPrice) {
+      resObj.isValid = false;
+      resObj.error = 'invalid_tp_short';
+      resObj.errorMessage = t(
+        'page.perpsDetail.PerpsAutoCloseModal.takeProfitTipsShort'
+      );
+    }
+
+    return resObj;
+  }, [tpPrice, position, t]);
+
+  // Validate SL price
+  const slValidation = useMemo(() => {
+    const resObj = {
+      isValid: true,
+      error: '',
+      errorMessage: '',
+    };
+
+    if (!slPrice || Number(slPrice) === 0) {
+      return resObj;
+    }
+
+    const slValue = Number(slPrice);
+    const markPrice = Number(position.markPx);
+
+    if (position.direction === 'Long' && slValue >= markPrice) {
+      resObj.isValid = false;
+      resObj.error = 'invalid_sl_long';
+      resObj.errorMessage = t(
+        'page.perpsDetail.PerpsAutoCloseModal.stopLossTipsLong'
+      );
+    }
+
+    if (position.direction === 'Short' && slValue <= markPrice) {
+      resObj.isValid = false;
+      resObj.error = 'invalid_sl_short';
+      resObj.errorMessage = t(
+        'page.perpsDetail.PerpsAutoCloseModal.stopLossTipsShort'
+      );
+    }
+
+    return resObj;
+  }, [slPrice, position, t]);
+
+  const canSubmit = useMemo(() => {
+    // At least one price should be set
+    if (!tpPrice && !slPrice) {
+      return false;
+    }
+    // If TP is set, it must be valid
+    if (tpPrice && !tpValidation.isValid) {
+      return false;
+    }
+    // If SL is set, it must be valid
+    if (slPrice && !slValidation.isValid) {
+      return false;
+    }
+    return true;
+  }, [tpPrice, slPrice, tpValidation.isValid, slValidation.isValid]);
+
+  const {
+    handleSetAutoClose,
+    handleModifyTpSlOrders,
+    handleCancelOrder,
+  } = usePerpsProPosition();
 
   const { loading, runAsync: runSubmit } = useRequest(
     async () => {
@@ -135,6 +301,10 @@ export const EditTpSlModal: React.FC<Props> = ({
             triggerPx: Number(slPrice).toString(),
             oid: position.slItem.oid,
           },
+        });
+        message.success({
+          duration: 1.5,
+          content: t('page.perps.toast.setAutoCloseSuccess'),
         });
       } else if (!position.tpItem && !position.slItem) {
         // both not have tp and sl
@@ -232,7 +402,10 @@ export const EditTpSlModal: React.FC<Props> = ({
                   onChange={(e) => {
                     handlePriceChange(e.target.value, 'tp');
                   }}
-                  className="text-right"
+                  className={clsx(
+                    'text-right',
+                    tpValidation.error && 'border-r-red-default'
+                  )}
                 />
                 <DesktopPerpsInput
                   prefix={
@@ -243,7 +416,7 @@ export const EditTpSlModal: React.FC<Props> = ({
                   className="text-right"
                   value={gainPct}
                   onChange={(e) => {
-                    const percent = e.target.value;
+                    handlePercentChange(e.target.value, 'tp');
                   }}
                   suffix={
                     <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
@@ -252,6 +425,27 @@ export const EditTpSlModal: React.FC<Props> = ({
                   }
                 />
               </div>
+              {position.tpItem && (
+                <div
+                  className="text-rb-blue-default cursor-pointer underline text-right pr-4 pb-8 text-[12px] leading-[14px]"
+                  onClick={() => {
+                    handleCancelOrder([
+                      {
+                        coin: position.coin,
+                        oid: position.tpItem!.oid,
+                      },
+                    ]);
+                    onCancel();
+                  }}
+                >
+                  Cancel TP
+                </div>
+              )}
+              {tpValidation.error && (
+                <div className="text-[12px] text-r-red-default font-medium pl-[4px]">
+                  {tpValidation.errorMessage}
+                </div>
+              )}
               <div className="flex items-center gap-[8px]">
                 <DesktopPerpsInput
                   prefix={
@@ -263,7 +457,10 @@ export const EditTpSlModal: React.FC<Props> = ({
                   onChange={(e) => {
                     handlePriceChange(e.target.value, 'sl');
                   }}
-                  className="text-right"
+                  className={clsx(
+                    'text-right',
+                    slValidation.error && 'border-r-red-default'
+                  )}
                 />
                 <DesktopPerpsInput
                   prefix={
@@ -279,11 +476,31 @@ export const EditTpSlModal: React.FC<Props> = ({
                   }
                   value={lossPct}
                   onChange={(e) => {
-                    const percent = e.target.value;
-                    // handlePriceChange
+                    handlePercentChange(e.target.value, 'sl');
                   }}
                 />
               </div>
+              {position.slItem && (
+                <div
+                  className="text-rb-blue-default cursor-pointer underline text-right pr-4 pb-8 text-[12px] leading-[14px]"
+                  onClick={() => {
+                    handleCancelOrder([
+                      {
+                        coin: position.coin,
+                        oid: position.slItem!.oid,
+                      },
+                    ]);
+                    onCancel();
+                  }}
+                >
+                  Cancel SL
+                </div>
+              )}
+              {slValidation.error && (
+                <div className="text-[12px] text-r-red-default font-medium pl-[4px]">
+                  {slValidation.errorMessage}
+                </div>
+              )}
             </div>
           </section>
 
@@ -300,7 +517,11 @@ export const EditTpSlModal: React.FC<Props> = ({
                     : 'text-r-green-default'
                 )}
               >
-                {tpPnl ? formatUsdValue(tpPnl ? Number(tpPnl) : 0) : '-'}
+                {tpPnl
+                  ? `${Number(tpPnl) >= 0 ? '+' : ''}${formatUsdValue(
+                      Number(tpPnl)
+                    )}`
+                  : '-'}
               </div>
             </div>
             <div className="flex items-center justify-between">
@@ -315,7 +536,11 @@ export const EditTpSlModal: React.FC<Props> = ({
                     : 'text-r-green-default'
                 )}
               >
-                {slPnl ? formatUsdValue(slPnl ? Number(slPnl) : 0) : '-'}
+                {slPnl
+                  ? `${Number(slPnl) >= 0 ? '+' : ''}${formatUsdValue(
+                      Number(slPnl)
+                    )}`
+                  : '-'}
               </div>
             </div>
           </section>
@@ -344,6 +569,7 @@ export const EditTpSlModal: React.FC<Props> = ({
               type="primary"
               className="h-[44px] text-15 font-medium"
               loading={loading}
+              disabled={!canSubmit || loading}
               onClick={async () => {
                 await runSubmit();
               }}

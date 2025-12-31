@@ -1,5 +1,6 @@
 import { useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
+import { formatPerpsPct } from '@/ui/views/Perps/utils';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
@@ -15,6 +16,13 @@ export const AccountInfo: React.FC = () => {
         return acc + Number(asset.position.unrealizedPnl || 0);
       }, 0) || 0
     );
+  }, [clearinghouseState]);
+
+  const crossMarginRatio = useMemo(() => {
+    const num = new BigNumber(
+      clearinghouseState?.crossMarginSummary.totalMarginUsed || 0
+    ).div(new BigNumber(clearinghouseState?.marginSummary?.accountValue || 1));
+    return formatPerpsPct(num.toNumber());
   }, [clearinghouseState]);
 
   return (
@@ -69,16 +77,22 @@ export const AccountInfo: React.FC = () => {
               )}
             >
               {positionAllPnl >= 0 ? '+' : '-'}$
-              {splitNumberByStep(Math.abs(positionAllPnl).toFixed(2))}
+              {formatUsdValue(Math.abs(positionAllPnl))}
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-rb-neutral-foot">Liquidation risk</div>
-            <div className="text-r-neutral-title-1">//todo</div>
+            <div className="text-rb-neutral-foot">Cross Margin Ratio</div>
+            <div className="text-r-neutral-title-1">{crossMarginRatio}</div>
           </div>
           <div className="flex items-center justify-between">
             <div className="text-rb-neutral-foot">Maintenance margin</div>
-            <div className="text-r-neutral-title-1">//todo</div>
+            <div className="text-r-neutral-title-1">
+              {formatUsdValue(
+                Number(
+                  clearinghouseState?.crossMarginSummary.totalMarginUsed || 0
+                )
+              )}
+            </div>
           </div>
           <div className="flex items-center justify-between">
             <div className="text-rb-neutral-foot">Cross account leverage</div>

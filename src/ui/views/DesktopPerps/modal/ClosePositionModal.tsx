@@ -1,11 +1,11 @@
 import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
 import { useRabbyDispatch } from '@/ui/store';
-import { splitNumberByStep } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { Button, Modal, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';
 import { useTranslation } from 'react-i18next';
 import { useSetState } from 'react-use';
@@ -85,13 +85,10 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   });
 
   const receiveAmount = useMemo(() => {
-    const size = new BigNumber(positionSize.amount || 0);
-    const price =
-      type === 'limit'
-        ? new BigNumber(limitPrice || 0)
-        : new BigNumber(marketPrice);
-    return size.times(price);
-  }, [positionSize.amount, limitPrice, marketPrice, type]);
+    const marginUsed = new BigNumber(position.marginUsed || 0);
+    const percentageValue = new BigNumber(percentage || 0);
+    return marginUsed.times(percentageValue).div(100);
+  }, [position.marginUsed, percentage]);
 
   const closedPnl = useMemo(() => {
     const size = new BigNumber(positionSize.amount || 0);
@@ -100,11 +97,15 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
       type === 'limit'
         ? new BigNumber(limitPrice || 0)
         : new BigNumber(marketPrice);
-    return exitPrice.minus(entryPrice).times(size);
+    const isLong = position.direction === 'Long';
+    return isLong
+      ? exitPrice.minus(entryPrice).times(size)
+      : entryPrice.minus(exitPrice).times(size);
   }, [
     positionSize.amount,
     limitPrice,
     marketPrice,
+    position.direction,
     position.entryPx,
     position.size,
     type,
@@ -235,6 +236,10 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     t,
   ]);
 
+  useEffect(() => {
+    handleMidClick();
+  }, []);
+
   const newPosition = useMemo(() => {
     if (type !== 'reverse') {
       return null;
@@ -308,6 +313,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                 ) : null}
                 <div className="space-y-[16px]">
                   <PositionSizeInputAndSlider
+                    defaultMax={true}
                     price={marketPrice}
                     maxTradeSize={position.size}
                     positionSize={positionSize}
@@ -334,8 +340,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                     <div
                       className={clsx('font-medium text-[12px] leading-[14px]')}
                     >
-                      +$
-                      {splitNumberByStep(receiveAmount.toFixed(2))}
+                      {formatUsdValue(receiveAmount.toNumber())}
                     </div>
                   ) : (
                     <div

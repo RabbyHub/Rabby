@@ -14,6 +14,7 @@ import { CommonTable } from '../CommonTable';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useTranslation } from 'react-i18next';
 import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBorderedButton';
+import { usePerpsProPosition } from '@/ui/views/DesktopPerps/hooks/usePerpsProPosition';
 
 export const OpenOrders: React.FC = () => {
   const { openOrders: orders, marketDataMap } = useRabbySelector(
@@ -24,36 +25,7 @@ export const OpenOrders: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
 
-  const handleCancelOrder = useMemoizedFn(
-    async (params: CancelOrderParams[]) => {
-      try {
-        const sdk = getPerpsSDK();
-        const res = await sdk.exchange?.cancelOrder(params);
-        if (
-          res?.response.data.statuses.every(
-            (item) => ((item as unknown) as string) === 'success'
-          )
-        ) {
-          message.success({
-            duration: 1.5,
-            content: 'canceled successfully',
-          });
-          setTimeout(() => {
-            dispatch.perps.fetchPositionOpenOrders();
-          }, 1000);
-        } else {
-          message.error({
-            duration: 1.5,
-            content: 'cancel error',
-          });
-        }
-      } catch (error) {
-        message.error({
-          content: 'cancel error',
-        });
-      }
-    }
-  );
+  const { handleCancelOrder } = usePerpsProPosition();
 
   const handleCloseAll = useMemoizedFn(async () => {
     await handleCancelOrder(

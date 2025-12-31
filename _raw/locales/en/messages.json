@@ -775,6 +775,7 @@
         "stopLossSuccess": "Stop loss set successfully",
         "setAutoCloseSuccess": "Auto close set successfully",
         "openTWAPOrderSuccess": "TWAP order opened {{direction}} {{coin}}-USD: Size {{size}}",
+        "cancelTWAPOrderSuccess": "TWAP order canceled successfully",
         "openTPSlMarketOrderSuccess": "{{tpsl}} market order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
         "openTPSlLimitOrderSuccess": "{{tpsl}} limit order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
         "openLimitOrderSuccess": "limit order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",

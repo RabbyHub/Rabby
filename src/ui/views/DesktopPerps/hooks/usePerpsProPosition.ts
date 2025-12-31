@@ -6,6 +6,7 @@ import {
 } from '../../Perps/constants';
 import {
   ClearinghouseState,
+  CancelOrderParams,
   OrderResponse,
   PlaceOrderParams,
   SLIPPAGE,
@@ -376,7 +377,7 @@ export const usePerpsProPosition = () => {
             // builder: PERPS_BUILDER_INFO_PRO,
             // add builder params is error by hyperliquid backend
           });
-          const twapId = res?.response?.data?.statuses?.running?.twapId;
+          const twapId = res?.response?.data?.status?.running?.twapId;
           if (twapId) {
             message.success({
               duration: 1.5,
@@ -394,6 +395,30 @@ export const usePerpsProPosition = () => {
         },
         params,
         'open twap order error'
+      );
+    }
+  );
+
+  const handleCancelTWAPOrder = useMemoizedFn(
+    async (params: { coin: string; twapId: number }) => {
+      return withErrorHandler(
+        async (p) => {
+          const sdk = getPerpsSDK();
+          const { coin, twapId } = p;
+          const res = await sdk.exchange?.cancelTwapOrder({ coin, twapId });
+          if (res?.response?.data.status === 'success') {
+            message.success({
+              duration: 1.5,
+              content: t('page.perps.toast.cancelTWAPOrderSuccess', {
+                coin,
+                twapId,
+              }),
+            });
+            return true;
+          }
+        },
+        params,
+        'cancel twap order error'
       );
     }
   );
@@ -781,10 +806,10 @@ export const usePerpsProPosition = () => {
           });
           const resting = res?.response?.data?.statuses[0]?.resting;
           if (resting?.oid) {
-            message.success({
-              duration: 1.5,
-              content: t('page.perps.toast.setAutoCloseSuccess'),
-            });
+            // message.success({
+            //   duration: 1.5,
+            //   content: t('page.perps.toast.setAutoCloseSuccess'),
+            // });
           } else {
             const msg = res?.response?.data?.statuses[0].error;
             throw new Error(msg || 'modify auto close failed');
@@ -796,6 +821,37 @@ export const usePerpsProPosition = () => {
     }
   );
 
+  const handleCancelOrder = useMemoizedFn(
+    async (params: CancelOrderParams[]) => {
+      return withErrorHandler(
+        async () => {
+          const sdk = getPerpsSDK();
+          const res = await sdk.exchange?.cancelOrder(params);
+          if (
+            res?.response.data.statuses.every(
+              (item) => ((item as unknown) as string) === 'success'
+            )
+          ) {
+            message.success({
+              duration: 1.5,
+              content: 'canceled successfully',
+            });
+            setTimeout(() => {
+              dispatch.perps.fetchPositionOpenOrders();
+            }, 100);
+          } else {
+            message.error({
+              duration: 1.5,
+              content: 'cancel error',
+            });
+          }
+        },
+        params,
+        'cancel error'
+      );
+    }
+  );
+
   return {
     handleCloseWithMarketOrder,
     handleOpenMarketOrder,
@@ -803,6 +859,7 @@ export const usePerpsProPosition = () => {
     handleOpenTPSlMarketOrder,
     handleOpenTPSlLimitOrder,
     handleOpenTWAPOrder,
+    handleCancelTWAPOrder,
     handleOpenScaleOrder,
     calculateScaleOrdersWithSkew,
     handleUpdateMargin,
@@ -810,5 +867,6 @@ export const usePerpsProPosition = () => {
     handleCloseAllPositions,
     handleModifyTpSlOrders,
     handleUpdateMarginModeLeverage,
+    handleCancelOrder,
   };
 };
