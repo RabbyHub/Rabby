@@ -1,11 +1,11 @@
 import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
-import { formatUsdValue } from '@/ui/utils';
+import { formatUsdValue, sleep } from '@/ui/utils';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { Button, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { noop } from 'lodash';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { usePerpsPosition } from '../../Perps/hooks/usePerpsPosition';
@@ -51,6 +51,18 @@ export const EditTpSlModal: React.FC<Props> = ({
   const [slPrice, setSlPrice] = React.useState<string>('');
   const [gainPct, setGainPct] = React.useState<string>('');
   const [lossPct, setLossPct] = React.useState<string>('');
+  const resetForm = useMemoizedFn(() => {
+    setTpPrice('');
+    setSlPrice('');
+    setGainPct('');
+    setLossPct('');
+  });
+
+  useEffect(() => {
+    return () => {
+      resetForm();
+    };
+  }, []);
 
   const handlePriceChange = useMemoizedFn(
     (price: string, type: 'tp' | 'sl') => {
@@ -76,12 +88,6 @@ export const EditTpSlModal: React.FC<Props> = ({
             extPrice: Number(value),
           });
           setLossPct(percent ? (percent * -1).toFixed(2) : '');
-        }
-      } else {
-        if (type === 'tp') {
-          setTpPrice('');
-        } else {
-          setSlPrice('');
         }
       }
     }
@@ -111,19 +117,70 @@ export const EditTpSlModal: React.FC<Props> = ({
 
   // todo validate input
 
-  const { handleSetAutoClose } = usePerpsProPosition();
+  const { handleSetAutoClose, handleModifyTpSlOrders } = usePerpsProPosition();
 
   const { loading, runAsync: runSubmit } = useRequest(
     async () => {
-      // todo modify sl tp
-      await handleSetAutoClose({
-        coin: position.coin,
-        tpTriggerPx: new BigNumber(tpPrice).isNaN() ? '' : tpPrice,
-        slTriggerPx: new BigNumber(slPrice).isNaN() ? '' : slPrice,
-        direction: new BigNumber(position.size).isGreaterThan(0)
-          ? 'Long'
-          : 'Short',
-      });
+      const direction = position.direction;
+      if (position.tpItem && position.slItem) {
+        // both have tp and sl
+        await handleModifyTpSlOrders({
+          coin: position.coin,
+          direction,
+          tp: {
+            triggerPx: Number(tpPrice).toString(),
+            oid: position.tpItem.oid,
+          },
+          sl: {
+            triggerPx: Number(slPrice).toString(),
+            oid: position.slItem.oid,
+          },
+        });
+      } else if (!position.tpItem && !position.slItem) {
+        // both not have tp and sl
+        await handleSetAutoClose({
+          coin: position.coin,
+          tpTriggerPx: new BigNumber(tpPrice).isNaN() ? '' : tpPrice,
+          slTriggerPx: new BigNumber(slPrice).isNaN() ? '' : slPrice,
+          direction,
+        });
+      } else {
+        // only have tp
+        if (position.tpItem) {
+          await handleModifyTpSlOrders({
+            coin: position.coin,
+            direction,
+            tp: {
+              triggerPx: Number(tpPrice).toString(),
+              oid: position.tpItem.oid,
+            },
+          });
+          await sleep(10);
+          await handleSetAutoClose({
+            coin: position.coin,
+            tpTriggerPx: '',
+            slTriggerPx: new BigNumber(slPrice).isNaN() ? '' : slPrice,
+            direction,
+          });
+        } else if (position.slItem) {
+          // only have sl
+          await handleModifyTpSlOrders({
+            coin: position.coin,
+            direction,
+            sl: {
+              triggerPx: Number(slPrice).toString(),
+              oid: position.slItem.oid,
+            },
+          });
+          await sleep(10);
+          await handleSetAutoClose({
+            coin: position.coin,
+            tpTriggerPx: new BigNumber(tpPrice).isNaN() ? '' : tpPrice,
+            slTriggerPx: '',
+            direction,
+          });
+        }
+      }
     },
     {
       manual: true,
@@ -187,7 +244,6 @@ export const EditTpSlModal: React.FC<Props> = ({
                   value={gainPct}
                   onChange={(e) => {
                     const percent = e.target.value;
-                    // handlePriceChange
                   }}
                   suffix={
                     <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">

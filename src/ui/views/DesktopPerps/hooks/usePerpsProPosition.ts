@@ -8,6 +8,7 @@ import {
   ClearinghouseState,
   OrderResponse,
   PlaceOrderParams,
+  SLIPPAGE,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { message } from 'antd';
 import * as Sentry from '@sentry/browser';
@@ -755,6 +756,46 @@ export const usePerpsProPosition = () => {
     }
   );
 
+  const handleModifyTpSlOrders = useMemoizedFn(
+    async (params: {
+      coin: string;
+      direction: 'Long' | 'Short';
+      tp?: {
+        triggerPx: string;
+        oid: number;
+      };
+      sl?: {
+        triggerPx: string;
+        oid: number;
+      };
+    }) => {
+      return withErrorHandler(
+        async (p) => {
+          const sdk = getPerpsSDK();
+          const { coin, direction, tp, sl } = params;
+          const res = await sdk.exchange?.updateTpslByOrderId({
+            coin,
+            isBuy: direction === 'Long',
+            tp,
+            sl,
+          });
+          const resting = res?.response?.data?.statuses[0]?.resting;
+          if (resting?.oid) {
+            message.success({
+              duration: 1.5,
+              content: t('page.perps.toast.setAutoCloseSuccess'),
+            });
+          } else {
+            const msg = res?.response?.data?.statuses[0].error;
+            throw new Error(msg || 'modify auto close failed');
+          }
+        },
+        params,
+        'modify auto close failed'
+      );
+    }
+  );
+
   return {
     handleCloseWithMarketOrder,
     handleOpenMarketOrder,
@@ -767,7 +808,7 @@ export const usePerpsProPosition = () => {
     handleUpdateMargin,
     handleSetAutoClose,
     handleCloseAllPositions,
-
+    handleModifyTpSlOrders,
     handleUpdateMarginModeLeverage,
   };
 };

@@ -30,6 +30,7 @@ import { calculatePnL } from '../../TradingPanel/utils';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { LeverageModal } from '../../TradingPanel/components';
 import { MarginMode } from '../../../types';
+import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -47,8 +48,8 @@ export interface PositionFormatData {
   returnOnEquity: string;
   liquidationDistancePercent: string;
   sinceOpenFunding: string;
-  tpPrice: string | undefined;
-  slPrice: string | undefined;
+  tpItem: OpenOrder | undefined;
+  slItem: OpenOrder | undefined;
 }
 
 export const PositionsInfo: React.FC = () => {
@@ -121,8 +122,8 @@ export const PositionsInfo: React.FC = () => {
         returnOnEquity: item.position.returnOnEquity,
         liquidationDistancePercent: formatPerpsPct(liquidationDistance),
         sinceOpenFunding: item.position.cumFunding.sinceOpen || '0',
-        tpPrice: tpItem?.triggerPx,
-        slPrice: slItem?.triggerPx,
+        tpItem: tpItem,
+        slItem: slItem,
       });
     });
 
@@ -417,8 +418,8 @@ export const PositionsInfo: React.FC = () => {
         key: 'children',
         dataIndex: 'children',
         render: (_, record) => {
-          const tpPrice = record.tpPrice;
-          const slPrice = record.slPrice;
+          const tpPrice = record.tpItem?.triggerPx;
+          const slPrice = record.slItem?.triggerPx;
 
           const entryPrice = Number(record.entryPx);
           const size = Math.abs(Number(record.size || 0));
