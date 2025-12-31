@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import './style.less';
 import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
 import { Button, message } from 'antd';
@@ -16,6 +15,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import { useHistory } from 'react-router-dom';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { UI_TYPE } from '@/constant/ui';
+import { useHandleDeleteHdKeyringAndSimpleKeyringAccount } from '@/ui/hooks/useDeleteHdOrPrivateKeyringAddress';
 
 type AddressDeleteProps = {
   brandName?: string;
@@ -61,28 +61,31 @@ export const AddressDelete = ({
     }
   };
 
+  const {
+    deleteAccount,
+    renderDelete,
+  } = useHandleDeleteHdKeyringAndSimpleKeyringAccount();
+
   const handleClickDelete = async () => {
     if (
       type === KEYRING_TYPE.HdKeyring ||
       type === KEYRING_TYPE.SimpleKeyring
     ) {
-      await AuthenticationModalPromise({
-        confirmText: t('global.Confirm'),
-        cancelText: t('global.Cancel'),
-        title: t('page.addressDetail.delete-address'),
-        description: t('page.addressDetail.delete-desc'),
-        checklist: [
-          t('page.manageAddress.delete-checklist-1'),
-          t('page.manageAddress.delete-checklist-2'),
-        ],
-        onFinished() {
-          handleDeleteAddress();
-        },
-        onCancel() {
-          // do nothing
-        },
+      await deleteAccount({
+        address,
+        type,
+        brandName,
         getContainer,
-        wallet,
+        onFinished: () => {
+          setVisible(false);
+          if (UI_TYPE.isDesktop) {
+            history.replace(history.location.pathname);
+          } else {
+            setTimeout(() => {
+              history.goBack();
+            }, 500);
+          }
+        },
       });
     } else {
       setVisible(true);
@@ -125,6 +128,7 @@ export const AddressDelete = ({
           }}
         ></AddressDeleteModal>
       )}
+      <>{renderDelete()}</>
     </>
   );
 };

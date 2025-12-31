@@ -1098,7 +1098,8 @@
       "sort-address": "Ordenar dirección",
       "CurrentDappAddress": {
         "desc": "Cambiar dirección Dapp"
-      }
+      },
+      "noSeedPhraseAddress": "No se han agregado direcciones para esta frase semilla. Puedes agregar una dirección o eliminar la frase semilla."
     },
     "dashboard": {
       "home": {
@@ -1297,7 +1298,8 @@
           "toggleThemeMode": "Modo de tema",
           "themeMode": "Modo de tema",
           "metamaskMode": "Conectar Rabby disfrazándolo como MetaMask",
-          "enableDappAccount": "Cambiar la dirección del Dapp de forma independiente\n"
+          "enableDappAccount": "Cambiar la dirección del Dapp de forma independiente\n",
+          "switchPasswordForNonWhitelistedTx": "Contraseña para transferencias no autorizadas"
         },
         "aboutUs": "Acerca de Nosotros",
         "currentVersion": "Versión Actual",
@@ -1324,6 +1326,14 @@
           "thxTitle": "¡Gracias!",
           "feedbackDesc": "¿Tienes comentarios? Estamos escuchando.",
           "thxDesc": "Si te gusta Rabby, una rápida valoración en la Chrome Store significaría mucho."
+        },
+        "PwdForNonWhitelistedTx": {
+          "titleDisable": "Introduce la contraseña para desactivar",
+          "inputPlaceholder": "Introduce la contraseña para confirmar",
+          "wrongPassword": "Contraseña incorrecta",
+          "titleEnable": "¿Habilitar verificación de contraseña?",
+          "descDisable": "Una vez deshabilitada, la verificación de contraseña ya no será necesaria para direcciones que no estén en la lista blanca.",
+          "descEnable": "Una vez habilitado, transferir a una dirección no autorizada en esta extensión requerirá su contraseña."
         }
       },
       "tokenDetail": {
@@ -1823,7 +1833,8 @@
         },
         "importBtn": "Importar ({{count}})",
         "manageImtokenOffline": "Administrar imToken",
-        "manageImKey": "Administrar imKey"
+        "manageImKey": "Administrar imKey",
+        "nonAddr": "No se han añadido direcciones para esta frase semilla. Puedes eliminar esta frase en Rabby Extension > Administrar Dirección."
       },
       "importYourKeystore": "Importar su KeyStore",
       "incorrectPassword": "Contraseña incorrecta",
@@ -2004,7 +2015,25 @@
       "safeModuleAddress": "Dirección del Módulo Safe",
       "manage-addresses-under": "Administra direcciones bajo este {{brand}}",
       "coboSafeErrorModule": "La dirección ha caducado, por favor elimínala e importa la dirección de nuevo.",
-      "importedDelegatedAddress": "Dirección delegada importada"
+      "importedDelegatedAddress": "Dirección delegada importada",
+      "deleteSeedPhrase": {
+        "option2": "Eliminar dirección y frase semilla",
+        "remainSeedPhrase": "Tu frase semilla permanece en tu dispositivo.",
+        "title2": "¿Eliminar la dirección?",
+        "option1": "Eliminar Dirección, Mantener Frase Semilla",
+        "keepSeedPhrase": "Esta es la única dirección vinculada a esta frase semilla. ¿Te gustaría conservar la frase semilla?",
+        "title": "¿Eliminar la dirección y la frase semilla?",
+        "check2": "Confirmo que he hecho una copia de seguridad de mi clave privada o frase semilla y estoy listo para eliminarla.",
+        "check1": "Entiendo que eliminar esta dirección también elimina su clave privada y frase semilla. Rabby no puede recuperarlas para mí.",
+        "onlyDeleteAddr": "Solo esta dirección será eliminada. Tu frase semilla no se verá afectada, ya que tus otras direcciones aún la utilizan.",
+        "sub-title": "Esta acción es permanente. Por favor, revise lo siguiente para proteger sus activos:"
+      },
+      "deletePrivateKey": {
+        "title": "¿Eliminar dirección y clave privada?",
+        "sub-title": "Esta acción es permanente. Por favor, revise lo siguiente para proteger sus activos:",
+        "check2": "Confirmo que he respaldado mi clave privada o frase semilla y estoy listo para eliminarla.",
+        "check1": "Entiendo que eliminar esta dirección también elimina su clave privada. Rabby no puede recuperarlas por mí."
+      }
     },
     "preferMetamaskDapps": {
       "title": "Dapps preferidos de MetaMask",
@@ -2902,7 +2931,11 @@
       "addSuccess": "Añadido con éxito",
       "exchangeAddress": "Dirección de intercambio",
       "enterAddress": "Introducir dirección",
-      "title": "Agregar dirección a la lista blanca"
+      "title": "Agregar dirección a la lista blanca",
+      "verifyPwd": {
+        "title": "Dirección no autorizada",
+        "inputPlaceholder": "Ingresa tu contraseña para confirmar esta transferencia"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3139,7 +3172,10 @@
         "removeFromWhitelist": "Eliminar de la lista blanca",
         "addWhitelist": "Agregar dirección a la lista blanca",
         "notWhitelist": "No es una dirección en la lista blanca",
-        "addWhitelistDesc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---sin necesidad de confirmación la próxima vez."
+        "addWhitelistDesc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---sin necesidad de confirmación la próxima vez.",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Contraseña para transferencias no autorizadas"
+        }
       },
       "addWhitelist": {
         "desc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---sin necesidad de confirmación la próxima vez.",

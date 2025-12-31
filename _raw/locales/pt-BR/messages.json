@@ -1098,7 +1098,8 @@
       "enterThePassphrase": "Digite a Passphrase",
       "CurrentDappAddress": {
         "desc": "Alterar o endereço do DApp\n"
-      }
+      },
+      "noSeedPhraseAddress": "Nenhum endereço foi adicionado para esta frase-semente. Você pode adicionar um endereço ou excluir a frase-semente."
     },
     "dashboard": {
       "home": {
@@ -1297,7 +1298,8 @@
           "customTestnet": "Adicionar Rede Personalizada",
           "themeMode": "Modo de Tema",
           "metamaskMode": "Conectar Rabby disfarçando como MetaMask",
-          "enableDappAccount": "Alternar Endereços de DApps Independentemente\n"
+          "enableDappAccount": "Alternar Endereços de DApps Independentemente\n",
+          "switchPasswordForNonWhitelistedTx": "Senha para transferências não autorizadas"
         },
         "aboutUs": "Sobre nós",
         "currentVersion": "Versão Atual",
@@ -1324,6 +1326,14 @@
           "rateOnChromeStoreButton": "Avalie na Chrome Web Store",
           "feedbackDesc": "Tem feedback? Estamos ouvindo.",
           "thxDesc": "Se você gosta do Rabby, uma rápida avaliação na Chrome Store significaria muito."
+        },
+        "PwdForNonWhitelistedTx": {
+          "titleDisable": "Digite a Senha para Desabilitar",
+          "inputPlaceholder": "Digite a Senha para Confirmar",
+          "descEnable": "Uma vez ativado, transferir para um endereço não aprovado nesta extensão exigirá sua senha.",
+          "wrongPassword": "Senha incorreta",
+          "titleEnable": "Habilitar verificação de senha?",
+          "descDisable": "Uma vez desabilitado, a verificação de senha não será mais necessária para endereços não incluídos na lista de permissões."
         }
       },
       "tokenDetail": {
@@ -1823,7 +1833,8 @@
         },
         "manageImtokenOffline": "Gerenciar imToken",
         "manageImKey": "Gerenciar imKey",
-        "importBtn": "Importar ({{count}})"
+        "importBtn": "Importar ({{count}})",
+        "nonAddr": "Nenhum endereço foi adicionado para esta frase-semente. Você pode deletar essa frase em Rabby Extension > Gerenciar Endereço."
       },
       "importYourKeystore": "Importar seu Arquivo de Keystore",
       "incorrectPassword": "Senha incorreta",
@@ -2004,7 +2015,25 @@
       "safeModuleAddress": "Endereço do Módulo de Segurança",
       "coboSafeErrorModule": "O endereço expirou, por favor, exclua-o e importe-o novamente.",
       "importedDelegatedAddress": "Endereço Delegado Importado",
-      "manage-addresses-under": "Gerencie endereços sob este {{brand}}"
+      "manage-addresses-under": "Gerencie endereços sob este {{brand}}",
+      "deleteSeedPhrase": {
+        "title2": "Excluir Endereço?",
+        "title": "Excluir Endereço e Frase Semente?",
+        "option2": "Excluir Endereço e Frase Semente",
+        "sub-title": "Esta ação é permanente. Por favor, revise o seguinte para proteger seus ativos:",
+        "check2": "Eu confirmo que fiz backup da minha chave privada ou frase semente e estou pronto para deletá-la.",
+        "option1": "Excluir Endereço, Manter Frase Semente",
+        "onlyDeleteAddr": "Apenas este endereço será removido. Sua frase-semente não será afetada, pois seus outros endereços ainda a utilizam.",
+        "remainSeedPhrase": "Sua frase-semente permanece em seu dispositivo.",
+        "check1": "Eu entendo que excluir este endereço também remove sua Chave Privada e Frase Semente. O Rabby não pode recuperá-los para mim.",
+        "keepSeedPhrase": "Este é o único endereço vinculado a esta frase-semente. Você gostaria de manter a frase-semente?"
+      },
+      "deletePrivateKey": {
+        "sub-title": "Esta ação é permanente. Por favor, revise o seguinte para proteger seus ativos:",
+        "title": "Excluir Endereço e Chave Privada?",
+        "check2": "Eu confirmo que fiz o backup da minha chave privada ou frase-semente e estou pronto para excluí-la.",
+        "check1": "Eu entendo que excluir este endereço também remove sua Chave Privada. O Rabby não pode recuperá-las para mim."
+      }
     },
     "preferMetamaskDapps": {
       "title": "Dapps Preferidos do MetaMask",
@@ -2902,7 +2931,11 @@
       "addSuccess": "Adicionado com sucesso",
       "riskTitle": "Adicionar Endereço à Lista Branca",
       "invalidAddress": "Este endereço é inválido",
-      "title": "Adicionar endereço à lista de permissões"
+      "title": "Adicionar endereço à lista de permissões",
+      "verifyPwd": {
+        "inputPlaceholder": "Digite sua senha para confirmar esta transferência",
+        "title": "Endereço Não Autorizado"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3139,7 +3172,10 @@
         "addWhitelist": "Adicionar endereço à lista de permissões",
         "removeFromWhitelist": "Remover da lista de permissões",
         "addWhitelistDesc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas---sem necessidade de confirmação na próxima vez.",
-        "notWhitelist": "Não é um endereço da whitelist"
+        "notWhitelist": "Não é um endereço da whitelist",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Senha para transferências não autorizadas"
+        }
       },
       "addWhitelist": {
         "title": "Adicionar endereço à lista de permissões",

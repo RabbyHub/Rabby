@@ -1550,6 +1550,7 @@
       "delete-empty-seed-phrase": "Delete seed phrase and its 0 address",
       "hd-path": "HD path:",
       "no-address-under-seed-phrase": "You haven't imported any addresses under this seed phrase.",
+      "noSeedPhraseAddress": "No addresses have been added for this seed phrase. You can add an address or delete the seed phrase.",
       "add-address": "Add address",
       "delete-seed-phrase": "Delete seed phrase",
       "confirm-delete": "Confirm Delete",
@@ -2204,6 +2205,7 @@
           "connectError": "Connect has stopped. Please refresh the page to connect again.",
           "disconnected": "Unable to connect to Hardware wallet. Please try to re-connect."
         },
+        "nonAddr": "No addresses have been added for this seed phrase. You can delete this phrase in Rabby Extension > Manage Address.",
         "waiting": "Waiting",
         "clickToGetInfo": "Click to get the information on-chain",
         "addToRabby": "Add to Rabby",
@@ -2483,7 +2485,25 @@
       "safeModuleAddress": "Safe Module Address",
       "coboSafeErrorModule": "Address has expired, please delete and import the address again.",
       "importedDelegatedAddress": "Imported Delegated address",
-      "manage-addresses-under": "Manage addresses under this {{brand}}"
+      "manage-addresses-under": "Manage addresses under this {{brand}}",
+      "deleteSeedPhrase": {
+        "title": "Delete Address and Seed Phrase?",
+        "title2": "Delete Address?",
+        "sub-title": "This action is permanent. Please review the following to protect your assets:",
+        "check1": "I understand that deleting this address also removes its Private Key and Seed Phrase. Rabby cannot recover them for me.",
+        "check2": "I confirm that I have backed up my Private Key or Seed Phrase and I am ready to delete it.",
+        "keepSeedPhrase": "This is the only address linked to this seed phrase. Would you like to keep the seed phrase?",
+        "onlyDeleteAddr": "Only this address will be removed. Your seed phrase is unaffected, as your other addresses still use it.",
+        "remainSeedPhrase": "Your seed phrase remains on your device.",
+        "option1": "Delete Address, Keep Seed Phrase",
+        "option2": "Delete Address and Seed Phrase"
+      },
+      "deletePrivateKey": {
+        "title": "Delete Address and Private key?",
+        "sub-title": "This action is permanent. Please review the following to protect your assets:",
+        "check1": "I understand that deleting this address also removes its Private Key. Rabby cannot recover them for me.",
+        "check2": "I confirm that I have backed up my Private Key or Seed Phrase and I am ready to delete it."
+      }
     },
     "preferMetamaskDapps": {
       "title": "MetaMask Preferred Dapps",

@@ -1190,7 +1190,8 @@
       "sort-by-address-type": "Classificar por tipo de endereço",
       "CurrentDappAddress": {
         "desc": "Alterar o endereço do Dapp\n"
-      }
+      },
+      "noSeedPhraseAddress": "Nenhum endereço foi adicionado para esta frase semente. Você pode adicionar um endereço ou deletar a frase semente."
     },
     "dashboard": {
       "home": {
@@ -1365,7 +1366,8 @@
           "customRpc": "Modificar URL RPC",
           "enableWhitelistForSendingAssets": "Ativar Lista Branca Para Envio de Ativos",
           "enableTestnets": "Ativar Testnets",
-          "enableDappAccount": "Alterar Endereço do Dapp Independentemente\n"
+          "enableDappAccount": "Alterar Endereço do Dapp Independentemente\n",
+          "switchPasswordForNonWhitelistedTx": "Senha para transferências não autorizadas"
         },
         "cancel": "Cancelar",
         "7Days": "7 dias",
@@ -1416,6 +1418,14 @@
           "feedbackSuccess": "Obrigado pelo seu feedback!",
           "feedbackDesc": "Tem feedback? Estamos ouvindo.",
           "thxDesc": "Se você gosta do Rabby, uma rápida avaliação na Chrome Store significaria muito."
+        },
+        "PwdForNonWhitelistedTx": {
+          "titleEnable": "Habilitar verificação de senha?",
+          "inputPlaceholder": "Digite a Senha para Confirmar",
+          "titleDisable": "Digite a senha para desativar",
+          "wrongPassword": "Senha incorreta",
+          "descEnable": "Uma vez ativado, transferir para um endereço não listado nesta extensão requererá sua senha.",
+          "descDisable": "Uma vez desativada, a verificação de senha não será mais necessária para endereços não autorizados."
         }
       },
       "tokenDetail": {
@@ -1924,7 +1934,8 @@
         "addressesInRabby": "Endereços no Rabby{{0}}",
         "manageCoolwallet": "Gerenciar CoolWallet",
         "customAddressHdPath": "Caminho HD de Endereço Personalizado",
-        "connectedToTrezor": "Conectado ao Trezor"
+        "connectedToTrezor": "Conectado ao Trezor",
+        "nonAddr": "Nenhum endereço foi adicionado para esta frase-semente. Você pode excluir esta frase em Rabby Extension > Gerenciar Endereço."
       },
       "keystore": {
         "password": {
@@ -2093,7 +2104,25 @@
       "please-input-address-note": "Por favor, insira a nota do endereço",
       "importedDelegatedAddress": "Endereço delegado importado",
       "delete-desc": "Antes de você deletar, mantenha os seguintes pontos em mente para entender como proteger seus ativos.",
-      "direct-delete-desc": "Este endereço é um endereço {{renderBrand}}, a Rabby não armazena a chave privada ou a frase-semente para este endereço, você pode simplesmente excluí-lo."
+      "direct-delete-desc": "Este endereço é um endereço {{renderBrand}}, a Rabby não armazena a chave privada ou a frase-semente para este endereço, você pode simplesmente excluí-lo.",
+      "deleteSeedPhrase": {
+        "title2": "Excluir Endereço?",
+        "title": "Delete Address and Seed Phrase?",
+        "remainSeedPhrase": "Sua frase-semente permanece no seu dispositivo.",
+        "option2": "Excluir Endereço e Frase Semente",
+        "option1": "Excluir Endereço, Manter Frase Semente",
+        "sub-title": "Esta ação é permanente. Por favor, revise o seguinte para proteger seus ativos:",
+        "keepSeedPhrase": "Este é o único endereço vinculado a esta frase semente. Você gostaria de manter a frase semente?",
+        "check2": "Eu confirmo que fiz o backup da minha chave privada ou frase semente e estou pronto para excluí-la.",
+        "onlyDeleteAddr": "Apenas este endereço será removido. Sua frase de recuperação não será afetada, pois seus outros endereços ainda a utilizam.",
+        "check1": "Eu entendo que deletar este endereço também remove sua Chave Privada e Frase Semente. Rabby não pode recuperá-las para mim."
+      },
+      "deletePrivateKey": {
+        "title": "Deletar Endereço e Chave Privada?",
+        "sub-title": "Esta ação é permanente. Por favor, revise o seguinte para proteger seus ativos:",
+        "check1": "Eu entendo que excluir este endereço também Remove sua Chave Privada. Rabby não pode recuperá-los para mim.",
+        "check2": "Eu confirmo que fiz backup da minha chave privada ou frase semente e estou pronto para excluí-la."
+      }
     },
     "preferMetamaskDapps": {
       "howToAddDesc": "Clique com o botão direito no site e encontre esta opção",
@@ -2899,7 +2928,11 @@
       "invalidAddress": "Este endereço é inválido",
       "riskTitle": "Adicionar Endereço à Lista Branca",
       "addSuccess": "Adicionado com sucesso",
-      "title": "Adicionar endereço à lista de permissões"
+      "title": "Adicionar endereço à lista de permissões",
+      "verifyPwd": {
+        "inputPlaceholder": "Digite sua senha para confirmar esta transferência",
+        "title": "Endereço Não Listado"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3136,7 +3169,10 @@
         "removeFromWhitelist": "Remover da lista branca",
         "addWhitelist": "Adicionar endereço à lista branca",
         "title": "Lista branca",
-        "addWhitelistDesc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas---sem confirmação necessária na próxima vez."
+        "addWhitelistDesc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas---sem confirmação necessária na próxima vez.",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Senha para transferências não autorizadas"
+        }
       },
       "addWhitelist": {
         "title": "Adicionar endereço à lista de permissões",
