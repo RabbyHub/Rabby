@@ -206,13 +206,6 @@ export const AccountList: React.FC<Props> = ({
     }
   );
 
-  console.log(
-    'currentAccounts',
-    currentAccounts,
-    brand,
-    currentAccounts?.length === 0 && keyring === KEYRING_CLASS.MNEMONIC
-  );
-
   const isEmptySeedPhraseAccount =
     currentAccounts?.length === 0 && keyring === KEYRING_CLASS.MNEMONIC;
   // fake loading progress
