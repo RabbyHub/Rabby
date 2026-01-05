@@ -190,7 +190,7 @@ export const DesktopPerpsSelectAccountList: React.FC<DesktopPerpsSelectAccountLi
   return (
     <div
       className={clsx(
-        'desktop-select-account-list flex flex-col gap-[12px] rounded-[20px]'
+        'desktop-perps-select-account-list flex flex-col gap-[12px] rounded-[20px]'
       )}
       style={{ height, position: isAbsolute ? 'absolute' : undefined }}
       ref={ref}

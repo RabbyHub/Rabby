@@ -22,7 +22,7 @@ export const TradeHistory: React.FC = () => {
   const marketDataMap = useRabbySelector((store) => {
     return store.perps.marketDataMap;
   });
-  
+
   const { t } = useTranslation();
 
   const list = useMemo<WsFill[]>(() => {
