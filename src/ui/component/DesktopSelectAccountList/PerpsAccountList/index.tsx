@@ -36,19 +36,12 @@ import './styles.less';
 import { Account } from '@/background/service/preference';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
-
-interface DesktopPerpsSelectAccountListProps {
-  currentAccount: Account | null;
-  switchPerpsAccount: (account: Account) => Promise<boolean | undefined>;
-}
+import { usePerpsProState } from '@/ui/views/DesktopPerps/hooks/usePerpsProState';
 
 // 10 minutes
 const CLEARINGHOUSE_STATE_EXPIRE_TIME = 1000 * 60 * 10;
 
-export const DesktopPerpsSelectAccountList: React.FC<DesktopPerpsSelectAccountListProps> = ({
-  currentAccount: currentAccountProp,
-  switchPerpsAccount,
-}) => {
+export const DesktopPerpsSelectAccountList: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
@@ -59,7 +52,11 @@ export const DesktopPerpsSelectAccountList: React.FC<DesktopPerpsSelectAccountLi
   const clearinghouseState = useRabbySelector(
     (s) => s.perps.clearinghouseState
   );
-  const currentAccount = currentAccountProp;
+  const currentPerpsAccount = useRabbySelector(
+    (s) => s.perps.currentPerpsAccount
+  );
+  const { login: switchPerpsAccount } = usePerpsProState();
+  const currentAccount = currentPerpsAccount;
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const shouldScrollRef = useRef(true);
   const [isAbsolute, setIsAbsolute] = useState(true);

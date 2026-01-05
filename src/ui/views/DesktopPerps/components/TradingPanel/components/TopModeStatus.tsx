@@ -53,8 +53,12 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
   const { handleUpdateMarginModeLeverage } = usePerpsProPosition();
 
   const handleLeverageConfirm = useMemoizedFn(async (newLeverage: number) => {
-    await handleUpdateMarginModeLeverage(selectedCoin, newLeverage, marginMode);
-    message.success('Leverage changed to: ' + newLeverage);
+    const res = await handleUpdateMarginModeLeverage(
+      selectedCoin,
+      newLeverage,
+      marginMode
+    );
+    res && message.success('Leverage changed to: ' + newLeverage);
     setShowLeverageModal(false);
   });
 
@@ -68,8 +72,12 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
   };
 
   const handleMarginModeConfirm = useMemoizedFn(async (mode: MarginMode) => {
-    await handleUpdateMarginModeLeverage(selectedCoin, leverage, mode);
-    message.success('Margin mode changed to: ' + mode);
+    const res = await handleUpdateMarginModeLeverage(
+      selectedCoin,
+      leverage,
+      mode
+    );
+    res && message.success('Margin mode changed to: ' + mode);
     setShowMarginModeModal(false);
   });
 

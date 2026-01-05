@@ -126,7 +126,10 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
   const maxMargin = useMemo(() => {
     const noHaveBalance = availableBalance < 0.01;
     const max = noHaveBalance ? marginUsed : availableBalance + marginUsed;
-    return new BigNumber(max).decimalPlaces(2, BigNumber.ROUND_DOWN).toNumber();
+    return Math.max(
+      new BigNumber(max).decimalPlaces(2, BigNumber.ROUND_DOWN).toNumber(),
+      minMargin
+    );
   }, [availableBalance, marginUsed]);
 
   const availableToReduce = useMemo(() => {

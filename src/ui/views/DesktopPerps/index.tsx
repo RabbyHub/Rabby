@@ -10,11 +10,10 @@ import { UserInfoHistory } from './components/UserInfoHistory';
 import { AccountInfo } from './components/AccountInfo';
 import { StatusBar } from './components/StatusBar';
 import './resizable-panels.css';
-import usePerpsProState from './hooks/usePerpsProState';
 import './index.less';
-import { usePerpsDefaultAccount } from '../Perps/hooks/usePerpsDefaultAccount';
 import { DesktopPerpsSelectAccountList } from '@/ui/component/DesktopSelectAccountList/PerpsAccountList';
 import clsx from 'clsx';
+import { usePerpsProInit } from './hooks/usePerpsProInit';
 
 const Wrap = styled.div`
   width: 100%;
@@ -26,30 +25,7 @@ const Wrap = styled.div`
 `;
 
 export const DesktopPerps: React.FC = () => {
-  usePerpsDefaultAccount({
-    isPro: true,
-  });
-  const {
-    positionAndOpenOrders,
-    accountSummary,
-    currentPerpsAccount,
-    isLogin,
-    marketData,
-    userFills,
-    marketDataMap,
-    isInitialized,
-    logout,
-    login,
-    handleWithdraw,
-    homeHistoryList,
-    hasPermission,
-    localLoadingHistory,
-
-    handleDeleteAgent,
-    perpFee,
-
-    judgeIsUserAgentIsExpired,
-  } = usePerpsProState({});
+  usePerpsProInit();
 
   return (
     <Wrap>
@@ -120,10 +96,7 @@ export const DesktopPerps: React.FC = () => {
             'min-w-[64px] flex-shrink-0 z-20 h-full overflow-auto px-[16px]'
           )}
         >
-          <DesktopPerpsSelectAccountList
-            currentAccount={currentPerpsAccount}
-            switchPerpsAccount={login}
-          />
+          <DesktopPerpsSelectAccountList />
         </aside>
       </div>
 
