@@ -47,11 +47,10 @@ export const useTokenAndDIFIData = ({
   }, [portfolioNetWorth, appPortfolioNetWorth]);
 
   const displayTokenList = useMemo(() => {
-    const result = tokenList.filter((item) => item.is_verified); // only show verified tokens
     if (selectChainId) {
-      return result.filter((item) => item.chain === selectChainId);
+      return tokenList.filter((item) => item.chain === selectChainId);
     }
-    return result;
+    return tokenList;
   }, [tokenList, selectChainId]);
 
   const displayPortfolios = useMemo(() => {
