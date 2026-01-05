@@ -113,6 +113,7 @@ export const DesktopProfile = () => {
 
   const handleUpdate = useMemoizedFn(async () => {
     setRefreshKey((prev) => prev + 1);
+    refreshPositions();
     await refreshBalance();
     await refreshCurve();
   });
@@ -144,6 +145,7 @@ export const DesktopProfile = () => {
     setLpTokenMode,
     appIds,
     isNoResults,
+    refreshPositions,
   } = useTokenAndDIFIData({ selectChainId: chainInfo?.serverId });
 
   useListenTxReload(async () => {
@@ -195,10 +197,10 @@ export const DesktopProfile = () => {
   return (
     <>
       <DesktopPageWrap
-        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element"
+        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px]"
         ref={scrollContainerRef}
       >
-        <div className="main-content is-open">
+        <div className="main-content is-open flex-1">
           <div className="layout-container sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
             <DesktopNav
               balance={balance}

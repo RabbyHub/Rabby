@@ -1,6 +1,7 @@
 import {
   RcIconHomeCC,
-  RcIconHomeInActiveCC,
+  RcIconHomeHover,
+  RcIconHomeInActive,
   RcIconLeadingCC,
   RcIconPerpsCC,
   RcIconPredictionCC,
@@ -116,11 +117,13 @@ export const DesktopNav: React.FC<{
             }}
           >
             {currentPathname === '/desktop/profile' ? (
-              <RcIconHomeCC className="flex-shrink-0 " />
+              <RcIconHomeCC className="flex-shrink-0" />
             ) : (
               <>
-                <RcIconHomeCC className="flex-shrink-0 hidden group-hover:flex group-hover:text-r-neutral-title2" />
-                <RcIconHomeInActiveCC className="text-rb-neutral-secondary group-hover:hidden" />
+                {/* <RcIconHomeCC className="flex-shrink-0 " /> */}
+
+                <RcIconHomeHover className="flex-shrink-0 hidden group-hover:block text-rb-neutral-InvertHighlight" />
+                <RcIconHomeInActive className="text-rb-neutral-secondary group-hover:hidden" />
               </>
             )}
             <div

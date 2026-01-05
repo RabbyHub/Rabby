@@ -11,13 +11,14 @@ import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 
 import { KEYRING_TYPE } from '@/constant';
 import { rules } from './rules';
+import { AddAddressModal } from '../DesktopProfile/components/AddAddressModal';
 
 const HANDSHAKE_MESSAGE_TYPE = 'rabby-dapp-iframe-handshake';
 const SYNC_MESSAGE_TYPE = 'rabby-dapp-iframe-sync-url';
 
 const Iframe = styled.iframe`
   width: 100%;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 116px);
   min-height: 640px;
   border: 0;
   display: block;
@@ -230,7 +231,7 @@ export const DesktopDappIframe = () => {
 
   return (
     <>
-      <DesktopPageWrap className="w-full h-full bg-rb-neutral-bg-1 px-[20px]">
+      <DesktopPageWrap className="w-full h-full bg-rb-neutral-bg-1 px-[20px] pb-0">
         <div className="main-content flex-1 pl-0">
           <div className="layout-container sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
             <DesktopNav
@@ -258,6 +259,14 @@ export const DesktopDappIframe = () => {
         <aside className={clsx('aside-list sticky top-[103px] z-20')}>
           <DesktopSelectAccountList autoCollapse />
         </aside>
+
+        <AddAddressModal
+          visible={action === 'add-address'}
+          onCancel={() => {
+            history.replace(history.location.pathname);
+          }}
+          destroyOnClose
+        />
       </DesktopPageWrap>
     </>
   );

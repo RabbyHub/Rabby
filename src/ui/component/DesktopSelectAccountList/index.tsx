@@ -197,6 +197,11 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
           Footer: () => (
             <div
               onClick={() => {
+                if (!isAbsolute) {
+                  document
+                    .querySelector('.main-content')
+                    ?.classList?.remove('is-open');
+                }
                 history.replace(`${location.pathname}?action=add-address`);
               }}
               className={clsx(
@@ -248,13 +253,16 @@ const AccountItem: React.FC<{
           'desktop-account-item',
           isSelected
             ? ' border-rb-neutral-line bg-rb-neutral-card-1'
-            : 'border-transparent bg-rb-neutral-bg-3'
+            : 'border-transparent bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-2 '
         )}
         onClick={onClick}
       >
         <img
           src={addressTypeIcon}
-          className={clsx('w-[24px] h-[24px]', !isSelected ? 'opacity-40' : '')}
+          className={clsx(
+            'w-[24px] h-[24px]',
+            !isSelected ? 'opacity-40 group-hover:opacity-100' : ''
+          )}
           alt=""
         />
         <div className="flex flex-1 flex-col gap-[2px] min-w-0 desktop-account-item-content">
