@@ -111,7 +111,7 @@ export const TokenItemAsset: React.FC<Props> = ({
         </TooltipWithMagnetArrow>
       </div>
       <div className="flex flex-1 flex-row items-center gap-[12px] overflow-hidden">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 max-w-[190px]">
           <DesktopTokenLabel
             token={{ ...item, id: item._tokenId }}
             isNft={false}

@@ -84,7 +84,7 @@ export const TokenTab = ({
   const tokenListTotalValue = React.useMemo(() => {
     return sortTokens
       ?.reduce(
-        (acc, item) => acc.plus(isLpToken(item) ? 0 : item._usdValue || 0),
+        (acc, item) => acc.plus(item.is_core ? item._usdValue || 0 : 0),
         new BigNumber(0)
       )
       .toNumber();
