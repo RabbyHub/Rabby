@@ -20,6 +20,7 @@ import { LimitOrderType, MarginMode } from '../types';
 import { removeTrailingZeros } from '../components/TradingPanel/utils';
 import BigNumber from 'bignumber.js';
 import { formatTpOrSlPrice } from '../../Perps/utils';
+import { usePerpsProState } from './usePerpsProState';
 
 const formatTriggerPx = (px?: string) => {
   // avoid '.15' input error from hy validator
@@ -31,6 +32,7 @@ export const usePerpsProPosition = () => {
   const currentPerpsAccount = useRabbySelector(
     (state) => state.perps.currentPerpsAccount
   );
+  const { handleActionApproveStatus } = usePerpsProState();
   const { t } = useTranslation();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -67,6 +69,7 @@ export const usePerpsProPosition = () => {
       errorMessage: string
     ): Promise<T | undefined> => {
       try {
+        await handleActionApproveStatus();
         return await operation(params);
       } catch (error) {
         const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
