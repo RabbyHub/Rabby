@@ -1098,7 +1098,8 @@
       "addNewAddress": "Yeni Adres Ekle",
       "CurrentDappAddress": {
         "desc": "DApp Adresini Değiştir\n"
-      }
+      },
+      "noSeedPhraseAddress": "Bu tohum ifadesi için adres eklenmemiştir. Bir adres ekleyebilir veya tohum ifadesini silebilirsiniz."
     },
     "dashboard": {
       "home": {
@@ -1297,7 +1298,8 @@
           "themeMode": "Tema Modu",
           "toggleThemeMode": "Tema Modu",
           "metamaskMode": "MetaMask gibi Gizlenerek Rabby'yi Bağla",
-          "enableDappAccount": "Dapp Adreslerini Bağımsız Olarak Değiştirin\n"
+          "enableDappAccount": "Dapp Adreslerini Bağımsız Olarak Değiştirin\n",
+          "switchPasswordForNonWhitelistedTx": "Beyaz listeye alınmamış transferler için şifre"
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",
@@ -1324,6 +1326,14 @@
           "thxTitle": "Teşekkür ederim!",
           "feedbackPlaceholder": "Rabby geri bildiriminizi değerlendirir!",
           "thxDesc": "Eğer Rabby'yi beğendiyseniz, Chrome Mağazası'na yapacağınız hızlı bir değerlendirme çok şey ifade eder."
+        },
+        "PwdForNonWhitelistedTx": {
+          "wrongPassword": "Yanlış şifre",
+          "titleDisable": "Parolayı Girin Devre Dışı Bırakmak için",
+          "inputPlaceholder": "Şifreyi Onaylamak için Girin",
+          "titleEnable": "Şifre kontrolünü etkinleştir?",
+          "descEnable": "Bir kez etkinleştirildiğinde, bu uzantıda beyaz listede olmayan bir adrese transfer yapmak şifrenizi gerektirecektir.",
+          "descDisable": "Devre dışı bırakıldıktan sonra, beyaz listede yer almayan adresler için şifre doğrulaması artık gerekli olmayacaktır."
         }
       },
       "tokenDetail": {
@@ -1408,13 +1418,14 @@
           "noMatch": "Eşleşme Yok",
           "lowValueDescription": "Düşük değerdeki varlıklar burada gösterilecek",
           "lowValueAssets": "{{count}} düşük değerli varlık",
-          "lowValueAssets_other": "{{count}} düşük değerli tokenlar",
-          "lowValueAssets_one": "{{count}} düşük değerli token",
-          "lowValueAssets_0": "{{count}} düşük değerli token",
           "review": "Gözden Geçir",
           "noTokens": "No Tokens",
-          "lowValueDefis": "{{count}} düşük değerli defis",
-          "searchToken": "Token Ara"
+          "searchToken": "Token Ara",
+          "lowValueAssets_one": "{{count}} düşük değerli token",
+          "lowValueDefis": "{{count}} düşük değerli DeFi varlıkları",
+          "noLpTokens": "Likidite Sağlayıcı (LP) Token Yok",
+          "lowValueAssets_0": "{{count}} düşük değerli token",
+          "lowValueAssets_other": "{{count}} düşük değerli token"
         },
         "noAssets": "Varlık Yok",
         "blockLinkText": "Tokeni engellemek için adresi ara",
@@ -1453,8 +1464,8 @@
         "customButtonText": "Özel token ekle",
         "side": "YAN TARAF",
         "price": "FİYAT",
-        "openInTab": "Sekmede aç",
-        "searchTokenPlaceholder": "Token Ara"
+        "searchTokenPlaceholder": "Token Ara",
+        "openInTab": "Rabby Sekmesinde Açın"
       },
       "hd": {
         "howToConnectLedger": "Ledger Nasıl Bağlanır",
@@ -1825,7 +1836,8 @@
         },
         "importBtn": "İçe Aktar ({{count}})",
         "manageImtokenOffline": "imToken'i Yönetin",
-        "manageImKey": "imKey'i Yönet"
+        "manageImKey": "imKey'i Yönet",
+        "nonAddr": "Bu seed ifadesi için hiçbir adres eklenmemiştir. Bu ifadeyi Rabby Extension > Adres Yönetimi bölümünden silebilirsiniz."
       },
       "importYourKeystore": "KeyStore'unuzu İçe Aktarın",
       "incorrectPassword": "yanlış şifre",
@@ -2006,7 +2018,25 @@
       "safeModuleAddress": "Safe Module Adresi",
       "coboSafeErrorModule": "Adresin süresi doldu, lütfen adresi silin ve tekrar içe aktarın.",
       "importedDelegatedAddress": "İçe Aktarılan Delege Adresi",
-      "manage-addresses-under": "Bu {{brand}} altındaki adresleri yönetin"
+      "manage-addresses-under": "Bu {{brand}} altındaki adresleri yönetin",
+      "deleteSeedPhrase": {
+        "option2": "Adres ve Seed Phrase'i Sil",
+        "title2": "Adresi Sil?",
+        "title": "Adres ve Seed İfadesini Sil?",
+        "option1": "Adres Sil, Seed Phrase'i Sakla",
+        "remainSeedPhrase": "Kök ifadeniz cihazınızda kalır.",
+        "onlyDeleteAddr": "Sadece bu adres kaldırılacaktır. Seed kelimeniz etkilenmeyecek, çünkü diğer adresleriniz hala onu kullanıyor.",
+        "keepSeedPhrase": "Bu, bu anahtar ifadesine bağlı tek adrestir. Anahtar ifadesini saklamak ister misiniz?",
+        "check2": "Özel Anahtarımı veya Seed Phrase'mi yedeklediğimi onaylıyorum ve silmeye hazırım.",
+        "check1": "Bu adresi silmenin aynı zamanda Özel Anahtarını ve Seed Phrase'i de sileceğini anlıyorum. Rabby bunları benim için kurtaramaz.",
+        "sub-title": "Bu eylem kalıcıdır. Lütfen varlıklarınızı korumak için aşağıdakileri gözden geçirin:"
+      },
+      "deletePrivateKey": {
+        "title": "Adres ve Özel anahtarı silmek istiyor musunuz?",
+        "check2": "Özel Anahtarımı veya Seed Phrase'imi yedeklediğimi onaylıyorum ve silmeye hazırım.",
+        "sub-title": "Bu eylem kalıcıdır. Varlıklarınızı korumak için lütfen aşağıdakileri gözden geçirin:",
+        "check1": "Bu adresi silmenin aynı zamanda Özel Anahtarını da sileceğini anlıyorum. Rabby bunları benim için geri getiremez."
+      }
     },
     "preferMetamaskDapps": {
       "title": "MetaMask Tercihli Dapp'ler",
@@ -2824,8 +2854,7 @@
       "sectionHeader": {
         "AllChains": "Tüm Zincirler",
         "token": "Jetonlar",
-        "NFT": "NFT",
-        "Defi": "DeFi"
+        "NFT": "NFT"
       },
       "header": {
         "placeHolder": "Araştırma",
@@ -2905,7 +2934,11 @@
       "riskTitle": "Beyaz Liste Adresi Ekle",
       "exchangeAddress": "Değişim Adresi",
       "address": "Adres",
-      "title": "Adres listeye ekle"
+      "title": "Adres listeye ekle",
+      "verifyPwd": {
+        "title": "Beyaz Listeye Alınmamış Adres",
+        "inputPlaceholder": "Bu transferi onaylamak için şifrenizi girin."
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3142,7 +3175,10 @@
         "notWhitelist": "Beyaz liste adresi değil",
         "addWhitelist": "Adresi beyaz listeye ekle",
         "removeFromWhitelist": "Beyaz listeye eklemekten çıkar",
-        "addWhitelistDesc": "Hızlı transferler için güvenilir adresleri beyaz listeye ekleyin - bir sonraki sefer onay gerekmez."
+        "addWhitelistDesc": "Hızlı transferler için güvenilir adresleri beyaz listeye ekleyin - bir sonraki sefer onay gerekmez.",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Beyaz listeye alınmamış transferler için şifre"
+        }
       },
       "addWhitelist": {
         "title": "Adresi beyaz listeye ekle",
@@ -3241,9 +3277,7 @@
       "tabs": {
         "approvals": "Onaylar",
         "tokens": "Jetonlar",
-        "transactions": "İşlemler",
-        "difi": "Defi",
-        "defi": "DeFi"
+        "transactions": "İşlemler"
       },
       "nft": {
         "message": {
@@ -3553,7 +3587,8 @@
       "chainNotSupport": "Bu zincir desteklenmiyor.",
       "chainFilterLine": {
         "filterAll": "Tüm Zincirler"
-      }
+      },
+      "noLpTokens": "LP Token Yok"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3638,7 +3673,8 @@
     },
     "LpTokenTag": {
       "title": "Bu bir likidite sağlayıcı (LP) tokenıdır.",
-      "description": "LP token’lar, varlıklarınızı yatırdığınız DeFi protokolleri tarafından verilmektedir. Bunlar, bu varlıkların kanıtı olarak hizmet eder, ancak değeri toplam bakiyenize dahil değildir."
+      "description": "LP token’lar, varlıklarınızı yatırdığınız DeFi protokolleri tarafından verilmektedir. Bunlar, bu varlıkların kanıtı olarak hizmet eder, ancak değeri toplam bakiyenize dahil değildir.",
+      "descriptionFor": "Bu, {{ protocolName }} için bir Likidite Sağlayıcı (LP) Token'dır."
     }
   },
   "global": {

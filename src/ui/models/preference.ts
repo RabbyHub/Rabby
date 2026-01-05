@@ -37,6 +37,7 @@ interface PreferenceState {
   themeMode: DARK_MODE_TYPE;
   reserveGasOnSendToken: boolean;
   isHideEcologyNoticeDict: Record<string | number, boolean>;
+  isEnabledPwdForNonWhitelistedTx?: boolean;
   isEnabledDappAccount?: boolean;
   rateGuideLastExposure?: RateGuideLastExposure;
 
@@ -68,6 +69,7 @@ export const preference = createModel<RootModel>()({
     themeMode: DARK_MODE_TYPE.system,
     reserveGasOnSendToken: false,
     isHideEcologyNoticeDict: {},
+    isEnabledPwdForNonWhitelistedTx: false,
     isEnabledDappAccount: false,
     rateGuideLastExposure: getDefaultRateGuideLastExposure(),
     desktopTokensAllMode: false,
@@ -123,6 +125,20 @@ export const preference = createModel<RootModel>()({
       }
 
       return value as PreferenceState;
+    },
+    async getPreferenceValue<K extends keyof PreferenceState>(
+      options: { key: K; updateLocalStore?: boolean },
+      store
+    ): Promise<PreferenceState[K]> {
+      const { key, updateLocalStore = false } = options;
+      const value = await store.app.wallet.getPreference(key);
+
+      if (updateLocalStore) {
+        dispatch.preference.setField({
+          [key]: value,
+        });
+      }
+      return value as PreferenceState[K];
     },
     async getIsDefaultWallet(_: void, store) {
       const isDefaultWallet = await store.app.wallet.isDefaultWallet();
@@ -282,6 +298,14 @@ export const preference = createModel<RootModel>()({
     ) {
       await store.app.wallet.setAddressSortStoreValue(key, value);
       dispatch.preference.getPreference('addressSortStore');
+    },
+
+    async enablePwdForNonWhitelistedTx(v: boolean, store) {
+      await store.app.wallet.enablePwdForNonWhitelistedTx(v);
+      dispatch.preference.getPreference('isEnabledPwdForNonWhitelistedTx');
+      ga4.fireEvent(`PwdForNonWhitelistedTx_${v ? 'On' : 'Off'}`, {
+        event_category: 'Settings Snapshot',
+      });
     },
 
     async enableDappAccount(v: boolean, store) {

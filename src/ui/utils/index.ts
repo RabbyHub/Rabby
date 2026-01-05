@@ -47,6 +47,15 @@ export const getUiType = (): UiTypeCheck => {
   }, {} as UiTypeCheck);
 };
 
+export function getContainerByScreen() {
+  const uiType = getUiType();
+
+  return uiType.isTab || uiType.isDesktop
+    ? (document.querySelector('.js-rabby-popup-container') as HTMLDivElement) ||
+        document.body
+    : document.body;
+}
+
 export const hex2Text = (hex: string) => {
   try {
     return hex.startsWith('0x')

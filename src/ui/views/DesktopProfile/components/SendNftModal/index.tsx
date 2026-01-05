@@ -1,7 +1,6 @@
 import { Modal, ModalProps } from 'antd';
 import React, { useMemo } from 'react';
 import SendToken from '../../../SendToken';
-import SendPoly from '../../../SendPoly';
 import WhitelistInput from '../../../WhitelistInput';
 import { useLocation } from 'react-router-dom';
 import SendNFT from '@/ui/views/SendNFT';
@@ -10,18 +9,17 @@ import { ReactComponent as RcIconClose } from '@/ui/assets/dapp-search/cc-close.
 export const SendNftModal: React.FC<ModalProps> = (props) => {
   const location = useLocation();
   const sendPageType =
-    new URLSearchParams(location.search).get('sendPageType') || 'sendPoly';
+    new URLSearchParams(location.search).get('sendPageType') || 'sendNft';
 
   const SendPage = useMemo(() => {
     if (sendPageType === 'sendNft') {
       return <SendNFT />;
     } else if (sendPageType === 'sendPoly') {
-      return <SendPoly />;
+      return <SendToken />;
     } else if (sendPageType === 'whitelistInput') {
       return <WhitelistInput />;
     }
-    // 默认返回 SendPoly 组件，避免返回 undefined
-    return <SendPoly />;
+    return <SendNFT />;
   }, [sendPageType]);
 
   return (

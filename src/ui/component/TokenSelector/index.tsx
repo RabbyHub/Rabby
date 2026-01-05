@@ -307,13 +307,15 @@ const TokenSelector = ({
           />
 
           <p className="text-r-neutral-foot text-14 mt-8 text-center mb-0">
-            {t('component.TokenSelector.noTokens')}
+            {lpTokenMode
+              ? t('component.TokenSelector.noLpTokens')
+              : t('component.TokenSelector.noTokens')}
           </p>
         </div>
       );
     }
     return null;
-  }, [isSwapOrBridge, t]);
+  }, [isSwapOrBridge, t, lpTokenMode]);
 
   const NoDataUI = useMemo(
     () =>
@@ -341,7 +343,9 @@ const TokenSelector = ({
 
           {!query || isSearchAddr ? (
             <p className="text-r-neutral-foot text-14 mt-12 text-center mb-0">
-              {t('component.TokenSelector.noTokens')}
+              {lpTokenMode
+                ? t('component.TokenSelector.noLpTokens')
+                : t('component.TokenSelector.noTokens')}
             </p>
           ) : (
             <>
@@ -371,6 +375,7 @@ const TokenSelector = ({
       type,
       isSwapOrBridge,
       query,
+      lpTokenMode,
     ]
   );
 
@@ -823,7 +828,12 @@ function CommonTokenItem(props: {
                     {getTokenSymbol(token)}
                   </span>
                   {isLpToken(token) && (
-                    <LpTokenTag size={14} iconClassName="text-r-neutral-foot" />
+                    <LpTokenTag
+                      size={14}
+                      inModal
+                      iconClassName="text-r-neutral-foot"
+                      protocolName={token.protocol_id || ''}
+                    />
                   )}
                   <ExchangeLogos cexIds={token.cex_ids || []} />
                 </div>
@@ -836,7 +846,12 @@ function CommonTokenItem(props: {
                     {getTokenSymbol(token)}
                   </span>
                   {isLpToken(token) && (
-                    <LpTokenTag size={14} iconClassName="text-r-neutral-foot" />
+                    <LpTokenTag
+                      size={14}
+                      inModal
+                      iconClassName="text-r-neutral-foot"
+                      protocolName={token.protocol_id || ''}
+                    />
                   )}
                 </div>
               )}

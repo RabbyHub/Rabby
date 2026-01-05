@@ -113,7 +113,7 @@ export const CustomTestnetTokenDetail = ({
                 className="rectangle w-[max-content]"
               >
                 <img
-                  className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
+                  className="w-14 h-14 absolute right-[-2px] bottom-[-2px] rounded-full"
                   src={chain?.logo || IconUnknown}
                 />
               </TooltipWithMagnetArrow>

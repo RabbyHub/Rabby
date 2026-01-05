@@ -59,6 +59,7 @@ const Wrap = styled.div`
   .main-content {
     padding-left: 80px;
     flex-shrink: 0;
+    min-height: 766px;
 
     transition: padding 0.3s;
 
@@ -192,6 +193,7 @@ export const DesktopProfile = () => {
   const {
     // useQueryProjects
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     portfolios,
     tokenList,
@@ -338,7 +340,10 @@ export const DesktopProfile = () => {
                       key="tokens"
                     >
                       <TokenTab
-                        isTokensLoading={!!isTokensLoading}
+                        isTokensLoading={
+                          !!isTokensLoading ||
+                          (!!lpTokenMode && !!isAllTokenLoading)
+                        }
                         isNoResults={isNoResults}
                         sortTokens={sortTokens}
                         hasTokens={hasTokens}
