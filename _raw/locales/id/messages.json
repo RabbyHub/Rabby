@@ -1190,7 +1190,8 @@
       "passphraseError": "Passphrase tidak valid",
       "CurrentDappAddress": {
         "desc": "Ganti Alamat Dapp"
-      }
+      },
+      "noSeedPhraseAddress": "Tidak ada alamat yang ditambahkan untuk frase biji ini. Anda dapat menambahkan alamat atau menghapus frase biji ini."
     },
     "dashboard": {
       "home": {
@@ -1365,7 +1366,8 @@
           "themeMode": "Mode Tema",
           "customTestnet": "Tambahkan Jaringan Kustom",
           "metamaskMode": "Sambungkan Rabby dengan Menyamar sebagai MetaMask",
-          "enableDappAccount": "Ganti Alamat Dapp Secara Independen\n"
+          "enableDappAccount": "Ganti Alamat Dapp Secara Independen\n",
+          "switchPasswordForNonWhitelistedTx": "Kata sandi untuk transfer yang tidak terdaftar"
         },
         "7Days": "7 hari",
         "4Hours": "4 jam",
@@ -1416,6 +1418,14 @@
           "submitFeedbackButton": "Kirim",
           "feedbackDesc": "Ada masukan? Kami mendengarkan.",
           "thxDesc": "Jika Anda menyukai Rabby, peringkat cepat di Chrome Store akan sangat berarti."
+        },
+        "PwdForNonWhitelistedTx": {
+          "titleEnable": "Aktifkan pemeriksaan kata sandi?",
+          "inputPlaceholder": "Masukkan Kata Sandi untuk Mengonfirmasi",
+          "wrongPassword": "Kata sandi salah",
+          "descDisable": "Setelah dinonaktifkan, verifikasi kata sandi tidak akan lagi diperlukan untuk alamat yang tidak ada dalam daftar putih.",
+          "titleDisable": "Masukkan Kata Sandi untuk Menonaktifkan",
+          "descEnable": "Setelah diaktifkan, mentransfer ke alamat yang tidak terdaftar di ekstensi ini akan memerlukan kata sandi Anda."
         }
       },
       "tokenDetail": {
@@ -1485,7 +1495,6 @@
           "dailyUnlock": "Pembukaan harian",
           "unlockAt": "Buka di",
           "exerciseEnd": "Latihan selesai",
-          "lowValueAssets_0": "{{count}} token nilai rendah",
           "assetAmount": "Aset / Jumlah",
           "claimable": "Dapat Diklaim",
           "strikePrice": "Harga pelaksanaan",
@@ -1496,14 +1505,16 @@
           "noMatch": "Tidak Cocok",
           "tradePair": "Pasangan perdagangan",
           "summaryDescription": "Semua aset dalam protokol (misalnya token LP) diselesaikan ke aset dasar untuk perhitungan statistik.",
-          "lowValueAssets_one": "{{count}} token bernilai rendah",
-          "lowValueAssets_other": "{{count}} token nilai rendah",
           "summaryTips": "Nilai aset dibagi dengan total kekayaan bersih",
           "price": "Harga",
           "review": "Tinjau",
           "noTokens": "Tidak Ada Token",
           "searchToken": "Cari Token",
-          "lowValueDefis": "{{count}} defis nilai rendah"
+          "lowValueAssets_one": "{{count}} token nilai rendah",
+          "lowValueAssets_other": "{{count}} token bernilai rendah",
+          "lowValueAssets_0": "{{count}} token bernilai rendah",
+          "noLpTokens": "Tidak Ada Token Penyedia Likuiditas (LP)",
+          "lowValueDefis": "{{count}} aset DeFi bernilai rendah"
         },
         "AddMainnetToken": {
           "tokenAddress": "Alamat Token",
@@ -1543,8 +1554,8 @@
         "customDescription": "Token kustom yang ditambahkan oleh Anda akan ditampilkan di sini",
         "price": "HARGA",
         "side": "SISI",
-        "openInTab": "Buka di tab",
-        "searchTokenPlaceholder": "Cari Token"
+        "searchTokenPlaceholder": "Cari Token",
+        "openInTab": "Buka di Rabby Tab"
       },
       "hd": {
         "ledger": {
@@ -1923,7 +1934,8 @@
         "addressesInRabby": "Alamat di Rabby{{0}}",
         "manageImtokenOffline": "Kelola imToken",
         "selectHdPath": "Pilih jalur HD:",
-        "importBtn": "Impor ({{count}})"
+        "importBtn": "Impor ({{count}})",
+        "nonAddr": "Belum ada alamat yang ditambahkan untuk frasa seed ini. Anda dapat menghapus frasa ini di Rabby Extension > Kelola Alamat."
       },
       "keystore": {
         "password": {
@@ -2092,7 +2104,25 @@
       "coboSafeErrorModule": "Alamat telah kedaluwarsa, silakan hapus dan impor alamat lagi.",
       "manage-addresses-under-this-seed-phrase": "Kelola alamat di bawah Seed Phrase ini",
       "delete-desc": "Sebelum Anda menghapus, ingatlah poin-poin berikut untuk memahami cara melindungi aset Anda.",
-      "manage-addresses-under": "Kelola alamat di bawah {{brand}}"
+      "manage-addresses-under": "Kelola alamat di bawah {{brand}}",
+      "deleteSeedPhrase": {
+        "title2": "Hapus Alamat?",
+        "remainSeedPhrase": "Frasa benih Anda tetap berada di perangkat Anda.",
+        "option1": "Hapus Alamat, Simpan Frase Benih",
+        "title": "Hapus Alamat dan Frase Benih?",
+        "sub-title": "Tindakan ini bersifat permanen. Silakan tinjau yang berikut ini untuk melindungi aset Anda:",
+        "option2": "Hapus Alamat dan Seed Phrase",
+        "onlyDeleteAddr": "Hanya alamat ini yang akan dihapus. Frasa benih Anda tidak terpengaruh, karena alamat Anda yang lain masih menggunakannya.",
+        "check2": "Saya mengkonfirmasi bahwa saya telah mencadangkan Kunci Pribadi atau Frase Benih saya dan saya siap untuk menghapusnya.",
+        "check1": "Saya mengerti bahwa menghapus alamat ini juga menghapus Kunci Pribadi dan Frasa Benihnya. Rabby tidak dapat memulihkannya untuk saya.",
+        "keepSeedPhrase": "Ini adalah satu-satunya alamat yang terhubung dengan frase benih ini. Apakah Anda ingin menyimpan frase benih tersebut?"
+      },
+      "deletePrivateKey": {
+        "check2": "Saya mengonfirmasi bahwa saya telah mencadangkan Key Pribadi atau Frasa Seed saya dan saya siap untuk menghapusnya.",
+        "sub-title": "Tindakan ini bersifat permanen. Harap tinjau hal-hal berikut untuk melindungi aset Anda:",
+        "title": "Hapus Alamat dan Kunci Pribadi?",
+        "check1": "Saya mengerti bahwa menghapus alamat ini juga menghapus Kunci Pribadinya. Rabby tidak dapat memulihkannya untuk saya."
+      }
     },
     "preferMetamaskDapps": {
       "empty": "Tidak ada dapps",
@@ -2817,7 +2847,6 @@
     "search": {
       "sectionHeader": {
         "NFT": "NFT",
-        "Defi": "DeFi",
         "token": "Token",
         "AllChains": "Semua Rantai"
       },
@@ -2899,7 +2928,11 @@
       "confirmPassword": "Konfirmasi Kata Sandi",
       "addSuccess": "Ditambahkan dengan sukses",
       "invalidAddress": "Alamat ini tidak valid",
-      "title": "Tambahkan alamat ke daftar putih"
+      "title": "Tambahkan alamat ke daftar putih",
+      "verifyPwd": {
+        "title": "Alamat Non-Whitelisted",
+        "inputPlaceholder": "Masukkan kata sandi Anda untuk mengonfirmasi transfer ini"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3136,7 +3169,10 @@
         "removeFromWhitelist": "Hapus dari whitelist",
         "addWhitelist": "Tambahkan alamat ke daftar putih",
         "title": "Daftar Putih",
-        "addWhitelistDesc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat---tidak perlu konfirmasi pada waktu berikutnya"
+        "addWhitelistDesc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat---tidak perlu konfirmasi pada waktu berikutnya",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Kata sandi untuk transfer yang tidak terdaftar"
+        }
       },
       "addWhitelist": {
         "title": "Tambahkan alamat ke daftar putih",
@@ -3235,9 +3271,7 @@
       "tabs": {
         "tokens": "Token",
         "approvals": "Persetujuan",
-        "transactions": "Transaksi",
-        "difi": "Defi",
-        "defi": "DeFi"
+        "transactions": "Transaksi"
       },
       "nft": {
         "message": {
@@ -3547,7 +3581,8 @@
       "chainNotSupport": "Rantai ini tidak didukung",
       "chainFilterLine": {
         "filterAll": "Semua Rantai"
-      }
+      },
+      "noLpTokens": "Tidak ada Token Penyedia Likuiditas (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3632,7 +3667,8 @@
     },
     "LpTokenTag": {
       "title": "Ini adalah token penyedia likuiditas (LP)",
-      "description": "Token LP diterbitkan oleh protokol DeFi tempat Anda menyimpan aset Anda. Mereka berfungsi sebagai bukti aset tersebut, tetapi nilainya tidak termasuk dalam total saldo Anda."
+      "description": "Token LP diterbitkan oleh protokol DeFi tempat Anda menyimpan aset Anda. Mereka berfungsi sebagai bukti aset tersebut, tetapi nilainya tidak termasuk dalam total saldo Anda.",
+      "descriptionFor": "Ini adalah Token Penyedia Likuiditas (LP) untuk {{ protocolName }}"
     }
   },
   "global": {

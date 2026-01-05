@@ -207,7 +207,7 @@ export function AddressInfoTo({
                   >
                     <div className="flex flex-col justify-center items-start">
                       {aliasName ? (
-                        <span className="text-[16px] mb-[4px] font-bold leading-[20px] text-r-neutral-title-1">
+                        <span className="text-[16px] mb-[4px] font-medium leading-[20px] text-r-neutral-title-1">
                           {aliasName}
                         </span>
                       ) : (
@@ -215,7 +215,7 @@ export function AddressInfoTo({
                           headCount={8}
                           tailCount={4}
                           address={toAccount?.address || ''}
-                          className="text-[16px] mb-[4px] font-bold leading-[20px] text-r-neutral-title-1"
+                          className="text-[16px] mb-[4px] font-medium leading-[20px] text-r-neutral-title-1"
                         />
                       )}
                       <AddressViewer

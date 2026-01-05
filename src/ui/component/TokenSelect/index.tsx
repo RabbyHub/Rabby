@@ -156,6 +156,7 @@ const TokenSelect = forwardRef<
     const handleCurrentTokenChange = (token: TokenItem) => {
       onChange && onChange('');
       onTokenChange(token);
+      setLpTokenMode(false);
       setTokenSelectorVisible(false);
 
       // const chainItem = findChainByServerID(token.chain);
@@ -181,7 +182,11 @@ const TokenSelect = forwardRef<
     const isSwapType = isSwapTokenType(type);
 
     // when no any queryConds
-    const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
+    const {
+      tokens: allTokens,
+      isLoading: isLoadingAllTokens,
+      isAllTokenLoading, // 包含lp Token的请求
+    } = useTokens(
       useSwapTokenList ? undefined : currentAccount?.address,
       undefined,
       tokenSelectorVisible,
@@ -285,7 +290,8 @@ const TokenSelect = forwardRef<
         ? isSearchLoading || remoteSwapToSearchTokensLoading
         : useSwapTokenList
         ? swapTokenListLoading
-        : isLoadingAllTokens) || initLoading;
+        : isLoadingAllTokens || (lpTokenMode && isAllTokenLoading)) ||
+      initLoading;
 
     const handleSearchTokens = React.useCallback(async (ctx) => {
       setQueryConds({

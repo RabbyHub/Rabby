@@ -28,7 +28,7 @@ import {
 } from './tokenUtils';
 import { isSameAddress } from '..';
 import { Token } from 'background/service/preference';
-import { defaultTokenFilter, includeLpTokensFilter } from './lpToken';
+import { defaultTokenFilter, isLpToken } from './lpToken';
 
 let lastResetTokenListAddr = '';
 // export const tokenChangeLoadingAtom = atom(false);
@@ -60,12 +60,13 @@ export const useTokens = (
   isTestnet: boolean = chainServerId
     ? !!findChain({ serverId: chainServerId })?.isTestnet
     : false,
-  showAll = false,
+  lpTokensOnly = false,
   showBlocked = false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
   const [isLoading, setLoading] = useSafeState(true);
+  const [isAllTokenLoading, setIsAllTokenLoading] = useSafeState(true);
   const historyTime = useRef<number>();
   const historyLoad = useRef<boolean>(false);
   const wallet = useWallet();
@@ -134,6 +135,7 @@ export const useTokens = (
     const abortedFn = () => {
       if (callCount === callCountRef.current) {
         setLoading(false);
+        setIsAllTokenLoading(false);
       }
     };
 
@@ -151,6 +153,7 @@ export const useTokens = (
     historyLoad.current = false;
 
     setLoading(true);
+    setIsAllTokenLoading(true);
     log('======Start-Tokens======', userAddr);
     let _data = produce(walletProject, (draft) => {
       draft.netWorth = 0;
@@ -177,6 +180,7 @@ export const useTokens = (
     if (!snapshot) {
       log('--Terminate-tokens-snapshot-', userAddr);
       setLoading(false);
+      setIsAllTokenLoading(false);
       return;
     }
 
@@ -220,6 +224,7 @@ export const useTokens = (
     if (!tokenRes) {
       log('--Terminate-tokens- no tokenRes', userAddr);
       setLoading(false);
+      setIsAllTokenLoading(false);
     }
 
     if (currentAbort.signal.aborted) {
@@ -331,7 +336,7 @@ export const useTokens = (
       ]);
     }
     setLoading(false);
-
+    setIsAllTokenLoading(false);
     loadHistory(_data, currentAbort);
 
     log('<<==Tokens-end==>>', userAddr);
@@ -455,15 +460,16 @@ export const useTokens = (
 
   const tokens = useMemo(() => {
     const list = isTestnet ? testnetTokens.list : mainnetTokens.list;
-    if (showAll) {
-      return list.filter(includeLpTokensFilter);
+    if (lpTokensOnly) {
+      return list.filter(isLpToken);
     }
     return list.filter(defaultTokenFilter);
-  }, [isTestnet, testnetTokens.list, mainnetTokens.list, showAll]);
+  }, [isTestnet, testnetTokens.list, mainnetTokens.list, lpTokensOnly]);
 
   return {
     netWorth: data?.netWorth || 0,
     isLoading,
+    isAllTokenLoading,
     tokens,
     customizeTokens: isTestnet
       ? testnetTokens.customize

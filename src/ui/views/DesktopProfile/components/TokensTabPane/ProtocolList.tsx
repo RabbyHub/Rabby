@@ -193,7 +193,7 @@ const ProtocolItem = ({
             noRound={isAppChain}
             isShowChainTooltip={true}
             hideChainIcon={isAppChain}
-            chainClassName="top-[-4px] right-[-4px]"
+            chainClassName="bottom-[-4px] right-[-4px]"
           />
           <div
             className="ml-[10px] flex items-center"

@@ -49,6 +49,7 @@ export const AssetListContainer: React.FC<Props> = ({
   const { setApps } = useCommonPopupView();
   const {
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     portfolios,
     tokens: tokenList,
@@ -122,8 +123,8 @@ export const AssetListContainer: React.FC<Props> = ({
     !appPortfolios?.length;
 
   React.useEffect(() => {
-    onEmptyAssets(isEmptyAssets);
-  }, [isEmptyAssets, onEmptyAssets]);
+    onEmptyAssets(isEmptyAssets && !lpTokenMode);
+  }, [isEmptyAssets, onEmptyAssets, lpTokenMode]);
 
   const sortTokens = useSortTokens(displayTokenList);
   const filteredPortfolios = useFilterProtocolList({
@@ -195,7 +196,7 @@ export const AssetListContainer: React.FC<Props> = ({
         </div>
         {/* {isFocus || search ? null : <AddTokenEntry ref={addTokenEntryRef} />} */}
       </div>
-      {isTokensLoading || isSearching ? (
+      {isTokensLoading || isSearching || (lpTokenMode && isAllTokenLoading) ? (
         <TokenListSkeleton />
       ) : (
         <div className="mt-[12px]">
@@ -206,6 +207,7 @@ export const AssetListContainer: React.FC<Props> = ({
               addTokenEntryRef.current?.startAddToken();
             }}
             isSearch={!!search}
+            lpTokenMode={lpTokenMode}
             isNoResults={isNoResults}
             blockedTokens={displayBlockedTokens}
             customizeTokens={displayCustomizeTokens}

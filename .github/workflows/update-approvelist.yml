@@ -1,0 +1,56 @@
+name: Update Approve List
+
+on:
+  workflow_dispatch:
+    inputs:
+      json_url:
+        description: 'JSON文件的URL地址'
+        required: true
+        type: string
+
+jobs:
+  update-json:
+    name: Update Approve List JSON
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Download JSON file
+        run: |
+          curl -L -o approvelist.json "${{ inputs.json_url }}"
+
+      - name: Update local JSON file
+        run: |
+          mv approvelist.json src/ui/views/CommonPopup/AssetList/components/DappActions/approvelist.json
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.git-check.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update approvelist.json from remote source'
+          title: 'chore: update approvelist.json'
+          body: |
+            从远程源更新 approvelist.json 文件
+            
+            源URL: ${{ inputs.json_url }}
+          branch: update-approvelist-${{ github.run_id }}
+          delete-branch: true
+

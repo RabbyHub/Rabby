@@ -1098,7 +1098,8 @@
       "addNewAddress": "Добавить новый адрес",
       "CurrentDappAddress": {
         "desc": "Переключить адрес Dapp\n"
-      }
+      },
+      "noSeedPhraseAddress": "Для этой мнемонической фразы не добавлены адреса. Вы можете добавить адрес или удалить мнемоническую фразу."
     },
     "dashboard": {
       "home": {
@@ -1298,7 +1299,8 @@
           "themeMode": "Theme Mode",
           "customTestnet": "Добавить свою сеть",
           "metamaskMode": "Подключите Rabby, замаскировав его под MetaMask",
-          "enableDappAccount": "Независимо переключать адреса Dapp\n"
+          "enableDappAccount": "Независимо переключать адреса Dapp\n",
+          "switchPasswordForNonWhitelistedTx": "Пароль для неавторизованных переводов"
         },
         "aboutUs": "О нас",
         "currentVersion": "Текущая версия",
@@ -1325,6 +1327,14 @@
           "feedbackPlaceholder": "Rabby ценит ваши отзывы!",
           "rateOnChromeStoreButton": "Оцените в Chrome Web Store",
           "thxDesc": "Если вам нравится Rabby, быстрая оценка в Chrome Store будет для нас очень важна."
+        },
+        "PwdForNonWhitelistedTx": {
+          "inputPlaceholder": "Введите пароль для подтверждения",
+          "wrongPassword": "Неверный пароль",
+          "titleDisable": "Введите пароль для отключения",
+          "titleEnable": "Включить проверку пароля?",
+          "descDisable": "После отключения проверка пароля больше не будет требоваться для не включенных в белый список адресов.",
+          "descEnable": "После активации передача средств на не внесённый в белый список адрес в этом расширении потребует ввода вашего пароля."
         }
       },
       "tokenDetail": {
@@ -1409,13 +1419,14 @@
           "noMatch": "Нет совпадений",
           "lowValueDescription": "Активы с низкой стоимостью будут показаны здесь",
           "lowValueAssets": "{{count}} активов с низкой стоимостью",
-          "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_0": "{{count}} с низкой стоимостью token",
-          "lowValueAssets_other": "{{count}} токенов с низкой стоимостью",
           "review": "Обзор",
           "noTokens": "Нет токенов",
           "searchToken": "Поиск токена",
-          "lowValueDefis": "{{count}} низкоценные дефи"
+          "lowValueAssets_other": "{{count}} токенов низкой стоимости",
+          "noLpTokens": "Нет токена поставщика ликвидности (LP)",
+          "lowValueAssets_one": "{{count}} токен с низкой стоимостью",
+          "lowValueDefis": "{{count}} низкоценные DeFi активы",
+          "lowValueAssets_0": "{{count}} токен с низкой ценностью"
         },
         "noAssets": "Нет активов",
         "blockLinkText": "Искать адрес, чтобы заблокировать токен",
@@ -1454,8 +1465,8 @@
         "customButtonText": "Добавить пользовательский токен",
         "price": "ЦЕНА",
         "side": "Сторона",
-        "openInTab": "Открыть в вкладке",
-        "searchTokenPlaceholder": "Поиск токена"
+        "searchTokenPlaceholder": "Поиск токена",
+        "openInTab": "Открыть в Rabby Tab"
       },
       "hd": {
         "howToConnectLedger": "Как подключить Ledger",
@@ -1843,7 +1854,8 @@
           "switchAnother": "Переключиться на другой {{0}}"
         },
         "manageImKey": "Manage imKey",
-        "importBtn": "Импортировать ({{count}})"
+        "importBtn": "Импортировать ({{count}})",
+        "nonAddr": "Для этойseed-фразы не добавлено адресов. Вы можете удалить эту фразу в Rabby Extension > Manage Address."
       },
       "importYourKeystore": "Импортируйте ваш KeyStore",
       "incorrectPassword": "неверный пароль",
@@ -2004,7 +2016,25 @@
       "safeModuleAddress": "Адрес модуля Safe",
       "coboSafeErrorModule": "Адрес устарел, пожалуйста, удалите и импортируйте адрес снова.",
       "importedDelegatedAddress": "Импортирован делегированный адрес",
-      "manage-addresses-under": "Управляйте адресами под этим {{brand}}"
+      "manage-addresses-under": "Управляйте адресами под этим {{brand}}",
+      "deleteSeedPhrase": {
+        "title2": "Удалить адрес?",
+        "title": "Удалить адрес и сид-фразу?",
+        "option1": "Удалить адрес, сохранить seed-фразу",
+        "option2": "Удалить адрес и Seed Phrase",
+        "remainSeedPhrase": "Ваша фраза бедствия остается на вашем устройстве.",
+        "check2": "Я подтверждаю, что я создал резервную копию своего ключа или Seed Phrase и готов его удалить.",
+        "keepSeedPhrase": "Это единственный адрес, связанный с этойseed phrase. Вы хотите сохранить seed phrase?",
+        "sub-title": "Это действие постоянное. Пожалуйста, просмотрите следующее, чтобы защитить ваши активы:",
+        "check1": "Я понимаю, что удаление этого адреса также удаляет его Закрытый Ключ и Начальную Фразу. Rabby не может восстановить их для меня.",
+        "onlyDeleteAddr": "Только этот адрес будет удалён. Ваша сид-фраза не затронута, так как вы другие адреса все еще используют её."
+      },
+      "deletePrivateKey": {
+        "title": "Удалить адрес и приватный ключ?",
+        "check2": "Я подтверждаю, что я создал резервную копию своего Private Key или Seed Phrase и готов удалить его.",
+        "sub-title": "Это действие является постоянным. Пожалуйста, просмотрите следующее, чтобы защитить ваши активы:",
+        "check1": "Я понимаю, что удаление этого адреса также удаляет его приватный ключ. Rabby не сможет восстановить их для меня."
+      }
     },
     "preferMetamaskDapps": {
       "title": "Предпочтительные Dapps MetaMask",
@@ -2823,7 +2853,6 @@
       "sectionHeader": {
         "NFT": "NFT",
         "AllChains": "Все цепочки",
-        "Defi": "DeFi",
         "token": "Токены"
       },
       "header": {
@@ -2904,7 +2933,11 @@
       "invalidAddress": "Этот адрес недействителен",
       "address": "Адрес",
       "enterAddress": "Введите адрес",
-      "title": "Добавить адрес в белый список"
+      "title": "Добавить адрес в белый список",
+      "verifyPwd": {
+        "title": "Непроверенный адрес",
+        "inputPlaceholder": "Введите свой пароль, чтобы подтвердить этот перевод"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3141,7 +3174,10 @@
         "title": "Список разрешенных адресов",
         "addWhitelist": "Добавить адрес в белый список",
         "removeFromWhitelist": "Удалить из белого списка",
-        "addWhitelistDesc": "Добавьте доверенные адреса в белый список для быстрого перевода — подтверждение не требуется в следующий раз"
+        "addWhitelistDesc": "Добавьте доверенные адреса в белый список для быстрого перевода — подтверждение не требуется в следующий раз",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Пароль для переводов, не внесенных в белый список"
+        }
       },
       "addWhitelist": {
         "title": "Добавить адрес в белый список",
@@ -3240,9 +3276,7 @@
       "tabs": {
         "approvals": "Подтверждения",
         "tokens": "Токены",
-        "transactions": "Транзакции",
-        "difi": "Дефи",
-        "defi": "DeFi"
+        "transactions": "Транзакции"
       },
       "nft": {
         "message": {
@@ -3552,7 +3586,8 @@
       "chainNotSupport": "Эта цепочка не поддерживается",
       "chainFilterLine": {
         "filterAll": "Все цепи"
-      }
+      },
+      "noLpTokens": "Нет токена поставщика ликвидности (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3637,7 +3672,8 @@
     },
     "LpTokenTag": {
       "title": "Это токен поставщика ликвидности (LP)",
-      "description": "Токены LP выдаются протоколами DeFi, в которые вы внесли свои активы. Они служат доказательством этих активов, но их стоимость не включена в ваш общий баланс."
+      "description": "Токены LP выдаются протоколами DeFi, в которые вы внесли свои активы. Они служат доказательством этих активов, но их стоимость не включена в ваш общий баланс.",
+      "descriptionFor": "Это токен провайдера ликвидности (LP) для {{ protocolName }}"
     }
   },
   "global": {

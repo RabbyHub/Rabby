@@ -65,7 +65,7 @@ export const RevokeButton: React.FC<Props> = ({
       className: 'am-revoke-info-modal modal-support-darkmode',
       centered: true,
       title: (
-        <h2 className="text-r-neutral-title1 text-[20px] font-[600] break-words">
+        <h2 className="text-r-neutral-title1 text-[20px] font-semibold break-words">
           <Trans
             i18nKey="page.approvals.component.RevokeButton.permit2Batch.modalTitle"
             values={{ count: revokeSummary.statics.txCount }}

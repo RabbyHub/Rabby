@@ -1133,6 +1133,10 @@
         "added": "Address added to whitelist",
         "repeated": "The current address is already on the whitelist.",
         "tooltip": "Whitelist address"
+      },
+      "verifyPwd": {
+        "title": "Non-Whitelisted Address",
+        "inputPlaceholder": "Enter your password to confirm this transfer"
       }
     },
     "sendTokenComponents": {
@@ -1546,6 +1550,7 @@
       "delete-empty-seed-phrase": "Delete seed phrase and its 0 address",
       "hd-path": "HD path:",
       "no-address-under-seed-phrase": "You haven't imported any addresses under this seed phrase.",
+      "noSeedPhraseAddress": "No addresses have been added for this seed phrase. You can add an address or delete the seed phrase.",
       "add-address": "Add address",
       "delete-seed-phrase": "Delete seed phrase",
       "confirm-delete": "Confirm Delete",
@@ -1766,7 +1771,8 @@
           "themeMode": "Theme Mode",
           "customTestnet": "Add Custom Network",
           "metamaskMode": "Connect Rabby by Disguising as MetaMask",
-          "enableDappAccount": "Switch Dapp Address Independently"
+          "enableDappAccount": "Switch Dapp Address Independently",
+          "switchPasswordForNonWhitelistedTx": "Password for non-whitelisted transfers"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -1793,6 +1799,14 @@
           "submitFeedbackButton": "Submit",
           "feedbackPlaceholder": "Rabby values your feedback!",
           "feedbackSuccess": "Thank you for your feedback!"
+        },
+        "PwdForNonWhitelistedTx": {
+          "titleEnable": "Enable password check?",
+          "titleDisable": "Enter Password to Disable",
+          "descEnable": "Once enabled, transferring to a non-whitelisted address in this extension will require your password.",
+          "descDisable": "Once disabled, password verification will no longer be required for non-whitelisted addresses.",
+          "inputPlaceholder": "Enter the Password to Confirm",
+          "wrongPassword": "Wrong password"
         }
       },
       "tokenDetail": {
@@ -1879,12 +1893,13 @@
           "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
           "noMatch": "No Match",
           "noTokens": "No Tokens",
+          "noLpTokens": "No Liquidity Provider (LP) Token",
           "lowValueDescription": "Low value assets will be shown here",
-          "lowValueAssets_0": "{{count}} low value token",
-          "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} low value tokens",
+          "lowValueAssets_0": "{{count}} low-value token",
+          "lowValueAssets_one": "{{count}} low-value token",
+          "lowValueAssets_other": "{{count}} low-value tokens",
           "searchToken": "Search Token",
-          "lowValueDefis": "{{count}} low value defis"
+          "lowValueDefis": "{{count}} low-value DeFi assets"
         },
         "noAssets": "No assets",
         "blockLinkText": "Search address to block token",
@@ -1920,7 +1935,7 @@
         },
         "noTestnetAssets": "No Custom Network Assets",
         "addTokenEntryText": "Token",
-        "openInTab": "Open in tab",
+        "openInTab": "Open in Rabby Tab",
         "searchTokenPlaceholder": "Search Token"
       },
       "hd": {
@@ -2191,6 +2206,7 @@
           "connectError": "Connect has stopped. Please refresh the page to connect again.",
           "disconnected": "Unable to connect to Hardware wallet. Please try to re-connect."
         },
+        "nonAddr": "No addresses have been added for this seed phrase. You can delete this phrase in Rabby Extension > Manage Address.",
         "waiting": "Waiting",
         "clickToGetInfo": "Click to get the information on-chain",
         "addToRabby": "Add to Rabby",
@@ -2470,7 +2486,25 @@
       "safeModuleAddress": "Safe Module Address",
       "coboSafeErrorModule": "Address has expired, please delete and import the address again.",
       "importedDelegatedAddress": "Imported Delegated address",
-      "manage-addresses-under": "Manage addresses under this {{brand}}"
+      "manage-addresses-under": "Manage addresses under this {{brand}}",
+      "deleteSeedPhrase": {
+        "title": "Delete Address and Seed Phrase?",
+        "title2": "Delete Address?",
+        "sub-title": "This action is permanent. Please review the following to protect your assets:",
+        "check1": "I understand that deleting this address also removes its Private Key and Seed Phrase. Rabby cannot recover them for me.",
+        "check2": "I confirm that I have backed up my Private Key or Seed Phrase and I am ready to delete it.",
+        "keepSeedPhrase": "This is the only address linked to this seed phrase. Would you like to keep the seed phrase?",
+        "onlyDeleteAddr": "Only this address will be removed. Your seed phrase is unaffected, as your other addresses still use it.",
+        "remainSeedPhrase": "Your seed phrase remains on your device.",
+        "option1": "Delete Address, Keep Seed Phrase",
+        "option2": "Delete Address and Seed Phrase"
+      },
+      "deletePrivateKey": {
+        "title": "Delete Address and Private key?",
+        "sub-title": "This action is permanent. Please review the following to protect your assets:",
+        "check1": "I understand that deleting this address also removes its Private Key. Rabby cannot recover them for me.",
+        "check2": "I confirm that I have backed up my Private Key or Seed Phrase and I am ready to delete it."
+      }
     },
     "preferMetamaskDapps": {
       "title": "MetaMask Preferred Dapps",
@@ -3194,6 +3228,7 @@
     },
     "search": {
       "sectionHeader": {
+        "__skip_translation": ["Defi"],
         "token": "Tokens",
         "Defi": "DeFi",
         "NFT": "NFT",
@@ -3273,10 +3308,10 @@
         "pending": "{{pendingTxCount}} Pending"
       },
       "tabs": {
+        "__skip_translation": ["defi"],
         "tokens": "Tokens",
         "transactions": "Transactions",
         "approvals": "Approvals",
-        "difi": "Defi",
         "defi": "DeFi"
       },
       "nft": {
@@ -3379,7 +3414,10 @@
         "addWhitelistDesc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time",
         "addWhitelist": "Add address to whitelist",
         "removeFromWhitelist": "Remove from whitelist",
-        "notWhitelist": "Not a whitelist Address"
+        "notWhitelist": "Not a whitelist Address",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Password for non-whitelisted transfers"
+        }
       },
       "sendToImportedAddress": "Send to Imported Address",
       "selectImportedAddress": "Select Imported address",
@@ -3556,6 +3594,7 @@
         "title": "Select Token"
       },
       "noTokens": "No Tokens",
+      "noLpTokens": "No Liquidity Provider (LP) Token",
       "noMatch": "No Match",
       "noMatchSuggestion": "Try to search contract address on {{ chainName }}",
       "hot": "Hot",
@@ -3640,6 +3679,7 @@
     },
     "LpTokenTag": {
       "title": "This is a liquidity provider(LP) token",
+      "descriptionFor": "This is a Liquidity Provider(LP) Token for {{ protocolName }}",
       "description": "LP tokens are issued by the DeFi protocols where you've deposited your assets. They serve as the proof of those assets, but their value isn't included in your total balance"
     }
   },

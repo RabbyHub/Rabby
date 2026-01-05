@@ -1098,7 +1098,8 @@
       "enterThePassphrase": "パスフレーズを入力してください",
       "CurrentDappAddress": {
         "desc": "Dappアドレスを切り替える"
-      }
+      },
+      "noSeedPhraseAddress": "このシードフレーズに対して追加されたアドレスはありません。アドレスを追加するか、シードフレーズを削除できます。"
     },
     "dashboard": {
       "home": {
@@ -1297,7 +1298,8 @@
           "toggleThemeMode": "テーマモード",
           "customTestnet": "カスタムネットワークを追加",
           "metamaskMode": "MetaMaskとして偽装してRabbyを接続",
-          "enableDappAccount": "Dapp アドレスを個別に切り替える\n"
+          "enableDappAccount": "Dapp アドレスを個別に切り替える\n",
+          "switchPasswordForNonWhitelistedTx": "ホワイトリストに登録されていない転送のパスワード"
         },
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",
@@ -1324,6 +1326,14 @@
           "thxTitle": "ありがとう！",
           "thxDesc": "Rabbyが気に入っていただけたら、Chromeストアでの簡単な評価はとてもありがたいです。",
           "feedbackPlaceholder": "Rabbyはあなたのフィードバックを大切にしています！"
+        },
+        "PwdForNonWhitelistedTx": {
+          "inputPlaceholder": "パスワードを入力して確認してください",
+          "wrongPassword": "パスワードが間違っています",
+          "titleEnable": "パスワードチェックを有効にしますか？",
+          "titleDisable": "パスワードを入力して無効にします",
+          "descDisable": "無効にすると、ホワイトリストに登録されていないアドレスに対してパスワード検証は必要なくなります。",
+          "descEnable": "有効化されると、この拡張機能でホワイトリストに登録されていないアドレスへの転送にはパスワードが必要です。"
         }
       },
       "tokenDetail": {
@@ -1408,13 +1418,14 @@
           "noMatch": "一致なし",
           "lowValueDescription": "低価値アセットがここに表示されます",
           "lowValueAssets": "{{count}}の低価値アセット",
-          "lowValueAssets_0": "{{count}} 個の low value token",
-          "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} 個の低価値トークン",
           "review": "レビュー",
           "noTokens": "トークンがありません",
           "searchToken": "トークンを検索",
-          "lowValueDefis": "{{count}} 低価値のデファイ"
+          "lowValueAssets_one": "{{count}} 低価値トークン",
+          "lowValueAssets_other": "{{count}} 低価値トークン",
+          "lowValueAssets_0": "{{count}} 低価値トークン",
+          "noLpTokens": "流動性提供者 (LP) トークンはありません",
+          "lowValueDefis": "{{count}} 低価値のDeFiアセット"
         },
         "noAssets": "アセットなし",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
@@ -1453,8 +1464,8 @@
         "customButtonText": "カスタムトークンを追加",
         "side": "サイド",
         "price": "価格",
-        "openInTab": "タブで開く",
-        "searchTokenPlaceholder": "トークンを検索"
+        "searchTokenPlaceholder": "トークンを検索",
+        "openInTab": "Rabbyタブで開く"
       },
       "hd": {
         "howToConnectLedger": "Ledgerとの接続方法",
@@ -1822,7 +1833,8 @@
         },
         "manageImtokenOffline": "imToken を管理",
         "manageImKey": "imKey を管理",
-        "importBtn": "インポート ({{count}})"
+        "importBtn": "インポート ({{count}})",
+        "nonAddr": "このシードフレーズにはアドレスが追加されていません。このフレーズは、Rabby Extension > アドレスの管理で削除できます。"
       },
       "importYourKeystore": "KeyStoreをインポート",
       "incorrectPassword": "パスワードが正しくありません",
@@ -2003,7 +2015,25 @@
       "safeModuleAddress": "セーフモジュールのアドレス",
       "coboSafeErrorModule": "アドレスが期限切れです。アドレスを削除して再インポートしてください。",
       "importedDelegatedAddress": "インポートされた委任アドレス",
-      "manage-addresses-under": "この{{brand}}の下でアドレスを管理する"
+      "manage-addresses-under": "この{{brand}}の下でアドレスを管理する",
+      "deleteSeedPhrase": {
+        "title2": "アドレスを削除しますか？",
+        "option2": "アドレスとシードフレーズを削除",
+        "sub-title": "このアクションは永久的です。資産を保護するために、以下をご確認ください：",
+        "option1": "アドレスを削除、シードフレーズを保持",
+        "check2": "私はプライベートキーまたはシードフレーズをバックアップしたことを確認し、それを削除する準備ができています。",
+        "title": "アドレスとシードフレーズを削除しますか？",
+        "check1": "このアドレスを削除すると、そのプライベートキーとシードフレーズも削除されることを理解しています。Rabbyはそれらを回復することはできません。",
+        "remainSeedPhrase": "あなたのシードフレーズはデバイスに残ります。",
+        "onlyDeleteAddr": "このアドレスのみが削除されます。シードフレーズには影響がなく、他のアドレスは引き続きそれを使用しています。",
+        "keepSeedPhrase": "これはこのシードフレーズにリンクされた唯一のアドレスです。シードフレーズを保存しますか？"
+      },
+      "deletePrivateKey": {
+        "sub-title": "このアクションは永久的です。資産を保護するために、以下を確認してください：",
+        "check2": "私はプライベートキーまたはシードフレーズをバックアップしたことを確認し、それを削除する準備ができました。",
+        "title": "アドレスと秘密鍵を削除しますか？",
+        "check1": "このアドレスを削除すると、そのプライベートキーも削除されることを理解しています。Rabbyはそれらを回復することはできません。"
+      }
     },
     "preferMetamaskDapps": {
       "title": "MetaMask優先Dapps",
@@ -2820,7 +2850,6 @@
     "search": {
       "sectionHeader": {
         "NFT": "NFT",
-        "Defi": "DeFi",
         "token": "トークン",
         "AllChains": "すべてのチェーン"
       },
@@ -2902,7 +2931,11 @@
       "exchangeAddress": "交換アドレス",
       "addSuccess": "追加成功",
       "address": "アドレス",
-      "title": "ホワイトリストにアドレスを追加する"
+      "title": "ホワイトリストにアドレスを追加する",
+      "verifyPwd": {
+        "title": "非ホワイトリストアドレス",
+        "inputPlaceholder": "この転送を確認するためにパスワードを入力してください。"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3139,7 +3172,10 @@
         "removeFromWhitelist": "ホワイトリストから削除",
         "addWhitelist": "ホワイトリストにアドレスを追加する",
         "addWhitelistDesc": "信頼できるアドレスをホワイトリストに追加して、迅速な送金を実現---次回は確認不要です。",
-        "notWhitelist": "ホワイトリストアドレスではありません"
+        "notWhitelist": "ホワイトリストアドレスではありません",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "ホワイトリストに登録されていない転送用のパスワード"
+        }
       },
       "addWhitelist": {
         "title": "ホワイトリストにアドレスを追加",
@@ -3238,9 +3274,7 @@
       "tabs": {
         "transactions": "取引",
         "tokens": "トークン",
-        "approvals": "承認",
-        "difi": "Defi",
-        "defi": "DeFi"
+        "approvals": "承認"
       },
       "nft": {
         "message": {
@@ -3550,7 +3584,8 @@
       "chainNotSupport": "このチェーンはサポートされていません",
       "chainFilterLine": {
         "filterAll": "すべてのチェーン"
-      }
+      },
+      "noLpTokens": "流動性提供者 (LP) トークンがありません"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3635,7 +3670,8 @@
     },
     "LpTokenTag": {
       "title": "これは流動性プロバイダー(LP)トークンです。",
-      "description": "LPトークンは、あなたが資産を預けたDeFiプロトコルによって発行されます。これらはその資産の証明として機能しますが、あなたの総残高にはその価値が含まれていません。"
+      "description": "LPトークンは、あなたが資産を預けたDeFiプロトコルによって発行されます。これらはその資産の証明として機能しますが、あなたの総残高にはその価値が含まれていません。",
+      "descriptionFor": "これは{{ protocolName }}の流動性プロバイダー（LP）トークンです"
     }
   },
   "global": {
