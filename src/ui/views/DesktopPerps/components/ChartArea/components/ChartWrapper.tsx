@@ -361,7 +361,13 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       });
       priceLineRefs.current.liquidation = liquidationLine;
     }
-  }, [lineTagInfo, colors]);
+  }, [
+    lineTagInfo.entryPrice,
+    lineTagInfo.tpPrice,
+    lineTagInfo.slPrice,
+    lineTagInfo.liquidationPrice,
+    colors,
+  ]);
 
   // Initialize chart
   useEffect(() => {
@@ -577,15 +583,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
         const candles = parseCandles(snapshot);
         const volumes = parseVolumes(snapshot);
-
-        // Debug: Log data counts
-        console.log(
-          'Candles count:',
-          candles.length,
-          'Volumes count:',
-          volumes.length
-        );
-        console.log('First 3 volumes:', volumes.slice(0, 3));
 
         if (candles.length > 0 && seriesRef.current) {
           seriesRef.current.setData(candles);
