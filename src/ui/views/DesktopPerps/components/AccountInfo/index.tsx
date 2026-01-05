@@ -4,8 +4,10 @@ import { formatPerpsPct } from '@/ui/views/Perps/utils';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const AccountInfo: React.FC = () => {
+  const { t } = useTranslation();
   const clearinghouseState = useRabbySelector(
     (store) => store.perps.clearinghouseState
   );
@@ -36,7 +38,7 @@ export const AccountInfo: React.FC = () => {
               'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
             )}
           >
-            Deposit
+            {t('page.perpsPro.accountInfo.deposit')}
           </button>
           <button
             type="button"
@@ -45,12 +47,14 @@ export const AccountInfo: React.FC = () => {
               'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
             )}
           >
-            Withdraw
+            {t('page.perpsPro.accountInfo.withdraw')}
           </button>
         </div>
         <div className="space-y-[8px] text-[12px] leading-[14px] font-medium">
           <div className="flex items-center justify-between">
-            <div className="text-r-neutral-title-1">Total Balance</div>
+            <div className="text-r-neutral-title-1">
+              {t('page.perpsPro.accountInfo.totalBalance')}
+            </div>
             <div className="text-r-neutral-title-1">
               {formatUsdValue(
                 Number(clearinghouseState?.marginSummary?.accountValue || 0),
@@ -59,7 +63,9 @@ export const AccountInfo: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-r-neutral-title-1">Available Balance</div>
+            <div className="text-r-neutral-title-1">
+              {t('page.perpsPro.accountInfo.availableBalance')}
+            </div>
             <div className="text-r-neutral-title-1">
               {formatUsdValue(
                 Number(clearinghouseState?.withdrawable || 0),
@@ -68,7 +74,9 @@ export const AccountInfo: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-rb-neutral-foot">Unrealized P&L</div>
+            <div className="text-rb-neutral-foot">
+              {t('page.perpsPro.accountInfo.unrealizedPnl')}
+            </div>
             <div
               className={clsx(
                 positionAllPnl >= 0
@@ -76,16 +84,20 @@ export const AccountInfo: React.FC = () => {
                   : 'text-rb-red-default'
               )}
             >
-              {positionAllPnl >= 0 ? '+' : '-'}$
+              {positionAllPnl >= 0 ? '+' : '-'}
               {formatUsdValue(Math.abs(positionAllPnl))}
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-rb-neutral-foot">Cross Margin Ratio</div>
+            <div className="text-rb-neutral-foot">
+              {t('page.perpsPro.accountInfo.crossMarginRatio')}
+            </div>
             <div className="text-r-neutral-title-1">{crossMarginRatio}</div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-rb-neutral-foot">Maintenance margin</div>
+            <div className="text-rb-neutral-foot">
+              {t('page.perpsPro.accountInfo.maintenanceMargin')}
+            </div>
             <div className="text-r-neutral-title-1">
               {formatUsdValue(
                 Number(
@@ -95,7 +107,9 @@ export const AccountInfo: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-rb-neutral-foot">Cross account leverage</div>
+            <div className="text-rb-neutral-foot">
+              {t('page.perpsPro.accountInfo.crossAccountLeverage')}
+            </div>
             <div className="text-r-neutral-title-1">
               {(
                 Number(clearinghouseState?.marginSummary?.totalNtlPos || 0) /

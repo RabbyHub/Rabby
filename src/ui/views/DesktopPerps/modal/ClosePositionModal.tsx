@@ -118,10 +118,11 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
 
   const { loading, runAsync: runSubmit } = useRequest(
     async () => {
+      const isBuy = position.direction === 'Short';
       if (type === 'limit') {
         await handleOpenLimitOrder({
           coin: position.coin,
-          isBuy: new BigNumber(position.size || 0).isLessThan(0) ? true : false,
+          isBuy,
           size: new BigNumber(positionSize.amount).toFixed(
             marketData.szDecimals
           ),
@@ -131,7 +132,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
       } else if (type === 'market') {
         await handleCloseWithMarketOrder({
           coin: position.coin,
-          isBuy: new BigNumber(position.size || 0).isLessThan(0) ? true : false,
+          isBuy,
           size: new BigNumber(positionSize.amount).toFixed(
             marketData.szDecimals
           ),
@@ -141,7 +142,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
       } else if (type === 'reverse') {
         await handleCloseWithMarketOrder({
           coin: position.coin,
-          isBuy: new BigNumber(position.size || 0).isLessThan(0) ? true : false,
+          isBuy,
           size: new BigNumber(position.size || 0)
             .times(2)
             .toFixed(marketData.szDecimals),

@@ -1,5 +1,5 @@
 import React from 'react';
-import { message, Select } from 'antd';
+import { Dropdown, Menu, message, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { MarginMode, OrderType } from '../../../types';
 import { useRabbySelector } from '@/ui/store';
@@ -8,6 +8,8 @@ import { LeverageModal } from './LeverageModal';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useMemoizedFn } from 'ahooks';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
+import clsx from 'clsx';
+import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 
 interface TopModeStatusProps {
   orderType: OrderType;
@@ -89,33 +91,35 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
         >
           {leverage}x
         </div>
-
-        <Select
-          value={orderType}
-          onChange={onOrderTypeChange}
-          className="text-[13px] flex-1 h-[32px]"
-          listItemHeight={32}
-          optionLabelProp="label"
-        >
-          {ORDER_TYPE_OPTIONS.map((option) => (
-            <Select.Option
-              key={option.value}
-              value={option.value}
-              label={
-                <div className="flex items-center justify-between text-[12px]">
-                  <span className="text-rb-neutral-foot font-medium">
-                    {t('page.perpsPro.tradingPanel.type')}{' '}
-                  </span>
-                  <span className="text-rb-neutral-title-1 font-medium">
-                    {option.label}
-                  </span>
-                </div>
-              }
+        <Dropdown
+          overlay={
+            <Menu
+              onClick={(info) => {
+                onOrderTypeChange(info.key as OrderType);
+              }}
             >
-              {option.label}
-            </Select.Option>
-          ))}
-        </Select>
+              {ORDER_TYPE_OPTIONS.map((option) => (
+                <Menu.Item key={option.value}>{option.label}</Menu.Item>
+              ))}
+            </Menu>
+          }
+        >
+          <button
+            type="button"
+            className={clsx(
+              'inline-flex items-center justify-between',
+              'px-[8px] py-[8px] flex-1',
+              'border border-rb-neutral-line rounded-[6px]',
+              'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+            )}
+          >
+            {t('page.perpsPro.tradingPanel.type')}{' '}
+            <span className="text-rb-neutral-title-1 font-medium flex items-center gap-[4px]">
+              {orderType}
+              <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+            </span>
+          </button>
+        </Dropdown>
       </div>
       {/* Margin Mode Modal */}
       <MarginModeModal

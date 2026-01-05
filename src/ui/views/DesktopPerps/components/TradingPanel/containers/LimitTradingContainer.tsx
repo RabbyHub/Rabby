@@ -12,7 +12,7 @@ import { TPSLSettings } from '../components/TPSLSettings';
 import { OrderSummary } from '../components/OrderSummary';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { useRequest } from 'ahooks';
-import { Button, Select } from 'antd';
+import { Button, Dropdown, Menu, Select, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSlider';
@@ -21,6 +21,7 @@ import { validatePriceInput } from '@/ui/views/Perps/utils';
 import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 
 export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -297,12 +298,40 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
           </label>
         </div>
         <div className="flex items-center gap-4">
-          <Select
-            options={limitOrderTypeOptions}
-            value={limitOrderType}
-            onChange={(value) => setLimitOrderType(value)}
-            listItemHeight={28}
-          />
+          <Dropdown
+            overlay={
+              <Menu
+                onClick={(info) =>
+                  setLimitOrderType(info.key as LimitOrderType)
+                }
+              >
+                {limitOrderTypeOptions.map((option) => (
+                  <Menu.Item key={option.value}>
+                    <Tooltip key={option.value} title={option.title}>
+                      {option.label}
+                    </Tooltip>
+                  </Menu.Item>
+                ))}
+              </Menu>
+            }
+          >
+            <button
+              type="button"
+              className={clsx(
+                'inline-flex items-center justify-between',
+                'px-[8px] py-[8px] flex-1 w-[80px] h-28',
+                'border border-rb-neutral-line rounded-[6px]',
+                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+              )}
+            >
+              {
+                limitOrderTypeOptions.find(
+                  (option) => option.value === limitOrderType
+                )?.label
+              }
+              <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+            </button>
+          </Dropdown>
         </div>
       </div>
 

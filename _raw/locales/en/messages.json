@@ -1167,6 +1167,15 @@
         "maxError": "Maximum leverage is {{max}}x",
         "confirm": "Confirm"
       },
+      "accountInfo": {
+        "deposit": "Deposit",
+        "withdraw": "Withdraw",
+        "totalBalance": "Total Balance",
+        "availableBalance": "Available Balance",
+        "unrealizedPnl": "Unrealized P&L",
+        "crossMarginRatio": "Cross Margin Ratio",
+        "maintenanceMargin": "Maintenance margin"
+      },
       "accountActions": {
         "available": "Available:",
         "positionCount": "{{count}} positions",

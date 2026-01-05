@@ -745,8 +745,10 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                   )}
                 >
                   {chartHoverData.isPositiveChange ? '+' : '-'}
-                  {splitNumberByStep(Math.abs(chartHoverData.delta || 0))} (
-                  {formatPercent(Math.abs(chartHoverData.deltaPercent || 0))})
+                  {splitNumberByStep(
+                    Math.abs(chartHoverData.delta || 0).toFixed(pxDecimals)
+                  )}{' '}
+                  ({formatPercent(Math.abs(chartHoverData.deltaPercent || 0))})
                 </span>
               </div>
             </>

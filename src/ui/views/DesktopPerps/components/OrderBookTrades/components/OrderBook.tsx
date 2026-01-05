@@ -4,13 +4,14 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { splitNumberByStep } from '@/ui/utils';
-import { Select } from 'antd';
+import { Dropdown, Menu, Select } from 'antd';
 import { ReactComponent as RcIconBuySell } from '@/ui/assets/perps/icon-buy-sell.svg';
 import { ReactComponent as RcIconBuy } from '@/ui/assets/perps/icon-buy.svg';
 import { ReactComponent as RcIconSell } from '@/ui/assets/perps/icon-sell.svg';
 import { Trade } from '../index';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
 
@@ -305,26 +306,49 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
         </div>
 
         <div className="flex items-center gap-12">
-          <Select
-            value={quoteUnit}
-            onChange={setQuoteUnit}
-            className="w-[60px] text-[12px] text-r-neutral-foot"
-            size="small"
-            options={[
-              { value: 'base', label: selectedCoin },
-              { value: 'usd', label: 'USD' },
-            ]}
-          />
-          <Select
-            value={aggregationIndex}
-            onChange={setAggregationIndex}
-            className="w-[80px] text-[12px] text-r-neutral-foot"
-            size="small"
-            options={aggregationLevels.map((level, index) => ({
-              value: index,
-              label: level.label,
-            }))}
-          />
+          <Dropdown
+            overlay={
+              <Menu onClick={(info) => setQuoteUnit(info.key as QuoteUnit)}>
+                <Menu.Item key="base">{selectedCoin}</Menu.Item>
+                <Menu.Item key="usd">USD</Menu.Item>
+              </Menu>
+            }
+          >
+            <button
+              type="button"
+              className={clsx(
+                'inline-flex items-center justify-between',
+                'px-[8px] py-[8px] flex-1 w-[60px] h-24',
+                'border border-rb-neutral-line rounded-[6px]',
+                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+              )}
+            >
+              {selectedCoin}
+              <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+            </button>
+          </Dropdown>
+          <Dropdown
+            overlay={
+              <Menu onClick={(info) => setAggregationIndex(info.key as number)}>
+                {aggregationLevels.map((level, index) => (
+                  <Menu.Item key={index}>{level.label}</Menu.Item>
+                ))}
+              </Menu>
+            }
+          >
+            <button
+              type="button"
+              className={clsx(
+                'inline-flex items-center justify-between',
+                'px-[8px] py-[8px] flex-1 w-[80px] h-24',
+                'border border-rb-neutral-line rounded-[6px]',
+                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+              )}
+            >
+              {aggregationLevels[aggregationIndex].label}
+              <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+            </button>
+          </Dropdown>
         </div>
       </div>
 
