@@ -1,5 +1,5 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
-import { Empty, PageHeader } from '@/ui/component';
+import { PageHeader } from '@/ui/component';
 import { useRabbyDispatch } from '@/ui/store';
 import React, { useCallback, useState } from 'react';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
@@ -23,6 +23,7 @@ import { LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
 import { useTranslation } from 'react-i18next';
 import { query2obj } from '@/ui/utils/url';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { ReactComponent as RcIconEmpty } from '@/ui/assets/empty-cc.svg';
 
 const ManageAddress = () => {
   const { t } = useTranslation();
@@ -329,14 +330,17 @@ const ManageAddress = () => {
 
           {TypedWalletObj?.[activeIndex]?.type === KEYRING_TYPE['HdKeyring'] &&
           !TypedWalletObj?.[activeIndex]?.list.length ? (
-            <div className="flex-1 flex flex-col items-center justify-center gap-[30px] min-h-[300px]">
-              <Empty
-                desc={
-                  <div className="text-r-neutral-body text-14 max-w-[352px] mt-12">
-                    {t('page.manageAddress.noSeedPhraseAddress')}
-                  </div>
-                }
-              />
+            <div className="flex-1 flex flex-col items-center justify-center gap-[24px] min-h-[300px]">
+              <div className="flex flex-col justify-center items-center gap-[12px]">
+                <RcIconEmpty
+                  viewBox="0 0 40 40"
+                  className="w-[28px] h-[28px] text-r-neutral-body"
+                />
+                <div className="text-r-neutral-body text-[13px] max-w-[352px] text-center">
+                  {t('page.manageAddress.noSeedPhraseAddress')}
+                </div>
+              </div>
+
               <div>
                 <Button
                   type="primary"
