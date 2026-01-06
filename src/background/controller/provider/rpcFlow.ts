@@ -121,6 +121,7 @@ const flowContext = flow
       request: {
         session: { origin, name, icon },
         data,
+        isFromDesktopDapp,
       },
       mapMethod,
     } = ctx;
@@ -141,7 +142,11 @@ const flowContext = flow
         try {
           const isUnlock = keyringService.memStore.getState().isUnlocked;
 
-          if (defaultAccount && shouldAutoConnect(origin, data?.method)) {
+          if (
+            isFromDesktopDapp &&
+            defaultAccount &&
+            shouldAutoConnect(origin, data?.method)
+          ) {
             try {
               const recommendChains = await openapiService.getRecommendChains(
                 defaultAccount.address,
@@ -209,6 +214,7 @@ const flowContext = flow
       request: {
         data: { params, method },
         session: { origin, name, icon },
+        isFromDesktopDapp,
       },
       mapMethod,
     } = ctx;
@@ -264,6 +270,7 @@ const flowContext = flow
       }
 
       if (
+        isFromDesktopDapp &&
         !shouldAutoPersonalSign({
           origin,
           method: ctx.request.data.method,

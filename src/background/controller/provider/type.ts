@@ -18,4 +18,5 @@ export type ProviderRequest<
   account?: Account;
   origin?: string;
   requestedApproval?: boolean;
+  isFromDesktopDapp?: boolean;
 };
