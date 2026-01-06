@@ -52,7 +52,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   const currentAccount = useCurrentAccount();
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const shouldScrollRef = useRef(true);
-  const [isAbsolute, setIsAbsolute] = useState(true);
+  const [isAbsolute, setIsAbsolute] = useState(autoCollapse);
 
   const {
     sortedAccountsList,
@@ -117,7 +117,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
 
   const ref = useRef<HTMLDivElement>(null);
   const handleResize = useMemoizedFn(() => {
-    if (!ref.current) {
+    if (!ref.current || !autoCollapse) {
       return;
     }
     const left = ref.current.getBoundingClientRect().left;

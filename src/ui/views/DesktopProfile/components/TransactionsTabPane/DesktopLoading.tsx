@@ -19,7 +19,7 @@ export const DesktopLoading = ({
             className="flex h-[100px] items-center border-b-[0.5px] px-16 border-rabby-neutral-line"
           >
             {/* Column 1 - Time and Hash */}
-            <div className="w-[180px] flex-shrink-0">
+            <div className="min-w-[180px] flex-shrink-0 flex-grow ">
               <Skeleton.Button
                 active={active}
                 className="h-[13px] mb-[6px] block"
@@ -41,7 +41,7 @@ export const DesktopLoading = ({
             </div>
 
             {/* Column 2 - Transaction Details */}
-            <div className="flex-1 min-w-0 mx-4">
+            <div className="flex-[2] min-w-0 mx-4">
               <Skeleton.Button
                 active={active}
                 className="h-[14px] mb-[6px] block"
@@ -55,7 +55,7 @@ export const DesktopLoading = ({
             </div>
 
             {/* Column 3 - Token Changes */}
-            <div className="flex-1 mx-4">
+            <div className="flex-[2] min-w-0 mx-4">
               <div className="flex items-center gap-[6px] mb-[6px]">
                 <Skeleton.Avatar
                   active={active}

@@ -38,10 +38,10 @@ export const TokenTable: React.FC<Props> = ({
             <THeadCell className="w-[352px]">
               {t('page.desktopProfile.portfolio.table.token')}
             </THeadCell>
-            <THeadCell className="flex-1 max-w-[280px]">
+            <THeadCell className="flex-1 w-[280px]">
               {t('page.desktopProfile.portfolio.table.price')}
             </THeadCell>
-            <THeadCell className="flex-1 max-w-[280px]">
+            <THeadCell className="flex-1 w-[280px]">
               {t('page.desktopProfile.portfolio.table.amount')}
             </THeadCell>
             <THeadCell className="w-[118px] text-right">
