@@ -1599,7 +1599,8 @@
           "dapps": "Dapps",
           "settings": "Settings",
           "perpsPositions_one": "{{count}} Position",
-          "perpsPositions_other": "{{count}} Positions"
+          "perpsPositions_other": "{{count}} Positions",
+          "prediction": "Prediction"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -3670,7 +3671,8 @@
       "portfolio": "Portfolio",
       "perps": "Perps",
       "lending": "Lending",
-      "comingSoon": "Coming Soon"
+      "comingSoon": "Coming Soon",
+      "prediction": "Prediction"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Add address"

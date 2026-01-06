@@ -4,9 +4,10 @@ import {
   notificationService,
   permissionService,
   preferenceService,
+  openapiService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
-import { EVENTS } from 'consts';
+import { CHAINS_ENUM, EVENTS, KEYRING_CLASS } from 'consts';
 import providerController from './controller';
 import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
@@ -17,10 +18,11 @@ import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import { gnosisController } from './gnosisController';
-import { Account } from '@/background/service/preference';
 import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
 import { hexToNumber } from 'viem';
 import BigNumber from 'bignumber.js';
+import { Chain } from '@debank/common';
+import { shouldAutoConnect, shouldAutoPersonalSign } from './autoConnect';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -119,6 +121,7 @@ const flowContext = flow
       request: {
         session: { origin, name, icon },
         data,
+        isFromDesktopDapp,
       },
       mapMethod,
     } = ctx;
@@ -131,24 +134,57 @@ const flowContext = flow
         }
         ctx.request.requestedApproval = true;
         connectOrigins.add(origin);
+
+        let defaultAccount: any =
+          ctx.request.account || preferenceService.getCurrentAccount();
+
+        let defaultChain = CHAINS_ENUM.ETH;
         try {
           const isUnlock = keyringService.memStore.getState().isUnlocked;
-          const {
-            defaultChain,
-            defaultAccount,
-          } = await notificationService.requestApproval(
-            {
-              params: { origin, name, icon, $ctx: data.$ctx },
-              account: ctx.request.account,
-              approvalComponent: 'Connect',
-            },
-            { height: isUnlock ? 800 : 628 }
-          );
+
+          if (
+            isFromDesktopDapp &&
+            defaultAccount &&
+            shouldAutoConnect(origin, data?.method)
+          ) {
+            try {
+              const recommendChains = await openapiService.getRecommendChains(
+                defaultAccount.address,
+                origin
+              );
+              let targetChain: Chain | null | undefined;
+              for (let i = 0; i < recommendChains.length; i++) {
+                targetChain = findChain({
+                  serverId: recommendChains[i].id,
+                });
+                if (targetChain) break;
+              }
+              defaultChain = targetChain ? targetChain.enum : CHAINS_ENUM.ETH;
+            } catch (error) {
+              console.log('shouldAutoConnect error', error);
+            }
+          } else {
+            const {
+              defaultChain: _defaultChain,
+              defaultAccount: _defaultAccount,
+            } = await notificationService.requestApproval(
+              {
+                params: { origin, name, icon, $ctx: data.$ctx },
+                account: ctx.request.account,
+                approvalComponent: 'Connect',
+              },
+              { height: isUnlock ? 800 : 628 }
+            );
+            defaultChain = _defaultChain;
+            defaultAccount = _defaultAccount;
+          }
+
           const isEnabledDappAccount = preferenceService.getPreference(
             'isEnabledDappAccount'
           );
+
           if (!isEnabledDappAccount) {
-            preferenceService.setCurrentAccount(defaultAccount);
+            preferenceService.setCurrentAccount(defaultAccount!);
           }
           connectOrigins.delete(origin);
           permissionService.addConnectedSiteV2({
@@ -178,11 +214,14 @@ const flowContext = flow
       request: {
         data: { params, method },
         session: { origin, name, icon },
+        isFromDesktopDapp,
       },
       mapMethod,
     } = ctx;
+
     const [approvalType, condition, options = {}] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
+
     let windowHeight = 800;
     if ('height' in options) {
       windowHeight = options.height;
@@ -229,20 +268,32 @@ const flowContext = flow
           }
         }
       }
-      ctx.approvalRes = await notificationService.requestApproval(
-        {
-          approvalComponent: approvalType,
-          params: {
-            $ctx: ctx?.request?.data?.$ctx,
-            method,
-            data: ctx.request.data.params,
-            session: { origin, name, icon },
-          },
-          account: ctx.request.account,
+
+      if (
+        isFromDesktopDapp &&
+        !shouldAutoPersonalSign({
           origin,
-        },
-        { height: windowHeight }
-      );
+          method: ctx.request.data.method,
+          account: ctx.request.account,
+          msgParams: ctx.request.data.params,
+        })
+      ) {
+        ctx.approvalRes = await notificationService.requestApproval(
+          {
+            approvalComponent: approvalType,
+            params: {
+              $ctx: ctx?.request?.data?.$ctx,
+              method,
+              data: ctx.request.data.params,
+              session: { origin, name, icon },
+            },
+            account: ctx.request.account,
+            origin,
+          },
+          { height: windowHeight }
+        );
+      }
+
       if (isSignApproval(approvalType)) {
         permissionService.updateConnectSite(origin, { isSigned: true }, true);
       } else {
@@ -262,12 +313,24 @@ const flowContext = flow
       session: { origin },
     } = request;
 
+    const isAutoPersonalSign = shouldAutoPersonalSign({
+      origin,
+      method: ctx.request.data.method,
+      account: ctx.request.account,
+      msgParams: ctx.request.data.params,
+    });
+
     const createRequestDeferFn = (
       originApprovalRes: typeof approvalRes
     ) => async (isRetry = false) =>
       new Promise((resolve, reject) => {
         let waitSignComponentPromise = Promise.resolve();
-        if (isSignApproval(approvalType) && uiRequestComponent) {
+
+        if (
+          !isAutoPersonalSign &&
+          isSignApproval(approvalType) &&
+          uiRequestComponent
+        ) {
           waitSignComponentPromise = waitSignComponentAmounted();
         }
 
@@ -405,7 +468,7 @@ const flowContext = flow
       }
     }
 
-    if (uiRequestComponent) {
+    if (!isAutoPersonalSign && uiRequestComponent) {
       ctx.request.requestedApproval = true;
       const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
       reportStatsData();

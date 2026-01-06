@@ -64,7 +64,7 @@ export const DesktopHistoryItem = ({
       )}
 
       {/* Column 1 - Time */}
-      <div className="w-[225px] flex-shrink-0">
+      <div className="min-w-[225px] flex-shrink-0 flex-grow">
         <div className="flex items-center gap-1">
           <span className="text-[14px] leading-[17px]  text-rb-neutral-secondary">
             {sinceTime(data.time_at)}
@@ -86,7 +86,7 @@ export const DesktopHistoryItem = ({
       </div>
 
       {/* Column 2 - Transaction Type/Details */}
-      <div className="flex-1 min-w-0 mx-4">
+      <div className="flex-[2] min-w-0 mx-4">
         <DesktopTxExplain
           data={data}
           projectDict={projectDict}
@@ -96,7 +96,7 @@ export const DesktopHistoryItem = ({
       </div>
 
       {/* Column 3 - Token Changes */}
-      <div className="flex-1 mx-4">
+      <div className="flex-[2] mx-4 min-w-0">
         <DesktopTokenChange data={data} tokenDict={tokenDict} />
       </div>
 

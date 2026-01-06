@@ -2,8 +2,6 @@
 
 @radius-value: 10px;
 
-@main-w: 1160px;
-
 @page-pt-without-switchnet-tabs: 40px;
 
 /* pt + h + pb*/
@@ -50,12 +48,8 @@
 }
 
 .desktop-approvals-manager {
-  // overflow: hidden;
-  height: 100%;
-  min-width: @main-w;
-  width: @main-w;
-  max-width: 1280px;
-  // width: 100%;
+  width: 0;
+  flex: 1;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -63,9 +57,6 @@
   justify-content: center;
 
   &.approvals-manager-desktop {
-    min-width: auto;
-    width: auto;
-    max-width: 1120px;
     padding: 0 20px;
     padding-top: 18px;
 
@@ -123,7 +114,6 @@
     display: block;
     width: 100%;
     text-align: center;
-    width: @main-w;
     margin: 0 auto;
     font-size: 20px;
     font-weight: 500;
@@ -147,7 +137,6 @@
   }
 
   .approvals-manager__table-tools {
-    width: @main-w;
     margin: 0 auto;
     height: @tools-h;
     display: flex;
@@ -199,7 +188,6 @@
   }
 
   .am-virtual-table {
-    max-width: @main-w;
     margin: 0 auto;
 
     .ant-spin-nested-loading {
