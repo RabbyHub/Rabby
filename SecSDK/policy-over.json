@@ -1,0 +1,474 @@
+{
+  "node_modules/react-dom/cjs/react-dom.development.js": {
+    "global": {
+      "allow": {
+        "HTMLIFrameElement": "r",
+        "nodeName": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/react-router/esm/react-router.js": {
+    "global": {
+      "allow": {
+        "__react_router_build__": "rw"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/safe-buffer/index.js": {
+    "global": {
+      "allow": {
+        "crypto": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/util-deprecate/browser.js": {
+    "global": {
+      "allow": {
+        "localStorage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/js-sha3/src/sha3.js": {
+    "global": {
+      "allow": {
+        "JS_SHA3_NO_WINDOW": "r",
+        "JS_SHA3_NO_NODE_JS": "r",
+        "JS_SHA3_NO_COMMON_JS": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/dexs/uniswap.js": {
+    "global": {
+      "allow": {
+        "navigator": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@sentry/utils/esm/misc.js": {
+    "global": {
+      "allow": {
+        "performance": "r",
+        "__SENTRY__": "rw",
+        "SENTRY_RELEASE": "r",
+        "fetch": "rw",
+        "setTimeout": "rw",
+        "setInterval": "rw",
+        "requestAnimationFrame": "rw",
+        "EventTarget": "r",
+        "Window": "r",
+        "Node": "r",
+        "ApplicationCache": "r",
+        "AudioTrackList": "r",
+        "ChannelMergerNode": "r",
+        "CryptoOperation": "r",
+        "EventSource": "r",
+        "FileReader": "r",
+        "HTMLUnknownElement": "r",
+        "IDBDatabase": "r",
+        "IDBRequest": "r",
+        "IDBTransaction": "r",
+        "KeyOperation": "r",
+        "MediaController": "r",
+        "MessagePort": "r",
+        "ModalWindow": "r",
+        "Notification": "r",
+        "SVGElementInstance": "r",
+        "Screen": "r",
+        "TextTrack": "r",
+        "TextTrackCue": "r",
+        "TextTrackList": "r",
+        "WebSocket": "r",
+        "WebSocketWorker": "r",
+        "Worker": "r",
+        "XMLHttpRequest": "r",
+        "XMLHttpRequestEventTarget": "r",
+        "XMLHttpRequestUpload": "r",
+        "console": "r",
+        "chrome": "r",
+        "history": "r",
+        "onpopstate": "rw",
+        "onerror": "rw",
+        "onunhandledrejection": "rw",
+        "navigator": "r",
+        "crypto": "r",
+        "location": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/koa-compose/index.js": {
+    "global": {
+      "allow": {
+        "__rb_is": "rw"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/lodash/lodash.js": {
+    "global": {
+      "allow": {
+        "process": "r",
+        "__core-js_shared__": "r",
+        "_": "rw",
+        "Buffer": "r",
+        "clearTimeout": "r",
+        "setTimeout": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/lodash/_freeGlobal.js": {
+    "global": {
+      "allow": {
+        "__core-js_shared__": "r",
+        "Buffer": "r",
+        "process": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/resize-observer-polyfill/dist/ResizeObserver.es.js": {
+    "global": {
+      "allow": {
+        "ResizeObserver": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_writable.js": {
+    "global": {
+      "allow": {
+        "localStorage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/node-fetch/browser.js": {
+    "global": {
+      "allow": {
+        "fetch": "r",
+        "Headers": "r",
+        "Request": "r",
+        "Response": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/pbkdf2/lib/to-buffer.js": {
+    "global": {
+      "allow": {
+        "crypto": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_writable.js": {
+    "global": {
+      "allow": {
+        "localStorage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/randomfill/browser.js": {
+    "global": {
+      "allow": {
+        "crypto": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/through2/node_modules/readable-stream/lib/_stream_writable.js": {
+    "global": {
+      "allow": {
+        "localStorage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@ledgerhq/evm-tools/node_modules/axios/lib/utils.js": {
+    "global": {
+      "allow": {
+        "postMessage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@ledgerhq/hw-app-eth/node_modules/axios/lib/utils.js": {
+    "global": {
+      "allow": {
+        "postMessage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@ledgerhq/domain-service/node_modules/axios/lib/utils.js": {
+    "global": {
+      "allow": {
+        "postMessage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@rabby-wallet/wc-socket-transport/dist/esm/network.js": {
+    "global": {
+      "allow": {
+        "WebSocket": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/pino/browser.js": {
+    "global": {
+      "allow": {
+        "console": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/lodash.isequal/index.js": {
+    "global": {
+      "allow": {
+        "process": "r",
+        "__core-js_shared__": "r",
+        "Buffer": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/gridplus-sdk/node_modules/js-sha3/src/sha3.js": {
+    "global": {
+      "allow": {
+        "JS_SHA3_NO_COMMON_JS": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER": "r",
+        "JS_SHA3_NO_NODE_JS": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r",
+        "JS_SHA3_NO_WINDOW": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/gridplus-sdk/node_modules/@ethersproject/keccak256/node_modules/js-sha3/src/sha3.js": {
+    "global": {
+      "allow": {
+        "JS_SHA3_NO_COMMON_JS": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER": "r",
+        "JS_SHA3_NO_NODE_JS": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r",
+        "JS_SHA3_NO_WINDOW": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@opensea/seaport-js/node_modules/ethers/lib.commonjs/crypto/crypto-browser.js": {
+    "global": {
+      "allow": {
+        "crypto": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/gridplus-sdk/node_modules/ethers/lib.commonjs/crypto/crypto-browser.js": {
+    "global": {
+      "allow": {
+        "crypto": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/gridplus-sdk/node_modules/ethers/lib.commonjs/providers/ws-browser.js": {
+    "global": {
+      "allow": {
+        "WebSocket": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@opensea/seaport-js/node_modules/ethers/lib.commonjs/providers/ws-browser.js": {
+    "global": {
+      "allow": {
+        "WebSocket": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_writable.js": {
+    "global": {
+      "allow": {
+        "localStorage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@ethersproject/wallet/node_modules/@ethersproject/random/lib.esm/random.js": {
+    "global": {
+      "allow": {
+        "crypto": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/ethers/node_modules/@ethersproject/random/lib.esm/random.js": {
+    "global": {
+      "allow": {
+        "crypto": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/js-md5/src/md5.js": {
+    "global": {
+      "allow": {
+        "JS_MD5_NO_COMMON_JS": "r",
+        "JS_MD5_NO_ARRAY_BUFFER": "r",
+        "JS_MD5_NO_NODE_JS": "r",
+        "JS_MD5_NO_ARRAY_BUFFER_IS_VIEW": "r",
+        "JS_MD5_NO_WINDOW": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/randombytes/browser.js": {
+    "global": {
+      "allow": {
+        "crypto": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@imkey/web3-provider/dist/imkey-web3-provider.umd.js": {
+    "global": {
+      "allow": {
+        "performance": "r",
+        "JS_SHA3_NO_WINDOW": "r",
+        "JS_SHA3_NO_NODE_JS": "r",
+        "JS_SHA3_NO_COMMON_JS": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r",
+        "document": "r",
+        "TYPED_ARRAY_SUPPORT": "r",
+        "__importDefault": "r",
+        "localStorage": "r",
+        "__awaiter": "r",
+        "__generator": "r",
+        "__createBinding": "r",
+        "__exportStar": "r",
+        "__setModuleDefault": "r",
+        "__importStar": "r",
+        "__read": "r",
+        "fetch": "r",
+        "ReadableStream": "r",
+        "location": "r",
+        "VBArray": "r",
+        "__extends": "r",
+        "__assign": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@onekeyfe/hd-transport/node_modules/protobufjs/src/util/minimal.js": {
+    "global": {
+      "allow": {
+        "dcodeIO": "r",
+        "Long": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/protobufjs/src/util/minimal.js": {
+    "global": {
+      "allow": {
+        "dcodeIO": "r",
+        "Long": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@onekeyfe/hd-transport/node_modules/protobufjs/src/util/longbits.js": {
+    "global": {
+      "allow": {
+        "process": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/protobufjs/src/util/longbits.js": {
+    "global": {
+      "allow": {
+        "process": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/jszip/dist/jszip.min.js": {
+    "global": {
+      "allow": {
+        "document": "r",
+        "postMessage": "r",
+        "importScripts": "r",
+        "onmessage": "rw",
+        "addEventListener": "r",
+        "setImmediate": "rw",
+        "clearImmediate": "rw"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@onekeyfe/hd-web-sdk/build/onekey-js-sdk.js": {
+    "global": {
+      "allow": {
+        "__core-js_shared__": "r",
+        "_": "rw",
+        "dcodeIO": "r",
+        "Long": "r",
+        "$$onekeyAppStorage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/react-dom/cjs/react-dom.production.min.js": {
+    "global": {
+      "allow": {
+        "HTMLIFrameElement": "r",
+        "nodeName": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/dexs/rabby.js": {
+    "global": {
+      "allow": {
+        "navigator": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@metamask/post-message-stream/dist/window/WindowPostMessageStream.js": {
+    "enable": false
+  },
+  "node_modules/ahooks/es/useEventListener/index.js": {
+    "global": {
+      "allow": {
+        "addEventListener": "r",
+        "removeEventListener": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/react-virtuoso/dist/index.mjs": {
+    "global": {
+      "allow": {
+        "VIRTUOSO_LOG_LEVEL": "r"
+      },
+      "disallow": []
+    }
+  }
+}
