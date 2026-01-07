@@ -87,7 +87,7 @@ export const TokenItemAsset: React.FC<Props> = ({
 
   return (
     <TCell
-      className="py-8 flex gap-10 items-center overflow-hidden"
+      className="py-8 flex gap-10 items-center overflow-hidden flex-1"
       style={{
         width: MAINNET_WIDTH_MAP['token'],
       }}
