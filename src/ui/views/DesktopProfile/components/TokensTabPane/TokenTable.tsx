@@ -35,7 +35,7 @@ export const TokenTable: React.FC<Props> = ({
             className="w-full justify-between bg-rb-neutral-bg-1 rounded-[6px] py-8"
             rowClassName="px-8"
           >
-            <THeadCell className="w-[352px]">
+            <THeadCell className="w-[352px] flex-1">
               {t('page.desktopProfile.portfolio.table.token')}
             </THeadCell>
             <THeadCell className="flex-1 w-[280px]">
