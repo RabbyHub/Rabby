@@ -69,7 +69,7 @@ export const showSuccessToast = ({ title, description }: ShowToastOptions) => {
   message.success({
     key,
     duration: 2,
-    className: 'perps-toast-wrapper',
+    className: 'perps-toast-wrapper toast-right-bottom-wrapper',
     content: (
       <PerpsToastContent
         type="success"
@@ -90,7 +90,7 @@ export const showErrorToast = ({ title, description }: ShowToastOptions) => {
   message.error({
     key,
     duration: 0,
-    className: 'perps-toast-wrapper',
+    className: 'perps-toast-wrapper toast-right-bottom-wrapper',
     content: (
       <PerpsToastContent
         type="error"
@@ -111,7 +111,7 @@ export const showInfoToast = ({ title, description }: ShowToastOptions) => {
   message.info({
     key,
     duration: 2,
-    className: 'perps-toast-wrapper',
+    className: 'perps-toast-wrapper toast-right-bottom-wrapper',
     content: (
       <PerpsToastContent
         type="info"

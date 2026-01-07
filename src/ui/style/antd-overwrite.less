@@ -80,6 +80,17 @@
     top: 50%;
     transform: translateY(-50%);
   }
+
+  &:has(.toast-right-bottom-wrapper) {
+    top: unset;
+    right: 24px;
+    bottom: 24px;
+    left: unset;
+
+    .ant-message-notice {
+      text-align: right;
+    }
+  }
 }
 .ant-message-notice-content {
   padding: 8px 12px;
