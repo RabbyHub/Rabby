@@ -147,4 +147,18 @@ const setupDappIframeSyncRoute = () => {
   window.addEventListener('message', handleHandshake);
 };
 
-setupDappIframeSyncRoute();
+const domReadyCall = (callback) => {
+  if (document.readyState === 'loading') {
+    const domContentLoadedHandler = () => {
+      callback();
+      document.removeEventListener('DOMContentLoaded', domContentLoadedHandler);
+    };
+    document.addEventListener('DOMContentLoaded', domContentLoadedHandler);
+  } else {
+    callback();
+  }
+};
+
+domReadyCall(() => {
+  setupDappIframeSyncRoute();
+});
