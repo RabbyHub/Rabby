@@ -5,6 +5,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
 import { PERPS_AGENT_NAME } from '../../Perps/constants';
 import { usePerpsProState } from './usePerpsProState';
+import { preloadSound } from '@/ui/utils/sound';
 
 export const usePerpsProInit = () => {
   usePerpsDefaultAccount({
@@ -20,6 +21,10 @@ export const usePerpsProInit = () => {
   const isInitialized = useRabbySelector((state) => state.perps.isInitialized);
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
+
+  useEffect(() => {
+    preloadSound('/sounds/order-filled.mp3');
+  }, []);
 
   useEffect(() => {
     const sdk = getPerpsSDK();

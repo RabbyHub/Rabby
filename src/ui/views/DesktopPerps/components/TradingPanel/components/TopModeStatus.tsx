@@ -10,6 +10,7 @@ import { useMemoizedFn } from 'ahooks';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import clsx from 'clsx';
 import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
+import perpsToast from '../../PerpsToast';
 
 interface TopModeStatusProps {
   orderType: OrderType;
@@ -58,7 +59,13 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
       newLeverage,
       marginMode
     );
-    res && message.success('Leverage changed to: ' + newLeverage);
+    res &&
+      perpsToast.success({
+        title: t('page.perps.toast.success'),
+        description: t('page.perps.toast.leverageChanged', {
+          leverage: newLeverage,
+        }),
+      });
     setShowLeverageModal(false);
   });
 
@@ -77,7 +84,13 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
       leverage,
       mode
     );
-    res && message.success('Margin mode changed to: ' + mode);
+    res &&
+      perpsToast.success({
+        title: t('page.perps.toast.success'),
+        description: t('page.perps.toast.marginModeUpdated', {
+          mode: mode === MarginMode.ISOLATED ? 'Isolated' : 'Cross',
+        }),
+      });
     setShowMarginModeModal(false);
   });
 

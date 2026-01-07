@@ -614,19 +614,23 @@ export const Perps: React.FC = () => {
 
         <BackToTopButton visible={showBackToTop} onClick={handleBackToTop} />
 
-        {isLogin && hasPermission && (
+        {/* {isLogin && hasPermission && ( */}
+        {isLogin && (
           <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20">
             <Button
               block
               type="primary"
               onClick={() => {
-                setSearchPopupVisible(true);
-                setOpenFromSource('openPosition');
+                wallet.openInDesktop('/desktop/perps');
+                window.close();
+                // setSearchPopupVisible(true);
+                // setOpenFromSource('openPosition');
               }}
               size="large"
               className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
             >
-              {t('page.perps.searchPerpsPopup.openPosition')}
+              {/* {t('page.perps.searchPerpsPopup.openPosition')} */}
+              {t('page.dashboard.assets.openInTab')}
             </Button>
           </div>
         )}

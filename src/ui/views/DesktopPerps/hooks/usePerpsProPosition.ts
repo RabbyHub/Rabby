@@ -1,4 +1,5 @@
 import { sleep, useWallet } from '@/ui/utils';
+import { playSound } from '@/ui/utils/sound';
 import { getPerpsSDK } from '../../Perps/sdkManager';
 import {
   PERPS_BUILDER_INFO,
@@ -12,6 +13,7 @@ import {
   SLIPPAGE,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { message } from 'antd';
+import { perpsToast } from '../components/PerpsToast';
 import * as Sentry from '@sentry/browser';
 import { useMemoizedFn } from 'ahooks';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -37,6 +39,10 @@ export const usePerpsProPosition = () => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
 
+  const playOrderFilledSound = useMemoizedFn(() => {
+    playSound('/sounds/order-filled.mp3');
+  });
+
   const judgeIsUserAgentIsExpired = useMemoizedFn(
     async (errorMessage: string) => {
       const masterAddress = currentPerpsAccount?.address;
@@ -50,10 +56,9 @@ export const usePerpsProPosition = () => {
       const agentAddress = agentWalletPreference?.agentAddress;
       if (agentAddress && errorMessage.includes(agentAddress)) {
         console.warn('handle action agent is expired, logout');
-        message.error({
-          // className: 'toast-message-2025-center',
-          duration: 1.5,
-          content: 'Agent is expired, please login again',
+        perpsToast.error({
+          title: 'Agent is expired, please login again',
+          // description: 'Agent is expired, please login again',
         });
         dispatch.perps.setAccountNeedApproveAgent(true);
         return true;
@@ -77,9 +82,9 @@ export const usePerpsProPosition = () => {
           return;
         }
         console.error('PERPS', errorMessage, error);
-        message.error({
-          duration: 1.5,
-          content: error?.message || errorMessage,
+        perpsToast.error({
+          title: errorMessage,
+          description: error?.message,
         });
         Sentry.captureException(
           new Error(
@@ -132,9 +137,13 @@ export const usePerpsProPosition = () => {
           const filled = results?.response?.data?.statuses[0]?.filled;
           if (filled) {
             const { totalSz, avgPx } = filled;
-            message.success({
-              duration: 1.5,
-              content: t('page.perps.toast.openPositionSuccess', {
+
+            // Play success sound effect when order is filled
+            playOrderFilledSound();
+
+            perpsToast.success({
+              title: t('page.perps.toast.orderFilled'),
+              description: t('page.perps.toast.openPositionSuccess', {
                 direction: isBuy ? 'Long' : 'Short',
                 coin,
                 size: totalSz,
@@ -224,9 +233,10 @@ export const usePerpsProPosition = () => {
           if (resting || filled) {
             if (filled) {
               const { totalSz, avgPx } = filled;
-              message.success({
-                duration: 1.5,
-                content: t('page.perps.toast.openPositionSuccess', {
+              playOrderFilledSound();
+              perpsToast.success({
+                title: t('page.perps.toast.orderFilled'),
+                description: t('page.perps.toast.openPositionSuccess', {
                   direction: isBuy ? 'Long' : 'Short',
                   coin,
                   size: totalSz,
@@ -234,9 +244,9 @@ export const usePerpsProPosition = () => {
                 }),
               });
             } else {
-              message.success({
-                duration: 1.5,
-                content: t('page.perps.toast.openLimitOrderSuccess', {
+              perpsToast.success({
+                title: t('page.perps.toast.orderPlaced'),
+                description: t('page.perps.toast.openLimitOrderSuccess', {
                   direction: isBuy ? 'Long' : 'Short',
                   coin,
                   size: size,
@@ -280,9 +290,9 @@ export const usePerpsProPosition = () => {
           });
           const resting = res?.response?.data?.statuses[0]?.resting;
           if (resting?.oid) {
-            message.success({
-              duration: 1.5,
-              content: t('page.perps.toast.openTPSlMarketOrderSuccess', {
+            perpsToast.success({
+              title: t('page.perps.toast.orderPlaced'),
+              description: t('page.perps.toast.openTPSlMarketOrderSuccess', {
                 tpsl: p.tpsl === 'tp' ? 'Take profit' : 'Stop loss',
                 direction: isBuy ? 'Long' : 'Short',
                 coin,
@@ -328,9 +338,9 @@ export const usePerpsProPosition = () => {
           });
           const resting = res?.response?.data?.statuses[0]?.resting;
           if (resting?.oid) {
-            message.success({
-              duration: 1.5,
-              content: t('page.perps.toast.openTPSlLimitOrderSuccess', {
+            perpsToast.success({
+              title: t('page.perps.toast.orderPlaced'),
+              description: t('page.perps.toast.openTPSlLimitOrderSuccess', {
                 tpsl: p.tpsl === 'tp' ? 'Take profit' : 'Stop loss',
                 direction: isBuy ? 'Long' : 'Short',
                 coin,
@@ -382,9 +392,9 @@ export const usePerpsProPosition = () => {
           });
           const twapId = res?.response?.data?.status?.running?.twapId;
           if (twapId) {
-            message.success({
-              duration: 1.5,
-              content: t('page.perps.toast.openTWAPOrderSuccess', {
+            perpsToast.success({
+              title: t('page.perps.toast.orderPlaced'),
+              description: t('page.perps.toast.openTWAPOrderSuccess', {
                 direction: isBuy ? 'Long' : 'Short',
                 coin,
                 size: size,
@@ -410,12 +420,9 @@ export const usePerpsProPosition = () => {
           const { coin, twapId } = p;
           const res = await sdk.exchange?.cancelTwapOrder({ coin, twapId });
           if (res?.response?.data.status === 'success') {
-            message.success({
-              duration: 1.5,
-              content: t('page.perps.toast.cancelTWAPOrderSuccess', {
-                coin,
-                twapId,
-              }),
+            perpsToast.info({
+              title: t('page.perps.toast.orderCancelled'),
+              description: t('page.perps.toast.cancelOrderSuccess'),
             });
             return true;
           }
@@ -609,9 +616,9 @@ export const usePerpsProPosition = () => {
           });
           const oid = res?.response?.data?.statuses[0]?.resting?.oid;
           if (oid) {
-            message.success({
-              duration: 1.5,
-              content: t('page.perps.toast.openScaleOrderSuccess', {
+            perpsToast.success({
+              title: t('page.perps.toast.orderPlaced'),
+              description: t('page.perps.toast.openScaleOrderSuccess', {
                 direction: isBuy ? 'Long' : 'Short',
                 coin,
                 size: totalSize,
@@ -655,10 +662,10 @@ export const usePerpsProPosition = () => {
           const filled = res?.response?.data?.statuses[0]?.filled;
           if (filled) {
             const { totalSz, avgPx } = filled;
-            message.success({
-              // className: 'toast-message-2025-center',
-              duration: 1.5,
-              content: t('page.perps.toast.closePositionSuccess', {
+            playOrderFilledSound();
+            perpsToast.success({
+              title: t('page.perps.toast.orderFilled'),
+              description: t('page.perps.toast.closePositionSuccess', {
                 direction: isBuy ? 'Long' : 'Short',
                 coin,
                 size: totalSz,
@@ -686,16 +693,19 @@ export const usePerpsProPosition = () => {
       return withErrorHandler(
         async (p) => {
           const sdk = getPerpsSDK();
-          await sdk.exchange?.closeAllPositions(
+          const res = await sdk.exchange?.closeAllPositions(
             p,
             0.08,
             PERPS_BUILDER_INFO_PRO
           );
-          message.success({
-            duration: 1.5,
-            content: t('page.perps.toast.closeAllPositionsSuccess'),
-          });
-          return true;
+          if (res?.response?.data?.statuses[0]?.filled) {
+            playOrderFilledSound();
+            perpsToast.success({
+              title: t('page.perps.toast.orderFilled'),
+              description: t('page.perps.toast.closeAllPositionsSuccess'),
+            });
+            return true;
+          }
         },
         clearinghouseState,
         'close all positions error'
@@ -714,10 +724,9 @@ export const usePerpsProPosition = () => {
           });
 
           if (res?.status === 'ok') {
-            message.success({
-              // className: 'toast-message-2025-center',
-              duration: 1.5,
-              content: t(
+            perpsToast.success({
+              title: t('page.perps.toast.marginUpdated'),
+              description: t(
                 p.action === 'add'
                   ? 'page.perpsDetail.PerpsEditMarginPopup.addMarginSuccess'
                   : 'page.perpsDetail.PerpsEditMarginPopup.reduceMarginSuccess'
@@ -773,9 +782,9 @@ export const usePerpsProPosition = () => {
             slTriggerPx: formattedSlTriggerPx,
             builder: PERPS_BUILDER_INFO_PRO,
           });
-          message.success({
-            duration: 1.5,
-            content: t('page.perps.toast.setAutoCloseSuccess'),
+          perpsToast.success({
+            title: t('page.perps.toast.success'),
+            description: t('page.perps.toast.setAutoCloseSuccess'),
           });
         },
         params,
@@ -835,17 +844,17 @@ export const usePerpsProPosition = () => {
               (item) => ((item as unknown) as string) === 'success'
             )
           ) {
-            message.success({
-              duration: 1.5,
-              content: 'canceled successfully',
+            perpsToast.success({
+              title: t('page.perps.toast.orderCancelled'),
+              description: t('page.perps.toast.cancelOrderSuccess'),
             });
             setTimeout(() => {
               dispatch.perps.fetchPositionOpenOrders();
             }, 100);
           } else {
-            message.error({
-              duration: 1.5,
-              content: 'cancel error',
+            perpsToast.error({
+              title: t('page.perps.toast.cancelFailed'),
+              description: t('page.perps.toast.cancelOrderError'),
             });
           }
         },

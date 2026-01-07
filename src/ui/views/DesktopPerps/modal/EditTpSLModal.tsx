@@ -14,6 +14,7 @@ import { DesktopPerpsInput } from '../components/DesktopPerpsInput';
 import { PerpsPositionCard } from '../components/PerpsPositionCard';
 import { PositionFormatData } from '../components/UserInfoHistory/PositionsInfo';
 import { usePerpsProPosition } from '../hooks/usePerpsProPosition';
+import perpsToast from '../components/PerpsToast';
 
 export interface Props {
   visible: boolean;
@@ -302,9 +303,8 @@ export const EditTpSlModal: React.FC<Props> = ({
             oid: position.slItem.oid,
           },
         });
-        message.success({
-          duration: 1.5,
-          content: t('page.perps.toast.setAutoCloseSuccess'),
+        perpsToast.success({
+          title: t('page.perps.toast.setAutoCloseSuccess'),
         });
       } else if (!position.tpItem && !position.slItem) {
         // both not have tp and sl

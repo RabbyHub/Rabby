@@ -770,6 +770,16 @@
         "description": "All your open positions will be closed at market price."
       },
       "toast": {
+        "success": "Success",
+        "orderFilled": "Order Filled",
+        "orderPlaced": "Order Placed",
+        "orderCancelled": "Order Cancelled",
+        "leverageChanged": "Leverage changed to: {{leverage}}",
+        "marginUpdated": "Margin updated",
+        "marginModeUpdated": "Margin mode changed to: {{mode}}",
+        "cancelFailed": "Cancel Failed",
+        "cancelOrderSuccess": "Order has been cancelled",
+        "cancelOrderError": "Failed to cancel order",
         "openScaleOrderSuccess": "Scale order opened {{direction}} {{coin}}-USD: Size {{size}}",
         "takeProfitSuccess": "Take profit set successfully",
         "stopLossSuccess": "Stop loss set successfully",

@@ -169,7 +169,10 @@ export const PositionsInfo: React.FC = () => {
         ? MarginMode.CROSS
         : MarginMode.ISOLATED;
     await handleUpdateMarginModeLeverage(selectedCoin, newLeverage, marginMode);
-    message.success('Leverage changed to: ' + newLeverage);
+    message.success({
+      // duration: 1.5,
+      content: 'Leverage changed to: ' + newLeverage,
+    });
     setShowLeverageModal(false);
     setTimeout(() => {
       dispatch.perps.fetchClearinghouseState();
