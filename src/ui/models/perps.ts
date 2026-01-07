@@ -30,7 +30,10 @@ import { maxBy } from 'lodash';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { isSameAddress } from '../utils';
-import { IDisplayedAccountWithBalance } from './accountToDisplay';
+import {
+  handleUpdateHistoricalOrders,
+  handleUpdateTwapSliceFills,
+} from '../views/DesktopPerps/utils';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -876,6 +879,10 @@ export const perps = createModel<RootModel>()({
             return;
           }
 
+          if (!isSnapshot) {
+            handleUpdateHistoricalOrders(orderHistory);
+          }
+
           dispatch.perps.patchStatsListBySnapshot({
             listName: 'historicalOrders',
             list: orderHistory,
@@ -933,6 +940,11 @@ export const perps = createModel<RootModel>()({
           if (!isSameAddress(user, address)) {
             return;
           }
+
+          if (!isSnapshot) {
+            handleUpdateTwapSliceFills(twapSliceFills);
+          }
+
           dispatch.perps.patchStatsListBySnapshot({
             listName: 'twapSliceFills',
             list: twapSliceFills,

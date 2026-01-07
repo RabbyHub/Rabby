@@ -769,16 +769,30 @@
         "title": "Confirm Close All Positions",
         "description": "All your open positions will be closed at market price."
       },
+      "cancelAllOrdersPopup": {
+        "title": "Confirm Cancel All Orders",
+        "description": "All your open orders will be cancelled."
+      },
       "toast": {
         "success": "Success",
+        "twapSliceFilled": "TWAP Slice Filled",
+        "buyFilledContentNoPercentage": "bought {{sz}} {{coin}} filled @{{price}} USDC",
+        "sellFilledContentNoPercentage": "sold {{sz}} {{coin}} filled @{{price}} USDC",
+        "limitOrderFilled": "Limit Order Filled（{{percent}}%）",
+        "buyFilledContent": "bought {{sz}} / {{origSz}} {{coin}} filled @{{price}} USDC",
+        "sellFilledContent": "sold {{sz}} / {{origSz}} {{coin}} filled @{{price}} USDC",
         "orderFilled": "Order Filled",
         "orderPlaced": "Order Placed",
+        "terminalTwap": "Terminal TWAP",
+        "terminalTwapSuccess": "Terminal TWAP order successfully",
         "orderCancelled": "Order Cancelled",
+        "ordersCancelled": "All order cancelled",
         "leverageChanged": "Leverage changed to: {{leverage}}",
         "marginUpdated": "Margin updated",
         "marginModeUpdated": "Margin mode changed to: {{mode}}",
         "cancelFailed": "Cancel Failed",
         "cancelOrderSuccess": "Order has been cancelled",
+        "cancelAllOrderSuccess": "Successfully cancelled {{count}} orders",
         "cancelOrderError": "Failed to cancel order",
         "openScaleOrderSuccess": "Scale order opened {{direction}} {{coin}}-USD: Size {{size}}",
         "takeProfitSuccess": "Take profit set successfully",
@@ -1185,6 +1199,7 @@
         "availableBalance": "Available Balance",
         "unrealizedPnl": "Unrealized P&L",
         "crossMarginRatio": "Cross Margin Ratio",
+        "crossAccountLeverage": "Cross Account Leverage",
         "maintenanceMargin": "Maintenance margin"
       },
       "accountActions": {

@@ -12,7 +12,6 @@ import {
   PlaceOrderParams,
   SLIPPAGE,
 } from '@rabby-wallet/hyperliquid-sdk';
-import { message } from 'antd';
 import { perpsToast } from '../components/PerpsToast';
 import * as Sentry from '@sentry/browser';
 import { useMemoizedFn } from 'ahooks';
@@ -40,10 +39,6 @@ export const usePerpsProPosition = () => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
 
-  const playOrderFilledSound = useMemoizedFn(() => {
-    playSound('/sounds/order-filled.mp3');
-  });
-
   const judgeIsUserAgentIsExpired = useMemoizedFn(
     async (errorMessage: string) => {
       const masterAddress = currentPerpsAccount?.address;
@@ -66,6 +61,10 @@ export const usePerpsProPosition = () => {
       }
     }
   );
+
+  const playOrderFilledSound = () => {
+    playSound('/sounds/order-filled.mp3');
+  };
 
   // Generic error handler wrapper
   const withErrorHandler = useMemoizedFn(
@@ -191,44 +190,17 @@ export const usePerpsProPosition = () => {
             reduceOnly,
             orderType = 'Gtc',
           } = p;
-          const promises = [
-            sdk.exchange?.placeOrder({
-              coin,
-              isBuy,
-              sz: removeTrailingZeros(size),
-              limitPx: removeTrailingZeros(limitPx),
-              reduceOnly,
-              orderType: {
-                limit: {
-                  tif: orderType,
-                },
-              },
-              builder: PERPS_BUILDER_INFO_PRO,
-            }),
-          ];
-
-          const formattedTpTriggerPx = formatTriggerPx(tpTriggerPx);
-          const formattedSlTriggerPx = formatTriggerPx(slTriggerPx);
-
-          if (tpTriggerPx || slTriggerPx) {
-            promises.push(
-              (async () => {
-                await sleep(10); // little delay to ensure nonce is correct
-
-                const result = await sdk.exchange?.bindTpslByOrderId({
-                  coin,
-                  isBuy,
-                  tpTriggerPx: formattedTpTriggerPx,
-                  slTriggerPx: formattedSlTriggerPx,
-                  builder: PERPS_BUILDER_INFO_PRO,
-                });
-                return result as OrderResponse;
-              })()
-            );
-          }
-
-          const results = await Promise.all(promises);
-          const res = results[0];
+          const res = await sdk.exchange?.limitOrderOpen({
+            coin,
+            isBuy,
+            size,
+            limitPx,
+            reduceOnly,
+            tpTriggerPx,
+            slTriggerPx,
+            tif: orderType,
+            builder: PERPS_BUILDER_INFO_PRO,
+          });
           const resting = res?.response?.data?.statuses[0]?.resting;
           const filled = res?.response?.data?.statuses[0]?.filled;
           if (resting || filled) {
@@ -422,8 +394,8 @@ export const usePerpsProPosition = () => {
           const res = await sdk.exchange?.cancelTwapOrder({ coin, twapId });
           if (res?.response?.data.status === 'success') {
             perpsToast.info({
-              title: t('page.perps.toast.orderCancelled'),
-              description: t('page.perps.toast.cancelOrderSuccess'),
+              title: t('page.perps.toast.terminalTwap'),
+              description: t('page.perps.toast.terminalTwapSuccess'),
             });
             return true;
           }
@@ -845,9 +817,18 @@ export const usePerpsProPosition = () => {
               (item) => ((item as unknown) as string) === 'success'
             )
           ) {
+            const num = params.length;
             perpsToast.success({
-              title: t('page.perps.toast.orderCancelled'),
-              description: t('page.perps.toast.cancelOrderSuccess'),
+              title:
+                num > 1
+                  ? t('page.perps.toast.ordersCancelled')
+                  : t('page.perps.toast.orderCancelled'),
+              description:
+                num > 1
+                  ? t('page.perps.toast.cancelAllOrderSuccess', {
+                      count: num,
+                    })
+                  : t('page.perps.toast.cancelOrderSuccess'),
             });
             setTimeout(() => {
               dispatch.perps.fetchPositionOpenOrders();

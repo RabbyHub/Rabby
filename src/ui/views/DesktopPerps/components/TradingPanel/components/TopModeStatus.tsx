@@ -136,7 +136,10 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
           >
             {t('page.perpsPro.tradingPanel.type')}{' '}
             <span className="text-rb-neutral-title-1 font-medium flex items-center gap-[4px]">
-              {orderType}
+              {
+                ORDER_TYPE_OPTIONS.find((option) => option.value === orderType)
+                  ?.label
+              }
               <RcIconArrowDownCC className="text-rb-neutral-secondary" />
             </span>
           </button>

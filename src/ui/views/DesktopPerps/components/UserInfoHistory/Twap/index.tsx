@@ -181,7 +181,18 @@ export const Twap: React.FC = () => {
                 record.side === 'B' ? 'is-long-bg' : 'is-short-bg'
               )}
             >
-              <div className="flex items-center gap-[4px]">
+              <div
+                className="flex items-center gap-[4px] cursor-pointer"
+                onClick={() => {
+                  setExpandedRowKeys((prev) =>
+                    prev.includes(`${record.twapId}-${record.status}`)
+                      ? prev.filter(
+                          (key) => key !== `${record.twapId}-${record.status}`
+                        )
+                      : [...prev, `${record.twapId}-${record.status}`]
+                  );
+                }}
+              >
                 <div className="flex flex-row items-center gap-[4px]">
                   <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1">
                     {record.coin}
@@ -192,18 +203,9 @@ export const Twap: React.FC = () => {
                 </div>
                 <RcIconArrowDown
                   className={clsx(
-                    'text-r-neutral-body cursor-pointer',
+                    'text-r-neutral-body',
                     isExpanded && 'rotate-180'
                   )}
-                  onClick={() => {
-                    setExpandedRowKeys((prev) =>
-                      prev.includes(`${record.twapId}-${record.status}`)
-                        ? prev.filter(
-                            (key) => key !== `${record.twapId}-${record.status}`
-                          )
-                        : [...prev, `${record.twapId}-${record.status}`]
-                    );
-                  }}
                 />
               </div>
             </div>

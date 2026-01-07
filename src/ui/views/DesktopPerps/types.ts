@@ -1,5 +1,4 @@
 // DesktopPerps Types
-
 export enum MarginMode {
   ISOLATED = 'isolated',
   CROSS = 'cross',
