@@ -1104,6 +1104,7 @@
         "randomized": "(randomized)"
       },
       "tradingPanel": {
+        "enableTrading": "Enable Trading",
         "startPrice": "Start Price",
         "endPrice": "End Price",
         "start": "Start",

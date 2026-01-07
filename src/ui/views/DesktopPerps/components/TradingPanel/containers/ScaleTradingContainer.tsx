@@ -170,6 +170,8 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   const {
     handleOpenScaleOrder,
     calculateScaleOrdersWithSkew,
+    needEnableTrading,
+    handleActionApproveStatus,
   } = usePerpsProPosition();
 
   const scaleOrders = useMemo(() => {
@@ -505,26 +507,37 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       </div>
 
       {/* Place Order Button */}
-      <Button
-        loading={handleOpenOrderLoading}
-        onClick={handleOpenOrderRequest}
-        disabled={!validation.isValid}
-        className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
-          validation.isValid
-            ? orderSide === OrderSide.BUY
-              ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
-              : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
-            : validation.error
-            ? 'bg-rb-orange-light-1 text-rb-orange-default cursor-not-allowed'
-            : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
-        }`}
-      >
-        {validation.error
-          ? validation.error
-          : orderSide === OrderSide.BUY
-          ? t('page.perpsPro.tradingPanel.buyLong')
-          : t('page.perpsPro.tradingPanel.sellShort')}
-      </Button>
+      {needEnableTrading ? (
+        <Button
+          onClick={handleActionApproveStatus}
+          className={
+            'w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent bg-rb-green-default text-rb-neutral-InvertHighlight'
+          }
+        >
+          {t('page.perpsPro.tradingPanel.enableTrading')}
+        </Button>
+      ) : (
+        <Button
+          loading={handleOpenOrderLoading}
+          onClick={handleOpenOrderRequest}
+          disabled={!validation.isValid}
+          className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
+            validation.isValid
+              ? orderSide === OrderSide.BUY
+                ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
+                : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
+              : validation.error
+              ? 'bg-rb-orange-light-1 text-rb-orange-default cursor-not-allowed'
+              : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
+          }`}
+        >
+          {validation.error
+            ? validation.error
+            : orderSide === OrderSide.BUY
+            ? t('page.perpsPro.tradingPanel.buyLong')
+            : t('page.perpsPro.tradingPanel.sellShort')}
+        </Button>
+      )}
 
       {/* Order Summary */}
       <div className="space-y-[6px] font-medium">

@@ -172,7 +172,10 @@ export const usePerpsProState = () => {
       let result: string[] = [];
       await dispatch.account.changeAccountAsync(account);
 
-      if (supportedDirectSign(account.type)) {
+      if (
+        account.type === KEYRING_CLASS.PRIVATE_KEY ||
+        account.type === KEYRING_CLASS.MNEMONIC
+      ) {
         typedDataSignatureStore.close();
         result = await typedDataSignatureStore.start(
           {
@@ -354,6 +357,10 @@ export const usePerpsProState = () => {
   );
 
   const isHandlingApproveStatus = useRef(false);
+
+  const needEnableTrading = useMemo(() => {
+    return accountNeedApproveAgent || accountNeedApproveBuilderFee;
+  }, [accountNeedApproveAgent, accountNeedApproveBuilderFee]);
 
   const handleActionApproveStatus = useMemoizedFn(async () => {
     try {
@@ -663,6 +670,7 @@ export const usePerpsProState = () => {
     logout,
     handleWithdraw,
     handleActionApproveStatus,
+    needEnableTrading,
     handleSafeSetReference,
 
     ensureLoginApproveSign,

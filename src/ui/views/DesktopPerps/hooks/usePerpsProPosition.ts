@@ -23,6 +23,7 @@ import { removeTrailingZeros } from '../components/TradingPanel/utils';
 import BigNumber from 'bignumber.js';
 import { formatTpOrSlPrice } from '../../Perps/utils';
 import { usePerpsProState } from './usePerpsProState';
+import { useMemo } from 'react';
 
 const formatTriggerPx = (px?: string) => {
   // avoid '.15' input error from hy validator
@@ -34,7 +35,7 @@ export const usePerpsProPosition = () => {
   const currentPerpsAccount = useRabbySelector(
     (state) => state.perps.currentPerpsAccount
   );
-  const { handleActionApproveStatus } = usePerpsProState();
+  const { handleActionApproveStatus, needEnableTrading } = usePerpsProState();
   const { t } = useTranslation();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -880,5 +881,8 @@ export const usePerpsProPosition = () => {
     handleModifyTpSlOrders,
     handleUpdateMarginModeLeverage,
     handleCancelOrder,
+
+    needEnableTrading,
+    handleActionApproveStatus,
   };
 };
