@@ -26,6 +26,14 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import type { Candle, CandleSnapshot } from '@rabby-wallet/hyperliquid-sdk';
 import { splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
+import { useMemoizedFn } from 'ahooks';
+
+// Type for pending chart data
+interface PendingChartData {
+  candles: CandlestickData<UTCTimestamp>[];
+  volumes: HistogramData<UTCTimestamp>[];
+  dataKey: string; // Used to identify which coin/interval this data belongs to
+}
 
 interface ChartWrapperProps {
   coin: string;
@@ -295,6 +303,16 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     visible: false,
   });
 
+  const [isChartReady, setIsChartReady] = useState(false);
+  const [pendingData, setPendingData] = useState<PendingChartData | null>(null);
+  const [isDataApplied, setIsDataApplied] = useState(false);
+
+  // Generate a unique key for the current coin/interval combination
+  const dataKey = useMemo(() => `${coin}-${selectedInterval}`, [
+    coin,
+    selectedInterval,
+  ]);
+
   const colors = useMemo(() => getThemeColors(isDarkTheme), [isDarkTheme]);
   const timeLocalization = useMemo(() => createTimeLocalization(), []);
 
@@ -377,7 +395,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       chartRef.current.remove();
     }
 
-    // Get initial dimensions with fallback
     const getContainerDimensions = () => {
       if (!chartContainerRef.current) {
         return { width: 800, height: 400 }; // Fallback dimensions
@@ -457,7 +474,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       },
     });
 
-    // Add volume series with separate scale
     const volumeSeries = chart.addSeries(HistogramSeries, {
       color: '#26a69a',
       priceFormat: {
@@ -468,7 +484,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       priceLineVisible: false,
     });
 
-    // Configure volume scale to appear at bottom with proper auto-scaling
     chart.priceScale('volume').applyOptions({
       scaleMargins: {
         top: 0.7, // Volume takes bottom 25%
@@ -484,6 +499,8 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     chartRef.current = chart;
     seriesRef.current = series;
     volumeSeriesRef.current = volumeSeries;
+
+    setIsChartReady(true);
 
     // Subscribe to crosshair move for hover data
     chart.subscribeCrosshairMove((param) => {
@@ -526,7 +543,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       }
     };
 
-    // Use ResizeObserver to track container size changes
     let resizeObserver: ResizeObserver | null = null;
     if (chartContainerRef.current) {
       resizeObserver = new ResizeObserver(() => {
@@ -535,10 +551,8 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       resizeObserver.observe(chartContainerRef.current);
     }
 
-    // Also listen to window resize as fallback
     window.addEventListener('resize', handleResize);
 
-    // Initial resize after a short delay to ensure layout is ready
     const timeoutId = setTimeout(() => {
       handleResize();
     }, 100);
@@ -549,7 +563,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       if (resizeObserver) {
         resizeObserver.disconnect();
       }
-      // Clear price lines
       Object.values(priceLineRefs.current).forEach((line) => {
         if (line && seriesRef.current) {
           seriesRef.current.removePriceLine(line);
@@ -560,58 +573,68 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       chartRef.current = null;
       seriesRef.current = null;
       volumeSeriesRef.current = null;
+
+      setIsChartReady(false);
+      setIsDataApplied(false);
     };
   }, [colors, pxDecimals, timeLocalization, isDarkTheme]);
 
-  // Fetch candle data
-  const fetchData = useCallback(
-    async (aborted: boolean) => {
+  const fetchData = useMemoizedFn(
+    async (targetCoin: string, targetInterval: string) => {
       const sdk = getPerpsSDK();
-      if (!seriesRef.current || !volumeSeriesRef.current) return;
-
-      const { start, end } = getTimeRange(selectedInterval);
+      const { start, end } = getTimeRange(targetInterval);
+      const currentDataKey = `${targetCoin}-${targetInterval}`;
 
       try {
         const snapshot = await sdk.info.candleSnapshot(
-          coin,
-          selectedInterval,
+          targetCoin,
+          targetInterval,
           start,
           end
         );
 
-        if (aborted || !isMountedRef.current) return;
+        if (!isMountedRef.current) return;
 
         const candles = parseCandles(snapshot);
         const volumes = parseVolumes(snapshot);
 
-        if (candles.length > 0 && seriesRef.current) {
-          seriesRef.current.setData(candles);
-        }
-        if (volumes.length > 0 && volumeSeriesRef.current) {
-          volumeSeriesRef.current.setData(volumes);
-        }
-        // Update price lines after data is loaded
-        updatePriceLines();
+        setPendingData({
+          candles,
+          volumes,
+          dataKey: currentDataKey,
+        });
       } catch (error) {
         console.error('Failed to fetch candle data:', error);
       }
-    },
-    [coin, selectedInterval, updatePriceLines]
+    }
   );
 
-  // Fetch data when coin or interval changes
   useEffect(() => {
-    let aborted = false;
+    setIsDataApplied(false);
+    setPendingData(null);
 
-    fetchData(aborted);
-
-    return () => {
-      aborted = true;
-    };
+    fetchData(coin, selectedInterval);
   }, [coin, selectedInterval, fetchData]);
 
-  // Subscribe to WebSocket updates
-  const subscribeCandle = useCallback(() => {
+  useEffect(() => {
+    if (!isChartReady || !pendingData || isDataApplied) return;
+    if (!seriesRef.current || !volumeSeriesRef.current) return;
+
+    if (pendingData.dataKey !== dataKey) return;
+
+    const { candles, volumes } = pendingData;
+
+    if (candles.length > 0) {
+      seriesRef.current.setData(candles);
+    }
+    if (volumes.length > 0) {
+      volumeSeriesRef.current.setData(volumes);
+    }
+
+    setIsDataApplied(true);
+  }, [isChartReady, pendingData, dataKey, isDataApplied]);
+
+  const subscribeCandle = useMemoizedFn(() => {
     const sdk = getPerpsSDK();
     if (!seriesRef.current || !volumeSeriesRef.current) return;
 
@@ -643,25 +666,25 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       console.log('Unsubscribing from candles:', coin, selectedInterval);
       unsubscribe();
     };
-  }, [coin, selectedInterval]);
+  });
 
-  // Subscribe to real-time candle updates
   useEffect(() => {
-    if (!seriesRef.current) return;
+    if (!isDataApplied || !seriesRef.current) return;
 
     const unsubscribe = subscribeCandle();
 
     return () => {
       unsubscribe?.();
     };
-  }, [subscribeCandle]);
+  }, [isDataApplied, subscribeCandle, coin, selectedInterval]);
 
-  // Update price lines when lineTagInfo changes
+  // Update price lines when lineTagInfo changes - only after data is applied
   useEffect(() => {
+    if (!isDataApplied) return;
     if (seriesRef.current && chartRef.current) {
       updatePriceLines();
     }
-  }, [updatePriceLines]);
+  }, [updatePriceLines, isDataApplied]);
 
   // Cleanup on unmount
   useEffect(() => {
