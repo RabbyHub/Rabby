@@ -20,6 +20,8 @@ import { LpTokenSwitch } from '../../DesktopProfile/components/TokensTabPane/com
 import clsx from 'clsx';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 import { HomePerpsPositionList } from './HomePerpsPositionList';
+import { uniqBy } from 'lodash';
+import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 
 interface Props {
   className?: string;
@@ -62,7 +64,9 @@ export const AssetListContainer: React.FC<Props> = ({
     false,
     visible,
     isTestnet,
-    lpTokenMode
+    lpTokenMode ? lpTokenMode : undefined,
+    undefined,
+    !!search
   );
   const {
     data: appPortfolios,
@@ -80,23 +84,12 @@ export const AssetListContainer: React.FC<Props> = ({
     }
   );
   const displayTokenList = useMemo(() => {
-    const result = search
-      ? list
-          .concat(
-            tokenList.filter((token) =>
-              token.symbol.toLowerCase().includes(search.toLowerCase())
-            )
-          )
-          .sort((a, b) => {
-            if (a.is_core && !b.is_core) {
-              return -1;
-            }
-            if (!a.is_core && b.is_core) {
-              return 1;
-            }
-            return b.price * b.amount - a.price * a.amount;
-          })
-      : tokenList;
+    const result = uniqBy(
+      search ? concatAndSort(list, tokenList, search) : tokenList,
+      (token) => {
+        return `${token.chain}-${token.id}`;
+      }
+    );
     if (selectChainId) {
       return result.filter((item) => item.chain === selectChainId);
     }
