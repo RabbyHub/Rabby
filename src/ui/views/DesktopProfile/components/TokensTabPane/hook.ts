@@ -7,8 +7,10 @@ import { useEffect, useMemo, useState } from 'react';
 
 export const useTokenAndDIFIData = ({
   selectChainId,
+  allTokenMode,
 }: {
   selectChainId?: string;
+  allTokenMode?: boolean;
 }) => {
   const [lpTokenMode, setLpTokenMode] = useState(false);
 
@@ -33,7 +35,8 @@ export const useTokenAndDIFIData = ({
     true,
     false,
     lpTokenMode,
-    true
+    true,
+    allTokenMode
   );
 
   const {

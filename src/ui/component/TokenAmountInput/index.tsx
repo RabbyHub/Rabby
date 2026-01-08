@@ -33,6 +33,7 @@ import { RiskWarningTitle } from '../RiskWarningTitle';
 import BigNumber from 'bignumber.js';
 import { ChainSelectorInSend } from '@/ui/views/SendToken/components/ChainSelectorInSend';
 import { Chain } from '@debank/common';
+import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 
 interface TokenAmountInputProps {
   token: TokenItem | null;
@@ -235,7 +236,9 @@ const TokenAmountInput = ({
     updateNonce,
     mainnetChainServerId,
     undefined,
-    isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
+    isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
+    undefined,
+    !!keyword
   );
 
   const handleSelectToken = useCallback(() => {
@@ -275,22 +278,11 @@ const TokenAmountInput = ({
 
     return uniqBy(
       keyword
-        ? searchedTokenByQuery
-            .map(abstractTokenToTokenItem)
-            .concat(
-              allTokens.filter((token) =>
-                token.symbol.toLowerCase().includes(keyword.toLowerCase())
-              )
-            )
-            .sort((a, b) => {
-              if (a.is_core && !b.is_core) {
-                return -1;
-              }
-              if (!a.is_core && b.is_core) {
-                return 1;
-              }
-              return b.price * b.amount - a.price * a.amount;
-            })
+        ? concatAndSort(
+            searchedTokenByQuery.map(abstractTokenToTokenItem),
+            allTokens,
+            keyword
+          )
         : allTokens,
       (token) => {
         return `${token.chain}-${token.id}`;

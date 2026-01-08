@@ -24,6 +24,7 @@ import { useAsync } from 'react-use';
 import { getUiType, useWallet } from '@/ui/utils';
 import { isAddress } from 'viem/utils';
 import { useTranslation } from 'react-i18next';
+import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 const isTab = getUiType().isTab;
 
 const Wrapper = styled.div`
@@ -193,7 +194,9 @@ const TokenSelect = forwardRef<
       updateNonce,
       queryConds.chainServerId,
       undefined,
-      isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
+      isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
+      undefined,
+      !!queryConds.keyword
     );
 
     const {
@@ -259,24 +262,11 @@ const TokenSelect = forwardRef<
                     ? true
                     : !!e.is_core
                 )
-            : searchedTokenByQuery
-                .map(abstractTokenToTokenItem)
-                .concat(
-                  allTokens.filter((token) =>
-                    token.symbol
-                      ?.toLowerCase()
-                      .includes(queryConds.keyword?.toLowerCase() || '')
-                  )
-                )
-                .sort((a, b) => {
-                  if (a.is_core && !b.is_core) {
-                    return -1;
-                  }
-                  if (!a.is_core && b.is_core) {
-                    return 1;
-                  }
-                  return b.price * b.amount - a.price * a.amount;
-                })
+            : concatAndSort(
+                searchedTokenByQuery.map(abstractTokenToTokenItem),
+                allTokens,
+                queryConds.keyword
+              )
           : allTokens,
         (token) => {
           return `${token.chain}-${token.id}`;

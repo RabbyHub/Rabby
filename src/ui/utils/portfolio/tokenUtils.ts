@@ -106,3 +106,33 @@ export const sortWalletTokens = (wallet: DisplayedProject) => {
     .flatMap((x) => x._tokenList)
     .sort((m, n) => (n._usdValue || 0) - (m._usdValue || 0));
 };
+export const concatAndSort = <
+  T extends {
+    symbol: string;
+    is_core?: boolean;
+    price?: number;
+    amount?: number;
+  }
+>(
+  source: T[],
+  appendList: T[],
+  keyword: string
+): T[] => {
+  return source
+    .concat(
+      appendList.filter((token) =>
+        token.symbol.toLowerCase().includes(keyword.toLowerCase())
+      )
+    )
+    .sort((a, b) => {
+      if (a.is_core && !b.is_core) {
+        return -1;
+      }
+      if (!a.is_core && b.is_core) {
+        return 1;
+      }
+      const aValue = (a.price ?? 0) * (a.amount ?? 0);
+      const bValue = (b.price ?? 0) * (b.amount ?? 0);
+      return bValue - aValue;
+    });
+};
