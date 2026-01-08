@@ -828,7 +828,9 @@
             "modalContent": "同じPermit2コントラクトからの承認は、同じ署名の下にまとめられます。",
             "modalTitle_other": "合計で <2>{{count}}</2> つの署名が必要です",
             "modalTitle_one": "<2>{{count}}</2> 件の署名が必要です"
-          }
+          },
+          "notSupport7702Title": "サポートされていないアドレスの種類",
+          "notSupport7702Content": "EIP-7702 の委任を取り消すことは、プライベートキーまたはシードフレーズアドレスのみサポートされています。"
         },
         "ViewMore": {
           "text": "詳細を表示"

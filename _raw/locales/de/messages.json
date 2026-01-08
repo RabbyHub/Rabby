@@ -828,7 +828,9 @@
             "modalTitle_other": "Insgesamt sind <2>{{count}}</2> Signaturen erforderlich",
             "modalContent": "Genehmigungen desselben Permit2-Vertrags würden mit derselben Signatur zusammengefasst.",
             "modalTitle_one": "Insgesamt ist eine Signatur von <2>{{count}}</2> erforderlich."
-          }
+          },
+          "notSupport7702Title": "Nicht unterstützter Adresstyp",
+          "notSupport7702Content": "Das Widerrufen von EIP-7702-Delegierungen wird nur für Adressen mit privatem Schlüssel oder Seed-Phrase unterstützt."
         },
         "ViewMore": {
           "text": "Mehr anzeigen"
