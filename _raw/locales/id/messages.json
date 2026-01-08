@@ -828,9 +828,7 @@
           },
           "btnText_one": "Cabut ({{count}})",
           "btnText_zero": "Batalkan",
-          "btnText_other": "Cabut ({{count}})",
-          "notSupport7702Title": "Tidak Didukung untuk Tipe Alamat Saat Ini",
-          "notSupport7702Content": "Saat ini hanya mendukung mencabut delegasi EIP-7702 untuk alamat kunci pribadi & frase benih."
+          "btnText_other": "Cabut ({{count}})"
         },
         "ViewMore": {
           "text": "Lihat lebih banyak"

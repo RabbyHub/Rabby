@@ -501,9 +501,7 @@
             "modalTitle_other": "Un total de <2>{{count}}</2> signatures est requis",
             "modalContent": "Les approbations du même contrat Permit2 seraient regroupées sous la même signature.",
             "modalTitle_one": "Un total de <2>{{count}}</2> signature est requis"
-          },
-          "notSupport7702Title": "Non pris en charge pour le type d'adresse actuel",
-          "notSupport7702Content": "Actuellement, seuls les retraits de délégation EIP-7702 pour les adresses de clé privée et de phrase de graine sont supportés."
+          }
         },
         "ViewMore": {
           "text": "Voir plus"
