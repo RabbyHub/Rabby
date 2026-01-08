@@ -27,6 +27,8 @@ interface Props {
   lpTokenMode: boolean;
   setLpTokenMode?: (value: boolean) => void;
   selectChainId?: string;
+  searchValue: string;
+  setSearchValue: (value: string) => void;
 }
 
 const StyledInput = styled(Input)`
@@ -44,6 +46,8 @@ export const TokenTab = ({
   selectChainId,
   lpTokenMode,
   setLpTokenMode,
+  searchValue,
+  setSearchValue,
 }: Props) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
@@ -58,9 +62,6 @@ export const TokenTab = ({
   };
 
   const { selectedTab, onTabChange, isShowTestnet } = useSwitchNetTab();
-
-  const [searchValue, setSearchValue] = React.useState('');
-
   const isMainnet = selectedTab === 'mainnet';
 
   const debouncedSearchValue = useDebounceValue(searchValue, 300);
@@ -84,7 +85,7 @@ export const TokenTab = ({
   const tokenListTotalValue = React.useMemo(() => {
     return sortTokens
       ?.reduce(
-        (acc, item) => acc.plus(isLpToken(item) ? 0 : item._usdValue || 0),
+        (acc, item) => acc.plus(item.is_core ? item._usdValue || 0 : 0),
         new BigNumber(0)
       )
       .toNumber();

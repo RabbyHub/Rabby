@@ -12,6 +12,7 @@ import type { NetSwitchTabsKey } from '@/ui/component/PillsSwitch/NetSwitchTabs'
 import { CustomTestnetAssetList } from './TestTokenlist';
 
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
+import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -65,7 +66,11 @@ export const TokenList = ({
           ) : (
             <>
               <TokenTable
-                list={isSearch ? searchList : currentList}
+                list={
+                  isSearch
+                    ? concatAndSort(searchList, list || [], search || '')
+                    : currentList
+                }
                 EmptyComponent={
                   isSearch ? (
                     <TokenListEmpty
