@@ -140,7 +140,9 @@ export const DesktopDappIframe = () => {
   const { value: permission } = useAsync(
     () =>
       currentAccount?.address
-        ? wallet.openapi.getPerpPermission({ id: currentAccount?.address })
+        ? wallet.openapi.getPolyMarketPermission({
+            id: currentAccount?.address,
+          })
         : Promise.resolve({ has_permission: false }),
     []
   );
@@ -196,10 +198,6 @@ export const DesktopDappIframe = () => {
   }, [iframeOrigin, isDarkTheme]);
 
   useEffect(() => {
-    console.log(
-      '[rabby-desktop] listen handleMessage',
-      iframeRef.current?.contentWindow
-    );
     const handleMessage = (event: MessageEvent) => {
       const data = event.data;
 
@@ -276,7 +274,7 @@ export const DesktopDappIframe = () => {
                 <Iframe ref={iframeRef} src={defaultUrl} />
                 {isIframeLoading && (
                   <DappIframeLoading
-                    loadingLabel={'Open Polymarket...'}
+                    loadingLabel={t('page.dappIfame.openPolymarket')}
                     icon={PolyMarketPng}
                   />
                 )}

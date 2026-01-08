@@ -65,7 +65,7 @@ const IframeLoadingText = styled.div`
   font-size: 16px;
   line-height: 19px;
   font-weight: 500;
-  color: var(--rb-neutral-title-1, #192945);
+  color: var(--r-neutral-foot, #6a7587);
   max-width: 240px;
   white-space: nowrap;
   overflow: hidden;

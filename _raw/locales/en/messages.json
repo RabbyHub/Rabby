@@ -3458,7 +3458,8 @@
     },
     "dappIfame": {
       "serviceUnavailable": "Service Unavailable",
-      "predictionNotSupported": "The Prediction feature is not supported in your current region."
+      "predictionNotSupported": "The Prediction feature is not supported in your current region.",
+      "openPolymarket": "Opening Polymarket..."
     }
   },
   "component": {
