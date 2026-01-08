@@ -80,7 +80,23 @@ export const AssetListContainer: React.FC<Props> = ({
     }
   );
   const displayTokenList = useMemo(() => {
-    const result = search ? list : tokenList;
+    const result = search
+      ? list
+          .concat(
+            tokenList.filter((token) =>
+              token.symbol.toLowerCase().includes(search.toLowerCase())
+            )
+          )
+          .sort((a, b) => {
+            if (a.is_core && !b.is_core) {
+              return -1;
+            }
+            if (!a.is_core && b.is_core) {
+              return 1;
+            }
+            return b.price * b.amount - a.price * a.amount;
+          })
+      : tokenList;
     if (selectChainId) {
       return result.filter((item) => item.chain === selectChainId);
     }
