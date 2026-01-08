@@ -1118,6 +1118,7 @@
         "randomized": "(randomized)"
       },
       "tradingPanel": {
+        "reduceOnly": "Reduce Only",
         "enableTrading": "Enable Trading",
         "startPrice": "Start Price",
         "endPrice": "End Price",
@@ -3906,6 +3907,7 @@
       "portfolio": "Portfolio",
       "perps": "Perps",
       "lending": "Lending",
+      "prediction": "Prediction",
       "comingSoon": "Coming Soon"
     },
     "DesktopSelectAccountList": {
