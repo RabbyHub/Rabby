@@ -50,7 +50,6 @@ import {
   WALLET_BRAND_CONTENT,
   CHAINS_ENUM,
   KEYRING_TYPE,
-  GNOSIS_SUPPORT_CHAINS,
   INTERNAL_REQUEST_SESSION,
   DARK_MODE_TYPE,
   KEYRING_CLASS,
@@ -179,6 +178,7 @@ import { CROSS_CHAIN_SEAPORT_V1_6_ADDRESS } from '@opensea/seaport-js/lib/consta
 import { buildCreateListingTypedData } from '@/utils/nft';
 import { http } from '../utils/http';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -188,7 +188,7 @@ const gnosisPQueue = new PQueue({
   interval: 1000,
   intervalCap: 5,
   carryoverConcurrencyCount: false,
-  concurrency: 5,
+  concurrency: 2,
 });
 
 export class WalletController extends BaseController {
