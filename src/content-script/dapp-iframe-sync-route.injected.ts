@@ -118,6 +118,14 @@ const setupDappIframeSyncRoute = () => {
 
     parentOrigin = event.origin;
     handshakeToken = data.token;
+
+    if (data.theme) {
+      if (location.origin === 'https://polymarket.com') {
+        localStorage.setItem('color-mode', data.theme);
+        document?.documentElement?.setAttribute('data-theme', data.theme);
+        document.documentElement.style['colorScheme'] = data.theme;
+      }
+    }
     ensureListening();
     postSyncUrl(true);
 
@@ -162,3 +170,4 @@ const domReadyCall = (callback) => {
 domReadyCall(() => {
   setupDappIframeSyncRoute();
 });
+console.log('test setupDappIframeSyncRoute watchDomReady 2222');

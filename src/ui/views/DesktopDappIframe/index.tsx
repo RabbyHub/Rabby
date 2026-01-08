@@ -8,11 +8,16 @@ import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountLis
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useDesktopBalanceView } from '../DesktopProfile/hooks/useDesktopBalanceView';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
-
+import { ReactComponent as IconGlobalSiteIconCC } from '@/ui/assets/global-cc.svg';
 import { KEYRING_TYPE } from '@/constant';
 import { rules } from './rules';
 import { AddAddressModal } from '../DesktopProfile/components/AddAddressModal';
-
+import { useAsync } from 'react-use';
+import { useWallet } from '@/ui/utils';
+import { useTranslation } from 'react-i18next';
+import PolyMarketPng from '@/ui/assets/dapp-iframe/polymarket.png';
+import { DappIframeLoading } from './component/loading';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 const HANDSHAKE_MESSAGE_TYPE = 'rabby-dapp-iframe-handshake';
 const SYNC_MESSAGE_TYPE = 'rabby-dapp-iframe-sync-url';
 
@@ -64,11 +69,15 @@ const getSafeSyncUrl = (value?: string | null) => {
 const defaultOrigin = 'https://polymarket.com/';
 
 export const DesktopDappIframe = () => {
+  const { isDarkTheme } = useThemeMode();
+  const wallet = useWallet();
   const history = useHistory();
   const location = useLocation();
+  const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const handshakeTokenRef = useRef<string>(createHandshakeToken());
+  const [isIframeLoading, setIsIframeLoading] = React.useState(true);
   const {
     balance,
     curveChartData,
@@ -128,6 +137,16 @@ export const DesktopDappIframe = () => {
     updateSearchParams((params) => params.delete('action'));
   }, [updateSearchParams]);
 
+  const { value: permission } = useAsync(
+    () =>
+      currentAccount?.address
+        ? wallet.openapi.getPerpPermission({ id: currentAccount?.address })
+        : Promise.resolve({ has_permission: false }),
+    []
+  );
+
+  console.log('permission', permission?.has_permission);
+
   useEffect(() => {
     if (
       action === 'gnosis-queue' &&
@@ -170,10 +189,11 @@ export const DesktopDappIframe = () => {
           timeouts: 15 * 1000,
           steps: rules['https://polymarket.com'],
         },
+        theme: isDarkTheme ? 'dark' : 'light',
       },
       iframeOrigin
     );
-  }, [iframeOrigin]);
+  }, [iframeOrigin, isDarkTheme]);
 
   useEffect(() => {
     console.log(
@@ -204,6 +224,8 @@ export const DesktopDappIframe = () => {
 
       if (!data.token) {
         postHandshake();
+        setIsIframeLoading(false);
+
         return;
       }
 
@@ -247,11 +269,34 @@ export const DesktopDappIframe = () => {
             <div className="">
               <div
                 className={clsx(
-                  'border border-solid border-rb-neutral-line',
+                  'border border-solid border-rb-neutral-line relative',
                   'rounded-[20px] overflow-hidden'
                 )}
               >
                 <Iframe ref={iframeRef} src={defaultUrl} />
+                {isIframeLoading && (
+                  <DappIframeLoading
+                    loadingLabel={'Open Polymarket...'}
+                    icon={PolyMarketPng}
+                  />
+                )}
+                {permission && !isIframeLoading && (
+                  <div className="absolute inset-0 bg-[rgba(0,0,0,0.5)] flex flex-col justify-center items-center gap-16">
+                    <div className="p-[22px] bg-rb-brand-default rounded-[16px] ">
+                      <div className="text-rb-neutral-InvertHighlight text-20 font-medium flex items-center justify-center gap-8">
+                        <IconGlobalSiteIconCC
+                          viewBox="0 0 24 24"
+                          width={24}
+                          height={24}
+                        />
+                        <span>{t('page.dappIfame.serviceUnavailable')}</span>
+                      </div>
+                      <div className="text-rb-neutral-InvertHighlight text-14">
+                        {t('page.dappIfame.predictionNotSupported')}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

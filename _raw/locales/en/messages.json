@@ -3455,6 +3455,10 @@
       "typedTitle": {
         "send": "Send To"
       }
+    },
+    "dappIfame": {
+      "serviceUnavailable": "Service Unavailable",
+      "predictionNotSupported": "The Prediction feature is not supported in your current region."
     }
   },
   "component": {
@@ -3655,10 +3659,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
