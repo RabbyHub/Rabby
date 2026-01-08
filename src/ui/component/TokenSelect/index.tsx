@@ -259,7 +259,24 @@ const TokenSelect = forwardRef<
                     ? true
                     : !!e.is_core
                 )
-            : searchedTokenByQuery.map(abstractTokenToTokenItem)
+            : searchedTokenByQuery
+                .map(abstractTokenToTokenItem)
+                .concat(
+                  allTokens.filter((token) =>
+                    token.symbol
+                      ?.toLowerCase()
+                      .includes(queryConds.keyword?.toLowerCase() || '')
+                  )
+                )
+                .sort((a, b) => {
+                  if (a.is_core && !b.is_core) {
+                    return -1;
+                  }
+                  if (!a.is_core && b.is_core) {
+                    return 1;
+                  }
+                  return b.price * b.amount - a.price * a.amount;
+                })
           : allTokens,
         (token) => {
           return `${token.chain}-${token.id}`;
