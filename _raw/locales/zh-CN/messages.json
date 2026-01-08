@@ -1005,9 +1005,7 @@
             "modalTitle_other": "总共需要<2>{{count}}</2>个签名",
             "modalTitle_one": "共需 <2>{{count}}</2> 个签名",
             "modalContent": "来自相同 Permit2 合约的授权将会在相同的签名下打包在一起。"
-          },
-          "notSupport7702Title": "当前地址类型不支持",
-          "notSupport7702Content": "当前仅支持撤销私钥和助记词地址的 EIP-7702 授权。"
+          }
         },
         "ViewMore": {
           "text": "查看更多"
