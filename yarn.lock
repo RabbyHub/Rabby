@@ -4622,10 +4622,10 @@
     events "^3.3.0"
     web3-utils "^1.6.0"
 
-"@rabby-wallet/gnosis-sdk@1.4.5":
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.4.5.tgz#2be23706c1f39fb71a7962e96ea3a4ce95aa13e0"
-  integrity sha512-kr1DWbNVr6tgrRtJK82RCBTplxdly7aRINwsez4ZSK5FN3cukNIMiRrLN0QnMpKso2yXy7ABApHrqdRBHxhtug==
+"@rabby-wallet/gnosis-sdk@1.4.6-2":
+  version "1.4.6-2"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.4.6-2.tgz#70d6bf8fc0e8fa5bc8a83dc07f59839f4181cc32"
+  integrity sha512-qL2OLOnQPnNWFvVI/AtxzyiO4iiZ5PDMD21Io0OsT1abilBp2HSSoDt2NuEJQxb9Q4akLVZC1X4Jfb8IhhTQpw==
   dependencies:
     "@ethersproject/bignumber" "5.5.0"
     "@ethersproject/bytes" "5.5.0"
@@ -4634,7 +4634,7 @@
     "@ethersproject/solidity" "5.5.0"
     "@safe-global/api-kit" "4.0.0"
     "@safe-global/protocol-kit" "5.2.1"
-    "@safe-global/safe-deployments" "1.37.36"
+    "@safe-global/safe-deployments" "1.37.49"
     "@safe-global/types-kit" "1.0.2"
     axios "0.24.0"
     ethereumjs-util "7.1.3"
@@ -4887,10 +4887,10 @@
     "@safe-global/types-kit" "^1.0.1"
     viem "^2.21.8"
 
-"@safe-global/safe-deployments@1.37.36":
-  version "1.37.36"
-  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.37.36.tgz#1c463cc9000af600056f5e1874527b5679b62505"
-  integrity sha512-h9vuA659vvjJKf7wgoV5iPIHXWEQMoSkXAIZ2CJEoBteP9vP4LjyuPFp+wVQ6WyQSeHi22HjrlvGXxZD72Kqqw==
+"@safe-global/safe-deployments@1.37.49":
+  version "1.37.49"
+  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.37.49.tgz#d01b70ec9178e3c7ad03aa0504977d1b4d001307"
+  integrity sha512-132QgqMY1/HktXqmda/uPp5b+73UXTgKRB00Xgc1kduFqceSw/ZyF1Q9jJjbND9q91hhapnXhYKWN2/HiWkRcg==
   dependencies:
     semver "^7.6.2"
 
