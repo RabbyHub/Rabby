@@ -36,7 +36,10 @@ export const HomeTokenList = ({
 }) => {
   const totalValue = React.useMemo(() => {
     return list
-      ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
+      ?.reduce(
+        (acc, item) => acc.plus(item.is_core ? item._usdValue || 0 : 0),
+        new BigNumber(0)
+      )
       .toNumber();
   }, [list]);
   const { result: currentList } = useExpandList(list, totalValue);
