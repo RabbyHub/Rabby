@@ -280,7 +280,7 @@ export const DesktopDappIframe = () => {
                     icon={PolyMarketPng}
                   />
                 )}
-                {permission && !isIframeLoading && (
+                {permission && !permission?.has_permission && !isIframeLoading && (
                   <div className="absolute inset-0 bg-[rgba(0,0,0,0.5)] flex flex-col justify-center items-center gap-16">
                     <div className="p-[22px] bg-rb-brand-default rounded-[16px] ">
                       <div className="text-rb-neutral-InvertHighlight text-20 font-medium flex items-center justify-center gap-8">
