@@ -200,7 +200,7 @@ export const DesktopProfile = () => {
         className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] block"
         ref={scrollContainerRef}
       >
-        <div className="sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
+        <div className="sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1 pr-[8px]">
           <DesktopNav
             balance={balance}
             changePercent={curveChartData?.changePercent}
