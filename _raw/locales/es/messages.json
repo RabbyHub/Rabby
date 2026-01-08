@@ -828,7 +828,9 @@
             "modalTitle_other": "Se requiere un total de <2>{{count}}</2> firmas",
             "modalTitle_one": "Se requiere un total de <2>{{count}}</2> firmas",
             "modalContent": "Las aprobaciones del mismo contrato Permit2 se empaquetarían juntas bajo la misma firma."
-          }
+          },
+          "notSupport7702Title": "Dirección de tipo no compatible",
+          "notSupport7702Content": "Revocar las delegaciones de EIP-7702 solo es compatible con direcciones de clave privada o frase semilla."
         },
         "ViewMore": {
           "text": "Ver más"

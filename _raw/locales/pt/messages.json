@@ -828,7 +828,9 @@
           },
           "btnText_other": "Revogar ({{count}})",
           "btnText_zero": "Revoke",
-          "btnText_one": "Revogar ({{count}})"
+          "btnText_one": "Revogar ({{count}})",
+          "notSupport7702Title": "Tipo de Endereço Não Suportado",
+          "notSupport7702Content": "Revogar delegações EIP-7702 é suportado apenas para endereços de chave privada ou frase-semente."
         },
         "ViewMore": {
           "text": "Ver mais"

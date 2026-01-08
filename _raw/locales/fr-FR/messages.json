@@ -501,7 +501,9 @@
             "modalTitle_other": "Un total de <2>{{count}}</2> signatures est requis",
             "modalContent": "Les approbations du même contrat Permit2 seraient regroupées sous la même signature.",
             "modalTitle_one": "Un total de <2>{{count}}</2> signature est requis"
-          }
+          },
+          "notSupport7702Title": "Type d'adresse non pris en charge",
+          "notSupport7702Content": "Révoquer les délégations EIP-7702 n'est pris en charge que pour les adresses de clé privée ou de phrase de récupération."
         },
         "ViewMore": {
           "text": "Voir plus"

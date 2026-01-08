@@ -828,7 +828,9 @@
           },
           "btnText_one": "Revoke ({{count}})",
           "btnText_other": "Revoke ({{count}})",
-          "btnText_zero": "철회"
+          "btnText_zero": "철회",
+          "notSupport7702Title": "지원하지 않는 주소 유형",
+          "notSupport7702Content": "EIP-7702 위임 취소는 개인 키 또는 시드 문구 주소에 대해서만 지원됩니다."
         },
         "ViewMore": {
           "text": "자세히 보기"

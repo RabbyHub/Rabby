@@ -828,7 +828,9 @@
             "modalTitle_one": "É necessário um total de <2>{{count}}</2> assinatura(s)",
             "modalTitle_other": "É necessário um total de <2>{{count}}</2> assinaturas",
             "modalContent": "Os approvals do mesmo contrato Permit2 seriam agrupados sob a mesma assinatura."
-          }
+          },
+          "notSupport7702Title": "Tipo de Endereço Não Suportado",
+          "notSupport7702Content": "Revogar delegações EIP-7702 é suportado apenas para endereços de chave privada ou frase-semente."
         },
         "ViewMore": {
           "text": "Ver mais"

@@ -828,7 +828,9 @@
           },
           "btnText_one": "Cabut ({{count}})",
           "btnText_zero": "Batalkan",
-          "btnText_other": "Cabut ({{count}})"
+          "btnText_other": "Cabut ({{count}})",
+          "notSupport7702Content": "Mencabut delegasi EIP-7702 hanya didukung untuk alamat kunci pribadi atau frasa biji.",
+          "notSupport7702Title": "Tipe Alamat Tidak Didukung"
         },
         "ViewMore": {
           "text": "Lihat lebih banyak"
