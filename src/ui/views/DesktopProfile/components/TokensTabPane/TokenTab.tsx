@@ -105,7 +105,7 @@ export const TokenTab = ({
           'bg-rb-neutral-bg-1',
           'sticky z-10'
         )}
-        style={{ top: 103 + 57 }}
+        style={{ top: 90 + 57 }}
       >
         <div className="flex items-center gap-[16px] widget-has-ant-input">
           <StyledInput

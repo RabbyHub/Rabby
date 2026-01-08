@@ -255,7 +255,7 @@ export const DesktopDappIframe = () => {
     <>
       <DesktopPageWrap className="w-full h-full bg-rb-neutral-bg-1 px-[20px] pb-0">
         <div className="main-content flex-1 pl-0">
-          <div className="layout-container sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
+          <div className="layout-container sticky top-0 z-10 py-[21px] bg-rb-neutral-bg-1">
             <DesktopNav
               balance={balance}
               changePercent={curveChartData?.changePercent}
@@ -301,7 +301,7 @@ export const DesktopDappIframe = () => {
             </div>
           </div>
         </div>
-        <aside className={clsx('aside-list sticky top-[103px] z-20')}>
+        <aside className={clsx('aside-list sticky top-[90px] z-20')}>
           <DesktopSelectAccountList autoCollapse />
         </aside>
 

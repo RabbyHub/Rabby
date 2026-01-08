@@ -45,7 +45,7 @@ import { useTokenAndDIFIData } from './components/TokensTabPane/hook';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 
 const StickyBorderTop = () => (
-  <div className="sticky top-[103px] h-0 z-50">
+  <div className="sticky top-[90px] h-0 z-50">
     <div
       className={clsx(
         'overflow-hidden absolute w-full h-[40px] pointer-events-none',
@@ -200,7 +200,7 @@ export const DesktopProfile = () => {
         className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] block"
         ref={scrollContainerRef}
       >
-        <div className="sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1 pr-[8px]">
+        <div className="sticky top-0 z-10 py-[21px] bg-rb-neutral-bg-1 pr-[8px]">
           <DesktopNav
             balance={balance}
             changePercent={curveChartData?.changePercent}
@@ -216,7 +216,7 @@ export const DesktopProfile = () => {
                 style={{
                   width: 0,
                   scrollbarWidth: 'none',
-                  top: 103 + 57,
+                  top: 90 + 57,
                 }}
                 id={TOP_SHORTCUT_SLOT_ID}
               >
@@ -246,7 +246,7 @@ export const DesktopProfile = () => {
                     <Tabs
                       tabBarStyle={{
                         position: 'sticky',
-                        top: 103,
+                        top: 90,
                       }}
                       className="overflow-visible"
                       defaultActiveKey={activeTab}
@@ -350,7 +350,7 @@ export const DesktopProfile = () => {
           <div>
             <aside
               className={clsx(
-                'min-w-[64px] flex-shrink-0 sticky top-[103px] z-20'
+                'min-w-[64px] flex-shrink-0 sticky top-[90px] z-20'
               )}
             >
               <DesktopSelectAccountList />

@@ -47,6 +47,34 @@ export const DesktopNav: React.FC<{
 
   const currentPathname = history.location.pathname;
 
+  const navs = useMemo(
+    () => [
+      {
+        key: '/desktop/profile',
+        icon: RcIconHomeCC,
+        title: t('component.DesktopNav.portfolio'),
+      },
+      {
+        key: '/desktop/perps',
+        icon: RcIconPerpsCC,
+        title: t('component.DesktopNav.perps'),
+        isSoon: true,
+      },
+      {
+        key: '/desktop/lending',
+        icon: RcIconLeadingCC,
+        title: t('component.DesktopNav.lending'),
+        isSoon: true,
+      },
+      {
+        key: '/desktop/dapp-iframe',
+        icon: RcIconPredictionCC,
+        title: t('component.DesktopNav.prediction'),
+      },
+    ],
+    [t]
+  );
+
   const handleActionClick = useCallback(
     (nextAction: DesktopNavAction) => {
       if (onActionSelect) {
@@ -90,149 +118,47 @@ export const DesktopNav: React.FC<{
       <div className="flex">
         <div
           className={clsx(
-            'flex items-center gap-[12px] rounded-[20px] px-[12px] py-[10px]',
-            'border-[1px] border-solid border-rb-neutral-bg-2',
-            'bg-rb-neutral-bg-3'
+            'flex items-center rounded-[20px] p-[3px]',
+            'border-[1px] border-solid border-rb-neutral-bg-2'
+            // 'bg-rb-neutral-bg-3'
           )}
         >
-          <div
-            className={clsx(
-              'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
-              currentPathname === '/desktop/profile'
-                ? 'text-r-neutral-title2'
-                : 'text-rb-neutral-foot hover:bg-rb-brand-light-1 group'
-            )}
-            style={
-              currentPathname === '/desktop/profile'
-                ? {
-                    background:
-                      'linear-gradient(267deg, #5A71FF 1.05%, #384ABA 98.9%)',
-                  }
-                : undefined
-            }
-            onClick={() => {
-              if (currentPathname !== '/desktop/profile') {
-                history.push('/desktop/profile');
-              }
-            }}
-          >
-            {currentPathname === '/desktop/profile' ? (
-              <RcIconHomeCC className="flex-shrink-0" />
-            ) : (
-              <>
-                {/* <RcIconHomeCC className="flex-shrink-0 " /> */}
-
-                <RcIconHomeHover className="flex-shrink-0 hidden group-hover:block text-rb-neutral-InvertHighlight" />
-                <RcIconHomeInActive className="text-rb-neutral-secondary group-hover:hidden" />
-              </>
-            )}
-            <div
-              className={clsx(
-                'min-w-0',
-                currentPathname !== '/desktop/profile' &&
-                  'group-hover:text-rb-brand-default'
-              )}
-            >
-              <div className="text-[16px] leading-[19px] font-bold">
-                {t('component.DesktopNav.portfolio')}
-              </div>
-              {isLoading ? (
-                <Skeleton.Input
-                  className="w-[96px] h-[14px] rounded-[2px] block"
-                  active
-                />
-              ) : (
-                <div className="text-[12px] leading-[14px] flex items-center gap-[4px]">
-                  <div className="truncate">
-                    ${splitNumberByStep((balance || 0).toFixed(2))}
-                  </div>
-                  {changePercent ? (
-                    <span
-                      className={clsx(
-                        isLoss ? 'text-r-red-default' : 'text-[#17FFAA]'
-                      )}
-                    >
-                      {isLoss ? '-' : '+'}
-                      {changePercent}
-                    </span>
-                  ) : null}
-                </div>
-              )}
-            </div>
-          </div>
-          <div
-            className={clsx(
-              'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer'
-            )}
-          >
-            <RcIconPerpsCC className="text-rb-neutral-secondary" />
-            <div>
-              <div className="text-rb-neutral-foot text-[16px] leading-[19px] font-bold">
-                {t('component.DesktopNav.perps')}
-              </div>
-              <div className="text-rb-neutral-secondary text-[12px] leading-[14px]">
-                {t('component.DesktopNav.comingSoon')}
-              </div>
-            </div>
-          </div>
-          <div
-            className={clsx(
-              'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer'
-            )}
-          >
-            <RcIconLeadingCC className="text-rb-neutral-secondary" />
-            <div>
-              <div className="text-rb-neutral-foot text-[16px] leading-[19px] font-bold">
-                {t('component.DesktopNav.lending')}
-              </div>
-              <div className="text-rb-neutral-secondary text-[12px] leading-[14px]">
-                {t('component.DesktopNav.comingSoon')}
-              </div>
-            </div>
-          </div>
-
-          <div
-            className={clsx(
-              'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
-              currentPathname === '/desktop/dapp-iframe'
-                ? 'text-r-neutral-title2'
-                : 'text-rb-neutral-foot hover:bg-rb-brand-light-1 group'
-            )}
-            style={
-              currentPathname === '/desktop/dapp-iframe'
-                ? {
-                    background:
-                      'linear-gradient(267deg, #5A71FF 1.05%, #384ABA 98.9%)',
-                  }
-                : undefined
-            }
-            onClick={() => {
-              if (currentPathname !== '/desktop/dapp-iframe') {
-                history.push('/desktop/dapp-iframe');
-              }
-            }}
-          >
-            <RcIconPredictionCC
-              className={clsx(
-                currentPathname === '/desktop/dapp-iframe'
-                  ? 'text-rb-neutral-InvertHighlight'
-                  : 'text-rb-neutral-secondary group-hover:text-rb-brand-default'
-              )}
-            />
-            <div>
+          {navs.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentPathname.startsWith(item.key);
+            return (
               <div
                 className={clsx(
-                  currentPathname === '/desktop/dapp-iframe'
-                    ? ''
-                    : 'text-rb-neutral-foot group-hover:text-rb-brand-default',
-
-                  'text-[16px] leading-[19px] font-bold'
+                  'flex items-center justify-center gap-[8px] min-w-[152px] h-[40px] ',
+                  'rounded-[16px]',
+                  isActive
+                    ? 'text-r-blue-default  bg-rb-brand-light-1'
+                    : 'text-rb-neutral-secondary',
+                  item.isSoon
+                    ? 'cursor-not-allowed'
+                    : 'hover:bg-rb-neutral-bg-2 cursor-pointer'
                 )}
+                onClick={() => {
+                  if (item.isSoon) {
+                    return;
+                  }
+                  history.push(item.key);
+                }}
               >
-                {t('component.DesktopNav.prediction')}
+                <Icon className={clsx('w-[28px] h-[28px]')} />
+                <div className="space-y-[1px]">
+                  <div className="text-[16px] leading-[19px] font-bold">
+                    {item.title}
+                  </div>
+                  {item.isSoon ? (
+                    <div className="text-[11px] leading-[13px] font-medium">
+                      {t('component.DesktopNav.comingSoon')}
+                    </div>
+                  ) : null}
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
       <div className="flex items-center gap-[12px]">
@@ -240,9 +166,9 @@ export const DesktopNav: React.FC<{
           <div
             key={key}
             className={clsx(
-              'min-w-[100px] p-[14px] rounded-[14px]',
+              'min-w-[100px] p-[15px] rounded-[14px]',
               'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-brand-default text-[14px]  font-semibold',
+              'text-rb-brand-default text-[14px] leading-[16px] font-semibold',
               'border border-rb-brand-light-1'
             )}
             style={{
@@ -257,9 +183,9 @@ export const DesktopNav: React.FC<{
         {isGnosis ? (
           <div
             className={clsx(
-              'min-w-[100px] p-[14px] rounded-[14px]',
+              'min-w-[100px] p-[15px] rounded-[14px]',
               'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-brand-default text-[14px] leading-[17px] font-semibold',
+              'text-rb-brand-default text-[14px] leading-[16px] font-semibold',
               'border-[0.5px] border-solid border-rb-brand-default'
             )}
             onClick={() => handleActionClick('gnosis-queue')}
