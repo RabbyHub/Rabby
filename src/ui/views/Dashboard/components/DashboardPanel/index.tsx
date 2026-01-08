@@ -448,6 +448,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         await wallet.openInDesktop('/desktop/dapp-iframe');
         window.close();
       },
+      isFullscreen: true,
     } as IPanelItem,
   };
 
