@@ -274,7 +274,24 @@ const TokenAmountInput = ({
       : allDisplayTokens;
 
     return uniqBy(
-      keyword ? searchedTokenByQuery.map(abstractTokenToTokenItem) : allTokens,
+      keyword
+        ? searchedTokenByQuery
+            .map(abstractTokenToTokenItem)
+            .concat(
+              allTokens.filter((token) =>
+                token.symbol.toLowerCase().includes(keyword.toLowerCase())
+              )
+            )
+            .sort((a, b) => {
+              if (a.is_core && !b.is_core) {
+                return -1;
+              }
+              if (!a.is_core && b.is_core) {
+                return 1;
+              }
+              return b.price * b.amount - a.price * a.amount;
+            })
+        : allTokens,
       (token) => {
         return `${token.chain}-${token.id}`;
       }
