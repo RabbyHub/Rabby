@@ -270,7 +270,7 @@ const flowContext = flow
       }
 
       if (
-        isFromDesktopDapp &&
+        !isFromDesktopDapp ||
         !shouldAutoPersonalSign({
           origin,
           method: ctx.request.data.method,

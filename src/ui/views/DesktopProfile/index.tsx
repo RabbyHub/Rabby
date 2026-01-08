@@ -197,160 +197,166 @@ export const DesktopProfile = () => {
   return (
     <>
       <DesktopPageWrap
-        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px]"
+        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] block"
         ref={scrollContainerRef}
       >
-        <div className="main-content is-open flex-1">
-          <div className="layout-container sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
-            <DesktopNav
-              balance={balance}
-              changePercent={curveChartData?.changePercent}
-              isLoss={curveChartData?.isLoss}
-              isLoading={isBalanceLoading || isCurveLoading}
-            />
-          </div>
-
-          <div className="layout-container">
-            <div
-              className="sticky z-10 pt-[0px] overflow-scroll flex-initial px-1 w-auto"
-              style={{
-                width: 0,
-                scrollbarWidth: 'none',
-                top: 103 + 57,
-              }}
-              id={TOP_SHORTCUT_SLOT_ID}
-            >
-              {cacheProjectOverviewList?.length > 0 && activeTab === 'difi' && (
-                <TopShortcut projects={cacheProjectOverviewList || []} />
-              )}
-            </div>
-            <StickyBorderTop />
-            <div className="flex items-start gap-[20px]">
-              <main className="flex-1" id={PORTFOLIO_LIST_ID}>
-                <div
-                  key={refreshKey}
-                  className={clsx(
-                    'border border-t-0 border-solid border-rb-neutral-line',
-                    'rounded-[20px] rounded-t-none'
+        <div className="sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
+          <DesktopNav
+            balance={balance}
+            changePercent={curveChartData?.changePercent}
+            isLoss={curveChartData?.isLoss}
+            isLoading={isBalanceLoading || isCurveLoading}
+          />
+        </div>
+        <div className="flex align-top justify-center gap-[16px]">
+          <div className="main-content is-open flex-1">
+            <div className="layout-container">
+              <div
+                className="sticky z-10 pt-[0px] overflow-scroll flex-initial px-1 w-auto"
+                style={{
+                  width: 0,
+                  scrollbarWidth: 'none',
+                  top: 103 + 57,
+                }}
+                id={TOP_SHORTCUT_SLOT_ID}
+              >
+                {cacheProjectOverviewList?.length > 0 &&
+                  activeTab === 'difi' && (
+                    <TopShortcut projects={cacheProjectOverviewList || []} />
                   )}
-                >
-                  <ProfileHeader
-                    balance={balance}
-                    evmBalance={evmBalance}
-                    curveChartData={curveChartData}
-                    isLoading={isBalanceLoading || isCurveLoading}
-                    onRefresh={handleUpdate}
-                    appChainIds={appChainIds}
-                  />
-                  <Tabs
-                    tabBarStyle={{
-                      position: 'sticky',
-                      top: 103,
-                    }}
-                    className="overflow-visible"
-                    defaultActiveKey={activeTab}
-                    activeKey={activeTab}
-                    onChange={handleTabChange}
-                    tabBarExtraContent={{
-                      right: (
-                        <>
-                          <div className="flex items-center gap-[16px] pr-[20px]">
-                            <DesktopPending />
-                            <DesktopChainSelector
-                              value={chain}
-                              onChange={(v) =>
-                                dispatch.desktopProfile.setField({ chain: v })
-                              }
-                            />
-                          </div>
-                        </>
-                      ),
-                    }}
+              </div>
+              <StickyBorderTop />
+              <div className="flex items-start gap-[20px]">
+                <main className="flex-1" id={PORTFOLIO_LIST_ID}>
+                  <div
+                    key={refreshKey}
+                    className={clsx(
+                      'border border-t-0 border-solid border-rb-neutral-line',
+                      'rounded-[20px] rounded-t-none'
+                    )}
                   >
-                    <Tabs.TabPane
-                      tab={t('page.desktopProfile.tabs.tokens')}
-                      key="tokens"
+                    <ProfileHeader
+                      balance={balance}
+                      evmBalance={evmBalance}
+                      curveChartData={curveChartData}
+                      isLoading={isBalanceLoading || isCurveLoading}
+                      onRefresh={handleUpdate}
+                      appChainIds={appChainIds}
+                    />
+                    <Tabs
+                      tabBarStyle={{
+                        position: 'sticky',
+                        top: 103,
+                      }}
+                      className="overflow-visible"
+                      defaultActiveKey={activeTab}
+                      activeKey={activeTab}
+                      onChange={handleTabChange}
+                      tabBarExtraContent={{
+                        right: (
+                          <>
+                            <div className="flex items-center gap-[16px] pr-[20px]">
+                              <DesktopPending />
+                              <DesktopChainSelector
+                                value={chain}
+                                onChange={(v) =>
+                                  dispatch.desktopProfile.setField({ chain: v })
+                                }
+                              />
+                            </div>
+                          </>
+                        ),
+                      }}
                     >
-                      <TokenTab
-                        isTokensLoading={
-                          !!isTokensLoading ||
-                          (!!lpTokenMode && !!isAllTokenLoading)
-                        }
-                        isNoResults={isNoResults}
-                        sortTokens={sortTokens}
-                        hasTokens={hasTokens}
-                        lpTokenMode={lpTokenMode}
-                        setLpTokenMode={setLpTokenMode}
-                        selectChainId={chainInfo?.serverId}
-                      />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane
-                      tab={t('page.desktopProfile.tabs.defi')}
-                      key="difi"
-                    >
-                      <>
-                        <DIFITab
-                          onProjectOverviewListChange={
-                            setCacheProjectOverviewList
-                          }
-                          appIds={appIds}
-                          displayPortfolios={displayPortfolios}
-                          currentPortfolioNetWorth={currentPortfolioNetWorth}
-                          isLoading={
+                      <Tabs.TabPane
+                        tab={t('page.desktopProfile.tabs.tokens')}
+                        key="tokens"
+                      >
+                        <TokenTab
+                          isTokensLoading={
                             !!isTokensLoading ||
-                            !!isPortfoliosLoading ||
-                            !!isAppPortfoliosLoading
+                            (!!lpTokenMode && !!isAllTokenLoading)
                           }
                           isNoResults={isNoResults}
-                          removeProtocol={removeProtocol}
+                          sortTokens={sortTokens}
+                          hasTokens={hasTokens}
+                          lpTokenMode={lpTokenMode}
+                          setLpTokenMode={setLpTokenMode}
+                          selectChainId={chainInfo?.serverId}
                         />
-                      </>
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab="NFTs" key="nft">
-                      <NFTTabPane selectChainId={chainInfo?.serverId} />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane
-                      tab={t('page.desktopProfile.tabs.transactions')}
-                      key="transactions"
+                      </Tabs.TabPane>
+                      <Tabs.TabPane
+                        tab={t('page.desktopProfile.tabs.defi')}
+                        key="difi"
+                      >
+                        <>
+                          <DIFITab
+                            onProjectOverviewListChange={
+                              setCacheProjectOverviewList
+                            }
+                            appIds={appIds}
+                            displayPortfolios={displayPortfolios}
+                            currentPortfolioNetWorth={currentPortfolioNetWorth}
+                            isLoading={
+                              !!isTokensLoading ||
+                              !!isPortfoliosLoading ||
+                              !!isAppPortfoliosLoading
+                            }
+                            isNoResults={isNoResults}
+                            removeProtocol={removeProtocol}
+                          />
+                        </>
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="NFTs" key="nft">
+                        <NFTTabPane selectChainId={chainInfo?.serverId} />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane
+                        tab={t('page.desktopProfile.tabs.transactions')}
+                        key="transactions"
+                      >
+                        <TransactionsTabPane
+                          selectChainId={chainInfo?.serverId}
+                          scrollContainerRef={scrollContainerRef}
+                        />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane
+                        tab={t('page.desktopProfile.tabs.approvals')}
+                        key="approvals"
+                      >
+                        <ApprovalsTabPane
+                          isDesktop={true}
+                          desktopChain={chain}
+                          key={`${currentAccount?.address}-${currentAccount?.type}`}
+                        />
+                      </Tabs.TabPane>
+                    </Tabs>
+                  </div>
+                  <div className="flex justify-end px-[20px]">
+                    <BackTop
+                      target={() => scrollContainerRef.current || window}
+                      style={{
+                        bottom: 32,
+                        zIndex: 100,
+                        right: 'initial',
+                      }}
                     >
-                      <TransactionsTabPane
-                        selectChainId={chainInfo?.serverId}
-                        scrollContainerRef={scrollContainerRef}
-                      />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane
-                      tab={t('page.desktopProfile.tabs.approvals')}
-                      key="approvals"
-                    >
-                      <ApprovalsTabPane
-                        isDesktop={true}
-                        desktopChain={chain}
-                        key={`${currentAccount?.address}-${currentAccount?.type}`}
-                      />
-                    </Tabs.TabPane>
-                  </Tabs>
-                </div>
-                <div className="flex justify-end px-[20px]">
-                  <BackTop
-                    target={() => scrollContainerRef.current || window}
-                    style={{
-                      bottom: 32,
-                      zIndex: 100,
-                      right: 'initial',
-                    }}
-                  >
-                    <ThemeIcon src={RcIconBackTop} />
-                  </BackTop>
-                </div>
-              </main>
+                      <ThemeIcon src={RcIconBackTop} />
+                    </BackTop>
+                  </div>
+                </main>
+              </div>
             </div>
           </div>
+          <div>
+            <aside
+              className={clsx(
+                'min-w-[64px] flex-shrink-0 sticky top-[103px] z-20'
+              )}
+            >
+              <DesktopSelectAccountList />
+            </aside>
+          </div>
         </div>
-        <aside
-          className={clsx('min-w-[64px] flex-shrink-0 sticky top-[103px] z-20')}
-        >
-          <DesktopSelectAccountList />
-        </aside>
       </DesktopPageWrap>
       <SendTokenModal
         visible={action === 'send'}
