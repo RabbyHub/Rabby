@@ -5,6 +5,7 @@ import { MarginMode } from '../../../types';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
 import { Checkbox } from '@/ui/component';
 import clsx from 'clsx';
+import { PerpsCheckbox } from './PerpsCheckbox';
 
 interface MarginModeModalProps {
   visible: boolean;
@@ -57,7 +58,6 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
       centered
       bodyStyle={{
         padding: 0,
-        height: '520px',
       }}
       maskStyle={{
         zIndex: 1000,
@@ -69,7 +69,7 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
       className="modal-support-darkmode desktop-perps-margin-mode-modal"
     >
       <div className="bg-rb-neutral-bg-2 flex flex-col h-full">
-        <div className="px-20 pt-16 flex-1">
+        <div className="px-20 pt-16 flex-1 pb-24">
           {/* Title */}
           <h3 className="text-[16px] font-medium text-rb-neutral-title-1 text-center mb-16">
             {coinSymbol} {t('page.perpsPro.marginMode.title') || 'Margin Mode'}
@@ -81,25 +81,19 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
             <div
               onClick={() => handleModeSelect(MarginMode.CROSS)}
               className={clsx(
-                'p-[12px] rounded-[8px] border cursor-pointer transition-all',
+                'p-[12px] rounded-[8px] border cursor-pointer',
                 selectedMode === MarginMode.CROSS
                   ? 'border-rb-brand-default bg-rb-brand-light-1'
-                  : 'border-rb-neutral-line bg-transparent hover:bg-rb-neutral-bg-1'
+                  : 'border-rb-neutral-line'
               )}
             >
               <div className="flex items-start gap-[8px]">
-                {/* Checkbox */}
-                <Checkbox
-                  type="square"
-                  width="16px"
-                  height="16px"
+                <PerpsCheckbox
                   checked={selectedMode === MarginMode.CROSS}
-                  className="mt-[2px] rounded-[4px]"
                   onChange={() => handleModeSelect(MarginMode.CROSS)}
                 />
 
-                {/* Content */}
-                <div className="flex-1">
+                <div className="flex-1 mt-[-2px]">
                   <div className="text-[14px] font-medium text-rb-neutral-title-1 mb-[4px]">
                     {t('page.perpsPro.marginMode.cross') || 'Cross'}
                   </div>
@@ -110,29 +104,22 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
               </div>
             </div>
 
-            {/* Isolated Mode */}
             <div
               onClick={() => handleModeSelect(MarginMode.ISOLATED)}
               className={clsx(
-                'p-[12px] rounded-[8px] border cursor-pointer transition-all',
+                'p-[12px] rounded-[8px] border cursor-pointer',
                 selectedMode === MarginMode.ISOLATED
                   ? 'border-rb-brand-default bg-rb-brand-light-1'
-                  : 'border-rb-neutral-line bg-transparent hover:bg-rb-neutral-bg-1'
+                  : 'border-rb-neutral-line'
               )}
             >
               <div className="flex items-start gap-[8px]">
-                {/* Checkbox */}
-                <Checkbox
-                  type="square"
-                  width="16px"
-                  height="16px"
+                <PerpsCheckbox
                   checked={selectedMode === MarginMode.ISOLATED}
-                  className="mt-[2px] rounded-[4px]"
                   onChange={() => handleModeSelect(MarginMode.ISOLATED)}
                 />
 
-                {/* Content */}
-                <div className="flex-1">
+                <div className="flex-1 mt-[-2px]">
                   <div className="text-[14px] font-medium text-rb-neutral-title-1 mb-[4px]">
                     {t('page.perpsPro.marginMode.isolated') || 'Isolated'}
                   </div>

@@ -50,12 +50,12 @@ export const OrderBookTrades: React.FC = () => {
     };
   }, [selectedCoin]);
 
-  const latestTradePrice = useMemo(() => {
-    return trades[0]?.price;
+  const latestTrade = useMemo(() => {
+    return trades[0];
   }, [trades]);
 
   return (
-    <div className="h-full w-full bg-rb-neutral-bg-1 flex flex-col overflow-hidden border-r border-solid border-rb-neutral-line">
+    <div className="h-full w-full bg-rb-neutral-bg-1 flex flex-col overflow-hidden border-r border-l border-solid border-rb-neutral-line">
       {/* Tabs */}
       <div className="flex border-b border-solid border-rb-neutral-line flex-shrink-0 h-40">
         <button
@@ -84,7 +84,7 @@ export const OrderBookTrades: React.FC = () => {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         {activeTab === 'orderbook' ? (
-          <OrderBook latestTradePrice={latestTradePrice} />
+          <OrderBook latestTrade={latestTrade} />
         ) : (
           <Trades trades={trades} selectedCoin={selectedCoin} />
         )}

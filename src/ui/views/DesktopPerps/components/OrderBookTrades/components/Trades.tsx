@@ -32,10 +32,10 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
     <div className="h-full flex flex-col bg-rb-neutral-bg-1">
       {/* Header */}
       <div className="flex items-center justify-between px-[8px] py-[6px] text-[11px] text-r-neutral-foot flex-shrink-0">
-        <span className="min-w-[90px] text-left">
+        <span className="min-w-[60px] text-left">
           {t('page.perpsPro.orderBook.price')} (USD)
         </span>
-        <span className="min-w-[90px] text-left">
+        <span className="min-w-[90px] text-right">
           {t('page.perpsPro.orderBook.amount')} ({selectedCoin})
         </span>
         <span className="min-w-[60px] text-right">
@@ -58,7 +58,7 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
               <span
                 onClick={() => handleClickPrice(trade.price)}
                 className={clsx(
-                  'min-w-[90px] text-left cursor-pointer hover:font-bold',
+                  'min-w-[60px] text-left cursor-pointer hover:font-bold',
                   trade.side === 'buy'
                     ? 'text-rb-green-default'
                     : 'text-rb-red-default'
@@ -66,7 +66,7 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
               >
                 {splitNumberByStep(trade.price)}
               </span>
-              <span className="min-w-[90px] text-left text-r-neutral-title-1">
+              <span className="min-w-[90px] text-right text-r-neutral-title-1">
                 {splitNumberByStep(trade.size)}
               </span>
               <span className="min-w-[60px] text-right text-r-neutral-title-1">

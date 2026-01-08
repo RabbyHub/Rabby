@@ -18,7 +18,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-[6px] font-medium">
+    <div className="space-y-[6px]">
       {/* TP/SL Expected PnL */}
       {showTPSLExpected && (
         <>
@@ -27,7 +27,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               <span className="text-r-neutral-foot text-[13px]">
                 {t('page.perpsPro.tradingPanel.takeProfitExpectedPnL')}
               </span>
-              <span className="text-r-green-default text-[13px]">
+              <span className="text-r-green-default font-medium text-[13px]">
                 {tpExpectedPnL}
               </span>
             </div>
@@ -37,7 +37,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               <span className="text-r-neutral-foot text-[13px]">
                 {t('page.perpsPro.tradingPanel.stopLossExpectedPnL')}
               </span>
-              <span className="text-r-red-default text-[13px]">
+              <span className="text-r-red-default font-medium text-[13px]">
                 {slExpectedPnL}
               </span>
             </div>
@@ -50,8 +50,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         <span className="text-r-neutral-foot text-[13px]">
           {t('page.perpsPro.tradingPanel.liquidationPrice')}
         </span>
-        <span className="text-r-neutral-title-1 text-[13px]">
-          {data.liquidationPrice}
+        {}
+        <span className="text-r-neutral-title-1 font-medium text-[13px]">
+          {data.liquidationPrice || '-'}
         </span>
       </div>
 
@@ -60,7 +61,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         <span className="text-r-neutral-foot text-[13px]">
           {t('page.perpsPro.tradingPanel.orderValue')}
         </span>
-        <span className="text-r-neutral-title-1 text-[13px]">
+        <span className="text-r-neutral-title-1 font-medium text-[13px]">
           {data.orderValue}
         </span>
       </div>
@@ -70,7 +71,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         <span className="text-r-neutral-foot text-[13px]">
           {t('page.perpsPro.tradingPanel.marginRequired')}
         </span>
-        <span className="text-r-neutral-title-1 text-[13px]">
+        <span className="text-r-neutral-title-1 font-medium text-[13px]">
           {data.marginRequired}
         </span>
       </div>
@@ -80,7 +81,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         <span className="text-r-neutral-foot text-[13px]">
           {t('page.perpsPro.tradingPanel.marginUsage')}
         </span>
-        <span className="text-r-neutral-title-1 text-[13px]">
+        <span className="text-r-neutral-title-1 font-medium text-[13px]">
           {data.marginUsage}
         </span>
       </div>
@@ -91,7 +92,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.slippage')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {data.slippage}
           </span>
         </div>

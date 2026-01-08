@@ -21,6 +21,8 @@ import { validatePriceInput } from '@/ui/views/Perps/utils';
 import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { PerpsCheckbox } from '../components/PerpsCheckbox';
+import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 
 interface TakeOrStopMarketTradingContainerProps {
   takeOrStop: 'tp' | 'sl';
@@ -241,21 +243,21 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
       />
 
       <div className="flex items-center gap-8">
-        <div className="relative flex-1">
-          <input
-            type="text"
-            value={triggerPrice}
-            onChange={handleTriggerPriceChange}
-            placeholder=""
-            className="w-full h-[40px] pl-[44px] pr-[40px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line text-r-neutral-title-1 text-[13px] focus:outline-none font-medium text-right"
-          />
-          <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.triggerPrice')}
-          </div>
-          <div className="absolute right-[8px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
-            USD
-          </div>
-        </div>
+        <DesktopPerpsInput
+          value={triggerPrice}
+          onChange={handleTriggerPriceChange}
+          className="text-right text-[13px] leading-[16px]"
+          suffix={
+            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
+              USD
+            </span>
+          }
+          prefix={
+            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
+              {t('page.perpsPro.tradingPanel.triggerPrice')}
+            </span>
+          }
+        />
         <div
           className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer"
           onClick={handleMidClick}
@@ -279,24 +281,12 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-16">
-          <label
-            className={`flex items-center gap-[8px] ${
-              !currentPosition
-                ? 'cursor-not-allowed opacity-50'
-                : 'cursor-pointer'
-            }`}
-          >
-            <input
-              type="checkbox"
-              checked={!currentPosition ? false : reduceOnly}
-              disabled={!currentPosition}
-              onChange={(e) => setReduceOnly(e.target.checked)}
-              className="w-[16px] h-[16px] rounded-[4px] accent-blue-600 cursor-pointer"
-            />
-            <span className="text-r-neutral-title-1 text-[13px]">
-              Reduce Only
-            </span>
-          </label>
+          <PerpsCheckbox
+            checked={reduceOnly}
+            onChange={setReduceOnly}
+            title={t('page.perpsPro.tradingPanel.reduceOnly')}
+            disabled={!currentPosition}
+          />
         </div>
       </div>
 
@@ -327,9 +317,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
         >
           {validation.error
             ? validation.error
-            : orderSide === OrderSide.BUY
-            ? t('page.perpsPro.tradingPanel.buyLong')
-            : t('page.perpsPro.tradingPanel.sellShort')}
+            : t('page.perpsPro.tradingPanel.placeOrder')}
         </Button>
       )}
 

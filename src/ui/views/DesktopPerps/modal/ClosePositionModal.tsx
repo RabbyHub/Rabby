@@ -85,10 +85,25 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   });
 
   const receiveAmount = useMemo(() => {
+    if (type === 'limit') {
+      const pnl = new BigNumber(limitPrice || 0)
+        .minus(new BigNumber(position.entryPx || 0))
+        .times(position.size)
+        .toFixed(2);
+      return new BigNumber(position.marginUsed || 0).plus(pnl);
+    }
+
     const marginUsed = new BigNumber(position.marginUsed || 0);
     const percentageValue = new BigNumber(percentage || 0);
     return marginUsed.times(percentageValue).div(100);
-  }, [position.marginUsed, percentage]);
+  }, [
+    position.marginUsed,
+    percentage,
+    limitPrice,
+    position.entryPx,
+    position.size,
+    position.leverage,
+  ]);
 
   const closedPnl = useMemo(() => {
     const size = new BigNumber(positionSize.amount || 0);
@@ -332,7 +347,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
               </div>
             </section>
             <section className="space-y-[8px]">
-              {type === 'market' && (
+              {(type === 'market' || type === 'limit') && (
                 <div className="flex items-center justify-between">
                   <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
                     {t('page.perpsPro.userInfo.positionInfo.receive')}

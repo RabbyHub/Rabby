@@ -37,7 +37,7 @@ export const OrderHistory: React.FC = () => {
         sorter: (a, b) => a.statusTimestamp - b.statusTimestamp,
         render: (_, record) => {
           return (
-            <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1">
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
               {dayjs(record.statusTimestamp).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );

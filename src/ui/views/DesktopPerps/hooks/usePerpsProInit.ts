@@ -23,6 +23,10 @@ export const usePerpsProInit = () => {
   const wallet = useWallet();
 
   useEffect(() => {
+    dispatch.perps.initFavoritedCoins(undefined);
+  }, []);
+
+  useEffect(() => {
     preloadSound('/sounds/order-filled.mp3');
   }, []);
 

@@ -39,7 +39,7 @@ export const TradeHistory: React.FC = () => {
         sorter: (a, b) => a.time - b.time,
         render: (_, record) => {
           return (
-            <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1">
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
               {dayjs(record.time).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );

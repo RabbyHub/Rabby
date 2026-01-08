@@ -12,7 +12,7 @@ import { TPSLSettings } from '../components/TPSLSettings';
 import { OrderSummary } from '../components/OrderSummary';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { useRequest } from 'ahooks';
-import { Button, Select } from 'antd';
+import { Button, Select, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSlider';
@@ -21,6 +21,8 @@ import { validatePriceInput } from '@/ui/views/Perps/utils';
 import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { PerpsCheckbox } from '../components/PerpsCheckbox';
+import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 
 export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -56,8 +58,8 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     handleTPSLEnabledChange,
     resetForm,
   } = usePerpsTradingState();
-  const [hourInput, setHourInput] = React.useState('');
-  const [minuteInput, setMinuteInput] = React.useState('');
+  const [hourInput, setHourInput] = React.useState('0');
+  const [minuteInput, setMinuteInput] = React.useState('5');
   const [randomize, setRandomize] = React.useState(false);
 
   const allMinsDuration = React.useMemo(() => {
@@ -69,7 +71,9 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     const sizePerSuborder = Number(tradeSize) / numberOfOrders;
     return {
       numberOfOrders,
-      sizePerSuborder: sizePerSuborder.toFixed(szDecimals),
+      sizePerSuborder: Number.isNaN(sizePerSuborder)
+        ? '-'
+        : sizePerSuborder.toFixed(szDecimals),
     };
   }, [allMinsDuration, tradeSize, szDecimals]);
 
@@ -226,79 +230,52 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
           </div>
         </div>
         <div className="flex items-center gap-[8px]">
-          <div className="flex-1">
-            <div className="relative">
-              <input
-                type="text"
-                value={hourInput}
-                onChange={handleHourInputChange}
-                placeholder=""
-                className={clsx(
-                  'w-full h-[40px] pl-[32px] pr-[12px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid text-[13px] focus:outline-none font-medium text-right',
-                  hourInput.length > 0 && !validateNumberInput(hourInput)
-                    ? 'border-rb-red-default text-rb-red-default'
-                    : 'border-rb-neutral-line text-r-neutral-title-1'
-                )}
-              />
-              <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
+          <DesktopPerpsInput
+            value={hourInput}
+            onChange={handleHourInputChange}
+            className="flex-1 text-right text-[13px] leading-[16px]"
+            prefix={
+              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
                 {t('page.perpsPro.tradingPanel.hours')}
-              </div>
-            </div>
-          </div>
-          <div className="flex-1">
-            <div className="relative">
-              <input
-                type="text"
-                value={minuteInput}
-                onChange={handleMinuteInputChange}
-                placeholder=""
-                className={clsx(
-                  'w-full h-[40px] pl-[32px] pr-[12px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid text-[13px] focus:outline-none font-medium text-right',
-                  minuteInput.length > 0 && !validateNumberInput(minuteInput)
-                    ? 'border-rb-red-default text-rb-red-default'
-                    : 'border-rb-neutral-line text-r-neutral-title-1'
-                )}
-              />
-              <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
+              </span>
+            }
+          />
+          <DesktopPerpsInput
+            value={minuteInput}
+            onChange={handleMinuteInputChange}
+            className="flex-1 text-right text-[13px] leading-[16px]"
+            prefix={
+              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
                 {t('page.perpsPro.tradingPanel.minutes')}
-              </div>
-            </div>
-          </div>
+              </span>
+            }
+          />
         </div>
       </div>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-16">
-          <label className="flex items-center gap-[8px] cursor-pointer">
-            <input
-              type="checkbox"
-              checked={randomize}
-              onChange={(e) => setRandomize(e.target.checked)}
-              className="w-[16px] h-[16px] rounded-[4px] accent-blue-600 cursor-pointer"
-            />
-            <span className="text-r-neutral-title-1 text-[13px]">
-              {t('page.perpsPro.tradingPanel.randomize')}
-            </span>
-          </label>
-
-          <label
-            className={`flex items-center gap-[8px] ${
-              !currentPosition
-                ? 'cursor-not-allowed opacity-50'
-                : 'cursor-pointer'
-            }`}
-          >
-            <input
-              type="checkbox"
-              checked={!currentPosition ? false : reduceOnly}
-              disabled={!currentPosition}
-              onChange={(e) => setReduceOnly(e.target.checked)}
-              className="w-[16px] h-[16px] rounded-[4px] accent-blue-600 cursor-pointer"
-            />
-            <span className="text-r-neutral-title-1 text-[13px]">
-              Reduce Only
-            </span>
-          </label>
+          <PerpsCheckbox
+            checked={randomize}
+            onChange={(checked) => setRandomize(checked)}
+            title={
+              <Tooltip
+                placement="top"
+                overlayClassName={clsx('rectangle')}
+                title={t('page.perpsPro.tradingPanel.randomizeTooltip')}
+              >
+                <span className="text-r-neutral-title-1 text-[12px]">
+                  {t('page.perpsPro.tradingPanel.randomize')}
+                </span>
+              </Tooltip>
+            }
+          />
+          <PerpsCheckbox
+            checked={reduceOnly}
+            onChange={setReduceOnly}
+            title={t('page.perpsPro.tradingPanel.reduceOnly')}
+            disabled={!currentPosition}
+          />
         </div>
       </div>
 
@@ -329,20 +306,18 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         >
           {validation.error
             ? validation.error
-            : orderSide === OrderSide.BUY
-            ? t('page.perpsPro.tradingPanel.buyLong')
-            : t('page.perpsPro.tradingPanel.sellShort')}
+            : t('page.perpsPro.tradingPanel.placeOrder')}
         </Button>
       )}
 
       {/* Order Summary */}
-      <div className="space-y-[6px] font-medium">
+      <div className="space-y-[6px]">
         <div className="flex items-center justify-between">
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.frequency')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
-            {'30 seconds'}
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
+            {t('page.perpsPro.tradingPanel.threeThirtySeconds')}
           </span>
         </div>
 
@@ -350,12 +325,15 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.runtime')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {`${
               Math.floor(allMinsDuration / 60) >= 1
-                ? Math.floor(allMinsDuration / 60) + ' hours'
+                ? Math.floor(allMinsDuration / 60) +
+                  t('page.perpsPro.tradingPanel.hours')
                 : ''
-            } ${Math.floor(allMinsDuration % 60)} minutes`}
+            } ${Math.floor(allMinsDuration % 60)} ${t(
+              'page.perpsPro.tradingPanel.minutes'
+            )}`}
           </span>
         </div>
 
@@ -363,7 +341,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.numberOfOrders')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {numberOfOrders}
           </span>
         </div>
@@ -372,7 +350,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.sizePerSuborder')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {sizePerSuborder}
           </span>
         </div>
@@ -382,7 +360,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.marginRequired')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {orderSummary.marginRequired}
           </span>
         </div>
@@ -392,7 +370,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.marginUsage')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {orderSummary.marginUsage}
           </span>
         </div>

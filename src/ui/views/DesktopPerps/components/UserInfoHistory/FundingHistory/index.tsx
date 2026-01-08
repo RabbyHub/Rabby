@@ -30,7 +30,7 @@ export const FundingHistory: React.FC = () => {
         sorter: (a, b) => dayjs(a.time).unix() - dayjs(b.time).unix(),
         render: (_, record) => {
           return (
-            <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1">
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
               {dayjs(record.time).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );

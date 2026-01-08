@@ -49,7 +49,7 @@ export const OrderSideAndFunds: React.FC<OrderSideAndFundsProps> = ({
       {/* Available Funds & Current Position */}
       <div className="space-y-[4px]">
         <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[12px] font-medium">
+          <span className="text-r-neutral-foot text-[12px]">
             {t('page.perpsPro.tradingPanel.availableFunds')}
           </span>
           <span className="text-r-neutral-title-1 text-[12px] font-medium">
@@ -57,7 +57,7 @@ export const OrderSideAndFunds: React.FC<OrderSideAndFundsProps> = ({
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[12px] font-medium">
+          <span className="text-r-neutral-foot text-[12px]">
             {t('page.perpsPro.tradingPanel.currentPosition')}
           </span>
           <span

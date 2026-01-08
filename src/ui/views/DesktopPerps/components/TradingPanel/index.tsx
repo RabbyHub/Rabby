@@ -44,7 +44,7 @@ export const TradingPanel: React.FC = () => {
   return (
     <>
       <div className="h-full w-full bg-rb-neutral-bg-1 flex flex-col overflow-hidden rounded-[16px]">
-        <div className="flex-1 overflow-auto px-[16px] py-[16px] min-h-0">
+        <div className="flex-1 overflow-hidden px-[16px] py-[16px] min-h-0">
           <div className="space-y-[16px]">
             <TopModeStatus
               orderType={orderType}

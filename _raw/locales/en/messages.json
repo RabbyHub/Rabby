@@ -1118,6 +1118,8 @@
         "randomized": "(randomized)"
       },
       "tradingPanel": {
+        "sizeSkewTooltip": "Ratio between end and start prices. For example, if size skew is 2.0 then a limit order for end price will be placed with twice the size of the start price. A size skew of 1.0 creates equally sized orders.",
+        "randomizeTooltip": "Randomizes the timing and size of sub-orders to reduce predictability.",
         "reduceOnly": "Reduce Only",
         "enableTrading": "Enable Trading",
         "startPrice": "Start Price",
@@ -1132,6 +1134,7 @@
         "orderValue": "Order Value",
         "slippage": "Slippage",
         "frequency": "Frequency",
+        "threeThirtySeconds": "30 Seconds",
         "numberOfOrders": "Number of Orders",
         "sizePerSuborder": "Size per Suborder",
         "marginRequired": "Margin Required",

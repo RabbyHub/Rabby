@@ -318,7 +318,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
       </div>
       <div className="flex items-start gap-[20px]">
         {/* Slider with preset points */}
-        <div className="flex-1 space-y-[6px] px-4">
+        <div className="flex-1 space-y-[6px] px-4 my-12">
           <DesktopPerpsSlider
             min={0}
             max={100}
@@ -337,7 +337,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
                 className="absolute text-[11px] text-r-neutral-foot transition-colors hover:text-r-blue-default -translate-x-1/2"
                 style={{ left: `${point}%` }}
               >
-                {point}%
+                {point}
               </button>
             ))}
           </div>

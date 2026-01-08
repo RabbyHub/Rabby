@@ -163,7 +163,7 @@ export const DesktopPerpsSelectAccountList: React.FC = () => {
   }, [currentAccount?.address]);
 
   const height = useMemo(() => {
-    return Math.min(filteredAccounts.length + 1, 10) * 74 - 12;
+    return Math.min(filteredAccounts.length + 1, 10) * 74 + 12;
   }, [filteredAccounts.length]);
 
   const ref = useRef<HTMLDivElement>(null);
@@ -229,29 +229,29 @@ export const DesktopPerpsSelectAccountList: React.FC = () => {
             </PerpsAccountItem>
           );
         }}
-        // components={{
-        //   Footer: () => (
-        //     <div
-        //       onClick={() => {
-        //         history.replace(`${location.pathname}?action=add-address`);
-        //       }}
-        //       className={clsx(
-        //         // 'bg-rb-neutral-bg-3',
-        //         'cursor-pointer rounded-[20px] h-[62px] p-[16px] flex items-center gap-[8px] text-r-blue-default',
-        //         'desktop-account-item'
-        //       )}
-        //       style={{
-        //         background: 'rgba(76, 101, 255, 0.08)',
-        //       }}
-        //     >
-        //       <RcIconAddWalletCC className="flex-shrink-0" />
-        //       <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
-        //         {t('component.DesktopSelectAccountList.addAddresses')}
-        //       </div>
-        //     </div>
-        //   ),
-        // }}
-        // increaseViewportBy={100}
+        components={{
+          Footer: () => (
+            <div
+              onClick={() => {
+                history.replace(`${location.pathname}?action=add-address`);
+              }}
+              className={clsx(
+                // 'bg-rb-neutral-bg-3',
+                'cursor-pointer rounded-[20px] h-[62px] p-[16px] flex items-center gap-[8px] text-r-blue-default',
+                'desktop-account-item'
+              )}
+              style={{
+                background: 'rgba(76, 101, 255, 0.08)',
+              }}
+            >
+              <RcIconAddWalletCC className="flex-shrink-0" />
+              <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
+                {t('component.DesktopSelectAccountList.addAddresses')}
+              </div>
+            </div>
+          ),
+        }}
+        increaseViewportBy={100}
       />
     </div>
   );

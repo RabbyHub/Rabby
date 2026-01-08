@@ -5713,6 +5713,7 @@ export class WalletController extends BaseController {
     return perpsService.getAgentWalletPreference(masterWallet);
   };
   getPerpsFavoritedCoins = perpsService.getPerpsFavoritedCoins;
+  setPerpsFavoritedCoins = perpsService.setPerpsFavoritedCoins;
   updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
   setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;
   getSendApproveAfterDeposit = async (masterAddress: string) => {

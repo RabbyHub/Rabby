@@ -16,6 +16,7 @@ import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSlider';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
+import { PerpsCheckbox } from '../components/PerpsCheckbox';
 
 export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -173,36 +174,17 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
 
       {/* TP/SL and Reduce Only */}
       <div className="flex items-center gap-16">
-        <label className="flex items-center gap-[8px] cursor-pointer">
-          <input
-            type="checkbox"
-            checked={tpslConfig.enabled}
-            onChange={(e) => handleTPSLEnabledChange(e.target.checked)}
-            className="w-[16px] h-[16px] rounded-[4px] accent-blue-600 cursor-pointer"
-          />
-          <span className="text-r-neutral-title-1 text-[13px]">
-            {t('page.perpsPro.tradingPanel.tpSl')}
-          </span>
-        </label>
-
-        <label
-          className={`flex items-center gap-[8px] ${
-            !currentPosition
-              ? 'cursor-not-allowed opacity-50'
-              : 'cursor-pointer'
-          }`}
-        >
-          <input
-            type="checkbox"
-            checked={!currentPosition ? false : reduceOnly}
-            disabled={!currentPosition}
-            onChange={(e) => setReduceOnly(e.target.checked)}
-            className="w-[16px] h-[16px] rounded-[4px] accent-blue-600 cursor-pointer"
-          />
-          <span className="text-r-neutral-title-1 text-[13px]">
-            Reduce Only
-          </span>
-        </label>
+        <PerpsCheckbox
+          checked={tpslConfig.enabled}
+          onChange={handleTPSLEnabledChange}
+          title={t('page.perpsPro.tradingPanel.tpSl')}
+        />
+        <PerpsCheckbox
+          checked={reduceOnly}
+          onChange={setReduceOnly}
+          title={t('page.perpsPro.tradingPanel.reduceOnly')}
+          disabled={!currentPosition}
+        />
       </div>
 
       {/* TP/SL Settings Expanded */}

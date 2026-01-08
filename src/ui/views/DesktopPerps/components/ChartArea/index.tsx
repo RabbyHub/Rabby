@@ -10,10 +10,6 @@ export const ChartArea: React.FC = () => {
     (state) => state.perps
   );
 
-  useEffect(() => {
-    dispatch.perps.initFavoritedCoins(undefined);
-  }, []);
-
   const handleSelectCoin = (coin: string) => {
     dispatch.perps.setSelectedCoin(coin);
   };

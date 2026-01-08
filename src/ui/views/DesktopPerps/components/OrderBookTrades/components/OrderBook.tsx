@@ -8,10 +8,10 @@ import { Dropdown, Menu, Select } from 'antd';
 import { ReactComponent as RcIconBuySell } from '@/ui/assets/perps/icon-buy-sell.svg';
 import { ReactComponent as RcIconBuy } from '@/ui/assets/perps/icon-buy.svg';
 import { ReactComponent as RcIconSell } from '@/ui/assets/perps/icon-sell.svg';
-import { Trade } from '../index';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
+import { Trade } from '..';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
 
@@ -31,8 +31,8 @@ interface OrderBookLevel {
   total: number;
 }
 
-export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
-  latestTradePrice,
+export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
+  latestTrade,
 }) => {
   const { t } = useTranslation();
   const { selectedCoin, marketDataMap, wsActiveAssetCtx } = useRabbySelector(
@@ -199,7 +199,7 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
         {/* Depth background */}
         <div
           className={clsx(
-            'absolute right-0 top-0 bottom-0',
+            'absolute left-0 top-0 bottom-0',
             type === 'bid' ? 'bg-rb-green-light-1' : 'bg-rb-red-light-1'
           )}
           style={{ width: `${depthPercent}%` }}
@@ -229,8 +229,8 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
   const { displayAsks, displayBids } = useMemo(() => {
     if (viewMode === 'Both') {
       return {
-        displayAsks: asks.slice(0, 12).reverse(),
-        displayBids: bids.slice(0, 12),
+        displayAsks: asks.slice(0, 11).reverse(),
+        displayBids: bids.slice(0, 11),
       };
     } else if (viewMode === 'Asks') {
       return {
@@ -318,7 +318,7 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
               type="button"
               className={clsx(
                 'inline-flex items-center justify-between',
-                'px-[8px] py-[8px] flex-1 w-[60px] h-24',
+                'px-[8px] py-[8px] flex-1 min-w-[80px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
                 'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
               )}
@@ -340,7 +340,7 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
               type="button"
               className={clsx(
                 'inline-flex items-center justify-between',
-                'px-[8px] py-[8px] flex-1 w-[80px] h-24',
+                'px-[8px] py-[8px] flex-1 min-w-[80px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
                 'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
               )}
@@ -369,23 +369,25 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
       <div className="flex-1 flex flex-col overflow-hidden">
         {(viewMode === 'Both' || viewMode === 'Asks') && (
           <div
-            className={clsx('overflow-y-auto', {
+            className={clsx('overflow-y-auto gap-2 flex flex-col', {
               'flex-1': viewMode === 'Both',
             })}
           >
             {displayAsks.map((ask) => renderOrderRow(ask, 'ask', maxTotal))}
           </div>
         )}
-        {Boolean(latestTradePrice) && (
+        {Boolean(latestTrade?.price) && (
           <div className="flex items-center justify-between px-[12px] h-40">
             <div className="flex items-center gap-[6px]">
               <span
                 className={clsx(
                   'text-[20px] font-bold',
-                  isPositive ? 'text-rb-green-default' : 'text-rb-red-default'
+                  latestTrade?.side === 'buy'
+                    ? 'text-rb-green-default'
+                    : 'text-rb-red-default'
                 )}
               >
-                {splitNumberByStep(latestTradePrice)}
+                {splitNumberByStep(latestTrade?.price || 0)}
               </span>
 
               <span
@@ -400,7 +402,7 @@ export const OrderBook: React.FC<{ latestTradePrice: string }> = ({
         )}
         {(viewMode === 'Both' || viewMode === 'Bids') && (
           <div
-            className={clsx('overflow-y-auto', {
+            className={clsx('overflow-y-auto gap-2 flex flex-col', {
               'flex-1': viewMode === 'Both',
             })}
           >

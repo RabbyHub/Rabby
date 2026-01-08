@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 import { splitNumberByStep } from '@/ui/utils';
@@ -31,6 +31,21 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
     return marketDataMap[coin.toUpperCase()] || {};
   }, [marketDataMap, wsActiveAssetCtx, coin]);
 
+  // Update browser tab title with market data
+  useEffect(() => {
+    const originalTitle = 'Rabby Wallet';
+    const markPx = currentMarketData?.markPx;
+
+    if (markPx) {
+      const price = splitNumberByStep(Number(markPx));
+      document.title = `$${price} | ${coin}-USD | Rabby`;
+    }
+
+    return () => {
+      document.title = originalTitle;
+    };
+  }, [coin, currentMarketData?.markPx]);
+
   const priceChange = currentMarketData.prevDayPx
     ? Number(currentMarketData.markPx) - Number(currentMarketData.prevDayPx)
     : 0;
@@ -40,18 +55,20 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
   const isPositive = priceChange >= 0;
 
   return (
-    <div className="flex items-center gap-[80px] px-[16px] py-[14px] border-b border-solid border-rb-neutral-line">
+    <div className="flex items-center gap-[32px] px-[16px] py-[14px] border-b border-solid border-rb-neutral-line">
       {/* Coin Dropdown - Only this area is clickable for dropdown */}
       <CoinDropdown coin={coin} onSelectCoin={onSelectCoin} />
 
       {/* Market Data - Display only, not clickable */}
-      <div className="flex items-center gap-[24px] flex-1">
+      <div className="flex items-center gap-[32px] flex-1">
         <div className="flex flex-col gap-2">
           <span className="text-[12px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.mark')}
           </span>
           <span className="text-[13px] font-medium text-r-neutral-title-1">
-            ${splitNumberByStep(Number(currentMarketData.markPx))}
+            {currentMarketData.markPx
+              ? `$${splitNumberByStep(Number(currentMarketData.markPx))}`
+              : '-'}
           </span>
         </div>
 
@@ -60,7 +77,9 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
             {t('page.perpsPro.chatArea.oracle')}
           </span>
           <span className="text-[13px] font-medium text-r-neutral-title-1">
-            ${splitNumberByStep(Number(currentMarketData.oraclePx))}
+            {currentMarketData.oraclePx
+              ? `$${splitNumberByStep(Number(currentMarketData.oraclePx))}`
+              : '-'}
           </span>
         </div>
 
@@ -68,16 +87,23 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           <span className="text-[12px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.24hChange')}
           </span>
-          <span
-            className={clsx(
-              'text-[13px] font-medium',
-              isPositive ? 'text-r-green-default' : 'text-r-red-default'
-            )}
-          >
-            {isPositive ? '+' : ''}${splitNumberByStep(priceChange.toFixed(2))}{' '}
-            / {isPositive ? '+' : ''}
-            {priceChangePercent.toFixed(2)}%
-          </span>
+          {currentMarketData.markPx && currentMarketData.prevDayPx ? (
+            <span
+              className={clsx(
+                'text-[13px] font-medium',
+                isPositive ? 'text-r-green-default' : 'text-r-red-default'
+              )}
+            >
+              {isPositive ? '+' : ''}
+              {`$${splitNumberByStep(priceChange.toFixed(2))}`} /{' '}
+              {isPositive ? '+' : ''}
+              {priceChangePercent.toFixed(2)}%
+            </span>
+          ) : (
+            <span className="text-[13px] font-medium text-r-neutral-foot">
+              -
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -85,7 +111,11 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
             {t('page.perpsPro.chatArea.24hVol')}
           </span>
           <span className="text-[13px] font-medium text-r-neutral-title-1">
-            ${splitNumberByStep(Number(currentMarketData.dayNtlVlm).toFixed(2))}
+            {currentMarketData.dayNtlVlm
+              ? `$${splitNumberByStep(
+                  Number(currentMarketData.dayNtlVlm).toFixed(2)
+                )}`
+              : '-'}
           </span>
         </div>
 
@@ -94,13 +124,14 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
             {t('page.perpsPro.chatArea.openInterest')}
           </span>
           <span className="text-[13px] font-medium text-r-neutral-title-1">
-            $
-            {splitNumberByStep(
-              (
-                Number(currentMarketData.openInterest) *
-                Number(currentMarketData.markPx)
-              ).toFixed(2)
-            )}
+            {currentMarketData.openInterest && currentMarketData.markPx
+              ? `$${splitNumberByStep(
+                  (
+                    Number(currentMarketData.openInterest) *
+                    Number(currentMarketData.markPx)
+                  ).toFixed(2)
+                )}`
+              : '-'}
           </span>
         </div>
 
@@ -108,22 +139,29 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           <span className="text-[12px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.fundingCountdown')}
           </span>
-          <span>
-            <span
-              className={clsx(
-                'text-[13px] font-medium',
-                Number(currentMarketData.funding) > 0
-                  ? 'text-r-green-default'
-                  : 'text-r-red-default'
-              )}
-            >
-              {formatPercent(Number(currentMarketData.funding), 4)}
+
+          {currentMarketData.funding ? (
+            <span>
+              <span
+                className={clsx(
+                  'text-[13px] font-medium',
+                  Number(currentMarketData.funding) > 0
+                    ? 'text-r-green-default'
+                    : 'text-r-red-default'
+                )}
+              >
+                {formatPercent(Number(currentMarketData.funding), 4)}
+              </span>
+              <span className="text-[13px] font-medium text-r-neutral-foot">
+                {' '}
+                / {countdown}
+              </span>
             </span>
+          ) : (
             <span className="text-[13px] font-medium text-r-neutral-foot">
-              {' '}
-              / {countdown}
+              -
             </span>
-          </span>
+          )}
         </div>
       </div>
     </div>

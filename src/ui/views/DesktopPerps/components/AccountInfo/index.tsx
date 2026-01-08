@@ -50,12 +50,12 @@ export const AccountInfo: React.FC = () => {
             {t('page.perpsPro.accountInfo.withdraw')}
           </button>
         </div>
-        <div className="space-y-[8px] text-[12px] leading-[14px] font-medium">
+        <div className="space-y-[8px] text-[12px] leading-[14px]">
           <div className="flex items-center justify-between">
             <div className="text-r-neutral-title-1">
               {t('page.perpsPro.accountInfo.totalBalance')}
             </div>
-            <div className="text-r-neutral-title-1">
+            <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(
                 Number(clearinghouseState?.marginSummary?.accountValue || 0),
                 BigNumber.ROUND_DOWN
@@ -66,7 +66,7 @@ export const AccountInfo: React.FC = () => {
             <div className="text-r-neutral-title-1">
               {t('page.perpsPro.accountInfo.availableBalance')}
             </div>
-            <div className="text-r-neutral-title-1">
+            <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(
                 Number(clearinghouseState?.withdrawable || 0),
                 BigNumber.ROUND_DOWN
@@ -79,6 +79,7 @@ export const AccountInfo: React.FC = () => {
             </div>
             <div
               className={clsx(
+                'font-medium',
                 positionAllPnl >= 0
                   ? 'text-rb-green-default'
                   : 'text-rb-red-default'
@@ -92,13 +93,15 @@ export const AccountInfo: React.FC = () => {
             <div className="text-rb-neutral-foot">
               {t('page.perpsPro.accountInfo.crossMarginRatio')}
             </div>
-            <div className="text-r-neutral-title-1">{crossMarginRatio}</div>
+            <div className="text-r-neutral-title-1 font-medium">
+              {crossMarginRatio}
+            </div>
           </div>
           <div className="flex items-center justify-between">
             <div className="text-rb-neutral-foot">
               {t('page.perpsPro.accountInfo.maintenanceMargin')}
             </div>
-            <div className="text-r-neutral-title-1">
+            <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(
                 Number(
                   clearinghouseState?.crossMarginSummary.totalMarginUsed || 0
@@ -110,7 +113,7 @@ export const AccountInfo: React.FC = () => {
             <div className="text-rb-neutral-foot">
               {t('page.perpsPro.accountInfo.crossAccountLeverage')}
             </div>
-            <div className="text-r-neutral-title-1">
+            <div className="text-r-neutral-title-1 font-medium">
               {(
                 Number(clearinghouseState?.marginSummary?.totalNtlPos || 0) /
                 Number(clearinghouseState?.marginSummary?.accountValue || 1)

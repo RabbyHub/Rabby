@@ -23,6 +23,8 @@ import { calculateMaxScaleTotalSize } from '../utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
+import { PerpsCheckbox } from '../components/PerpsCheckbox';
+import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 
 export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -358,115 +360,93 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         precision={{ amount: szDecimals, price: pxDecimals }}
       />
 
-      <div className="flex items-center gap-8">
-        <div className="relative flex-1">
-          <input
-            type="text"
+      <div className="space-y-[8px]">
+        <div className="flex items-center gap-8">
+          <DesktopPerpsInput
             value={startPrice}
             onChange={handleStartPriceChange}
-            placeholder=""
-            className="w-full h-[40px] pl-[44px] pr-[40px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line text-r-neutral-title-1 text-[13px] focus:outline-none font-medium text-right"
+            className="text-right text-[13px] leading-[16px]"
+            suffix={
+              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
+                USD
+              </span>
+            }
+            prefix={
+              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
+                {t('page.perpsPro.tradingPanel.startPrice')}
+              </span>
+            }
           />
-          <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.startPrice')}
-          </div>
-          <div className="absolute right-[8px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
-            USD
+          <div
+            className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer"
+            onClick={handleStartMidClick}
+          >
+            Mid
           </div>
         </div>
-        <div
-          className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer"
-          onClick={handleStartMidClick}
-        >
-          Mid
-        </div>
-      </div>
 
-      <div className="flex items-center gap-8">
-        <div className="relative flex-1">
-          <input
-            type="text"
+        <div className="flex items-center gap-8">
+          <DesktopPerpsInput
             value={endPrice}
             onChange={handleEndPriceChange}
-            placeholder=""
-            className="w-full h-[40px] pl-[44px] pr-[40px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line text-r-neutral-title-1 text-[13px] focus:outline-none font-medium text-right"
+            className="text-right text-[13px] leading-[16px]"
+            suffix={
+              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
+                USD
+              </span>
+            }
+            prefix={
+              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
+                {t('page.perpsPro.tradingPanel.endPrice')}
+              </span>
+            }
           />
-          <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.endPrice')}
-          </div>
-          <div className="absolute right-[8px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
-            USD
+          <div
+            className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer"
+            onClick={handleEndMidClick}
+          >
+            Mid
           </div>
         </div>
-        <div
-          className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer"
-          onClick={handleEndMidClick}
-        >
-          Mid
-        </div>
-      </div>
 
-      <div className="flex items-center gap-[8px]">
-        <div className="flex-1">
-          <div className="relative">
-            <input
-              type="text"
-              value={numGrids}
-              onChange={handleNumGridsChange}
-              placeholder=""
-              className={clsx(
-                'w-full h-[40px] pl-[32px] pr-[12px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid text-[13px] focus:outline-none font-medium text-right',
-                Number(numGrids) > 0 && !validateNumberInput(numGrids)
-                  ? 'border-rb-red-default text-rb-red-default'
-                  : 'border-rb-neutral-line text-r-neutral-title-1'
-              )}
-            />
-            <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
-              {t('page.perpsPro.tradingPanel.totalOrders')}
-            </div>
-          </div>
-        </div>
-        <div className="flex-1">
-          <div className="relative">
-            <input
-              type="text"
+        <div className="flex items-center gap-[8px]">
+          <DesktopPerpsInput
+            value={numGrids}
+            onChange={handleNumGridsChange}
+            className="flex-1 text-right text-[13px] leading-[16px]"
+            prefix={
+              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
+                {t('page.perpsPro.tradingPanel.totalOrders')}
+              </span>
+            }
+          />
+          <Tooltip
+            placement="top"
+            overlayClassName={clsx('rectangle')}
+            title={t('page.perpsPro.tradingPanel.sizeSkewTooltip')}
+          >
+            <DesktopPerpsInput
               value={sizeSkew}
               onChange={handleSizeSkewChange}
-              placeholder=""
-              className={clsx(
-                'w-full h-[40px] pl-[32px] pr-[12px] rounded-[8px] bg-rb-neutral-bg-1 border border-solid text-[13px] focus:outline-none font-medium text-right',
-                !validateSizeSkewInput(sizeSkew)
-                  ? 'border-rb-red-default text-rb-red-default'
-                  : 'border-rb-neutral-line text-r-neutral-title-1'
-              )}
+              className="flex-1 text-right text-[13px] leading-[16px]"
+              prefix={
+                <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
+                  {t('page.perpsPro.tradingPanel.sizeSkew')}
+                </span>
+              }
             />
-            <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-r-neutral-foot text-[13px]">
-              {t('page.perpsPro.tradingPanel.sizeSkew')}
-            </div>
-          </div>
+          </Tooltip>
         </div>
       </div>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-16">
-          <label
-            className={`flex items-center gap-[8px] ${
-              !currentPosition
-                ? 'cursor-not-allowed opacity-50'
-                : 'cursor-pointer'
-            }`}
-          >
-            <input
-              type="checkbox"
-              checked={!currentPosition ? false : reduceOnly}
-              disabled={!currentPosition}
-              onChange={(e) => setReduceOnly(e.target.checked)}
-              className="w-[16px] h-[16px] rounded-[4px] accent-blue-600 cursor-pointer"
-            />
-            <span className="text-r-neutral-title-1 text-[13px]">
-              Reduce Only
-            </span>
-          </label>
+          <PerpsCheckbox
+            checked={reduceOnly}
+            onChange={setReduceOnly}
+            title={t('page.perpsPro.tradingPanel.reduceOnly')}
+            disabled={!currentPosition}
+          />
         </div>
         <div className="flex items-center gap-4">
           <Dropdown
@@ -533,19 +513,17 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         >
           {validation.error
             ? validation.error
-            : orderSide === OrderSide.BUY
-            ? t('page.perpsPro.tradingPanel.buyLong')
-            : t('page.perpsPro.tradingPanel.sellShort')}
+            : t('page.perpsPro.tradingPanel.placeOrder')}
         </Button>
       )}
 
       {/* Order Summary */}
-      <div className="space-y-[6px] font-medium">
+      <div className="space-y-[6px]">
         <div className="flex items-center justify-between">
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.start')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {orderSummary.start}
           </span>
         </div>
@@ -554,7 +532,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.end')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {orderSummary.end}
           </span>
         </div>
@@ -563,7 +541,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.orderValue')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {orderSummary.orderValue}
           </span>
         </div>
@@ -572,7 +550,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.marginRequired')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {orderSummary.marginRequired}
           </span>
         </div>
@@ -581,7 +559,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.marginUsage')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {orderSummary.marginUsage}
           </span>
         </div>

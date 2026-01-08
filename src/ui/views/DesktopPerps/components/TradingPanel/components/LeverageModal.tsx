@@ -126,7 +126,6 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
       centered
       bodyStyle={{
         padding: 0,
-        height: '520px',
       }}
       maskStyle={{
         zIndex: 1000,
@@ -138,7 +137,7 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
       className="modal-support-darkmode desktop-perps-margin-mode-modal"
     >
       <div className="bg-rb-neutral-bg-2 flex flex-col h-full">
-        <div className="px-20 pt-16 flex-1">
+        <div className="px-20 pt-16 flex-1 pb-24">
           {/* Title */}
           <h3 className="text-[16px] font-medium text-rb-neutral-title-1 text-center mb-16">
             {t('page.perpsPro.leverage.title')}
@@ -156,7 +155,7 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
             </div>
 
             <div className="flex items-center gap-[20px]">
-              <div className="flex-1 space-y-[6px]">
+              <div className="flex-1 space-y-[6px] my-8">
                 <DesktopPerpsSlider
                   min={1}
                   max={maxLeverage}

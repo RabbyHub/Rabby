@@ -303,7 +303,7 @@ export const OpenOrders: React.FC = () => {
         title: (
           <div
             className="text-r-blue-default cursor-pointer underline"
-            onClick={handleClickCloseAll}
+            onClick={handleCloseAll}
           >
             {t('page.perpsPro.userInfo.openOrders.cancelAll')}
           </div>
