@@ -7,7 +7,7 @@ import {
   RcIconPredictionCC,
 } from '@/ui/assets/desktop/nav';
 import { splitNumberByStep } from '@/ui/utils';
-import { Skeleton } from 'antd';
+import { Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,21 +24,12 @@ import { KEYRING_TYPE } from '@/constant';
 
 type DesktopNavAction = 'swap' | 'send' | 'bridge' | 'gnosis-queue';
 
+export const DESKTOP_NAV_HEIGHT = 84;
+
 export const DesktopNav: React.FC<{
-  balance?: number | null;
-  changePercent?: string | null;
-  isLoss?: boolean;
-  isLoading?: boolean;
   onActionSelect?: (action: DesktopNavAction) => void;
   showRightItems?: boolean;
-}> = ({
-  balance,
-  changePercent,
-  isLoss,
-  isLoading,
-  onActionSelect,
-  showRightItems = true,
-}) => {
+}> = ({ onActionSelect, showRightItems = true }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const currentAccount = useCurrentAccount();
@@ -60,12 +51,12 @@ export const DesktopNav: React.FC<{
         title: t('component.DesktopNav.perps'),
         isSoon: true,
       },
-      // {
-      //   key: '/desktop/lending',
-      //   icon: RcIconLeadingCC,
-      //   title: t('component.DesktopNav.lending'),
-      //   isSoon: true,
-      // },
+      {
+        key: '/desktop/lending',
+        icon: RcIconLeadingCC,
+        title: t('component.DesktopNav.lending'),
+        isSoon: true,
+      },
       {
         key: '/desktop/dapp-iframe',
         icon: RcIconPredictionCC,
@@ -114,86 +105,100 @@ export const DesktopNav: React.FC<{
   );
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex">
-        <div
-          className={clsx(
-            'flex items-center rounded-[20px] p-[3px]',
-            'border-[1px] border-solid border-rb-neutral-bg-2'
-            // 'bg-rb-neutral-bg-3'
-          )}
-        >
-          {navs.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentPathname.startsWith(item.key);
-            return (
-              <div
-                className={clsx(
-                  'flex items-center justify-center gap-[8px] min-w-[152px] h-[40px] ',
-                  'rounded-[16px]',
-                  isActive
-                    ? 'text-r-blue-default  bg-rb-brand-light-1'
-                    : 'text-rb-neutral-secondary',
-                  item.isSoon
-                    ? 'cursor-not-allowed'
-                    : 'hover:bg-rb-neutral-bg-2 cursor-pointer'
-                )}
-                onClick={() => {
-                  if (item.isSoon) {
-                    return;
+    <div className="sticky top-0 z-10 pt-[20px] pb-[16px] bg-rb-neutral-bg-1 pr-[8px]">
+      <div className="flex items-center justify-between">
+        <div className="flex">
+          <div
+            className={clsx(
+              'flex items-center rounded-[20px] p-[3px]',
+              'border-[1px] border-solid border-rb-neutral-bg-2'
+              // 'bg-rb-neutral-bg-3'
+            )}
+          >
+            {navs.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentPathname.startsWith(item.key);
+
+              const isLending = item.key === '/desktop/lending';
+
+              return (
+                <Tooltip
+                  key={item.key}
+                  overlayClassName="rectangle"
+                  placement="bottom"
+                  title={
+                    item.isSoon
+                      ? t('component.DesktopNav.comingSoon')
+                      : undefined
                   }
-                  history.push(item.key);
-                }}
-              >
-                <Icon className={clsx('w-[28px] h-[28px]')} />
-                <div className="space-y-[1px]">
-                  <div className="text-[16px] leading-[19px] font-bold">
-                    {item.title}
-                  </div>
-                  {item.isSoon ? (
-                    <div className="text-[11px] leading-[13px] font-medium">
-                      {t('component.DesktopNav.comingSoon')}
+                >
+                  <div
+                    className={clsx(
+                      'flex items-center justify-center gap-[8px] min-w-[152px] h-[40px] ',
+                      'rounded-[16px]',
+                      isActive
+                        ? 'text-r-blue-default  bg-rb-brand-light-1'
+                        : 'text-rb-neutral-secondary',
+                      item.isSoon
+                        ? 'cursor-not-allowed opacity-70'
+                        : 'hover:bg-rb-neutral-bg-2 cursor-pointer'
+                    )}
+                    onClick={() => {
+                      if (item.isSoon) {
+                        return;
+                      }
+                      history.push(item.key);
+                    }}
+                  >
+                    <Icon
+                      className={clsx(
+                        isLending ? 'w-[32px] h-[32px]' : 'w-[28px] h-[28px]'
+                      )}
+                    />
+                    <div className="space-y-[1px]">
+                      <div className="text-[16px] leading-[19px] font-bold">
+                        {item.title}
+                      </div>
                     </div>
-                  ) : null}
-                </div>
-              </div>
-            );
-          })}
+                  </div>
+                </Tooltip>
+              );
+            })}
+          </div>
         </div>
-      </div>
-      <div className="flex items-center gap-[12px]">
-        {items?.map(({ key, title, Icon, onClick }) => (
-          <div
-            key={key}
-            className={clsx(
-              'min-w-[100px] p-[15px] rounded-[14px]',
-              'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-brand-default text-[14px] leading-[16px] font-semibold',
-              'border border-rb-brand-light-1'
-            )}
-            style={{
-              background: 'rgba(var(--rb-brand-default-rgb),0.08)',
-            }}
-            onClick={onClick}
-          >
-            <Icon />
-            {title}
-          </div>
-        ))}
-        {isGnosis ? (
-          <div
-            className={clsx(
-              'min-w-[100px] p-[15px] rounded-[14px]',
-              'flex items-center justify-center gap-[8px] cursor-pointer',
-              'text-rb-brand-default text-[14px] leading-[16px] font-semibold',
-              'border-[0.5px] border-solid border-rb-brand-default'
-            )}
-            onClick={() => handleActionClick('gnosis-queue')}
-          >
-            <RcIconQueueCC />
-            {t('page.desktopProfile.button.queue')}
-          </div>
-        ) : null}
+        <div className="flex items-center gap-[12px]">
+          {items?.map(({ key, title, Icon, onClick }) => (
+            <div
+              key={key}
+              className={clsx(
+                'min-w-[88px] p-[12px] rounded-[14px]',
+                'flex items-center justify-center gap-[4px] cursor-pointer',
+                'text-rb-brand-default text-[14px] leading-[16px] font-medium'
+              )}
+              style={{
+                background: 'rgba(var(--rb-brand-default-rgb),0.08)',
+              }}
+              onClick={onClick}
+            >
+              <Icon />
+              {title}
+            </div>
+          ))}
+          {isGnosis ? (
+            <div
+              className={clsx(
+                'min-w-[88px] p-[12px] rounded-[14px]',
+                'flex items-center justify-center gap-[4px] cursor-pointer',
+                'text-rb-brand-default text-[14px] leading-[16px] font-medium',
+                'border-[0.5px] border-solid border-rb-brand-default'
+              )}
+              onClick={() => handleActionClick('gnosis-queue')}
+            >
+              <RcIconQueueCC />
+              {t('page.desktopProfile.button.queue')}
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );

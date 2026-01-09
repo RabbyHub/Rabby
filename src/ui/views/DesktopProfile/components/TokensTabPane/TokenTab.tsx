@@ -18,6 +18,7 @@ import { LpTokenSwitch } from './components/LpTokenSwitch';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import styled from 'styled-components';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
+import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
 
 interface Props {
   isTokensLoading: boolean;
@@ -105,7 +106,7 @@ export const TokenTab = ({
           'bg-rb-neutral-bg-1',
           'sticky z-10'
         )}
-        style={{ top: 90 + 57 }}
+        style={{ top: DESKTOP_NAV_HEIGHT + 57 }}
       >
         <div className="flex items-center gap-[16px] widget-has-ant-input">
           <StyledInput
