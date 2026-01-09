@@ -60,12 +60,12 @@ export const DesktopNav: React.FC<{
         title: t('component.DesktopNav.perps'),
         isSoon: true,
       },
-      {
-        key: '/desktop/lending',
-        icon: RcIconLeadingCC,
-        title: t('component.DesktopNav.lending'),
-        isSoon: true,
-      },
+      // {
+      //   key: '/desktop/lending',
+      //   icon: RcIconLeadingCC,
+      //   title: t('component.DesktopNav.lending'),
+      //   isSoon: true,
+      // },
       {
         key: '/desktop/dapp-iframe',
         icon: RcIconPredictionCC,

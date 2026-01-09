@@ -208,7 +208,7 @@ export const DesktopProfile = () => {
             isLoading={isBalanceLoading || isCurveLoading}
           />
         </div>
-        <div className="flex align-top justify-center gap-[16px]">
+        <div className="flex align-top justify-center gap-[20px]">
           <div className="main-content is-open flex-1">
             <div className="layout-container">
               <div
