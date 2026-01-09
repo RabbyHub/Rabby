@@ -2,7 +2,7 @@ import React, { useMemo, useState, useRef, useEffect } from 'react';
 
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { DesktopNav } from '@/ui/component/DesktopNav';
+import { DESKTOP_NAV_HEIGHT, DesktopNav } from '@/ui/component/DesktopNav';
 import { ProfileHeader } from './components/ProfileHeader';
 import { BackTop, Tabs } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
@@ -45,7 +45,7 @@ import { useTokenAndDIFIData } from './components/TokensTabPane/hook';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 
 const StickyBorderTop = () => (
-  <div className="sticky top-[90px] h-0 z-50">
+  <div className="sticky h-0 z-50" style={{ top: DESKTOP_NAV_HEIGHT }}>
     <div
       className={clsx(
         'overflow-hidden absolute w-full h-[40px] pointer-events-none',
@@ -204,14 +204,7 @@ export const DesktopProfile = () => {
         className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] block"
         ref={scrollContainerRef}
       >
-        <div className="sticky top-0 z-10 py-[21px] bg-rb-neutral-bg-1 pr-[8px]">
-          <DesktopNav
-            balance={balance}
-            changePercent={curveChartData?.changePercent}
-            isLoss={curveChartData?.isLoss}
-            isLoading={isBalanceLoading || isCurveLoading}
-          />
-        </div>
+        <DesktopNav />
         <div className="flex align-top justify-center gap-[16px]">
           <div className="main-content is-open flex-1">
             <div className="layout-container">
@@ -220,7 +213,7 @@ export const DesktopProfile = () => {
                 style={{
                   width: 0,
                   scrollbarWidth: 'none',
-                  top: 90 + 57,
+                  top: DESKTOP_NAV_HEIGHT + 57,
                 }}
                 id={TOP_SHORTCUT_SLOT_ID}
               >
@@ -250,7 +243,7 @@ export const DesktopProfile = () => {
                     <Tabs
                       tabBarStyle={{
                         position: 'sticky',
-                        top: 90,
+                        top: DESKTOP_NAV_HEIGHT,
                       }}
                       className="overflow-visible"
                       defaultActiveKey={activeTab}
@@ -355,9 +348,8 @@ export const DesktopProfile = () => {
           </div>
           <div>
             <aside
-              className={clsx(
-                'min-w-[64px] flex-shrink-0 sticky top-[90px] z-20'
-              )}
+              className={clsx('min-w-[64px] flex-shrink-0 sticky z-20')}
+              style={{ top: DESKTOP_NAV_HEIGHT }}
             >
               <DesktopSelectAccountList />
             </aside>

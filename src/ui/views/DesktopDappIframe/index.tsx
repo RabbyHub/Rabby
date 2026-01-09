@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import { useHistory, useLocation } from 'react-router-dom';
-import { DesktopNav } from '@/ui/component/DesktopNav';
+import { DESKTOP_NAV_HEIGHT, DesktopNav } from '@/ui/component/DesktopNav';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useDesktopBalanceView } from '../DesktopProfile/hooks/useDesktopBalanceView';
@@ -140,7 +140,9 @@ export const DesktopDappIframe = () => {
   const { value: permission } = useAsync(
     () =>
       currentAccount?.address
-        ? wallet.openapi.getPerpPermission({ id: currentAccount?.address })
+        ? wallet.openapi.getPolyMarketPermission({
+            id: currentAccount?.address,
+          })
         : Promise.resolve({ has_permission: false }),
     []
   );
@@ -196,10 +198,6 @@ export const DesktopDappIframe = () => {
   }, [iframeOrigin, isDarkTheme]);
 
   useEffect(() => {
-    console.log(
-      '[rabby-desktop] listen handleMessage',
-      iframeRef.current?.contentWindow
-    );
     const handleMessage = (event: MessageEvent) => {
       const data = event.data;
 
@@ -255,12 +253,8 @@ export const DesktopDappIframe = () => {
     <>
       <DesktopPageWrap className="w-full h-full bg-rb-neutral-bg-1 px-[20px] pb-0">
         <div className="main-content flex-1 pl-0">
-          <div className="layout-container sticky top-0 z-10 py-[21px] bg-rb-neutral-bg-1">
+          <div className="layout-container">
             <DesktopNav
-              balance={balance}
-              changePercent={curveChartData?.changePercent}
-              isLoss={curveChartData?.isLoss}
-              isLoading={isBalanceLoading || isCurveLoading}
               onActionSelect={handleActionSelect}
               showRightItems={false}
             />
@@ -276,7 +270,7 @@ export const DesktopDappIframe = () => {
                 <Iframe ref={iframeRef} src={defaultUrl} />
                 {isIframeLoading && (
                   <DappIframeLoading
-                    loadingLabel={'Open Polymarket...'}
+                    loadingLabel={t('page.dappIfame.openPolymarket')}
                     icon={PolyMarketPng}
                   />
                 )}
@@ -301,7 +295,10 @@ export const DesktopDappIframe = () => {
             </div>
           </div>
         </div>
-        <aside className={clsx('aside-list sticky top-[90px] z-20')}>
+        <aside
+          className={clsx('aside-list sticky z-20')}
+          style={{ top: DESKTOP_NAV_HEIGHT }}
+        >
           <DesktopSelectAccountList autoCollapse />
         </aside>
 

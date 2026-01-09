@@ -170,4 +170,3 @@ const domReadyCall = (callback) => {
 domReadyCall(() => {
   setupDappIframeSyncRoute();
 });
-console.log('test setupDappIframeSyncRoute watchDomReady 2222');
