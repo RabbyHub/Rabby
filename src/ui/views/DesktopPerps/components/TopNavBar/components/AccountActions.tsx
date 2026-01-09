@@ -8,6 +8,8 @@ import { ReactComponent as RcIconMoon } from '@/ui/assets/perps/icon-moon.svg';
 import { ReactComponent as RcIconSun } from '@/ui/assets/perps/icon-sun.svg';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as IconPerpsWallet } from '@/ui/assets/perps/IconPerpsWallet.svg';
+import { useHistory } from 'react-router-dom';
+import { DepositPending } from '../../DepositWithdrawModal/DepositPending';
 
 export const AccountActions: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -20,6 +22,11 @@ export const AccountActions: React.FC = () => {
   const availableBalance = Number(
     clearinghouseState?.marginSummary?.accountValue || 0
   );
+  // Get pending history count
+  const localLoadingHistory = useRabbySelector(
+    (state) => state.perps.localLoadingHistory
+  );
+  const pendingCount = localLoadingHistory.length;
 
   const handleThemeToggle = useCallback(() => {
     const newThemeMode =
@@ -29,10 +36,12 @@ export const AccountActions: React.FC = () => {
     dispatch.preference.switchThemeMode(newThemeMode);
   }, [dispatch, themeMode]);
 
+  const history = useHistory();
   const handleDeposit = useCallback(() => {
-    // TODO: Implement deposit functionality
-    console.log('Deposit clicked');
-  }, []);
+    const currentPathname = history.location.pathname;
+
+    history.replace(`${currentPathname}?action=deposit`);
+  }, [history]);
 
   return (
     <div className="flex items-center gap-[12px]">
@@ -69,15 +78,28 @@ export const AccountActions: React.FC = () => {
           </div>
 
           {/* Deposit Button */}
-          <button
-            onClick={handleDeposit}
-            className={clsx(
-              'px-[12px] h-[28px] rounded-[6px] text-[15px] font-medium flex items-center justify-center',
-              'bg-rb-brand-light-1 text-rb-brand-default'
-            )}
-          >
-            {t('page.perpsPro.accountActions.deposit')}
-          </button>
+          {pendingCount > 0 ? (
+            <div
+              onClick={handleDeposit}
+              className={clsx(
+                'px-[12px] h-[28px] rounded-[6px] text-[15px] font-medium flex items-center gap-8 cursor-pointer justify-center',
+                'bg-rb-orange-light-1 text-rb-orange-default'
+              )}
+            >
+              {t('page.perpsPro.accountActions.deposit')}
+              <DepositPending pendingCount={pendingCount} />
+            </div>
+          ) : (
+            <button
+              onClick={handleDeposit}
+              className={clsx(
+                'px-[12px] h-[28px] rounded-[6px] text-[15px] font-medium flex items-center justify-center',
+                'bg-rb-brand-light-1 text-rb-brand-default'
+              )}
+            >
+              {t('page.perpsPro.accountActions.deposit')}
+            </button>
+          )}
         </div>
       )}
     </div>

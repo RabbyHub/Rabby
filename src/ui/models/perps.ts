@@ -23,7 +23,10 @@ import {
 import { Account } from '@/background/service/preference';
 import { RootModel } from '.';
 import { destroyPerpsSDK, getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import { formatMarkData } from '../views/Perps/utils';
+import {
+  formatMarkData,
+  getMaxTimeFromAccountHistory,
+} from '../views/Perps/utils';
 import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
 import { ApproveSignatures } from '@/background/service/perps';
 import { maxBy } from 'lodash';
@@ -178,14 +181,14 @@ export const perps = createModel<RootModel>()({
           | 'twapHistory'
           | 'userFunding'
           | 'historicalOrders'
-          | 'nonFundingLedgerUpdates'
+          // | 'nonFundingLedgerUpdates'
           | 'userFills';
         list:
           | UserTwapSliceFill[]
           | UserTwapHistory[]
           | WsUserFunding['fundings']
           | UserHistoricalOrders[]
-          | UserNonFundingLedgerUpdates[]
+          // | UserNonFundingLedgerUpdates[]
           | WsFill[];
         isSnapshot: boolean;
       }
@@ -200,6 +203,85 @@ export const perps = createModel<RootModel>()({
         return {
           ...state,
           [listName]: [...list, ...state[listName]],
+        };
+      }
+    },
+
+    setUserNonFundingLedgerUpdates(
+      state,
+      payload: { list: UserNonFundingLedgerUpdates[]; isSnapshot?: boolean }
+    ) {
+      const { list, isSnapshot } = payload;
+
+      const newList = list
+        .filter((item) => {
+          if (
+            item.delta.type === 'deposit' ||
+            item.delta.type === 'withdraw' ||
+            item.delta.type === 'internalTransfer' ||
+            item.delta.type === 'accountClassTransfer'
+          ) {
+            return true;
+          }
+          return false;
+        })
+        .map((item) => {
+          if (item.delta.type === 'internalTransfer') {
+            const fee = (item.delta as any).fee as string;
+            const realUsdValue = Number(item.delta.usdc) - Number(fee || '0');
+            return {
+              time: item.time,
+              hash: item.hash,
+              type: 'receive' as const,
+              status: 'success' as const,
+              usdValue: realUsdValue.toString(),
+            };
+          }
+
+          const type =
+            item.delta.type === 'accountClassTransfer'
+              ? item.delta.toPerp
+                ? 'deposit'
+                : 'withdraw'
+              : item.delta.type;
+
+          return {
+            time: item.time,
+            hash: item.hash,
+            type: type as 'deposit' | 'withdraw' | 'receive',
+            status: 'success' as const,
+            usdValue: item.delta.usdc || '0',
+          };
+        });
+
+      if (isSnapshot) {
+        return {
+          ...state,
+          userAccountHistory: newList.reverse().slice(0, 2000),
+        };
+      } else {
+        const {
+          depositMaxTime,
+          withdrawMaxTime,
+          receiveMaxTime,
+        } = getMaxTimeFromAccountHistory(newList);
+
+        const filteredLocalHistory = state.localLoadingHistory.filter(
+          (item) => {
+            if (item.type === 'deposit') {
+              return item.time >= depositMaxTime;
+            } else if (item.type === 'withdraw') {
+              return item.time >= withdrawMaxTime;
+            } else {
+              return item.time >= receiveMaxTime;
+            }
+          }
+        );
+
+        return {
+          ...state,
+          localLoadingHistory: filteredLocalHistory,
+          userAccountHistory: [...newList, ...state.userAccountHistory],
         };
       }
     },
@@ -340,18 +422,11 @@ export const perps = createModel<RootModel>()({
         return state;
       }
       const { newHistoryList } = payload;
-      const depositList = newHistoryList.filter(
-        (item) => item.type === 'deposit'
-      );
-      const withdrawList = newHistoryList.filter(
-        (item) => item.type === 'withdraw'
-      );
-      const receiveList = newHistoryList.filter(
-        (item) => item.type === 'receive'
-      );
-      const receiveMaxTime = maxBy(receiveList, 'time')?.time || 0;
-      const depositMaxTime = maxBy(depositList, 'time')?.time || 0;
-      const withdrawMaxTime = maxBy(withdrawList, 'time')?.time || 0;
+      const {
+        depositMaxTime,
+        withdrawMaxTime,
+        receiveMaxTime,
+      } = getMaxTimeFromAccountHistory(newHistoryList);
       // 使用当前userAccountHistory过滤 localLoadingHistory
       const filteredLocalHistory = state.localLoadingHistory.filter((item) => {
         if (item.type === 'deposit') {
@@ -899,8 +974,7 @@ export const perps = createModel<RootModel>()({
             return;
           }
 
-          dispatch.perps.patchStatsListBySnapshot({
-            listName: 'nonFundingLedgerUpdates',
+          dispatch.perps.setUserNonFundingLedgerUpdates({
             list: nonFundingLedgerUpdates,
             isSnapshot: isSnapshot || false,
           });

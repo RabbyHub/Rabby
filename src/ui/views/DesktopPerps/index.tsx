@@ -13,6 +13,7 @@ import clsx from 'clsx';
 import { usePerpsProInit } from './hooks/usePerpsProInit';
 import { AddAddressModal } from '../DesktopProfile/components/AddAddressModal';
 import { useHistory, useLocation } from 'react-router-dom';
+import { DepositWithdrawModal } from './components/DepositWithdrawModal';
 
 const Wrap = styled.div`
   width: 100%;
@@ -92,6 +93,21 @@ export const DesktopPerps: React.FC = () => {
         }}
         destroyOnClose
       />
+
+      <DepositWithdrawModal
+        visible={action === 'deposit' || action === 'withdraw'}
+        type={action === 'deposit' ? 'deposit' : 'withdraw'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+      />
+      {/* <DepositWithdrawModal
+        visible={action === 'withdraw'}
+        type="withdraw"
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+      /> */}
     </>
   );
 };

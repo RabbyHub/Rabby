@@ -566,88 +566,6 @@ export const usePerpsProState = () => {
     wallet.setPerpsCurrentAccount(null);
   });
 
-  const handleWithdraw = useMemoizedFn(
-    async (amount: number): Promise<boolean> => {
-      try {
-        console.log('handleWithdraw', amount);
-        const sdk = getPerpsSDK();
-
-        if (!currentPerpsAccount) {
-          throw new Error('No currentPerpsAccount address');
-        }
-
-        if (!sdk.exchange) {
-          throw new Error('Hyperliquid no exchange client');
-        }
-
-        const action = sdk.exchange.prepareWithdraw({
-          amount: amount.toString(),
-          destination: currentPerpsAccount.address,
-        });
-        console.log('withdraw action', action);
-
-        const [signature] = await executeSignTypedData(
-          [action],
-          currentPerpsAccount
-        );
-
-        console.log('withdraw signature', signature);
-        const res = await sdk.exchange.sendWithdraw({
-          action: action.message as any,
-          nonce: action.nonce || 0,
-          signature: signature as string,
-        });
-        console.log('withdraw res', res);
-        dispatch.perps.setLocalLoadingHistory([
-          {
-            time: Date.now(),
-            hash: res.hash || '',
-            type: 'withdraw',
-            status: 'pending',
-            usdValue: (amount - 1).toString(),
-          },
-        ]);
-        dispatch.perps.fetchClearinghouseState();
-        return true;
-      } catch (error) {
-        console.error('Failed to withdraw:', error);
-        message.error({
-          // className: 'toast-message-2025-center',
-          duration: 1.5,
-          content: error.message || 'Withdraw failed',
-        });
-        Sentry.captureException(
-          new Error(
-            'PERPS Withdraw failed' +
-              'account: ' +
-              JSON.stringify(currentPerpsAccount) +
-              'amount: ' +
-              amount +
-              'error: ' +
-              JSON.stringify({
-                error,
-              })
-          )
-        );
-        return false;
-      }
-    }
-  );
-
-  const homeHistoryList = useMemo(() => {
-    const list = [
-      ...perpsState.localLoadingHistory,
-      ...perpsState.userAccountHistory,
-      ...perpsState.userFills,
-    ];
-
-    return list.sort((a, b) => b.time - a.time);
-  }, [
-    perpsState.userAccountHistory,
-    perpsState.userFills,
-    perpsState.localLoadingHistory,
-  ]);
-
   return {
     // State
     marketData: perpsState.marketData,
@@ -659,8 +577,6 @@ export const usePerpsProState = () => {
     isInitialized: perpsState.isInitialized,
     userFills: perpsState.userFills,
     hasPermission: perpsState.hasPermission,
-    homeHistoryList,
-    localLoadingHistory: perpsState.localLoadingHistory,
     perpFee: perpsState.perpFee,
     accountNeedApproveAgent: perpsState.accountNeedApproveAgent,
     accountNeedApproveBuilderFee: perpsState.accountNeedApproveBuilderFee,
@@ -668,7 +584,6 @@ export const usePerpsProState = () => {
     // Actions
     login,
     logout,
-    handleWithdraw,
     handleActionApproveStatus,
     needEnableTrading,
     handleSafeSetReference,

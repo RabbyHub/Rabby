@@ -5,9 +5,11 @@ import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 
 export const AccountInfo: React.FC = () => {
   const { t } = useTranslation();
+  const history = useHistory();
   const clearinghouseState = useRabbySelector(
     (store) => store.perps.clearinghouseState
   );
@@ -27,6 +29,17 @@ export const AccountInfo: React.FC = () => {
     return formatPerpsPct(num.toNumber());
   }, [clearinghouseState]);
 
+  const handleDepositClick = () => {
+    const currentPathname = history.location.pathname;
+
+    history.replace(`${currentPathname}?action=deposit`);
+  };
+  const handleWithdrawClick = () => {
+    const currentPathname = history.location.pathname;
+
+    history.replace(`${currentPathname}?action=withdraw`);
+  };
+
   return (
     <div className="w-full h-full flex flex-col flex-shrink-0 overflow-hidden">
       <div className="flex-1 overflow-auto p-[16px] min-h-0">
@@ -34,18 +47,20 @@ export const AccountInfo: React.FC = () => {
           <button
             type="button"
             className={clsx(
-              'w-full bg-rb-neutral-bg-4 rounded-[8px] py-[9px]',
+              'w-full bg-rb-neutral-bg-4 rounded-[8px] h-[32px] flex items-center justify-center',
               'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
             )}
+            onClick={handleDepositClick}
           >
             {t('page.perpsPro.accountInfo.deposit')}
           </button>
           <button
             type="button"
             className={clsx(
-              'w-full bg-rb-neutral-bg-4 rounded-[8px] py-[9px]',
+              'w-full bg-rb-neutral-bg-4 rounded-[8px] h-[32px] flex items-center justify-center',
               'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
             )}
+            onClick={handleWithdrawClick}
           >
             {t('page.perpsPro.accountInfo.withdraw')}
           </button>
