@@ -121,6 +121,7 @@ export interface PerpsState {
   twapStates: WsTwapStates['states'];
   twapHistory: UserTwapHistory[];
   twapSliceFills: UserTwapSliceFill[];
+  marketSlippage: number; // 0-1, default 0.08 (8%)
 }
 
 export const perps = createModel<RootModel>()({
@@ -163,6 +164,7 @@ export const perps = createModel<RootModel>()({
     twapStates: [],
     twapHistory: [],
     twapSliceFills: [],
+    marketSlippage: 0.08, // default 8%
   } as PerpsState,
 
   reducers: {
@@ -645,6 +647,13 @@ export const perps = createModel<RootModel>()({
         wsActiveAssetData: payload,
       };
     },
+
+    setMarketSlippage(state, payload: number) {
+      return {
+        ...state,
+        marketSlippage: Math.max(0, Math.min(1, payload)),
+      };
+    },
   },
 
   effects: (dispatch) => ({
@@ -1124,6 +1133,26 @@ export const perps = createModel<RootModel>()({
         await rootState.app.wallet.setPerpsFavoritedCoins(newFavoritedCoins);
       } catch (error) {
         console.error('Failed to toggle favorite coin:', error);
+      }
+    },
+
+    async initMarketSlippage(_, rootState) {
+      try {
+        const slippage = await rootState.app.wallet.getMarketSlippage();
+        dispatch.perps.setMarketSlippage(slippage ?? 0.08);
+      } catch (error) {
+        console.error('Failed to load market slippage:', error);
+        dispatch.perps.setMarketSlippage(0.08);
+      }
+    },
+
+    async updateMarketSlippage(slippage: number, rootState) {
+      try {
+        const clampedSlippage = Math.max(0, Math.min(1, slippage));
+        dispatch.perps.setMarketSlippage(clampedSlippage);
+        await rootState.app.wallet.setMarketSlippage(clampedSlippage);
+      } catch (error) {
+        console.error('Failed to save market slippage:', error);
       }
     },
   }),

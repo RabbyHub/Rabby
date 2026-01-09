@@ -17,9 +17,15 @@ import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSlider';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
+import { EditMarketSlippage } from '../components/EditMarketSlippage';
 
 export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
+
+  // Get slippage from Redux
+  const marketSlippage = useRabbySelector(
+    (state) => state.perps.marketSlippage
+  );
 
   // Get data from perpsState
   const {
@@ -52,6 +58,8 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     handleTPSLEnabledChange,
     resetForm,
   } = usePerpsTradingState();
+
+  const [slippageVisible, setSlippageVisible] = React.useState(false);
 
   // Form validation
   const validation = React.useMemo(() => {
@@ -126,6 +134,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         tpTriggerPx: tpslConfig.takeProfit.price,
         slTriggerPx: tpslConfig.stopLoss.price,
         reduceOnly,
+        slippage: marketSlippage,
       });
     },
     {
@@ -144,106 +153,118 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       orderValue: tradeUsdAmount > 0 ? formatUsdValue(tradeUsdAmount) : '$0.00',
       marginRequired: formatUsdValue(marginRequired),
       marginUsage,
-      slippage: '8%',
+      slippage: `Max ${(marketSlippage * 100).toFixed(2)}%`,
     };
-  }, [estimatedLiquidationPrice, tradeUsdAmount, marginUsage]);
+  }, [estimatedLiquidationPrice, tradeUsdAmount, marginUsage, marketSlippage]);
+
+  const handleSetSlippage = () => {
+    setSlippageVisible(true);
+  };
 
   return (
-    <div className="space-y-[16px]">
-      {/* Buy/Sell Tabs */}
-      <OrderSideAndFunds
-        orderSide={orderSide}
-        switchOrderSide={switchOrderSide}
-        availableBalance={availableBalance}
-        currentPosition={currentPosition}
-        selectedCoin={selectedCoin}
-      />
-
-      {/* Position Size Input */}
-      <PositionSizeInputAndSlider
-        price={markPrice}
-        maxTradeSize={maxTradeSize}
-        positionSize={positionSize}
-        setPositionSize={setPositionSize}
-        percentage={percentage}
-        setPercentage={setPercentage}
-        baseAsset={selectedCoin}
-        quoteAsset="USDC"
-        precision={{ amount: szDecimals, price: pxDecimals }}
-      />
-
-      {/* TP/SL and Reduce Only */}
-      <div className="flex items-center gap-16">
-        <PerpsCheckbox
-          checked={tpslConfig.enabled}
-          onChange={handleTPSLEnabledChange}
-          title={t('page.perpsPro.tradingPanel.tpSl')}
+    <>
+      <div className="space-y-[16px]">
+        {/* Buy/Sell Tabs */}
+        <OrderSideAndFunds
+          orderSide={orderSide}
+          switchOrderSide={switchOrderSide}
+          availableBalance={availableBalance}
+          currentPosition={currentPosition}
+          selectedCoin={selectedCoin}
         />
-        <PerpsCheckbox
-          checked={reduceOnly}
-          onChange={setReduceOnly}
-          title={t('page.perpsPro.tradingPanel.reduceOnly')}
-          disabled={!currentPosition}
+
+        {/* Position Size Input */}
+        <PositionSizeInputAndSlider
+          price={markPrice}
+          maxTradeSize={maxTradeSize}
+          positionSize={positionSize}
+          setPositionSize={setPositionSize}
+          percentage={percentage}
+          setPercentage={setPercentage}
+          baseAsset={selectedCoin}
+          quoteAsset="USDC"
+          precision={{ amount: szDecimals, price: pxDecimals }}
+        />
+
+        {/* TP/SL and Reduce Only */}
+        <div className="flex items-center gap-16">
+          <PerpsCheckbox
+            checked={tpslConfig.enabled}
+            onChange={handleTPSLEnabledChange}
+            title={t('page.perpsPro.tradingPanel.tpSl')}
+          />
+          <PerpsCheckbox
+            checked={reduceOnly}
+            onChange={setReduceOnly}
+            title={t('page.perpsPro.tradingPanel.reduceOnly')}
+            disabled={!currentPosition}
+          />
+        </div>
+
+        {/* TP/SL Settings Expanded */}
+        {tpslConfig.enabled && (
+          <TPSLSettings
+            szDecimals={szDecimals}
+            config={tpslConfig}
+            setConfig={setTpslConfig}
+            orderSide={orderSide}
+            tradeSize={tradeSize}
+            price={midPrice}
+            marginRequired={marginRequired}
+          />
+        )}
+
+        {/* Place Order Button */}
+        {needEnableTrading ? (
+          <Button
+            onClick={handleActionApproveStatus}
+            className={
+              'w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent bg-rb-green-default text-rb-neutral-InvertHighlight'
+            }
+          >
+            {t('page.perpsPro.tradingPanel.enableTrading')}
+          </Button>
+        ) : (
+          <Button
+            loading={handleOpenOrderLoading}
+            onClick={handleOpenOrderRequest}
+            disabled={!validation.isValid || tpslConfigHasError}
+            className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
+              validation.isValid
+                ? orderSide === OrderSide.BUY
+                  ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
+                  : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
+                : validation.error
+                ? 'bg-rb-orange-light-1 text-rb-orange-default cursor-not-allowed'
+                : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
+            }`}
+          >
+            {validation.error
+              ? validation.error
+              : orderSide === OrderSide.BUY
+              ? t('page.perpsPro.tradingPanel.buyLong')
+              : t('page.perpsPro.tradingPanel.sellShort')}
+          </Button>
+        )}
+
+        {/* Order Summary */}
+        <OrderSummary
+          data={orderSummary}
+          showTPSLExpected={tpslConfig.enabled}
+          tpExpectedPnL={
+            tpslConfig.enabled ? tpslConfig.takeProfit.expectedPnL : undefined
+          }
+          handleSetSlippage={handleSetSlippage}
+          slExpectedPnL={
+            tpslConfig.enabled ? tpslConfig.stopLoss.expectedPnL : undefined
+          }
         />
       </div>
 
-      {/* TP/SL Settings Expanded */}
-      {tpslConfig.enabled && (
-        <TPSLSettings
-          szDecimals={szDecimals}
-          config={tpslConfig}
-          setConfig={setTpslConfig}
-          orderSide={orderSide}
-          tradeSize={tradeSize}
-          price={midPrice}
-          marginRequired={marginRequired}
-        />
-      )}
-
-      {/* Place Order Button */}
-      {needEnableTrading ? (
-        <Button
-          onClick={handleActionApproveStatus}
-          className={
-            'w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent bg-rb-green-default text-rb-neutral-InvertHighlight'
-          }
-        >
-          {t('page.perpsPro.tradingPanel.enableTrading')}
-        </Button>
-      ) : (
-        <Button
-          loading={handleOpenOrderLoading}
-          onClick={handleOpenOrderRequest}
-          disabled={!validation.isValid || tpslConfigHasError}
-          className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
-            validation.isValid
-              ? orderSide === OrderSide.BUY
-                ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
-                : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
-              : validation.error
-              ? 'bg-rb-orange-light-1 text-rb-orange-default cursor-not-allowed'
-              : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
-          }`}
-        >
-          {validation.error
-            ? validation.error
-            : orderSide === OrderSide.BUY
-            ? t('page.perpsPro.tradingPanel.buyLong')
-            : t('page.perpsPro.tradingPanel.sellShort')}
-        </Button>
-      )}
-
-      {/* Order Summary */}
-      <OrderSummary
-        data={orderSummary}
-        showTPSLExpected={tpslConfig.enabled}
-        tpExpectedPnL={
-          tpslConfig.enabled ? tpslConfig.takeProfit.expectedPnL : undefined
-        }
-        slExpectedPnL={
-          tpslConfig.enabled ? tpslConfig.stopLoss.expectedPnL : undefined
-        }
+      <EditMarketSlippage
+        visible={slippageVisible}
+        onCancel={() => setSlippageVisible(false)}
       />
-    </div>
+    </>
   );
 };

@@ -1,12 +1,14 @@
 import React from 'react';
 import { OrderSummaryData } from '../../../types';
 import { useTranslation } from 'react-i18next';
+import { DashedUnderlineText } from '../../DashedUnderlineText';
 
 interface OrderSummaryProps {
   data: OrderSummaryData;
   showTPSLExpected?: boolean;
   tpExpectedPnL?: string;
   slExpectedPnL?: string;
+  handleSetSlippage?: () => void;
 }
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({
@@ -14,6 +16,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   showTPSLExpected,
   tpExpectedPnL,
   slExpectedPnL,
+  handleSetSlippage,
 }) => {
   const { t } = useTranslation();
 
@@ -92,9 +95,14 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.slippage')}
           </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
+          <DashedUnderlineText
+            onClick={() => {
+              handleSetSlippage?.();
+            }}
+            className="text-r-neutral-title-1 font-medium text-[13px]"
+          >
             {data.slippage}
-          </span>
+          </DashedUnderlineText>
         </div>
       )}
     </div>

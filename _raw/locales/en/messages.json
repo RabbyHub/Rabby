@@ -1122,6 +1122,13 @@
         "randomized": "(randomized)"
       },
       "tradingPanel": {
+        "slippagePage": {
+          "title": "Adjust Max Slippage",
+          "description": "Max slippage only affects market orders placed from the order form. Closing positions will use max slippage of 8% and market TP/SL orders will use max slippage of 10%.",
+          "maxSlippage": "Max slippage",
+          "minError": "Minimum slippage is 0%",
+          "maxError": "Maximum slippage is 100%"
+        },
         "sizeSkewTooltip": "Ratio between end and start prices. For example, if size skew is 2.0 then a limit order for end price will be placed with twice the size of the start price. A size skew of 1.0 creates equally sized orders.",
         "randomizeTooltip": "Randomizes the timing and size of sub-orders to reduce predictability.",
         "reduceOnly": "Reduce Only",

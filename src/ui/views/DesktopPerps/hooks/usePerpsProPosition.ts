@@ -108,6 +108,7 @@ export const usePerpsProPosition = () => {
       tpTriggerPx?: string;
       slTriggerPx?: string;
       reduceOnly?: boolean;
+      slippage?: number;
     }) => {
       return withErrorHandler(
         async (p) => {
@@ -120,6 +121,7 @@ export const usePerpsProPosition = () => {
             tpTriggerPx,
             slTriggerPx,
             reduceOnly,
+            slippage,
           } = p;
           const formattedTpTriggerPx = formatTriggerPx(tpTriggerPx);
           const formattedSlTriggerPx = formatTriggerPx(slTriggerPx);
@@ -133,6 +135,7 @@ export const usePerpsProPosition = () => {
             tpTriggerPx: formattedTpTriggerPx,
             slTriggerPx: formattedSlTriggerPx,
             builder: PERPS_BUILDER_INFO_PRO,
+            slippage,
           });
           const filled = results?.response?.data?.statuses[0]?.filled;
           if (filled) {

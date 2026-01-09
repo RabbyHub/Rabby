@@ -22,6 +22,7 @@ import { useRabbySelector } from '@/ui/store';
 import { HistoryPopup } from './HistoryPopup';
 import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconPending.svg';
 import { DepositPending } from './DepositPending';
+import { DashedUnderlineText } from '../DashedUnderlineText';
 
 export type DepositWithdrawModalType = 'deposit' | 'withdraw';
 
@@ -37,31 +38,6 @@ const PERCENTAGE_OPTIONS = [
   { label: '75%', value: 0.75 },
   { label: 'Max', value: 1 },
 ];
-
-// 带虚线下划线的文字组件
-const DashedUnderlineText = React.forwardRef<
-  HTMLSpanElement,
-  {
-    children: React.ReactNode;
-    className?: string;
-  } & React.HTMLAttributes<HTMLSpanElement>
->(({ children, className, ...rest }, ref) => {
-  return (
-    <span
-      ref={ref}
-      className={clsx('relative inline-block cursor-pointer', className)}
-      {...rest}
-    >
-      {children}
-      <span
-        className="absolute left-0 right-0 bottom-0"
-        style={{
-          borderBottom: '1px dashed currentColor',
-        }}
-      />
-    </span>
-  );
-});
 
 export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
   visible,
