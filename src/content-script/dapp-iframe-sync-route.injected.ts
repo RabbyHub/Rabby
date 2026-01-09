@@ -168,5 +168,7 @@ const domReadyCall = (callback) => {
 };
 
 domReadyCall(() => {
-  setupDappIframeSyncRoute();
+  setTimeout(() => {
+    setupDappIframeSyncRoute();
+  }, 300);
 });
