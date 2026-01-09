@@ -111,7 +111,7 @@ export const DesktopNav: React.FC<{
           <div
             className={clsx(
               'flex items-center rounded-[20px] p-[3px]',
-              'border-[1px] border-solid border-rb-neutral-bg-2'
+              'border-[1px] border-solid border-rb-neutral-line'
               // 'bg-rb-neutral-bg-3'
             )}
           >
@@ -138,9 +138,9 @@ export const DesktopNav: React.FC<{
                       'rounded-[16px]',
                       isActive
                         ? 'text-r-blue-default  bg-rb-brand-light-1'
-                        : 'text-rb-neutral-secondary',
+                        : 'text-rb-neutral-foot',
                       item.isSoon
-                        ? 'cursor-not-allowed opacity-70'
+                        ? 'cursor-not-allowed opacity-50'
                         : 'hover:bg-rb-neutral-bg-2 cursor-pointer'
                     )}
                     onClick={() => {
