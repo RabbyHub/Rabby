@@ -311,14 +311,17 @@ const flowContext = flow
     const { uiRequestComponent, ...rest } = approvalRes || {};
     const {
       session: { origin },
+      isFromDesktopDapp,
     } = request;
 
-    const isAutoPersonalSign = shouldAutoPersonalSign({
-      origin,
-      method: ctx.request.data.method,
-      account: ctx.request.account,
-      msgParams: ctx.request.data.params,
-    });
+    const isAutoPersonalSign =
+      isFromDesktopDapp &&
+      shouldAutoPersonalSign({
+        origin,
+        method: ctx.request.data.method,
+        account: ctx.request.account,
+        msgParams: ctx.request.data.params,
+      });
 
     const createRequestDeferFn = (
       originApprovalRes: typeof approvalRes
