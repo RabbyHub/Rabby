@@ -209,6 +209,7 @@ import Logo1inch from 'ui/assets/swap/1inch.svg';
 import LogoOdos from 'ui/assets/swap/odos.png';
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
 import LogoMagpie from 'ui/assets/swap/magpie.png';
+import LogoSushi from 'ui/assets/swap/sushi.png';
 
 import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
 import LogoBinance from 'ui/assets/swap/binance.png';
@@ -1571,6 +1572,12 @@ export const DEX = {
     logo: LogoMagpie,
     name: 'Fly',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.MAGPIE],
+  },
+  [DEX_ENUM.SUSHI]: {
+    id: DEX_ENUM.SUSHI,
+    logo: LogoSushi,
+    name: 'Sushi',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.SUSHI],
   },
 };
 
