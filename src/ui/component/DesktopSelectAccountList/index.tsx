@@ -207,11 +207,9 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
               className={clsx(
                 // 'bg-rb-neutral-bg-3',
                 'cursor-pointer rounded-[20px] h-[62px] p-[16px] flex items-center gap-[8px] text-r-blue-default',
-                'desktop-account-item'
+                'desktop-account-item',
+                'bg-rb-brand-light-1 hover:bg-rb-brand-light-2'
               )}
-              style={{
-                background: 'rgba(76, 101, 255, 0.08)',
-              }}
             >
               <RcIconAddWalletCC className="flex-shrink-0" />
               <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">

@@ -173,11 +173,9 @@ export const DesktopNav: React.FC<{
               className={clsx(
                 'min-w-[88px] p-[12px] rounded-[14px]',
                 'flex items-center justify-center gap-[4px] cursor-pointer',
-                'text-rb-brand-default text-[14px] leading-[16px] font-medium'
+                'text-rb-brand-default text-[14px] leading-[16px] font-medium',
+                'bg-rb-brand-light-1 hover:bg-rb-brand-light-2'
               )}
-              style={{
-                background: 'rgba(var(--rb-brand-default-rgb),0.08)',
-              }}
               onClick={onClick}
             >
               <Icon />
