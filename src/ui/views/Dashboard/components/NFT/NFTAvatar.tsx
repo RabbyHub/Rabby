@@ -28,7 +28,9 @@ const isValidHttpUrl = (url?: string): boolean => {
   if (!url) return false;
   try {
     const urlObj = new URL(url);
-    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    // only allow http(s) URLs with a non-empty hostname
+    const isHttp = urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    return isHttp && !!urlObj.hostname;
   } catch {
     return false;
   }
@@ -54,11 +56,11 @@ const Thumbnail = ({
   }
 
   const isShowEmpty =
-    !(type && ['image', 'image_url'].includes(type) && content) && empty;
+    !(type && ['image', 'image_url'].includes(type) && sanitizedUrl) && empty;
 
   const src =
-    type && ['image', 'image_url'].includes(type) && content
-      ? content
+    type && ['image', 'image_url'].includes(type) && sanitizedUrl
+      ? sanitizedUrl
       : unknown || IconNFTDefault;
 
   if (isShowEmpty) {
@@ -82,10 +84,11 @@ const Thumbnail = ({
 };
 
 const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
-  if (type && ['image', 'image_url'].includes(type) && content) {
+  const sanitizedUrl = isValidHttpUrl(content) ? content : '';
+  if (type && ['image', 'image_url'].includes(type) && sanitizedUrl) {
     return (
       <Image
-        src={content}
+        src={sanitizedUrl}
         className="nft-avatar-image"
         preview={false}
         fallback={IconImgFail}
@@ -99,7 +102,6 @@ const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
       ></Image>
     );
   }
-  const sanitizedUrl = isValidHttpUrl(content) ? content : '';
   if (type && ['video_url', 'audio_url'].includes(type) && sanitizedUrl) {
     return (
       <video
