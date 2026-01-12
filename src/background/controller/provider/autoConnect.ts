@@ -72,7 +72,6 @@ export const shouldAutoPersonalSign = ({
     ? fromHex(msg[0] as any, 'string')?.startsWith(matchText)
     : false;
 
-
   if (!isValidText) {
     return false;
   }
