@@ -81,7 +81,7 @@ export const DappIframeLoading = ({
 }) => {
   return (
     <IframeLoadingOverlay>
-      <IframeLoadingBar />
+      {/* <IframeLoadingBar /> */}
       <IframeLoadingContent>
         <IframeLoadingIcon>
           <IframeLoadingIconImage src={icon} />
