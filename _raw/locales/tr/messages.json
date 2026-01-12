@@ -829,8 +829,8 @@
             "modalTitle_other": "Toplam <2>{{count}}</2> imza gereklidir",
             "modalContent": "Aynı Permit2 sözleşmesinden gelen onaylar aynı imza altında birleştirilecektir."
           },
-          "notSupport7702Title": "Geçerli Adres Türü İçin Desteklenmiyor",
-          "notSupport7702Content": "Şu anda yalnızca özel anahtar ve tohum kelime adresleri için EIP-7702 delegasyonunu iptal etmeyi desteklemektedir."
+          "notSupport7702Title": "Desteklenmeyen Adres Türü",
+          "notSupport7702Content": "EIP-7702 delegasyonlarını iptal etmek yalnızca private key veya seed phrase adresleri için desteklenmektedir."
         },
         "ViewMore": {
           "text": "Daha fazla göster"

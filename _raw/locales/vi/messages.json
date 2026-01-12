@@ -829,8 +829,8 @@
           "btnText_other": "Hủy bỏ ({{count}})",
           "btnText_zero": "Hủy bỏ",
           "btnText_one": "Thu hồi ({{count}})",
-          "notSupport7702Title": "Không hỗ trợ cho loại địa chỉ hiện tại",
-          "notSupport7702Content": "Hiện tại chỉ hỗ trợ thu hồi ủy quyền EIP-7702 cho các địa chỉ khóa riêng & cụm từ hạt giống."
+          "notSupport7702Title": "Địa chỉ loại không được hỗ trợ",
+          "notSupport7702Content": "Việt văn: Việc thu hồi các ủy quyền EIP-7702 chỉ được hỗ trợ cho các địa chỉ khóa riêng tư hoặc cụm từ hạt giống."
         },
         "ViewMore": {
           "text": "Xem thêm"

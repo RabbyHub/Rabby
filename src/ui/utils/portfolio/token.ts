@@ -28,7 +28,11 @@ import {
 } from './tokenUtils';
 import { isSameAddress } from '..';
 import { Token } from 'background/service/preference';
-import { defaultTokenFilter, isLpToken } from './lpToken';
+import {
+  defaultTokenFilter,
+  includeLpTokensFilter,
+  isLpToken,
+} from './lpToken';
 
 let lastResetTokenListAddr = '';
 // export const tokenChangeLoadingAtom = atom(false);
@@ -61,7 +65,8 @@ export const useTokens = (
     ? !!findChain({ serverId: chainServerId })?.isTestnet
     : false,
   lpTokensOnly = false,
-  showBlocked = false
+  showBlocked = false,
+  searchMode = false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
@@ -460,11 +465,20 @@ export const useTokens = (
 
   const tokens = useMemo(() => {
     const list = isTestnet ? testnetTokens.list : mainnetTokens.list;
+    if (searchMode) {
+      return list.filter(includeLpTokensFilter);
+    }
     if (lpTokensOnly) {
       return list.filter(isLpToken);
     }
     return list.filter(defaultTokenFilter);
-  }, [isTestnet, testnetTokens.list, mainnetTokens.list, lpTokensOnly]);
+  }, [
+    isTestnet,
+    testnetTokens.list,
+    mainnetTokens.list,
+    lpTokensOnly,
+    searchMode,
+  ]);
 
   return {
     netWorth: data?.netWorth || 0,

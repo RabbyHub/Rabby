@@ -41,7 +41,7 @@ const useSortToken = <T extends TokenItem | AbstractPortfolioToken>(
     for (let i = 0; i < list.length; i++) {
       const item = list[i];
       const usdValue = item.price * item.amount;
-      if (usdValue > 0) {
+      if (usdValue > 0 && item.is_core) {
         hasUsdValue.push(item);
       } else if (item.amount > 0) {
         hasAmount.push(item);

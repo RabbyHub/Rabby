@@ -51,7 +51,7 @@ const ActionBottom = ({
         swap-action-btn
         px-10 h-[24px] leading-[24px] 
         text-r-blue-default text-12 font-medium rounded-[6px] 
-        border-[0.5px] border-r-blue-default w-min cursor-pointer 
+        border-[0.5px] border-r-blue-default w-min whitespace-nowrap cursor-pointer 
         hover:bg-r-blue-light1
       `}
     >
@@ -111,7 +111,7 @@ export const TokenItemAsset: React.FC<Props> = ({
         </TooltipWithMagnetArrow>
       </div>
       <div className="flex flex-1 flex-row items-center gap-[12px] overflow-hidden">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 max-w-[190px]">
           <DesktopTokenLabel
             token={{ ...item, id: item._tokenId }}
             isNft={false}
