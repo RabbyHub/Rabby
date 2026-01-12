@@ -105,7 +105,7 @@ export const DesktopNav: React.FC<{
   );
 
   return (
-    <div className="sticky top-0 z-10 pt-[20px] pb-[16px] bg-rb-neutral-bg-1 pr-[8px]">
+    <div className="sticky top-0 z-10 pt-[20px] pb-[16px] bg-rb-neutral-bg-1">
       <div className="flex items-center justify-between">
         <div className="flex">
           <div
