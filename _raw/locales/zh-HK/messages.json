@@ -1006,8 +1006,8 @@
             "modalTitle_one": "總共需要 <2>{{count}}</2> 個簽名",
             "modalContent": "來自相同 Permit2 合約的批准將會在相同的簽名下打包在一起。"
           },
-          "notSupport7702Title": "不支持当前地址类型",
-          "notSupport7702Content": "目前只支持撤销私钥和种子短语地址的 EIP-7702 授权。"
+          "notSupport7702Title": "不支持的地址类型",
+          "notSupport7702Content": "撤销 EIP-7702 委托只支持私钥或种子短语地址"
         },
         "ViewMore": {
           "text": "查看更多"

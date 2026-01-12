@@ -2,7 +2,8 @@ import { AbstractPortfolioToken } from './types';
 
 // lpTokenMode is false
 export const defaultTokenFilter = (token: AbstractPortfolioToken) => {
-  if (!token.is_verified) {
+  // null和false是两种情况，null表示没处理，false已经明确是诈骗token
+  if (token.is_verified === false) {
     return false;
   }
   if (token.is_core === false) {
@@ -16,7 +17,7 @@ export const defaultTokenFilter = (token: AbstractPortfolioToken) => {
 
 // lpTokenMode is true
 export const includeLpTokensFilter = (token: AbstractPortfolioToken) => {
-  if (!token.is_verified) {
+  if (token.is_verified === false) {
     return false;
   }
   if (token.is_core === false && !token.protocol_id) {
@@ -31,5 +32,5 @@ interface IsLpTokenProps {
   protocol_id?: string;
 }
 export const isLpToken = (token: IsLpTokenProps) => {
-  return !!token.is_verified && !token.is_core && !!token.protocol_id;
+  return token.is_verified !== false && !token.is_core && !!token.protocol_id;
 };

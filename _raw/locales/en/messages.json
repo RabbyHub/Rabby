@@ -1210,8 +1210,8 @@
             "modalTitle_one": "A total of <2>{{count}}</2> signature is required",
             "modalTitle_other": "A total of <2>{{count}}</2> signatures is required"
           },
-          "notSupport7702Title": "Not Supported for Current Address Type",
-          "notSupport7702Content": "Currently only supports revoking EIP-7702 delegation for private key & seed phrase addresses."
+          "notSupport7702Title": "Unsupported Address Type",
+          "notSupport7702Content": "Revoking EIP-7702 delegations is only supported for private key or seed phrase addresses"
         },
         "ViewMore": {
           "text": "View more"

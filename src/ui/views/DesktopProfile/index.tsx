@@ -120,6 +120,7 @@ export const DesktopProfile = () => {
   const [cacheProjectOverviewList, setCacheProjectOverviewList] = useState<
     AbstractProject[]
   >([]);
+  const [searchValue, setSearchValue] = React.useState('');
 
   const {
     // useQueryProjects
@@ -146,7 +147,10 @@ export const DesktopProfile = () => {
     appIds,
     isNoResults,
     refreshPositions,
-  } = useTokenAndDIFIData({ selectChainId: chainInfo?.serverId });
+  } = useTokenAndDIFIData({
+    selectChainId: chainInfo?.serverId,
+    allTokenMode: !!searchValue,
+  });
 
   useListenTxReload(async () => {
     if (['tokens', 'transactions'].includes(activeTab)) {
@@ -266,6 +270,8 @@ export const DesktopProfile = () => {
                         key="tokens"
                       >
                         <TokenTab
+                          searchValue={searchValue}
+                          setSearchValue={setSearchValue}
                           isTokensLoading={
                             !!isTokensLoading ||
                             (!!lpTokenMode && !!isAllTokenLoading)
