@@ -15,6 +15,7 @@ import {
   RcIconArrowDownPerpsCC,
 } from '@/ui/assets/desktop/common';
 import { Trade } from '..';
+import { getPerpTickOptions } from '../../../utils';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
 
@@ -24,7 +25,7 @@ type QuoteUnit = 'base' | 'usd';
 // Aggregation level config
 interface AggregationConfig {
   nSigFigs?: number;
-  mantissa?: number;
+  mantissa?: number | null;
   label: string;
 }
 
@@ -38,9 +39,12 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   latestTrade,
 }) => {
   const { t } = useTranslation();
-  const { selectedCoin, marketDataMap, wsActiveAssetCtx } = useRabbySelector(
-    (state) => state.perps
-  );
+  const {
+    selectedCoin,
+    marketDataMap,
+    wsActiveAssetCtx,
+    isInitialized,
+  } = useRabbySelector((state) => state.perps);
   const dispatch = useRabbyDispatch();
   const [viewMode, setViewMode] = useState<ViewMode>('Both');
   const [quoteUnit, setQuoteUnit] = useState<QuoteUnit>('base');
@@ -60,7 +64,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
 
   const szDecimals = useMemo(() => {
     return marketDataMap[selectedCoin.toUpperCase()]?.szDecimals ?? 5;
-  }, [currentMarketData]);
+  }, [currentMarketData, selectedCoin]);
 
   const markPx = useMemo(() => {
     if (
@@ -71,7 +75,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     }
 
     return Number(currentMarketData?.markPx || 0);
-  }, [wsActiveAssetCtx, currentMarketData]);
+  }, [wsActiveAssetCtx, currentMarketData, selectedCoin]);
 
   // Six aggregation levels: from finest to coarsest
   // Based on szDecimals to determine appropriate tick size
@@ -79,46 +83,25 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   // For ETH (szDecimals=4): baseTickSize = 0.1 → 0.1, 0.2, 0.5, 1, 10, 100
   // For SOL (szDecimals=2): baseTickSize = 0.01 → 0.01, 0.02, 0.05, 0.1, 1, 10
   const aggregationLevels = useMemo<AggregationConfig[]>(() => {
-    // Calculate base tick size from szDecimals
-    // For szDecimals >= 4: offset = 5 (BTC, ETH)
-    // For szDecimals < 4: offset = 4 (SOL and lower precision coins)
-    const offset = szDecimals >= 4 ? 5 : 4;
-    const baseTickSize = Math.pow(10, szDecimals - offset);
+    if (!markPx || !isInitialized) return [];
+    const result = getPerpTickOptions(markPx, szDecimals);
 
-    const levels = [
-      { multiplier: 1, nSigFigs: 5, mantissa: undefined },
-      { multiplier: 2, nSigFigs: 5, mantissa: 2 },
-      { multiplier: 5, nSigFigs: 5, mantissa: 5 },
-      { multiplier: 10, nSigFigs: 4, mantissa: undefined },
-      { multiplier: 100, nSigFigs: 3, mantissa: undefined },
-      { multiplier: 1000, nSigFigs: 2, mantissa: undefined },
-    ];
-
-    return levels.map((level) => {
-      const tickValue = level.multiplier * baseTickSize;
-
-      // Format label based on tick value
-      let label: string;
-      if (tickValue >= 1) {
-        label = tickValue.toString();
-      } else if (tickValue >= 0.0001) {
-        // Remove trailing zeros
-        label = tickValue.toFixed(4).replace(/\.?0+$/, '');
-      } else {
-        label = tickValue.toFixed(6).replace(/\.?0+$/, '');
-      }
-
+    return result.map((level) => {
       return {
         nSigFigs: level.nSigFigs,
         mantissa: level.mantissa,
-        label,
+        label: level.displayPrice.toString(),
       };
     });
-  }, [szDecimals]);
+  }, [szDecimals, selectedCoin, isInitialized]);
+
+  const selectedAggregation = useMemo(() => {
+    return aggregationLevels[aggregationIndex] || aggregationLevels[0];
+  }, [aggregationIndex, aggregationLevels]);
 
   // Subscribe to order book data via WebSocket
   useEffect(() => {
-    if (!selectedCoin || aggregationLevels.length === 0) return;
+    if (!selectedCoin) return;
 
     const sdk = getPerpsSDK();
     const currentAggregation = aggregationLevels[aggregationIndex];
@@ -127,8 +110,8 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     const { unsubscribe } = sdk.ws.subscribeToL2Book(
       {
         coin: selectedCoin,
-        nSigFigs: currentAggregation.nSigFigs,
-        mantissa: currentAggregation.mantissa,
+        nSigFigs: currentAggregation?.nSigFigs || 5,
+        mantissa: currentAggregation?.mantissa || undefined,
       },
       (data) => {
         if (data && data.levels) {
@@ -169,7 +152,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     return () => {
       unsubscribe();
     };
-  }, [selectedCoin, aggregationIndex]);
+  }, [selectedCoin, aggregationIndex, aggregationLevels]);
 
   const formatValue = useCallback(
     (value: number) => {
@@ -350,7 +333,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
               )}
             >
-              {aggregationLevels[aggregationIndex].label}
+              {selectedAggregation?.label || ''}
               <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
             </button>
           </Dropdown>

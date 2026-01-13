@@ -91,9 +91,9 @@ export const usePerpsProInit = () => {
           account: initAccount,
           isPro: true,
         });
-        dispatch.perps.fetchMarketData(undefined);
-
         ensureLoginApproveSign(initAccount, agentAddress);
+
+        await dispatch.perps.fetchMarketData(undefined);
 
         dispatch.perps.setInitialized(true);
         return true;

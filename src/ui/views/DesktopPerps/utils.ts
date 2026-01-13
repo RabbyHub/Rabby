@@ -79,3 +79,70 @@ export const handleUpdateTwapSliceFills = (
     playSound('/sounds/order-filled.mp3');
   }
 };
+
+/**
+ * Hyperliquid Perps Tick Calculation (Pure Contract Mode)
+ */
+
+export interface TickOption {
+  displayPrice: number; // UI 显示的值 (e.g. 0.000001)
+  nSigFigs: 2 | 3 | 4 | 5; // API 请求参数
+  mantissa: 1 | 2 | 5 | null; // API 请求参数 (仅 nSigFigs=5 时存在)
+}
+
+const PERP_MAX_DECIMALS_GLOBAL = 6;
+
+/**
+ * calc the valid tick options
+ * @param currentPrice  current price (must, for calculating the valid digits)
+ * @param szDecimals   szDecimals in API meta (must, for calculating the max allowed decimals)
+ */
+export function getPerpTickOptions(
+  currentPrice: number,
+  szDecimals: number
+): TickOption[] {
+  if (currentPrice <= 0) return [];
+
+  const options: TickOption[] = [];
+
+  // 1. calc the max allowed decimals
+  // no more than 6 - szDecimals
+  // if szDecimals is 0 (kPEPE), limit = 6
+  const maxAllowedDecimals = Math.max(0, PERP_MAX_DECIMALS_GLOBAL - szDecimals);
+
+  // 2. calc the magnitude of the current price
+  // e.g. 3133.1 -> 3;  0.0059 -> -3
+  const magnitude = Math.floor(Math.log10(currentPrice));
+
+  // 3. start from the finest nSigFigs=5 and traverse down to 2
+  for (let sigFigs = 5; sigFigs >= 2; sigFigs--) {
+    // calc the base tick for the given sigFigs
+    // Formula: 10 ^ (Mag - SigFigs + 1)
+    const exponent = magnitude - sigFigs + 1;
+
+    if (-exponent > maxAllowedDecimals) {
+      continue;
+    }
+
+    const baseTick = Math.pow(10, exponent);
+
+    if (sigFigs === 5) {
+      options.push(createOption(baseTick * 1, 5, null)); // x1
+      options.push(createOption(baseTick * 2, 5, 2)); // x2
+      options.push(createOption(baseTick * 5, 5, 5)); // x5
+    } else {
+      options.push(createOption(baseTick, sigFigs as 2 | 3 | 4 | 5, null));
+    }
+  }
+
+  return options;
+}
+
+function createOption(
+  val: number,
+  nSig: 2 | 3 | 4 | 5,
+  man: 1 | 2 | 5 | null
+): TickOption {
+  const cleanVal = parseFloat(val.toPrecision(10));
+  return { displayPrice: cleanVal, nSigFigs: nSig, mantissa: man };
+}
