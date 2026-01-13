@@ -109,7 +109,7 @@ export const sortWalletTokens = (wallet: DisplayedProject) => {
 export const concatAndSort = <
   T extends {
     symbol: string;
-    is_core?: boolean;
+    is_core?: boolean | null;
     price?: number;
     amount?: number;
   }
