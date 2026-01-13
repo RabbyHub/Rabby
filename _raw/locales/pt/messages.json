@@ -1218,7 +1218,8 @@
           "searchDapp": "Pesquisar Dapp",
           "settings": "Configurações",
           "perpsPositions_one": "{{count}} Posição",
-          "perpsPositions_other": "{{count}} Posições"
+          "perpsPositions_other": "{{count}} Posições",
+          "prediction": "Previsão"
         },
         "queue": {
           "title": "Fila",
@@ -3450,6 +3451,11 @@
         "liquidationPriceTips": "O preço pelo qual sua posição é automaticamente fechada pela exchange para evitar novas perdas quando sua margem cai abaixo do nível de margem de manutenção."
       },
       "needDepositFirst": "Você precisa depositar fundos primeiro."
+    },
+    "dappIfame": {
+      "openPolymarket": "Abrindo Polymarket...",
+      "serviceUnavailable": "Serviço Indisponível",
+      "predictionNotSupported": "A funcionalidade de Previsão não é suportada na sua região atual."
     }
   },
   "component": {
@@ -3660,7 +3666,8 @@
       "perps": "Perps",
       "lending": "Empréstimo",
       "portfolio": "Portfólio",
-      "comingSoon": "Em Breve"
+      "comingSoon": "Em Breve",
+      "prediction": "Previsão"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adicionar endereço"

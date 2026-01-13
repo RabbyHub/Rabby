@@ -123,7 +123,8 @@
           "searchDapp": "搜索 Dapp",
           "settings": "设置",
           "perpsPositions_one": "{{count}} 头寸",
-          "perpsPositions_other": "{{count}} 头寸"
+          "perpsPositions_other": "{{count}} 头寸",
+          "prediction": "预测"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -3491,6 +3492,11 @@
         "liquidationPriceTips": "在您的保证金跌至维持保证金水平以下时，交易所自动平仓以防止进一步损失的价格。"
       },
       "needDepositFirst": "您需要先存入资金。"
+    },
+    "dappIfame": {
+      "serviceUnavailable": "服务不可用",
+      "predictionNotSupported": "当前区域不支持预测功能。",
+      "openPolymarket": "打开 Polymarket..."
     }
   },
   "component": {
@@ -3701,7 +3707,8 @@
       "perps": "永久合约",
       "comingSoon": "即将推出",
       "portfolio": "投资组合",
-      "lending": "借贷"
+      "lending": "借贷",
+      "prediction": "预测"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "添加地址"

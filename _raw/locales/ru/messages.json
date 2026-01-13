@@ -3455,6 +3455,11 @@
         "liquidationPriceTips": "Цена, по которой ваша позиция автоматически закрывается биржей, чтобы предотвратить дальнейшие убытки, когда ваш маржинальный баланс падает ниже уровня поддерживающей маржи."
       },
       "needDepositFirst": "Сначала вам нужно внести средства."
+    },
+    "dappIfame": {
+      "serviceUnavailable": "Служба недоступна",
+      "openPolymarket": "Открытие Polymarket...",
+      "predictionNotSupported": "Функция Прогнозирования не поддерживается в вашем текущем регионе."
     }
   },
   "component": {
@@ -3665,7 +3670,8 @@
       "lending": "Кредитование",
       "perps": "Перпсы",
       "comingSoon": "Скоро будет",
-      "portfolio": "Портфель"
+      "portfolio": "Портфель",
+      "prediction": "Предсказание"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Добавить адрес"
