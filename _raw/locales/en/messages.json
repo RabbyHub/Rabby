@@ -1121,6 +1121,11 @@
         "no": "No",
         "randomized": "(randomized)"
       },
+      "statusBar": {
+        "online": "Online",
+        "offline": "Offline",
+        "sound": "Enable Sound"
+      },
       "tradingPanel": {
         "slippagePage": {
           "title": "Adjust Max Slippage",
@@ -1208,16 +1213,24 @@
         "confirm": "Confirm"
       },
       "accountInfo": {
+        "balance": "Balance",
+        "balanceTip": "Total Net Transfers + Total Realized Profit + Total Net Funding Fees",
+        "accountEquity": "Account Equity",
+        "accountEquityTip": "Balance + Unrealized PNL (approximate account value if all positions were closed)",
         "deposit": "Deposit",
         "withdraw": "Withdraw",
         "totalBalance": "Total Balance",
         "availableBalance": "Available Balance",
         "unrealizedPnl": "Unrealized P&L",
         "crossMarginRatio": "Cross Margin Ratio",
+        "crossMarginRatioTips": "Maintenance Margin / Portfolio Value. Your cross positions will be liquidated if Margin Ratio reaches 100%.",
         "crossAccountLeverage": "Cross Account Leverage",
-        "maintenanceMargin": "Maintenance margin"
+        "crossAccountLeverageTips": "Cross Account Leverage = Total Cross Position Value / Cross Account Value.",
+        "maintenanceMargin": "Maintenance margin",
+        "maintenanceMarginTips": "The minimum portfolio value required to keep your cross positions open"
       },
       "accountActions": {
+        "pending": "Pending",
         "available": "Available:",
         "positionCount": "{{count}} positions",
         "deposit": "Deposit"

@@ -122,6 +122,7 @@ export interface PerpsState {
   twapHistory: UserTwapHistory[];
   twapSliceFills: UserTwapSliceFill[];
   marketSlippage: number; // 0-1, default 0.08 (8%)
+  soundEnabled: boolean;
 }
 
 export const perps = createModel<RootModel>()({
@@ -164,6 +165,7 @@ export const perps = createModel<RootModel>()({
     twapStates: [],
     twapHistory: [],
     twapSliceFills: [],
+    soundEnabled: true,
     marketSlippage: 0.08, // default 8%
   } as PerpsState,
 
@@ -654,6 +656,13 @@ export const perps = createModel<RootModel>()({
         marketSlippage: Math.max(0, Math.min(1, payload)),
       };
     },
+
+    setSoundEnabled(state, payload: boolean) {
+      return {
+        ...state,
+        soundEnabled: payload ?? true,
+      };
+    },
   },
 
   effects: (dispatch) => ({
@@ -964,7 +973,10 @@ export const perps = createModel<RootModel>()({
           }
 
           if (!isSnapshot) {
-            handleUpdateHistoricalOrders(orderHistory);
+            handleUpdateHistoricalOrders(
+              orderHistory,
+              rootState.perps.soundEnabled
+            );
           }
 
           dispatch.perps.patchStatsListBySnapshot({
@@ -1025,7 +1037,10 @@ export const perps = createModel<RootModel>()({
           }
 
           if (!isSnapshot) {
-            handleUpdateTwapSliceFills(twapSliceFills);
+            handleUpdateTwapSliceFills(
+              twapSliceFills,
+              rootState.perps.soundEnabled
+            );
           }
 
           dispatch.perps.patchStatsListBySnapshot({
@@ -1146,6 +1161,16 @@ export const perps = createModel<RootModel>()({
       }
     },
 
+    async initSoundEnabled(_, rootState) {
+      try {
+        const soundEnabled = await rootState.app.wallet.getSoundEnabled();
+        dispatch.perps.setSoundEnabled(soundEnabled ?? true);
+      } catch (error) {
+        console.error('Failed to load sound enabled:', error);
+        dispatch.perps.setSoundEnabled(true);
+      }
+    },
+
     async updateMarketSlippage(slippage: number, rootState) {
       try {
         const clampedSlippage = Math.max(0, Math.min(1, slippage));
@@ -1153,6 +1178,15 @@ export const perps = createModel<RootModel>()({
         await rootState.app.wallet.setMarketSlippage(clampedSlippage);
       } catch (error) {
         console.error('Failed to save market slippage:', error);
+      }
+    },
+
+    async updateEnabledSound(enabled: boolean, rootState) {
+      try {
+        await rootState.app.wallet.setSoundEnabled(enabled);
+        dispatch.perps.setSoundEnabled(enabled);
+      } catch (error) {
+        console.error('Failed to save sound enabled:', error);
       }
     },
   }),

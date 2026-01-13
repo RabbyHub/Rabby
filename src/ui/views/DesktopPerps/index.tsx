@@ -17,10 +17,9 @@ import { DepositWithdrawModal } from './components/DepositWithdrawModal';
 
 const Wrap = styled.div`
   width: 100%;
+  min-height: 100vh;
   background: var(--rb-neutral-bg-1, #fff);
   display: flex;
-  overflow-x: hidden;
-  overflow-y: auto;
   flex-direction: column;
   padding-bottom: 32px;
 `;
@@ -42,10 +41,10 @@ export const DesktopPerps: React.FC = () => {
       <Wrap>
         <TopNavBar />
 
-        <div className="flex flex-1 overflow-hidden px-16">
-          <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden">
+        <div className="flex flex-1 pl-16 pr-8 pb-16">
+          <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
             <div className="flex h-[670px] border-b border-solid border-rb-neutral-line">
-              <div className="flex flex-[4] min-w-0">
+              <div className="flex flex-[4] min-w-0 border-r border-solid border-rb-neutral-line">
                 {/* ChartArea - 75% */}
                 <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
                   <ChartArea />
@@ -57,19 +56,19 @@ export const DesktopPerps: React.FC = () => {
               </div>
 
               {/* Right: TradingPanel */}
-              <div className="w-[400px] flex-shrink-0 border-l border-solid border-rb-neutral-line">
+              <div className="w-[400px] flex-shrink-0">
                 <TradingPanel />
               </div>
             </div>
 
             {/* Bottom Row: UserInfoHistory + AccountInfo */}
-            <div className="flex flex-1 min-h-[300px]">
+            <div className="flex flex-1 min-h-[300px] max-h-[400px]">
               {/* UserInfoHistory */}
-              <div className="flex-[4] min-w-0 border-r border-solid border-rb-neutral-line">
+              <div className="flex-[4] min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
                 <UserInfoHistory />
               </div>
               {/* AccountInfo */}
-              <div className="w-[400px] flex-shrink-0">
+              <div className="w-[400px] flex-shrink-0 overflow-auto">
                 <AccountInfo />
               </div>
             </div>
@@ -77,7 +76,7 @@ export const DesktopPerps: React.FC = () => {
 
           <aside
             className={clsx(
-              'min-w-[64px] flex-shrink-0 z-20 h-full overflow-auto px-[16px]'
+              'min-w-[64px] flex-shrink-0 z-20 h-full overflow-auto pl-[16px]'
             )}
           >
             <DesktopPerpsSelectAccountList />

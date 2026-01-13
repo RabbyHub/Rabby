@@ -6,6 +6,8 @@ import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import { DashedUnderlineText } from '../DashedUnderlineText';
+import { Tooltip } from 'antd';
 
 export const AccountInfo: React.FC = () => {
   const { t } = useTranslation();
@@ -40,6 +42,19 @@ export const AccountInfo: React.FC = () => {
     history.replace(`${currentPathname}?action=withdraw`);
   };
 
+  const customBalance = useMemo(() => {
+    const allFundingPayments = clearinghouseState?.assetPositions.reduce(
+      (acc, asset) => {
+        return acc + Number(asset.position.cumFunding.sinceOpen || 0);
+      },
+      0
+    );
+    return (
+      Number(clearinghouseState?.marginSummary?.accountValue || 0) -
+      Number(positionAllPnl || 0)
+    );
+  }, [clearinghouseState, positionAllPnl]);
+
   return (
     <div className="w-full h-full flex flex-col flex-shrink-0 overflow-hidden">
       <div className="flex-1 overflow-auto p-[16px] min-h-0">
@@ -47,7 +62,7 @@ export const AccountInfo: React.FC = () => {
           <button
             type="button"
             className={clsx(
-              'w-full bg-rb-neutral-bg-4 rounded-[8px] h-[32px] flex items-center justify-center',
+              'w-full bg-rb-neutral-bg-4 rounded-[8px] h-[32px] flex items-center justify-center hover:border-rb-brand-default border border-solid border-transparent',
               'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
             )}
             onClick={handleDepositClick}
@@ -57,7 +72,7 @@ export const AccountInfo: React.FC = () => {
           <button
             type="button"
             className={clsx(
-              'w-full bg-rb-neutral-bg-4 rounded-[8px] h-[32px] flex items-center justify-center',
+              'w-full bg-rb-neutral-bg-4 rounded-[8px] h-[32px] flex items-center justify-center hover:border-rb-brand-default border border-solid border-transparent',
               'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
             )}
             onClick={handleWithdrawClick}
@@ -67,9 +82,19 @@ export const AccountInfo: React.FC = () => {
         </div>
         <div className="space-y-[8px] text-[12px] leading-[14px]">
           <div className="flex items-center justify-between">
-            <div className="text-r-neutral-title-1">
-              {t('page.perpsPro.accountInfo.totalBalance')}
-            </div>
+            <Tooltip
+              title={t('page.perpsPro.accountInfo.accountEquityTip')}
+              overlayClassName="rectangle"
+              placement="top"
+              trigger="hover"
+            >
+              <DashedUnderlineText
+                needCursor={false}
+                className="text-r-neutral-title-1"
+              >
+                {t('page.perpsPro.accountInfo.accountEquity')}
+              </DashedUnderlineText>
+            </Tooltip>
             <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(
                 Number(clearinghouseState?.marginSummary?.accountValue || 0),
@@ -78,14 +103,21 @@ export const AccountInfo: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center justify-between">
+            <Tooltip
+              title={t('page.perpsPro.accountInfo.balanceTip')}
+              overlayClassName="rectangle"
+              placement="top"
+              trigger="hover"
+            >
+              <DashedUnderlineText
+                needCursor={false}
+                className="text-r-neutral-title-1"
+              >
+                {t('page.perpsPro.accountInfo.balance')}
+              </DashedUnderlineText>
+            </Tooltip>
             <div className="text-r-neutral-title-1">
-              {t('page.perpsPro.accountInfo.availableBalance')}
-            </div>
-            <div className="text-r-neutral-title-1 font-medium">
-              {formatUsdValue(
-                Number(clearinghouseState?.withdrawable || 0),
-                BigNumber.ROUND_DOWN
-              )}
+              {formatUsdValue(customBalance)}
             </div>
           </div>
           <div className="flex items-center justify-between">
@@ -105,17 +137,37 @@ export const AccountInfo: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-rb-neutral-foot">
-              {t('page.perpsPro.accountInfo.crossMarginRatio')}
-            </div>
+            <Tooltip
+              title={t('page.perpsPro.accountInfo.crossMarginRatioTips')}
+              overlayClassName="rectangle"
+              placement="top"
+              trigger="hover"
+            >
+              <DashedUnderlineText
+                needCursor={false}
+                className="text-rb-neutral-foot"
+              >
+                {t('page.perpsPro.accountInfo.crossMarginRatio')}
+              </DashedUnderlineText>
+            </Tooltip>
             <div className="text-r-neutral-title-1 font-medium">
               {crossMarginRatio}
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-rb-neutral-foot">
-              {t('page.perpsPro.accountInfo.maintenanceMargin')}
-            </div>
+            <Tooltip
+              title={t('page.perpsPro.accountInfo.maintenanceMarginTips')}
+              overlayClassName="rectangle"
+              placement="top"
+              trigger="hover"
+            >
+              <DashedUnderlineText
+                needCursor={false}
+                className="text-rb-neutral-foot"
+              >
+                {t('page.perpsPro.accountInfo.maintenanceMargin')}
+              </DashedUnderlineText>
+            </Tooltip>
             <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(
                 Number(
@@ -125,9 +177,19 @@ export const AccountInfo: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-rb-neutral-foot">
-              {t('page.perpsPro.accountInfo.crossAccountLeverage')}
-            </div>
+            <Tooltip
+              title={t('page.perpsPro.accountInfo.crossAccountLeverageTips')}
+              overlayClassName="rectangle"
+              placement="top"
+              trigger="hover"
+            >
+              <DashedUnderlineText
+                needCursor={false}
+                className="text-rb-neutral-foot"
+              >
+                {t('page.perpsPro.accountInfo.crossAccountLeverage')}
+              </DashedUnderlineText>
+            </Tooltip>
             <div className="text-r-neutral-title-1 font-medium">
               {(
                 Number(clearinghouseState?.marginSummary?.totalNtlPos || 0) /

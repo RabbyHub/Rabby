@@ -29,7 +29,7 @@ export const OrderSideAndFunds: React.FC<OrderSideAndFundsProps> = ({
           className={`flex-1 h-[32px] rounded-[8px] font-medium text-[12px] transition-colors ${
             orderSide === OrderSide.BUY
               ? 'bg-rb-green-default text-rb-neutral-InvertHighlight '
-              : 'bg-rb-neutral-bg-2 text-rb-neutral-title-1'
+              : 'hover:border-rb-brand-default border border-solid border-transparent  bg-rb-neutral-bg-2 text-rb-neutral-title-1'
           }`}
         >
           {t('page.perpsPro.tradingPanel.buyLong')}
@@ -39,7 +39,7 @@ export const OrderSideAndFunds: React.FC<OrderSideAndFundsProps> = ({
           className={`flex-1 h-[32px] rounded-[8px] font-medium text-[12px] transition-colors ${
             orderSide === OrderSide.SELL
               ? 'bg-rb-red-default text-rb-neutral-InvertHighlight '
-              : 'bg-rb-neutral-bg-2 text-rb-neutral-title-1'
+              : 'hover:border-rb-brand-default border border-solid border-transparent bg-rb-neutral-bg-2 text-rb-neutral-title-1'
           }`}
         >
           {t('page.perpsPro.tradingPanel.sellShort')}

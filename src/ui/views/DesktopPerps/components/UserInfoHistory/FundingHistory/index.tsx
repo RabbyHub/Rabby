@@ -30,7 +30,7 @@ export const FundingHistory: React.FC = () => {
         sorter: (a, b) => dayjs(a.time).unix() - dayjs(b.time).unix(),
         render: (_, record) => {
           return (
-            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
+            <div className="text-[13px] leading-[16px] font-510 text-r-neutral-title-1">
               {dayjs(record.time).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
@@ -45,7 +45,7 @@ export const FundingHistory: React.FC = () => {
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {record.coin}
             </div>
           );
@@ -60,7 +60,7 @@ export const FundingHistory: React.FC = () => {
         sorter: (a, b) => Number(a.szi) - Number(b.szi),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {splitNumberByStep(Math.abs(Number(record.szi)))} {record.coin}
             </div>
           );
@@ -75,7 +75,7 @@ export const FundingHistory: React.FC = () => {
           (Number(a.szi) >= 0 ? 1 : -1) - (Number(b.szi) >= 0 ? 1 : -1),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {Number(record.szi) >= 0 ? 'Long' : 'Short'}
             </div>
           );
@@ -91,7 +91,7 @@ export const FundingHistory: React.FC = () => {
           return (
             <div
               className={clsx(
-                'text-[12px] leading-[14px] font-medium',
+                'text-[12px] leading-[14px] font-510',
                 Number(record.usdc) >= 0
                   ? 'text-rb-green-default'
                   : 'text-rb-red-default'
@@ -111,7 +111,7 @@ export const FundingHistory: React.FC = () => {
         sorter: (a, b) => Number(a.fundingRate) - Number(b.fundingRate),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {Number(record.usdc) < 0 ? '' : '-'}
               {new BigNumber(record.fundingRate).times(100).toFixed(5)}%
             </div>
@@ -129,6 +129,8 @@ export const FundingHistory: React.FC = () => {
       rowKey={(record) => `${record.time}-${record.coin}`}
       bordered={false}
       showSorterTooltip={false}
+      defaultSortField="time"
+      defaultSortOrder="descend"
     />
   );
 };

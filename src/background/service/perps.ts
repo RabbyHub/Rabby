@@ -42,6 +42,7 @@ export interface PerpsServiceStore {
   lastUsedAccount: StoreAccount | null;
   hasDoneNewUserProcess: boolean;
   favoritedCoins: string[];
+  soundEnabled: boolean;
   marketSlippage: number; // 0-1, default 0.08 (8%)
 }
 export interface PerpsServiceMemoryState {
@@ -72,6 +73,7 @@ class PerpsService {
         hasDoneNewUserProcess: false,
         favoritedCoins: ['BTC', 'ETH', 'SOL'],
         marketSlippage: 0.08, // default 8%
+        soundEnabled: true,
       },
     });
 
@@ -417,6 +419,20 @@ class PerpsService {
     this.store.marketSlippage = Math.max(0, Math.min(1, slippage));
   };
 
+  getSoundEnabled = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.soundEnabled ?? true;
+  };
+
+  setSoundEnabled = async (soundEnabled: boolean) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.soundEnabled = soundEnabled;
+  };
+
   getInviteConfig = async (address: string) => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
@@ -451,6 +467,7 @@ class PerpsService {
       inviteConfig: {},
       favoritedCoins: ['BTC', 'ETH', 'SOL'],
       marketSlippage: 0.08,
+      soundEnabled: true,
     };
     this.memoryState.agentWallets = {};
   };

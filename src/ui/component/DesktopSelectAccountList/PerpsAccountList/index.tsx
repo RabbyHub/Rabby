@@ -132,6 +132,27 @@ export const DesktopPerpsSelectAccountList: React.FC = () => {
     }
   }, [filteredAccounts]);
 
+  const sortedList = useMemo(() => {
+    return filteredAccounts.sort((a, b) => {
+      const positionCountA =
+        Number(
+          clearinghouseStateMap[a.address.toLowerCase()]?.assetPositions?.length
+        ) || 0;
+      const positionCountB =
+        Number(
+          clearinghouseStateMap[b.address.toLowerCase()]?.assetPositions?.length
+        ) || 0;
+
+      const aWithdrawable =
+        Number(clearinghouseStateMap[a.address.toLowerCase()]?.withdrawable) ||
+        0;
+      const bWithdrawable =
+        Number(clearinghouseStateMap[b.address.toLowerCase()]?.withdrawable) ||
+        0;
+      return positionCountB - positionCountA || bWithdrawable - aWithdrawable;
+    });
+  }, [filteredAccounts, clearinghouseStateMap]);
+
   const switchAccount = useCallback(
     async (account: typeof accountsList[number]) => {
       shouldScrollRef.current = false;
@@ -147,7 +168,7 @@ export const DesktopPerpsSelectAccountList: React.FC = () => {
   });
 
   const scrollToCurrent = useMemoizedFn(() => {
-    const index = filteredAccounts.findIndex(
+    const index = sortedList.findIndex(
       (item) => currentAccount && isSameAccount(item, currentAccount)
     );
     if (index !== -1) {
@@ -203,8 +224,8 @@ export const DesktopPerpsSelectAccountList: React.FC = () => {
       <Virtuoso
         ref={virtuosoRef}
         className={clsx('h-full')}
-        data={filteredAccounts}
-        totalCount={filteredAccounts.length}
+        data={sortedList}
+        totalCount={sortedList.length}
         defaultItemHeight={72 + 12}
         itemContent={(index, item) => {
           const isSelected = currentAccount
@@ -274,7 +295,7 @@ const PerpsAccountItem: React.FC<{
     <div className="pb-[12px] group">
       <div
         className={clsx(
-          'rounded-[20px] px-[15px] py-[11px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
+          'rounded-[20px] px-[15px] py-[10px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
           'border-solid border-[1px]',
           'desktop-account-item',
           isSelected
@@ -337,7 +358,7 @@ const PerpsAccountItem: React.FC<{
               <RcIconMoreCC />
             </div> */}
 
-            {Number(clearinghouseState?.marginSummary.accountValue) > 0 ? (
+            {Number(clearinghouseState?.withdrawable) > 0 ? (
               <div
                 className={clsx(
                   'ml-[10px] truncate flex-1 block text-right',
@@ -346,9 +367,7 @@ const PerpsAccountItem: React.FC<{
                     : 'text-[14px] font-medium text-rb-neutral-body'
                 )}
               >
-                {formatUsdValue(
-                  Number(clearinghouseState?.marginSummary.accountValue)
-                )}
+                {formatUsdValue(Number(clearinghouseState?.withdrawable))}
               </div>
             ) : null}
           </div>

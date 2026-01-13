@@ -501,6 +501,7 @@ export const useDepositWithdraw = (
         if (hashes && hashes.length > 0) {
           handleSignDepositDone(hashes[hashes.length - 1]);
           resetFormValue();
+          onCancel();
         }
       } catch (error) {
         if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
@@ -540,6 +541,7 @@ export const useDepositWithdraw = (
       const signature = last(res as Array<string>);
       handleSignDepositDone(signature as string);
       resetFormValue();
+      onCancel();
     } catch (error) {
       // setMiniSignTx(null);
     }
@@ -629,6 +631,7 @@ export const useDepositWithdraw = (
       ]);
       dispatch.perps.fetchClearinghouseState();
       resetFormValue();
+      onCancel();
     } catch (error: any) {
       console.error('Failed to withdraw:', error);
       message.error({

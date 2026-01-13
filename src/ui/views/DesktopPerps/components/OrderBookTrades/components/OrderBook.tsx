@@ -10,7 +10,10 @@ import { ReactComponent as RcIconBuy } from '@/ui/assets/perps/icon-buy.svg';
 import { ReactComponent as RcIconSell } from '@/ui/assets/perps/icon-sell.svg';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
-import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
+import {
+  RcIconArrowDownCC,
+  RcIconArrowDownPerpsCC,
+} from '@/ui/assets/desktop/common';
 import { Trade } from '..';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
@@ -74,14 +77,14 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   // Based on szDecimals to determine appropriate tick size
   // For BTC (szDecimals=5): baseTickSize = 1 → 1, 2, 5, 10, 100, 1000
   // For ETH (szDecimals=4): baseTickSize = 0.1 → 0.1, 0.2, 0.5, 1, 10, 100
+  // For SOL (szDecimals=2): baseTickSize = 0.01 → 0.01, 0.02, 0.05, 0.1, 1, 10
   const aggregationLevels = useMemo<AggregationConfig[]>(() => {
     // Calculate base tick size from szDecimals
-    // Formula: baseTickSize = 10^(szDecimals - 5)
-    // BTC: szDecimals=5 → 10^0 = 1
-    // ETH: szDecimals=4 → 10^-1 = 0.1
-    const baseTickSize = Math.pow(10, szDecimals - 5);
+    // For szDecimals >= 4: offset = 5 (BTC, ETH)
+    // For szDecimals < 4: offset = 4 (SOL and lower precision coins)
+    const offset = szDecimals >= 4 ? 5 : 4;
+    const baseTickSize = Math.pow(10, szDecimals - offset);
 
-    // Six levels with multipliers: 1, 2, 5, 10, 100, 1000
     const levels = [
       { multiplier: 1, nSigFigs: 5, mantissa: undefined },
       { multiplier: 2, nSigFigs: 5, mantissa: 2 },
@@ -102,7 +105,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         // Remove trailing zeros
         label = tickValue.toFixed(4).replace(/\.?0+$/, '');
       } else {
-        label = tickValue.toFixed(5).replace(/\.?0+$/, '');
+        label = tickValue.toFixed(6).replace(/\.?0+$/, '');
       }
 
       return {
@@ -111,7 +114,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         label,
       };
     });
-  }, [currentMarketData]);
+  }, [szDecimals]);
 
   // Subscribe to order book data via WebSocket
   useEffect(() => {
@@ -194,12 +197,13 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     return (
       <div
         key={`${type}-${order.price}`}
-        className="relative flex items-center justify-between px-[12px] h-[24px] text-[12px]"
+        onClick={() => handleClickPrice(order.price)}
+        className="relative flex items-center justify-between px-[12px] h-[24px] text-[12px] hover:bg-rb-neutral-bg-0 cursor-pointer group"
       >
         {/* Depth background */}
         <div
           className={clsx(
-            'absolute left-0 top-0 bottom-0',
+            'absolute left-0 top-0 bottom-0 transition-[width] duration-200 ease-out',
             type === 'bid' ? 'bg-rb-green-light-1' : 'bg-rb-red-light-1'
           )}
           style={{ width: `${depthPercent}%` }}
@@ -208,10 +212,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         <div className="relative z-10 flex items-center justify-between w-full">
           <span
             className={clsx(
-              'font-medium min-w-[80px] text-left hover:font-bold cursor-pointer',
+              'font-medium min-w-[80px] text-left group-hover:font-bold',
               type === 'bid' ? 'text-rb-green-default' : 'text-rb-red-default'
             )}
-            onClick={() => handleClickPrice(order.price)}
           >
             {splitNumberByStep(order.price)}
           </span>
@@ -320,11 +323,12 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 'inline-flex items-center justify-between',
                 'px-[8px] py-[8px] flex-1 min-w-[80px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
+                'hover:border-rb-brand-default border border-solid border-transparent',
                 'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
               )}
             >
               {selectedCoin}
-              <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+              <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
             </button>
           </Dropdown>
           <Dropdown
@@ -342,11 +346,12 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 'inline-flex items-center justify-between',
                 'px-[8px] py-[8px] flex-1 min-w-[80px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
+                'hover:border-rb-brand-default border border-solid border-transparent',
                 'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
               )}
             >
               {aggregationLevels[aggregationIndex].label}
-              <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+              <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
             </button>
           </Dropdown>
         </div>

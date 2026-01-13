@@ -73,7 +73,7 @@ export const UserInfoHistory: React.FC = () => {
   );
 
   return (
-    <div className="flex-1 h-full border-r border-solid border-rb-neutral-line bg-rb-neutral-bg-1 flex flex-col min-w-0 overflow-hidden">
+    <div className="flex-1 h-full bg-rb-neutral-bg-1 flex flex-col min-w-0 overflow-hidden">
       {/* Tabs */}
       <div className="flex border-b border-solid border-rb-neutral-line flex-shrink-0">
         {tabs.map((tab) => {
@@ -81,16 +81,16 @@ export const UserInfoHistory: React.FC = () => {
             <button
               key={tab.key}
               className={clsx(
-                'px-[16px] py-[12px] text-[14px] font-medium border-b-2 flex items-center gap-[4px]',
+                'px-[16px] py-[12px] text-[14px] font-510 border-b-2 flex items-center gap-[4px]',
                 activeTab === tab.key
                   ? 'text-r-blue-default border-rabby-blue-default'
-                  : 'text-r-neutral-foot border-transparent'
+                  : 'hover:text-r-blue-default text-r-neutral-foot border-transparent'
               )}
               onClick={() => setActiveTab(tab.key)}
             >
               {tab.label}
               {tab.number ? (
-                <div className="h-[16px] px-6 text-[12px] font-medium text-rb-brand-default bg-rb-brand-light-1 rounded-[4px] flex items-center justify-center">
+                <div className="h-[16px] px-6 text-[12px] font-510 text-rb-brand-default bg-rb-brand-light-1 rounded-[4px] flex items-center justify-center">
                   {tab.number}
                 </div>
               ) : null}

@@ -13,7 +13,10 @@ import {
   calculateDistanceToLiquidation,
   formatPerpsPct,
 } from '@/ui/views/Perps/utils';
-import { RcIconArrowDownCC, RcIconEditCC } from '@/ui/assets/desktop/common';
+import {
+  RcIconArrowDownPerpsCC,
+  RcIconEditCC,
+} from '@/ui/assets/desktop/common';
 import { EditMarginModal } from '../../../modal/EditMarginModal';
 import { EditTpSlModal } from '../../../modal/EditTpSLModal';
 import { useMemoizedFn } from 'ahooks';
@@ -168,7 +171,12 @@ export const PositionsInfo: React.FC = () => {
       currentPosition?.type === 'cross'
         ? MarginMode.CROSS
         : MarginMode.ISOLATED;
-    await handleUpdateMarginModeLeverage(selectedCoin, newLeverage, marginMode);
+    await handleUpdateMarginModeLeverage(
+      selectedCoin,
+      newLeverage,
+      marginMode,
+      'leverage'
+    );
     message.success({
       // duration: 1.5,
       content: 'Leverage changed to: ' + newLeverage,
@@ -201,7 +209,7 @@ export const PositionsInfo: React.FC = () => {
             <div className="text-[17px] font-bold text-r-neutral-title-1 text-center">
               {t('page.perps.closeAllPopup.title')}
             </div>
-            <div className="text-15 font-medium text-r-neutral-title-1 text-center">
+            <div className="text-15 font-510 text-r-neutral-title-1 text-center">
               {t('page.perps.closeAllPopup.description')}
             </div>
             <div className="flex items-center justify-center w-full gap-12 mt-20">
@@ -259,9 +267,9 @@ export const PositionsInfo: React.FC = () => {
                 >
                   {record.coin}
                 </div>
-                <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
+                <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
                   <span
-                    className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot hover:font-bold hover:text-rb-neutral-title-1 cursor-pointer"
+                    className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot hover:font-bold hover:text-rb-neutral-title-1 cursor-pointer"
                     onClick={(e) =>
                       handleClickLeverage(record.coin, record.leverage)
                     }
@@ -284,10 +292,10 @@ export const PositionsInfo: React.FC = () => {
         render: (_, record) => {
           return (
             <div>
-              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1 mb-[4px]">
+              <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1 mb-[4px]">
                 {formatUsdValue(record.positionValue || 0)}
               </div>
-              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
+              <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
                 {Number(record.size)} {record.coin}
               </div>
             </div>
@@ -303,10 +311,10 @@ export const PositionsInfo: React.FC = () => {
         render: (_, record) => {
           return (
             <div>
-              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1 mb-[4px]">
+              <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1 mb-[4px]">
                 ${splitNumberByStep(record.markPx)}
               </div>
-              <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
+              <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
                 ${splitNumberByStep(record.entryPx || 0)}
               </div>
             </div>
@@ -325,7 +333,7 @@ export const PositionsInfo: React.FC = () => {
             <div>
               <div
                 className={clsx(
-                  'text-[12px] leading-[14px] font-medium  mb-[4px]',
+                  'text-[12px] leading-[14px] font-510  mb-[4px]',
                   isUp ? 'text-r-green-default' : 'text-r-red-default'
                 )}
               >
@@ -336,7 +344,7 @@ export const PositionsInfo: React.FC = () => {
               </div>
               <div
                 className={clsx(
-                  'text-[12px] leading-[14px] font-medium  mb-[4px]',
+                  'text-[12px] leading-[14px] font-510  mb-[4px]',
                   isUp ? 'text-r-green-default' : 'text-r-red-default'
                 )}
               >
@@ -356,7 +364,7 @@ export const PositionsInfo: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="flex items-center gap-[4px]">
-              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
                 ${splitNumberByStep(record.liquidationPx)}
               </div>
               <DistanceRiskTag
@@ -377,10 +385,10 @@ export const PositionsInfo: React.FC = () => {
           return (
             <div className="flex items-center gap-[12px]">
               <div>
-                <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1 mb-[4px]">
+                <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1 mb-[4px]">
                   {formatUsdValue(Number(record.marginUsed || 0))}
                 </div>
-                <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
+                <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
                   {record.type === 'cross' ? 'Cross' : 'Isolated'}
                 </div>
               </div>
@@ -404,10 +412,10 @@ export const PositionsInfo: React.FC = () => {
           Number(a.sinceOpenFunding) - Number(b.sinceOpenFunding),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
+            <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
               {Number(record.sinceOpenFunding || 0) === 0
                 ? ''
-                : Number(record.sinceOpenFunding || 0) > 0
+                : Number(record.sinceOpenFunding || 0) < 0
                 ? '+'
                 : '-'}
               ${Math.abs(Number(record.sinceOpenFunding || 0))}
@@ -447,7 +455,7 @@ export const PositionsInfo: React.FC = () => {
           return (
             <div className="flex items-center gap-[12px]">
               <div className="flex flex-col gap-[4px]">
-                <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+                <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
                   {tpPrice ? (
                     <div>
                       ${splitNumberByStep(tpPrice)}{' '}
@@ -465,12 +473,12 @@ export const PositionsInfo: React.FC = () => {
                       ) : null}
                     </div>
                   ) : (
-                    <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
+                    <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
                       no TP
                     </div>
                   )}
                 </div>
-                <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+                <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
                   {slPrice ? (
                     <div>
                       ${splitNumberByStep(slPrice)}{' '}
@@ -488,7 +496,7 @@ export const PositionsInfo: React.FC = () => {
                       ) : null}
                     </div>
                   ) : (
-                    <div className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot">
+                    <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
                       no SL
                     </div>
                   )}
@@ -549,11 +557,12 @@ export const PositionsInfo: React.FC = () => {
                   'inline-flex items-center justify-between',
                   'pl-[8px] pr-[4px] py-[8px] w-[88px]',
                   'border border-rb-neutral-line rounded-[6px]',
-                  'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+                  'hover:border-rb-brand-default border border-solid border-transparent',
+                  'text-[12px] leading-[14px] font-510 text-rb-neutral-title-1'
                 )}
               >
                 {t('page.perpsPro.userInfo.positionInfo.close')}
-                <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+                <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
               </button>
             </Dropdown>
           );
@@ -572,6 +581,8 @@ export const PositionsInfo: React.FC = () => {
         bordered={false}
         showSorterTooltip={false}
         rowKey="coin"
+        defaultSortField="coin"
+        defaultSortOrder="ascend"
       ></CommonTable>
       {currentPosition && (
         <>

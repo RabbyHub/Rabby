@@ -25,6 +25,7 @@ export const usePerpsProInit = () => {
   useEffect(() => {
     dispatch.perps.initFavoritedCoins(undefined);
     dispatch.perps.initMarketSlippage(undefined);
+    dispatch.perps.initSoundEnabled(undefined);
   }, [dispatch]);
 
   useEffect(() => {

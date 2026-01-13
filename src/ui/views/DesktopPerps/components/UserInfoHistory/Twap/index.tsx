@@ -225,7 +225,7 @@ export const Twap: React.FC = () => {
             .toFixed(1);
 
           return (
-            <div className="text-[12px] leading-[14px] font-medium flex flex-col gap-[4px] text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 flex flex-col gap-[4px] text-rb-neutral-title-1">
               <div className="flex items-center gap-[4px]">
                 {record.executedSz}
                 {record.randomize && (
@@ -247,7 +247,7 @@ export const Twap: React.FC = () => {
         width: 130,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {calculateAveragePrice(record)}
             </div>
           );
@@ -259,7 +259,7 @@ export const Twap: React.FC = () => {
         width: 180,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {calculateRunningTime(record)}
             </div>
           );
@@ -289,7 +289,7 @@ export const Twap: React.FC = () => {
           return (
             <div
               className={clsx(
-                'text-[12px] leading-[14px] font-medium',
+                'text-[12px] leading-[14px] font-510',
                 statusColor
               )}
             >
@@ -306,7 +306,7 @@ export const Twap: React.FC = () => {
         sorter: (a, b) => Number(a.reduceOnly) - Number(b.reduceOnly),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {record.reduceOnly
                 ? t('page.perpsPro.userInfo.yes')
                 : t('page.perpsPro.userInfo.no')}
@@ -321,7 +321,7 @@ export const Twap: React.FC = () => {
         sorter: (a, b) => a.timestamp - b.timestamp,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {dayjs(record.timestamp).format('DD/MM/YYYY-hh:mm:ss A')}
             </div>
           );
@@ -333,7 +333,7 @@ export const Twap: React.FC = () => {
       //   width: 80,
       //   render: () => {
       //     return (
-      //       <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+      //       <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
       //         -
       //       </div>
       //     );
@@ -477,7 +477,7 @@ export const Twap: React.FC = () => {
       >
         <div
           className={clsx(
-            'px-[8px] py-[6px] text-[12px] font-medium cursor-pointer',
+            'px-[8px] py-[6px] text-[12px] font-510 cursor-pointer',
             activeTab === 'active'
               ? 'text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px]'
               : 'text-r-neutral-foot bg-rb-neutral-bg-4'
@@ -488,7 +488,7 @@ export const Twap: React.FC = () => {
         </div>
         <div
           className={clsx(
-            'px-[8px] py-[6px] text-[12px] font-medium cursor-pointer',
+            'px-[8px] py-[6px] text-[12px] font-510 cursor-pointer',
             activeTab === 'history'
               ? 'text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px]'
               : 'text-r-neutral-foot bg-rb-neutral-bg-4'
@@ -508,6 +508,8 @@ export const Twap: React.FC = () => {
           bordered={false}
           showSorterTooltip={false}
           rowKey={(record) => `${record.twapId}-${record.status}`}
+          defaultSortField="creationTime"
+          defaultSortOrder="descend"
           expandable={{
             expandedRowKeys,
             expandedRowRender,

@@ -55,14 +55,14 @@ export const OrderBookTrades: React.FC = () => {
   }, [trades]);
 
   return (
-    <div className="h-full w-full bg-rb-neutral-bg-1 flex flex-col overflow-hidden border-r border-l border-solid border-rb-neutral-line">
+    <div className="h-full w-full bg-rb-neutral-bg-1 flex flex-col overflow-hidden">
       {/* Tabs */}
-      <div className="flex border-b border-solid border-rb-neutral-line flex-shrink-0 h-40">
+      <div className="relative flex border-b border-solid border-rb-neutral-line flex-shrink-0 h-40">
         <button
           className={clsx(
             'flex-1 px-[16px] items-center justify-center text-[12px] font-medium transition-colors',
             activeTab === 'orderbook'
-              ? 'text-r-neutral-title-1 border-b-2 border-rb-brand-default'
+              ? 'text-r-neutral-title-1'
               : 'text-r-neutral-foot hover:text-r-blue-default'
           )}
           onClick={() => setActiveTab('orderbook')}
@@ -73,13 +73,25 @@ export const OrderBookTrades: React.FC = () => {
           className={clsx(
             'flex-1 px-[16px] items-center justify-center text-[12px] font-medium transition-colors',
             activeTab === 'trades'
-              ? 'text-r-neutral-title-1 border-b-2 border-rb-brand-default'
+              ? 'text-r-neutral-title-1'
               : 'text-r-neutral-foot hover:text-r-blue-default'
           )}
           onClick={() => setActiveTab('trades')}
         >
           {t('page.perpsPro.orderBook.trades')}
         </button>
+        {/* Sliding indicator */}
+        <div
+          className={clsx(
+            'absolute bottom-0 h-[2px] bg-rb-brand-default transition-transform duration-300 ease-out',
+            'w-1/2'
+          )}
+          style={{
+            transform: `translateX(${
+              activeTab === 'orderbook' ? '0%' : '100%'
+            })`,
+          }}
+        />
       </div>
       {/* Content */}
       <div className="flex-1 overflow-hidden">

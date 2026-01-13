@@ -337,7 +337,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
                 className="absolute text-[11px] text-r-neutral-foot transition-colors hover:text-r-blue-default -translate-x-1/2"
                 style={{ left: `${point}%` }}
               >
-                {point}
+                {point}%
               </button>
             ))}
           </div>

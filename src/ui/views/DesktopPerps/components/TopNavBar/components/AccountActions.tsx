@@ -19,9 +19,7 @@ export const AccountActions: React.FC = () => {
   );
   const themeMode = useRabbySelector((state) => state.preference.themeMode);
   const { t } = useTranslation();
-  const availableBalance = Number(
-    clearinghouseState?.marginSummary?.accountValue || 0
-  );
+  const availableBalance = Number(clearinghouseState?.withdrawable || 0);
   // Get pending history count
   const localLoadingHistory = useRabbySelector(
     (state) => state.perps.localLoadingHistory
@@ -86,7 +84,7 @@ export const AccountActions: React.FC = () => {
                 'bg-rb-orange-light-1 text-rb-orange-default'
               )}
             >
-              {t('page.perpsPro.accountActions.deposit')}
+              {t('page.perpsPro.accountActions.pending')}
               <DepositPending pendingCount={pendingCount} />
             </div>
           ) : (

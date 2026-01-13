@@ -229,7 +229,7 @@ const AccountItem: React.FC<{
     <div className="pb-[12px] group">
       <div
         className={clsx(
-          'rounded-[20px] px-[15px] py-[11px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
+          'rounded-[20px] px-[15px] py-[10px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
           'border-solid border-[1px]',
           'desktop-account-item',
           isSelected

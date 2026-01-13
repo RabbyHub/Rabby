@@ -15,7 +15,8 @@ export const getPositionDirection = (
 };
 
 export const handleUpdateHistoricalOrders = (
-  historicalOrders: UserHistoricalOrders[]
+  historicalOrders: UserHistoricalOrders[],
+  enableSound: boolean
 ) => {
   const changeOrderLen = historicalOrders.length;
   if (changeOrderLen > 1) {
@@ -49,12 +50,15 @@ export const handleUpdateHistoricalOrders = (
         }
       ),
     });
-    playSound('/sounds/order-filled.mp3');
+    if (enableSound) {
+      playSound('/sounds/order-filled.mp3');
+    }
   }
 };
 
 export const handleUpdateTwapSliceFills = (
-  twapSliceFills: UserTwapSliceFill[]
+  twapSliceFills: UserTwapSliceFill[],
+  enableSound: boolean
 ) => {
   const item = twapSliceFills[0];
   const isBuy = item.fill.side === 'B';
@@ -71,5 +75,7 @@ export const handleUpdateTwapSliceFills = (
       }
     ),
   });
-  playSound('/sounds/order-filled.mp3');
+  if (enableSound) {
+    playSound('/sounds/order-filled.mp3');
+  }
 };

@@ -421,11 +421,15 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           color: colors.crosshairVertLineColor,
           labelBackgroundColor: colors.timeLabelBackgroundColor,
           width: 1,
-          style: 0,
+          style: 3,
         },
         horzLine: {
-          visible: false,
-          labelVisible: false,
+          visible: true,
+          labelVisible: true,
+          color: colors.crosshairVertLineColor,
+          labelBackgroundColor: colors.timeLabelBackgroundColor,
+          width: 1,
+          style: 3,
         },
       },
       grid: {

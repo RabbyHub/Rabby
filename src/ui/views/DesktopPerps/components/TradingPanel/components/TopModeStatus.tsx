@@ -9,7 +9,7 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useMemoizedFn } from 'ahooks';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import clsx from 'clsx';
-import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
+import { RcIconArrowDownPerpsCC } from '@/ui/assets/desktop/common';
 import perpsToast from '../../PerpsToast';
 
 interface TopModeStatusProps {
@@ -57,7 +57,8 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
     const res = await handleUpdateMarginModeLeverage(
       selectedCoin,
       newLeverage,
-      marginMode
+      marginMode,
+      'leverage'
     );
     res &&
       perpsToast.success({
@@ -82,7 +83,8 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
     const res = await handleUpdateMarginModeLeverage(
       selectedCoin,
       leverage,
-      mode
+      mode,
+      'marginMode'
     );
     res &&
       perpsToast.success({
@@ -99,7 +101,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
       <div className="flex items-center gap-[8px]">
         <div
           onClick={handleMarginModeClick}
-          className="h-[32px] w-[80px] rounded-[6px] flex items-center justify-center text-[13px] text-rb-neutral-title-1 border border-solid border-rb-neutral-line font-medium cursor-pointer"
+          className="h-[32px] w-[80px] rounded-[6px] flex items-center justify-center text-[13px] text-rb-neutral-title-1 border border-solid border-rb-neutral-line font-medium cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
         >
           {marginMode === MarginMode.ISOLATED
             ? t('page.perpsPro.tradingPanel.marginIsolated')
@@ -108,7 +110,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
 
         <div
           onClick={handleLeverageClick}
-          className="h-[32px] w-[60px] flex items-center justify-center rounded-[6px] text-[13px] text-rb-neutral-title-1 border border-solid border-rb-neutral-line font-medium cursor-pointer"
+          className="h-[32px] w-[60px] flex items-center justify-center rounded-[6px] text-[13px] text-rb-neutral-title-1 border border-solid border-rb-neutral-line font-medium cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
         >
           {leverage}x
         </div>
@@ -131,7 +133,8 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
               'inline-flex items-center justify-between',
               'px-[8px] py-[8px] flex-1',
               'border border-rb-neutral-line rounded-[6px]',
-              'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+              'hover:border-rb-brand-default border border-solid border-transparent',
+              'text-[12px] leading-[14px] font-510 text-rb-neutral-title-1'
             )}
           >
             {t('page.perpsPro.tradingPanel.type')}{' '}
@@ -140,7 +143,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
                 ORDER_TYPE_OPTIONS.find((option) => option.value === orderType)
                   ?.label
               }
-              <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+              <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
             </span>
           </button>
         </Dropdown>

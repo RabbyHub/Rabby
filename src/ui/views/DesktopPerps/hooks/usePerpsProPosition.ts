@@ -34,6 +34,7 @@ export const usePerpsProPosition = () => {
   const currentPerpsAccount = useRabbySelector(
     (state) => state.perps.currentPerpsAccount
   );
+  const soundEnabled = useRabbySelector((state) => state.perps.soundEnabled);
   const { handleActionApproveStatus, needEnableTrading } = usePerpsProState();
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -63,7 +64,9 @@ export const usePerpsProPosition = () => {
   );
 
   const playOrderFilledSound = () => {
-    playSound('/sounds/order-filled.mp3');
+    if (soundEnabled) {
+      playSound('/sounds/order-filled.mp3');
+    }
   };
 
   // Generic error handler wrapper
@@ -721,7 +724,12 @@ export const usePerpsProPosition = () => {
   );
 
   const handleUpdateMarginModeLeverage = useMemoizedFn(
-    async (coin: string, leverage: number, mode: MarginMode) => {
+    async (
+      coin: string,
+      leverage: number,
+      mode: MarginMode,
+      type: 'leverage' | 'marginMode'
+    ) => {
       return withErrorHandler(
         async () => {
           const sdk = getPerpsSDK();
@@ -733,7 +741,9 @@ export const usePerpsProPosition = () => {
           return true;
         },
         { coin, leverage, mode },
-        'update margin mode leverage error'
+        type === 'marginMode'
+          ? 'Cannot Change Margin Mode'
+          : 'Cannot Change Leverage'
       );
     }
   );

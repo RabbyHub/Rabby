@@ -393,7 +393,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
         <div className="text-[20px] leading-[24px] font-bold text-r-neutral-title-1">
           {coin}
         </div>
-        <RcIconArrowDown className="text-r-neutral-secondary w-[20px] h-[20px]" />
+        <RcIconArrowDown className="text-r-neutral-secondary" />
       </div>
     </Dropdown>
   );

@@ -21,7 +21,7 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
   const { t } = useTranslation();
 
   const formatTime = (timestamp: number) => {
-    return dayjs(timestamp).format('HH:mm:ss A');
+    return dayjs(timestamp).format('HH:mm:ss');
   };
 
   const handleClickPrice = (price: string) => {
@@ -53,12 +53,12 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
           trades.map((trade, index) => (
             <div
               key={`${trade.time}-${index}`}
-              className="flex items-center justify-between px-[8px] py-[4px] text-[12px]"
+              onClick={() => handleClickPrice(trade.price)}
+              className="flex items-center justify-between px-[8px] py-[4px] text-[12px] hover:bg-rb-neutral-bg-2 cursor-pointer group"
             >
               <span
-                onClick={() => handleClickPrice(trade.price)}
                 className={clsx(
-                  'min-w-[60px] text-left cursor-pointer hover:font-bold',
+                  'min-w-[60px] text-left cursor-pointer group-hover:font-bold',
                   trade.side === 'buy'
                     ? 'text-rb-green-default'
                     : 'text-rb-red-default'

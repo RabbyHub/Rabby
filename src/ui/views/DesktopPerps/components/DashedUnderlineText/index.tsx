@@ -5,13 +5,18 @@ export const DashedUnderlineText = React.forwardRef<
   HTMLSpanElement,
   {
     children: React.ReactNode;
+    needCursor?: boolean;
     className?: string;
   } & React.HTMLAttributes<HTMLSpanElement>
->(({ children, className, ...rest }, ref) => {
+>(({ children, className, needCursor = true, ...rest }, ref) => {
   return (
     <span
       ref={ref}
-      className={clsx('relative inline-block cursor-pointer', className)}
+      className={clsx(
+        'relative inline-block',
+        needCursor && 'cursor-pointer',
+        className
+      )}
       {...rest}
     >
       {children}

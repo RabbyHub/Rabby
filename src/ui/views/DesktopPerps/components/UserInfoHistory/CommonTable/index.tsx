@@ -90,17 +90,26 @@ const Wrapper = styled.div`
 
 interface CommonTableProps<T> extends TableProps<T> {
   columns: ColumnType<T>[];
+  dataSource: T[];
+  defaultSortField?: string;
+  defaultSortOrder?: 'ascend' | 'descend';
 }
 
 export const CommonTable = <T extends object = any>({
   columns,
   onChange,
+  dataSource,
+  defaultSortField,
+  defaultSortOrder = 'ascend',
   ...restProps
 }: CommonTableProps<T>) => {
   const [sortedInfo, setSortedInfo] = useState<{
     field: string | null;
     order: 'ascend' | 'descend' | null;
-  }>({ field: null, order: null });
+  }>({
+    field: defaultSortField || null,
+    order: defaultSortField ? defaultSortOrder : null,
+  });
 
   const handleTableChange = (
     pagination: any,
@@ -108,10 +117,31 @@ export const CommonTable = <T extends object = any>({
     sorter: any,
     extra: any
   ) => {
-    setSortedInfo({
-      field: sorter.field || null,
-      order: sorter.order || null,
-    });
+    const clickedField = sorter.field;
+    const clickedOrder = sorter.order;
+
+    // If clicking the same column, toggle between ascend and descend
+    if (clickedField === sortedInfo.field) {
+      const newOrder = sortedInfo.order === 'ascend' ? 'descend' : 'ascend';
+      setSortedInfo({
+        field: clickedField,
+        order: newOrder,
+      });
+
+      // Override sorter.order for onChange callback
+      sorter.order = newOrder;
+    } else {
+      // Clicking a different column, use ascending order by default
+      setSortedInfo({
+        field: clickedField || null,
+        order: clickedField ? 'ascend' : null,
+      });
+
+      // Override sorter.order for onChange callback
+      if (clickedField) {
+        sorter.order = 'ascend';
+      }
+    }
 
     // Call parent onChange if provided
     onChange?.(pagination, filters, sorter, extra);
@@ -130,6 +160,7 @@ export const CommonTable = <T extends object = any>({
       return {
         ...col,
         sortOrder: sortedInfo.field === fieldKey ? sortedInfo.order : null,
+        sortDirections: ['ascend', 'descend', 'ascend'] as any,
         title: (
           <>
             {originalTitle}
@@ -144,10 +175,21 @@ export const CommonTable = <T extends object = any>({
     });
   }, [columns, sortedInfo]);
 
+  if (dataSource.length === 0) {
+    return (
+      <Wrapper>
+        <div className="text-[12px] pt-[100px] leading-[14px] font-510 text-rb-neutral-foot text-center">
+          No data
+        </div>
+      </Wrapper>
+    );
+  }
+
   return (
     <Wrapper>
       <Table
         {...restProps}
+        dataSource={dataSource}
         columns={enhancedColumns}
         onChange={handleTableChange}
       />

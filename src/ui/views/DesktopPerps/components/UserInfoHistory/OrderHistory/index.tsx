@@ -37,7 +37,7 @@ export const OrderHistory: React.FC = () => {
         sorter: (a, b) => a.statusTimestamp - b.statusTimestamp,
         render: (_, record) => {
           return (
-            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
+            <div className="text-[13px] leading-[16px] font-510 text-r-neutral-title-1">
               {dayjs(record.statusTimestamp).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
@@ -51,7 +51,7 @@ export const OrderHistory: React.FC = () => {
         sorter: (a, b) => a.order.orderType.localeCompare(b.order.orderType),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {record.order.orderType}
             </div>
           );
@@ -65,7 +65,7 @@ export const OrderHistory: React.FC = () => {
         sorter: (a, b) => a.order.coin.localeCompare(b.order.coin),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {record.order.coin}
             </div>
           );
@@ -80,7 +80,7 @@ export const OrderHistory: React.FC = () => {
         render: (_, record) => {
           const isReduceOnly = record.order.reduceOnly;
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {record.order.side === 'B'
                 ? isReduceOnly
                   ? 'Close Short'
@@ -100,7 +100,7 @@ export const OrderHistory: React.FC = () => {
         sorter: (a, b) => Number(a.order.origSz) - Number(b.order.origSz),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {Number(record.order.origSz) === 0 ? (
                 '-'
               ) : (
@@ -121,7 +121,7 @@ export const OrderHistory: React.FC = () => {
         sorter: (a, b) => Number(a.order.sz) - Number(b.order.sz),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {Number(record.order.sz) === 0 ? (
                 '-'
               ) : (
@@ -150,7 +150,7 @@ export const OrderHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
                 {record.order.orderType.includes('Market')
                   ? '-'
                   : `$${splitNumberByStep(
@@ -172,7 +172,7 @@ export const OrderHistory: React.FC = () => {
         // sorter: (a, b) => Number(a.order.limitPx) - Number(b.order.limitPx),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {record.order.orderType.includes('Market')
                 ? 'Market'
                 : `$${splitNumberByStep(record.order.limitPx)}`}
@@ -187,7 +187,7 @@ export const OrderHistory: React.FC = () => {
         width: 100,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {record.order.reduceOnly ? 'Yes' : 'No'}
             </div>
           );
@@ -200,7 +200,7 @@ export const OrderHistory: React.FC = () => {
         width: 180,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {record.order.triggerCondition}
             </div>
           );
@@ -214,7 +214,7 @@ export const OrderHistory: React.FC = () => {
         render: (_, record) => {
           // todo
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {record.status}
             </div>
           );
@@ -231,6 +231,8 @@ export const OrderHistory: React.FC = () => {
       bordered={false}
       showSorterTooltip={false}
       rowKey={(record) => `${record.order.oid}-${record.status}`}
+      defaultSortField="statusTimestamp"
+      defaultSortOrder="descend"
     ></CommonTable>
   );
 };

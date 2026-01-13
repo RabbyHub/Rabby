@@ -39,7 +39,7 @@ export const TradeHistory: React.FC = () => {
         sorter: (a, b) => a.time - b.time,
         render: (_, record) => {
           return (
-            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
+            <div className="text-[13px] leading-[16px] font-510 text-r-neutral-title-1">
               {dayjs(record.time).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
@@ -53,7 +53,7 @@ export const TradeHistory: React.FC = () => {
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {record.coin}
             </div>
           );
@@ -67,7 +67,7 @@ export const TradeHistory: React.FC = () => {
         sorter: (a, b) => Number(a.sz) - Number(b.sz),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {Math.abs(Number(record.sz || 0))} {record.coin}
             </div>
           );
@@ -81,7 +81,7 @@ export const TradeHistory: React.FC = () => {
         sorter: (a, b) => a.dir.localeCompare(b.dir),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               {record.dir}
             </div>
           );
@@ -98,7 +98,7 @@ export const TradeHistory: React.FC = () => {
             marketDataMap[record.coin.toUpperCase()]?.pxDecimals || 2;
           const px = new BigNumber(record.px).toFixed(pxDecimals);
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               ${splitNumberByStep(px)}
             </div>
           );
@@ -115,7 +115,7 @@ export const TradeHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
                 {splitNumberByStep(
                   new BigNumber(record.px)
                     .times(new BigNumber(record.sz).abs())
@@ -123,7 +123,7 @@ export const TradeHistory: React.FC = () => {
                 )}{' '}
                 USDC
               </div>
-              <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
                 {Math.abs(Number(record.sz || 0))} {record.coin}
               </div>
             </div>
@@ -141,7 +141,7 @@ export const TradeHistory: React.FC = () => {
             <div
               className={clsx(
                 'space-y-[4px]',
-                'text-[12px] leading-[14px] font-medium',
+                'text-[12px] leading-[14px] font-510',
                 Number(record.closedPnl) === 0
                   ? 'text-rb-neutral-foot'
                   : Number(record.closedPnl) > 0
@@ -187,7 +187,7 @@ export const TradeHistory: React.FC = () => {
         sorter: (a, b) => Number(a.fee) - Number(b.fee),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
               ${splitNumberByStep(record.fee)}
             </div>
           );
@@ -204,6 +204,8 @@ export const TradeHistory: React.FC = () => {
       bordered={false}
       showSorterTooltip={false}
       rowKey="hash"
+      defaultSortField="time"
+      defaultSortOrder="descend"
     ></CommonTable>
   );
 };

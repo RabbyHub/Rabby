@@ -55,13 +55,13 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
   const isPositive = priceChange >= 0;
 
   return (
-    <div className="flex items-center gap-[32px] px-[16px] py-[14px] border-b border-solid border-rb-neutral-line">
+    <div className="flex items-center gap-[32px] px-[16px] py-[5px] border-b border-solid border-rb-neutral-line">
       {/* Coin Dropdown - Only this area is clickable for dropdown */}
       <CoinDropdown coin={coin} onSelectCoin={onSelectCoin} />
 
       {/* Market Data - Display only, not clickable */}
       <div className="flex items-center gap-[32px] flex-1">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
           <span className="text-[12px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.mark')}
           </span>
@@ -72,7 +72,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           </span>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
           <span className="text-[12px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.oracle')}
           </span>
@@ -83,7 +83,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           </span>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
           <span className="text-[12px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.24hChange')}
           </span>
@@ -106,7 +106,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           )}
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
           <span className="text-[12px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.24hVol')}
           </span>
@@ -119,7 +119,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           </span>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
           <span className="text-[12px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.openInterest')}
           </span>
@@ -135,7 +135,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           </span>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
           <span className="text-[12px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.fundingCountdown')}
           </span>
