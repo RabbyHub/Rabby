@@ -29,6 +29,7 @@ export const useTokenAndDIFIData = ({
     hasTokens,
     removeProtocol,
     portfolioNetWorth,
+    refreshPositions,
   } = useQueryProjects(
     currentAccount?.address,
     false,
@@ -117,5 +118,6 @@ export const useTokenAndDIFIData = ({
     setLpTokenMode,
     appIds,
     isNoResults,
+    refreshPositions,
   };
 };

@@ -21,7 +21,8 @@ const MAINNET_WIDTH_MAP = {
   token: 360 - PADDING,
   price: 280,
   amount: 280,
-  usdValue: 'auto', //136 - PADDING,
+  usdValue: 118,
+  // usdValue: 'auto', //136 - PADDING,
 };
 
 export interface Props {
@@ -86,7 +87,7 @@ export const TokenItemAsset: React.FC<Props> = ({
 
   return (
     <TCell
-      className="py-8 flex gap-10 items-center overflow-hidden"
+      className="py-8 flex gap-10 items-center overflow-hidden flex-1"
       style={{
         width: MAINNET_WIDTH_MAP['token'],
       }}
@@ -216,7 +217,7 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
 const TokenItemAmount: React.FC<Props> = ({ item }) => {
   return (
     <TCell
-      className="py-8 text-r-neutral-title1 text-14 truncate"
+      className="py-8 text-r-neutral-title1 text-14 truncate flex-1"
       style={{
         width: MAINNET_WIDTH_MAP['amount'],
       }}
@@ -238,7 +239,7 @@ const TokenItemAmount: React.FC<Props> = ({ item }) => {
 const TokenItemPrice: React.FC<Props> = ({ item }) => {
   return (
     <TCell
-      className="text-r-neutral-title1 text-14  truncate flex items-center gap-4"
+      className="text-r-neutral-title1 text-14  truncate flex items-center gap-4 flex-1"
       style={{
         width: MAINNET_WIDTH_MAP['price'],
       }}
@@ -262,7 +263,7 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
 const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
   return (
     <TCell
-      className="py-8 text-r-neutral-title1 text-14 flex-1 text-right truncate"
+      className="py-8 text-r-neutral-title1 text-14 text-right truncate"
       style={{
         width: MAINNET_WIDTH_MAP['usdValue'],
       }}

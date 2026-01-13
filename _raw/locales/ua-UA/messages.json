@@ -1130,7 +1130,8 @@
           "setting": "Налаштування",
           "settings": "Налаштування",
           "perpsPositions_other": "{{count}} Позицій",
-          "perpsPositions_one": "{{count}} Позиція"
+          "perpsPositions_one": "{{count}} Позиція",
+          "prediction": "Прогнозування"
         },
         "comingSoon": "Скоро",
         "soon": "Незабаром",
@@ -3465,6 +3466,11 @@
         "liquidationPriceTips": "Ціна, за якою ваша позиція автоматично закривається біржею, щоб запобігти подальшим збиткам, коли ваш маржинальний внесок падає нижче рівня підтримуючого маржі."
       },
       "needDepositFirst": "Вам спочатку потрібно внести кошти."
+    },
+    "dappIfame": {
+      "serviceUnavailable": "Сервіс недоступний",
+      "openPolymarket": "Відкриваю Polymarket...",
+      "predictionNotSupported": "Функція Прогнозування не підтримується у вашому поточному регіоні."
     }
   },
   "component": {
@@ -3675,7 +3681,8 @@
       "lending": "Позика",
       "portfolio": "Портфель",
       "comingSoon": "Скоро буде",
-      "perps": "Периферійні"
+      "perps": "Периферійні",
+      "prediction": "Прогнозування"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Додати адресу"

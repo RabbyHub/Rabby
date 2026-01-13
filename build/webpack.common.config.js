@@ -46,9 +46,7 @@ const config = {
       asyncChunks: false,
     },
     'content-script': paths.rootResolve('src/content-script/index.ts'),
-    pageProvider: paths.rootResolve(
-      'node_modules/@rabby-wallet/page-provider/dist/index.js'
-    ),
+    pageProvider: paths.rootResolve('src/content-script/page-provider.ts'),
     ui: paths.rootResolve('src/ui/index.tsx'),
     offscreen: paths.rootResolve('src/offscreen/scripts/offscreen.ts'),
   },

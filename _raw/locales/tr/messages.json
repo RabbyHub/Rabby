@@ -1127,7 +1127,8 @@
           "searchDapp": "Dapp Araştırın",
           "settings": "Ayarlar",
           "perpsPositions_one": "{{count}} Pozisyon",
-          "perpsPositions_other": "{{count}} Pozisyonlar"
+          "perpsPositions_other": "{{count}} Pozisyonlar",
+          "prediction": "Tahmin"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -3456,6 +3457,11 @@
         "sizeTips": "Marjin ve kaldıraçla belirlenen işleminizin toplam değeri veya miktarı."
       },
       "needDepositFirst": "Öncelikle fon yatırmanız gerekiyor."
+    },
+    "dappIfame": {
+      "openPolymarket": "Polymarket açılıyor...",
+      "serviceUnavailable": "Hizmet Kullanılamıyor",
+      "predictionNotSupported": "Tahmin özelliği mevcut bölgenizde desteklenmiyor."
     }
   },
   "component": {
@@ -3666,7 +3672,8 @@
       "perps": "Perps",
       "comingSoon": "Yakında",
       "lending": "Kredi Verme",
-      "portfolio": "Portföy"
+      "portfolio": "Portföy",
+      "prediction": "Tahmin"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adres ekle"

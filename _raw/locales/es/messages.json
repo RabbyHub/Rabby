@@ -1127,7 +1127,8 @@
           "setting": "Configuración",
           "settings": "Configuraciones",
           "perpsPositions_one": "{{count}} Posición",
-          "perpsPositions_other": "{{count}} Posiciones"
+          "perpsPositions_other": "{{count}} Posiciones",
+          "prediction": "Predicción"
         },
         "comingSoon": "Próximamente",
         "soon": "Pronto",
@@ -3453,6 +3454,11 @@
         "totalSize": "Tamaño Total"
       },
       "needDepositFirst": "Primero necesitas depositar fondos."
+    },
+    "dappIfame": {
+      "serviceUnavailable": "Servicio no disponible",
+      "openPolymarket": "Abriendo Polymarket...",
+      "predictionNotSupported": "La función de Predicción no es compatible en tu región actual."
     }
   },
   "component": {
@@ -3663,7 +3669,8 @@
       "portfolio": "Cartera",
       "lending": "Préstamo",
       "perps": "Perps",
-      "comingSoon": "Próximamente"
+      "comingSoon": "Próximamente",
+      "prediction": "Predicción"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Agregar dirección"

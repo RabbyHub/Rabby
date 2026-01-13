@@ -444,7 +444,16 @@ browser.runtime.onConnect.addListener((port) => {
     }
     const origin = getOriginFromUrl(port.sender.url);
     const session = sessionService.getOrCreateSession(sessionId, origin);
-    const req = { data, session, origin };
+    const req = {
+      data,
+      session,
+      origin,
+      isFromDesktopDapp:
+        port.sender.id === browser.runtime.id &&
+        port.sender?.tab?.url?.startsWith(
+          `${browser.runtime.getURL('')}desktop.html#/desktop/dapp-iframe`
+        ),
+    };
     if (!session?.origin) {
       const tabInfo = await browser.tabs.get(sessionId);
       // prevent tabCheckin not triggered, re-fetch tab info when session have no info at all

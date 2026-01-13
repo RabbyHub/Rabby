@@ -1127,7 +1127,8 @@
           "dapps": "Dapps",
           "settings": "Configurações",
           "perpsPositions_other": "{{count}} Posições",
-          "perpsPositions_one": "{{count}} Posição"
+          "perpsPositions_one": "{{count}} Posição",
+          "prediction": "Previsão"
         },
         "comingSoon": "Em breve",
         "soon": "Em breve",
@@ -3455,6 +3456,11 @@
         "liquidationPriceTips": "O preço pelo qual sua posição é automaticamente fechada pela exchange para evitar mais perdas quando sua margem cai abaixo do nível de margem de manutenção."
       },
       "needDepositFirst": "Você precisa depositar fundos primeiro."
+    },
+    "dappIfame": {
+      "serviceUnavailable": "Serviço Indisponível",
+      "predictionNotSupported": "O recurso de Previsão não é suportado na sua região atual.",
+      "openPolymarket": "Abrindo Polymarket..."
     }
   },
   "component": {
@@ -3666,7 +3672,8 @@
       "comingSoon": "Em Breve",
       "perps": "Perps",
       "lending": "Empréstimo",
-      "portfolio": "Portfólio"
+      "portfolio": "Portfólio",
+      "prediction": "Previsão"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adicionar endereço"

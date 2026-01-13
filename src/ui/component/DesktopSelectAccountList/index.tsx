@@ -39,10 +39,12 @@ import { Account } from '@/background/service/preference';
 
 interface DesktopSelectAccountListProps {
   isShowApprovalAlert?: boolean;
+  autoCollapse?: boolean;
 }
 
 export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> = ({
   isShowApprovalAlert = false,
+  autoCollapse = false,
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -51,7 +53,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   const currentAccount = useCurrentAccount();
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const shouldScrollRef = useRef(true);
-  const [isAbsolute, setIsAbsolute] = useState(true);
+  const [isAbsolute, setIsAbsolute] = useState(autoCollapse);
 
   const {
     sortedAccountsList,
@@ -116,7 +118,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
 
   const ref = useRef<HTMLDivElement>(null);
   const handleResize = useMemoizedFn(() => {
-    if (!ref.current) {
+    if (!ref.current || !autoCollapse) {
       return;
     }
     const left = ref.current.getBoundingClientRect().left;
@@ -135,18 +137,31 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   return (
     <div
       className={clsx(
-        'desktop-select-account-list flex flex-col gap-[12px] rounded-[20px]'
+        'desktop-select-account-list flex flex-col gap-[12px] rounded-[20px]',
+        autoCollapse && 'auto-narrow'
       )}
       style={{ height, position: isAbsolute ? 'absolute' : undefined }}
       ref={ref}
-      // onMouseEnter={() => {
-      //   if (!isAbsolute) {
-      //     document.querySelector('.main-content')?.classList?.add('is-open');
-      //   }
-      // }}
-      // onMouseLeave={() => {
-      //   document.querySelector('.main-content')?.classList?.remove('is-open');
-      // }}
+      onMouseEnter={
+        autoCollapse
+          ? () => {
+              if (!isAbsolute) {
+                document
+                  .querySelector('.main-content')
+                  ?.classList?.add('is-open');
+              }
+            }
+          : undefined
+      }
+      onMouseLeave={
+        autoCollapse
+          ? () => {
+              document
+                .querySelector('.main-content')
+                ?.classList?.remove('is-open');
+            }
+          : undefined
+      }
     >
       <Virtuoso
         ref={virtuosoRef}
@@ -183,16 +198,19 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
           Footer: () => (
             <div
               onClick={() => {
+                if (!isAbsolute) {
+                  document
+                    .querySelector('.main-content')
+                    ?.classList?.remove('is-open');
+                }
                 history.replace(`${location.pathname}?action=add-address`);
               }}
               className={clsx(
                 // 'bg-rb-neutral-bg-3',
                 'cursor-pointer rounded-[20px] h-[62px] p-[16px] flex items-center gap-[8px] text-r-blue-default',
-                'desktop-account-item'
+                'desktop-account-item',
+                'bg-rb-brand-light-1 hover:bg-rb-brand-light-2'
               )}
-              style={{
-                background: 'rgba(76, 101, 255, 0.08)',
-              }}
             >
               <RcIconAddWalletCC className="flex-shrink-0" />
               <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
@@ -234,13 +252,16 @@ const AccountItem: React.FC<{
           'desktop-account-item',
           isSelected
             ? ' border-rb-neutral-line bg-rb-neutral-card-1'
-            : 'border-transparent bg-rb-neutral-bg-3'
+            : 'border-transparent bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-2 '
         )}
         onClick={onClick}
       >
         <img
           src={addressTypeIcon}
-          className={clsx('w-[24px] h-[24px]', !isSelected ? 'opacity-40' : '')}
+          className={clsx(
+            'w-[24px] h-[24px]',
+            !isSelected ? 'opacity-40 group-hover:opacity-100' : ''
+          )}
           alt=""
         />
         <div className="flex flex-1 flex-col gap-[2px] min-w-0 desktop-account-item-content">

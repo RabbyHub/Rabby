@@ -2,8 +2,7 @@ import React, { useMemo, useState, useRef, useEffect } from 'react';
 
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { DesktopNav } from '@/ui/component/DesktopNav';
+import { DESKTOP_NAV_HEIGHT, DesktopNav } from '@/ui/component/DesktopNav';
 import { ProfileHeader } from './components/ProfileHeader';
 import { BackTop, Tabs } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
@@ -43,79 +42,10 @@ import { DesktopPending } from './components/DesktopPending';
 import { TokenTab } from './components/TokensTabPane/TokenTab';
 import { DIFITab } from './components/TokensTabPane/DifiTab';
 import { useTokenAndDIFIData } from './components/TokensTabPane/hook';
-
-const Wrap = styled.div`
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-  background: var(--rb-neutral-bg-1, #fff);
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 16px;
-  padding-bottom: 120px;
-
-  .main-content {
-    padding-left: 80px;
-    flex-shrink: 0;
-    min-height: 766px;
-
-    transition: padding 0.3s;
-
-    &.is-open {
-      padding-left: 0;
-    }
-  }
-
-  .layout-container {
-    /* max-width: 1440px; */
-    width: 1120px;
-    /* margin-left: auto; */
-    /* margin-right: auto; */
-    background-color: var(--rb-neutral-bg-1, #ffffff);
-  }
-
-  /* antd */
-  .ant-tabs-tab {
-    color: var(--r-neutral-foot, #6a7587);
-    font-size: 18px;
-    font-weight: 400;
-
-    padding-top: 16px;
-    padding-bottom: 13px;
-
-    &:hover {
-      color: var(--r-blue-default, #4c65ff);
-    }
-  }
-  .ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap {
-    padding-left: 20px;
-  }
-  .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: var(--r-blue-default, #4c65ff);
-    font-weight: 700;
-    font-size: 18px;
-    text-shadow: none;
-  }
-  .ant-tabs-top > .ant-tabs-nav .ant-tabs-ink-bar {
-    height: 4px;
-    border-radius: 4px 4px 0 0;
-    background-color: var(--r-blue-default, #4c65ff);
-  }
-  .ant-tabs-top > .ant-tabs-nav {
-    margin-bottom: 0;
-    position: sticky;
-    z-index: 10;
-    background: var(--rb-neutral-bg-1, #fff);
-  }
-  .ant-tabs-top > .ant-tabs-nav::before {
-    border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
-  }
-`;
+import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 
 const StickyBorderTop = () => (
-  <div className="sticky top-[103px] h-0 z-50">
+  <div className="sticky h-0 z-50" style={{ top: DESKTOP_NAV_HEIGHT }}>
     <div
       className={clsx(
         'overflow-hidden absolute w-full h-[40px] pointer-events-none',
@@ -183,6 +113,7 @@ export const DesktopProfile = () => {
 
   const handleUpdate = useMemoizedFn(async () => {
     setRefreshKey((prev) => prev + 1);
+    refreshPositions();
     await refreshBalance();
     await refreshCurve();
   });
@@ -215,6 +146,7 @@ export const DesktopProfile = () => {
     setLpTokenMode,
     appIds,
     isNoResults,
+    refreshPositions,
   } = useTokenAndDIFIData({
     selectChainId: chainInfo?.serverId,
     allTokenMode: !!searchValue,
@@ -268,27 +200,19 @@ export const DesktopProfile = () => {
 
   return (
     <>
-      <Wrap
-        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element"
+      <DesktopPageWrap
+        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px]"
         ref={scrollContainerRef}
       >
-        <div className="main-content is-open">
-          <div className="layout-container sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
-            <DesktopNav
-              balance={balance}
-              changePercent={curveChartData?.changePercent}
-              isLoss={curveChartData?.isLoss}
-              isLoading={isBalanceLoading || isCurveLoading}
-            />
-          </div>
-
+        <div className="main-content is-open flex-1">
           <div className="layout-container">
+            <DesktopNav />
             <div
               className="sticky z-10 pt-[0px] overflow-scroll flex-initial px-1 w-auto"
               style={{
                 width: 0,
                 scrollbarWidth: 'none',
-                top: 103 + 57,
+                top: DESKTOP_NAV_HEIGHT + 57,
               }}
               id={TOP_SHORTCUT_SLOT_ID}
             >
@@ -317,7 +241,7 @@ export const DesktopProfile = () => {
                   <Tabs
                     tabBarStyle={{
                       position: 'sticky',
-                      top: 103,
+                      top: DESKTOP_NAV_HEIGHT,
                     }}
                     className="overflow-visible"
                     defaultActiveKey={activeTab}
@@ -421,11 +345,12 @@ export const DesktopProfile = () => {
           </div>
         </div>
         <aside
-          className={clsx('min-w-[64px] flex-shrink-0 sticky top-[103px] z-20')}
+          className={clsx('min-w-[64px] flex-shrink-0 sticky z-20')}
+          style={{ top: DESKTOP_NAV_HEIGHT }}
         >
           <DesktopSelectAccountList />
         </aside>
-      </Wrap>
+      </DesktopPageWrap>
       <SendTokenModal
         visible={action === 'send'}
         onCancel={() => {

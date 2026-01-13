@@ -1127,7 +1127,8 @@
           "searchDapp": "Dappを検索",
           "settings": "設定",
           "perpsPositions_other": "{{count}} ポジション",
-          "perpsPositions_one": "{{count}} ポジション"
+          "perpsPositions_one": "{{count}} ポジション",
+          "prediction": "予測"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -3453,6 +3454,11 @@
         "liquidationPriceTips": "維持証拠金レベルを下回ると、さらなる損失を防ぐために、取引所があなたのポジションを自動的にクローズする価格です。"
       },
       "needDepositFirst": "最初に資金を入金する必要があります。"
+    },
+    "dappIfame": {
+      "serviceUnavailable": "サービスは利用できません",
+      "openPolymarket": "Polymarketを開いています...",
+      "predictionNotSupported": "予測機能は、現在の地域ではサポートされていません。"
     }
   },
   "component": {
@@ -3663,7 +3669,8 @@
       "lending": "レンディング",
       "perps": "パープス",
       "portfolio": "ポートフォリオ",
-      "comingSoon": "近日公開予定"
+      "comingSoon": "近日公開予定",
+      "prediction": "予測"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "アドレスを追加"

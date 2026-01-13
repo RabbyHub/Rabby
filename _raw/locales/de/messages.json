@@ -1127,7 +1127,8 @@
           "dapps": "Dapps",
           "settings": "Einstellungen",
           "perpsPositions_one": "{{count}} Position",
-          "perpsPositions_other": "{{count}} Positionen"
+          "perpsPositions_other": "{{count}} Positionen",
+          "prediction": "Vorhersage"
         },
         "comingSoon": "Demnächst",
         "soon": "Bald",
@@ -3453,6 +3454,11 @@
         "sizeTips": "Der Gesamtwert oder die Menge Ihres Handels, festgelegt durch Margin und Hebel."
       },
       "needDepositFirst": "Sie müssen zuerst Geld einzahlen."
+    },
+    "dappIfame": {
+      "openPolymarket": "Öffne Polymarket...",
+      "serviceUnavailable": "Dienst nicht verfügbar",
+      "predictionNotSupported": "Die Prognosefunktion wird in Ihrer aktuellen Region nicht unterstützt."
     }
   },
   "component": {
@@ -3663,7 +3669,8 @@
       "lending": "Kreditvergabe",
       "portfolio": "Portfolio",
       "perps": "Perps",
-      "comingSoon": "Bald verfügbar"
+      "comingSoon": "Bald verfügbar",
+      "prediction": "Vorhersage"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adresse hinzufügen"

@@ -1218,7 +1218,8 @@
           "searchDapp": "Dapp 검색",
           "settings": "설정",
           "perpsPositions_one": "{{count}} 포지션",
-          "perpsPositions_other": "{{count}} 포지션"
+          "perpsPositions_other": "{{count}} 포지션",
+          "prediction": "예측"
         },
         "queue": {
           "count": "{{count}} 에서",
@@ -3450,6 +3451,11 @@
         "liquidationPriceTips": "마진이 유지 마진 수준 이하로 떨어질 때, 추가 손실을 방지하기 위해 거래소가 자동으로 포지션을 종료하는 가격입니다."
       },
       "needDepositFirst": "먼저 자금을 입금해야 합니다."
+    },
+    "dappIfame": {
+      "serviceUnavailable": "서비스를 사용할 수 없습니다",
+      "openPolymarket": "Polymarket 열기...",
+      "predictionNotSupported": "예측 기능은 현재 귀하의 지역에서 지원되지 않습니다."
     }
   },
   "component": {
@@ -3660,7 +3666,8 @@
       "lending": "대출",
       "perps": "Perps",
       "comingSoon": "곧 출시됩니다",
-      "portfolio": "포트폴리오"
+      "portfolio": "포트폴리오",
+      "prediction": "예측"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "주소 추가"
