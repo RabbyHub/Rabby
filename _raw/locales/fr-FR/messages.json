@@ -254,7 +254,8 @@
       "perps": "Perps",
       "portfolio": "Portefeuille",
       "lending": "Prêt",
-      "comingSoon": "Bientôt disponible"
+      "comingSoon": "Bientôt disponible",
+      "prediction": "Prédiction"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Ajouter une adresse"
@@ -865,7 +866,8 @@
           "searchDapp": "Rechercher Dapp",
           "settings": "Paramètres",
           "perpsPositions_one": "{{count}} Position",
-          "perpsPositions_other": "{{count}} Positions"
+          "perpsPositions_other": "{{count}} Positions",
+          "prediction": "Prédiction"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",
@@ -3768,6 +3770,11 @@
         "sizeTips": "La valeur totale ou la quantité de votre trade, définie par la marge et l'effet de levier."
       },
       "needDepositFirst": "Vous devez d'abord déposer des fonds."
+    },
+    "dappIfame": {
+      "serviceUnavailable": "Service Indisponible",
+      "openPolymarket": "Ouverture de Polymarket...",
+      "predictionNotSupported": "La fonctionnalité de prédiction n'est pas prise en charge dans votre région actuelle."
     }
   }
 }

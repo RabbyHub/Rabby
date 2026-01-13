@@ -1218,7 +1218,8 @@
           "dapps": "Dapps",
           "settings": "Cài đặt",
           "perpsPositions_other": "{{count}} Vị trí",
-          "perpsPositions_one": "{{count}} Vị trí"
+          "perpsPositions_one": "{{count}} Vị trí",
+          "prediction": "Dự đoán"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -3450,6 +3451,11 @@
         "liquidationPriceTips": "Giá mà vị thế của bạn sẽ tự động bị đóng bởi sàn giao dịch để ngăn chặn tổn thất thêm khi ký quỹ của bạn giảm xuống dưới mức ký quỹ duy trì."
       },
       "needDepositFirst": "Bạn cần phải gửi tiền trước."
+    },
+    "dappIfame": {
+      "openPolymarket": "Mở Polymarket...",
+      "serviceUnavailable": "Dịch vụ không khả dụng",
+      "predictionNotSupported": "Tính năng Dự đoán không được hỗ trợ trong khu vực hiện tại của bạn."
     }
   },
   "component": {
@@ -3660,7 +3666,8 @@
       "perps": "Perps",
       "portfolio": "Danh mục đầu tư",
       "lending": "Cho vay",
-      "comingSoon": "Sắp ra mắt"
+      "comingSoon": "Sắp ra mắt",
+      "prediction": "Dự đoán"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Thêm địa chỉ"

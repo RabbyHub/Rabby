@@ -1218,7 +1218,8 @@
           "setting": "Pengaturan",
           "settings": "Pengaturan",
           "perpsPositions_other": "{{count}} Posisi",
-          "perpsPositions_one": "{{count}} Posisi"
+          "perpsPositions_one": "{{count}} Posisi",
+          "prediction": "Prediksi"
         },
         "queue": {
           "title": "Antrian",
@@ -3450,6 +3451,11 @@
         "liquidationPriceTips": "Harga di mana posisi Anda secara otomatis ditutup oleh bursa untuk mencegah kerugian lebih lanjut ketika margin Anda jatuh di bawah tingkat margin pemeliharaan."
       },
       "needDepositFirst": "Anda perlu menyetor dana terlebih dahulu."
+    },
+    "dappIfame": {
+      "openPolymarket": "Membuka Polymarket...",
+      "serviceUnavailable": "Layanan Tidak Tersedia",
+      "predictionNotSupported": "Fitur Prediksi tidak didukung di wilayah Anda saat ini."
     }
   },
   "component": {
@@ -3660,7 +3666,8 @@
       "perps": "Perps",
       "portfolio": "Portofolio",
       "comingSoon": "Segera Hadir",
-      "lending": "Peminjaman"
+      "lending": "Peminjaman",
+      "prediction": "Prediksi"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Tambah alamat"
