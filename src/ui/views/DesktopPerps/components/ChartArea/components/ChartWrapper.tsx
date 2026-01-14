@@ -161,14 +161,14 @@ const parseVolumes = (data: CandleSnapshot): HistogramData<UTCTimestamp>[] => {
 };
 
 const INTERVAL_OPTIONS: Array<{ label: string; value: IntervalKey }> = [
-  { label: '1M', value: '1m' },
+  // { label: '1M', value: '1m' },
   { label: '5M', value: '5m' },
   { label: '15M', value: '15m' },
   { label: '30M', value: '30m' },
   { label: '1H', value: '1h' },
   { label: '4H', value: '4h' },
-  { label: '8H', value: '8h' },
-  { label: '12H', value: '12h' },
+  // { label: '8H', value: '8h' },
+  // { label: '12H', value: '12h' },
   { label: '1D', value: '1d' },
   { label: '1W', value: '1w' },
 ];
@@ -703,7 +703,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col bg-rb-neutral-bg-1">
-      <div className="flex items-center justify-between px-16 py-12">
+      <div className="flex items-center px-16 py-12 gap-16">
         {/* Left: Interval selector */}
         <div className="flex gap-8">
           {INTERVAL_OPTIONS.map((option) => (
@@ -727,39 +727,74 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           {chartHoverData.visible ? (
             <>
               <div className="flex flex-row items-center justify-center">
-                <span className="text-13 text-r-neutral-foot">Open:</span>
-                <span className="text-13 font-medium text-r-neutral-title-1">
+                <span className="text-13 text-r-neutral-foot ">{'O '}</span>
+                <span
+                  className={clsx(
+                    'text-13 font-medium',
+                    chartHoverData.isPositiveChange
+                      ? 'text-r-green-default'
+                      : 'text-r-red-default'
+                  )}
+                >
                   {splitNumberByStep(chartHoverData.open || 0)}
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center">
-                <span className="text-13 text-r-neutral-foot">High:</span>
-                <span className="text-13 font-medium text-r-neutral-title-1">
+                <span className="text-13 text-r-neutral-foot">H </span>
+                <span
+                  className={clsx(
+                    'text-13 font-medium',
+                    chartHoverData.isPositiveChange
+                      ? 'text-r-green-default'
+                      : 'text-r-red-default'
+                  )}
+                >
                   {splitNumberByStep(chartHoverData.high || 0)}
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center">
-                <span className="text-13 text-r-neutral-foot">Low:</span>
-                <span className="text-13 font-medium text-r-neutral-title-1">
+                <span className="text-13 text-r-neutral-foot">L </span>
+                <span
+                  className={clsx(
+                    'text-13 font-medium',
+                    chartHoverData.isPositiveChange
+                      ? 'text-r-green-default'
+                      : 'text-r-red-default'
+                  )}
+                >
                   {splitNumberByStep(chartHoverData.low || 0)}
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center">
-                <span className="text-13 text-r-neutral-foot">Close:</span>
-                <span className="text-13 font-medium text-r-neutral-title-1">
+                <span className="text-13 text-r-neutral-foot">C </span>
+                <span
+                  className={clsx(
+                    'text-13 font-medium',
+                    chartHoverData.isPositiveChange
+                      ? 'text-r-green-default'
+                      : 'text-r-red-default'
+                  )}
+                >
                   {splitNumberByStep(chartHoverData.close || 0)}
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center">
-                <span className="text-13 text-r-neutral-foot">Volume:</span>
-                <span className="text-13 font-medium text-r-neutral-title-1">
+                <span className="text-13 text-r-neutral-foot">V </span>
+                <span
+                  className={clsx(
+                    'text-13 font-medium',
+                    chartHoverData.isPositiveChange
+                      ? 'text-r-green-default'
+                      : 'text-r-red-default'
+                  )}
+                >
                   {splitNumberByStep(
                     Number(chartHoverData.volume?.toFixed(2) || 0)
                   )}
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center">
-                <span className="text-13 text-r-neutral-foot">Change:</span>
+                {/* <span className="text-13 text-r-neutral-foot"></span> */}
                 <span
                   className={clsx(
                     'text-13 font-medium',

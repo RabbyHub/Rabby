@@ -195,16 +195,16 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         <div className="relative z-10 flex items-center justify-between w-full">
           <span
             className={clsx(
-              'font-medium min-w-[80px] text-left group-hover:font-bold',
+              'font-medium min-w-[60px] text-left group-hover:font-bold',
               type === 'bid' ? 'text-rb-green-default' : 'text-rb-red-default'
             )}
           >
             {splitNumberByStep(order.price)}
           </span>
-          <span className="text-r-neutral-title-1 font-medium min-w-[80px] text-right">
+          <span className="text-r-neutral-title-1 font-medium min-w-[60px] text-right">
             {formatValue(order.size)}
           </span>
-          <span className="text-r-neutral-title-1 font-medium min-w-[80px] text-right">
+          <span className="text-r-neutral-title-1 font-medium min-w-[60px] text-right">
             {formatValue(order.total)}
           </span>
         </div>
@@ -341,14 +341,14 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
       </div>
 
       <div className="flex items-center justify-between px-[8px] py-[5px] text-[11px] text-r-neutral-foot flex-shrink-0">
-        <span className="min-w-[80px] text-left">
+        <span className="min-w-[60px] text-left">
           {t('page.perpsPro.orderBook.price')}
         </span>
-        <span className="min-w-[80px] text-right">
+        <span className="min-w-[60px] text-right">
           {t('page.perpsPro.orderBook.amount')} (
           {quoteUnit === 'base' ? selectedCoin : 'USD'})
         </span>
-        <span className="min-w-[80px] text-right">
+        <span className="min-w-[60px] text-right">
           {t('page.perpsPro.orderBook.total')} (
           {quoteUnit === 'base' ? selectedCoin : 'USD'})
         </span>

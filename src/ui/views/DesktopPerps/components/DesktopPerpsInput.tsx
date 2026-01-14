@@ -42,5 +42,5 @@ const StyledInput = styled(Input)`
 interface DesktopPerpsInputProps extends InputProps {}
 
 export const DesktopPerpsInput: React.FC<DesktopPerpsInputProps> = (props) => {
-  return <StyledInput {...props} />;
+  return <StyledInput placeholder="0" {...props} />;
 };

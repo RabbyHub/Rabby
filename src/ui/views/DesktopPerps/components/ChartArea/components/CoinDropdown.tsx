@@ -384,7 +384,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
       onVisibleChange={setDropdownVisible}
       placement="bottomLeft"
     >
-      <div className="flex items-center gap-[8px] cursor-pointer transition-colors px-[8px] py-[4px] rounded-[6px]">
+      <div className="flex items-center gap-[8px] cursor-pointer transition-colors py-[4px] rounded-[6px] min-w-[90px] justify-center">
         <TokenImg
           logoUrl={marketItem?.logoUrl || ''}
           withDirection={false}

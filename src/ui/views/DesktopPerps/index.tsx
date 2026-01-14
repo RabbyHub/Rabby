@@ -56,7 +56,7 @@ export const DesktopPerps: React.FC = () => {
               </div>
 
               {/* Right: TradingPanel */}
-              <div className="w-[400px] flex-shrink-0">
+              <div className="flex-1 flex-shrink-0 overflow-auto">
                 <TradingPanel />
               </div>
             </div>
@@ -68,7 +68,7 @@ export const DesktopPerps: React.FC = () => {
                 <UserInfoHistory />
               </div>
               {/* AccountInfo */}
-              <div className="w-[400px] flex-shrink-0 overflow-auto">
+              <div className="flex-1 flex-shrink-0 overflow-auto">
                 <AccountInfo />
               </div>
             </div>
