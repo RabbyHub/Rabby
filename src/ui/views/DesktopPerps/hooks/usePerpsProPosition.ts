@@ -21,8 +21,9 @@ import { LimitOrderType, MarginMode } from '../types';
 import { removeTrailingZeros } from '../components/TradingPanel/utils';
 import BigNumber from 'bignumber.js';
 import { formatTpOrSlPrice } from '../../Perps/utils';
-import { usePerpsProState } from './usePerpsProState';
+import { SignAction, usePerpsProState } from './usePerpsProState';
 import { useMemo } from 'react';
+import { KEYRING_CLASS } from '@/constant';
 
 const formatTriggerPx = (px?: string) => {
   // avoid '.15' input error from hy validator
@@ -35,10 +36,46 @@ export const usePerpsProPosition = () => {
     (state) => state.perps.currentPerpsAccount
   );
   const soundEnabled = useRabbySelector((state) => state.perps.soundEnabled);
-  const { handleActionApproveStatus, needEnableTrading } = usePerpsProState();
+  const {
+    handleActionApproveStatus,
+    needEnableTrading,
+    executeSignatures,
+  } = usePerpsProState();
   const { t } = useTranslation();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+
+  const autoSendNewApproveAgent = useMemoizedFn(async () => {
+    try {
+      if (
+        currentPerpsAccount?.type !== KEYRING_CLASS.PRIVATE_KEY &&
+        currentPerpsAccount?.type !== KEYRING_CLASS.MNEMONIC
+      ) {
+        dispatch.perps.setAccountNeedApproveAgent(true);
+        return;
+      }
+
+      const sdk = getPerpsSDK();
+      const signActions: SignAction = {
+        action: sdk.exchange?.prepareApproveAgent(),
+        type: 'approveAgent',
+        signature: '',
+      };
+
+      await executeSignatures([signActions], currentPerpsAccount!);
+
+      const res = await sdk.exchange?.sendApproveAgent({
+        action: signActions.action?.message,
+        nonce: signActions.action?.nonce || 0,
+        signature: signActions.signature,
+      });
+    } catch (error) {
+      console.error('Failed to send new approve agent:', error);
+      Sentry.captureException(
+        new Error(`Failed to send new approve agent: ${error}`)
+      );
+    }
+  });
 
   const judgeIsUserAgentIsExpired = useMemoizedFn(
     async (errorMessage: string) => {
@@ -53,11 +90,11 @@ export const usePerpsProPosition = () => {
       const agentAddress = agentWalletPreference?.agentAddress;
       if (agentAddress && errorMessage.includes(agentAddress)) {
         console.warn('handle action agent is expired, logout');
-        perpsToast.error({
-          title: 'Agent is expired, please login again',
+        perpsToast.info({
+          title: 'Agent is expired, please try it again',
           // description: 'Agent is expired, please login again',
         });
-        dispatch.perps.setAccountNeedApproveAgent(true);
+        autoSendNewApproveAgent();
         return true;
       }
     }

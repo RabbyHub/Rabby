@@ -24,9 +24,10 @@ import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { getPerpsSDK } from '../../Perps/sdkManager';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { openDeleteAgentModal } from '../utils/openDeleteAgentModal';
+import perpsToast from '../components/PerpsToast';
 type SignActionType = 'approveAgent' | 'approveBuilderFee';
 
-interface SignAction {
+export interface SignAction {
   action: any;
   type: SignActionType;
   signature: string;
@@ -254,6 +255,9 @@ export const usePerpsProState = () => {
         })
       );
 
+      setTimeout(() => {
+        handleSafeSetReference();
+      }, 500);
       const [approveAgentRes, approveBuilderFeeRes] = results;
       console.log('sendApproveAgentRes', approveAgentRes);
       console.log('sendApproveBuilderFeeRes', approveBuilderFeeRes);
@@ -325,9 +329,6 @@ export const usePerpsProState = () => {
             actionObj.signature = signature;
           }
           await handleDirectApprove(signActions);
-          setTimeout(() => {
-            handleSafeSetReference();
-          }, 500);
           dispatch.perps.setAccountNeedApproveAgent(false);
           dispatch.perps.setAccountNeedApproveBuilderFee(false);
         } else {
@@ -401,17 +402,12 @@ export const usePerpsProState = () => {
 
       await executeSignatures(signActions, currentPerpsAccount);
 
-      // try {
-      await handleDirectApprove(signActions);
-      if (
-        currentPerpsAccount.type === KEYRING_CLASS.PRIVATE_KEY ||
-        currentPerpsAccount.type === KEYRING_CLASS.MNEMONIC
-      ) {
-        setTimeout(() => {
-          handleSafeSetReference();
-        }, 500);
+      try {
+        await handleDirectApprove(signActions);
+      } catch (error) {
+        // no throw error to avoid block
+        console.error('Failed to handle direct approve:', error);
       }
-      // } catch (error) {}
       dispatch.perps.setAccountNeedApproveAgent(false);
       dispatch.perps.setAccountNeedApproveBuilderFee(false);
       isHandlingApproveStatus.current = false;
@@ -419,7 +415,10 @@ export const usePerpsProState = () => {
       isHandlingApproveStatus.current = false;
       console.error('Failed to handle action approve status:', error);
       // todo fixme maybe no need show toast in prod
-      message.error('message' in error ? error.message : String(error));
+      perpsToast.error({
+        title: 'Failed to enable trading',
+        description: 'message' in error ? error.message : String(error),
+      });
       Sentry.captureException(
         new Error(
           `Failed to handle action approve status, address: ${currentPerpsAccount?.address} , account type: ${currentPerpsAccount?.type} , error: ${error}`
@@ -545,10 +544,10 @@ export const usePerpsProState = () => {
       return true;
     } catch (error: any) {
       console.error('Failed to login Perps account:', error);
-      message.error({
+      perpsToast.error({
         // className: 'toast-message-2025-center',
-        duration: 1.5,
-        content: error.message || 'Login failed',
+        title: 'Switch account failed',
+        description: error.message || 'Login failed',
       });
       Sentry.captureException(
         new Error(
@@ -589,6 +588,7 @@ export const usePerpsProState = () => {
     handleSafeSetReference,
 
     ensureLoginApproveSign,
+    executeSignatures,
   };
 };
 

@@ -409,6 +409,9 @@ export const usePerpsState = ({
         })
       );
 
+      setTimeout(() => {
+        handleSafeSetReference();
+      }, 500);
       const [approveAgentRes, approveBuilderFeeRes] = results;
       console.log('sendApproveAgentRes', approveAgentRes);
       console.log('sendApproveBuilderFeeRes', approveBuilderFeeRes);
@@ -480,9 +483,6 @@ export const usePerpsState = ({
             actionObj.signature = signature;
           }
           await handleDirectApprove(signActions);
-          setTimeout(() => {
-            handleSafeSetReference();
-          }, 500);
           dispatch.perps.setAccountNeedApproveAgent(false);
           dispatch.perps.setAccountNeedApproveBuilderFee(false);
         } else {
@@ -554,14 +554,6 @@ export const usePerpsState = ({
 
       // try {
       await handleDirectApprove(signActions);
-      if (
-        currentPerpsAccount.type === KEYRING_CLASS.PRIVATE_KEY ||
-        currentPerpsAccount.type === KEYRING_CLASS.MNEMONIC
-      ) {
-        setTimeout(() => {
-          handleSafeSetReference();
-        }, 500);
-      }
       // } catch (error) {}
       dispatch.perps.setAccountNeedApproveAgent(false);
       dispatch.perps.setAccountNeedApproveBuilderFee(false);
