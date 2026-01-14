@@ -8,8 +8,11 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { DashedUnderlineText } from '../DashedUnderlineText';
 import { Tooltip } from 'antd';
+import { PopupType } from '../../index';
 
-export const AccountInfo: React.FC = () => {
+export const AccountInfo: React.FC<{
+  handleSetPopupType: (type: PopupType) => void;
+}> = ({ handleSetPopupType }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const clearinghouseState = useRabbySelector(
@@ -32,14 +35,10 @@ export const AccountInfo: React.FC = () => {
   }, [clearinghouseState]);
 
   const handleDepositClick = () => {
-    const currentPathname = history.location.pathname;
-
-    history.replace(`${currentPathname}?action=deposit`);
+    handleSetPopupType('deposit');
   };
   const handleWithdrawClick = () => {
-    const currentPathname = history.location.pathname;
-
-    history.replace(`${currentPathname}?action=withdraw`);
+    handleSetPopupType('withdraw');
   };
 
   const customBalance = useMemo(() => {

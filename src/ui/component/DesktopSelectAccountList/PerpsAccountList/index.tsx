@@ -37,11 +37,14 @@ import { Account } from '@/background/service/preference';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { usePerpsProState } from '@/ui/views/DesktopPerps/hooks/usePerpsProState';
+import { PopupType } from '@/ui/views/DesktopPerps';
 
 // 10 minutes
 const CLEARINGHOUSE_STATE_EXPIRE_TIME = 1000 * 60 * 10;
 
-export const DesktopPerpsSelectAccountList: React.FC = () => {
+export const DesktopPerpsSelectAccountList: React.FC<{
+  handleSetPopupType: (type: PopupType) => void;
+}> = ({ handleSetPopupType }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
@@ -254,7 +257,7 @@ export const DesktopPerpsSelectAccountList: React.FC = () => {
           Footer: () => (
             <div
               onClick={() => {
-                history.replace(`${location.pathname}?action=add-address`);
+                handleSetPopupType('add-address');
               }}
               className={clsx(
                 // 'bg-rb-neutral-bg-3',

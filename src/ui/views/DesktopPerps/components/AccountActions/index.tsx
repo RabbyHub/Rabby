@@ -9,9 +9,12 @@ import { ReactComponent as RcIconSun } from '@/ui/assets/perps/icon-sun.svg';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as IconPerpsWallet } from '@/ui/assets/perps/IconPerpsWallet.svg';
 import { useHistory } from 'react-router-dom';
-import { DepositPending } from '../../DepositWithdrawModal/DepositPending';
+import { DepositPending } from '../DepositWithdrawModal/DepositPending';
+import { PopupType } from '../../index';
 
-export const AccountActions: React.FC = () => {
+export const AccountActions: React.FC<{
+  handleSetPopupType: (type: PopupType) => void;
+}> = ({ handleSetPopupType }) => {
   const dispatch = useRabbyDispatch();
   const { isDarkTheme } = useThemeMode();
   const clearinghouseState = useRabbySelector(
@@ -34,12 +37,9 @@ export const AccountActions: React.FC = () => {
     dispatch.preference.switchThemeMode(newThemeMode);
   }, [dispatch, themeMode]);
 
-  const history = useHistory();
   const handleDeposit = useCallback(() => {
-    const currentPathname = history.location.pathname;
-
-    history.replace(`${currentPathname}?action=deposit`);
-  }, [history]);
+    handleSetPopupType('deposit');
+  }, [handleSetPopupType]);
 
   return (
     <div className="flex items-center gap-[12px]">
