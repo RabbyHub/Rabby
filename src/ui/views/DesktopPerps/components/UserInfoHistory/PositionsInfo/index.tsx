@@ -243,7 +243,7 @@ export const PositionsInfo: React.FC = () => {
     () => [
       {
         title: t('page.perpsPro.userInfo.tab.coin'),
-        width: 120,
+        // width: 120,
         className: 'relative',
         key: 'coin',
         dataIndex: 'coin',
@@ -285,7 +285,7 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.tab.size'),
-        width: 160,
+        // width: 160,
         key: 'positionValue',
         dataIndex: 'positionValue',
         sorter: (a, b) => Number(a.positionValue) - Number(b.positionValue),
@@ -307,7 +307,7 @@ export const PositionsInfo: React.FC = () => {
         key: 'entryPx',
         dataIndex: 'entryPx',
         sorter: (a, b) => Number(a.entryPx) - Number(b.entryPx),
-        width: 160,
+        // width: 160,
         render: (_, record) => {
           return (
             <div>
@@ -326,7 +326,7 @@ export const PositionsInfo: React.FC = () => {
         key: 'unrealizedPnl',
         dataIndex: 'unrealizedPnl',
         sorter: (a, b) => Number(a.unrealizedPnl) - Number(b.unrealizedPnl),
-        width: 160,
+        // width: 160,
         render: (_, record) => {
           const isUp = Number(record.unrealizedPnl) >= 0;
           return (
@@ -357,7 +357,7 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.tab.liqPrice'),
-        width: 160,
+        // width: 160,
         key: 'liquidationPx',
         dataIndex: 'liquidationPx',
         sorter: (a, b) => Number(a.liquidationPx) - Number(b.liquidationPx),
@@ -377,7 +377,7 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.tab.margin'),
-        width: 160,
+        // width: 160,
         key: 'marginUsed',
         dataIndex: 'marginUsed',
         sorter: (a, b) => Number(a.marginUsed) - Number(b.marginUsed),
@@ -405,7 +405,7 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.tab.funding'),
-        width: 160,
+        // width: 160,
         key: 'fundingPayments',
         dataIndex: 'fundingPayments',
         sorter: (a, b) =>
@@ -425,7 +425,7 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.tab.tpSl'),
-        width: 160,
+        // width: 160,
         key: 'children',
         dataIndex: 'children',
         render: (_, record) => {
@@ -525,7 +525,7 @@ export const PositionsInfo: React.FC = () => {
         key: 'oid',
         dataIndex: 'oid',
         align: 'center',
-        width: 160,
+        // width: 160,
         render: (_, record) => {
           return (
             <Dropdown

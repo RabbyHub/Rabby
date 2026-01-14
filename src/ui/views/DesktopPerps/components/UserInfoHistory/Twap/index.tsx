@@ -1,4 +1,4 @@
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import React, { useMemo, useState } from 'react';
 import { CommonTable } from '../CommonTable';
 import { ColumnType } from 'antd/lib/table';
@@ -40,7 +40,7 @@ export const Twap: React.FC = () => {
     marketDataMap,
   } = useRabbySelector((store) => store.perps);
   const { t } = useTranslation();
-
+  const dispatch = useRabbyDispatch();
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active');
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
 
@@ -195,7 +195,15 @@ export const Twap: React.FC = () => {
               >
                 <div className="flex flex-row items-center gap-[4px]">
                   <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1">
-                    {record.coin}
+                    <span
+                      className="cursor-pointer hover:font-bold hover:text-rb-neutral-body"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        dispatch.perps.setSelectedCoin(record.coin);
+                      }}
+                    >
+                      {record.coin}{' '}
+                    </span>
                   </div>
                   <div className="text-[12px] leading-[14px] text-r-neutral-foot">
                     {sideName} · ({sliceCount} slices)

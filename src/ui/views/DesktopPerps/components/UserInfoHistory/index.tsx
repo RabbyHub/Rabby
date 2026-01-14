@@ -100,7 +100,7 @@ export const UserInfoHistory: React.FC = () => {
       </div>
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        <div className="text-r-neutral-foot text-[12px]">
+        <div className="text-r-neutral-foot text-[12px] whitespace-nowrap">
           {ActiveComponent ? <ActiveComponent /> : null}
         </div>
       </div>

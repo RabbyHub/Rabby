@@ -6,6 +6,7 @@ import { CoinDropdown } from './CoinDropdown';
 import { formatPercent } from '@/ui/views/Perps/utils';
 import { useHourlyCountdown } from '@/ui/views/DesktopPerps/hooks/useHourlyCountdown';
 import { useTranslation } from 'react-i18next';
+import { HorizontalScrollContainer } from './HorizontalScrollContainer';
 
 interface CoinSelectorProps {
   coin: string;
@@ -55,12 +56,12 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
   const isPositive = priceChange >= 0;
 
   return (
-    <div className="flex items-center gap-[32px] px-[16px] py-[4px] border-b border-solid border-rb-neutral-line">
+    <div className="flex items-center px-[16px] py-[4px] border-b border-solid border-rb-neutral-line">
       {/* Coin Dropdown - Only this area is clickable for dropdown */}
       <CoinDropdown coin={coin} onSelectCoin={onSelectCoin} />
 
       {/* Market Data - Display only, not clickable */}
-      <div className="flex items-center gap-[32px] whitespace-nowrap overflow-scroll scrollbar-hide">
+      <HorizontalScrollContainer className="flex items-center gap-24">
         <div className="flex flex-col">
           <span className="text-[12px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.mark')}
@@ -163,7 +164,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
             </span>
           )}
         </div>
-      </div>
+      </HorizontalScrollContainer>
     </div>
   );
 };

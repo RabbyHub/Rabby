@@ -95,6 +95,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     });
   }, [szDecimals, selectedCoin, isInitialized]);
 
+  useEffect(() => {
+    setAggregationIndex(0);
+  }, [selectedCoin]);
+
   const selectedAggregation = useMemo(() => {
     return aggregationLevels[aggregationIndex] || aggregationLevels[0];
   }, [aggregationIndex, aggregationLevels]);
@@ -248,11 +252,11 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const isPositive = priceChange >= 0;
 
   return (
-    <div className="h-full flex flex-col bg-rb-neutral-bg-1">
+    <div className="h-full flex flex-col bg-rb-neutral-bg-1 whitespace-nowrap">
       {/* Control Bar */}
       <div className="flex items-center justify-between px-[12px] py-[6px] flex-shrink-0">
         {/* View Mode Switcher */}
-        <div className="flex items-center gap-[12px]">
+        <div className="flex items-center gap-[8px]">
           <button
             className={clsx(
               'opacity-50',
@@ -304,13 +308,13 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
               type="button"
               className={clsx(
                 'inline-flex items-center justify-between',
-                'px-[8px] py-[8px] flex-1 min-w-[80px] h-24',
+                'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
                 'hover:border-rb-brand-default border border-solid border-transparent',
                 'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
               )}
             >
-              {selectedCoin}
+              {quoteUnit === 'base' ? selectedCoin : 'USD'}
               <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
             </button>
           </Dropdown>
@@ -327,7 +331,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
               type="button"
               className={clsx(
                 'inline-flex items-center justify-between',
-                'px-[8px] py-[8px] flex-1 min-w-[80px] h-24',
+                'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
                 'hover:border-rb-brand-default border border-solid border-transparent',
                 'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
@@ -340,7 +344,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-[8px] py-[5px] text-[11px] text-r-neutral-foot flex-shrink-0">
+      <div className="flex items-center justify-between px-[12px] py-[5px] text-[11px] text-r-neutral-foot flex-shrink-0">
         <span className="min-w-[60px] text-left">
           {t('page.perpsPro.orderBook.price')}
         </span>

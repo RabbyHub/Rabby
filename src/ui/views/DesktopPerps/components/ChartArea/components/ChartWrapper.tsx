@@ -27,6 +27,7 @@ import type { Candle, CandleSnapshot } from '@rabby-wallet/hyperliquid-sdk';
 import { splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import { useMemoizedFn } from 'ahooks';
+import { isScreenSmall } from '../../../utils';
 
 // Type for pending chart data
 interface PendingChartData {
@@ -161,13 +162,13 @@ const parseVolumes = (data: CandleSnapshot): HistogramData<UTCTimestamp>[] => {
 };
 
 const INTERVAL_OPTIONS: Array<{ label: string; value: IntervalKey }> = [
-  // { label: '1M', value: '1m' },
+  { label: '1M', value: '1m' },
   { label: '5M', value: '5m' },
   { label: '15M', value: '15m' },
   { label: '30M', value: '30m' },
   { label: '1H', value: '1h' },
   { label: '4H', value: '4h' },
-  // { label: '8H', value: '8h' },
+  { label: '8H', value: '8h' },
   // { label: '12H', value: '12h' },
   { label: '1D', value: '1d' },
   { label: '1W', value: '1w' },
@@ -302,6 +303,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
   const [chartHoverData, setChartHoverData] = useState<ChartHoverData>({
     visible: false,
   });
+  const [latestCandle, setLatestCandle] = useState<ChartHoverData | null>(null);
 
   const [isChartReady, setIsChartReady] = useState(false);
   const [pendingData, setPendingData] = useState<PendingChartData | null>(null);
@@ -538,8 +540,8 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     // Handle resize using ResizeObserver for better container tracking
     const handleResize = () => {
       if (chartContainerRef.current && chartRef.current) {
-        const newWidth = chartContainerRef.current.clientWidth || 800;
-        const newHeight = chartContainerRef.current.clientHeight || 400;
+        const newWidth = chartContainerRef.current.offsetWidth || 800;
+        const newHeight = chartContainerRef.current.offsetHeight || 400;
         chartRef.current.applyOptions({
           width: newWidth,
           height: newHeight,
@@ -613,6 +615,10 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     }
   );
 
+  const showDisplayData = useMemo(() => {
+    return chartHoverData.visible ? chartHoverData : latestCandle;
+  }, [chartHoverData, latestCandle]);
+
   useEffect(() => {
     setIsDataApplied(false);
     setPendingData(null);
@@ -630,6 +636,20 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
     if (candles.length > 0) {
       seriesRef.current.setData(candles);
+      // Save latest candle data
+      const latest = candles[candles.length - 1];
+      const latestVolume = volumes[volumes.length - 1]?.value || 0;
+      setLatestCandle({
+        open: latest.open,
+        high: latest.high,
+        low: latest.low,
+        close: latest.close,
+        volume: latestVolume,
+        visible: false,
+        isPositiveChange: latest.close - latest.open > 0,
+        delta: latest.close - latest.open,
+        deltaPercent: (latest.close - latest.open) / latest.open,
+      });
     }
     if (volumes.length > 0) {
       volumeSeriesRef.current.setData(volumes);
@@ -659,6 +679,20 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
         const volumes = parseVolumes([snapshot]);
         if (candles.length > 0) {
           seriesRef.current?.update(candles[0]);
+          // Update latest candle data
+          const latest = candles[0];
+          const latestVolume = volumes[0]?.value || 0;
+          setLatestCandle({
+            open: latest.open,
+            high: latest.high,
+            low: latest.low,
+            close: latest.close,
+            volume: latestVolume,
+            visible: false,
+            isPositiveChange: latest.close - latest.open > 0,
+            delta: latest.close - latest.open,
+            deltaPercent: (latest.close - latest.open) / latest.open,
+          });
         }
         if (volumes.length > 0) {
           volumeSeriesRef.current?.update(volumes[0]);
@@ -703,9 +737,14 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col bg-rb-neutral-bg-1">
-      <div className="flex items-center px-16 py-12 gap-16">
+      <div
+        className={clsx(
+          'flex px-16 py-12 gap-8',
+          isScreenSmall() ? 'flex-col gap-4' : 'flex-row gap-8 items-center'
+        )}
+      >
         {/* Left: Interval selector */}
-        <div className="flex gap-8">
+        <div className="flex gap-8 flex-shrink-0">
           {INTERVAL_OPTIONS.map((option) => (
             <button
               key={option.value}
@@ -722,92 +761,91 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           ))}
         </div>
 
-        {/* Right: Hover data or default info */}
-        <div className="flex items-center gap-8">
-          {chartHoverData.visible ? (
+        <div className="flex flex-wrap items-center gap-8 flex-shrink-0">
+          {showDisplayData ? (
             <>
-              <div className="flex flex-row items-center justify-center">
-                <span className="text-13 text-r-neutral-foot ">{'O '}</span>
+              <div className="flex flex-row items-center justify-center flex-shrink-0">
+                <span className="text-13 text-r-neutral-foot">{'O '}</span>
                 <span
                   className={clsx(
                     'text-13 font-medium',
-                    chartHoverData.isPositiveChange
+                    showDisplayData.isPositiveChange
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
                   )}
                 >
-                  {splitNumberByStep(chartHoverData.open || 0)}
+                  {splitNumberByStep(showDisplayData.open || 0)}
                 </span>
               </div>
-              <div className="flex flex-row items-center justify-center">
+              <div className="flex flex-row items-center justify-center flex-shrink-0">
                 <span className="text-13 text-r-neutral-foot">H </span>
                 <span
                   className={clsx(
                     'text-13 font-medium',
-                    chartHoverData.isPositiveChange
+                    showDisplayData.isPositiveChange
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
                   )}
                 >
-                  {splitNumberByStep(chartHoverData.high || 0)}
+                  {splitNumberByStep(showDisplayData.high || 0)}
                 </span>
               </div>
-              <div className="flex flex-row items-center justify-center">
+              <div className="flex flex-row items-center justify-center flex-shrink-0">
                 <span className="text-13 text-r-neutral-foot">L </span>
                 <span
                   className={clsx(
                     'text-13 font-medium',
-                    chartHoverData.isPositiveChange
+                    showDisplayData.isPositiveChange
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
                   )}
                 >
-                  {splitNumberByStep(chartHoverData.low || 0)}
+                  {splitNumberByStep(showDisplayData.low || 0)}
                 </span>
               </div>
-              <div className="flex flex-row items-center justify-center">
+              <div className="flex flex-row items-center justify-center flex-shrink-0">
                 <span className="text-13 text-r-neutral-foot">C </span>
                 <span
                   className={clsx(
                     'text-13 font-medium',
-                    chartHoverData.isPositiveChange
+                    showDisplayData.isPositiveChange
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
                   )}
                 >
-                  {splitNumberByStep(chartHoverData.close || 0)}
+                  {splitNumberByStep(showDisplayData.close || 0)}
                 </span>
               </div>
-              <div className="flex flex-row items-center justify-center">
+              <div className="flex flex-row items-center justify-center flex-shrink-0">
                 <span className="text-13 text-r-neutral-foot">V </span>
                 <span
                   className={clsx(
                     'text-13 font-medium',
-                    chartHoverData.isPositiveChange
+                    showDisplayData.isPositiveChange
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
                   )}
                 >
                   {splitNumberByStep(
-                    Number(chartHoverData.volume?.toFixed(2) || 0)
+                    Number(showDisplayData.volume?.toFixed(2) || 0)
                   )}
                 </span>
               </div>
-              <div className="flex flex-row items-center justify-center">
+              <div className="flex flex-row items-center justify-center flex-shrink-0">
                 {/* <span className="text-13 text-r-neutral-foot"></span> */}
                 <span
                   className={clsx(
                     'text-13 font-medium',
-                    chartHoverData.isPositiveChange
+                    showDisplayData.isPositiveChange
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
                   )}
                 >
-                  {chartHoverData.isPositiveChange ? '+' : '-'}
+                  {showDisplayData.isPositiveChange ? '+' : '-'}
                   {splitNumberByStep(
-                    Math.abs(chartHoverData.delta || 0).toFixed(pxDecimals)
+                    Math.abs(showDisplayData.delta || 0).toFixed(pxDecimals)
                   )}{' '}
-                  ({formatPercent(Math.abs(chartHoverData.deltaPercent || 0))})
+                  ({formatPercent(Math.abs(showDisplayData.deltaPercent || 0))})
                 </span>
               </div>
             </>

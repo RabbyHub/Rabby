@@ -11,6 +11,7 @@ import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import clsx from 'clsx';
 import { RcIconArrowDownPerpsCC } from '@/ui/assets/desktop/common';
 import perpsToast from '../../PerpsToast';
+import { isScreenSmall } from '../../../utils';
 
 interface TopModeStatusProps {
   orderType: OrderType;
@@ -134,11 +135,17 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
               'px-[8px] py-[8px] flex-1',
               'border border-rb-neutral-line rounded-[6px]',
               'hover:border-rb-brand-default border border-solid border-transparent',
+              isScreenSmall() ? 'justify-center' : '',
               'text-[12px] leading-[14px] font-510 text-rb-neutral-title-1'
             )}
           >
-            {t('page.perpsPro.tradingPanel.type')}{' '}
-            <span className="text-rb-neutral-title-1 font-medium flex items-center gap-[4px]">
+            {isScreenSmall() ? null : t('page.perpsPro.tradingPanel.type')}
+            <span
+              className={clsx(
+                'text-rb-neutral-title-1 font-medium flex items-center gap-[4px]',
+                isScreenSmall() ? 'justify-between w-full' : ''
+              )}
+            >
               {
                 ORDER_TYPE_OPTIONS.find((option) => option.value === orderType)
                   ?.label

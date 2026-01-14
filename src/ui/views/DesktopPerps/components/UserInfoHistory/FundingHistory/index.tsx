@@ -1,4 +1,4 @@
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { splitNumberByStep } from '@/ui/utils';
 import { UserFunding, WsUserFunding } from '@rabby-wallet/hyperliquid-sdk';
 import { ColumnType } from 'antd/lib/table';
@@ -11,6 +11,7 @@ import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 export const FundingHistory: React.FC = () => {
+  const dispatch = useRabbyDispatch();
   const { userFunding } = useRabbySelector((store) => {
     return store.perps;
   });
@@ -26,7 +27,7 @@ export const FundingHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.time'),
         dataIndex: 'time',
         key: 'time',
-        width: 160,
+        // width: 160,
         sorter: (a, b) => dayjs(a.time).unix() - dayjs(b.time).unix(),
         render: (_, record) => {
           return (
@@ -41,11 +42,16 @@ export const FundingHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         dataIndex: 'coin',
         key: 'coin',
-        width: 100,
+        // width: 100,
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+            <div
+              className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1 cursor-pointer hover:font-bold hover:text-rb-neutral-body"
+              onClick={() => {
+                dispatch.perps.setSelectedCoin(record.coin);
+              }}
+            >
               {record.coin}
             </div>
           );
@@ -56,7 +62,7 @@ export const FundingHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.size'),
         dataIndex: 'szi',
         key: 'szi',
-        width: 100,
+        // width: 100,
         sorter: (a, b) => Number(a.szi) - Number(b.szi),
         render: (_, record) => {
           return (
@@ -70,7 +76,7 @@ export const FundingHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.side'),
         key: 'side',
         dataIndex: 'side',
-        width: 100,
+        // width: 100,
         sorter: (a, b) =>
           (Number(a.szi) >= 0 ? 1 : -1) - (Number(b.szi) >= 0 ? 1 : -1),
         render: (_, record) => {
@@ -85,7 +91,7 @@ export const FundingHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.payment'),
         dataIndex: 'usdc',
         key: 'usdc',
-        width: 100,
+        // width: 100,
         sorter: (a, b) => Number(a.usdc) - Number(b.usdc),
         render: (_, record) => {
           return (
@@ -107,7 +113,7 @@ export const FundingHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.rate'),
         dataIndex: 'fundingRate',
         key: 'fundingRate',
-        width: 100,
+        //  width: 100,
         sorter: (a, b) => Number(a.fundingRate) - Number(b.fundingRate),
         render: (_, record) => {
           return (

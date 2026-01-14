@@ -1,5 +1,5 @@
 import { PositionAndOpenOrder } from '@/ui/models/perps';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
@@ -15,6 +15,7 @@ import { formatPercent } from '@/ui/views/Perps/utils';
 import { useTranslation } from 'react-i18next';
 
 export const TradeHistory: React.FC = () => {
+  const dispatch = useRabbyDispatch();
   const { userFills } = useRabbySelector((store) => {
     return store.perps;
   });
@@ -35,7 +36,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.time'),
         key: 'time',
         dataIndex: 'time',
-        width: 180,
+        // width: 180,
         sorter: (a, b) => a.time - b.time,
         render: (_, record) => {
           return (
@@ -49,11 +50,16 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         key: 'coin',
         dataIndex: 'coin',
-        width: 80,
+        // width: 80,
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+            <div
+              className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1 cursor-pointer hover:font-bold hover:text-rb-neutral-body"
+              onClick={() => {
+                dispatch.perps.setSelectedCoin(record.coin);
+              }}
+            >
               {record.coin}
             </div>
           );
@@ -63,7 +69,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.size'),
         key: 'sz',
         dataIndex: 'sz',
-        width: 100,
+        // width: 100,
         sorter: (a, b) => Number(a.sz) - Number(b.sz),
         render: (_, record) => {
           return (
@@ -77,7 +83,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.trade'),
         key: 'dir',
         dataIndex: 'dir',
-        width: 100,
+        // width: 100,
         sorter: (a, b) => a.dir.localeCompare(b.dir),
         render: (_, record) => {
           return (
@@ -91,7 +97,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.averagePrice'),
         key: 'px',
         dataIndex: 'px',
-        width: 180,
+        // width: 180,
         sorter: (a, b) => Number(a.px) - Number(b.px),
         render: (_, record) => {
           const pxDecimals =
@@ -108,7 +114,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.tradeValue'),
         key: 'tradeValue',
         dataIndex: 'tradeValue',
-        width: 180,
+        // width: 180,
         sorter: (a, b) =>
           new BigNumber(a.px).times(new BigNumber(a.sz).abs()).toNumber() -
           new BigNumber(b.px).times(new BigNumber(b.sz).abs()).toNumber(),
@@ -134,7 +140,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.closedPnl'),
         key: 'closedPnl',
         dataIndex: 'closedPnl',
-        width: 180,
+        // width: 180,
         sorter: (a, b) => Number(a.closedPnl) - Number(b.closedPnl),
         render: (_, record) => {
           return (
@@ -183,7 +189,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.fee'),
         key: 'fee',
         dataIndex: 'fee',
-        width: 180,
+        // width: 180,
         sorter: (a, b) => Number(a.fee) - Number(b.fee),
         render: (_, record) => {
           return (

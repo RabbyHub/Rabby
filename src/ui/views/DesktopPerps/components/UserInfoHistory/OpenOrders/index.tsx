@@ -89,7 +89,7 @@ export const OpenOrders: React.FC = () => {
     () => [
       {
         title: t('page.perpsPro.userInfo.openOrders.order'),
-        width: 100,
+        width: 80,
         className: 'relative',
         key: 'side',
         dataIndex: 'side',
@@ -98,7 +98,6 @@ export const OpenOrders: React.FC = () => {
           // const isTpSL =
           //   record.orderType.includes('Take Profit') ||
           //   record.orderType.includes('Stop') ||
-          const isReduceOnly = record.reduceOnly;
           return (
             <div
               className={clsx(
@@ -109,14 +108,13 @@ export const OpenOrders: React.FC = () => {
               )}
             >
               <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 mb-[2px]">
-                {record.coin}{' '}
-                {record.side === 'B'
-                  ? isReduceOnly
-                    ? 'Close Short'
-                    : 'Long'
-                  : isReduceOnly
-                  ? 'Close Long'
-                  : 'Short'}
+                <span
+                  onClick={() => dispatch.perps.setSelectedCoin(record.coin)}
+                  className="cursor-pointer hover:font-bold hover:text-rb-neutral-body"
+                >
+                  {record.coin}{' '}
+                </span>
+                <span>{record.side === 'B' ? 'Long' : 'Short'}</span>
               </div>
             </div>
           );
@@ -124,7 +122,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.time'),
-        width: 160,
+        // width: 160,
         key: 'timestamp',
         dataIndex: 'timestamp',
         sorter: (a, b) => a.timestamp - b.timestamp,
@@ -138,7 +136,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.type'),
-        width: 130,
+        // width: 130,
         key: 'orderType',
         dataIndex: 'orderType',
         sorter: (a, b) => a.orderType.localeCompare(b.orderType),
@@ -152,7 +150,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.orderValueSize'),
-        width: 180,
+        // width: 180,
         key: 'origSz',
         dataIndex: 'origSz',
         sorter: (a, b) => Number(a.origSz) - Number(b.origSz),
@@ -183,7 +181,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.filled'),
-        width: 120,
+        // width: 120,
         key: 'sz',
         dataIndex: 'sz',
         sorter: (a, b) => Number(a.sz) - Number(b.sz),
@@ -207,7 +205,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.price'),
-        width: 120,
+        // width: 120,
         key: 'limitPx',
         dataIndex: 'limitPx',
         render: (_, record) => {
@@ -222,7 +220,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.reduceOnly'),
-        width: 100,
+        // width: 100,
         sorter: (a, b) => Number(a.reduceOnly) - Number(b.reduceOnly),
         key: 'reduceOnly',
         dataIndex: 'reduceOnly',
@@ -236,7 +234,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.triggerConditions'),
-        width: 180,
+        // width: 180,
         key: 'triggerCondition',
         dataIndex: 'triggerCondition',
         render: (_, record) => {
@@ -249,7 +247,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.tpSl'),
-        width: 180,
+        // width: 180,
         key: 'children',
         dataIndex: 'children',
         render: (_, record) => {
@@ -309,7 +307,7 @@ export const OpenOrders: React.FC = () => {
           </div>
         ),
         align: 'center',
-        width: 120,
+        // width: 120,
         key: 'oid',
         dataIndex: 'oid',
         render: (_, record) => {

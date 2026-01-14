@@ -56,8 +56,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   const { t } = useTranslation();
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [searchInputFocused, setSearchInputFocused] = useState(false);
-  const [sortField, setSortField] = useState<SortField>('openInterest');
+  const [sortField, setSortField] = useState<SortField>('dayNtlVlm');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const { marketData, favoritedCoins, marketDataMap } = useRabbySelector(
     (state) => state.perps
@@ -172,8 +171,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
         <div
           key={item.name}
           className={clsx(
-            'flex items-center gap-[12px] px-[8px] rounded-[4px] py-[12px] hover:bg-rb-neutral-bg-2 cursor-pointer transition-colors',
-            'hover:bg-rb-neutral-bg-2'
+            'flex items-center gap-[12px] px-[8px] rounded-[4px] py-[12px] hover:bg-rb-neutral-bg-2 cursor-pointer transition-colors'
           )}
           onClick={() => {
             onSelectCoin(item.name);
@@ -384,7 +382,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
       onVisibleChange={setDropdownVisible}
       placement="bottomLeft"
     >
-      <div className="flex items-center gap-[8px] cursor-pointer transition-colors py-[4px] rounded-[6px] min-w-[90px] justify-center">
+      <div className="mr-32 flex items-center gap-[8px] cursor-pointer transition-colors py-[4px] rounded-[6px] min-w-[90px] justify-center">
         <TokenImg
           logoUrl={marketItem?.logoUrl || ''}
           withDirection={false}

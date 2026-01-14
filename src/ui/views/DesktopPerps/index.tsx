@@ -99,30 +99,21 @@ export const DesktopPerps: React.FC = () => {
         <div className="flex flex-1 pl-16 pr-8 pb-16">
           <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
             <div className="flex h-[670px] border-b border-solid border-rb-neutral-line">
-              <div className="flex flex-[4] min-w-0 border-r border-solid border-rb-neutral-line">
-                {/* ChartArea - 75% */}
-                <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
-                  <ChartArea />
-                </div>
-                {/* OrderBookTrades - 25% */}
-                <div className="flex-1 min-w-0">
-                  <OrderBookTrades />
-                </div>
+              <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
+                <ChartArea />
               </div>
-
-              {/* Right: TradingPanel */}
-              <div className="flex-1 flex-shrink-0 overflow-auto">
+              <div className="flex-1 min-w-0">
+                <OrderBookTrades />
+              </div>
+              <div className=" flex-1 border-l border-solid border-rb-neutral-line flex-shrink-0 overflow-auto">
                 <TradingPanel />
               </div>
             </div>
 
-            {/* Bottom Row: UserInfoHistory + AccountInfo */}
             <div className="flex flex-1 min-h-[300px] max-h-[400px]">
-              {/* UserInfoHistory */}
               <div className="flex-[4] min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
                 <UserInfoHistory />
               </div>
-              {/* AccountInfo */}
               <div className="flex-1 flex-shrink-0 overflow-auto">
                 <AccountInfo handleSetPopupType={handleSetPopupType} />
               </div>
@@ -157,13 +148,6 @@ export const DesktopPerps: React.FC = () => {
           setPopupType(null);
         }}
       />
-      {/* <DepositWithdrawModal
-        visible={action === 'withdraw'}
-        type="withdraw"
-        onCancel={() => {
-          history.replace(history.location.pathname);
-        }}
-      /> */}
     </>
   );
 };

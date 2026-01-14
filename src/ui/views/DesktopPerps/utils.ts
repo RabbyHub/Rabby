@@ -146,3 +146,7 @@ function createOption(
   const cleanVal = parseFloat(val.toPrecision(10));
   return { displayPrice: cleanVal, nSigFigs: nSig, mantissa: man };
 }
+
+export const isScreenSmall = () => {
+  return window.innerWidth < 1680;
+};
