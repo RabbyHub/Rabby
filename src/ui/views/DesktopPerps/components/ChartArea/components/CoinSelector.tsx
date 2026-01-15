@@ -7,6 +7,7 @@ import { formatPercent } from '@/ui/views/Perps/utils';
 import { useHourlyCountdown } from '@/ui/views/DesktopPerps/hooks/useHourlyCountdown';
 import { useTranslation } from 'react-i18next';
 import { HorizontalScrollContainer } from './HorizontalScrollContainer';
+import BigNumber from 'bignumber.js';
 
 interface CoinSelectorProps {
   coin: string;
@@ -55,6 +56,16 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
     : 0;
   const isPositive = priceChange >= 0;
 
+  const calculateChangeValue = (prevDayPx: string, markPx: string) => {
+    if (!prevDayPx) return 0;
+    return new BigNumber(markPx).minus(new BigNumber(prevDayPx)).toNumber();
+  };
+
+  const changeValue = calculateChangeValue(
+    currentMarketData.prevDayPx,
+    currentMarketData.markPx
+  );
+
   return (
     <div className="flex items-center px-[16px] py-[4px] border-b border-solid border-rb-neutral-line">
       {/* Coin Dropdown - Only this area is clickable for dropdown */}
@@ -96,7 +107,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
               )}
             >
               {isPositive ? '+' : ''}
-              {`$${splitNumberByStep(priceChange.toFixed(2))}`} /{' '}
+              {`$${splitNumberByStep(Math.abs(changeValue))}`} /{' '}
               {isPositive ? '+' : ''}
               {priceChangePercent.toFixed(2)}%
             </span>
