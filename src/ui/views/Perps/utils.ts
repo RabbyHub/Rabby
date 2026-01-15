@@ -273,20 +273,13 @@ export const formatTpOrSlPrice = (
     return integerPart;
   }
 
-  // Some digits are in decimal part
+  // Calculate remaining digits allowed in decimal part
+  // Note: every digit in decimalPart counts toward allDigits length
   const remainingDigits = 5 - integerPartLength;
 
-  // Keep leading zeros but count significant digits after them
-  const leadingZerosInDecimal = decimalPart.match(/^0*/)?.[0] || '';
-  const sigDigitsInDecimal = decimalPart.slice(leadingZerosInDecimal.length);
-  const desiredSig = Math.min(remainingDigits, sigDigitsInDecimal.length);
-  const takenSig = sigDigitsInDecimal.slice(0, desiredSig);
-
-  // Compose decimal respecting maxDecimals
-  let composedDecimal = (leadingZerosInDecimal + takenSig).slice(
-    0,
-    maxDecimals
-  );
+  // Limit decimal part to the minimum of remainingDigits and maxDecimals
+  const maxDecimalLength = Math.min(remainingDigits, maxDecimals);
+  let composedDecimal = decimalPart.slice(0, maxDecimalLength);
 
   // Remove trailing zeros
   composedDecimal = composedDecimal.replace(/0+$/, '');
