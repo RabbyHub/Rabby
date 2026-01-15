@@ -10,6 +10,7 @@ import {
   GlobalSignerPortal,
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
+import clsx from 'clsx';
 
 declare global {
   interface Window {
@@ -35,7 +36,10 @@ const Main = () => {
       </Switch>
       {hasMountedDappIframeRef.current ? (
         <PrivateRouteGuard>
-          <div style={{ display: isDappIframeRoute ? 'block' : 'none' }}>
+          <div
+            style={{ display: isDappIframeRoute ? 'block' : 'none' }}
+            className={clsx('h-full', isDappIframeRoute ? 'block' : 'hidden')}
+          >
             <DesktopDappIframe isActive={isDappIframeRoute} />
           </div>
         </PrivateRouteGuard>
