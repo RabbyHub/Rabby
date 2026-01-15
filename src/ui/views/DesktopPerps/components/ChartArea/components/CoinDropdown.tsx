@@ -1,4 +1,12 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+  CSSProperties,
+  memo,
+} from 'react';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 import { splitNumberByStep } from '@/ui/utils';
@@ -14,6 +22,7 @@ import { formatUsdValueKMB } from '@/ui/views/Dashboard/components/TokenDetailPo
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+import { FixedSizeList } from 'react-window';
 
 const SearchInput = styled(Input)`
   background-color: var(--r-neutral-card1, #fff) !important;
@@ -39,6 +48,8 @@ interface CoinDropdownProps {
   onSelectCoin: (coin: string) => void;
 }
 
+const ROW_HEIGHT = 48;
+
 type SortField =
   | 'name'
   | 'markPx'
@@ -47,6 +58,174 @@ type SortField =
   | 'dayNtlVlm'
   | 'openInterest';
 type SortOrder = 'asc' | 'desc';
+
+interface MarketRowProps {
+  index: number;
+  style: CSSProperties;
+  data: {
+    items: MarketData[];
+    favoritedCoins: string[];
+    lastFavoritedIndex: number;
+    onSelectCoin: (coin: string) => void;
+    onToggleFavorite: (coinName: string, e: React.MouseEvent) => void;
+    setDropdownVisible: (visible: boolean) => void;
+    setSearchText: (text: string) => void;
+  };
+}
+
+const calculateChangeValue = (item: MarketData) => {
+  if (!item.prevDayPx) return 0;
+  return new BigNumber(item.markPx)
+    .minus(new BigNumber(item.prevDayPx))
+    .toNumber();
+};
+
+const calculateChange = (item: MarketData) => {
+  if (!item.prevDayPx) return 0;
+  return (
+    ((Number(item.markPx) - Number(item.prevDayPx)) / Number(item.prevDayPx)) *
+    100
+  );
+};
+
+const MarketRowComponent = memo(
+  ({ index, style, data }: MarketRowProps) => {
+    const {
+      items,
+      favoritedCoins,
+      lastFavoritedIndex,
+      onSelectCoin,
+      onToggleFavorite,
+      setDropdownVisible,
+      setSearchText,
+    } = data;
+    const marketItem = items[index];
+    const isFavorited = favoritedCoins.includes(marketItem.name);
+    const priceChange = calculateChange(marketItem);
+    const priceChangeVal = calculateChangeValue(marketItem);
+    const isPositive = priceChangeVal >= 0;
+    const isLastFavorited =
+      index === lastFavoritedIndex && lastFavoritedIndex >= 0;
+
+    return (
+      <div
+        style={style}
+        className={clsx(
+          isLastFavorited && 'border-b border-solid border-rb-neutral-line'
+        )}
+      >
+        <div
+          className="flex items-center gap-[12px] px-[8px] h-full rounded-[4px] hover:bg-rb-neutral-bg-2 cursor-pointer"
+          onClick={() => {
+            onSelectCoin(marketItem.name);
+            setDropdownVisible(false);
+            setSearchText('');
+          }}
+        >
+          {/* Left: Star + Logo + Symbol */}
+          <div className="flex items-center gap-[8px] w-[180px] flex-shrink-0">
+            <div
+              className="flex items-center justify-center w-[16px] h-[16px] flex-shrink-0"
+              onClick={(e) => onToggleFavorite(marketItem.name, e)}
+            >
+              {isFavorited ? (
+                <RcIconStarFilled className="text-r-yellow-default" />
+              ) : (
+                <RcIconStar className="text-r-neutral-foot" />
+              )}
+            </div>
+            <TokenImg
+              logoUrl={marketItem.logoUrl}
+              withDirection={false}
+              size={20}
+            />
+            <div>
+              <span className="text-[13px] font-medium text-r-neutral-title-1">
+                {marketItem.name}
+              </span>
+              <span className="text-[13px] text-r-neutral-foot ml-4">
+                {marketItem.maxLeverage}x
+              </span>
+            </div>
+          </div>
+
+          {/* Right: Data columns - 5 columns with custom widths */}
+          <div className="flex flex-1">
+            {/* Last Price */}
+            <div className="text-[13px] text-r-neutral-title-1 text-start flex-1">
+              ${splitNumberByStep(Number(marketItem.markPx))}
+            </div>
+
+            {/* 24h Change - 1.5x width */}
+            <div
+              className={clsx(
+                'text-[13px] text-r-neutral-title-1 text-start flex-[1.5]'
+              )}
+            >
+              {isPositive ? '+' : '-'}$
+              {splitNumberByStep(Math.abs(priceChangeVal))}{' '}
+              <span
+                className={clsx(
+                  isPositive ? 'text-r-green-default' : 'text-r-red-default'
+                )}
+              >
+                {isPositive ? '+' : ''}
+                {priceChange.toFixed(2)}%
+              </span>
+            </div>
+
+            {/* 8hr Funding */}
+            <div
+              className={clsx(
+                'text-[13px] text-r-neutral-title-1 text-start flex-1'
+              )}
+            >
+              {formatPercent(Number(marketItem.funding), 4)}
+            </div>
+
+            {/* Volume */}
+            <div className="text-[13px] text-r-neutral-title-1 text-start flex-1">
+              {formatUsdValueKMB(Number(marketItem.dayNtlVlm))}
+            </div>
+
+            {/* Open Interest */}
+            <div className="text-[13px] text-r-neutral-title-1 text-start flex-1">
+              {formatUsdValueKMB(
+                Number(marketItem.openInterest) * Number(marketItem.markPx)
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  },
+  (prevProps, nextProps) => {
+    // Custom comparison: only re-render if the specific item data changed
+    const prevItem = prevProps.data.items[prevProps.index];
+    const nextItem = nextProps.data.items[nextProps.index];
+
+    if (!prevItem || !nextItem) return false;
+
+    // Check if this row is/was the last favorited (border changes)
+    const prevIsLastFav = prevProps.index === prevProps.data.lastFavoritedIndex;
+    const nextIsLastFav = nextProps.index === nextProps.data.lastFavoritedIndex;
+    if (prevIsLastFav !== nextIsLastFav) return false;
+
+    return (
+      prevItem.name === nextItem.name &&
+      prevItem.logoUrl === nextItem.logoUrl &&
+      prevItem.markPx === nextItem.markPx &&
+      prevItem.prevDayPx === nextItem.prevDayPx &&
+      prevItem.funding === nextItem.funding &&
+      prevItem.dayNtlVlm === nextItem.dayNtlVlm &&
+      prevItem.openInterest === nextItem.openInterest &&
+      prevItem.maxLeverage === nextItem.maxLeverage &&
+      prevProps.data.favoritedCoins.includes(prevItem.name) ===
+        nextProps.data.favoritedCoins.includes(nextItem.name) &&
+      prevProps.index === nextProps.index
+    );
+  }
+);
 
 export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   coin,
@@ -58,11 +237,24 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   const [searchText, setSearchText] = useState('');
   const [sortField, setSortField] = useState<SortField>('dayNtlVlm');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<FixedSizeList>(null);
   const { marketData, favoritedCoins, marketDataMap } = useRabbySelector(
     (state) => state.perps
   );
 
   const marketItem = marketDataMap[coin.toUpperCase()];
+
+  // Reset scroll position and search text when dropdown opens
+  useEffect(() => {
+    if (dropdownVisible) {
+      setSearchText('');
+      // Reset virtual list scroll position
+      setTimeout(() => {
+        listRef.current?.scrollTo(0);
+      }, 0);
+    }
+  }, [dropdownVisible]);
 
   const handleToggleFavorite = (coinName: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -80,22 +272,6 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
     },
     [sortField, sortOrder]
   );
-
-  const calculateChangeValue = (item: MarketData) => {
-    if (!item.prevDayPx) return 0;
-    return new BigNumber(item.markPx)
-      .minus(new BigNumber(item.prevDayPx))
-      .toNumber();
-  };
-
-  const calculateChange = (item: MarketData) => {
-    if (!item.prevDayPx) return 0;
-    return (
-      ((Number(item.markPx) - Number(item.prevDayPx)) /
-        Number(item.prevDayPx)) *
-      100
-    );
-  };
 
   const sortedAndFilteredData = useMemo(() => {
     const filtered = searchText
@@ -157,101 +333,34 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
       (item) => !favoritedCoins.includes(item.name)
     );
 
-    return { favorited, others };
+    // Merge into single list (favorited first, then others)
+    return [...favorited, ...others];
   }, [marketData, searchText, sortField, sortOrder, favoritedCoins]);
 
-  const renderMarketRow = useCallback(
-    (item: MarketData) => {
-      const isFavorited = favoritedCoins.includes(item.name);
-      const priceChange = calculateChange(item);
-      const priceChangeVal = calculateChangeValue(item);
-      const isPositive = priceChangeVal >= 0;
+  // Calculate last favorited index for border display
+  const lastFavoritedIndex = useMemo(() => {
+    const favCount = sortedAndFilteredData.filter((item) =>
+      favoritedCoins.includes(item.name)
+    ).length;
+    // Only show border if there are both favorited and non-favorited items
+    const hasNonFavorited = sortedAndFilteredData.some(
+      (item) => !favoritedCoins.includes(item.name)
+    );
+    return favCount > 0 && hasNonFavorited ? favCount - 1 : -1;
+  }, [sortedAndFilteredData, favoritedCoins]);
 
-      return (
-        <div
-          key={item.name}
-          className={clsx(
-            'flex items-center gap-[12px] px-[8px] rounded-[4px] py-[12px] hover:bg-rb-neutral-bg-2 cursor-pointer transition-colors'
-          )}
-          onClick={() => {
-            onSelectCoin(item.name);
-            setDropdownVisible(false);
-            setSearchText('');
-          }}
-        >
-          {/* Left: Star + Logo + Symbol */}
-          <div className="flex items-center gap-[8px] w-[180px] flex-shrink-0">
-            <div
-              className="flex items-center justify-center w-[16px] h-[16px] flex-shrink-0"
-              onClick={(e) => handleToggleFavorite(item.name, e)}
-            >
-              {isFavorited ? (
-                <RcIconStarFilled className="text-r-yellow-default" />
-              ) : (
-                <RcIconStar className="text-r-neutral-foot" />
-              )}
-            </div>
-            <TokenImg logoUrl={item.logoUrl} withDirection={false} size={20} />
-            <div>
-              <span className="text-[13px] font-medium text-r-neutral-title-1">
-                {item.name}
-              </span>
-              <span className="text-[13px] text-r-neutral-foot ml-4">
-                {item.maxLeverage}x
-              </span>
-            </div>
-          </div>
-
-          {/* Right: Data columns - 5 columns with custom widths */}
-          <div className="flex flex-1">
-            {/* Last Price */}
-            <div className="text-[13px] text-r-neutral-title-1 text-start flex-1">
-              ${splitNumberByStep(Number(item.markPx))}
-            </div>
-
-            {/* 24h Change - 1.5x width */}
-            <div
-              className={clsx(
-                'text-[13px text-r-neutral-title-1  text-start flex-[1.5]'
-              )}
-            >
-              {isPositive ? '+' : '-'}$
-              {splitNumberByStep(Math.abs(priceChangeVal))}{' '}
-              <span
-                className={clsx(
-                  isPositive ? 'text-r-green-default' : 'text-r-red-default'
-                )}
-              >
-                {isPositive ? '+' : ''}
-                {priceChange.toFixed(2)}%
-              </span>
-            </div>
-
-            {/* 8hr Funding */}
-            <div
-              className={clsx(
-                'text-[13px] text-r-neutral-title-1  text-start flex-1'
-              )}
-            >
-              {formatPercent(Number(item.funding), 4)}
-            </div>
-
-            {/* Volume */}
-            <div className="text-[13px] text-r-neutral-title-1 text-start flex-1">
-              {formatUsdValueKMB(Number(item.dayNtlVlm))}
-            </div>
-
-            {/* Open Interest */}
-            <div className="text-[13px] text-r-neutral-title-1 text-start flex-1">
-              {formatUsdValueKMB(
-                Number(item.openInterest) * Number(item.markPx)
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    },
-    [favoritedCoins, onSelectCoin, setDropdownVisible, setSearchText]
+  // Memoized item data to prevent unnecessary re-renders
+  const itemData = useMemo(
+    () => ({
+      items: sortedAndFilteredData,
+      favoritedCoins,
+      lastFavoritedIndex,
+      onSelectCoin,
+      onToggleFavorite: handleToggleFavorite,
+      setDropdownVisible,
+      setSearchText,
+    }),
+    [sortedAndFilteredData, favoritedCoins, lastFavoritedIndex, onSelectCoin]
   );
 
   const renderSortIcon = useCallback(
@@ -343,22 +452,18 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
           </div>
         </div>
 
-        <div className="overflow-y-auto flex-1">
-          {sortedAndFilteredData.favorited.length > 0 && (
-            <>
-              {sortedAndFilteredData.favorited.map((item) =>
-                renderMarketRow(item)
-              )}
-              {sortedAndFilteredData.others.length > 0 && (
-                <div className="px-8">
-                  <div className="h-[8px] bg-rb-neutral-bg-1  border-b border-solid border-rb-neutral-line"></div>
-                  <div className="h-[8px] bg-rb-neutral-bg-1"></div>
-                </div>
-              )}
-            </>
-          )}
-
-          {sortedAndFilteredData.others.map((item) => renderMarketRow(item))}
+        <div ref={scrollContainerRef} className="flex-1">
+          <FixedSizeList
+            ref={listRef}
+            width="100%"
+            height={350}
+            itemCount={sortedAndFilteredData.length}
+            itemData={itemData}
+            itemSize={ROW_HEIGHT}
+            className="trades-container-no-scrollbar"
+          >
+            {MarketRowComponent}
+          </FixedSizeList>
         </div>
       </div>
     ),
@@ -367,7 +472,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
       sortField,
       sortOrder,
       searchText,
-      renderMarketRow,
+      itemData,
       renderSortIcon,
       handleSort,
       t,
