@@ -93,6 +93,7 @@ interface CommonTableProps<T> extends TableProps<T> {
   dataSource: T[];
   defaultSortField?: string;
   defaultSortOrder?: 'ascend' | 'descend';
+  emptyMessage?: string;
 }
 
 export const CommonTable = <T extends object = any>({
@@ -101,6 +102,7 @@ export const CommonTable = <T extends object = any>({
   dataSource,
   defaultSortField,
   defaultSortOrder = 'ascend',
+  emptyMessage,
   ...restProps
 }: CommonTableProps<T>) => {
   const [sortedInfo, setSortedInfo] = useState<{
@@ -179,7 +181,7 @@ export const CommonTable = <T extends object = any>({
     return (
       <Wrapper>
         <div className="text-[12px] pt-[100px] leading-[14px] font-510 text-rb-neutral-foot text-center">
-          No data
+          {emptyMessage || 'No data'}
         </div>
       </Wrapper>
     );

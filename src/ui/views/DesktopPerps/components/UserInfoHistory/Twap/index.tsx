@@ -171,6 +171,7 @@ export const Twap: React.FC = () => {
           );
           const sideName = record.side === 'B' ? 'Long' : 'Short';
           const sliceCount = record.slices.length;
+          const canExpand = record.slices.length > 0;
 
           return (
             <div
@@ -182,8 +183,15 @@ export const Twap: React.FC = () => {
               )}
             >
               <div
-                className="flex items-center gap-[4px] cursor-pointer"
+                className={clsx(
+                  'flex items-center gap-[4px]',
+                  canExpand && 'cursor-pointer'
+                )}
                 onClick={() => {
+                  if (!canExpand) {
+                    return;
+                  }
+
                   setExpandedRowKeys((prev) =>
                     prev.includes(`${record.twapId}-${record.status}`)
                       ? prev.filter(
@@ -209,12 +217,14 @@ export const Twap: React.FC = () => {
                     {sideName} · ({sliceCount} slices)
                   </div>
                 </div>
-                <RcIconArrowDown
-                  className={clsx(
-                    'text-r-neutral-body',
-                    isExpanded && 'rotate-180'
-                  )}
-                />
+                {canExpand && (
+                  <RcIconArrowDown
+                    className={clsx(
+                      'text-r-neutral-body',
+                      isExpanded && 'rotate-180'
+                    )}
+                  />
+                )}
               </div>
             </div>
           );
@@ -510,6 +520,11 @@ export const Twap: React.FC = () => {
       {/* Table */}
       <div className="flex-1 overflow-auto">
         <CommonTable
+          emptyMessage={
+            activeTab === 'active'
+              ? t('page.perpsPro.userInfo.emptyMessage.activeTwap')
+              : t('page.perpsPro.userInfo.emptyMessage.twapHistory')
+          }
           dataSource={filteredOrders}
           columns={columns}
           pagination={false}

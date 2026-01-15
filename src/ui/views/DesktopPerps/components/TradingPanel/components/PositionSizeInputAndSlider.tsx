@@ -55,47 +55,48 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     setPercentageInputValue(isNaN(percentage) ? '' : percentage.toString());
   }, [percentage]);
 
-  const handleSliderChange = (value: number) => {
+  const handleSliderChange = useMemoizedFn((value: number) => {
     handlePercentageChange(value);
-  };
+  });
 
-  const handlePresetClick = (value: number) => {
+  const handlePresetClick = useMemoizedFn((value: number) => {
     handlePercentageChange(value);
-  };
+  });
 
   const handlePercentageInputChange = (
     e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
+  ) =>
+    useMemoizedFn(() => {
+      const value = e.target.value;
 
-    if (value === '') {
-      setPercentageInputValue('');
-      handlePercentageChange(0);
-      return;
-    }
+      if (value === '') {
+        setPercentageInputValue('');
+        handlePercentageChange(0);
+        return;
+      }
 
-    if (Number(value) > 100) {
-      setPercentageInputValue('100');
-      handlePercentageChange(100);
-      return;
-    }
+      if (Number(value) > 100) {
+        setPercentageInputValue('100');
+        handlePercentageChange(100);
+        return;
+      }
 
-    if (Number(value) < 0) {
-      setPercentageInputValue('0');
-      handlePercentageChange(0);
-      return;
-    }
+      if (Number(value) < 0) {
+        setPercentageInputValue('0');
+        handlePercentageChange(0);
+        return;
+      }
 
-    if (!/^\d*$/.test(value)) {
-      return;
-    }
+      if (!/^\d*$/.test(value)) {
+        return;
+      }
 
-    setPercentageInputValue(value);
+      setPercentageInputValue(value);
 
-    const numeric = Number(value) || 0;
-    const clamped = Math.max(0, Math.min(100, numeric));
-    handlePercentageChange(clamped);
-  };
+      const numeric = Number(value) || 0;
+      const clamped = Math.max(0, Math.min(100, numeric));
+      handlePercentageChange(clamped);
+    });
 
   const handleAmountChange = useMemoizedFn((amount: string) => {
     if (!price) {
@@ -125,7 +126,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     }
   });
 
-  const handleNotionalChangeWithoutLimit = useMemoizedFn((notional: string) => {
+  const handleNotionalChange = useMemoizedFn((notional: string) => {
     if (!price) {
       setPositionSize({ amount: '', notionalValue: notional });
       setPercentage(0);
@@ -174,7 +175,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     let newNotionalValue = calcAssetNotionalByAmount(amount, price);
     if (
       maxTradeSize &&
-      (Number(amount) > Number(maxTradeSize) || percentage === 100)
+      (Number(amount) > Number(maxTradeSize) || newPercentage === 100)
     ) {
       amount = maxTradeSize;
       newNotionalValue = calcAssetNotionalByAmount(maxTradeSize, price);
@@ -185,25 +186,25 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     });
   });
 
-  const handleAmountChangeFormatted = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    // Validate input based on szDecimals
-    if (validateAmountInput(value, szDecimals)) {
-      handleAmountChange(value);
+  const handleAmountChangeFormatted = useMemoizedFn(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      // Validate input based on szDecimals
+      if (validateAmountInput(value, szDecimals)) {
+        handleAmountChange(value);
+      }
     }
-  };
+  );
 
-  const handleNotionalChangeFormatted = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    // Validate notional input (max 2 decimal places)
-    if (validateNotionalInput(value)) {
-      handleNotionalChangeWithoutLimit(value);
+  const handleNotionalChangeFormatted = useMemoizedFn(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      // Validate notional input (max 2 decimal places)
+      if (validateNotionalInput(value)) {
+        handleNotionalChange(value);
+      }
     }
-  };
+  );
 
   useEffect(() => {
     if (defaultMax) {

@@ -29,7 +29,7 @@ export const AccountInfo: React.FC<{
 
   const crossMarginRatio = useMemo(() => {
     const num = new BigNumber(
-      clearinghouseState?.crossMarginSummary.totalMarginUsed || 0
+      clearinghouseState?.crossMaintenanceMarginUsed || 0
     ).div(new BigNumber(clearinghouseState?.marginSummary?.accountValue || 1));
     return formatPerpsPct(num.toNumber());
   }, [clearinghouseState]);
@@ -42,12 +42,6 @@ export const AccountInfo: React.FC<{
   };
 
   const customBalance = useMemo(() => {
-    const allFundingPayments = clearinghouseState?.assetPositions.reduce(
-      (acc, asset) => {
-        return acc + Number(asset.position.cumFunding.sinceOpen || 0);
-      },
-      0
-    );
     return (
       Number(clearinghouseState?.marginSummary?.accountValue || 0) -
       Number(positionAllPnl || 0)
@@ -169,9 +163,7 @@ export const AccountInfo: React.FC<{
             </Tooltip>
             <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(
-                Number(
-                  clearinghouseState?.crossMarginSummary.totalMarginUsed || 0
-                )
+                Number(clearinghouseState?.crossMaintenanceMarginUsed || 0)
               )}
             </div>
           </div>

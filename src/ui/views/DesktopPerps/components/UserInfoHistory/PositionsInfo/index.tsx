@@ -400,13 +400,15 @@ export const PositionsInfo: React.FC = () => {
                   {record.type === 'cross' ? 'Cross' : 'Isolated'}
                 </div>
               </div>
-              <RcIconEditCC
-                className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default"
-                onClick={() => {
-                  setSelectedCoin(record.coin);
-                  setEditMarginVisible(true);
-                }}
-              />
+              {record.type === 'isolated' && (
+                <RcIconEditCC
+                  className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default"
+                  onClick={() => {
+                    setSelectedCoin(record.coin);
+                    setEditMarginVisible(true);
+                  }}
+                />
+              )}
             </div>
           );
         },
@@ -583,6 +585,7 @@ export const PositionsInfo: React.FC = () => {
   return (
     <>
       <CommonTable
+        emptyMessage={t('page.perpsPro.userInfo.emptyMessage.positions')}
         dataSource={positionFormatData}
         columns={columns}
         pagination={false}

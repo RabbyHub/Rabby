@@ -1075,6 +1075,15 @@
           "fundingHistory": "Funding History",
           "orderHistory": "Order History"
         },
+        "emptyMessage": {
+          "openOrders": "No open orders",
+          "positions": "No positions",
+          "activeTwap": "No active TWAP",
+          "twapHistory": "No TWAP history",
+          "tradeHistory": "No trade history",
+          "fundingHistory": "No funding history",
+          "orderHistory": "No order history"
+        },
         "positionInfo": {
           "currentPosition": "Current Position",
           "reversePosition": "Reverse Position",

@@ -216,6 +216,12 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   );
 
   const validation = React.useMemo(() => {
+    if (type === 'reverse') {
+      return {
+        isValid: true,
+        error: '',
+      };
+    }
     let error: string = '';
     const notionalNum = Number(positionSize.notionalValue) || 0;
     const tradeSize = Number(positionSize.amount) || 0;
@@ -244,6 +250,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
       error,
     };
   }, [
+    type,
     positionSize.notionalValue,
     limitPrice,
     position.size,
@@ -451,23 +458,23 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
           >
             {t('global.Cancel')}
           </Button>
-          <Tooltip
+          {/* <Tooltip
             title={validation.error}
             placement="top"
             overlayClassName={clsx('rectangle')}
+          > */}
+          <Button
+            block
+            size="large"
+            type="primary"
+            className="h-[44px] text-15 font-medium"
+            disabled={!validation.isValid}
+            loading={loading}
+            onClick={runSubmit}
           >
-            <Button
-              block
-              size="large"
-              type="primary"
-              className="h-[44px] text-15 font-medium"
-              disabled={!validation.isValid}
-              loading={loading}
-              onClick={runSubmit}
-            >
-              {btnText}
-            </Button>
-          </Tooltip>
+            {validation.error ? validation.error : btnText}
+          </Button>
+          {/* </Tooltip> */}
         </div>
       </div>
     </div>

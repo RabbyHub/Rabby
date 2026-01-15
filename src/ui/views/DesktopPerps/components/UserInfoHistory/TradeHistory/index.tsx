@@ -204,6 +204,7 @@ export const TradeHistory: React.FC = () => {
   );
   return (
     <CommonTable
+      emptyMessage={t('page.perpsPro.userInfo.emptyMessage.tradeHistory')}
       dataSource={list}
       columns={columns}
       pagination={false}

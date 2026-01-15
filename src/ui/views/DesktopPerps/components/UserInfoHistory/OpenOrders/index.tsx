@@ -335,6 +335,7 @@ export const OpenOrders: React.FC = () => {
   return (
     <>
       <CommonTable
+        emptyMessage={t('page.perpsPro.userInfo.emptyMessage.openOrders')}
         dataSource={orders}
         columns={columns}
         pagination={false}

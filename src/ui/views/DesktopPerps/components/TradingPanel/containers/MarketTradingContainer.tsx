@@ -60,7 +60,6 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     handleTPSLEnabledChange,
     resetForm,
   } = usePerpsTradingState();
-  console.log('maxTradeSize', maxTradeSize);
 
   const [slippageVisible, setSlippageVisible] = React.useState(false);
 

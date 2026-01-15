@@ -23,6 +23,9 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
 }) => {
   return (
     <Button
+      type="primary"
+      block
+      size="large"
       loading={loading}
       onClick={onClick}
       disabled={disabled}

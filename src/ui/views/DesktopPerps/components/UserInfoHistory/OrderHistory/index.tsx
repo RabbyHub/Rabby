@@ -103,10 +103,10 @@ export const OrderHistory: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.tab.size'),
-        key: 'origSz',
-        dataIndex: 'origSz',
+        key: 'sz',
+        dataIndex: 'sz',
         // width: 120,
-        sorter: (a, b) => Number(a.order.origSz) - Number(b.order.origSz),
+        // sorter: (a, b) => Number(a.order.sz) - Number(b.order.sz),
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
@@ -124,18 +124,23 @@ export const OrderHistory: React.FC = () => {
 
       {
         title: t('page.perpsPro.userInfo.tab.filled'),
-        key: 'sz',
-        dataIndex: 'sz',
+        key: 'origSz',
+        dataIndex: 'origSz',
         // width: 120,
-        sorter: (a, b) => Number(a.order.sz) - Number(b.order.sz),
+        // sorter: (a, b) => Number(a.order.sz) || Number(a.order.or) - Number(b.order.sz) || 0,
         render: (_, record) => {
+          const isReduceOnly = record.order.reduceOnly;
+          const fillSz = Number(record.order.sz)
+            ? Number(record.order.sz)
+            : Number(record.order.origSz);
+
           return (
             <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
-              {Number(record.order.sz) === 0 ? (
+              {record.status !== 'filled' ? (
                 '-'
               ) : (
                 <>
-                  {splitNumberByStep(new BigNumber(record.order.sz).toString())}{' '}
+                  {splitNumberByStep(new BigNumber(fillSz).toString())}{' '}
                   {record.order.coin}
                 </>
               )}
@@ -157,6 +162,9 @@ export const OrderHistory: React.FC = () => {
         //     .times(new BigNumber(b.order.sz).abs())
         //     .toNumber(),
         render: (_, record) => {
+          const fillSz = Number(record.order.sz)
+            ? record.order.sz
+            : record.order.origSz;
           return (
             <div className="space-y-[4px]">
               <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
@@ -164,7 +172,7 @@ export const OrderHistory: React.FC = () => {
                   ? '-'
                   : `$${splitNumberByStep(
                       new BigNumber(record.order.limitPx)
-                        .times(new BigNumber(record.order.sz).abs())
+                        .times(new BigNumber(fillSz).abs())
                         .toFixed(2)
                     )} USD`}
               </div>
@@ -222,9 +230,12 @@ export const OrderHistory: React.FC = () => {
         // width: 100,
         render: (_, record) => {
           // todo
+          const isPartiallyFilled =
+            Number(record.order.sz) !== 0 &&
+            Number(record.order.sz) < Number(record.order.origSz);
           return (
             <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
-              {record.status}
+              {isPartiallyFilled ? 'Partially Filled' : record.status}
             </div>
           );
         },
@@ -234,6 +245,7 @@ export const OrderHistory: React.FC = () => {
   );
   return (
     <CommonTable
+      emptyMessage={t('page.perpsPro.userInfo.emptyMessage.openOrders')}
       dataSource={list}
       columns={columns}
       pagination={false}

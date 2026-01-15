@@ -118,7 +118,6 @@ export const FundingHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
-              {Number(record.usdc) < 0 ? '' : '-'}
               {new BigNumber(record.fundingRate).times(100).toFixed(5)}%
             </div>
           );
@@ -129,6 +128,7 @@ export const FundingHistory: React.FC = () => {
   );
   return (
     <CommonTable
+      emptyMessage={t('page.perpsPro.userInfo.emptyMessage.fundingHistory')}
       dataSource={list}
       columns={columns}
       pagination={false}
