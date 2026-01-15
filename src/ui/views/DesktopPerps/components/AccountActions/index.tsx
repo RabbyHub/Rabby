@@ -71,7 +71,8 @@ export const AccountActions: React.FC<{
           <div className="flex items-center gap-[6px]">
             <IconPerpsWallet />
             <span className="text-[15px] font-medium text-r-neutral-title-1">
-              ${splitNumberByStep(availableBalance.toFixed(2))}
+              {t('page.perpsPro.accountActions.available')} $
+              {splitNumberByStep(availableBalance.toFixed(2))}
             </span>
           </div>
 

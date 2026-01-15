@@ -35,7 +35,10 @@ export const OrderHistory: React.FC = () => {
         key: 'statusTimestamp',
         dataIndex: 'statusTimestamp',
         // width: 180,
-        sorter: (a, b) => a.statusTimestamp - b.statusTimestamp,
+        // need filled front by open status
+        sorter: (a, b) =>
+          a.statusTimestamp - b.statusTimestamp ||
+          b.status.localeCompare(a.status),
         render: (_, record) => {
           return (
             <div className="text-[13px] leading-[16px] font-510 text-r-neutral-title-1">

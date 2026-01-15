@@ -516,7 +516,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: (
           <div
-            className="text-rb-neutral-foot cursor-pointer underline"
+            className="text-rb-neutral-foot cursor-pointer underline  hover:text-rb-brand-default"
             onClick={handleClickCloseAll}
           >
             {t('page.perpsPro.userInfo.positionInfo.closeAll')}

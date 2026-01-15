@@ -478,8 +478,7 @@ export const useDepositWithdraw = (
   const handleDepositClick = useMemoizedFn(async () => {
     if (!miniSignTx || !currentPerpsAccount) return;
 
-    if (!canUseDirectSubmitTx && miniSignTx.length) {
-      // typedDataSignatureStore.close();
+    if (canUseDirectSubmitTx && miniSignTx.length) {
       setIsPreparingSign(true);
       closeSign();
       try {
@@ -554,7 +553,7 @@ export const useDepositWithdraw = (
       }
       let result: string[] = [];
       await dispatch.account.changeAccountAsync(account);
-      if (supportedDirectSign(account.type)) {
+      if (canUseDirectSubmitTx) {
         typedDataSignatureStore.close();
         result = await typedDataSignatureStore.start(
           {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { OrderSide, Position } from '../../../types';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 
 interface OrderSideAndFundsProps {
@@ -53,7 +53,7 @@ export const OrderSideAndFunds: React.FC<OrderSideAndFundsProps> = ({
             {t('page.perpsPro.tradingPanel.availableFunds')}
           </span>
           <span className="text-r-neutral-title-1 text-[12px] font-medium">
-            {formatUsdValue(availableBalance)} USDC
+            {splitNumberByStep(availableBalance)} USDC
           </span>
         </div>
         <div className="flex items-center justify-between">

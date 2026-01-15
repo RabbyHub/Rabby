@@ -46,14 +46,9 @@ export const DesktopPerpsSelectAccountList: React.FC<{
   handleSetPopupType: (type: PopupType) => void;
 }> = ({ handleSetPopupType }) => {
   const { t } = useTranslation();
-  const history = useHistory();
-  const location = useLocation();
   const dispatch = useRabbyDispatch();
   const clearinghouseStateMap = useRabbySelector(
     (s) => s.perps.clearinghouseStateMap
-  );
-  const clearinghouseState = useRabbySelector(
-    (s) => s.perps.clearinghouseState
   );
   const currentPerpsAccount = useRabbySelector(
     (s) => s.perps.currentPerpsAccount
@@ -242,9 +237,7 @@ export const DesktopPerpsSelectAccountList: React.FC<{
                 switchAccount(item);
               }}
               clearinghouseState={
-                isSelected
-                  ? clearinghouseState
-                  : clearinghouseStateMap[item.address.toLowerCase()]
+                clearinghouseStateMap[item.address.toLowerCase()]
               }
               isSelected={isSelected}
               item={item}

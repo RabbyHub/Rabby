@@ -1,4 +1,4 @@
-import { PositionAndOpenOrder } from '@/ui/models/perps';
+import { AccountHistoryItem, PositionAndOpenOrder } from '@/ui/models/perps';
 import {
   UserHistoricalOrders,
   UserTwapSliceFill,
@@ -78,6 +78,23 @@ export const handleUpdateTwapSliceFills = (
   if (enableSound) {
     playSound('/sounds/order-filled.mp3');
   }
+};
+
+export const showDepositAndWithdrawToast = (item: AccountHistoryItem) => {
+  const isDeposit = item.type === 'deposit' || item.type === 'receive';
+  perpsToast.success({
+    title: i18n.t(
+      isDeposit ? 'page.perps.toast.deposit' : 'page.perps.toast.withdraw'
+    ),
+    description: i18n.t(
+      isDeposit
+        ? 'page.perps.toast.depositTip'
+        : 'page.perps.toast.withdrawTip',
+      {
+        amount: item.usdValue,
+      }
+    ),
+  });
 };
 
 /**

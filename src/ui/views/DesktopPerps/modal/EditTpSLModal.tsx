@@ -62,6 +62,16 @@ export const EditTpSlModal: React.FC<Props> = ({
     setLossPct('');
   });
 
+  const szDecimals = marketData.szDecimals;
+
+  const ensurePriceFormat = useMemoizedFn((price: string) => {
+    if (!validatePriceInput(price, szDecimals)) {
+      return formatTpOrSlPrice(Number(price), szDecimals);
+    } else {
+      return price;
+    }
+  });
+
   useEffect(() => {
     if (visible) {
       // Initialize with existing prices if available
@@ -69,10 +79,10 @@ export const EditTpSlModal: React.FC<Props> = ({
       const existingSlPrice = position.slItem?.triggerPx || '';
 
       if (existingTpPrice && Number(existingTpPrice) > 0) {
-        handlePriceChange(existingTpPrice, 'tp');
+        handlePriceChange(ensurePriceFormat(existingTpPrice), 'tp');
       }
       if (existingSlPrice && Number(existingSlPrice) > 0) {
-        handlePriceChange(existingSlPrice, 'sl');
+        handlePriceChange(ensurePriceFormat(existingSlPrice), 'sl');
       }
     } else {
       resetForm();
@@ -85,10 +95,13 @@ export const EditTpSlModal: React.FC<Props> = ({
       if (value.startsWith('$')) {
         value = value.slice(1);
       }
+      console.log('handlePriceChange', price);
+      console.log('validatePriceInput', validatePriceInput(value, szDecimals));
       if (
         (/^\d*\.?\d*$/.test(value) || value === '') &&
-        validatePriceInput(value, marketData.szDecimals)
+        validatePriceInput(value, szDecimals)
       ) {
+        console.log('validatePriceInput', value);
         if (type === 'tp') {
           setTpPrice(value);
           if (value && Number(value) > 0) {
@@ -154,10 +167,7 @@ export const EditTpSlModal: React.FC<Props> = ({
             newPrice = entryPrice - priceDifference;
           }
 
-          const newPriceStr = formatTpOrSlPrice(
-            newPrice,
-            marketData.szDecimals
-          );
+          const newPriceStr = formatTpOrSlPrice(newPrice, szDecimals);
           if (type === 'tp') {
             setTpPrice(newPriceStr);
           } else {
@@ -325,13 +335,15 @@ export const EditTpSlModal: React.FC<Props> = ({
               oid: position.tpItem.oid,
             },
           });
-          await sleep(10);
-          await handleSetAutoClose({
-            coin: position.coin,
-            tpTriggerPx: '',
-            slTriggerPx: new BigNumber(slPrice).isNaN() ? '' : slPrice,
-            direction,
-          });
+          if (!new BigNumber(slPrice).isNaN()) {
+            await sleep(10);
+            await handleSetAutoClose({
+              coin: position.coin,
+              tpTriggerPx: '',
+              slTriggerPx: slPrice,
+              direction,
+            });
+          }
         } else if (position.slItem) {
           // only have sl
           await handleModifyTpSlOrders({
@@ -342,13 +354,15 @@ export const EditTpSlModal: React.FC<Props> = ({
               oid: position.slItem.oid,
             },
           });
-          await sleep(10);
-          await handleSetAutoClose({
-            coin: position.coin,
-            tpTriggerPx: new BigNumber(tpPrice).isNaN() ? '' : tpPrice,
-            slTriggerPx: '',
-            direction,
-          });
+          if (!new BigNumber(tpPrice).isNaN()) {
+            await sleep(10);
+            await handleSetAutoClose({
+              coin: position.coin,
+              tpTriggerPx: tpPrice,
+              slTriggerPx: '',
+              direction,
+            });
+          }
         }
       }
     },
@@ -375,27 +389,27 @@ export const EditTpSlModal: React.FC<Props> = ({
     >
       <div className="flex flex-col min-h-[520px] bg-r-neutral-bg2">
         <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-2">
-          Configure TP/SL
+          {t('page.perpsPro.editTpSl.title')}
         </div>
 
         <div className="flex-1 px-20 overflow-y-auto pb-24">
           <section className="mb-[12px]">
             <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-              Current position
+              {t('page.perpsPro.editTpSl.currentPosition')}
             </div>
             <PerpsPositionCard position={position} marketData={marketData} />
           </section>
 
           <section className="mb-[8px]">
             <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-              Configure TP/SL
+              {t('page.perpsPro.editTpSl.title')}
             </div>
             <div className="space-y-[8px]">
               <div className="flex items-center gap-[8px]">
                 <DesktopPerpsInput
                   prefix={
                     <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                      TP
+                      {t('page.perpsPro.editTpSl.tp')}
                     </span>
                   }
                   value={tpPrice}
@@ -410,7 +424,7 @@ export const EditTpSlModal: React.FC<Props> = ({
                 <DesktopPerpsInput
                   prefix={
                     <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                      Gain
+                      {t('page.perpsPro.editTpSl.gain')}
                     </span>
                   }
                   className="text-right"
@@ -426,19 +440,21 @@ export const EditTpSlModal: React.FC<Props> = ({
                 />
               </div>
               {position.tpItem && (
-                <div
-                  className="text-rb-blue-default cursor-pointer underline text-right pr-4 pb-8 text-[12px] leading-[14px]"
-                  onClick={() => {
-                    handleCancelOrder([
-                      {
-                        coin: position.coin,
-                        oid: position.tpItem!.oid,
-                      },
-                    ]);
-                    onCancel();
-                  }}
-                >
-                  Cancel TP
+                <div className="flex items-center justify-end">
+                  <div
+                    className="text-rb-brand-default cursor-pointer bg-rb-brand-light-1 rounded-[4px] text-right px-4 py-2 text-[12px] leading-[14px] flex items-center justify-center"
+                    onClick={() => {
+                      handleCancelOrder([
+                        {
+                          coin: position.coin,
+                          oid: position.tpItem!.oid,
+                        },
+                      ]);
+                      onCancel();
+                    }}
+                  >
+                    {t('page.perpsPro.editTpSl.cancelTp')}
+                  </div>
                 </div>
               )}
               {tpValidation.error && (
@@ -450,7 +466,7 @@ export const EditTpSlModal: React.FC<Props> = ({
                 <DesktopPerpsInput
                   prefix={
                     <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                      SL
+                      {t('page.perpsPro.editTpSl.sl')}
                     </span>
                   }
                   value={slPrice}
@@ -465,7 +481,7 @@ export const EditTpSlModal: React.FC<Props> = ({
                 <DesktopPerpsInput
                   prefix={
                     <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                      Loss
+                      {t('page.perpsPro.editTpSl.loss')}
                     </span>
                   }
                   className="text-right"
@@ -481,19 +497,21 @@ export const EditTpSlModal: React.FC<Props> = ({
                 />
               </div>
               {position.slItem && (
-                <div
-                  className="text-rb-blue-default cursor-pointer underline text-right pr-4 pb-8 text-[12px] leading-[14px]"
-                  onClick={() => {
-                    handleCancelOrder([
-                      {
-                        coin: position.coin,
-                        oid: position.slItem!.oid,
-                      },
-                    ]);
-                    onCancel();
-                  }}
-                >
-                  Cancel SL
+                <div className="flex items-center justify-end">
+                  <div
+                    className="text-rb-brand-default cursor-pointer bg-rb-brand-light-1 rounded-[4px] text-right px-4 py-2 text-[12px] leading-[14px] flex items-center justify-center"
+                    onClick={() => {
+                      handleCancelOrder([
+                        {
+                          coin: position.coin,
+                          oid: position.slItem!.oid,
+                        },
+                      ]);
+                      onCancel();
+                    }}
+                  >
+                    {t('page.perpsPro.editTpSl.cancelSl')}
+                  </div>
                 </div>
               )}
               {slValidation.error && (
@@ -507,7 +525,7 @@ export const EditTpSlModal: React.FC<Props> = ({
           <section className="space-y-[8px]">
             <div className="flex items-center justify-between">
               <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                Take profit expected PnL
+                {t('page.perpsPro.editTpSl.takeProfitExpectedPnl')}
               </div>
               <div
                 className={clsx(
@@ -526,7 +544,7 @@ export const EditTpSlModal: React.FC<Props> = ({
             </div>
             <div className="flex items-center justify-between">
               <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                Stop loss expected PnL
+                {t('page.perpsPro.editTpSl.stopLossExpectedPnl')}
               </div>
               <div
                 className={clsx(

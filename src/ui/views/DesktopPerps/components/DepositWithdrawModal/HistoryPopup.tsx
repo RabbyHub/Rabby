@@ -13,6 +13,7 @@ import { ReactComponent as RcIconNoSrc } from '@/ui/assets/perps/IconNoSrc.svg';
 import { ReactComponent as RcIconBack } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
 import { ellipsisAddress } from '@/ui/utils/address';
+import { SvgIconCross } from '@/ui/assets';
 
 interface HistoryPopupProps {
   visible: boolean;
@@ -118,20 +119,14 @@ export const HistoryPopup: React.FC<HistoryPopupProps> = ({
     <div className="absolute inset-0 bg-rb-neutral-bg-2 z-10 flex flex-col">
       {/* Header */}
       <div className="px-20 pt-16 pb-12 flex items-center justify-between relative">
-        <div
-          className="cursor-pointer p-4 -ml-4 hover:opacity-70"
-          onClick={onClose}
-        >
+        <div className="cursor-pointer p-4 -ml-4" onClick={onClose}>
           <RcIconBack className="w-20 h-20 rotate-180 text-rb-neutral-title-1" />
         </div>
         <h3 className="text-[20px] font-medium text-rb-neutral-title-1 absolute left-1/2 -translate-x-1/2">
           {t('page.perps.history')}
         </h3>
-        <div
-          className="cursor-pointer p-4 -mr-4 hover:opacity-70"
-          onClick={onClose}
-        >
-          {ModalCloseIcon}
+        <div className="cursor-pointer p-4 -mr-4" onClick={onClose}>
+          <SvgIconCross className="w-14 fill-current text-rb-neutral-title-1" />
         </div>
       </div>
 

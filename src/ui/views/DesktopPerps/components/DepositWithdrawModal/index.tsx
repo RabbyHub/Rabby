@@ -3,6 +3,7 @@ import { Button, Modal, Skeleton, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
+import { SvgIconCross } from 'ui/assets';
 import { TokenWithChain } from '@/ui/component';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { ReactComponent as RcIconHistory } from '@/ui/assets/swap/history.svg';
@@ -164,7 +165,11 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
           backdropFilter: 'blur(8px)',
           backgroundColor: 'rgba(0, 0, 0, 0.3)',
         }}
-        closeIcon={historyVisible ? null : ModalCloseIcon}
+        closeIcon={
+          historyVisible ? null : (
+            <SvgIconCross className="w-14 fill-current text-rb-neutral-title-1" />
+          )
+        }
         closable={!historyVisible}
         className="modal-support-darkmode desktop-perps-deposit-withdraw-modal"
       >
@@ -240,6 +245,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                       onClick={() => handlePercentageClick(option.value)}
                       className={clsx(
                         'px-20 h-[36px] flex items-center justify-center rounded-[8px] text-13 font-medium',
+                        'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
                         'bg-rb-neutral-bg-2 text-rb-neutral-body'
                       )}
                     >
@@ -288,7 +294,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                   </div>
                   {type === 'deposit' && (
                     <ThemeIcon
-                      className="icon icon-arrow-right ml-4"
+                      className="icon icon-arrow-right text-rb-neutral-title-1 ml-4"
                       src={RcIconArrowRight}
                     />
                   )}

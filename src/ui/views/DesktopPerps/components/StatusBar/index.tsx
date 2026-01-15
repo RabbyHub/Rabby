@@ -59,11 +59,11 @@ export const StatusBar: React.FC = () => {
   };
 
   const handleOpenDiscord = () => {
-    openInTab('https://discord.gg/rabby');
+    openInTab('https://discord.gg/seFBCWmUre');
   };
 
   const handleOpenDocs = () => {
-    openInTab('https://rabby.io/docs');
+    openInTab('https://support.rabby.io/');
   };
 
   return (
@@ -83,17 +83,17 @@ export const StatusBar: React.FC = () => {
 
         <div className="flex items-center gap-[12px]">
           <RcIconTwitter
-            className="w-[16px] h-[16px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 transition-colors"
+            className="w-[16px] h-[16px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
             onClick={handleOpenTwitter}
           />
-          {/* <RcIconDiscord
-            className="w-[16px] h-[16px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 transition-colors"
+          <RcIconDiscord
+            className="w-[16px] h-[16px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
             onClick={handleOpenDiscord}
           />
           <RcIconDocs
-            className="w-[16px] h-[16px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 transition-colors"
+            className="w-[16px] h-[16px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
             onClick={handleOpenDocs}
-          /> */}
+          />
         </div>
 
         {/* <div className="text-[12px] text-r-neutral-foot">{VERSION}</div> */}

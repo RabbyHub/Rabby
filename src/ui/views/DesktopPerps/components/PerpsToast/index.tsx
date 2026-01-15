@@ -74,7 +74,7 @@ export const showSuccessToast = ({ title, description }: ShowToastOptions) => {
       <PerpsToastContent
         type="success"
         title={title}
-        description={description}
+        description={String(description)}
         messageKey={key}
       />
     ),
@@ -83,19 +83,19 @@ export const showSuccessToast = ({ title, description }: ShowToastOptions) => {
 };
 
 /**
- * Show error toast - stays until manually closed
+ * Show error toast - auto close after 5s
  */
 export const showErrorToast = ({ title, description }: ShowToastOptions) => {
   const key = generateKey();
   message.error({
     key,
-    duration: 0,
+    duration: 5,
     className: 'perps-toast-wrapper toast-right-bottom-wrapper',
     content: (
       <PerpsToastContent
         type="error"
         title={title}
-        description={description}
+        description={String(description)}
         messageKey={key}
       />
     ),
@@ -116,7 +116,7 @@ export const showInfoToast = ({ title, description }: ShowToastOptions) => {
       <PerpsToastContent
         type="info"
         title={title}
-        description={description}
+        description={String(description)}
         messageKey={key}
       />
     ),

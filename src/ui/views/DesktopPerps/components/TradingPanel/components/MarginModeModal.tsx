@@ -81,9 +81,9 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
             <div
               onClick={() => handleModeSelect(MarginMode.CROSS)}
               className={clsx(
-                'p-[12px] rounded-[8px] border cursor-pointer',
+                'p-[12px] rounded-[8px] border cursor-pointer bg-rb-neutral-bg-1',
                 selectedMode === MarginMode.CROSS
-                  ? 'border-rb-brand-default bg-rb-brand-light-1'
+                  ? 'border-rb-brand-default'
                   : 'border-rb-neutral-line'
               )}
             >
@@ -107,9 +107,9 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
             <div
               onClick={() => handleModeSelect(MarginMode.ISOLATED)}
               className={clsx(
-                'p-[12px] rounded-[8px] border cursor-pointer',
+                'p-[12px] rounded-[8px] border cursor-pointer bg-rb-neutral-bg-1',
                 selectedMode === MarginMode.ISOLATED
-                  ? 'border-rb-brand-default bg-rb-brand-light-1'
+                  ? 'border-rb-brand-default'
                   : 'border-rb-neutral-line'
               )}
             >

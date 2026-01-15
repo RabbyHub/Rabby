@@ -329,7 +329,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
             tooltipVisible={false}
           />
           {/* Preset Points */}
-          <div className="relative">
+          <div className="relative ml-2">
             {PRESET_POINTS.map((point) => (
               <button
                 key={point}

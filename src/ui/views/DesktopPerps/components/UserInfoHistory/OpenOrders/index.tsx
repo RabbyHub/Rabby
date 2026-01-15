@@ -300,7 +300,7 @@ export const OpenOrders: React.FC = () => {
       {
         title: (
           <div
-            className="text-rb-neutral-foot cursor-pointer underline"
+            className="text-rb-neutral-foot cursor-pointer underline  hover:text-rb-brand-default"
             onClick={handleCloseAll}
           >
             {t('page.perpsPro.userInfo.openOrders.cancelAll')}
@@ -316,6 +316,8 @@ export const OpenOrders: React.FC = () => {
               type="button"
               className={clsx(
                 'bg-rb-neutral-bg-4 rounded-[8px] py-[9px] px-[12px] min-w-[88px]',
+                'border border-transparent',
+                'hover:border-rb-brand-default',
                 'text-[12px] leading-[14px] font-510 text-r-neutral-title-1'
               )}
               onClick={() => {

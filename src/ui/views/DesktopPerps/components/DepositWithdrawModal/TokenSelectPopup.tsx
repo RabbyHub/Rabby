@@ -18,6 +18,7 @@ import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useRabbySelector } from '@/ui/store';
 import { findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
+import { SvgIconCross } from '@/ui/assets';
 
 interface TokenSelectPopupProps {
   visible: boolean;
@@ -43,7 +44,27 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
 
   const sortedTokenList = useMemo(() => {
     const items = [...(tokenList || [])];
-    items.sort((a, b) => b.amount * b.price - a.amount * a.price);
+
+    // Sort by amount * price (descending)
+    items.sort((a, b) => {
+      const aValue = b.amount * b.price;
+      const bValue = a.amount * a.price;
+
+      // Check if tokens are in supported chains
+      const aChain = findChainByServerID(a.chain)?.enum || CHAINS_ENUM.ETH;
+      const bChain = findChainByServerID(b.chain)?.enum || CHAINS_ENUM.ETH;
+      const aIsSupported = supportedChains.includes(aChain);
+      const bIsSupported = supportedChains.includes(bChain);
+
+      // Supported chains first, then by value
+      if (aIsSupported && !bIsSupported) return -1;
+      if (!aIsSupported && bIsSupported) return 1;
+
+      // Both supported or both not supported, sort by value
+      return aValue - bValue;
+    });
+
+    // Move ARB USDC to the front if it exists
     const idx = items.findIndex(
       (token) =>
         token.id === ARB_USDC_TOKEN_ID &&
@@ -56,7 +77,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       items.unshift(ARB_USDC_TOKEN_ITEM);
     }
     return items;
-  }, [tokenList]);
+  }, [tokenList, supportedChains]);
 
   const handleClickToken = useMemoizedFn(async (token: TokenItem) => {
     if (clickLoading) return;
@@ -114,12 +135,12 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
           key={item.id}
           style={style}
           className={clsx(
-            'flex justify-between items-center cursor-pointer h-[48px] mb-8 border border-transparent',
+            'flex justify-between items-center h-[48px] mb-8 border border-transparent',
             'bg-r-neutral-card1 rounded-[8px] px-16',
             'text-13 font-medium text-rb-neutral-title-1',
-            'hover:border-rabby-blue-default',
-            'hover:bg-r-blue-light-1',
-            isDisabled && 'opacity-50 cursor-not-allowed'
+            isDisabled
+              ? 'opacity-50'
+              : 'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light-1'
           )}
           onClick={() => {
             if (isDisabled) return;
@@ -155,11 +176,14 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
     <Popup
       visible={visible}
       onCancel={onCancel}
-      height={400}
+      height={460}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
       closable
+      closeIcon={
+        <SvgIconCross className="w-14 fill-current text-rb-neutral-title-1" />
+      }
       keyboard={false}
       push={false}
       getContainer={getContainer}
@@ -200,7 +224,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
           ) : (
             <FixedSizeList
               width={'100%'}
-              height={334}
+              height={394}
               itemCount={sortedTokenList?.length || 0}
               itemData={sortedTokenList}
               itemSize={56}

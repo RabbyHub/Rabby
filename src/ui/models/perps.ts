@@ -22,7 +22,7 @@ import {
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
 import { RootModel } from '.';
-import { destroyPerpsSDK, getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import {
   formatMarkData,
   getMaxTimeFromAccountHistory,
@@ -36,6 +36,7 @@ import { isSameAddress } from '../utils';
 import {
   handleUpdateHistoricalOrders,
   handleUpdateTwapSliceFills,
+  showDepositAndWithdrawToast,
 } from '../views/DesktopPerps/utils';
 
 export interface PositionAndOpenOrder extends AssetPosition {
@@ -270,6 +271,7 @@ export const perps = createModel<RootModel>()({
           receiveMaxTime,
         } = getMaxTimeFromAccountHistory(newList);
 
+        newList.forEach((item) => showDepositAndWithdrawToast(item));
         const filteredLocalHistory = state.localLoadingHistory.filter(
           (item) => {
             if (item.type === 'deposit') {

@@ -774,7 +774,11 @@
         "description": "All your open orders will be cancelled."
       },
       "toast": {
+        "deposit": "Deposit successful",
+        "depositTip": "{{amount}} USDC deposited",
         "success": "Success",
+        "withdraw": "Withdrawal Successful",
+        "withdrawTip": "{{amount}} USDC has been withdrawn successfully",
         "twapSliceFilled": "TWAP Slice Filled",
         "buyFilledContentNoPercentage": "bought {{sz}} {{coin}} filled @{{price}} USDC",
         "sellFilledContentNoPercentage": "sold {{sz}} {{coin}} filled @{{price}} USDC",
@@ -1212,7 +1216,21 @@
         "maxError": "Maximum leverage is {{max}}x",
         "confirm": "Confirm"
       },
+      "editTpSl": {
+        "title": "Configure TP/SL",
+        "gain": "Gain",
+        "loss": "Loss",
+        "cancelTp": "Cancel TP",
+        "cancelSl": "Cancel SL",
+        "takeProfitExpectedPnl": "Take profit expected PnL",
+        "stopLossExpectedPnl": "Stop loss expected PnL",
+        "currentPosition": "Current Position",
+        "tp": "TP",
+        "sl": "SL",
+        "confirm": "Confirm"
+      },
       "accountInfo": {
+        "available": "Available: ",
         "balance": "Balance",
         "balanceTip": "Total Net Transfers + Total Realized Profit + Total Net Funding Fees",
         "accountEquity": "Account Equity",

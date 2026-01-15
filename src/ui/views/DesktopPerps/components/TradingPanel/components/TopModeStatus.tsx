@@ -136,7 +136,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
               'border border-rb-neutral-line rounded-[6px]',
               'hover:border-rb-brand-default border border-solid border-transparent',
               isScreenSmall() ? 'justify-center' : '',
-              'text-[12px] leading-[14px] font-510 text-rb-neutral-title-1'
+              'text-[12px] leading-[14px] text-rb-neutral-secondary'
             )}
           >
             {isScreenSmall() ? null : t('page.perpsPro.tradingPanel.type')}
