@@ -19,7 +19,7 @@ export const DappIframeError: React.FC<DappIframeErrorProps> = ({
 }) => {
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-rb-neutral-bg-1">
-      <div className="flex flex-col items-center text-center gap-[8px] px-[24px] max-w-[360px]">
+      <div className="flex flex-col items-center text-center gap-[8px] px-[24px]">
         <div className="w-[40px] h-[40px] rounded-full bg-rb-neutral-bg-1 text-rb-neutral-foot flex items-center justify-center">
           {imageSrc ? (
             <img src={imageSrc} alt="" className="w-[40px] h-[40px]" />
