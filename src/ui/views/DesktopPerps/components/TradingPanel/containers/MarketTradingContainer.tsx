@@ -18,6 +18,8 @@ import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSl
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { EditMarketSlippage } from '../components/EditMarketSlippage';
+import { TradingButton } from '../components/TradingButton';
+import BigNumber from 'bignumber.js';
 
 export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -58,6 +60,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     handleTPSLEnabledChange,
     resetForm,
   } = usePerpsTradingState();
+  console.log('maxTradeSize', maxTradeSize);
 
   const [slippageVisible, setSlippageVisible] = React.useState(false);
 
@@ -148,14 +151,40 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
 
   const orderSummary: OrderSummaryData = React.useMemo(() => {
     return {
+      tpExpectedPnL:
+        Number(tpslConfig.takeProfit.percentage) && Number(tradeSize) > 0
+          ? '+' +
+            formatUsdValue(
+              (Number(tpslConfig.takeProfit.percentage) * marginRequired) / 100
+            )
+          : '',
+      slExpectedPnL:
+        Number(tpslConfig.stopLoss.percentage) && Number(tradeSize) > 0
+          ? '-' +
+            formatUsdValue(
+              (Number(tpslConfig.stopLoss.percentage) * marginRequired) / 100
+            )
+          : '',
       liquidationPrice: estimatedLiquidationPrice,
       liquidationDistance: '',
-      orderValue: tradeUsdAmount > 0 ? formatUsdValue(tradeUsdAmount) : '$0.00',
+      orderValue:
+        tradeUsdAmount > 0
+          ? formatUsdValue(tradeUsdAmount, BigNumber.ROUND_DOWN)
+          : '$0.00',
       marginRequired: formatUsdValue(marginRequired),
       marginUsage,
       slippage: `Max ${(marketSlippage * 100).toFixed(2)}%`,
     };
-  }, [estimatedLiquidationPrice, tradeUsdAmount, marginUsage, marketSlippage]);
+  }, [
+    tpslConfig.takeProfit.percentage,
+    tpslConfig.stopLoss.percentage,
+    tradeSize,
+    marginRequired,
+    tradeUsdAmount,
+    estimatedLiquidationPrice,
+    marginUsage,
+    marketSlippage,
+  ]);
 
   const handleSetSlippage = () => {
     setSlippageVisible(true);
@@ -183,19 +212,29 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           setPercentage={setPercentage}
           baseAsset={selectedCoin}
           quoteAsset="USDC"
-          precision={{ amount: szDecimals, price: pxDecimals }}
+          szDecimals={szDecimals}
         />
 
         {/* TP/SL and Reduce Only */}
         <div className="flex items-center gap-16">
           <PerpsCheckbox
             checked={tpslConfig.enabled}
-            onChange={handleTPSLEnabledChange}
+            onChange={(enabled) => {
+              handleTPSLEnabledChange(enabled);
+              if (enabled) {
+                setReduceOnly(false);
+              }
+            }}
             title={t('page.perpsPro.tradingPanel.tpSl')}
           />
           <PerpsCheckbox
             checked={reduceOnly}
-            onChange={setReduceOnly}
+            onChange={(checked) => {
+              setReduceOnly(checked);
+              if (checked) {
+                handleTPSLEnabledChange(false);
+              }
+            }}
             title={t('page.perpsPro.tradingPanel.reduceOnly')}
             disabled={!currentPosition}
           />
@@ -208,9 +247,8 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
             config={tpslConfig}
             setConfig={setTpslConfig}
             orderSide={orderSide}
-            tradeSize={tradeSize}
             price={midPrice}
-            marginRequired={marginRequired}
+            leverage={leverage}
           />
         )}
 
@@ -225,26 +263,19 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
             {t('page.perpsPro.tradingPanel.enableTrading')}
           </Button>
         ) : (
-          <Button
+          <TradingButton
             loading={handleOpenOrderLoading}
             onClick={handleOpenOrderRequest}
             disabled={!validation.isValid || tpslConfigHasError}
-            className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
-              validation.isValid
-                ? orderSide === OrderSide.BUY
-                  ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
-                  : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
-                : validation.error
-                ? 'bg-rb-orange-light-1 text-rb-orange-default cursor-not-allowed'
-                : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
-            }`}
-          >
-            {validation.error
-              ? validation.error
-              : orderSide === OrderSide.BUY
-              ? t('page.perpsPro.tradingPanel.buyLong')
-              : t('page.perpsPro.tradingPanel.sellShort')}
-          </Button>
+            error={validation.error}
+            isValid={validation.isValid}
+            orderSide={orderSide}
+            titleText={
+              orderSide === OrderSide.BUY
+                ? t('page.perpsPro.tradingPanel.buyLong')
+                : t('page.perpsPro.tradingPanel.sellShort')
+            }
+          />
         )}
 
         {/* Order Summary */}
@@ -252,11 +283,11 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           data={orderSummary}
           showTPSLExpected={tpslConfig.enabled}
           tpExpectedPnL={
-            tpslConfig.enabled ? tpslConfig.takeProfit.expectedPnL : undefined
+            tpslConfig.enabled ? orderSummary?.tpExpectedPnL : undefined
           }
           handleSetSlippage={handleSetSlippage}
           slExpectedPnL={
-            tpslConfig.enabled ? tpslConfig.stopLoss.expectedPnL : undefined
+            tpslConfig.enabled ? orderSummary?.tpExpectedPnL : undefined
           }
         />
       </div>

@@ -3,10 +3,11 @@ import React, { useEffect, useMemo } from 'react';
 import { OrderSide, Position, PositionSize, TPSLConfig } from '../types';
 import { calLiquidationPrice } from '../../Perps/utils';
 import { useMemoizedFn } from 'ahooks';
+import BigNumber from 'bignumber.js';
 const DEFAULT_TPSL_CONFIG: TPSLConfig = {
   enabled: false,
-  takeProfit: { price: '', percentage: '', expectedPnL: '', error: '' },
-  stopLoss: { price: '', percentage: '', expectedPnL: '', error: '' },
+  takeProfit: { price: '', percentage: '', error: '' },
+  stopLoss: { price: '', percentage: '', error: '' },
 };
 
 export const usePerpsTradingState = () => {
@@ -34,6 +35,10 @@ export const usePerpsTradingState = () => {
   const currentMarketData = React.useMemo(() => {
     return marketDataMap?.[selectedCoin] || null;
   }, [marketDataMap, selectedCoin]);
+
+  const crossMargin = React.useMemo(() => {
+    return Number(clearinghouseState?.crossMarginSummary.accountValue || 0);
+  }, [clearinghouseState?.crossMarginSummary.accountValue]);
 
   // Get current position for selected coin
   const currentPosition: Position | null = React.useMemo(() => {
@@ -86,10 +91,11 @@ export const usePerpsTradingState = () => {
     return markPrice;
   }, [wsActiveAssetCtx, markPrice, selectedCoin]);
 
-  const szDecimals = currentMarketData?.szDecimals || 4;
-  const pxDecimals = currentMarketData?.pxDecimals || 2;
+  const szDecimals = currentMarketData?.szDecimals ?? 4;
+  const pxDecimals = currentMarketData?.pxDecimals ?? 2;
   const maxLeverage = currentMarketData?.maxLeverage || 25;
   const leverage = wsActiveAssetData?.leverage.value || maxLeverage;
+  const leverageType = wsActiveAssetData?.leverage.type || 'isolated';
 
   const availableBalance = React.useMemo(() => {
     const account = Number(clearinghouseState?.withdrawable || 0);
@@ -117,7 +123,7 @@ export const usePerpsTradingState = () => {
   // Calculate margin required
   const marginRequired = React.useMemo(() => {
     return tradeUsdAmount / leverage;
-  }, [tradeUsdAmount, leverage]);
+  }, [tradeUsdAmount, leverage, reduceOnly]);
 
   // Calculate trade size (in base asset)
   const tradeSize = React.useMemo(() => {
@@ -134,15 +140,20 @@ export const usePerpsTradingState = () => {
 
     const liqPrice = calLiquidationPrice(
       markPrice,
-      marginRequired,
+      leverageType === 'cross' ? crossMargin : marginRequired,
       direction,
       size,
       tradeUsdAmount,
       maxLeverage
     );
+    if (!new BigNumber(liqPrice).gt(0)) {
+      return '-';
+    }
     return `$${liqPrice.toFixed(pxDecimals)}`;
   }, [
+    crossMargin,
     markPrice,
+    leverageType,
     leverage,
     tradeUsdAmount,
     orderSide,
@@ -176,10 +187,14 @@ export const usePerpsTradingState = () => {
 
   // Calculate margin usage percentage
   const marginUsage = React.useMemo(() => {
+    if (reduceOnly) {
+      return '-';
+    }
+
     if (!availableBalance || availableBalance === 0) return '0.0%';
     const usage = (marginRequired / availableBalance) * 100;
     return `${Math.min(usage, 100).toFixed(1)}%`;
-  }, [marginRequired, availableBalance]);
+  }, [marginRequired, availableBalance, reduceOnly]);
 
   const handleTPSLEnabledChange = useMemoizedFn((enabled: boolean) => {
     if (!enabled) {
@@ -195,6 +210,10 @@ export const usePerpsTradingState = () => {
     setReduceOnly(false);
     setTpslConfig(DEFAULT_TPSL_CONFIG);
   };
+
+  useEffect(() => {
+    resetForm();
+  }, [selectedCoin]);
 
   const switchOrderSide = (side: OrderSide) => {
     setOrderSide(side);

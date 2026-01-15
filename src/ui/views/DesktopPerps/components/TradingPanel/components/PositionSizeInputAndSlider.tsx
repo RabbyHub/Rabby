@@ -7,6 +7,10 @@ import {
   calcAssetAmountByNotional,
   calcAssetNotionalByAmount,
   removeTrailingZeros,
+  validateAmountInput,
+  formatAmount,
+  validateNotionalInput,
+  formatNotional,
 } from '../utils';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 const PRESET_POINTS = [0, 25, 50, 75, 100];
@@ -27,10 +31,7 @@ interface PositionSizeInputAndSliderProps {
   quoteAsset: string;
   percentage: number;
   setPercentage: (percentage: number) => void;
-  precision: {
-    amount: number;
-    price: number;
-  };
+  szDecimals: number;
 }
 
 export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProps> = ({
@@ -43,7 +44,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   quoteAsset,
   percentage,
   setPercentage,
-  precision,
+  szDecimals,
 }) => {
   const [
     percentageInputValue,
@@ -51,7 +52,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   ] = React.useState<string>(percentage.toString());
 
   React.useEffect(() => {
-    setPercentageInputValue(percentage.toString());
+    setPercentageInputValue(isNaN(percentage) ? '' : percentage.toString());
   }, [percentage]);
 
   const handleSliderChange = (value: number) => {
@@ -66,26 +67,34 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;
-    // Allow empty string or valid numbers
-    if (value === '' || /^\d*$/.test(value)) {
-      setPercentageInputValue(value);
-    }
-  };
 
-  const handlePercentageInputBlur = () => {
-    if (percentageInputValue === '') {
+    if (value === '') {
+      setPercentageInputValue('');
+      handlePercentageChange(0);
+      return;
+    }
+
+    if (Number(value) > 100) {
+      setPercentageInputValue('100');
+      handlePercentageChange(100);
+      return;
+    }
+
+    if (Number(value) < 0) {
       setPercentageInputValue('0');
       handlePercentageChange(0);
       return;
     }
 
-    let numValue = parseInt(percentageInputValue, 10);
-    // Clamp value between 0 and 100
-    if (numValue < 0) numValue = 0;
-    if (numValue > 100) numValue = 100;
+    if (!/^\d*$/.test(value)) {
+      return;
+    }
 
-    setPercentageInputValue(numValue.toString());
-    handlePercentageChange(numValue);
+    setPercentageInputValue(value);
+
+    const numeric = Number(value) || 0;
+    const clamped = Math.max(0, Math.min(100, numeric));
+    handlePercentageChange(clamped);
   };
 
   const handleAmountChange = useMemoizedFn((amount: string) => {
@@ -116,38 +125,6 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     }
   });
 
-  const handleNotionalChange = useMemoizedFn((notional: string) => {
-    if (!price) {
-      setPositionSize({ amount: '', notionalValue: notional });
-      setPercentage(0);
-      return;
-    }
-
-    let newNotional = notional;
-    let amount = calcAssetAmountByNotional(notional, price, precision.amount);
-    if (maxTradeSize && Number(amount) > Number(maxTradeSize)) {
-      amount = maxTradeSize;
-      newNotional = calcAssetNotionalByAmount(amount, price);
-    }
-    setPositionSize({
-      amount,
-      notionalValue: newNotional,
-    });
-
-    if (maxTradeSize && Number(maxTradeSize) > 0) {
-      const pct = Math.min(
-        Math.round(
-          new BigNumber(amount)
-            .div(new BigNumber(maxTradeSize))
-            .multipliedBy(100)
-            .toNumber()
-        ),
-        100
-      );
-      setPercentage(maxTradeSize === amount ? 100 : pct);
-    }
-  });
-
   const handleNotionalChangeWithoutLimit = useMemoizedFn((notional: string) => {
     if (!price) {
       setPositionSize({ amount: '', notionalValue: notional });
@@ -155,7 +132,9 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
       return;
     }
 
-    const amount = calcAssetAmountByNotional(notional, price, precision.amount);
+    const amount = notional
+      ? calcAssetAmountByNotional(notional, price, szDecimals)
+      : '';
     setPositionSize({
       amount,
       notionalValue: notional,
@@ -191,11 +170,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
       return;
     }
 
-    let amount = calcAssetAmountByNotional(
-      notionalValue,
-      price,
-      precision.amount
-    );
+    let amount = calcAssetAmountByNotional(notionalValue, price, szDecimals);
     let newNotionalValue = calcAssetNotionalByAmount(amount, price);
     if (
       maxTradeSize &&
@@ -210,18 +185,12 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     });
   });
 
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.currentTarget.blur();
-    }
-  };
-
   const handleAmountChangeFormatted = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;
-    // Allow numbers and decimal point, calculate notional and percentage immediately without limit
-    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+    // Validate input based on szDecimals
+    if (validateAmountInput(value, szDecimals)) {
       handleAmountChange(value);
     }
   };
@@ -230,55 +199,10 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;
-    // Allow numbers and decimal point, calculate amount and percentage immediately without limit
-    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+    // Validate notional input (max 2 decimal places)
+    if (validateNotionalInput(value)) {
       handleNotionalChangeWithoutLimit(value);
     }
-  };
-
-  const handleAmountBlur = () => {
-    const value = positionSize.amount;
-    if (!value || value === '') {
-      setPositionSize({ amount: '', notionalValue: '' });
-      setPercentage(0);
-      return;
-    }
-    const num = parseFloat(value);
-    if (isNaN(num) || num === 0) {
-      setPositionSize({ amount: '', notionalValue: '' });
-      setPercentage(0);
-      return;
-    }
-
-    // Check max trade size and clamp if exceeded
-    let finalAmount = num;
-    if (maxTradeSize && num > Number(maxTradeSize)) {
-      finalAmount = Number(maxTradeSize);
-    }
-
-    // Format and calculate on blur
-    handleAmountChange(
-      removeTrailingZeros(finalAmount.toFixed(precision.amount))
-    );
-  };
-
-  const handleNotionalBlur = () => {
-    const value = positionSize.notionalValue;
-    if (!value || value === '') {
-      setPositionSize({ amount: '', notionalValue: '' });
-      setPercentage(0);
-      return;
-    }
-    const num = parseFloat(value);
-    if (isNaN(num) || num === 0) {
-      setPositionSize({ amount: '', notionalValue: '' });
-      setPercentage(0);
-      return;
-    }
-
-    // Format and calculate on blur (max check is inside handleNotionalChange)
-    const formatted = num.toFixed(2);
-    handleNotionalChange(formatted);
   };
 
   useEffect(() => {
@@ -294,8 +218,6 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
           className="flex-1"
           value={positionSize.amount}
           onChange={handleAmountChangeFormatted}
-          onBlur={handleAmountBlur}
-          onKeyDown={handleInputKeyDown}
           suffix={
             <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
               {baseAsset}
@@ -307,8 +229,6 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
           className="flex-1"
           value={positionSize.notionalValue}
           onChange={handleNotionalChangeFormatted}
-          onBlur={handleNotionalBlur}
-          onKeyDown={handleInputKeyDown}
           suffix={
             <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
               {quoteAsset}
@@ -334,7 +254,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
               <button
                 key={point}
                 onClick={() => handlePresetClick(point)}
-                className="absolute text-[11px] text-r-neutral-foot transition-colors hover:text-r-blue-default -translate-x-1/2"
+                className="absolute text-[11px] text-r-neutral-foot hover:text-r-blue-default hover:font-medium -translate-x-1/2"
                 style={{ left: `${point}%` }}
               >
                 {point}%
@@ -348,8 +268,6 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
           className="w-[60px] p-[8px]"
           value={percentageInputValue}
           onChange={handlePercentageInputChange}
-          onBlur={handlePercentageInputBlur}
-          onKeyDown={handleInputKeyDown}
           suffix={
             <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
               %

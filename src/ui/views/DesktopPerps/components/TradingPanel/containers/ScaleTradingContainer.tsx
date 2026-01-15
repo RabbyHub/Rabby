@@ -25,6 +25,7 @@ import { EVENTS } from '@/constant';
 import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
+import { TradingButton } from '../components/TradingButton';
 
 export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -357,7 +358,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
         quoteAsset="USDC"
-        precision={{ amount: szDecimals, price: pxDecimals }}
+        szDecimals={szDecimals}
       />
 
       <div className="space-y-[8px]">
@@ -497,24 +498,15 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           {t('page.perpsPro.tradingPanel.enableTrading')}
         </Button>
       ) : (
-        <Button
+        <TradingButton
           loading={handleOpenOrderLoading}
           onClick={handleOpenOrderRequest}
           disabled={!validation.isValid}
-          className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
-            validation.isValid
-              ? orderSide === OrderSide.BUY
-                ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
-                : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
-              : validation.error
-              ? 'bg-rb-orange-light-1 text-rb-orange-default cursor-not-allowed'
-              : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
-          }`}
-        >
-          {validation.error
-            ? validation.error
-            : t('page.perpsPro.tradingPanel.placeOrder')}
-        </Button>
+          error={validation.error}
+          isValid={validation.isValid}
+          orderSide={orderSide}
+          titleText={t('page.perpsPro.tradingPanel.placeOrder')}
+        />
       )}
 
       {/* Order Summary */}

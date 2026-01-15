@@ -1,11 +1,7 @@
 import React from 'react';
 import { TPSLConfig, OrderSide } from '../../../types';
 import { formatTpOrSlPrice, validatePriceInput } from '@/ui/views/Perps/utils';
-import clsx from 'clsx';
 import { useMemoizedFn } from 'ahooks';
-import { calculatePnL } from '../utils';
-import { formatPnL } from '../utils';
-import { calculateTargetPrice } from '../utils';
 import { useTranslation } from 'react-i18next';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 
@@ -14,9 +10,8 @@ interface TPSLSettingsProps {
   setConfig: (config: TPSLConfig) => void;
   szDecimals: number;
   orderSide: OrderSide;
-  tradeSize: string;
   price: number | string;
-  marginRequired: number;
+  leverage: number;
 }
 
 export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
@@ -24,14 +19,9 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
   setConfig,
   szDecimals,
   orderSide,
-  tradeSize,
   price,
-  marginRequired,
+  leverage,
 }) => {
-  const noSizeTradeAmount = React.useMemo(() => {
-    return Number(tradeSize) === 0;
-  }, [tradeSize]);
-
   const { t } = useTranslation();
   const validatePercentageInput = (value: string): boolean => {
     // Allow empty, numbers, decimal point, and minus sign at the start
@@ -44,7 +34,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
       currentConfig: {
         price: string;
         percentage: string;
-        expectedPnL: string;
+        // expectedPnL: string;
         error: string;
       }
     ) => {
@@ -90,38 +80,37 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
         [field]: value,
       };
 
-      const direction = orderSide === OrderSide.BUY ? 'Long' : 'Short';
-      const size = Number(tradeSize);
-
-      if (field === 'price' && value && price && size) {
+      if (field === 'price' && value && price) {
         // Price → Percentage
         const targetPrice = Number(value);
-        const pnl = calculatePnL(targetPrice, direction, size, Number(price));
-        newConfig.expectedPnL = formatPnL(pnl);
-
-        const pnlPercent = (pnl / marginRequired) * 100;
+        const side = orderSide === OrderSide.BUY ? 1 : -1;
+        const priceDiff = (targetPrice - Number(price)) / Number(price);
+        // Take Profit: positive percentage for profit
+        // Stop Loss: negative percentage (inherently negative)
+        const pnlPercent =
+          type === 'takeProfit'
+            ? priceDiff * 100 * leverage * side
+            : -priceDiff * 100 * leverage * side;
         newConfig.percentage = pnlPercent.toFixed(2);
-      } else if (field === 'percentage' && value && price && size) {
+      } else if (field === 'percentage' && value && price) {
         // Percentage → Price
         const pnlPercent = Number(value);
-        const pnl = (pnlPercent * marginRequired) / 100;
-        const targetPrice = calculateTargetPrice(
-          pnl,
-          direction,
-          size,
-          Number(price)
-        );
+        const side = orderSide === OrderSide.BUY ? 1 : -1;
+        // Take Profit: percentage is positive, add to price
+        // Stop Loss: percentage is negative (inherently), subtract from price
+        const targetPrice =
+          type === 'takeProfit'
+            ? Number(price) * (1 + ((pnlPercent / 100) * side) / leverage)
+            : Number(price) * (1 - ((pnlPercent / 100) * side) / leverage);
 
         newConfig.price =
           targetPrice > 0 ? formatTpOrSlPrice(targetPrice, szDecimals) : '';
-        newConfig.expectedPnL = formatPnL(pnl);
       }
 
       if (value === '') {
         newConfig.error = '';
         newConfig.price = '';
         newConfig.percentage = '';
-        newConfig.expectedPnL = '';
       }
 
       setConfig({
@@ -139,33 +128,41 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     createTPSLChangeHandler('stopLoss')
   );
 
-  const handleTPPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (validatePriceInput(value, szDecimals)) {
-      handleTakeProfitChange('price', value);
+  const handleTPPriceChange = useMemoizedFn(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (validatePriceInput(value, szDecimals)) {
+        handleTakeProfitChange('price', value);
+      }
     }
-  };
+  );
 
-  const handleTPPercentageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (validatePercentageInput(value)) {
-      handleTakeProfitChange('percentage', value);
+  const handleTPPercentageChange = useMemoizedFn(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (validatePercentageInput(value)) {
+        handleTakeProfitChange('percentage', value);
+      }
     }
-  };
+  );
 
-  const handleSLPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (validatePriceInput(value, szDecimals)) {
-      handleStopLossChange('price', value);
+  const handleSLPriceChange = useMemoizedFn(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (validatePriceInput(value, szDecimals)) {
+        handleStopLossChange('price', value);
+      }
     }
-  };
+  );
 
-  const handleSLPercentageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (validatePercentageInput(value)) {
-      handleStopLossChange('percentage', value);
+  const handleSLPercentageChange = useMemoizedFn(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (validatePercentageInput(value)) {
+        handleStopLossChange('percentage', value);
+      }
     }
-  };
+  );
 
   return (
     <div className="space-y-[12px]">
@@ -173,7 +170,6 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
       <div className="space-y-[4px]">
         <div className="flex items-center gap-[8px]">
           <DesktopPerpsInput
-            disabled={noSizeTradeAmount}
             prefix={
               <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                 TP
@@ -184,7 +180,6 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
             className="text-right"
           />
           <DesktopPerpsInput
-            disabled={noSizeTradeAmount}
             prefix={
               <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                 Gain
@@ -211,7 +206,6 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
       <div className="space-y-[4px]">
         <div className="flex items-center gap-[8px]">
           <DesktopPerpsInput
-            disabled={noSizeTradeAmount}
             prefix={
               <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                 SL
@@ -222,7 +216,6 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
             className="text-right"
           />
           <DesktopPerpsInput
-            disabled={noSizeTradeAmount}
             prefix={
               <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
                 Loss

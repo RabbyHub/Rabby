@@ -197,6 +197,15 @@ export const validatePriceInput = (
   return true;
 };
 
+export const validateTradeAmount = (value: string, szDecimals: number) => {
+  if (!value || value === '0' || value === '0.') return true;
+};
+
+export const formatTradeAmount = (value: string, szDecimals: number) => {
+  if (!value || value === '0' || value === '0.') return '0';
+  return value;
+};
+
 /**
  * Format TP/SL price to ensure it passes validation
  * Rules:

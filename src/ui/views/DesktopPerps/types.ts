@@ -47,14 +47,12 @@ export interface TPSLConfig {
   takeProfit: {
     price: string;
     percentage: string;
-    expectedPnL: string;
     error: string;
   };
   stopLoss: {
     price: string;
     error: string;
     percentage: string;
-    expectedPnL: string;
   };
 }
 
@@ -64,6 +62,8 @@ export interface OrderSummaryData {
   orderValue: string;
   marginRequired: string;
   marginUsage: string;
+  tpExpectedPnL?: string;
+  slExpectedPnL?: string;
   slippage?: string;
 }
 

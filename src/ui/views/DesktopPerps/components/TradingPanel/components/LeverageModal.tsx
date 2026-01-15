@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Modal } from 'antd';
+import { Button, message, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { DesktopPerpsSlider } from '../../DesktopPerpsSlider';
 import clsx from 'clsx';
@@ -41,13 +41,10 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
 
   const validateLeverage = (value: number): string => {
     if (value < 1) {
-      return t('page.perpsPro.leverage.minError') || 'Minimum leverage is 1x';
+      return t('page.perpsPro.leverage.minError');
     }
     if (value > maxLeverage) {
-      return (
-        t('page.perpsPro.leverage.maxError', { max: maxLeverage }) ||
-        `Maximum leverage is ${maxLeverage}x`
-      );
+      return t('page.perpsPro.leverage.maxError', { max: maxLeverage });
     }
     return '';
   };
@@ -55,16 +52,20 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
-    // Allow empty or numbers with optional decimal
-    if (value === '' || /^\d*\.?\d*$/.test(value)) {
-      setInputValue(value);
+    // Allow empty or numbers
+    if (value === '' || /^\d*$/.test(value)) {
+      let newValue = value;
+      if (Number(value) > maxLeverage) {
+        newValue = maxLeverage.toString();
+      }
+      setInputValue(newValue);
 
-      if (value && !isNaN(Number(value))) {
-        const numValue = Number(value);
+      if (newValue && !isNaN(Number(newValue))) {
+        const numValue = Number(newValue);
         setLeverage(numValue);
         setError(validateLeverage(numValue));
       } else {
-        setError('');
+        setError('No leverage input');
       }
     }
   };
@@ -77,14 +78,18 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
 
   const handleConfirm = async () => {
     try {
+      if (error) {
+        message.error(error);
+        return;
+      }
       if (isConfirming) return;
       if (!error && leverage >= 1 && leverage <= maxLeverage) {
         setIsConfirming(true);
         await onConfirm(Math.round(leverage));
         setIsConfirming(false);
       }
-    } catch (error) {
-      console.error('Failed to change leverage:', error);
+    } catch (e) {
+      console.error('Failed to change leverage:', e);
     } finally {
       setIsConfirming(false);
     }
@@ -94,27 +99,6 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
     setLeverage(value);
     setInputValue(value.toString());
     setError(validateLeverage(value));
-  };
-
-  const handleInputBlur = () => {
-    if (inputValue === '' || isNaN(Number(inputValue))) {
-      setInputValue(currentLeverage.toString());
-      setLeverage(currentLeverage);
-      setError('');
-    } else {
-      const numValue = Number(inputValue);
-      const clampedValue = Math.max(1, Math.min(maxLeverage, numValue));
-      const roundedValue = Math.round(clampedValue);
-      setLeverage(roundedValue);
-      setInputValue(roundedValue.toString());
-      setError(validateLeverage(roundedValue));
-    }
-  };
-
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.currentTarget.blur();
-    }
   };
 
   return (
@@ -170,7 +154,7 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
                     <button
                       key={point}
                       onClick={() => handlePresetClick(point)}
-                      className="text-[11px] text-r-neutral-foot transition-colors hover:text-r-blue-default"
+                      className="text-[11px] text-r-neutral-foot hover:text-r-blue-default hover:font-medium"
                     >
                       {point}x
                     </button>
@@ -182,8 +166,6 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
                   type="text"
                   value={inputValue}
                   onChange={handleInputChange}
-                  onBlur={handleInputBlur}
-                  onKeyDown={handleInputKeyDown}
                   className="w-[24px] text-[12px] text-rb-neutral-title-1 font-medium text-left bg-transparent border-none outline-none focus:outline-none px-0"
                 />
                 <span className="text-[12px] text-rb-neutral-foot font-medium">
@@ -207,6 +189,7 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
           <Button
             loading={isConfirming}
             onClick={handleConfirm}
+            disabled={Boolean(error) || isConfirming}
             size="large"
             type="primary"
             className={clsx(

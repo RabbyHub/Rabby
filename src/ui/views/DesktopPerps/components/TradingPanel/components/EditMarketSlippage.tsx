@@ -127,8 +127,8 @@ export const EditMarketSlippage: React.FC<EditMarketSlippageProps> = ({
             <DesktopPerpsInput
               value={inputValue}
               onChange={handleInputChange}
-              onBlur={handleInputBlur}
-              onKeyDown={handleInputKeyDown}
+              // onBlur={handleInputBlur}
+              // onKeyDown={handleInputKeyDown}
               prefix={
                 <span className="text-[13px] text-rb-neutral-foot">
                   {t('page.perpsPro.tradingPanel.slippagePage.maxSlippage')}

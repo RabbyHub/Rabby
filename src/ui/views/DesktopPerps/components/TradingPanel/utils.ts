@@ -56,6 +56,118 @@ export function removeTrailingZeros(value: string): string {
 }
 
 /**
+ * Validate amount input based on szDecimals
+ * According to Hyperliquid docs: szDecimals determines the lot size precision
+ * https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size
+ *
+ * @param value - The input value to validate
+ * @param szDecimals - The size decimals for the asset
+ * @returns true if the input is valid, false otherwise
+ */
+export const validateAmountInput = (
+  value: string,
+  szDecimals: number
+): boolean => {
+  // Allow empty string
+  if (value === '') return true;
+
+  // Allow single decimal point at the end (user is typing)
+  if (value === '.') return false;
+
+  // Check if it's a valid number format
+  if (!/^\d*\.?\d*$/.test(value)) return false;
+
+  // If no decimal point, always valid
+  if (!value.includes('.')) return true;
+
+  // If ends with decimal point, allow it (user is typing)
+  if (value.endsWith('.')) return true;
+
+  // Check decimal places don't exceed szDecimals
+  const [, decimalPart] = value.split('.');
+  if (decimalPart && decimalPart.length > szDecimals) {
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * Format amount to correct precision based on szDecimals
+ * According to Hyperliquid docs: szDecimals determines the lot size precision
+ *
+ * @param value - The value to format
+ * @param szDecimals - The size decimals for the asset
+ * @returns Formatted amount string
+ */
+export const formatAmount = (
+  value: string | number,
+  szDecimals: number
+): string => {
+  if (value === '' || value === undefined || value === null) return '';
+
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(num) || num === 0) return '';
+
+  // Round down to szDecimals precision
+  const formatted = new BigNumber(num).toFixed(
+    szDecimals,
+    BigNumber.ROUND_DOWN
+  );
+
+  // Remove trailing zeros
+  return removeTrailingZeros(formatted);
+};
+
+/**
+ * Validate notional (USD value) input
+ * Notional values are typically limited to 2 decimal places
+ *
+ * @param value - The input value to validate
+ * @returns true if the input is valid, false otherwise
+ */
+export const validateNotionalInput = (value: string): boolean => {
+  // Allow empty string
+  if (value === '') return true;
+
+  // Check if it's a valid number format
+  if (!/^\d*\.?\d*$/.test(value)) return false;
+
+  // If no decimal point, always valid
+  if (!value.includes('.')) return true;
+
+  // If ends with decimal point, allow it (user is typing)
+  if (value.endsWith('.')) return true;
+
+  // Check decimal places don't exceed 2
+  const [, decimalPart] = value.split('.');
+  if (decimalPart && decimalPart.length > 2) {
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * Format notional to 2 decimal places
+ *
+ * @param value - The value to format
+ * @returns Formatted notional string
+ */
+export const formatNotional = (value: string | number): string => {
+  if (value === '' || value === undefined || value === null) return '';
+
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(num) || num === 0) return '';
+
+  // Round down to 2 decimal places
+  const formatted = new BigNumber(num).toFixed(2, BigNumber.ROUND_DOWN);
+
+  // Remove trailing zeros
+  return removeTrailingZeros(formatted);
+};
+
+/**
  * Calculate maximum totalSize for scale orders based on available balance and leverage
  * @param availableBalance - Available balance in USD
  * @param leverage - Leverage value

@@ -364,13 +364,21 @@ export const PositionsInfo: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="flex items-center gap-[4px]">
-              <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
-                ${splitNumberByStep(record.liquidationPx)}
-              </div>
-              <DistanceRiskTag
-                isLong={record.direction === 'Long'}
-                percent={record.liquidationDistancePercent}
-              />
+              {new BigNumber(record.liquidationPx).gt(0) ? (
+                <>
+                  <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+                    ${splitNumberByStep(record.liquidationPx)}
+                  </div>
+                  <DistanceRiskTag
+                    isLong={record.direction === 'Long'}
+                    percent={record.liquidationDistancePercent}
+                  />
+                </>
+              ) : (
+                <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+                  -
+                </div>
+              )}
             </div>
           );
         },

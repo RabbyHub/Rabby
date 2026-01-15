@@ -24,6 +24,7 @@ import { EVENTS } from '@/constant';
 import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
+import { TradingButton } from '../components/TradingButton';
 
 export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -168,14 +169,37 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
   const orderSummary: OrderSummaryData = React.useMemo(() => {
     return {
-      liquidationPrice: estimatedLiquidationPrice,
+      tpExpectedPnL:
+        Number(tpslConfig.takeProfit.percentage) && Number(tradeSize) > 0
+          ? '+' +
+            formatUsdValue(
+              (Number(tpslConfig.takeProfit.percentage) * marginRequired) / 100
+            )
+          : '',
+      slExpectedPnL:
+        Number(tpslConfig.stopLoss.percentage) && Number(tradeSize) > 0
+          ? '-' +
+            formatUsdValue(
+              (Number(tpslConfig.stopLoss.percentage) * marginRequired) / 100
+            )
+          : '',
+      liquidationPrice: reduceOnly ? '-' : estimatedLiquidationPrice,
       liquidationDistance: '',
       orderValue: tradeUsdAmount > 0 ? formatUsdValue(tradeUsdAmount) : '$0.00',
-      marginRequired: formatUsdValue(marginRequired),
+      marginRequired: reduceOnly ? '-' : formatUsdValue(marginRequired),
       marginUsage,
       slippage: undefined,
     };
-  }, [estimatedLiquidationPrice, tradeUsdAmount, marginUsage]);
+  }, [
+    estimatedLiquidationPrice,
+    tradeUsdAmount,
+    marginUsage,
+    reduceOnly,
+    tpslConfig.takeProfit.percentage,
+    tpslConfig.stopLoss.percentage,
+    tradeSize,
+    marginRequired,
+  ]);
 
   const limitOrderTypeOptions = [
     {
@@ -267,20 +291,30 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
         quoteAsset="USDC"
-        precision={{ amount: szDecimals, price: pxDecimals }}
+        szDecimals={szDecimals}
       />
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-16">
           <PerpsCheckbox
             checked={tpslConfig.enabled}
-            onChange={handleTPSLEnabledChange}
+            onChange={(enabled) => {
+              handleTPSLEnabledChange(enabled);
+              if (enabled) {
+                setReduceOnly(false);
+              }
+            }}
             title={t('page.perpsPro.tradingPanel.tpSl')}
           />
 
           <PerpsCheckbox
             checked={reduceOnly}
-            onChange={setReduceOnly}
+            onChange={(checked) => {
+              setReduceOnly(checked);
+              if (checked) {
+                handleTPSLEnabledChange(false);
+              }
+            }}
             title={t('page.perpsPro.tradingPanel.reduceOnly')}
             disabled={!currentPosition}
           />
@@ -330,9 +364,8 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
           config={tpslConfig}
           setConfig={setTpslConfig}
           orderSide={orderSide}
-          tradeSize={tradeSize}
           price={limitPrice}
-          marginRequired={marginRequired}
+          leverage={leverage}
         />
       )}
 
@@ -347,34 +380,25 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
           {t('page.perpsPro.tradingPanel.enableTrading')}
         </Button>
       ) : (
-        <Button
+        <TradingButton
           loading={handleOpenOrderLoading}
           onClick={handleOpenOrderRequest}
           disabled={!validation.isValid || tpslConfigHasError}
-          className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
-            validation.isValid
-              ? orderSide === OrderSide.BUY
-                ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
-                : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
-              : validation.error
-              ? 'bg-rb-orange-light-1 text-rb-orange-default cursor-not-allowed'
-              : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
-          }`}
-        >
-          {validation.error
-            ? validation.error
-            : t('page.perpsPro.tradingPanel.placeOrder')}
-        </Button>
+          error={validation.error}
+          isValid={validation.isValid}
+          orderSide={orderSide}
+          titleText={t('page.perpsPro.tradingPanel.placeOrder')}
+        />
       )}
       {/* Order Summary */}
       <OrderSummary
         data={orderSummary}
         showTPSLExpected={tpslConfig.enabled}
         tpExpectedPnL={
-          tpslConfig.enabled ? tpslConfig.takeProfit.expectedPnL : undefined
+          tpslConfig.enabled ? orderSummary?.tpExpectedPnL : undefined
         }
         slExpectedPnL={
-          tpslConfig.enabled ? tpslConfig.stopLoss.expectedPnL : undefined
+          tpslConfig.enabled ? orderSummary?.slExpectedPnL : undefined
         }
       />
     </div>
