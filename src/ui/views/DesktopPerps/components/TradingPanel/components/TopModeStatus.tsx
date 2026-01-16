@@ -117,6 +117,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
         </div>
         <Dropdown
           forceRender={true}
+          transitionName=""
           overlay={
             <Menu
               onClick={(info) => {

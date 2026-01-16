@@ -539,6 +539,7 @@ export const PositionsInfo: React.FC = () => {
         render: (_, record) => {
           return (
             <Dropdown
+              transitionName=""
               forceRender={true}
               overlay={
                 <Menu

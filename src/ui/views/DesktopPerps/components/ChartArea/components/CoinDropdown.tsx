@@ -483,6 +483,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
     <Dropdown
       overlay={dropdownMenu}
       // trigger={['click']}
+      transitionName=""
       visible={dropdownVisible}
       onVisibleChange={setDropdownVisible}
       placement="bottomLeft"

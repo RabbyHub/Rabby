@@ -321,6 +321,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         </div>
         <div className="flex items-center gap-4">
           <Dropdown
+            transitionName=""
             forceRender={true}
             overlay={
               <Menu
