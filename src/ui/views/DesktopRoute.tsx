@@ -10,6 +10,7 @@ import {
   GlobalSignerPortal,
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
+import { DesktopPerps } from './DesktopPerps';
 
 declare global {
   interface Window {
@@ -27,6 +28,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/desktop/profile/:activeTab?">
           <DesktopProfile />
+        </PrivateRoute>
+        <PrivateRoute exact path="/desktop/perps">
+          <DesktopPerps />
         </PrivateRoute>
       </Switch>
 

@@ -1,0 +1,63 @@
+/* Resizable Panels Styles */
+
+/* Resize handle base styles */
+[data-panel-resize-handle-id] {
+  position: relative;
+  z-index: 10;
+  transition: background-color 0.2s ease;
+  background-color: var(--rb-neutral-line, #e5e8ef);
+}
+
+/* Expand clickable area with pseudo element */
+[data-panel-resize-handle-id]::before {
+  content: '';
+  position: absolute;
+  z-index: 10;
+}
+
+/* Horizontal handles - expand left/right */
+[data-panel-resize-handle-id][data-panel-group-direction='horizontal']::before {
+  left: -4px;
+  right: -4px;
+  top: 0;
+  bottom: 0;
+}
+
+/* Vertical handles - expand top/bottom */
+[data-panel-resize-handle-id][data-panel-group-direction='vertical']::before {
+  left: 0;
+  right: 0;
+  top: -4px;
+  bottom: -4px;
+}
+
+/* Hover and drag states */
+[data-panel-resize-handle-id][data-resize-handle-state='hover'],
+[data-panel-resize-handle-id][data-resize-handle-state='drag'] {
+  background-color: var(--r-blue-default, #7084ff) !important;
+}
+
+/* Cursor styles */
+[data-panel-resize-handle-id][data-panel-group-direction='horizontal'] {
+  cursor: col-resize;
+}
+
+[data-panel-resize-handle-id][data-panel-group-direction='vertical'] {
+  cursor: row-resize;
+}
+
+/* Active state during drag */
+[data-panel-resize-handle-id][data-resize-handle-state='drag'] {
+  opacity: 0.8;
+}
+
+/* Panel overflow handling */
+[data-panel] {
+  overflow: hidden;
+}
+
+/* Smooth transitions */
+[data-panel-group] {
+  transition: none;
+}
+

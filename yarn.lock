@@ -4641,10 +4641,10 @@
     ethers "5.5.1"
     semver "7.5.4"
 
-"@rabby-wallet/hyperliquid-sdk@1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/hyperliquid-sdk/-/hyperliquid-sdk-1.1.1.tgz#2b6d4782c83e4ea25fab3732c03ea0f63450ac12"
-  integrity sha512-MGGyyrZWKBFpThHWB2xgTlsuwdSCbQ80HrcUcg5v+9ZD+KlH6n3FkMgZiJoycP+huxJD4X2fzGplDw8x97BBaw==
+"@rabby-wallet/hyperliquid-sdk@1.1.2-beta.18":
+  version "1.1.2-beta.18"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/hyperliquid-sdk/-/hyperliquid-sdk-1.1.2-beta.18.tgz#e8fb0129f189fd06fd56f66969053addaa2eeb38"
+  integrity sha512-1wPPb/qc599bbUzb5R0EgJlUwiBIMS91Jm+i3y8e1nj/b8AQ/Y9SjNHO0FPtXPn2KN1KQFBfuCVjGNLlfw7EdQ==
   dependencies:
     "@ethereumjs/util" "9.0.0"
     "@metamask/eth-sig-util" "5.1.0"
@@ -18201,6 +18201,11 @@ react-redux@8.0.1:
     hoist-non-react-statics "^3.3.2"
     react-is "^18.0.0"
     use-sync-external-store "^1.0.0"
+
+react-resizable-panels@3.0.6:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/react-resizable-panels/-/react-resizable-panels-3.0.6.tgz#8183132ea13a09821e9c93962ed49f240cdcfd3f"
+  integrity sha512-b3qKHQ3MLqOgSS+FRYKapNkJZf5EQzuf6+RLiq1/IlTHw99YrZ2NJZLk4hQIzTnnIkRg2LUqyVinu6YWWpUYew==
 
 react-resize-detector@^8.0.4:
   version "8.1.0"

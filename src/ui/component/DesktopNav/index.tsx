@@ -49,7 +49,7 @@ export const DesktopNav: React.FC<{
         key: '/desktop/perps',
         icon: RcIconPerpsCC,
         title: t('component.DesktopNav.perps'),
-        isSoon: true,
+        // isSoon: true,
       },
       {
         key: '/desktop/lending',
