@@ -6,7 +6,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { DESKTOP_NAV_HEIGHT, DesktopNav } from '@/ui/component/DesktopNav';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useDesktopBalanceView } from '../DesktopProfile/hooks/useDesktopBalanceView';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 import { ReactComponent as IconGlobalSiteIconCC } from '@/ui/assets/global-cc.svg';
 import { KEYRING_TYPE } from '@/constant';
@@ -16,10 +15,15 @@ import { useAsync } from 'react-use';
 import { useWallet } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
 import PolyMarketPng from '@/ui/assets/dapp-iframe/polymarket.png';
+import PolyMarketLostConnectedPng from '@/ui/assets/dapp-iframe/polymarket-lost.png';
+
 import { DappIframeLoading } from './component/loading';
+import { DappIframeError } from './component/error';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 const HANDSHAKE_MESSAGE_TYPE = 'rabby-dapp-iframe-handshake';
 const SYNC_MESSAGE_TYPE = 'rabby-dapp-iframe-sync-url';
+const IFRAME_LOAD_TIMEOUT = 20 * 1000;
+const RULE_OBSERVER_TIMEOUT = 20 * 1000;
 
 const Iframe = styled.iframe`
   width: 100%;
@@ -66,9 +70,26 @@ const getSafeSyncUrl = (value?: string | null) => {
   }
 };
 
+const getHostFromUrl = (value?: string | null) => {
+  if (!value) {
+    return '';
+  }
+  try {
+    return new URL(value).hostname;
+  } catch (err) {
+    return '';
+  }
+};
+
 const defaultOrigin = 'https://polymarket.com/';
 
-export const DesktopDappIframe = () => {
+type DesktopDappIframeProps = {
+  isActive?: boolean;
+};
+
+export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
+  isActive = true,
+}) => {
   const { isDarkTheme } = useThemeMode();
   const wallet = useWallet();
   const history = useHistory();
@@ -77,15 +98,12 @@ export const DesktopDappIframe = () => {
   const currentAccount = useCurrentAccount();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const handshakeTokenRef = useRef<string>(createHandshakeToken());
+  const latestSyncUrlRef = useRef<string | null>(null);
+  const [iframeError, setIframeError] = React.useState<
+    'network' | 'timeout' | null
+  >(null);
   const [isIframeLoading, setIsIframeLoading] = React.useState(true);
-  const {
-    balance,
-    curveChartData,
-    isBalanceLoading,
-    isCurveLoading,
-  } = useDesktopBalanceView({
-    address: currentAccount?.address,
-  });
+  const connectedRef = React.useRef(false);
 
   const [defaultUrl] = React.useState(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -112,6 +130,7 @@ export const DesktopDappIframe = () => {
     };
   }, [location.search]);
   const iframeOrigin = useMemo(() => getOriginFromUrl(iframeSrc), [iframeSrc]);
+  const iframeHost = useMemo(() => getHostFromUrl(iframeSrc), [iframeSrc]);
 
   const updateSearchParams = useCallback(
     (updater: (params: URLSearchParams) => void) => {
@@ -137,6 +156,10 @@ export const DesktopDappIframe = () => {
     updateSearchParams((params) => params.delete('action'));
   }, [updateSearchParams]);
 
+  const handleReload = useCallback(() => {
+    window.location.reload();
+  }, []);
+
   const { value: permission } = useAsync(
     () =>
       currentAccount?.address
@@ -150,18 +173,25 @@ export const DesktopDappIframe = () => {
   console.log('permission', permission?.has_permission);
 
   useEffect(() => {
+    if (!isActive) {
+      return;
+    }
     if (
       action === 'gnosis-queue' &&
       currentAccount?.type !== KEYRING_TYPE.GnosisKeyring
     ) {
       handleCloseAction();
     }
-  }, [action, currentAccount?.type, handleCloseAction]);
+  }, [action, currentAccount?.type, handleCloseAction, isActive]);
 
   const syncUrlToQuery = useCallback(
     (nextUrl?: string | null) => {
       const safeUrl = getSafeSyncUrl(nextUrl);
       if (!safeUrl) {
+        return;
+      }
+      latestSyncUrlRef.current = safeUrl;
+      if (!isActive) {
         return;
       }
       const currentSyncUrl = new URLSearchParams(location.search).get(
@@ -172,7 +202,7 @@ export const DesktopDappIframe = () => {
       }
       updateSearchParams((params) => params.set('syncUrl', safeUrl));
     },
-    [location.search, updateSearchParams]
+    [isActive, location.search, updateSearchParams]
   );
 
   const postHandshake = useCallback(() => {
@@ -188,7 +218,7 @@ export const DesktopDappIframe = () => {
         token: handshakeTokenRef.current,
         rules: {
           debug: true,
-          timeouts: 15 * 1000,
+          timeouts: RULE_OBSERVER_TIMEOUT,
           steps: rules['https://polymarket.com'],
         },
         theme: isDarkTheme ? 'dark' : 'light',
@@ -196,6 +226,19 @@ export const DesktopDappIframe = () => {
       iframeOrigin
     );
   }, [iframeOrigin, isDarkTheme]);
+
+  useEffect(() => {
+    if (!isActive || !isIframeLoading || iframeError) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setIframeError('timeout');
+      setIsIframeLoading(false);
+    }, IFRAME_LOAD_TIMEOUT);
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [iframeError, isActive, isIframeLoading]);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -223,7 +266,8 @@ export const DesktopDappIframe = () => {
       if (!data.token) {
         postHandshake();
         setIsIframeLoading(false);
-
+        setIframeError(null);
+        connectedRef.current = true;
         return;
       }
 
@@ -242,10 +286,28 @@ export const DesktopDappIframe = () => {
   }, [syncUrlToQuery]);
 
   useEffect(() => {
+    if (!isActive) {
+      return;
+    }
     if (!syncUrlParam && iframeSrc) {
       syncUrlToQuery(iframeSrc);
     }
-  }, [iframeSrc, syncUrlParam, syncUrlToQuery]);
+  }, [iframeSrc, isActive, syncUrlParam, syncUrlToQuery]);
+
+  useEffect(() => {
+    if (!isActive) {
+      return;
+    }
+    const latestSyncUrl = latestSyncUrlRef.current;
+    if (!latestSyncUrl) {
+      return;
+    }
+    const currentSyncUrl = new URLSearchParams(location.search).get('syncUrl');
+    if (currentSyncUrl === latestSyncUrl) {
+      return;
+    }
+    updateSearchParams((params) => params.set('syncUrl', latestSyncUrl));
+  }, [isActive, location.search, updateSearchParams]);
 
   (window as any).$$iframeRef = iframeRef.current;
 
@@ -267,14 +329,41 @@ export const DesktopDappIframe = () => {
                   'rounded-[20px] overflow-hidden'
                 )}
               >
-                <Iframe ref={iframeRef} src={defaultUrl} />
-                {isIframeLoading && (
-                  <DappIframeLoading
-                    loadingLabel={t('page.dappIfame.openPolymarket')}
-                    icon={PolyMarketPng}
+                <Iframe
+                  allow="clipboard-write"
+                  ref={iframeRef}
+                  src={defaultUrl}
+                  onError={() => {
+                    if (!connectedRef.current) {
+                      setIsIframeLoading(false);
+                      setIframeError('network');
+                    }
+                  }}
+                />
+                {isIframeLoading &&
+                  !iframeError &&
+                  !permission?.has_permission && (
+                    <DappIframeLoading
+                      loadingLabel={t('page.dappIfame.openPolymarket')}
+                      icon={PolyMarketPng}
+                    />
+                  )}
+                {iframeError && !permission?.has_permission && (
+                  <DappIframeError
+                    imageSrc={PolyMarketLostConnectedPng}
+                    title={t('page.dappIfame.networkErrorTitle')}
+                    description={
+                      iframeHost
+                        ? t('page.dappIfame.networkErrorDescription', {
+                            site: iframeHost,
+                          })
+                        : t('page.dappIfame.networkErrorDescriptionFallback')
+                    }
+                    reloadLabel={t('page.dappIfame.reload')}
+                    onReload={handleReload}
                   />
                 )}
-                {permission && !permission?.has_permission && !isIframeLoading && (
+                {permission && !permission?.has_permission && (
                   <div className="absolute inset-0 bg-[rgba(0,0,0,0.5)] flex flex-col justify-center items-center gap-16">
                     <div className="p-[22px] bg-rb-brand-default rounded-[16px] ">
                       <div className="text-rb-neutral-InvertHighlight text-20 font-medium flex items-center justify-center gap-8">
@@ -303,7 +392,7 @@ export const DesktopDappIframe = () => {
         </aside>
 
         <AddAddressModal
-          visible={action === 'add-address'}
+          visible={isActive && action === 'add-address'}
           onCancel={() => {
             history.replace(history.location.pathname);
           }}
