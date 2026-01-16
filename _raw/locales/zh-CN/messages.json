@@ -3496,7 +3496,11 @@
     "dappIfame": {
       "serviceUnavailable": "服务不可用",
       "predictionNotSupported": "当前区域不支持预测功能。",
-      "openPolymarket": "打开 Polymarket..."
+      "openPolymarket": "打开 Polymarket...",
+      "reload": "重新加载",
+      "networkErrorTitle": "此网站无法访问",
+      "networkErrorDescription": "{{site}} 意外关闭了连接。请检查您的网络。",
+      "networkErrorDescriptionFallback": "网站意外关闭了连接。请检查您的网络。"
     }
   },
   "component": {

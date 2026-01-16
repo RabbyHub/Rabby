@@ -3458,7 +3458,11 @@
     "dappIfame": {
       "serviceUnavailable": "サービスは利用できません",
       "openPolymarket": "Polymarketを開いています...",
-      "predictionNotSupported": "予測機能は、現在の地域ではサポートされていません。"
+      "predictionNotSupported": "予測機能は、現在の地域ではサポートされていません。",
+      "reload": "リロード",
+      "networkErrorDescription": "{{site}}は予期せず接続を閉じました。ネットワークを確認してください。",
+      "networkErrorTitle": "このサイトにアクセスできません",
+      "networkErrorDescriptionFallback": "サイトが予期せず接続を閉じました。ネットワークを確認してください。"
     }
   },
   "component": {
