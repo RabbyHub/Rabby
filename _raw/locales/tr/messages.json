@@ -3461,7 +3461,11 @@
     "dappIfame": {
       "openPolymarket": "Polymarket açılıyor...",
       "serviceUnavailable": "Hizmet Kullanılamıyor",
-      "predictionNotSupported": "Tahmin özelliği mevcut bölgenizde desteklenmiyor."
+      "predictionNotSupported": "Tahmin özelliği mevcut bölgenizde desteklenmiyor.",
+      "reload": "Yenileştir",
+      "networkErrorTitle": "Bu siteye ulaşılamıyor.",
+      "networkErrorDescription": "{{site}} beklenmedik bir şekilde bağlantıyı kapattı. Lütfen ağınızı kontrol edin.",
+      "networkErrorDescriptionFallback": "Site beklenmedik bir şekilde bağlantıyı kapattı. Lütfen ağınızı kontrol edin."
     }
   },
   "component": {

@@ -3470,7 +3470,11 @@
     "dappIfame": {
       "serviceUnavailable": "Сервіс недоступний",
       "openPolymarket": "Відкриваю Polymarket...",
-      "predictionNotSupported": "Функція Прогнозування не підтримується у вашому поточному регіоні."
+      "predictionNotSupported": "Функція Прогнозування не підтримується у вашому поточному регіоні.",
+      "reload": "Перезавантажити",
+      "networkErrorTitle": "Цей сайт недоступний",
+      "networkErrorDescriptionFallback": "Сайт несподівано закрив з'єднання. Будь ласка, перевірте вашу мережу.",
+      "networkErrorDescription": "{{site}} несподівано закрив з'єднання. Будь ласка, перевірте вашу мережу."
     }
   },
   "component": {

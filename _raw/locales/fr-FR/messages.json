@@ -3774,7 +3774,11 @@
     "dappIfame": {
       "serviceUnavailable": "Service Indisponible",
       "openPolymarket": "Ouverture de Polymarket...",
-      "predictionNotSupported": "La fonctionnalité de prédiction n'est pas prise en charge dans votre région actuelle."
+      "predictionNotSupported": "La fonctionnalité de prédiction n'est pas prise en charge dans votre région actuelle.",
+      "networkErrorTitle": "Ce site est inaccessible",
+      "networkErrorDescriptionFallback": "Le site a fermé la connexion de manière inattendue. Veuillez vérifier votre réseau.",
+      "networkErrorDescription": "{{site}} a fermé la connexion de manière inattendue. Veuillez vérifier votre réseau.",
+      "reload": "Recharger"
     }
   }
 }
