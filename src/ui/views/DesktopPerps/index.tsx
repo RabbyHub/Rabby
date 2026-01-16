@@ -99,13 +99,15 @@ export const DesktopPerps: React.FC = () => {
         <div className="flex flex-1 pl-16 pr-8 pb-16">
           <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
             <div className="flex h-[670px] border-b border-solid border-rb-neutral-line">
-              <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
-                <ChartArea />
+              <div className="flex-[4] flex min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
+                <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
+                  <ChartArea />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <OrderBookTrades />
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <OrderBookTrades />
-              </div>
-              <div className=" flex-1 border-l border-solid border-rb-neutral-line flex-shrink-0 overflow-auto">
+              <div className=" flex-1 flex-shrink-0 overflow-auto">
                 <TradingPanel />
               </div>
             </div>

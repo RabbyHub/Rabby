@@ -120,14 +120,14 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
       destroyOnClose
       className="modal-support-darkmode desktop-perps-margin-mode-modal"
     >
-      <div className="bg-rb-neutral-bg-2 flex flex-col h-full">
+      <div className="bg-r-neutral-bg-2 flex flex-col h-full">
         <div className="px-20 pt-16 flex-1 pb-24">
           {/* Title */}
           <h3 className="text-[16px] font-medium text-rb-neutral-title-1 text-center mb-16">
             {t('page.perpsPro.leverage.title')}
           </h3>
 
-          <div className="text-[13px] text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px] gap-16 flex flex-col px-20 py-16">
+          <div className="text-[13px] text-rb-neutral-body bg-r-neutral-card1 rounded-[8px] gap-16 flex flex-col px-20 py-16">
             <div className="text-[13px] text-rb-neutral-body">
               {t('page.perpsPro.leverage.controlPositionLeverage', {
                 coin: coinSymbol,

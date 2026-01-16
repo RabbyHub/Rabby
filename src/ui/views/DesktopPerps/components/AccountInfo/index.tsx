@@ -109,7 +109,7 @@ export const AccountInfo: React.FC<{
                 {t('page.perpsPro.accountInfo.balance')}
               </DashedUnderlineText>
             </Tooltip>
-            <div className="text-r-neutral-title-1">
+            <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(customBalance)}
             </div>
           </div>

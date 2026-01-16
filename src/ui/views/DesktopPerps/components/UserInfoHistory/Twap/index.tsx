@@ -204,7 +204,7 @@ export const Twap: React.FC = () => {
                 <div className="flex flex-row items-center gap-[4px]">
                   <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1">
                     <span
-                      className="cursor-pointer hover:font-bold hover:text-rb-neutral-body"
+                      className="cursor-pointer hover:font-bold hover:text-rb-brand-default"
                       onClick={(e) => {
                         e.stopPropagation();
                         dispatch.perps.setSelectedCoin(record.coin);
@@ -243,7 +243,7 @@ export const Twap: React.FC = () => {
             .toFixed(1);
 
           return (
-            <div className="text-[12px] leading-[14px] font-510 flex flex-col gap-[4px] text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  flex flex-col gap-[4px] text-rb-neutral-title-1">
               <div className="flex items-center gap-[4px]">
                 {record.executedSz}
                 {record.randomize && (
@@ -265,7 +265,7 @@ export const Twap: React.FC = () => {
         width: 130,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
               {calculateAveragePrice(record)}
             </div>
           );
@@ -277,7 +277,7 @@ export const Twap: React.FC = () => {
         width: 180,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
               {calculateRunningTime(record)}
             </div>
           );
@@ -305,12 +305,7 @@ export const Twap: React.FC = () => {
               : 'text-rb-red-default';
 
           return (
-            <div
-              className={clsx(
-                'text-[12px] leading-[14px] font-510',
-                statusColor
-              )}
-            >
+            <div className={clsx('text-[12px] leading-[14px] ', statusColor)}>
               {statusText}
             </div>
           );
@@ -324,7 +319,7 @@ export const Twap: React.FC = () => {
         sorter: (a, b) => Number(a.reduceOnly) - Number(b.reduceOnly),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
               {record.reduceOnly
                 ? t('page.perpsPro.userInfo.yes')
                 : t('page.perpsPro.userInfo.no')}
@@ -339,7 +334,7 @@ export const Twap: React.FC = () => {
         sorter: (a, b) => a.timestamp - b.timestamp,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
               {dayjs(record.timestamp).format('DD/MM/YYYY-hh:mm:ss A')}
             </div>
           );
@@ -351,7 +346,7 @@ export const Twap: React.FC = () => {
       //   width: 80,
       //   render: () => {
       //     return (
-      //       <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+      //       <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
       //         -
       //       </div>
       //     );
@@ -495,7 +490,7 @@ export const Twap: React.FC = () => {
       >
         <div
           className={clsx(
-            'px-[8px] py-[6px] text-[12px] font-510 cursor-pointer',
+            'px-[8px] py-[6px] text-[12px]  cursor-pointer',
             activeTab === 'active'
               ? 'text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px]'
               : 'text-r-neutral-foot bg-rb-neutral-bg-4'
@@ -506,7 +501,7 @@ export const Twap: React.FC = () => {
         </div>
         <div
           className={clsx(
-            'px-[8px] py-[6px] text-[12px] font-510 cursor-pointer',
+            'px-[8px] py-[6px] text-[12px]  cursor-pointer',
             activeTab === 'history'
               ? 'text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px]'
               : 'text-r-neutral-foot bg-rb-neutral-bg-4'

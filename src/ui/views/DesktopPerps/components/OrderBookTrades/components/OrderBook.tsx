@@ -297,6 +297,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
 
         <div className="flex items-center gap-12">
           <Dropdown
+            forceRender={true}
             overlay={
               <Menu onClick={(info) => setQuoteUnit(info.key as QuoteUnit)}>
                 <Menu.Item key="base">{selectedCoin}</Menu.Item>
@@ -319,6 +320,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
             </button>
           </Dropdown>
           <Dropdown
+            forceRender={true}
             overlay={
               <Menu onClick={(info) => setAggregationIndex(info.key as number)}>
                 {aggregationLevels.map((level, index) => (

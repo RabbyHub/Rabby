@@ -68,7 +68,7 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
       destroyOnClose
       className="modal-support-darkmode desktop-perps-margin-mode-modal"
     >
-      <div className="bg-rb-neutral-bg-2 flex flex-col h-full">
+      <div className="bg-r-neutral-bg-2 flex flex-col h-full">
         <div className="px-20 pt-16 flex-1 pb-24">
           {/* Title */}
           <h3 className="text-[16px] font-medium text-rb-neutral-title-1 text-center mb-16">
@@ -81,7 +81,7 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
             <div
               onClick={() => handleModeSelect(MarginMode.CROSS)}
               className={clsx(
-                'p-[12px] rounded-[8px] border cursor-pointer bg-rb-neutral-bg-1',
+                'p-[12px] rounded-[8px] border cursor-pointer bg-r-neutral-card1',
                 selectedMode === MarginMode.CROSS
                   ? 'border-rb-brand-default'
                   : 'border-rb-neutral-line'
@@ -107,7 +107,7 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
             <div
               onClick={() => handleModeSelect(MarginMode.ISOLATED)}
               className={clsx(
-                'p-[12px] rounded-[8px] border cursor-pointer bg-rb-neutral-bg-1',
+                'p-[12px] rounded-[8px] border cursor-pointer bg-r-neutral-card1',
                 selectedMode === MarginMode.ISOLATED
                   ? 'border-rb-brand-default'
                   : 'border-rb-neutral-line'

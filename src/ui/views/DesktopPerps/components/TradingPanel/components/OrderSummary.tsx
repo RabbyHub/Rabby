@@ -27,20 +27,20 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         <>
           {tpExpectedPnL && (
             <div className="flex items-center justify-between">
-              <span className="text-r-neutral-foot text-[13px]">
+              <span className="text-r-neutral-foot text-[12px]">
                 {t('page.perpsPro.tradingPanel.takeProfitExpectedPnL')}
               </span>
-              <span className="text-r-green-default font-medium text-[13px]">
+              <span className="text-r-green-default font-medium text-[12px]">
                 {tpExpectedPnL}
               </span>
             </div>
           )}
           {slExpectedPnL && (
             <div className="flex items-center justify-between">
-              <span className="text-r-neutral-foot text-[13px]">
+              <span className="text-r-neutral-foot text-[12px]">
                 {t('page.perpsPro.tradingPanel.stopLossExpectedPnL')}
               </span>
-              <span className="text-r-red-default font-medium text-[13px]">
+              <span className="text-r-red-default font-medium text-[12px]">
                 {slExpectedPnL}
               </span>
             </div>
@@ -50,41 +50,41 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       {/* Est. Liq. Price */}
       <div className="flex items-center justify-between">
-        <span className="text-r-neutral-foot text-[13px]">
+        <span className="text-r-neutral-foot text-[12px]">
           {t('page.perpsPro.tradingPanel.liquidationPrice')}
         </span>
         {}
-        <span className="text-r-neutral-title-1 font-medium text-[13px]">
+        <span className="text-r-neutral-title-1 font-medium text-[12px]">
           {data.liquidationPrice || '-'}
         </span>
       </div>
 
       {/* Order Value */}
       <div className="flex items-center justify-between">
-        <span className="text-r-neutral-foot text-[13px]">
+        <span className="text-r-neutral-foot text-[12px]">
           {t('page.perpsPro.tradingPanel.orderValue')}
         </span>
-        <span className="text-r-neutral-title-1 font-medium text-[13px]">
+        <span className="text-r-neutral-title-1 font-medium text-[12px]">
           {data.orderValue}
         </span>
       </div>
 
       {/* Margin Required */}
       <div className="flex items-center justify-between">
-        <span className="text-r-neutral-foot text-[13px]">
+        <span className="text-r-neutral-foot text-[12px]">
           {t('page.perpsPro.tradingPanel.marginRequired')}
         </span>
-        <span className="text-r-neutral-title-1 font-medium text-[13px]">
+        <span className="text-r-neutral-title-1 font-medium text-[12px]">
           {data.marginRequired}
         </span>
       </div>
 
       {/* Margin Usage */}
       <div className="flex items-center justify-between">
-        <span className="text-r-neutral-foot text-[13px]">
+        <span className="text-r-neutral-foot text-[12px]">
           {t('page.perpsPro.tradingPanel.marginUsage')}
         </span>
-        <span className="text-r-neutral-title-1 font-medium text-[13px]">
+        <span className="text-r-neutral-title-1 font-medium text-[12px]">
           {data.marginUsage}
         </span>
       </div>
@@ -92,14 +92,14 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       {/* Slippage */}
       {data.slippage && (
         <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[13px]">
+          <span className="text-r-neutral-foot text-[12px]">
             {t('page.perpsPro.tradingPanel.slippage')}
           </span>
           <DashedUnderlineText
             onClick={() => {
               handleSetSlippage?.();
             }}
-            className="text-r-neutral-title-1 font-medium text-[13px]"
+            className="text-r-neutral-title-1 font-medium text-[12px]"
           >
             {data.slippage}
           </DashedUnderlineText>

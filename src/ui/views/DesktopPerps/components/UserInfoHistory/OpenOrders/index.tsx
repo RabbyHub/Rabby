@@ -55,7 +55,7 @@ export const OpenOrders: React.FC = () => {
             <div className="text-[17px] font-bold text-r-neutral-title-1 text-center">
               {t('page.perps.cancelAllOrdersPopup.title')}
             </div>
-            <div className="text-15 font-510 text-r-neutral-title-1 text-center">
+            <div className="text-15  text-r-neutral-title-1 text-center">
               {t('page.perps.cancelAllOrdersPopup.description')}
             </div>
             <div className="flex items-center justify-center w-full gap-12 mt-20">
@@ -110,7 +110,7 @@ export const OpenOrders: React.FC = () => {
               <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 mb-[2px]">
                 <span
                   onClick={() => dispatch.perps.setSelectedCoin(record.coin)}
-                  className="cursor-pointer hover:font-bold hover:text-rb-neutral-body"
+                  className="cursor-pointer hover:font-bold hover:text-rb-brand-default"
                 >
                   {record.coin}{' '}
                 </span>
@@ -128,7 +128,7 @@ export const OpenOrders: React.FC = () => {
         sorter: (a, b) => a.timestamp - b.timestamp,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
+            <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
               {dayjs(record.timestamp).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
@@ -142,7 +142,7 @@ export const OpenOrders: React.FC = () => {
         sorter: (a, b) => a.orderType.localeCompare(b.orderType),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
+            <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
               {record.orderType}
             </div>
           );
@@ -157,22 +157,22 @@ export const OpenOrders: React.FC = () => {
         render: (_, record) => {
           return Number(record.origSz) === 0 ? (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
                 -
               </div>
-              <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
+              <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
                 -
               </div>
             </div>
           ) : (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
                 $
                 {splitNumberByStep(
                   new BigNumber(record.origSz).times(record.limitPx).toFixed(2)
                 )}
               </div>
-              <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
+              <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
                 {record.origSz} {record.coin}
               </div>
             </div>
@@ -188,7 +188,7 @@ export const OpenOrders: React.FC = () => {
         render: (_, record) => {
           // todo
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
               {Number(record.origSz) === 0 ? (
                 '-'
               ) : (
@@ -210,7 +210,7 @@ export const OpenOrders: React.FC = () => {
         dataIndex: 'limitPx',
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
               {record.orderType.includes('Market')
                 ? 'Market'
                 : `$${splitNumberByStep(record.limitPx)}`}
@@ -226,7 +226,7 @@ export const OpenOrders: React.FC = () => {
         dataIndex: 'reduceOnly',
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
               {record.reduceOnly ? 'Yes' : 'No'}
             </div>
           );
@@ -239,7 +239,7 @@ export const OpenOrders: React.FC = () => {
         dataIndex: 'triggerCondition',
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px] font-510 text-rb-neutral-foot">
+            <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
               {record.triggerCondition}
             </div>
           );
@@ -282,13 +282,13 @@ export const OpenOrders: React.FC = () => {
 
           return (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
                 {tpItem?.triggerPx
                   ? `$${splitNumberByStep(tpItem.triggerPx)} `
                   : '-'}
               </div>
 
-              <div className="text-[12px] leading-[14px] font-510 text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
                 {slItem?.triggerPx
                   ? `$${splitNumberByStep(slItem.triggerPx)}`
                   : '-'}
@@ -318,7 +318,7 @@ export const OpenOrders: React.FC = () => {
                 'bg-rb-neutral-bg-4 rounded-[8px] py-[9px] px-[12px] min-w-[88px]',
                 'border border-transparent',
                 'hover:border-rb-brand-default',
-                'text-[12px] leading-[14px] font-510 text-r-neutral-title-1'
+                'text-[12px] leading-[14px]  text-r-neutral-title-1'
               )}
               onClick={() => {
                 handleCancelOrder([{ oid: record.oid, coin: record.coin }]);

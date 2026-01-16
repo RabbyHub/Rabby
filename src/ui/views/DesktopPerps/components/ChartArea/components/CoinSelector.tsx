@@ -74,10 +74,10 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
       {/* Market Data - Display only, not clickable */}
       <HorizontalScrollContainer className="flex items-center gap-24">
         <div className="flex flex-col">
-          <span className="text-[12px] text-r-neutral-foot">
+          <span className="text-[12px] leading-[18px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.mark')}
           </span>
-          <span className="text-[12px] text-r-neutral-title-1">
+          <span className="text-[12px] leading-[18px] text-r-neutral-title-1">
             {currentMarketData.markPx
               ? `$${splitNumberByStep(Number(currentMarketData.markPx))}`
               : '-'}
@@ -85,10 +85,10 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </div>
 
         <div className="flex flex-col">
-          <span className="text-[12px] text-r-neutral-foot">
+          <span className="text-[12px] leading-[18px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.oracle')}
           </span>
-          <span className="text-[12px] text-r-neutral-title-1">
+          <span className="text-[12px] leading-[18px] text-r-neutral-title-1">
             {currentMarketData.oraclePx
               ? `$${splitNumberByStep(Number(currentMarketData.oraclePx))}`
               : '-'}
@@ -96,13 +96,13 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </div>
 
         <div className="flex flex-col">
-          <span className="text-[12px] text-r-neutral-foot">
+          <span className="text-[12px] leading-[18px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.24hChange')}
           </span>
           {currentMarketData.markPx && currentMarketData.prevDayPx ? (
             <span
               className={clsx(
-                'text-[12px] font-medium',
+                'text-[12px] leading-[18px] font-medium',
                 isPositive ? 'text-r-green-default' : 'text-r-red-default'
               )}
             >
@@ -112,17 +112,17 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
               {priceChangePercent.toFixed(2)}%
             </span>
           ) : (
-            <span className="text-[13px] font-medium text-r-neutral-foot">
+            <span className="text-[13px] leading-[18px] font-medium text-r-neutral-foot">
               -
             </span>
           )}
         </div>
 
         <div className="flex flex-col">
-          <span className="text-[12px] text-r-neutral-foot">
+          <span className="text-[12px] leading-[18px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.24hVol')}
           </span>
-          <span className="text-[12px] text-r-neutral-title-1">
+          <span className="text-[12px] leading-[18px] text-r-neutral-title-1">
             {currentMarketData.dayNtlVlm
               ? `$${splitNumberByStep(
                   Number(currentMarketData.dayNtlVlm).toFixed(2)
@@ -132,10 +132,10 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </div>
 
         <div className="flex flex-col">
-          <span className="text-[12px] text-r-neutral-foot">
+          <span className="text-[12px] leading-[18px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.openInterest')}
           </span>
-          <span className="text-[12px] text-r-neutral-title-1">
+          <span className="text-[12px] leading-[18px] text-r-neutral-title-1">
             {currentMarketData.openInterest && currentMarketData.markPx
               ? `$${splitNumberByStep(
                   (
@@ -148,15 +148,15 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </div>
 
         <div className="flex flex-col">
-          <span className="text-[12px] text-r-neutral-foot">
+          <span className="text-[12px] leading-[18px] text-r-neutral-foot">
             {t('page.perpsPro.chatArea.fundingCountdown')}
           </span>
 
           {currentMarketData.funding ? (
-            <span>
+            <span className="text-[12px] leading-[18px]">
               <span
                 className={clsx(
-                  'text-[12px]',
+                  'text-[12px] leading-[18px]',
                   Number(currentMarketData.funding) > 0
                     ? 'text-r-green-default'
                     : 'text-r-red-default'
@@ -164,13 +164,15 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
               >
                 {formatPercent(Number(currentMarketData.funding), 4)}
               </span>
-              <span className="text-[12px] text-r-neutral-foot">
+              <span className="text-[12px] leading-[18px] text-r-neutral-foot">
                 {' '}
                 / {countdown}
               </span>
             </span>
           ) : (
-            <span className="text-[12px] text-r-neutral-foot">-</span>
+            <span className="text-[12px] leading-[18px] text-r-neutral-foot">
+              -
+            </span>
           )}
         </div>
       </HorizontalScrollContainer>

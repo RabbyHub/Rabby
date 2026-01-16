@@ -282,7 +282,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
           }
         />
         <div
-          className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer"
+          className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
           onClick={handleMidClick}
         >
           Mid

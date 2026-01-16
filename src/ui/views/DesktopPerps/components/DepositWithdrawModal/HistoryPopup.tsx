@@ -51,13 +51,13 @@ const HistoryAccountItemRow: React.FC<HistoryAccountItemProps> = ({ data }) => {
   return (
     <div
       className={clsx(
-        'w-full bg-rb-neutral-bg-1 rounded-[8px] px-12 py-10 flex items-center justify-between mb-8'
+        'w-full bg-r-neutral-card1 rounded-[8px] px-12 py-10 flex items-center justify-between mb-8'
       )}
     >
       <div className="flex items-center">
         {ImgAvatar}
         <div className="flex flex-col ml-10">
-          <div className="text-15 text-rb-neutral-title-1 font-medium">
+          <div className="text-15 text-r-neutral-title-1 font-medium">
             {isRealDeposit ? t('page.perps.deposit') : t('page.perps.withdraw')}
           </div>
           {status === 'pending' ? (
@@ -116,17 +116,17 @@ export const HistoryPopup: React.FC<HistoryPopupProps> = ({
   }
 
   return (
-    <div className="absolute inset-0 bg-rb-neutral-bg-2 z-10 flex flex-col">
+    <div className="absolute inset-0 bg-r-neutral-bg-2 z-10 flex flex-col">
       {/* Header */}
       <div className="px-20 pt-16 pb-12 flex items-center justify-between relative">
         <div className="cursor-pointer p-4 -ml-4" onClick={onClose}>
-          <RcIconBack className="w-20 h-20 rotate-180 text-rb-neutral-title-1" />
+          <RcIconBack className="w-20 h-20 rotate-180 text-r-neutral-title-1" />
         </div>
-        <h3 className="text-[20px] font-medium text-rb-neutral-title-1 absolute left-1/2 -translate-x-1/2">
+        <h3 className="text-[20px] font-medium text-r-neutral-title-1 absolute left-1/2 -translate-x-1/2">
           {t('page.perps.history')}
         </h3>
         <div className="cursor-pointer p-4 -mr-4" onClick={onClose}>
-          <SvgIconCross className="w-14 fill-current text-rb-neutral-title-1" />
+          <SvgIconCross className="w-14 fill-current text-r-neutral-title-1" />
         </div>
       </div>
 
@@ -137,7 +137,7 @@ export const HistoryPopup: React.FC<HistoryPopupProps> = ({
             <HistoryAccountItemRow key={`${item.hash}-${index}`} data={item} />
           ))
         ) : (
-          <div className="flex items-center justify-center gap-8 bg-rb-neutral-bg-1 rounded-[8px] p-20 h-[120px] flex-col">
+          <div className="flex items-center justify-center gap-8 bg-r-neutral-bg-1 rounded-[8px] p-20 h-[120px] flex-col">
             <ThemeIcon src={RcIconNoSrc} className="w-24 h-24" />
             <div className="text-13 text-r-neutral-foot">
               {t('page.gasAccount.history.noHistory')}

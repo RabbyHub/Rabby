@@ -137,7 +137,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
           className={clsx(
             'flex justify-between items-center h-[48px] mb-8 border border-transparent',
             'bg-r-neutral-card1 rounded-[8px] px-16',
-            'text-13 font-medium text-rb-neutral-title-1',
+            'text-13 font-medium text-r-neutral-title-1',
             isDisabled
               ? 'opacity-50'
               : 'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light-1'
@@ -149,7 +149,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
         >
           <div className="flex items-center gap-12">
             <TokenWithChain token={item} hideConer width="24px" height="24px" />
-            <span className="text-13 text-rb-neutral-title-1 font-medium">
+            <span className="text-13 text-r-neutral-title-1 font-medium">
               {getTokenSymbol(item)}
             </span>
             {item.id === ARB_USDC_TOKEN_ID &&
@@ -159,7 +159,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
                 </div>
               )}
           </div>
-          <div className="text-13 text-rb-neutral-title-1 font-medium">
+          <div className="text-13 text-r-neutral-title-1 font-medium">
             {clickLoading && loadingItem === item.id + item.chain ? (
               <RcIconLoginLoading className="w-16 h-16 animate-spin" />
             ) : (
@@ -182,7 +182,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       destroyOnClose
       closable
       closeIcon={
-        <SvgIconCross className="w-14 fill-current text-rb-neutral-title-1" />
+        <SvgIconCross className="w-14 fill-current text-r-neutral-title-1" />
       }
       keyboard={false}
       push={false}
@@ -190,7 +190,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
     >
       <div className="flex flex-col h-full pt-16 px-16 bg-r-neutral-bg2 rounded-t-[16px]">
         {/* Token Select Header */}
-        <div className="text-[20px] font-medium text-rb-neutral-title-1 text-center mb-16">
+        <div className="text-[20px] font-medium text-r-neutral-title-1 text-center mb-16">
           {t('page.perps.selectTokenToDeposit')}
         </div>
 

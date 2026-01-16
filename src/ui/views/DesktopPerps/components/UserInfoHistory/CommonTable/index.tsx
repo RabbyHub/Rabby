@@ -37,14 +37,12 @@ const Wrapper = styled.div`
       /* Hover state */
       &:hover {
         color: var(--rb-neutral-title-1, #192945);
-        font-weight: 500;
         background-color: transparent;
       }
 
       /* Active (sorted) state */
       &.ant-table-column-sort {
         color: var(--rb-neutral-title-1, #192945);
-        font-weight: 500;
       }
     }
 

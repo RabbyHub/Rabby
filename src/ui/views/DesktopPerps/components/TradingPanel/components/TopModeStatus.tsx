@@ -116,6 +116,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
           {leverage}x
         </div>
         <Dropdown
+          forceRender={true}
           overlay={
             <Menu
               onClick={(info) => {

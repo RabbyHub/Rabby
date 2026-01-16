@@ -274,7 +274,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
           }
         />
         <div
-          className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer"
+          className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
           onClick={handleMidClick}
         >
           Mid
@@ -321,6 +321,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         </div>
         <div className="flex items-center gap-4">
           <Dropdown
+            forceRender={true}
             overlay={
               <Menu
                 onClick={(info) =>
@@ -343,7 +344,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
                 'inline-flex items-center justify-between',
                 'px-[8px] py-[8px] flex-1 w-[80px] h-28',
                 'border border-rb-neutral-line rounded-[6px]',
-                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1 hover:border-rb-brand-default'
               )}
             >
               {

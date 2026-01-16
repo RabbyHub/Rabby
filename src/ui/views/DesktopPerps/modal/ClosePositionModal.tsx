@@ -326,7 +326,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                       className={clsx(
                         'cursor-pointer w-[88px] py-[12px]',
                         'rounded-[8px] bg-rb-neutral-bg-1',
-                        'text-center text-[13px] leading-[16px] font-medium text-rb-neutral-title-1'
+                        'text-center text-[13px] leading-[16px] font-medium text-rb-neutral-title-1 hover:border-rb-brand-default border border-solid border-transparent'
                       )}
                       onClick={handleMidClick}
                     >
