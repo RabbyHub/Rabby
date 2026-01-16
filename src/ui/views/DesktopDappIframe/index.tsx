@@ -340,13 +340,15 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
                     }
                   }}
                 />
-                {isIframeLoading && !iframeError && (
-                  <DappIframeLoading
-                    loadingLabel={t('page.dappIfame.openPolymarket')}
-                    icon={PolyMarketPng}
-                  />
-                )}
-                {iframeError && (
+                {isIframeLoading &&
+                  !iframeError &&
+                  !permission?.has_permission && (
+                    <DappIframeLoading
+                      loadingLabel={t('page.dappIfame.openPolymarket')}
+                      icon={PolyMarketPng}
+                    />
+                  )}
+                {iframeError && !permission?.has_permission && (
                   <DappIframeError
                     imageSrc={PolyMarketLostConnectedPng}
                     title={t('page.dappIfame.networkErrorTitle')}
@@ -361,26 +363,23 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
                     onReload={handleReload}
                   />
                 )}
-                {permission &&
-                  !permission?.has_permission &&
-                  !isIframeLoading &&
-                  !iframeError && (
-                    <div className="absolute inset-0 bg-[rgba(0,0,0,0.5)] flex flex-col justify-center items-center gap-16">
-                      <div className="p-[22px] bg-rb-brand-default rounded-[16px] ">
-                        <div className="text-rb-neutral-InvertHighlight text-20 font-medium flex items-center justify-center gap-8">
-                          <IconGlobalSiteIconCC
-                            viewBox="0 0 24 24"
-                            width={24}
-                            height={24}
-                          />
-                          <span>{t('page.dappIfame.serviceUnavailable')}</span>
-                        </div>
-                        <div className="text-rb-neutral-InvertHighlight text-14">
-                          {t('page.dappIfame.predictionNotSupported')}
-                        </div>
+                {permission && !permission?.has_permission && (
+                  <div className="absolute inset-0 bg-[rgba(0,0,0,0.5)] flex flex-col justify-center items-center gap-16">
+                    <div className="p-[22px] bg-rb-brand-default rounded-[16px] ">
+                      <div className="text-rb-neutral-InvertHighlight text-20 font-medium flex items-center justify-center gap-8">
+                        <IconGlobalSiteIconCC
+                          viewBox="0 0 24 24"
+                          width={24}
+                          height={24}
+                        />
+                        <span>{t('page.dappIfame.serviceUnavailable')}</span>
+                      </div>
+                      <div className="text-rb-neutral-InvertHighlight text-14">
+                        {t('page.dappIfame.predictionNotSupported')}
                       </div>
                     </div>
-                  )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
