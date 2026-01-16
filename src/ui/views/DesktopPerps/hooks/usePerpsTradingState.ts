@@ -37,7 +37,10 @@ export const usePerpsTradingState = () => {
   }, [marketDataMap, selectedCoin]);
 
   const crossMargin = React.useMemo(() => {
-    return Number(clearinghouseState?.crossMarginSummary.accountValue || 0);
+    return (
+      Number(clearinghouseState?.crossMarginSummary.accountValue || 0) -
+      Number(clearinghouseState?.crossMaintenanceMarginUsed || 0)
+    );
   }, [clearinghouseState?.crossMarginSummary.accountValue]);
 
   // Get current position for selected coin
