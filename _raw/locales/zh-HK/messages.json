@@ -3496,7 +3496,11 @@
     "dappIfame": {
       "serviceUnavailable": "服務不可用",
       "predictionNotSupported": "預測功能在您當前的地區不受支持。",
-      "openPolymarket": "開啟 Polymarket..."
+      "openPolymarket": "開啟 Polymarket...",
+      "reload": "重新加载",
+      "networkErrorTitle": "此網站無法訪問",
+      "networkErrorDescription": "{{site}} 意外地关闭了连接。請檢查你的網絡。",
+      "networkErrorDescriptionFallback": "網站意外關閉了連接。請檢查您的網絡。"
     }
   },
   "component": {

@@ -3460,7 +3460,11 @@
     "dappIfame": {
       "serviceUnavailable": "Serviço Indisponível",
       "predictionNotSupported": "O recurso de Previsão não é suportado na sua região atual.",
-      "openPolymarket": "Abrindo Polymarket..."
+      "openPolymarket": "Abrindo Polymarket...",
+      "networkErrorTitle": "Este site não pode ser alcançado",
+      "reload": "Recarregar",
+      "networkErrorDescriptionFallback": "O site fechou a conexão inesperadamente. Por favor, verifique sua rede.",
+      "networkErrorDescription": "{{site}} fechou a conexão inesperadamente. Por favor, verifique sua rede."
     }
   },
   "component": {

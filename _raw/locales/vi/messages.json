@@ -3455,7 +3455,11 @@
     "dappIfame": {
       "openPolymarket": "Mở Polymarket...",
       "serviceUnavailable": "Dịch vụ không khả dụng",
-      "predictionNotSupported": "Tính năng Dự đoán không được hỗ trợ trong khu vực hiện tại của bạn."
+      "predictionNotSupported": "Tính năng Dự đoán không được hỗ trợ trong khu vực hiện tại của bạn.",
+      "reload": "Tải lại",
+      "networkErrorTitle": "Trang web này không thể truy cập.",
+      "networkErrorDescriptionFallback": "Trang web đã đóng kết nối một cách bất ngờ. Vui lòng kiểm tra mạng của bạn.",
+      "networkErrorDescription": "{{site}} đã đóng kết nối một cách bất ngờ. Vui lòng kiểm tra mạng của bạn."
     }
   },
   "component": {

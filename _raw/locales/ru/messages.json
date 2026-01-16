@@ -1127,7 +1127,8 @@
           "dapps": "Dapps",
           "settings": "Настройки",
           "perpsPositions_one": "{{count}} Позиция",
-          "perpsPositions_other": "{{count}} Позиции"
+          "perpsPositions_other": "{{count}} Позиции",
+          "prediction": "Прогнозирование"
         },
         "comingSoon": "Скоро будет",
         "soon": "Скоро",
@@ -3459,7 +3460,11 @@
     "dappIfame": {
       "serviceUnavailable": "Служба недоступна",
       "openPolymarket": "Открытие Polymarket...",
-      "predictionNotSupported": "Функция Прогнозирования не поддерживается в вашем текущем регионе."
+      "predictionNotSupported": "Функция Прогнозирования не поддерживается в вашем текущем регионе.",
+      "reload": "Перезагрузить",
+      "networkErrorDescriptionFallback": "Сайт неожиданно закрыл соединение. Пожалуйста, проверьте свою сеть.",
+      "networkErrorTitle": "Этот сайт недоступен",
+      "networkErrorDescription": "{{site}} неожиданно закрыл соединение. Пожалуйста, проверьте вашу сеть."
     }
   },
   "component": {
