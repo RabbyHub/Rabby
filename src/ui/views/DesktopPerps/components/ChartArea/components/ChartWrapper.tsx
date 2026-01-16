@@ -315,6 +315,9 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     selectedInterval,
   ]);
 
+  // Track expected dataKey to ignore stale requests
+  const expectedDataKeyRef = useRef<string>(dataKey);
+
   const colors = useMemo(() => getThemeColors(isDarkTheme), [isDarkTheme]);
   const timeLocalization = useMemo(() => createTimeLocalization(), []);
 
@@ -601,6 +604,15 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
         if (!isMountedRef.current) return;
 
+        // Ignore stale request - only apply if this is still the expected data
+        if (expectedDataKeyRef.current !== currentDataKey) {
+          console.log('Ignoring stale request:', {
+            requested: currentDataKey,
+            expected: expectedDataKeyRef.current,
+          });
+          return;
+        }
+
         const candles = parseCandles(snapshot);
         const volumes = parseVolumes(snapshot);
 
@@ -620,6 +632,10 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
   }, [chartHoverData, latestCandle]);
 
   useEffect(() => {
+    // Update expected dataKey BEFORE fetching to prevent stale requests
+    const newDataKey = `${coin}-${selectedInterval}`;
+    expectedDataKeyRef.current = newDataKey;
+
     setIsDataApplied(false);
     setPendingData(null);
 
@@ -765,7 +781,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           {showDisplayData ? (
             <>
               <div className="flex flex-row items-center justify-center flex-shrink-0">
-                <span className="text-13 text-r-neutral-foot">{'O '}</span>
+                <span className="text-13 text-r-neutral-foot mr-2">O</span>
                 <span
                   className={clsx(
                     'text-13 font-medium',
@@ -778,7 +794,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center flex-shrink-0">
-                <span className="text-13 text-r-neutral-foot">H </span>
+                <span className="text-13 text-r-neutral-foot mr-2">H</span>
                 <span
                   className={clsx(
                     'text-13 font-medium',
@@ -791,7 +807,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center flex-shrink-0">
-                <span className="text-13 text-r-neutral-foot">L </span>
+                <span className="text-13 text-r-neutral-foot mr-2">L</span>
                 <span
                   className={clsx(
                     'text-13 font-medium',
@@ -804,7 +820,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center flex-shrink-0">
-                <span className="text-13 text-r-neutral-foot">C </span>
+                <span className="text-13 text-r-neutral-foot mr-2">C</span>
                 <span
                   className={clsx(
                     'text-13 font-medium',
@@ -817,7 +833,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center flex-shrink-0">
-                <span className="text-13 text-r-neutral-foot">V </span>
+                <span className="text-13 text-r-neutral-foot mr-2">V</span>
                 <span
                   className={clsx(
                     'text-13 font-medium',
