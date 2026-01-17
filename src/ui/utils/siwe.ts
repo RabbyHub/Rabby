@@ -26,8 +26,12 @@ export const checkSIWEDomain = (
   let isSIWEDomainValid = false;
 
   if (origin) {
-    const { host } = new URL(origin);
-    isSIWEDomainValid = parsedMessage.domain === host;
+    try {
+      const { host } = new URL(origin);
+      isSIWEDomainValid = parsedMessage.domain === host;
+    } catch (error) {
+      isSIWEDomainValid = false;
+    }
   }
   return isSIWEDomainValid;
 };
