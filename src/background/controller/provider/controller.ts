@@ -70,7 +70,11 @@ import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
 import { getOriginFromUrl } from '@/utils';
 import { hexToNumber, isAddress, numberToHex, stringToHex, toHex } from 'viem';
-import { ProviderRequest } from './type';
+import {
+  ProviderRequest,
+  Eip7702AuthorizationRequest,
+  SignedEip7702Authorization,
+} from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
 import { add0x } from '@/ui/utils/address';
 import {
@@ -1512,6 +1516,142 @@ class ProviderController extends BaseController {
       }
     }
     return null;
+  };
+
+  /**
+   * EIP-7702: Sign authorization for code delegation
+   * Allows a dApp to request the user sign an authorization that delegates
+   * code execution to a smart contract.
+   *
+   * WARNING: This is a high-risk operation - signing an authorization gives
+   * the target contract full control over the EOA.
+   */
+  @Reflect.metadata('APPROVAL', [
+    'SignAuthorization',
+    (req: ProviderRequest) => {
+      assertProviderRequest(req);
+      const {
+        data: { params },
+        session: { origin },
+        account,
+      } = req;
+
+      const authRequest = params?.[0] as Eip7702AuthorizationRequest;
+      if (!authRequest) {
+        throw ethErrors.rpc.invalidParams('Authorization request is required');
+      }
+
+      if (
+        !authRequest.contractAddress ||
+        !isAddress(authRequest.contractAddress)
+      ) {
+        throw ethErrors.rpc.invalidParams(
+          'Valid contractAddress is required'
+        );
+      }
+
+      if (!authRequest.from || !isAddress(authRequest.from)) {
+        throw ethErrors.rpc.invalidParams('Valid from address is required');
+      }
+
+      const currentAddress = account?.address?.toLowerCase();
+      if (authRequest.from.toLowerCase() !== currentAddress) {
+        throw ethErrors.rpc.invalidParams(
+          'from should be same as current address'
+        );
+      }
+
+      // Validate chainId if provided (0 means all chains, which is valid but risky)
+      if (
+        authRequest.chainId !== undefined &&
+        authRequest.chainId !== 0 &&
+        authRequest.chainId < 0
+      ) {
+        throw ethErrors.rpc.invalidParams('Invalid chainId');
+      }
+    },
+    { height: 600 },
+  ])
+  walletSignAuthorization = async (
+    req: ProviderRequest
+  ): Promise<SignedEip7702Authorization> => {
+    assertProviderRequest(req);
+    const {
+      data: { params },
+      session,
+      account: currentAccount,
+    } = req;
+
+    const authRequest = params[0] as Eip7702AuthorizationRequest;
+
+    try {
+      const keyring = await this._checkAddress(authRequest.from, req);
+
+      // Get nonce if not provided
+      let nonce = authRequest.nonce;
+      if (nonce === undefined) {
+        const nonceHex = await this.ethRpc({
+          ...req,
+          data: {
+            method: 'eth_getTransactionCount',
+            params: [authRequest.from, 'pending'],
+          },
+        });
+        nonce = hexToNumber(nonceHex as `0x${string}`);
+      } else if (typeof nonce === 'string') {
+        nonce = hexToNumber(nonce as `0x${string}`);
+      }
+
+      // Get chainId if not provided
+      let chainId = authRequest.chainId;
+      if (chainId === undefined) {
+        const site = permissionService.getConnectedSite(session.origin);
+        const chain = site ? findChainByEnum(site.chain) : null;
+        chainId = chain?.id ?? 1;
+      }
+
+      const authorization: [number, string, number] = [
+        chainId,
+        authRequest.contractAddress,
+        nonce as number,
+      ];
+
+      const signature: string = await keyringService.signEip7702Authorization(
+        keyring,
+        {
+          from: authRequest.from,
+          authorization,
+        }
+      );
+
+      // Parse signature into EIP-7702 format
+      // Signature format: 0x + r(64) + s(64) + v(2)
+      const r = ('0x' + signature.slice(2, 66)) as `0x${string}`;
+      const s = ('0x' + signature.slice(66, 130)) as `0x${string}`;
+      const v = parseInt(signature.slice(130, 132), 16);
+      const yParity = v >= 27 ? v - 27 : v;
+
+      const result: SignedEip7702Authorization = {
+        chainId: toHex(chainId) as `0x${string}`,
+        address: authRequest.contractAddress,
+        nonce: toHex(nonce as number) as `0x${string}`,
+        yParity: toHex(yParity) as `0x${string}`,
+        r,
+        s,
+      };
+
+      // Log the authorization for audit trail
+      signTextHistoryService.createHistory({
+        address: authRequest.from,
+        text: `EIP-7702 Authorization: Delegate to ${authRequest.contractAddress} on chain ${chainId}`,
+        origin: session.origin,
+        type: 'eip7702Authorization',
+      });
+
+      return result;
+    } catch (e) {
+      throw e;
+    }
   };
 
   personalEcRecover = ({

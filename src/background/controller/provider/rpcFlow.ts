@@ -25,7 +25,12 @@ import { Chain } from '@debank/common';
 import { shouldAutoConnect, shouldAutoPersonalSign } from './autoConnect';
 
 const isSignApproval = (type: string) => {
-  const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
+  const SIGN_APPROVALS = [
+    'SignText',
+    'SignTypedData',
+    'SignTx',
+    'SignAuthorization',
+  ];
   return SIGN_APPROVALS.includes(type);
 };
 
