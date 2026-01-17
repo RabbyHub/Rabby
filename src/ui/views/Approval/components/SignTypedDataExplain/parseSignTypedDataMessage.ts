@@ -1,5 +1,12 @@
 export const parseSignTypedDataMessage = (raw: string | object) => {
-  const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
+  let data: any = raw;
+  if (typeof raw === 'string') {
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      return raw;
+    }
+  }
 
   if (!data.primaryType) {
     return data.message;
@@ -20,6 +27,10 @@ export const filterPrimaryType = ({
 }) => {
   const keys = types[primaryType];
   const filteredMessage: Record<string, string> = {};
+
+  if (!Array.isArray(keys)) {
+    return message;
+  }
 
   keys.forEach((key: { name: string; type: string }) => {
     filteredMessage[key.name] = message[key.name];
