@@ -69,7 +69,7 @@ export function getFormattedIpfsUrl(
  * @returns A URL with a https:// prepended.
  */
 export function addUrlProtocolPrefix(urlString: string): string {
-  if (!urlString.match(/(^http:\/\/)|(^https:\/\/)/u)) {
+  if (!urlString.match(/^https?:\/\//iu)) {
     return `https://${urlString}`;
   }
   return urlString;
