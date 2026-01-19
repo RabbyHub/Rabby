@@ -4,7 +4,7 @@ import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { CommonTable } from '../CommonTable';
 import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
@@ -13,6 +13,7 @@ import BigNumber from 'bignumber.js';
 import { sortBy } from 'lodash';
 import { formatPercent } from '@/ui/views/Perps/utils';
 import { useTranslation } from 'react-i18next';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 
 export const TradeHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -25,6 +26,21 @@ export const TradeHistory: React.FC = () => {
   });
 
   const { t } = useTranslation();
+
+  const fetchUserFills = useCallback(() => {
+    const sdk = getPerpsSDK();
+    sdk.info.getUserFills().then((res) => {
+      dispatch.perps.patchStatsListBySnapshot({
+        listName: 'userFills',
+        list: (res as unknown) as WsFill[],
+        isSnapshot: true,
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    fetchUserFills();
+  }, []);
 
   const list = useMemo<WsFill[]>(() => {
     return sortBy(userFills, (item) => -item.time);
@@ -88,6 +104,7 @@ export const TradeHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+              {record.liquidation ? 'Liquidation: ' : ''}
               {record.dir}
             </div>
           );

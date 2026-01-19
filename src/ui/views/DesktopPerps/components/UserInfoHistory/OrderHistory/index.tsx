@@ -4,7 +4,7 @@ import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { CommonTable } from '../CommonTable';
 import { UserHistoricalOrders, WsFill } from '@rabby-wallet/hyperliquid-sdk';
@@ -13,6 +13,7 @@ import BigNumber from 'bignumber.js';
 import { sortBy } from 'lodash';
 import { formatPercent } from '@/ui/views/Perps/utils';
 import { useTranslation } from 'react-i18next';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 
 export const OrderHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -25,6 +26,21 @@ export const OrderHistory: React.FC = () => {
   const list = useMemo<UserHistoricalOrders[]>(() => {
     return sortBy(historicalOrders, (item) => -item.statusTimestamp);
   }, [historicalOrders]);
+
+  const fetchHistoricalOrders = useCallback(() => {
+    const sdk = getPerpsSDK();
+    sdk.info.getUserHistoricalOrders().then((res) => {
+      dispatch.perps.patchStatsListBySnapshot({
+        listName: 'historicalOrders',
+        list: res,
+        isSnapshot: true,
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    fetchHistoricalOrders();
+  }, []);
 
   const columns = useMemo<ColumnType<UserHistoricalOrders>[]>(
     () => [

@@ -206,7 +206,7 @@ export const perps = createModel<RootModel>()({
       if (isSnapshot) {
         return {
           ...state,
-          [listName]: list.reverse().slice(0, 2000),
+          [listName]: list.reverse().slice(0, 200),
         };
       } else {
         return {
@@ -266,7 +266,7 @@ export const perps = createModel<RootModel>()({
       if (isSnapshot) {
         return {
           ...state,
-          userAccountHistory: newList.reverse().slice(0, 2000),
+          userAccountHistory: newList.reverse().slice(0, 200),
         };
       } else {
         const {
@@ -384,7 +384,7 @@ export const perps = createModel<RootModel>()({
       if (isSnapshot) {
         return {
           ...state,
-          userFills: fills.slice(0, 2000),
+          userFills: fills.slice(0, 200),
         };
       } else {
         return {
