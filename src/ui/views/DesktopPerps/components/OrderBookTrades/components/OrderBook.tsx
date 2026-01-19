@@ -30,7 +30,7 @@ interface AggregationConfig {
 }
 
 interface OrderBookLevel {
-  price: number;
+  price: string;
   size: number;
   total: number;
 }
@@ -44,6 +44,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     marketDataMap,
     wsActiveAssetCtx,
     isInitialized,
+    marketEstSize,
   } = useRabbySelector((state) => state.perps);
   const dispatch = useRabbyDispatch();
   const [viewMode, setViewMode] = useState<ViewMode>('Both');
@@ -123,7 +124,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           const processedBids: OrderBookLevel[] = [];
           let totalBids = 0;
           for (const level of data.levels[0] || []) {
-            const price = Number(level.px);
+            const price = level.px;
             const size = Number(level.sz);
             totalBids += size;
             processedBids.push({
@@ -137,7 +138,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           const processedAsks: OrderBookLevel[] = [];
           let totalAsks = 0;
           for (const level of data.levels[1] || []) {
-            const price = Number(level.px);
+            const price = level.px;
             const size = Number(level.sz);
             totalAsks += size;
             processedAsks.push({
@@ -184,7 +185,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     return (
       <div
         key={`${type}-${order.price}`}
-        onClick={() => handleClickPrice(order.price)}
+        onClick={() => handleClickPrice(Number(order.price))}
         className="relative flex items-center justify-between px-[12px] h-[24px] text-[12px] hover:bg-rb-neutral-bg-0 cursor-pointer group"
       >
         {/* Depth background */}
@@ -234,6 +235,25 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
       };
     }
   }, [viewMode, asks, bids]);
+
+  useEffect(() => {
+    if (!marketEstSize) return;
+    let estPrice = '';
+    const isBuy = Number(marketEstSize) > 0;
+    const arr = isBuy ? asks : bids;
+    arr.forEach((item, index) => {
+      if (
+        item.total > Math.abs(Number(marketEstSize)) ||
+        index === arr.length - 1
+      ) {
+        estPrice = item.price;
+        return;
+      }
+    });
+    dispatch.perps.patchState({
+      marketEstPrice: estPrice,
+    });
+  }, [marketEstSize, asks, bids]);
 
   const maxTotal = useMemo(() => {
     const bid =

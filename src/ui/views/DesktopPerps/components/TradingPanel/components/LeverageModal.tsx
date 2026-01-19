@@ -5,6 +5,7 @@ import { DesktopPerpsSlider } from '../../DesktopPerpsSlider';
 import clsx from 'clsx';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
+import { LeverageInput } from './LeverageInput';
 
 interface LeverageModalProps {
   visible: boolean;
@@ -25,65 +26,23 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
 }) => {
   const [isConfirming, setIsConfirming] = React.useState(false);
   const { t } = useTranslation();
-  const [leverage, setLeverage] = React.useState<number>(currentLeverage);
-  const [inputValue, setInputValue] = React.useState<string>(
-    currentLeverage.toString()
+  const [selectedLeverage, setLeverage] = React.useState<number | undefined>(
+    currentLeverage
   );
+  const leverage = selectedLeverage || 1;
   const [error, setError] = React.useState<string>('');
 
   React.useEffect(() => {
     if (visible) {
       setLeverage(currentLeverage);
-      setInputValue(currentLeverage.toString());
       setError('');
     }
   }, [visible, currentLeverage]);
 
-  const validateLeverage = (value: number): string => {
-    if (value < 1) {
-      return t('page.perpsPro.leverage.minError');
-    }
-    if (value > maxLeverage) {
-      return t('page.perpsPro.leverage.maxError', { max: maxLeverage });
-    }
-    return '';
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-
-    // Allow empty or numbers
-    if (value === '' || /^\d*$/.test(value)) {
-      let newValue = value;
-      if (Number(value) > maxLeverage) {
-        newValue = maxLeverage.toString();
-      }
-      setInputValue(newValue);
-
-      if (newValue && !isNaN(Number(newValue))) {
-        const numValue = Number(newValue);
-        setLeverage(numValue);
-        setError(validateLeverage(numValue));
-      } else {
-        setError('No leverage input');
-      }
-    }
-  };
-
-  const handleSliderChange = (value: number) => {
-    setLeverage(value);
-    setInputValue(value.toString());
-    setError(validateLeverage(value));
-  };
-
   const handleConfirm = async () => {
     try {
-      if (error) {
-        message.error(error);
-        return;
-      }
       if (isConfirming) return;
-      if (!error && leverage >= 1 && leverage <= maxLeverage) {
+      if (leverage >= 1 && leverage <= maxLeverage) {
         setIsConfirming(true);
         await onConfirm(Math.round(leverage));
         setIsConfirming(false);
@@ -95,11 +54,34 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
     }
   };
 
-  const handlePresetClick = (value: number) => {
-    setLeverage(value);
-    setInputValue(value.toString());
-    setError(validateLeverage(value));
-  };
+  const leverageRangeValidation = React.useMemo(() => {
+    if (selectedLeverage == null || Number.isNaN(+selectedLeverage)) {
+      return {
+        error: true,
+        errorMessage: t('page.perps.leverageRangeMinError', {
+          min: 1,
+        }),
+      };
+    }
+    if (selectedLeverage > maxLeverage) {
+      return {
+        error: true,
+        errorMessage: t('page.perps.leverageRangeMaxError', {
+          max: maxLeverage,
+        }),
+      };
+    }
+
+    if (selectedLeverage < 1) {
+      return {
+        error: true,
+        errorMessage: t('page.perps.leverageRangeMinError', {
+          min: 1,
+        }),
+      };
+    }
+    return { error: false, errorMessage: '' };
+  }, [selectedLeverage, maxLeverage, t]);
 
   return (
     <Modal
@@ -127,59 +109,20 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
             {t('page.perpsPro.leverage.title')}
           </h3>
 
-          <div className="text-[13px] text-rb-neutral-body bg-r-neutral-card1 rounded-[8px] gap-16 flex flex-col px-20 py-16">
-            <div className="text-[13px] text-rb-neutral-body">
-              {t('page.perpsPro.leverage.controlPositionLeverage', {
-                coin: coinSymbol,
-                max: maxLeverage,
-              })}
-            </div>
-            <div className="text-[13px] text-rb-neutral-body">
-              {t('page.perpsPro.leverage.maxPositionSize')}
-            </div>
-
-            <div className="flex items-center gap-[20px]">
-              <div className="flex-1 space-y-[6px] my-8">
-                <DesktopPerpsSlider
-                  min={1}
-                  max={maxLeverage}
-                  value={leverage}
-                  onChange={handleSliderChange}
-                  step={1}
-                  tooltipVisible={false}
-                />
-                {/* Preset Points */}
-                <div className="flex items-center justify-between">
-                  {[1, maxLeverage].map((point) => (
-                    <button
-                      key={point}
-                      onClick={() => handlePresetClick(point)}
-                      className="text-[11px] text-r-neutral-foot hover:text-r-blue-default hover:font-medium"
-                    >
-                      {point}x
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-8 gap-[2px] h-[28px] w-[52px] shrink-0 border border-solid border-rb-neutral-line rounded-[8px] ">
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={handleInputChange}
-                  className="w-[24px] text-[12px] text-rb-neutral-title-1 font-medium text-left bg-transparent border-none outline-none focus:outline-none px-0"
-                />
-                <span className="text-[12px] text-rb-neutral-foot font-medium">
-                  x
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-4 bg-rb-orange-light-1 rounded-[8px] px-12 py-10">
-              <RcIconInfoCC className="text-rb-orange-default" />
-              <div className=" text-[12px]  text-rb-orange-default font-medium">
-                {t('page.perpsPro.leverage.higherLeverageRisk')}
-              </div>
-            </div>
-          </div>
+          <LeverageInput
+            title={t('page.perps.leverage')}
+            value={selectedLeverage}
+            onChange={setLeverage}
+            min={1}
+            max={maxLeverage}
+            step={1}
+            errorMessage={
+              leverageRangeValidation.error &&
+              leverageRangeValidation.errorMessage
+                ? leverageRangeValidation.errorMessage
+                : undefined
+            }
+          />
         </div>
         <div
           className={clsx(
@@ -189,7 +132,7 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
           <Button
             loading={isConfirming}
             onClick={handleConfirm}
-            disabled={Boolean(error) || isConfirming}
+            disabled={leverageRangeValidation.error || isConfirming}
             size="large"
             type="primary"
             className={clsx(

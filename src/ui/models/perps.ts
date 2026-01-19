@@ -124,6 +124,8 @@ export interface PerpsState {
   twapSliceFills: UserTwapSliceFill[];
   marketSlippage: number; // 0-1, default 0.08 (8%)
   soundEnabled: boolean;
+  marketEstSize: string;
+  marketEstPrice: string;
 }
 
 export const perps = createModel<RootModel>()({
@@ -168,6 +170,8 @@ export const perps = createModel<RootModel>()({
     twapSliceFills: [],
     soundEnabled: true,
     marketSlippage: 0.08, // default 8%
+    marketEstSize: '',
+    marketEstPrice: '',
   } as PerpsState,
 
   reducers: {

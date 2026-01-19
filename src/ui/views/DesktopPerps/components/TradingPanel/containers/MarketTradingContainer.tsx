@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue } from '@/ui/utils';
 import {
   OrderSide,
@@ -20,6 +20,7 @@ import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { EditMarketSlippage } from '../components/EditMarketSlippage';
 import { TradingButton } from '../components/TradingButton';
 import BigNumber from 'bignumber.js';
+import { formatPercent, formatPerpsPct } from '@/ui/views/Perps/utils';
 
 export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -28,6 +29,8 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   const marketSlippage = useRabbySelector(
     (state) => state.perps.marketSlippage
   );
+
+  const dispatch = useRabbyDispatch();
 
   // Get data from perpsState
   const {
@@ -61,7 +64,21 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     resetForm,
   } = usePerpsTradingState();
 
+  const estPrice = useRabbySelector((state) => state.perps.marketEstPrice);
   const [slippageVisible, setSlippageVisible] = React.useState(false);
+
+  useEffect(() => {
+    const isBuy = orderSide === OrderSide.BUY;
+    if (!Number(positionSize.amount)) {
+      return;
+    }
+    const marketEstSize = isBuy
+      ? positionSize.amount
+      : `-${positionSize.amount}`;
+    dispatch.perps.patchState({
+      marketEstSize,
+    });
+  }, [positionSize.amount, orderSide]);
 
   // Form validation
   const validation = React.useMemo(() => {
@@ -149,6 +166,10 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   );
 
   const orderSummary: OrderSummaryData = React.useMemo(() => {
+    const estSlippage =
+      estPrice && Number(positionSize.amount) > 0
+        ? (Number(estPrice) - Number(markPrice)) / Number(markPrice)
+        : 0;
     return {
       tpExpectedPnL:
         Number(tpslConfig.takeProfit.percentage) && Number(tradeSize) > 0
@@ -172,7 +193,10 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           : '$0.00',
       marginRequired: formatUsdValue(marginRequired),
       marginUsage,
-      slippage: `Max ${(marketSlippage * 100).toFixed(2)}%`,
+      slippage: `Est. ${formatPercent(
+        Math.abs(estSlippage),
+        4
+      )} Max ${formatPercent(marketSlippage, 2)}`,
     };
   }, [
     tpslConfig.takeProfit.percentage,
@@ -183,6 +207,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     estimatedLiquidationPrice,
     marginUsage,
     marketSlippage,
+    estPrice,
   ]);
 
   const handleSetSlippage = () => {

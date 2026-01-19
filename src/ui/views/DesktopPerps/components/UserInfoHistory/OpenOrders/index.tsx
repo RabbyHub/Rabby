@@ -167,10 +167,13 @@ export const OpenOrders: React.FC = () => {
           ) : (
             <div className="space-y-[4px]">
               <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-                $
-                {splitNumberByStep(
-                  new BigNumber(record.origSz).times(record.limitPx).toFixed(2)
-                )}
+                {record.orderType.includes('Market')
+                  ? 'Market'
+                  : splitNumberByStep(
+                      new BigNumber(record.origSz)
+                        .times(record.limitPx)
+                        .toFixed(2)
+                    )}
               </div>
               <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
                 {record.origSz} {record.coin}

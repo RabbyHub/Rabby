@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { PositionsInfo } from './PositionsInfo';
 import { OrderHistory } from './OrderHistory';
@@ -8,6 +8,8 @@ import { FundingHistory } from './FundingHistory';
 import { Twap } from './Twap';
 import { useRabbySelector } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
+import { EVENTS } from '@/constant';
+import eventBus from '@/eventBus';
 
 interface Tab {
   key: string;
@@ -71,6 +73,22 @@ export const UserInfoHistory: React.FC = () => {
     () => tabs.find((tab) => tab.key === activeTab)?.content,
     [activeTab]
   );
+
+  useEffect(() => {
+    const handleTabChange = (tab: typeof tabs[number]['key']) => {
+      setActiveTab(tab);
+    };
+    eventBus.addEventListener(
+      EVENTS.PERPS.USER_INFO_HISTORY_TAB_CHANGED,
+      handleTabChange
+    );
+    return () => {
+      eventBus.removeEventListener(
+        EVENTS.PERPS.USER_INFO_HISTORY_TAB_CHANGED,
+        handleTabChange
+      );
+    };
+  }, []);
 
   return (
     <div className="flex-1 h-full bg-rb-neutral-bg-1 flex flex-col min-w-0 overflow-hidden">

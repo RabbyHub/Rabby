@@ -1,12 +1,11 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import { formatUsdValue } from '@/ui/utils';
-import { PerpsSlider } from '../components/PerpsSlider';
 import { useTranslation } from 'react-i18next';
-import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../constants';
 import clsx from 'clsx';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { useMemoizedFn } from 'ahooks';
+import { DesktopPerpsSlider } from '../../DesktopPerpsSlider';
 
 interface LeverageInputProps {
   title: string;
@@ -101,22 +100,21 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
         </div>
       </div>
 
-      <PerpsSlider
+      <DesktopPerpsSlider
         value={value ?? 1}
-        onValueChange={onChange}
-        showPercentage={false}
+        onChange={onChange}
         step={step}
         min={min}
         max={max}
       />
-      {errorMessage ? (
+      {
         <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px] mt-[14px]">
           <RcIconInfoCC className="text-r-orange-default" />
           <div className="text-center text-[12px] leading-[14px] text-r-orange-default">
-            {errorMessage}
+            {errorMessage || t('page.perpsPro.leverage.higherLeverageRisk')}
           </div>
         </div>
-      ) : null}
+      }
     </div>
   );
 };

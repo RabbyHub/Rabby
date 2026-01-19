@@ -1085,6 +1085,7 @@
           "orderHistory": "No order history"
         },
         "positionInfo": {
+          "viewOrders": "View Orders",
           "currentPosition": "Current Position",
           "reversePosition": "Reverse Position",
           "configure": "Configure",

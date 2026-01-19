@@ -34,6 +34,8 @@ import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { LeverageModal } from '../../TradingPanel/components';
 import { MarginMode } from '../../../types';
 import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -53,6 +55,7 @@ export interface PositionFormatData {
   sinceOpenFunding: string;
   tpItem: OpenOrder | undefined;
   slItem: OpenOrder | undefined;
+  needSeeMoreOrder: boolean;
 }
 
 export const PositionsInfo: React.FC = () => {
@@ -91,14 +94,21 @@ export const PositionsInfo: React.FC = () => {
           order.coin === item.position.coin &&
           order.orderType === 'Take Profit Market' &&
           order.isTrigger &&
-          order.reduceOnly
+          order.isPositionTpsl
       );
       const slItem = openOrders.find(
         (order) =>
           order.coin === item.position.coin &&
           order.orderType === 'Stop Market' &&
           order.isTrigger &&
-          order.reduceOnly
+          order.isPositionTpsl
+      );
+
+      const needSeeMoreOrder = openOrders.find(
+        (order) =>
+          order.coin === item.position.coin &&
+          order.isTrigger &&
+          !order.isPositionTpsl
       );
 
       const pxDecimals = marketData.pxDecimals || 2;
@@ -127,6 +137,7 @@ export const PositionsInfo: React.FC = () => {
         sinceOpenFunding: item.position.cumFunding.sinceOpen || '0',
         tpItem: tpItem,
         slItem: slItem,
+        needSeeMoreOrder: Boolean(needSeeMoreOrder) && !tpItem && !slItem,
       });
     });
 
@@ -463,55 +474,69 @@ export const PositionsInfo: React.FC = () => {
           );
 
           return (
-            <div className="flex items-center gap-[12px]">
-              <div className="flex flex-col gap-[4px]">
-                <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-                  {tpPrice ? (
-                    <div>
-                      ${splitNumberByStep(tpPrice)}{' '}
-                      {takeProfitExpectedPnl ? (
-                        <span
-                          className={
-                            takeProfitExpectedPnl >= 0
-                              ? 'text-r-green-default'
-                              : 'text-r-red-default'
-                          }
-                        >
-                          ({takeProfitExpectedPnl >= 0 ? '+' : '-'}
-                          {formatUsdValue(Math.abs(takeProfitExpectedPnl))})
-                        </span>
-                      ) : null}
-                    </div>
-                  ) : (
-                    <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
-                      no TP
-                    </div>
-                  )}
+            <div className="flex items-center gap-[6px]">
+              {record.needSeeMoreOrder ? (
+                <div
+                  className="text-[12px] leading-[14px]  text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
+                  onClick={() => {
+                    eventBus.emit(
+                      EVENTS.PERPS.USER_INFO_HISTORY_TAB_CHANGED,
+                      'openOrders'
+                    );
+                  }}
+                >
+                  {t('page.perpsPro.userInfo.positionInfo.viewOrders')}
                 </div>
-                <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-                  {slPrice ? (
-                    <div>
-                      ${splitNumberByStep(slPrice)}{' '}
-                      {stopLossExpectedPnl ? (
-                        <span
-                          className={
-                            stopLossExpectedPnl >= 0
-                              ? 'text-r-green-default'
-                              : 'text-r-red-default'
-                          }
-                        >
-                          ({stopLossExpectedPnl >= 0 ? '+' : '-'}
-                          {formatUsdValue(Math.abs(stopLossExpectedPnl))})
-                        </span>
-                      ) : null}
-                    </div>
-                  ) : (
-                    <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
-                      no SL
-                    </div>
-                  )}
+              ) : (
+                <div className="flex flex-col gap-[4px]">
+                  <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+                    {tpPrice ? (
+                      <div>
+                        ${splitNumberByStep(tpPrice)}{' '}
+                        {takeProfitExpectedPnl ? (
+                          <span
+                            className={
+                              takeProfitExpectedPnl >= 0
+                                ? 'text-r-green-default'
+                                : 'text-r-red-default'
+                            }
+                          >
+                            ({takeProfitExpectedPnl >= 0 ? '+' : '-'}
+                            {formatUsdValue(Math.abs(takeProfitExpectedPnl))})
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
+                        no TP
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+                    {slPrice ? (
+                      <div>
+                        ${splitNumberByStep(slPrice)}{' '}
+                        {stopLossExpectedPnl ? (
+                          <span
+                            className={
+                              stopLossExpectedPnl >= 0
+                                ? 'text-r-green-default'
+                                : 'text-r-red-default'
+                            }
+                          >
+                            ({stopLossExpectedPnl >= 0 ? '+' : '-'}
+                            {formatUsdValue(Math.abs(stopLossExpectedPnl))})
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
+                        no SL
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
               <RcIconEditCC
                 className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default"
                 onClick={() => {
