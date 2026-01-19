@@ -39,7 +39,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     currentPosition,
     markPrice,
     midPrice,
-    currentBestAskPrice,
     szDecimals,
     pxDecimals,
     leverage,
@@ -68,6 +67,27 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     'Gtc'
   );
 
+  const wsActiveAssetCtx = useRabbySelector(
+    (state) => state.perps.wsActiveAssetCtx
+  );
+
+  const { currentBestAskPrice, currentBestBidPrice } = React.useMemo(() => {
+    if (
+      wsActiveAssetCtx &&
+      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
+    ) {
+      const impactPxs = wsActiveAssetCtx?.ctx.impactPxs;
+      return {
+        currentBestAskPrice: Number(impactPxs[1] || 0),
+        currentBestBidPrice: Number(impactPxs[0] || 0),
+      };
+    }
+    return {
+      currentBestAskPrice: midPrice,
+      currentBestBidPrice: midPrice,
+    };
+  }, [wsActiveAssetCtx, markPrice, selectedCoin]);
+
   // Form validation
   const validation = React.useMemo(() => {
     let error: string = '';
@@ -93,9 +113,18 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     // post-only order price must be lower than the best ask price to avoid immediately matching
     if (
       limitOrderType === 'Alo' &&
-      Number(limitPrice) >= Number(currentBestAskPrice || midPrice)
+      orderSide === OrderSide.BUY &&
+      Number(limitPrice) >= Number(currentBestAskPrice)
     ) {
-      error = t('page.perpsPro.tradingPanel.aloTooLarge');
+      error = t('page.perpsPro.tradingPanel.aloTooLargeBuy');
+      return { isValid: false, error };
+    }
+    if (
+      limitOrderType === 'Alo' &&
+      orderSide === OrderSide.SELL &&
+      Number(limitPrice) <= Number(currentBestBidPrice)
+    ) {
+      error = t('page.perpsPro.tradingPanel.aloTooLargeSell');
       return { isValid: false, error };
     }
 
@@ -132,6 +161,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     availableBalance,
     currentMarketData,
     currentBestAskPrice,
+    currentBestBidPrice,
     midPrice,
     t,
   ]);
@@ -208,20 +238,24 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Gtc'),
     },
     {
-      label: 'ALO',
-      value: 'Alo',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Alo'),
-    },
-    {
       label: 'IOC',
       value: 'Ioc',
       title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Ioc'),
+    },
+    {
+      label: 'ALO',
+      value: 'Alo',
+      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Alo'),
     },
   ];
 
   const handleMidClick = () => {
     setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
   };
+
+  useEffect(() => {
+    setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
+  }, [selectedCoin]);
 
   useEffect(() => {
     const handleClickPrice = (price: string) => {
@@ -292,6 +326,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         baseAsset={selectedCoin}
         quoteAsset="USDC"
         szDecimals={szDecimals}
+        priceChangeUsdValue={true}
       />
 
       <div className="flex items-center justify-between">

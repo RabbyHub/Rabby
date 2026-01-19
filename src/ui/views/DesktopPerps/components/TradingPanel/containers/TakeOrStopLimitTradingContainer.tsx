@@ -340,6 +340,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         baseAsset={selectedCoin}
         quoteAsset="USDC"
         szDecimals={szDecimals}
+        priceChangeUsdValue={true}
       />
 
       <div className="flex items-center justify-between">

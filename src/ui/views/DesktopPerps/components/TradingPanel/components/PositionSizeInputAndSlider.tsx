@@ -32,6 +32,7 @@ interface PositionSizeInputAndSliderProps {
   percentage: number;
   setPercentage: (percentage: number) => void;
   szDecimals: number;
+  priceChangeUsdValue?: boolean;
 }
 
 export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProps> = ({
@@ -45,6 +46,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   percentage,
   setPercentage,
   szDecimals,
+  priceChangeUsdValue,
 }) => {
   const [
     percentageInputValue,
@@ -125,6 +127,12 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
       setPercentage(Math.round(pct));
     }
   });
+
+  useEffect(() => {
+    if (priceChangeUsdValue && positionSize.amount) {
+      handleAmountChange(positionSize.amount);
+    }
+  }, [price, priceChangeUsdValue]);
 
   const handleNotionalChange = useMemoizedFn((notional: string) => {
     if (!price) {

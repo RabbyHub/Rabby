@@ -83,17 +83,6 @@ export const usePerpsTradingState = () => {
     return Number(currentMarketData?.midPx || 0);
   }, [wsActiveAssetCtx, currentMarketData]);
 
-  const currentBestAskPrice = React.useMemo(() => {
-    if (
-      wsActiveAssetCtx &&
-      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
-    ) {
-      const impactPxs = wsActiveAssetCtx?.ctx.impactPxs;
-      return Number(impactPxs[1] || 0);
-    }
-    return markPrice;
-  }, [wsActiveAssetCtx, markPrice, selectedCoin]);
-
   const szDecimals = currentMarketData?.szDecimals ?? 4;
   const pxDecimals = currentMarketData?.pxDecimals ?? 2;
   const maxLeverage = currentMarketData?.maxLeverage || 25;
@@ -236,7 +225,6 @@ export const usePerpsTradingState = () => {
     currentPosition,
     markPrice,
     midPrice,
-    currentBestAskPrice,
     szDecimals,
     pxDecimals,
     maxLeverage,

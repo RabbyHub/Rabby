@@ -3,6 +3,7 @@ import { OrderSide, Position } from '../../../types';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
+import BigNumber from 'bignumber.js';
 
 interface OrderSideAndFundsProps {
   orderSide: OrderSide;
@@ -53,7 +54,10 @@ export const OrderSideAndFunds: React.FC<OrderSideAndFundsProps> = ({
             {t('page.perpsPro.tradingPanel.availableFunds')}
           </span>
           <span className="text-r-neutral-title-1 text-[12px] font-medium">
-            {splitNumberByStep(availableBalance)} USDC
+            {splitNumberByStep(
+              new BigNumber(availableBalance).toFixed(2, BigNumber.ROUND_DOWN)
+            )}{' '}
+            USDC
           </span>
         </div>
         <div className="flex items-center justify-between">

@@ -1193,7 +1193,8 @@
           "Ioc": "IOC (Immediate Or Cancel):Any portion that is not immediately filled will be canceled",
           "Alo": "ALO (Add Liquidity Only):Order will exist only as a limit order on the book. Also known as post-only."
         },
-        "aloTooLarge" : "Alo order price must be lower than best ask price",
+        "aloTooLargeBuy" : "Alo order price must be lower than best ask price",
+        "aloTooLargeSell" : "Alo order price must be higher than best bid price",
         "runtime": "Runtime",
         "randomize": "Randomize",
         "runtimeTips": "(5m-24h)",

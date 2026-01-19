@@ -337,7 +337,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                 <div className="space-y-[16px]">
                   <PositionSizeInputAndSlider
                     defaultMax={true}
-                    price={marketPrice}
+                    price={type === 'limit' ? limitPrice : marketPrice}
                     maxTradeSize={position.size}
                     positionSize={positionSize}
                     setPositionSize={setPositionSize}
@@ -346,6 +346,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                     baseAsset={position.coin}
                     quoteAsset="USDC"
                     szDecimals={marketData.szDecimals}
+                    priceChangeUsdValue={type === 'limit'}
                   />
                 </div>
               </div>

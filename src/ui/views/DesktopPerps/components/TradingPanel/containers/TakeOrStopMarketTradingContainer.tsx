@@ -300,6 +300,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
         baseAsset={selectedCoin}
         quoteAsset="USDC"
         szDecimals={szDecimals}
+        priceChangeUsdValue={true}
       />
 
       <div className="flex items-center justify-between">

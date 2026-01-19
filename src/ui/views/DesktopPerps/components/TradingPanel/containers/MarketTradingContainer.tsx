@@ -196,7 +196,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       slippage: `Est. ${formatPercent(
         Math.abs(estSlippage),
         4
-      )} Max ${formatPercent(marketSlippage, 2)}`,
+      )} / Max ${formatPercent(marketSlippage, 2)}`,
     };
   }, [
     tpslConfig.takeProfit.percentage,
@@ -228,7 +228,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
 
         {/* Position Size Input */}
         <PositionSizeInputAndSlider
-          price={markPrice}
+          price={midPrice}
           maxTradeSize={maxTradeSize}
           positionSize={positionSize}
           setPositionSize={setPositionSize}
