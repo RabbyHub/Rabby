@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import clsx from 'clsx';
 import { PositionsInfo } from './PositionsInfo';
 import { OrderHistory } from './OrderHistory';
@@ -26,6 +32,10 @@ export const UserInfoHistory: React.FC = () => {
   const [activeTab, setActiveTab] = useState<typeof tabs[number]['key']>(
     'positions'
   );
+
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const tabsContainerRef = useRef<HTMLDivElement | null>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
 
   const tabs: Tab[] = useMemo(() => {
     const assetPositionNum = clearinghouseState?.assetPositions.length || 0;
@@ -74,6 +84,19 @@ export const UserInfoHistory: React.FC = () => {
     [activeTab]
   );
 
+  useLayoutEffect(() => {
+    const activeButton = tabRefs.current[activeTab];
+    const container = tabsContainerRef.current;
+    if (activeButton && container) {
+      const containerRect = container.getBoundingClientRect();
+      const buttonRect = activeButton.getBoundingClientRect();
+      setIndicatorStyle({
+        left: buttonRect.left - containerRect.left,
+        width: buttonRect.width,
+      });
+    }
+  }, [activeTab, tabs]);
+
   useEffect(() => {
     const handleTabChange = (tab: typeof tabs[number]['key']) => {
       setActiveTab(tab);
@@ -92,31 +115,42 @@ export const UserInfoHistory: React.FC = () => {
 
   return (
     <div className="flex-1 h-full bg-rb-neutral-bg-1 flex flex-col min-w-0 overflow-hidden">
-      {/* Tabs */}
-      <div className="flex border-b border-solid border-rb-neutral-line flex-shrink-0">
+      <div
+        ref={tabsContainerRef}
+        className="relative flex border-b border-solid border-rb-neutral-line flex-shrink-0"
+      >
         {tabs.map((tab) => {
           return (
             <button
               key={tab.key}
+              ref={(el) => {
+                tabRefs.current[tab.key] = el;
+              }}
               className={clsx(
-                'px-[16px] py-[12px] text-[14px] font-510 border-b-2 flex items-center gap-[4px]',
+                'px-[16px] py-[16px] text-[14px] flex items-center gap-[4px]',
                 activeTab === tab.key
-                  ? 'text-r-blue-default border-rabby-blue-default'
-                  : 'hover:text-r-blue-default text-r-neutral-foot border-transparent'
+                  ? 'text-r-blue-default'
+                  : 'hover:text-r-blue-default text-r-neutral-foot'
               )}
               onClick={() => setActiveTab(tab.key)}
             >
               {tab.label}
               {tab.number ? (
-                <div className="h-[16px] px-6 text-[12px] font-510 text-rb-brand-default bg-rb-brand-light-1 rounded-[4px] flex items-center justify-center">
+                <div className="h-[16px] px-6 text-[12px] text-rb-brand-default bg-rb-brand-light-1 rounded-[4px] flex items-center justify-center">
                   {tab.number}
                 </div>
               ) : null}
             </button>
           );
         })}
+        <div
+          className="absolute bottom-0 h-[2px] bg-rb-brand-default transition-all duration-300 ease-out"
+          style={{
+            left: indicatorStyle.left,
+            width: indicatorStyle.width,
+          }}
+        />
       </div>
-      {/* Content */}
       <div className="flex-1 overflow-hidden min-h-0">
         <div className="text-r-neutral-foot text-[12px] whitespace-nowrap h-full">
           {ActiveComponent ? <ActiveComponent /> : null}

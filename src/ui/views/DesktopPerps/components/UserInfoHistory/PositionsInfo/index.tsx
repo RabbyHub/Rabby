@@ -217,10 +217,10 @@ export const PositionsInfo: React.FC = () => {
       content: (
         <>
           <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
-            <div className="text-[17px] font-bold text-r-neutral-title-1 text-center">
+            <div className=" text-20 font-medium text-r-neutral-title-1 text-center">
               {t('page.perps.closeAllPopup.title')}
             </div>
-            <div className="text-15  text-r-neutral-title-1 text-center">
+            <div className="text-[13px] leading-[16px] font-medium text-rb-neutral-body text-center">
               {t('page.perps.closeAllPopup.description')}
             </div>
             <div className="flex items-center justify-center w-full gap-12 mt-20">

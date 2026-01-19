@@ -89,7 +89,7 @@ export const OpenOrders: React.FC = () => {
     () => [
       {
         title: t('page.perpsPro.userInfo.openOrders.order'),
-        width: 80,
+        width: 120,
         className: 'relative',
         key: 'side',
         dataIndex: 'side',

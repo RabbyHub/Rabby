@@ -27,7 +27,7 @@ export const PerpsHeaderRight: React.FC<PerpsHeaderRightProps> = ({
   const coin = undefined;
 
   return (
-    <div className="flex items-center absolute top-[50%] translate-y-[-50%] right-0 gap-8">
+    <div className="flex items-center absolute top-[50%] translate-y-[-50%] right-0 gap-20">
       <div
         className="text-r-neutral-title1 cursor-pointer"
         onClick={() => {

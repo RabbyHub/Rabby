@@ -4,6 +4,8 @@ import { Switch } from 'antd';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { ReactComponent as RcIconTwitter } from '@/ui/assets/perps/icon-twitter.svg';
 import { ReactComponent as RcIconDiscord } from '@/ui/assets/perps/icon-discord.svg';
+import { ReactComponent as RcIconOpenVolume } from '@/ui/assets/perps/IconOpenVolume.svg';
+import { ReactComponent as RcIconClosedVolume } from '@/ui/assets/perps/IconClosedVolume.svg';
 import { ReactComponent as RcIconDocs } from '@/ui/assets/perps/icon-docs.svg';
 import { useTranslation } from 'react-i18next';
 import { openInTab } from '@/ui/utils';
@@ -66,37 +68,32 @@ export const StatusBar: React.FC = () => {
     openInTab('https://support.rabby.io/');
   };
 
+  const RcIconVolume = soundEnabled ? RcIconOpenVolume : RcIconClosedVolume;
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-[32px] border-t border-solid border-rb-neutral-line bg-rb-neutral-bg-1 flex items-center justify-between px-[16px]">
+    <div className="fixed bottom-0 left-0 right-0 h-[32px] border-t border-solid border-rb-neutral-line bg-rb-neutral-bg-1 flex items-center justify-between px-[16px] w-full">
       {/* Left section */}
-      <div className="flex items-center gap-[16px]">
+      <div className="flex items-center justify-between gap-[16px]">
         <OnlineStatus online={isConnected} />
 
-        <div className="flex items-center gap-[8px] text-[12px] text-r-neutral-foot">
-          <Switch
-            size="small"
-            checked={soundEnabled}
-            onChange={(checked) => dispatch.perps.updateEnabledSound(checked)}
-          />
-          <span>{t('page.perpsPro.statusBar.sound')}</span>
-        </div>
-
-        <div className="flex items-center gap-[12px]">
-          <RcIconTwitter
-            className="w-[16px] h-[16px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
-            onClick={handleOpenTwitter}
-          />
-          <RcIconDiscord
-            className="w-[16px] h-[16px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
-            onClick={handleOpenDiscord}
-          />
-          <RcIconDocs
-            className="w-[16px] h-[16px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
-            onClick={handleOpenDocs}
-          />
-        </div>
-
-        {/* <div className="text-[12px] text-r-neutral-foot">{VERSION}</div> */}
+        <RcIconVolume
+          className="text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
+          onClick={() => dispatch.perps.updateEnabledSound(!soundEnabled)}
+        />
+      </div>
+      <div className="flex items-center gap-[12px]">
+        <RcIconTwitter
+          className="text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
+          onClick={handleOpenTwitter}
+        />
+        <RcIconDiscord
+          className="text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
+          onClick={handleOpenDiscord}
+        />
+        <RcIconDocs
+          className="text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
+          onClick={handleOpenDocs}
+        />
       </div>
     </div>
   );

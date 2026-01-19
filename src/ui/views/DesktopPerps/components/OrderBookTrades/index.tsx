@@ -62,7 +62,7 @@ export const OrderBookTrades: React.FC = () => {
           className={clsx(
             'flex-1 px-[16px] items-center justify-center text-[12px] font-medium transition-colors',
             activeTab === 'orderbook'
-              ? 'text-r-neutral-title-1'
+              ? 'text-r-blue-default'
               : 'text-r-neutral-foot hover:text-r-blue-default'
           )}
           onClick={() => setActiveTab('orderbook')}
@@ -73,7 +73,7 @@ export const OrderBookTrades: React.FC = () => {
           className={clsx(
             'flex-1 px-[16px] items-center justify-center text-[12px] font-medium transition-colors',
             activeTab === 'trades'
-              ? 'text-r-neutral-title-1'
+              ? 'text-r-blue-default'
               : 'text-r-neutral-foot hover:text-r-blue-default'
           )}
           onClick={() => setActiveTab('trades')}
