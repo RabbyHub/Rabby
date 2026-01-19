@@ -2751,15 +2751,15 @@
         "tip3": "3. Cihazınızı kilitleyin"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "Keystone donanım cüzdanındaki QR kodunu tarayın"
-        },
         "usb": {
           "tip2": "Şifrenizi girin ve kilidi açın",
           "tip3": "Bilgisayarınıza bağlantıyı onaylayın",
           "connect": "Keystone bağla",
           "desc": "Keystone 3 Pro'nuzun ana sayfada olduğundan emin olun",
           "tip1": "Keystone cihazınızı takın"
+        },
+        "qrcode": {
+          "desc": "{{brandName}} donanım cüzdanında QR kodunu tarayın."
         }
       },
       "importSafe": {

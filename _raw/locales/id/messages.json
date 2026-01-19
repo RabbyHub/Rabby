@@ -2745,15 +2745,15 @@
         "tip2": "2. Colokkan BitBox02 Anda"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "Pindai kode QR pada dompet keras {{brandName}}"
-        },
         "usb": {
           "tip1": "Sambungkan perangkat Keystone Anda",
           "tip3": "Setujui koneksi ke komputer Anda",
           "desc": "Pastikan Keystone 3 Pro Anda ada di halaman utama",
           "connect": "Sambungkan Keystone",
           "tip2": "Masukkan kata sandi Anda untuk membuka kunci"
+        },
+        "qrcode": {
+          "desc": "Pindai kode QR di dompet keras {{brandName}}"
         }
       },
       "importSafe": {

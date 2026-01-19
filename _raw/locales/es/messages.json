@@ -2748,15 +2748,15 @@
         "tip2": "2. Conecta tu BitBox02"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "Escanee el código QR en el monedero de hardware Keystone"
-        },
         "usb": {
           "connect": "Conectar Keystone",
           "tip1": "Conecte su dispositivo Keystone",
           "tip3": "Aprobar la conexión a su computadora",
           "tip2": "Ingrese su contraseña para desbloquear",
           "desc": "Asegúrate de que tu Keystone 3 Pro esté en la página de inicio"
+        },
+        "qrcode": {
+          "desc": "Escanea el código QR en la billetera hardware {{brandName}}"
         }
       },
       "importSafe": {

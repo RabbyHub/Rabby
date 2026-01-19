@@ -2786,15 +2786,15 @@
         "tip2": "2. 插入你的 BitBox02"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "請掃描 Keystone 硬件錢包上的 QR 碼"
-        },
         "usb": {
           "tip1": "插入您的 Keystone 裝置",
           "tip2": "輸入你的密碼以解鎖",
           "connect": "連接 Keystone",
           "desc": "確保你的 Keystone 3 Pro 在主頁上",
           "tip3": "批准連接到你的電腦"
+        },
+        "qrcode": {
+          "desc": "掃描{{brandName}}硬件錢包上的QR碼"
         }
       },
       "importSafe": {
