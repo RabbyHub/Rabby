@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "node build/clean.js",
     "make-theme": "node ./scripts/make-theme.js",
-    "build:dev:default": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && webpack --progress --env config=dev",
+    "build:dev:default": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && webpack serve --progress --env config=dev",
     "build:dev:turbo": "cross-env NODE_OPTIONS='--max-old-space-size=24576' TAILWIND_MODE=watch npm run clean && npm run make-theme && NODE_OPTIONS='--max-old-space-size=24576' webpack --progress --env config=dev",
     "build:pro:default": "npm run clean && npm run make-theme && webpack --progress --env config=pro",
     "build:debug:default": "npm run clean && npm run make-theme && webpack --progress --env config=debug",
@@ -152,6 +152,7 @@
     "webextension-polyfill": "0.7.0"
   },
   "devDependencies": {
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",
     "@sentry/webpack-plugin": "2.16.1",
     "@svgr/webpack": "5.5.0",
     "@types/archiver": "6.0.2",
@@ -209,6 +210,8 @@
     "postcss-nested": "5.0.5",
     "prettier": "2.2.1",
     "react-i18next": "13.0.3",
+    "react-refresh": "^0.18.0",
+    "react-refresh-typescript": "^2.0.11",
     "shelljs": "0.8.5",
     "sinon-chrome": "3.0.1",
     "style-loader": "2.0.0",

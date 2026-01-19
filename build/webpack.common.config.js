@@ -9,6 +9,7 @@ const tsImportPluginFactory = require('ts-import-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const ReactRefreshTypeScript = require('react-refresh-typescript');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
   .default;
@@ -80,6 +81,16 @@ const config = {
               ? {
                   options: {
                     transpileOnly: true,
+                    getCustomTransformers: () => ({
+                      before: [
+                        tsImportPluginFactory({
+                          libraryName: 'antd',
+                          libraryDirectory: 'lib',
+                          style: true,
+                        }),
+                        isEnvDevelopment && new ReactRefreshTypeScript(),
+                      ].filter(Boolean),
+                    }),
                   },
                 }
               : {}),
@@ -98,7 +109,8 @@ const config = {
                         libraryDirectory: 'lib',
                         style: true,
                       }),
-                    ],
+                      isEnvDevelopment && new ReactRefreshTypeScript(),
+                    ].filter(Boolean),
                   }),
                   compilerOptions: {
                     module: 'es2015',
@@ -134,7 +146,8 @@ const config = {
                 before: [
                   // @see https://github.com/Igorbek/typescript-plugin-styled-components#ts-loader
                   tsStyledComponentTransformer,
-                ],
+                  isEnvDevelopment && new ReactRefreshTypeScript(),
+                ].filter(Boolean),
               }),
             },
           },
