@@ -117,8 +117,8 @@ export const UserInfoHistory: React.FC = () => {
         })}
       </div>
       {/* Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="text-r-neutral-foot text-[12px] whitespace-nowrap">
+      <div className="flex-1 overflow-hidden min-h-0">
+        <div className="text-r-neutral-foot text-[12px] whitespace-nowrap h-full">
           {ActiveComponent ? <ActiveComponent /> : null}
         </div>
       </div>

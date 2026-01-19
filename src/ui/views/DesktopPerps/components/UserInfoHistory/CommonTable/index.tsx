@@ -4,14 +4,62 @@ import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .ant-table-wrapper {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ant-spin-nested-loading {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ant-spin-container {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
   .ant-table {
     background-color: transparent;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
+
+  .ant-table-container {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ant-table-header {
+    flex-shrink: 0;
+  }
+
+  .ant-table-body {
+    flex: 1;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
   .ant-table-thead > tr > th {
     color: var(--rb-neutral-foot, #6a7587);
     font-size: 13px;
     font-weight: 400;
-    background-color: transparent;
+    background-color: var(--rb-neutral-card-1, #fff);
     border: none;
 
     padding: 12px 8px;
@@ -92,6 +140,7 @@ interface CommonTableProps<T> extends TableProps<T> {
   defaultSortField?: string;
   defaultSortOrder?: 'ascend' | 'descend';
   emptyMessage?: string;
+  scrollHeight?: number | string;
 }
 
 export const CommonTable = <T extends object = any>({
@@ -101,6 +150,7 @@ export const CommonTable = <T extends object = any>({
   defaultSortField,
   defaultSortOrder = 'ascend',
   emptyMessage,
+  scrollHeight,
   ...restProps
 }: CommonTableProps<T>) => {
   const [sortedInfo, setSortedInfo] = useState<{
@@ -192,6 +242,7 @@ export const CommonTable = <T extends object = any>({
         dataSource={dataSource}
         columns={enhancedColumns}
         onChange={handleTableChange}
+        scroll={{ y: scrollHeight || 'auto' }}
       />
     </Wrapper>
   );

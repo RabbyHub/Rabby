@@ -26,8 +26,6 @@ export const OrderHistory: React.FC = () => {
     return sortBy(historicalOrders, (item) => -item.statusTimestamp);
   }, [historicalOrders]);
 
-  console.log('historicalOrders', list);
-
   const columns = useMemo<ColumnType<UserHistoricalOrders>[]>(
     () => [
       {
