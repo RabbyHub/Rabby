@@ -98,7 +98,7 @@
     "eth-rpc-errors": "4.0.3",
     "eth-sig-util": "3.0.1",
     "ethereumjs-util": "7.1.2",
-    "ethers": "5.4.2",
+    "ethers": "6.0.0",
     "events": "3.3.0",
     "hdkey": "0.8.0",
     "https-browserify": "1.0.0",
