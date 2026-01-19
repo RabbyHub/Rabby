@@ -3455,7 +3455,11 @@
     "dappIfame": {
       "openPolymarket": "Membuka Polymarket...",
       "serviceUnavailable": "Layanan Tidak Tersedia",
-      "predictionNotSupported": "Fitur Prediksi tidak didukung di wilayah Anda saat ini."
+      "predictionNotSupported": "Fitur Prediksi tidak didukung di wilayah Anda saat ini.",
+      "reload": "Muat Ulang",
+      "networkErrorDescriptionFallback": "Situs secara tiba-tiba menutup koneksi. Silakan periksa jaringan Anda.",
+      "networkErrorTitle": "Situs ini tidak dapat diakses",
+      "networkErrorDescription": "{{site}} secara tiba-tiba menutup koneksi. Silakan periksa jaringan Anda."
     }
   },
   "component": {

@@ -71,7 +71,8 @@ export function getCustomTxParamsData(
     if (spender.startsWith('0x')) {
       spender = spender.substring(2);
     }
-    const [signature, tokenValue] = data.split(spender);
+    const separator = new RegExp(spender, 'i');
+    const [signature, tokenValue] = data.split(separator);
 
     if (!signature || !tokenValue) {
       throw new Error('Invalid data');

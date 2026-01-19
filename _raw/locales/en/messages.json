@@ -3753,7 +3753,11 @@
     "dappIfame": {
       "serviceUnavailable": "Service Unavailable",
       "predictionNotSupported": "The Prediction feature is not supported in your current region.",
-      "openPolymarket": "Opening Polymarket..."
+      "openPolymarket": "Opening Polymarket...",
+      "networkErrorTitle": "This site can't be reached",
+      "networkErrorDescription": "{{site}} unexpectedly closed the connection. Please check your network.",
+      "networkErrorDescriptionFallback": "The site unexpectedly closed the connection. Please check your network.",
+      "reload": "Reload"
     }
   },
   "component": {

@@ -3458,7 +3458,11 @@
     "dappIfame": {
       "serviceUnavailable": "Servicio no disponible",
       "openPolymarket": "Abriendo Polymarket...",
-      "predictionNotSupported": "La función de Predicción no es compatible en tu región actual."
+      "predictionNotSupported": "La función de Predicción no es compatible en tu región actual.",
+      "reload": "Recargar",
+      "networkErrorTitle": "Este sitio no se puede alcanzar",
+      "networkErrorDescription": "{{site}} cerró la conexión inesperadamente. Por favor, verifica tu red.",
+      "networkErrorDescriptionFallback": "El sitio cerró inesperadamente la conexión. Por favor, revisa tu red."
     }
   },
   "component": {

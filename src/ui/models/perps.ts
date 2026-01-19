@@ -425,7 +425,11 @@ export const perps = createModel<RootModel>()({
       payload: { newHistoryList: AccountHistoryItem[] }
     ) {
       if (payload.newHistoryList.length === 0) {
-        return state;
+        return {
+          ...state,
+          userAccountHistory: [],
+          localLoadingHistory: [],
+        };
       }
       const { newHistoryList } = payload;
       const {

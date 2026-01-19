@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.93.71",
+  "version": "0.93.72",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "node build/clean.js",
@@ -70,7 +70,7 @@
     "@rabby-wallet/rabby-action": "0.1.14",
     "@rabby-wallet/rabby-api": "0.9.53",
     "@rabby-wallet/rabby-security-engine": "2.0.11",
-    "@rabby-wallet/rabby-swap": "0.0.71",
+    "@rabby-wallet/rabby-swap": "0.0.72",
     "@rabby-wallet/widgets": "1.0.9",
     "@rematch/core": "2.2.0",
     "@rematch/select": "3.1.2",
