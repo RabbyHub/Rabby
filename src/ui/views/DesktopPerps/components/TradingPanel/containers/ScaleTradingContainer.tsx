@@ -40,7 +40,6 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     currentPosition,
     markPrice,
     midPrice,
-    currentBestAskPrice,
     szDecimals,
     pxDecimals,
     leverage,
@@ -267,14 +266,14 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Gtc'),
     },
     {
-      label: 'ALO',
-      value: 'Alo',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Alo'),
-    },
-    {
       label: 'IOC',
       value: 'Ioc',
       title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Ioc'),
+    },
+    {
+      label: 'ALO',
+      value: 'Alo',
+      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Alo'),
     },
   ];
 

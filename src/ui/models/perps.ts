@@ -320,13 +320,6 @@ export const perps = createModel<RootModel>()({
       };
     },
 
-    setCurrentBestAskPrice(state, payload: string) {
-      return {
-        ...state,
-        currentBestAskPrice: payload,
-      };
-    },
-
     setFillsOrderTpOrSl(state, payload: Record<string, 'tp' | 'sl'>) {
       return {
         ...state,

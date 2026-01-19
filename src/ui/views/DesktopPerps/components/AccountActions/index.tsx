@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { splitNumberByStep } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { DARK_MODE_TYPE } from '@/constant';
 import clsx from 'clsx';
 import { ReactComponent as RcIconMoon } from '@/ui/assets/perps/icon-moon.svg';
@@ -11,6 +11,7 @@ import { ReactComponent as IconPerpsWallet } from '@/ui/assets/perps/IconPerpsWa
 import { useHistory } from 'react-router-dom';
 import { DepositPending } from '../DepositWithdrawModal/DepositPending';
 import { PopupType } from '../../index';
+import BigNumber from 'bignumber.js';
 
 export const AccountActions: React.FC<{
   handleSetPopupType: (type: PopupType) => void;
@@ -71,8 +72,8 @@ export const AccountActions: React.FC<{
           <div className="flex items-center gap-[6px]">
             <IconPerpsWallet />
             <span className="text-[15px] font-medium text-r-neutral-title-1">
-              {t('page.perpsPro.accountActions.available')} $
-              {splitNumberByStep(availableBalance.toFixed(2))}
+              {t('page.perpsPro.accountActions.available')}
+              {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
             </span>
           </div>
 
