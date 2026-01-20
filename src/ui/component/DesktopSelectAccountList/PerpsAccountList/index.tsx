@@ -23,7 +23,6 @@ import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { formatUsdValue, isSameAddress, splitNumberByStep } from '@/ui/utils';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
-import { obj2query } from '@/ui/utils/url';
 import { isSameAccount } from '@/utils/account';
 import { useMemoizedFn } from 'ahooks';
 import { flatten } from 'lodash';
@@ -58,6 +57,7 @@ export const DesktopPerpsSelectAccountList: React.FC<{
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const shouldScrollRef = useRef(true);
   const [isAbsolute, setIsAbsolute] = useState(true);
+  const history = useHistory();
   const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
 
   const {
@@ -250,7 +250,15 @@ export const DesktopPerpsSelectAccountList: React.FC<{
           Footer: () => (
             <div
               onClick={() => {
-                handleSetPopupType('add-address');
+                // handleSetPopupType('add-address');
+                const searchParams = new URLSearchParams(
+                  history.location.search
+                );
+                searchParams.set('action', 'add-address');
+                history.replace({
+                  pathname: history.location.pathname,
+                  search: searchParams.toString(),
+                });
               }}
               className={clsx(
                 // 'bg-rb-neutral-bg-3',

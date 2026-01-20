@@ -136,7 +136,7 @@ export const DesktopPerps: React.FC = () => {
         <StatusBar />
       </Wrap>
       <AddAddressModal
-        visible={popupType === 'add-address'}
+        visible={action === 'add-address'}
         onCancel={() => {
           setPopupType(null);
         }}

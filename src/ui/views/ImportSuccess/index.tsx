@@ -77,7 +77,13 @@ const ImportSuccess = ({
     }
 
     if (UI_TYPE.isDesktop) {
-      history.push('/desktop/profile');
+      const searchParams = new URLSearchParams(history.location.search);
+      searchParams.delete('action');
+      searchParams.delete('import');
+      history.replace({
+        pathname: history.location.pathname,
+        search: searchParams.toString(),
+      });
     } else {
       history.push('/dashboard');
     }
