@@ -491,6 +491,7 @@ export const usePerpsProState = () => {
       dispatch.perps.setAccountNeedApproveBuilderFee(needApproveBuilderFee);
     }
 
+    dispatch.perps.setCurrentPerpsAccount(account);
     await dispatch.perps.loginPerpsAccount({
       account,
       isPro: true,
@@ -522,6 +523,7 @@ export const usePerpsProState = () => {
             PERPS_AGENT_NAME
           );
           // 未到过期时间无需签名直接登录即可
+          dispatch.perps.setCurrentPerpsAccount(account);
           await dispatch.perps.loginPerpsAccount({
             account,
             isPro: true,

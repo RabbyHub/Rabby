@@ -2,6 +2,7 @@ import { Table } from 'antd';
 import { TableProps, ColumnType } from 'antd/lib/table';
 import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
+import { ReactComponent as RcIconEmpty } from '@/ui/assets/perps/IconHistoryEmpty.svg';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -47,6 +48,13 @@ const Wrapper = styled.div`
 
   .ant-table-header {
     flex-shrink: 0;
+    .ant-table-thead > tr > th.ant-table-cell-scrollbar:last-child {
+      padding-right: 0;
+    }
+
+    .ant-table-thead > tr > th:nth-last-child(2) {
+      padding-right: 20px; // add 4px for scrollbar
+    }
   }
 
   .ant-table-body {
@@ -228,8 +236,11 @@ export const CommonTable = <T extends object = any>({
   if (dataSource.length === 0) {
     return (
       <Wrapper>
-        <div className="text-[12px] pt-[100px] leading-[14px] font-510 text-rb-neutral-foot text-center">
-          {emptyMessage || 'No data'}
+        <div className="flex flex-col items-center justify-center gap-[4px] pt-[100px]">
+          <RcIconEmpty className="text-rb-neutral-foot" />
+          <div className="text-[12px] leading-[14px] text-rb-neutral-foot text-center">
+            {emptyMessage || 'No data'}
+          </div>
         </div>
       </Wrapper>
     );

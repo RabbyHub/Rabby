@@ -91,5 +91,5 @@ const StyledSlider = styled(Slider)`
 `;
 
 export const DesktopPerpsSlider = (props: SliderSingleProps) => {
-  return <StyledSlider {...props} />;
+  return <StyledSlider {...props} tooltipVisible={false} />;
 };

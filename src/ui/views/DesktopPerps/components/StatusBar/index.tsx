@@ -71,7 +71,7 @@ export const StatusBar: React.FC = () => {
   const RcIconVolume = soundEnabled ? RcIconOpenVolume : RcIconClosedVolume;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-[32px] border-t border-solid border-rb-neutral-line bg-rb-neutral-bg-1 flex items-center justify-between px-[16px] w-full">
+    <div className="fixed bottom-0 left-0 right-0 h-[32px] border-t border-solid border-rb-neutral-line bg-rb-neutral-bg-1 flex items-center justify-between px-[16px] w-full z-30">
       {/* Left section */}
       <div className="flex items-center justify-between gap-[16px]">
         <OnlineStatus online={isConnected} />

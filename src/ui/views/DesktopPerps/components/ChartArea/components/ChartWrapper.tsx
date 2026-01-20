@@ -861,7 +861,8 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                   {splitNumberByStep(
                     Math.abs(showDisplayData.delta || 0).toFixed(pxDecimals)
                   )}{' '}
-                  ({formatPercent(Math.abs(showDisplayData.deltaPercent || 0))})
+                  ({showDisplayData.isPositiveChange ? '+' : '-'}
+                  {formatPercent(Math.abs(showDisplayData.deltaPercent || 0))})
                 </span>
               </div>
             </>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TPSLConfig, OrderSide } from '../../../types';
 import { formatTpOrSlPrice, validatePriceInput } from '@/ui/views/Perps/utils';
 import { useMemoizedFn } from 'ahooks';
@@ -12,6 +12,7 @@ interface TPSLSettingsProps {
   orderSide: OrderSide;
   price: number | string;
   leverage: number;
+  priceChangeUpdate?: boolean;
 }
 
 export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
@@ -21,6 +22,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
   orderSide,
   price,
   leverage,
+  priceChangeUpdate = false,
 }) => {
   const { t } = useTranslation();
   const validatePercentageInput = (value: string): boolean => {
@@ -163,6 +165,15 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
       }
     }
   );
+
+  useEffect(() => {
+    if (priceChangeUpdate && Number(price) > 0) {
+      Number(config.takeProfit.percentage) &&
+        handleTakeProfitChange('percentage', config.takeProfit.percentage);
+      Number(config.stopLoss.percentage) &&
+        handleStopLossChange('percentage', config.stopLoss.percentage);
+    }
+  }, [price]);
 
   return (
     <div className="space-y-[12px]">

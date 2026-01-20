@@ -61,6 +61,7 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
         </div>
         <div className="flex-1 flex items-center">
           <input
+            autoFocus={true}
             className={clsx(
               'flex-1',
               'text-[32px] leading-[38px] font-bold bg-transparent border-none p-0 text-right',

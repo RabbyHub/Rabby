@@ -439,7 +439,7 @@ export const PositionsInfo: React.FC = () => {
                 : Number(record.sinceOpenFunding || 0) < 0
                 ? '+'
                 : '-'}
-              ${Math.abs(Number(record.sinceOpenFunding || 0))}
+              {formatUsdValue(Math.abs(Number(record.sinceOpenFunding || 0)))}
             </div>
           );
         },
@@ -558,50 +558,52 @@ export const PositionsInfo: React.FC = () => {
           </div>
         ),
         key: 'oid',
+        align: 'right',
         dataIndex: 'oid',
-        align: 'center',
         // width: 160,
         render: (_, record) => {
           return (
-            <Dropdown
-              transitionName=""
-              forceRender={true}
-              overlay={
-                <Menu
-                  onClick={(info) => {
-                    setSelectedCoin(record.coin);
-                    setClosePositionType(
-                      info.key as 'limit' | 'market' | 'reverse'
-                    );
-                    setClosePositionVisible(true);
-                  }}
-                >
-                  <Menu.Item key="reverse">
-                    {t('page.perpsPro.userInfo.positionInfo.reverse')}
-                  </Menu.Item>
-                  <Menu.Item key="limit">
-                    {t('page.perpsPro.userInfo.positionInfo.closeLimit')}
-                  </Menu.Item>
-                  <Menu.Item key="market">
-                    {t('page.perpsPro.userInfo.positionInfo.closeMarket')}
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <button
-                type="button"
-                className={clsx(
-                  'inline-flex items-center justify-between',
-                  'pl-[8px] pr-[4px] py-[8px] w-[88px]',
-                  'border border-rb-neutral-line rounded-[6px]',
-                  'hover:border-rb-brand-default border border-solid border-transparent',
-                  'text-[12px] leading-[14px]  text-rb-neutral-title-1'
-                )}
+            <div className="flex justify-end">
+              <Dropdown
+                transitionName=""
+                forceRender={true}
+                overlay={
+                  <Menu
+                    onClick={(info) => {
+                      setSelectedCoin(record.coin);
+                      setClosePositionType(
+                        info.key as 'limit' | 'market' | 'reverse'
+                      );
+                      setClosePositionVisible(true);
+                    }}
+                  >
+                    <Menu.Item key="reverse">
+                      {t('page.perpsPro.userInfo.positionInfo.reverse')}
+                    </Menu.Item>
+                    <Menu.Item key="limit">
+                      {t('page.perpsPro.userInfo.positionInfo.closeLimit')}
+                    </Menu.Item>
+                    <Menu.Item key="market">
+                      {t('page.perpsPro.userInfo.positionInfo.closeMarket')}
+                    </Menu.Item>
+                  </Menu>
+                }
               >
-                {t('page.perpsPro.userInfo.positionInfo.close')}
-                <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
-              </button>
-            </Dropdown>
+                <button
+                  type="button"
+                  className={clsx(
+                    'inline-flex items-center justify-between',
+                    'pl-[8px] pr-[4px] py-[8px] w-[64px]',
+                    'border border-rb-neutral-line rounded-[6px]',
+                    'hover:border-rb-brand-default border border-solid border-transparent',
+                    'text-[12px] leading-[14px]  text-rb-neutral-title-1'
+                  )}
+                >
+                  {t('page.perpsPro.userInfo.positionInfo.close')}
+                  <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
+                </button>
+              </Dropdown>
+            </div>
           );
         },
       },
