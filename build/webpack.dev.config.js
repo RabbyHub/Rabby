@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const path = require('path');
+const { codeInspectorPlugin } = require('code-inspector-plugin');
 const isHot = process.env.HOT === 'true';
 
 // for extension local test, can build each time
@@ -16,6 +17,9 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.BUILD_ENV': JSON.stringify('DEV'),
       'process.env.DEBUG': true,
+    }),
+    codeInspectorPlugin({
+      bundler: 'webpack',
     }),
     isHot && new ReactRefreshWebpackPlugin(),
   ].filter(Boolean),
