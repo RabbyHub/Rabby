@@ -12,7 +12,7 @@ gasPrice means how much you will pay for each step of this transaction, if DApp 
 
 ## value
 
-Sometimes DApp doesn't set value param (like [https://pancakeswap.finance/farms](https://pancakeswap.finance/farms), when you enable a Stake LP, value is not set), we will set `0x0` as default.
+Sometimes DApp doesn't set value param (like [PancakeSwap](https://pancakeswap.finance/farms), when you enable a Stake LP, value is not set), we will set `0x0` as default.
 
 ## data
 
