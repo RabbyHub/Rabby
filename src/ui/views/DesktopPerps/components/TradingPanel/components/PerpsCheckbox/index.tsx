@@ -52,9 +52,9 @@ export const PerpsCheckbox = ({
             <path
               d="M4.66797 7.99913L7.11241 10.4436L12.0013 5.55469"
               stroke="white"
-              stroke-width="1.25"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         ) : (

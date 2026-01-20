@@ -70,9 +70,13 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     ''
   );
   const [limitPrice, setLimitPrice] = React.useState(
-    // formatTpOrSlPrice(midPrice, szDecimals)
-    ''
+    formatTpOrSlPrice(midPrice, szDecimals)
   );
+
+  useEffect(() => {
+    setTriggerPrice('');
+    setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
+  }, [selectedCoin]);
 
   // Form validation
   const validation = React.useMemo(() => {
@@ -331,7 +335,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
-        price={triggerPrice}
+        price={limitPrice}
         maxTradeSize={maxTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}

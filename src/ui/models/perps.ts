@@ -719,7 +719,6 @@ export const perps = createModel<RootModel>()({
     ) {
       const { account, isPro } = payload;
       await rootState.app.wallet.setPerpsCurrentAccount(account);
-      dispatch.perps.setCurrentPerpsAccount(account);
       // await dispatch.perps.refreshData();
       if (isPro) {
         await dispatch.perps.fetchClearinghouseState();

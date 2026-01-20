@@ -70,6 +70,10 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     ''
   );
 
+  useEffect(() => {
+    setTriggerPrice('');
+  }, [selectedCoin]);
+
   // Form validation
   const validation = React.useMemo(() => {
     let error: string = '';

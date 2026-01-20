@@ -30,10 +30,8 @@ export const TradeHistory: React.FC = () => {
   const fetchUserFills = useCallback(() => {
     const sdk = getPerpsSDK();
     sdk.info.getUserFills().then((res) => {
-      dispatch.perps.patchStatsListBySnapshot({
-        listName: 'userFills',
-        list: (res as unknown) as WsFill[],
-        isSnapshot: true,
+      dispatch.perps.patchState({
+        userFills: res.slice(0, 200),
       });
     });
   }, []);

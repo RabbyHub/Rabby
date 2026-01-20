@@ -103,5 +103,11 @@ export const usePerpsProInit = () => {
     };
 
     initIsLogin();
-  }, [wallet, dispatch, isInitialized, currentPerpsAccount]);
+  }, [
+    wallet,
+    dispatch,
+    isInitialized,
+    currentPerpsAccount?.address,
+    currentPerpsAccount?.type,
+  ]);
 };

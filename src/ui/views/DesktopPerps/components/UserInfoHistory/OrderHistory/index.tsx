@@ -30,11 +30,7 @@ export const OrderHistory: React.FC = () => {
   const fetchHistoricalOrders = useCallback(() => {
     const sdk = getPerpsSDK();
     sdk.info.getUserHistoricalOrders().then((res) => {
-      dispatch.perps.patchStatsListBySnapshot({
-        listName: 'historicalOrders',
-        list: res,
-        isSnapshot: true,
-      });
+      dispatch.perps.patchState({ historicalOrders: res.slice(0, 200) });
     });
   }, []);
 

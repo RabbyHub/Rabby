@@ -89,7 +89,7 @@ export const OpenOrders: React.FC = () => {
     () => [
       {
         title: t('page.perpsPro.userInfo.openOrders.order'),
-        width: 120,
+        width: 100,
         className: 'relative',
         key: 'side',
         dataIndex: 'side',
@@ -237,7 +237,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.triggerConditions'),
-        // width: 180,
+        width: 140,
         key: 'triggerCondition',
         dataIndex: 'triggerCondition',
         render: (_, record) => {
@@ -309,26 +309,27 @@ export const OpenOrders: React.FC = () => {
             {t('page.perpsPro.userInfo.openOrders.cancelAll')}
           </div>
         ),
-        align: 'center',
-        // width: 120,
+        align: 'right',
         key: 'oid',
         dataIndex: 'oid',
         render: (_, record) => {
           return (
-            <button
-              type="button"
-              className={clsx(
-                'bg-rb-neutral-bg-4 rounded-[8px] py-[9px] px-[12px] min-w-[88px]',
-                'border border-transparent',
-                'hover:border-rb-brand-default',
-                'text-[12px] leading-[14px]  text-r-neutral-title-1'
-              )}
-              onClick={() => {
-                handleCancelOrder([{ oid: record.oid, coin: record.coin }]);
-              }}
-            >
-              {t('page.perpsPro.userInfo.openOrders.cancel')}
-            </button>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className={clsx(
+                  'bg-rb-neutral-bg-4 rounded-[8px] py-[9px] px-[12px] h-[32px] w-[88px]',
+                  'border border-transparent',
+                  'hover:border-rb-brand-default',
+                  'text-[12px] leading-[14px]  text-r-neutral-title-1'
+                )}
+                onClick={() => {
+                  handleCancelOrder([{ oid: record.oid, coin: record.coin }]);
+                }}
+              >
+                {t('page.perpsPro.userInfo.openOrders.cancel')}
+              </button>
+            </div>
           );
         },
       },

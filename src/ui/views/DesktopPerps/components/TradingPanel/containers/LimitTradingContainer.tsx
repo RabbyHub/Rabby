@@ -403,6 +403,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
           orderSide={orderSide}
           price={limitPrice}
           leverage={leverage}
+          priceChangeUpdate={true}
         />
       )}
 
