@@ -82,15 +82,6 @@ const config = {
               ? {
                   options: {
                     transpileOnly: true,
-                    getCustomTransformers: () => ({
-                      before: [
-                        tsImportPluginFactory({
-                          libraryName: 'antd',
-                          libraryDirectory: 'lib',
-                          style: true,
-                        }),
-                      ].filter(Boolean),
-                    }),
                   },
                 }
               : {}),

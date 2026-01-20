@@ -7,7 +7,7 @@ const isHot = process.env.HOT === 'true';
 const config = {
   mode: 'development',
   devtool: 'inline-cheap-module-source-map',
-  // watch: true,
+  watch: !isHot,
   watchOptions: {
     ignored: ['**/public', '**/node_modules'],
     followSymlinks: false,

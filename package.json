@@ -154,7 +154,7 @@
     "webextension-polyfill": "0.7.0"
   },
   "devDependencies": {
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",
+    "@pmmmwh/react-refresh-webpack-plugin": "0.6.2",
     "@sentry/webpack-plugin": "2.16.1",
     "@svgr/webpack": "5.5.0",
     "@types/archiver": "6.0.2",
@@ -212,8 +212,8 @@
     "postcss-nested": "5.0.5",
     "prettier": "2.2.1",
     "react-i18next": "13.0.3",
-    "react-refresh": "^0.18.0",
-    "react-refresh-typescript": "^2.0.11",
+    "react-refresh": "0.18.0",
+    "react-refresh-typescript": "2.0.11",
     "shelljs": "0.8.5",
     "sinon-chrome": "3.0.1",
     "style-loader": "2.0.0",

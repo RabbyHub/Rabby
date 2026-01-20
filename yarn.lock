@@ -4477,7 +4477,7 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@pmmmwh/react-refresh-webpack-plugin@^0.6.2":
+"@pmmmwh/react-refresh-webpack-plugin@0.6.2":
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/@pmmmwh/react-refresh-webpack-plugin/-/react-refresh-webpack-plugin-0.6.2.tgz#c17661001ef4d7ad5c6e7dd714c142962b00b5dc"
   integrity sha512-IhIAD5n4XvGHuL9nAgWfsBR0TdxtjrUWETYKCBHxauYXEv+b+ctEbs9neEgPC7Ecgzv4bpZTBwesAoGDeFymzA==
@@ -18287,12 +18287,12 @@ react-redux@8.0.1:
     react-is "^18.0.0"
     use-sync-external-store "^1.0.0"
 
-react-refresh-typescript@^2.0.11:
+react-refresh-typescript@2.0.11:
   version "2.0.11"
   resolved "https://registry.yarnpkg.com/react-refresh-typescript/-/react-refresh-typescript-2.0.11.tgz#85496b9b9e52d26f90aa226f81cd7bb6288af6b3"
   integrity sha512-u6afET6t6NDNcxD67wSVlgazX/CiRuC7qSqALZueMckjmPQnOBajmwibJr2TTU6MtttDNPjBhD8K3AB8i0opJg==
 
-react-refresh@^0.18.0:
+react-refresh@0.18.0:
   version "0.18.0"
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.18.0.tgz#2dce97f4fe932a4d8142fa1630e475c1729c8062"
   integrity sha512-QgT5//D3jfjJb6Gsjxv0Slpj23ip+HtOpnNgnb2S5zU3CB26G/IDPGoy4RJB42wzFE46DRsstbW6tKHoKbhAxw==
