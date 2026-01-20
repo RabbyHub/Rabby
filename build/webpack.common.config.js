@@ -16,6 +16,7 @@ const createStyledComponentsTransformer = require('typescript-plugin-styled-comp
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const useForkTsChecker = process.env.FORK_TS_CHECKER === 'enable';
+const isHot = process.env.HOT === 'true';
 
 const paths = require('./paths');
 
@@ -88,7 +89,6 @@ const config = {
                           libraryDirectory: 'lib',
                           style: true,
                         }),
-                        isEnvDevelopment && new ReactRefreshTypeScript(),
                       ].filter(Boolean),
                     }),
                   },
@@ -109,7 +109,7 @@ const config = {
                         libraryDirectory: 'lib',
                         style: true,
                       }),
-                      isEnvDevelopment && new ReactRefreshTypeScript(),
+                      isHot && new ReactRefreshTypeScript(),
                     ].filter(Boolean),
                   }),
                   compilerOptions: {
@@ -146,7 +146,7 @@ const config = {
                 before: [
                   // @see https://github.com/Igorbek/typescript-plugin-styled-components#ts-loader
                   tsStyledComponentTransformer,
-                  isEnvDevelopment && new ReactRefreshTypeScript(),
+                  isHot && new ReactRefreshTypeScript(),
                 ].filter(Boolean),
               }),
             },

@@ -5,7 +5,8 @@
   "scripts": {
     "clean": "node build/clean.js",
     "make-theme": "node ./scripts/make-theme.js",
-    "build:dev:default": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && webpack serve --progress --env config=dev",
+    "build:dev:default": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && webpack --progress --env config=dev",
+    "build:hot": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch hot=true npm run clean && npm run make-theme && webpack serve --progress --env config=dev",
     "build:dev:turbo": "cross-env NODE_OPTIONS='--max-old-space-size=24576' TAILWIND_MODE=watch npm run clean && npm run make-theme && NODE_OPTIONS='--max-old-space-size=24576' webpack --progress --env config=dev",
     "build:pro:default": "npm run clean && npm run make-theme && webpack --progress --env config=pro",
     "build:debug:default": "npm run clean && npm run make-theme && webpack --progress --env config=debug",
@@ -15,6 +16,7 @@
     "build:dev": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:dev:default",
     "build:turbodev": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:dev:turbo",
     "dev": "cross-env FORK_TS_CHECKER=enable MANIFEST_TYPE=chrome-mv3 TAILWIND_MODE=build npm run build:dev:default",
+    "dev:hot": "cross-env FORK_TS_CHECKER=enable MANIFEST_TYPE=chrome-mv3 TAILWIND_MODE=build npm run build:hot",
     "build:pro": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:pro:default",
     "build:debug": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:debug:default",
     "build:sourcemap": "npm run clean && npm run make-theme && webpack --progress --env config=sourcemap",
