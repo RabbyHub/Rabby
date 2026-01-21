@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from 'antd';
 import { OrderSide } from '../../../types';
 
@@ -21,6 +21,8 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
   orderSide,
   titleText,
 }) => {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <Button
       type="primary"
@@ -31,12 +33,14 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
       disabled={disabled}
       style={{
         boxShadow:
-          isValid && !error
+          hovered && isValid && !error
             ? orderSide === OrderSide.BUY
               ? '0px 8px 16px rgba(42, 187, 127, 0.3)'
               : '0px 8px 16px rgba(227, 73, 53, 0.3)'
             : 'none',
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
         isValid && !error
           ? orderSide === OrderSide.BUY

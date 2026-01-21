@@ -339,6 +339,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
                 setReduceOnly(false);
               }
             }}
+            tooltipText={t('page.perpsPro.tradingPanel.tpSlTips')}
             title={t('page.perpsPro.tradingPanel.tpSl')}
           />
 
@@ -350,6 +351,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
                 handleTPSLEnabledChange(false);
               }
             }}
+            tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
             title={t('page.perpsPro.tradingPanel.reduceOnly')}
             disabled={!currentPosition}
           />

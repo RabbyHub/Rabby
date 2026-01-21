@@ -472,6 +472,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           <PerpsCheckbox
             checked={reduceOnly}
             onChange={setReduceOnly}
+            tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
             title={t('page.perpsPro.tradingPanel.reduceOnly')}
             disabled={!currentPosition}
           />

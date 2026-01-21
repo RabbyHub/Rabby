@@ -1,7 +1,7 @@
 import { PositionAndOpenOrder } from '@/ui/models/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { Table } from 'antd';
+import { Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -14,6 +14,7 @@ import { sortBy } from 'lodash';
 import { formatPercent } from '@/ui/views/Perps/utils';
 import { useTranslation } from 'react-i18next';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { DashedUnderlineText } from '../../DashedUnderlineText';
 
 export const TradeHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -152,7 +153,13 @@ export const TradeHistory: React.FC = () => {
         },
       },
       {
-        title: t('page.perpsPro.userInfo.tab.closedPnl'),
+        title: (
+          <DashedUnderlineText
+            tooltipText={t('page.perpsPro.userInfo.tab.closedPnlTooltip')}
+          >
+            {t('page.perpsPro.userInfo.tab.closedPnl')}
+          </DashedUnderlineText>
+        ),
         key: 'closedPnl',
         dataIndex: 'closedPnl',
         // width: 180,

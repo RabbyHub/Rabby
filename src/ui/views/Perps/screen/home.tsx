@@ -637,7 +637,7 @@ export const Perps: React.FC = () => {
                 'bg-r-neutral-bg-2 hover:bg-r-blue-light1'
               )}
               onClick={() => {
-                wallet.openInDesktop('/desktop/profile');
+                wallet.openInDesktop('/desktop/perps');
                 window.close();
               }}
             >

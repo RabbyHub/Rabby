@@ -476,9 +476,12 @@ export const useDepositWithdraw = (
 
   // Handle deposit
   const handleDepositClick = useMemoizedFn(async () => {
-    if (!miniSignTx || !currentPerpsAccount) return;
+    if (!miniSignTx || !currentPerpsAccount) {
+      console.error('handleDepositClick No miniSignTx');
+      return;
+    }
 
-    if (canUseDirectSubmitTx && miniSignTx.length) {
+    if (canUseDirectSubmitTx) {
       setIsPreparingSign(true);
       closeSign();
       try {
@@ -517,7 +520,10 @@ export const useDepositWithdraw = (
   });
 
   const handleDepositFullSign = useMemoizedFn(async () => {
-    if (!miniSignTx) return;
+    if (!miniSignTx) {
+      console.error('handleDepositFullSign No miniSignTx');
+      return;
+    }
 
     try {
       const promise = Promise.all(

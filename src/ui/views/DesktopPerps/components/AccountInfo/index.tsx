@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { DashedUnderlineText } from '../DashedUnderlineText';
 import { Tooltip } from 'antd';
 import { PopupType } from '../../index';
+import { isNaN } from 'lodash';
 
 export const AccountInfo: React.FC<{
   handleSetPopupType: (type: PopupType) => void;
@@ -31,7 +32,7 @@ export const AccountInfo: React.FC<{
     const num = new BigNumber(
       clearinghouseState?.crossMaintenanceMarginUsed || 0
     ).div(new BigNumber(clearinghouseState?.marginSummary?.accountValue || 1));
-    return formatPerpsPct(num.toNumber());
+    return isNaN(num.toNumber()) ? '0%' : formatPerpsPct(num.toNumber());
   }, [clearinghouseState]);
 
   const handleDepositClick = () => {
@@ -47,6 +48,13 @@ export const AccountInfo: React.FC<{
       Number(positionAllPnl || 0)
     );
   }, [clearinghouseState, positionAllPnl]);
+
+  const crossAccountLeverage = useMemo(() => {
+    return (
+      Number(clearinghouseState?.marginSummary?.totalNtlPos || 0) /
+      Number(clearinghouseState?.marginSummary?.accountValue || 1)
+    );
+  }, [clearinghouseState]);
 
   return (
     <div className="w-full h-full flex flex-col flex-shrink-0 overflow-hidden">
@@ -75,19 +83,13 @@ export const AccountInfo: React.FC<{
         </div>
         <div className="space-y-[8px] text-[12px] leading-[14px]">
           <div className="flex items-center justify-between">
-            <Tooltip
-              title={t('page.perpsPro.accountInfo.accountEquityTip')}
-              overlayClassName="rectangle"
-              placement="top"
-              trigger="hover"
+            <DashedUnderlineText
+              needCursor={false}
+              tooltipText={t('page.perpsPro.accountInfo.accountEquityTip')}
+              className="text-r-neutral-title-1"
             >
-              <DashedUnderlineText
-                needCursor={false}
-                className="text-r-neutral-title-1"
-              >
-                {t('page.perpsPro.accountInfo.accountEquity')}
-              </DashedUnderlineText>
-            </Tooltip>
+              {t('page.perpsPro.accountInfo.accountEquity')}
+            </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(
                 Number(clearinghouseState?.marginSummary?.accountValue || 0),
@@ -96,19 +98,13 @@ export const AccountInfo: React.FC<{
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <Tooltip
-              title={t('page.perpsPro.accountInfo.balanceTip')}
-              overlayClassName="rectangle"
-              placement="top"
-              trigger="hover"
+            <DashedUnderlineText
+              tooltipText={t('page.perpsPro.accountInfo.balanceTip')}
+              needCursor={false}
+              className="text-r-neutral-title-1"
             >
-              <DashedUnderlineText
-                needCursor={false}
-                className="text-r-neutral-title-1"
-              >
-                {t('page.perpsPro.accountInfo.balance')}
-              </DashedUnderlineText>
-            </Tooltip>
+              {t('page.perpsPro.accountInfo.balance')}
+            </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(customBalance)}
             </div>
@@ -130,37 +126,25 @@ export const AccountInfo: React.FC<{
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <Tooltip
-              title={t('page.perpsPro.accountInfo.crossMarginRatioTips')}
-              overlayClassName="rectangle"
-              placement="top"
-              trigger="hover"
+            <DashedUnderlineText
+              needCursor={false}
+              tooltipText={t('page.perpsPro.accountInfo.crossMarginRatioTips')}
+              className="text-rb-neutral-foot"
             >
-              <DashedUnderlineText
-                needCursor={false}
-                className="text-rb-neutral-foot"
-              >
-                {t('page.perpsPro.accountInfo.crossMarginRatio')}
-              </DashedUnderlineText>
-            </Tooltip>
+              {t('page.perpsPro.accountInfo.crossMarginRatio')}
+            </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
               {crossMarginRatio}
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <Tooltip
-              title={t('page.perpsPro.accountInfo.maintenanceMarginTips')}
-              overlayClassName="rectangle"
-              placement="top"
-              trigger="hover"
+            <DashedUnderlineText
+              needCursor={false}
+              tooltipText={t('page.perpsPro.accountInfo.maintenanceMarginTips')}
+              className="text-rb-neutral-foot"
             >
-              <DashedUnderlineText
-                needCursor={false}
-                className="text-rb-neutral-foot"
-              >
-                {t('page.perpsPro.accountInfo.maintenanceMargin')}
-              </DashedUnderlineText>
-            </Tooltip>
+              {t('page.perpsPro.accountInfo.maintenanceMargin')}
+            </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(
                 Number(clearinghouseState?.crossMaintenanceMarginUsed || 0)
@@ -168,24 +152,19 @@ export const AccountInfo: React.FC<{
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <Tooltip
-              title={t('page.perpsPro.accountInfo.crossAccountLeverageTips')}
-              overlayClassName="rectangle"
-              placement="top"
-              trigger="hover"
+            <DashedUnderlineText
+              needCursor={false}
+              tooltipText={t(
+                'page.perpsPro.accountInfo.crossAccountLeverageTips'
+              )}
+              className="text-rb-neutral-foot"
             >
-              <DashedUnderlineText
-                needCursor={false}
-                className="text-rb-neutral-foot"
-              >
-                {t('page.perpsPro.accountInfo.crossAccountLeverage')}
-              </DashedUnderlineText>
-            </Tooltip>
+              {t('page.perpsPro.accountInfo.crossAccountLeverage')}
+            </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
-              {(
-                Number(clearinghouseState?.marginSummary?.totalNtlPos || 0) /
-                Number(clearinghouseState?.marginSummary?.accountValue || 1)
-              ).toFixed(2)}
+              {isNaN(crossAccountLeverage)
+                ? '0'
+                : crossAccountLeverage.toFixed(2)}
               x
             </div>
           </div>
