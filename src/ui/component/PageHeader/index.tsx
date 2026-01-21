@@ -73,11 +73,15 @@ const PageHeader = ({
         )}
       >
         {(forceShowBack || (canBack && history.length > 1)) && (
-          <ThemeIcon
-            src={keepBackLightVersion ? IconBack : RcIconBackNew}
-            className={clsx('icon icon-back', invertBack && 'filter invert')}
+          <div
+            className="icon-back-container hit-slop-8"
             onClick={onBack || (() => history.goBack())}
-          />
+          >
+            <ThemeIcon
+              src={keepBackLightVersion ? IconBack : RcIconBackNew}
+              className={clsx('icon icon-back', invertBack && 'filter invert')}
+            />
+          </div>
         )}
         <div className="header-content">
           {children}

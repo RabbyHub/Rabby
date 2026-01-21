@@ -43,7 +43,7 @@ export const PerpsHeaderRight: React.FC<PerpsHeaderRightProps> = ({
     </div>
   ) : (
     <div
-      className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0 cursor-pointer"
+      className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0 cursor-pointer hit-slop-8"
       onClick={() => {
         history.push(`/perps/history/${coin}`);
       }}
