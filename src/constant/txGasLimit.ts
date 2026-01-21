@@ -11,4 +11,7 @@ export const TX_GAS_LIMIT_CHAIN_MAPPING = {
   [CHAINS_ENUM.BASE]: 16_777_216,
   //https://docs.linea.build/release-notes#block-size-changes
   [CHAINS_ENUM.LINEA]: 24_000_000,
+  //https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/hyperevm/dual-block-architecture
+  // fast block gas limit
+  ['HYPER' as CHAINS_ENUM]: 2_000_000,
 };
