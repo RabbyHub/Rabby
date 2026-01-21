@@ -13,6 +13,9 @@ import { DesktopLoading } from './DesktopLoading';
 import { last } from 'lodash';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DesktopHistoryItem } from './DesktopHistoryItem';
+import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
+import clsx from 'clsx';
+import { HideScamTransactionModal } from './HideScamTransactionModal';
 
 const PAGE_COUNT = 20;
 
@@ -28,6 +31,9 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
   const wallet = useWallet();
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
+  const [isShowHideScamTxModal, setIsShowHideScamTxModal] = React.useState(
+    false
+  );
 
   const fetchData = async (startTime = 0) => {
     const { address } = currentAccount!;
@@ -106,19 +112,24 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
         </div>
       ) : (
         <>
+          <div
+            className={clsx(
+              'my-[12px]',
+              'inline-flex items-center gap-[4px] rounded-[8px] py-[6px] px-[8px] bg-rb-neutral-bg-3',
+              'text-[14px] leading-[18px] font-medium text-rb-neutral-foot',
+              'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
+              'cursor-pointer'
+            )}
+            onClick={() => {
+              setIsShowHideScamTxModal(true);
+            }}
+          >
+            Hide Scam tx
+            <RcIconArrowRightCC />
+          </div>
           {isEmpty ? (
             <Empty
               title={t('page.transactions.empty.title')}
-              // desc={
-              //   <span>
-              //     <Trans i18nKey="page.transactions.empty.desc" t={t}>
-              //       No transactions found on
-              //       <Link className="underline" to="/settings/chain-list">
-              //         supported chains
-              //       </Link>
-              //     </Trans>
-              //   </span>
-              // }
               className="pt-[108px]"
             />
           ) : (
@@ -137,6 +148,10 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
           )}
         </>
       )}
+      <HideScamTransactionModal
+        visible={isShowHideScamTxModal}
+        onCancel={() => setIsShowHideScamTxModal(false)}
+      />
     </div>
   );
 };
