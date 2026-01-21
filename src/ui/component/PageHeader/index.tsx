@@ -197,7 +197,7 @@ const AccountSwitchInner = ({
         </div>
       </div>
       <AccountSelectorModal
-        title={t('component.PageHeader.selectAccount')}
+        // title={t('component.PageHeader.selectAccount')}
         height="calc(100% - 60px)"
         visible={isShowModal}
         value={currentAccount}

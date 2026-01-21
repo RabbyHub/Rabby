@@ -1432,7 +1432,8 @@
         "title": "This token has a low credit value",
         "desc": "A low credit value often signals high risk, such as a honeypot token or very low liquidity."
       },
-      "understandRisks": "I understand the risks and want to continue"
+      "understandRisks": "I understand the risks and want to continue",
+      "search-by-token-name-address": "Search Token Name / Address"
     },
     "bridge": {
       "From": "From",
@@ -3602,7 +3603,8 @@
         "high": "High"
       },
       "searchInput": {
-        "placeholder": "Search by Name / Address"
+        "placeholder": "Search by Name / Address",
+        "placeholder1": "Search Token Name / Address"
       },
       "header": {
         "title": "Select Token"
