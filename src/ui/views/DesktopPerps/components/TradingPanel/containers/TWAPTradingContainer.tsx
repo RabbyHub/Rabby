@@ -68,7 +68,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
   }, [hourInput, minuteInput]);
 
   const { numberOfOrders, sizePerSuborder } = React.useMemo(() => {
-    const numberOfOrders = Math.floor((allMinsDuration * 60) / 30);
+    const numberOfOrders = Math.floor((allMinsDuration * 60) / 30) + 1;
     const sizePerSuborder = Number(tradeSize) / numberOfOrders;
     return {
       numberOfOrders,
@@ -77,6 +77,12 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         : sizePerSuborder.toFixed(szDecimals),
     };
   }, [allMinsDuration, tradeSize, szDecimals]);
+
+  useEffect(() => {
+    setHourInput('0');
+    setMinuteInput('5');
+    setRandomize(false);
+  }, [selectedCoin]);
 
   // Form validation
   const validation = React.useMemo(() => {
@@ -102,6 +108,17 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
 
     if (Number(sizePerSuborder) * Number(midPrice) < 10) {
       error = t('page.perpsPro.tradingPanel.minimumSuborderSize');
+      return { isValid: false, error };
+    }
+
+    //allMinsDuration in 5min - 24h
+    if (allMinsDuration < 5) {
+      error = t('page.perpsPro.tradingPanel.runtimeTooShort');
+      return { isValid: false, error };
+    }
+
+    if (allMinsDuration > 24 * 60) {
+      error = t('page.perpsPro.tradingPanel.runtimeTooLong');
       return { isValid: false, error };
     }
 
@@ -193,7 +210,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
 
   const handleMinuteInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (validatePriceInput(value, szDecimals)) {
+    if (validateNumberInput(value)) {
       setMinuteInput(value);
     }
   };
@@ -343,7 +360,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
             {t('page.perpsPro.tradingPanel.sizePerSuborder')}
           </span>
           <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {sizePerSuborder}
+            {sizePerSuborder} {selectedCoin}
           </span>
         </div>
 

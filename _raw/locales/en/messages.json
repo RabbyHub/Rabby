@@ -1141,6 +1141,8 @@
         "sound": "Enable Sound"
       },
       "tradingPanel": {
+        "runtimeTooShort": "Runtime must be more than 5 minutes",
+        "runtimeTooLong": "Runtime must be less than 24 hours",
         "slippagePage": {
           "title": "Adjust Max Slippage",
           "description": "Max slippage only affects market orders placed from the order form. Closing positions will use max slippage of 8% and market TP/SL orders will use max slippage of 10%.",

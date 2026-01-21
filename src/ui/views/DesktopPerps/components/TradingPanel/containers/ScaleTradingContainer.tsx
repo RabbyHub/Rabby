@@ -17,7 +17,7 @@ import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSlider';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
-import { validatePriceInput } from '@/ui/views/Perps/utils';
+import { formatPercent, validatePriceInput } from '@/ui/views/Perps/utils';
 import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import { calculateMaxScaleTotalSize } from '../utils';
 import eventBus from '@/eventBus';
@@ -69,13 +69,20 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     'Gtc'
   );
 
+  useEffect(() => {
+    setStartPrice('');
+    setEndPrice('');
+    setNumGrids('5');
+    setSizeSkew('1.00');
+  }, [selectedCoin]);
+
   // Calculate maxTradeSize for scale orders based on scale parameters
   const scaleMaxTradeSize = React.useMemo(() => {
     if (
       !startPrice ||
       !endPrice ||
       !numGrids ||
-      Number(numGrids) <= 0 ||
+      Number(numGrids) <= 1 ||
       !sizeSkew ||
       Number(sizeSkew) <= 0 ||
       !availableBalance ||
@@ -106,6 +113,44 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     maxTradeSize,
   ]);
 
+  const {
+    handleOpenScaleOrder,
+    calculateScaleOrdersWithSkew,
+    needEnableTrading,
+    handleActionApproveStatus,
+  } = usePerpsProPosition();
+
+  const scaleOrders = useMemo(() => {
+    try {
+      return calculateScaleOrdersWithSkew({
+        coin: selectedCoin,
+        szDecimals,
+        isBuy: orderSide === OrderSide.BUY,
+        totalSize: tradeSize,
+        startPrice,
+        endPrice,
+        sizeSkew: Number(sizeSkew),
+        numGrids: Number(numGrids),
+        reduceOnly,
+        limitOrderType,
+      });
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }, [
+    selectedCoin,
+    orderSide,
+    tradeSize,
+    startPrice,
+    endPrice,
+    numGrids,
+    sizeSkew,
+    szDecimals,
+    limitOrderType,
+    reduceOnly,
+  ]);
+
   // Form validation
   const validation = React.useMemo(() => {
     let error: string = '';
@@ -123,7 +168,10 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     }
 
     // Check minimum order size ($10)
-    if (notionalNum < 10) {
+    const someOrderSizeIsLessThan10 = scaleOrders.some(
+      (order) => Number(order.sz) * Number(order.limitPx) < 10
+    );
+    if (someOrderSizeIsLessThan10) {
       error = t('page.perpsPro.tradingPanel.minimumOrderSize');
       return { isValid: false, error };
     }
@@ -155,6 +203,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       error,
     };
   }, [
+    scaleOrders,
     positionSize.notionalValue,
     scaleMaxTradeSize,
     reduceOnly,
@@ -167,43 +216,6 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     startPrice,
     endPrice,
     t,
-  ]);
-
-  const {
-    handleOpenScaleOrder,
-    calculateScaleOrdersWithSkew,
-    needEnableTrading,
-    handleActionApproveStatus,
-  } = usePerpsProPosition();
-
-  const scaleOrders = useMemo(() => {
-    try {
-      return calculateScaleOrdersWithSkew({
-        coin: selectedCoin,
-        szDecimals,
-        isBuy: orderSide === OrderSide.BUY,
-        totalSize: tradeSize,
-        startPrice,
-        endPrice,
-        sizeSkew: Number(sizeSkew),
-        numGrids: Number(numGrids),
-        reduceOnly,
-        limitOrderType,
-      });
-    } catch (error) {
-      return [];
-    }
-  }, [
-    selectedCoin,
-    orderSide,
-    tradeSize,
-    startPrice,
-    endPrice,
-    numGrids,
-    sizeSkew,
-    szDecimals,
-    limitOrderType,
-    reduceOnly,
   ]);
 
   const {
@@ -238,6 +250,11 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     const startOrderSize = scaleOrders[0]?.sz || '0';
     const endOrderSize = scaleOrders[scaleOrders.length - 1]?.sz || '0';
 
+    const scaleOrdersValue = scaleOrders.reduce((acc, order) => {
+      return acc + Number(order.sz) * Number(order.limitPx);
+    }, 0);
+
+    const marginRequired = scaleOrdersValue / leverage;
     return {
       start: `${startOrderSize} ${selectedCoin} @ ${splitNumberByStep(
         startPrice || '0'
@@ -245,13 +262,16 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       end: `${endOrderSize} ${selectedCoin} @ ${splitNumberByStep(
         endPrice || '0'
       )} USDC`,
-      orderValue: tradeUsdAmount > 0 ? formatUsdValue(tradeUsdAmount) : '$0.00',
+      orderValue:
+        scaleOrdersValue > 0 ? formatUsdValue(scaleOrdersValue) : '$0.00',
       marginRequired: formatUsdValue(marginRequired),
-      marginUsage: marginUsage,
+      marginUsage: formatPercent(marginRequired / availableBalance, 1),
     };
   }, [
-    tradeUsdAmount,
+    scaleOrders,
+    leverage,
     marginRequired,
+    availableBalance,
     marginUsage,
     selectedCoin,
     startPrice,
@@ -322,12 +342,20 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   const handleNumGridsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (validateNumberInput(value)) {
+      if (Number(value) > 100) {
+        setNumGrids('100');
+        return;
+      }
       setNumGrids(value);
     }
   };
 
   const validateSizeSkewInput = (value: string) => {
-    return /^[0-9.]*$/.test(value);
+    if (value === '') {
+      return true;
+    }
+    // 0.01 - 100.00，限制两位小数，最大100，不允许负号输入
+    return /^(100(\.00?)?|(\d{1,2})(\.\d{0,2})?)$/.test(value);
   };
 
   const handleSizeSkewChange = (e: React.ChangeEvent<HTMLInputElement>) => {

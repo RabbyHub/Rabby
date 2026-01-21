@@ -172,6 +172,9 @@ export const validatePriceInput = (
   value: string,
   szDecimals: number
 ): boolean => {
+  // not input '-' in price input
+  if (value.includes('-')) return false;
+
   if (!value || value === '0' || value === '0.') return true;
 
   // Check if it's an integer (no decimal point or ends with decimal point)
