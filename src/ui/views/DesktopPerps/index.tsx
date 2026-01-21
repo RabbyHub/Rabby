@@ -25,6 +25,7 @@ import {
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
+import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
 
 const Wrap = styled.div`
   width: 100%;
@@ -90,42 +91,43 @@ export const DesktopPerps: React.FC = () => {
   return (
     <>
       <Wrap>
-        <div className="flex items-center justify-between px-[20px]">
-          <DesktopNav showRightItems={false} />
-
-          <AccountActions handleSetPopupType={handleSetPopupType} />
-        </div>
-
         <div className="flex flex-1 pl-16 pr-8 pb-16">
-          <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
-            <div className="flex h-[670px] border-b border-solid border-rb-neutral-line">
-              <div className="flex-[4] flex min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
-                <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
-                  <ChartArea />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <OrderBookTrades />
-                </div>
-              </div>
-              <div className=" flex-1 flex-shrink-0 overflow-auto">
-                <TradingPanel />
-              </div>
-            </div>
+          <div className="flex flex-col flex-1 min-w-0">
+            <div className="flex items-center justify-between">
+              <DesktopNav showRightItems={false} />
 
-            <div className="flex flex-1 min-h-[300px] max-h-[430px]">
-              <div className="flex-[4] min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
-                <UserInfoHistory />
+              <AccountActions handleSetPopupType={handleSetPopupType} />
+            </div>
+            <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
+              <div className="flex h-[670px] border-b border-solid border-rb-neutral-line">
+                <div className="flex-[4] flex min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
+                  <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
+                    <ChartArea />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <OrderBookTrades />
+                  </div>
+                </div>
+                <div className=" flex-1 flex-shrink-0 overflow-auto">
+                  <TradingPanel />
+                </div>
               </div>
-              <div className="flex-1 flex-shrink-0 overflow-auto">
-                <AccountInfo handleSetPopupType={handleSetPopupType} />
+
+              <div className="flex flex-1 min-h-[300px] max-h-[430px]">
+                <div className="flex-[4] min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
+                  <UserInfoHistory />
+                </div>
+                <div className="flex-1 flex-shrink-0 overflow-auto">
+                  <AccountInfo handleSetPopupType={handleSetPopupType} />
+                </div>
               </div>
             </div>
           </div>
-
           <aside
             className={clsx(
-              'min-w-[64px] flex-shrink-0 z-20 h-full overflow-auto pl-[16px]'
+              'min-w-[64px] flex-shrink-0 z-20 h-full overflow-auto pl-[16px] sticky'
             )}
+            style={{ top: DESKTOP_NAV_HEIGHT }}
           >
             <DesktopPerpsSelectAccountList
               handleSetPopupType={handleSetPopupType}
