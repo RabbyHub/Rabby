@@ -278,9 +278,18 @@ export const PositionsInfo: React.FC = () => {
                 >
                   {record.coin}
                 </div>
-                <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
+                <div
+                  className={clsx(
+                    'text-[12px] leading-[14px] font-medium',
+                    record.direction === 'Long'
+                      ? 'text-rb-green-default'
+                      : 'text-rb-red-default'
+                  )}
+                >
                   <span
-                    className="text-[12px] leading-[14px]  text-rb-neutral-foot font-medium hover:font-bold hover:text-rb-brand-default cursor-pointer"
+                    className={clsx(
+                      'text-[12px] leading-[14px] font-medium hover:font-bold hover:text-rb-brand-default cursor-pointer'
+                    )}
                     onClick={(e) =>
                       handleClickLeverage(record.coin, record.leverage)
                     }

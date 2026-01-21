@@ -44,7 +44,7 @@ export const OrderHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.time'),
         key: 'statusTimestamp',
         dataIndex: 'statusTimestamp',
-        // width: 180,
+        width: 160,
         // need filled front by open status
         sorter: (a, b) =>
           a.statusTimestamp - b.statusTimestamp ||
