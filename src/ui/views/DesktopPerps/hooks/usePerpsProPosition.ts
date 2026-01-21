@@ -253,7 +253,7 @@ export const usePerpsProPosition = () => {
               perpsToast.success({
                 title: t('page.perps.toast.orderFilled'),
                 description: t('page.perps.toast.openPositionSuccess', {
-                  direction: isBuy ? 'Long' : 'Short',
+                  direction: isBuy ? 'Bought' : 'Sold',
                   coin,
                   size: totalSz,
                   price: avgPx,

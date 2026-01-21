@@ -276,21 +276,13 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
           <PerpsCheckbox
             checked={randomize}
             onChange={(checked) => setRandomize(checked)}
-            title={
-              <Tooltip
-                placement="top"
-                overlayClassName={clsx('rectangle')}
-                title={t('page.perpsPro.tradingPanel.randomizeTooltip')}
-              >
-                <span className="text-r-neutral-title-1 text-[12px]">
-                  {t('page.perpsPro.tradingPanel.randomize')}
-                </span>
-              </Tooltip>
-            }
+            tooltipText={t('page.perpsPro.tradingPanel.randomizeTooltip')}
+            title={t('page.perpsPro.tradingPanel.randomize')}
           />
           <PerpsCheckbox
             checked={reduceOnly}
             onChange={setReduceOnly}
+            tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
             title={t('page.perpsPro.tradingPanel.reduceOnly')}
             disabled={!currentPosition}
           />

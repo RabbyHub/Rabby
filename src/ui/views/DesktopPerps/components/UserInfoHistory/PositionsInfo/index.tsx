@@ -36,6 +36,7 @@ import { MarginMode } from '../../../types';
 import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { DashedUnderlineText } from '../../DashedUnderlineText';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -342,7 +343,13 @@ export const PositionsInfo: React.FC = () => {
         },
       },
       {
-        title: t('page.perpsPro.userInfo.tab.unrealizedPnl'),
+        title: (
+          <DashedUnderlineText
+            tooltipText={t('page.perpsPro.userInfo.tab.unrealizedPnlTooltip')}
+          >
+            {t('page.perpsPro.userInfo.tab.unrealizedPnl')}
+          </DashedUnderlineText>
+        ),
         key: 'unrealizedPnl',
         dataIndex: 'unrealizedPnl',
         sorter: (a, b) => Number(a.unrealizedPnl) - Number(b.unrealizedPnl),

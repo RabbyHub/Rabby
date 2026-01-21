@@ -41,7 +41,9 @@ export const Twap: React.FC = () => {
   } = useRabbySelector((store) => store.perps);
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
-  const [activeTab, setActiveTab] = useState<'active' | 'history'>('active');
+  const [activeTab, setActiveTab] = useState<'active' | 'history' | 'filled'>(
+    'active'
+  );
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
 
   // Merge twapStates and twapHistory
@@ -63,7 +65,7 @@ export const Twap: React.FC = () => {
         randomize: state.randomize,
         timestamp: state.timestamp,
         status: 'activated',
-        slices,
+        slices: slices.sort((a, b) => a.fill.time - b.fill.time),
       });
     });
 
@@ -92,7 +94,7 @@ export const Twap: React.FC = () => {
         randomize: history.state.randomize,
         timestamp: history.state.timestamp,
         status: history.status.status,
-        slices,
+        slices: slices.sort((a, b) => a.fill.time - b.fill.time),
       });
     });
 
@@ -157,8 +159,185 @@ export const Twap: React.FC = () => {
     return `${formatTime(totalSeconds)} / ${formatTime(totalSeconds)}`;
   };
 
-  const columns = useMemo<ColumnType<TwapOrder>[]>(
+  // Fill History columns for twapSliceFills
+  const fillHistoryColumns = useMemo<ColumnType<UserTwapSliceFill>[]>(
     () => [
+      {
+        title: t('page.perpsPro.userInfo.tab.time'),
+        key: 'time',
+        dataIndex: 'time',
+        width: 180,
+        sorter: (a, b) => a.fill.time - b.fill.time,
+        render: (_, record) => (
+          <div className="text-[13px] leading-[16px] text-r-neutral-title-1">
+            {dayjs(record.fill.time).format('YYYY/MM/DD-HH:mm:ss')}
+          </div>
+        ),
+      },
+      {
+        title: t('page.perpsPro.userInfo.tab.coin'),
+        key: 'coin',
+        width: 120,
+        dataIndex: 'coin',
+        sorter: (a, b) => a.fill.coin.localeCompare(b.fill.coin),
+        render: (_, record) => (
+          <div
+            className="text-[12px] leading-[14px] text-r-neutral-title-1 cursor-pointer hover:font-bold hover:text-rb-brand-default"
+            onClick={() => {
+              dispatch.perps.setSelectedCoin(record.fill.coin);
+            }}
+          >
+            {record.fill.coin}
+          </div>
+        ),
+      },
+      {
+        title: t('page.perpsPro.userInfo.tab.direction'),
+        key: 'direction',
+        width: 120,
+        dataIndex: 'direction',
+        sorter: (a, b) => a.fill.side.localeCompare(b.fill.side),
+        render: (_, record) => {
+          const isBuy = record.fill.side === 'B';
+          return (
+            <div
+              className={clsx(
+                'text-[12px] leading-[14px]',
+                isBuy ? 'text-rb-green-default' : 'text-rb-red-default'
+              )}
+            >
+              {record.fill.dir}
+            </div>
+          );
+        },
+      },
+      {
+        title: t('page.perpsPro.userInfo.tab.averagePrice'),
+        key: 'px',
+        width: 130,
+        dataIndex: 'px',
+        sorter: (a, b) => Number(a.fill.px) - Number(b.fill.px),
+        render: (_, record) => {
+          const pxDecimals =
+            marketDataMap[record.fill.coin.toUpperCase()]?.pxDecimals || 2;
+          const px = new BigNumber(record.fill.px).toFixed(pxDecimals);
+          return (
+            <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
+              {splitNumberByStep(px)}
+            </div>
+          );
+        },
+      },
+      {
+        title: t('page.perpsPro.userInfo.tab.size'),
+        key: 'sz',
+        width: 130,
+        dataIndex: 'sz',
+        sorter: (a, b) => Number(a.fill.sz) - Number(b.fill.sz),
+        render: (_, record) => (
+          <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
+            {splitNumberByStep(Number(record.fill.sz))} {record.fill.coin}
+          </div>
+        ),
+      },
+      {
+        title: t('page.perpsPro.userInfo.tab.tradeValue'),
+        key: 'tradeValue',
+        width: 150,
+        dataIndex: 'tradeValue',
+        sorter: (a, b) =>
+          new BigNumber(a.fill.px).times(a.fill.sz).toNumber() -
+          new BigNumber(b.fill.px).times(b.fill.sz).toNumber(),
+        render: (_, record) => (
+          <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
+            {splitNumberByStep(
+              new BigNumber(record.fill.px)
+                .times(new BigNumber(record.fill.sz).abs())
+                .toFixed(2)
+            )}{' '}
+            USDC
+          </div>
+        ),
+      },
+      {
+        title: t('page.perpsPro.userInfo.tab.fee'),
+        key: 'fee',
+        width: 100,
+        dataIndex: 'fee',
+        render: (_, record) => {
+          const fee = (record.fill as any).fee;
+          if (!fee) {
+            return (
+              <div className="text-[12px] leading-[14px] text-rb-neutral-foot">
+                -
+              </div>
+            );
+          }
+          return (
+            <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
+              {splitNumberByStep(fee)} USDC
+            </div>
+          );
+        },
+      },
+      {
+        title: t('page.perpsPro.userInfo.tab.closedPnl'),
+        key: 'closedPnl',
+        width: 130,
+        render: (_, record) => {
+          const closedPnl = (record.fill as any).closedPnl;
+          if (!closedPnl || Number(closedPnl) === 0) {
+            return (
+              <div className="text-[12px] leading-[14px] text-rb-neutral-foot">
+                -
+              </div>
+            );
+          }
+          const pnlValue = Number(closedPnl);
+          return (
+            <div
+              className={clsx(
+                'text-[12px] leading-[14px]',
+                pnlValue > 0 ? 'text-rb-green-default' : 'text-rb-red-default'
+              )}
+            >
+              {pnlValue > 0 ? '+' : ''}
+              {splitNumberByStep(pnlValue.toFixed(2))} USDC
+            </div>
+          );
+        },
+      },
+    ],
+    [marketDataMap, t, dispatch]
+  );
+
+  const columns = useMemo<ColumnType<TwapOrder>[]>(() => {
+    const activeColumns = [
+      {
+        title: t('page.perpsPro.userInfo.tab.terminate'),
+        key: 'terminate',
+        width: 100,
+        render: (_, record) => {
+          return (
+            <div className="flex items-center">
+              <div
+                className="text-[12px] px-[16px] h-[28px] flex items-center justify-center bg-rb-red-light-1 text-rb-red-default cursor-pointer rounded-[8px]"
+                onClick={() =>
+                  handleCancelTWAPOrder({
+                    coin: record.coin,
+                    twapId: record.twapId,
+                  })
+                }
+              >
+                {t('page.perpsPro.userInfo.terminate')}
+              </div>
+            </div>
+          );
+        },
+      },
+    ];
+
+    const commonColumns = [
       {
         title: t('page.perpsPro.userInfo.tab.coin'),
         dataIndex: 'coin',
@@ -329,7 +508,8 @@ export const Twap: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.tab.creationTime'),
-        key: 'creationTime',
+        key: 'time',
+        dataIndex: 'time',
         width: 180,
         sorter: (a, b) => a.timestamp - b.timestamp,
         render: (_, record) => {
@@ -340,51 +520,19 @@ export const Twap: React.FC = () => {
           );
         },
       },
-      // {
-      //   title: 'Errors',
-      //   key: 'errors',
-      //   width: 80,
-      //   render: () => {
-      //     return (
-      //       <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-      //         -
-      //       </div>
-      //     );
-      //   },
-      // },
-      {
-        title: t('page.perpsPro.userInfo.tab.terminate'),
-        key: 'terminate',
-        width: 100,
-        render: (_, record) => {
-          if (activeTab === 'history') {
-            return <div className="text-[12px] text-r-neutral-foot">-</div>;
-          }
+    ];
 
-          return (
-            <div className="flex items-center">
-              <div
-                className="text-[12px] px-[16px] h-[28px] flex items-center justify-center bg-rb-red-light-1 text-rb-red-default cursor-pointer rounded-[8px]"
-                onClick={() =>
-                  handleCancelTWAPOrder({
-                    coin: record.coin,
-                    twapId: record.twapId,
-                  })
-                }
-              >
-                {t('page.perpsPro.userInfo.terminate')}
-              </div>
-            </div>
-          );
-        },
-      },
-    ],
-    [expandedRowKeys, handleCancelTWAPOrder, activeTab]
-  );
+    const columns =
+      activeTab === 'active'
+        ? [...commonColumns, ...activeColumns]
+        : [...commonColumns];
+
+    return columns;
+  }, [expandedRowKeys, handleCancelTWAPOrder, activeTab, t]);
 
   // Expanded row render
   const expandedRowRender = (record: TwapOrder) => {
-    const sliceColumns: ColumnType<UserTwapSliceFill>[] = [
+    const commonColumns: ColumnType<UserTwapSliceFill>[] = [
       {
         title: t('page.perpsPro.userInfo.tab.slice'),
         key: 'index',
@@ -452,21 +600,20 @@ export const Twap: React.FC = () => {
           </div>
         ),
       },
-      // {
-      //   title: 'Errors',
-      //   width: 80,
-      //   render: () => (
-      //     <div className="text-[12px] leading-[14px] text-rb-neutral-foot">
-      //       -
-      //     </div>
-      //   ),
-      // },
+    ];
+
+    const activeColumns: ColumnType<UserTwapSliceFill>[] = [
       {
         title: '',
         width: 100,
         render: () => null,
       },
     ];
+
+    const sliceColumns =
+      activeTab === 'active'
+        ? [...commonColumns, ...activeColumns]
+        : [...commonColumns];
 
     return (
       <CommonTable
@@ -510,30 +657,55 @@ export const Twap: React.FC = () => {
         >
           {t('page.perpsPro.userInfo.history')}
         </div>
+        <div
+          className={clsx(
+            'px-[8px] py-[6px] text-[12px]  cursor-pointer',
+            activeTab === 'filled'
+              ? 'text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px]'
+              : 'text-r-neutral-foot bg-rb-neutral-bg-4'
+          )}
+          onClick={() => setActiveTab('filled')}
+        >
+          {t('page.perpsPro.userInfo.fillHistory')}
+        </div>
       </div>
 
       {/* Table */}
       <div className="flex-1 overflow-auto">
-        <CommonTable
-          emptyMessage={
-            activeTab === 'active'
-              ? t('page.perpsPro.userInfo.emptyMessage.activeTwap')
-              : t('page.perpsPro.userInfo.emptyMessage.twapHistory')
-          }
-          dataSource={filteredOrders}
-          columns={columns}
-          pagination={false}
-          bordered={false}
-          showSorterTooltip={false}
-          rowKey={(record) => `${record.twapId}-${record.status}`}
-          defaultSortField="creationTime"
-          defaultSortOrder="descend"
-          expandable={{
-            expandedRowKeys,
-            expandedRowRender,
-            expandIconColumnIndex: -1,
-          }}
-        />
+        {activeTab === 'filled' ? (
+          <CommonTable
+            emptyMessage={t('page.perpsPro.userInfo.emptyMessage.fillHistory')}
+            dataSource={twapSliceFills}
+            columns={fillHistoryColumns}
+            pagination={false}
+            bordered={false}
+            showSorterTooltip={false}
+            rowKey={(record) => `${record.twapId}-${record.fill.tid}`}
+            defaultSortField="time"
+            defaultSortOrder="descend"
+          />
+        ) : (
+          <CommonTable
+            emptyMessage={
+              activeTab === 'active'
+                ? t('page.perpsPro.userInfo.emptyMessage.activeTwap')
+                : t('page.perpsPro.userInfo.emptyMessage.twapHistory')
+            }
+            dataSource={filteredOrders}
+            columns={columns}
+            pagination={false}
+            bordered={false}
+            showSorterTooltip={false}
+            rowKey={(record) => `${record.twapId}-${record.status}`}
+            defaultSortField="time"
+            defaultSortOrder="descend"
+            expandable={{
+              expandedRowKeys,
+              expandedRowRender,
+              expandIconColumnIndex: -1,
+            }}
+          />
+        )}
       </div>
     </div>
   );

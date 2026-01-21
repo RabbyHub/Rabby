@@ -798,18 +798,18 @@
         "cancelOrderSuccess": "Order has been cancelled",
         "cancelAllOrderSuccess": "Successfully cancelled {{count}} orders",
         "cancelOrderError": "Failed to cancel order",
-        "openScaleOrderSuccess": "Scale order opened {{direction}} {{coin}}-USD: Size {{size}}",
+        "openScaleOrderSuccess": "Scale order placed {{direction}} {{coin}}-USD: Size {{size}}",
         "takeProfitSuccess": "Take profit set successfully",
         "stopLossSuccess": "Stop loss set successfully",
         "setAutoCloseSuccess": "Auto close set successfully",
         "openTWAPOrderSuccess": "TWAP order opened {{direction}} {{coin}}-USD: Size {{size}}",
         "cancelTWAPOrderSuccess": "TWAP order canceled successfully",
-        "openTPSlMarketOrderSuccess": "{{tpsl}} market order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
-        "openTPSlLimitOrderSuccess": "{{tpsl}} limit order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
-        "openLimitOrderSuccess": "limit order opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
+        "openTPSlMarketOrderSuccess": "{{tpsl}} market order placed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
+        "openTPSlLimitOrderSuccess": "{{tpsl}} limit order placed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
+        "openLimitOrderSuccess": "limit order placed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
         "closePositionSuccess": "Closed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
         "closeAllPositionsSuccess": "All positions closed successfully",
-        "openPositionSuccess": "Opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}"
+        "openPositionSuccess": "{{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}"
       },
       "closePositionPopup": {
         "title": "Close {{coin}}-USD {{direction}}",
@@ -1025,6 +1025,10 @@
     "perpsPro": {
       "__skip_translation": ["TWAP", "TP", "SL"],
       "chatArea": {
+        "markTips": "Used for margining, computing unrealized PNL, liquidations, and triggering TP/SL orders.",
+        "oracleTips": "The median of external prices reported by validators, used for computing funding rates.",
+        "openInterestTips": "Two sided-open interest: the sum of long and short positions on this contract.",
+        "fundingTips": "The hourly rate at which longs pay shorts (if negative, shorts pay longs). There are no fees associated with funding, which is a peer-to-peer transfer between users to push prices towards the spot price. See Docs for details.",
         "symbol": "Symbol",
         "searchMarkets": "Search markets",
         "lastPrice": "Last Price",
@@ -1039,6 +1043,9 @@
       },
       "userInfo": {
         "tab": {
+          "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
+          "closedPnlTooltip": "Closed PNL includes fees and rebates",
+          "direction": "Direction",
           "time": "Time",
           "type": "Type",
           "value": "Value",
@@ -1081,6 +1088,7 @@
           "activeTwap": "No active TWAP",
           "twapHistory": "No TWAP history",
           "tradeHistory": "No trade history",
+          "fillHistory": "No fill history",
           "fundingHistory": "No funding history",
           "orderHistory": "No order history"
         },
@@ -1130,6 +1138,7 @@
         },
         "history": "History",
         "active": "Active",
+        "fillHistory": "Fill History",
         "terminate": "Terminate",
         "yes": "Yes",
         "no": "No",
@@ -1141,6 +1150,9 @@
         "sound": "Enable Sound"
       },
       "tradingPanel": {
+        "liquidationPriceTooltip": "Position risk is low, so there is no liquidation price for the time being. Note that increasing the position or reducing the margin will increase the risk.",
+        "tpSlTips": "Places simple market TP/SL orders. For advanced features such as limited prices or partial TP/SL, set the TP/SL in an open position.",
+        "reduceOnlyTips": "This order will not open a new position no matter how large the order size is. It will compare to the existing position at the time of execution.",
         "runtimeTooShort": "Runtime must be more than 5 minutes",
         "runtimeTooLong": "Runtime must be less than 24 hours",
         "slippagePage": {

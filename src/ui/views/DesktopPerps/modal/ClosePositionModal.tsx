@@ -45,12 +45,15 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   const dispatch = useRabbyDispatch();
 
   const marketPrice = marketData.markPx;
+  const szDecimals = marketData.szDecimals;
   const [positionSize, setPositionSize] = React.useState<PositionSize>({
     amount: '',
     notionalValue: '',
   });
   const [percentage, setPercentage] = React.useState(0);
-  const [limitPrice, setLimitPrice] = React.useState('');
+  const [limitPrice, setLimitPrice] = React.useState(
+    formatTpOrSlPrice(Number(marketData.midPx || 0), szDecimals)
+  );
 
   const { desc, btnText } = useMemo(() => {
     switch (type) {

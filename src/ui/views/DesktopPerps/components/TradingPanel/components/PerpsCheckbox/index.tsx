@@ -1,10 +1,12 @@
 import { Checkbox } from '@/ui/component';
+import { Tooltip } from 'antd';
 import React from 'react';
 
 interface PerpsCheckboxProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   title?: string | React.ReactNode;
+  tooltipText?: string;
   disabled?: boolean;
 }
 
@@ -12,6 +14,7 @@ export const PerpsCheckbox = ({
   checked,
   onChange,
   title,
+  tooltipText,
   disabled,
 }: PerpsCheckboxProps) => {
   return (
@@ -77,9 +80,19 @@ export const PerpsCheckbox = ({
         )
       }
     >
-      {title && (
-        <span className="text-r-neutral-title-1 text-[12px]">{title}</span>
-      )}
+      {title &&
+        (tooltipText ? (
+          <Tooltip
+            title={tooltipText}
+            overlayClassName="rectangle"
+            placement="top"
+            trigger="hover"
+          >
+            <span className="text-r-neutral-title-1 text-[12px]">{title}</span>
+          </Tooltip>
+        ) : (
+          <span className="text-r-neutral-title-1 text-[12px]">{title}</span>
+        ))}
     </Checkbox>
   );
 };

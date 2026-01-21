@@ -2,6 +2,7 @@ import React from 'react';
 import { OrderSummaryData } from '../../../types';
 import { useTranslation } from 'react-i18next';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
+import { Tooltip } from 'antd';
 
 interface OrderSummaryProps {
   data: OrderSummaryData;
@@ -50,10 +51,22 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       {/* Est. Liq. Price */}
       <div className="flex items-center justify-between">
-        <span className="text-r-neutral-foot text-[12px]">
-          {t('page.perpsPro.tradingPanel.liquidationPrice')}
-        </span>
-        {}
+        {data.liquidationPrice ? (
+          <span className="text-r-neutral-foot text-[12px]">
+            {t('page.perpsPro.tradingPanel.liquidationPrice')}
+          </span>
+        ) : (
+          <Tooltip
+            title={t('page.perpsPro.tradingPanel.liquidationPriceTooltip')}
+            overlayClassName="rectangle"
+            placement="top"
+            trigger="hover"
+          >
+            <span className="text-r-neutral-foot text-[12px]">
+              {t('page.perpsPro.tradingPanel.liquidationPrice')}
+            </span>
+          </Tooltip>
+        )}
         <span className="text-r-neutral-title-1 font-medium text-[12px]">
           {data.liquidationPrice || '-'}
         </span>
