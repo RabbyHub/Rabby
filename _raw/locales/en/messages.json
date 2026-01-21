@@ -652,7 +652,8 @@
     "receive": {
       "title": "Receive {{token}} on {{chain}}",
       "watchModeAlert1": "This is a Watch Mode address.",
-      "watchModeAlert2": "Are you sure to use it to receive assets?"
+      "watchModeAlert2": "Are you sure to use it to receive assets?",
+      "receiveOn": "Receive {{token}} on"
     },
     "sendToken": {
       "addressNotInContract": "Not on address list. <1></1><2>Add to contacts</2>",
@@ -3228,7 +3229,9 @@
     },
     "search": {
       "sectionHeader": {
-        "__skip_translation": ["Defi"],
+        "__skip_translation": [
+          "Defi"
+        ],
         "token": "Tokens",
         "Defi": "DeFi",
         "NFT": "NFT",
@@ -3308,7 +3311,9 @@
         "pending": "{{pendingTxCount}} Pending"
       },
       "tabs": {
-        "__skip_translation": ["defi"],
+        "__skip_translation": [
+          "defi"
+        ],
         "tokens": "Tokens",
         "transactions": "Transactions",
         "approvals": "Approvals",
@@ -3664,7 +3669,10 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
