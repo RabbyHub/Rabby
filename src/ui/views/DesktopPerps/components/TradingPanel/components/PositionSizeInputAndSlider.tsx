@@ -65,10 +65,8 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     handlePercentageChange(value);
   });
 
-  const handlePercentageInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) =>
-    useMemoizedFn(() => {
+  const handlePercentageInputChange = useMemoizedFn(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
 
       if (value === '') {
@@ -98,7 +96,8 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
       const numeric = Number(value) || 0;
       const clamped = Math.max(0, Math.min(100, numeric));
       handlePercentageChange(clamped);
-    });
+    }
+  );
 
   const handleAmountChange = useMemoizedFn((amount: string) => {
     if (!price) {

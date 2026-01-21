@@ -72,12 +72,16 @@ export const PositionItem: React.FC<{
       (order) =>
         order.orderType === 'Take Profit Market' &&
         order.isTrigger &&
+        order.isPositionTpsl &&
         order.reduceOnly
     );
 
     const slItem = openOrders.find(
       (order) =>
-        order.orderType === 'Stop Market' && order.isTrigger && order.reduceOnly
+        order.orderType === 'Stop Market' &&
+        order.isTrigger &&
+        order.isPositionTpsl &&
+        order.reduceOnly
     );
 
     return {
