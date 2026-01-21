@@ -1923,7 +1923,7 @@ const SendToken = () => {
           rightSlot={
             isTab || isDesktop ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer absolute right-0"
+                className="text-r-neutral-title1 cursor-pointer absolute right-0 hit-slop-8"
                 onClick={() => {
                   // openInternalPageInTab(`send-token${history.location.search}`);
                   wallet.openInDesktop(

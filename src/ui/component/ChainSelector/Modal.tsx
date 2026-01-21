@@ -226,10 +226,10 @@ const ChainSelectorModal = ({
   return (
     <>
       <Drawer
-        title={title || t('page.bridge.select-chain')}
+        title={title}
         width="400px"
         height={height}
-        closable={showClosableIcon}
+        closable={showClosableIcon && !!title}
         placement={'bottom'}
         visible={visible}
         onClose={handleCancel}
@@ -238,6 +238,7 @@ const ChainSelectorModal = ({
           'chain-selector__modal',
           // isLoading && 'disable-body-scroll',
           connection && 'connection',
+          !title && 'no-title',
           className
         )}
         zIndex={zIndex}

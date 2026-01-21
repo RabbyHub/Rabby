@@ -135,6 +135,7 @@ const BridgeToTokenSelect = ({
           <TokenSelector
             drawerHeight={drawerHeight}
             visible={tokenSelectorVisible}
+            isHideTitle={true}
             mainnetTokenList={displayTokenList}
             onConfirm={handleCurrentTokenChange}
             onCancel={handleTokenSelectorClose}

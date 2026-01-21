@@ -319,18 +319,19 @@ export const BridgeToken = ({
               token={token}
               onTokenChange={onChangeToken}
               chainId={chainObj?.serverId}
-              placeholder={t('page.swap.search-by-name-address')}
+              placeholder={t('page.swap.search-by-token-name-address')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
               getContainer={getContainer}
             />
           ) : (
             <TokenSelect
+              isHideTitle={true}
               drawerHeight={540}
               token={token}
               onTokenChange={handleChangeFromToken}
               chainId={chainObj?.serverId}
               type={'bridgeFrom'}
-              placeholder={t('page.swap.search-by-name-address')}
+              placeholder={t('page.swap.search-by-token-name-address')}
               disabledTips={t('page.bridge.insufficient-balance')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
               // supportChains={supportedChains}

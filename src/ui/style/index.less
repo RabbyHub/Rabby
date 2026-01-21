@@ -464,3 +464,16 @@ button:focus {
     max-height: unset;
   }
 }
+
+.hit-slop-8 {
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    bottom: -8px;
+    left: -8px;
+    right: -8px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+}
