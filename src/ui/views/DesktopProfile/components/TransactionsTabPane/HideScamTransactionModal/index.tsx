@@ -81,6 +81,7 @@ export const HideScamTransactionModal: React.FC<ModalProps> = (props) => {
       bodyStyle={{
         background: 'transparent',
         padding: 0,
+        height: '720px',
       }}
       centered
       maskClosable={true}
