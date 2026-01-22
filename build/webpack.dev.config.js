@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const path = require('path');
 const { codeInspectorPlugin } = require('code-inspector-plugin');
+const paths = require('./paths');
 const isHot = process.env.HOT === 'true';
 
 // for extension local test, can build each time
@@ -27,7 +27,7 @@ const config = {
     port: 3173,
     hot: true,
     static: {
-      directory: path.join(__dirname, 'dist'),
+      directory: paths.dist,
     },
 
     devMiddleware: {

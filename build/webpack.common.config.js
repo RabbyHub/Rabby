@@ -100,7 +100,7 @@ const config = {
                         libraryDirectory: 'lib',
                         style: true,
                       }),
-                      isHot && new ReactRefreshTypeScript(),
+                      isHot && ReactRefreshTypeScript(),
                     ].filter(Boolean),
                   }),
                   compilerOptions: {
@@ -137,7 +137,7 @@ const config = {
                 before: [
                   // @see https://github.com/Igorbek/typescript-plugin-styled-components#ts-loader
                   tsStyledComponentTransformer,
-                  isHot && new ReactRefreshTypeScript(),
+                  isHot && ReactRefreshTypeScript(),
                 ].filter(Boolean),
               }),
             },
