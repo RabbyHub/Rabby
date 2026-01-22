@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 interface Props {
   cexIds: string[];
 }
+const MAX_LOGOS = 3;
+
 export const ExchangeLogos = ({ cexIds }: Props) => {
   const { t } = useTranslation();
   const logos = useMemo(() => {
@@ -25,7 +27,7 @@ export const ExchangeLogos = ({ cexIds }: Props) => {
   return (
     <div className="flex items-center gap-4 ml-[6px]">
       <div className="w-0 h-[12px] border-r border-r-r-neutral-line mr-[2px]" />
-      {logos.slice(0, 4).map(({ logo, name }) => (
+      {logos.slice(0, MAX_LOGOS).map(({ logo, name }) => (
         <Tooltip
           key={name}
           title={t('page.search.tokenItem.listBy', {
@@ -40,11 +42,11 @@ export const ExchangeLogos = ({ cexIds }: Props) => {
         </Tooltip>
       ))}
 
-      {logos.length > 4 ? (
+      {logos.length > MAX_LOGOS ? (
         <Tooltip
           title={t('page.search.tokenItem.listBy', {
             name: logos
-              .slice(4)
+              .slice(MAX_LOGOS)
               .map((e) => e.name)
               .join(','),
           })}
@@ -52,7 +54,7 @@ export const ExchangeLogos = ({ cexIds }: Props) => {
           overlayClassName="rectangle w-[max-content]"
         >
           <span className="text-r-neutral-foot text-[11px] font-medium whitespace-nowrap">
-            +{logos.length - 4}
+            +{logos.length - MAX_LOGOS}
           </span>
         </Tooltip>
       ) : null}

@@ -1,11 +1,11 @@
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TokenItemWithEntity } from '@rabby-wallet/rabby-api/dist/types';
-import React, { memo, SVGProps, useCallback, useMemo } from 'react';
+import React, { memo, SVGProps, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import TokenWithChain from '../TokenWithChain';
 import { formatPrice, formatTokenAmount, formatUsdValue } from '@/ui/utils';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
-import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
+import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/portfolio/cc-right.svg';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { ellipsisAddress } from '@/ui/utils/address';
@@ -57,62 +57,6 @@ const ExternalTokenRow = memo(
         ? 'text-r-green-default'
         : 'text-r-red-default';
     }, [data.price_24h_change]);
-
-    const ExtraContent = useMemo(() => {
-      const isDanger = data.is_verified === false;
-      const isWarning = data.is_suspicious;
-
-      return (
-        <div
-          className={clsx(
-            'flex justify-between items-center mt-10 relative',
-            'px-8 py-6 mx-16 rounded-[6px]',
-            'border-[0.5px] border-solid border-transparent',
-            'text-12 font-medium text-r-neutral-foot'
-          )}
-        >
-          {isGasToken ? (
-            <span
-              className={`bg-r-blue-light2 text-r-blue-default 
-                items-center justify-center inline-block
-                text-[12px] leading-[16px] font-medium
-                h-[16px] px-6 rounded  w-auto`}
-            >
-              {t('page.search.tokenItem.gasToken')}
-            </span>
-          ) : (
-            <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
-              {t('page.search.tokenItem.FDV')}{' '}
-              {data.identity?.fdv ? formatUsdValue(data.identity?.fdv) : '-'}
-              <span className="text-r-neutral-line text-13 font-normal">
-                {' '}
-                |{' '}
-              </span>
-              CA:{' '}
-              {ellipsisAddress(
-                (data as TokenItemWithEntity)?.identity?.token_id || data.id
-              )}
-            </span>
-          )}
-          <div
-            className={clsx(
-              'flex items-center gap-2',
-              isDanger
-                ? 'text-r-red-default'
-                : isWarning
-                ? 'text-r-orange-default'
-                : 'text-r-neutral-body'
-            )}
-          >
-            {(isDanger || isWarning) && (
-              <RcIconWarningCC className="w-12 h-12" viewBox="0 0 16 16" />
-            )}
-            <RcIconArrowRight className="w-12 h-12" viewBox="0 0 20 20" />
-          </div>
-          <BoxWrapper className="absolute bottom-0 left-0 w-full" />
-        </div>
-      );
-    }, [data, isGasToken, t]);
 
     const cexIds = useMemo(() => {
       return getCexIds(data);
@@ -174,28 +118,105 @@ const ExternalTokenRow = memo(
           </div>
         </li>
 
-        {ExtraContent}
+        <ExternalContent
+          onEnter={onClickTokenSymbol}
+          data={data}
+          isGasToken={isGasToken}
+        />
       </div>
     );
   }
 );
 
-const BoxWrapper = (props: SVGProps<SVGSVGElement>) => {
+const BoxWrapper = ({
+  isHover,
+  ...props
+}: { isHover: boolean } & SVGProps<SVGSVGElement>) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="330"
       height="34"
       viewBox="0 0 330 34"
-      fill="none"
+      fill={isHover ? 'var(--r-blue-light2)' : 'none'}
       {...props}
     >
       <path
         d="M16.6651 1.26647L13 6.82609H7C3.68629 6.82609 1 9.51238 1 12.8261V27C1 30.3137 3.68629 33 6.99999 33H323C326.314 33 329 30.3137 329 27V12.8261C329 9.51238 326.314 6.82609 323 6.82609H22L18.3349 1.26647C17.9397 0.667001 17.0603 0.667001 16.6651 1.26647Z"
-        stroke="var(--r-neutral-line)"
+        stroke={isHover ? 'var(--r-blue-light2)' : 'var(--r-neutral-line)'}
         stroke-width="0.5"
       />
     </svg>
+  );
+};
+
+export const ExternalContent = ({
+  data,
+  isGasToken,
+  onEnter,
+}: {
+  data: TokenItemWithEntity;
+  isGasToken: boolean;
+  onEnter?: React.MouseEventHandler<HTMLSpanElement>;
+}) => {
+  const { t } = useTranslation();
+  const isDanger = data.is_verified === false;
+  const isWarning = !!data.is_suspicious;
+  const [isHover, setIsHover] = useState(false);
+
+  return (
+    <div
+      className={clsx(
+        'flex justify-between items-center mt-10 relative',
+        'px-8 py-6 mx-16 rounded-[6px]',
+        'border-[0.5px] border-solid border-transparent',
+        'text-12 font-medium text-r-neutral-foot',
+        'hover:bg-r-blue-light2'
+      )}
+      onClick={onEnter}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
+      {isGasToken ? (
+        <span
+          className={`bg-r-blue-light2 text-r-blue-default 
+            items-center justify-center inline-block
+            text-[12px] leading-[16px] font-medium
+            h-[16px] px-6 rounded  w-auto z-20`}
+        >
+          {t('page.search.tokenItem.gasToken')}
+        </span>
+      ) : (
+        <span className="symbol text-13 font-normal text-r-neutral-foot mb-2 z-20">
+          {t('page.search.tokenItem.FDV')}{' '}
+          {data.identity?.fdv ? formatUsdValue(data.identity?.fdv) : '-'}
+          <span className="text-r-neutral-line text-13 font-normal"> | </span>
+          CA:{' '}
+          {ellipsisAddress(
+            (data as TokenItemWithEntity)?.identity?.token_id || data.id
+          )}
+        </span>
+      )}
+      <div
+        className={clsx(
+          'flex items-center gap-2 z-20',
+          isDanger
+            ? 'text-r-red-default'
+            : isWarning
+            ? 'text-r-orange-default'
+            : 'text-r-neutral-foot'
+        )}
+      >
+        {(isDanger || isWarning) && (
+          <RcIconWarningCC className="w-16 h-16" viewBox="0 0 16 16" />
+        )}
+        <RcIconArrowRight className="w-16 h-16" viewBox="0 0 16 16" />
+      </div>
+      <BoxWrapper
+        isHover={isHover}
+        className="absolute bottom-0 left-0 w-full z-10"
+      />
+    </div>
   );
 };
 
