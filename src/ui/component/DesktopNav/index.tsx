@@ -9,7 +9,7 @@ import {
 import { splitNumberByStep } from '@/ui/utils';
 import { Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -21,6 +21,8 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { KEYRING_TYPE } from '@/constant';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { ga4 } from '@/utils/ga4';
 
 type DesktopNavAction = 'swap' | 'send' | 'bridge' | 'gnosis-queue';
 
@@ -44,26 +46,35 @@ export const DesktopNav: React.FC<{
         key: '/desktop/profile',
         icon: RcIconHomeCC,
         title: t('component.DesktopNav.portfolio'),
+        eventKey: 'Portfolio',
       },
       {
         key: '/desktop/perps',
         icon: RcIconPerpsCC,
         title: t('component.DesktopNav.perps'),
         // isSoon: true,
+        eventKey: 'Perps',
       },
       {
         key: '/desktop/lending',
         icon: RcIconLeadingCC,
         title: t('component.DesktopNav.lending'),
         isSoon: true,
+        eventKey: 'Lending',
       },
       {
         key: '/desktop/dapp-iframe',
         icon: RcIconPredictionCC,
         title: t('component.DesktopNav.prediction'),
+        eventKey: 'Prediction',
       },
     ],
     [t]
+  );
+
+  const activeNav = useMemo(
+    () => navs.find((item) => currentPathname.startsWith(item.key)),
+    [navs, currentPathname]
   );
 
   const handleActionClick = useCallback(
@@ -103,6 +114,20 @@ export const DesktopNav: React.FC<{
         : [],
     [handleActionClick, t, showRightItems]
   );
+
+  useEffect(() => {
+    if (!activeNav?.eventKey) {
+      return;
+    }
+    matomoRequestEvent({
+      category: 'RabbyWeb_Active',
+      action: `RabbyWeb_${activeNav.eventKey}`,
+    });
+
+    ga4.fireEvent('RabbyWeb_Active', {
+      event_category: `RabbyWeb_${activeNav.eventKey}`,
+    });
+  }, [activeNav?.eventKey]);
 
   return (
     <div className="sticky top-0 z-10 pt-[20px] pb-[16px] bg-rb-neutral-bg-1">

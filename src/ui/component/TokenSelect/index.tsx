@@ -91,6 +91,8 @@ interface CommonProps {
   supportChains?: CHAINS_ENUM[];
   getContainer?: DrawerProps['getContainer'];
   onStartSelectChain?: () => void;
+  onOpenTokenModal?: () => void;
+  onSelectRecentToken?: (token: TokenItem) => void;
 }
 
 interface BridgeFromProps extends CommonProps {
@@ -131,6 +133,8 @@ const TokenSelect = forwardRef<
       supportChains,
       getContainer,
       onStartSelectChain,
+      onOpenTokenModal,
+      onSelectRecentToken,
     },
     ref
   ) => {
@@ -183,6 +187,7 @@ const TokenSelect = forwardRef<
         setUpdateNonce(updateNonce + 1);
       }
       setTokenSelectorVisible(true);
+      onOpenTokenModal?.();
     };
 
     const isSwapType = isSwapTokenType(type);
@@ -361,6 +366,7 @@ const TokenSelect = forwardRef<
             setLpTokenMode={setLpTokenMode}
             showLpTokenSwitch={isFromMode}
             onStartSelectChain={onStartSelectChain}
+            onSelectRecentToken={onSelectRecentToken}
           />
         </>
       );

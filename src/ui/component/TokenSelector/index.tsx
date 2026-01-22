@@ -97,6 +97,7 @@ export interface TokenSelectorProps {
   lpTokenMode?: boolean;
   setLpTokenMode?: (value: boolean) => void;
   showLpTokenSwitch?: boolean;
+  onSelectRecentToken?: (token: TokenItem) => void;
 }
 
 const filterTestnetTokenItem = (token: TokenItem) => {
@@ -129,6 +130,7 @@ const TokenSelector = ({
   lpTokenMode,
   setLpTokenMode,
   showLpTokenSwitch,
+  onSelectRecentToken,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -588,7 +590,10 @@ const TokenSelector = ({
                         'bg-r-neutral-card1 hover:bg-r-blue-light-1',
                         'text-15 text-r-neutral-title1 font-medium'
                       )}
-                      onClick={() => onConfirm(token)}
+                      onClick={() => {
+                        onConfirm(token);
+                        onSelectRecentToken?.(token);
+                      }}
                     >
                       <TokenWithChain
                         token={token}
