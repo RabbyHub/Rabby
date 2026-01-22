@@ -441,7 +441,13 @@ export const PositionsInfo: React.FC = () => {
         },
       },
       {
-        title: t('page.perpsPro.userInfo.tab.funding'),
+        title: (
+          <DashedUnderlineText
+            tooltipText={t('page.perpsPro.userInfo.tab.fundingTips')}
+          >
+            {t('page.perpsPro.userInfo.tab.funding')}
+          </DashedUnderlineText>
+        ),
         // width: 160,
         key: 'fundingPayments',
         dataIndex: 'fundingPayments',
@@ -453,7 +459,7 @@ export const PositionsInfo: React.FC = () => {
               {Number(record.sinceOpenFunding || 0) === 0
                 ? ''
                 : Number(record.sinceOpenFunding || 0) < 0
-                ? '+'
+                ? ''
                 : '-'}
               {formatUsdValue(Math.abs(Number(record.sinceOpenFunding || 0)))}
             </div>

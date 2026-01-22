@@ -101,7 +101,7 @@ export const DesktopPerps: React.FC = () => {
             </div>
             <TopPermissionTips />
             <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
-              <div className="flex h-[670px] border-b border-solid border-rb-neutral-line">
+              <div className="flex h-[680px] border-b border-solid border-rb-neutral-line">
                 <div className="flex-[4] flex min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
                   <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
                     <ChartArea />
@@ -115,7 +115,7 @@ export const DesktopPerps: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex flex-1 min-h-[300px] max-h-[500px]">
+              <div className="flex flex-1 min-h-[300px] max-h-[max(300px,calc(100vh-860px))]">
                 <div className="flex-[4] min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
                   <UserInfoHistory />
                 </div>

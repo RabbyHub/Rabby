@@ -204,11 +204,12 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
         ? (Number(percentage) * marginRequired) / 100
         : 0;
     };
+    const orderValue = Number(tradeSize) * Number(markPrice);
     return {
       liquidationPrice: estimatedLiquidationPrice,
       liquidationDistance: '',
-      orderValue: tradeUsdAmount > 0 ? formatUsdValue(tradeUsdAmount) : '$0.00',
-      marginRequired: reduceOnly ? '-' : formatUsdValue(marginRequired),
+      orderValue: orderValue > 0 ? formatUsdValue(orderValue) : '$0.00',
+      marginRequired: reduceOnly ? '-' : formatUsdValue(orderValue / leverage),
       marginUsage,
       slippage: undefined,
       tpExpectedPnL: 1 * getExpectedPnL(tpslConfig.takeProfit.percentage),
@@ -216,7 +217,8 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     };
   }, [
     estimatedLiquidationPrice,
-    tradeUsdAmount,
+    leverage,
+    markPrice,
     reduceOnly,
     marginUsage,
     tpslConfig.takeProfit.percentage,
@@ -289,7 +291,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
-        price={triggerPrice}
+        price={markPrice}
         maxTradeSize={maxTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}

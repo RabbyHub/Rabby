@@ -942,7 +942,7 @@
       "openPositionTips": "Trading perpetual contracts involves significant risk, including the potential for sudden and total loss of your investment and collateral due to high leverage and market volatility, and may not be suitable for all users. Prices may be influenced by funding rates and liquidity and you may be subject to automatic liquidations without notice. Market data provided by Hyperliquid.",
       "liquidationPriceTips": "The price at which your position is automatically closed by the exchange to prevent further losses when your margin falls below the maintenance margin level.",
       "sizeTips": "The total value or quantity of your trade, set by margin and leverage.",
-      "rabbyFeeTips": "Rabby fee: 0.04%",
+      "rabbyFeeTipsV2": "Rabby fee: 0.02%",
       "rabbyFeeTipsZero": "Rabby fee: 0%",
       "providerFeeTips": "Hyperliquid fee: {{fee}}",
       "timeAgo": "{{time}} ago",
@@ -1046,6 +1046,7 @@
       "userInfo": {
         "tab": {
           "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
+          "fundingTips": "Net funding payments since the position was opened. If negative, it means funding gains.",
           "closedPnlTooltip": "Closed PNL includes fees and rebates",
           "direction": "Direction",
           "time": "Time",

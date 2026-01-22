@@ -17,11 +17,9 @@ export const AccountActions: React.FC<{
   handleSetPopupType: (type: PopupType) => void;
 }> = ({ handleSetPopupType }) => {
   const dispatch = useRabbyDispatch();
-  const { isDarkTheme } = useThemeMode();
   const clearinghouseState = useRabbySelector(
     (state) => state.perps.clearinghouseState
   );
-  const themeMode = useRabbySelector((state) => state.preference.themeMode);
   const { t } = useTranslation();
   const availableBalance = Number(clearinghouseState?.withdrawable || 0);
   // Get pending history count
@@ -30,14 +28,6 @@ export const AccountActions: React.FC<{
   );
   const pendingCount = localLoadingHistory.length;
 
-  const handleThemeToggle = useCallback(() => {
-    const newThemeMode =
-      themeMode === DARK_MODE_TYPE.dark
-        ? DARK_MODE_TYPE.light
-        : DARK_MODE_TYPE.dark;
-    dispatch.preference.switchThemeMode(newThemeMode);
-  }, [dispatch, themeMode]);
-
   const handleDeposit = useCallback(() => {
     handleSetPopupType('deposit');
   }, [handleSetPopupType]);
@@ -45,7 +35,7 @@ export const AccountActions: React.FC<{
   return (
     <div className="flex items-center gap-[12px]">
       {/* Theme Toggle */}
-      <div className="flex items-center gap-[4px] bg-rb-neutral-bg-3 rounded-[10px] p-[4px] border border-rb-neutral-bg-2">
+      {/* <div className="flex items-center gap-[4px] bg-rb-neutral-bg-3 rounded-[10px] p-[4px] border border-rb-neutral-bg-2">
         <button
           onClick={handleThemeToggle}
           className={clsx(
@@ -64,7 +54,7 @@ export const AccountActions: React.FC<{
         >
           <RcIconMoon className="w-[20px] h-[20px]" />
         </button>
-      </div>
+      </div> */}
 
       {/* Available Balance */}
       {Boolean(clearinghouseState) && (

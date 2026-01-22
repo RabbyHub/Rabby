@@ -217,6 +217,8 @@ export const usePerpsTradingState = () => {
   }, [tpslConfig.takeProfit.error, tpslConfig.stopLoss.error]);
 
   return {
+    leverageType,
+    crossMargin,
     selectedCoin,
     orderSide,
     switchOrderSide,

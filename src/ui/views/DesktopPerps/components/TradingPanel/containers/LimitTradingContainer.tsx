@@ -17,7 +17,10 @@ import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSlider';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
-import { validatePriceInput } from '@/ui/views/Perps/utils';
+import {
+  calLiquidationPrice,
+  validatePriceInput,
+} from '@/ui/views/Perps/utils';
 import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
@@ -25,12 +28,17 @@ import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 import { TradingButton } from '../components/TradingButton';
+import { BigNumber } from 'bignumber.js';
 
 export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
 
   // Get data from perpsState
   const {
+    leverageType,
+    crossMargin,
+    maxLeverage,
+
     selectedCoin,
     orderSide,
     switchOrderSide,
@@ -48,7 +56,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     tradeUsdAmount,
     marginRequired,
     tradeSize,
-    estimatedLiquidationPrice,
     maxTradeSize,
     marginUsage,
     currentMarketData,
@@ -63,6 +70,40 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const [limitPrice, setLimitPrice] = React.useState(
     formatTpOrSlPrice(midPrice, szDecimals)
   );
+
+  // Calculate liquidation price
+  const estimatedLiquidationPrice = React.useMemo(() => {
+    if (!limitPrice || !Number(limitPrice) || !leverage || !tradeUsdAmount)
+      return '';
+    const direction = orderSide === OrderSide.BUY ? 'Long' : 'Short';
+    const size = Number(tradeSize);
+    if (size === 0) return '';
+
+    const liqPrice = calLiquidationPrice(
+      Number(limitPrice),
+      leverageType === 'cross' ? crossMargin : marginRequired,
+      direction,
+      size,
+      tradeUsdAmount,
+      maxLeverage
+    );
+    if (!new BigNumber(liqPrice).gt(0)) {
+      return '-';
+    }
+    return `$${liqPrice.toFixed(pxDecimals)}`;
+  }, [
+    crossMargin,
+    limitPrice,
+    leverageType,
+    leverage,
+    tradeUsdAmount,
+    orderSide,
+    tradeSize,
+    marginRequired,
+    maxLeverage,
+    pxDecimals,
+  ]);
+
   const [limitOrderType, setLimitOrderType] = React.useState<LimitOrderType>(
     'Gtc'
   );
@@ -203,25 +244,29 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         ? (Number(percentage) * marginRequired) / 100
         : 0;
     };
+
+    const orderValue = Number(tradeSize) * Number(limitPrice);
+
     return {
       tpExpectedPnL: 1 * getExpectedPnL(tpslConfig.takeProfit.percentage),
       slExpectedPnL: -1 * getExpectedPnL(tpslConfig.stopLoss.percentage),
       liquidationPrice: reduceOnly ? '-' : estimatedLiquidationPrice,
       liquidationDistance: '',
-      orderValue: tradeUsdAmount > 0 ? formatUsdValue(tradeUsdAmount) : '$0.00',
-      marginRequired: reduceOnly ? '-' : formatUsdValue(marginRequired),
+      orderValue: orderValue > 0 ? formatUsdValue(orderValue) : '$0.00',
+      marginRequired: reduceOnly ? '-' : formatUsdValue(orderValue / leverage),
       marginUsage,
       slippage: undefined,
     };
   }, [
     estimatedLiquidationPrice,
-    tradeUsdAmount,
     marginUsage,
     reduceOnly,
     tpslConfig.takeProfit.percentage,
     tpslConfig.stopLoss.percentage,
     tradeSize,
     marginRequired,
+    leverage,
+    limitPrice,
   ]);
 
   const limitOrderTypeOptions = [
