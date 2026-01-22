@@ -3619,8 +3619,6 @@
       "noMatch": "无匹配",
       "noMatchSuggestion": "尝试搜索 {{ chainName }} 上的合约地址",
       "bridge": {
-        "high": "高",
-        "low": "低",
         "value": "价值",
         "liquidityTips": "历史交易量越高，桥接成功的可能性就越大。",
         "liquidity": "流动性",

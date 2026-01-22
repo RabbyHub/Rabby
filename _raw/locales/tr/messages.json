@@ -3585,9 +3585,7 @@
       "noMatchSuggestion": "{{ chainName }} üzerinde sözleşme adresini aramayı deneyin",
       "bridge": {
         "token": "Token",
-        "high": "Yüksek",
         "value": "Değer",
-        "low": "Düşük",
         "liquidity": "Likidite",
         "liquidityTips": "Tarihi ticaret hacmi ne kadar yüksekse, köprünün başarılı olma olasılığı o kadar yüksektir."
       },

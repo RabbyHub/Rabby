@@ -3569,8 +3569,6 @@
         }
       },
       "bridge": {
-        "high": "Alta",
-        "low": "Baixo",
         "value": "Valor",
         "liquidity": "Liquidez",
         "liquidityTips": "Quanto maior o volume de negócios históricos, maior a probabilidade de sucesso da ponte.",

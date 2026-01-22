@@ -162,8 +162,6 @@
       },
       "bridge": {
         "value": "Valeur",
-        "high": "Élevé",
-        "low": "Faible",
         "token": "Token",
         "liquidity": "Liquidité",
         "liquidityTips": "Plus le volume des transactions historiques est élevé, plus il est probable que le bridge réussira."

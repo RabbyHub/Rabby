@@ -33,6 +33,7 @@ import {
   includeLpTokensFilter,
   isLpToken,
 } from './lpToken';
+import { useAsync } from 'react-use';
 
 let lastResetTokenListAddr = '';
 // export const tokenChangeLoadingAtom = atom(false);
@@ -463,8 +464,69 @@ export const useTokens = (
     };
   }, []);
 
+  const shouldLoadRecommended = useMemo(() => {
+    if (
+      !userAddr ||
+      lpTokensOnly ||
+      searchMode ||
+      isLoading ||
+      isTestnet ||
+      !visible ||
+      !!mainnetTokens.list.length
+    ) {
+      return false;
+    }
+    const currentChainTokenLength = mainnetTokens.list.filter(
+      (token) => token.chain === chainServerId
+    ).length;
+    return currentChainTokenLength === 0;
+  }, [
+    userAddr,
+    lpTokensOnly,
+    searchMode,
+    isLoading,
+    isTestnet,
+    visible,
+    mainnetTokens.list,
+    chainServerId,
+  ]);
+
+  const {
+    value: recommendedTokens,
+    loading: loadingRecommendedTokens,
+  } = useAsync(async () => {
+    if (!shouldLoadRecommended || !userAddr) {
+      return [];
+    }
+    const list = await wallet.openapi.getSwapTokenList(
+      userAddr,
+      chainServerId || ''
+    );
+    const chainTokens = list.reduce((m, n) => {
+      m[n.chain] = m[n.chain] || [];
+      m[n.chain].push(n);
+
+      return m;
+    }, {} as Record<string, TokenItem[]>);
+    let _data = produce(walletProject, (draft) => {
+      draft.netWorth = 0;
+      draft._netWorth = '$0';
+      draft._netWorthChange = '-';
+      draft.netWorthChange = 0;
+      draft._netWorthChangePercent = '';
+    });
+    _data = produce(_data, (draft) => {
+      setWalletTokens(draft, chainTokens);
+    });
+
+    const _tokens: AbstractPortfolioToken[] = sortWalletTokens(_data);
+    return _tokens;
+  }, [shouldLoadRecommended, userAddr, chainServerId]);
+
   const tokens = useMemo(() => {
-    const list = isTestnet ? testnetTokens.list : mainnetTokens.list;
+    const list = isTestnet
+      ? testnetTokens.list
+      : [...mainnetTokens.list, ...(recommendedTokens || [])];
     if (searchMode) {
       return list.filter(includeLpTokensFilter);
     }
@@ -476,14 +538,15 @@ export const useTokens = (
     isTestnet,
     testnetTokens.list,
     mainnetTokens.list,
-    lpTokensOnly,
+    recommendedTokens,
     searchMode,
+    lpTokensOnly,
   ]);
 
   return {
     netWorth: data?.netWorth || 0,
-    isLoading,
-    isAllTokenLoading,
+    isLoading: isLoading || loadingRecommendedTokens,
+    isAllTokenLoading: isAllTokenLoading || loadingRecommendedTokens,
     tokens,
     customizeTokens: isTestnet
       ? testnetTokens.customize

@@ -3572,9 +3572,7 @@
         "liquidity": "Likuiditas",
         "token": "Token",
         "liquidityTips": "Semakin tinggi volume perdagangan historis, semakin besar kemungkinan jembatan akan berhasil.",
-        "value": "Nilai",
-        "low": "Rendah",
-        "high": "Tinggi"
+        "value": "Nilai"
       },
       "searchInput": {
         "placeholder": "Cari berdasarkan Nama / Alamat"
