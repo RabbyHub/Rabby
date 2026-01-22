@@ -156,3 +156,9 @@ export const contactAmountTokens = (
     };
   });
 };
+
+export const getCexIds = (token: TokenItemWithEntity) => {
+  return (
+    token.cex_ids || token.identity?.cex_list?.map((item) => item.id) || []
+  );
+};

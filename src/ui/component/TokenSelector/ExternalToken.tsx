@@ -12,6 +12,7 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import { ExchangeLogos } from './CexLogos';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
+import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
 
 const formatPercentage = (x: number) => {
   if (Math.abs(x) < 0.00001) {
@@ -111,16 +112,11 @@ const ExternalTokenRow = memo(
           <BoxWrapper className="absolute bottom-0 left-0 w-full" />
         </div>
       );
-    }, [data.identity, t]);
+    }, [data, isGasToken, t]);
 
-    const siteList = useMemo(() => {
-      return data?.identity?.cex_list || [];
-    }, [data]);
     const cexIds = useMemo(() => {
-      return (
-        data.cex_ids || data.identity?.cex_list?.map((item) => item.id) || []
-      );
-    }, [data.cex_ids, data.identity?.cex_list]);
+      return getCexIds(data);
+    }, [data]);
 
     return (
       <div

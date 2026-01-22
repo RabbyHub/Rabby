@@ -51,6 +51,7 @@ import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/c
 import { ChainFilterV2Line } from './ChainFilterV2Line';
 import { isNil } from 'lodash';
 import { ExternalTokenRow } from './ExternalToken';
+import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
 
 const isTab = getUiType().isTab;
 
@@ -744,10 +745,8 @@ function CommonTokenItem(props: {
   }, [disabled, t]);
 
   const cexIds = useMemo(() => {
-    return (
-      token.cex_ids || token.identity?.cex_list?.map((item) => item.id) || []
-    );
-  }, [token.cex_ids, token.identity?.cex_list]);
+    return getCexIds(token);
+  }, [token]);
 
   const showExchangeLogos = useMemo(() => {
     return (isBridgeTo || isSwapTo) && !!cexIds?.length;
