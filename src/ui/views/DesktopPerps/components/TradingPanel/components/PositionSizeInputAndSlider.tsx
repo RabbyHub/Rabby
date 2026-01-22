@@ -68,8 +68,8 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   });
 
   useEffect(() => {
-    if (percentage) {
-      handlePercentageChange(percentage);
+    if (positionSize.amount) {
+      handleAmountChange(positionSize.amount);
     }
   }, [reduceOnly]);
 

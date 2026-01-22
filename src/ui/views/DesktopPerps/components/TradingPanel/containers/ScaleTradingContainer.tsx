@@ -87,7 +87,8 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       !sizeSkew ||
       Number(sizeSkew) <= 0 ||
       !availableBalance ||
-      !leverage
+      !leverage ||
+      reduceOnly
     ) {
       return maxTradeSize;
     }
@@ -104,6 +105,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
 
     return calculatedMaxSize;
   }, [
+    reduceOnly,
     startPrice,
     endPrice,
     numGrids,
@@ -412,6 +414,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         baseAsset={selectedCoin}
         quoteAsset="USDC"
         szDecimals={szDecimals}
+        reduceOnly={reduceOnly}
       />
 
       <div className="space-y-[8px]">

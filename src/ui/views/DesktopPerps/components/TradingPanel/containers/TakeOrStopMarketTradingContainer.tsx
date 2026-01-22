@@ -77,8 +77,8 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
   // Form validation
   const validation = React.useMemo(() => {
     let error: string = '';
-    const notionalNum = Number(positionSize.notionalValue) || 0;
     const tradeSize = Number(positionSize.amount) || 0;
+    const notionalNum = tradeSize * Number(markPrice || 0);
 
     if (notionalNum === 0) {
       return {
@@ -154,7 +154,8 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
       error,
     };
   }, [
-    positionSize.notionalValue,
+    tradeSize,
+    markPrice,
     maxTradeSize,
     reduceOnly,
     percentage,
@@ -301,6 +302,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
         quoteAsset="USDC"
         szDecimals={szDecimals}
         priceChangeUsdValue={true}
+        reduceOnly={reduceOnly}
       />
 
       <div className="flex items-center justify-between">
