@@ -2,74 +2,16 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { TokenItemWithEntity } from '@rabby-wallet/rabby-api/dist/types';
 import React, { memo, SVGProps, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import TokenWithChain, { IconWithChain } from '../TokenWithChain';
-import { formatPrice, formatUsdValue } from '@/ui/utils';
+import TokenWithChain from '../TokenWithChain';
+import { formatPrice, formatTokenAmount, formatUsdValue } from '@/ui/utils';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
-import { ReactComponent as IconBridgeTo } from '@/ui/assets/search/IconBridgeTo.svg';
-import { ReactComponent as IconOrigin } from '@/ui/assets/search/IconOrigin.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
-import { Divider } from 'antd';
 import clsx from 'clsx';
-import styled from 'styled-components';
-import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
-
-const TokenSymbolWrapper = styled.div`
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 15px;
-  font-style: normal;
-  font-weight: 510;
-  line-height: normal;
-  color: var(--r-neutral-body, #3e495e);
-  margin-left: 10px;
-  max-width: 100%;
-  padding: 2px 4px;
-  border-radius: 4px;
-  width: min-content;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-
-  text-decoration-style: solid;
-  text-decoration-skip-ink: none;
-  text-decoration-thickness: auto;
-  text-underline-offset: auto;
-  text-underline-position: from-font;
-
-  &:hover {
-    background: var(--r-blue-light2, #dee3fc);
-    color: var(--r-blue-default, #7084ff);
-    text-decoration-line: underline;
-  }
-`;
-
-const SymbolClickable = ({
-  token,
-  className,
-  groupHover = true,
-  onClick,
-}: {
-  token: TokenItemWithEntity;
-  className?: string;
-  groupHover?: boolean;
-  onClick?: () => void;
-}) => {
-  const title = useMemo(() => {
-    return getTokenSymbol(token);
-  }, [token]);
-  return (
-    <TokenSymbolWrapper
-      className={clsx(
-        groupHover &&
-          'group-hover:text-rabby-blue-default group-hover:underline',
-        className
-      )}
-      onClick={onClick}
-    >
-      {title}
-    </TokenSymbolWrapper>
-  );
-};
+import BigNumber from 'bignumber.js';
+import { ellipsisAddress } from '@/ui/utils/address';
+import { ExchangeLogos } from './CexLogos';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 
 const formatPercentage = (x: number) => {
   if (Math.abs(x) < 0.00001) {
@@ -116,46 +58,69 @@ const ExternalTokenRow = memo(
     }, [data.price_24h_change]);
 
     const ExtraContent = useMemo(() => {
-      if (data.is_verified === false) {
-        return <RiskTokenTips onPress={onClickTokenSymbol} isDanger={true} />;
-      }
+      const isDanger = data.is_verified === false;
+      const isWarning = data.is_suspicious;
 
-      if (data.is_suspicious) {
-        return <RiskTokenTips onPress={onClickTokenSymbol} isDanger={false} />;
-      }
-
-      if (data.identity?.domain_id) {
-        const isBridgeDomain = data.identity.bridge_ids?.length > 0;
-        const isVerified = data.identity.is_domain_verified;
-
-        return (
+      return (
+        <div
+          className={clsx(
+            'flex justify-between items-center mt-10 relative',
+            'px-8 py-6 mx-16 rounded-[6px]',
+            'border-[0.5px] border-solid border-transparent',
+            'text-12 font-medium text-r-neutral-foot'
+          )}
+        >
+          {isGasToken ? (
+            <span
+              className={`bg-r-blue-light2 text-r-blue-default 
+                items-center justify-center inline-block
+                text-[12px] leading-[16px] font-medium
+                h-[16px] px-6 rounded  w-auto`}
+            >
+              {t('page.search.tokenItem.gasToken')}
+            </span>
+          ) : (
+            <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
+              {t('page.search.tokenItem.FDV')}{' '}
+              {data.identity?.fdv ? formatUsdValue(data.identity?.fdv) : '-'}
+              <span className="text-r-neutral-line text-13 font-normal">
+                {' '}
+                |{' '}
+              </span>
+              CA:{' '}
+              {ellipsisAddress(
+                (data as TokenItemWithEntity)?.identity?.token_id || data.id
+              )}
+            </span>
+          )}
           <div
             className={clsx(
-              'flex justify-between items-center mt-10 relative',
-              'px-8 py-6 mx-16 rounded-[6px]',
-              'border-[0.5px] border-solid border-transparent',
-              'text-12 font-medium text-r-neutral-foot'
+              'flex items-center gap-2',
+              isDanger
+                ? 'text-r-red-default'
+                : isWarning
+                ? 'text-r-orange-default'
+                : 'text-r-neutral-body'
             )}
           >
-            <span>{t('page.search.tokenItem.Issuedby')}</span>
-            <div className="flex items-center gap-4">
-              {isVerified &&
-                (isBridgeDomain ? <IconBridgeTo /> : <IconOrigin />)}
-              <span className="text-neutral-title-1 max-w-[200px] truncate">
-                {data.identity?.domain_id}
-              </span>
-            </div>
-            <BoxWrapper className="absolute bottom-0 left-0 w-full" />
+            {(isDanger || isWarning) && (
+              <RcIconWarningCC className="w-12 h-12" viewBox="0 0 16 16" />
+            )}
+            <RcIconArrowRight className="w-12 h-12" viewBox="0 0 20 20" />
           </div>
-        );
-      }
-
-      return null;
+          <BoxWrapper className="absolute bottom-0 left-0 w-full" />
+        </div>
+      );
     }, [data.identity, t]);
 
     const siteList = useMemo(() => {
       return data?.identity?.cex_list || [];
     }, [data]);
+    const cexIds = useMemo(() => {
+      return (
+        data.cex_ids || data.identity?.cex_list?.map((item) => item.id) || []
+      );
+    }, [data.cex_ids, data.identity?.cex_list]);
 
     return (
       <div
@@ -173,66 +138,19 @@ const ExternalTokenRow = memo(
                 <span className="symbol_click" onClick={onClickTokenSymbol}>
                   {getTokenSymbol(data)}
                 </span>
-                {siteList.length > 0 && (
-                  <Divider
-                    type="vertical"
-                    className="ml-2 mr-6 relative top-1 border-rabby-neutral-line"
+                {isLpToken(data) && (
+                  <LpTokenTag
+                    size={14}
+                    inModal
+                    iconClassName="text-r-neutral-foot"
+                    protocolName={data.protocol_id || ''}
                   />
                 )}
-                <div className="flex items-center gap-4 relative">
-                  {siteList.slice(0, 5).map((item, idx) => (
-                    <TooltipWithMagnetArrow
-                      key={item.name}
-                      title={t('page.search.tokenItem.listBy', {
-                        name: item.name,
-                      })}
-                      trigger={['hover']}
-                      overlayClassName="rectangle w-[max-content]"
-                    >
-                      <div>
-                        <IconWithChain
-                          iconUrl={item.logo_url}
-                          width={'12px'}
-                          height={'12px'}
-                          hideChainIcon
-                          chainServerId={data.chain}
-                        />
-                      </div>
-                    </TooltipWithMagnetArrow>
-                  ))}
-
-                  {siteList.length > 5 ? (
-                    <TooltipWithMagnetArrow
-                      title={t('page.search.tokenItem.listBy', {
-                        name: siteList
-                          .slice(5)
-                          .map((e) => e.name)
-                          .join(','),
-                      })}
-                      trigger={['hover']}
-                      overlayClassName="rectangle w-[max-content]"
-                    >
-                      <span className="text-r-neutral-foot text-[11px] font-medium whitespace-nowrap">
-                        +{siteList.length - 5}
-                      </span>
-                    </TooltipWithMagnetArrow>
-                  ) : null}
-                </div>
+                <ExchangeLogos cexIds={cexIds} />
               </div>
-              {isGasToken ? (
-                <span className="symbol text-13 ml-[10px]">
-                  <span className="bg-r-blue-light2 py-2 px-6 rounded text-[11px] font-medium text-r-blue-default w-auto inline-block">
-                    {t('page.search.tokenItem.gasToken')}
-                  </span>
-                </span>
-              ) : (
-                <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
-                  {t('page.search.tokenItem.FDV')}{' '}
-                  {data.identity?.fdv
-                    ? formatUsdValue(data.identity?.fdv)
-                    : '-'}
-                </span>
-              )}
+              <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
+                {formatTokenAmount(data.amount || 0)} {data.symbol}
+              </span>
             </div>
           </div>
 
@@ -240,15 +158,22 @@ const ExternalTokenRow = memo(
 
           <div className="flex flex-col text-right items-end">
             <span className="token_usd_value">
-              {decimalPrecision ? '$' : ''}
-              {(decimalPrecision ? formatPrice : formatUsdValue)(
-                data.price || 0
+              {formatUsdValue(
+                new BigNumber(data.price || 0).times(data.amount || 0).toFixed()
               )}
             </span>
-            <span
-              className={clsx('text-sm text-13 font-normal mb-2', percentColor)}
-            >
-              {formatPercentage(data.price_24h_change || 0)}
+            <span className="flex items-center gap-4">
+              <span className="text-r-neutral-foot text-13 font-normal">
+                @{decimalPrecision ? '$' : ''}
+                {(decimalPrecision ? formatPrice : formatUsdValue)(
+                  data.price || 0
+                )}
+              </span>
+              <span
+                className={clsx('text-sm text-13 font-medium', percentColor)}
+              >
+                {formatPercentage(data.price_24h_change || 0)}
+              </span>
             </span>
           </div>
         </li>

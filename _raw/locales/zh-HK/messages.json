@@ -3621,8 +3621,6 @@
       "bridge": {
         "value": "價值",
         "token": "代幣",
-        "low": "低",
-        "high": "高",
         "liquidityTips": "歷史交易量越高，橋接成功的可能性就越大。",
         "liquidity": "流動性"
       },
