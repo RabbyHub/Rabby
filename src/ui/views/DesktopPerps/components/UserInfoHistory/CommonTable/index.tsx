@@ -64,6 +64,12 @@ const Wrapper = styled.div`
     overflow-x: hidden !important;
   }
 
+  .ant-table-expanded-row {
+    .ant-table-cell {
+      background-color: transparent;
+    }
+  }
+
   .ant-table-thead > tr > th {
     color: var(--rb-neutral-foot, #6a7587);
     font-size: 13px;
