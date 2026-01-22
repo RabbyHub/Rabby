@@ -187,7 +187,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       };
     }
 
-    if (scaleOrders.length === 1) {
+    if (scaleOrders.length === 1 || Number(numGrids) <= 0) {
       error = t('page.perpsPro.tradingPanel.atLeastTwoOrders');
       return { isValid: false, error };
     }
@@ -228,6 +228,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       error,
     };
   }, [
+    numGrids,
     scaleOrders,
     positionSize.notionalValue,
     scaleMaxTradeSize,
