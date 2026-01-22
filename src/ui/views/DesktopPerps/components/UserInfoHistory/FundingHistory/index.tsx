@@ -103,7 +103,7 @@ export const FundingHistory: React.FC = () => {
                   : 'text-rb-red-default'
               )}
             >
-              {Number(record.usdc) >= 0 ? '+' : '-'}$
+              {Number(record.usdc) >= 0 ? '' : '-'}$
               {splitNumberByStep(new BigNumber(record.usdc).abs().toFixed(4))}
             </div>
           );
