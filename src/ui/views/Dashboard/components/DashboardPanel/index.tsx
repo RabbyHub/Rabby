@@ -13,7 +13,23 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
+import {
+  DndContext,
+  MeasuringStrategy,
+  MouseSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  closestCenter,
+  pointerWithin,
+  rectIntersection,
+  getFirstCollision,
+  PointerSensor,
+} from '@dnd-kit/core';
+import { DragEndEvent } from '@dnd-kit/core/dist/types';
+import { SortableContext, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 import { ReactComponent as RcIconGift } from 'ui/assets/gift-14.svg';
@@ -57,98 +73,222 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
 import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
 
-const Container = styled.div`
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-
-  height: 264px;
-  overflow: auto;
-
-  border-radius: 8px;
-  background-color: var(--r-neutral-card2, #f2f4f7);
-
-  .panel-item {
-    height: 88px;
-    width: 100%;
-    cursor: pointer;
-
-    background: var(--r-neutral-card1, #fff);
-
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    &:hover {
-      background: var(--r-blue-light1, #edf0ff);
+const GlobalStyle = createGlobalStyle`
+  .rabby-dashboard-panel-container {
+    .dashboard-panel-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
     }
 
-    &-icon {
-      width: 24px;
-      height: 24px;
-      justify-self: center;
-      margin-bottom: 6px;
-      color: var(--r-neutral-title1, #192945);
+    .panel-item {
+      height: 88px;
+      width: 100%;
 
-      &.icon-spin {
-        animation: icn-spin 1.5s linear infinite;
+      background: var(--r-neutral-card1, #fff);
+
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      &:hover {
+        background: var(--r-blue-light1, #edf0ff);
       }
 
-      &.icon-rabby-mobile {
+      &-icon {
         width: 24px;
         height: 24px;
-        margin-bottom: 4px;
+        justify-self: center;
+        margin-bottom: 6px;
+        color: var(--r-neutral-title1, #192945);
+
+        &.icon-spin {
+          animation: icn-spin 1.5s linear infinite;
+        }
+
+        &.icon-rabby-mobile {
+          width: 24px;
+          height: 24px;
+          margin-bottom: 4px;
+        }
+
+        &.icon-points {
+          width: 24px;
+          height: 24px;
+          margin-bottom: 4px;
+        }
       }
 
-      &.icon-points {
-        width: 24px;
-        height: 24px;
-        margin-bottom: 4px;
+      &-label {
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 16px;
+        color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
+        text-align: center;
+      }
+
+      @keyframes icn-spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .icon-alert {
+        position: absolute;
+        right: 33px;
+        top: 7px;
       }
     }
 
-    &-label {
-      font-weight: 500;
-      font-size: 13px;
-      line-height: 16px;
-      color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
-      text-align: center;
-    }
-
-    @keyframes icn-spin {
-      100% {
-        transform: rotate(360deg);
+    .ant-badge {
+      .ant-badge-count {
+        background-color: var(--r-blue-default, #7084ff);
+        padding: 2px 6px;
+        font-size: 13px;
+        line-height: 1;
+        height: 18px;
+        border-radius: 90px;
+        box-shadow: none;
       }
-    }
-
-    .icon-alert {
-      position: absolute;
-      right: 33px;
-      top: 7px;
-    }
-  }
-
-  .ant-badge {
-    .ant-badge-count {
-      background-color: var(--r-blue-default, #7084ff);
-      padding: 2px 6px;
-      font-size: 13px;
-      line-height: 1;
-      height: 18px;
-      border-radius: 90px;
-      box-shadow: none;
-    }
-    &.alert .ant-badge-count {
-      background-color: #ec5151;
-    }
-    &.round .ant-badge-count {
-      padding: 2px 4.5px !important;
+      &.alert .ant-badge-count {
+        background-color: #ec5151;
+      }
+      &.round .ant-badge-count {
+        padding: 2px 4.5px !important;
+      }
     }
   }
 `;
+
+type IPanelItem = {
+  icon: ThemeIconType;
+  content: string;
+  onClick: import('react').MouseEventHandler<HTMLElement>;
+  badge?: number;
+  badgeAlert?: boolean;
+  badgeClassName?: string;
+  iconSpin?: boolean;
+  showAlert?: boolean;
+  disabled?: boolean;
+  commingSoonBadge?: boolean;
+  disableReason?: string;
+  eventKey: string;
+  iconClassName?: string;
+  subContent?: React.ReactNode;
+  isFullscreen?: boolean;
+};
+
+const SortablePanelItem: React.FC<{
+  panelKey: string;
+  item: IPanelItem;
+  isGnosis: boolean;
+  index: number;
+}> = ({ panelKey, item, isGnosis, index }) => {
+  const { t } = useTranslation();
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: panelKey,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    cursor: isDragging ? 'grabbing' : 'pointer',
+    opacity: isDragging ? 0.4 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="bg-r-neutral-bg-2"
+    >
+      {item.disabled ? (
+        <Tooltip
+          {...(item.commingSoonBadge && { visible: false })}
+          title={item.disableReason || t('page.dashboard.home.comingSoon')}
+          overlayClassName="rectangle direction-tooltip"
+          autoAdjustOverflow={false}
+        >
+          <div key={index} className="disable-direction">
+            <ThemeIcon src={item.icon} className="images" />
+            <div className="panel-item-label">{item.content} </div>
+          </div>
+        </Tooltip>
+      ) : (
+        <div
+          key={index}
+          onClick={(evt) => {
+            matomoRequestEvent({
+              category: 'Dashboard',
+              action: 'clickEntry',
+              label: item.eventKey,
+            });
+
+            ga4.fireEvent(`Entry_${item.eventKey}`, {
+              event_category: 'Dashboard',
+            });
+
+            item?.onClick(evt);
+          }}
+          className="panel-item group"
+        >
+          {item.showAlert && (
+            <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
+          )}
+          {item.badge ? (
+            <Badge
+              count={item.badge}
+              size="small"
+              className={clsx(
+                {
+                  alert: item.badgeAlert && !item.badgeClassName,
+                },
+                item.badgeClassName
+              )}
+            >
+              <ThemeIcon
+                src={item.icon}
+                className={clsx([
+                  item.iconSpin && 'icon-spin',
+                  'panel-item-icon',
+                ])}
+              />
+            </Badge>
+          ) : (
+            <ThemeIcon
+              src={item.icon}
+              className={clsx(['panel-item-icon', item.iconClassName])}
+            />
+          )}
+          <div className="panel-item-label">{item.content}</div>
+          {item.subContent}
+          {item.commingSoonBadge && (
+            <div className="coming-soon-badge">
+              {t('page.dashboard.home.soon')}
+            </div>
+          )}
+          {item.isFullscreen && (
+            <div className="absolute top-[6px] right-[6px] opacity-50 text-r-neutral-foot hidden group-hover:block">
+              <RcIconExternal1CC />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   onSettingClick,
@@ -158,6 +298,8 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   usePerpsDefaultAccount();
   const { perpsPositionInfo, isFetching, positionPnl } = usePerpsHomePnl();
   // useCheckBridgePendingItem();
+
+  const wallet = useWallet();
 
   const [badgeModalVisible, setBadgeModalVisible] = useState(false);
 
@@ -170,8 +312,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const [isShowDappsPopup, setIsShowDappsPopup] = useState(false);
 
   const [safeSupportChains, setSafeSupportChains] = useState<CHAINS_ENUM[]>([]);
-
-  const wallet = useWallet();
 
   const account = useRabbySelector((state) => state.account.currentAccount);
 
@@ -224,25 +364,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       getSafeNetworks();
     }
   }, [isGnosis]);
-
-  type IPanelItem = {
-    icon: ThemeIconType;
-    content: string;
-    onClick: import('react').MouseEventHandler<HTMLElement>;
-    badge?: number;
-    badgeAlert?: boolean;
-    badgeClassName?: string;
-    iconSpin?: boolean;
-    hideForGnosis?: boolean;
-    showAlert?: boolean;
-    disabled?: boolean;
-    commingSoonBadge?: boolean;
-    disableReason?: string;
-    eventKey: string;
-    iconClassName?: string;
-    subContent?: React.ReactNode;
-    isFullscreen?: boolean;
-  };
 
   const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
   const hasClaimedGift = useRabbySelector((s) => s.gift.hasClaimedGift);
@@ -463,7 +584,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     } as IPanelItem,
   };
 
-  const pickedPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
+  const defaultPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
     return isGnosis
       ? [
           'swap',
@@ -503,6 +624,105 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         ];
   }, [isGnosis]);
 
+  // Load saved panel order from localStorage
+  const loadPanelOrder = () => {
+    try {
+      const saved = localStorage.getItem('dashboard_panel_order');
+      if (saved) {
+        const parsed = JSON.parse(saved) as (keyof typeof panelItems)[];
+        // Validate that all items still exist and match current keys
+        const validKeys = parsed.filter((key) => panelItems[key]);
+        // Add any new keys that aren't in saved order
+        const missingKeys = defaultPanelKeys.filter(
+          (key) => !validKeys.includes(key)
+        );
+        return [...validKeys, ...missingKeys];
+      }
+    } catch (e) {
+      console.error('Failed to load panel order:', e);
+    }
+    return defaultPanelKeys;
+  };
+
+  const [pickedPanelKeys, setPickedPanelKeys] = useState<
+    (keyof typeof panelItems)[]
+  >(() => loadPanelOrder());
+
+  // Save panel order to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        'dashboard_panel_order',
+        JSON.stringify(pickedPanelKeys)
+      );
+    } catch (e) {
+      console.error('Failed to save panel order:', e);
+    }
+  }, [pickedPanelKeys]);
+
+  // Update panel keys when defaultPanelKeys changes
+  useEffect(() => {
+    const currentKeys = new Set(pickedPanelKeys);
+    const defaultKeys = new Set(defaultPanelKeys);
+
+    // Check if there are new keys or removed keys
+    const hasNewKeys = defaultPanelKeys.some((key) => !currentKeys.has(key));
+    const hasRemovedKeys = pickedPanelKeys.some((key) => !defaultKeys.has(key));
+
+    if (hasNewKeys || hasRemovedKeys) {
+      // Keep existing order but add new items and remove deleted ones
+      const validKeys = pickedPanelKeys.filter((key) => defaultKeys.has(key));
+      const missingKeys = defaultPanelKeys.filter(
+        (key) => !currentKeys.has(key)
+      );
+      setPickedPanelKeys([...validKeys, ...missingKeys]);
+    }
+  }, [defaultPanelKeys]);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) {
+      setActiveId(null);
+      return;
+    }
+
+    const oldIndex = pickedPanelKeys.findIndex((key) => key === active.id);
+    const newIndex = pickedPanelKeys.findIndex((key) => key === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const newKeys = [...pickedPanelKeys];
+      const [removed] = newKeys.splice(oldIndex, 1);
+      newKeys.splice(newIndex, 0, removed);
+      setPickedPanelKeys(newKeys);
+    }
+    setActiveId(null);
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 3,
+      },
+    })
+  );
+
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const handleDragStart = (event: any) => {
+    setActiveId(event.active.id);
+  };
+
+  const handleDragCancel = () => {
+    setActiveId(null);
+  };
+
+  const activeItem = useMemo(() => {
+    if (!activeId) return null;
+    return panelItems[activeId as keyof typeof panelItems] as
+      | IPanelItem
+      | undefined;
+  }, [activeId, panelItems]);
+
   const ref = useRef<HTMLDivElement | null>(null);
   const scroll = useScroll(ref);
   const scrollRatio = useMemo(() => {
@@ -515,100 +735,137 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const { isDarkTheme } = useThemeMode();
 
   return (
-    <div className="relative px-[16px] pt-[14px] pb-[12px]">
-      <Container
+    <div
+      className={clsx(
+        'relative px-[16px] pt-[14px] pb-[12px]',
+        'rabby-dashboard-panel-container'
+      )}
+    >
+      <GlobalStyle />
+      <div
+        className="overflow-auto rounded-[8px] bg-r-neutral-card-2"
+        style={{ height: 264 }}
         ref={ref}
-        style={
-          isDarkTheme
-            ? {
-                backgroundColor: 'rgb(41,43,57)',
-              }
-            : undefined
-        }
       >
-        {pickedPanelKeys.map((panelKey, index) => {
-          const item = panelItems[panelKey] as IPanelItem;
-          if (item.hideForGnosis && isGnosis) return <></>;
-          return (
-            <div key={panelKey} className="bg-r-neutral-bg-2">
-              {item.disabled ? (
-                <Tooltip
-                  {...(item.commingSoonBadge && { visible: false })}
-                  title={
-                    item.disableReason || t('page.dashboard.home.comingSoon')
-                  }
-                  overlayClassName="rectangle direction-tooltip"
-                  autoAdjustOverflow={false}
-                >
-                  <div key={index} className="disable-direction">
-                    <ThemeIcon src={item.icon} className="images" />
-                    <div className="panel-item-label">{item.content} </div>
-                  </div>
-                </Tooltip>
-              ) : (
+        <DndContext
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+          measuring={{
+            droppable: { strategy: MeasuringStrategy.Always },
+          }}
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          autoScroll={{
+            threshold: {
+              x: 0.2,
+              y: 0.2,
+            },
+            acceleration: 10,
+          }}
+        >
+          <SortableContext items={pickedPanelKeys}>
+            <div
+              className="dashboard-panel-grid"
+              style={
+                isDarkTheme
+                  ? {
+                      backgroundColor: 'rgb(41,43,57)',
+                    }
+                  : undefined
+              }
+            >
+              {pickedPanelKeys.map((panelKey, index) => {
+                const item = panelItems[panelKey] as IPanelItem;
+                return (
+                  <SortablePanelItem
+                    key={panelKey}
+                    panelKey={panelKey}
+                    item={item}
+                    isGnosis={isGnosis}
+                    index={index}
+                  />
+                );
+              })}
+            </div>
+          </SortableContext>
+          <DragOverlay
+            dropAnimation={{
+              duration: 200,
+              easing: 'ease',
+            }}
+            style={{
+              cursor: 'grabbing',
+            }}
+          >
+            <>
+              {activeId && activeItem ? (
                 <div
-                  key={index}
-                  onClick={(evt) => {
-                    matomoRequestEvent({
-                      category: 'Dashboard',
-                      action: 'clickEntry',
-                      label: item.eventKey,
-                    });
-
-                    ga4.fireEvent(`Entry_${item.eventKey}`, {
-                      event_category: 'Dashboard',
-                    });
-
-                    item?.onClick(evt);
+                  className="bg-r-neutral-bg-2"
+                  style={{
+                    opacity: 0.95,
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                   }}
-                  className="panel-item group"
                 >
-                  {item.showAlert && (
-                    <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
-                  )}
-                  {item.badge ? (
-                    <Badge
-                      count={item.badge}
-                      size="small"
-                      className={clsx(
-                        {
-                          alert: item.badgeAlert && !item.badgeClassName,
-                        },
-                        item.badgeClassName
-                      )}
-                    >
+                  <div className="panel-item group">
+                    {activeItem.showAlert && (
                       <ThemeIcon
-                        src={item.icon}
+                        src={IconAlertRed}
+                        className="icon icon-alert"
+                      />
+                    )}
+                    {activeItem.badge ? (
+                      <Badge
+                        count={activeItem.badge}
+                        size="small"
+                        className={clsx(
+                          {
+                            alert:
+                              activeItem.badgeAlert &&
+                              !activeItem.badgeClassName,
+                          },
+                          activeItem.badgeClassName
+                        )}
+                      >
+                        <ThemeIcon
+                          src={activeItem.icon}
+                          className={clsx([
+                            activeItem.iconSpin && 'icon-spin',
+                            'panel-item-icon',
+                          ])}
+                        />
+                      </Badge>
+                    ) : (
+                      <ThemeIcon
+                        src={activeItem.icon}
                         className={clsx([
-                          item.iconSpin && 'icon-spin',
                           'panel-item-icon',
+                          activeItem.iconClassName,
                         ])}
                       />
-                    </Badge>
-                  ) : (
-                    <ThemeIcon
-                      src={item.icon}
-                      className={clsx(['panel-item-icon', item.iconClassName])}
-                    />
-                  )}
-                  <div className="panel-item-label">{item.content}</div>
-                  {item.subContent}
-                  {item.commingSoonBadge && (
-                    <div className="coming-soon-badge">
-                      {t('page.dashboard.home.soon')}
-                    </div>
-                  )}
-                  {item.isFullscreen && (
-                    <div className="absolute top-[6px] right-[6px] opacity-50 text-r-neutral-foot hidden group-hover:block">
-                      <RcIconExternal1CC />
-                    </div>
-                  )}
+                    )}
+                    <div className="panel-item-label">{activeItem.content}</div>
+                    {activeItem.subContent}
+                    {activeItem.commingSoonBadge && (
+                      <div className="coming-soon-badge">
+                        {t('page.dashboard.home.soon')}
+                      </div>
+                    )}
+                    {activeItem.isFullscreen && (
+                      <div className="absolute top-[6px] right-[6px] opacity-50 text-r-neutral-foot hidden group-hover:block">
+                        <RcIconExternal1CC />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
-            </div>
-          );
-        })}
-      </Container>
+              ) : null}
+            </>
+          </DragOverlay>
+        </DndContext>
+        <footer className="bg-r-neutral-card-1 p-2 text-center text-sm text-r-neutral-foot mt-[1px]">
+          Long-press feature to reorder
+        </footer>
+      </div>
       <div className="absolute right-[8px] top-[50%] translate-y-[-50%]">
         <div className="w-[3px] h-[80px] rounded-full relative">
           <div
