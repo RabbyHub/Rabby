@@ -132,8 +132,8 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   // Form validation
   const validation = React.useMemo(() => {
     let error: string = '';
-    const notionalNum = Number(positionSize.notionalValue) || 0;
     const tradeSize = Number(positionSize.amount) || 0;
+    const notionalNum = tradeSize * Number(limitPrice || 0);
 
     if (notionalNum === 0) {
       return {
@@ -191,7 +191,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       error,
     };
   }, [
-    positionSize.notionalValue,
+    positionSize.amount,
     maxTradeSize,
     reduceOnly,
     limitOrderType,
@@ -365,6 +365,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         quoteAsset="USDC"
         szDecimals={szDecimals}
         priceChangeUsdValue={true}
+        reduceOnly={reduceOnly}
       />
 
       <div className="flex items-center justify-between">

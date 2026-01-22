@@ -83,8 +83,8 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   // Form validation
   const validation = React.useMemo(() => {
     let error: string = '';
-    const notionalNum = Number(positionSize.notionalValue) || 0;
     const tradeSize = Number(positionSize.amount) || 0;
+    const notionalNum = tradeSize * Number(markPrice || 0);
 
     if (notionalNum === 0) {
       return {
@@ -124,7 +124,8 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       error,
     };
   }, [
-    positionSize.notionalValue,
+    markPrice,
+    positionSize.amount,
     maxTradeSize,
     reduceOnly,
     tradeSize,

@@ -1,10 +1,12 @@
+import { useThemeMode } from '@/ui/hooks/usePreference';
 import { Slider, SliderSingleProps } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
-const StyledSlider = styled(Slider)`
+const StyledSlider = styled(Slider)<{ isDark: boolean }>`
   .ant-slider-rail {
-    background-color: var(--rb-neutral-bg-2);
+    background-color: ${({ isDark }) =>
+      isDark ? 'var(--rb-neutral-bg-2)' : 'var(--r-neutral-line)'};
   }
 
   &:hover .ant-slider-rail {
@@ -91,5 +93,8 @@ const StyledSlider = styled(Slider)`
 `;
 
 export const DesktopPerpsSlider = (props: SliderSingleProps) => {
-  return <StyledSlider {...props} tooltipVisible={false} />;
+  const { isDarkTheme } = useThemeMode();
+  return (
+    <StyledSlider {...props} tooltipVisible={false} isDark={isDarkTheme} />
+  );
 };

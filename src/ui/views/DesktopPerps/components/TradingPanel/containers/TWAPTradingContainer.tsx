@@ -242,6 +242,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         baseAsset={selectedCoin}
         quoteAsset="USDC"
         szDecimals={szDecimals}
+        reduceOnly={reduceOnly}
       />
 
       <div className="flex flex-col gap-8">
