@@ -16,6 +16,7 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
+import { DashedUnderlineText } from '../../DashedUnderlineText';
 
 type TwapOrder = {
   twapId: number;
@@ -275,17 +276,24 @@ export const Twap: React.FC = () => {
           }
           return (
             <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
-              {splitNumberByStep(fee)} USDC
+              {splitNumberByStep(Number(fee).toFixed(2))} USDC
             </div>
           );
         },
       },
       {
-        title: t('page.perpsPro.userInfo.tab.closedPnl'),
+        title: (
+          <DashedUnderlineText
+            tooltipText={t('page.perpsPro.userInfo.tab.closedPnlTooltip')}
+          >
+            {t('page.perpsPro.userInfo.tab.closedPnl')}
+          </DashedUnderlineText>
+        ),
         key: 'closedPnl',
         width: 130,
         render: (_, record) => {
-          const closedPnl = (record.fill as any).closedPnl;
+          const closedPnl =
+            Number(record.fill.closedPnl) - Number(record.fill.fee);
           if (!closedPnl || Number(closedPnl) === 0) {
             return (
               <div className="text-[12px] leading-[14px] text-rb-neutral-foot">
@@ -298,10 +306,10 @@ export const Twap: React.FC = () => {
             <div
               className={clsx(
                 'text-[12px] leading-[14px]',
-                pnlValue > 0 ? 'text-rb-green-default' : 'text-rb-red-default'
+                pnlValue >= 0 ? 'text-rb-green-default' : 'text-rb-red-default'
               )}
             >
-              {pnlValue > 0 ? '+' : ''}
+              {pnlValue >= 0 ? '+' : ''}
               {splitNumberByStep(pnlValue.toFixed(2))} USDC
             </div>
           );

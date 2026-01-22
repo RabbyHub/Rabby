@@ -153,6 +153,20 @@ export const TradeHistory: React.FC = () => {
         },
       },
       {
+        title: t('page.perpsPro.userInfo.tab.fee'),
+        key: 'fee',
+        dataIndex: 'fee',
+        // width: 180,
+        sorter: (a, b) => Number(a.fee) - Number(b.fee),
+        render: (_, record) => {
+          return (
+            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+              ${splitNumberByStep(Number(record.fee).toFixed(2))}
+            </div>
+          );
+        },
+      },
+      {
         title: (
           <DashedUnderlineText
             tooltipText={t('page.perpsPro.userInfo.tab.closedPnlTooltip')}
@@ -165,19 +179,20 @@ export const TradeHistory: React.FC = () => {
         // width: 180,
         sorter: (a, b) => Number(a.closedPnl) - Number(b.closedPnl),
         render: (_, record) => {
+          const closedPnl = Number(record.closedPnl) - Number(record.fee);
           return (
             <div
               className={clsx(
                 'space-y-[4px]',
                 'text-[12px] leading-[14px] ',
-                Number(record.closedPnl) === 0
+                Number(closedPnl) === 0
                   ? 'text-rb-neutral-foot'
-                  : Number(record.closedPnl) > 0
+                  : Number(closedPnl) > 0
                   ? 'text-rb-green-default'
                   : 'text-rb-red-default'
               )}
             >
-              {Number(record.closedPnl) === 0 ? (
+              {Number(closedPnl) === 0 ? (
                 <>
                   <div>-</div>
                   <div>-</div>
@@ -185,38 +200,11 @@ export const TradeHistory: React.FC = () => {
               ) : (
                 <>
                   <div>
-                    {Number(record.closedPnl) > 0 ? '+' : '-'}$
-                    {splitNumberByStep(
-                      Math.abs(Number(record.closedPnl)).toFixed(2)
-                    )}
-                  </div>
-                  <div>
-                    {Number(record.closedPnl) > 0 ? '+' : '-'}$
-                    {formatPercent(
-                      new BigNumber(record.closedPnl)
-                        .div(record.sz)
-                        .div(record.px)
-                        .abs()
-                        .toNumber(),
-                      2
-                    )}
+                    {Number(closedPnl) > 0 ? '+' : '-'}$
+                    {splitNumberByStep(Math.abs(Number(closedPnl)).toFixed(2))}
                   </div>
                 </>
               )}
-            </div>
-          );
-        },
-      },
-      {
-        title: t('page.perpsPro.userInfo.tab.fee'),
-        key: 'fee',
-        dataIndex: 'fee',
-        // width: 180,
-        sorter: (a, b) => Number(a.fee) - Number(b.fee),
-        render: (_, record) => {
-          return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-              ${splitNumberByStep(record.fee)}
             </div>
           );
         },
