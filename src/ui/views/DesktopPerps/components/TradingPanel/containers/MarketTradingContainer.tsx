@@ -128,8 +128,6 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     maxTradeSize,
     reduceOnly,
     tradeSize,
-    marginRequired,
-    availableBalance,
     currentMarketData,
     t,
   ]);

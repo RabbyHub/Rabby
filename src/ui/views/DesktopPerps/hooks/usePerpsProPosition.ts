@@ -596,19 +596,8 @@ export const usePerpsProPosition = () => {
         checkTotalSize = checkTotalSize.plus(new BigNumber(order.sz));
       }
 
-      console.log(
-        `网格计算完成。起始价量: ${ordersToSubmit[0].sz}, 终点价量: ${
-          ordersToSubmit[numGrids - 1].sz
-        }`
-      );
       const startSizeBN = new BigNumber(ordersToSubmit[0].sz);
       const endSizeBN = new BigNumber(ordersToSubmit[numGrids - 1].sz);
-      console.log(
-        `理论倾斜比 (V_end / V_start): ${endSizeBN
-          .dividedBy(startSizeBN)
-          .toFixed()}`
-      );
-      console.log(`实际倾斜比: ${sizeSkew}`);
 
       return ordersToSubmit;
     }

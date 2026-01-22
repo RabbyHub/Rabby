@@ -606,10 +606,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
         // Ignore stale request - only apply if this is still the expected data
         if (expectedDataKeyRef.current !== currentDataKey) {
-          console.log('Ignoring stale request:', {
-            requested: currentDataKey,
-            expected: expectedDataKeyRef.current,
-          });
           return;
         }
 
@@ -678,7 +674,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     const sdk = getPerpsSDK();
     if (!seriesRef.current || !volumeSeriesRef.current) return;
 
-    console.log('Subscribing to candles:', coin, selectedInterval);
     const { unsubscribe } = sdk.ws.subscribeToCandles(
       coin,
       selectedInterval,
@@ -717,7 +712,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     );
 
     return () => {
-      console.log('Unsubscribing from candles:', coin, selectedInterval);
       unsubscribe();
     };
   });
