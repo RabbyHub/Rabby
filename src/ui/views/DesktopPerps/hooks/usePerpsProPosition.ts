@@ -568,7 +568,8 @@ export const usePerpsProPosition = () => {
         // size: size_i = size_1 + i * d
         let size: string;
 
-        if (i === numGrids - 1) {
+        if (i === numGrids - 1 && !sizeSkewBN.isEqualTo(1)) {
+          // if sizeSkew is not 1, the last order size is remaining size
           size = totalSizeBN
             .minus(checkTotalSize)
             .toFixed(szDecimals, BigNumber.ROUND_DOWN);
@@ -682,7 +683,7 @@ export const usePerpsProPosition = () => {
             perpsToast.success({
               title: t('page.perps.toast.orderFilled'),
               description: t('page.perps.toast.closePositionSuccess', {
-                direction: isBuy ? 'Long' : 'Short',
+                direction: isBuy ? 'Short' : 'Long',
                 coin,
                 size: totalSz,
                 price: avgPx,

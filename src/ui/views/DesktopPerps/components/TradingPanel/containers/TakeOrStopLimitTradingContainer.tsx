@@ -204,31 +204,26 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
   );
 
   const orderSummary: OrderSummaryData = React.useMemo(() => {
+    const getExpectedPnL = (percentage: string) => {
+      return Number(percentage) && Number(tradeSize) > 0
+        ? (Number(percentage) * marginRequired) / 100
+        : 0;
+    };
+
     return {
       liquidationPrice: estimatedLiquidationPrice,
       liquidationDistance: '',
       orderValue: tradeUsdAmount > 0 ? formatUsdValue(tradeUsdAmount) : '$0.00',
-      marginRequired: formatUsdValue(marginRequired),
+      marginRequired: reduceOnly ? '-' : formatUsdValue(marginRequired),
       marginUsage,
       slippage: undefined,
-      tpExpectedPnL:
-        Number(tpslConfig.takeProfit.percentage) && Number(tradeSize) > 0
-          ? '+' +
-            formatUsdValue(
-              (Number(tpslConfig.takeProfit.percentage) * marginRequired) / 100
-            )
-          : '',
-      slExpectedPnL:
-        Number(tpslConfig.stopLoss.percentage) && Number(tradeSize) > 0
-          ? '-' +
-            formatUsdValue(
-              (Number(tpslConfig.stopLoss.percentage) * marginRequired) / 100
-            )
-          : '',
+      tpExpectedPnL: 1 * getExpectedPnL(tpslConfig.takeProfit.percentage),
+      slExpectedPnL: -1 * getExpectedPnL(tpslConfig.stopLoss.percentage),
     };
   }, [
     estimatedLiquidationPrice,
     tradeUsdAmount,
+    reduceOnly,
     marginUsage,
     tpslConfig.takeProfit.percentage,
     tpslConfig.stopLoss.percentage,

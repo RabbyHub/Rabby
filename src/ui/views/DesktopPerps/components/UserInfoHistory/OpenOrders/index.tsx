@@ -309,12 +309,12 @@ export const OpenOrders: React.FC = () => {
             {t('page.perpsPro.userInfo.openOrders.cancelAll')}
           </div>
         ),
-        align: 'right',
+        align: 'center',
         key: 'oid',
         dataIndex: 'oid',
         render: (_, record) => {
           return (
-            <div className="flex justify-end">
+            <div className="flex justify-center">
               <button
                 type="button"
                 className={clsx(

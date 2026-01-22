@@ -574,12 +574,12 @@ export const PositionsInfo: React.FC = () => {
           </div>
         ),
         key: 'oid',
-        align: 'right',
+        align: 'center',
         dataIndex: 'oid',
         // width: 160,
         render: (_, record) => {
           return (
-            <div className="flex justify-end">
+            <div className="flex justify-center">
               <Dropdown
                 transitionName=""
                 forceRender={true}

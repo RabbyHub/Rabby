@@ -62,8 +62,8 @@ export interface OrderSummaryData {
   orderValue: string;
   marginRequired: string;
   marginUsage: string;
-  tpExpectedPnL?: string;
-  slExpectedPnL?: string;
+  tpExpectedPnL?: number;
+  slExpectedPnL?: number;
   slippage?: string;
 }
 

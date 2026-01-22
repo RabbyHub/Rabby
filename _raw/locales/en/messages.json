@@ -1151,6 +1151,7 @@
         "sound": "Enable Sound"
       },
       "tradingPanel": {
+        "atLeastTwoOrders": "At least two orders are required",
         "liquidationPriceTooltip": "Position risk is low, so there is no liquidation price for the time being. Note that increasing the position or reducing the margin will increase the risk.",
         "tpSlTips": "Places simple market TP/SL orders. For advanced features such as limited prices or partial TP/SL, set the TP/SL in an open position.",
         "reduceOnlyTips": "This order will not open a new position no matter how large the order size is. It will compare to the existing position at the time of execution.",
@@ -1243,6 +1244,8 @@
         "confirm": "Confirm"
       },
       "editTpSl": {
+        "entryPrice": "Entry Price:",
+        "markPrice": "Mark Price:",
         "title": "Configure TP/SL",
         "gain": "Gain",
         "loss": "Loss",

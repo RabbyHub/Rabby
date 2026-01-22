@@ -624,7 +624,7 @@ export const Perps: React.FC = () => {
               'fixed bottom-0 left-0 right-0',
               'px-[20px] py-[14px]',
               'border-t-[0.5px] border-solid border-rabby-neutral-line',
-              'bg-r-neutral-bg-2',
+              'bg-r-neutral-bg-2 z-20',
               scroll?.top ? 'hidden' : ''
             )}
           >

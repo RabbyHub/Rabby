@@ -515,7 +515,7 @@ export const useDepositWithdraw = (
         setIsPreparingSign(false);
       }
     } else {
-      handleDepositFullSign();
+      await handleDepositFullSign();
     }
   });
 

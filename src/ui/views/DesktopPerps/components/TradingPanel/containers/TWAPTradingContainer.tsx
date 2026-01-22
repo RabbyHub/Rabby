@@ -100,17 +100,6 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
       };
     }
 
-    // Check minimum order size ($10)
-    if (notionalNum < 10) {
-      error = t('page.perpsPro.tradingPanel.minimumOrderSize');
-      return { isValid: false, error };
-    }
-
-    if (Number(sizePerSuborder) * Number(midPrice) < 10) {
-      error = t('page.perpsPro.tradingPanel.minimumSuborderSize');
-      return { isValid: false, error };
-    }
-
     //allMinsDuration in 5min - 24h
     if (allMinsDuration < 5) {
       error = t('page.perpsPro.tradingPanel.runtimeTooShort');
@@ -119,6 +108,17 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
 
     if (allMinsDuration > 24 * 60) {
       error = t('page.perpsPro.tradingPanel.runtimeTooLong');
+      return { isValid: false, error };
+    }
+
+    // Check minimum order size ($10)
+    if (notionalNum < 10) {
+      error = t('page.perpsPro.tradingPanel.minimumOrderSize');
+      return { isValid: false, error };
+    }
+
+    if (Number(sizePerSuborder) * Number(midPrice) < 10) {
+      error = t('page.perpsPro.tradingPanel.minimumSuborderSize');
       return { isValid: false, error };
     }
 
@@ -191,11 +191,17 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
       liquidationPrice: estimatedLiquidationPrice,
       liquidationDistance: '',
       orderValue: tradeUsdAmount > 0 ? formatUsdValue(tradeUsdAmount) : '$0.00',
-      marginRequired: formatUsdValue(marginRequired),
+      marginRequired: reduceOnly ? '-' : formatUsdValue(marginRequired),
       marginUsage,
       slippage: '0.08%',
     };
-  }, [estimatedLiquidationPrice, tradeUsdAmount, marginUsage]);
+  }, [
+    estimatedLiquidationPrice,
+    tradeUsdAmount,
+    marginUsage,
+    reduceOnly,
+    marginRequired,
+  ]);
 
   const validateNumberInput = (value: string) => {
     return /^[0-9]*$/.test(value);

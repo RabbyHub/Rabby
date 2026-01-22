@@ -170,28 +170,22 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       estPrice && Number(positionSize.amount) > 0
         ? (Number(estPrice) - Number(markPrice)) / Number(markPrice)
         : 0;
+
+    const getExpectedPnL = (percentage: string) => {
+      return Number(percentage) && Number(tradeSize) > 0
+        ? (Number(percentage) * marginRequired) / 100
+        : 0;
+    };
     return {
-      tpExpectedPnL:
-        Number(tpslConfig.takeProfit.percentage) && Number(tradeSize) > 0
-          ? '+' +
-            formatUsdValue(
-              (Number(tpslConfig.takeProfit.percentage) * marginRequired) / 100
-            )
-          : '',
-      slExpectedPnL:
-        Number(tpslConfig.stopLoss.percentage) && Number(tradeSize) > 0
-          ? '-' +
-            formatUsdValue(
-              (Number(tpslConfig.stopLoss.percentage) * marginRequired) / 100
-            )
-          : '',
+      tpExpectedPnL: 1 * getExpectedPnL(tpslConfig.takeProfit.percentage),
+      slExpectedPnL: -1 * getExpectedPnL(tpslConfig.stopLoss.percentage),
       liquidationPrice: estimatedLiquidationPrice,
       liquidationDistance: '',
       orderValue:
         tradeUsdAmount > 0
           ? formatUsdValue(tradeUsdAmount, BigNumber.ROUND_DOWN)
           : '$0.00',
-      marginRequired: formatUsdValue(marginRequired),
+      marginRequired: reduceOnly ? '-' : formatUsdValue(marginRequired),
       marginUsage,
       slippage: `Est. ${formatPercent(
         Math.abs(estSlippage),
@@ -202,6 +196,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     tpslConfig.takeProfit.percentage,
     tpslConfig.stopLoss.percentage,
     tradeSize,
+    reduceOnly,
     marginRequired,
     tradeUsdAmount,
     estimatedLiquidationPrice,
@@ -237,6 +232,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           baseAsset={selectedCoin}
           quoteAsset="USDC"
           szDecimals={szDecimals}
+          reduceOnly={reduceOnly}
         />
 
         {/* TP/SL and Reduce Only */}
@@ -313,7 +309,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           }
           handleSetSlippage={handleSetSlippage}
           slExpectedPnL={
-            tpslConfig.enabled ? orderSummary?.tpExpectedPnL : undefined
+            tpslConfig.enabled ? orderSummary?.slExpectedPnL : undefined
           }
         />
       </div>
