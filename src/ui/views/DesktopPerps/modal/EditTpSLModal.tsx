@@ -37,7 +37,9 @@ const calculatePnl = ({
     (Number(extPrice) - Number(position.entryPx)) *
     Number(position.size) *
     withSize;
-  const percent = (pnl / Number(position.marginUsed)) * 100;
+  const costValue =
+    (Number(position.size) * Number(position.entryPx)) / position.leverage;
+  const percent = (pnl / costValue) * 100;
   return { pnl, percent };
 };
 
@@ -151,7 +153,9 @@ export const EditTpSlModal: React.FC<Props> = ({
             pctValue = -pctValue;
           }
 
-          const costValue = Number(position.marginUsed);
+          const costValue =
+            (Number(position.size) * Number(position.entryPx)) /
+            position.leverage;
           const pnlUsdValue = costValue * pctValue;
           const size = Number(position.size);
           const priceDifference = pnlUsdValue / size;
@@ -393,6 +397,18 @@ export const EditTpSlModal: React.FC<Props> = ({
         </div>
 
         <div className="flex-1 px-20 overflow-y-auto pb-24">
+          <section className="mb-[12px] mt-4">
+            <div className="text-[12px] leading-[16px] text-rb-neutral-foot font-medium flex items-center justify-center">
+              <span>{t('page.perpsPro.editTpSl.entryPrice')}</span>
+              <span className="text-r-neutral-title-1 ml-4 mr-8">
+                ${splitNumberByStep(position.entryPx)}
+              </span>
+              <span>{t('page.perpsPro.editTpSl.markPrice')}</span>
+              <span className="text-r-neutral-title-1 ml-4">
+                ${splitNumberByStep(position.markPx)}
+              </span>
+            </div>
+          </section>
           <section className="mb-[12px]">
             <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
               {t('page.perpsPro.editTpSl.currentPosition')}
@@ -458,7 +474,7 @@ export const EditTpSlModal: React.FC<Props> = ({
                 </div>
               )}
               {tpValidation.error && (
-                <div className="text-[12px] text-r-red-default font-medium pl-[4px]">
+                <div className="text-[12px] text-r-red-default font-medium">
                   {tpValidation.errorMessage}
                 </div>
               )}
@@ -515,7 +531,7 @@ export const EditTpSlModal: React.FC<Props> = ({
                 </div>
               )}
               {slValidation.error && (
-                <div className="text-[12px] text-r-red-default font-medium pl-[4px]">
+                <div className="text-[12px] text-r-red-default font-medium">
                   {slValidation.errorMessage}
                 </div>
               )}

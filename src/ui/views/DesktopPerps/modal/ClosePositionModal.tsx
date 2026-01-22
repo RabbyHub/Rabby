@@ -349,7 +349,6 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                     baseAsset={position.coin}
                     quoteAsset="USDC"
                     szDecimals={marketData.szDecimals}
-                    priceChangeUsdValue={type === 'limit'}
                   />
                 </div>
               </div>

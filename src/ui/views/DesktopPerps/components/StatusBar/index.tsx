@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { Switch } from 'antd';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import { ReactComponent as RcIconTwitter } from '@/ui/assets/perps/icon-twitter.svg';
-import { ReactComponent as RcIconDiscord } from '@/ui/assets/perps/icon-discord.svg';
+import { ReactComponent as RcIconTwitter } from '@/ui/assets/perps/IconTwitter.svg';
+import { ReactComponent as RcIconDiscord } from '@/ui/assets/perps/IconDiscord.svg';
 import { ReactComponent as RcIconOpenVolume } from '@/ui/assets/perps/IconOpenVolume.svg';
 import { ReactComponent as RcIconClosedVolume } from '@/ui/assets/perps/IconClosedVolume.svg';
-import { ReactComponent as RcIconDocs } from '@/ui/assets/perps/icon-docs.svg';
+import { ReactComponent as RcIconDocs } from '@/ui/assets/perps/IconDocument.svg';
 import { useTranslation } from 'react-i18next';
 import { openInTab } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -18,7 +18,7 @@ const OnlineStatus: React.FC<{ online: boolean }> = ({ online }) => {
   return (
     <div
       className={clsx(
-        'flex items-center justify-center gap-4 h-[20px] px-[8px] rounded-[4px] border border-solid text-[12px] font-medium',
+        'flex items-center justify-center gap-4 h-[18px] px-[8px] rounded-[4px] border border-solid text-[12px] font-medium',
         online
           ? 'border-rb-green-default text-rb-green-default bg-rb-green-light-1'
           : 'border-rb-neutral-line text-rb-neutral-secondary bg-rb-neutral-bg-2'

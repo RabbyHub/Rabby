@@ -33,6 +33,7 @@ interface PositionSizeInputAndSliderProps {
   setPercentage: (percentage: number) => void;
   szDecimals: number;
   priceChangeUsdValue?: boolean;
+  reduceOnly?: boolean;
 }
 
 export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProps> = ({
@@ -47,6 +48,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   setPercentage,
   szDecimals,
   priceChangeUsdValue,
+  reduceOnly,
 }) => {
   const [
     percentageInputValue,
@@ -64,6 +66,12 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   const handlePresetClick = useMemoizedFn((value: number) => {
     handlePercentageChange(value);
   });
+
+  useEffect(() => {
+    if (percentage) {
+      handlePercentageChange(percentage);
+    }
+  }, [reduceOnly]);
 
   const handlePercentageInputChange = useMemoizedFn(
     (e: React.ChangeEvent<HTMLInputElement>) => {

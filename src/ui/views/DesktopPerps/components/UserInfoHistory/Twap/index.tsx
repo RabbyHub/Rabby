@@ -170,7 +170,7 @@ export const Twap: React.FC = () => {
         sorter: (a, b) => a.fill.time - b.fill.time,
         render: (_, record) => (
           <div className="text-[13px] leading-[16px] text-r-neutral-title-1">
-            {dayjs(record.fill.time).format('YYYY/MM/DD-HH:mm:ss')}
+            {dayjs(record.fill.time).format('YYYY/MM/DD HH:mm:ss')}
           </div>
         ),
       },
@@ -515,7 +515,7 @@ export const Twap: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-              {dayjs(record.timestamp).format('DD/MM/YYYY-hh:mm:ss A')}
+              {dayjs(record.timestamp).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
         },

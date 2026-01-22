@@ -26,6 +26,7 @@ import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 import { TradingButton } from '../components/TradingButton';
+import { BigNumber } from 'bignumber.js';
 
 export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -126,7 +127,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         coin: selectedCoin,
         szDecimals,
         isBuy: orderSide === OrderSide.BUY,
-        totalSize: tradeSize,
+        totalSize: scaleMaxTradeSize || '0',
         startPrice,
         endPrice,
         sizeSkew: Number(sizeSkew),
@@ -151,6 +152,25 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     reduceOnly,
   ]);
 
+  const scaleAveragePrice = React.useMemo(() => {
+    if (!startPrice || !endPrice) {
+      return midPrice;
+    }
+    const sizeSkewBN = new BigNumber(sizeSkew);
+    if (sizeSkewBN.isEqualTo(1)) {
+      return (Number(startPrice) + Number(endPrice)) / 2;
+    } else {
+      const totalNotional = scaleOrders.reduce((acc, order) => {
+        return acc + Number(order.sz) * Number(order.limitPx);
+      }, 0);
+      const totalSize = scaleOrders.reduce((acc, order) => {
+        return acc + Number(order.sz);
+      }, 0);
+      const averagePrice = totalNotional / totalSize;
+      return averagePrice;
+    }
+  }, [startPrice, endPrice, scaleOrders, midPrice]);
+
   // Form validation
   const validation = React.useMemo(() => {
     let error: string = '';
@@ -165,6 +185,11 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
             ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
             : '',
       };
+    }
+
+    if (scaleOrders.length === 1) {
+      error = t('page.perpsPro.tradingPanel.atLeastTwoOrders');
+      return { isValid: false, error };
     }
 
     // Check minimum order size ($10)
@@ -377,7 +402,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
-        price={midPrice}
+        price={scaleAveragePrice}
         maxTradeSize={scaleMaxTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
@@ -573,7 +598,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
             {t('page.perpsPro.tradingPanel.marginRequired')}
           </span>
           <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {orderSummary.marginRequired}
+            {reduceOnly ? '-' : orderSummary.marginRequired}
           </span>
         </div>
 

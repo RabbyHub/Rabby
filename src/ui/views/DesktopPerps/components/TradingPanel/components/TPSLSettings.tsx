@@ -130,6 +130,64 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     createTPSLChangeHandler('stopLoss')
   );
 
+  // Update both TP and SL in a single setConfig call to avoid race conditions
+  const handleBothTPSLPercentageChange = useMemoizedFn(
+    (tpPercentage: string | null, slPercentage: string | null) => {
+      const newConfig = { ...config };
+
+      // Process Take Profit
+      if (tpPercentage !== null && price) {
+        const tpConfig = { ...config.takeProfit };
+        tpConfig.percentage = tpPercentage;
+
+        if (tpPercentage && Number(tpPercentage)) {
+          const pnlPercent = Number(tpPercentage);
+          const side = orderSide === OrderSide.BUY ? 1 : -1;
+          const targetPrice =
+            Number(price) * (1 + ((pnlPercent / 100) * side) / leverage);
+          tpConfig.price =
+            targetPrice > 0 ? formatTpOrSlPrice(targetPrice, szDecimals) : '';
+        }
+
+        if (tpPercentage === '') {
+          tpConfig.error = '';
+          tpConfig.price = '';
+          tpConfig.percentage = '';
+        }
+
+        newConfig.takeProfit = handleTPSLConfigValidation(
+          'takeProfit',
+          tpConfig
+        );
+      }
+
+      // Process Stop Loss
+      if (slPercentage !== null && price) {
+        const slConfig = { ...config.stopLoss };
+        slConfig.percentage = slPercentage;
+
+        if (slPercentage && Number(slPercentage)) {
+          const pnlPercent = Number(slPercentage);
+          const side = orderSide === OrderSide.BUY ? 1 : -1;
+          const targetPrice =
+            Number(price) * (1 - ((pnlPercent / 100) * side) / leverage);
+          slConfig.price =
+            targetPrice > 0 ? formatTpOrSlPrice(targetPrice, szDecimals) : '';
+        }
+
+        if (slPercentage === '') {
+          slConfig.error = '';
+          slConfig.price = '';
+          slConfig.percentage = '';
+        }
+
+        newConfig.stopLoss = handleTPSLConfigValidation('stopLoss', slConfig);
+      }
+
+      setConfig(newConfig);
+    }
+  );
+
   const handleTPPriceChange = useMemoizedFn(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -168,10 +226,16 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
 
   useEffect(() => {
     if (priceChangeUpdate && Number(price) > 0) {
-      Number(config.takeProfit.percentage) &&
-        handleTakeProfitChange('percentage', config.takeProfit.percentage);
-      Number(config.stopLoss.percentage) &&
-        handleStopLossChange('percentage', config.stopLoss.percentage);
+      const slPercentage = Number(config.stopLoss.percentage)
+        ? config.stopLoss.percentage
+        : null;
+      const tpPercentage = Number(config.takeProfit.percentage)
+        ? config.takeProfit.percentage
+        : null;
+
+      if (slPercentage !== null || tpPercentage !== null) {
+        handleBothTPSLPercentageChange(tpPercentage, slPercentage);
+      }
     }
   }, [price]);
 
