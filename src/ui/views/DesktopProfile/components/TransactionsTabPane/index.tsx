@@ -114,7 +114,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
         <>
           <div
             className={clsx(
-              'mt-[12px]',
+              'mt-[12px] mb-[10px]',
               'inline-flex items-center gap-[4px] rounded-[8px] py-[6px] px-[8px] bg-rb-neutral-bg-3',
               'text-[14px] leading-[18px] font-medium text-rb-neutral-foot',
               'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
@@ -124,7 +124,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
               setIsShowHideScamTxModal(true);
             }}
           >
-            Hide Scam tx
+            {t('page.transactions.filterScam.button')}
             <RcIconArrowRightCC />
           </div>
           {isEmpty ? (
