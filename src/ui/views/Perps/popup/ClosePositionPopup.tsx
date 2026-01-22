@@ -193,7 +193,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
               title={
                 <div>
                   <div className="text-13 text-r-neutral-title-2">
-                    {t('page.perps.rabbyFeeTips')}
+                    {t('page.perps.rabbyFeeTipsV2')}
                   </div>
                   <div className="text-13 text-r-neutral-title-2">
                     {t('page.perps.providerFeeTips', {

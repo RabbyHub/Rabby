@@ -56,17 +56,17 @@ export const DesktopNav: React.FC<{
         eventKey: 'Perps',
       },
       {
+        key: '/desktop/dapp-iframe',
+        icon: RcIconPredictionCC,
+        title: t('component.DesktopNav.prediction'),
+        eventKey: 'Prediction',
+      },
+      {
         key: '/desktop/lending',
         icon: RcIconLeadingCC,
         title: t('component.DesktopNav.lending'),
         isSoon: true,
         eventKey: 'Lending',
-      },
-      {
-        key: '/desktop/dapp-iframe',
-        icon: RcIconPredictionCC,
-        title: t('component.DesktopNav.prediction'),
-        eventKey: 'Prediction',
       },
     ],
     [t]
