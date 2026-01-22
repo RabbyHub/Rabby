@@ -900,7 +900,11 @@ function CommonTokenItem(props: {
                   </div>
                   {isNil(value?.price_24h_change) ? null : (
                     <div
+<<<<<<< HEAD
                       className={clsx('font-normal text-13 leading-[14px]', {
+=======
+                      className={clsx('font-medium text-13 leading-[14px]', {
+>>>>>>> feat/token-render
                         'text-green': value?.price_24h_change > 0,
                         'text-red-forbidden': value?.price_24h_change < 0,
                       })}
