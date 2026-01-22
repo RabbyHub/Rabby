@@ -1,6 +1,7 @@
 import FallbackImage from '@/ui/component/FallbackSiteLogo';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { openInTab } from '@/ui/utils';
+import { ga4 } from '@/utils/ga4';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { BasicDappInfo } from '@rabby-wallet/rabby-api/dist/types';
 import { Divider, Tooltip } from 'antd';
@@ -72,6 +73,13 @@ export const DappCard = ({
               ? 'Dapps_Search_Open_Favorite'
               : 'Dapps_Search_Open',
         });
+
+        ga4.fireEvent(
+          size === 'small' ? 'Dapps_Search_Open_Favorite' : 'Dapps_Search_Open',
+          {
+            event_category: 'DappsSearch',
+          }
+        );
       }}
     >
       <div className="flex items-center ">

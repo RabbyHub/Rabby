@@ -18,6 +18,7 @@ import { CustomTestnetForm } from './CustomTestnetForm';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ConfirmModifyRpcModal } from './ConfirmModifyRpcModal';
 import { useHistory } from 'react-router-dom';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -71,6 +72,7 @@ export const EditCustomTestnetModal = ({
   const [isShowModifyRpcModal, setIsShowModifyRpcModal] = useState(false);
   const [form] = Form.useForm();
   const [formValues, setFormValues] = useState<Partial<TestnetChainBase>>({});
+  const { getContainer } = usePopupContainer();
 
   const { loading, runAsync: runAddTestnet } = useRequest(
     (
@@ -133,6 +135,7 @@ export const EditCustomTestnetModal = ({
       bodyStyle={{
         padding: 0,
       }}
+      getContainer={getContainer}
       zIndex={zIndex || 1001}
       style={{
         zIndex: zIndex || 1001,

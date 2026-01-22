@@ -2,9 +2,12 @@ import {
   TokenItem,
   TxHistoryResult,
   TxHistoryItem,
+  TokenEntityDetail,
 } from '@rabby-wallet/rabby-api/dist/types';
-import { Button } from 'antd';
+import IconNoFind from 'ui/assets/tokenDetail/IconNoFind.svg';
+import { Button, Image } from 'antd';
 import clsx from 'clsx';
+import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import { useTranslation } from 'react-i18next';
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -18,14 +21,16 @@ import {
   useWallet,
   openInTab,
   isSameAddress,
+  ellipsisOverflowedText,
+  splitNumberByStep,
 } from 'ui/utils';
-import { Spin } from 'ui/component';
+import { Copy, Spin } from 'ui/component';
 import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetArrow';
 import { CopyChecked } from 'ui/component/CopyChecked';
 import { getTokenSymbol } from 'ui/utils/token';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { ellipsis } from 'ui/utils/address';
-import { Token } from 'background/service/preference';
+import { Account, Token } from 'background/service/preference';
 import { ReactComponent as RcIconExternalCC } from 'ui/assets/open-external-cc.svg';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import IconWarning from 'ui/assets/icon-subtract.svg';
@@ -37,27 +42,34 @@ import {
 import IconTokenDefault from '@/ui/assets/token-default.svg';
 import { Chain } from '@/types/chain';
 import { getAddressScanLink, getTxScanLink } from '@/utils';
+import { TokenCharts } from '@/ui/component/TokenChart';
+import TokenChainAndContract from '../../Dashboard/components/TokenDetailPopup/TokenInfo';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 interface AddAssetProps {
-  data: {
-    type: string;
-    options: {
-      address: string;
-      symbol: string;
-      decimals: number;
-      image: string;
+  params: {
+    data: {
+      type: string;
+      options: {
+        address: string;
+        symbol: string;
+        decimals: number;
+        image: string;
+      };
+    };
+    session: {
+      origin: string;
+      icon: string;
+      name: string;
     };
   };
-  session: {
-    origin: string;
-    icon: string;
-    name: string;
-  };
+  account: Account;
 }
 
 const AddAssetWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  background-color: var(--r-neutral-bg2, #f2f4f7);
   height: 100vh;
   overflow: hidden;
   .header {
@@ -75,6 +87,8 @@ const AddAssetWrapper = styled.div`
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    overflow-y: auto;
+    background-color: var(--r-neutral-bg2, #f2f4f7);
     .token-info {
       display: flex;
       align-items: center;
@@ -128,7 +142,6 @@ const AddAssetWrapper = styled.div`
     }
     .token-history {
       flex: 1;
-      overflow: auto;
       .empty {
         width: 100%;
         display: flex;
@@ -183,7 +196,7 @@ interface TokenHistoryItem extends TxHistoryItem {
   tokenDict: TxHistoryResult['token_dict'];
 }
 
-const AddAsset = ({ params }: { params: AddAssetProps }) => {
+const AddAsset = ({ params, account }: AddAssetProps) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -192,6 +205,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   const [chainSelectorVisible, setChainSelectorVisible] = useState(false);
   const [tokenHistory, setTokenHistory] = useState<TokenHistoryItem[]>([]);
   const [isTokenHistoryLoaded, setIsTokenHistoryLoaded] = useState(false);
+  const [tokenEntity, setTokenEntity] = React.useState<TokenEntityDetail>();
   const [isLoading, setIsLoading] = useState(true);
   const [customTokens, setCustomTokens] = useState<Token[]>([]);
   const [currentChain, setCurrentChain] = useState<
@@ -204,6 +218,29 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   const [isCustomTestnetTokenAdded, setIsCustomTestnetTokenAdded] = useState(
     false
   );
+  const [entityLoading, setEntityLoading] = React.useState(true);
+
+  const getTokenEntity = React.useCallback(async () => {
+    try {
+      const info = await wallet.openapi.getTokenEntity(
+        token?.id || '',
+        token?.chain
+      );
+      if (info) {
+        setTokenEntity(info);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setEntityLoading(false);
+    }
+  }, [token]);
+
+  React.useEffect(() => {
+    if (token?.id && token?.chain) {
+      getTokenEntity();
+    }
+  }, [token]);
 
   const addButtonStatus = useMemo(() => {
     if (customTestnetToken) {
@@ -278,7 +315,6 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   };
 
   const init = async () => {
-    const account = await wallet.getCurrentAccount();
     const site = await wallet.getConnectedSite(params.session.origin);
     const chain = findChain({
       enum: site?.chain,
@@ -331,7 +367,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   };
 
   const getTokenHistory = async (token: TokenItem) => {
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount = account;
     if (!currentAccount) return;
     const history = await wallet.openapi.listTxHisotry({
       id: currentAccount.address,
@@ -413,45 +449,95 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
     <Spin spinning={isLoading}>
       <AddAssetWrapper>
         <div className="header">{t('page.addToken.title')}</div>
-        <div className="token">
+        <div className="token flex flex-col gap-12">
           {token ? (
             <>
-              <div className="token-info text-r-neutral-title1">
-                <img
-                  src={token.logo_url || IconUnknown}
-                  className="icon icon-token"
-                />
-                <span className="token-symbol">{getTokenSymbol(token)}</span>
-                <div className="token-address">
-                  <img src={currentChain?.logo} className="icon icon-chain" />
-                  {ellipsis(token.id)}
-                  <RcIconExternalCC
-                    className="icon icon-open-external cursor-pointer text-r-neutral-foot"
-                    onClick={handleOpenExplorer}
-                  />
-                  <CopyChecked
-                    addr={token.id}
-                    className="w-14 h-14 cursor-pointer text-r-neutral-foot"
-                  />
+              <div className={clsx('flex items-center')}>
+                <div className="flex items-center mr-8">
+                  <div className="relative h-[24px]">
+                    <Image
+                      className="w-24 h-24 rounded-full"
+                      src={token.logo_url || IconUnknown}
+                      fallback={IconUnknown}
+                      preview={false}
+                    />
+                    <TooltipWithMagnetArrow
+                      title={currentChain?.name}
+                      className="rectangle w-[max-content]"
+                    >
+                      <img
+                        className="w-14 h-14 absolute right-[-2px] bottom-[-2px] rounded-full"
+                        src={currentChain?.logo || IconUnknown}
+                      />
+                    </TooltipWithMagnetArrow>
+                  </div>
+
+                  <div
+                    className="token-symbol ml-8 text-r-neutral-title-1 text-20 font-medium"
+                    title={getTokenSymbol(token)}
+                  >
+                    {ellipsisOverflowedText(getTokenSymbol(token), 16)}
+                  </div>
                 </div>
               </div>
-              <div className="token-balance text-r-neutral-body">
-                <div>
-                  {getTokenSymbol(token)} {t('page.addToken.balance')}
-                </div>
-                <div>
-                  <span className="amount text-r-neutral-title1">
-                    {formatTokenAmount(token.amount)}
-                  </span>{' '}
-                  ≈{' '}
-                  {formatUsdValue(
-                    new BigNumber(token.amount).times(token.price).toFixed()
-                  )}
+              <TokenCharts token={token}></TokenCharts>
+              <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
+                <div className="balance-content overflow-hidden flex flex-col gap-8 px-16 py-12">
+                  <div className="flex flex-row justify-between w-full">
+                    <div className="balance-title text-r-neutral-body text-13">
+                      {t('page.dashboard.tokenDetail.myBalance')}
+                    </div>
+                    <div></div>
+                  </div>
+                  <div className="flex flex-row justify-between w-full">
+                    <div className="flex flex-row gap-8 items-center">
+                      <Image
+                        className="w-24 h-24 rounded-full"
+                        src={token.logo_url || IconUnknown}
+                        fallback={IconUnknown}
+                        preview={false}
+                      />
+                      <TooltipWithMagnetArrow
+                        className="rectangle w-[max-content]"
+                        title={(token.amount || 0).toString()}
+                        placement="bottom"
+                      >
+                        <div className="balance-value truncate text-r-neutral-title-1 text-15 font-medium">
+                          {splitNumberByStep((token.amount || 0)?.toFixed(8))}{' '}
+                          {ellipsisOverflowedText(getTokenSymbol(token), 8)}
+                        </div>
+                      </TooltipWithMagnetArrow>
+                    </div>
+                    {token.amount ? (
+                      <TooltipWithMagnetArrow
+                        title={`≈ $${(
+                          token.amount * token.price || 0
+                        ).toString()}`}
+                        className="rectangle w-[max-content]"
+                        placement="bottom"
+                      >
+                        <div className="balance-value-usd truncate text-r-neutral-body text-15 font-normal">
+                          ≈ $
+                          {splitNumberByStep(
+                            (token.amount * token.price || 0)?.toFixed(2)
+                          )}
+                        </div>
+                      </TooltipWithMagnetArrow>
+                    ) : (
+                      <div></div>
+                    )}
+                  </div>
                 </div>
               </div>
-              <div className="token-history">
+              <TokenChainAndContract
+                entityLoading={entityLoading}
+                token={token}
+                tokenEntity={tokenEntity}
+                popupHeight={494}
+              ></TokenChainAndContract>
+              <div className="token-history flex flex-col">
                 {isTokenHistoryLoaded && tokenHistory.length <= 0 && (
-                  <div className="empty">
+                  <div className="empty bg-r-neutral-card-1 rounded-[8px] pb-[30px] pt-[30px]">
                     <img className="no-data" src="./images/nodata-tx.png" />
                     <p className="text-[12px] text-r-neutral-body mt-[12px]">
                       {t('page.dashboard.tokenDetail.noTransactions')}
@@ -472,44 +558,141 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
             </>
           ) : customTestnetToken ? (
             <>
-              <div className="token-info text-r-neutral-title1">
-                <img src={IconTokenDefault} className="icon icon-token" />
-                <span className="token-symbol">
-                  {customTestnetToken.symbol}
-                </span>
-                <div className="token-address">
-                  <img
-                    src={currentChain?.logo || IconUnknown}
-                    className="icon icon-chain"
-                  />
-                  {ellipsis(customTestnetToken.id)}
-                  <RcIconExternalCC
-                    className="icon icon-open-external cursor-pointer text-r-neutral-foot"
-                    onClick={handleOpenExplorer}
-                  />
-                  <CopyChecked
-                    addr={customTestnetToken.id}
-                    className="w-14 h-14 cursor-pointer text-r-neutral-foot"
-                  />
+              <div className={clsx('flex items-center')}>
+                <div className="flex items-center mr-8">
+                  <div className="relative h-[24px]">
+                    <Image
+                      className="w-24 h-24 rounded-full"
+                      src={customTestnetToken.logo || IconUnknown}
+                      fallback={IconUnknown}
+                      preview={false}
+                    />
+                    <TooltipWithMagnetArrow
+                      title={currentChain?.name}
+                      className="rectangle w-[max-content]"
+                    >
+                      <img
+                        className="w-14 h-14 absolute right-[-2px] bottom-[-2px] rounded-full"
+                        src={currentChain?.logo || IconUnknown}
+                      />
+                    </TooltipWithMagnetArrow>
+                  </div>
+
+                  <div
+                    className="token-symbol ml-8 text-r-neutral-title-1 text-20 font-medium"
+                    title={customTestnetToken.symbol}
+                  >
+                    {customTestnetToken.symbol}
+                  </div>
                 </div>
               </div>
-              <div className="token-balance text-r-neutral-body">
-                <div>
-                  {customTestnetToken.symbol} {t('page.addToken.balance')}
-                </div>
-                <div>
-                  <span className="amount text-r-neutral-title1">
-                    {formatTokenAmount(customTestnetToken.amount)}
-                  </span>{' '}
-                  ≈{' '}
-                  {formatUsdValue(
-                    new BigNumber(customTestnetToken.amount).times(0).toFixed()
-                  )}
+              <TokenCharts
+                token={(customTestnetToken as any) as TokenItem}
+              ></TokenCharts>
+              <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
+                <div className="balance-content overflow-hidden flex flex-col gap-8 px-16 py-12">
+                  <div className="flex flex-row justify-between w-full">
+                    <div className="balance-title text-r-neutral-body text-13">
+                      {t('page.dashboard.tokenDetail.myBalance')}
+                    </div>
+                    <div></div>
+                  </div>
+                  <div className="flex flex-row justify-between w-full">
+                    <div className="flex flex-row gap-8 items-center">
+                      <Image
+                        className="w-24 h-24 rounded-full"
+                        src={customTestnetToken.logo || IconUnknown}
+                        fallback={IconUnknown}
+                        preview={false}
+                      />
+                      <div className="balance-value truncate text-r-neutral-title-1 text-15 font-medium">
+                        {splitNumberByStep(
+                          (customTestnetToken.amount || 0)?.toFixed(8)
+                        )}{' '}
+                        {customTestnetToken.symbol}
+                      </div>
+                    </div>
+                    <div></div>
+                  </div>
                 </div>
               </div>
-              <div className="token-history">
+              <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px] gap-12 py-12">
+                <div className="text-r-neutral-foot text-13 flex flex-row items-center justify-center w-full">
+                  <img src={IconNoFind} className="w-14 mr-4" />
+                  {t('page.dashboard.tokenDetail.noIssuer')}
+                </div>
+              </div>
+              <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px] gap-12 py-12">
+                <div className="text-r-neutral-foot text-13 flex flex-row items-center justify-center w-full">
+                  <img src={IconNoFind} className="w-14 mr-4" />
+                  {t('page.dashboard.tokenDetail.NoListedBy')}
+                </div>
+              </div>
+              <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px] gap-12 py-12">
+                <div className="text-r-neutral-foot text-13 flex flex-row items-center justify-center w-full">
+                  <img src={IconNoFind} className="w-14 mr-4" />
+                  {t('page.dashboard.tokenDetail.NoSupportedExchanges')}
+                </div>
+              </div>
+              <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
+                <div className="flex flex-row justify-between w-full px-16 py-12">
+                  <span className="text-r-neutral-body text-[13px] font-normal">
+                    {t('page.dashboard.tokenDetail.TokenName')}
+                  </span>
+                  <span className="text-r-neutral-title-1 text-13 font-medium">
+                    {customTestnetToken.symbol || ''}
+                  </span>
+                </div>
+                <div className="flex flex-row justify-between w-full px-16 py-12">
+                  <span className="text-r-neutral-body text-[13px] font-normal">
+                    {t('page.dashboard.tokenDetail.Chain')}
+                  </span>
+                  <div className="flex flex-row items-center gap-6">
+                    <img
+                      src={currentChain?.logo || IconUnknown}
+                      className="w-16 h-16"
+                    />
+                    <span className="text-r-neutral-title-1 text-13 font-medium">
+                      {currentChain?.name}
+                    </span>
+                  </div>
+                </div>
+                {
+                  <div className="flex flex-row justify-between w-full px-16 py-12">
+                    <span className="text-r-neutral-body text-[13px] font-normal">
+                      {t('page.dashboard.tokenDetail.ContractAddress')}
+                    </span>
+                    <div className="flex flex-row items-center gap-6">
+                      <span className="text-r-neutral-title-1 text-13 font-medium">
+                        {ellipsis(customTestnetToken.id)}
+                      </span>
+                      <ThemeIcon
+                        src={RcIconExternal}
+                        className="w-14 cursor-pointer"
+                        onClick={handleOpenExplorer}
+                      />
+                      <Copy
+                        data={customTestnetToken.id}
+                        variant="address"
+                        className="w-14 cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                }
+                <div className="flex flex-row justify-between w-full px-16 py-12">
+                  <div className="flex flex-row items-center gap-4">
+                    <span className="text-r-neutral-body text-[13px] font-normal">
+                      {'FDV'}
+                    </span>
+                  </div>
+                  <span className="text-r-neutral-title-1 text-13 font-medium">
+                    {'-'}
+                  </span>
+                </div>
+              </div>
+              <div className="token-history  flex flex-col">
                 {isTokenHistoryLoaded && tokenHistory.length <= 0 && (
-                  <div className="empty">
+                  <div className="empty bg-r-neutral-card-1 rounded-[8px] pb-[30px] pt-[30px]">
                     <img className="no-data" src="./images/nodata-tx.png" />
                     <p className="text-[12px] text-r-neutral-body mt-[12px]">
                       {t('page.dashboard.tokenDetail.noTransactions')}

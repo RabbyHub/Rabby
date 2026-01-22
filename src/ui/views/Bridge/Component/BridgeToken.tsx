@@ -1,9 +1,11 @@
-import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import ChainSelectorInForm, {
+  ChainSelectorRef,
+} from '@/ui/component/ChainSelector/InForm';
 import TokenSelect from '@/ui/component/TokenSelect';
-import { findChainByEnum } from '@/utils/chain';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { Input } from 'antd';
+import { DrawerProps, Input } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +22,9 @@ import { tokenAmountBn } from '@/ui/utils/token';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import styled from 'styled-components';
 import BridgeToTokenSelect from './BridgeToTokenSelect';
-import { useSetSettingVisible } from '../hooks';
 import { useRabbySelector } from '@/ui/store';
 import { useAsync } from 'react-use';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const StyledInput = styled(Input)`
   color: var(--r-neutral-title1, #192945);
@@ -71,6 +71,9 @@ export const BridgeToken = ({
   noQuote,
   inSufficient,
   handleSetGasPrice,
+  getContainer,
+  skeletonLoading,
+  disabled,
 }: {
   type?: 'from' | 'to';
   token?: TokenItem;
@@ -88,6 +91,9 @@ export const BridgeToken = ({
   fromChainId?: string;
   fromTokenId?: string;
   noQuote?: boolean;
+  getContainer?: DrawerProps['getContainer'];
+  skeletonLoading?: boolean;
+  disabled?: boolean;
 }) => {
   const { t } = useTranslation();
 
@@ -102,6 +108,8 @@ export const BridgeToken = ({
   const isMaxRef = useRef(false);
 
   const inputRef = useRef<Input>();
+
+  const chainSelectorRef = useRef<ChainSelectorRef>(null);
 
   const fromTokenIsNativeToken = useMemo(() => {
     if (isFromToken && token && chain) {
@@ -143,6 +151,10 @@ export const BridgeToken = ({
 
   const handleChangeFromToken = React.useCallback(
     (t: TokenItem) => {
+      const chainEnum = findChainByServerID(t?.chain || '')?.enum;
+      if (t && chainEnum && chainEnum !== chain) {
+        changeChain(chainEnum);
+      }
       onChangeToken(t);
       if (t.id !== token?.id) {
         onInputChange?.('');
@@ -202,6 +214,9 @@ export const BridgeToken = ({
   );
 
   const handleMax = React.useCallback(() => {
+    if (disabled) {
+      return;
+    }
     if (token) {
       isMaxRef.current = true;
       if (isFromToken && fromTokenIsNativeToken && gasList) {
@@ -235,15 +250,18 @@ export const BridgeToken = ({
     isFromToken,
     fromTokenIsNativeToken,
     gasList,
+    disabled,
   ]);
 
+  useEffect(() => {
+    if (isFromToken && disabled) {
+      onInputChange?.('');
+      handleSetGasPrice?.();
+    }
+  }, [isFromToken, disabled, onInputChange, handleSetGasPrice]);
+
   return (
-    <div
-      className={clsx(
-        'h-[156px] bg-r-neutral-card1 rounded-[8px]',
-        'border-[0.5px] border-solid border-rabby-neutral-line'
-      )}
-    >
+    <div className={clsx('h-[156px] bg-r-neutral-card1 rounded-[8px]')}>
       <div
         className={clsx(
           'flex items-center gap-8',
@@ -251,23 +269,27 @@ export const BridgeToken = ({
           'border-b-[0.5px] border-solid border-rabby-neutral-line'
         )}
       >
-        <span className="text-12 text-r-neutral-body">{name}</span>
+        <span className="text-[13px] font-normal text-r-neutral-foot">
+          {name}
+        </span>
         <ChainSelectorInForm
           bridge
           hideTestnetTab
           value={chain}
           onChange={changeChain}
-          title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
-          excludeChains={excludeChains}
-          supportChains={supportedChains}
+          // excludeChains={excludeChains}
+          // supportChains={supportedChains}
           drawerHeight={540}
           showClosableIcon
+          getContainer={getContainer}
+          ref={chainSelectorRef}
+          zIndex={1111}
         />
       </div>
 
       <div className={clsx('p-16 pb-[18px]')}>
         <div className={clsx('flex justify-between items-center')}>
-          {valueLoading ? (
+          {valueLoading && skeletonLoading ? (
             <SkeletonInput
               active
               className="rounded-[4px]"
@@ -278,11 +300,14 @@ export const BridgeToken = ({
             />
           ) : (
             <StyledInput
-              className={clsx(inSufficient && 'text-rabby-red-default')}
+              className={clsx(
+                inSufficient && 'text-rabby-red-default',
+                valueLoading && 'opacity-50'
+              )}
               placeholder={showNoQuote ? t('page.bridge.no-quote') : '0'}
               value={value}
               onChange={inputChange}
-              readOnly={!isFromToken}
+              readOnly={disabled || !isFromToken}
               ref={inputRef as any}
             />
           )}
@@ -294,9 +319,9 @@ export const BridgeToken = ({
               token={token}
               onTokenChange={onChangeToken}
               chainId={chainObj?.serverId}
-              type={'to'}
               placeholder={t('page.swap.search-by-name-address')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
+              getContainer={getContainer}
             />
           ) : (
             <TokenSelect
@@ -308,7 +333,11 @@ export const BridgeToken = ({
               placeholder={t('page.swap.search-by-name-address')}
               disabledTips={t('page.bridge.insufficient-balance')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
-              supportChains={supportedChains}
+              // supportChains={supportedChains}
+              getContainer={getContainer}
+              onStartSelectChain={() => {
+                chainSelectorRef.current?.toggleShow(true);
+              }}
             />
           )}
         </div>
@@ -316,11 +345,11 @@ export const BridgeToken = ({
         <div
           className={clsx(
             'flex justify-between items-center',
-            'mt-14 text-13 text-r-neutral-foot'
+            'mt-14 text-13 text-r-neutral-foot font-normal'
           )}
         >
           <div className="flex items-center gap-2">
-            {valueLoading ? (
+            {valueLoading && skeletonLoading ? (
               <SkeletonInput
                 active
                 className="rounded-[4px]"
@@ -330,28 +359,41 @@ export const BridgeToken = ({
                 }}
               />
             ) : (
-              <span>{useValue}</span>
+              <span className={clsx(valueLoading && 'opacity-50')}>
+                {useValue}
+              </span>
             )}
           </div>
           <div className="flex items-center gap-4 relative">
-            <div className="flex items-center gap-4">
+            <div
+              className={clsx(
+                'flex items-center gap-4',
+
+                isFromToken && inSufficient
+                  ? 'text-rabby-red-default'
+                  : 'text-r-neutral-foot'
+              )}
+            >
               <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
-              <span>
+              <span className={clsx(valueLoading && 'opacity-50')}>
                 {token
                   ? formatTokenAmount(tokenAmountBn(token).toString(10)) || '0'
                   : 0}
               </span>
             </div>
             {isFromToken && (
-              <TooltipWithMagnetArrow
-                visible={fromTokenIsNativeToken ? undefined : false}
-                className="rectangle w-[max-content]"
-                title={t('page.bridge.max-tips')}
+              // <TooltipWithMagnetArrow
+              //   visible={fromTokenIsNativeToken ? undefined : false}
+              //   className="rectangle w-[max-content]"
+              //   title={t('page.bridge.max-tips')}
+              // >
+              <MaxButton
+                className={clsx('ml-0', disabled && 'pointer-events-none')}
+                onClick={handleMax}
               >
-                <MaxButton className="ml-0" onClick={handleMax}>
-                  {t('page.swap.max')}
-                </MaxButton>
-              </TooltipWithMagnetArrow>
+                {t('page.swap.max')}
+              </MaxButton>
+              // </TooltipWithMagnetArrow>
             )}
           </div>
         </div>

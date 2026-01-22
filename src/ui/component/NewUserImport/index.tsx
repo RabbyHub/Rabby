@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ReactComponent as IconBackCC } from '@/ui/assets/new-user-import/back-cc.svg';
+import { ReactComponent as IconBackCC } from '@/ui/assets/back-with-line-cc.svg';
 import { ReactComponent as IconDotCC } from '@/ui/assets/new-user-import/dot-cc.svg';
 import clsx from 'clsx';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -10,7 +10,7 @@ const StyedBg = styled.div<{
 }>`
   background: ${(props) =>
     props.isDarkTheme
-      ? 'linear-gradient(0deg, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0.60) 100%), var(--r-blue-default, #7084FF)'
+      ? 'linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%), var(--r-blue-default, #7084FF)'
       : 'var(--r-blue-default, #7084ff)'};
   overflow-x: auto;
   min-height: 100vh;
@@ -25,8 +25,7 @@ const StyledCard = styled.div`
   border-radius: 16px;
   background-color: var(--r-neutral-bg1, #fff);
   box-shadow: 0px 40px 80px 0px rgba(43, 57, 143, 0.4);
-  padding: 20px;
-  padding-top: 0px;
+  padding: 0px 24px 20px;
   .header {
     display: flex;
     align-items: center;
@@ -70,7 +69,7 @@ const Step = ({ step }: { step: 1 | 2 }) => {
       <IconDotCC className="text-rabby-blue-default" viewBox="0 0 8 8" />
       <div
         className={clsx(
-          'w-[56px] h-[1px]',
+          'w-[16px] h-[1px]',
           step === 2 ? 'bg-rabby-blue-default' : 'bg-rabby-blue-light2'
         )}
       />
@@ -109,7 +108,7 @@ export const Card = ({
       <StyledCard className={className} style={cardStyle}>
         <div
           className={clsx(
-            headerBlock ? 'block' : !onBack && !title && !onBack && 'hidden',
+            headerBlock ? 'block' : !onBack && !title && !step && 'hidden',
             'header',
             headerClassName,
             step && 'mt-18',
@@ -119,7 +118,10 @@ export const Card = ({
         >
           {!!onBack && (
             <div className="back-icon" onClick={onBack}>
-              <IconBackCC className="w-20 h-20" viewBox="0 0 20 20" />
+              <IconBackCC
+                className="w-20 h-20 text-r-neutral-body"
+                viewBox="0 0 20 20"
+              />
             </div>
           )}
           {!!title && <div>{title}</div>}

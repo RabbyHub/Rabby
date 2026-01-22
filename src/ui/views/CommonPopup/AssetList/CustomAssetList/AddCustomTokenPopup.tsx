@@ -85,6 +85,7 @@ const Wraper = styled.div`
   .ant-form-item-has-error .ant-input,
   .ant-form-item-has-error .ant-input:hover {
     border: 1px solid var(--r-red-default, #e34935);
+    background: transparent;
   }
 
   .ant-form-item-explain.ant-form-item-explain-error {
@@ -163,6 +164,8 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
               errors: [t('page.dashboard.assets.AddMainnetToken.notFound')],
             },
           ]);
+        } else {
+          setChecked(true);
         }
       });
     },
@@ -252,7 +255,7 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
       <Popup
         visible={visible}
         closable={false}
-        height={494}
+        height={500}
         onClose={onClose}
         className="add-custom-token-popup"
         push={false}
@@ -345,21 +348,14 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
                 {token && !error ? (
                   <Form.Item label="Found Token">
                     <div
-                      onClick={() => {
-                        // if (isLocalToken) return;
-                        setChecked((v) => !v);
-                      }}
                       className={clsx(
-                        'flex items-center gap-[12px] rounded-[6px] cursor-pointer',
-                        'bg-r-neutral-card2 min-h-[52px] px-[16px] py-[14px]',
-                        'border-[1px] border-transparent',
-                        checked && 'border-rabby-blue-default'
-                        // isLocalToken && 'opacity-60 cursor-not-allowed'
+                        'flex items-center gap-[12px] rounded-[6px]',
+                        'bg-r-neutral-card2 min-h-[52px] px-[16px] py-[14px]'
                       )}
                     >
                       <div className="relative h-[24px]">
                         <img
-                          src={IconUnknown}
+                          src={token?.logo_url || IconUnknown}
                           alt=""
                           className="w-[24px] h-[24px] rounded-full"
                         />
@@ -368,7 +364,7 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
                           className="rectangle w-[max-content]"
                         >
                           <img
-                            className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
+                            className="w-14 h-14 absolute right-[-2px] bottom-[-2px] rounded-full"
                             src={chain?.logo || IconUnknown}
                             alt={chain?.name}
                           />
@@ -377,15 +373,6 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
                       <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium">
                         {formatAmount(token.amount || 0)} {token.symbol}
                       </div>
-                      {checked ? (
-                        <div className="ml-auto text-r-blue-default">
-                          <RcIconChecked />
-                        </div>
-                      ) : (
-                        <div className="ml-auto text-r-neutral-body">
-                          <RcIconCheck />
-                        </div>
-                      )}
                     </div>
                   </Form.Item>
                 ) : null}

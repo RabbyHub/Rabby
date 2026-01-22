@@ -23,7 +23,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.20.4'
+          node-version: '22.17.1'
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -64,6 +64,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.17.1'
+
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -84,7 +89,7 @@ jobs:
         run: yarn build:pro
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'pull_request' }}
         with:
           name: Rabby_${{github.sha}}
@@ -92,7 +97,7 @@ jobs:
           retention-days: 7
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'push' }}
         with:
           name: Rabby_${{github.ref_name}}
@@ -108,6 +113,11 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.17.1'
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -129,7 +139,7 @@ jobs:
         run: yarn build:debug
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'pull_request' }}
         with:
           name: Rabby_${{github.sha}}_debug
@@ -137,7 +147,7 @@ jobs:
           retention-days: 7
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'push' }}
         with:
           name: Rabby_${{github.ref_name}}_debug

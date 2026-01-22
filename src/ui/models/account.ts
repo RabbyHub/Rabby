@@ -7,7 +7,10 @@ import type {
 import { KEYRING_CLASS } from '@/constant';
 import { createModel } from '@rematch/core';
 import { DisplayedKeryring } from 'background/service/keyring';
-import { TotalBalanceResponse } from 'background/service/openapi';
+import {
+  ApprovalStatus,
+  TotalBalanceResponse,
+} from 'background/service/openapi';
 import { RootModel } from '.';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
@@ -15,6 +18,10 @@ import { coerceFloat, sleep } from '../utils';
 import { isTestnet as checkIsTestnet } from '@/utils/chain';
 import { requestOpenApiMultipleNets } from '../utils/openapi';
 
+interface TotalBalanceWithEvmUsdValue extends TotalBalanceResponse {
+  evmUsdValue?: number;
+  appChainIds?: string[];
+}
 export interface AccountState {
   currentAccount: null | Account;
   /**
@@ -29,7 +36,7 @@ export interface AccountState {
     curvePoints: CurvePointCollection;
   };
   balanceAboutCacheMap: {
-    balanceMap: Record<string, TotalBalanceResponse>;
+    balanceMap: Record<string, TotalBalanceWithEvmUsdValue>;
     curvePointsMap: Record<string, CurvePointCollection>;
   };
   matteredChainBalances: {
@@ -52,6 +59,8 @@ export interface AccountState {
   mnemonicAccounts: DisplayedKeryring[];
 
   [symLoaderMatteredBalance]: Promise<MatteredChainBalancesResult> | null;
+
+  approvalStatus: Record<string, ApprovalStatus[]>;
 }
 
 /**
@@ -71,6 +80,7 @@ type MatteredChainBalancesResult = {
   testnet: TotalBalanceResponse | null;
 };
 const symLoaderMatteredBalance = Symbol('uiHelperMateeredChainBalancesPromise');
+
 export const account = createModel<RootModel>()({
   name: 'account',
 
@@ -103,6 +113,8 @@ export const account = createModel<RootModel>()({
     },
 
     [symLoaderMatteredBalance]: null,
+
+    approvalStatus: {},
   } as AccountState,
 
   reducers: {
@@ -183,6 +195,16 @@ export const account = createModel<RootModel>()({
     ) {
       return { ...state, currentAccount: payload.currentAccount };
     },
+
+    setApprovalStatus(state, payload: Record<string, ApprovalStatus[]>) {
+      return {
+        ...state,
+        approvalStatus: {
+          ...state.approvalStatus,
+          ...payload,
+        },
+      };
+    },
   },
 
   selectors: (slice) => {
@@ -216,12 +238,18 @@ export const account = createModel<RootModel>()({
 
       dispatch.account.onAccountChanged(account?.address);
 
+      // 初始化gift状态
+      await dispatch.gift.initGiftStateAsync();
+
       return account;
     },
     async onAccountChanged(currentAccountAddress?: string, store?) {
       try {
-        currentAccountAddress =
-          currentAccountAddress || store?.account.currentAccount?.address;
+        // 避免循环引用，直接使用传入的地址
+        if (!currentAccountAddress && store) {
+          const currentAccount = await store.app.wallet.getCurrentAccount();
+          currentAccountAddress = currentAccount?.address;
+        }
         // trigger once when account fetched;
         await dispatch.account.getMatteredChainBalance({
           currentAccountAddress,

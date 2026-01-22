@@ -7,11 +7,9 @@ import { getUiType, useWallet, useWalletRequest } from '@/ui/utils';
 import { clearClipboard } from '@/ui/utils/clipboard';
 import { connectStore, useRabbyDispatch } from '../../store';
 import WordsMatrix from '@/ui/component/WordsMatrix';
-import { ReactComponent as RcIconMnemonicInkCC } from '@/ui/assets/walletlogo/mnemonic-ink-cc.svg';
-import LogoSVG from '@/ui/assets/logo.svg';
 import { KEYRING_CLASS } from '@/constant';
 import { useTranslation } from 'react-i18next';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { Card } from '@/ui/component/NewUserImport';
 
 const FormItemWrapper = styled.div`
   .mnemonics-with-error,
@@ -20,28 +18,6 @@ const FormItemWrapper = styled.div`
       + .ant-form-item-explain.ant-form-item-explain-error {
       display: none;
     }
-  }
-`;
-
-const TipTextList = styled.div`
-  margin-top: 32px;
-  h3 {
-    font-weight: 700;
-    font-size: 13px;
-    line-height: 15px;
-    color: var(--r-neutral-title-1);
-    margin-top: 0;
-    margin-bottom: 8px;
-  }
-  p {
-    font-weight: 400;
-    font-size: 13px;
-    line-height: 15px;
-    color: var(--r-neutral-body);
-    margin: 0;
-  }
-  section + section {
-    margin-top: 24px;
   }
 `;
 
@@ -98,6 +74,13 @@ const ImportMnemonics = () => {
         isExistedKeyring: isExistedKR,
         stashKeyringId,
       });
+      const accounts = await dispatch.importMnemonics.getAccounts({
+        start: 0,
+        end: 1,
+      });
+
+      await dispatch.importMnemonics.setSelectedAccounts([accounts[0].address]);
+      await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
       keyringId = stashKeyringId;
     },
     {
@@ -105,11 +88,10 @@ const ImportMnemonics = () => {
         setErrMsgs([]);
         clearClipboard();
         history.push({
-          pathname: '/import/select-address',
-          state: {
-            keyring: KEYRING_CLASS.MNEMONIC,
-            keyringId,
-          },
+          pathname: '/new-user/success',
+          search: `?hd=${
+            KEYRING_CLASS.MNEMONIC
+          }&keyringId=${keyringId}&isCreated=${false}`,
         });
       },
       onError(err) {
@@ -189,106 +171,68 @@ const ImportMnemonics = () => {
   }, [isSlip39, secretShares, slip39GroupNumber]);
 
   return (
-    <main className="w-screen h-screen bg-r-neutral-bg-2 flex items-center">
-      <div className="mx-auto w-[600px]">
-        <img src={LogoSVG} alt="Rabby" className="mb-[12px]" />
-        <Form
-          form={form}
-          className={clsx(
-            'px-[100px] pt-[36px] pb-[40px]',
-            'bg-r-neutral-card-1 rounded-[12px]'
-          )}
-          onFinish={({ mnemonics, passphrase }) => run(mnemonics, passphrase)}
-          onValuesChange={(states) => {
-            setErrMsgs([]);
-            setSlip39ErrorIndex(-1);
-          }}
-        >
-          <h1
+    <Card step={1} className="flex flex-col">
+      <div className="mt-18 mb-[25px] text-center text-[28px] font-semibold text-r-neutral-title1">
+        {t('page.newUserImport.importSeedPhrase.title')}
+      </div>
+      <Form
+        form={form}
+        className={clsx('flex flex-col flex-1')}
+        onFinish={({ mnemonics, passphrase }) => run(mnemonics, passphrase)}
+        onValuesChange={() => {
+          setErrMsgs([]);
+          setSlip39ErrorIndex(-1);
+        }}
+      >
+        <FormItemWrapper className="relative mb-16">
+          <Form.Item
+            name="mnemonics"
             className={clsx(
-              'flex items-center justify-center',
-              'space-x-[16px] mb-[24px]',
-              'text-[20px] text-r-neutral-title-1'
+              isSlip39 ? 'mb-16' : 'mb-[24px]',
+              errMsgs?.length && 'mnemonics-with-error'
             )}
           >
-            <ThemeIcon
-              className="w-[24px] text-r-neutral-body"
-              src={RcIconMnemonicInkCC}
-              viewBox="0 0 32 32"
+            <WordsMatrix.MnemonicsInputs
+              newUserImport
+              slip39GroupNumber={slip39GroupNumber}
+              isSlip39={isSlip39}
+              onSlip39Change={setIsSlip39}
+              onPassphrase={onPassphrase}
+              errMsgs={errMsgs}
+              onChange={checkSlip39Mnemonics}
+              setSlip39GroupNumber={setSlip39GroupNumber}
+              errorIndexes={[slip39ErrorIndex]}
             />
-            <span>{t('page.newAddress.importSeedPhrase')}</span>
-          </h1>
-          <div>
-            <FormItemWrapper className="relative">
-              <Form.Item
-                name="mnemonics"
+          </Form.Item>
+          {needPassphrase && (
+            <Form.Item name="passphrase" className={clsx('mb-[12px]')}>
+              <Input
+                type="password"
                 className={clsx(
-                  isSlip39 ? 'mb-16' : 'mb-[24px]',
-                  errMsgs?.length && 'mnemonics-with-error'
+                  isSlip39 ? 'h-[56px] text-15' : 'h-[44px]',
+                  'border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue text-r-neutral-title-1'
                 )}
-              >
-                <WordsMatrix.MnemonicsInputs
-                  slip39GroupNumber={slip39GroupNumber}
-                  isSlip39={isSlip39}
-                  onSlip39Change={setIsSlip39}
-                  onPassphrase={onPassphrase}
-                  errMsgs={errMsgs}
-                  onChange={checkSlip39Mnemonics}
-                  setSlip39GroupNumber={setSlip39GroupNumber}
-                  errorIndexes={[slip39ErrorIndex]}
-                />
-              </Form.Item>
-              {needPassphrase && (
-                <Form.Item name="passphrase" className={clsx('mb-[12px]')}>
-                  <Input
-                    type="password"
-                    className={clsx(
-                      isSlip39 ? 'h-[56px] text-15' : 'h-[44px]',
-                      'border-solid border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue'
-                    )}
-                    spellCheck={false}
-                    placeholder={t('page.newAddress.seedPhrase.passphrase')}
-                  />
-                </Form.Item>
-              )}
-            </FormItemWrapper>
-            <TipTextList>
-              <section>
-                <h3>
-                  {t('page.newAddress.seedPhrase.whatIsASeedPhrase.question')}
-                </h3>
-                <p>
-                  {t('page.newAddress.seedPhrase.whatIsASeedPhrase.answer')}
-                </p>
-              </section>
-              <section>
-                <h3>
-                  {t(
-                    'page.newAddress.seedPhrase.isItSafeToImportItInRabby.question'
-                  )}
-                </h3>
-                <p className="whitespace-nowrap">
-                  {t(
-                    'page.newAddress.seedPhrase.isItSafeToImportItInRabby.answer'
-                  )}
-                </p>
-              </section>
-            </TipTextList>
-          </div>
-          <div className="text-center">
-            <Button
-              htmlType="submit"
-              type="primary"
-              className="h-[44px] mt-[40px]"
-              block
-              disabled={disabledButton}
-            >
-              {t('global.confirm')}
-            </Button>
-          </div>
-        </Form>
-      </div>
-    </main>
+                spellCheck={false}
+                placeholder={t('page.newAddress.seedPhrase.passphrase')}
+              />
+            </Form.Item>
+          )}
+        </FormItemWrapper>
+
+        <Button
+          htmlType="submit"
+          disabled={disabledButton}
+          block
+          type="primary"
+          className={clsx(
+            'mt-auto h-[56px] shadow-none rounded-[8px]',
+            'text-[17px] font-medium'
+          )}
+        >
+          {t('global.confirm')}
+        </Button>
+      </Form>
+    </Card>
   );
 };
 

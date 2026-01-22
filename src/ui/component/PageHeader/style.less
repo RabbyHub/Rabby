@@ -1,13 +1,35 @@
 .page-header {
   display: flex;
   color: var(--r-neutral-title-1, #192945);
+  // font-weight: 900;
   font-weight: 500;
   font-size: 20px;
-  line-height: 23px;
+  line-height: 24px;
   padding-top: 20px;
   margin-bottom: 20px;
   position: relative;
   align-items: center;
+
+  &.thin-header {
+    .header-content {
+      color: var(--r-neutral-title1, #192945);
+      text-align: center;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 24px;
+    }
+  }
+
+  &.switch-account {
+    padding-top: 9px;
+    padding-bottom: 6px;
+
+    .icon-back {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
 
   &-container {
     height: 64px;
@@ -15,7 +37,7 @@
   }
   &-container.transparent-wrap .page-header-wrap {
     background-color: transparent;
-  };
+  }
   &-wrap {
     position: fixed;
     top: 0;

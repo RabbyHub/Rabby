@@ -32,25 +32,24 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
   }, [commonPopupVisible]);
 
   return (
-    <div className={clsx('flex justify-between items-center mt-8', className)}>
-      <div
-        className={clsx(
-          'text-r-neutral-foot text-13',
-          'flex items-center',
-          'cursor-pointer',
-          'hover:opacity-60'
-        )}
-        onClick={() => setVisible(true)}
-      >
+    <div
+      className={clsx(
+        'flex justify-between border border-transparent items-center mt-8 bg-r-neutral-card1 rounded-[8px] px-16',
+        'hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10',
+        'cursor-pointer',
+        className
+      )}
+      onClick={() => setVisible(true)}
+    >
+      <div className={clsx('text-r-neutral-foot text-13', 'flex items-center')}>
         <LowValueSVG className="mr-12" />
-        <div className="font-medium">
+        <div className="text-r-neutral-foot">
           {t('page.dashboard.assets.table.lowValueAssets', {
             count: list?.length,
           })}
         </div>
-        <LowValueArrowSVG />
       </div>
-      <div className="text-13 text-r-neutral-title-1 font-medium">
+      <div className="text-13 text-r-neutral-foot font-medium">
         ${splitNumberByStep(totalValue?.toFixed(2) ?? '0')}
       </div>
 
@@ -62,11 +61,15 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
             })}
           </div>
         }
-        height={494}
+        isNew
+        height={500}
         visible={visible}
         closable
         push={false}
-        onClose={() => setVisible(false)}
+        onClose={(e) => {
+          e?.stopPropagation();
+          setVisible(false);
+        }}
         bodyStyle={{
           padding: '20px 20px 0',
         }}
@@ -76,8 +79,8 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
           <TokenTable
             list={list}
             virtual={{
-              height: 403,
-              itemSize: 51,
+              height: 430,
+              itemSize: 68,
             }}
           />
         ) : (

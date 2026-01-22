@@ -1,5 +1,5 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
-import { Empty, PageHeader } from '@/ui/component';
+import { PageHeader } from '@/ui/component';
 import { useRabbyDispatch } from '@/ui/store';
 import React, { useCallback, useState } from 'react';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
@@ -23,6 +23,7 @@ import { LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
 import { useTranslation } from 'react-i18next';
 import { query2obj } from '@/ui/utils/url';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { ReactComponent as RcIconEmpty } from '@/ui/assets/empty-cc.svg';
 
 const ManageAddress = () => {
   const { t } = useTranslation();
@@ -231,7 +232,6 @@ const ManageAddress = () => {
     history.replace('/add-address');
     return null;
   }
-  console.log(typedWalletIdList, TypedWalletObj);
 
   return (
     <div className="page-address-management px-0 pb-0 bg-r-neutral-bg-2 overflow-hidden">
@@ -330,29 +330,33 @@ const ManageAddress = () => {
 
           {TypedWalletObj?.[activeIndex]?.type === KEYRING_TYPE['HdKeyring'] &&
           !TypedWalletObj?.[activeIndex]?.list.length ? (
-            <div className="flex-1 flex flex-col items-center justify-center gap-[30px] min-h-[300px]">
-              <Empty
-                desc={
-                  <div className="text-r-neutral-body text-14 max-w-[296px] mt-12">
-                    {t('page.manageAddress.no-address-under-seed-phrase')}
-                  </div>
-                }
-              />
+            <div className="flex-1 flex flex-col items-center justify-center gap-[24px] min-h-[300px]">
+              <div className="flex flex-col justify-center items-center gap-[12px]">
+                <RcIconEmpty
+                  viewBox="0 0 40 40"
+                  className="w-[28px] h-[28px] text-r-neutral-body"
+                />
+                <div className="text-r-neutral-body text-[13px] max-w-[352px] text-center">
+                  {t('page.manageAddress.noSeedPhraseAddress')}
+                </div>
+              </div>
+
               <div>
                 <Button
                   type="primary"
-                  className="w-[140px] h-[36px] rounder-[4px] flex items-center justify-center gap-4 text-13 font-medium"
+                  className="w-[186px] h-[44px] rounder-[4px] flex items-center justify-center gap-4 text-15 font-medium"
                   icon={<IconPlus />}
                   onClick={handleAddSeedPhraseAddress}
                 >
                   {t('page.manageAddress.add-address')}
                 </Button>
-                <div
-                  className="mt-20 cursor-pointer underline text-r-neutral-body text-14 text-center"
+                <Button
+                  type="ghost"
+                  className="w-[186px] h-[44px] rounder-[4px] mt-12 text-r-red-default text-15 font-medium  border-rabby-red-default"
                   onClick={handleDeleteEmptySeedPhrase}
                 >
                   {t('page.manageAddress.delete-seed-phrase')}
-                </div>
+                </Button>
               </div>
             </div>
           ) : null}

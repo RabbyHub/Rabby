@@ -10,6 +10,7 @@ import {
   BatchApproveTokenRequireData,
   ActionRequireData,
   ParsedTypedDataActionData,
+  ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
 import { getActionTypeText } from './utils';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
@@ -46,6 +47,266 @@ import { TransactionActionList } from '../Actions/components/TransactionActionLi
 import { noop } from '@/ui/utils';
 import { BalanceChangeWrapper } from '../TxComponents/BalanceChangeWrapper';
 import { ParseCommonResponse } from '@rabby-wallet/rabby-api/dist/types';
+import { Account } from '@/background/service/preference';
+
+export interface MultiActionProps {
+  actionList: ParsedTypedDataActionData[] | ParsedTransactionActionData[];
+  requireDataList: ActionRequireData[];
+  engineResultList: Result[][];
+}
+
+const ActionItem = ({
+  raw,
+  chain,
+  data,
+  requireData,
+  engineResults,
+  account,
+  message,
+  origin,
+}: {
+  data: ParsedTypedDataActionData | null;
+  requireData: ActionRequireData;
+  chain?: Chain;
+  engineResults: Result[];
+  raw: Record<string, any>;
+  message: string;
+  typedDataActionData?: ParseCommonResponse | null;
+  account: Account;
+  origin: string;
+}) => {
+  const { t } = useTranslation();
+
+  const isUnknown = (!data?.actionType && !data?.common) || data?.contractCall;
+
+  const actionName = useMemo(() => {
+    return getActionTypeText(data);
+  }, [data]);
+
+  const handleViewRawClick = () => {
+    ViewRawModal.open({
+      raw,
+    });
+  };
+
+  return (
+    <Card>
+      <div
+        className={clsx('action-header', {
+          'is-unknown': isUnknown,
+        })}
+      >
+        <div className="left">
+          <span>{actionName}</span>
+          {isUnknown && (
+            <TooltipWithMagnetArrow
+              inApproval
+              placement="bottom"
+              overlayClassName="rectangle w-[max-content] decode-tooltip"
+              title={
+                <NoActionAlert
+                  account={account}
+                  data={{
+                    origin,
+                    text: message,
+                  }}
+                />
+              }
+            >
+              <IconQuestionMark className="w-14 text-r-neutral-foot ml-2 mt-2" />
+            </TooltipWithMagnetArrow>
+          )}
+        </div>
+        <div className="right">
+          <div
+            className="float-right text-13 cursor-pointer flex items-center view-raw"
+            onClick={handleViewRawClick}
+          >
+            {t('page.signTx.viewRaw')}
+            <ThemeIcon
+              className="icon icon-arrow-right"
+              src={RcIconArrowRight}
+            />
+          </div>
+        </div>
+      </div>
+
+      {data && <Divide />}
+
+      {raw.primaryType && chain?.isTestnet && (
+        <div className="container border-b border-rabby-neutral-line">
+          <Col>
+            <Row isTitle>{t('page.signTx.primaryType')}</Row>
+            <Row wrap>
+              <div className="relative flex items-center">
+                <span className="break-all" title={raw.primaryType}>
+                  {raw.primaryType}
+                </span>
+              </div>
+            </Row>
+          </Col>
+        </div>
+      )}
+
+      <div className="container">
+        {!chain?.isTestnet && (
+          <>
+            {(data?.actionType || data?.actionType === null) && (
+              <>
+                {chain && (
+                  <Col>
+                    <Row isTitle>{t('page.signTx.chain')}</Row>
+                    <Row>
+                      <LogoWithText
+                        logo={chain.logo}
+                        text={chain.name}
+                        logoRadius="100%"
+                      />
+                    </Row>
+                  </Col>
+                )}
+
+                {data.permit && (
+                  <Permit
+                    data={data.permit}
+                    requireData={requireData as ApproveTokenRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.permit2 && chain && (
+                  <Permit2
+                    data={data.permit2}
+                    requireData={requireData as ApproveTokenRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.batchPermit2 && chain && (
+                  <BatchPermit2
+                    data={data.batchPermit2}
+                    requireData={requireData as BatchApproveTokenRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.swapTokenOrder && chain && (
+                  <SwapTokenOrder
+                    data={data.swapTokenOrder}
+                    requireData={requireData as SwapTokenOrderRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.buyNFT && chain && (
+                  <BuyNFT
+                    data={data.buyNFT}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                    sender={data.sender}
+                  />
+                )}
+                {data.batchSellNFT && chain && (
+                  <BatchSellNFT
+                    data={data.batchSellNFT}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                    sender={data.sender}
+                  />
+                )}
+                {data.sellNFT && chain && (
+                  <SellNFT
+                    data={data.sellNFT}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                    sender={data.sender}
+                  />
+                )}
+                {data.signMultiSig && (
+                  <SignMultisig
+                    data={data.signMultiSig}
+                    requireData={requireData as MultiSigRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.createKey && (
+                  <CreateKey
+                    data={data.createKey}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.verifyAddress && (
+                  <VerifyAddress
+                    data={data.verifyAddress}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.contractCall && chain && (
+                  <ContractCall
+                    data={data.permit}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                    raw={raw}
+                  />
+                )}
+                {data.coboSafeCreate && (
+                  <CoboSafeCreate data={data.coboSafeCreate} />
+                )}
+                {data.coboSafeModificationRole && (
+                  <CoboSafeModificationRule
+                    data={data.coboSafeModificationRole}
+                  />
+                )}
+                {data.coboSafeModificationDelegatedAddress && (
+                  <CoboSafeModificationDelegatedAddress
+                    data={data.coboSafeModificationDelegatedAddress}
+                  />
+                )}
+                {data.coboSafeModificationTokenApproval && (
+                  <CoboSafeModificationTokenApproval
+                    data={data.coboSafeModificationTokenApproval}
+                  />
+                )}
+                {data.common && (
+                  <CommonAction
+                    data={data.common}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {chain && (
+                  <TransactionActionList
+                    data={data}
+                    requireData={requireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                    raw={raw}
+                    isTypedData
+                    onChange={noop}
+                  />
+                )}
+              </>
+            )}
+          </>
+        )}
+      </div>
+
+      {chain?.isTestnet && (
+        <>
+          <div className="p-[15px] whitespace-pre-wrap break-all overflow-y-auto text-[13px] leading-[16px] text-r-neutral-body h-[260px] font-medium">
+            {JSON.stringify(raw, null, 2)}
+          </div>
+        </>
+      )}
+    </Card>
+  );
+};
 
 const Actions = ({
   data,
@@ -57,6 +318,8 @@ const Actions = ({
   origin,
   originLogo,
   typedDataActionData,
+  account,
+  multiAction,
 }: {
   data: ParsedTypedDataActionData | null;
   requireData: ActionRequireData;
@@ -67,19 +330,14 @@ const Actions = ({
   origin: string;
   originLogo?: string;
   typedDataActionData?: ParseCommonResponse | null;
+  account: Account;
+  multiAction?: MultiActionProps;
 }) => {
   const { t } = useTranslation();
 
-  const actionName = useMemo(() => {
-    return getActionTypeText(data);
-  }, [data]);
-
-  const handleViewRawClick = () => {
-    ViewRawModal.open({
-      raw,
-    });
-  };
-  const isUnknown = (!data?.actionType && !data?.common) || data?.contractCall;
+  const isMultiAction = useMemo(() => {
+    return !!multiAction;
+  }, [multiAction]);
 
   return (
     <>
@@ -100,202 +358,34 @@ const Actions = ({
             }
           />
         </Card>
-
-        <Card>
-          <div
-            className={clsx('action-header', {
-              'is-unknown': isUnknown,
-            })}
-          >
-            <div className="left">
-              <span>{actionName}</span>
-              {isUnknown && (
-                <TooltipWithMagnetArrow
-                  inApproval
-                  placement="bottom"
-                  overlayClassName="rectangle w-[max-content] decode-tooltip"
-                  title={
-                    <NoActionAlert
-                      data={{
-                        origin,
-                        text: message,
-                      }}
-                    />
-                  }
-                >
-                  <IconQuestionMark className="w-14 text-r-neutral-foot ml-2 mt-2" />
-                </TooltipWithMagnetArrow>
-              )}
-            </div>
-            <div className="right">
-              <div
-                className="float-right text-13 cursor-pointer flex items-center view-raw"
-                onClick={handleViewRawClick}
-              >
-                {t('page.signTx.viewRaw')}
-                <ThemeIcon
-                  className="icon icon-arrow-right"
-                  src={RcIconArrowRight}
-                />
-              </div>
-            </div>
-          </div>
-
-          {data && <Divide />}
-
-          {chain?.isTestnet ? (
-            <>
-              <div className="p-[15px] whitespace-pre-wrap break-all overflow-y-auto text-[13px] leading-[16px] text-r-neutral-body h-[260px] font-medium">
-                {JSON.stringify(raw, null, 2)}
-              </div>
-            </>
-          ) : (
-            <>
-              {(data?.actionType || data?.actionType === null) && (
-                <div className="container">
-                  {chain && (
-                    <Col>
-                      <Row isTitle>{t('page.signTx.chain')}</Row>
-                      <Row>
-                        <LogoWithText
-                          logo={chain.logo}
-                          text={chain.name}
-                          logoRadius="100%"
-                        />
-                      </Row>
-                    </Col>
-                  )}
-
-                  {data.permit && (
-                    <Permit
-                      data={data.permit}
-                      requireData={requireData as ApproveTokenRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {data.permit2 && chain && (
-                    <Permit2
-                      data={data.permit2}
-                      requireData={requireData as ApproveTokenRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {data.batchPermit2 && chain && (
-                    <BatchPermit2
-                      data={data.batchPermit2}
-                      requireData={requireData as BatchApproveTokenRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {data.swapTokenOrder && chain && (
-                    <SwapTokenOrder
-                      data={data.swapTokenOrder}
-                      requireData={requireData as SwapTokenOrderRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {data.buyNFT && chain && (
-                    <BuyNFT
-                      data={data.buyNFT}
-                      requireData={requireData as ContractRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                      sender={data.sender}
-                    />
-                  )}
-                  {data.batchSellNFT && chain && (
-                    <BatchSellNFT
-                      data={data.batchSellNFT}
-                      requireData={requireData as ContractRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                      sender={data.sender}
-                    />
-                  )}
-                  {data.sellNFT && chain && (
-                    <SellNFT
-                      data={data.sellNFT}
-                      requireData={requireData as ContractRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                      sender={data.sender}
-                    />
-                  )}
-                  {data.signMultiSig && (
-                    <SignMultisig
-                      data={data.signMultiSig}
-                      requireData={requireData as MultiSigRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {data.createKey && (
-                    <CreateKey
-                      data={data.createKey}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {data.verifyAddress && (
-                    <VerifyAddress
-                      data={data.verifyAddress}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {data.contractCall && chain && (
-                    <ContractCall
-                      data={data.permit}
-                      requireData={requireData as ContractRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                      raw={raw}
-                    />
-                  )}
-                  {data.coboSafeCreate && (
-                    <CoboSafeCreate data={data.coboSafeCreate} />
-                  )}
-                  {data.coboSafeModificationRole && (
-                    <CoboSafeModificationRule
-                      data={data.coboSafeModificationRole}
-                    />
-                  )}
-                  {data.coboSafeModificationDelegatedAddress && (
-                    <CoboSafeModificationDelegatedAddress
-                      data={data.coboSafeModificationDelegatedAddress}
-                    />
-                  )}
-                  {data.coboSafeModificationTokenApproval && (
-                    <CoboSafeModificationTokenApproval
-                      data={data.coboSafeModificationTokenApproval}
-                    />
-                  )}
-                  {data.common && (
-                    <CommonAction
-                      data={data.common}
-                      requireData={requireData as ContractRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {chain && (
-                    <TransactionActionList
-                      data={data}
-                      requireData={requireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                      raw={raw}
-                      isTypedData
-                      onChange={noop}
-                    />
-                  )}
-                </div>
-              )}
-            </>
-          )}
-        </Card>
+        {isMultiAction && multiAction ? (
+          (multiAction.actionList as ParsedTypedDataActionData[]).map(
+            (action, index) => (
+              <ActionItem
+                key={index}
+                data={action}
+                requireData={multiAction.requireDataList[index]}
+                chain={chain}
+                engineResults={multiAction.engineResultList[index]}
+                raw={raw}
+                message={message}
+                account={account}
+                origin={origin}
+              />
+            )
+          )
+        ) : (
+          <ActionItem
+            data={data}
+            requireData={requireData}
+            chain={chain}
+            engineResults={engineResults}
+            raw={raw}
+            message={message}
+            account={account}
+            origin={origin}
+          />
+        )}
       </ActionWrapper>
 
       <Card className="mt-12">

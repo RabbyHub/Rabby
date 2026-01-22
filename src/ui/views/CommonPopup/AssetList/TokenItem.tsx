@@ -8,6 +8,9 @@ import { Image } from 'antd';
 import { isNil } from 'lodash';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
+import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { LpTokenTag } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenTag';
+import styled from 'styled-components';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -15,16 +18,25 @@ export interface Props {
   onClick?: () => void;
 }
 
+const LpContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  .inner-symbol {
+    max-width: calc(100% - 24px);
+  }
+`;
+
 const TokenItemAsset: React.FC<Props> = ({ item }) => {
   const chain = findChain({
     serverId: item.chain,
   });
 
   return (
-    <TCell className="py-8 flex gap-12 w-[160px] items-center">
-      <div className="relative h-[24px]">
+    <TCell className="py-8 flex gap-10 w-[146px] items-center flex-shrink-0">
+      <div className="relative h-[32px]">
         <Image
-          className="w-24 h-24 rounded-full"
+          className="w-32 h-32 rounded-full"
           src={item.logo_url || IconUnknown}
           alt={item.symbol}
           fallback={IconUnknown}
@@ -35,19 +47,29 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           className="rectangle w-[max-content]"
         >
           <img
-            className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
+            className="w-16 h-16 absolute right-[-2px] bottom-[-2px] rounded-full"
             src={chain?.logo || IconUnknown}
             alt={item.chain}
           />
         </TooltipWithMagnetArrow>
       </div>
-      <div className="flex flex-col gap-4 overflow-hidden">
+      <div className="flex flex-1 flex-col gap-2 overflow-hidden">
         <span className="text-r-neutral-title-1 text-13 font-medium leading-[15px] truncate">
           {item._amountStr}
         </span>
-        <span className="text-r-neutral-body text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden">
-          {item.symbol}
-        </span>
+        <LpContainer>
+          <span className="text-r-neutral-foot text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden inner-symbol">
+            {item.symbol}
+          </span>
+          {isLpToken(item) && (
+            <LpTokenTag
+              size={13.5}
+              inModal
+              iconClassName="text-r-neutral-foot"
+              protocolName={item.protocol_id || ''}
+            />
+          )}
+        </LpContainer>
       </div>
     </TCell>
   );
@@ -57,14 +79,14 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
   return (
     <TCell
       className={clsx(
-        'py-8 text-r-neutral-body text-12 w-[90px]',
-        'flex flex-col gap-4'
+        'py-8 text-r-neutral-title1 text-13 w-[90px]',
+        'flex flex-col gap-2'
       )}
     >
       <div>${item._priceStr}</div>
       {isNil(item.price_24h_change) ? null : (
         <div
-          className={clsx('font-normal', {
+          className={clsx('font-normal text-12', {
             'text-green': item.price_24h_change > 0,
             'text-red-forbidden': item.price_24h_change < 0,
           })}
@@ -89,10 +111,13 @@ export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
   return (
     <TRow
       onClick={onClick}
-      style={style}
+      style={{
+        ...style,
+        boxShadow: '0px 4px 16px 0px rgba(0, 0, 0, 0.04)',
+      }}
       className={clsx(
         'cursor-pointer',
-        'rounded-[6px] border border-transparent -my-1 px-[19px] first-of-type:my-0',
+        'rounded-[8px] border border-transparent bg-r-neutral-card1 h-[60px] mt-8 pl-12 pr-16',
         'hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10'
       )}
     >

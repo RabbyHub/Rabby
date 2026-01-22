@@ -29,9 +29,18 @@ export const gasAccount = createModel<RootModel>()({
   effects: (dispatch) => ({
     init() {
       const logout = () => {
-        this.setGasAccountSig({});
+        this.setField({
+          sig: undefined,
+          account: undefined,
+          accountId: undefined,
+        });
+      };
+
+      const login = () => {
+        this.syncState();
       };
       eventBus.addEventListener(EVENTS.GAS_ACCOUNT.LOG_OUT, logout);
+      eventBus.addEventListener(EVENTS.GAS_ACCOUNT.LOG_IN, login);
       return this.syncState();
     },
     async syncState(key: keyof GasAccountServiceStore | undefined, store) {
@@ -59,12 +68,6 @@ export const gasAccount = createModel<RootModel>()({
       store
     ) {
       await store.app.wallet.setGasAccountSig(sig, account);
-
-      this.setField({
-        sig,
-        account,
-        accountId: account?.address,
-      });
     },
   }),
 });

@@ -1,4 +1,4 @@
-@import "@/ui/style/mixin.less";
+@import '@/ui/style/mixin.less';
 
 .confirm-revoke-modal {
   .ant-modal-content {
@@ -16,27 +16,25 @@
   }
 
   .ant-table-cell {
-    color: var(--r-neutral-foot, #6A7587);
+    color: var(--r-neutral-foot, #6a7587);
     background: transparent;
     font-size: 13px;
     font-style: normal;
     font-weight: 400;
-    border-bottom: 1px solid var(--r-neutral-line, #E0E5EC);
+    border-bottom: 1px solid var(--r-neutral-line, #e0e5ec);
     padding: 0;
-
-   
   }
 
   .ant-modal-header,
   .ant-modal-content {
-    background: var(--r-neutral-bg1, #FFF);
+    background: var(--r-neutral-bg1, #fff);
     border-bottom: none;
   }
-  
+
   &.ledger-modal {
     .ant-modal-header,
     .ant-modal-content {
-      background: var(--r-neutral-bg2, #F2F4F7);
+      background: var(--r-neutral-bg2, #f2f4f7);
     }
 
     .ant-modal-title {
@@ -59,7 +57,7 @@
     }
 
     .contract-name {
-      color: var(--r-neutral-foot, #6A7587);
+      color: var(--r-neutral-foot, #6a7587);
       text-overflow: ellipsis;
       overflow: hidden;
       text-wrap: nowrap;
@@ -81,10 +79,8 @@
     background: transparent;
   }
 
-
-
   .am-virtual-table-cell-inner {
-    color: var(--r-neutral-foot, #6A7587);
+    color: var(--r-neutral-foot, #6a7587);
     font-size: 14px;
     font-weight: 500;
     overflow: hidden;
@@ -97,7 +93,6 @@
       padding-right: 0;
     }
   }
-
 
   .index-cell {
     .am-virtual-table-cell-inner {
@@ -116,11 +111,11 @@
   .ant-table-container:after {
     display: none;
   }
-  
+
   .am-virtual-grid {
     overflow-y: overlay !important;
     overflow-x: hidden !important;
-    width: 920px!important;
+    width: 920px !important;
     .chromelike-scrollbar(4px);
   }
 

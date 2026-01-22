@@ -3,20 +3,15 @@ import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import IconAlert from 'ui/assets/alert.svg';
+import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 
 const GnosisWrongChainAlert = () => {
   const { t } = useTranslation();
-  const currentConnection = useRabbySelector(
-    (state) => state.chains.currentConnection
-  );
-  const chain = CHAINS[currentConnection?.chain || CHAINS_ENUM.ETH];
 
   return (
     <div className="gnosis-wrong-chain-alert">
-      <img className="icon-alert" src={IconAlert} />
-      {t('page.dashboard.GnosisWrongChainAlertBar.warning', {
-        chain: chain?.name,
-      })}
+      <RcIconInfoCC className="w-[14px] h-[14px]" />
+      {t('page.dashboard.GnosisWrongChainAlertBar.notDeployed')}
     </div>
   );
 };

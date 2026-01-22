@@ -12,8 +12,13 @@ import { GnosisMessageQueue } from './components/GnosisMessageQueue';
 import { useGnosisPendingMessages } from '@/ui/hooks/useGnosisPendingMessages';
 import { useSyncGnosisNetworks } from '@/ui/hooks/useSyncGnonisNetworks';
 import { sum } from 'lodash';
+import clsx from 'clsx';
+import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 
-export const GnosisQueue = () => {
+export const GnosisQueue: React.FC<{
+  isInModal?: boolean;
+  onClose?(e: React.MouseEvent<HTMLElement>): void;
+}> = ({ isInModal, onClose }) => {
   const { t } = useTranslation();
 
   const [account] = useAccount();
@@ -49,12 +54,31 @@ export const GnosisQueue = () => {
   useSyncGnosisNetworks({ address: account?.address });
 
   return (
-    <div className="queue">
-      <PageHeader fixed className="pb-[16px]">
-        {t('page.safeQueue.title', {
-          total: total,
-        })}
-      </PageHeader>
+    <div
+      className={clsx(
+        'queue',
+        isInModal ? 'min-h-0 h-[600px] overflow-auto' : ''
+      )}
+    >
+      {isInModal ? (
+        <div className="text-[20px] leading-[24px] font-medium text-center py-[16px]">
+          {t('page.safeQueue.title', {
+            total: total,
+          })}
+          <div
+            onClick={onClose}
+            className="cursor-pointer absolute top-[18px] right-[20px]"
+          >
+            <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot " />
+          </div>
+        </div>
+      ) : (
+        <PageHeader fixed className="pb-[16px]">
+          {t('page.safeQueue.title', {
+            total: total,
+          })}
+        </PageHeader>
+      )}
       <div className="flex items-center justify-center mb-[16px]">
         <PillsSwitch
           className="p-[2px]"

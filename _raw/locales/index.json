@@ -10,5 +10,8 @@
   { "code": "ru", "name": "Русский" },
   { "code": "de", "name": "Deutsch" },
   { "code": "ja", "name": "日本語" },
-  { "code": "id", "name": "Bahasa Indonesia" }
+  { "code": "pt", "name": "Português" },
+  { "code": "vi", "name": "Tiếng Việt" },
+  { "code": "id", "name": "Bahasa Indonesia" },
+  { "code": "ko", "name": "한국어" }
 ]

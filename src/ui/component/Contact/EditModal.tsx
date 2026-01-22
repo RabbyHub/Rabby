@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Drawer, Input, Button, Form } from 'antd';
+import { Drawer, Input, Button, Form, DrawerProps } from 'antd';
 import { useWallet } from 'ui/utils';
 import { UIContactBookItem } from 'background/service/contactBook';
 import { Divide } from '@/ui/views/Approval/components/Divide';
@@ -13,9 +13,16 @@ interface EditModalProps {
   onOk(data: UIContactBookItem): void;
   onCancel(): void;
   isEdit: boolean;
+  getContainer?: DrawerProps['getContainer'];
 }
 
-const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
+const EditModal = ({
+  address,
+  visible,
+  onOk,
+  onCancel,
+  getContainer,
+}: EditModalProps) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const [name, setName] = useState<string | undefined>('');
@@ -80,6 +87,7 @@ const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
       placement="bottom"
       height="224px"
       destroyOnClose
+      getContainer={getContainer}
     >
       <Form onFinish={handleConfirm} className="mt-[8px] mb-[28px]">
         <Input

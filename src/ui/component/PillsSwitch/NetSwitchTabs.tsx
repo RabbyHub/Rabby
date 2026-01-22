@@ -17,7 +17,10 @@ type OptionType = {
 type SwitchTabProps = Omit<PillsSwitchProps<OptionType[]>, 'options'>;
 
 export function useSwitchNetTab(options?: { hideTestnetTab?: boolean }) {
-  const isShowTestnet = useRabbySelector((s) => s.preference.isShowTestnet);
+  // const isShowTestnet = useRabbySelector((s) => s.preference.isShowTestnet);
+  const isShowTestnet = useRabbySelector(
+    (s) => s.chains.testnetList.length > 0
+  );
   const { hideTestnetTab = false } = options || {};
 
   const [selectedTab, setSelectedTab] = useState<OptionType['key']>('mainnet');
@@ -40,7 +43,7 @@ export function useSwitchNetTab(options?: { hideTestnetTab?: boolean }) {
   };
 }
 
-function useSwitchOptions() {
+export function useSwitchOptions() {
   const { t } = useTranslation();
 
   return useMemo(() => {
@@ -59,13 +62,18 @@ function useSwitchOptions() {
   }, [t]);
 }
 
-export default function NetSwitchTabs(props: SwitchTabProps) {
+export default function NetSwitchTabs(
+  props: SwitchTabProps & { isDesktop?: boolean }
+) {
   const switchOptions = useSwitchOptions();
 
   return (
     <PillsSwitch
       {...props}
-      className="flex bg-r-neutral-line w-[260px] mx-[auto] my-[0] h-[32px] p-[2px] mb-[14px]"
+      className={clsx(
+        'flex w-[260px] mx-[auto] my-[0] h-[32px] p-[2px] mb-[16px]',
+        props.isDesktop ? 'bg-transparent' : 'bg-r-neutral-line'
+      )}
       itemClassname={clsx('w-[128px] text-[12px]')}
       itemClassnameActive="bg-r-neutral-bg-1"
       itemClassnameInActive={clsx(

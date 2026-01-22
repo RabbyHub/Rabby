@@ -9,6 +9,7 @@ import { useApprovalPopup } from './approval-popup';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useTranslation } from 'react-i18next';
 import { useDeviceConnect } from './useDeviceConnect';
+import { isValidAddress } from '@ethereumjs/util';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -24,16 +25,17 @@ export const useApproval = () => {
     forceReject = false,
     approvalId?: string
   ) => {
+    const approval = await getApproval();
+
     // handle connect
-    if (!(await deviceConnect(data))) {
+    if (!(await deviceConnect(data, approval?.data?.account))) {
       return;
     }
-
-    const approval = await getApproval();
 
     if (approval) {
       wallet.resolveApproval(data, forceReject, approvalId);
     }
+
     if (stay) {
       return;
     }
@@ -223,7 +225,7 @@ export const useAlias = (address: string) => {
     if (address) {
       wallet.getAlianName(address).then(setName);
     }
-  }, [address]);
+  }, [address, wallet]);
 
   const updateAlias = useCallback(
     async (alias: string) => {
@@ -234,6 +236,34 @@ export const useAlias = (address: string) => {
   );
 
   return [name, updateAlias] as const;
+};
+
+export const useCexId = (address: string) => {
+  const wallet = useWallet();
+  const { exchanges } = useRabbySelector((s) => ({
+    exchanges: s.exchange.exchanges,
+  }));
+  const [cexId, setCexId] = useState<string>();
+  useEffect(() => {
+    setCexId(undefined);
+    if (!address || !isValidAddress(address)) {
+      return;
+    }
+    wallet.getCexId(address).then(setCexId);
+  }, [address, wallet]);
+
+  const updateCexId = useCallback(
+    async (cexId: string) => {
+      await wallet.updateCexId(address, cexId);
+      setCexId(cexId);
+    },
+    [address, wallet]
+  );
+
+  return [
+    exchanges.find((e) => e.id.toLowerCase() === cexId?.toLowerCase()),
+    updateCexId,
+  ] as const;
 };
 
 export const useBalance = (address: string) => {
@@ -342,7 +372,7 @@ export const useAccountInfo = (
     wallet.requestKeyring(type, 'getAccountInfo', null, address).then((res) => {
       setAccount({
         ...res,
-        hdPathTypeLabel: LedgerHDPathTypeLabel[res.hdPathType],
+        hdPathTypeLabel: LedgerHDPathTypeLabel[res?.hdPathType],
       });
     });
   }, []);

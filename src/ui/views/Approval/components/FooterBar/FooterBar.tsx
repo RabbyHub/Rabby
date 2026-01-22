@@ -28,6 +28,7 @@ import { GasAccountCheckResult } from '@/background/service/openapi';
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
   gnosisAccount?: Account;
+  account: Account;
   securityLevel?: Level;
   origin?: string;
   originLogo?: string;
@@ -53,6 +54,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   gasAccountCanPay?: boolean;
   noCustomRPC?: boolean;
   canGotoUseGasAccount?: boolean;
+  canDepositUseGasAccount?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -61,6 +63,7 @@ const Wrapper = styled.section`
   border-radius: 16px 16px 0px 0px;
   background: var(--r-neutral-bg-1, #3d4251);
   box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--r-neutral-line);
 
   &.is-darkmode {
     box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.3);
@@ -144,6 +147,7 @@ export const FooterBar: React.FC<Props> = ({
   origin,
   originLogo,
   gnosisAccount,
+  account: currentAccount,
   securityLevel,
   engineResults = [],
   hasUnProcessSecurityResult,
@@ -165,13 +169,14 @@ export const FooterBar: React.FC<Props> = ({
   gasAccountCanPay,
   noCustomRPC,
   canGotoUseGasAccount,
+  canDepositUseGasAccount,
   ...props
 }) => {
-  const [account, setAccount] = React.useState<Account>();
   const [
     connectedSite,
     setConnectedSite,
   ] = React.useState<ConnectedSite | null>(null);
+  const account = gnosisAccount || currentAccount;
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
@@ -214,12 +219,6 @@ export const FooterBar: React.FC<Props> = ({
     });
   };
 
-  const init = async () => {
-    const currentAccount =
-      gnosisAccount || (await wallet.syncGetCurrentAccount());
-    if (currentAccount) setAccount(currentAccount);
-  };
-
   useEffect(() => {
     if (origin) {
       wallet.getConnectedSite(origin).then((site) => {
@@ -227,10 +226,6 @@ export const FooterBar: React.FC<Props> = ({
       });
     }
   }, [origin]);
-
-  React.useEffect(() => {
-    init();
-  }, []);
 
   const { isDarkTheme } = useThemeMode();
 
@@ -324,6 +319,7 @@ export const FooterBar: React.FC<Props> = ({
               gasLessFailedReason={gasLessFailedReason}
               canGotoUseGasAccount={canGotoUseGasAccount}
               onChangeGasAccount={onChangeGasAccount}
+              canDepositUseGasAccount={canDepositUseGasAccount}
             />
           )
         ) : null}

@@ -1,43 +1,31 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Popup, Item, TokenWithChain, AddressViewer } from '@/ui/component';
+import { Popup, Item, Empty } from '@/ui/component';
 import { Button, message, Skeleton, Tooltip } from 'antd';
 import { PopupProps } from '@/ui/component/Popup';
-import { noop, set } from 'lodash';
+import { noop } from 'lodash';
 import { FixedSizeList } from 'react-window';
 import clsx from 'clsx';
 import { useGasAccountRefresh, useGasAccountSign } from '../hooks';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { ReactComponent as RcIconHelp } from 'ui/assets/tokenDetail/IconHelp.svg';
 
-import { formatUsdValue, openInTab, useAlias, useWallet } from '@/ui/utils';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { formatUsdValue, useAlias, useWallet } from '@/ui/utils';
+import { useRabbySelector } from '@/ui/store';
 import { GasAccountCloseIcon } from './PopupCloseIcon';
-import { findChainByEnum, findChainByServerID } from '@/utils/chain';
+import { findChainByServerID } from '@/utils/chain';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useAsync } from 'react-use';
 import { CSSProperties } from 'styled-components';
 import styled from 'styled-components';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
-import { CopyChecked } from '@/ui/component/CopyChecked';
 import {
+  GasAccountInfo,
   RechargeChainItem,
   WithdrawListAddressItem,
 } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
-
-// export interface RechargeChainItem {
-//   chain_id: string;
-//   withdraw_limit: number;
-//   withdraw_fee: number;
-// }
-
-// export interface WithdrawListAddressItem {
-//   recharge_addr: string;
-//   total_withdraw_limit: number;
-//   recharge_chain_list: RechargeChainItem[];
-// }
+import IconArrowRight from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
 
 enum SelectorStatus {
   Hidden,
@@ -70,25 +58,11 @@ const AddressRightAreaInItem = ({
 
   return (
     <div className={clsx('flex items-center gap-[6px] ', ['rounded-[2px]'])}>
-      <img src={addressTypeIcon} className="w-24 h-24" />
+      <img src={addressTypeIcon} className="w-18 h-18" />
       <div className="flex flex-col overflow-hidden">
-        <span className="text-13 font-medium text-r-neutral-title-1 truncate">
+        <span className="text-14 font-medium text-r-neutral-title-1 truncate">
           {alias}
         </span>
-        <div className="flex items-center">
-          <AddressViewer
-            address={account?.address || ''}
-            showArrow={false}
-            className="text-[12px] text-r-neutral-body relative top-1"
-          />
-          <CopyChecked
-            addr={account?.address || ''}
-            className={clsx(
-              'w-[14px] h-[14px] ml-4 text-14  cursor-pointer relative top-1'
-            )}
-            checkedClassName={clsx('text-[#00C087]')}
-          />
-        </div>
       </div>
     </div>
   );
@@ -106,7 +80,7 @@ const Selector = ({
   accountsList: IDisplayedAccountWithBalance[];
   status: SelectorStatus;
   onClose: () => void;
-  selectAddressChainList: WithdrawListAddressItem;
+  selectAddressChainList?: WithdrawListAddressItem;
   setChain: (chain: RechargeChainItem) => void;
   setSelectAddressChainList: (item: WithdrawListAddressItem) => void;
   withdrawList: WithdrawListAddressItem[];
@@ -167,14 +141,14 @@ const Selector = ({
                   src={chainEnum.logo}
                   className="w-[20px] h-[20px] rounded-full"
                 />
-                <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
+                <span className="text-r-neutral-title-1 text-[14px] leading-[17px] font-medium">
                   {chainEnum.name}
                 </span>
               </div>
             }
             right={
-              <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
-                {`$${item.withdraw_limit}`}
+              <span className="text-r-neutral-title-1 text-[14px] leading-[17px] font-medium">
+                {formatUsdValue(item.withdraw_limit, BigNumber.ROUND_DOWN)}
               </span>
             }
             onClick={() => {
@@ -185,7 +159,6 @@ const Selector = ({
             }}
           />
         </div>
-        // </div>
       );
     },
     [isSelectChain]
@@ -226,7 +199,10 @@ const Selector = ({
             left={<AddressRightAreaInItem account={account} />}
             right={
               <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
-                {`$${item.total_withdraw_limit}`}
+                {formatUsdValue(
+                  item.total_withdraw_limit,
+                  BigNumber.ROUND_DOWN
+                )}
               </span>
             }
             onClick={() => {
@@ -272,7 +248,7 @@ const Selector = ({
             </div>
           </div>
           <div className="px-20">
-            <div className="flex justify-between text-12 text-r-neutral-body pt-[24px] pb-8">
+            <div className="flex justify-between text-14 text-r-neutral-body pt-[24px] pb-8">
               <div>
                 {isSelectChain
                   ? t('page.gasAccount.withdrawPopup.destinationChain')
@@ -299,7 +275,7 @@ const Selector = ({
           </div>
         </div>
         <div className="overflow-y-auto flex-1 relative px-20">
-          {isSelectChain ? (
+          {!sortedList?.length ? null : isSelectChain ? (
             <FixedSizeList<RechargeChainItem[]>
               width={'100%'}
               height={328}
@@ -320,6 +296,18 @@ const Selector = ({
               {AddressRow}
             </FixedSizeList>
           )}
+          {!sortedList?.length && (
+            <Empty
+              className="mt-[75px]"
+              title={
+                <span className="text-14 text-r-neutral-foot text-center">
+                  {isSelectChain
+                    ? t('page.gasAccount.withdrawPopup.noEligibleChain')
+                    : t('page.gasAccount.withdrawPopup.noEligibleAddr')}
+                </span>
+              }
+            />
+          )}
         </div>
       </div>
     </Popup>
@@ -330,10 +318,12 @@ const WithdrawContent = ({
   balance,
   onClose,
   handleRefreshHistory,
+  gasAccountInfo,
 }: {
   balance: number;
   handleRefreshHistory: () => void;
   onClose: () => void;
+  gasAccountInfo?: GasAccountInfo;
 }) => {
   const { t } = useTranslation();
   const [selectorStatus, setSelectorStatus] = useState<SelectorStatus>(
@@ -392,14 +382,27 @@ const WithdrawContent = ({
   }));
 
   const withdraw = async () => {
-    if (balance <= 0 || !selectAddressChainList || !chain) {
+    if (
+      !gasAccountInfo?.withdrawable_balance ||
+      gasAccountInfo.withdrawable_balance <= 0 ||
+      !selectAddressChainList ||
+      !chain
+    ) {
       return;
     }
 
     try {
       setBtnLoading(true);
+      const chainWithdrawLimit =
+        selectAddressChainList.recharge_chain_list?.find(
+          (item) => item.chain_id === chain.chain_id
+        )?.withdraw_limit || 0;
 
-      const amount = Math.min(balance, chain.withdraw_limit);
+      const amount = Math.min(
+        gasAccountInfo.withdrawable_balance,
+        chainWithdrawLimit
+      );
+
       const res: any = await wallet.openapi.withdrawGasAccount({
         sig: sig!,
         account_id: accountId!,
@@ -441,14 +444,29 @@ const WithdrawContent = ({
   };
 
   const BalanceSuffix = useMemo(() => {
-    if (!chain) {
+    if (
+      !chain ||
+      !gasAccountInfo?.withdrawable_balance ||
+      gasAccountInfo.withdrawable_balance <= 0
+    ) {
       return '';
     } else {
-      const withdrawTotal = Math.min(balance, chain.withdraw_limit);
-      const usdValue = formatUsdValue(withdrawTotal, BigNumber.ROUND_DOWN);
-      return ` ${usdValue}`;
+      const chainWithdrawLimit =
+        selectAddressChainList?.recharge_chain_list?.find(
+          (item) => item.chain_id === chain.chain_id
+        )?.withdraw_limit || 0;
+
+      const actualWithdrawableAmount = Math.min(
+        gasAccountInfo.withdrawable_balance,
+        chainWithdrawLimit
+      );
+      const usdValue = formatUsdValue(
+        actualWithdrawableAmount,
+        BigNumber.ROUND_DOWN
+      );
+      return `${usdValue}`;
     }
-  }, [balance, chain]);
+  }, [chain, gasAccountInfo?.withdrawable_balance, selectAddressChainList]);
 
   const withdrawBtnDisabledTips = useMemo(() => {
     if (!chain) {
@@ -457,16 +475,17 @@ const WithdrawContent = ({
 
     const withdrawTotal = Math.min(balance, chain.withdraw_limit);
     if (withdrawTotal < chain.withdraw_fee) {
-      return t('page.gasAccount.withdrawPopup.noEnoughGas');
+      return `${t(
+        'page.gasAccount.withdrawPopup.noEnoughGas'
+      )} (~$${chain?.withdraw_fee.toFixed(2)})`;
     }
 
     if (withdrawTotal > chain.l1_balance) {
-      return t('page.gasAccount.withdrawPopup.noEnoughValuetBalance');
+      return t('page.gasAccount.withdrawPopup.noEnoughValueBalance');
     }
 
     return '';
-  }, [chain, balance]);
-
+  }, [t, chain, balance]);
   const selectedAccount = useMemo(() => {
     return accountsList.find(
       (i) => i.address === selectAddressChainList?.recharge_addr
@@ -478,75 +497,132 @@ const WithdrawContent = ({
       <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[12px]">
         {t('page.gasAccount.withdrawPopup.title')}
       </div>
+      <div className="text-13 text-r-neutral-body text-center flex gap-4 items-center justify-center mb-20">
+        {t('page.gasAccount.withdrawPopup.withdrawalTip', {
+          amount: formatUsdValue(
+            gasAccountInfo?.withdrawable_balance || 0,
+            BigNumber.ROUND_DOWN
+          ),
+        })}
+        {gasAccountInfo?.non_withdrawable_balance &&
+        gasAccountInfo.non_withdrawable_balance > 0 ? (
+          <Tooltip
+            overlayClassName={clsx('rectangle')}
+            placement="topLeft"
+            title={
+              <span>
+                {formatUsdValue(
+                  gasAccountInfo.non_withdrawable_balance,
+                  BigNumber.ROUND_DOWN
+                )}{' '}
+                of your gas balance is non-withdrawable:
+                <br />
+                1. Apple Pay / Google Pay
+                <br />
+                2. Gas Rewards
+              </span>
+            }
+            align={{ targetOffset: [12, 0] }}
+          >
+            <RcIconHelp className="text-rabby-neutral-foot w-14 h-14" />
+          </Tooltip>
+        ) : null}
+      </div>
 
-      <div className="w-full px-20">
-        <div className="text-13 text-r-neutral-body mt-12 mb-8">
-          {t('page.gasAccount.withdrawPopup.recipientAddress')}
-        </div>
+      <div className="w-full px-20 py-10">
         <Item
           px={16}
           py={0}
-          className="rounded-[6px] w-full h-[52px]"
+          className="rounded-[6px] w-full h-[52px] mt-12 flex justify-between"
           bgColor="var(--r-neutral-card2, #F2F4F7)"
           left={
-            loading ? (
-              <div
-                className={clsx('flex items-center gap-[6px] ', [
-                  'rounded-[2px]',
-                ])}
-              >
-                <Skeleton.Avatar
-                  className="rounded-[12px] w-[24px] h-[24px]"
-                  active
-                />
-                <div className="flex flex-col overflow-hidden gap-[6px]">
-                  <Skeleton.Input
-                    className="rounded w-[89px] h-[16px]"
+            <span className="text-14 text-r-neutral-body">
+              {t('page.gasAccount.withdrawPopup.recipientAddress')}
+            </span>
+          }
+          right={
+            <div className="flex items-center gap-8">
+              {loading ? (
+                <div
+                  className={clsx('flex items-center gap-[6px] ', [
+                    'rounded-[2px]',
+                  ])}
+                >
+                  <Skeleton.Avatar
+                    className="rounded-[12px] w-[24px] h-[24px]"
                     active
                   />
-                  <Skeleton.Input
-                    className="rounded w-[66px] h-[12px]"
-                    active
-                  />
+                  <div className="flex flex-col overflow-hidden gap-[6px]">
+                    <Skeleton.Input
+                      className="rounded w-[89px] h-[16px]"
+                      active
+                    />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <AddressRightAreaInItem account={selectedAccount} />
-            )
+              ) : selectedAccount ? (
+                <AddressRightAreaInItem account={selectedAccount} />
+              ) : (
+                <span className="text-14 font-medium text-r-neutral-title1">
+                  {t('page.gasAccount.withdrawPopup.selectAddr')}
+                </span>
+              )}
+              <img src={IconArrowRight} alt="" />
+            </div>
           }
           hoverBorder={!loading}
-          right={loading ? () => null : undefined}
           onClick={openAddreesList}
         />
-        <div className="text-13 text-r-neutral-body mt-12 mb-8">
-          {t('page.gasAccount.withdrawPopup.destinationChain')}
-        </div>
-
         <Item
           px={16}
           py={0}
-          className="rounded-[6px] w-full h-[52px]"
+          className="rounded-[6px] w-full h-[52px] mt-12 flex justify-between"
           bgColor="var(--r-neutral-card2, #F2F4F7)"
+          hoverBorder={!loading}
           left={
-            chainInfo ? (
-              <div
-                className={clsx('flex items-center gap-[6px] ', [
-                  'rounded-[2px]',
-                ])}
-              >
-                <img
-                  src={chainInfo?.logo}
-                  className="w-[20px] h-[20px] rounded-full"
-                />
-                <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
-                  {chainInfo?.name}
+            <span className="text-14 text-r-neutral-body">
+              {t('page.gasAccount.withdrawPopup.destinationChain')}
+            </span>
+          }
+          right={
+            <div className="flex items-center gap-8">
+              {loading ? (
+                <div
+                  className={clsx('flex items-center gap-[6px] ', [
+                    'rounded-[2px]',
+                  ])}
+                >
+                  <Skeleton.Avatar
+                    className="rounded-[12px] w-[24px] h-[24px]"
+                    active
+                  />
+                  <div className="flex flex-col overflow-hidden gap-[6px]">
+                    <Skeleton.Input
+                      className="rounded w-[89px] h-[16px]"
+                      active
+                    />
+                  </div>
+                </div>
+              ) : chainInfo ? (
+                <div
+                  className={clsx('flex items-center gap-[6px] ', [
+                    'rounded-[2px]',
+                  ])}
+                >
+                  <img
+                    src={chainInfo?.logo}
+                    className="w-[18px] h-[18px] rounded-full"
+                  />
+                  <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
+                    {chainInfo?.name}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-14 font-medium text-r-neutral-title1">
+                  {t('page.gasAccount.withdrawPopup.selectChain')}
                 </span>
-              </div>
-            ) : (
-              <span className="text-15 font-medium text-r-neutral-title1">
-                {t('page.gasAccount.withdrawPopup.selectChain')}
-              </span>
-            )
+              )}
+              <img src={IconArrowRight} alt="" />
+            </div>
           }
           onClick={openChainList}
         />
@@ -565,27 +641,33 @@ const WithdrawContent = ({
             {` ~$${chain?.withdraw_fee.toFixed(2)}`}
           </div>
         )}
-        <TooltipWithMagnetArrow
+        <Tooltip
           overlayClassName={clsx('rectangle')}
           placement="top"
-          visible={withdrawBtnDisabledTips ? undefined : false}
-          title={withdrawBtnDisabledTips}
+          title={withdrawBtnDisabledTips ? withdrawBtnDisabledTips : undefined}
+          align={{ targetOffset: [0, 0] }}
         >
           <Button
             type="primary"
-            className="h-[48px] text-15 font-medium text-r-neutral-title-2"
+            className={clsx(
+              'h-[48px] text-14 font-medium text-r-neutral-title-2'
+            )}
             onClick={withdraw}
             block
             size="large"
-            disabled={!chain || Boolean(withdrawBtnDisabledTips)}
+            disabled={
+              !chain ||
+              !gasAccountInfo?.withdrawable_balance ||
+              !!withdrawBtnDisabledTips
+            }
             loading={btnLoading}
           >
             {t('page.gasAccount.withdrawPopup.title')}
-            {BalanceSuffix}
+            {` ${BalanceSuffix}`}
           </Button>
-        </TooltipWithMagnetArrow>
+        </Tooltip>
       </WrapperDiv>
-      {withdrawList && selectAddressChainList && (
+      {
         <Selector
           accountsList={accountsList}
           status={selectorStatus}
@@ -593,16 +675,27 @@ const WithdrawContent = ({
           selectAddressChainList={selectAddressChainList}
           setChain={setChain}
           setSelectAddressChainList={setSelectAddressChainList}
-          withdrawList={withdrawList}
+          withdrawList={withdrawList || []}
         />
-      )}
+      }
     </div>
   );
 };
 
 export const WithdrawPopup = (
-  props: PopupProps & { balance: number; handleRefreshHistory: () => void }
+  props: PopupProps & {
+    balance: number;
+    handleRefreshHistory: () => void;
+    gasAccountInfo?: GasAccountInfo;
+  }
 ) => {
+  const {
+    balance,
+    handleRefreshHistory,
+    gasAccountInfo,
+    ...popupProps
+  } = props;
+
   return (
     <>
       <Popup
@@ -616,12 +709,13 @@ export const WithdrawPopup = (
         destroyOnClose
         push={false}
         closeIcon={<GasAccountCloseIcon />}
-        {...props}
+        {...popupProps}
       >
         <WithdrawContent
           onClose={props.onCancel || props.onClose || noop}
-          balance={props.balance}
-          handleRefreshHistory={props.handleRefreshHistory}
+          balance={balance}
+          handleRefreshHistory={handleRefreshHistory}
+          gasAccountInfo={gasAccountInfo}
         />
       </Popup>
     </>

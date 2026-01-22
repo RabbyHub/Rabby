@@ -1,5 +1,16 @@
-import * as ethUtil from 'ethereumjs-util';
-import * as sigUtil from 'eth-sig-util';
+import {
+  recoverPersonalSignature,
+  recoverTypedSignature,
+  SignTypedDataVersion,
+  TypedDataUtils,
+} from '@metamask/eth-sig-util';
+import {
+  toChecksumAddress,
+  addHexPrefix,
+  stripHexPrefix,
+  bytesToHex,
+} from '@ethereumjs/util';
+import { RLP, utils } from '@ethereumjs/rlp';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import Transport from '@ledgerhq/hw-transport';
 import LedgerEth from '@ledgerhq/hw-app-eth';
@@ -8,7 +19,6 @@ import {
   TransactionFactory,
   FeeMarketEIP1559Transaction,
 } from '@ethereumjs/tx';
-import { EVENTS } from 'consts';
 import { isSameAddress } from '@/background/utils';
 import { LedgerHDPathType } from './helper';
 
@@ -113,9 +123,7 @@ class LedgerBridgeKeyring {
 
     // Remove accounts that don't have corresponding account details
     this.accounts = this.accounts.filter((account) =>
-      Object.keys(this.accountDetails).includes(
-        ethUtil.toChecksumAddress(account)
-      )
+      Object.keys(this.accountDetails).includes(toChecksumAddress(account))
     );
 
     return Promise.resolve();
@@ -201,7 +209,7 @@ class LedgerBridgeKeyring {
             address = await this.unlock(path);
 
             const hdPathType = this.getHDPathType(path);
-            this.accountDetails[ethUtil.toChecksumAddress(address)] = {
+            this.accountDetails[toChecksumAddress(address)] = {
               hdPath: path,
               hdPathBasePublicKey: await this.getPathBasePublicKey(hdPathType),
               hdPathType,
@@ -246,7 +254,7 @@ class LedgerBridgeKeyring {
     this.accounts = this.accounts.filter(
       (a) => a.toLowerCase() !== address.toLowerCase()
     );
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     delete this.accountDetails[checksummedAddress];
     delete this.paths[checksummedAddress];
   }
@@ -265,7 +273,7 @@ class LedgerBridgeKeyring {
       // transaction which is only communicated to ethereumjs-tx in this
       // value. In newer versions the chainId is communicated via the 'Common'
       // object.
-      tx.v = ethUtil.bufferToHex(tx.getChainId());
+      tx.v = bytesToHex(tx.getChainId());
       tx.r = '0x00';
       tx.s = '0x00';
 
@@ -288,18 +296,25 @@ class LedgerBridgeKeyring {
     // return a Transaction that is frozen if the originally provided
     // transaction was also frozen.
     const messageToSign = tx.getMessageToSign(false);
-    const rawTxHex = Buffer.isBuffer(messageToSign)
+    let rawTxHex = Buffer.isBuffer(messageToSign)
       ? messageToSign.toString('hex')
-      : ethUtil.rlp.encode(messageToSign).toString('hex');
+      : stripHexPrefix(utils.bytesToHex(RLP.encode(messageToSign)));
+
+    // FIXME: This is a temporary fix for the issue with the Ledger device, waiting for a fix from Ledger
+    if (!Array.isArray(RLP.decode(Buffer.from(rawTxHex, 'hex')))) {
+      console.log('rlpTx not an array');
+      rawTxHex = Buffer.from(messageToSign).toString('hex');
+    }
+
     return this._signTransaction(address, rawTxHex, (payload) => {
       // Because tx will be immutable, first get a plain javascript object that
       // represents the transaction. Using txData here as it aligns with the
       // nomenclature of ethereumjs/tx.
       const txData = tx.toJSON();
       // The fromTxData utility expects v,r and s to be hex prefixed
-      txData.v = ethUtil.addHexPrefix(payload.v);
-      txData.r = ethUtil.addHexPrefix(payload.r);
-      txData.s = ethUtil.addHexPrefix(payload.s);
+      txData.v = addHexPrefix(payload.v);
+      txData.r = addHexPrefix(payload.r);
+      txData.s = addHexPrefix(payload.s);
       // Adopt the 'common' option from the original transaction and set the
       // returned object to be frozen if the original is frozen.
       if (is1559Tx(txData)) {
@@ -343,7 +358,7 @@ class LedgerBridgeKeyring {
       const hdPath = await this.unlockAccountByAddress(withAccount);
       const res = await ethApp!.signPersonalMessage(
         hdPath,
-        ethUtil.stripHexPrefix(message)
+        stripHexPrefix(message)
       );
       // let v: string | number = res.v - 27;
       let v = res.v.toString(16);
@@ -351,13 +366,12 @@ class LedgerBridgeKeyring {
         v = `0${v}`;
       }
       const signature = `0x${res.r}${res.s}${v}`;
-      const addressSignedWith = sigUtil.recoverPersonalSignature({
+      const addressSignedWith = recoverPersonalSignature({
         data: message,
-        sig: signature,
+        signature,
       });
       if (
-        ethUtil.toChecksumAddress(addressSignedWith) !==
-        ethUtil.toChecksumAddress(withAccount)
+        toChecksumAddress(addressSignedWith) !== toChecksumAddress(withAccount)
       ) {
         throw new Error(
           "Ledger: The signature doesn't match the right address"
@@ -372,7 +386,7 @@ class LedgerBridgeKeyring {
   }
 
   async unlockAccountByAddress(address) {
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     if (!Object.keys(this.accountDetails).includes(checksummedAddress)) {
       throw new Error(
         `Ledger: Account for address '${checksummedAddress}' not found`
@@ -403,43 +417,58 @@ class LedgerBridgeKeyring {
     try {
       await this.makeApp(true);
 
-      const {
-        domain,
-        types,
-        primaryType,
-        message,
-      } = sigUtil.TypedDataUtils.sanitizeData(data);
-      const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
-        'EIP712Domain',
-        domain,
-        types,
-        isV4
-      ).toString('hex');
-      const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
-        primaryType as string,
-        message,
-        types,
-        isV4
-      ).toString('hex');
+      let res: {
+        v: number;
+        s: string;
+        r: string;
+      };
 
-      const res = await ethApp!.signEIP712HashedMessage(
-        hdPath,
-        domainSeparatorHex,
-        hashStructMessageHex
-      );
+      // https://github.com/LedgerHQ/ledger-live/blob/5bae039273beeeb02d8640d778fd7bf5f7fd3776/libs/coin-evm/src/hw-signMessage.ts#L68C7-L79C10
+      try {
+        res = await ethApp!.signEIP712Message(hdPath, data);
+      } catch (e) {
+        const shouldFallbackOnHashedMethod =
+          'statusText' in e && e.statusText === 'INS_NOT_SUPPORTED';
+        if (!shouldFallbackOnHashedMethod) throw e;
+
+        const {
+          domain,
+          types,
+          primaryType,
+          message,
+        } = TypedDataUtils.sanitizeData(data);
+        const domainSeparatorHex = TypedDataUtils.hashStruct(
+          'EIP712Domain',
+          domain,
+          types,
+          SignTypedDataVersion.V4
+        ).toString('hex');
+        const hashStructMessageHex = TypedDataUtils.hashStruct(
+          primaryType as string,
+          message,
+          types,
+          SignTypedDataVersion.V4
+        ).toString('hex');
+
+        res = await ethApp!.signEIP712HashedMessage(
+          hdPath,
+          domainSeparatorHex,
+          hashStructMessageHex
+        );
+      }
 
       let v = res.v.toString(16);
       if (v.length < 2) {
         v = `0${v}`;
       }
       const signature = `0x${res.r}${res.s}${v}`;
-      const addressSignedWith = sigUtil.recoverTypedSignature_v4({
+      const addressSignedWith = recoverTypedSignature({
         data,
-        sig: signature,
+        signature,
+        version: SignTypedDataVersion.V4,
       });
       if (
-        ethUtil.toChecksumAddress(addressSignedWith) !==
-        ethUtil.toChecksumAddress(withAccount)
+        toChecksumAddress(addressSignedWith) !== toChecksumAddress(withAccount)
       ) {
         throw new Error('Ledger: The signature doesnt match the right address');
       }
@@ -489,7 +518,7 @@ class LedgerBridgeKeyring {
   }
 
   getIndexFromAddress(address: string) {
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     if (!this.accountDetails[checksummedAddress]) {
       throw new Error(`Address ${address} not found`);
     }
@@ -501,7 +530,7 @@ class LedgerBridgeKeyring {
         index = parseInt(res[1], 10);
       }
     } else {
-      const checksummedAddress = ethUtil.toChecksumAddress(address);
+      const checksummedAddress = toChecksumAddress(address);
       const arr = this.accountDetails[checksummedAddress].hdPath.split('/');
       index = Number(arr[arr.length - 1]);
     }
@@ -569,7 +598,7 @@ class LedgerBridgeKeyring {
   }
 
   private async _fixAccountDetail(address: string) {
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     const detail = this.accountDetails[checksummedAddress];
 
     // The detail is already fixed
@@ -628,7 +657,7 @@ class LedgerBridgeKeyring {
       const address = addresses[i];
       await this._fixAccountDetail(address);
 
-      const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+      const detail = this.accountDetails[toChecksumAddress(address)];
 
       if (detail.hdPathBasePublicKey === currentPublicKey) {
         const info = this.getAccountInfo(address);
@@ -659,7 +688,7 @@ class LedgerBridgeKeyring {
   }
 
   getAccountInfo(address: string) {
-    const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+    const detail = this.accountDetails[toChecksumAddress(address)];
     if (detail) {
       const { hdPath, hdPathType, hdPathBasePublicKey } = detail;
       return {

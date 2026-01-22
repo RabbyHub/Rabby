@@ -54,10 +54,13 @@ const FieldCheckbox = ({
       className={cx(
         'bg-white flex justify-between items-center py-12 px-16 border transition-colors',
         'lg:max-w-[460px]',
-        _checked ? 'border-blue-light' : 'border-white',
+        _checked ? 'border-blue-light' : '',
         disable ? 'opacity-40' : 'hover:border-blue-light',
         className
       )}
+      style={{
+        borderColor: _checked ? undefined : 'var(--r-neutral-line)',
+      }}
       leftIcon={leftIcon}
       rightIcon={
         rightSlot

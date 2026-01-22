@@ -6,17 +6,21 @@ import { Button, message } from 'antd';
 import clsx from 'clsx';
 import { Header } from './Header';
 import { useApproval, useWallet } from '@/ui/utils';
-import { isAddress } from 'web3-utils';
+import { isAddress } from 'viem';
 import { SelectAddressPopup } from './SelectAddressPopup';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { findChainByID } from '@/utils/chain';
 import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
 import { safeJSONParse } from '@/utils';
+import { UI_TYPE } from '@/constant/ui';
+import qs from 'qs';
 
 type Type = 'select-chain' | 'add-address' | 'select-address';
 
-export const ImportCoboArgus = () => {
+export const ImportCoboArgus: React.FC<{ isInModal?: boolean }> = ({
+  isInModal,
+}) => {
   const { state } = useLocation<{
     address: string;
     chainId: number | string;
@@ -67,18 +71,37 @@ export const ImportCoboArgus = () => {
         networkId: CHAINS[selectedChain!].serverId,
         safeModuleAddress: inputAddress,
       });
-      history.replace({
-        pathname: '/popup/import/success',
-        state: {
-          accounts,
-          title: t('page.newAddress.importedSuccessfully'),
-          editing: true,
-          importedAccount: true,
-          importedLength: (
-            await wallet.getTypedAccounts(KEYRING_TYPE.CoboArgusKeyring)
-          )?.[0]?.accounts?.length,
-        },
-      });
+      if (UI_TYPE.isDesktop) {
+        history.replace({
+          pathname: history.location.pathname,
+          search: `?${qs.stringify({
+            action: 'add-address',
+            import: 'success',
+          })}`,
+          state: {
+            accounts,
+            title: t('page.newAddress.importedSuccessfully'),
+            editing: true,
+            importedAccount: true,
+            importedLength: (
+              await wallet.getTypedAccounts(KEYRING_TYPE.CoboArgusKeyring)
+            )?.[0]?.accounts?.length,
+          },
+        });
+      } else {
+        history.replace({
+          pathname: '/popup/import/success',
+          state: {
+            accounts,
+            title: t('page.newAddress.importedSuccessfully'),
+            editing: true,
+            importedAccount: true,
+            importedLength: (
+              await wallet.getTypedAccounts(KEYRING_TYPE.CoboArgusKeyring)
+            )?.[0]?.accounts?.length,
+          },
+        });
+      }
     } catch (e) {
       if (e.message?.includes?.('DuplicateAccountError')) {
         const address = safeJSONParse(e.message)?.address;
@@ -112,7 +135,12 @@ export const ImportCoboArgus = () => {
   }, []);
 
   return (
-    <section className="bg-r-neutral-bg-2 relative">
+    <section
+      className={clsx(
+        'bg-r-neutral-bg-2 relative',
+        isInModal ? 'h-[600px] overflow-auto' : ''
+      )}
+    >
       {contextHolder}
       <Header hasBack={!isByImportAddressEvent}>
         {step === 'select-chain' &&

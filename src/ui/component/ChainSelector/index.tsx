@@ -1,4 +1,6 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { CHAINS_ENUM } from 'consts';
 import { useHover, useWallet } from 'ui/utils';
 import { ReactComponent as ArrowDownSVG } from '@/ui/assets/dashboard/arrow-down.svg';
@@ -8,7 +10,7 @@ import ChainIcon from '../ChainIcon';
 import './style.less';
 import clsx from 'clsx';
 import { findChainByEnum } from '@/utils/chain';
-import { ChainSelectorPurpose } from '@/ui/hooks/useChain';
+import { Account } from '@/background/service/preference';
 
 interface ChainSelectorProps {
   value: CHAINS_ENUM;
@@ -20,7 +22,8 @@ interface ChainSelectorProps {
   title?: ReactNode;
   onAfterOpen?: () => void;
   showRPCStatus?: boolean;
-  modalHeight?: number;
+  modalHeight?: number | string;
+  account?: Account | null;
 }
 
 const ChainSelector = ({
@@ -33,6 +36,7 @@ const ChainSelector = ({
   onAfterOpen,
   showRPCStatus = false,
   modalHeight,
+  account,
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
   const [isHovering, hoverProps] = useHover();
@@ -53,14 +57,14 @@ const ChainSelector = ({
     setShowSelectorModal(false);
   };
 
-  const getCustomRPC = async () => {
+  const getCustomRPC = useCallback(async () => {
     const rpc = await wallet.getCustomRpcByChain(value);
     setCustomRPC(rpc?.enable ? rpc.url : '');
-  };
+  }, [value, wallet]);
 
   useEffect(() => {
     getCustomRPC();
-  }, [value]);
+  }, [getCustomRPC]);
 
   return (
     <>
@@ -91,6 +95,7 @@ const ChainSelector = ({
         connection={connection}
         showRPCStatus={showRPCStatus}
         height={modalHeight}
+        account={account}
       />
     </>
   );

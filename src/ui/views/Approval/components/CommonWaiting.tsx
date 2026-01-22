@@ -1,6 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  openInternalPageInTab,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import {
   CHAINS,
   EVENTS,
@@ -22,8 +27,12 @@ import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { ga4 } from '@/utils/ga4';
+import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface ApprovalParams {
+  from?: string;
+  nonce?: string;
   address: string;
   chainId?: number;
   isGnosis?: boolean;
@@ -38,11 +47,19 @@ interface ApprovalParams {
     message: string;
     chainId: number;
   };
+  stay?: boolean;
 }
 
-export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
+export const CommonWaiting = ({
+  params,
+  account: $account,
+}: {
+  params: ApprovalParams;
+  account: Account;
+}) => {
   const wallet = useWallet();
   const {
+    setHeight,
     setTitle,
     setVisible,
     closePopup,
@@ -78,9 +95,13 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
       message.success(t('page.signFooterBar.ledger.resubmited'));
       return;
     }
-    const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
-    await wallet.resendSign();
+
+    const autoRetryUpdate =
+      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
+    await wallet.setRetryTxType(txFailedResult?.[1] || false);
+    await wallet.resendSign(autoRetryUpdate);
+
     message.success(t('page.signFooterBar.ledger.resent'));
     emitSignComponentAmounted();
   };
@@ -105,9 +126,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [brandName]);
 
   const init = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
     const approval = await getApproval();
 
     const isSignText = params.isGnosis
@@ -153,6 +172,13 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
     });
 
+    eventBus.addEventListener(
+      EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB,
+      async () => {
+        openInternalPageInTab('request-permission?type=onekey&from=approval');
+      }
+    );
+
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
@@ -191,6 +217,11 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
           action: 'Submit',
           label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
         });
+
+        ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+          event_category: 'Transaction',
+        });
+
         setSignFinishedData({
           data: sig,
           approvalId: approval.id,
@@ -206,9 +237,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
 
   React.useEffect(() => {
     (async () => {
-      const account = params.isGnosis
-        ? params.account!
-        : (await wallet.syncGetCurrentAccount())!;
+      const account = params.isGnosis ? params.account! : $account;
       setTitle(
         <div className="flex justify-center items-center">
           <img src={brandContent?.icon} className="w-20 mr-8" />
@@ -219,6 +248,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
           </span>
         </div>
       );
+      setHeight('fit-content');
       init();
     })();
   }, []);
@@ -227,12 +257,13 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
     setPopupProps(params?.extra?.popupProps);
   }, [params?.extra?.popupProps]);
 
+  const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        false,
+        stay,
         false,
         signFinishedData.approvalId
       );
@@ -254,7 +285,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:
         setStatusProp('REJECTED');
-        setContent(t('page.signFooterBar.ledger.txRejected'));
+        setContent(t('page.signFooterBar.qrcode.txFailed'));
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTED:
@@ -277,6 +308,29 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
     }
   }, [brandContent?.brand]);
 
+  const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    nonce: params?.nonce,
+    chainId: params?.chainId,
+    from: params?.from,
+    status: connectStatus,
+    description: description,
+  });
+
+  React.useEffect(() => {
+    if (
+      [
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(connectStatus)
+    ) {
+      setContent(
+        txFailedResult?.[1]
+          ? t('page.signFooterBar.qrcode.txFailedRetry')
+          : t('page.signFooterBar.qrcode.txFailed')
+      );
+    }
+  }, [txFailedResult?.[1], connectStatus]);
+
   if (!brandContent) {
     throw new Error(t('page.signFooterBar.common.notSupport', [brandName]));
   }
@@ -288,10 +342,11 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
       status={statusProp}
       onRetry={handleRetry}
       content={content}
-      description={description}
       onDone={() => setIsClickDone(true)}
       onCancel={handleCancel}
       hasMoreDescription={!!errorMessage}
+      description={txFailedResult?.[0] || description}
+      retryUpdateType={txFailedResult?.[1] ?? 'origin'}
     />
   );
 };

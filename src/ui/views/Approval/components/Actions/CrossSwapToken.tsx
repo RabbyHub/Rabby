@@ -13,6 +13,7 @@ import {
 } from '@rabby-wallet/rabby-action';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { Chain } from 'background/service/openapi';
+import { findChain } from '@/utils/chain';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { SecurityListItem } from './components/SecurityListItem';
@@ -86,6 +87,10 @@ const CrossSwapToken = ({
     return !isSameAddress(receiver, requireData.sender);
   }, [requireData, receiver]);
 
+  const receiveChain = useMemo(() => {
+    return findChain({ serverId: receiveToken.chain }) || undefined;
+  }, [receiveToken.chain]);
+
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;
@@ -97,6 +102,8 @@ const CrossSwapToken = ({
       ignored: processedRules.includes(id),
     });
   };
+
+  const hasRequiredData = requireData && Object.keys(requireData).length > 0;
 
   return (
     <Wrapper>
@@ -206,7 +213,7 @@ const CrossSwapToken = ({
                 <Values.AddressWithCopy
                   id="cross-swap-token-receiver"
                   address={receiver}
-                  chain={chain}
+                  chain={receiveChain}
                 />
               </Row>
             </Col>
@@ -235,65 +242,69 @@ const CrossSwapToken = ({
             </SubTable>
           </>
         )}
-        <Col>
-          <Row isTitle itemsCenter>
-            {t('page.signTx.interactContract')}
-          </Row>
-          <Row>
-            <ViewMore
-              type="contract"
-              data={{
-                bornAt: requireData.bornAt,
-                protocol: requireData.protocol,
-                rank: requireData.rank,
-                address: requireData.id,
-                hasInteraction: requireData.hasInteraction,
-                chain,
-              }}
-            >
-              <Values.Address
-                id="cross-swap-token-address"
-                hasHover
-                address={requireData.id}
-                chain={chain}
+        {hasRequiredData && (
+          <>
+            <Col>
+              <Row isTitle itemsCenter>
+                {t('page.signTx.interactContract')}
+              </Row>
+              <Row>
+                <ViewMore
+                  type="contract"
+                  data={{
+                    bornAt: requireData.bornAt,
+                    protocol: requireData.protocol,
+                    rank: requireData.rank,
+                    address: requireData.id,
+                    hasInteraction: requireData.hasInteraction,
+                    chain,
+                  }}
+                >
+                  <Values.Address
+                    id="cross-swap-token-address"
+                    hasHover
+                    address={requireData.id}
+                    chain={chain}
+                  />
+                </ViewMore>
+              </Row>
+            </Col>
+            <SubTable target="cross-swap-token-address">
+              <SubCol>
+                <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+                <SubRow>
+                  <ProtocolListItem protocol={requireData.protocol} />
+                </SubRow>
+              </SubCol>
+              <SubCol>
+                <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
+                <SubRow>
+                  <Values.Boolean value={requireData.hasInteraction} />
+                </SubRow>
+              </SubCol>
+              {isInWhitelist && (
+                <SubCol>
+                  <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
+                  <SubRow>{t('page.signTx.trusted')}</SubRow>
+                </SubCol>
+              )}
+
+              <SecurityListItem
+                id="1135"
+                engineResult={engineResultMap['1135']}
+                forbiddenText={t('page.signTx.markAsBlock')}
+                title={t('page.signTx.myMark')}
               />
-            </ViewMore>
-          </Row>
-        </Col>
-        <SubTable target="cross-swap-token-address">
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
-            <SubRow>
-              <ProtocolListItem protocol={requireData.protocol} />
-            </SubRow>
-          </SubCol>
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
-            <SubRow>
-              <Values.Boolean value={requireData.hasInteraction} />
-            </SubRow>
-          </SubCol>
-          {isInWhitelist && (
-            <SubCol>
-              <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
-              <SubRow>{t('page.signTx.trusted')}</SubRow>
-            </SubCol>
-          )}
 
-          <SecurityListItem
-            id="1135"
-            engineResult={engineResultMap['1135']}
-            forbiddenText={t('page.signTx.markAsBlock')}
-            title={t('page.signTx.myMark')}
-          />
-
-          <SecurityListItem
-            id="1137"
-            engineResult={engineResultMap['1137']}
-            warningText={t('page.signTx.markAsBlock')}
-            title={t('page.signTx.myMark')}
-          />
-        </SubTable>
+              <SecurityListItem
+                id="1137"
+                engineResult={engineResultMap['1137']}
+                warningText={t('page.signTx.markAsBlock')}
+                title={t('page.signTx.myMark')}
+              />
+            </SubTable>
+          </>
+        )}
       </Table>
     </Wrapper>
   );

@@ -1,17 +1,59 @@
-import React, { InsHTMLAttributes, useEffect, useMemo } from 'react';
+import React, {
+  InsHTMLAttributes,
+  PropsWithRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+} from 'react';
 import clsx from 'clsx';
 import { CHAINS_ENUM } from '@debank/common';
 
 import { useState } from 'react';
 import { SelectChainListProps } from '@/ui/component/ChainSelector/components/SelectChainList';
 import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import ChainIcon from '@/ui/component/ChainIcon';
 import { ReactComponent as RcImgArrowDownCC } from '@/ui/assets/swap/arrow-down-cc.svg';
 import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
+import { DrawerProps, Modal, Skeleton } from 'antd';
+import { TDisableCheckChainFn } from './components/SelectChainItem';
+import { RiskWarningTitle } from '../RiskWarningTitle';
 
+const ChainGlobalStyle = createGlobalStyle`
+  .chain-selector-disable-item-tips {
+    .ant-modal-body {
+      background: var(--r-neutral-bg1, #fff);
+      padding-top: 24px !important;
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+      padding-bottom: 20px !important;
+    }
+    .ant-modal-confirm-content {
+      margin-top: 0 !important;
+      padding: 0 !important;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      color: var(--r-neutral-title1, #192945);
+    }
+    .ant-modal-confirm-btns {
+      margin-top: 35px !important;
+      .ant-btn {
+        font-size: 13px !important;
+        font-weight: 500;
+      }
+      .ant-btn-ghost {
+        border-color: var(--r-blue-default);
+        color: var(--r-blue-default);
+        &:hover {
+          background: var(--r-blue-light1, #eef1ff) !important;
+        }
+      }
+    }
+  }
+`;
 const ChainWrapper = styled.div`
   /* height: 40px; */
   background: var(--r-neutral-card-2, #f2f4f7);
@@ -77,7 +119,7 @@ const ChainWrapper = styled.div`
     }
   }
   &:hover {
-    background: var(--r-blue-light1, #eef1ff);
+    background: var(--r-blue-light2, #eef1ff);
   }
   & > {
     .down {
@@ -100,12 +142,14 @@ export const ChainRender = ({
   arrowDownComponent,
   bridge,
   swap,
+  loading,
   ...other
 }: {
   chain?: CHAINS_ENUM;
   readonly: boolean;
   arrowDownComponent?: React.ReactNode;
   bridge?: boolean;
+  loading?: boolean;
   swap?: boolean;
 } & InsHTMLAttributes<HTMLDivElement>) => {
   const wallet = useWallet();
@@ -138,24 +182,33 @@ export const ChainRender = ({
       )}
       {...other}
     >
-      {chain && (
-        <ChainIcon
-          chain={chain}
-          customRPC={customRPC}
-          size={'small'}
-          innerClassName={clsx(
-            bridge && 'w-[16px] h-[16px]',
-            swap && 'w-[18px] h-[18px]'
+      {loading ? (
+        <>
+          <Skeleton.Avatar className="bg-r-neutral-card2 w-[18px] h-[18px] rounded-full" />
+          <Skeleton.Avatar className="bg-r-neutral-card2 w-[94px] h-[18px] rounded-[2px]" />
+        </>
+      ) : (
+        <>
+          {chain && (
+            <ChainIcon
+              chain={chain}
+              customRPC={customRPC}
+              size={'small'}
+              innerClassName={clsx(
+                bridge && 'w-[16px] h-[16px]',
+                swap && 'w-[18px] h-[18px]'
+              )}
+              showCustomRPCToolTip
+              tooltipProps={{
+                visible: swap || bridge ? false : undefined,
+              }}
+            />
           )}
-          showCustomRPCToolTip
-          tooltipProps={{
-            visible: swap || bridge ? false : undefined,
-          }}
-        />
+          <span className={clsx('name')}>
+            {chainInfo?.name || t('page.bridge.Select')}
+          </span>
+        </>
       )}
-      <span className={clsx('name')}>
-        {chainInfo?.name || t('page.bridge.Select')}
-      </span>
       {/* {!readonly && <img className="down" src={ImgArrowDown} alt="" />} */}
       {!readonly &&
         (arrowDownComponent ? (
@@ -184,69 +237,132 @@ interface ChainSelectorProps {
   drawerHeight?: number;
   showClosableIcon?: boolean;
   swap?: boolean;
+  getContainer?: DrawerProps['getContainer'];
+  disableChainCheck?: TDisableCheckChainFn;
+  loading?: boolean;
+  zIndex?: number;
 }
-export default function ChainSelectorInForm({
-  value,
-  onChange,
-  readonly = false,
-  showModal = false,
-  disabledTips,
-  title,
-  supportChains,
-  chainRenderClassName,
-  arrowDownComponent,
-  bridge,
-  hideTestnetTab = false,
-  excludeChains,
-  drawerHeight,
-  showClosableIcon,
-  swap,
-}: ChainSelectorProps) {
-  const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
-  const handleClickSelector = () => {
-    if (readonly) return;
-    setShowSelectorModal(true);
-  };
+export type ChainSelectorRef = {
+  toggleShow: (show: boolean) => void;
+};
+const ChainSelectorInForm = React.forwardRef<
+  ChainSelectorRef,
+  ChainSelectorProps
+>(
+  (
+    {
+      value,
+      onChange,
+      readonly = false,
+      showModal = false,
+      disabledTips,
+      disableChainCheck,
+      title,
+      supportChains,
+      chainRenderClassName,
+      arrowDownComponent,
+      bridge,
+      hideTestnetTab = false,
+      excludeChains,
+      drawerHeight,
+      showClosableIcon,
+      swap,
+      loading,
+      getContainer,
+      zIndex,
+    },
+    ref
+  ) => {
+    const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
-  const handleCancel = () => {
-    if (readonly) return;
-    setShowSelectorModal(false);
-  };
+    const { t } = useTranslation();
+    const handleClickSelector = () => {
+      if (readonly) return;
+      setShowSelectorModal(true);
+    };
 
-  const handleChange = (value: CHAINS_ENUM) => {
-    if (readonly) return;
-    onChange && onChange(value);
-    setShowSelectorModal(false);
-  };
+    const handleCancel = () => {
+      if (readonly) return;
+      setShowSelectorModal(false);
+    };
 
-  return (
-    <>
-      <ChainRender
-        chain={value}
-        onClick={handleClickSelector}
-        readonly={readonly}
-        className={chainRenderClassName}
-        arrowDownComponent={arrowDownComponent}
-        bridge={bridge}
-        swap={swap}
-      />
-      {!readonly && (
-        <ChainSelectorModal
-          height={drawerHeight}
-          excludeChains={excludeChains}
-          hideTestnetTab={hideTestnetTab}
-          value={value}
-          visible={showSelectorModal}
-          onChange={handleChange}
-          onCancel={handleCancel}
-          supportChains={supportChains}
-          disabledTips={disabledTips}
-          title={title}
-          showClosableIcon={showClosableIcon}
-          showRPCStatus
+    const handleChange = (value: CHAINS_ENUM) => {
+      if (readonly) return;
+      onChange && onChange(value);
+      setShowSelectorModal(false);
+    };
+    const checkBeforeConfirm = (value: CHAINS_ENUM) => {
+      if (readonly) return;
+      const chainServerId = findChain({ enum: value })?.serverId;
+      if (chainServerId) {
+        const { disable, reason } = disableChainCheck?.(chainServerId) || {};
+        if (disable) {
+          Modal.confirm({
+            width: 340,
+            closable: true,
+            closeIcon: <></>,
+            centered: true,
+            className: 'chain-selector-disable-item-tips',
+            title: <RiskWarningTitle />,
+            content: reason,
+            okText: t('global.proceedButton'),
+            cancelText: t('global.cancelButton'),
+            cancelButtonProps: {
+              type: 'ghost',
+              className: 'text-r-blue-default border-r-blue-default',
+            },
+            onOk() {
+              handleChange(value);
+            },
+          });
+          return;
+        }
+      }
+      handleChange(value);
+    };
+
+    useImperativeHandle(ref, () => ({
+      toggleShow: (show: boolean) => {
+        setShowSelectorModal(show);
+      },
+    }));
+
+    return (
+      <>
+        <ChainRender
+          chain={value}
+          onClick={handleClickSelector}
+          readonly={readonly}
+          className={chainRenderClassName}
+          arrowDownComponent={arrowDownComponent}
+          bridge={bridge}
+          swap={swap}
+          loading={loading}
         />
-      )}
-    </>
-  );
-}
+        {!readonly && (
+          <ChainSelectorModal
+            height={drawerHeight}
+            excludeChains={excludeChains}
+            hideTestnetTab={hideTestnetTab}
+            value={value}
+            visible={showSelectorModal}
+            onChange={checkBeforeConfirm}
+            onCancel={handleCancel}
+            supportChains={supportChains}
+            disabledTips={disabledTips}
+            disableChainCheck={disableChainCheck}
+            title={title}
+            showClosableIcon={showClosableIcon}
+            showRPCStatus
+            getContainer={getContainer}
+            zIndex={zIndex}
+          />
+        )}
+        <ChainGlobalStyle />
+      </>
+    );
+  }
+);
+
+export default ChainSelectorInForm;

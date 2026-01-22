@@ -2,23 +2,32 @@ import { ReactComponent as RcIconSwapHistory } from '@/ui/assets/swap/history.sv
 
 import { PageHeader } from '@/ui/component';
 import React, { useCallback, useState } from 'react';
-import {
-  usePollSwapPendingNumber,
-  useRabbyFee,
-  useSetRabbyFee,
-} from '../hooks';
+import { useRabbyFee, useSetRabbyFee } from '../hooks';
 import { SwapTxHistory } from './History';
 import { useTranslation } from 'react-i18next';
 import { useRabbyDispatch } from '@/ui/store';
-import { PendingTx } from '../../Bridge/Component/PendingTx';
 import { RabbyFeePopup } from './RabbyFeePopup';
 import { useHistory } from 'react-router-dom';
+import { getUiType } from '@/ui/utils';
+import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+const isTab = getUiType().isTab;
+const isDesktop = getUiType().isDesktop;
 
-export const Header = () => {
+const getContainer = isTab
+  ? '.js-rabby-popup-container'
+  : isDesktop
+  ? '.js-rabby-desktop-swap-container'
+  : undefined;
+
+export const Header = ({
+  onOpenInTab,
+  noShowHeader = false,
+}: {
+  onOpenInTab?(): void;
+  noShowHeader: boolean;
+}) => {
   const [historyVisible, setHistoryVisible] = useState(false);
   const { t } = useTranslation();
-
-  const loadingNumber = usePollSwapPendingNumber(5000);
 
   const { visible, feeDexDesc, dexName } = useRabbyFee();
   const setRabbyFeeVisible = useSetRabbyFee();
@@ -40,36 +49,48 @@ export const Header = () => {
 
   return (
     <>
-      <PageHeader
-        className="mx-[20px] pt-[20px] mb-[14px]"
-        forceShowBack
-        onBack={gotoDashboard}
-        rightSlot={
-          <div className="flex items-center gap-20 absolute bottom-0 right-0">
-            {loadingNumber ? (
-              <PendingTx number={loadingNumber} onClick={openHistory} />
-            ) : (
+      {!noShowHeader && (
+        <PageHeader
+          className="mx-[20px] mb-[5px]"
+          forceShowBack={!isTab}
+          onBack={gotoDashboard}
+          canBack={!isTab}
+          isShowAccount
+          rightSlot={
+            <div className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0">
+              {isTab ? null : (
+                <div
+                  className="text-r-neutral-title1 cursor-pointer"
+                  onClick={() => {
+                    onOpenInTab?.();
+                  }}
+                >
+                  <RcIconFullscreen />
+                </div>
+              )}
               <RcIconSwapHistory
                 className="cursor-pointer"
                 onClick={openHistory}
               />
-            )}
-          </div>
-        }
-      >
-        {t('page.swap.title')}
-      </PageHeader>
+            </div>
+          }
+        >
+          {t('page.swap.title')}
+        </PageHeader>
+      )}
       <SwapTxHistory
         visible={historyVisible}
         onClose={useCallback(() => {
           setHistoryVisible(false);
         }, [])}
+        getContainer={getContainer}
       />
       <RabbyFeePopup
         visible={visible}
         dexName={dexName}
         feeDexDesc={feeDexDesc}
         onClose={() => setRabbyFeeVisible({ visible: false })}
+        getContainer={getContainer}
       />
     </>
   );

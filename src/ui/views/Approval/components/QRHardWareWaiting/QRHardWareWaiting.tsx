@@ -43,8 +43,9 @@ export type RequestSignPayload = {
   };
 };
 
-const QRHardWareWaiting = ({ params }) => {
-  const { setTitle, closePopup } = useCommonPopupView();
+const QRHardWareWaiting = ({ params, account: $account }) => {
+  const account = params.isGnosis ? params.account : $account;
+  const { setTitle, closePopup, setHeight } = useCommonPopupView();
   const [status, setStatus] = useState<QRHARDWARE_STATUS>(
     QRHARDWARE_STATUS.SYNC
   );
@@ -87,7 +88,6 @@ const QRHardWareWaiting = ({ params }) => {
     })?.enum || CHAINS_ENUM.ETH;
   const init = useCallback(async () => {
     const approval = await getApproval();
-    const account = await wallet.syncGetCurrentAccount()!;
     if (!account) return;
     setBrand(account.brandName);
     const icon = WALLET_BRAND_CONTENT[account.brandName].icon;
@@ -101,6 +101,7 @@ const QRHardWareWaiting = ({ params }) => {
         </span>
       </div>
     );
+    setHeight('fit-content');
     setWalletBrandContent(WALLET_BRAND_CONTENT[account.brandName]);
     setIsSignText(
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
@@ -181,12 +182,13 @@ const QRHardWareWaiting = ({ params }) => {
     };
   }, [init]);
 
+  const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        false,
+        stay,
         false,
         signFinishedData.approvalId
       );
@@ -197,7 +199,6 @@ const QRHardWareWaiting = ({ params }) => {
     rejectApproval('User rejected the request.');
   };
   const handleRequestSignature = async () => {
-    const account = await wallet.syncGetCurrentAccount()!;
     const approval = await getApproval();
     if (account) {
       if (!isSignText) {
@@ -264,7 +265,7 @@ const QRHardWareWaiting = ({ params }) => {
     wallet.submitQRHardwareSignature(
       signPayload!.requestId,
       scanMessage!,
-      params?.account?.address
+      account?.address
     );
   };
 
@@ -308,7 +309,7 @@ const QRHardWareWaiting = ({ params }) => {
         wallet.submitQRHardwareSignature(
           signPayload!.requestId,
           message,
-          params?.account?.address
+          account?.address
         );
       };
       const onKeystoneWaitingPageRetry = async () => {
@@ -337,7 +338,7 @@ const QRHardWareWaiting = ({ params }) => {
         {status === QRHARDWARE_STATUS.SYNC && signPayload && (
           <Player
             layoutStyle={shouldShowSignatureSwitchButton ? 'normal' : 'compact'}
-            playerSize={shouldShowSignatureSwitchButton ? 144 : 180}
+            playerSize={shouldShowSignatureSwitchButton ? 144 : 260}
             type={signPayload.payload.type}
             cbor={signPayload.payload.cbor}
             onSign={handleRequestSignature}

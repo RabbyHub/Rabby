@@ -29,7 +29,8 @@ export const batchQueryTokens = async (
   user_id: string,
   wallet: WalletControllerType,
   chainId?: string,
-  isTestnet: boolean = !chainId ? false : checkIsTestnet(chainId)
+  isTestnet: boolean = !chainId ? false : checkIsTestnet(chainId),
+  isAll: boolean = true
 ) => {
   if (!chainId && !isTestnet) {
     const usedChains = await wallet.openapi.usedChainList(user_id);
@@ -38,7 +39,7 @@ export const batchQueryTokens = async (
       chainIdList.map((serverId) =>
         pQueue.add(() => {
           return requestOpenApiWithChainId(
-            ({ openapi }) => openapi.listToken(user_id, serverId, true),
+            ({ openapi }) => openapi.listToken(user_id, serverId, isAll),
             {
               wallet,
               isTestnet,
@@ -50,7 +51,7 @@ export const batchQueryTokens = async (
     return flatten(res);
   }
   return requestOpenApiWithChainId(
-    ({ openapi }) => openapi.listToken(user_id, chainId, true),
+    ({ openapi }) => openapi.listToken(user_id, chainId, isAll),
     {
       wallet,
       isTestnet,
@@ -104,4 +105,34 @@ export const sortWalletTokens = (wallet: DisplayedProject) => {
   return wallet._portfolios
     .flatMap((x) => x._tokenList)
     .sort((m, n) => (n._usdValue || 0) - (m._usdValue || 0));
+};
+export const concatAndSort = <
+  T extends {
+    symbol: string;
+    is_core?: boolean | null;
+    price?: number;
+    amount?: number;
+  }
+>(
+  source: T[],
+  appendList: T[],
+  keyword: string
+): T[] => {
+  return source
+    .concat(
+      appendList.filter((token) =>
+        token.symbol.toLowerCase().includes(keyword.toLowerCase())
+      )
+    )
+    .sort((a, b) => {
+      if (a.is_core && !b.is_core) {
+        return -1;
+      }
+      if (!a.is_core && b.is_core) {
+        return 1;
+      }
+      const aValue = (a.price ?? 0) * (a.amount ?? 0);
+      const bValue = (b.price ?? 0) * (b.amount ?? 0);
+      return bValue - aValue;
+    });
 };

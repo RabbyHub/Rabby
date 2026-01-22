@@ -1,30 +1,32 @@
 import React from 'react';
 import { TokenButton } from './components/TokenButton';
-import { useRabbySelector } from '@/ui/store';
-import useSortToken from '@/ui/hooks/useSortTokens';
 import { useTranslation } from 'react-i18next';
+import { useFilteredTokens } from './useFilteredTokens';
 
 type Props = {
   onClickButton: () => void;
   isTestnet: boolean;
+  selectChainId?: string | null;
 };
 
 export const CustomizedButton: React.FC<Props> = ({
   onClickButton,
   isTestnet,
+  selectChainId,
 }) => {
-  const { customize } = useRabbySelector((store) =>
-    isTestnet ? store.account.testnetTokens : store.account.tokens
+  const { sortedCustomize: list } = useFilteredTokens(
+    selectChainId || null,
+    isTestnet
   );
-  const list = useSortToken(customize);
   const { t } = useTranslation();
 
   return (
     <TokenButton
-      label={
+      label={t('page.dashboard.tokenDetail.customizedButton')}
+      modalTitle={
         list?.length > 1
-          ? t('page.dashboard.tokenDetail.customizedButtons')
-          : t('page.dashboard.tokenDetail.customizedButton')
+          ? t('page.dashboard.tokenDetail.customizedListTitles')
+          : t('page.dashboard.tokenDetail.customizedListTitle')
       }
       buttonText={t('page.dashboard.assets.customButtonText')}
       description={t('page.dashboard.assets.customDescription')}

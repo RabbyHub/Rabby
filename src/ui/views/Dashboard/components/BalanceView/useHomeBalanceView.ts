@@ -70,6 +70,8 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
     if (!totalBalance || !curvePoints) return null;
 
     const balanceValue = totalBalance?.total_usd_value || 0;
+    const evmBalanceValue = totalBalance?.evmUsdValue || 0;
+    const appChainIds = totalBalance?.appChainIds || [];
 
     const { chainList, chainListWithValue } = normalizeAndVaryChainList(
       totalBalance?.chain_list || []
@@ -77,6 +79,8 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
 
     return {
       balance: balanceValue,
+      evmBalance: evmBalanceValue,
+      appChainIds,
       originalCurveData: curvePoints || [],
       curveChartData: formChartData(
         curvePoints || [],

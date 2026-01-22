@@ -13,6 +13,7 @@ import { ReactComponent as RcIconHiddenArrow } from '@/ui/assets/swap/hidden-quo
 import clsx from 'clsx';
 import { useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
+import { DrawerProps } from 'antd';
 
 interface QuotesProps
   extends Omit<
@@ -29,6 +30,7 @@ interface QuotesProps
   activeName?: string;
   visible: boolean;
   onClose: () => void;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 export const Quotes = ({
@@ -36,6 +38,7 @@ export const Quotes = ({
   activeName,
   inSufficient,
   sortIncludeGasFee,
+  getContainer,
   ...other
 }: QuotesProps) => {
   const { t } = useTranslation();
@@ -56,10 +59,14 @@ export const Quotes = ({
           if (!quote.preExecResult) {
             return new BigNumber(Number.MIN_SAFE_INTEGER);
           }
-          const receiveTokenAmount =
-            quote?.preExecResult.swapPreExecTx.balance_change.receive_token_list.find(
-              (item) => isSameAddress(item.id, other.receiveToken.id)
-            )?.amount || 0;
+          const receiveTokenAmount = new BigNumber(
+            quote?.data?.toTokenAmount || 0
+          )
+            .div(
+              10 **
+                (quote?.data?.toTokenDecimals || other.receiveToken.decimals)
+            )
+            .toString();
           if (sortIncludeGasFee) {
             return new BigNumber(receiveTokenAmount)
               .times(price)
@@ -76,11 +83,13 @@ export const Quotes = ({
 
   const [bestQuoteAmount, bestQuoteGasUsd] = useMemo(() => {
     const bestQuote = sortedList?.[0];
-    const receiveTokenAmount = bestQuote?.preExecResult
-      ? bestQuote.preExecResult.swapPreExecTx.balance_change.receive_token_list.find(
-          (item) => isSameAddress(item.id, other.receiveToken.id)
-        )?.amount || 0
-      : 0;
+    const receiveTokenAmount =
+      new BigNumber(bestQuote?.data?.toTokenAmount || 0)
+        .div(
+          10 **
+            (bestQuote?.data?.toTokenDecimals || other.receiveToken.decimals)
+        )
+        .toString() || '0';
 
     return [
       inSufficient
@@ -116,9 +125,12 @@ export const Quotes = ({
             name={dex?.name}
             isBestQuote
             bestQuoteAmount={`${
-              dex?.preExecResult?.swapPreExecTx.balance_change.receive_token_list.find(
-                (token) => isSameAddress(token.id, other.receiveToken.id)
-              )?.amount || '0'
+              new BigNumber(dex?.data?.toTokenAmount || 0)
+                .div(
+                  10 **
+                    (dex?.data?.toTokenDecimals || other.receiveToken.decimals)
+                )
+                .toString() || '0'
             }`}
             bestQuoteGasUsd={bestQuoteGasUsd}
             isLoading={dex.loading}
@@ -237,7 +249,7 @@ const bodyStyle = {
 };
 
 export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
-  const { visible, onClose } = props;
+  const { visible, onClose, getContainer } = props;
   const refresh = useSetRefreshId();
 
   const refreshQuote = React.useCallback(() => {
@@ -346,6 +358,7 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
       className="isConnectView z-[999]"
       bodyStyle={bodyStyle}
       isSupportDarkMode
+      getContainer={getContainer}
     >
       <Quotes {...props} sortIncludeGasFee={sortIncludeGasFee} />
     </Popup>

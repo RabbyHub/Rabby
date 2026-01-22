@@ -9,6 +9,7 @@ import IconInfo from 'ui/assets/infoicon.svg';
 import { Copy } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
 import AccountCard from './AccountCard';
+import { Account } from '@/background/service/preference';
 
 interface ConnectProps {
   params: {
@@ -19,9 +20,10 @@ interface ConnectProps {
       name: string;
     };
   };
+  account: Account;
 }
 
-const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
+const GetEncryptionPublicKey = ({ params, account }: ConnectProps) => {
   const { t } = useTranslation();
   const [canProcess, setCanProcess] = useState(true);
   const [msg] = params.data;
@@ -34,7 +36,6 @@ const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
   }, [rejectApproval]);
 
   const decrypt = async () => {
-    const account = await wallet.getCurrentAccount();
     const res = await wallet.decryptMessage({
       type: account!.type,
       from: account!.address,
@@ -64,7 +65,6 @@ const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
   };
 
   const init = async () => {
-    const account = await wallet.getCurrentAccount();
     setCanProcess(
       !!account &&
         [KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(
@@ -79,7 +79,7 @@ const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
 
   return (
     <div className="approval-decrypt">
-      <AccountCard></AccountCard>
+      <AccountCard account={account}></AccountCard>
       <div className="content">
         <div className="desc">
           This website requires you to decrypt the following text in order to
@@ -108,8 +108,8 @@ const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
           )}
         </div>
       </div>
-      <footer className="footer">
-        <div className="action-buttons flex justify-between mt-4">
+      <footer className={clsx('footer')}>
+        <div className="action-buttons flex justify-between mt-4 p-[20px]">
           <Button
             type="primary"
             size="large"

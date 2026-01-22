@@ -7,6 +7,7 @@ export { default as openapiService } from './openapi';
 export { default as transactionWatchService } from './transactionWatcher';
 export { default as pageStateCacheService } from './pageStateCache';
 export { default as transactionHistoryService } from './transactionHistory';
+export { default as transactionsService } from './transactions';
 export { default as contactBookService } from './contactBook';
 export { default as signTextHistoryService } from './signTextHistory';
 export { default as whitelistService } from './whitelist';
@@ -21,3 +22,6 @@ export { default as HDKeyRingLastAddAddrTimeService } from './HDKeyRingLastAddAd
 export { default as bridgeService } from './bridge';
 export { default as gasAccountService } from './gasAccount';
 export { default as uninstalledService } from './uninstalled';
+export { default as OfflineChainsService } from './offlineChain';
+export { default as perpsService } from './perps';
+export { default as miscService } from './misc';

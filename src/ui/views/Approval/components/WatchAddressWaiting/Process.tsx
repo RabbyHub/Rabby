@@ -28,16 +28,18 @@ const Process = ({
   onRetry,
   onCancel,
   onDone,
-  chain,
 }: {
   chain: CHAINS_ENUM;
   result: string;
   status: Valueof<typeof WALLETCONNECT_STATUS_MAP>;
   account: Account;
   error: { code?: number; message?: string } | null;
-  onRetry(): void;
+  onRetry(retry?: boolean): void;
   onCancel(): void;
   onDone(): void;
+  nonce?: string;
+  chainId?: number;
+  from?: string;
 }) => {
   const { setClassName, setTitle: setPopupViewTitle } = useCommonPopupView();
   const [displayBrandName] = useDisplayBrandName(account.brandName);

@@ -21,6 +21,8 @@ import { useQueryDbkBridgeHistory } from './hooks/useQueryDbkBridgeHistory';
 import { useCheckBridgeStatus } from './hooks/useCheckBridgeStatus';
 import { useTranslation } from 'react-i18next';
 import { sortBy } from 'lodash';
+import { useLocation } from 'react-router-dom';
+import { query2obj } from '@/ui/utils/url';
 
 const Warper = styled.div`
   input::-webkit-outer-spin-button,
@@ -98,8 +100,13 @@ export const DbkChainBridge = () => {
       label: t('page.ecology.dbk.bridge.tabs.withdraw'),
     },
   ];
+
+  const { search } = useLocation();
+  const qs = query2obj(search);
   const [activeTab, setActiveTab] = React.useState<'deposit' | 'withdraw'>(
-    'deposit'
+    ['deposit', 'withdraw'].includes(qs.activeTab)
+      ? (qs.activeTab as any)
+      : 'deposit'
   );
 
   const {
@@ -268,7 +275,7 @@ export const DbkChainBridge = () => {
                           payToken?.decimals || 18
                         )
                       )
-                      .toString()
+                      .toFixed()
                   );
                 }}
               >

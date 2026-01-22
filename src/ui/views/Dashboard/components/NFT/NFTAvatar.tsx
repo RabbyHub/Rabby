@@ -1,7 +1,7 @@
 import { NFTItem } from '@/background/service/openapi';
 import { Image } from 'antd';
 import clsx from 'clsx';
-import React from 'react';
+import React, { ReactNode } from 'react';
 // import IconImgLoading from 'ui/assets/img-loading.svg';
 import IconImgFail from 'ui/assets/img-fail-1.svg';
 import IconNFTDefault from 'ui/assets/nft-default.svg';
@@ -20,17 +20,31 @@ type AvatarProps = {
   onPreview?: (e) => void;
   amount?: number;
   unknown?: string;
+  empty?: ReactNode;
+};
+
+// check if the url is a valid http(s) url
+const isValidHttpUrl = (url?: string): boolean => {
+  if (!url) return false;
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+  } catch {
+    return false;
+  }
 };
 
 const Thumbnail = ({
   content,
   type,
   unknown,
-}: Pick<AvatarProps, 'content' | 'type' | 'unknown'>) => {
-  if (type && ['video_url'].includes(type) && content) {
+  empty,
+}: Pick<AvatarProps, 'content' | 'type' | 'unknown' | 'empty'>) => {
+  const sanitizedUrl = isValidHttpUrl(content) ? content : '';
+  if (type && ['video_url'].includes(type) && sanitizedUrl) {
     return (
       <video
-        src={content}
+        src={sanitizedUrl}
         preload="metadata"
         className="nft-avatar-image"
         controlsList="nodownload nofullscreen noplaybackrate"
@@ -38,10 +52,18 @@ const Thumbnail = ({
       />
     );
   }
+
+  const isShowEmpty =
+    !(type && ['image', 'image_url'].includes(type) && content) && empty;
+
   const src =
     type && ['image', 'image_url'].includes(type) && content
       ? content
       : unknown || IconNFTDefault;
+
+  if (isShowEmpty) {
+    return <>{empty}</>;
+  }
   return (
     <Image
       src={src}
@@ -77,10 +99,11 @@ const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
       ></Image>
     );
   }
-  if (type && ['video_url', 'audio_url'].includes(type) && content) {
+  const sanitizedUrl = isValidHttpUrl(content) ? content : '';
+  if (type && ['video_url', 'audio_url'].includes(type) && sanitizedUrl) {
     return (
       <video
-        src={content}
+        src={sanitizedUrl}
         controls
         className="nft-avatar-image"
         controlsList="nodownload nofullscreen noplaybackrate"
@@ -101,13 +124,19 @@ const NFTAvatar = ({
   onPreview,
   unknown,
   amount,
+  empty,
 }: AvatarProps) => {
   const logo = getChain(chain)?.logo || IconUnknown;
   const isShowLogo = !!chain;
   return (
     <div className={clsx('nft-avatar', className)} style={style}>
       {thumbnail ? (
-        <Thumbnail content={content} type={type} unknown={unknown} />
+        <Thumbnail
+          content={content}
+          type={type}
+          unknown={unknown}
+          empty={empty}
+        />
       ) : (
         <Preview content={content} type={type}></Preview>
       )}

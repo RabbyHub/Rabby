@@ -5,11 +5,11 @@ import { Alert, Tooltip } from 'antd';
 import type { ColumnType, TableProps } from 'antd/lib/table';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-import { formatUsdValue, useWallet } from 'ui/utils';
+import { formatUsdValue, isSameAddress, useWallet } from 'ui/utils';
 import './style.less';
 
 import { Chain, CHAINS_ENUM } from '@debank/common';
-import { findChainByServerID } from '@/utils/chain';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 
 import {
   HandleClickTableRow,
@@ -41,7 +41,7 @@ import {
   compareAssetSpenderByAmount,
   compareAssetSpenderByType,
 } from '@/utils/approval';
-import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
 import {
@@ -61,7 +61,7 @@ import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
 import { RevokeApprovalModal } from './components/RevokeApprovalModal';
 import { RISKY_ROW_HEIGHT, ROW_HEIGHT } from './constant';
-import { RevokeButton } from './components/RevokeButton';
+import { RevokeButton, RevokeEIP7702Button } from './components/RevokeButton';
 import SearchInput from './components/SearchInput';
 import { useInspectRowItem } from './components/ModalDebugRowItem';
 import { IS_WINDOWS, KEYRING_CLASS } from '@/constant';
@@ -80,6 +80,13 @@ import { AssetRow } from './components/AssetRow';
 import { SpenderRow } from './components/SpenderRow';
 import { CheckboxRow } from './components/CheckboxRow';
 import { ChainSelectorButton } from './components/ChainSelectorButton';
+import {
+  EIP7702_REVOKE_SUPPORTED_CHAINS,
+  EIP7702Delegated,
+  useEIP7702ApprovalsQuery,
+} from './useEIP7702Approvals';
+import { noop } from 'lodash';
+import ChainIcon from '@/ui/component/ChainIcon';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -251,7 +258,7 @@ function getColumnsForContract({
           </div>
         );
       },
-      width: 380,
+      width: 360,
     },
     // Contract Trust value
     {
@@ -570,7 +577,7 @@ function getColumnsForContract({
           </div>
         );
       },
-      width: 180,
+      width: 200,
     },
   ];
 
@@ -763,7 +770,7 @@ function getColumnsForAsset({
       key: 'approveSpender',
       dataIndex: 'key',
       render: (_, spender) => <SpenderRow spender={spender} />,
-      width: 400,
+      width: 380,
     },
     // My Approval Time
     {
@@ -785,11 +792,114 @@ function getColumnsForAsset({
 
         return formatTimeFromNow(time ? time * 1e3 : 0);
       },
-      width: 160 + 20,
+      width: 160 + 20 + 20,
     },
   ];
 
   return columnsForAsset;
+}
+
+function getColumnsForEIP7702({
+  selectedRows = [],
+  t,
+  toggleSelectAll,
+  isSelectedAll,
+  isIndeterminate,
+}: {
+  selectedRows: EIP7702Delegated[];
+  onChangeSelected: (item: EIP7702Delegated[]) => void;
+  t: ReturnType<typeof useTranslation>['t'];
+  toggleSelectAll: () => void;
+} & TableSelectResult) {
+  const columnsForContract: ColumnType<EIP7702Delegated>[] = [
+    {
+      title: () => (
+        <CheckboxRow
+          onClick={toggleSelectAll}
+          isIndeterminate={isIndeterminate}
+          isSelected={isSelectedAll}
+        />
+      ),
+      key: 'selection',
+      className: 'J_selection',
+      render: (_, record) => {
+        const selected =
+          selectedRows?.findIndex(
+            (e) =>
+              isSameAddress(e.address, record.address) &&
+              e.chain === record.chain &&
+              e.delegatedAddress === record.delegatedAddress
+          ) > -1;
+        return <CheckboxRow isSelected={!!selected} />;
+      },
+      width: 80,
+    },
+    {
+      title: () => (
+        <span className="text-r-neutral-body text-13">
+          {t('page.approvals.tableConfig.byEIP7702.columnTitle.currentAddress')}
+        </span>
+      ),
+      key: 'address',
+      dataIndex: 'address',
+      render: (_, row, rowIndex) => {
+        return (
+          <span>
+            {ellipsisAddress(row.address)}{' '}
+            {row.alias ? (
+              <span className="text-r-neutral-foot text-14">({row.alias})</span>
+            ) : null}
+          </span>
+        );
+      },
+      width: 600,
+    },
+    {
+      title: () => (
+        <div className="flex justify-end pr-20 text-r-neutral-body text-13">
+          {t(
+            'page.approvals.tableConfig.byEIP7702.columnTitle.delegatedAddress'
+          )}
+        </div>
+      ),
+      key: 'address',
+      dataIndex: 'address',
+      render: (_, row, rowIndex) => {
+        const chainItem = findChainByEnum(row.chain as Chain['serverId']);
+
+        if (!chainItem) return null;
+
+        return (
+          <div className="flex items-center justify-end pr-20 w-full">
+            <IconWithChain
+              width="18px"
+              height="18px"
+              hideConer
+              hideChainIcon
+              iconUrl={chainItem?.logo || IconUnknown}
+              chainServerId={chainItem.serverId}
+              noRound={false}
+            />
+            <ApprovalsNameAndAddr
+              className="ml-[6px]"
+              addressClass=""
+              address={row.delegatedAddress || ''}
+              chainEnum={chainItem?.enum}
+              copyIconClass="text-r-neutral-body"
+              addressSuffix={null}
+              tooltipAliasName={false}
+              openExternal={true}
+              copyIcon={true}
+            />
+          </div>
+        );
+      },
+      width: 480,
+      // width: 380,
+    },
+  ];
+
+  return columnsForContract;
 }
 
 const getRowHeight = (row: ContractApprovalItem) => {
@@ -803,18 +913,46 @@ const getCellKey = (params: IVGridContextualPayload<ContractApprovalItem>) => {
 };
 
 const getCellClassName = (
-  ctx: IVGridContextualPayload<ContractApprovalItem>
+  ctx: IVGridContextualPayload<ContractApprovalItem>,
+  selectedRows: ApprovalSpenderItemToBeRevoked[]
 ) => {
   const riskResult = getFinalRiskInfo(ctx.record);
 
   return clsx(
-    riskResult.isServerRisk && 'is-contract-row__risky'
+    riskResult.isServerRisk && 'is-contract-row__risky',
+    //check is current row is selected
+    ctx.record.list.some((spenderHost) => {
+      return (
+        findIndexRevokeList(selectedRows, {
+          item: ctx.record,
+          spenderHost,
+          itemIsContractApproval: true,
+        }) > -1
+      );
+    }) && 'is-selected-row-cell'
     // riskResult.isServerDanger && 'is-contract-row__danger',
     // riskResult.isServerWarning && 'is-contract-row__warning'
   );
 };
 
-type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
+const getCellClassNameForAsset = (
+  ctx: IVGridContextualPayload<AssetApprovalSpender>,
+  selectedRows: ApprovalSpenderItemToBeRevoked[]
+) => {
+  // check if current row is selected
+  const isSelected =
+    findIndexRevokeList(selectedRows, {
+      item: ctx.record.$assetContract!,
+      spenderHost: ctx.record.$assetToken!,
+      assetApprovalSpender: ctx.record,
+    }) > -1;
+
+  return clsx(isSelected && 'is-selected-row-cell');
+};
+
+type PageTableProps<
+  T extends ContractApprovalItem | AssetApprovalSpender | EIP7702Delegated
+> = {
   isDarkTheme?: boolean;
   isLoading: boolean;
   emptyStatus?: 'none' | 'no-matched' | false;
@@ -826,6 +964,7 @@ type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
   className?: string;
   toggleAllAssetRevoke?: (list: AssetApprovalSpender[]) => void;
   toggleAllContractRevoke?: (list: ContractApprovalItem[]) => void;
+  isDesktop?: boolean;
 } & TableSelectResult;
 function TableByContracts({
   isDarkTheme,
@@ -841,6 +980,7 @@ function TableByContracts({
   toggleAllContractRevoke,
   isSelectedAll,
   isIndeterminate,
+  isDesktop,
 }: PageTableProps<ContractApprovalItem> & {
   onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem>;
 }) {
@@ -903,6 +1043,7 @@ function TableByContracts({
 
   return (
     <VirtualTable<ContractApprovalItem>
+      isDesktop={isDesktop}
       loading={isLoading}
       vGridRef={vGridRef}
       className={clsx(className, 'J_table_by_contracts', isDarkTheme && 'dark')}
@@ -920,7 +1061,7 @@ function TableByContracts({
       getTotalHeight={getContractListTotalHeight}
       getRowHeight={getRowHeight}
       getCellKey={getCellKey}
-      getCellClassName={getCellClassName}
+      getCellClassName={(ctx) => getCellClassName(ctx, selectedRows)}
       onChange={handleChange}
     />
   );
@@ -938,6 +1079,7 @@ function TableByAssetSpenders({
   toggleAllAssetRevoke,
   isSelectedAll,
   isIndeterminate,
+  isDesktop,
 }: PageTableProps<AssetApprovalSpender>) {
   const [sortedInfo, setSortedInfo] = useState<
     SorterResult<AssetApprovalSpender>
@@ -963,6 +1105,7 @@ function TableByAssetSpenders({
 
   return (
     <VirtualTable<AssetApprovalSpender>
+      isDesktop={isDesktop}
       loading={isLoading}
       vGridRef={vGridRef}
       className={clsx(className, 'J_table_by_assets')}
@@ -984,16 +1127,122 @@ function TableByAssetSpenders({
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
       onClickRow={onClickRowInspection}
+      getCellClassName={(ctx) => getCellClassNameForAsset(ctx, selectedRows)}
       // getRowHeight={(row) => ROW_HEIGHT}
       onChange={handleChange}
     />
   );
 }
 
-const ApprovalManagePage = () => {
-  useTitle('Approvals - Rabby Wallet');
+function TableByEIP7702({
+  isLoading,
+  emptyStatus,
+  dataSource,
+  containerHeight,
+  selectedRows = [],
+  onClickRow,
+  vGridRef,
+  className,
+  toggleSelectAll,
+  isSelectedAll,
+  isIndeterminate,
+  isActive,
+  isDesktop,
+}: {
+  isDarkTheme?: boolean;
+  isLoading: boolean;
+  emptyStatus?: 'none' | 'no-matched' | '7702' | false;
+  dataSource: EIP7702Delegated[];
+  containerHeight: number;
+  selectedRows: EIP7702Delegated[];
+  onClickRow?: HandleClickTableRow<EIP7702Delegated>;
+  vGridRef: React.RefObject<VGrid>;
+  className?: string;
+  toggleSelectAll: () => void;
+  isActive?: boolean;
+  isDesktop?: boolean;
+} & TableSelectResult) {
+  const [sortedInfo, setSortedInfo] = useState<SorterResult<EIP7702Delegated>>({
+    columnKey: 'address',
+    order: DEFAULT_SORT_ORDER,
+  });
+  const { t } = useTranslation();
+  const { onClickRowInspection } = useInspectRowItem(onClickRow || noop);
 
-  useReloadPageOnCurrentAccountChanged();
+  // const toggleSelectAll = toggleSelectAll;
+
+  return (
+    <>
+      {isActive ? (
+        <div className="mb-20">
+          <div className="mt-20 mb-10 text-14 font-semibold text-r-neutral-body">
+            {t('page.approvals.component.EIP7702SupportChains')}
+          </div>
+          <div className="flex items-center flex-wrap gap-[12px]">
+            {EIP7702_REVOKE_SUPPORTED_CHAINS.map((e) => {
+              const chainInfo = findChainByEnum(e);
+              if (!chainInfo) return null;
+              return (
+                <div className="h-[36px] px-12 py-8 flex items-center justify-center gap-[8px] text-r-neutral-body font-medium bg-r-neutral-card1 rounded-[16px]">
+                  <ChainIcon
+                    chain={e}
+                    size="small"
+                    tooltipProps={{
+                      visible: false,
+                    }}
+                  />
+                  {chainInfo.name}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+      <VirtualTable<EIP7702Delegated>
+        isDesktop={isDesktop}
+        loading={isLoading}
+        vGridRef={vGridRef}
+        className={clsx(className, 'J_table_by_eip_7702')}
+        markHoverRow={false}
+        columns={getColumnsForEIP7702({
+          // sortedInfo,
+          selectedRows,
+          onChangeSelected: (item: EIP7702Delegated[]) => {},
+          toggleSelectAll,
+          isSelectedAll,
+          isIndeterminate,
+          t,
+        })}
+        sortedInfo={sortedInfo}
+        emptyText={
+          emptyStatus === '7702'
+            ? t('page.approvals.component.table.bodyEmpty.7702')
+            : emptyStatus === 'no-matched'
+            ? t('page.approvals.component.table.bodyEmpty.noMatchText')
+            : t('page.approvals.component.table.bodyEmpty.noDataText')
+        }
+        dataSource={dataSource}
+        scroll={{ y: containerHeight, x: '100%' }}
+        onClickRow={onClickRowInspection}
+
+        // getRowHeight={(row) => ROW_HEIGHT}
+        // onChange={handleChange}
+      />
+    </>
+  );
+}
+
+const ApprovalManagePage = ({
+  isDesktop = false,
+  desktopChain,
+}: {
+  isDesktop?: boolean;
+  desktopChain?: CHAINS_ENUM;
+}) => {
+  if (!isDesktop) {
+    useTitle('Approvals - Rabby Wallet');
+    useReloadPageOnCurrentAccountChanged();
+  }
 
   const { t } = useTranslation();
 
@@ -1001,13 +1250,15 @@ const ApprovalManagePage = () => {
   const isShowTestnet = false;
 
   const { isDarkTheme } = useThemeMode();
-  const [chain, setChain] = React.useState<CHAINS_ENUM>();
+  const [_chain, setChain] = React.useState<CHAINS_ENUM>();
+
+  const chain = isDesktop ? desktopChain : _chain;
 
   const {
     isLoading,
     loadApprovals,
-    searchKw,
-    setSearchKw,
+    searchKw: contractOrAssetsSearchKw,
+    setSearchKw: setContractOrAssetsSearchKw,
     account,
     displaySortedContractList,
     contractEmptyStatus,
@@ -1020,6 +1271,33 @@ const ApprovalManagePage = () => {
     vGridRefContracts,
     vGridRefAsset,
   } = useApprovalsPage({ isTestnet: selectedTab === 'testnet', chain });
+
+  const [tab, setTab] = React.useState<typeof filterType | 'eip-7702'>(
+    filterType
+  );
+
+  const {
+    isLoading: eip7702Loading,
+    data: delegationAddresses,
+    searchEIP7702Kw,
+    setSearchEIP7702Kw,
+    selectedRows: eip7702SelectedRows,
+    setSelectedRows: setEIP7702SelectedRows,
+    vGridRefEIP7702,
+    handleEIP7702Revoke,
+  } = useEIP7702ApprovalsQuery({ isActive: tab === 'eip-7702', chain });
+
+  const [searchKw, setSearchKw] = useMemo(() => {
+    return tab === 'eip-7702'
+      ? [searchEIP7702Kw, setSearchEIP7702Kw]
+      : [contractOrAssetsSearchKw, setContractOrAssetsSearchKw];
+  }, [
+    tab,
+    searchEIP7702Kw,
+    setSearchEIP7702Kw,
+    contractOrAssetsSearchKw,
+    setContractOrAssetsSearchKw,
+  ]);
 
   useEffect(() => {
     loadApprovals();
@@ -1090,12 +1368,14 @@ const ApprovalManagePage = () => {
         clearRevoke();
       }
     },
+    isDesktop,
   });
   const confirmRevokeModal = useConfirmRevokeModal({
     revokeListCount: revokeSummary.currentRevokeList.length,
     onBatchRevoke: () => batchRevokeModal.show(),
     onRevokeOneByOne: () => handleRevoke(),
     accountType: account?.type,
+    isDesktop,
   });
   const enableBatchRevoke = React.useMemo(() => {
     return (
@@ -1120,37 +1400,51 @@ const ApprovalManagePage = () => {
   return (
     <div
       className={clsx(
-        'approvals-manager-page',
-        isShowTestnet && 'with-switchnet-tabs'
+        {
+          'approvals-manager-page': !isDesktop,
+          'with-switchnet-tabs': isShowTestnet && !isDesktop,
+        },
+        'w-full max-w-full'
       )}
     >
-      <div className="approvals-manager">
-        <header className="approvals-manager__header">
-          {isShowTestnet && (
-            <div className="tabs">
-              <NetSwitchTabs value={selectedTab} onTabChange={onTabChange} />
-            </div>
-          )}
-          <div className="title">
-            {/* Approvals on {ellipsisAddress(account?.address || '')} */}
-            {t('page.approvals.header.title', {
-              address: ellipsisAddress(account?.address || ''),
-            })}
-            {account?.alianName && (
-              <span className="text-r-neutral-foot text-[20px] font-normal">
-                {' '}
-                ({account?.alianName})
-              </span>
+      <div
+        className={clsx(
+          'approvals-manager',
+          isDesktop && 'approvals-manager-desktop'
+        )}
+      >
+        {!isDesktop && (
+          <header className="approvals-manager__header">
+            {isShowTestnet && (
+              <div className="tabs">
+                <NetSwitchTabs
+                  value={selectedTab}
+                  onTabChange={onTabChange}
+                  isDesktop={isDesktop}
+                />
+              </div>
             )}
-          </div>
-        </header>
+            <div className="title">
+              {/* Approvals on {ellipsisAddress(account?.address || '')} */}
+              {t('page.approvals.header.title', {
+                address: ellipsisAddress(account?.address || ''),
+              })}
+              {account?.alianName && (
+                <span className="text-r-neutral-foot text-[20px] font-normal">
+                  {' '}
+                  ({account?.alianName})
+                </span>
+              )}
+            </div>
+          </header>
+        )}
 
         {selectedTab === 'mainnet' ? (
           <>
-            <main>
+            <main className="relative w-full max-w-full overflow-hidden">
               <div className="approvals-manager__table-tools">
                 <PillsSwitch
-                  value={filterType}
+                  value={tab}
                   options={
                     [
                       {
@@ -1163,11 +1457,31 @@ const ApprovalManagePage = () => {
                         // 'By Assets'
                         label: t('page.approvals.tab-switch.assets'),
                       },
+                      {
+                        key: 'eip-7702',
+                        // 'By EIP-7702'
+                        label: `${t('page.approvals.tab-switch.eip-7702')} (${
+                          delegationAddresses?.length || 0
+                        })`,
+                      },
                     ] as const
                   }
-                  onTabChange={(key) => setFilterType(key)}
-                  itemClassname="text-[15px] w-[148px] h-[40px]"
-                  itemClassnameActive="bg-r-neutral-bg-1"
+                  onTabChange={(key) => {
+                    setTab(key);
+                    if (key !== 'eip-7702') {
+                      setFilterType(key);
+                    }
+                  }}
+                  className={clsx(
+                    isDesktop &&
+                      'bg-transparent p-2 rounded-[8px] border-[0.5px] border-solid border-rabby-neutral-line'
+                  )}
+                  itemClassname="text-[15px] w-[128px] h-[40px]"
+                  itemClassnameActive={
+                    isDesktop
+                      ? 'bg-r-blue-light1 rounded-[6px]'
+                      : 'bg-r-neutral-bg-1'
+                  }
                   itemClassnameInActive={
                     'text-r-neutral-body hover:text-r-blue-default'
                   }
@@ -1181,15 +1495,17 @@ const ApprovalManagePage = () => {
                     className="search-input"
                     suffix={<span />}
                     placeholder={t('page.approvals.search.placeholder', {
-                      type: filterType === 'contract' ? 'contract' : 'assets',
+                      type: tab !== 'assets' ? 'contract' : 'assets',
                     })}
                   />
 
-                  <ChainSelectorButton
-                    large
-                    chain={chain}
-                    setChain={setChain}
-                  />
+                  {!isDesktop && (
+                    <ChainSelectorButton
+                      large
+                      chain={chain}
+                      setChain={setChain}
+                    />
+                  )}
                 </div>
               </div>
 
@@ -1197,7 +1513,7 @@ const ApprovalManagePage = () => {
                 <TableByContracts
                   isDarkTheme={isDarkTheme}
                   isLoading={isLoading}
-                  className={filterType === 'contract' ? '' : 'hidden'}
+                  className={tab === 'contract' ? '' : 'hidden'}
                   vGridRef={vGridRefContracts}
                   containerHeight={yValue}
                   emptyStatus={contractEmptyStatus}
@@ -1210,10 +1526,11 @@ const ApprovalManagePage = () => {
                   toggleAllContractRevoke={toggleAllContractRevoke}
                   isSelectedAll={contractSelectResult.isSelectedAll}
                   isIndeterminate={contractSelectResult.isIndeterminate}
+                  isDesktop={isDesktop}
                 />
 
                 <TableByAssetSpenders
-                  className={filterType === 'assets' ? '' : 'hidden'}
+                  className={tab === 'assets' ? '' : 'hidden'}
                   isLoading={isLoading}
                   vGridRef={vGridRefAsset}
                   containerHeight={yValue}
@@ -1224,9 +1541,56 @@ const ApprovalManagePage = () => {
                   toggleAllAssetRevoke={toggleAllAssetRevoke}
                   isSelectedAll={assetSelectResult.isSelectedAll}
                   isIndeterminate={assetSelectResult.isIndeterminate}
+                  isDesktop={isDesktop}
+                />
+
+                <TableByEIP7702
+                  isActive={tab === 'eip-7702'}
+                  className={tab === 'eip-7702' ? '' : 'hidden'}
+                  isLoading={eip7702Loading}
+                  vGridRef={vGridRefEIP7702}
+                  containerHeight={yValue}
+                  emptyStatus={delegationAddresses?.length ? false : '7702'}
+                  dataSource={delegationAddresses || []}
+                  selectedRows={eip7702SelectedRows}
+                  onClickRow={(ctx) => {
+                    console.log('ctx', ctx.record);
+                    setEIP7702SelectedRows((pre) => {
+                      const index = pre.findIndex(
+                        (item) =>
+                          item.address === ctx.record.address &&
+                          item.chain === ctx.record.chain &&
+                          item.delegatedAddress === ctx.record.delegatedAddress
+                      );
+                      if (index > -1) {
+                        // If already selected, remove from selection
+                        return pre.filter((_, i) => i !== index);
+                      }
+                      // Otherwise, add to selection
+                      return [...pre, ctx.record];
+                    });
+                  }}
+                  toggleSelectAll={() => {
+                    setEIP7702SelectedRows((pre) =>
+                      pre.length === delegationAddresses.length
+                        ? []
+                        : delegationAddresses
+                    );
+                  }}
+                  isSelectedAll={
+                    delegationAddresses?.length ===
+                      eip7702SelectedRows.length &&
+                    eip7702SelectedRows.length > 0
+                  }
+                  isIndeterminate={
+                    eip7702SelectedRows.length > 0 &&
+                    delegationAddresses?.length > 0 &&
+                    eip7702SelectedRows?.length < delegationAddresses?.length
+                  }
+                  isDesktop={isDesktop}
                 />
               </div>
-              {selectedContract ? (
+              {selectedContract && tab !== 'eip-7702' ? (
                 <RevokeApprovalModal
                   item={selectedContract}
                   visible={visibleRevokeModal}
@@ -1240,14 +1604,43 @@ const ApprovalManagePage = () => {
                 />
               ) : null}
               {batchRevokeModal.node}
+              {isDesktop && (
+                <div className="sticky-footer w-full static pt-[36[x] pb-[40px]]">
+                  {tab === 'eip-7702' ? (
+                    <>
+                      <div className="h-[36px]" />
+
+                      <RevokeEIP7702Button
+                        onRevoke={handleEIP7702Revoke}
+                        selectedCount={eip7702SelectedRows.length || 0}
+                      />
+                    </>
+                  ) : (
+                    <RevokeButton
+                      revokeSummary={revokeSummary}
+                      enableBatchRevoke={enableBatchRevoke}
+                      onRevoke={onRevoke}
+                    />
+                  )}
+                </div>
+              )}
             </main>
-            <div className="sticky-footer">
-              <RevokeButton
-                revokeSummary={revokeSummary}
-                enableBatchRevoke={enableBatchRevoke}
-                onRevoke={onRevoke}
-              />
-            </div>
+            {!isDesktop && (
+              <div className="sticky-footer">
+                {tab === 'eip-7702' ? (
+                  <RevokeEIP7702Button
+                    onRevoke={handleEIP7702Revoke}
+                    selectedCount={eip7702SelectedRows.length || 0}
+                  />
+                ) : (
+                  <RevokeButton
+                    revokeSummary={revokeSummary}
+                    enableBatchRevoke={enableBatchRevoke}
+                    onRevoke={onRevoke}
+                  />
+                )}
+              </div>
+            )}
           </>
         ) : (
           <div className="mt-[20px] rounded-[8px] bg-r-neutral-card1 pt-[145px] pb-[175px] flex flex-col items-center w-full">

@@ -6,11 +6,20 @@ import { uniqBy } from 'lodash';
 import React, { useRef } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
-import { useGasAccountRefreshId, useGasAccountSetRefreshId } from './context';
-import { preferenceService } from '@/background/service';
+import {
+  useGasAccountRefreshId,
+  useGasAccountSetRefreshId,
+  useGasAccountHistoryRefreshId,
+  useGasAccountSetHistoryRefreshId,
+} from './context';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
-import { KEYRING_CLASS } from '@/constant';
 import pRetry from 'p-retry';
+import { Account } from '@/background/service/preference';
+import { personalMessagePromise } from '../../Approval/components/MiniPersonalMessgae/MiniSignPersonalMessage';
+import {
+  supportedDirectSign,
+  supportedHardwareDirectSign,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 
 export const useGasAccountRefresh = () => {
   const refreshId = useGasAccountRefreshId();
@@ -21,11 +30,36 @@ export const useGasAccountRefresh = () => {
   return { refreshId, refresh };
 };
 
+export const useGasAccountHistoryRefresh = () => {
+  const refreshHistoryId = useGasAccountHistoryRefreshId();
+  const setRefreshHistoryId = useGasAccountSetHistoryRefreshId();
+
+  const refreshHistory = useCallback(() => {
+    setRefreshHistoryId((e) => e + 1);
+  }, [setRefreshHistoryId]);
+
+  return { refreshHistoryId, refreshHistory };
+};
+
 export const useGasAccountSign = () => {
   const sig = useRabbySelector((s) => s.gasAccount.sig);
   const accountId = useRabbySelector((s) => s.gasAccount.accountId);
 
   return { sig, accountId };
+};
+
+export const claimGift = () => {
+  const { sig, accountId } = useGasAccountSign();
+  const wallet = useWallet();
+  const { value, loading } = useAsync(async () => {
+    if (!sig || !accountId) return undefined;
+    return wallet.openapi.claimGasAccountGift({
+      sig,
+      id: accountId,
+    });
+  }, [sig, accountId]);
+
+  return { value, loading };
 };
 
 export const useGasAccountInfo = () => {
@@ -49,36 +83,57 @@ export const useGasAccountInfo = () => {
       });
   }, [sig, accountId, refreshId]);
 
-  if (
-    error?.message?.includes('gas account verified failed') &&
-    sig &&
-    accountId
-  ) {
-    dispatch.gasAccount.setGasAccountSig({});
-  }
+  useEffect(() => {
+    if (
+      error?.message?.includes('gas account verified failed') &&
+      sig &&
+      accountId
+    ) {
+      dispatch.gasAccount.setGasAccountSig({});
+    }
+  }, [error?.message, sig, accountId]);
 
   return { loading, value };
 };
 
 export const useGasAccountMethods = () => {
   const wallet = useWallet();
-  const account = useRabbySelector((s) => s.account.currentAccount);
   const dispatch = useRabbyDispatch();
 
   const { sig, accountId } = useGasAccountSign();
   const { refresh } = useGasAccountRefresh();
+  const { refreshHistory } = useGasAccountHistoryRefresh();
 
-  const handleNoSignLogin = useCallback(async () => {
-    if (account) {
+  const handleNoSignLogin = useCallback(
+    async (account: Account, isClaimGift: boolean = false) => {
+      if (!account) return '';
+
       try {
         const { text } = await wallet.openapi.getGasAccountSignText(
           account.address
         );
 
-        const { txHash: signature } = await sendPersonalMessage({
-          data: [text, account.address],
-          wallet,
-        });
+        const miniSign = supportedHardwareDirectSign(account.type);
+        let signature = '';
+        if (miniSign) {
+          // startDirectSigning(true);
+          const [hash] = (await personalMessagePromise.present({
+            autoSign: true,
+            account,
+            directSubmit: true,
+            canUseDirectSubmitTx: true,
+            txs: [{ data: [text, account.address] }],
+          })) as string[];
+
+          signature = hash;
+        } else {
+          const { txHash } = await sendPersonalMessage({
+            data: [text, account.address],
+            wallet,
+            account,
+          });
+          signature = txHash;
+        }
 
         const result = await pRetry(
           async () =>
@@ -86,31 +141,83 @@ export const useGasAccountMethods = () => {
               sig: signature,
               account_id: account.address,
             }),
-          {
-            retries: 2,
-          }
+          { retries: 2 }
         );
+
         if (result?.success) {
           dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+          if (isClaimGift) {
+            await wallet.claimGasAccountGift(account.address);
+          }
+          dispatch.gift.markGiftAsClaimed({ address: account.address });
+          wallet.markGiftAsClaimed();
           refresh();
+          refreshHistory();
+          return signature;
         }
       } catch (e) {
         message.error('Login in error, Please retry');
       }
-    }
-  }, [account]);
+      return '';
+    },
+    [wallet, dispatch, refresh]
+  );
 
-  const login = useCallback(async () => {
-    const noSignType =
-      account?.type === KEYRING_CLASS.PRIVATE_KEY ||
-      account?.type === KEYRING_CLASS.MNEMONIC;
-    if (noSignType) {
-      handleNoSignLogin();
-    } else {
-      wallet.signGasAccount();
-      window.close();
-    }
-  }, [account, handleNoSignLogin]);
+  const handleHardwareLogin = useCallback(
+    async (account: Account, isClaimGift: boolean = false) => {
+      const signature = await wallet.signGasAccount(account, isClaimGift);
+      return signature;
+    },
+    [wallet]
+  );
+
+  const getSignMessage = useCallback(
+    async (account: Account) => {
+      const { text } = await wallet.openapi.getGasAccountSignText(
+        account.address
+      );
+
+      return text;
+    },
+    [wallet, dispatch, refresh, refreshHistory]
+  );
+
+  const handleLoginOnSig = useCallback(
+    async (account: Account, signature: string, isClaimGift: boolean) => {
+      const result = await pRetry(
+        async () =>
+          wallet.openapi.loginGasAccount({
+            sig: signature,
+            account_id: account.address,
+          }),
+        { retries: 2 }
+      );
+
+      if (result?.success) {
+        dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+        if (isClaimGift) {
+          await wallet.claimGasAccountGift(account.address);
+        }
+        dispatch.gift.markGiftAsClaimed({ address: account.address });
+        wallet.markGiftAsClaimed();
+        refresh();
+        refreshHistory();
+        return signature;
+      }
+    },
+    [wallet, refresh, refreshHistory]
+  );
+
+  const login = useCallback(
+    async (account: Account, isClaimGift: boolean = false) => {
+      if (account && supportedDirectSign(account.type)) {
+        return await handleNoSignLogin(account, isClaimGift);
+      } else {
+        return await handleHardwareLogin(account, isClaimGift);
+      }
+    },
+    [handleNoSignLogin, handleHardwareLogin]
+  );
 
   const logout = useCallback(async () => {
     if (sig && accountId) {
@@ -126,7 +233,7 @@ export const useGasAccountMethods = () => {
     }
   }, []);
 
-  return { login, logout };
+  return { login, logout, getSignMessage, handleLoginOnSig };
 };
 
 export const useGasAccountLogin = ({
@@ -156,6 +263,7 @@ export const useGasAccountHistory = () => {
   }, []);
 
   const { refresh: refreshGasAccountBalance } = useGasAccountRefresh();
+  const { refreshHistoryId } = useGasAccountHistoryRefresh();
 
   type History = Awaited<
     ReturnType<typeof wallet.openapi.getGasAccountHistory>
@@ -195,7 +303,7 @@ export const useGasAccountHistory = () => {
     },
 
     {
-      reloadDeps: [sig],
+      reloadDeps: [sig, refreshHistoryId],
       isNoMore(data) {
         if (data) {
           return (
@@ -241,7 +349,7 @@ export const useGasAccountHistory = () => {
           totalCount: value.pagination.total,
           list: uniqBy(
             [...(value?.history_list || []), ...(d?.list || [])],
-            (e) => `${e.chain_id}${e.tx_id}` as string
+            (e) => `${e?.create_at}` as string
           ),
         };
       });
@@ -278,6 +386,7 @@ export const useGasAccountHistory = () => {
     txList,
     loadingMore,
     ref,
+    refreshListTx,
   };
 };
 

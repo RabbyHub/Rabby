@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { isSameAddress, useWallet } from '@/ui/utils';
-import AddressItem from '@/ui/component/AccountSearchInput/AddressItem';
+import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import './confirmPopup.less';
+import { UI_TYPE } from '@/constant/ui';
 
 type NullFunction = () => void;
 let cleanup: NullFunction | undefined;
@@ -46,7 +47,7 @@ export const useRepeatImportConfirm = () => {
           </div>
         ),
         content: (
-          <AddressItem
+          <AccountItem
             address={address}
             type={account.type}
             brandName={account.type}
@@ -56,7 +57,11 @@ export const useRepeatImportConfirm = () => {
         ),
         onOk: () => {
           wallet.changeAccount(account).then(() => {
-            history.push('/dashboard');
+            if (UI_TYPE.isDesktop) {
+              history.replace(history.location.pathname);
+            } else {
+              history.push('/dashboard');
+            }
           });
         },
         okText: t('global.confirm'),

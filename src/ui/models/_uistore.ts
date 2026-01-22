@@ -36,6 +36,19 @@ export default (store: typeof import('@/ui/store').default) => {
       //   })
       //   break;
       // }
+      case 'rateGuideLastExposure': {
+        dispatch.preference.setField({
+          rateGuideLastExposure: payload.partials.rateGuideLastExposure,
+        });
+        break;
+      }
+      case 'isEnabledPwdForNonWhitelistedTx': {
+        dispatch.preference.setField({
+          isEnabledPwdForNonWhitelistedTx:
+            payload.partials.isEnabledPwdForNonWhitelistedTx,
+        });
+        break;
+      }
     }
   });
 

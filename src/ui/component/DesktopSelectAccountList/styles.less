@@ -1,0 +1,52 @@
+.desktop-select-account-list {
+  ::-webkit-scrollbar {
+    background-color: transparent;
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    margin: 10px 0; /* 模拟上下 padding */
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--rb-neutral-line, #e0e5ec);
+    border-radius: 1000px;
+  }
+
+  div[data-test-id='virtuoso-item-list'] + div {
+    background-color: var(--rb-neutral-bg-1, #fff);
+    position: sticky;
+    bottom: 0;
+  }
+
+  width: 64px;
+  transition: width 0.3s;
+  .desktop-account-item {
+    transition: all 0.3s;
+
+    width: 56px;
+    overflow: hidden;
+  }
+  .desktop-account-item-content {
+    transition: all 0.3s;
+    opacity: 0;
+  }
+
+  &:not(.auto-narrow) {
+    width: 256px;
+    .desktop-account-item {
+      width: 248px;
+    }
+    .desktop-account-item-content {
+      opacity: 1;
+    }
+  }
+
+  &.auto-narrow:hover {
+    width: 256px;
+    .desktop-account-item {
+      width: 248px;
+    }
+    .desktop-account-item-content {
+      opacity: 1;
+    }
+  }
+}

@@ -55,6 +55,9 @@ const EditRPCWrapped = styled.div`
     &.has-error {
       border-color: #ec5151 !important;
     }
+    &::placeholder {
+      color: var(--r-neutral-foot, #6a7587) !important;
+    }
   }
 `;
 

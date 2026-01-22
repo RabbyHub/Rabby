@@ -9,6 +9,8 @@ import providerController from './controller';
 import { findChainByEnum } from '@/utils/chain';
 import { appIsDev } from '@/utils/env';
 import wallet from '../wallet';
+import { metamaskModeService } from '@/background/service/metamaskModeService';
+import { ProviderRequest } from './type';
 
 const networkIdMap: {
   [key: string]: string;
@@ -89,8 +91,13 @@ const isDefaultWallet = ({ origin }) => {
   return preferenceService.getIsDefaultWallet(origin);
 };
 
-const getProvider = ({ origin }: { origin: string }) => {
-  return permissionService.getSite(origin)?.rdns;
+const getProviderConfig = ({ origin }: { origin: string }) => {
+  const rdns = permissionService.getSite(origin)?.rdns;
+  const isMetamaskMode = metamaskModeService.checkIsMetamaskMode(origin);
+  return {
+    rdns,
+    isMetamaskMode,
+  };
 };
 
 const resetProvider = ({ origin }: { origin: string }) => {
@@ -100,12 +107,43 @@ const resetProvider = ({ origin }: { origin: string }) => {
   }
 };
 
+const openInDesktop = async (req: ProviderRequest) => {
+  const origin = req.session?.origin || req.origin;
+
+  const params: { address: string } = req.data?.params?.[0] || {};
+
+  if (
+    !origin ||
+    !['https://debank.com', 'https://www.debank.com'].includes(origin)
+  ) {
+    return;
+  }
+
+  if (!keyringService.isUnlocked()) {
+    wallet.openInDesktop(`/unlock?address=${params.address || ''}`);
+    return;
+  }
+  if (params.address) {
+    const account = await wallet.getAccountByAddress(params.address);
+    const currentAccount = preferenceService.getCurrentAccount();
+    if (
+      account &&
+      currentAccount &&
+      account.address?.toLowerCase() !== currentAccount.address.toLowerCase()
+    ) {
+      preferenceService.setCurrentAccount(account);
+    }
+  }
+  wallet.openInDesktop('/desktop/profile');
+};
+
 export default {
   tabCheckin,
   getProviderState,
   providerOverwrite,
   hasOtherProvider,
   isDefaultWallet,
-  'rabby:getProvider': getProvider,
+  'rabby:getProviderConfig': getProviderConfig,
   'rabby:resetProvider': resetProvider,
+  'rabby:openInDesktop': openInDesktop,
 };

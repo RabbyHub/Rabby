@@ -52,6 +52,8 @@
 }
 
 .ant-btn-primary {
+  background-color: var(--r-blue-default, #7084ff);
+  border-color: var(--r-blue-default);
   &:hover,
   &:focus {
     background-color: var(--r-blue-default, #7084ff);
@@ -72,8 +74,12 @@
         message
 ---------------------*/
 .ant-message {
-  top: 12px;
+  top: 55px;
   z-index: 1500;
+  &:has(.toast-message-2025-center) {
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 .ant-message-notice-content {
   padding: 8px 12px;
@@ -98,6 +104,26 @@
     & > span {
       word-break: break-all;
     }
+  }
+}
+.toast-message-2025 .ant-message-notice-content {
+  display: inline-flex;
+  justify-content: center;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  align-items: center;
+  border-radius: 2px;
+  background: var(--r-neutral-black, #000);
+
+  .anticon {
+    top: 0;
+  }
+
+  .anticon + span {
+    line-height: 1;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--r-neutral-title-2, #fff);
   }
 }
 
@@ -155,6 +181,7 @@
 }
 
 .ant-modal-content {
+  border: 1.5px solid var(--r-neutral-line);
   border-radius: 6px;
   overflow: hidden;
 
@@ -191,6 +218,7 @@
   }
   .ant-modal-confirm-content {
     margin-top: 20px;
+    color: var(--r-neutral-body);
     background-color: var(--r-neutral-bg-1);
     padding: 18px 12px;
     border-radius: 6px;
@@ -224,14 +252,19 @@
     overflow: auto;
     overflow: -moz-scrollbars-none;
     &::-webkit-scrollbar {
-      display: none;
+      display: none !important;
+    }
+  }
+  .ant-drawer-body {
+    &::-webkit-scrollbar {
+      display: none !important;
     }
   }
 }
 
 .ant-modal-confirm-error {
   .ant-modal-content {
-    background: #fff;
+    background: var(--r-neutral-bg-1, #fff);
   }
   .anticon-close-circle {
     display: none;
@@ -378,6 +411,42 @@ textarea {
       display: none !important;
     }
   }
+
+  &.rounded-tooltip {
+    .ant-tooltip-inner {
+      border-radius: 2px !important;
+    }
+    .ant-tooltip-arrow {
+      display: block !important;
+    }
+  }
+  &.address-tooltip.address-tooltip-light {
+    .ant-tooltip-inner {
+      background: var(--r-neutral-bg1);
+      color: var(--r-neutral-title1);
+    }
+
+    .ant-tooltip-arrow {
+      border-color: var(--r-neutral-bg1);
+    }
+
+    .ant-tooltip-arrow-content {
+      background-color: var(--r-neutral-bg1);
+    }
+  }
+  &.address-tooltip.address-tooltip-transparent {
+    .ant-tooltip-inner {
+      background: transparent;
+    }
+
+    .ant-tooltip-arrow {
+      border-color: transparent;
+    }
+
+    .ant-tooltip-arrow-content {
+      background-color: transparent;
+    }
+  }
 }
 
 /*---------------------
@@ -405,6 +474,9 @@ textarea {
       Drawer
 ---------------------*/
 .ant-drawer {
+  .ant-drawer-content {
+    border-top: 1.5px solid var(--r-neutral-line);
+  }
   .ant-drawer-close {
     font-size: 19px;
     line-height: 0;
@@ -471,5 +543,104 @@ textarea {
   &:hover {
     background-color: rgba(134, 151, 255, 0.2);
     border: 1px solid var(--r-blue-default, #7084ff);
+  }
+}
+
+.perps-bridge-swap-modal-dark {
+  .ant-modal-content {
+    border: 1.5px solid #505562 !important;
+  }
+}
+
+.perps-bridge-swap-modal {
+  .ant-modal-body {
+    // border: transparent !important;
+    border-radius: 16px;
+    background-color: var(--r-neutral-bg-2, #f5f6fa) !important;
+  }
+
+  .ant-modal-confirm-btns {
+    display: none !important;
+  }
+
+  .ant-modal-confirm-content {
+    padding: 0 !important;
+    background-color: var(--r-neutral-bg-2, #f5f6fa) !important;
+  }
+}
+
+.perps-edit-tp-sl-modal,
+.perps-close-all-position-modal {
+  .ant-modal-content {
+    border-radius: 16px;
+  }
+
+  .ant-modal-body {
+    border-radius: 12px;
+  }
+
+  .ant-modal-confirm-content {
+    margin-top: 0;
+  }
+  
+}
+
+
+
+
+.desktop-swap-token-modal {
+  .ant-modal-body {
+    max-height: 600px;
+    padding: 0;
+    width: 100%;
+    background: transparent;
+    border-radius: 20px;
+    overflow: visible;
+    &::-webkit-scrollbar {
+      display: none !important;
+    }
+  }
+  .ant-modal-content {
+    border-radius: 8px;
+    border-radius: 20px;
+    overflow: visible;
+  }
+
+  .js-rabby-desktop-swap-container {
+    position: relative;
+    overflow: hidden;
+    width: 100% !important;
+    height: 600px;
+    transform: translateX(0);
+
+    .ant-drawer-bottom {
+      position: absolute;
+    }
+    .ant-drawer-mask {
+      border-radius: 8px;
+    }
+    .custom-popup {
+      .ant-drawer-content {
+        border-radius: 8px;
+      }
+    }
+  }
+}
+.whitelist-guard-bordered-view {
+  bottom: -6px;
+  right: -6px;
+}
+
+html[desktop] {
+  .ant-switch {
+    background: var(--r-neutral-line, #e0e5ec);
+
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+
+  .ant-switch-checked {
+    background: var(--r-green-default, #27c193);
   }
 }

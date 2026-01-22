@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import { CHAINS_ENUM } from '@debank/common';
 import {
   DndContext,
@@ -11,7 +13,7 @@ import { SortableContext } from '@dnd-kit/sortable';
 import { Chain } from 'background/service/openapi';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
-import { SelectChainItemProps } from './SelectChainItem';
+import { SelectChainItemProps, TDisableCheckChainFn } from './SelectChainItem';
 import { SortableSelectChainItem } from './SortableSelectChainItem';
 
 export type SelectChainListProps = {
@@ -26,6 +28,7 @@ export type SelectChainListProps = {
   pinned: CHAINS_ENUM[];
   supportChains?: CHAINS_ENUM[];
   disabledTips?: SelectChainItemProps['disabledTips'];
+  disableChainCheck?: TDisableCheckChainFn;
   showRPCStatus?: boolean;
 };
 
@@ -41,6 +44,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
     pinned,
     supportChains,
     disabledTips,
+    disableChainCheck,
     showRPCStatus = false,
   } = props;
 
@@ -105,6 +109,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
                     supportChains ? !supportChains.includes(item.enum) : false
                   }
                   disabledTips={disabledTips}
+                  disableChainCheck={disableChainCheck}
                   showRPCStatus={showRPCStatus}
                 ></SortableSelectChainItem>
               );
@@ -131,6 +136,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
               supportChains ? !supportChains.includes(item.enum) : false
             }
             disabledTips={disabledTips}
+            disableChainCheck={disableChainCheck}
             showRPCStatus={showRPCStatus}
           ></SortableSelectChainItem>
         );

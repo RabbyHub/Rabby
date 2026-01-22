@@ -27,9 +27,12 @@ export const MnemonicManager: React.FC = () => {
     DEFAULT_SETTING_DATA
   );
   const [loading, setLoading] = React.useState(false);
-  const { getCurrentAccounts, createTask, keyringId } = React.useContext(
-    HDManagerStateContext
-  );
+  const {
+    getCurrentAccounts,
+    createTask,
+    keyringId,
+    setSelectedAccounts,
+  } = React.useContext(HDManagerStateContext);
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
@@ -45,6 +48,7 @@ export const MnemonicManager: React.FC = () => {
       await changeHDPathTask(data.type);
     }
     await createTask(() => getCurrentAccounts());
+    setSelectedAccounts([]);
     setSetting(data);
     setLoading(false);
   }, []);

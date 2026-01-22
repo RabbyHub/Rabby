@@ -16,26 +16,27 @@
   }
 
   .footer {
-    padding: 20px 0;
+    padding: 16px 20px;
     margin-left: -20px;
     margin-right: -20px;
-    width: 100vw;
 
-    background-color: var(--r-neutral-card-1, #FFF);
+    background-color: var(--r-neutral-bg-2, #FFF);
     border-top: 0.5px solid var(--r-neutral-line, #D3D8E0);
   }
 
-  .footer .whitelist-alert {
-    margin-top: 0;
-    margin-bottom: 16px;
-  }
-
   .nft-info {
-    padding-bottom: 16px;
+    padding: 16px;
     border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+    background-color: var(--r-neutral-card-1, #FFF);
+    border-radius: 8px;
+    &__inner {
+      display: flex;
+      padding-bottom: 20px;
+    }
     .nft-avatar {
       margin-right: 12px;
       border: none;
+      border-radius: 4px;
     }
     &__detail {
       flex: 1;
@@ -44,10 +45,10 @@
         font-size: 15px;
         line-height: 18px;
         color: var(--r-neutral-title-1, #F7FAFC);
-        margin-bottom: 12px;
       }
       p {
-        margin-bottom: 8px;
+        margin-top: 8px;
+        margin-bottom: 0;
         font-weight: 400;
         font-size: 12px;
         line-height: 14px;
@@ -72,11 +73,23 @@
         .icon-copy {
           cursor: pointer;
         }
+        .chain-icon {
+          font-size: 12px;
+          font-weight: 400;
+          margin-right: 4px;
+          color: var(--r-neutral-body, #D3D8E0);
+        }
       }
     }
   }
   .section {
     margin-bottom: 16px;
+    .section-title {
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 17px;
+      color: var(--r-neutral-title-1, #F7FAFC);
+    }
   }
   .section-footer {
     display: flex;
@@ -86,36 +99,14 @@
     font-size: 12px;
     line-height: 14px;
     color: var(--r-neutral-body, #D3D8E0);
-    margin-top: 20px;
+    border-top: 0.5px solid var(--r-neutral-line, #D3D8E0);
+    padding-top: 12px;
     .ant-input {
       padding: 0;
       text-align: center;
-    }
-  }
-  .token-validation {
-    margin-top: 32px;
-  }
- 
-  .whitelist-alert {
-    display: flex;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--r-red-dark, #ae2a19);
-    margin-top: -4px;
-    margin-bottom: 16px;
-    justify-content: center;
-    .icon-check {
-      width: 16px;
-      height: 16px;
-      margin-right: 4px;
-    }
-    &__content {
-      max-width: 312px;
-      margin-bottom: 0;
-    }
-    &.granted {
-      color: var(--r-neutral-foot, #babec5);
+      border: 0.5px solid var(--r-neutral-line, #D3D8E0);
+      background-color: var(--r-neutral-card-1, #FFF);
+      border-radius: 2px;
     }
   }
 }

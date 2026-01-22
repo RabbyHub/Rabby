@@ -25,6 +25,7 @@ import { intToHex } from 'ui/utils/number';
 import { getActionTypeTextByType } from '../Actions/utils';
 import { Card } from '../Card';
 import { Divide } from '../Divide';
+import { Account } from '@/background/service/preference';
 
 const Wrapper = styled(Card)`
   .nonce-select {
@@ -159,6 +160,7 @@ interface SafeNonceSelectorProps {
   chainId: number;
   safeInfo?: BasicSafeInfo | null;
   disabled?: boolean;
+  account: Account;
 }
 export const SafeNonceSelector = ({
   value,
@@ -167,6 +169,7 @@ export const SafeNonceSelector = ({
   chainId,
   safeInfo,
   disabled,
+  account,
 }: SafeNonceSelectorProps) => {
   const { t } = useTranslation();
   const [isShowOptionList, setIsShowOptionList] = useState(false);
@@ -293,6 +296,7 @@ export const SafeNonceSelector = ({
         {isShowOptionList ? (
           <div ref={optionListRef}>
             <OptionList
+              account={account}
               chainId={chainId}
               value={val === '' ? undefined : val}
               onChange={handleOnChange}
@@ -310,14 +314,15 @@ const OptionList = ({
   value,
   onChange,
   safeInfo,
+  account,
 }: {
   chainId: number;
   value?: number;
   onChange?(value: number): void;
   safeInfo?: BasicSafeInfo | null;
+  account: Account;
 }) => {
   const wallet = useWallet();
-  const [account] = useAccount();
 
   const { t } = useTranslation();
 
@@ -339,14 +344,16 @@ const OptionList = ({
   );
 
   const pendingOptionlist = useMemo(() => {
-    return sortBy(uniqBy(pendingList || [], 'nonce'), 'nonce');
+    return sortBy(uniqBy(pendingList || [], 'nonce'), (item) =>
+      Number(item.nonce)
+    );
   }, [pendingList]);
 
   const recommendNonce = useMemo(() => {
     const maxNonceTx = pendingList?.length
-      ? maxBy(pendingList || [], (item) => item.nonce)
+      ? maxBy(pendingList || [], (item) => Number(item.nonce))
       : null;
-    return maxNonceTx != null ? maxNonceTx.nonce + 1 : safeInfo?.nonce;
+    return maxNonceTx != null ? Number(maxNonceTx.nonce) + 1 : safeInfo?.nonce;
   }, [pendingList, safeInfo]);
 
   if (isLoadingPendingList && !pendingList) {
@@ -388,7 +395,7 @@ const OptionList = ({
           <OptionListItem
             checked={recommendNonce === value}
             onClick={() => {
-              onChange?.(recommendNonce);
+              onChange?.(+recommendNonce);
             }}
           >
             {recommendNonce} - {t('page.signTx.SafeNonceSelector.option.new')}
@@ -404,9 +411,9 @@ const OptionList = ({
             return (
               <OptionListItem
                 key={item.nonce}
-                checked={item.nonce === value}
+                checked={+item.nonce === value}
                 onClick={() => {
-                  onChange?.(item.nonce);
+                  onChange?.(+item.nonce);
                 }}
               >
                 <PendingOptionContent data={item} chainId={chainId} />
@@ -439,7 +446,7 @@ const PendingOptionContent = ({
           to: data.to,
           data: data.data || '0x',
           value: `0x${Number(data.value).toString(16)}`,
-          nonce: intToHex(data.nonce),
+          nonce: intToHex(Number(data.nonce)),
           gasPrice: '0x0',
           gas: '0x0',
         },

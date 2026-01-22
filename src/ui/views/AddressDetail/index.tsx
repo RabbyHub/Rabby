@@ -11,8 +11,10 @@ import { AddressBackup } from './AddressBackup';
 import { AddressDelete } from './AddressDelete';
 import { AddressInfo } from './AddressInfo';
 import './style.less';
+import clsx from 'clsx';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 
-const AddressDetail = () => {
+const AddressDetail: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
   const { t } = useTranslation();
   const { search } = useLocation();
   const dispatch = useRabbyDispatch();
@@ -27,6 +29,8 @@ const AddressDetail = () => {
     byImport?: string;
   };
 
+  const { getContainer } = usePopupContainer();
+
   const { address, type, brandName, byImport } = qs || {};
 
   const source = useAddressSource({
@@ -40,19 +44,23 @@ const AddressDetail = () => {
     dispatch.whitelist.getWhitelist();
   }, []);
 
-  const handleWhitelistChange = (checked: boolean) => {
+  const handleWhitelistChange = async (checked: boolean) => {
+    if (!checked) {
+      await wallet.removeWhitelist(address);
+      const cexId = await wallet.getCexId(address);
+      if (cexId) {
+        await wallet.updateCexId(address, '');
+      }
+      return;
+    }
     AuthenticationModalPromise({
-      title: checked
-        ? t('page.addressDetail.add-to-whitelist')
-        : t('page.addressDetail.remove-from-whitelist'),
+      title: t('page.addressDetail.add-to-whitelist'),
       cancelText: t('global.Cancel'),
       wallet,
+      containerClassName: 'whitelist-confirm-modal',
+      getContainer,
       validationHandler: async (password) => {
-        if (checked) {
-          await wallet.addWhitelist(password, address);
-        } else {
-          await wallet.removeWhitelist(password, address);
-        }
+        await wallet.addWhitelist(password, address);
       },
       onFinished() {
         // dispatch.whitelist.getWhitelist();
@@ -68,8 +76,17 @@ const AddressDetail = () => {
   }
 
   return (
-    <div className="page-address-detail overflow-auto">
-      <PageHeader wrapperClassName="bg-r-neutral-bg-2" fixed>
+    <div
+      className={clsx(
+        'page-address-detail overflow-auto',
+        isInModal ? 'min-h-0 h-[600px]' : ''
+      )}
+    >
+      <PageHeader
+        wrapperClassName="bg-r-neutral-bg-2"
+        fixed
+        canBack={!isInModal}
+      >
         {t('page.addressDetail.address-detail')}
       </PageHeader>
       <AddressInfo

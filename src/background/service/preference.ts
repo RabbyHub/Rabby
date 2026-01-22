@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash/cloneDeep';
+import * as Sentry from '@sentry/browser';
 import eventBus from '@/eventBus';
 import { createPersistStore, isSameAddress } from 'background/utils';
 import {
@@ -8,13 +9,7 @@ import {
   permissionService,
 } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
-import {
-  HARDWARE_KEYRING_TYPES,
-  EVENTS,
-  CHAINS_ENUM,
-  LANGS,
-  DARK_MODE_TYPE,
-} from 'consts';
+import { EVENTS, CHAINS_ENUM, LANGS, DARK_MODE_TYPE } from 'consts';
 import browser from 'webextension-polyfill';
 import semver from 'semver-compare';
 import { syncStateToUI } from '../utils/broadcastToUI';
@@ -22,6 +17,12 @@ import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 import dayjs from 'dayjs';
 import type { IExtractFromPromise } from '@/ui/utils/type';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
+import { getFirstPreferredLangCode } from './i18n';
+import {
+  getDefaultRateGuideLastExposure,
+  LAST_EXPOSURE_VERSIONED_KEY,
+  RateGuideLastExposure,
+} from '@/utils/rateGuidance';
 
 const version = process.env.release || '0';
 
@@ -62,12 +63,15 @@ export type IHighlightedAddress = {
 export type CurvePointCollection = IExtractFromPromise<
   ReturnType<OpenApiService['getNetCurve']>
 >;
+
 export interface PreferenceStore {
   currentAccount: Account | undefined | null;
   externalLinkAck: boolean;
   hiddenAddresses: Account[];
   balanceMap: {
-    [address: string]: TotalBalanceResponse;
+    [address: string]: TotalBalanceResponse & {
+      evmUsdValue?: number;
+    };
   };
   curvePointsMap: {
     [address: string]: CurvePointCollection;
@@ -90,13 +94,20 @@ export interface PreferenceStore {
   locale: string;
   watchAddressPreference: Record<string, number>;
   isDefaultWallet: boolean;
+  /**
+   * @deprecated
+   */
   lastTimeSendToken: Record<string, TokenItem>;
+  lastTimeUsedToken: {
+    [P in 'send']?: TokenItem;
+  };
   highligtedAddresses: IHighlightedAddress[];
   walletSavedList: any[];
   alianNames?: Record<string, string>;
   initAlianNames: boolean;
   gasCache: GasCache;
   currentVersion: string;
+  prevVersion?: string;
   firstOpen: boolean;
   pinnedChain: string[];
   /**
@@ -110,6 +121,7 @@ export interface PreferenceStore {
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
   sendEnableTime?: number;
+  ga4EventTime?: number;
   customizedToken?: Token[];
   blockedToken?: Token[];
   collectionStarred?: Token[];
@@ -121,10 +133,21 @@ export interface PreferenceStore {
   isShowTestnet?: boolean;
   themeMode?: DARK_MODE_TYPE;
   addressSortStore: AddressSortStore;
+  safeSelfHostConfirm?: Record<string, boolean>;
 
   /** @deprecated */
   reserveGasOnSendToken?: boolean;
   isHideEcologyNoticeDict?: Record<string | number, boolean>;
+
+  isEnabledPwdForNonWhitelistedTx?: boolean;
+  isEnabledDappAccount?: boolean;
+
+  rateGuideLastExposure?: RateGuideLastExposure;
+
+  desktopTabId?: number;
+
+  /** @deprecated */
+  desktopTokensAllMode?: boolean;
 }
 
 export interface AddressSortStore {
@@ -139,6 +162,8 @@ const defaultAddressSortStore: AddressSortStore = {
   sortType: 'usd',
 };
 
+export type PreferenceServiceCls = PreferenceService;
+
 class PreferenceService {
   store!: PreferenceStore;
   popupOpen = false;
@@ -146,7 +171,14 @@ class PreferenceService {
   currentCoboSafeAddress?: Account | null;
 
   init = async () => {
-    const defaultLang = 'en';
+    let defaultLang = 'en';
+    try {
+      defaultLang = await getFirstPreferredLangCode();
+    } catch (e) {
+      Sentry.captureException(
+        `i18n getFirstPreferredLangCode error: ${JSON.stringify(e)}`
+      );
+    }
     this.store = await createPersistStore<PreferenceStore>({
       name: 'preference',
       template: {
@@ -161,12 +193,14 @@ class PreferenceService {
         watchAddressPreference: {},
         isDefaultWallet: false,
         lastTimeSendToken: {},
+        lastTimeUsedToken: {},
         highligtedAddresses: [],
         walletSavedList: [],
         alianNames: {},
         initAlianNames: false,
         gasCache: {},
         currentVersion: '0',
+        prevVersion: '0',
         firstOpen: false,
         pinnedChain: [],
         addedToken: {},
@@ -186,6 +220,13 @@ class PreferenceService {
         },
         reserveGasOnSendToken: true,
         isHideEcologyNoticeDict: {},
+        safeSelfHostConfirm: {},
+        isEnabledPwdForNonWhitelistedTx: false,
+        isEnabledDappAccount: false,
+        ga4EventTime: 0,
+        rateGuideLastExposure: getDefaultRateGuideLastExposure(),
+        desktopTabId: undefined,
+        desktopTokensAllMode: false,
       },
     });
 
@@ -205,13 +246,16 @@ class PreferenceService {
     if (!this.store.lastTimeSendToken) {
       this.store.lastTimeSendToken = {};
     }
+    if (!this.store.lastTimeUsedToken) {
+      this.store.lastTimeUsedToken = {};
+    }
     if (!this.store.initAlianNames) {
       this.store.initAlianNames = false;
     }
     if (!this.store.gasCache) {
       this.store.gasCache = {};
     }
-    if (!this.store.pinnedChain) {
+    if (!this.store.pinnedChain || !Array.isArray(this.store.pinnedChain)) {
       this.store.pinnedChain = [];
     }
     if (!this.store.addedToken) {
@@ -276,6 +320,43 @@ class PreferenceService {
     if (!this.store.isHideEcologyNoticeDict) {
       this.store.isHideEcologyNoticeDict = {};
     }
+    if (!this.store.safeSelfHostConfirm) {
+      this.store.safeSelfHostConfirm = {};
+    }
+
+    if (
+      !this.store.currentVersion ||
+      semver(version, this.store.currentVersion) > 0
+    ) {
+      this.store.firstOpen = true;
+    }
+
+    if (this.store.currentVersion !== version) {
+      this.store.prevVersion = this.store.currentVersion;
+    }
+
+    this.store.currentVersion = version;
+
+    if (this.store.ga4EventTime) {
+      this.store.ga4EventTime = 0;
+    }
+  };
+
+  hasConfirmSafeSelfHost = (networkId: string) => {
+    if (this.store.safeSelfHostConfirm?.[networkId]) {
+      return true;
+    }
+    return false;
+  };
+
+  setConfirmSafeSelfHost = (networkId: string) => {
+    if (!this.store.safeSelfHostConfirm) {
+      this.store.safeSelfHostConfirm = {
+        [networkId]: true,
+      };
+    } else {
+      this.store.safeSelfHostConfirm[networkId] = true;
+    }
   };
 
   getPreference = (key?: string) => {
@@ -329,16 +410,18 @@ class PreferenceService {
     };
   };
 
-  getLastTimeSendToken = (address: string) => {
-    const key = address.toLowerCase();
-    return this.store.lastTimeSendToken[key];
+  getLastTimeSendToken = () => {
+    // const key = address.toLowerCase();
+    return this.store.lastTimeUsedToken['send'];
   };
 
-  setLastTimeSendToken = (address: string, token: TokenItem) => {
-    const key = address.toLowerCase();
-    this.store.lastTimeSendToken = {
-      ...this.store.lastTimeSendToken,
-      [key]: token,
+  setLastTimeSendToken = (token: TokenItem) => {
+    if (Object.values(this.store.lastTimeSendToken).length) {
+      this.store.lastTimeSendToken = {};
+    }
+    this.store.lastTimeUsedToken = {
+      ...this.store.lastTimeUsedToken,
+      ['send']: token,
     };
   };
 
@@ -454,9 +537,11 @@ class PreferenceService {
   setCurrentAccount = (account: Account | null) => {
     this.store.currentAccount = account;
     if (account) {
-      sessionService.broadcastEvent('accountsChanged', [
-        account.address.toLowerCase(),
-      ]);
+      if (!this.store.isEnabledDappAccount) {
+        sessionService.broadcastEvent('accountsChanged', [
+          account.address.toLowerCase(),
+        ]);
+      }
       syncStateToUI(BROADCAST_TO_UI_EVENTS.accountsChanged, account);
     }
   };
@@ -618,20 +703,7 @@ class PreferenceService {
   };
   getLastTimeGasSelection = (chainId: keyof GasCache): ChainGas | null => {
     const cache = this.store.gasCache[chainId];
-    if (cache && cache.lastTimeSelect === 'gasPrice') {
-      if (Date.now() <= (cache.expireAt || 0)) {
-        return cache;
-      } else if (cache.gasLevel) {
-        return {
-          lastTimeSelect: 'gasLevel',
-          gasLevel: cache.gasLevel,
-        };
-      } else {
-        return null;
-      }
-    } else {
-      return cache;
-    }
+    return cache;
   };
 
   updateLastTimeGasSelection = (chainId: keyof GasCache, gas: ChainGas) => {
@@ -655,15 +727,13 @@ class PreferenceService {
     }
   };
   getIsFirstOpen = () => {
-    if (
-      !this.store.currentVersion ||
-      semver(version, this.store.currentVersion) > 0
-    ) {
-      this.store.currentVersion = version;
-      this.store.firstOpen = true;
-    }
     return this.store.firstOpen;
   };
+
+  getIsNewUser = () => {
+    return !this.store.prevVersion || this.store.prevVersion === '0';
+  };
+
   updateIsFirstOpen = () => {
     this.store.firstOpen = false;
   };
@@ -689,7 +759,8 @@ class PreferenceService {
     this.store.addedToken[key] = tokenList;
   };
   getCustomizedToken = () => {
-    return this.store.customizedToken || [];
+    // return this.store.customizedToken || [];
+    return [] as Token[];
   };
   hasCustomizedToken = (token: Token) => {
     return !!this.store.customizedToken?.find(
@@ -714,7 +785,8 @@ class PreferenceService {
     );
   };
   getBlockedToken = () => {
-    return this.store.blockedToken || [];
+    // return this.store.blockedToken || [];
+    return [] as Token[];
   };
   addBlockedToken = (token: Token) => {
     if (
@@ -798,6 +870,9 @@ class PreferenceService {
   setIsShowTestnet = (value: boolean) => {
     this.store.isShowTestnet = value;
   };
+  setDesktopTokensAllMode = (value: boolean) => {
+    this.store.desktopTokensAllMode = value;
+  };
   saveCurrentCoboSafeAddress = async () => {
     this.currentCoboSafeAddress = await this.getCurrentAccount();
   };
@@ -848,6 +923,25 @@ class PreferenceService {
   };
   setIsHideEcologyNoticeDict = (v: Record<string | number, boolean>) => {
     this.store.isHideEcologyNoticeDict = v;
+  };
+
+  getRateGuideLastExposure = () => {
+    return (
+      this.store.rateGuideLastExposure || getDefaultRateGuideLastExposure()
+    );
+  };
+
+  setRateGuideLastExposure = (exposure: Partial<RateGuideLastExposure>) => {
+    this.store.rateGuideLastExposure = {
+      txCount: 0,
+      ...this.store.rateGuideLastExposure,
+      ...exposure,
+      [LAST_EXPOSURE_VERSIONED_KEY]: {
+        time: -1,
+        ...this.store.rateGuideLastExposure?.[LAST_EXPOSURE_VERSIONED_KEY],
+        ...exposure[LAST_EXPOSURE_VERSIONED_KEY],
+      },
+    };
   };
 }
 

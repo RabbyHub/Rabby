@@ -1,4 +1,4 @@
-import { intToHex, isHexString } from 'ethereumjs-util';
+import { BigIntLike, intToHex, isHexString } from '@ethereumjs/util';
 import BigNumber from 'bignumber.js';
 import {
   CAN_ESTIMATE_L1_FEE_CHAINS,
@@ -10,11 +10,44 @@ import {
   SAFE_GAS_LIMIT_BUFFER,
   SAFE_GAS_LIMIT_RATIO,
 } from 'consts';
-import { ExplainTxResponse, GasLevel, Tx } from 'background/service/openapi';
+import {
+  ExplainTxResponse,
+  GasLevel,
+  Tx,
+  TxPushType,
+} from 'background/service/openapi';
 import { findChain } from './chain';
 import type { WalletControllerType } from '@/ui/utils';
 import { Chain } from '@debank/common';
 import i18n from '@/i18n';
+import { Account } from 'background/service/preference';
+import { AuthorizationList, AuthorizationListBytes } from '@ethereumjs/common';
+import { TX_GAS_LIMIT_CHAIN_MAPPING } from '@/constant/txGasLimit';
+
+export interface ApprovalRes extends Tx {
+  type?: string;
+  address?: string;
+  uiRequestComponent?: string;
+  isSend?: boolean;
+  isSpeedUp?: boolean;
+  isCancel?: boolean;
+  isSwap?: boolean;
+  isGnosis?: boolean;
+  account?: Account;
+  $account?: Account;
+  extra?: Record<string, any>;
+  traceId?: string;
+  $ctx?: any;
+  signingTxId?: string;
+  pushType?: TxPushType;
+  lowGasDeadline?: number;
+  reqId?: string;
+  isGasLess?: boolean;
+  isGasAccount?: boolean;
+  logId?: string;
+  authorizationList?: AuthorizationListBytes | AuthorizationList | never;
+  sig?: string;
+}
 
 export const validateGasPriceRange = (tx: Tx) => {
   const chain = findChain({
@@ -63,6 +96,19 @@ export const is1559Tx = (tx: Tx) => {
   return isHexString(tx.maxFeePerGas!) && isHexString(tx.maxPriorityFeePerGas!);
 };
 
+export const is7702Tx = (tx: ApprovalRes) => {
+  if ('authorizationList' in tx) {
+    if (
+      Array.isArray(tx.authorizationList) &&
+      tx.authorizationList.length > 0
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 export function getKRCategoryByType(type?: string) {
   return KEYRING_CATEGORY_MAP[type as any] || null;
 }
@@ -97,7 +143,7 @@ export function makeTransactionId(
   return `${fromAddr}_${nonce}_${chainEnum}`;
 }
 
-interface BlockInfo {
+export interface BlockInfo {
   baseFeePerGas: string;
   difficulty: string;
   extraData: string;
@@ -130,6 +176,7 @@ export async function calcGasLimit({
   explainTx,
   needRatio,
   wallet,
+  preparedBlock,
 }: {
   chain: Chain;
   tx: Tx;
@@ -139,16 +186,19 @@ export async function calcGasLimit({
   explainTx: ExplainTxResponse;
   needRatio: boolean;
   wallet: WalletControllerType;
+  preparedBlock?: BlockInfo | Promise<BlockInfo | null>;
 }) {
-  let block: null | BlockInfo = null;
+  let block: null | BlockInfo = preparedBlock ? await preparedBlock : null;
   try {
-    block = await wallet.requestETHRpc<any>(
-      {
-        method: 'eth_getBlockByNumber',
-        params: ['latest', false],
-      },
-      chain.serverId
-    );
+    if (!block) {
+      block = await wallet.requestETHRpc<BlockInfo>(
+        {
+          method: 'eth_getBlockByNumber',
+          params: ['latest', false],
+        },
+        chain.serverId
+      );
+    }
   } catch (e) {
     // NOTHING
   }
@@ -173,10 +223,22 @@ export async function calcGasLimit({
     ? gas.times(ratio).toFixed(0)
     : gas.toFixed(0);
   const blockGasRatio = SAFE_GAS_LIMIT_BUFFER[chain.id] || 1;
-  if (block && new BigNumber(block.gasLimit).times(blockGasRatio).lt(recommendGasLimit)) {
+  if (
+    block &&
+    new BigNumber(block.gasLimit).times(blockGasRatio).lt(recommendGasLimit)
+  ) {
     const buffer = SAFE_GAS_LIMIT_BUFFER[chain.id] || DEFAULT_GAS_LIMIT_BUFFER;
     recommendGasLimit = new BigNumber(block.gasLimit).times(buffer).toFixed(0);
   }
+
+  const singleTxGasLimit =
+    TX_GAS_LIMIT_CHAIN_MAPPING[chain.enum] || Number(recommendGasLimit);
+
+  recommendGasLimit =
+    Number(recommendGasLimit) > singleTxGasLimit
+      ? singleTxGasLimit + ''
+      : recommendGasLimit;
+
   const gasLimit = intToHex(
     Math.max(Number(recommendGasLimit), Number(tx.gas || 0))
   );
@@ -216,10 +278,12 @@ export const getPendingTxs = async ({
   recommendNonce,
   wallet,
   address,
+  chainId,
 }: {
   recommendNonce: string;
   wallet: WalletControllerType;
   address: string;
+  chainId: number;
 }) => {
   const { pendings } = await wallet.getTransactionHistory(address);
 
@@ -228,6 +292,7 @@ export const getPendingTxs = async ({
     .reduce((result, item) => {
       return result.concat(item.txs.map((tx) => tx.rawTx));
     }, [] as Tx[])
+    .filter((item) => item.chainId === chainId)
     .map((item) => ({
       from: item.from,
       to: item.to,
@@ -250,6 +315,8 @@ export const explainGas = async ({
   tx,
   wallet,
   gasLimit,
+  account,
+  preparedL1Fee,
 }: {
   gasUsed: number | string;
   gasPrice: number | string;
@@ -258,6 +325,8 @@ export const explainGas = async ({
   tx: Tx;
   wallet: WalletControllerType;
   gasLimit: string | undefined;
+  account: Account;
+  preparedL1Fee?: string | Promise<string>;
 }) => {
   let gasCostTokenAmount = new BigNumber(gasUsed).times(gasPrice).div(1e18);
   let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
@@ -266,17 +335,23 @@ export const explainGas = async ({
   });
   if (!chain) throw new Error(`${chainId} is not found in supported chains`);
   if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
-    const res = await wallet.fetchEstimatedL1Fee(
-      {
-        txParams: tx,
-      },
-      chain.enum
-    );
+    let res =
+      typeof preparedL1Fee === 'object' && 'then' in preparedL1Fee
+        ? await preparedL1Fee
+        : preparedL1Fee || undefined;
+    if (!res) {
+      res = await wallet.fetchEstimatedL1Fee(
+        {
+          txParams: tx,
+        },
+        chain.enum,
+        account
+      );
+    }
     gasCostTokenAmount = new BigNumber(res).div(1e18).plus(gasCostTokenAmount);
     maxGasCostAmount = new BigNumber(res).div(1e18).plus(maxGasCostAmount);
   }
   const gasCostUsd = new BigNumber(gasCostTokenAmount).times(nativeTokenPrice);
-
   return {
     gasCostUsd,
     gasCostAmount: gasCostTokenAmount,

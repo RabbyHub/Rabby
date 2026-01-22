@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
@@ -8,6 +8,8 @@ import { GasLessAnimatedWrapper } from './GasLessComponents';
 import styled from 'styled-components';
 import { LoadingOutlined } from '@ant-design/icons';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useDebounce } from 'react-use';
 
 const ButtonStyled = styled(Button)`
   &:hover {
@@ -46,7 +48,7 @@ export const SubmitActions: React.FC<Props> = ({
       {isSign ? (
         <div
           className={clsx(
-            'bg-blue-light',
+            'bg-blue-light w-[246px]',
             'text-white',
             'rounded-[8px] h-[48px]',
             'flex items-center',
@@ -78,7 +80,7 @@ export const SubmitActions: React.FC<Props> = ({
           <button
             className={clsx(
               'hover:bg-[#00000033]',
-              'w-[60px] h-full',
+              'flex-1 h-full',
               'flex justify-center items-center'
             )}
             onClick={handleClickCancel}

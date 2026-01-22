@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import {
@@ -29,15 +29,21 @@ const Process = ({
   onCancel,
   onDone,
   chain,
+  chainId,
+  nonce,
+  from,
 }: {
   chain: CHAINS_ENUM;
   result: string;
   status: Valueof<typeof WALLETCONNECT_STATUS_MAP>;
   account: Account;
   error: { code?: number; message?: string } | null;
-  onRetry(): void;
+  onRetry(bool?: boolean): void;
   onCancel(): void;
   onDone(): void;
+  nonce?: string;
+  chainId?: number;
+  from?: string;
 }) => {
   const { setClassName, setTitle: setPopupViewTitle } = useCommonPopupView();
   const [displayBrandName] = useDisplayBrandName(account.brandName);
@@ -60,7 +66,7 @@ const Process = ({
     ApprovalPopupContainerProps['status']
   >('SENDING');
 
-  const handleRetry = () => {
+  const handleRetry = async () => {
     onRetry();
     setSendingCounter(INIT_SENDING_COUNTER);
   };
@@ -107,7 +113,10 @@ const Process = ({
         setStatusProp('WAITING');
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:
-        setContent(t('page.signFooterBar.walletConnect.requestFailedToSend'));
+        setContent(
+          t('page.signFooterBar.qrcode.txFailed')
+          // t('page.signFooterBar.walletConnect.requestFailedToSend')
+        );
         setDescription(error?.message || '');
         setStatusProp('FAILED');
         break;
@@ -127,6 +136,17 @@ const Process = ({
   React.useEffect(() => {
     init();
   }, []);
+
+  const showOriginDesc = useCallback(() => {
+    if (
+      ![
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(mergedStatus)
+    ) {
+      return description;
+    }
+  }, [mergedStatus, description]);
 
   return (
     <ApprovalPopupContainer

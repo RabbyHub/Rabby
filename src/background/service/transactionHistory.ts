@@ -8,6 +8,9 @@ import openapiService, {
   TxPushType,
   testnetOpenapiService,
   TxRequest,
+  TokenItem,
+  NFTItem,
+  BridgeHistory,
 } from './openapi';
 import { INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
 import stats from '@/stats';
@@ -16,19 +19,24 @@ import { nanoid } from 'nanoid';
 import { findChain, findChainByID } from '@/utils/chain';
 import { makeTransactionId } from '@/utils/transaction';
 import { sortBy, groupBy } from 'lodash';
-import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
+import {
+  checkIsPendingTxGroup,
+  checkIsSubmittedTxGroup,
+  findMaxGasTx,
+} from '@/utils/tx';
 import eventBus from '@/eventBus';
 import { customTestnetService } from './customTestnet';
 import {
   ActionRequireData,
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
-import { uninstalledService } from '.';
+import { RPCService, uninstalledService } from '.';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
   createdAt: number;
   isCompleted: boolean;
+  completedAt?: number;
   hash?: string;
   failed: boolean;
   gasUsed?: number;
@@ -62,6 +70,7 @@ export interface TransactionGroup {
   txs: TransactionHistoryItem[];
   isPending: boolean;
   createdAt: number;
+  completedAt?: number;
   explain?: ObjectType.Merge<
     ExplainTxResponse,
     { approvalId: string; calcSuccess: boolean }
@@ -75,10 +84,111 @@ export interface TransactionGroup {
   $ctx?: any;
 }
 
+export interface BridgeTxHistoryItem {
+  address: string;
+  fromChainId: number;
+  toChainId: number;
+  fromToken: TokenItem;
+  toToken: TokenItem;
+  slippage: number;
+  fromAmount: number;
+  toAmount: number; // quote est amount
+  dexId: string;
+  status: 'pending' | 'fromSuccess' | 'fromFailed' | 'allSuccess' | 'failed';
+  hash: string;
+  acceleratedHash?: string;
+  estimatedDuration: number; // ms from server
+  createdAt: number;
+  fromTxCompleteTs?: number;
+  actualToToken?: TokenItem; // actual token, may be not toToken
+  actualToAmount?: number; // actual amount
+  completedAt?: number;
+}
+
+export interface SwapTxHistoryItem {
+  address: string;
+  chainId: number;
+  fromToken: TokenItem;
+  toToken: TokenItem;
+  slippage: number;
+  fromAmount: number;
+  toAmount: number;
+  dexId: string;
+  isCanceled?: boolean;
+  status: 'pending' | 'success' | 'failed';
+  hash: string;
+  createdAt: number;
+  completedAt?: number;
+}
+
+export interface SendTxHistoryItem {
+  address: string;
+  chainId: number;
+  from: string;
+  to: string;
+  isCanceled?: boolean;
+  token: TokenItem;
+  amount: number;
+  status: 'pending' | 'success' | 'failed';
+  hash: string;
+  createdAt: number;
+  completedAt?: number;
+}
+
+export interface SendNftTxHistoryItem {
+  address: string;
+  chainId: number;
+  from: string;
+  to: string;
+  token: NFTItem;
+  isCanceled?: boolean;
+  amount: number;
+  status: 'pending' | 'success' | 'failed';
+  hash: string;
+  createdAt: number;
+  completedAt?: number;
+}
+
+export interface ApproveTokenTxHistoryItem {
+  address: string;
+  chainId: number;
+  amount: number;
+  isCanceled?: boolean;
+  token: TokenItem;
+  status: 'pending' | 'success' | 'failed';
+  hash: string;
+  createdAt: number;
+  completedAt?: number;
+}
+
+type InnerTxHistoryMap = {
+  swap: SwapTxHistoryItem;
+  send: SendTxHistoryItem;
+  bridge: BridgeTxHistoryItem;
+  sendNft: SendNftTxHistoryItem;
+  approveSwap: ApproveTokenTxHistoryItem;
+  approveBridge: ApproveTokenTxHistoryItem;
+};
+
 interface TxHistoryStore {
   transactions: {
     [addr: string]: Record<string, TransactionGroup>;
   };
+  swapTxHistory: SwapTxHistoryItem[];
+  sendTxHistory: SendTxHistoryItem[];
+  sendNftTxHistory: SendNftTxHistoryItem[];
+  bridgeTxHistory: BridgeTxHistoryItem[];
+  approveSwapTxHistory: InnerTxHistoryMap['approveSwap'][];
+  approveBridgeTxHistory: InnerTxHistoryMap['approveBridge'][];
+}
+
+interface CacheHistoryData {
+  [key: string]: {
+    [K in keyof InnerTxHistoryMap]: {
+      type: K;
+      data: Omit<InnerTxHistoryMap[K], 'hash'>;
+    };
+  }[keyof InnerTxHistoryMap];
 }
 
 class TxHistory {
@@ -152,9 +262,31 @@ class TxHistory {
       name: 'txHistory',
       template: {
         transactions: {},
+        swapTxHistory: [],
+        sendTxHistory: [],
+        bridgeTxHistory: [],
+        sendNftTxHistory: [],
+        approveSwapTxHistory: [],
+        approveBridgeTxHistory: [],
       },
     });
+
+    if (!Array.isArray(this.store.swapTxHistory)) {
+      this.store.swapTxHistory = [];
+    }
+
+    if (!Array.isArray(this.store.sendTxHistory)) {
+      this.store.sendTxHistory = [];
+    }
+
+    if (!Array.isArray(this.store.bridgeTxHistory)) {
+      this.store.bridgeTxHistory = [];
+    }
+
     if (!this.store.transactions) this.store.transactions = {};
+
+    // Clear cache on initialization
+    this.cacheHistoryData = {};
 
     this._populateAvailableTxs();
   }
@@ -220,6 +352,261 @@ class TxHistory {
     ).length;
   }
 
+  cacheHistoryData: CacheHistoryData = {};
+
+  addCacheHistoryData<K extends keyof InnerTxHistoryMap>(
+    key: string, //`${chain}-${tx.data}`;
+    data: Omit<InnerTxHistoryMap[K], 'hash'>,
+    type: K
+  ) {
+    this.cacheHistoryData[key] = {
+      data,
+      type,
+    } as CacheHistoryData[string];
+  }
+
+  postCacheHistoryData(key: string, txHash: string) {
+    if (this.cacheHistoryData[key]) {
+      const { data, type } = this.cacheHistoryData[key];
+      if (!data) return;
+      delete this.cacheHistoryData[key];
+
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.INNER_HISTORY_ITEM_PENDING,
+        params: {
+          type,
+          key,
+          txHash,
+        },
+      });
+
+      if (type === 'swap') {
+        this.addSwapTxHistory({
+          ...(data as SwapTxHistoryItem),
+          hash: txHash,
+        });
+      }
+
+      if (type === 'send') {
+        this.addSendTxHistory({
+          ...(data as SendTxHistoryItem),
+          hash: txHash,
+        });
+      }
+
+      if (type === 'bridge') {
+        this.addBridgeTxHistory({
+          ...(data as BridgeTxHistoryItem),
+          hash: txHash,
+        });
+      }
+
+      if (type === 'sendNft') {
+        this.addSendNftTxHistory({
+          ...(data as SendNftTxHistoryItem),
+          hash: txHash,
+        });
+      }
+
+      if (type === 'approveSwap') {
+        this.addApproveSwapTokenTxHistory({
+          ...(data as InnerTxHistoryMap['approveSwap']),
+          hash: txHash,
+        });
+      }
+      if (type === 'approveBridge') {
+        this.addApproveBridgeTokenTxHistory({
+          ...(data as InnerTxHistoryMap['approveBridge']),
+          hash: txHash,
+        });
+      }
+    }
+  }
+
+  addApproveSwapTokenTxHistory(tx: InnerTxHistoryMap['approveSwap']) {
+    this.store.approveSwapTxHistory = [...this.store.approveSwapTxHistory, tx]
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 200);
+  }
+
+  addApproveBridgeTokenTxHistory(tx: InnerTxHistoryMap['approveBridge']) {
+    this.store.approveBridgeTxHistory = [
+      ...this.store.approveBridgeTxHistory,
+      tx,
+    ]
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 200);
+  }
+
+  addSwapTxHistory(tx: SwapTxHistoryItem) {
+    this.store.swapTxHistory = [...this.store.swapTxHistory, tx]
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 200);
+  }
+
+  addSendTxHistory(tx: SendTxHistoryItem) {
+    this.store.sendTxHistory = [...this.store.sendTxHistory, tx]
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 500);
+  }
+
+  addBridgeTxHistory(tx: BridgeTxHistoryItem) {
+    this.store.bridgeTxHistory = [...this.store.bridgeTxHistory, tx]
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 200);
+  }
+
+  addSendNftTxHistory(tx: SendNftTxHistoryItem) {
+    this.store.sendNftTxHistory = [...this.store.sendNftTxHistory, tx]
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 200);
+  }
+
+  getRecentPendingTxHistory(address: string, type: keyof InnerTxHistoryMap) {
+    const recentItem = this.store[`${type}TxHistory`]
+      .filter((item) => {
+        return isSameAddress(address, item.address);
+      })
+      .sort((a, b) => b.createdAt - a.createdAt)[0];
+    if (
+      recentItem?.status === 'pending' ||
+      recentItem?.status === 'fromSuccess'
+    ) {
+      return recentItem;
+    } else {
+      return null;
+    }
+  }
+
+  getRecentTxHistory(
+    address: string,
+    hash: string,
+    chainId: number,
+    type: keyof InnerTxHistoryMap
+  ) {
+    return this.store[`${type}TxHistory`].find(
+      (item) =>
+        isSameAddress(address, item.address) &&
+        item.hash === hash &&
+        ('chainId' in item ? item.chainId : item.fromChainId) === chainId
+    );
+  }
+
+  completeRecentTxHistory(
+    txs: TransactionHistoryItem[],
+    chainId: number,
+    status: SwapTxHistoryItem['status'],
+    completedTx: TransactionHistoryItem
+  ) {
+    const hashArr = txs.map((item) => item.hash);
+    const completedAt = Date.now();
+    const completedHash = completedTx.hash;
+    const isCancel = Boolean(completedTx.action?.actionData?.cancelTx?.nonce);
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.INNER_HISTORY_ITEM_COMPLETE,
+      params: {
+        hashArr,
+        chainId,
+      },
+    });
+
+    this.store.swapTxHistory = this.store.swapTxHistory.map((item) => {
+      if (item.chainId === chainId && hashArr.includes(item.hash)) {
+        return {
+          ...item,
+          status,
+          isCanceled: isCancel,
+          completedAt,
+        };
+      }
+      return item;
+    });
+
+    this.store.sendTxHistory = this.store.sendTxHistory.map((item) => {
+      if (item.chainId === chainId && hashArr.includes(item.hash)) {
+        return {
+          ...item,
+          status,
+          isCanceled: isCancel,
+          completedAt,
+        };
+      }
+
+      return item;
+    });
+
+    this.store.bridgeTxHistory = this.store.bridgeTxHistory.map((item) => {
+      if (item.fromChainId === chainId && hashArr.includes(item.hash)) {
+        return {
+          ...item,
+          status: status === 'success' ? 'fromSuccess' : 'fromFailed',
+          acceleratedHash: completedHash || item.hash,
+          fromTxCompleteTs: completedAt,
+        };
+      }
+      return item;
+    });
+
+    this.store.sendNftTxHistory = this.store.sendNftTxHistory.map((item) => {
+      if (item.chainId === chainId && hashArr.includes(item.hash)) {
+        return {
+          ...item,
+          status,
+          isCanceled: isCancel,
+          completedAt,
+        };
+      }
+      return item;
+    });
+
+    this.store.approveSwapTxHistory = this.store.approveSwapTxHistory.map(
+      (item) => {
+        if (item.chainId === chainId && hashArr.includes(item.hash)) {
+          return {
+            ...item,
+            status,
+            isCanceled: isCancel,
+            completedAt,
+          };
+        }
+        return item;
+      }
+    );
+
+    this.store.approveBridgeTxHistory = this.store.approveBridgeTxHistory.map(
+      (item) => {
+        if (item.chainId === chainId && hashArr.includes(item.hash)) {
+          return {
+            ...item,
+            status,
+            completedAt,
+          };
+        }
+        return item;
+      }
+    );
+  }
+
+  completeBridgeTxHistory(
+    from_tx_id: string,
+    chainId: number,
+    status: BridgeTxHistoryItem['status'],
+    bridgeTx?: BridgeHistory
+  ) {
+    this.store.bridgeTxHistory = this.store.bridgeTxHistory.map((item) => {
+      if (item.fromChainId === chainId && item.hash === from_tx_id) {
+        return {
+          ...item,
+          status,
+          actualToToken: bridgeTx?.to_actual_token,
+          actualToAmount: bridgeTx?.actual.receive_token_amount,
+          completedAt: Date.now(),
+        };
+      }
+      return item;
+    });
+  }
+
   getPendingTxsByNonce(address: string, chainId: number, nonce: number) {
     const normalizedAddress = address.toLowerCase();
     const pendingTxs = Object.values(
@@ -236,9 +623,11 @@ class TxHistory {
     tx,
     explain,
     origin,
+    actionData,
   }: {
     tx: TransactionHistoryItem;
     explain: TransactionGroup['explain'];
+    actionData: TransactionGroup['action'];
     origin: string;
   }) {
     const nonce = Number(tx.rawTx.nonce);
@@ -263,6 +652,10 @@ class TxHistory {
     }
     if (explain) {
       tx.explain = explain;
+    }
+
+    if (actionData) {
+      tx.action = actionData;
     }
 
     if (!this.store.transactions[from]) {
@@ -290,6 +683,7 @@ class TxHistory {
             createdAt: tx.createdAt,
             isPending: true,
             explain: explain,
+            action: actionData,
             isFailed: false,
             isSubmitFailed: true,
           },
@@ -506,6 +900,30 @@ class TxHistory {
     }
   };
 
+  getRpcTxReceipt = (chainServerId: string, hash: string) => {
+    return RPCService.requestDefaultRPC({
+      chainServerId,
+      method: 'eth_getTransactionReceipt',
+      params: [hash],
+    })
+      .then((res) => {
+        return {
+          hash: res.transactionHash,
+          code: 0,
+          status: parseInt(res.status, 16),
+          gas_used: parseInt(res.gasUsed, 16),
+        };
+      })
+      .catch((e) => {
+        return {
+          hash: hash,
+          code: -1,
+          status: 0,
+          gas_used: 0,
+        };
+      });
+  };
+
   async reloadTx(
     {
       address,
@@ -543,17 +961,13 @@ class TxHistory {
               hash: tx.hash!,
             });
           } else {
-            return openapiService.getTx(
-              chain.serverId,
-              tx.hash!,
-              Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
-            );
+            // Use standard RPC to get transaction receipt
+            return this.getRpcTxReceipt(chain.serverId, tx.hash!);
           }
         })
       );
-      const completed = results.find(
-        (result) => result.code === 0 && result.status !== 0
-      );
+      const completed = results.find((result) => result.code === 0);
+
       if (!completed) {
         if (duration !== false && +duration < 1000 * 15) {
           const timeout = Number(duration) + 1000;
@@ -578,6 +992,12 @@ class TxHistory {
         success: completed.status === 1,
         reqId: completedTx.reqId,
       });
+      this.completeRecentTxHistory(
+        txs,
+        chainId,
+        completed.status === 1 ? 'success' : 'failed',
+        completedTx
+      );
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.RELOAD_TX,
         params: {
@@ -642,7 +1062,7 @@ class TxHistory {
 
   getList(address: string) {
     const list = Object.values(this._availableTxs[address.toLowerCase()] || {});
-
+    const maxCompletedNonceByChain: Record<string, number> = {};
     const pendings: TransactionGroup[] = [];
     const completeds: TransactionGroup[] = [];
     if (!list) return { pendings: [], completeds: [] };
@@ -650,23 +1070,50 @@ class TxHistory {
       if (checkIsPendingTxGroup(list[i])) {
         pendings.push(list[i]);
       } else {
-        completeds.push(list[i]);
+        const item = list[i];
+        if (checkIsSubmittedTxGroup(list[i])) {
+          maxCompletedNonceByChain[item.chainId] = Math.max(
+            item.nonce,
+            maxCompletedNonceByChain[item.chainId] ?? -1
+          );
+        }
+        completeds.push(item);
+        /**
+         * TODO:
+         * 1. repair other type tx
+         * 2. maybe we need to migrate data once on bootstrap
+         */
+        // repair completedAt field from corresponding txs
+        const isSend =
+          item.$ctx?.ga?.category === 'Send' ||
+          item.$ctx?.ga?.source === 'sendToken';
+        if (isSend) {
+          const storedItem =
+            this.store.sendTxHistory.find(
+              (tx) =>
+                isSend &&
+                tx.chainId === item.chainId &&
+                tx.hash === item.txs[0]?.hash
+            ) || null;
+          if (storedItem && storedItem.completedAt) {
+            item.completedAt = storedItem.completedAt;
+          }
+        }
       }
-      // if (list[i].isPending && !list[i].isSubmitFailed) {
-      //   pendings.push(list[i]);
-      // } else {
-      //   completeds.push(list[i]);
-      // }
     }
 
     return {
-      pendings: pendings.sort((a, b) => {
-        if (a.chainId === b.chainId) {
-          return b.nonce - a.nonce;
-        } else {
-          return a.chainId - b.chainId;
-        }
-      }),
+      pendings: pendings
+        .filter(
+          (item) => item.nonce > (maxCompletedNonceByChain[item.chainId] ?? -1)
+        )
+        .sort((a, b) => {
+          if (a.chainId === b.chainId) {
+            return b.nonce - a.nonce;
+          } else {
+            return a.chainId - b.chainId;
+          }
+        }),
       completeds: completeds.sort((a, b) => {
         return b.createdAt - a.createdAt;
       }),
@@ -816,6 +1263,7 @@ class TxHistory {
       const t = copyHistory[k];
       if (t.chainId === chainId && t.nonce < nonce && t.isPending) {
         delete copyHistory[k];
+        this.removeFeatPendingByLocal(copyHistory[k].txs[0], address, chainId);
       }
     }
     // for (const k in copyExplain) {
@@ -854,6 +1302,69 @@ class TxHistory {
           };
         }, {}),
     });
+    this.store.swapTxHistory = this.store.swapTxHistory.filter((item) => {
+      return !(
+        isSameAddress(address, item.address) && item.status === 'pending'
+      );
+    });
+    this.store.sendTxHistory = this.store.sendTxHistory.filter((item) => {
+      return !(
+        isSameAddress(address, item.address) && item.status === 'pending'
+      );
+    });
+    this.store.bridgeTxHistory = this.store.bridgeTxHistory.filter((item) => {
+      return !(
+        isSameAddress(address, item.address) && item.status !== 'allSuccess'
+      );
+    });
+    this.store.sendNftTxHistory = this.store.sendNftTxHistory.filter((item) => {
+      return !(
+        isSameAddress(address, item.address) && item.status === 'pending'
+      );
+    });
+  }
+
+  removeFeatPendingByLocal(
+    localItem: TransactionHistoryItem,
+    address: string,
+    chainId: number
+  ) {
+    this.store.swapTxHistory = this.store.swapTxHistory.filter(
+      (tx) =>
+        !(
+          isSameAddress(address, tx.address) &&
+          tx.status === 'pending' &&
+          chainId === tx.chainId &&
+          localItem?.hash === tx.hash
+        )
+    );
+    this.store.sendTxHistory = this.store.sendTxHistory.filter(
+      (tx) =>
+        !(
+          isSameAddress(address, tx.address) &&
+          tx.status === 'pending' &&
+          chainId === tx.chainId &&
+          localItem?.hash === tx.hash
+        )
+    );
+    this.store.sendNftTxHistory = this.store.sendNftTxHistory.filter(
+      (tx) =>
+        !(
+          isSameAddress(address, tx.address) &&
+          tx.status === 'pending' &&
+          chainId === tx.chainId &&
+          localItem?.hash === tx.hash
+        )
+    );
+    this.store.bridgeTxHistory = this.store.bridgeTxHistory.filter(
+      (tx) =>
+        !(
+          isSameAddress(address, tx.address) &&
+          tx.status !== 'allSuccess' &&
+          chainId === tx.fromChainId &&
+          localItem?.hash === tx.hash
+        )
+    );
   }
 
   removeLocalPendingTx({
@@ -871,11 +1382,14 @@ class TxHistory {
       ...this.store.transactions,
       [address.toLowerCase()]: Object.values(transactions)
         .filter((transaction) => {
-          return !(
+          const needFilter =
             transaction.isPending &&
             +chainId === +transaction.chainId &&
-            +transaction.nonce === +nonce
-          );
+            +transaction.nonce === +nonce;
+          if (needFilter) {
+            this.removeFeatPendingByLocal(transaction.txs[0], address, chainId);
+          }
+          return !needFilter;
         })
         .reduce((res, current) => {
           return {

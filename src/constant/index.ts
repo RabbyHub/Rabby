@@ -31,9 +31,12 @@ import IconWarning, {
 import LogoCoboArgus, {
   ReactComponent as RcLogoCoboArgus,
 } from 'ui/assets/walletlogo/CoboArgus.svg';
-import IconMnemonicWhite, {
+import IconMnemonicWhiteRaw, {
   ReactComponent as RcIconMnemonicWhite,
 } from 'ui/assets/walletlogo/IconMnemonic-white.svg';
+import IconMnemonicDesktopWhite, {
+  ReactComponent as RcIconMnemonicDesktopWhite,
+} from 'ui/assets/walletlogo/IconMnemonic-desktop-white.svg';
 import IconWatchWhite, {
   ReactComponent as RcIconWatchWhite,
 } from 'ui/assets/walletlogo/IconWatch-white.svg';
@@ -121,9 +124,12 @@ import {
 import IconMetaMask, {
   ReactComponent as RcIconMetaMask,
 } from 'ui/assets/walletlogo/metamask.svg';
-import IconMnemonicInk, {
+import IconMnemonicInkRaw, {
   ReactComponent as RcIconMnemonicInk,
 } from 'ui/assets/walletlogo/mnemonic-ink.svg';
+import IconMnemonicDesktopInk, {
+  ReactComponent as RcIconMnemonicDesktopInk,
+} from 'ui/assets/walletlogo/mnemonic-desktop-ink.svg';
 import LogoMPCVault, {
   ReactComponent as RcLogoMPCVault,
 } from 'ui/assets/walletlogo/mpcvault.svg';
@@ -138,12 +144,18 @@ import {
   ReactComponent as RcIconOnekey,
   ReactComponent as RcLogoOnekey,
 } from 'ui/assets/walletlogo/onekey.svg';
-import IconPrivateKeyWhite, {
+import IconPrivateKeyWhiteRaw, {
   ReactComponent as RcIconPrivateKeyWhite,
 } from 'ui/assets/walletlogo/private-key-white.svg';
-import IconPrivateKeyInk, {
+import IconPrivateKeyDesktopWhite, {
+  ReactComponent as RcIconPrivateKeyDesktopWhite,
+} from 'ui/assets/walletlogo/private-key-desktop-white.svg';
+import IconPrivateKeyInkRaw, {
   ReactComponent as RcIconPrivateKeyInk,
 } from 'ui/assets/walletlogo/privatekey-ink.svg';
+import IconPrivateKeyDesktopInk, {
+  ReactComponent as RcIconPrivateKeyDesktopInk,
+} from 'ui/assets/walletlogo/privatekey-desktop-ink.svg';
 import LogoPrivateKey, {
   ReactComponent as RcLogoPrivateKey,
 } from 'ui/assets/walletlogo/privatekeylogo.svg';
@@ -193,10 +205,10 @@ import LogoZerion, {
 import browser from 'webextension-polyfill';
 
 import Logo0X from 'ui/assets/swap/0xswap.png';
-import Logo1inch from 'ui/assets/swap/1inch.png';
+import Logo1inch from 'ui/assets/swap/1inch.svg';
 import LogoOdos from 'ui/assets/swap/odos.png';
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
-import LogoMagpie from 'ui/assets/swap/magpie.jpg';
+import LogoMagpie from 'ui/assets/swap/magpie.png';
 
 import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
 import LogoBinance from 'ui/assets/swap/binance.png';
@@ -209,6 +221,21 @@ import LogoTokenDefault from 'ui/assets/token-default.svg';
 export { default as LANGS } from '../../_raw/locales/index.json';
 
 export { CHAINS, CHAINS_ENUM };
+
+const isDesktop =
+  typeof window !== 'undefined' && window.location.pathname === '/desktop.html';
+const IconPrivateKeyInk = isDesktop
+  ? IconPrivateKeyDesktopInk
+  : IconPrivateKeyInkRaw;
+
+const IconPrivateKeyWhite = isDesktop
+  ? IconPrivateKeyDesktopWhite
+  : IconPrivateKeyWhiteRaw;
+
+const IconMnemonicInk = isDesktop ? IconMnemonicDesktopInk : IconMnemonicInkRaw;
+const IconMnemonicWhite = isDesktop
+  ? IconMnemonicDesktopWhite
+  : IconMnemonicWhiteRaw;
 
 interface PortfolioChain extends Chain {
   isSupportHistory: boolean;
@@ -243,10 +270,8 @@ export const KEYRING_TYPE = {
   CoinbaseKeyring: 'Coinbase',
 } as const;
 
-export const KEYRING_CLASS = {
-  PRIVATE_KEY: 'Simple Key Pair',
-  MNEMONIC: 'HD Key Tree',
-  HARDWARE: {
+const createHardwareObject = () => {
+  const hardware = {
     BITBOX02: 'BitBox02 Hardware',
     TREZOR: 'Trezor Hardware',
     LEDGER: 'Ledger Hardware',
@@ -254,7 +279,16 @@ export const KEYRING_CLASS = {
     GRIDPLUS: 'GridPlus Hardware',
     KEYSTONE: 'QR Hardware Wallet Device',
     IMKEY: 'imKey Hardware',
-  },
+    NGRAVEZERO: 'QR Hardware Wallet Device',
+  };
+
+  return hardware;
+};
+
+export const KEYRING_CLASS = {
+  PRIVATE_KEY: 'Simple Key Pair',
+  MNEMONIC: 'HD Key Tree',
+  HARDWARE: createHardwareObject(),
   WATCH: 'Watch Address',
   WALLETCONNECT: 'WalletConnect',
   GNOSIS: 'Gnosis',
@@ -279,6 +313,7 @@ export const SUPPORT_1559_KEYRING_TYPE = [
   KEYRING_CLASS.PRIVATE_KEY,
   KEYRING_CLASS.MNEMONIC,
   KEYRING_CLASS.HARDWARE.KEYSTONE,
+  KEYRING_CLASS.HARDWARE.NGRAVEZERO,
   KEYRING_CLASS.HARDWARE.TREZOR,
   KEYRING_CLASS.HARDWARE.ONEKEY,
   KEYRING_CLASS.HARDWARE.BITBOX02,
@@ -295,6 +330,7 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'Imported by GridPlus',
   [KEYRING_CLASS.GNOSIS]: 'Imported by Safe',
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Imported by QRCode Base',
+  [KEYRING_CLASS.HARDWARE.NGRAVEZERO]: 'Imported by QRCode Base',
   [KEYRING_CLASS.HARDWARE.IMKEY]: 'Imported by imKey',
 };
 
@@ -322,6 +358,10 @@ export const HARDWARE_KEYRING_TYPES = {
   Keystone: {
     type: 'QR Hardware Wallet Device',
     brandName: 'Keystone',
+  },
+  NGRAVEZERO: {
+    type: 'QR Hardware Wallet Device',
+    brandName: 'NGRAVE ZERO',
   },
   ImKey: {
     type: 'imKey Hardware',
@@ -471,6 +511,7 @@ export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';
 export const INITIAL_TESTNET_OPENAPI_URL = 'https://api.testnet.rabby.io';
 
 export const EVENTS = {
+  BRIDGE_HISTORY_UPDATED: 'BRIDGE_HISTORY_UPDATED',
   broadcastToUI: 'broadcastToUI',
   broadcastToBackground: 'broadcastToBackground',
   TX_COMPLETED: 'TX_COMPLETED',
@@ -500,14 +541,34 @@ export const EVENTS = {
   COMMON_HARDWARE: {
     REJECTED: 'COMMON_HARDWARE_REJECTED',
   },
+  ONEKEY: {
+    REQUEST_PERMISSION_WEBUSB: 'ONEKEY_REQUEST_PERMISSION_WEBUI',
+  },
   LOCK_WALLET: 'LOCK_WALLET',
   RELOAD_TX: 'RELOAD_TX',
   SIGN_BEGIN: 'SIGN_BEGIN',
   SIGN_WAITING_AMOUNTED: 'SIGN_WAITING_AMOUNTED',
+  DIRECT_SIGN: 'DIRECT_SIGN',
   // FORCE_EXPIRE_ADDRESS_BALANCE: 'FORCE_EXPIRE_ADDRESS_BALANCE',
   GAS_ACCOUNT: {
+    LOG_IN: 'LOG_IN',
     LOG_OUT: 'LOG_OUT',
+    CLOSE_WINDOW: 'CLOSE_WINDOW',
   },
+  PERPS: {
+    LOG_OUT: 'PERPS_LOG_OUT',
+  },
+  INNER_HISTORY_ITEM_PENDING: 'INNER_HISTORY_ITEM_PENDING',
+  INNER_HISTORY_ITEM_COMPLETE: 'INNER_HISTORY_ITEM_COMPLETE',
+  PERSIST_KEYRING: 'PERSIST_KEYRING',
+
+  RELOAD_ACCOUNT_LIST: 'RELOAD_ACCOUNT_LIST',
+
+  DESKTOP: {
+    FOCUSED: 'DESKTOP_FOCUSED',
+  },
+
+  RELOAD_APPROVAL: 'RELOAD_APPROVAL',
 };
 
 export const EVENTS_IN_BG = {
@@ -789,7 +850,8 @@ export const WALLET_BRAND_CONTENT: {
     image: LogoOnekey,
     rcSvg: RcLogoOnekey,
     maybeSvg: LogoOnekey,
-    connectType: BRAND_WALLET_CONNECT_TYPE.OneKeyConnect,
+    // connectType: BRAND_WALLET_CONNECT_TYPE.OneKeyConnect,
+    connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
   [WALLET_BRAND_TYPES.TP]: {
@@ -1107,7 +1169,8 @@ export const SORT_WEIGHT = {
   [KEYRING_TYPE.SimpleKeyring]: 2,
   [KEYRING_TYPE.HardwareKeyring]: 3,
   [KEYRING_TYPE.WalletConnectKeyring]: 4,
-  [KEYRING_TYPE.WatchAddressKeyring]: 5,
+  [KEYRING_TYPE.GnosisKeyring]: 5,
+  [KEYRING_TYPE.WatchAddressKeyring]: 999,
 };
 
 export const GASPRICE_RANGE = ensureChainHashValid({
@@ -1160,6 +1223,7 @@ export const KEYRING_CATEGORY_MAP = {
   [KEYRING_CLASS.HARDWARE.TREZOR]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.BITBOX02]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.NGRAVEZERO]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.WALLETCONNECT]: KEYRING_CATEGORY.WalletConnect,
   [KEYRING_CLASS.Coinbase]: KEYRING_CATEGORY.WalletConnect,
@@ -1283,6 +1347,10 @@ export const L2_ENUMS = [
   'DBK',
   'MINT',
   'CYBER',
+  'KATANA',
+  'WORLD',
+  'INK',
+  'SONEIUM',
 ];
 
 // opstack L2 chains
@@ -1296,6 +1364,10 @@ export const OP_STACK_ENUMS = [
   'DBK',
   'MINT',
   'CYBER',
+  'KATANA',
+  'WORLD',
+  'INK',
+  'SONEIUM',
 ];
 
 export const ARB_LIKE_L2_CHAINS = [CHAINS_ENUM.ARBITRUM, CHAINS_ENUM.AURORA];
@@ -1374,10 +1446,12 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
+  [WALLET_BRAND_TYPES.ONEKEY]: 'Onekey QR',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
   [KEYRING_CLASS.GNOSIS]: 'Safe',
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'GridPlus',
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Keystone',
+  [KEYRING_CLASS.HARDWARE.NGRAVEZERO]: 'NGRAVE ZERO',
   [WALLET_BRAND_TYPES.TP]: WALLET_BRAND_CONTENT.TP.name,
   [WALLET_BRAND_TYPES.METAMASK]: WALLET_BRAND_CONTENT.MetaMask.name,
   [WALLET_BRAND_TYPES.IMTOKEN]: WALLET_BRAND_CONTENT.IMTOKEN.name,
@@ -1386,28 +1460,6 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.Coinbase]: WALLET_BRAND_CONTENT.Coinbase.name,
   [KEYRING_CLASS.HARDWARE.IMKEY]: 'imKey',
 };
-
-export const GNOSIS_SUPPORT_CHAINS = [
-  CHAINS_ENUM.ETH,
-  CHAINS_ENUM.BSC,
-  CHAINS_ENUM.POLYGON,
-  CHAINS_ENUM.GNOSIS,
-  CHAINS_ENUM.AVAX,
-  CHAINS_ENUM.OP,
-  CHAINS_ENUM.ARBITRUM,
-  CHAINS_ENUM.AURORA,
-  CHAINS_ENUM.BASE,
-  CHAINS_ENUM.CELO,
-  CHAINS_ENUM.PZE,
-  CHAINS_ENUM.ERA,
-  CHAINS_ENUM.SCRL,
-  CHAINS_ENUM.LINEA,
-  'XLAYER',
-  CHAINS_ENUM.MANTLE,
-  'WORLD',
-  CHAINS_ENUM.BLAST,
-  'SONIC',
-];
 
 export const COBO_ARGUS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.ETH,
@@ -1442,6 +1494,7 @@ export const WALLET_SORT_SCORE = [
   WALLET_BRAND_TYPES.GRIDPLUS,
   WALLET_BRAND_TYPES.ONEKEY,
   WALLET_BRAND_TYPES.KEYSTONE,
+  WALLET_BRAND_TYPES.NGRAVEZERO,
   WALLET_BRAND_TYPES.BITBOX02,
   WALLET_BRAND_TYPES.COOLWALLET,
   WALLET_BRAND_TYPES.AIRGAP,
@@ -1516,7 +1569,7 @@ export const DEX = {
   [DEX_ENUM.MAGPIE]: {
     id: DEX_ENUM.MAGPIE,
     logo: LogoMagpie,
-    name: 'Magpie',
+    name: 'Fly',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.MAGPIE],
   },
 };
@@ -1603,3 +1656,14 @@ export const DBK_CHAIN_BRIDGE_CONTRACT =
   '0x28f1b9F457CB51E0af56dff1d11CD6CEdFfD1977';
 export const DBK_NFT_CONTRACT_ADDRESS =
   '0x633b7472E1641D59334886a7692107D6332B1ff0';
+
+export const SELF_HOST_SAFE_NETWORKS = [
+  '1',
+  '56',
+  '42161',
+  '137',
+  '10',
+  '8453',
+];
+
+export const SAFE_API_KEY = process.env.SAFE_API_KEY || '';

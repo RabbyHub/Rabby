@@ -12,6 +12,7 @@ export interface Props {
   onFocus?: () => void;
   onBlur?: () => void;
   className?: string;
+  placeholder?: string;
 }
 
 const InputStyled = styled(Input)`
@@ -22,10 +23,15 @@ const InputStyled = styled(Input)`
   &:hover {
     border-color: var(--r-blue-default, #7084ff) !important;
   }
+
+  input::placeholder {
+    font-size: 12px;
+    color: var(--r-neutral-foot, #6a7587);
+  }
 `;
 
 export const TokenSearchInput = React.forwardRef<Input, Props>(
-  ({ onSearch, onBlur, onFocus, className }, ref) => {
+  ({ onSearch, onBlur, onFocus, className, placeholder }, ref) => {
     const [input, setInput] = React.useState<string>('');
     const { visible } = useCommonPopupView();
     const { t } = useTranslation();
@@ -48,7 +54,9 @@ export const TokenSearchInput = React.forwardRef<Input, Props>(
       <InputStyled
         ref={ref}
         onChange={(e) => setInput(e.target.value)}
-        placeholder={t('page.dashboard.assets.searchPlaceholder')}
+        placeholder={
+          placeholder || t('page.dashboard.assets.searchPlaceholder')
+        }
         onFocus={onFocus}
         onBlur={onBlur}
         allowClear

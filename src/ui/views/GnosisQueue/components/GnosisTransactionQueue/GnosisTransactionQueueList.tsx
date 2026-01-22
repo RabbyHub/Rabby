@@ -11,19 +11,18 @@ import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { groupBy } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { numberToHex, toChecksumAddress } from 'web3-utils';
 
 import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
 import { useAccount } from '@/ui/store-hooks';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { findChain, findChainByID } from '@/utils/chain';
 import { LoadingOutlined } from '@ant-design/icons';
-import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
-import { useRequest } from 'ahooks';
+import { SafeTransactionDataPartial } from '@safe-global/types-kit';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
-import { intToHex } from 'ethereumjs-util';
+import { intToHex, toChecksumAddress } from '@ethereumjs/util';
 import { useHistory } from 'react-router-dom';
 import { Virtuoso } from 'react-virtuoso';
 import IconUser from 'ui/assets/address-management.svg';
@@ -39,6 +38,9 @@ import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
 import { splitNumberByStep } from 'ui/utils/number';
 import { getProtocol } from '@rabby-wallet/rabby-action';
 import { ReplacePopup } from './ReplacePopup';
+import { numberToHex } from 'viem';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { UI_TYPE } from '@/constant/ui';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -323,7 +325,7 @@ const GnosisTransactionItem = ({
         to: data.to,
         data: data.data || '0x',
         value: `0x${Number(data.value).toString(16)}`,
-        nonce: intToHex(data.nonce),
+        nonce: intToHex(Number(data.nonce)),
         gasPrice: '0x0',
         gas: '0x0',
       },
@@ -342,7 +344,7 @@ const GnosisTransactionItem = ({
       to: data.to,
       data: data.data || '0x',
       value: `0x${Number(data.value).toString(16)}`,
-      nonce: intToHex(data.nonce),
+      nonce: intToHex(Number(data.nonce)),
       safeTxGas: data.safeTxGas,
       gasPrice: Number(data.gasPrice),
       baseGas: data.baseGas,
@@ -376,30 +378,44 @@ const GnosisTransactionItem = ({
         },
       ],
     });
-    window.close();
+    if (UI_TYPE.isPop) {
+      window.close();
+    }
   };
 
   const history = useHistory();
   const handleReplace = async (type: string) => {
     if (type === 'send') {
-      history.replace({
-        pathname: '/send-token',
-        state: {
-          safeInfo: {
-            nonce: data.nonce,
-            chainId: Number(networkId),
+      if (UI_TYPE.isDesktop) {
+        // todo check this
+        history.replace(
+          `/desktop/profile?action=send&safeInfo=${encodeURIComponent(
+            JSON.stringify({
+              nonce: data.nonce,
+              chainId: Number(networkId),
+            })
+          )}`
+        );
+      } else {
+        history.replace({
+          pathname: '/send-token',
+          state: {
+            safeInfo: {
+              nonce: data.nonce,
+              chainId: Number(networkId),
+            },
+            from: '/gnosis-queue',
           },
-          from: '/gnosis-queue',
-        },
-      });
+        });
+      }
     } else if (type === 'reject') {
       const params = {
         chainId: Number(networkId),
         from: toChecksumAddress(data.safe),
         to: toChecksumAddress(data.safe),
         data: '0x',
-        value: '0x',
-        nonce: intToHex(data.nonce),
+        value: '0x0',
+        nonce: intToHex(Number(data.nonce)),
         safeTxGas: 0,
         gasPrice: '0',
         baseGas: 0,
@@ -408,7 +424,9 @@ const GnosisTransactionItem = ({
         method: 'eth_sendTransaction',
         params: [params],
       });
-      window.close();
+      if (UI_TYPE.isPop) {
+        window.close();
+      }
     }
   };
 
@@ -416,13 +434,15 @@ const GnosisTransactionItem = ({
     init();
   }, []);
 
+  const { getContainer } = usePopupContainer();
+
   return (
     <>
       <div
         className={clsx('queue-item', {
           canExec:
             data.confirmations.length >= safeInfo.threshold &&
-            data.nonce === safeInfo.nonce,
+            +data.nonce === +safeInfo.nonce,
         })}
       >
         <div className="queue-item__time">
@@ -452,7 +472,7 @@ const GnosisTransactionItem = ({
           <Tooltip
             overlayClassName="rectangle"
             title={
-              data.nonce !== safeInfo.nonce ? (
+              +data.nonce !== +safeInfo.nonce ? (
                 <Trans
                   i18nKey="page.safeQueue.LowerNonceError"
                   values={{ nonce: safeInfo.nonce }}
@@ -468,7 +488,7 @@ const GnosisTransactionItem = ({
                 onClick={() => onSubmit(data)}
                 disabled={
                   data.confirmations.length < safeInfo.threshold ||
-                  data.nonce !== safeInfo.nonce
+                  +data.nonce !== +safeInfo.nonce
                 }
               >
                 {t('page.safeQueue.submitBtn')}
@@ -490,6 +510,7 @@ const GnosisTransactionItem = ({
         visible={isShowReplacePopup}
         onClose={() => setIsShowReplacePopup(false)}
         onSelect={handleReplace}
+        getContainer={getContainer}
       />
     </>
   );
@@ -525,6 +546,7 @@ export const GnosisTransactionQueueList = (props: {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadFaild, setIsLoadFaild] = useState(false);
   const [account] = useAccount();
+  const history = useHistory();
 
   const { data: safeInfo, loading: isSafeInfoLoading } = useGnosisSafeInfo({
     address: account?.address,
@@ -539,15 +561,15 @@ export const GnosisTransactionQueueList = (props: {
         txs.map(async (safeTx) => {
           const tx: SafeTransactionDataPartial = {
             data: safeTx.data || '0x',
-            gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
+            gasPrice: safeTx.gasPrice || '0',
             gasToken: safeTx.gasToken,
             refundReceiver: safeTx.refundReceiver,
             to: safeTx.to,
-            value: numberToHex(safeTx.value),
-            safeTxGas: safeTx.safeTxGas,
+            value: numberToHex(BigInt(safeTx.value)),
+            safeTxGas: safeTx.safeTxGas.toString(),
             nonce: safeTx.nonce,
             operation: safeTx.operation,
-            baseGas: safeTx.baseGas,
+            baseGas: safeTx.baseGas.toString(),
           };
           return wallet.validateGnosisTransaction(
             {
@@ -568,15 +590,15 @@ export const GnosisTransactionQueueList = (props: {
           if (!txHashValidation[index]) return false;
           const tx: SafeTransactionDataPartial = {
             data: safeTx.data || '0x',
-            gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
+            gasPrice: safeTx.gasPrice || '0',
             gasToken: safeTx.gasToken,
             refundReceiver: safeTx.refundReceiver,
             to: safeTx.to,
-            value: numberToHex(safeTx.value),
-            safeTxGas: safeTx.safeTxGas,
+            value: numberToHex(BigInt(safeTx.value)),
+            safeTxGas: safeTx.safeTxGas.toString(),
             nonce: safeTx.nonce,
             operation: safeTx.operation,
-            baseGas: safeTx.baseGas,
+            baseGas: safeTx.baseGas.toString(),
           };
 
           return safeTx.confirmations.every((confirm) =>
@@ -624,8 +646,8 @@ export const GnosisTransactionQueueList = (props: {
         from: toChecksumAddress(data.safe),
         to: data.to,
         data: data.data || '0x',
-        value: numberToHex(data.value),
-        nonce: intToHex(data.nonce),
+        value: numberToHex(BigInt(data.value)),
+        nonce: intToHex(Number(data.nonce)),
         safeTxGas: data.safeTxGas,
         gasPrice: Number(data.gasPrice),
         baseGas: data.baseGas,
@@ -648,7 +670,15 @@ export const GnosisTransactionQueueList = (props: {
       );
       await wallet.execGnosisTransaction(account);
       setIsSubmitting(false);
-      window.close();
+      if (UI_TYPE.isDesktop) {
+        history.replace(
+          history.location.pathname.startsWith('/desktop/profile')
+            ? history.location.pathname
+            : '/desktop/profile'
+        );
+      } else {
+        window.close();
+      }
     } catch (e) {
       message.error(e.message || JSON.stringify(e));
       setIsSubmitting(false);
@@ -669,6 +699,8 @@ export const GnosisTransactionQueueList = (props: {
   const list = useMemo(() => {
     return Object.entries(transactionsGroup);
   }, [transactionsGroup]);
+
+  const { getContainer } = usePopupContainer();
 
   return (
     <div className="queue-list h-full">
@@ -751,6 +783,8 @@ export const GnosisTransactionQueueList = (props: {
         onCancel={handleCancel}
         isLoading={isSubmitting}
         networkId={networkId}
+        owners={safeInfo?.owners}
+        getContainer={getContainer}
       />
     </div>
   );

@@ -18,10 +18,13 @@ import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus'
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
   address: string;
   chainId?: number;
+  nonce?: string;
+  from?: string;
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
@@ -34,9 +37,16 @@ interface ApprovalParams {
     message: string;
     chainId: number;
   };
+  stay?: boolean;
 }
 
-const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
+const WatchAddressWaiting = ({
+  params,
+  account: $account,
+}: {
+  params: ApprovalParams;
+  account: Account;
+}) => {
   const { setHeight, setVisible, closePopup } = useCommonPopupView();
   const wallet = useWallet();
   const [connectStatus, setConnectStatus] = useState(
@@ -65,9 +75,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const { t } = useTranslation();
 
   const initWalletConnect = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
     const status = await wallet.getWalletConnectStatus(
       account.address,
       account.brandName
@@ -98,13 +106,11 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     rejectApproval('user cancel');
   };
 
-  const handleRetry = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+  const handleRetry = async (retry?: boolean) => {
+    const account = params.isGnosis ? params.account! : $account;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     setConnectError(null);
-    wallet.resendSign();
+    wallet.resendSign(retry);
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
     emitSignComponentAmounted();
   };
@@ -115,9 +121,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const init = async () => {
     const approval = await getApproval();
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
 
     setCurrentAccount(account);
 
@@ -255,6 +259,14 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
                 ? 'Custom Network'
                 : 'Integrated Network',
             });
+
+            ga4.fireEvent(
+              `Submit_${chainInfo?.isTestnet ? 'Custom' : 'Integrated'}`,
+              {
+                event_category: 'Transaction',
+              }
+            );
+
             isSignTriggered = true;
           }
           if (isText && !isSignTriggered) {
@@ -299,15 +311,16 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
   useEffect(() => {
     init();
-    setHeight(360);
+    setHeight('fit-content');
   }, []);
 
+  const { stay = false } = params || {};
   useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        false,
+        stay,
         false,
         signFinishedData.approvalId
       );
@@ -343,6 +356,9 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
               onCancel={handleCancel}
               account={currentAccount}
               onDone={() => setIsClickDone(true)}
+              chainId={params?.chainId}
+              nonce={params?.nonce}
+              from={params?.from}
             />
           )
         )}

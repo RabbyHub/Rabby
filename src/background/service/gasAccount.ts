@@ -1,3 +1,5 @@
+import { EVENTS } from '@/constant';
+import eventBus from '@/eventBus';
 import { createPersistStore } from 'background/utils';
 
 export type GasAccountRecord = {
@@ -14,21 +16,24 @@ export type GasAccountServiceStore = {
     type: string;
     brandName: string;
   };
+  hasAnyAccountClaimedGift: boolean; // 全局标记：是否有任何账号已经领取过gift
 };
 
 class GasAccountService {
   store: GasAccountServiceStore = {
     sig: undefined,
     accountId: undefined,
+    hasAnyAccountClaimedGift: false,
   };
 
   init = async () => {
-    const storage = await createPersistStore<GasAccountServiceStore>({
+    const store = await createPersistStore<GasAccountServiceStore>({
       name: 'gasAccount',
-      template: {},
+      template: {
+        hasAnyAccountClaimedGift: false,
+      },
     });
-
-    this.store = storage || this.store;
+    this.store = store || this.store;
   };
 
   getGasAccountData = (key?: keyof GasAccountServiceStore) => {
@@ -51,10 +56,40 @@ class GasAccountService {
       this.store.sig = sig;
       this.store.accountId = account?.address;
       this.store.account = {
-        ...account!,
+        address: account.address,
+        brandName: account.brandName,
+        type: account.type,
       };
     }
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method:
+        !sig || !account
+          ? EVENTS.GAS_ACCOUNT.LOG_OUT
+          : EVENTS.GAS_ACCOUNT.LOG_IN,
+    });
   };
+
+  /**
+   * 标记地址已领取gift
+   * @param address 地址
+   */
+  markGiftAsClaimed() {
+    this.store.hasAnyAccountClaimedGift = true;
+  }
+
+  /**
+   * 获取是否有任何账号已经领取过gift
+   */
+  getHasAnyAccountClaimedGift() {
+    return this.store.hasAnyAccountClaimedGift;
+  }
+
+  /**
+   * 设置是否有任何账号已经领取过gift
+   */
+  setHasAnyAccountClaimedGift(hasClaimed: boolean) {
+    this.store.hasAnyAccountClaimedGift = hasClaimed;
+  }
 }
 
 export default new GasAccountService();

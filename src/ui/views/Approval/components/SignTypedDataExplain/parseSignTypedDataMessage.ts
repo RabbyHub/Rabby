@@ -1,5 +1,5 @@
-export const parseSignTypedDataMessage = (raw: string) => {
-  const data = JSON.parse(raw);
+export const parseSignTypedDataMessage = (raw: string | object) => {
+  const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
 
   if (!data.primaryType) {
     return data.message;

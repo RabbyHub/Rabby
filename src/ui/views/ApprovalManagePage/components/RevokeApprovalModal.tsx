@@ -13,7 +13,7 @@ import clsx from 'clsx';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { ApprovalItem, getSpenderApprovalAmount } from '@/utils/approval';
 import styled from 'styled-components';
 import ApprovalsNameAndAddr from './NameAndAddr';
@@ -128,8 +128,17 @@ export const RevokeApprovalModal = (props: {
   className?: string;
   revokeList?: ApprovalSpenderItemToBeRevoked[];
   onConfirm: (items: ApprovalSpenderItemToBeRevoked[]) => void;
+  isDesktop?: boolean;
 }) => {
-  const { item, visible, onClose, className, revokeList, onConfirm } = props;
+  const {
+    item,
+    visible,
+    onClose,
+    className,
+    revokeList,
+    onConfirm,
+    isDesktop,
+  } = props;
   const { t } = useTranslation();
 
   const [selectedSet, setSelectedSet] = useState<Set<string>>(
@@ -510,6 +519,14 @@ export const RevokeApprovalModal = (props: {
       footer={null}
       title={t('page.approvals.RevokeApprovalModal.title')}
       closeIcon={<RcIconClose />}
+      maskStyle={
+        isDesktop
+          ? {
+              background: 'rgba(0, 0, 0, 0.30)',
+              backdropFilter: 'blur(8px)',
+            }
+          : undefined
+      }
     >
       <div className="flex flex-col h-[100%]">
         <div className="mt-0 mb-0 flex-shrink-0">

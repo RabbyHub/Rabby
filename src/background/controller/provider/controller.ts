@@ -1,20 +1,18 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import * as Sentry from '@sentry/browser';
-import Common, { Hardfork } from '@ethereumjs/common';
-import { TransactionFactory } from '@ethereumjs/tx';
+import { AuthorizationListItem, Common, Hardfork } from '@ethereumjs/common';
+import { FeeMarketEIP1559TxData, TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
 import {
-  bufferToHex,
   isHexString,
   addHexPrefix,
   intToHex,
-} from 'ethereumjs-util';
-import { stringToHex } from 'web3-utils';
+  bytesToHex,
+} from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
 import {
   normalize as normalizeAddress,
   recoverPersonalSignature,
-} from 'eth-sig-util';
+} from '@metamask/eth-sig-util';
 import cloneDeep from 'lodash/cloneDeep';
 import {
   keyringService,
@@ -31,6 +29,7 @@ import {
   transactionBroadcastWatchService,
   notificationService,
   bridgeService,
+  gasAccountService,
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx, TxPushType } from 'background/service/openapi';
@@ -49,7 +48,12 @@ import {
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Account } from 'background/service/preference';
-import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
+import {
+  validateGasPriceRange,
+  is1559Tx,
+  ApprovalRes,
+  is7702Tx,
+} from '@/utils/transaction';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from '@/ui/views/Approval/components/AddChain/type';
@@ -59,10 +63,21 @@ import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
 import {
   CustomTestnetTokenBase,
+  TestnetChain,
   customTestnetService,
 } from '@/background/service/customTestnet';
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
+import { getOriginFromUrl } from '@/utils';
+import { hexToNumber, isAddress, numberToHex, stringToHex, toHex } from 'viem';
+import { ProviderRequest } from './type';
+import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
+import { add0x } from '@/ui/utils/address';
+import {
+  EIP7702RevokeMiniGasLimit,
+  removeLeadingZeroes,
+} from '@/background/utils/7702';
+import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
 
 const reportSignText = (params: {
   method: string;
@@ -87,27 +102,12 @@ const reportSignText = (params: {
   });
 };
 
-interface ApprovalRes extends Tx {
-  type?: string;
-  address?: string;
-  uiRequestComponent?: string;
-  isSend?: boolean;
-  isSpeedUp?: boolean;
-  isCancel?: boolean;
-  isSwap?: boolean;
-  isGnosis?: boolean;
-  account?: Account;
-  extra?: Record<string, any>;
-  traceId?: string;
-  $ctx?: any;
-  signingTxId?: string;
-  pushType?: TxPushType;
-  lowGasDeadline?: number;
-  reqId?: string;
-  isGasLess?: boolean;
-  isGasAccount?: boolean;
-  logId?: string;
-}
+const convertToHex = (data: Buffer | bigint) => {
+  if (typeof data === 'bigint') {
+    return `0x${data.toString(16)}`;
+  }
+  return bytesToHex(data);
+};
 
 interface Web3WalletPermission {
   // The name of the method corresponding to the permission
@@ -121,10 +121,9 @@ const v1SignTypedDataVlidation = ({
   data: {
     params: [_, from],
   },
-}) => {
-  const currentAddress = preferenceService
-    .getCurrentAccount()
-    ?.address.toLowerCase();
+  account,
+}: ProviderRequest) => {
+  const currentAddress = account?.address?.toLowerCase();
   if (from.toLowerCase() !== currentAddress)
     throw ethErrors.rpc.invalidParams('from should be same as current address');
 };
@@ -134,30 +133,30 @@ const signTypedDataVlidation = ({
     params: [from, data],
   },
   session,
-}) => {
+  account,
+}: ProviderRequest) => {
   let jsonData;
   try {
     jsonData = JSON.parse(data);
   } catch (e) {
     throw ethErrors.rpc.invalidParams('data is not a validate JSON string');
   }
-  const currentChain = permissionService.isInternalOrigin(session.origin)
-    ? findChain({ id: jsonData.domain.chainId })?.enum
-    : permissionService.getConnectedSite(session.origin)?.chain;
-  if (jsonData.domain.chainId) {
-    const chainItem = findChainByEnum(currentChain);
-    if (
-      !currentChain ||
-      (chainItem && Number(jsonData.domain.chainId) !== chainItem.id)
-    ) {
-      throw ethErrors.rpc.invalidParams(
-        'chainId should be same as current chainId'
-      );
+  if (!permissionService.isInternalOrigin(session!.origin)) {
+    const currentChain = permissionService.getConnectedSite(session!.origin)
+      ?.chain;
+    if (jsonData.domain.chainId) {
+      const chainItem = findChainByEnum(currentChain);
+      if (
+        !currentChain ||
+        (chainItem && Number(jsonData.domain.chainId) !== chainItem.id)
+      ) {
+        throw ethErrors.rpc.invalidParams(
+          'chainId should be same as current chainId'
+        );
+      }
     }
   }
-  const currentAddress = preferenceService
-    .getCurrentAccount()
-    ?.address.toLowerCase();
+  const currentAddress = account?.address.toLowerCase();
   if (from.toLowerCase() !== currentAddress)
     throw ethErrors.rpc.invalidParams('from should be same as current address');
 };
@@ -168,6 +167,7 @@ class ProviderController extends BaseController {
     const {
       data: { method, params },
       session: { origin: _origin },
+      account,
     } = req;
 
     let origin = _origin;
@@ -199,8 +199,7 @@ class ProviderController extends BaseController {
       chainServerId = forceChainServerId;
     }
 
-    const currentAddress =
-      preferenceService.getCurrentAccount()?.address.toLowerCase() || '0x';
+    const currentAddress = account?.address?.toLowerCase() || '0x';
     const cache = RpcCache.get(currentAddress, {
       method,
       params,
@@ -233,21 +232,20 @@ class ProviderController extends BaseController {
         });
         return promise;
       } else {
-        const promise = openapiService
-          .ethRpc(chainServerId, {
-            origin: encodeURIComponent(origin),
+        const promise = RPCService.requestDefaultRPC({
+          chainServerId,
+          method,
+          params,
+          origin,
+        }).then((result) => {
+          RpcCache.set(currentAddress, {
             method,
             params,
-          })
-          .then((result) => {
-            RpcCache.set(currentAddress, {
-              method,
-              params,
-              result,
-              chainId: chainServerId,
-            });
-            return result;
+            result,
+            chainId: chainServerId,
           });
+          return result;
+        });
         RpcCache.set(currentAddress, {
           method,
           params,
@@ -265,14 +263,18 @@ class ProviderController extends BaseController {
     }
   };
 
-  ethRequestAccounts = async ({ session: { origin } }) => {
+  ethRequestAccounts = async (req) => {
+    assertProviderRequest(req);
+    const {
+      session: { origin },
+    } = req;
     if (!permissionService.hasPermission(origin)) {
       throw ethErrors.provider.unauthorized();
     }
 
-    const _account = await this.getCurrentAccount();
+    const _account = req.account;
     const account = _account ? [_account.address.toLowerCase()] : [];
-    sessionService.broadcastEvent('accountsChanged', account);
+    sessionService.broadcastEvent('accountsChanged', account, origin);
     const connectSite = permissionService.getConnectedSite(origin);
     if (connectSite) {
       const chain = findChain({ enum: connectSite.chain });
@@ -288,21 +290,19 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('SAFE', true)
-  ethAccounts = async ({ session: { origin } }) => {
+  ethAccounts = async ({ session: { origin }, account }) => {
     if (!permissionService.hasPermission(origin) || !Wallet.isUnlocked()) {
       return [];
     }
 
-    const account = await this.getCurrentAccount();
     return account ? [account.address.toLowerCase()] : [];
   };
 
-  ethCoinbase = async ({ session: { origin } }) => {
+  ethCoinbase = async ({ session: { origin }, account }) => {
     if (!permissionService.hasPermission(origin)) {
       return null;
     }
 
-    const account = await this.getCurrentAccount();
     return account ? account.address.toLowerCase() : null;
   };
 
@@ -316,18 +316,24 @@ class ProviderController extends BaseController {
 
   @Reflect.metadata('APPROVAL', [
     'SignTx',
-    ({
-      data: {
-        params: [tx],
-      },
-      session,
-    }) => {
-      const currentAddress = preferenceService
-        .getCurrentAccount()
-        ?.address.toLowerCase();
-      const currentChain = permissionService.isInternalOrigin(session.origin)
-        ? findChain({ id: tx.chainId })!.enum
-        : permissionService.getConnectedSite(session.origin)?.chain;
+    (req: ProviderRequest) => {
+      assertProviderRequest(req);
+      const {
+        data: {
+          params: [tx],
+        },
+        session,
+        account,
+      } = req;
+      const isSpeedUp = !!tx.isSpeedUp;
+      const isCancel = !!tx.isCancel;
+      const currentAddress = account?.address?.toLowerCase();
+      const currentChain =
+        permissionService.isInternalOrigin(session.origin) ||
+        isSpeedUp ||
+        isCancel
+          ? findChain({ id: tx.chainId })!.enum
+          : permissionService.getConnectedSite(session.origin)?.chain;
       if (tx.from.toLowerCase() !== currentAddress) {
         throw ethErrors.rpc.invalidParams(
           'from should be same as current address'
@@ -353,7 +359,30 @@ class ProviderController extends BaseController {
     approvalRes: ApprovalRes;
     pushed: boolean;
     result: any;
+    account: Account;
   }) => {
+    const rechargeGasAccountOnTx = (txHash = '') => {
+      if (
+        options?.data?.$ctx?.ga?.rechargeGasAccount &&
+        options?.approvalRes?.nonce
+      ) {
+        try {
+          openapiService
+            .rechargeGasAccount({
+              ...options.data.$ctx.ga.rechargeGasAccount,
+              tx_id: txHash,
+              nonce: parseInt(options.approvalRes.nonce),
+            })
+            .catch((e) => {
+              console.log('rechargeGasAccount e', e);
+            });
+        } catch (error) {
+          console.log('rechargeGasAccount error', error);
+        }
+      }
+    };
+
+    assertProviderRequest(options as any);
     if (options.pushed) return options.result;
     const {
       data: {
@@ -361,8 +390,10 @@ class ProviderController extends BaseController {
       },
       session: { origin },
       approvalRes,
+      account,
     } = cloneDeep(options);
-    const keyring = await this._checkAddress(txParams.from);
+    const currentAccount = account;
+    const keyring = await this._checkAddress(txParams.from, options);
     const isSend = !!txParams.isSend;
     const isSpeedUp = !!txParams.isSpeedUp;
     const isCancel = !!txParams.isCancel;
@@ -375,6 +406,11 @@ class ProviderController extends BaseController {
     const isGasLess = approvalRes.isGasLess || false;
     const logId = approvalRes.logId || '';
     const isGasAccount = approvalRes.isGasAccount || false;
+    const sig = approvalRes.sig;
+
+    const eip7702Revoke = options?.data?.$ctx?.eip7702Revoke || false;
+    const eip7702RevokeAuthorization =
+      options?.data?.$ctx?.eip7702RevokeAuthorization || [];
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -396,11 +432,22 @@ class ProviderController extends BaseController {
     delete approvalRes.isGasLess;
     delete approvalRes.logId;
     delete approvalRes.isGasAccount;
+    delete approvalRes.sig;
+    delete approvalRes.$account;
 
     let is1559 = is1559Tx(approvalRes);
+    const is7702 = is7702Tx(approvalRes);
+
+    if (is7702 && !(eip7702Revoke || isSpeedUp)) {
+      // todo
+      throw new Error('not support 7702');
+    }
+
     if (
       is1559 &&
-      approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas
+      approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas &&
+      !eip7702Revoke &&
+      !is7702
     ) {
       // fallback to legacy transaction if maxFeePerGas is equal to maxPriorityFeePerGas
       approvalRes.gasPrice = approvalRes.maxFeePerGas;
@@ -409,17 +456,72 @@ class ProviderController extends BaseController {
       is1559 = false;
     }
     const common = Common.custom(
-      { chainId: approvalRes.chainId },
-      { hardfork: Hardfork.London }
+      {
+        chainId: approvalRes.chainId,
+      },
+      { hardfork: Hardfork.Prague, eips: [7702] }
     );
+
     const txData = { ...approvalRes, gasLimit: approvalRes.gas };
+
     if (is1559) {
       txData.type = '0x2';
     }
-    const tx = TransactionFactory.fromTxData(txData, {
+
+    if (
+      (is7702 && isSpeedUp) ||
+      (eip7702Revoke && eip7702RevokeAuthorization?.length)
+    ) {
+      txData.type = '0x4';
+
+      if (!isSpeedUp) {
+        const authorizationList = [] as AuthorizationListItem[];
+
+        for (const authorization of eip7702RevokeAuthorization) {
+          const signature: string = await keyringService.signEip7702Authorization(
+            keyring,
+            {
+              from: txParams.from,
+              authorization: authorization,
+            }
+          );
+          const r = signature.slice(0, 66) as `0x${string}`;
+          const s = add0x(signature.slice(66, 130));
+          const v = parseInt(signature.slice(130, 132), 16);
+          const yParity = toHex(v - 27 === 0 ? 0 : 1);
+          authorizationList.push({
+            chainId: toHex(authorization[0]),
+            address: authorization[1],
+            nonce: toHex(authorization[2]),
+            r: removeLeadingZeroes(r),
+            s: removeLeadingZeroes(s),
+            yParity: removeLeadingZeroes(yParity),
+          } as any);
+        }
+        txData.authorizationList = authorizationList;
+        approvalRes.authorizationList = authorizationList;
+      }
+
+      // bsc use gasPrice
+      if (!txData.maxFeePerGas || !txData.maxPriorityFeePerGas) {
+        txData.maxFeePerGas = txData.maxFeePerGas || txData.gasPrice;
+        txData.maxPriorityFeePerGas =
+          txData.maxPriorityFeePerGas || txData.gasPrice;
+        delete txData.gasPrice;
+      }
+
+      if (!approvalRes.maxFeePerGas || !approvalRes.maxPriorityFeePerGas) {
+        approvalRes.maxFeePerGas =
+          approvalRes.maxFeePerGas || approvalRes.gasPrice;
+        approvalRes.maxPriorityFeePerGas =
+          approvalRes.maxPriorityFeePerGas || approvalRes.gasPrice;
+        delete approvalRes.gasPrice;
+      }
+    }
+
+    const tx = TransactionFactory.fromTxData(txData as FeeMarketEIP1559TxData, {
       common,
     });
-    const currentAccount = preferenceService.getCurrentAccount()!;
     let opts;
     opts = extra;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
@@ -437,11 +539,12 @@ class ProviderController extends BaseController {
         console.log(e);
       }
     }
-    const chain = permissionService.isInternalOrigin(origin)
-      ? (findChain({
-          id: approvalRes.chainId,
-        })?.enum as CHAINS_ENUM)
-      : permissionService.getConnectedSite(origin)!.chain;
+    const chain =
+      permissionService.isInternalOrigin(origin) || isSpeedUp || isCancel
+        ? (findChain({
+            id: approvalRes.chainId,
+          })?.enum as CHAINS_ENUM)
+        : permissionService.getConnectedSite(origin)!.chain;
 
     const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
 
@@ -451,9 +554,6 @@ class ProviderController extends BaseController {
     if (!approvingTx?.rawTx) {
       throw new Error(`approvingTx not found: ${signingTxId}`);
     }
-    transactionHistoryService.updateSigningTx(signingTxId!, {
-      isSubmitted: true,
-    });
 
     const { explain: cacheExplain, rawTx, action } = approvingTx;
 
@@ -487,7 +587,12 @@ class ProviderController extends BaseController {
         txParams.from,
         opts
       );
+      await fixKeyringAccountOnSigned({
+        keyring,
+        address: txParams.from,
+      });
     } catch (e) {
+      console.error(e);
       const errObj =
         typeof e === 'object'
           ? { message: e.message }
@@ -497,6 +602,16 @@ class ProviderController extends BaseController {
       throw errObj;
     }
 
+    transactionHistoryService.updateSigningTx(signingTxId!, {
+      isSubmitted: true,
+    });
+    const txDataWithRSV: any = {
+      ...txData,
+      r: addHexPrefix(signedTx.r),
+      s: addHexPrefix(signedTx.s),
+      v: addHexPrefix(signedTx.v),
+    };
+
     try {
       if (
         currentAccount.type === KEYRING_TYPE.GnosisKeyring ||
@@ -505,6 +620,7 @@ class ProviderController extends BaseController {
         signedTransactionSuccess = true;
         statsData.signed = true;
         statsData.signedSuccess = true;
+        rechargeGasAccountOnTx();
         return;
       }
 
@@ -530,6 +646,8 @@ class ProviderController extends BaseController {
         if (hash) {
           swapService.postSwap(chain, hash, other);
           bridgeService.postBridge(chain, hash, other);
+          const key = `${chain}-${other.data}`;
+          transactionHistoryService.postCacheHistoryData(key, hash);
         }
 
         statsData.submit = true;
@@ -540,9 +658,9 @@ class ProviderController extends BaseController {
         const _rawTx = {
           ...rawTx,
           ...approvalRes,
-          r: bufferToHex(signedTx.r),
-          s: bufferToHex(signedTx.s),
-          v: bufferToHex(signedTx.v),
+          r: convertToHex(signedTx.r),
+          s: convertToHex(signedTx.s),
+          v: convertToHex(signedTx.v),
         };
         if (is1559) {
           delete _rawTx.gasPrice;
@@ -628,6 +746,7 @@ class ProviderController extends BaseController {
               isSubmitFailed: true,
             },
             explain: cacheExplain,
+            actionData: action,
             origin,
           });
         }
@@ -655,55 +774,25 @@ class ProviderController extends BaseController {
           statsData.signMethod = notificationService.statsData?.signMethod;
         }
         notificationService.setStatsData(statsData);
+        rechargeGasAccountOnTx(signedTx);
         return signedTx;
       }
 
-      const buildTx = TransactionFactory.fromTxData({
-        ...approvalRes,
-        r: addHexPrefix(signedTx.r),
-        s: addHexPrefix(signedTx.s),
-        v: addHexPrefix(signedTx.v),
-        type: is1559 ? '0x2' : '0x0',
-      });
-
-      // Report address type(not sensitive information) to sentry when tx signature is invalid
-      if (!buildTx.verifySignature()) {
-        if (!buildTx.v) {
-          Sentry.captureException(new Error(`v missed, ${keyring.type}`));
-        } else if (!buildTx.s) {
-          Sentry.captureException(new Error(`s missed, ${keyring.type}`));
-        } else if (!buildTx.r) {
-          Sentry.captureException(new Error(`r missed, ${keyring.type}`));
-        } else {
-          Sentry.captureException(
-            new Error(`invalid signature, ${keyring.type}`)
-          );
-        }
-      }
       signedTransactionSuccess = true;
       statsData.signed = true;
       statsData.signedSuccess = true;
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.TX_SUBMITTING,
       });
+
       try {
         validateGasPriceRange(approvalRes);
         let hash: string | undefined = undefined;
         let reqId: string | undefined = undefined;
         if (!findChain({ enum: chain })?.isTestnet) {
           if (RPCService.hasCustomRPC(chain)) {
-            const txData: any = {
-              ...approvalRes,
-              gasLimit: approvalRes.gas,
-              r: addHexPrefix(signedTx.r),
-              s: addHexPrefix(signedTx.s),
-              v: addHexPrefix(signedTx.v),
-            };
-            if (is1559) {
-              txData.type = '0x2';
-            }
-            const tx = TransactionFactory.fromTxData(txData);
-            const rawTx = bufferToHex(tx.serialize());
+            const tx = TransactionFactory.fromTxData(txDataWithRSV, { common });
+            const rawTx = bytesToHex(tx.serialize());
             try {
               hash = await RPCService.requestCustomRPC(
                 chain,
@@ -713,36 +802,134 @@ class ProviderController extends BaseController {
             } catch (e) {
               let errMsg = typeof e === 'object' ? e.message : e;
               if (RPCService.hasCustomRPC(chain)) {
-                errMsg = `[From Custom RPC] ${errMsg}`;
+                const rpc = RPCService.getRPCByChain(chain);
+                const origin = getOriginFromUrl(rpc.url);
+                errMsg = `[From ${origin}] ${errMsg}`;
               }
               onTransactionSubmitFailed({
                 ...e,
                 message: errMsg,
               });
             }
-
             onTransactionCreated({ hash, reqId, pushType });
             notificationService.setStatsData(statsData);
           } else {
-            const res = await openapiService.submitTx({
-              tx: {
-                ...approvalRes,
-                r: bufferToHex(signedTx.r),
-                s: bufferToHex(signedTx.s),
-                v: bufferToHex(signedTx.v),
-                value: approvalRes.value || '0x0',
+            const chainServerId = findChain({ enum: chain })!.serverId;
+            const params: Parameters<typeof openapiService.submitTxV2>[0] = {
+              context: {
+                tx: {
+                  ...approvalRes,
+                  r: convertToHex(signedTx.r),
+                  s: convertToHex(signedTx.s),
+                  v: convertToHex(signedTx.v),
+                  value: approvalRes.value || '0x0',
+                },
+                origin,
+                log_id: logId,
               },
-              push_type: pushType,
-              low_gas_deadline: lowGasDeadline,
-              req_id: preReqId || '',
-              origin,
-              is_gasless: isGasLess,
-              is_gas_account: isGasAccount,
-              log_id: logId,
-            });
-            hash = res.req.tx_id || undefined;
-            reqId = res.req.id || undefined;
-            if (res.req.push_status === 'failed') {
+              backend_push_require: {
+                gas_type: isGasAccount
+                  ? 'gas_account'
+                  : isGasLess
+                  ? 'gasless'
+                  : null,
+              },
+              sig,
+              mev_share_model: pushType === 'mev' ? 'user' : 'rabby',
+            };
+
+            const adoptBE7702Params = () => {
+              if (
+                approvalRes.authorizationList &&
+                approvalRes.authorizationList?.some((e) => e.yParity)
+              ) {
+                params.context.tx = {
+                  ...params.context.tx,
+                  authorizationList: approvalRes.authorizationList.map((e) => ({
+                    chainId: hexToNumber(e.chainId),
+                    address: e.address,
+                    nonce: e.nonce,
+                    r: e.r,
+                    s: e.s,
+                    v: e.yParity,
+                  })),
+                } as any;
+              }
+            };
+
+            const defaultRPC = RPCService.getDefaultRPC(chainServerId);
+            if (defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount) {
+              let fePushedFailed = false;
+
+              const tx = TransactionFactory.fromTxData(txDataWithRSV, {
+                common,
+              });
+              const rawTx = bytesToHex(tx.serialize());
+
+              try {
+                const [
+                  fePushedHash,
+                  url,
+                ] = await RPCService.defaultRPCSubmitTxWithFallback(
+                  chainServerId,
+                  'eth_sendRawTransaction',
+                  [rawTx]
+                );
+
+                hash = fePushedHash;
+
+                params.frontend_push_result = {
+                  success: true,
+                  has_pushed: true,
+                  raw_tx: rawTx,
+                  url,
+                  return_tx_id: fePushedHash!,
+                };
+
+                openapiService.submitTxV2(params).catch((error) => {
+                  console.log('ignore BE error', error);
+                });
+              } catch (fePushError) {
+                fePushedFailed = true;
+
+                const urls = RPCService.getDefaultRPCByChainServerId(
+                  chainServerId
+                );
+                params.frontend_push_result = {
+                  success: false,
+                  has_pushed: true,
+                  url: urls?.rpcUrl?.[0] || '',
+                  error_msg:
+                    typeof fePushError === 'object'
+                      ? fePushError.message
+                      : String(fePushError),
+                };
+              }
+
+              if (fePushedFailed) {
+                adoptBE7702Params();
+                const res = await openapiService.submitTxV2(params);
+                hash = res.tx_id;
+              }
+            } else {
+              adoptBE7702Params();
+              const res = await openapiService.submitTxV2(params);
+              if (res.access_token) {
+                gasAccountService.setGasAccountSig(
+                  res.access_token,
+                  currentAccount
+                );
+                eventBus.emit(EVENTS.broadcastToUI, {
+                  method: EVENTS.GAS_ACCOUNT.LOG_IN,
+                });
+              }
+              hash = res.tx_id;
+            }
+
+            //No more low gas push, reqId is no longer required.
+            reqId = undefined;
+
+            if (!hash) {
               onTransactionSubmitFailed(new Error('Submit tx failed'));
             } else {
               onTransactionCreated({ hash, reqId, pushType });
@@ -757,18 +944,9 @@ class ProviderController extends BaseController {
           const chainData = findChain({
             enum: chain,
           })!;
-          const txData: any = {
-            ...approvalRes,
-            gasLimit: approvalRes.gas,
-            r: addHexPrefix(signedTx.r),
-            s: addHexPrefix(signedTx.s),
-            v: addHexPrefix(signedTx.v),
-          };
-          if (is1559) {
-            txData.type = '0x2';
-          }
-          const tx = TransactionFactory.fromTxData(txData);
-          const rawTx = bufferToHex(tx.serialize());
+
+          const tx = TransactionFactory.fromTxData(txDataWithRSV, { common });
+          const rawTx = bytesToHex(tx.serialize());
           const client = customTestnetService.getClient(chainData.id);
 
           hash = await client.request({
@@ -778,11 +956,24 @@ class ProviderController extends BaseController {
           onTransactionCreated({ hash, reqId, pushType });
           notificationService.setStatsData(statsData);
         }
-
+        rechargeGasAccountOnTx(hash);
         return hash;
       } catch (e: any) {
+        const chainData = findChain({
+          enum: chain,
+        })!;
+        let errMsg = e.details || e.message || JSON.stringify(e);
+        if (chainData && chainData.isTestnet) {
+          const rpcUrl = RPCService.hasCustomRPC(chain)
+            ? RPCService.getRPCByChain(chain).url
+            : (chainData as TestnetChain).rpcUrl;
+          errMsg = rpcUrl
+            ? `[From ${getOriginFromUrl(rpcUrl)}] ${errMsg}`
+            : errMsg;
+        }
         console.log('submit tx failed', e);
-        onTransactionSubmitFailed(e);
+        onTransactionSubmitFailed(errMsg);
+        rechargeGasAccountOnTx();
       }
     } catch (e) {
       if (!signedTransactionSuccess) {
@@ -793,6 +984,7 @@ class ProviderController extends BaseController {
         statsData.signMethod = notificationService.statsData?.signMethod;
       }
       notificationService.setStatsData(statsData);
+      rechargeGasAccountOnTx();
       throw typeof e === 'object' ? e : new Error(e);
     }
   };
@@ -818,24 +1010,26 @@ class ProviderController extends BaseController {
 
   @Reflect.metadata('APPROVAL', [
     'SignText',
-    ({
-      data: {
-        params: [_, from],
-      },
-    }) => {
-      const currentAddress = preferenceService
-        .getCurrentAccount()
-        ?.address.toLowerCase();
+    (req) => {
+      assertProviderRequest(req);
+      const {
+        data: {
+          params: [_, from],
+        },
+        account,
+      } = req;
+      const currentAddress = account.address.toLowerCase();
       if (from.toLowerCase() !== currentAddress)
         throw ethErrors.rpc.invalidParams(
           'from should be same as current address'
         );
     },
   ])
-  personalSign = async ({ data, approvalRes, session }) => {
+  personalSign = async (req) => {
+    assertProviderRequest(req);
+    const { data, approvalRes, session, account: currentAccount } = req;
     if (!data.params) return;
 
-    const currentAccount = preferenceService.getCurrentAccount()!;
     if (
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
@@ -845,8 +1039,7 @@ class ProviderController extends BaseController {
     try {
       const [string, from] = data.params;
       const hex = isHexString(string) ? string : stringToHex(string);
-      const keyring = await this._checkAddress(from);
-      // todo
+      const keyring = await this._checkAddress(from, req);
       const result = await keyringService.signPersonalMessage(
         keyring,
         { data: hex, from },
@@ -876,8 +1069,21 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('PRIVATE', true)
-  private _signTypedData = async (from, data, version, extra?) => {
-    const keyring = await this._checkAddress(from);
+  private _signTypedData = async (
+    {
+      from,
+      data,
+      version,
+      extra,
+    }: {
+      from: string;
+      data: any;
+      version: string;
+      extra: any;
+    },
+    req: ProviderRequest
+  ) => {
+    const keyring = await this._checkAddress(from, req);
     let _data = data;
     if (version !== 'V1') {
       if (typeof data === 'string') {
@@ -893,14 +1099,16 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', v1SignTypedDataVlidation])
-  ethSignTypedData = async ({
-    data: {
-      params: [data, from],
-    },
-    session,
-    approvalRes,
-  }) => {
-    const currentAccount = preferenceService.getCurrentAccount()!;
+  ethSignTypedData = async (req) => {
+    const {
+      data: {
+        params: [data, from],
+      },
+      session,
+      approvalRes,
+    } = req;
+    assertProviderRequest(req);
+    const currentAccount = req.account;
     if (
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
@@ -909,10 +1117,13 @@ class ProviderController extends BaseController {
     }
     try {
       const result = await this._signTypedData(
-        from,
-        data,
-        'V1',
-        approvalRes?.extra
+        {
+          from,
+          data,
+          version: 'V1',
+          extra: approvalRes?.extra,
+        },
+        req
       );
       signTextHistoryService.createHistory({
         address: from,
@@ -937,14 +1148,17 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', v1SignTypedDataVlidation])
-  ethSignTypedDataV1 = async ({
-    data: {
-      params: [data, from],
-    },
-    session,
-    approvalRes,
-  }) => {
-    const currentAccount = preferenceService.getCurrentAccount()!;
+  ethSignTypedDataV1 = async (req) => {
+    assertProviderRequest(req);
+    const {
+      data: {
+        params: [data, from],
+      },
+      session,
+      approvalRes,
+      account,
+    } = req;
+    const currentAccount = account;
     if (
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
@@ -953,10 +1167,13 @@ class ProviderController extends BaseController {
     }
     try {
       const result = await this._signTypedData(
-        from,
-        data,
-        'V1',
-        approvalRes?.extra
+        {
+          from,
+          data,
+          version: 'V1',
+          extra: approvalRes?.extra,
+        },
+        req
       );
       signTextHistoryService.createHistory({
         address: from,
@@ -981,14 +1198,16 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
-  ethSignTypedDataV3 = async ({
-    data: {
-      params: [from, data],
-    },
-    session,
-    approvalRes,
-  }) => {
-    const currentAccount = preferenceService.getCurrentAccount()!;
+  ethSignTypedDataV3 = async (req) => {
+    assertProviderRequest(req);
+    const {
+      data: {
+        params: [from, data],
+      },
+      session,
+      approvalRes,
+      account: currentAccount,
+    } = req;
     if (
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
@@ -997,10 +1216,13 @@ class ProviderController extends BaseController {
     }
     try {
       const result = await this._signTypedData(
-        from,
-        data,
-        'V3',
-        approvalRes?.extra
+        {
+          from,
+          data,
+          version: 'V3',
+          extra: approvalRes?.extra,
+        },
+        req
       );
       signTextHistoryService.createHistory({
         address: from,
@@ -1025,14 +1247,16 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
-  ethSignTypedDataV4 = async ({
-    data: {
-      params: [from, data],
-    },
-    session,
-    approvalRes,
-  }) => {
-    const currentAccount = preferenceService.getCurrentAccount()!;
+  ethSignTypedDataV4 = async (req) => {
+    const {
+      data: {
+        params: [from, data],
+      },
+      session,
+      approvalRes,
+      account: currentAccount,
+    } = req;
+    assertProviderRequest(req);
     if (
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
@@ -1041,10 +1265,13 @@ class ProviderController extends BaseController {
     }
     try {
       const result = await this._signTypedData(
-        from,
-        data,
-        'V4',
-        approvalRes?.extra
+        {
+          from,
+          data,
+          version: 'V4',
+          extra: approvalRes?.extra,
+        },
+        req
       );
       signTextHistoryService.createHistory({
         address: from,
@@ -1210,7 +1437,29 @@ class ProviderController extends BaseController {
     return null;
   };
 
-  @Reflect.metadata('APPROVAL', ['AddAsset', () => null, { height: 600 }])
+  @Reflect.metadata('APPROVAL', [
+    'AddAsset',
+    ({ data, session }) => {
+      if (!data.params) {
+        throw ethErrors.rpc.invalidParams('params is required');
+      }
+      if (!data.params.type) {
+        throw ethErrors.rpc.invalidParams('Asset type is required');
+      }
+      if (
+        !data.params.options?.address ||
+        !isAddress(data.params.options?.address, {
+          strict: false,
+        })
+      ) {
+        throw ethErrors.rpc.invalidParams(
+          `Invalid address '${data.params.options?.address}'.`
+        );
+      }
+      return null;
+    },
+    { height: 600 },
+  ])
   walletWatchAsset = ({
     approvalRes,
   }: {
@@ -1273,7 +1522,7 @@ class ProviderController extends BaseController {
     return recoverPersonalSignature({
       ...extra,
       data,
-      sig,
+      signature: sig,
     });
   };
 
@@ -1283,14 +1532,13 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('PRIVATE', true)
-  private _checkAddress = async (address) => {
+  private _checkAddress = async (address, req) => {
     // eslint-disable-next-line prefer-const
-    let { address: currentAddress, type } =
-      (await this.getCurrentAccount()) || {};
+    let { address: currentAddress, type } = req.account || {};
     currentAddress = currentAddress?.toLowerCase();
     if (
       !currentAddress ||
-      currentAddress !== normalizeAddress(address).toLowerCase()
+      currentAddress !== normalizeAddress(address)?.toLowerCase()
     ) {
       throw ethErrors.rpc.invalidParams({
         message:
@@ -1307,13 +1555,15 @@ class ProviderController extends BaseController {
 
   @Reflect.metadata('APPROVAL', [
     'GetPublicKey',
-    ({
-      data: {
-        params: [address],
-      },
-      session: { origin },
-    }) => {
-      const account = preferenceService.getCurrentAccount();
+    (req) => {
+      assertProviderRequest(req);
+      const {
+        data: {
+          params: [address],
+        },
+        session: { origin },
+        account,
+      } = req;
 
       if (address?.toLowerCase() !== account?.address?.toLowerCase()) {
         throw ethErrors.rpc.invalidParams({
@@ -1353,6 +1603,20 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     return approvalRes.data;
+  };
+
+  ethGetTransactionReceipt = async (req) => {
+    try {
+      const res = await this.ethRpc(req);
+      return res;
+    } catch (e) {
+      const idxKeyPhrases = ['index', 'progress'];
+      if (idxKeyPhrases.some((phrase) => e.message?.includes(phrase))) {
+        return null;
+      } else {
+        throw e;
+      }
+    }
   };
 
   ethGetTransactionByHash = async (req) => {

@@ -9,6 +9,7 @@ import {
 } from '@/ui/utils';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { CurvePointCollection } from '@/background/service/preference';
+import { useRequest } from 'ahooks';
 
 type CurveList = Array<{ timestamp: number; usd_value: number }>;
 
@@ -114,21 +115,24 @@ export const useCurve = (
 ) => {
   const { nonce, realtimeNetWorth, initData = [] } = options;
   const [data, setData] = useState<CurvePointCollection>(initData);
-  const [isLoading, setIsLoading] = useState(!data.length);
 
   const wallet = useWallet();
 
-  const fetch = async (addr: string, force = false) => {
-    setIsLoading(true);
-    try {
+  const { runAsync: fetch, loading: isLoading } = useRequest(
+    async (addr: string, force = false) => {
       const curve = await wallet.getInMemoryNetCurve(addr, force);
-      setData(curve);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+      return curve;
+    },
+    {
+      onSuccess(res) {
+        setData(res);
+      },
+      onError(e) {
+        console.error(e);
+      },
+      manual: true,
     }
-  };
+  );
 
   const refresh = useCallback(async () => {
     if (!address) return;

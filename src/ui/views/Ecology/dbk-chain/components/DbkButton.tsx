@@ -5,6 +5,19 @@ import { Loading3QuartersOutlined } from '@ant-design/icons';
 
 const Button = styled.button`
   position: relative;
+  border-radius: 1000px;
+  background: var(--r-orange-DBK, #ff7c60);
+  color: var(--r-neutral-title2, #fff);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  padding: 9px 18px;
+
+  font-size: 15px;
+  line-height: 18px;
+
   &:hover {
     box-shadow: 0px 4px 8px 0px rgba(255, 124, 96, 0.4);
   }
@@ -20,7 +33,7 @@ const Button = styled.button`
     right: 0;
     bottom: 0;
     top: 0;
-    border-radius: 900px;
+    border-radius: inherit;
     background-color: rgba(0, 0, 0, 0.1);
   }
 `;
@@ -47,12 +60,7 @@ export const DbkButton = ({
     <Button
       type="button"
       className={clsx(
-        'rounded-full bg-r-orange-DBK',
-        'text-r-neutral-title2 font-semibold',
-        'inline-flex items-center gap-[8px] justify-center',
-        size === 'small'
-          ? 'text-[13px] leading-[16px] py-[6px] px-[16px]'
-          : 'py-[9px] px-[18px] text-[15px] leading-[18px]',
+        size === 'small' ? 'text-[13px] leading-[16px] py-[6px] px-[16px]' : '',
         className
       )}
       style={style}

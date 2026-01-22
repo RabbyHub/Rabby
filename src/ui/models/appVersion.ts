@@ -7,6 +7,7 @@ type IState = {
   firstNotice: boolean;
   updateContent: string;
   version: string;
+  isNewUser?: boolean;
 };
 
 /**
@@ -18,6 +19,7 @@ export const appVersion = createModel<RootModel>()({
     firstNotice: false,
     updateContent: '',
     version: '',
+    isNewUser: true,
   },
   reducers: {
     setField(state, payload: Partial<typeof state>) {
@@ -33,6 +35,7 @@ export const appVersion = createModel<RootModel>()({
   effects: (dispatch) => ({
     async checkIfFirstLoginAsync(_: void, store) {
       const firstOpen = await store.app.wallet.getIsFirstOpen();
+      const isNewUser = await store.app.wallet.getIsNewUser();
       let updateContent = await getUpdateContent();
 
       const locale = store.preference?.locale || 'en';
@@ -58,6 +61,7 @@ export const appVersion = createModel<RootModel>()({
       }
 
       dispatch.appVersion.setField({
+        isNewUser,
         version,
         updateContent,
         ...(firstOpen &&

@@ -7,9 +7,14 @@ import {
   KEYRING_PURPLE_LOGOS,
   KEYRING_TYPE,
   KeyringWithIcon,
+  SORT_WEIGHT,
 } from 'consts';
 import { t } from 'i18next';
 import { DisplayChainWithWhiteLogo, findChain } from './chain';
+import { isAddress } from 'viem';
+import { isSameAddress } from '@/background/utils';
+import { isObject, isPlainObject } from 'lodash';
+import WatchLogo from 'ui/assets/waitcup.svg';
 
 export function generateAliasName({
   keyringType,
@@ -54,6 +59,7 @@ export function pickKeyringThemeIcon(
     | {
         needLightVersion?: boolean;
         purpleFirst?: boolean;
+        forceWatchTransparent?: boolean;
       }
 ) {
   if (!keyringClass) return null;
@@ -68,6 +74,10 @@ export function pickKeyringThemeIcon(
       keyringClass as any
     ),
   } = options || {};
+
+  if (options.forceWatchTransparent && keyringClass === KEYRING_CLASS.WATCH) {
+    return WatchLogo;
+  }
 
   if (
     purpleFirst &&
@@ -124,3 +134,106 @@ export function normalizeAndVaryChainList(chain_balances: ChainWithBalance[]) {
     chainListWithValue,
   };
 }
+
+export const SYNC_KEYRING_TYPES = [
+  KEYRING_CLASS.MNEMONIC,
+  KEYRING_CLASS.PRIVATE_KEY,
+  KEYRING_CLASS.HARDWARE.ONEKEY,
+  KEYRING_CLASS.HARDWARE.LEDGER,
+  KEYRING_CLASS.GNOSIS,
+  KEYRING_CLASS.HARDWARE.KEYSTONE,
+  KEYRING_CLASS.WATCH,
+  KEYRING_CLASS.HARDWARE.TREZOR,
+];
+
+interface Account {
+  type: string;
+  address: string;
+  brandName: string;
+  alianName?: string;
+  balance?: number;
+}
+
+export const isSameAccount = (a: Account, b: Account) => {
+  return (
+    a.address.toLowerCase() === b.address.toLowerCase() &&
+    a.brandName === b.brandName &&
+    a.type === b.type
+  );
+};
+
+export const filterKeyringData = (
+  data: string[] | object,
+  addresses: string[]
+) => {
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  const keys = Object.keys(data);
+
+  for (const key of keys) {
+    const value = data[key];
+
+    if (Array.isArray(value)) {
+      if (isAddress(value[0])) {
+        data[key] = value.filter((item) =>
+          addresses.some((address) => isSameAddress(item, address))
+        );
+      }
+    } else if (isObject(value)) {
+      const subKeys = Object.keys(value);
+
+      if (isAddress(subKeys[0])) {
+        const filteredSubKeys = subKeys.filter((item) =>
+          addresses.some((address) => isSameAddress(item, address))
+        );
+        data[key] = filteredSubKeys.reduce((acc, subKey) => {
+          acc[subKey] = value[subKey];
+          return acc;
+        }, {} as Record<string, any>);
+      }
+    }
+  }
+
+  return data;
+};
+
+export function sortAccountByPriority(a: Account, b: Account) {
+  return (SORT_WEIGHT[a.type] || 100) - (SORT_WEIGHT[b.type] || 100);
+}
+
+export function findAccountByPriority(accounts: Account[]) {
+  return accounts.sort(sortAccountByPriority)[0];
+}
+
+export function sortAccountByPriorityFallbackToBalanceDesc(
+  a: Account,
+  b: Account
+) {
+  const check = sortAccountByPriority(a, b);
+
+  if (check === 0) return (b.balance || 0) - (a.balance || 0);
+  return check;
+}
+
+export const isFullVersionAccountType = (account: Account) => {
+  return ![
+    KEYRING_TYPE.WatchAddressKeyring,
+    KEYRING_TYPE.WalletConnectKeyring,
+    KEYRING_TYPE.GnosisKeyring,
+    KEYRING_TYPE.CoboArgusKeyring,
+    KEYRING_TYPE.CoinbaseKeyring,
+  ].includes(account.type as any);
+};
+
+export const filterMyAccounts = (account: Account) => {
+  const isMyImported =
+    account.type !== KEYRING_CLASS.WATCH &&
+    account.type !== KEYRING_CLASS.GNOSIS;
+  return {
+    isMyImported,
+    isWatchOnly: account.type === KEYRING_CLASS.WATCH,
+    isGnosis: account.type === KEYRING_CLASS.GNOSIS,
+  };
+};

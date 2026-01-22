@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import BigNumber from 'bignumber.js';
 import Views from './views';
 import { Message } from '@/utils/message';
-import { getUiType, getUITypeName, openInTab } from 'ui/utils';
+import { getUiType, getUITypeName } from 'ui/utils';
 import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
 import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
@@ -17,9 +18,11 @@ import store from './store';
 import { getSentryEnv, isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
 
+BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
+
 Sentry.init({
   dsn:
-    'https://a864fbae7ba680ce68816ff1f6ef2c4e@o4507018303438848.ingest.us.sentry.io/4507018389749760',
+    'https://f4a992c621c55f48350156a32da4778d@o4507018303438848.ingest.us.sentry.io/4507018389749760',
   release: process.env.release,
   environment: getSentryEnv(),
   ignoreErrors: [
@@ -30,13 +33,19 @@ Sentry.init({
     'Non-Error promise rejection captured with keys: code, message',
     'Non-Error promise rejection captured with keys: message, stack',
     'Failed to fetch',
+    'Non-Error promise rejection captured with keys: message',
+    /Non-Error promise rejection captured/,
+    /\[From .*\]/, // error from custom rpc
+    /AxiosError/,
+    /WebSocket connection failed/,
   ],
 });
 
 function initAppMeta() {
   const head = document.querySelector('head');
   const icon = document.createElement('link');
-  icon.href = 'https://rabby.io/assets/images/logo-128.png';
+  icon.href =
+    'https://static-assets.debank.com/files/10eaa959-f65a-4488-8b5a-976aa189bcc4.png';
   icon.rel = 'icon';
   head?.appendChild(icon);
   const name = document.createElement('meta');
@@ -92,6 +101,22 @@ const wallet = new Proxy(
             }
           );
           break;
+        case 'fakeTestnetOpenapi':
+          return new Proxy(
+            {},
+            {
+              get(obj, key) {
+                return function (...params: any) {
+                  return portMessageChannel.request({
+                    type: 'fakeTestnetOpenapi',
+                    method: key,
+                    params,
+                  });
+                };
+              },
+            }
+          );
+          break;
         default:
           return function (...params: any) {
             return portMessageChannel.request({
@@ -127,6 +152,7 @@ eventBus.addEventListener('syncChainList', (params) => {
 });
 
 const main = () => {
+  console.log('name', getUITypeName());
   portMessageChannel.connect(getUITypeName());
 
   store.dispatch.app.initBizStore();
@@ -171,3 +197,35 @@ const bootstrap = () => {
 };
 
 bootstrap();
+
+const checkSwAlive = () => {
+  console.log('[checkSwAlive]', new Date());
+  Promise.race([
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), 5000)
+    ),
+    browser.runtime.sendMessage({
+      type: 'ping',
+    }),
+  ])
+    .then(() => {
+      console.log('[checkSwAlive] sw is alive');
+    })
+    .catch((e) => {
+      if (e.message === 'timeout') {
+        console.log('[checkSwAlive] sw is inactive', e);
+        Sentry.captureException(
+          'sw is inactive' +
+            (browser.runtime.lastError ? ':' + browser.runtime.lastError : '')
+        );
+      } else {
+        console.log('[checkSwAlive] sw is dead');
+        Sentry.captureMessage(
+          'sw is dead:' +
+            e.message +
+            (browser.runtime.lastError ? ':' + browser.runtime.lastError : '')
+        );
+      }
+    });
+};
+checkSwAlive();

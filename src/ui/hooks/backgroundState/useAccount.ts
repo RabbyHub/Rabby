@@ -1,6 +1,6 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
   BROADCAST_TO_UI_EVENTS,
@@ -9,7 +9,9 @@ import {
 } from '@/utils/broadcastToUI';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { onBroadcastToUI } from '@/ui/utils/broadcastToUI';
-import { isSameAddress } from '@/ui/utils';
+import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { Account } from '@/background/service/preference';
 
 export function useCurrentAccount(options?: {
   onChanged?: (ctx: {
@@ -112,4 +114,38 @@ export function useReloadPageOnCurrentAccountChanged() {
       runBroadcastDispose(disposes);
     };
   }, [currentAccount]);
+}
+
+export function useSceneAccountInfo() {
+  const dispatch = useRabbyDispatch();
+  const wallet = useWallet();
+
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
+  const { data: alias } = useRequest(
+    async () => {
+      if (!currentAccount?.address) {
+        return '';
+      }
+      return wallet.getAlianName(currentAccount?.address);
+    },
+    {
+      refreshDeps: [currentAccount?.address],
+    }
+  );
+
+  const switchCurrentAccount = useMemoizedFn((account: Account) => {
+    return dispatch.account.changeAccountAsync(account);
+  });
+
+  return {
+    currentAccount: useMemo(() => {
+      return currentAccount
+        ? {
+            ...currentAccount,
+            alianName: alias,
+          }
+        : null;
+    }, [currentAccount, alias]),
+    switchCurrentAccount,
+  };
 }

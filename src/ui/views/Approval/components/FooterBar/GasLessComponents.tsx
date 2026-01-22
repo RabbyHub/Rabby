@@ -14,9 +14,11 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { Button } from 'antd';
 import {
-  GasAccountDepositTipPopup,
-  GasAccountLogInTipPopup,
-} from '@/ui/views/GasAccount/components/GasAccountTxPopups';
+  GAS_ACCOUNT_INSUFFICIENT_TIP,
+  useLoginDepositConfirm,
+} from '@/ui/views/GasAccount/hooks/checkTxs';
+import { GasAccountDepositTipPopup } from '@/ui/views/GasAccount/components/GasAccountTxPopups';
+import { useHistory } from 'react-router-dom';
 
 export type GasLessConfig = {
   button_text: string;
@@ -31,31 +33,78 @@ export function GasLessNotEnough({
   gasLessFailedReason,
   onChangeGasAccount,
   canGotoUseGasAccount,
+  canDepositUseGasAccount,
+  miniFooter,
+  directSubmit,
+  onRedirectToDeposit,
 }: {
   url?: string;
   gasLessFailedReason?: string;
   onChangeGasAccount?: () => void;
   canGotoUseGasAccount?: boolean;
+  canDepositUseGasAccount?: boolean;
+  miniFooter?: boolean;
+  directSubmit?: boolean;
+  onRedirectToDeposit?: () => void;
 }) {
   const { t } = useTranslation();
-  const [
-    hoverGasLessFailedReason,
-    setHoverGasLessFailedReason,
-  ] = React.useState(false);
+
+  const modalConfirm = useLoginDepositConfirm({
+    onGotoGasAccount: onRedirectToDeposit,
+  });
+  const [tipPopupVisible, setTipPopupVisible] = useState(false);
+  const history = useHistory();
+  const gotoGasAccount = React.useCallback(() => {
+    onRedirectToDeposit?.();
+    history.push('/gas-account');
+  }, [onRedirectToDeposit]);
 
   return (
     <div
-      className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px] items-center"
-      onMouseEnter={() => setHoverGasLessFailedReason(true)}
-      onMouseLeave={() => setHoverGasLessFailedReason(false)}
+      className={clsx(
+        'security-level-tip  items-center text-r-neutral-card2',
+        directSubmit
+          ? 'mt-8 bg-r-red-light border border-solid border-rabby-red-default'
+          : 'bg-r-neutral-card2  mt-[15px]'
+      )}
     >
-      <RcIconGas
-        viewBox="0 0 16 16"
-        className="w-16 h-16 mr-4 text-r-neutral-title-1"
-      />
-      <span className="relative flex-1 text-r-neutral-title1 inline-flex gap-4 items-center">
+      {!directSubmit && (
+        <RcIconGas
+          viewBox="0 0 16 16"
+          className="w-16 h-16 mr-4 text-r-neutral-title-1"
+        />
+      )}
+      <span
+        className={clsx(
+          'relative flex-1  inline-flex gap-4 items-center',
+          directSubmit ? 'text-r-red-default' : 'text-r-neutral-title1'
+        )}
+      >
         {t('page.signFooterBar.gasless.notEnough')}
       </span>
+
+      {canDepositUseGasAccount ? (
+        <Button
+          type="primary"
+          className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
+          onClick={() => {
+            if (directSubmit) {
+              gotoGasAccount();
+            } else if (miniFooter) {
+              modalConfirm('deposit');
+            } else {
+              setTipPopupVisible(true);
+            }
+          }}
+        >
+          {t('page.signFooterBar.gasAccount.deposit')}
+        </Button>
+      ) : null}
+
+      <GasAccountDepositTipPopup
+        visible={tipPopupVisible}
+        onClose={() => setTipPopupVisible(false)}
+      />
 
       {canGotoUseGasAccount ? (
         <div
@@ -108,6 +157,10 @@ const GasLessReady = styled.div`
   position: relative;
   height: 54px;
 
+  &.direct-submit {
+    height: auto;
+  }
+
   & > .gas-ready,
   & > .gas-to-sign {
     position: absolute !important;
@@ -138,26 +191,56 @@ const GasLessReady = styled.div`
       z-index: -1;
     }
   }
+
+  &.direct-submit {
+    & > .gas-ready {
+      display: none;
+    }
+
+    & > .gas-to-sign {
+      display: flex;
+    }
+    & > .gas-ready,
+    & > .gas-to-sign {
+      margin-top: 8px !important;
+      position: static !important;
+      top: 0px;
+      align-items: center;
+    }
+  }
+
+  &.gasLess.direct-submit > {
+    .gas-ready {
+      display: flex;
+    }
+    .gas-to-sign {
+      display: none;
+    }
+  }
 `;
 
 function FreeGasReady({
   freeGasText,
   color,
   logo,
+  directSubmit,
 }: {
   freeGasText?: string;
   color?: string;
   logo?: string;
+  directSubmit?: boolean;
 }) {
   const { t } = useTranslation();
   return (
     <span
       className={clsx(
-        'gas-ready security-level-tip text-transparent py-0 pt-[18px] h-[46px]',
-        'bg-transparent'
+        'gas-ready security-level-tip text-transparent',
+        directSubmit
+          ? 'mt-8 bg-r-blue-light-1 border border-solid border-rabby-blue-default h-[40px]'
+          : 'bg-transparent py-0 pt-[18px] h-[46px]'
       )}
       style={
-        freeGasText
+        freeGasText || directSubmit
           ? {}
           : {
               backgroundImage: `url(${GasLessBg})`,
@@ -187,11 +270,13 @@ export function GasLessActivityToSign({
   handleFreeGas,
   gasLessEnable,
   gasLessConfig,
+  directSubmit,
 }: {
   handleFreeGas: () => void;
   gasLessEnable: boolean;
 
   gasLessConfig?: GasLessConfig;
+  directSubmit?: boolean;
 }) {
   const { t } = useTranslation();
   const { isDarkTheme } = useThemeMode();
@@ -203,13 +288,19 @@ export function GasLessActivityToSign({
 
   return (
     <>
-      <GasLessReady className={clsx(gasLessEnable && 'gasLess')}>
+      <GasLessReady
+        className={clsx(
+          gasLessEnable && 'gasLess',
+          directSubmit && 'direct-submit'
+        )}
+      >
         <FreeGasReady
+          directSubmit={directSubmit}
           freeGasText={gasLessConfig?.after_click_text}
           color={themeColor}
           logo={gasLessConfig?.logo}
         />
-        {themeColor && (
+        {themeColor && !directSubmit && (
           <RcIconCCFreeGasBg
             style={{
               color: themeColor,
@@ -219,8 +310,11 @@ export function GasLessActivityToSign({
         )}
         <span
           className={clsx(
-            'gas-to-sign security-level-tip  items-center pr-6',
-            themeColor
+            'gas-to-sign security-level-tip  items-center ',
+            !directSubmit && 'pr-6',
+            directSubmit
+              ? 'mt-8 rounded-[8px] border border-solid bg-r-red-light border-rabby-red-default'
+              : themeColor
               ? 'bg-transparent text-transparent'
               : 'bg-r-neutral-card2 text-r-neutral-card2'
           )}
@@ -228,16 +322,19 @@ export function GasLessActivityToSign({
           {gasLessConfig?.logo ? (
             <img src={gasLessConfig?.logo} className="w-16 h-16 mr-4" />
           ) : (
-            <RcIconGas
-              viewBox="0 0 16 16"
-              className="w-16 h-16 mr-4 text-r-neutral-title-1"
-            />
+            !directSubmit && (
+              <RcIconGas
+                viewBox="0 0 16 16"
+                className="w-16 h-16 mr-4 text-r-neutral-title-1"
+              />
+            )
           )}
 
           <span
             className={clsx(
               'flex-1',
-              themeColor ? '' : 'text-r-neutral-title-1'
+              themeColor ? '' : 'text-r-neutral-title-1',
+              directSubmit && 'text-r-red-default'
             )}
             style={{
               color: themeColor,
@@ -325,63 +422,143 @@ export function GasAccountTips({
   isGasAccountLogin,
   isWalletConnect,
   noCustomRPC,
+  miniFooter,
+  directSubmit,
+  onRedirectToDeposit,
 }: {
   gasAccountCost?: GasAccountCheckResult;
   isGasAccountLogin?: boolean;
   isWalletConnect?: boolean;
   noCustomRPC?: boolean;
+  miniFooter?: boolean;
+  directSubmit?: boolean;
+  onRedirectToDeposit?: () => void;
 }) {
   const { t } = useTranslation();
   const [tipPopupVisible, setTipPopupVisible] = useState(false);
 
-  const [tip, btnText] = useMemo(() => {
+  const { tip, btnText, loginGasAccount, depositGasAccount } = useMemo(() => {
     if (!noCustomRPC) {
-      return [t('page.signFooterBar.gasAccount.customRPC'), null];
+      return {
+        tip: t('page.signFooterBar.gasAccount.customRPC'),
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
     }
+
     if (isWalletConnect) {
-      return [t('page.signFooterBar.gasAccount.WalletConnectTips'), null];
+      return {
+        tip: t('page.signFooterBar.gasAccount.WalletConnectTips'),
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
     }
-    if (!isGasAccountLogin) {
-      return [
-        t('page.signFooterBar.gasAccount.loginFirst'),
-        t('page.signFooterBar.gasAccount.login'),
-      ];
+
+    if (
+      gasAccountCost?.err_msg &&
+      gasAccountCost?.err_msg?.toLowerCase() !==
+        GAS_ACCOUNT_INSUFFICIENT_TIP?.toLowerCase()
+    ) {
+      return {
+        tip: gasAccountCost.err_msg,
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
     }
+
+    // if (!isGasAccountLogin && !miniFooter) {
+    //   return {
+    //     tip: t('page.signFooterBar.gasAccount.loginFirst'),
+    //     btnText: t('page.signFooterBar.gasAccount.login'),
+    //     loginGasAccount: true,
+    //     depositGasAccount: false,
+    //   };
+    // }
+
     if (gasAccountCost?.chain_not_support) {
-      return [t('page.signFooterBar.gasAccount.chainNotSupported'), null];
+      return {
+        tip: t('page.signFooterBar.gasAccount.chainNotSupported'),
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
     }
+
     if (!gasAccountCost?.balance_is_enough) {
-      return [
-        t('page.signFooterBar.gasAccount.notEnough'),
-        t('page.signFooterBar.gasAccount.deposit'),
-      ];
+      return {
+        tip: directSubmit
+          ? t('page.signFooterBar.gasless.notEnough')
+          : t('page.signFooterBar.gasAccount.notEnough'),
+        btnText: t('page.signFooterBar.gasAccount.deposit'),
+        loginGasAccount: false,
+        depositGasAccount: true,
+      };
     }
-    return [null, null];
-  }, [isGasAccountLogin, isWalletConnect, gasAccountCost]);
+
+    return {
+      tip: null,
+      btnText: null,
+      loginGasAccount: false,
+      depositGasAccount: false,
+    };
+  }, [
+    directSubmit,
+    miniFooter,
+    isGasAccountLogin,
+    isWalletConnect,
+    gasAccountCost,
+    noCustomRPC,
+    t,
+  ]);
 
   useEffect(() => {
-    return () => {
-      setTipPopupVisible(false);
-    };
+    return () => setTipPopupVisible(false);
+  }, []);
+
+  const modalConfirm = useLoginDepositConfirm({
+    onGotoGasAccount: onRedirectToDeposit,
+  });
+
+  const history = useHistory();
+  const gotoGasAccount = React.useCallback(() => {
+    history.push('/gas-account');
   }, []);
 
   if (
     !isWalletConnect &&
-    isGasAccountLogin &&
+    // isGasAccountLogin &&
     gasAccountCost?.balance_is_enough &&
     !gasAccountCost.chain_not_support &&
-    noCustomRPC
+    noCustomRPC &&
+    !gasAccountCost?.err_msg
   ) {
     return null;
   }
 
   return (
-    <div className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px] items-center">
-      <RcIconGasAccountCC
-        viewBox="0 0 20 20"
-        className="w-16 h-16 mr-4 text-r-neutral-foot"
-      />
-      <span className="relative flex-1 text-r-neutral-title1 inline-flex gap-4 items-center">
+    <div
+      className={clsx(
+        'security-level-tip text-r-neutral-card2 items-center',
+        directSubmit
+          ? 'mt-8 bg-r-red-light border border-solid border-rabby-red-default min-h-[42px]'
+          : 'bg-r-neutral-card2 mt-[15px]'
+      )}
+    >
+      {!directSubmit && (
+        <RcIconGasAccountCC
+          viewBox="0 0 20 20"
+          className="w-16 h-16 mr-4 text-r-neutral-foot"
+        />
+      )}
+      <span
+        className={clsx(
+          'relative flex-1  inline-flex gap-4 items-center',
+          directSubmit ? 'text-r-red-default' : 'text-r-neutral-title1'
+        )}
+      >
         {tip}
       </span>
 
@@ -389,22 +566,21 @@ export function GasAccountTips({
         <Button
           type="primary"
           className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
-          onClick={() => setTipPopupVisible(true)}
+          onClick={() => {
+            if (depositGasAccount && directSubmit) {
+              gotoGasAccount();
+            } else if (depositGasAccount && miniFooter) {
+              modalConfirm('deposit');
+            } else {
+              setTipPopupVisible(true);
+            }
+          }}
         >
           {btnText}
         </Button>
       ) : null}
-
       <GasAccountDepositTipPopup
-        visible={
-          !isWalletConnect && isGasAccountLogin ? tipPopupVisible : false
-        }
-        onClose={() => setTipPopupVisible(false)}
-      />
-      <GasAccountLogInTipPopup
-        visible={
-          !isWalletConnect && !isGasAccountLogin ? tipPopupVisible : false
-        }
+        visible={tipPopupVisible}
         onClose={() => setTipPopupVisible(false)}
       />
     </div>

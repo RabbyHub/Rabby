@@ -1,7 +1,8 @@
 import { ethers, Contract } from 'ethers';
-import * as optimismContracts from '@eth-optimism/contracts';
+import { getContractFactory, predeploys } from '@eth-optimism/contracts';
 import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
 import { CHAINS_ENUM, OP_STACK_ENUMS } from 'consts';
+import BigNumber from 'bignumber.js';
 
 // https://docs.scroll.io/en/developers/transaction-fees-on-scroll/#calculating-the-l1-data-fee-with-gas-oracle
 export const scrollL1FeeEstimate = async (
@@ -40,9 +41,9 @@ export const opStackL1FeeEstimate = async (
   txParams: any
 ) => {
   const signer = provider.getSigner();
-  const OVMGasPriceOracle = optimismContracts
-    .getContractFactory('OVM_GasPriceOracle')
-    .attach(optimismContracts.predeploys.OVM_GasPriceOracle);
+  const OVMGasPriceOracle = getContractFactory('OVM_GasPriceOracle').attach(
+    predeploys.OVM_GasPriceOracle
+  );
   const abi = JSON.parse(
     OVMGasPriceOracle.interface.format(ethers.utils.FormatTypes.json) as string
   );
@@ -53,7 +54,8 @@ export const opStackL1FeeEstimate = async (
   }).serialize();
 
   const res = await contract.getL1Fee(serializedTransaction);
-  return res.toHexString();
+  const bn = new BigNumber(res.toHexString()).times(1.1); // Add 10% buffer for L1 data fee
+  return `0x${bn.toString(16)}`;
 };
 
 export const estimateL1Fee = ({

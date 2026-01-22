@@ -3,6 +3,8 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 
 import { findChainByServerID, DisplayChainWithWhiteLogo } from '@/utils/chain';
 import { filterChainWithBalance, normalizeChainList } from '@/utils/account';
+import { useRabbyDispatch, useRabbySelector } from '../store';
+import { useRequest } from 'ahooks';
 
 /** @deprecated import from '@/utils/chain' directly  */
 export type { DisplayChainWithWhiteLogo };
@@ -27,6 +29,7 @@ export default function useCurrentBalance(
   } = opts || {};
 
   const wallet = useWallet();
+  const [evmBalance, setEvmBalance] = useState<number | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
   const [success, setSuccess] = useState(true);
   const [balanceLoading, setBalanceLoading] = useState(false);
@@ -37,17 +40,28 @@ export default function useCurrentBalance(
   const [matteredChainBalances, setChainBalances] = useState<
     DisplayChainWithWhiteLogo[]
   >([]);
-
+  const [appChainIds, setAppChainIds] = useState<string[]>([]);
   const [missingList, setMissingList] = useState<string[]>();
 
-  const [getInMemoryAddressBalance] = useWalletRequest(
+  const dispatch = useRabbyDispatch();
+
+  const { runAsync: getInMemoryAddressBalance } = useRequest(
     wallet.getInMemoryAddressBalance,
     {
-      onSuccess({ total_usd_value, chain_list }) {
+      onSuccess(options) {
+        const { total_usd_value, chain_list } = options;
+        const evmUsdValue =
+          'evmUsdValue' in options ? (options.evmUsdValue as number) : 0;
+        const chainIds =
+          'appChainIds' in options ? (options.appChainIds as string[]) : [];
         if (isCanceled) return;
+        setAppChainIds(chainIds);
+        setEvmBalance(evmUsdValue);
         setBalance(total_usd_value);
         setSuccess(true);
         const chainList = normalizeChainList(chain_list);
+
+        dispatch.accountToDisplay.getAllAccountsToDisplay();
 
         setChainBalances(chainList);
         setBalanceLoading(false);
@@ -71,6 +85,7 @@ export default function useCurrentBalance(
         }
         setSuccess(false);
       },
+      manual: true,
     }
   );
 
@@ -82,6 +97,7 @@ export default function useCurrentBalance(
     if (cacheData) {
       setBalanceFromCache(true);
       setBalance(cacheData.total_usd_value);
+      setEvmBalance(cacheData.evmUsdValue || 0);
       const chainList = normalizeChainList(cacheData.chain_list);
       setChainBalances(chainList);
 
@@ -140,6 +156,8 @@ export default function useCurrentBalance(
 
   return {
     balance,
+    evmBalance,
+    appChainIds,
     matteredChainBalances,
     chainBalancesWithValue,
     isCurrentBalanceExpired,

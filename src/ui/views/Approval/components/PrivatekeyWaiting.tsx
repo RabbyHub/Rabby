@@ -29,14 +29,20 @@ import { pickKeyringThemeIcon } from '@/utils/account';
 import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
-import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
+import { ga4 } from '@/utils/ga4';
+import { useAsync } from 'react-use';
+import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
+import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface ApprovalParams {
   address: string;
   chainId?: number;
+  from?: string;
+  nonce?: string;
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
+  $account: Account;
   $ctx?: any;
   extra?: Record<string, any>;
   type: string;
@@ -46,9 +52,16 @@ interface ApprovalParams {
     message: string;
     chainId: number;
   };
+  stay?: boolean;
 }
 
-export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
+export const PrivatekeyWaiting = ({
+  params,
+  account: $account,
+}: {
+  params: ApprovalParams;
+  account: Account;
+}) => {
   const wallet = useWallet();
   const {
     setTitle,
@@ -85,7 +98,12 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       return;
     }
     setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
-    await wallet.resendSign();
+
+    const autoRetryUpdate =
+      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
+    await wallet.setRetryTxType(txFailedResult?.[1] || false);
+    await wallet.resendSign(autoRetryUpdate);
+
     message.success(t('page.signFooterBar.ledger.resent'));
     emitSignComponentAmounted();
   };
@@ -120,10 +138,10 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
     }
   }, [type, isDarkTheme]);
 
+  const account = params.isGnosis ? params.account! : $account;
+
   const init = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
 
     const approval = await getApproval();
 
@@ -204,6 +222,11 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
           action: 'Submit',
           label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
         });
+
+        ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+          event_category: 'Transaction',
+        });
+
         setSignFinishedData({
           data: sig,
           approvalId: approval.id,
@@ -233,7 +256,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       if (isSignText) {
         setHeight(0);
       } else {
-        setHeight(208);
+        setHeight('fit-content');
       }
       init();
     })();
@@ -243,12 +266,13 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
     setPopupProps(params?.extra?.popupProps);
   }, [params?.extra?.popupProps]);
 
+  const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        false,
+        stay,
         false,
         signFinishedData.approvalId
       );
@@ -284,6 +308,30 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
     }
   }, [connectStatus, errorMessage]);
 
+  const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    nonce: params?.nonce,
+    chainId: params?.chainId,
+    status: connectStatus,
+    from: params.from,
+    description,
+  });
+
+  React.useEffect(() => {
+    if (
+      [
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(connectStatus)
+    ) {
+      setHeight('fit-content');
+      setContent(
+        txFailedResult?.[1]
+          ? t('page.signFooterBar.qrcode.txFailedRetry')
+          : t('page.signFooterBar.qrcode.txFailed')
+      );
+    }
+  }, [txFailedResult?.[1], connectStatus]);
+
   if (isSignText && connectStatus !== WALLETCONNECT_STATUS_MAP.FAILED) {
     return null;
   }
@@ -295,10 +343,11 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       status={statusProp}
       onRetry={handleRetry}
       content={content}
-      description={description}
       onDone={() => setIsClickDone(true)}
       onCancel={handleCancel}
       hasMoreDescription={!!description}
+      description={txFailedResult?.[0] || description}
+      retryUpdateType={txFailedResult?.[1] ?? 'origin'}
     />
   );
 };

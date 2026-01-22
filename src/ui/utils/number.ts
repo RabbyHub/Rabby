@@ -121,7 +121,7 @@ export const formatNumber = (
   return n.toFormat(decimal, roundingMode, format);
 };
 
-export const formatPrice = (price: string | number) => {
+export const formatPrice = (price: string | number, len = 4) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   if (price >= 1) {
@@ -132,7 +132,7 @@ export const formatPrice = (price: string | number) => {
   if (price < 0.0001) {
     return formatLittleNumber(new BigNumber(price).toFixed(), 6);
   }
-  return formatNumber(price, 4);
+  return formatNumber(price, len);
 };
 
 export const intToHex = (n: number) => {
@@ -251,4 +251,17 @@ export const formatGasAccountUSDValue = (value: string | number) => {
   const bnValue = new BigNumber(value);
   if (bnValue.lt(0.0001)) return '<$0.0001';
   return `$${formatNumber(value, 4)}`;
+};
+
+export const formatGasAccountUsdValueV2 = (usd: string | number) => {
+  const v = Number(usd);
+  if (v >= 1000) {
+    return `$${formatTokenAmount(Number(v).toFixed(0), 0)}`;
+  }
+  if (v >= 100) {
+    const fixDown = Math.floor(v * 10) / 10;
+    return `$${Number(fixDown).toFixed(1)}`;
+  }
+  const fixDown = Math.floor(v * 100) / 100;
+  return `$${Number(fixDown).toFixed(2)}`;
 };

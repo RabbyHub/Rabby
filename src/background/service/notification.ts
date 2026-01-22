@@ -14,7 +14,7 @@ import {
   IS_WINDOWS,
 } from 'consts';
 import transactionHistoryService from './transactionHistory';
-import preferenceService from './preference';
+import preferenceService, { Account } from './preference';
 import stats from '@/stats';
 import { findChain } from '@/utils/chain';
 import { isManifestV3 } from '@/utils/env';
@@ -28,6 +28,7 @@ export interface Approval {
   signingTxId?: string;
   data: {
     params?: import('react').ComponentProps<IApprovalComponent>['params'];
+    account: Account;
     origin?: string;
     approvalComponent: keyof IApprovalComponents;
     requestDefer?: Promise<any>;
@@ -84,7 +85,7 @@ class NotificationService extends Events {
   _approvals: Approval[] = [];
   notifiWindowId: null | number = null;
   isLocked = false;
-  currentRequestDeferFn?: () => void;
+  currentRequestDeferFn?: (retry?: boolean) => void;
   statsData: StatsData | undefined;
 
   get approvals() {
@@ -172,7 +173,7 @@ class NotificationService extends Events {
       this.openNotification(approval.winProps, true);
     } catch (e) {
       Sentry.captureException(
-        'activeFirstApproval failed: ' + JSON.stringify(e)
+        new Error('activeFirstApproval failed: ' + JSON.stringify(e))
       );
       this.clear();
     }
@@ -259,7 +260,8 @@ class NotificationService extends Events {
         );
       }
     }
-    const currentAccount = preferenceService.getCurrentAccount();
+    const currentAccount =
+      data.account || preferenceService.getCurrentAccount();
     const reportExplain = (signingTxId?: string) => {
       const signingTx = signingTxId
         ? transactionHistoryService.getSigningTx(signingTxId)
@@ -417,12 +419,12 @@ class NotificationService extends Events {
     }
   };
 
-  setCurrentRequestDeferFn = (fn: () => void) => {
+  setCurrentRequestDeferFn = (fn: (retry?: boolean) => void) => {
     this.currentRequestDeferFn = fn;
   };
 
-  callCurrentRequestDeferFn = () => {
-    return this.currentRequestDeferFn?.();
+  callCurrentRequestDeferFn = (retry?: boolean) => {
+    return this.currentRequestDeferFn?.(retry);
   };
 
   setStatsData = (data?: StatsData) => {

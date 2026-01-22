@@ -29,8 +29,9 @@ const ComponentConfig = {
     title: null,
     closeable: false,
     titleSize: '16px',
-    padding: '12px 20px',
-    isNew: false,
+    // padding: '12px 20px',
+    padding: '0',
+    isNew: true,
   },
   Default: {
     title: undefined,

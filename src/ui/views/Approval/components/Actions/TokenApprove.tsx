@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Chain, TokenItem } from 'background/service/openapi';
+import { TokenItem } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
   ApproveTokenRequireData,
@@ -25,6 +25,7 @@ import { SubCol, SubRow, SubTable } from './components/SubTable';
 import { Divide } from '../Divide';
 import IconUnknown from 'ui/assets/token-default.svg';
 import { TokenAmountItem } from './components/TokenAmountItem';
+import { Chain } from '@/types/chain';
 
 const Wrapper = styled.div`
   .header {
@@ -197,6 +198,7 @@ const TokenApprove = ({
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
+  const isTestnet = chain.isTestnet;
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -279,86 +281,96 @@ const TokenApprove = ({
             {t('page.signTx.tokenApprove.approveTo')}
           </Row>
           <Row>
-            <ViewMore
-              type="spender"
-              data={{
-                ...requireData,
-                spender: actionData.spender,
-                chain,
-              }}
-            >
+            {isTestnet ? (
               <Values.Address
                 id="token-approve-address"
-                hasHover
                 address={actionData.spender}
                 chain={chain}
               />
-            </ViewMore>
+            ) : (
+              <ViewMore
+                type="spender"
+                data={{
+                  ...requireData,
+                  spender: actionData.spender,
+                  chain,
+                }}
+              >
+                <Values.Address
+                  id="token-approve-address"
+                  hasHover
+                  address={actionData.spender}
+                  chain={chain}
+                />
+              </ViewMore>
+            )}
           </Row>
         </Col>
-        <SubTable target="token-approve-address">
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
-            <SubRow>
-              <ProtocolListItem protocol={requireData.protocol} />
-            </SubRow>
-          </SubCol>
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
-            <SubRow>
-              <Values.Interacted value={requireData.hasInteraction} />
-            </SubRow>
-          </SubCol>
+        {isTestnet ? null : (
+          <SubTable target="token-approve-address">
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+              <SubRow>
+                <ProtocolListItem protocol={requireData.protocol} />
+              </SubRow>
+            </SubCol>
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
+              <SubRow>
+                <Values.Interacted value={requireData.hasInteraction} />
+              </SubRow>
+            </SubCol>
 
-          <SecurityListItem
-            id="1022"
-            engineResult={engineResultMap['1022']}
-            dangerText={t('page.signTx.tokenApprove.eoaAddress')}
-            title={t('page.signTx.addressTypeTitle')}
-          />
+            <SecurityListItem
+              id="1022"
+              engineResult={engineResultMap['1022']}
+              dangerText={t('page.signTx.tokenApprove.eoaAddress')}
+              title={t('page.signTx.addressTypeTitle')}
+            />
 
-          <SecurityListItem
-            tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
-            id="1150"
-            engineResult={engineResultMap['1150']}
-            warningText={'$0'}
-            title={t('page.signTx.trustValueTitle')}
-          />
+            <SecurityListItem
+              tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
+              id="1150"
+              engineResult={engineResultMap['1150']}
+              warningText={'$0'}
+              title={t('page.signTx.trustValueTitle')}
+            />
 
-          <SecurityListItem
-            id="1024"
-            engineResult={engineResultMap['1024']}
-            warningText={t('page.signTx.tokenApprove.deployTimeLessThan', {
-              value: '3',
-            })}
-            title={t('page.signTx.deployTimeTitle')}
-          />
+            <SecurityListItem
+              id="1024"
+              engineResult={engineResultMap['1024']}
+              warningText={t('page.signTx.tokenApprove.deployTimeLessThan', {
+                value: '3',
+              })}
+              title={t('page.signTx.deployTimeTitle')}
+            />
 
-          <SecurityListItem
-            id="1029"
-            engineResult={engineResultMap['1029']}
-            title={t('page.signTx.tokenApprove.flagByRabby')}
-            dangerText={t('page.signTx.yes')}
-          />
+            <SecurityListItem
+              id="1029"
+              engineResult={engineResultMap['1029']}
+              title={t('page.signTx.tokenApprove.flagByRabby')}
+              dangerText={t('page.signTx.yes')}
+            />
 
-          <SecurityListItem
-            id="1134"
-            engineResult={engineResultMap['1134']}
-            forbiddenText={t('page.signTx.markAsBlock')}
-          />
+            <SecurityListItem
+              id="1134"
+              engineResult={engineResultMap['1134']}
+              forbiddenText={t('page.signTx.markAsBlock')}
+            />
 
-          <SecurityListItem
-            id="1136"
-            engineResult={engineResultMap['1136']}
-            warningText={t('page.signTx.markAsBlock')}
-          />
+            <SecurityListItem
+              id="1136"
+              engineResult={engineResultMap['1136']}
+              warningText={t('page.signTx.markAsBlock')}
+            />
 
-          <SecurityListItem
-            id="1133"
-            engineResult={engineResultMap['1133']}
-            safeText={t('page.signTx.markAsTrust')}
-          />
-        </SubTable>
+            <SecurityListItem
+              id="1133"
+              engineResult={engineResultMap['1133']}
+              safeText={t('page.signTx.markAsTrust')}
+            />
+          </SubTable>
+        )}
       </Table>
       <Popup
         visible={editApproveModalVisible}

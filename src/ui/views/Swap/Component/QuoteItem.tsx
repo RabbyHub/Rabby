@@ -173,16 +173,10 @@ export const DexQuoteItem = (
     let disable = false;
     let receivedTokenUsd: React.ReactNode = null;
     let diffUsd: React.ReactNode = null;
-    const balanceChangeReceiveTokenAmount = preExecResult
-      ? preExecResult.swapPreExecTx.balance_change.receive_token_list.find(
-          (item) => isSameAddress(item.id, receiveToken.id)
-        )?.amount || '0'
-      : '0';
-    const actualReceiveAmount = inSufficient
-      ? new BigNumber(quote?.toTokenAmount || 0)
-          .div(10 ** (quote?.toTokenDecimals || receiveToken.decimals))
-          .toString()
-      : balanceChangeReceiveTokenAmount;
+    const actualReceiveAmount = new BigNumber(quote?.toTokenAmount || 0)
+      .div(10 ** (quote?.toTokenDecimals || receiveToken.decimals))
+      .toString();
+
     if (actualReceiveAmount || dexId === 'WrapToken') {
       const receiveAmount =
         actualReceiveAmount || (dexId === 'WrapToken' ? payAmount : 0);
@@ -290,23 +284,15 @@ export const DexQuoteItem = (
     sortIncludeGasFee,
   ]);
 
-  const CheckIcon = useCallback(() => {
-    if (disabled || loading || !quote?.tx || !preExecResult?.swapPreExecTx) {
-      return null;
-    }
-    return <CheckedIcon />;
-  }, [disabled, loading, quote?.tx, preExecResult?.swapPreExecTx]);
-
-  const gasFeeTooHight = useMemo(() => {
+  const gasFeeTooHigh = useMemo(() => {
     return (
-      new BigNumber(preExecResult?.swapPreExecTx?.gas?.gas_used || 0).gte(
-        GAS_USE_AMOUNT_LIMIT
-      ) && chain === CHAINS_ENUM.ETH
+      new BigNumber(preExecResult?.gasUsed || 0).gte(GAS_USE_AMOUNT_LIMIT) &&
+      chain === CHAINS_ENUM.ETH
     );
   }, [preExecResult, chain]);
 
   const handleClick = useCallback(() => {
-    if (gasFeeTooHight) {
+    if (gasFeeTooHigh) {
       return;
     }
 
@@ -315,9 +301,9 @@ export const DexQuoteItem = (
     }
     if (disabled) return;
     const actualReceiveAmount =
-      preExecResult?.swapPreExecTx.balance_change.receive_token_list.find(
-        (item) => isSameAddress(item.id, receiveToken.id)
-      )?.amount || 0;
+      new BigNumber(quote?.toTokenAmount || 0)
+        .div(10 ** (quote?.toTokenDecimals || receiveToken.decimals))
+        .toString() || 0;
     setActiveProvider?.({
       manualClick: true,
       name: dexId,
@@ -341,7 +327,7 @@ export const DexQuoteItem = (
     dexId,
     quote,
     preExecResult,
-    gasFeeTooHight,
+    gasFeeTooHigh,
     receiveToken,
   ]);
 
@@ -362,11 +348,11 @@ export const DexQuoteItem = (
     if (onlyShow) {
       return false;
     }
-    if (gasFeeTooHight || (inSufficient && !disabled)) {
+    if (gasFeeTooHigh || (inSufficient && !disabled)) {
       return undefined;
     }
     return false;
-  }, [onlyShow, gasFeeTooHight, inSufficient, disabled]);
+  }, [onlyShow, gasFeeTooHigh, inSufficient, disabled]);
 
   useEffect(() => {
     if (isErrorQuote && props.onlyShowErrorQuote) {
@@ -394,11 +380,10 @@ export const DexQuoteItem = (
       overlayClassName="rectangle w-[max-content]"
       placement="top"
       title={
-        gasFeeTooHight
+        gasFeeTooHigh
           ? t('page.swap.Gas-fee-too-high')
           : t('page.swap.insufficient-balance')
       }
-      trigger={['click']}
       visible={tooltipVisible}
       align={{ offset: [0, 30] }}
       arrowPointAtCenter
@@ -410,7 +395,7 @@ export const DexQuoteItem = (
           disabled && 'disabled',
           isErrorQuote && 'error',
           inSufficient && !disabled && 'disabled inSufficient',
-          gasFeeTooHight && 'disabled gasFeeTooHight',
+          gasFeeTooHigh && 'disabled gasFeeTooHight',
           onlyShow &&
             'bg-transparent shadow-none p-0 h-auto hover:border-transparent hover:after:hidden'
         )}
@@ -449,10 +434,10 @@ export const DexQuoteItem = (
                     hideConer
                   />
                 )}
-                <div className="ml-6 mr-4 flex items-center">
+                <div className="ml-6 flex items-center">
                   {receiveOrErrorContent}
                 </div>
-                <CheckIcon />
+                {/* <CheckIcon /> */}
               </div>
             )}
           </div>
@@ -462,13 +447,14 @@ export const DexQuoteItem = (
                 <div
                   className={clsx(
                     'inline-flex items-center gap-4 px-4',
-                    gasFeeTooHight && 'bg-r-red-light'
+                    gasFeeTooHigh && 'bg-r-red-light',
+                    inSufficient && 'hidden'
                   )}
                 >
                   <RcIconGasCC
                     className={clsx(
                       'text-r-neutral-foot w-16 h-16',
-                      gasFeeTooHight
+                      gasFeeTooHigh
                         ? 'text-rabby-red-default'
                         : 'text-r-neutral-foot'
                     )}
@@ -477,7 +463,7 @@ export const DexQuoteItem = (
                   <span
                     className={clsx(
                       'text-13',
-                      gasFeeTooHight
+                      gasFeeTooHigh
                         ? 'text-rabby-red-default'
                         : 'text-r-neutral-foot'
                     )}

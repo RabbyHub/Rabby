@@ -86,7 +86,9 @@ export const IconWithChain = ({
   height = '28px',
   noRound = false,
   hideChainIcon = false,
+  chainSize,
   isShowChainTooltip = false,
+  chainClassName,
 }: {
   iconUrl?: string;
   chainServerId: string;
@@ -96,10 +98,22 @@ export const IconWithChain = ({
   noRound?: boolean;
   hideChainIcon?: boolean;
   isShowChainTooltip?: boolean;
+  chainSize?: string;
+  chainClassName?: string;
 }) => {
   const chain = findChain({
     serverId: chainServerId,
   });
+  const chainStyle = useMemo(
+    () =>
+      chainSize
+        ? {
+            width: chainSize,
+            height: chainSize,
+          }
+        : {},
+    [chainSize]
+  );
   return (
     <div
       className={clsx('token-with-chain', noRound && 'no-round')}
@@ -118,10 +132,18 @@ export const IconWithChain = ({
             title={chain?.name}
             className="rectangle w-[max-content]"
           >
-            <img className="chain-symbol" src={chain?.logo || IconUnknown} />
+            <img
+              className={clsx('chain-symbol', chainClassName)}
+              src={chain?.logo || IconUnknown}
+              style={chainStyle}
+            />
           </TooltipWithMagnetArrow>
         ) : (
-          <img className="chain-symbol" src={chain?.logo || IconUnknown} />
+          <img
+            className={clsx('chain-symbol', chainClassName)}
+            src={chain?.logo || IconUnknown}
+            style={chainStyle}
+          />
         ))}
     </div>
   );

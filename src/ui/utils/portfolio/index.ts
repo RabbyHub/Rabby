@@ -12,7 +12,10 @@ export const useQueryProjects = (
   userAddr: string | undefined,
   withHistory = false,
   visible: boolean,
-  isTestnet = false
+  isTestnet = false,
+  lpTokenMode = false,
+  showBlocked = false,
+  searchMode = false
 ) => {
   const [time, setTime] = useSafeState(dayjs().subtract(1, 'day'));
 
@@ -31,12 +34,23 @@ export const useQueryProjects = (
     tokens,
     netWorth: tokenNetWorth,
     isLoading: isTokensLoading,
+    isAllTokenLoading,
     hasValue: hasTokens,
     updateData: updateTokens,
     walletProject,
     customizeTokens,
     blockedTokens,
-  } = useTokens(userAddr, historyTime, visible, 0, undefined, isTestnet);
+  } = useTokens(
+    userAddr,
+    historyTime,
+    visible,
+    0,
+    undefined,
+    isTestnet,
+    lpTokenMode,
+    showBlocked,
+    searchMode
+  );
 
   const {
     data: portfolios,
@@ -44,6 +58,7 @@ export const useQueryProjects = (
     hasValue: hasPortfolios,
     netWorth: portfolioNetWorth,
     updateData: updatePortfolio,
+    removeProtocol,
   } = usePortfolios(userAddr, historyTime, visible, isTestnet);
 
   const refreshPositions = useCallback(() => {
@@ -71,6 +86,7 @@ export const useQueryProjects = (
     grossNetWorth,
     refreshPositions,
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     hasTokens,
     hasPortfolios,
@@ -79,5 +95,6 @@ export const useQueryProjects = (
     blockedTokens,
     portfolios,
     walletProject,
+    removeProtocol,
   };
 };

@@ -2,7 +2,6 @@ import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
-import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
   SendRequireData,
@@ -19,6 +18,7 @@ import { SecurityListItem } from './components/SecurityListItem';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
 import { ALIAS_ADDRESS } from '@/constant';
 import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
+import { Chain } from '@/types/chain';
 
 const Wrapper = styled.div`
   .header {
@@ -56,6 +56,8 @@ const Send = ({
     return map;
   }, [engineResults]);
 
+  const isTestnet = chain.isTestnet;
+
   const isLabelAddress =
     requireData.name && Object.values(ALIAS_ADDRESS).includes(requireData.name);
 
@@ -82,33 +84,42 @@ const Send = ({
             {t('page.signTx.send.sendTo')}
           </Row>
           <Row>
-            <ViewMore
-              type="receiver"
-              data={{
-                token: actionData.token,
-                address: actionData.to,
-                chain,
-                eoa: requireData.eoa,
-                cex: requireData.cex,
-                contract: requireData.contract,
-                usd_value: requireData.usd_value,
-                hasTransfer: requireData.hasTransfer,
-                isTokenContract: requireData.isTokenContract,
-                name: requireData.name,
-                onTransferWhitelist: requireData.onTransferWhitelist,
-                hasReceiverMnemonicInWallet:
-                  requireData.hasReceiverMnemonicInWallet,
-                hasReceiverPrivateKeyInWallet:
-                  requireData.hasReceiverPrivateKeyInWallet,
-              }}
-            >
+            {isTestnet ? (
               <Values.Address
                 id="send-contract"
                 hasHover
                 address={actionData.to}
                 chain={chain}
               />
-            </ViewMore>
+            ) : (
+              <ViewMore
+                type="receiver"
+                data={{
+                  token: actionData.token,
+                  address: actionData.to,
+                  chain,
+                  eoa: requireData.eoa,
+                  cex: requireData.cex,
+                  contract: requireData.contract,
+                  usd_value: requireData.usd_value,
+                  hasTransfer: requireData.hasTransfer,
+                  isTokenContract: requireData.isTokenContract,
+                  name: requireData.name,
+                  onTransferWhitelist: requireData.onTransferWhitelist,
+                  hasReceiverMnemonicInWallet:
+                    requireData.hasReceiverMnemonicInWallet,
+                  hasReceiverPrivateKeyInWallet:
+                    requireData.hasReceiverPrivateKeyInWallet,
+                }}
+              >
+                <Values.Address
+                  id="send-contract"
+                  hasHover
+                  address={actionData.to}
+                  chain={chain}
+                />
+              </ViewMore>
+            )}
           </Row>
         </Col>
         <SubTable target="send-contract">
@@ -126,7 +137,7 @@ const Send = ({
               </SubRow>
             </SubCol>
           )}
-          {!!requireData.contract && (
+          {!!requireData.name && (
             <SubCol>
               <SubRow isTitle>{t('page.signTx.addressTypeTitle')}</SubRow>
               <SubRow>{t('page.signTx.contract')}</SubRow>
@@ -150,8 +161,7 @@ const Send = ({
                     }}
                   />
                 ) : (
-                  requireData.name.replace(/^Token: /, 'Token ') +
-                  ' contract address'
+                  requireData.name.replace(/^Token: /, 'Token ')
                 )}
               </SubRow>
             </SubCol>

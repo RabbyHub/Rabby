@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const tsImportPluginFactory = require('ts-import-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
@@ -13,13 +14,15 @@ const createStyledComponentsTransformer = require('typescript-plugin-styled-comp
   .default;
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
+const useForkTsChecker = process.env.FORK_TS_CHECKER === 'enable';
 
 const paths = require('./paths');
 
 const BUILD_GIT_HASH = child_process
-  .execSync('git log --format="%h" -n 1')
+  .execSync('git rev-parse HEAD')
   .toString()
-  .trim();
+  .trim()
+  .slice(0, 8);
 
 const {
   transformer: tsStyledComponentTransformer,
@@ -38,11 +41,12 @@ const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
 
 const config = {
   entry: {
-    background: paths.rootResolve('src/background/index.ts'),
+    background: {
+      import: paths.rootResolve('src/background/index.ts'),
+      asyncChunks: false,
+    },
     'content-script': paths.rootResolve('src/content-script/index.ts'),
-    pageProvider: paths.rootResolve(
-      'node_modules/@rabby-wallet/page-provider/dist/index.js'
-    ),
+    pageProvider: paths.rootResolve('src/content-script/page-provider.ts'),
     ui: paths.rootResolve('src/ui/index.tsx'),
     offscreen: paths.rootResolve('src/offscreen/scripts/offscreen.ts'),
   },
@@ -51,6 +55,16 @@ const config = {
     filename: '[name].js',
     publicPath: '/',
   },
+  ...(useForkTsChecker
+    ? {
+        cache: {
+          type: 'filesystem',
+          buildDependencies: {
+            config: [__filename],
+          },
+        },
+      }
+    : {}),
   module: {
     rules: [
       {
@@ -62,6 +76,13 @@ const config = {
             sideEffects: true,
             test: /[\\/]pageProvider[\\/]index.ts/,
             loader: 'ts-loader',
+            ...(useForkTsChecker
+              ? {
+                  options: {
+                    transpileOnly: true,
+                  },
+                }
+              : {}),
           },
           {
             test: /[\\/]ui[\\/]index.tsx/,
@@ -108,6 +129,7 @@ const config = {
           {
             loader: 'ts-loader',
             options: {
+              ...(useForkTsChecker ? { transpileOnly: true } : {}),
               getCustomTransformers: () => ({
                 before: [
                   // @see https://github.com/Igorbek/typescript-plugin-styled-components#ts-loader
@@ -198,7 +220,18 @@ const config = {
   plugins: [
     new ESLintWebpackPlugin({
       extensions: ['ts', 'tsx', 'js', 'jsx'],
+      ...(useForkTsChecker ? { lintDirtyModulesOnly: true } : {}),
     }),
+    ...(useForkTsChecker
+      ? [
+          new ForkTsCheckerWebpackPlugin({
+            async: isEnvDevelopment,
+            typescript: {
+              memoryLimit: 2048,
+            },
+          }),
+        ]
+      : []),
     // new AntdDayjsWebpackPlugin(),
     new HtmlWebpackPlugin({
       inject: true,
@@ -217,6 +250,12 @@ const config = {
       template: paths.indexHtml,
       chunks: ['ui'],
       filename: 'index.html',
+    }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: paths.desktopHtml,
+      chunks: ['ui'],
+      filename: 'desktop.html',
     }),
     new HtmlWebpackPlugin({
       inject: true,
@@ -240,6 +279,7 @@ const config = {
       'process.env.release': JSON.stringify(process.env.VERSION),
       'process.env.RABBY_BUILD_GIT_HASH': JSON.stringify(BUILD_GIT_HASH),
       'process.env.ETHERSCAN_KEY': JSON.stringify(process.env.ETHERSCAN_KEY),
+      'process.env.SAFE_API_KEY': JSON.stringify(process.env.SAFE_API_KEY),
     }),
     new CopyPlugin({
       patterns: [

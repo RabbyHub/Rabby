@@ -11,6 +11,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
 import { GnosisMessageQueueList } from './GnosisMessageQueueList';
+import { UI_TYPE } from '@/constant/ui';
 
 const getTabs = (
   networks: string[],
@@ -49,9 +50,14 @@ export const GnosisMessageQueue = () => {
 
   const [account] = useAccount();
   const { data: networks } = useGnosisNetworks({ address: account?.address });
-  const { data: pendingMessages, loading } = useGnosisPendingMessages({
-    address: account?.address,
-  });
+  const { data: pendingMessages, loading } = useGnosisPendingMessages(
+    {
+      address: account?.address,
+    },
+    {
+      refreshOnWindowFocus: UI_TYPE.isDesktop,
+    }
+  );
 
   const tabs = useMemo(() => {
     return getTabs(

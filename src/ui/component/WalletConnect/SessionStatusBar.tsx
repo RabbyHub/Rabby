@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SessionSignal } from './SessionSignal';
 import { useSessionStatus } from './useSessionStatus';
 import { useWallet, useCommonPopupView } from '@/ui/utils';
@@ -6,6 +6,7 @@ import { useDisplayBrandName } from './useDisplayBrandName';
 import { message } from 'antd';
 import { CommonStatusBar } from '../ConnectStatus/CommonStatusBar';
 import { useTranslation } from 'react-i18next';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 
 interface Props {
   address: string;
@@ -27,13 +28,15 @@ export const SessionStatusBar: React.FC<Props> = ({
     },
     true
   );
-  const { activePopup, setAccount } = useCommonPopupView();
+  const { activePopup, setAccount, setPopupProps } = useCommonPopupView();
   const wallet = useWallet();
   const [displayBrandName, realBrandName] = useDisplayBrandName(
     brandName,
     address
   );
   const { t } = useTranslation();
+
+  const { getContainer } = usePopupContainer();
 
   const tipStatus = React.useMemo(() => {
     switch (status) {
@@ -102,6 +105,10 @@ export const SessionStatusBar: React.FC<Props> = ({
         );
     }
   };
+
+  useEffect(() => {
+    setPopupProps({ getContainer });
+  }, [getContainer]);
 
   return (
     <CommonStatusBar

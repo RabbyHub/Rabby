@@ -29,10 +29,14 @@ import { useImKeyStatus } from '@/ui/component/ConnectStatus/useImKeyStatus';
 import * as Sentry from '@sentry/browser';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { ga4 } from '@/utils/ga4';
+import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface ApprovalParams {
   address: string;
   chainId?: number;
+  from?: string;
+  nonce?: string;
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
@@ -44,14 +48,18 @@ interface ApprovalParams {
     message: string;
     chainId: number;
   };
+  stay?: boolean;
 }
 
 export const ImKeyHardwareWaiting = ({
   params,
+  account: $account,
 }: {
   params: ApprovalParams;
+  account: Account;
 }) => {
   const {
+    setHeight,
     setTitle,
     setVisible,
     closePopup,
@@ -95,9 +103,11 @@ export const ImKeyHardwareWaiting = ({
       return;
     }
     if (sessionStatus === 'DISCONNECTED') return;
-    const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
-    await wallet.resendSign();
+    const autoRetryUpdate =
+      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
+    await wallet.setRetryTxType(txFailedResult?.[1] || false);
+    await wallet.resendSign(autoRetryUpdate);
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
@@ -110,9 +120,7 @@ export const ImKeyHardwareWaiting = ({
   // };
 
   const init = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
     const approval = await getApproval();
 
     const isSignText = params.isGnosis
@@ -208,6 +216,10 @@ export const ImKeyHardwareWaiting = ({
           label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
         });
 
+        ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+          event_category: 'Transaction',
+        });
+
         setSignFinishedData({
           data: sig,
           approvalId: approval.id,
@@ -246,6 +258,7 @@ export const ImKeyHardwareWaiting = ({
         </span>
       </div>
     );
+    setHeight('fit-content');
     init();
     mountedRef.current = true;
   }, []);
@@ -262,12 +275,13 @@ export const ImKeyHardwareWaiting = ({
   //   showDueToStatusChangeRef.current = false;
   // }, [visible]);
 
+  const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        false,
+        stay,
         false,
         signFinishedData.approvalId
       );
@@ -290,7 +304,7 @@ export const ImKeyHardwareWaiting = ({
         break;
       case WALLETCONNECT_STATUS_MAP.REJECTED:
         setStatusProp('REJECTED');
-        setContent(t('page.signFooterBar.ledger.txRejected'));
+        setContent(t('page.signFooterBar.qrcode.txFailed'));
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:
@@ -312,6 +326,29 @@ export const ImKeyHardwareWaiting = ({
     return description;
   }, [description]);
 
+  const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    nonce: params?.nonce,
+    chainId: params?.chainId,
+    status: connectStatus,
+    from: params.from,
+    description: description,
+  });
+
+  React.useEffect(() => {
+    if (
+      [
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(connectStatus)
+    ) {
+      setContent(
+        txFailedResult?.[1]
+          ? t('page.signFooterBar.qrcode.txFailedRetry')
+          : t('page.signFooterBar.qrcode.txFailed')
+      );
+    }
+  }, [txFailedResult?.[1], connectStatus]);
+
   return (
     <ApprovalPopupContainer
       showAnimation
@@ -320,7 +357,8 @@ export const ImKeyHardwareWaiting = ({
       onRetry={() => handleRetry()}
       onDone={() => setIsClickDone(true)}
       onCancel={handleCancel}
-      description={currentDescription}
+      description={txFailedResult?.[0] || currentDescription}
+      retryUpdateType={txFailedResult?.[1] ?? 'origin'}
       content={content}
       hasMoreDescription={statusProp === 'REJECTED' || statusProp === 'FAILED'}
     />

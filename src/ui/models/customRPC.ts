@@ -3,6 +3,7 @@ import { RPCItem } from '@/background/service/rpc';
 import { createModel } from '@rematch/core';
 
 import { RootModel } from '.';
+import { isEqual } from 'lodash';
 
 type IState = {
   customRPC: Record<CHAINS_ENUM, RPCItem>;
@@ -27,6 +28,10 @@ export const customRPC = createModel<RootModel>()({
   effects: (dispatch) => ({
     async getAllRPC(_: void, store) {
       const rpcMap = await store.app.wallet.getAllCustomRPC();
+      const prevValue = (store as any).customRPC.customRPC;
+      if (isEqual(rpcMap, prevValue)) {
+        return prevValue;
+      }
       dispatch.customRPC.setField({ customRPC: rpcMap });
       return rpcMap;
     },

@@ -1,5 +1,5 @@
 import { message, Table } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ReactComponent as RcCopySVG } from 'ui/assets/icon-copy-cc.svg';
 import ClipboardJS from 'clipboard';
 import { AddToRabby } from './AddToRabby';
@@ -13,11 +13,16 @@ import clsx from 'clsx';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { AliasName } from './AliasName';
 import { ChainList } from './ChainList';
-import { KEYRING_CLASS } from '@/constant';
+import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
 import { useRabbyDispatch } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
 import { detectClientOS } from '@/ui/utils/os';
-
+import { useQueryAccountsInfo } from './hooks/useQueryAccontsInfo';
+import { InViewport } from './InViewport';
+import { useMemoizedFn } from 'ahooks';
+import { generateAliasName } from '@/utils/account';
+import { uniqBy, values } from 'lodash';
+import { ReactComponent as IconInfoCC } from '@/ui/assets/address/info-cc.svg';
 const isWin32 = detectClientOS() === 'win32';
 
 export interface Account {
@@ -33,6 +38,7 @@ export interface Props {
   loading: boolean;
   data?: Account[];
   preventLoading?: boolean;
+  brand?: string;
 }
 
 export const AccountList: React.FC<Props> = ({
@@ -41,21 +47,22 @@ export const AccountList: React.FC<Props> = ({
   preventLoading,
 }) => {
   const wallet = useWallet();
-  const [list, setList] = React.useState<Account[]>([]);
-  const infoRef = React.useRef<HTMLDivElement>(null);
+  const [list, setList] = React.useState<Account[]>(data || []);
   const currentAccountsRef = React.useRef<Account[]>([]);
-  const [infoColumnWidth, setInfoColumnWidth] = React.useState(0);
-  const [infoColumnTop, setInfoColumnTop] = React.useState(0);
   const {
     currentAccounts,
+    selectedAccounts,
+    setSelectedAccounts,
+    isLazyImport,
     getCurrentAccounts,
-    hiddenInfo,
-    setHiddenInfo,
     createTask,
     keyringId,
     removeCurrentAccount,
     updateCurrentAccountAliasName,
+    updateSelectedAccountAliasName,
     keyring,
+    tab,
+    brand,
   } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
   const dispatch = useRabbyDispatch();
@@ -64,13 +71,6 @@ export const AccountList: React.FC<Props> = ({
     currentAccountsRef.current = currentAccounts;
   }, [currentAccounts]);
 
-  const toggleHiddenInfo = React.useCallback(
-    (e: React.MouseEvent, val: boolean) => {
-      e.preventDefault();
-      setHiddenInfo(val);
-    },
-    []
-  );
   const { t } = useTranslation();
 
   const copy = React.useCallback((value: string) => {
@@ -89,12 +89,8 @@ export const AccountList: React.FC<Props> = ({
   }, []);
 
   React.useEffect(() => {
-    if (!hiddenInfo) {
-      fetchAccountsInfo(wallet, data ?? []).then(setList);
-    } else {
-      setList(data ?? []);
-    }
-  }, [hiddenInfo, data]);
+    setList(data ?? []);
+  }, [data]);
 
   const currentIndex = React.useMemo(() => {
     if (!preventLoading && list?.length) {
@@ -104,7 +100,7 @@ export const AccountList: React.FC<Props> = ({
   }, [list, preventLoading]);
 
   const handleAddAccount = React.useCallback(
-    async (checked: boolean, account: Account) => {
+    async (checked: boolean, account: Account, isHideToast?: boolean) => {
       if (checked) {
         await createTask(async () => {
           if (keyring === KEYRING_CLASS.MNEMONIC) {
@@ -113,7 +109,6 @@ export const AccountList: React.FC<Props> = ({
             ]);
             await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
           } else {
-            console.log(account, keyring, keyringId);
             await wallet.unlockHardwareAccount(
               keyring,
               [account.index - 1],
@@ -128,9 +123,6 @@ export const AccountList: React.FC<Props> = ({
 
         // update current account list
         await createTask(() => getCurrentAccounts());
-        message.success({
-          content: t('page.newAddress.hd.tooltip.added'),
-        });
       } else {
         await createTask(() =>
           wallet.removeAddress(
@@ -143,9 +135,6 @@ export const AccountList: React.FC<Props> = ({
           )
         );
         removeCurrentAccount(account.address);
-        message.success({
-          content: t('page.newAddress.hd.tooltip.removed'),
-        });
       }
 
       return;
@@ -153,30 +142,72 @@ export const AccountList: React.FC<Props> = ({
     [keyring, keyringId, wallet]
   );
 
-  const handleChangeAliasName = React.useCallback(
+  const handleSelectAccount = useMemoizedFn(
+    async (checked: boolean, account: Account) => {
+      const addressCount =
+        uniqBy([...currentAccounts, ...selectedAccounts], (item) =>
+          item.address.toLowerCase()
+        ).length || 0;
+
+      if (checked) {
+        const accountWithAlias = { ...account };
+        if (keyring === KEYRING_CLASS.MNEMONIC) {
+          const index = (await wallet.getKeyringIndex(keyring, keyringId)) || 0;
+
+          const alias = generateAliasName({
+            keyringType: keyring,
+            keyringCount: index,
+            addressCount,
+          });
+          wallet.updateCacheAlias({
+            address: account.address,
+            name: alias,
+          });
+          accountWithAlias.aliasName = alias;
+        } else {
+          const { brandName } = Object.keys(HARDWARE_KEYRING_TYPES)
+            .map((key) => HARDWARE_KEYRING_TYPES[key])
+            .find((item) => item.type === keyring);
+          const alias = generateAliasName({
+            brandName: brand || brandName,
+            keyringType: keyring,
+            addressCount,
+          });
+          wallet.updateCacheAlias({
+            address: account.address,
+            name: alias,
+          });
+          accountWithAlias.aliasName = alias;
+        }
+        setSelectedAccounts((pre) => {
+          return [...pre, accountWithAlias];
+        });
+      } else {
+        setSelectedAccounts((pre) => {
+          return pre.filter(
+            (item) => !isSameAddress(item.address, account.address)
+          );
+        });
+      }
+    }
+  );
+
+  const handleChangeAliasName = useMemoizedFn(
     async (value: string, account?: Account) => {
       if (!account) {
         return;
       }
       await wallet.updateAlianName(account.address, value);
-      updateCurrentAccountAliasName(account.address, value);
-      return;
-    },
-    []
+      if (tab === 'hd' && isLazyImport) {
+        updateSelectedAccountAliasName(account.address, value);
+      } else {
+        updateCurrentAccountAliasName(account.address, value);
+      }
+    }
   );
 
-  React.useEffect(() => {
-    // watch infoRef resize
-    const resizeObserver = new ResizeObserver(() => {
-      setInfoColumnWidth(infoRef.current?.parentElement?.offsetWidth ?? 0);
-      setInfoColumnTop(infoRef.current?.closest('thead')?.offsetHeight ?? 0);
-    });
-    resizeObserver.observe(infoRef.current ?? new Element());
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
+  const isEmptySeedPhraseAccount =
+    currentAccounts?.length === 0 && keyring === KEYRING_CLASS.MNEMONIC;
   // fake loading progress
   React.useEffect(() => {
     let timer;
@@ -198,180 +229,216 @@ export const AccountList: React.FC<Props> = ({
     };
   }, [loading]);
 
+  const {
+    accountsMap,
+    pendingMap,
+    createQueryAccountJob,
+  } = useQueryAccountsInfo();
+
+  const initRef = useRef(false);
+
+  useEffect(() => {
+    if (initRef.current) {
+      return;
+    }
+    if (tab === 'hd' && data?.[0]?.address) {
+      if (isLazyImport && !selectedAccounts?.length) {
+        handleSelectAccount(true, data[0]);
+      }
+      if (!isLazyImport && !currentAccounts?.length) {
+        handleAddAccount(true, data[0], true);
+      }
+      initRef.current = true;
+    }
+  }, [isLazyImport, tab, data, selectedAccounts, currentAccounts]);
+
   return (
-    <Table<Account>
-      scroll={{ y: 'calc(100vh - 352px)' }}
-      dataSource={list}
-      rowKey={(record) => record.address || record.index}
-      className={clsx('AccountList', isWin32 && 'is-win32')}
-      loading={
-        !preventLoading && loading
-          ? {
-              tip:
-                t('page.newAddress.hd.waiting') +
-                (loadNum ? ` - ${loadNum}%` : ''),
-            }
-          : false
-      }
-      pagination={false}
-      summary={() =>
-        list.length && hiddenInfo ? (
-          <tr
-            onClick={(e) => toggleHiddenInfo(e, !hiddenInfo)}
-            className={clsx('info-mask', {
-              'info-mask--center': list.length < 4,
-            })}
-            style={{
-              top: `${infoColumnTop}px`,
-              width: `${infoColumnWidth + (isWin32 ? 6 : 1)}px`,
-            }}
-          >
-            <td>
-              <RcArrowSVG className="icon text-r-neutral-title-1" />
-              <span>{t('page.newAddress.hd.clickToGetInfo')}</span>
-            </td>
-          </tr>
-        ) : null
-      }
-    >
-      <Table.Column<Account>
-        title={t('page.newAddress.hd.addToRabby')}
-        key="add"
-        render={(val, record) =>
-          record.address ? (
-            <AddToRabby
-              checked={currentAccounts?.some((item) =>
-                isSameAddress(item.address, record.address)
-              )}
-              onChange={(val) => handleAddAccount(val, record)}
-            />
-          ) : (
-            <AccountListSkeleton width={52} />
-          )
-        }
-        width={120}
-        align="center"
-        className="cell-add"
-      />
-
-      <Table.ColumnGroup
-        title={
-          <div className="column-group">
-            {t('page.newAddress.hd.basicInformation')}
-          </div>
-        }
-        className="column-group-wrap"
-      >
-        <Table.Column
-          width={45}
-          title="#"
-          dataIndex="index"
-          key="index"
-          className="cell-index"
-        />
-        <Table.Column<Account>
-          title={t('page.newAddress.hd.addresses')}
-          dataIndex="address"
-          key="address"
-          render={(value: string, record, index) =>
-            value ? (
-              <div className="cell-address text-r-neutral-title-1">
-                <span>{value.toLowerCase()}</span>
-                <RcCopySVG
-                  onClick={() => copy(value.toLowerCase())}
-                  className="copy-icon"
-                />
-              </div>
-            ) : (
-              <AccountListSkeleton align="left" height={28} width={300}>
-                {index === currentIndex
-                  ? t('page.newAddress.hd.loadingAddress', [
-                      index + 1,
-                      MAX_ACCOUNT_COUNT,
-                    ])
-                  : ''}
-              </AccountListSkeleton>
-            )
-          }
-        />
-        <Table.Column<Account>
-          width={200}
-          title={t('page.newAddress.hd.notes')}
-          dataIndex="aliasName"
-          key="aliasName"
-          className="cell-note"
-          render={(value, record) => {
-            const account = currentAccounts?.find((item) =>
-              isSameAddress(item.address, record.address)
-            );
-            return !record.address ? (
-              <AccountListSkeleton align="left" width={100} />
-            ) : (
-              <AliasName
-                address={record.address}
-                aliasName={account?.aliasName}
-                cacheAliasName={record?.aliasName}
-                disabled={!account}
-                onChange={(val) => handleChangeAliasName(val, record)}
+    <>
+      {isEmptySeedPhraseAccount && (
+        <>
+          <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center gap-4 px-18 py-10 bg-r-neutral-card-1 rounded-[8px] text-r-neutral-body text-13 font-medium mb-[26px]">
+              <IconInfoCC
+                className="text-r-neutral-body w-14 h-14"
+                viewBox="0 0 14 14"
               />
-            );
-          }}
-        />
-      </Table.ColumnGroup>
-
-      <Table.ColumnGroup
-        className="column-group-wrap"
-        title={
-          <div ref={infoRef} className="column-group">
-            <a href="#" onClick={(e) => toggleHiddenInfo(e, !hiddenInfo)}>
-              {hiddenInfo
-                ? t('page.newAddress.hd.getOnChainInformation')
-                : t('page.newAddress.hd.hideOnChainInformation')}
-            </a>
+              <span>{t('page.newAddress.hd.nonAddr')}</span>
+            </div>
           </div>
+        </>
+      )}
+      <Table<Account>
+        scroll={{ y: 'calc(100vh - 352px)' }}
+        dataSource={list}
+        rowKey={(record) => record.address || record.index}
+        className={clsx('AccountList', isWin32 && 'is-win32')}
+        loading={
+          !preventLoading && loading
+            ? {
+                tip:
+                  t('page.newAddress.hd.waiting') +
+                  (loadNum ? ` - ${loadNum}%` : ''),
+              }
+            : false
         }
+        pagination={false}
       >
         <Table.Column<Account>
-          title={t('page.newAddress.hd.usedChains')}
-          dataIndex="usedChains"
-          key="usedChains"
-          width={140}
-          render={(value, record) =>
-            hiddenInfo ? (
-              <AccountListSkeleton width={100} />
+          title={t('page.newAddress.hd.addToRabby')}
+          key="add"
+          render={(val, record) =>
+            record.address ? (
+              isLazyImport && tab === 'hd' ? (
+                <AddToRabby
+                  checked={selectedAccounts?.some((item) =>
+                    isSameAddress(item.address, record.address)
+                  )}
+                  onChange={(val) => handleSelectAccount(val, record)}
+                />
+              ) : (
+                <AddToRabby
+                  checked={currentAccounts?.some((item) =>
+                    isSameAddress(item.address, record.address)
+                  )}
+                  onChange={(val) => handleAddAccount(val, record)}
+                />
+              )
             ) : (
-              <ChainList account={record} />
+              <AccountListSkeleton width={52} />
             )
           }
+          width={120}
+          align="center"
+          className="cell-add"
         />
-        <Table.Column<Account>
-          title={t('page.newAddress.hd.firstTransactionTime')}
-          dataIndex="firstTxTime"
-          key="firstTxTime"
-          width={160}
-          render={(value) =>
-            hiddenInfo ? (
-              <AccountListSkeleton width={100} />
-            ) : !isNaN(value) ? (
-              dayjs.unix(value).format('YYYY-MM-DD')
-            ) : null
+
+        <Table.ColumnGroup
+          title={
+            <div className="column-group">
+              {t('page.newAddress.hd.basicInformation')}
+            </div>
           }
-        />
-        <Table.Column<Account>
-          title={t('page.newAddress.hd.balance')}
-          dataIndex="balance"
-          key="balance"
-          width={200}
-          ellipsis
-          render={(balance, record) =>
-            hiddenInfo ? (
-              <AccountListSkeleton width={100} />
-            ) : record.chains?.length && balance ? (
-              `$${splitNumberByStep(balance.toFixed(2))}`
-            ) : null
-          }
-        />
-      </Table.ColumnGroup>
-    </Table>
+          className="column-group-wrap"
+        >
+          <Table.Column
+            width={45}
+            title="#"
+            dataIndex="index"
+            key="index"
+            className="cell-index"
+          />
+          <Table.Column<Account>
+            title={t('page.newAddress.hd.addresses')}
+            dataIndex="address"
+            key="address"
+            render={(value: string, record, index) =>
+              value ? (
+                <div className="cell-address text-r-neutral-title-1">
+                  <span>{value.toLowerCase()}</span>
+                  <RcCopySVG
+                    onClick={() => copy(value.toLowerCase())}
+                    className="copy-icon"
+                  />
+                </div>
+              ) : (
+                <AccountListSkeleton align="left" height={28} width={300}>
+                  {index === currentIndex
+                    ? t('page.newAddress.hd.loadingAddress', [
+                        index + 1,
+                        MAX_ACCOUNT_COUNT,
+                      ])
+                    : ''}
+                </AccountListSkeleton>
+              )
+            }
+          />
+          <Table.Column<Account>
+            width={200}
+            title={t('page.newAddress.hd.notes')}
+            dataIndex="aliasName"
+            key="aliasName"
+            className="cell-note"
+            render={(value, record) => {
+              const account = (isLazyImport && tab === 'hd'
+                ? selectedAccounts
+                : currentAccounts
+              )?.find((item) => isSameAddress(item.address, record.address));
+              return !record.address ? (
+                <AccountListSkeleton align="left" width={100} />
+              ) : (
+                <AliasName
+                  address={record.address}
+                  aliasName={account?.aliasName}
+                  cacheAliasName={record?.aliasName}
+                  disabled={!account}
+                  onChange={(val) => handleChangeAliasName(val, record)}
+                />
+              );
+            }}
+          />
+        </Table.ColumnGroup>
+
+        <Table.ColumnGroup className="column-group-wrap">
+          <Table.Column<Account>
+            title={t('page.newAddress.hd.usedChains')}
+            dataIndex="usedChains"
+            key="usedChains"
+            width={140}
+            render={(value, record) => {
+              const account = accountsMap[record.address] || record;
+              return (
+                <InViewport
+                  callback={() => {
+                    createQueryAccountJob(record);
+                  }}
+                >
+                  {!record.address || pendingMap[record.address] ? (
+                    <AccountListSkeleton width={100} />
+                  ) : account.chains?.length ? (
+                    <ChainList account={account} />
+                  ) : (
+                    '-'
+                  )}
+                </InViewport>
+              );
+            }}
+          />
+          <Table.Column<Account>
+            title={t('page.newAddress.hd.firstTransactionTime')}
+            dataIndex="firstTxTime"
+            key="firstTxTime"
+            width={160}
+            render={(_, record) => {
+              const account = accountsMap[record.address] || record;
+              const value = account.firstTxTime;
+              return !record.address || pendingMap[record.address] ? (
+                <AccountListSkeleton width={100} />
+              ) : value && !isNaN(value) ? (
+                dayjs.unix(value).format('YYYY-MM-DD')
+              ) : (
+                '-'
+              );
+            }}
+          />
+          <Table.Column<Account>
+            title={t('page.newAddress.hd.balance')}
+            dataIndex="balance"
+            key="balance"
+            width={200}
+            ellipsis
+            render={(balance, record) => {
+              const account = accountsMap[record.address] || record;
+              return !record.address || pendingMap[record.address] ? (
+                <AccountListSkeleton width={100} />
+              ) : account.chains?.length && account.balance ? (
+                `$${splitNumberByStep(account.balance.toFixed(2))}`
+              ) : (
+                '-'
+              );
+            }}
+          />
+        </Table.ColumnGroup>
+      </Table>
+    </>
   );
 };

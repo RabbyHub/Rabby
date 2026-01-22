@@ -2,7 +2,7 @@ import React from 'react';
 import browser, { Tabs, Windows } from 'webextension-polyfill';
 import { t } from 'i18next';
 import { Button } from 'antd';
-import { WalletController, WalletControllerType } from './index';
+import { getUITypeName, WalletController, WalletControllerType } from './index';
 import { getOriginFromUrl } from '@/utils';
 import Modal from '../component/Modal';
 import { ReactComponent as ExternalLinkAlert } from 'ui/assets/component/external-link-alert.svg';
@@ -34,7 +34,8 @@ export const openInTab = async (
     url,
   });
 
-  if (needClose) window.close();
+  const isDesktop = getUITypeName() === 'desktop';
+  if (needClose && !isDesktop) window.close();
 
   return tab;
 };
@@ -57,6 +58,28 @@ export const openInternalPageInTab = (
   } else {
     window.open(`./index.html#/${path}`);
   }
+};
+
+export const TRUSTED_URLS = {
+  chromeStoreUrl:
+    'https://chromewebstore.google.com/detail/rabby-wallet/acmacodkjbdgmoleebolmdjonilkdbch',
+  chromeStoreReviewsUrl:
+    'https://chromewebstore.google.com/detail/rabby-wallet/acmacodkjbdgmoleebolmdjonilkdbch/reviews',
+  // // notice, only logged google user can access this page
+  // chromeStoreMyReviewUrl:
+  //   'https://chromewebstore.google.com/detail/rabby-wallet/acmacodkjbdgmoleebolmdjonilkdbch/reviews/my-review',
+};
+export const openTrustedExternalWebsiteInTab = async (
+  type: keyof typeof TRUSTED_URLS,
+  needClose = false
+) => {
+  const url = TRUSTED_URLS[type];
+
+  await browser.tabs.create({
+    active: true,
+    url,
+  });
+  if (needClose) window.close();
 };
 
 export const openExternalWebsiteInTab = async (

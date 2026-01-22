@@ -8,15 +8,28 @@ import { HDPathType } from './HDPathTypeButton';
 import { MainContainer } from './MainContainer';
 import { HDManagerStateContext, sleep } from './utils';
 import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg';
+import { ReactComponent as RcHardwareSVG } from 'ui/assets/import/hardware-cc.svg';
 import { useAsyncRetry } from 'react-use';
 import useModal from 'antd/lib/modal/useModal';
 import * as Sentry from '@sentry/browser';
 import { useTranslation } from 'react-i18next';
 import { Modal as CustomModal } from '@/ui/component';
+import { useHistory } from 'react-router-dom';
+import { useWallet } from '@/ui/utils';
+import { HARDWARE_KEYRING_TYPES } from '@/constant';
+
+const ONEKEY_TYPE = HARDWARE_KEYRING_TYPES.Onekey.type;
 
 export const OneKeyManager: React.FC = () => {
+  const history = useHistory();
+  const wallet = useWallet();
+
   const [loading, setLoading] = React.useState(true);
-  const { getCurrentAccounts } = React.useContext(HDManagerStateContext);
+  const {
+    getCurrentAccounts,
+    setSelectedAccounts,
+    keyringId,
+  } = React.useContext(HDManagerStateContext);
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
   const [setting, setSetting] = React.useState<SettingData>(
     DEFAULT_SETTING_DATA
@@ -49,6 +62,7 @@ export const OneKeyManager: React.FC = () => {
       ...data,
       type: HDPathType.BIP44,
     });
+    setSelectedAccounts([]);
   }, []);
 
   const [modal, contextHolder] = useModal();
@@ -85,9 +99,24 @@ export const OneKeyManager: React.FC = () => {
     }
   }, [fetchCurrentAccountsRetry.loading, fetchCurrentAccountsRetry.error]);
 
+  const cleanUpDeviceState = React.useCallback(async () => {
+    await wallet.requestKeyring(ONEKEY_TYPE, 'cleanUp', keyringId);
+  }, [wallet, keyringId]);
+
+  const openSwitchHD = React.useCallback(async () => {
+    await cleanUpDeviceState();
+    history.push('/import/hardware/onekey');
+  }, []);
+
   return (
     <>
       <div className="toolbar">
+        <div className="toolbar-item" onClick={openSwitchHD}>
+          <RcHardwareSVG className="icon text-r-neutral-title1" />
+          <span className="title">
+            {t('page.newAddress.hd.qrCode.switchAnother', ['OneKey'])}
+          </span>
+        </div>
         <div className="toolbar-item" onClick={openAdvanced}>
           <RcSettingSVG className="icon text-r-neutral-title1" />
           <span className="title">

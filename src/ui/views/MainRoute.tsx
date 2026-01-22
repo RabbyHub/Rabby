@@ -13,6 +13,8 @@ import SelectAddress from './SelectAddress';
 import ImportSuccess from './ImportSuccess';
 import ImportGnosis from './ImportGnosisAddress';
 import ConnectLedger from './ImportHardware/LedgerConnect';
+import ConnectTrezor from './ImportHardware/TrezorConnect';
+import ConnectOneKey from './ImportHardware/OneKeyConnect';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
 import TokenApproval from './TokenApproval';
@@ -23,6 +25,9 @@ import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import Activities from './Activities';
 import { HistoryPage } from './History';
+import PerpsSingleCoin from './Perps/screen/SingleCoin';
+import { HistoryPage as PerpsHistoryPage } from './Perps/screen/HistoryPage';
+import ExploreMore from './Perps/screen/ExploreMore';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
@@ -57,6 +62,7 @@ import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 import { GasAccount } from './GasAccount';
 import { GnosisQueue } from './GnosisQueue';
+import Perps from './Perps/screen/home';
 import { Guide } from './NewUserImport/Guide';
 import { ImportWalletList } from './NewUserImport/ImportList';
 import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
@@ -64,14 +70,32 @@ import { NewUserImportPrivateKey } from './NewUserImport/ImportPrivateKey';
 import { NewUserSetPassword } from './NewUserImport/SetPassword';
 import { NewUserImportGnosisAddress } from './NewUserImport/ImportGnosisAddress';
 import { NewUserImportLedger } from './NewUserImport/ImportLedger';
+import { NewUserImportImKey } from './NewUserImport/ImportImKey';
 import { NewUserImportKeystone } from './NewUserImport/ImportKeystone';
+import { NewUserImportOneKey } from './NewUserImport/ImportOnekey';
 import { BackupSeedPhrase } from './NewUserImport/BackupSeedPhrase';
 import { ImportOrCreatedSuccess } from './NewUserImport/Success';
 import { ReadyToUse } from './NewUserImport/ReadyToUse';
 import { ImportSeedPhrase } from './NewUserImport/ImportSeedPhrase';
 import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
-import { KEYRING_CLASS } from '@/constant';
-import { MetamaskModeDapps } from './MetamaskModeDapps';
+import { DARK_MODE_TYPE, KEYRING_CLASS } from '@/constant';
+import {
+  MetamaskModeDappsGuide,
+  MetamaskModeDappsList,
+} from './MetamaskModeDapps';
+import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
+import { ga4 } from '@/utils/ga4';
+import { ConnectApproval } from './Approval/components/Connect/SelectWalletApproval';
+import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
+import dayjs from 'dayjs';
+import { PreferenceStore } from '@/background/service/preference';
+import WhitelistInput from './WhitelistInput';
+import { PortalHost } from '../component/PortalHost';
+import {
+  GlobalSignerPortal,
+  GlobalTypedDataSignerPortal,
+} from '../component/MiniSignV2/components';
+import SelectToAddress from './SelectToAddress';
 
 declare global {
   interface Window {
@@ -80,8 +104,13 @@ declare global {
 }
 
 const LogPageView = () => {
+  const path = window.location.hash.replace(/#/, '');
+
+  ga4.firePageViewEvent({
+    pageLocation: path,
+  });
   if (window._paq) {
-    window._paq.push(['setCustomUrl', window.location.hash.replace(/#/, '')]);
+    window._paq.push(['setCustomUrl', path]);
     window._paq.push(['trackPageView']);
   }
 
@@ -103,6 +132,43 @@ const Main = () => {
             ? `popup|${hasOtherProvider ? 'hasMetaMask' : 'noMetaMask'}`
             : `request|${hasOtherProvider ? 'hasMetaMask' : 'noMetaMask'}`,
         });
+
+        ga4.fireEvent(
+          UIType.isPop
+            ? `Popup_${hasOtherProvider ? 'HasMM' : 'NoMM'}`
+            : `Request_${hasOtherProvider ? 'HasMM' : 'NoMM'}`,
+          {
+            event_category: 'User Active',
+          }
+        );
+        const preference: PreferenceStore = await wallet.getPreference();
+        if (
+          dayjs(preference.ga4EventTime || 0)
+            .utc()
+            .isSame(dayjs().utc(), 'day')
+        ) {
+          return;
+        }
+        ga4.fireEvent(
+          `ThemeMode_${
+            preference.themeMode === DARK_MODE_TYPE.dark ? 'Dark' : 'Light'
+          }`,
+          {
+            event_category: 'Settings Snapshot',
+          }
+        );
+        ga4.fireEvent(
+          `DappAccount_${preference.isEnabledDappAccount ? 'On' : 'Off'}`,
+          {
+            event_category: 'Settings Snapshot',
+          }
+        );
+
+        const isEnabledWhiteList = await wallet.isWhitelistEnabled();
+        ga4.fireEvent(`Whitelist_${isEnabledWhiteList ? 'On' : 'Off'}`, {
+          event_category: 'Settings Snapshot',
+        });
+        wallet.updateGa4EventTime(Date.now());
       }
     })();
   }, []);
@@ -114,6 +180,12 @@ const Main = () => {
         <Route exact path="/welcome">
           <Welcome />
         </Route>
+
+        {/* todo remove */}
+        <Route exact path="/sync">
+          <SyncToMobile />
+        </Route>
+
         <Route exact path="/new-user/guide">
           <Guide />
         </Route>
@@ -143,9 +215,23 @@ const Main = () => {
 
         <Route
           exact
+          path={`/new-user/import/hardware/${KEYRING_CLASS.HARDWARE.IMKEY}`}
+        >
+          <NewUserImportImKey />
+        </Route>
+
+        <Route
+          exact
           path={`/new-user/import/hardware/${KEYRING_CLASS.HARDWARE.KEYSTONE}`}
         >
           <NewUserImportKeystone />
+        </Route>
+
+        <Route
+          exact
+          path={`/new-user/import/hardware/${KEYRING_CLASS.HARDWARE.ONEKEY}`}
+        >
+          <NewUserImportOneKey />
         </Route>
 
         <Route exact path="/new-user/import/hardware/:type">
@@ -172,6 +258,10 @@ const Main = () => {
           <ReadyToUse />
         </Route>
 
+        <Route exact path="/new-user/import/select-address">
+          <NewUserSelectAddress />
+        </Route>
+
         <Route exact path="/password">
           <CreatePassword />
         </Route>
@@ -179,6 +269,11 @@ const Main = () => {
         <Route exact path="/no-address">
           <NoAddress />
         </Route>
+
+        <Route exact path="/connect-approval">
+          <ConnectApproval />
+        </Route>
+
         <PrivateRoute exact path="/mnemonics/create">
           <CreateMnemonics />
         </PrivateRoute>
@@ -202,6 +297,12 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/ledger-connect">
           <ConnectLedger />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/trezor-connect">
+          <ConnectTrezor />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/onekey">
+          <ConnectOneKey />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/imkey-connect">
           <ImKeyConnect />
@@ -292,8 +393,14 @@ const Main = () => {
         <PrivateRoute exact path="/send-token">
           <SendToken />
         </PrivateRoute>
+        <PrivateRoute exact path="/select-to-address">
+          <SelectToAddress />
+        </PrivateRoute>
         <PrivateRoute exact path="/send-nft">
           <SendNFT />
+        </PrivateRoute>
+        <PrivateRoute exact path="/whitelist-input">
+          <WhitelistInput />
         </PrivateRoute>
         <PrivateRoute exact path="/receive">
           <Receive />
@@ -303,9 +410,11 @@ const Main = () => {
           <Bridge />
         </PrivateRoute>
 
+        {/* todo remove */}
         <PrivateRoute exact path="/approval-manage">
           <ApprovalManagePage />
         </PrivateRoute>
+
         <PrivateRoute exact path="/dapp-search">
           <DappSearchPage />
         </PrivateRoute>
@@ -328,7 +437,10 @@ const Main = () => {
           <CustomTestnet />
         </PrivateRoute>
         <PrivateRoute exact path="/metamask-mode-dapps">
-          <MetamaskModeDapps />
+          <MetamaskModeDappsGuide />
+        </PrivateRoute>
+        <PrivateRoute exact path="/metamask-mode-dapps/list">
+          <MetamaskModeDappsList />
         </PrivateRoute>
         <PrivateRoute exact path="/nft">
           <NFTView />
@@ -342,9 +454,24 @@ const Main = () => {
         <PrivateRoute path="/gas-account">
           <GasAccount />
         </PrivateRoute>
+        <PrivateRoute exact path="/perps">
+          <Perps />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/single-coin/:coin">
+          <PerpsSingleCoin />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/explore">
+          <ExploreMore />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/history/:coin">
+          <PerpsHistoryPage />
+        </PrivateRoute>
       </Switch>
 
       <CommonPopup />
+      <PortalHost />
+      <GlobalSignerPortal />
+      <GlobalTypedDataSignerPortal />
     </>
   );
 };

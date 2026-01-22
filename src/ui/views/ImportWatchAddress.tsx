@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
 import QRCodeReader from 'ui/component/QRCodeReader';
-import { isValidAddress } from 'ethereumjs-util';
+import { isValidAddress } from '@ethereumjs/util';
 import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
@@ -21,8 +21,12 @@ import IconBack from 'ui/assets/icon-back.svg';
 import { useRepeatImportConfirm } from 'ui/utils/useRepeatImportConfirm';
 import eventBus from '@/eventBus';
 import { safeJSONParse } from '@/utils';
+import { UI_TYPE } from '@/constant/ui';
+import qs from 'qs';
 
-const ImportWatchAddress = () => {
+const ImportWatchAddress: React.FC<{ isInModal?: boolean }> = ({
+  isInModal,
+}) => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
@@ -49,16 +53,33 @@ const ImportWatchAddress = () => {
       const successShowAccounts = accounts.map((item, index) => {
         return { ...item, index: index + 1 };
       });
-      history.replace({
-        pathname: '/popup/import/success',
-        state: {
-          accounts: successShowAccounts,
-          title: t('page.newAddress.importedSuccessfully'),
-          editing: true,
-          importedAccount: true,
-          importedLength: importedAccounts && importedAccounts?.length,
-        },
-      });
+      if (UI_TYPE.isDesktop) {
+        history.replace({
+          pathname: history.location.pathname,
+          search: `?${qs.stringify({
+            action: 'add-address',
+            import: 'success',
+          })}`,
+          state: {
+            accounts: successShowAccounts,
+            title: t('page.newAddress.importedSuccessfully'),
+            editing: true,
+            importedAccount: true,
+            importedLength: importedAccounts && importedAccounts?.length,
+          },
+        });
+      } else {
+        history.replace({
+          pathname: '/popup/import/success',
+          state: {
+            accounts: successShowAccounts,
+            title: t('page.newAddress.importedSuccessfully'),
+            editing: true,
+            importedAccount: true,
+            importedLength: importedAccounts && importedAccounts?.length,
+          },
+        });
+      }
     },
     onError(err) {
       if (err.message?.includes?.('DuplicateAccountError')) {
@@ -212,7 +233,11 @@ const ImportWatchAddress = () => {
       form={form}
       hasDivider
       noPadding
-      className={clsx('import-watchmode', isWide && 'rabby-stray-page')}
+      className={clsx(
+        'import-watchmode',
+        isWide && 'rabby-stray-page',
+        isInModal ? 'min-h-0 h-[600px] overflow-auto' : ''
+      )}
       formProps={{
         onValuesChange: handleValuesChange,
       }}
@@ -223,7 +248,7 @@ const ImportWatchAddress = () => {
     >
       {contextHolder}
       <header className="create-new-header create-password-header h-[180px] py-[20px] dark:bg-r-blue-disable">
-        <div className="rabby-container">
+        <div className={clsx('rabby-container', isInModal ? 'w-full' : '')}>
           <img
             className="icon-back mb-0 z-10 relative"
             src={IconBack}

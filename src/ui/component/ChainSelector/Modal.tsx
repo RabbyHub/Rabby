@@ -1,7 +1,13 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { Button, Drawer, Input } from 'antd';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import { Button, Drawer, DrawerProps, Input } from 'antd';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
 import { Chain } from 'background/service/openapi';
@@ -28,6 +34,8 @@ import {
 } from './components/SelectChainList';
 import { LoadingBalances } from './LoadingBalances';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import { Account } from '@/background/service/preference';
+import { TDisableCheckChainFn } from './components/SelectChainItem';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -39,16 +47,19 @@ interface ChainSelectorModalProps {
   className?: string;
   supportChains?: SelectChainListProps['supportChains'];
   disabledTips?: SelectChainListProps['disabledTips'];
+  disableChainCheck?: TDisableCheckChainFn;
   hideTestnetTab?: boolean;
   hideMainnetTab?: boolean;
   showRPCStatus?: boolean;
-  height?: number;
+  height?: number | string;
   zIndex?: number;
   excludeChains?: CHAINS_ENUM[];
   showClosableIcon?: boolean;
+  getContainer?: DrawerProps['getContainer'];
+  account?: Account | null;
 }
 
-const useChainSeletorList = ({
+const useChainSelectorList = ({
   supportChains,
   netTabKey,
 }: {
@@ -141,18 +152,24 @@ const ChainSelectorModal = ({
   hideTestnetTab = false,
   hideMainnetTab = false,
   showRPCStatus = false,
-  height = 494,
+  height = 540,
   zIndex,
   excludeChains,
-  showClosableIcon = false,
+  showClosableIcon = true,
+  getContainer,
+  account,
+  disableChainCheck,
 }: ChainSelectorModalProps) => {
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     onCancel();
-  };
+  }, [onCancel]);
 
-  const handleChange = (val: CHAINS_ENUM) => {
-    onChange(val);
-  };
+  const handleChange = useCallback(
+    (val: CHAINS_ENUM) => {
+      onChange(val);
+    },
+    [onChange]
+  );
 
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab({
     hideTestnetTab,
@@ -170,7 +187,7 @@ const ChainSelectorModal = ({
     search,
     setSearch,
     pinned,
-  } = useChainSeletorList({
+  } = useChainSelectorList({
     supportChains,
     netTabKey: !hideMainnetTab ? selectedTab : 'testnet',
   });
@@ -200,14 +217,16 @@ const ChainSelectorModal = ({
     if (!visible) {
       setSearch('');
     } else {
-      rDispatch.account.getMatteredChainBalance();
+      rDispatch.account.getMatteredChainBalance({
+        currentAccountAddress: account?.address,
+      });
     }
-  }, [visible, rDispatch, setSearch]);
+  }, [visible, rDispatch, setSearch, account?.address]);
 
   return (
     <>
       <Drawer
-        title={title}
+        title={title || t('page.bridge.select-chain')}
         width="400px"
         height={height}
         closable={showClosableIcon}
@@ -215,7 +234,7 @@ const ChainSelectorModal = ({
         visible={visible}
         onClose={handleCancel}
         className={clsx(
-          'custom-popup is-support-darkmode',
+          'custom-popup is-support-darkmode is-new',
           'chain-selector__modal',
           // isLoading && 'disable-body-scroll',
           connection && 'connection',
@@ -226,8 +245,9 @@ const ChainSelectorModal = ({
         closeIcon={
           <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
         }
+        getContainer={getContainer}
       >
-        <header className={title ? 'pt-[8px]' : 'pt-[20px]'}>
+        <header>
           {isShowTestnet && !hideMainnetTab && (
             <NetSwitchTabs
               value={selectedTab}
@@ -265,6 +285,7 @@ const ChainSelectorModal = ({
               value={value}
               disabledTips={disabledTips}
               showRPCStatus={showRPCStatus}
+              disableChainCheck={disableChainCheck}
             ></SelectChainList>
             <SelectChainList
               supportChains={supportChains}
@@ -275,6 +296,7 @@ const ChainSelectorModal = ({
               onChange={handleChange}
               disabledTips={disabledTips}
               showRPCStatus={showRPCStatus}
+              disableChainCheck={disableChainCheck}
             ></SelectChainList>
 
             {matteredList.length === 0 && unmatteredList.length === 0 ? (

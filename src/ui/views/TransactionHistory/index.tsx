@@ -14,11 +14,12 @@ import { SkipNonceAlert } from './components/SkipNonceAlert';
 import { TransactionItem } from './components/TransactionItem';
 import { useLoadTxRequests } from './hooks';
 import './style.less';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const TransactionHistory = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [account] = useAccount();
+  const account = useCurrentAccount();
   const [_pendingList, setPendingList] = useState<TransactionGroup[]>([]);
   const [_completeList, setCompleteList] = useState<TransactionGroup[]>([]);
 
@@ -31,7 +32,9 @@ const TransactionHistory = () => {
   }, [_completeList]);
 
   const init = async () => {
-    const account = await wallet.syncGetCurrentAccount<Account>()!;
+    if (!account) {
+      return;
+    }
     const { pendings, completeds } = await wallet.getTransactionHistory(
       account.address
     );
@@ -52,7 +55,7 @@ const TransactionHistory = () => {
   useEffect(() => {
     init();
     loadPendingListQueue();
-  }, []);
+  }, [account?.address]);
 
   const { txRequests, reloadTxRequests } = useLoadTxRequests(pendingList);
 
@@ -77,7 +80,13 @@ const TransactionHistory = () => {
 
   return (
     <div className="tx-history">
-      <SkipNonceAlert pendings={pendingList} />
+      <SkipNonceAlert
+        pendings={pendingList}
+        onClearPending={() => {
+          init();
+          loadPendingListQueue();
+        }}
+      />
       {pendingList.length > 0 && (
         <div className="tx-history__pending">
           {pendingList.map((item) => (

@@ -1,13 +1,11 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import produce from 'immer';
 import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { CHAINS } from '@debank/common';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import {
   findChainByEnum,
   isTestnet as checkIsTestnet,
-  findChainByServerID,
   findChain,
 } from '@/utils/chain';
 import { useWallet } from '../WalletContext';
@@ -30,7 +28,13 @@ import {
 } from './tokenUtils';
 import { isSameAddress } from '..';
 import { Token } from 'background/service/preference';
+import {
+  defaultTokenFilter,
+  includeLpTokensFilter,
+  isLpToken,
+} from './lpToken';
 
+let lastResetTokenListAddr = '';
 // export const tokenChangeLoadingAtom = atom(false);
 
 const filterDisplayToken = (
@@ -42,13 +46,11 @@ const filterDisplayToken = (
       serverId: token.chain,
     });
     return (
-      token.is_core &&
       !blocked.find(
         (item) =>
           isSameAddress(token._tokenId, item.address) &&
           item.chain === token.chain
-      ) &&
-      findChainByEnum(chain?.enum)
+      ) && findChainByEnum(chain?.enum)
     );
   });
 };
@@ -61,11 +63,15 @@ export const useTokens = (
   chainServerId?: string,
   isTestnet: boolean = chainServerId
     ? !!findChain({ serverId: chainServerId })?.isTestnet
-    : false
+    : false,
+  lpTokensOnly = false,
+  showBlocked = false,
+  searchMode = false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
   const [isLoading, setLoading] = useSafeState(true);
+  const [isAllTokenLoading, setIsAllTokenLoading] = useSafeState(true);
   const historyTime = useRef<number>();
   const historyLoad = useRef<boolean>(false);
   const wallet = useWallet();
@@ -77,6 +83,7 @@ export const useTokens = (
   const userAddrRef = useRef('');
   const chainIdRef = useRef<string | undefined>(undefined);
   // const setTokenChangeLoading = useSetAtom(tokenChangeLoadingAtom);
+  const callCountRef = useRef(0);
 
   useEffect(() => {
     if (updateNonce === 0) return;
@@ -128,16 +135,30 @@ export const useTokens = (
   }, [timeAt, isLoading]);
 
   const loadProcess = async () => {
+    callCountRef.current++;
+    const callCount = callCountRef.current;
+    const abortedFn = () => {
+      if (callCount === callCountRef.current) {
+        setLoading(false);
+        setIsAllTokenLoading(false);
+      }
+    };
+
     if (!userAddr || isTestnet) {
       return;
     }
 
-    await dispatch.account.resetTokenList();
+    if (!isSameAddress(userAddr, lastResetTokenListAddr)) {
+      await dispatch.account.resetTokenList();
+      lastResetTokenListAddr = userAddr;
+    }
+
     const currentAbort = new AbortController();
     abortProcess.current = currentAbort;
     historyLoad.current = false;
 
     setLoading(true);
+    setIsAllTokenLoading(true);
     log('======Start-Tokens======', userAddr);
     let _data = produce(walletProject, (draft) => {
       draft.netWorth = 0;
@@ -151,17 +172,26 @@ export const useTokens = (
     setData(_data);
     const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
 
-    const blocked = (await wallet.getBlockedToken()).filter((token) => {
-      if (isTestnet) {
-        return checkIsTestnet(token.chain);
-      } else {
-        return !checkIsTestnet(token.chain);
-      }
-    });
+    const blocked = showBlocked
+      ? []
+      : (await wallet.getBlockedToken()).filter((token) => {
+          if (isTestnet) {
+            return checkIsTestnet(token.chain);
+          } else {
+            return !checkIsTestnet(token.chain);
+          }
+        });
 
-    if (currentAbort.signal.aborted || !snapshot) {
+    if (!snapshot) {
       log('--Terminate-tokens-snapshot-', userAddr);
       setLoading(false);
+      setIsAllTokenLoading(false);
+      return;
+    }
+
+    if (currentAbort.signal.aborted) {
+      log('--Terminate-tokens-snapshot-', userAddr);
+      abortedFn();
       return;
     }
 
@@ -196,9 +226,15 @@ export const useTokens = (
       isTestnet
     );
 
-    if (currentAbort.signal.aborted || !tokenRes) {
-      log('--Terminate-tokens-', userAddr);
+    if (!tokenRes) {
+      log('--Terminate-tokens- no tokenRes', userAddr);
       setLoading(false);
+      setIsAllTokenLoading(false);
+    }
+
+    if (currentAbort.signal.aborted) {
+      log('--Terminate-tokens-', userAddr);
+      abortedFn();
       return;
     }
 
@@ -305,7 +341,7 @@ export const useTokens = (
       ]);
     }
     setLoading(false);
-
+    setIsAllTokenLoading(false);
     loadHistory(_data, currentAbort);
 
     log('<<==Tokens-end==>>', userAddr);
@@ -329,7 +365,6 @@ export const useTokens = (
     // setTokenChangeLoading(true);
 
     if (currentAbort.signal.aborted || !_data?.netWorth) {
-      setLoading(false);
       return;
     }
 
@@ -341,7 +376,6 @@ export const useTokens = (
     );
 
     if (currentAbort.signal.aborted) {
-      setLoading(false);
       return;
     }
 
@@ -377,7 +411,6 @@ export const useTokens = (
     setData(_data);
 
     if (currentAbort.signal.aborted) {
-      setLoading(false);
       return;
     }
 
@@ -397,7 +430,6 @@ export const useTokens = (
     );
 
     if (currentAbort.signal.aborted || !priceDicts) {
-      setLoading(false);
       return;
     }
 
@@ -414,7 +446,6 @@ export const useTokens = (
     }) as DisplayedProject;
 
     if (currentAbort.signal.aborted) {
-      setLoading(false);
       return;
     }
 
@@ -432,10 +463,28 @@ export const useTokens = (
     };
   }, []);
 
+  const tokens = useMemo(() => {
+    const list = isTestnet ? testnetTokens.list : mainnetTokens.list;
+    if (searchMode) {
+      return list.filter(includeLpTokensFilter);
+    }
+    if (lpTokensOnly) {
+      return list.filter(isLpToken);
+    }
+    return list.filter(defaultTokenFilter);
+  }, [
+    isTestnet,
+    testnetTokens.list,
+    mainnetTokens.list,
+    lpTokensOnly,
+    searchMode,
+  ]);
+
   return {
     netWorth: data?.netWorth || 0,
     isLoading,
-    tokens: isTestnet ? testnetTokens.list : mainnetTokens.list,
+    isAllTokenLoading,
+    tokens,
     customizeTokens: isTestnet
       ? testnetTokens.customize
       : mainnetTokens.customize,

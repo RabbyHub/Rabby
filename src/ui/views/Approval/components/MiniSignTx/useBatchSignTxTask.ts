@@ -1,12 +1,13 @@
-import { message } from 'antd';
-import { useWallet } from '@/ui/utils';
+import { openInternalPageInTab, useWallet } from '@/ui/utils';
 import { sendTransaction } from '@/ui/utils/sendTransaction';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { HardwareErrorCode } from '@onekeyfe/hd-shared';
 import { useMemoizedFn } from 'ahooks';
-import PQueue from 'p-queue';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
 import { isLedgerLockError } from '@/ui/utils/ledger';
+import { useSetDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import BigNumber from 'bignumber.js';
 
 type TxStatus = 'sended' | 'signed' | 'idle' | 'failed';
 
@@ -18,6 +19,7 @@ type ListItemType = {
   >;
   status: TxStatus;
   message?: string;
+  hash?: string;
 };
 
 export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
@@ -49,15 +51,74 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
     setStatus('idle');
   });
 
-  const start = useMemoizedFn(async () => {
+  const retryTxs = useRef<ListItemType[]>([]);
+
+  const setDirectSigning = useSetDirectSigning();
+
+  const start = useMemoizedFn(async (isRetry = false) => {
+    let txHash = '';
     try {
+      setDirectSigning(true);
       setStatus('active');
+
+      const {
+        getRetryTxType,
+        retryTxReset,
+        getRetryTxRecommendNonce,
+        setRetryTxRecommendNonce,
+      } = wallet;
+
+      if (!isRetry) {
+        retryTxs.current = [];
+        await retryTxReset();
+      } else {
+        if (!retryTxs.current.length) {
+          retryTxs.current = list;
+        }
+      }
+
       for (let index = 0; index < list.length; index++) {
-        const item = list[index];
-        const tx = item.tx;
+        let item = list[index];
         const options = item.options;
+
         if (item.status === 'signed') {
           continue;
+        }
+
+        if (isRetry) {
+          item = retryTxs.current[index];
+        }
+        const tx = item.tx;
+
+        if (isRetry) {
+          const retryType = await getRetryTxType();
+          switch (retryType) {
+            case 'nonce': {
+              const recommendNonce = await getRetryTxRecommendNonce();
+              tx.nonce = recommendNonce;
+              break;
+            }
+
+            case 'gasPrice': {
+              if (tx.gasPrice) {
+                tx.gasPrice = `0x${new BigNumber(
+                  new BigNumber(tx.gasPrice, 16).times(1.3).toFixed(0)
+                ).toString(16)}`;
+              }
+              if (tx.maxFeePerGas) {
+                tx.maxFeePerGas = `0x${new BigNumber(
+                  new BigNumber(tx.maxFeePerGas, 16).times(1.3).toFixed(0)
+                ).toString(16)}`;
+              }
+              break;
+            }
+
+            default:
+              break;
+          }
+          const tmp = [...list];
+          tmp[index] = { ...item, tx: { ...tx } };
+          retryTxs.current = tmp;
         }
 
         try {
@@ -84,9 +145,18 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
               }
             },
           });
+          // 保存交易 hash
+          if (result) {
+            txHash = result.txHash || '';
+          }
         } catch (e) {
           console.error(e);
           const msg = e.message || e.name;
+
+          // eventBus.emit(EVENTS.DIRECT_SIGN, {
+          //   error: msg,
+          // });
+
           _updateList({
             index,
             payload: {
@@ -95,24 +165,64 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
             },
           });
 
-          if (!(isLedgerLockError(msg) || msg === 'DISCONNECTED')) {
+          retryTxReset();
+          if (
+            !(
+              isLedgerLockError(msg) ||
+              msg === 'DISCONNECTED' ||
+              msg === 'No OneKey Device found'
+            )
+          ) {
+            try {
+              await setRetryTxRecommendNonce({
+                from: tx.from,
+                chainId: tx.chainId,
+                nonce: tx.nonce,
+              });
+            } catch (error) {
+              console.error(
+                'useBatchSignTxTask setRetryTxRecommendNonce error',
+                error
+              );
+            }
+
             setError(msg);
+          }
+
+          // retry webusb permission
+          if (
+            msg.startsWith(
+              HardwareErrorCode.WebDeviceNotFoundOrNeedsPermission.toString()
+            )
+          ) {
+            openInternalPageInTab(
+              'request-permission?type=onekey&from=approval'
+            );
           }
           throw e;
         }
       }
+      retryTxReset();
       setStatus('completed');
+      // eventBus.emit(EVENTS.DIRECT_SIGN, {});
+      return txHash;
     } catch (e) {
       console.error(e);
+      const msg = e.message || e.name;
+
+      // eventBus.emit(EVENTS.DIRECT_SIGN, {
+      //   error: msg || 'failed to completed',
+      // });
       throw e;
+    } finally {
+      setDirectSigning(false);
     }
   });
 
   const handleRetry = useMemoizedFn(async () => {
     setError('');
-    // setStatus('idle');
-    // setStatus('')
-    await start();
+    const hash = await start(true);
+    return hash;
   });
 
   const stop = useMemoizedFn(() => {

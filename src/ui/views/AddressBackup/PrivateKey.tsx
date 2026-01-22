@@ -12,27 +12,41 @@ import IconMaskIcon from '@/ui/assets/create-mnemonics/mask-lock.svg';
 import { ReactComponent as IconRcMask } from '@/ui/assets/create-mnemonics/mask-lock.svg';
 import clsx from 'clsx';
 
-const AddressBackup = () => {
+const AddressBackupPrivateKey: React.FC<{
+  isInModal?: boolean;
+  onClose?(): void;
+}> = ({ isInModal, onClose }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const history = useHistory();
   const { state } = useLocation<{
     data: string;
   }>();
+
   const data = state?.data;
   const [masked, setMasked] = useState(true);
   const [isShowPrivateKey, setIsShowPrivateKey] = useState(false);
 
   useEffect(() => {
     if (!data) {
-      history.goBack();
+      if (isInModal) {
+        onClose?.();
+      } else {
+        history.goBack();
+      }
     }
-  }, [data, history]);
+  }, [data, history, isInModal]);
+
   if (!data) {
     return null;
   }
   return (
-    <div className="page-address-backup">
+    <div
+      className={clsx(
+        'page-address-backup',
+        isInModal ? 'min-h-0 h-[600px]' : ''
+      )}
+    >
       <header>{t('page.backupPrivateKey.title')}</header>
       <div className="alert mb-[20px]">
         <InfoCircleOutlined />
@@ -68,11 +82,9 @@ const AddressBackup = () => {
             {t('page.backupPrivateKey.clickToShow')}
           </div>
         ) : (
-          <>
-            {data}
-            <Copy icon={IconCopy} data={data} className="icon-copy"></Copy>
-          </>
+          <p className="private-key-text">{data}</p>
         )}
+        <Copy icon={IconCopy} data={data} className="icon-copy"></Copy>
       </div>
 
       <div className="footer pb-[20px]">
@@ -89,4 +101,4 @@ const AddressBackup = () => {
   );
 };
 
-export default AddressBackup;
+export default AddressBackupPrivateKey;

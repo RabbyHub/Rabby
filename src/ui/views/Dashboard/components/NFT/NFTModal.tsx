@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { openNFTLinkFromChainItem } from '@/ui/views/ApprovalManagePage/utils';
 import { findChainByServerID } from '@/utils/chain';
+import { UI_TYPE } from '@/constant/ui';
 
 interface ContentProps {
   data?: NFTItem;
@@ -35,19 +36,32 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
   const handleClickSend = () => {
     setVisible(false);
     onClose?.();
-    history.push({
-      pathname: '/send-nft',
-      state: {
-        nftItem: {
+    const query = new URLSearchParams();
+    query.set('rbisource', 'nftdetail');
+    query.set(
+      'nftItem',
+      encodeURIComponent(
+        JSON.stringify({
           ...data,
           collection: {
             ...data?.collection,
             name: collectionName,
           },
-        },
-      },
-      search: `?rbisource=${'nftdetail' as IGAEventSource.ISendNFT}`,
-    });
+        })
+      )
+    );
+
+    if (UI_TYPE.isDesktop) {
+      const pathname = location.pathname.startsWith('/desktop/profile')
+        ? location.pathname
+        : '/desktop/profile';
+      query.set('action', 'send');
+      query.set('sendPageType', 'sendNft');
+      history.push(`${pathname}?${query.toString()}`);
+    } else {
+      // history.push(`/send-poly?${query.toString()}`);
+      history.push(`/send-nft?${query.toString()}`);
+    }
   };
 
   const onDetail = () => {

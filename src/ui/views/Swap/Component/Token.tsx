@@ -6,7 +6,7 @@ import TokenSelect from '@/ui/component/TokenSelect';
 import { formatTokenAmount } from '@debank/common';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { TokenRender } from './TokenRender';
-import { Input } from 'antd';
+import { DrawerProps, Input } from 'antd';
 import styled from 'styled-components';
 import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
@@ -71,6 +71,10 @@ interface SwapTokenItemProps {
   inSufficient?: boolean;
   valueLoading?: boolean;
   currentQuote?: QuoteProvider;
+  getContainer?: DrawerProps['getContainer'];
+  skeletonLoading?: boolean;
+  disabled?: boolean;
+  onFromSelectChain?: () => void;
 }
 
 export const SwapTokenItem = (props: SwapTokenItemProps) => {
@@ -87,6 +91,10 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     inSufficient,
     valueLoading,
     currentQuote,
+    getContainer,
+    skeletonLoading,
+    disabled,
+    onFromSelectChain: onStartSelectChain,
   } = props;
 
   const openTokenModalRef = useRef<{
@@ -113,7 +121,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
         valueLoading
           ? formatUsdValue(0)
           : formatUsdValue(
-              new BigNumber(value || 0).times(token.price).toString(10)
+              new BigNumber(value || 0).times(token.price || 0).toString(10)
             ),
       ];
     }
@@ -147,23 +155,27 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
 
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
-      onValueChange?.(e.target.value);
+      if (!disabled) {
+        onValueChange?.(e.target.value);
+      }
     },
     [onValueChange]
   );
 
   const onAfterChangeSlider = useCallback(
     (value: number) => {
-      onChangeSlider?.(value, true);
+      if (!disabled) {
+        onChangeSlider?.(value, true);
+      }
     },
     [onChangeSlider]
   );
 
   useLayoutEffect(() => {
-    if (token?.id && isFrom) {
+    if (token?.id && isFrom && !disabled) {
       inputRef.current?.focus();
     }
-  }, [token?.id]);
+  }, [token?.id, disabled]);
 
   return (
     <div className="p-16 pb-20 h-[132px]">
@@ -187,7 +199,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
               min={0}
               max={100}
               tooltipVisible={false}
-              disabled={!token}
+              disabled={!token || disabled}
             />
             <span className="absolute top-1/2 -right-12 transform -translate-y-1/2 w-[38px] text-13 text-r-blue-default font-medium">
               {slider}%
@@ -215,15 +227,17 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             chainId={chainId}
             type={isFrom ? 'swapFrom' : 'swapTo'}
             placeholder={t('page.swap.search-by-name-address')}
-            excludeTokens={excludeTokens}
+            // excludeTokens={excludeTokens}
             tokenRender={tokenRender}
-            supportChains={SWAP_SUPPORT_CHAINS}
+            // supportChains={SWAP_SUPPORT_CHAINS}
             useSwapTokenList={!isFrom}
             disabledTips={t('page.swap.insufficient-balance')}
+            getContainer={getContainer}
+            onStartSelectChain={onStartSelectChain}
           />
         </div>
 
-        {valueLoading ? (
+        {valueLoading && skeletonLoading ? (
           <SkeletonInput
             active
             className="rounded-[4px]"
@@ -242,19 +256,29 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             readOnly={!isFrom}
             className={clsx(
               !isFrom && 'cursor-pointer',
-              isFrom && inSufficient && 'text-r-red-default'
+              isFrom && inSufficient && 'text-r-red-default',
+              valueLoading && 'opacity-50',
+              disabled && 'pointer-events-none'
             )}
           />
         )}
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 text-rabby-neutral-foot">
+        <div
+          className={clsx(
+            'flex items-center gap-4 ',
+
+            isFrom && inSufficient
+              ? 'text-r-red-default'
+              : 'text-rabby-neutral-foot'
+          )}
+        >
           <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
-          <span className="text-13 text-rabby-neutral-foot">{balance}</span>
+          <span className="text-13">{balance}</span>
         </div>
         <div className="text-13 text-rabby-neutral-foot flex items-center gap-2 relative">
-          {valueLoading ? (
+          {valueLoading && skeletonLoading ? (
             <SkeletonInput
               active
               className="rounded-[4px]"
@@ -264,7 +288,9 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
               }}
             />
           ) : (
-            <span>{usdValue}</span>
+            <span className={clsx(valueLoading && 'opacity-50')}>
+              {usdValue}
+            </span>
           )}
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Button, Input, Skeleton, Tooltip } from 'antd';
+import { Button, DrawerProps, Input, Skeleton, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { GasLevel, Tx, TxPushType } from 'background/service/openapi';
@@ -50,6 +50,10 @@ import { calcGasEstimated } from '@/utils/time';
 import { getUiType, useHover, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { noop } from 'lodash';
+import {
+  useGetShowMoreGasSelectVisible,
+  useSetGasInfoByUI,
+} from '@/ui/views/Bridge/Component/ShowMoreGasModal';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -114,6 +118,12 @@ interface GasSelectorProps {
     balance_is_enough: boolean;
     chain_not_support: boolean;
   };
+  directSubmit?: boolean;
+  checkGasLevelIsNotEnough?: (
+    gas: GasSelectorResponse,
+    gasType: 'native' | 'gasAccount'
+  ) => Promise<[boolean, number]>;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const useExplainGas = ({
@@ -300,6 +310,9 @@ const GasSelectorHeader = ({
   gasAccountCost,
   onChangeGasMethod,
   tx,
+  checkGasLevelIsNotEnough,
+  directSubmit,
+  getContainer,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -421,6 +434,181 @@ const GasSelectorHeader = ({
     },
   });
 
+  const gasSlowUsd = useExplainGas({
+    price: gasList.find((e) => e.level === 'slow')?.price || 0,
+    method: gasCalcMethod,
+    value: {
+      gasCostAmount: new BigNumber(gas.gasCostAmount),
+      gasCostUsd: new BigNumber(gas.gasCostUsd),
+    },
+  }).gasCostUsd;
+
+  const gasNormalUsd = useExplainGas({
+    price: gasList.find((e) => e.level === 'normal')?.price || 0,
+    method: gasCalcMethod,
+    value: {
+      gasCostAmount: new BigNumber(gas.gasCostAmount),
+      gasCostUsd: new BigNumber(gas.gasCostUsd),
+    },
+  }).gasCostUsd;
+
+  const gasFastUsd = useExplainGas({
+    price: gasList.find((e) => e.level === 'fast')?.price || 0,
+    method: gasCalcMethod,
+    value: {
+      gasCostAmount: new BigNumber(gas.gasCostAmount),
+      gasCostUsd: new BigNumber(gas.gasCostUsd),
+    },
+  }).gasCostUsd;
+
+  const [gasIsNotEnough, setGasIsNotEnough] = useState({
+    slow: false,
+    normal: false,
+    fast: false,
+  });
+  const [gasAccountIsNotEnough, setGasAccountIsNotEnough] = useState<{
+    slow: [boolean, string];
+    normal: [boolean, string];
+    fast: [boolean, string];
+  }>({
+    slow: [false, ''],
+    normal: [false, ''],
+    fast: [false, ''],
+  });
+
+  const calcGasAccountUsd = useCallback((n: number | string) => {
+    const v = Number(n);
+    if (!Number.isNaN(v) && v < 0.0001) {
+      return `$${n}`;
+    }
+    return formatGasAccountUSDValue(n || '0');
+  }, []);
+
+  useDebounce(
+    () => {
+      if (
+        checkGasLevelIsNotEnough &&
+        gasList.length &&
+        directSubmit &&
+        isReady
+      ) {
+        let init = true;
+        ['slow', 'normal', 'fast'].forEach((level) => {
+          const selectedGas = gasList.find((e) => e.level === level);
+          checkGasLevelIsNotEnough(
+            {
+              ...gasList.find((e) => e.level === level),
+              gasLimit: Number(afterGasLimit),
+              nonce: Number(customNonce),
+              level: selectedGas!.level,
+              maxPriorityFee: calcMaxPriorityFee(
+                gasList,
+                selectedGas!,
+                chainId,
+                isCancel || isSpeedUp
+              ),
+            } as GasSelectorResponse,
+            'native'
+          )
+            .then((arr) => {
+              if (init) {
+                setGasIsNotEnough((pre) => ({ ...pre, [level]: arr[0] }));
+              }
+            })
+            .catch((e) => {
+              console.log('checkGasLevelIsNotEnough native gas error', e);
+            });
+        });
+
+        return () => {
+          init = false;
+        };
+      }
+    },
+    100,
+    [
+      isReady,
+      directSubmit,
+      afterGasLimit,
+      checkGasLevelIsNotEnough,
+      customNonce,
+      gasList,
+      chainId,
+      isCancel,
+      isSpeedUp,
+    ]
+  );
+
+  const outGasModalIsOpen = useGetShowMoreGasSelectVisible();
+
+  const gasAccountStateInit = useRef(false);
+
+  useDebounce(
+    () => {
+      if (
+        checkGasLevelIsNotEnough &&
+        gasList.length &&
+        directSubmit &&
+        isReady &&
+        outGasModalIsOpen &&
+        !gasAccountStateInit.current
+      ) {
+        let init = true;
+        ['slow', 'normal', 'fast'].forEach((level) => {
+          const selectedGas = gasList.find((e) => e.level === level);
+          checkGasLevelIsNotEnough(
+            {
+              ...gasList.find((e) => e.level === level),
+              gasLimit: Number(afterGasLimit),
+              nonce: Number(customNonce),
+              level: selectedGas!.level,
+              maxPriorityFee: calcMaxPriorityFee(
+                gasList,
+                selectedGas!,
+                chainId,
+                isCancel || isSpeedUp
+              ),
+            } as GasSelectorResponse,
+            'gasAccount'
+          )
+            .then((arr) => {
+              if (init) {
+                gasAccountStateInit.current = true;
+                setGasAccountIsNotEnough((pre) => ({
+                  ...pre,
+                  [level]: [
+                    arr[0],
+                    calcGasAccountUsd(((arr[1] as unknown) as number) || 0),
+                  ],
+                }));
+              }
+            })
+            .catch((e) => {
+              console.log('checkGasLevelIsNotEnough gasAccount error', e);
+            });
+        });
+
+        return () => {
+          init = false;
+        };
+      }
+    },
+    100,
+    [
+      outGasModalIsOpen,
+      isReady,
+      directSubmit,
+      afterGasLimit,
+      checkGasLevelIsNotEnough,
+      customNonce,
+      gasList,
+      chainId,
+      isCancel,
+      isSpeedUp,
+      calcGasAccountUsd,
+    ]
+  );
+
   const handleConfirmGas = () => {
     if (!selectedGas) return;
     if (selectedGas.level === 'custom') {
@@ -463,7 +651,7 @@ const GasSelectorHeader = ({
   }, [customGas, changedCustomGas]);
 
   const [isSelectCustom, setIsSelectCustom] = useState(false);
-  const handleClickEdit = () => {
+  const handleClickEdit = useCallback(() => {
     setModalVisible(true);
     if (rawSelectedGas?.level !== 'custom') {
       setSelectedGas(rawSelectedGas);
@@ -476,10 +664,13 @@ const GasSelectorHeader = ({
       action: 'EditGas',
       label: chain?.serverId,
     });
-    setTimeout(() => {
-      customerInputRef.current?.focus();
-    }, 50);
-  };
+    setTimeout(
+      () => {
+        customerInputRef.current?.focus();
+      },
+      getContainer ? 1000 : 50
+    );
+  }, [chain?.serverId, gasLimit, nonce, rawSelectedGas]);
 
   const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
@@ -515,39 +706,51 @@ const GasSelectorHeader = ({
     return panelSelection(e, gas);
   };
 
-  const externalPanelSelection = (gas: GasLevel) => {
-    const target = gas;
+  const externalPanelSelection = useCallback(
+    (gas: GasLevel) => {
+      const target = gas;
 
-    if (gas.level === 'custom') {
-      if (!changedCustomGas) return;
-      onChange({
-        ...target,
-        level: 'custom',
-        price: Number(target.price),
-        gasLimit: Number(afterGasLimit),
-        nonce: Number(customNonce),
-        maxPriorityFee: calcMaxPriorityFee(
-          gasList,
-          target,
-          chainId,
-          isCancel || isSpeedUp
-        ),
-      });
-    } else {
-      onChange({
-        ...gas,
-        gasLimit: Number(afterGasLimit),
-        nonce: Number(customNonce),
-        level: gas?.level,
-        maxPriorityFee: calcMaxPriorityFee(
-          gasList,
-          target,
-          chainId,
-          isCancel || isSpeedUp
-        ),
-      });
-    }
-  };
+      if (gas.level === 'custom') {
+        if (!changedCustomGas) return;
+        onChange({
+          ...target,
+          level: 'custom',
+          price: Number(target.price),
+          gasLimit: Number(afterGasLimit),
+          nonce: Number(customNonce),
+          maxPriorityFee: calcMaxPriorityFee(
+            gasList,
+            target,
+            chainId,
+            isCancel || isSpeedUp
+          ),
+        });
+      } else {
+        onChange({
+          ...gas,
+          gasLimit: Number(afterGasLimit),
+          nonce: Number(customNonce),
+          level: gas?.level,
+          maxPriorityFee: calcMaxPriorityFee(
+            gasList,
+            target,
+            chainId,
+            isCancel || isSpeedUp
+          ),
+        });
+      }
+    },
+    [
+      afterGasLimit,
+      chainId,
+      changedCustomGas,
+      customNonce,
+      gasList,
+      isCancel,
+      isSpeedUp,
+      onChange,
+    ]
+  );
 
   const customGasConfirm = (e) => {
     const customGas = gasList.find((item) => item.level === 'custom')!;
@@ -728,14 +931,6 @@ const GasSelectorHeader = ({
     )} ${chain.nativeTokenSymbol}`;
   }, [modalExplainGas?.gasCostAmount]);
 
-  const calcGasAccountUsd = useCallback((n: number | string) => {
-    const v = Number(n);
-    if (!Number.isNaN(v) && v < 0.0001) {
-      return `$${n}`;
-    }
-    return formatGasAccountUSDValue(n || '0');
-  }, []);
-
   const [isGasHovering, gasHoverProps] = useHover();
 
   const [isGasAccountHovering, gasAccountHoverProps] = useHover();
@@ -746,6 +941,58 @@ const GasSelectorHeader = ({
     setSelectedGas(rawSelectedGas);
     setModalVisible(false);
   };
+
+  const setGasInfoByUI = useSetGasInfoByUI();
+
+  useEffect(() => {
+    if (
+      isFirstTimeLoad ||
+      disabled ||
+      !isReady ||
+      !selectedGas ||
+      !directSubmit
+    ) {
+      setGasInfoByUI(undefined);
+      return;
+    }
+
+    setGasInfoByUI({
+      externalPanelSelection,
+      handleClickEdit,
+      // gasList,
+      gasCostUsdStr,
+      gasUsdList: {
+        slow: formatGasHeaderUsdValue(new BigNumber(gasSlowUsd).toString(10)),
+        normal: formatGasHeaderUsdValue(
+          new BigNumber(gasNormalUsd).toString(10)
+        ),
+        fast: formatGasHeaderUsdValue(new BigNumber(gasFastUsd).toString(10)),
+      },
+      gasIsNotEnough,
+      gasAccountIsNotEnough,
+      gasAccountCost: gasAccountCost?.gas_account_cost,
+    });
+  }, [
+    gasAccountIsNotEnough,
+    gasIsNotEnough,
+    directSubmit,
+    isReady,
+    isFirstTimeLoad,
+    disabled,
+    gasMethod,
+    onChangeGasMethod,
+    // isDisabledGasPopup,
+    gasList,
+    selectedGas,
+    externalPanelSelection,
+    handleClickEdit,
+    changedCustomGas,
+    gasCostUsdStr,
+    gasSlowUsd,
+    gasNormalUsd,
+    gasFastUsd,
+    gasAccountCost?.gas_account_cost,
+  ]);
 
   const uiType = useMemo(() => getUiType(), []);
 
@@ -839,27 +1086,28 @@ const GasSelectorHeader = ({
                     visible={isGasAccountHovering}
                     title={
                       <>
+                        <div>{t('page.signTx.gasAccount.description')}</div>
                         <div>
-                          {t('page.signTx.gasAccount.estimatedGas')}
+                          {t('page.signTx.gasAccount.estimatedGas')}{' '}
                           {calcGasAccountUsd(
                             gasAccountCost?.gas_account_cost.estimate_tx_cost ||
                               0
                           )}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.maxGas')}
+                          {t('page.signTx.gasAccount.maxGas')}{' '}
                           {calcGasAccountUsd(
                             gasAccountCost?.gas_account_cost.total_cost || '0'
                           )}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.sendGas')}
+                          {t('page.signTx.gasAccount.sendGas')}{' '}
                           {calcGasAccountUsd(
                             gasAccountCost?.gas_account_cost.total_cost || '0'
                           )}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.gasCost')}
+                          {t('page.signTx.gasAccount.gasCost')}{' '}
                           {calcGasAccountUsd(
                             gasAccountCost?.gas_account_cost.gas_cost || '0'
                           )}
@@ -902,7 +1150,7 @@ const GasSelectorHeader = ({
                       {gasCostUsdStr}
                     </span>
                   )}
-                  {L2_ENUMS.includes(chain.enum) &&
+                  {chain.needEstimateGas &&
                     !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
                       <span className="relative ml-6">
                         <TooltipWithMagnetArrow
@@ -960,6 +1208,7 @@ const GasSelectorHeader = ({
         destroyOnClose
         closable
         isSupportDarkMode
+        getContainer={getContainer}
       >
         <div className="mb-20 -mt-4">
           {disabled ? (
@@ -1037,7 +1286,11 @@ const GasSelectorHeader = ({
                           onClick={(e) => handlePanelSelection(e, item)}
                           // onPressEnter={customGasConfirm}
                           ref={customerInputRef}
-                          autoFocus={selectedGas?.level === item.level}
+                          autoFocus={
+                            getContainer
+                              ? false
+                              : selectedGas?.level === item.level
+                          }
                           min={0}
                           bordered={false}
                           disabled={disabled}
@@ -1133,7 +1386,13 @@ const GasSelectorHeader = ({
                   <div className="priority-slider-body">
                     <Input
                       onFocus={(e) => e.target.select()}
-                      value={maxPriorityFee}
+                      value={
+                        maxPriorityFee && typeof maxPriorityFee === 'number'
+                          ? new BigNumber(maxPriorityFee).toFormat({
+                              decimalSeparator: '.',
+                            })
+                          : maxPriorityFee
+                      }
                       onChange={(e) =>
                         handleMaxPriorityFeeChange(e.target.value)
                       }
@@ -1176,14 +1435,22 @@ const GasSelectorHeader = ({
   );
 };
 
-const GasMethod = (props: {
+export const GasMethod = (props: {
   active: boolean;
-  onChange: () => void;
+  onChange: React.MouseEventHandler<HTMLDivElement>;
   ActiveComponent: React.FC<React.SVGProps<SVGSVGElement>>;
   BlurComponent: React.FC<React.SVGProps<SVGSVGElement>>;
   tips?: React.ReactNode;
+  title?: React.ReactNode;
 }) => {
-  const { active, onChange, ActiveComponent, BlurComponent, tips } = props;
+  const {
+    title,
+    active,
+    onChange,
+    ActiveComponent,
+    BlurComponent,
+    tips,
+  } = props;
   return (
     <Tooltip
       overlayClassName="rectangle"
@@ -1196,7 +1463,8 @@ const GasMethod = (props: {
     >
       <div
         className={clsx(
-          'w-32 h-24 relative rounded',
+          title ? 'w-[114px] h-[28px]' : 'w-32 h-24',
+          'relative rounded gap-[4px]',
           'flex items-center justify-center',
           'group cursor-pointer',
           active ? 'bg-r-blue-light1' : 'bg-transparent'
@@ -1211,6 +1479,16 @@ const GasMethod = (props: {
               : 'text-r-neutral-foot group-hover:text-r-neutral-body'
           )}
         />
+        {title ? (
+          <div
+            className={clsx(
+              'text-[13px] font-medium',
+              active ? 'text-r-blue-default' : 'text-r-neutral-body'
+            )}
+          >
+            {title}
+          </div>
+        ) : null}
       </div>
     </Tooltip>
   );

@@ -81,6 +81,7 @@
     border-radius: @radius-value;
     margin-bottom: 8px;
     font-size: 14px;
+    font-weight: 500;
     line-height: 16px;
     color: var(--r-neutral-title-1, #f7fafc);
     padding: 0 16px;
@@ -119,7 +120,7 @@
     &:hover,
     &.checked {
       background-color: rgba(134, 151, 255, 0.2);
-      border: 1px solid var(--r-blue-default, #7084ff);
+      border: 1px solid var(--r-blue-default);
       border-radius: @radius-value;
     }
     .not-default-tip {
@@ -146,6 +147,8 @@
   .openapi-modal,
   .reset-account-modal,
   .auto-lock-modal,
+  .ecology-modal,
+  .dapp-account-modal,
   .switch-theme-modal {
     position: absolute;
     width: 100%;
@@ -192,6 +195,7 @@
 
         color: var(--r-neutral-title-1, #f7fafc);
         font-size: 14px;
+        font-weight: 500;
         line-height: 16px;
         border: 1px solid transparent;
 
@@ -285,4 +289,12 @@
 
 .settings-popup-wrapper .ant-drawer-content {
   background: var(--r-neutral-bg-1, #575b70);
+}
+.whitelist-confirm-modal {
+  .ant-drawer-content {
+    background: var(--r-neutral-bg2, #f2f4f7) !important;
+  }
+  #password {
+    background-color: var(--r-neutral-card1, #fff) !important;
+  }
 }

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect } from 'react';
 import { Button, Modal } from 'antd';
 import { Trans, useTranslation } from 'react-i18next';
-import { RevokeSummary } from '@/utils-isomorphic/approve';
+import { RevokeSummary } from '@/utils/approve';
 import { modalCloseIcon20 } from '@/ui/component/Modal';
 import { useWallet } from '@/ui/utils';
 
@@ -65,7 +65,7 @@ export const RevokeButton: React.FC<Props> = ({
       className: 'am-revoke-info-modal modal-support-darkmode',
       centered: true,
       title: (
-        <h2 className="text-r-neutral-title1 text-[20px] font-[600] break-words">
+        <h2 className="text-r-neutral-title1 text-[20px] font-medium break-words">
           <Trans
             i18nKey="page.approvals.component.RevokeButton.permit2Batch.modalTitle"
             values={{ count: revokeSummary.statics.txCount }}
@@ -115,6 +115,48 @@ export const RevokeButton: React.FC<Props> = ({
       >
         {t('page.approvals.component.RevokeButton.btnText', {
           count: spenderCount,
+        })}
+      </Button>
+    </>
+  );
+};
+
+export const RevokeEIP7702Button = ({
+  onRevoke,
+  selectedCount,
+}: {
+  onRevoke: () => Promise<void>;
+  selectedCount?: number;
+}) => {
+  const { t } = useTranslation();
+
+  const [isRevokeLoading, setIsRevokeLoading] = React.useState(false);
+  const wallet = useWallet();
+  const handleOnRevoke = useCallback(async () => {
+    if (isRevokeLoading) return;
+
+    try {
+      setIsRevokeLoading(true);
+      await onRevoke();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsRevokeLoading(false);
+    }
+  }, [onRevoke]);
+
+  return (
+    <>
+      <Button
+        loading={isRevokeLoading}
+        className="w-[280px] h-[60px] text-[20px] am-revoke-btn"
+        type="primary"
+        size="large"
+        disabled={!selectedCount}
+        onClick={handleOnRevoke}
+      >
+        {t('page.approvals.component.RevokeButton.btnText', {
+          count: selectedCount,
         })}
       </Button>
     </>

@@ -10,7 +10,7 @@ import { ReactComponent as RcIconPen } from '@/ui/assets/new-user-import/pen.svg
 import { ReactComponent as RcIconConfirm } from '@/ui/assets/new-user-import/confirm-check.svg';
 import { ReactComponent as RcIconExternalCC } from '@/ui/assets/new-user-import/external-cc.svg';
 
-import { useAlias, useWallet } from '@/ui/utils';
+import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { Account } from '@/background/service/preference';
 import { useRabbyDispatch } from '@/ui/store';
@@ -83,7 +83,7 @@ const AccountItem = ({ account }: { account: Account }) => {
             className={clsx(
               'relative left-[-8px]',
               'w-[260px] h-[38px]',
-              'border-none bg-r-neutral-card2 ',
+              'border-none bg-r-neutral-card2 text-r-neutral-title-1',
               'p-8 rounded',
               'text-[20px] font-medium'
             )}
@@ -118,8 +118,8 @@ const AccountItem = ({ account }: { account: Account }) => {
           </>
         ) : (
           <RcIconPen
-            className="w-16 h-16 cursor-pointer ml-6"
-            viewBox="0 0 16 16"
+            className="w-[18px] h-[19px] cursor-pointer ml-6"
+            viewBox="0 0 18 19"
             onClick={() => {
               setEdit(true);
               setLocalName(name || '');
@@ -170,15 +170,45 @@ export const ImportOrCreatedSuccess = () => {
 
   const documentVisibility = useDocumentVisibility();
 
-  const { value: accounts } = useAsync(wallet.getAllVisibleAccountsArray, [
-    documentVisibility,
-  ]);
+  const { value: accounts } = useAsync(async () => {
+    if (documentVisibility === 'visible') {
+      const accounts = await wallet.getAllVisibleAccountsArray();
+      if (hd !== KEYRING_CLASS.MNEMONIC) {
+        return accounts;
+      }
+      const addresses = await wallet.requestKeyring(
+        KEYRING_TYPE.HdKeyring,
+        'getAccounts',
+        Number(keyringId) ?? null
+      );
+      if (!addresses.length) {
+        return accounts;
+      }
+      return accounts.filter((account) =>
+        addresses.some((addr) => isSameAddress(addr, account.address))
+      );
+    }
+    return [];
+  }, [documentVisibility, keyringId]);
+
+  const { value: allAccounts } = useAsync(
+    wallet.getAllVisibleAccountsArray,
+    []
+  );
+
+  const isNewUserImport = React.useMemo(() => {
+    return allAccounts?.length === 1;
+  }, [!!allAccounts?.length]);
 
   const getStarted = React.useCallback(() => {
-    history.push({
-      pathname: '/new-user/ready',
-    });
-  }, []);
+    if (isNewUserImport) {
+      history.push({
+        pathname: '/new-user/ready',
+      });
+    } else {
+      window.close();
+    }
+  }, [isNewUserImport]);
 
   const addMoreAddr = () => {
     const oBrand = brand !== 'null' ? brand : undefined;
@@ -263,39 +293,27 @@ export const ImportOrCreatedSuccess = () => {
           'text-[17px] font-medium'
         )}
       >
-        {t('page.newUserImport.successful.start')}
+        {isNewUserImport
+          ? t('page.newUserImport.successful.start')
+          : t('global.Done')}
       </Button>
 
-      {!!hd && isSeedPhrase && (
+      {!!hd && (
         <div
           onClick={addMoreAddr}
           className="flex items-center justify-center gap-2 text-[14px] text-r-neutral-foot mt-[23px] cursor-pointer"
         >
-          <span>{t('page.newUserImport.successful.addMoreAddr')}</span>
-          <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
-        </div>
-      )}
-      {!!hd && !isSeedPhrase && (
-        <Button
-          onClick={addMoreAddr}
-          block
-          type="primary"
-          ghost
-          className={clsx(
-            'mt-16 h-[56px] shadow-none rounded-[8px]',
-            'text-[17px] font-medium',
-            'hover:bg-light-r-blue-light1 hover:before:hidden hover:border-rabby-blue-default hover:text-r-blue-default'
-          )}
-        >
-          <div className="inline-flex items-center justify-center gap-2">
+          {isSeedPhrase ? (
+            <span>{t('page.newUserImport.successful.addMoreAddr')}</span>
+          ) : (
             <span>
               {t('page.newUserImport.successful.addMoreFrom', {
-                name: BRAND_ALIAN_TYPE_TEXT[hd] || hd,
+                name: brand || BRAND_ALIAN_TYPE_TEXT[hd] || hd,
               })}
             </span>
-            <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
-          </div>
-        </Button>
+          )}
+          <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
+        </div>
       )}
     </Card>
   );

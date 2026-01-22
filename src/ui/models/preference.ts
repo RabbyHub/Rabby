@@ -8,6 +8,13 @@ import {
 } from 'background/service/preference';
 import { CHAINS_ENUM, DARK_MODE_TYPE } from 'consts';
 import { changeLanguage } from '@/i18n';
+import { ga4 } from '@/utils/ga4';
+import {
+  getDefaultRateGuideLastExposure,
+  LAST_EXPOSURE_VERSIONED_KEY,
+  RateGuideLastExposure,
+  userCouldRated,
+} from '@/utils/rateGuidance';
 
 interface PreferenceState {
   externalLinkAck: boolean;
@@ -30,6 +37,12 @@ interface PreferenceState {
   themeMode: DARK_MODE_TYPE;
   reserveGasOnSendToken: boolean;
   isHideEcologyNoticeDict: Record<string | number, boolean>;
+  isEnabledPwdForNonWhitelistedTx?: boolean;
+  isEnabledDappAccount?: boolean;
+  rateGuideLastExposure?: RateGuideLastExposure;
+
+  /** @deprecated */
+  desktopTokensAllMode?: boolean;
 }
 
 export const preference = createModel<RootModel>()({
@@ -56,6 +69,10 @@ export const preference = createModel<RootModel>()({
     themeMode: DARK_MODE_TYPE.system,
     reserveGasOnSendToken: false,
     isHideEcologyNoticeDict: {},
+    isEnabledPwdForNonWhitelistedTx: false,
+    isEnabledDappAccount: false,
+    rateGuideLastExposure: getDefaultRateGuideLastExposure(),
+    desktopTokensAllMode: false,
   } as PreferenceState,
 
   reducers: {
@@ -75,6 +92,18 @@ export const preference = createModel<RootModel>()({
       /** @deprecated */
       isReserveGasOnSendToken() {
         return slice((preference) => preference.reserveGasOnSendToken);
+      },
+      rateGuideLastExposureTimestamp() {
+        return slice((preference) => {
+          const lastExposure =
+            preference.rateGuideLastExposure?.[LAST_EXPOSURE_VERSIONED_KEY];
+          return lastExposure?.time;
+        });
+      },
+      userViewedRate() {
+        return slice((preference) =>
+          userCouldRated(preference.rateGuideLastExposure)
+        );
       },
     };
   },
@@ -96,6 +125,20 @@ export const preference = createModel<RootModel>()({
       }
 
       return value as PreferenceState;
+    },
+    async getPreferenceValue<K extends keyof PreferenceState>(
+      options: { key: K; updateLocalStore?: boolean },
+      store
+    ): Promise<PreferenceState[K]> {
+      const { key, updateLocalStore = false } = options;
+      const value = await store.app.wallet.getPreference(key);
+
+      if (updateLocalStore) {
+        dispatch.preference.setField({
+          [key]: value,
+        });
+      }
+      return value as PreferenceState[K];
     },
     async getIsDefaultWallet(_: void, store) {
       const isDefaultWallet = await store.app.wallet.isDefaultWallet();
@@ -205,6 +248,14 @@ export const preference = createModel<RootModel>()({
       dispatch.preference.getPreference('isShowTestnet');
     },
 
+    async setDesktopTokensAllMode(value: boolean, store) {
+      dispatch.preference.setField({
+        desktopTokensAllMode: value,
+      });
+      await store.app.wallet.setDesktopTokensAllMode(value);
+      dispatch.preference.getPreference('desktopTokensAllMode');
+    },
+
     async switchLocale(locale: string, store) {
       dispatch.preference.setField({
         locale,
@@ -220,6 +271,12 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setThemeMode(themeMode);
       dispatch.preference.getPreference('themeMode');
+      ga4.fireEvent(
+        `ThemeMode_${themeMode === DARK_MODE_TYPE.dark ? 'Dark' : 'Light'}`,
+        {
+          event_category: 'Settings Snapshot',
+        }
+      );
     },
 
     async setIsReserveGasOnSendToken(value: boolean, store) {
@@ -243,6 +300,22 @@ export const preference = createModel<RootModel>()({
       dispatch.preference.getPreference('addressSortStore');
     },
 
+    async enablePwdForNonWhitelistedTx(v: boolean, store) {
+      await store.app.wallet.enablePwdForNonWhitelistedTx(v);
+      dispatch.preference.getPreference('isEnabledPwdForNonWhitelistedTx');
+      ga4.fireEvent(`PwdForNonWhitelistedTx_${v ? 'On' : 'Off'}`, {
+        event_category: 'Settings Snapshot',
+      });
+    },
+
+    async enableDappAccount(v: boolean, store) {
+      await store.app.wallet.enableDappAccount(v);
+      dispatch.preference.getPreference('isEnabledDappAccount');
+      ga4.fireEvent(`DappAccount_${v ? 'On' : 'Off'}`, {
+        event_category: 'Settings Snapshot',
+      });
+    },
+
     // async setOpenapiHost(value: string, store) {
     //   dispatch.preference.setField({
     //     isShowTestnet: value,
@@ -250,5 +323,24 @@ export const preference = createModel<RootModel>()({
     //   await store.app.wallet.setIsShowTestnet(value);
     //   dispatch.preference.getPreference('isShowTestnet');
     // },
+
+    async setRateGuideLastExposure(
+      lastExposure: Partial<RateGuideLastExposure>,
+      store
+    ) {
+      await store.app.wallet.setRateGuideLastExposure(lastExposure);
+
+      dispatch.preference.setField({
+        rateGuideLastExposure: {
+          ...getDefaultRateGuideLastExposure(),
+          ...lastExposure,
+          [LAST_EXPOSURE_VERSIONED_KEY]: {
+            time: -1,
+            userViewedRate: false,
+            ...lastExposure[LAST_EXPOSURE_VERSIONED_KEY],
+          },
+        },
+      });
+    },
   }),
 });

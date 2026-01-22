@@ -14,10 +14,9 @@ import {
   KEYRING_CLASS,
   SecurityEngineLevel,
 } from 'consts';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
 import {
   GasAccountTips,
@@ -29,6 +28,9 @@ import { MiniCommonAction } from './MiniCommonAction';
 import { MiniLedgerAction } from './MiniLedgerAction';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
 import { GasAccountCheckResult } from '@/background/service/openapi';
+import { DrawerProps } from 'antd';
+import { MiniOneKeyAction } from './MiniOneKeyAction';
+import { GAS_ACCOUNT_INSUFFICIENT_TIP } from '@/ui/views/GasAccount/hooks/checkTxs';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -60,6 +62,15 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   gasAccountCanPay?: boolean;
   noCustomRPC?: boolean;
   canGotoUseGasAccount?: boolean;
+  canDepositUseGasAccount?: boolean;
+  getContainer?: DrawerProps['getContainer'];
+  isFirstGasCostLoading?: boolean;
+  isFirstGasLessLoading?: boolean;
+  directSubmit?: boolean;
+  account?: Account;
+  disableSignBtn?: boolean;
+  onRedirectToDeposit?: () => void;
+  className?: string;
 }
 
 const Wrapper = styled.section`
@@ -98,6 +109,26 @@ const Wrapper = styled.section`
       border-bottom: 8px solid currentColor;
       top: -13px;
       left: 115px;
+    }
+  }
+`;
+
+const GasTipsWrapper = styled.div`
+  position: relative;
+
+  .security-level-tip {
+    margin-top: 10px;
+    border-radius: 4px;
+    padding: 6px 10px 6px 8px;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 15px;
+    display: flex;
+    position: relative;
+    .icon-level {
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
     }
   }
 `;
@@ -173,7 +204,17 @@ export const MiniFooterBar: React.FC<Props> = ({
   gasAccountCanPay,
   noCustomRPC,
   canGotoUseGasAccount,
+  canDepositUseGasAccount,
   task,
+  getContainer,
+  isFirstGasCostLoading,
+  isFirstGasLessLoading,
+  isGasNotEnough,
+  directSubmit,
+  account: propsAccount,
+  disableSignBtn = false,
+  onRedirectToDeposit,
+  className,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -225,9 +266,12 @@ export const MiniFooterBar: React.FC<Props> = ({
 
   const init = async () => {
     const currentAccount =
-      gnosisAccount || (await wallet.syncGetCurrentAccount());
+      propsAccount || gnosisAccount || (await wallet.syncGetCurrentAccount());
     if (currentAccount) setAccount(currentAccount);
   };
+
+  const isSetGasMethodRef = useRef(false);
+  const [isInited, setIsInited] = useState(false);
 
   useEffect(() => {
     if (origin) {
@@ -240,6 +284,43 @@ export const MiniFooterBar: React.FC<Props> = ({
   React.useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (isSetGasMethodRef.current) {
+      return;
+    }
+    if (!isFirstGasCostLoading && !isFirstGasLessLoading) {
+      isSetGasMethodRef.current = true;
+
+      if (showGasLess && !canUseGasLess && canGotoUseGasAccount) {
+        onChangeGasAccount?.();
+      }
+
+      const otherGasAccountError =
+        !!gasAccountCost?.err_msg &&
+        gasAccountCost?.err_msg?.toLowerCase() !==
+          GAS_ACCOUNT_INSUFFICIENT_TIP?.toLowerCase();
+
+      if (
+        showGasLess &&
+        directSubmit &&
+        (canGotoUseGasAccount || otherGasAccountError)
+      ) {
+        onChangeGasAccount?.();
+      }
+
+      setIsInited(true);
+    }
+  }, [
+    directSubmit,
+    canGotoUseGasAccount,
+    canUseGasLess,
+    isFirstGasCostLoading,
+    isFirstGasLessLoading,
+    onChangeGasAccount,
+    showGasLess,
+    gasAccountCost?.err_msg,
+  ]);
 
   const { isDarkTheme } = useThemeMode();
 
@@ -296,6 +377,9 @@ export const MiniFooterBar: React.FC<Props> = ({
             gasLessFailedReason={gasLessFailedReason}
             canGotoUseGasAccount={canGotoUseGasAccount}
             onChangeGasAccount={onChangeGasAccount}
+            canDepositUseGasAccount={canDepositUseGasAccount}
+            miniFooter
+            onRedirectToDeposit={onRedirectToDeposit}
           />
         )
       ) : null}
@@ -306,35 +390,52 @@ export const MiniFooterBar: React.FC<Props> = ({
           isGasAccountLogin={isGasAccountLogin}
           isWalletConnect={isWalletConnect}
           noCustomRPC={noCustomRPC}
+          miniFooter
+          onRedirectToDeposit={onRedirectToDeposit}
         />
       ) : null}
     </>
   );
 
+  const MiniHardwareAction =
+    account.type === KEYRING_CLASS.HARDWARE.LEDGER
+      ? MiniLedgerAction
+      : MiniOneKeyAction;
+
+  const overWriteDisabledProcess = disableSignBtn
+    ? true
+    : payGasByGasAccount
+    ? !gasAccountCanPay
+    : useGasLess
+    ? false
+    : props.disabledProcess;
+
   return (
     <div className="relative">
       {!isDarkTheme && <Shadow isShow={hasShadow} />}
       <Wrapper
-        className={clsx({
-          'is-darkmode': hasShadow,
-        })}
+        className={clsx(
+          {
+            'is-darkmode': hasShadow,
+          },
+          className
+        )}
       >
         {Header}
         <div className="pt-[10px]">
-          {account.type === KEYRING_CLASS.HARDWARE.LEDGER ? (
-            <MiniLedgerAction
+          {[
+            KEYRING_CLASS.HARDWARE.LEDGER,
+            KEYRING_CLASS.HARDWARE.ONEKEY,
+          ].includes(account.type) ? (
+            <MiniHardwareAction
+              directSubmit={directSubmit}
+              isMiniSignTx
               key={gasMethod}
               task={task}
               account={account}
               gasLess={useGasLess && !payGasByGasAccount}
               {...props}
-              disabledProcess={
-                payGasByGasAccount
-                  ? !gasAccountCanPay
-                  : useGasLess
-                  ? false
-                  : props.disabledProcess
-              }
+              disabledProcess={overWriteDisabledProcess}
               enableTooltip={
                 payGasByGasAccount
                   ? false
@@ -348,21 +449,18 @@ export const MiniFooterBar: React.FC<Props> = ({
                   : gasLessConfig?.theme_color
               }
               footer={footer}
-            ></MiniLedgerAction>
+              getContainer={getContainer}
+            ></MiniHardwareAction>
           ) : (
             <MiniCommonAction
+              directSubmit={directSubmit}
+              isMiniSignTx
               key={gasMethod}
               task={task}
               account={account}
               gasLess={useGasLess && !payGasByGasAccount}
               {...props}
-              disabledProcess={
-                payGasByGasAccount
-                  ? !gasAccountCanPay
-                  : useGasLess
-                  ? false
-                  : props.disabledProcess
-              }
+              disabledProcess={overWriteDisabledProcess}
               enableTooltip={
                 payGasByGasAccount
                   ? false

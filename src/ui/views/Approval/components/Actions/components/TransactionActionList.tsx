@@ -15,6 +15,7 @@ import {
   SwapRequireData,
   WrapTokenRequireData,
   TransferOwnerRequireData,
+  AddLiquidityRequireData,
 } from '@rabby-wallet/rabby-action';
 import React from 'react';
 import { CommonAction } from '../../CommonAction';
@@ -43,8 +44,9 @@ import MultiSwap from '../MultiSwap';
 import SwapLimitPay from '../SwapLimitPay';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Chain } from '@debank/common';
+import AddLiquidity from '../AddLiquidity';
 
-export const TransactionActionList: React.FC<{
+const SingleAction: React.FC<{
   data: ParsedTransactionActionData;
   requireData: ActionRequireData;
   engineResults: Result[];
@@ -55,11 +57,11 @@ export const TransactionActionList: React.FC<{
 }> = ({
   data,
   requireData,
-  engineResults,
   chain,
+  engineResults,
   onChange,
   raw,
-  isTypedData = false,
+  isTypedData,
 }) => {
   return (
     <>
@@ -260,6 +262,44 @@ export const TransactionActionList: React.FC<{
           engineResults={engineResults}
         />
       )}
+      {data.addLiquidity && (
+        <AddLiquidity
+          data={data.addLiquidity}
+          requireData={requireData as AddLiquidityRequireData}
+          chain={chain}
+          engineResults={engineResults}
+        />
+      )}
     </>
+  );
+};
+
+export const TransactionActionList: React.FC<{
+  data: ParsedTransactionActionData;
+  requireData: ActionRequireData;
+  engineResults: Result[];
+  chain: Chain;
+  raw: Record<string, string | number>;
+  isTypedData?: boolean;
+  onChange(tx: Record<string, any>): void;
+}> = ({
+  data,
+  requireData,
+  engineResults,
+  chain,
+  onChange,
+  raw,
+  isTypedData = false,
+}) => {
+  return (
+    <SingleAction
+      data={data}
+      requireData={requireData}
+      chain={chain}
+      engineResults={engineResults}
+      onChange={onChange}
+      raw={raw}
+      isTypedData={isTypedData}
+    />
   );
 };

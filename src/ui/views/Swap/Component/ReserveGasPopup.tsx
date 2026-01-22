@@ -2,10 +2,10 @@ import { Checkbox, Popup } from '@/ui/component';
 import { formatTokenAmount } from '@/ui/utils';
 import { CHAINS_ENUM } from '@debank/common';
 import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
-import { Button } from 'antd';
+import { Button, Skeleton } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCheckedCC } from '@/ui/assets/icon-checked-cc.svg';
 import { ReactComponent as RcIconUnCheckedCC } from '@/ui/assets/icon-unchecked-cc.svg';
@@ -20,6 +20,7 @@ interface ReserveGasContentProps {
   selectedItem?: GasLevelType | string;
   onGasChange: (gasLevel: GasLevel) => void;
   rawHexBalance?: string | number;
+  isLoading?: boolean;
 }
 
 const SORT_SCORE = {
@@ -43,10 +44,25 @@ const ReserveGasContent = React.forwardRef<
     selectedItem = 'normal',
     onGasChange,
     rawHexBalance,
+    isLoading,
   } = props;
 
   const [currentSelectedItem, setCurrentSelectedItem] = useState(selectedItem);
-  const [gasLevel, setGasLevel] = useState<GasLevel>();
+
+  const sortedList = React.useMemo(
+    () =>
+      gasList?.sort((a, b) => {
+        const v1 = SORT_SCORE[a.level];
+        const v2 = SORT_SCORE[b.level];
+        return v1 - v2;
+      }),
+    [gasList]
+  );
+
+  const gasLevel = useMemo(
+    () => sortedList?.find((item) => item.level === currentSelectedItem),
+    [sortedList, currentSelectedItem]
+  );
 
   React.useImperativeHandle(ref, () => ({
     getSelectedGasLevel: () => gasLevel ?? null,
@@ -68,16 +84,6 @@ const ReserveGasContent = React.forwardRef<
       symbol: findChain({ enum: chain })?.nativeTokenSymbol || '',
     }),
     [chain]
-  );
-
-  const sortedList = React.useMemo(
-    () =>
-      gasList?.sort((a, b) => {
-        const v1 = SORT_SCORE[a.level];
-        const v2 = SORT_SCORE[b.level];
-        return v1 - v2;
-      }),
-    [gasList]
   );
 
   const getAmount = React.useCallback(
@@ -116,13 +122,8 @@ const ReserveGasContent = React.forwardRef<
             if (gasIsSufficient) {
               return;
             }
-            setGasLevel(item);
             setCurrentSelectedItem(item.level as any);
           };
-
-          if (checked && gasLevel?.level !== currentSelectedItem) {
-            setGasLevel(item);
-          }
 
           const isCustom = item.level === 'custom';
 
@@ -204,6 +205,7 @@ const ReserveGasContent = React.forwardRef<
           <Button
             type="primary"
             block
+            disabled={isLoading}
             className="h-[44px] text-15 text-r-neutral-title2"
             onClick={() => {
               if (gasLevel) {
@@ -269,6 +271,7 @@ export const SendReserveGasPopup = (
     rawHexBalance,
     onClose,
     onCancel,
+    isLoading,
     ...otherPopupProps
   } = props;
   const { t } = useTranslation();
@@ -276,9 +279,12 @@ export const SendReserveGasPopup = (
   const reverseGasContentRef = React.useRef<ReserveGasType>(null);
 
   const handleClose = useCallback(() => {
+    if (isLoading) {
+      return;
+    }
     const gasLevel = reverseGasContentRef.current?.getSelectedGasLevel();
     onClose?.(gasLevel);
-  }, [onClose]);
+  }, [onClose, isLoading]);
 
   return (
     <Popup
@@ -290,12 +296,63 @@ export const SendReserveGasPopup = (
       {...otherPopupProps}
       onClose={handleClose}
     >
+      {!gasList && (
+        <div>
+          <div className={clsx('flex flex-col gap-12')}>
+            <Skeleton.Input
+              active
+              style={{
+                height: 66,
+              }}
+              className="h-[66px] rounded-[8px]"
+            />
+            <Skeleton.Input
+              active
+              style={{
+                height: 66,
+              }}
+              className="h-[66px] rounded-[8px]"
+            />
+            <Skeleton.Input
+              active
+              style={{
+                height: 66,
+              }}
+              className="h-[66px] rounded-[8px]"
+            />
+            <Skeleton.Input
+              active
+              style={{
+                height: 66,
+              }}
+              className="h-[66px] rounded-[8px]"
+            />
+            <div
+              className={clsx(
+                'fixed left-0 bottom-0',
+                'w-full px-20 py-18',
+                'border-t-[0.5px] border-solid border-rabby-neutral-line'
+              )}
+            >
+              <Button
+                type="primary"
+                block
+                disabled
+                className="h-[44px] text-15 text-r-neutral-title2"
+              >
+                {t('global.Confirm')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       {gasList && (
         <ReserveGasContent
           ref={reverseGasContentRef}
           gasList={gasList}
           chain={chain}
           limit={limit}
+          isLoading={isLoading}
           selectedItem={selectedItem}
           onGasChange={onGasChange}
           rawHexBalance={rawHexBalance}

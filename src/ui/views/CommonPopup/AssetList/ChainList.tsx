@@ -5,9 +5,10 @@ import { ChainItem, ChainItemType, sortChainWithValueDesc } from './ChainItem';
 import { DisplayChainWithWhiteLogo } from '@/ui/hooks/useCurrentBalance';
 import { Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { formatAppChain } from '@/ui/hooks/useAppChain';
 
 function shouldChainRevealed(chainItem: ChainItemType) {
-  return chainItem.percent >= 1 || chainItem.usd_value >= 1000;
+  return chainItem.percent >= 5 || chainItem.usd_value >= 1000;
 }
 
 export const ChainList = ({
@@ -17,7 +18,7 @@ export const ChainList = ({
   onChange(id: string | null): void;
   isTestnet?: boolean;
 }) => {
-  const { data, visible } = useCommonPopupView();
+  const { data, visible, apps } = useCommonPopupView();
   const chainList = isTestnet
     ? (data?.matteredTestnetChainBalances as DisplayChainWithWhiteLogo[]) ?? []
     : (data?.matteredChainBalances as DisplayChainWithWhiteLogo[]) ?? [];
@@ -47,21 +48,21 @@ export const ChainList = ({
     };
 
     const chainCount = chainList.length;
-    chainList.forEach((item) => {
+    [...chainList, ...(apps?.map(formatAppChain) || [])].forEach((item) => {
       const chainItem: ChainItemType = {
         ...item,
         percent: (item.usd_value / balance) * 100,
       };
       res.allItems.push(chainItem);
 
-      if (chainCount <= 6 || shouldChainRevealed(chainItem)) {
+      if (chainCount <= 5 || shouldChainRevealed(chainItem)) {
         res.chainsToReveal.push(chainItem);
       } else {
         res.chainsToHide.push(chainItem);
       }
     });
 
-    if (res.chainsToHide.length <= 2) {
+    if (res.chainsToHide.length <= 1) {
       res.chainsToReveal = [...res.allItems];
       res.chainsToHide = [];
     }
@@ -70,7 +71,7 @@ export const ChainList = ({
     res.chainsToHide.sort(sortChainWithValueDesc);
 
     return res;
-  }, [chainList, balance]);
+  }, [chainList, balance, apps]);
 
   React.useEffect(() => {
     if (!visible) {
@@ -97,7 +98,7 @@ export const ChainList = ({
   return (
     <div
       className={clsx(
-        'bg-r-neutral-card-2 rounded-[6px] p-[12px]',
+        'bg-r-neutral-card-1 rounded-[8px] p-[12px]',
         'flex gap-12 flex-wrap'
       )}
     >

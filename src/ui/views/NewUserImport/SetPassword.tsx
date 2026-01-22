@@ -1,7 +1,7 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useRabbyDispatch } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
-import { query2obj } from '@/ui/utils/url';
+import { obj2query, query2obj } from '@/ui/utils/url';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { message } from 'antd';
 import React, { useMemo } from 'react';
@@ -17,7 +17,7 @@ export const NewUserSetPassword = () => {
   const { type } = useParams<{ type: string }>();
 
   const { search } = useLocation();
-  const { isCreated = false } = React.useMemo(() => query2obj(search), [
+  const { isCreated = false, brand } = React.useMemo(() => query2obj(search), [
     search,
   ]);
 
@@ -45,10 +45,10 @@ export const NewUserSetPassword = () => {
       if (!store.seedPhrase) {
         throw new Error('empty seed phrase');
       }
-      await wallet.boot(password);
       let stashKeyringId: number | null = null;
 
       if (!isCreated) {
+        await wallet.boot(password);
         const {
           keyringId,
           isExistedKR,
@@ -64,7 +64,32 @@ export const NewUserSetPassword = () => {
           stashKeyringId: keyringId,
         });
         stashKeyringId = keyringId;
+        dispatch.importMnemonics.switchKeyring({
+          stashKeyringId: stashKeyringId as number,
+        });
+
+        const accounts = await dispatch.importMnemonics.getAccounts({
+          start: 0,
+          end: 1,
+        });
+
+        await dispatch.importMnemonics.setSelectedAccounts([
+          accounts[0].address,
+        ]);
+        await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+
+        setStore({
+          password,
+        });
+
+        history.push({
+          pathname: '/new-user/success',
+          search: `?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${String(
+            stashKeyringId || ''
+          )}&isCreated=${false}`,
+        });
       } else {
+        await wallet.boot(password);
         await wallet.createKeyringWithMnemonics(store.seedPhrase);
         const keyring = await wallet.getKeyringByMnemonic(
           store.seedPhrase,
@@ -74,24 +99,26 @@ export const NewUserSetPassword = () => {
         stashKeyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
           keyring!.publicKey!
         );
+
+        dispatch.importMnemonics.switchKeyring({
+          stashKeyringId: stashKeyringId as number,
+        });
+
+        const accounts = await dispatch.importMnemonics.getAccounts({
+          start: 0,
+          end: 1,
+        });
+
+        await dispatch.importMnemonics.setSelectedAccounts([
+          accounts[0].address,
+        ]);
+        await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+
+        history.push({
+          pathname: '/new-user/success',
+          search: `?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${stashKeyringId}&isCreated=${isCreated}`,
+        });
       }
-
-      dispatch.importMnemonics.switchKeyring({
-        stashKeyringId: stashKeyringId as number,
-      });
-
-      const accounts = await dispatch.importMnemonics.getAccounts({
-        start: 0,
-        end: 1,
-      });
-
-      await dispatch.importMnemonics.setSelectedAccounts([accounts[0].address]);
-      await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
-
-      history.push({
-        pathname: '/new-user/success',
-        search: `?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${stashKeyringId}&isCreated=${isCreated}`,
-      });
     } catch (e) {
       console.error(e);
       message.error(e.message);
@@ -122,7 +149,6 @@ export const NewUserSetPassword = () => {
   });
 
   const handleSubmit = useMemoizedFn(async (password: string) => {
-    // todo different type
     if (type === 'private-key') {
       handlePrivateKey(password);
     }
@@ -142,12 +168,18 @@ export const NewUserSetPassword = () => {
         KEYRING_CLASS.HARDWARE.LEDGER,
         KEYRING_CLASS.HARDWARE.KEYSTONE,
         KEYRING_CLASS.HARDWARE.BITBOX02,
+        KEYRING_CLASS.HARDWARE.IMKEY,
       ] as string[]).includes(type)
     ) {
       setStore({
         password,
       });
-      history.push(`/new-user/import/hardware/${type}`);
+      history.push({
+        pathname: `/new-user/import/hardware/${type}`,
+        search: qs.stringify({
+          brand,
+        }),
+      });
     }
     return;
   });
@@ -167,6 +199,7 @@ export const NewUserSetPassword = () => {
       KEYRING_CLASS.HARDWARE.GRIDPLUS,
       KEYRING_CLASS.HARDWARE.LEDGER,
       KEYRING_CLASS.HARDWARE.KEYSTONE,
+      KEYRING_CLASS.HARDWARE.IMKEY,
     ] as string[]).includes(type)
       ? 1
       : 2;

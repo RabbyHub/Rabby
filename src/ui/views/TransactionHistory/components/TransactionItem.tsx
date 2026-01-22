@@ -1,23 +1,23 @@
 import { getTokenSymbol } from '@/ui/utils/token';
-import { Tooltip, message } from 'antd';
-import { GasLevel, TokenItem, TxRequest } from 'background/service/openapi';
+import { DrawerProps, Tooltip, message } from 'antd';
+import { GasLevel, Tx, TxRequest } from 'background/service/openapi';
 import {
   TransactionGroup,
   TransactionHistoryItem,
 } from 'background/service/transactionHistory';
 import clsx from 'clsx';
-import { CANCEL_TX_TYPE, CHAINS } from 'consts';
-import { intToHex } from 'ethereumjs-util';
+import { CANCEL_TX_TYPE, INTERNAL_REQUEST_ORIGIN } from 'consts';
+import { intToHex } from '@ethereumjs/util';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { SvgPendingSpin } from 'ui/assets';
 import { ReactComponent as RcIconCancel } from 'ui/assets/cancel.svg';
 import IconQuestionMark from 'ui/assets/question-mark-black.svg';
 import { ReactComponent as RcIconSpeedup } from 'ui/assets/speedup.svg';
-import { isSameAddress, sinceTime, useWallet } from 'ui/utils';
+import { getUiType, isSameAddress, sinceTime, useWallet } from 'ui/utils';
 import { openInTab } from 'ui/utils/webapi';
 import { ChildrenTxText } from './ChildrenTxText';
 import { TransactionExplain } from './TransactionExplain';
@@ -25,10 +25,17 @@ import { TransactionWebsite } from './TransactionWebsite';
 import { CancelTxPopup } from './CancelTxPopup';
 import { TransactionPendingTag } from './TransactionPendingTag';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
-import { useGetTx, useLoadTxData } from '../hooks';
+import { useLoadTxData } from '../hooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
 import { getTxScanLink } from '@/utils';
+import { is7702Tx } from '@/utils/transaction';
+import { omit } from 'lodash';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+const isDesktop = getUiType().isDesktop;
 
 const ChildrenWrapper = styled.div`
   padding: 2px;
@@ -43,6 +50,7 @@ export const TransactionItem = ({
   onRetry,
   txRequests,
   onClearPending,
+  getContainer,
 }: {
   item: TransactionGroup;
   canCancel: boolean;
@@ -51,8 +59,10 @@ export const TransactionItem = ({
   onQuickCancel?(): void;
   onRetry?(): void;
   onClearPending?(): void;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
+  const desktopGetContainer = getContainer || '.activities';
   const wallet = useWallet();
   const [isShowCancelPopup, setIsShowCancelPopup] = useState(false);
   const chain = findChain({
@@ -63,18 +73,36 @@ export const TransactionItem = ({
   const completedTx = item.txs.find(
     (tx) => tx.isCompleted && !tx.isSubmitFailed && !tx.isWithdrawed
   );
+  const account = useCurrentAccount();
+
+  const { openUI, resetGasStore, close: closeSign } = useMiniSigner({
+    account: account!,
+    chainServerId: chain?.serverId,
+  });
+
+  const canUseMiniTx = useMemo(() => {
+    const chain = findChain({
+      id: item.chainId,
+    });
+
+    return (
+      chain && !chain.isTestnet && supportedDirectSign(account?.type || '')
+    );
+  }, [account?.type]);
+
+  const originGasPrice = useMemo(() => {
+    const maxGasTx = item.txs[item.txs.length - 1]!;
+    const maxGasPrice =
+      maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || '0';
+    return maxGasPrice;
+  }, [item.txs]);
 
   const isCanceled =
     !item.isPending &&
     item.txs.length > 1 &&
     isSameAddress(completedTx!.rawTx.from, completedTx!.rawTx.to);
 
-  const {
-    txQueues,
-    gasTokenCount,
-    gasTokenSymbol,
-    gasUSDValue,
-  } = useLoadTxData(item);
+  const { gasTokenCount, gasTokenSymbol, gasUSDValue } = useLoadTxData(item);
 
   const handleClickCancel = () => {
     setIsShowCancelPopup(true);
@@ -112,18 +140,16 @@ export const TransactionItem = ({
 
   const handleRemoveLocalPendingTx = async () => {
     const maxGasTx = findMaxGasTx(item.txs);
-    if (maxGasTx?.reqId) {
-      try {
-        await wallet.removeLocalPendingTx({
-          chainId: maxGasTx.rawTx.chainId,
-          nonce: +maxGasTx.rawTx.nonce,
-          address: maxGasTx.rawTx.from,
-        });
-        message.success(t('page.activities.signedTx.message.deleteSuccess'));
-        onClearPending?.();
-      } catch (e) {
-        message.error(e.message);
-      }
+    try {
+      await wallet.removeLocalPendingTx({
+        chainId: maxGasTx.rawTx.chainId,
+        nonce: +maxGasTx.rawTx.nonce,
+        address: maxGasTx.rawTx.from,
+      });
+      message.success(t('page.activities.signedTx.message.deleteSuccess'));
+      onClearPending?.();
+    } catch (e) {
+      message.error(e.message);
     }
   };
 
@@ -158,7 +184,17 @@ export const TransactionItem = ({
       message.error(e.message);
     }
   };
-  const handleOnChainCancel = async () => {
+
+  const originSession =
+    originTx?.site && originTx?.site?.origin !== INTERNAL_REQUEST_ORIGIN
+      ? {
+          name: originTx?.site?.name,
+          icon: originTx?.site?.icon,
+          origin: originTx?.site?.origin,
+        }
+      : undefined;
+
+  const handleOnChainCancel = async (forceSignPage?: boolean) => {
     if (!canCancel) return;
     const maxGasTx = findMaxGasTx(item.txs)!;
     const maxGasPrice = Number(
@@ -171,6 +207,7 @@ export const TransactionItem = ({
     if (!chain) {
       throw new Error('chainServerId not found');
     }
+
     const gasLevels: GasLevel[] = chain.isTestnet
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
@@ -179,26 +216,80 @@ export const TransactionItem = ({
           chain,
           tx: maxGasTx.rawTx,
         });
+
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
-    await wallet.sendRequest({
-      method: 'eth_sendTransaction',
-      params: [
+
+    const cancelTx: Tx = {
+      from: maxGasTx.rawTx.from,
+      to: maxGasTx.rawTx.from,
+      gasPrice: intToHex(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
+      value: '0x0',
+      chainId: item.chainId,
+      nonce: intToHex(item.nonce),
+      // @ts-expect-error extend tx metadata for cancel flag
+      isCancel: true,
+      reqId: maxGasTx.reqId,
+    };
+
+    const sendViaRequest = async () => {
+      await wallet.sendRequest(
         {
-          from: maxGasTx.rawTx.from,
-          to: maxGasTx.rawTx.from,
-          gasPrice: intToHex(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
-          value: '0x0',
-          chainId: item.chainId,
-          nonce: intToHex(item.nonce),
-          isCancel: true,
-          reqId: maxGasTx.reqId,
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              from: cancelTx.from,
+              to: cancelTx.to,
+              gasPrice: cancelTx.gasPrice,
+              value: cancelTx.value,
+              chainId: cancelTx.chainId,
+              nonce: cancelTx.nonce,
+              isCancel: true,
+              reqId: maxGasTx.reqId,
+            },
+          ],
         },
-      ],
-    });
-    window.close();
+        {
+          session: originSession,
+        }
+      );
+      window.close();
+    };
+
+    if (canUseMiniTx && !forceSignPage && account) {
+      try {
+        resetGasStore();
+        closeSign();
+        await openUI({
+          txs: [cancelTx],
+          session: originSession,
+          originGasPrice,
+          ga: {
+            category: 'TxHistory',
+            source: 'cancel',
+          },
+          onPreExecError: () => {
+            void sendViaRequest();
+          },
+          getContainer: isDesktop ? desktopGetContainer : undefined,
+        });
+        setTimeout(() => {
+          onClearPending?.();
+        }, 500);
+        return;
+      } catch (error) {
+        console.log('speedUp direct sign error', error);
+        if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+          closeSign();
+          return;
+        }
+        await sendViaRequest();
+      }
+    }
+
+    await sendViaRequest();
   };
 
-  const handleClickSpeedUp = async () => {
+  const handleClickSpeedUp = async (forceSignPage?: boolean) => {
     if (!canCancel) return;
     const maxGasTx = findMaxGasTx(item.txs);
     const maxGasPrice = Number(
@@ -211,6 +302,9 @@ export const TransactionItem = ({
     if (!chain) {
       throw new Error('chainServerId not found');
     }
+
+    const is7702 = is7702Tx(originTx.rawTx);
+
     const gasLevels: GasLevel[] = chain.isTestnet
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
@@ -220,25 +314,87 @@ export const TransactionItem = ({
           tx: originTx.rawTx,
         });
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
-    await wallet.sendRequest({
-      method: 'eth_sendTransaction',
-      params: [
+
+    const speedUpTx: Tx = {
+      from: originTx.rawTx.from,
+      value: originTx.rawTx.value,
+      data: originTx.rawTx.data,
+      nonce: originTx.rawTx.nonce,
+      chainId: originTx.rawTx.chainId,
+      to: originTx.rawTx.to,
+      gasPrice: intToHex(
+        Math.round(Math.max(maxGasPrice * 2, maxGasMarketPrice))
+      ),
+      // @ts-expect-error extend tx metadata
+      isSpeedUp: true,
+      reqId: maxGasTx.reqId,
+      authorizationList: is7702
+        ? (originTx?.rawTx as any)?.authorizationList
+        : [],
+    };
+
+    const sendViaRequest = async () => {
+      await wallet.sendRequest(
         {
-          from: originTx.rawTx.from,
-          value: originTx.rawTx.value,
-          data: originTx.rawTx.data,
-          nonce: originTx.rawTx.nonce,
-          chainId: originTx.rawTx.chainId,
-          to: originTx.rawTx.to,
-          gasPrice: intToHex(
-            Math.round(Math.max(maxGasPrice * 2, maxGasMarketPrice))
-          ),
-          isSpeedUp: true,
-          reqId: maxGasTx.reqId,
+          method: 'eth_sendTransaction',
+          params: [
+            omit(
+              {
+                from: speedUpTx.from,
+                value: speedUpTx.value,
+                data: speedUpTx.data,
+                nonce: speedUpTx.nonce,
+                chainId: speedUpTx.chainId,
+                to: speedUpTx.to,
+                gasPrice: speedUpTx.gasPrice,
+                isSpeedUp: true,
+                reqId: maxGasTx.reqId,
+                authorizationList: (speedUpTx as any).authorizationList,
+              },
+              is7702 ? [] : ['authorizationList']
+            ),
+          ],
         },
-      ],
-    });
-    window.close();
+        {
+          session: originSession,
+        }
+      );
+      window.close();
+    };
+
+    if (canUseMiniTx && !is7702 && !forceSignPage && account) {
+      try {
+        resetGasStore();
+        closeSign();
+        await openUI({
+          txs: [omit(speedUpTx, ['authorizationList']) as Tx],
+          session: originSession,
+          originGasPrice,
+          ga: {
+            category: 'TxHistory',
+            source: 'speedUp',
+          },
+          onPreExecError: () => {
+            void sendViaRequest();
+          },
+          getContainer: isDesktop ? desktopGetContainer : undefined,
+        });
+        setTimeout(() => {
+          onClearPending?.();
+        }, 500);
+        return;
+      } catch (error) {
+        console.log('speedUp direct sign error', error);
+        if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+          closeSign();
+          return;
+        }
+        await sendViaRequest();
+        return;
+      }
+    }
+
+    await sendViaRequest();
   };
 
   const handleOpenScan = () => {
@@ -247,7 +403,6 @@ export const TransactionItem = ({
       hash = completedTx!.hash;
     } else {
       const maxGasTx = findMaxGasTx(item.txs)!;
-      console.log(maxGasTx);
       hash = maxGasTx.hash;
     }
     if (!hash) {
@@ -291,6 +446,7 @@ export const TransactionItem = ({
             isSubmitFailed={!!item.isSubmitFailed}
             isWithdrawed={!!maxGasTx?.isWithdrawed}
             explain={item.explain}
+            action={item.action}
             onOpenScan={handleOpenScan}
           />
           {isPending && (
@@ -323,7 +479,7 @@ export const TransactionItem = ({
                         'cursor-not-allowed': !canCancel,
                       })}
                       src={RcIconSpeedup}
-                      onClick={handleClickSpeedUp}
+                      onClick={() => handleClickSpeedUp()}
                     />
                   </Tooltip>
                   <div className="hr" />
@@ -392,14 +548,6 @@ export const TransactionItem = ({
                     ? `${gasTokenCount.toFixed(
                         6
                       )} ${gasTokenSymbol} ($${gasUSDValue})`
-                    : txQueues[completedTx!.hash!]
-                    ? txQueues[completedTx!.hash!].tokenCount?.toFixed(8) +
-                      ` ${getTokenSymbol(
-                        txQueues[completedTx!.hash!].token
-                      )} ($${(
-                        txQueues[completedTx!.hash!].tokenCount! *
-                        (txQueues[completedTx!.hash!].token?.price || 1)
-                      ).toFixed(2)})`
                     : t('page.activities.signedTx.common.unknown')}
                 </span>
               </>
@@ -446,14 +594,16 @@ export const TransactionItem = ({
           </div>
         </ChildrenWrapper>
       )}
-      <CancelTxPopup
-        visible={isShowCancelPopup}
-        onClose={() => {
-          setIsShowCancelPopup(false);
-        }}
-        onCancelTx={handleCancelTx}
-        tx={maxGasTx}
-      ></CancelTxPopup>
+      {canCancel ? (
+        <CancelTxPopup
+          visible={isShowCancelPopup}
+          onClose={() => {
+            setIsShowCancelPopup(false);
+          }}
+          onCancelTx={handleCancelTx}
+          tx={maxGasTx}
+        ></CancelTxPopup>
+      ) : null}
     </div>
   );
 };

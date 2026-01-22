@@ -17,7 +17,6 @@ const useGetHdKeys = () => {
 
 export const UseSeedPhrase = () => {
   const { accountGroup } = useWalletTypeData();
-  console.log('accountGroup', accountGroup);
   const { value } = useGetHdKeys();
 
   const invokeEnterPassphrase = useEnterPassphraseModal('publickey');

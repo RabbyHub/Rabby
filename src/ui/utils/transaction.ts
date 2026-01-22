@@ -2,7 +2,10 @@ import abi from 'human-standard-token-abi';
 import { ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
 import { ExplainTxResponse } from '@/background/service/openapi';
-import { hexToString, isHex, stringToHex } from 'web3-utils';
+import { hexToString, isHex, stringToHex } from 'viem';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
+import { WalletController, WalletControllerType } from './WalletContext';
 
 const hstInterface = new ethers.utils.Interface(abi);
 
@@ -68,7 +71,8 @@ export function getCustomTxParamsData(
     if (spender.startsWith('0x')) {
       spender = spender.substring(2);
     }
-    const [signature, tokenValue] = data.split(spender);
+    const separator = new RegExp(spender, 'i');
+    const [signature, tokenValue] = data.split(separator);
 
     if (!signature || !tokenValue) {
       throw new Error('Invalid data');
@@ -177,7 +181,7 @@ export function formatTxInputDataOnERC20(maybeHex: string) {
 
   if (result.currentIsHex) {
     try {
-      result.currentData = hexToString(maybeHex);
+      result.currentData = hexToString(maybeHex as any);
       result.withInputData = true;
       result.hexData = maybeHex;
       result.utf8Data = result.currentData;
@@ -225,3 +229,42 @@ export function formatTxExplainAbiData(abi?: ExplainTxResponse['abi'] | null) {
     ')',
   ].join('');
 }
+
+export const waitForTxCompleted = async ({
+  wallet,
+  hash,
+  chainServerId,
+}: {
+  hash: string;
+  chainServerId: string;
+  wallet: WalletControllerType;
+}) => {
+  return await new Promise((resolve, reject) => {
+    const handler = (res) => {
+      if (res?.hash === hash) {
+        if (res?.status) {
+          resolve(true);
+        } else {
+          reject(new Error('tx failed'));
+        }
+        unsubscribe();
+      }
+    };
+
+    eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+
+    const unsubscribe = () =>
+      eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+
+    wallet.getRpcTxReceipt(chainServerId, hash).then((res) => {
+      if (res.code === 0) {
+        if (res?.status) {
+          resolve(true);
+        } else {
+          reject(new Error('tx failed'));
+        }
+        unsubscribe();
+      }
+    });
+  });
+};

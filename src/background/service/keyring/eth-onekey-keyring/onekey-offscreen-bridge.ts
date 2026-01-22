@@ -23,6 +23,23 @@ export default class OneKeyOffscreenBridge implements OneKeyBridgeInterface {
     });
   };
 
+  getFeatures: OneKeyBridgeInterface['getFeatures'] = () => {
+    return new Promise((resolve, reject) => {
+      browser.runtime
+        .sendMessage({
+          target: OffscreenCommunicationTarget.onekeyOffscreen,
+          action: OneKeyAction.getFeatures,
+        })
+        .then((res) => {
+          if (res?.error) {
+            reject(res.error);
+          } else {
+            resolve(res);
+          }
+        });
+    });
+  };
+
   searchDevices: OneKeyBridgeInterface['searchDevices'] = () => {
     return new Promise((resolve, reject) => {
       browser.runtime

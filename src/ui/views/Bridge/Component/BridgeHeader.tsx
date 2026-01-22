@@ -12,21 +12,42 @@ import { useTranslation } from 'react-i18next';
 import { useRabbyDispatch } from '@/ui/store';
 import { PendingTx } from './PendingTx';
 import { RabbyFeePopup } from '../../Swap/Component/RabbyFeePopup';
+import { getUiType, openInternalPageInTab } from '@/ui/utils';
+import { useHistory } from 'react-router-dom';
+import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+const isTab = getUiType().isTab;
+const isDesktop = getUiType().isDesktop;
 
-export const Header = () => {
+const getContainer = isTab
+  ? '.js-rabby-popup-container'
+  : isDesktop
+  ? '.js-rabby-desktop-swap-container'
+  : undefined;
+
+export const Header = ({
+  onOpenInTab,
+  noShowHeader,
+  historyVisible,
+  setHistoryVisible,
+}: {
+  onOpenInTab?(): void;
+  noShowHeader: boolean;
+  historyVisible: boolean;
+  setHistoryVisible: (visible: boolean) => void;
+}) => {
   const feePopupVisible = useSettingVisible();
   const setFeePopupVisible = useSetSettingVisible();
-
-  const [historyVisible, setHistoryVisible] = useState(false);
   const { t } = useTranslation();
 
   const dispath = useRabbyDispatch();
 
-  const loadingNumber = usePollBridgePendingNumber();
-
   const openHistory = useCallback(() => {
     setHistoryVisible(true);
   }, []);
+
+  const gotoDashboard = () => {
+    history.push('/dashboard');
+  };
 
   const closeFeePopup = useCallback(() => {
     setFeePopupVisible(false);
@@ -36,34 +57,48 @@ export const Header = () => {
     dispath.bridge.fetchAggregatorsList();
     dispath.bridge.fetchSupportedChains();
   }, []);
+  const history = useHistory();
 
   return (
     <>
-      <PageHeader
-        className="mx-[20px] pt-[20px] mb-[16px]"
-        forceShowBack
-        rightSlot={
-          <div className="flex items-center gap-20 absolute bottom-0 right-0">
-            {loadingNumber ? (
-              <PendingTx number={loadingNumber} onClick={openHistory} />
-            ) : (
+      {!noShowHeader && (
+        <PageHeader
+          className="mx-[20px] mb-[5px]"
+          forceShowBack={!isTab}
+          onBack={gotoDashboard}
+          canBack={!isTab}
+          isShowAccount
+          rightSlot={
+            <div className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0">
+              {isTab ? null : (
+                <div
+                  className="text-r-neutral-title1 cursor-pointer"
+                  onClick={() => {
+                    onOpenInTab?.();
+                  }}
+                >
+                  <RcIconFullscreen />
+                </div>
+              )}
               <RcIconHistory className="cursor-pointer" onClick={openHistory} />
-            )}
-          </div>
-        }
-      >
-        {t('page.bridge.title')}
-      </PageHeader>
+            </div>
+          }
+        >
+          {t('page.bridge.title')}
+        </PageHeader>
+      )}
       <BridgeTxHistory
         visible={historyVisible}
         onClose={useCallback(() => {
           setHistoryVisible(false);
         }, [])}
+        getContainer={getContainer}
       />
       <RabbyFeePopup
         type="bridge"
         visible={feePopupVisible}
         onClose={closeFeePopup}
+        getContainer={getContainer}
       />
     </>
   );

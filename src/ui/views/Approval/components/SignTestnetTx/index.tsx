@@ -1,9 +1,7 @@
 import { Account, ChainGas } from 'background/service/preference';
-import React, { ReactNode, useMemo, useState } from 'react';
+import React, { ReactNode, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { findChain } from '@/utils/chain';
-import { TestnetActions } from './components/TestnetActions';
 import BigNumber from 'bignumber.js';
 import { FooterBar } from '../FooterBar/FooterBar';
 import {
@@ -14,6 +12,7 @@ import {
 } from '@/ui/utils';
 import { useMount, useRequest } from 'ahooks';
 import {
+  ALIAS_ADDRESS,
   DEFAULT_GAS_LIMIT_BUFFER,
   DEFAULT_GAS_LIMIT_RATIO,
   HARDWARE_KEYRING_TYPES,
@@ -26,9 +25,8 @@ import {
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { normalizeTxParams } from '../SignTx';
-import { isHexString, toChecksumAddress } from 'ethereumjs-util';
+import { isHexString, toChecksumAddress } from '@ethereumjs/util';
 import { WaitingSignComponent } from '../map';
-import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import i18n from '@/i18n';
@@ -39,7 +37,18 @@ import { MessageWrapper } from '../TextActions';
 import { Card } from '../Card';
 import { SignAdvancedSettings } from '../SignAdvancedSettings';
 import clsx from 'clsx';
-import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
+import { Modal } from 'antd';
+import { ga4 } from '@/utils/ga4';
+import { TestnetActions } from './Actions';
+import {
+  ActionRequireData,
+  fetchActionRequiredData,
+  parseAction,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
+import * as Sentry from '@sentry/browser';
+import { getCexInfo } from '@/ui/models/exchange';
+import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
 
 const checkGasAndNonce = ({
   recommendGasLimitRatio,
@@ -192,10 +201,16 @@ interface SignTxProps<TData extends any[] = any[]> {
     $ctx?: any;
   };
   origin?: string;
+  account: Account;
 }
 
-export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
-  const { isGnosis, account } = params;
+export const SignTestnetTx = ({
+  params,
+  origin,
+  account: $account,
+}: SignTxProps) => {
+  const { isGnosis } = params;
+  const currentAccount = params.isGnosis ? params.account! : $account;
 
   const {
     data = '0x',
@@ -269,7 +284,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
 
   const { data: recommendNonce, runAsync: runGetNonce } = useRequest(
     async () => {
-      const currentAccount = (await wallet.getCurrentAccount())!;
       return wallet.getCustomTestnetNonce({
         address: currentAccount.address,
         chainId: chainId,
@@ -283,7 +297,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
   const { data: gasUsed, runAsync: runGetGasUsed } = useRequest(
     async () => {
       try {
-        const currentAccount = (await wallet.getCurrentAccount())!;
         let estimateGas = await wallet.estimateCustomTestnetGas({
           address: currentAccount.address,
           chainId: chainId,
@@ -310,7 +323,12 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
               .times(buffer)
               .toFixed(0);
           }
-
+          if (tx.gas || tx.gasLimit) {
+            recommendGasLimit = Math.max(
+              Number(tx.gas || tx.gasLimit),
+              Number(recommendGasLimit)
+            ).toString();
+          }
           setGasLimit(
             `0x${new BigNumber(recommendGasLimit).integerValue().toString(16)}`
           );
@@ -318,9 +336,11 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         return `0x${new BigNumber(estimateGas).integerValue().toString(16)}`;
       } catch (e) {
         console.error(e);
-        const fallback = intToHex(2000000);
+        const fallbackNumber = 2000000;
+        const fallback = intToHex(fallbackNumber);
         if (!gasLimit) {
-          setGasLimit(fallback);
+          const dappSetGasLimit = Number(tx.gas || tx.gasLimit || 0);
+          setGasLimit(intToHex(Math.max(dappSetGasLimit, fallbackNumber)));
         }
         return fallback;
       }
@@ -360,95 +380,243 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
   );
 
   const init = async () => {
-    const currentAccount = (await wallet.getCurrentAccount())!;
-    setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
-    setIsHardware(
-      !!Object.values(HARDWARE_KEYRING_TYPES).find(
-        (item) => item.type === currentAccount.type
-      )
-    );
-    wallet.reportStats('createTransaction', {
-      type: currentAccount.brandName,
-      category: KEYRING_CATEGORY_MAP[currentAccount.type],
-      chainId: chain?.serverId || '',
-      createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-      source: params?.$ctx?.ga?.source || '',
-      trigger: params?.$ctx?.ga?.trigger || '',
-      networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-      swapUseSlider: params?.$ctx?.ga?.swapUseSlider ?? '',
-    });
+    try {
+      setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
+      setIsHardware(
+        !!Object.values(HARDWARE_KEYRING_TYPES).find(
+          (item) => item.type === currentAccount.type
+        )
+      );
 
-    matomoRequestEvent({
-      category: 'Transaction',
-      action: 'init',
-      label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-    });
-    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-      setIsGnosisAccount(true);
-    }
-    if (currentAccount.type === KEYRING_TYPE.CoboArgusKeyring) {
-      setIsCoboArugsAccount(true);
-    }
-    checkCanProcess();
-    const balance = await wallet.getCustomTestnetToken({
-      chainId,
-      address: currentAccount.address,
-    });
+      matomoRequestEvent({
+        category: 'Transaction',
+        action: 'init',
+        label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+      });
+      ga4.fireEvent(`Init_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+        event_category: 'Transaction',
+      });
 
-    setNativeTokenBalance(balance.rawAmount);
-    let customGasPrice = 0;
-    const lastTimeGas = await runGetLastTimeGasSelection();
-    if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
-      // use cached gasPrice if exist
-      customGasPrice = lastTimeGas.gasPrice;
-    }
-    if (
-      isSpeedUp ||
-      isCancel ||
-      ((isSend || isSwap || isBridge) && tx.gasPrice)
-    ) {
-      // use gasPrice set by dapp when it's a speedup or cancel tx
-      customGasPrice = parseInt(tx.gasPrice!);
-    }
-    await runGetGasUsed();
-    const recommendNonce = await runGetNonce();
-    if (updateNonce) {
-      setRealNonce(intToHex(recommendNonce));
-    }
-    const gasList = await runGetGasMarket(customGasPrice);
-    // const median = gasList.find((item) => item.level === 'normal');
-    let gas: GasLevel | null = null;
+      if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+        setIsGnosisAccount(true);
+      }
+      if (currentAccount.type === KEYRING_TYPE.CoboArgusKeyring) {
+        setIsCoboArugsAccount(true);
+      }
+      checkCanProcess();
+      try {
+        const balance = await wallet.getCustomTestnetToken({
+          chainId,
+          address: currentAccount.address,
+        });
 
-    if (
-      ((isSend || isSwap || isBridge) && customGasPrice) ||
-      isSpeedUp ||
-      isCancel ||
-      lastTimeGas?.lastTimeSelect === 'gasPrice'
-    ) {
-      gas = gasList.find((item) => item.level === 'custom')!;
-    } else if (
-      lastTimeGas?.lastTimeSelect &&
-      lastTimeGas?.lastTimeSelect === 'gasLevel'
-    ) {
-      const target = gasList.find(
-        (item) => item.level === lastTimeGas?.gasLevel
-      )!;
-      if (target) {
-        gas = target;
+        setNativeTokenBalance(balance.rawAmount);
+      } catch (e) {
+        console.error(e);
+        if (chain && (await wallet.hasCustomRPC(chain.enum))) {
+          triggerCustomRPCErrorModal();
+        }
+      }
+      let customGasPrice = 0;
+      const lastTimeGas = await runGetLastTimeGasSelection();
+      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+        // use cached gasPrice if exist
+        customGasPrice = lastTimeGas.gasPrice;
+      }
+      if (
+        isSpeedUp ||
+        isCancel ||
+        ((isSend || isSwap || isBridge) && tx.gasPrice)
+      ) {
+        // use gasPrice set by dapp when it's a speedup or cancel tx
+        customGasPrice = parseInt(tx.gasPrice!);
+      }
+      const gasUsed = await runGetGasUsed();
+      const recommendNonce = await runGetNonce();
+      if (updateNonce) {
+        setRealNonce(intToHex(recommendNonce));
+      }
+      const gasList = await runGetGasMarket(customGasPrice);
+      // const median = gasList.find((item) => item.level === 'normal');
+      let gas: GasLevel | null = null;
+
+      if (
+        ((isSend || isSwap || isBridge) && customGasPrice) ||
+        isSpeedUp ||
+        isCancel ||
+        lastTimeGas?.lastTimeSelect === 'gasPrice'
+      ) {
+        gas = gasList.find((item) => item.level === 'custom')!;
+      } else if (
+        lastTimeGas?.lastTimeSelect &&
+        lastTimeGas?.lastTimeSelect === 'gasLevel'
+      ) {
+        const target = gasList.find(
+          (item) => item.level === lastTimeGas?.gasLevel
+        )!;
+        if (target) {
+          gas = target;
+        } else {
+          gas = gasList.find((item) => item.level === 'normal')!;
+        }
       } else {
+        // no cache, use the fast level in gasMarket
         gas = gasList.find((item) => item.level === 'normal')!;
       }
-    } else {
-      // no cache, use the fast level in gasMarket
-      gas = gasList.find((item) => item.level === 'normal')!;
+
+      wallet.reportStats('createTransaction', {
+        type: currentAccount.brandName,
+        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+        chainId: chain?.serverId || '',
+        createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+        source: params?.$ctx?.ga?.source || '',
+        trigger: params?.$ctx?.ga?.trigger || '',
+        networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+        swapUseSlider: params?.$ctx?.ga?.swapUseSlider ?? '',
+        gasLevel: gas?.level || 'normal',
+      });
+
+      setSelectedGas(gas);
+      setTx({
+        ...tx,
+        gasPrice: intToHex(gas.price),
+      });
+      await explainTx({
+        gasUsed,
+        tx: {
+          ...tx,
+          gasPrice: intToHex(gas.price),
+        },
+      });
+      setIsReady(true);
+    } catch (e) {
+      console.error(e);
+      if (!customRPCErrorModalRef.current) {
+        Modal.error({
+          className: 'modal-support-darkmode',
+          title: 'Error',
+          content: e.details || e.message || JSON.stringify(e),
+          closable: false,
+          maskClosable: false,
+          onOk() {
+            rejectApproval('');
+          },
+        });
+      }
+      Sentry.captureException(e);
     }
-    setSelectedGas(gas);
-    setTx({
-      ...tx,
-      gasPrice: intToHex(gas.price),
-    });
-    setIsReady(true);
   };
+
+  const customRPCErrorModalRef = useRef(false);
+  const triggerCustomRPCErrorModal = () => {
+    if (customRPCErrorModalRef.current) return;
+    customRPCErrorModalRef.current = true;
+    Modal.error({
+      className: 'modal-support-darkmode',
+      closable: true,
+      title: t('page.signTx.customRPCErrorModal.title'),
+      content: t('page.signTx.customRPCErrorModal.content'),
+      okText: t('page.signTx.customRPCErrorModal.button'),
+      okButtonProps: {
+        className: 'w-[280px]',
+      },
+      async onOk() {
+        if (chain) {
+          await wallet.setRPCEnable(chain.enum, false);
+          location.reload();
+        }
+      },
+    });
+  };
+
+  const { data: explainResult, runAsync: explainTx } = useRequest(
+    async ({ gasUsed, tx }: { gasUsed?: string; tx: Tx }) => {
+      try {
+        if (!chain) {
+          return;
+        }
+        const actionData = await wallet.parseCustomNetworkTx({
+          chainId: chain.id,
+          tx: {
+            ...tx,
+            gas: '0x0',
+            value: tx.value || '0x0',
+            to: tx.to || '',
+          },
+          origin: origin || '',
+          addr: currentAccount.address,
+        });
+
+        if (!actionData) {
+          return;
+        }
+
+        const parsed = parseAction({
+          type: 'transaction',
+          data: actionData.action,
+          balanceChange: {} as any,
+          tx: {
+            ...tx,
+            gas: '0x0',
+
+            value: tx.value || '0x0',
+          },
+          preExecVersion: 'v0',
+          gasUsed: gasUsed ? Number(gasUsed) : 0,
+          sender: tx.from,
+        });
+
+        const cexInfo = await getCexInfo(parsed.send?.to || '', wallet);
+        const requiredData = await fetchActionRequiredData({
+          type: 'transaction',
+          actionData: parsed,
+          contractCall: actionData.contract_call,
+          chainId: chain.serverId,
+          sender: currentAccount.address,
+          walletProvider: {
+            findChain,
+            ALIAS_ADDRESS,
+            hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+            hasAddress: wallet.hasAddress,
+            getWhitelist: wallet.getWhitelist,
+            isWhitelistEnabled: wallet.isWhitelistEnabled,
+            getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+          },
+          cex: cexInfo,
+          tx: {
+            ...tx,
+            gas: '0x0',
+            // nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+            value: tx.value || '0x0',
+          },
+          // todo fake api provider
+          apiProvider: (wallet.fakeTestnetOpenapi as unknown) as any,
+        });
+
+        return {
+          actionData: parsed,
+          requiredData,
+        };
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    {
+      manual: true,
+      onFinally() {
+        console.log('finally');
+      },
+      onError(e) {
+        console.log(e);
+        Modal.error({
+          title: 'Error',
+          content: e.message || JSON.stringify(e),
+          className: 'modal-support-darkmode',
+        });
+        Sentry.captureException(e);
+      },
+    }
+  );
 
   useMount(() => {
     init();
@@ -460,8 +628,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
 
   const checkCanProcess = async () => {
     const session = params.session;
-    const currentAccount =
-      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
     const site = await wallet.getConnectedSite(session.origin);
 
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
@@ -534,6 +700,28 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const handleTxChange = async (obj: Record<string, any>) => {
+    setTx({
+      ...tx,
+      ...obj,
+    });
+    try {
+      setIsReady(false);
+      // trigger explain
+      await explainTx({
+        gasUsed,
+        tx: {
+          ...tx,
+          ...obj,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsReady(true);
+    }
+  };
+
   const handleCancel = () => {
     //  gaEvent('cancel');
     rejectApproval('User rejected the request.');
@@ -550,8 +738,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     if (activeApprovalPopup()) {
       return;
     }
-
-    const currentAccount = (await wallet.getCurrentAccount())!;
 
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
@@ -586,6 +772,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         rawTx: {
           nonce: realNonce || tx.nonce,
         },
+        action: explainResult,
       }));
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
@@ -595,6 +782,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         nonce: realNonce || tx.nonce,
         gas: gasLimit,
         uiRequestComponent: WaitingSignComponent[currentAccount.type],
+        $account: currentAccount,
         type: currentAccount.type,
         address: currentAccount.address,
         // traceId: txDetail?.trace_id,
@@ -631,6 +819,11 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
       action: 'Submit',
       label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
+
+    ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+      event_category: 'Transaction',
+    });
+
     resolveApproval({
       ...transaction,
       nonce: realNonce || tx.nonce,
@@ -657,6 +850,8 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     recommendGasLimitRatio: 1.5,
   });
 
+  useSetReportGasLevel(selectedGas?.level);
+
   if (!chain) {
     return null;
   }
@@ -665,6 +860,9 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     <>
       <div className="approval-tx overflow-x-hidden">
         <TestnetActions
+          account={currentAccount}
+          data={explainResult?.actionData || {}}
+          requireData={explainResult?.requiredData || null}
           isReady={isReady}
           chain={chain}
           raw={{
@@ -675,30 +873,8 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           isSpeedUp={isSpeedUp}
           originLogo={params.session.icon}
           origin={params.session.origin}
+          onChange={handleTxChange}
         />
-
-        {isReady && (
-          <Card>
-            <MessageWrapper>
-              <div className="title">
-                <div className="title-text">
-                  {t('page.customTestnet.signTx.title')}
-                </div>
-              </div>
-              <div className="content">
-                {JSON.stringify(
-                  {
-                    ...tx,
-                    nonce: realNonce || tx.nonce,
-                    gas: gasLimit!,
-                  },
-                  null,
-                  2
-                )}
-              </div>
-            </MessageWrapper>
-          </Card>
-        )}
 
         {isReady && (
           <SignAdvancedSettings
@@ -717,11 +893,12 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           <div
             className={clsx(
               'w-[186px]',
-              'ml-auto mr-[-20px] mt-[-116px]',
+              'ml-auto',
               'px-[16px] py-[12px] rotate-[-23deg]',
               'border-rabby-neutral-title1 border-[1px] rounded-[6px]',
               'text-r-neutral-title1 text-[20px] leading-[24px]',
-              'opacity-30'
+              'opacity-30',
+              'absolute bottom-[210px] right-[16px] pointer-events-none'
             )}
           >
             Custom Network
@@ -800,6 +977,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           !canProcess ||
           !!checkErrors.find((item) => item.level === 'forbidden')
         }
+        account={currentAccount}
       />
     </>
   );

@@ -4,15 +4,18 @@ import { createPersistStore } from '../utils';
 import { ALARMS_SYNC_METAMASK_DAPPS } from '../utils/alarms';
 import { http } from '../utils/http';
 import permissionService from './permission';
+import dayjs from 'dayjs';
 
 interface MetamaskModeServiceStore {
   sites: string[];
+  updatedAt: number;
 }
 class MetamaskModeService {
   timer: ReturnType<typeof setInterval> | null = null;
 
   store: MetamaskModeServiceStore = {
     sites: [],
+    updatedAt: 0,
   };
 
   localSites: string[] = [];
@@ -22,20 +25,23 @@ class MetamaskModeService {
       name: 'metamaskMode',
       template: {
         sites: [],
+        updatedAt: 0,
       },
     });
     this.store = storageCache || this.store;
+    this.store.updatedAt = this.store.updatedAt || 0;
 
     this.syncMetamaskModeList();
     this.resetTimer();
     this.localSites = permissionService.getMetamaskModeSites().map((item) => {
       return item.origin.replace(/^https?:\/\//, '');
     });
-
-    this.registerEvent();
   };
 
   syncMetamaskModeList = async () => {
+    if (dayjs().isBefore(dayjs(this.store.updatedAt || 0).add(25, 'minute'))) {
+      return [];
+    }
     try {
       const sites = await http
         .get('https://static.debank.com/fake_mm_dapps.json')
@@ -43,6 +49,7 @@ class MetamaskModeService {
           return res.data as string[];
         });
       this.store.sites = sites;
+      this.store.updatedAt = Date.now();
     } catch (e) {
       console.error('fetch metamask list error: ', e);
     }
@@ -73,52 +80,11 @@ class MetamaskModeService {
     }
   };
 
-  defineMetamaskMode = () => {
-    (function () {
-      console.log('inject by executeScript');
-      (window as any).__rabby__inject__ = {
-        isMetamaskMode: true,
-      };
-      if ((window as any).rabbyWalletRouter) {
-        (window as any).rabbyWalletRouter.rabbyProvider.isMetaMask = true;
-        delete (window as any).rabbyWalletRouter.rabbyProvider.isRabby;
-        (window as any).rabbyWalletRouter.rabbyEthereumProvider.isMetaMask = true;
-        delete (window as any).rabbyWalletRouter.rabbyEthereumProvider.isRabby;
-        window.dispatchEvent(new Event('eip6963:requestProvider'));
-      }
-    })();
-  };
-
-  handleInject = (tabId: number) => {
-    const sites = new Set([...this.store.sites, ...this.localSites]);
-    browser.tabs.get(tabId).then((tab) => {
-      if (tab.url?.startsWith('http') && sites.has(new URL(tab.url).hostname))
-        browser.scripting.executeScript({
-          target: {
-            tabId,
-          },
-          func: this.defineMetamaskMode,
-          injectImmediately: true,
-          // Inject as soon as possible
-          // todo ts
-          world: 'MAIN' as any,
-        });
-    });
-  };
-  registerEvent = () => {
-    browser.tabs.onCreated.addListener((tab) => {
-      tab.id && this.handleInject(tab.id);
-    });
-    browser.tabs.onActivated.addListener((tab) => {
-      this.handleInject(tab.tabId);
-    });
-    browser.tabs.onReplaced.addListener((tabId) => {
-      this.handleInject(tabId);
-    });
-    browser.tabs.onUpdated.addListener((tabId) => {
-      this.handleInject(tabId);
-    });
-  };
+  checkIsMetamaskMode(origin: string) {
+    return !![...this.store.sites, ...this.localSites].find(
+      (item) => item === origin.replace(/^https?:\/\//, '')
+    );
+  }
 }
 
 export const metamaskModeService = new MetamaskModeService();

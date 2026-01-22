@@ -83,7 +83,7 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
   const decoder = useRef(new URDecoder());
 
   useEffect(() => {
-    setHeight(360);
+    setHeight('fit-content');
   }, []);
 
   const { value, error, retry, loading } = useAsyncRetry(async () => {
@@ -169,7 +169,7 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       }
 
       setStatusProp('REJECTED');
-      return t('page.signFooterBar.keystone.txRejected');
+      return t('page.signFooterBar.qrcode.txFailed');
     }
     if (isDone) {
       setStatusProp('RESOLVED');

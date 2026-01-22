@@ -4,6 +4,7 @@ import { WalletController as WalletControllerClass } from 'background/controller
 import { IExtractFromPromise } from './type';
 import { CommonPopupComponentName } from '../views/CommonPopup';
 import { PopupProps } from '../component/Popup';
+import { AppChain } from '../hooks/useAppChain';
 
 // TODO: implement here but not used now to avoid too much ts checker error.
 // we will use it on almost biz store ready.
@@ -35,7 +36,7 @@ const useCommonPopupViewState = () => {
   >();
   const [visible, setVisible] = useState(false);
   const [title, setTitle] = useState<React.ReactNode>('Sign');
-  const [height, setHeight] = useState(360);
+  const [height, setHeight] = useState<number | 'auto' | 'fit-content'>(360);
   const [className, setClassName] = useState<'isConnectView' | undefined>();
   const [account, setAccount] = useState<{
     address: string;
@@ -45,6 +46,7 @@ const useCommonPopupViewState = () => {
     type: string;
   }>();
   const [data, setData] = useState<any>();
+  const [apps, setApps] = useState<AppChain[]>();
   const [popupProps, setPopupProps] = useState<PopupProps | undefined>();
 
   const activePopup = (name: CommonPopupComponentName) => {
@@ -84,6 +86,8 @@ const useCommonPopupViewState = () => {
     setData,
     popupProps,
     setPopupProps,
+    apps,
+    setApps,
   };
 };
 

@@ -2,7 +2,13 @@ import { Popup, TokenWithChain } from '@/ui/component';
 import React, { forwardRef, useMemo } from 'react';
 import { useSwapHistory } from '../hooks';
 import { SwapItem, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { formatAmount, formatUsdValue, openInTab, sinceTime } from '@/ui/utils';
+import {
+  formatAmount,
+  formatUsdValue,
+  getUiType,
+  openInTab,
+  sinceTime,
+} from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import ImgPending from 'ui/assets/swap/pending.svg';
@@ -18,6 +24,8 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
 import { DEX } from '@/constant';
+import { DrawerProps } from 'antd';
+const isTab = getUiType().isTab;
 
 const TokenCost = ({
   payToken,
@@ -109,7 +117,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 
     const gotoScan = React.useCallback(() => {
       if (scanLink && txId) {
-        openInTab(scanLink + txId);
+        openInTab(scanLink + txId, !isTab);
       }
     }, []);
 
@@ -156,9 +164,17 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             <span>{!isPending && sinceTime(time)}</span>
           </div>
           {!!targetDex && (
-            <span className="text-12 font-medium text-r-neutral-title-1">
-              {targetDex}
-            </span>
+            <div className="flex items-center gap-4">
+              {DEX?.[data?.dex_id]?.logo ? (
+                <img
+                  src={DEX?.[data?.dex_id]?.logo}
+                  className="w-16 h-16 rounded-full"
+                />
+              ) : null}
+              <span className="text-12 font-medium text-r-neutral-title-1">
+                {targetDex}
+              </span>
+            </div>
           )}
         </div>
 
@@ -279,9 +295,11 @@ const HistoryList = () => {
 export const SwapTxHistory = ({
   visible,
   onClose,
+  getContainer,
 }: {
   visible: boolean;
   onClose: () => void;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
   return (
@@ -298,6 +316,7 @@ export const SwapTxHistory = ({
       destroyOnClose
       isSupportDarkMode
       isNew
+      getContainer={getContainer}
     >
       <HistoryList />
     </Popup>

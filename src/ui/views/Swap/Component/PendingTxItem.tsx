@@ -1,0 +1,367 @@
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+  forwardRef,
+  useRef,
+} from 'react';
+import { useTranslation } from 'react-i18next';
+import { useInterval, useMemoizedFn } from 'ahooks';
+import clsx from 'clsx';
+import { findChain } from '@/utils/chain';
+import { formatTokenAmount } from '@/ui/utils/number';
+import { getTokenSymbol } from '@/ui/utils/token';
+import { useWallet } from '@/ui/utils';
+import IconUnknown from '@/ui/assets/token-default.svg';
+import { useHistory } from 'react-router-dom';
+import { transactionHistoryService } from '@/background/service';
+import { useRabbySelector } from '@/ui/store';
+import {
+  SvgPendingSpin,
+  SvgIcPending,
+  SvgIcSuccess,
+  SvgIcWarning,
+} from 'ui/assets';
+
+import type {
+  SwapTxHistoryItem,
+  SendTxHistoryItem,
+  BridgeTxHistoryItem,
+  SendNftTxHistoryItem,
+  ApproveTokenTxHistoryItem,
+} from '@/background/service/transactionHistory';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { DrawerProps, Image } from 'antd';
+import { BridgeHistory, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { getUiType } from '@/ui/utils';
+import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
+import { PendingTxStatusPopup } from './PendingTxStatusPopup';
+
+const isDesktop = getUiType().isDesktop;
+type PendingTxData =
+  | SwapTxHistoryItem
+  | SendNftTxHistoryItem
+  | SendTxHistoryItem
+  | ApproveTokenTxHistoryItem;
+
+const StatusIcon = ({ status }: { status: string }) => {
+  if (status === 'pending' || status === 'fromSuccess') {
+    return (
+      <div className="w-16 h-16 rounded-full flex items-center justify-center">
+        <SvgIcPending
+          className="w-16 h-16 animate-spin text-r-orange-default"
+          style={{
+            animation: 'spin 1.5s linear infinite',
+          }}
+        />
+      </div>
+    );
+  }
+  if (status === 'failed') {
+    return (
+      <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center">
+        <SvgIcWarning className="w-16 h-16 text-r-red-default" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center">
+      <SvgIcSuccess className="w-16 h-16 text-r-green-default" />
+    </div>
+  );
+};
+
+const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
+  const chainItem = findChain({ serverId: chain }) || null;
+
+  return (
+    <div className="relative w-20 h-20">
+      <Image
+        className="w-20 h-20 rounded-full"
+        src={token}
+        fallback={IconUnknown}
+        preview={false}
+      />
+      <TooltipWithMagnetArrow
+        title={chainItem?.name}
+        className="rectangle w-[max-content]"
+      >
+        <img
+          className="w-12 h-12 absolute right-[-4px] bottom-[-4px] rounded-full"
+          src={chainItem?.logo || IconUnknown}
+          alt={chainItem?.name}
+        />
+      </TooltipWithMagnetArrow>
+    </div>
+  );
+};
+
+export const PendingTxItem = forwardRef<
+  { fetchHistory: () => void },
+  {
+    type: 'send' | 'swap' | 'sendNft' | 'approveSwap';
+    bridgeHistoryList?: BridgeHistory[];
+    openBridgeHistory?: () => void;
+    onFulfilled?: () => void;
+    getContainer?: DrawerProps['getContainer'];
+  }
+>(
+  (
+    { type, bridgeHistoryList, openBridgeHistory, onFulfilled, getContainer },
+    ref
+  ) => {
+    const { t } = useTranslation();
+    const wallet = useWallet();
+    const history = useHistory();
+    const [data, setData] = useState<PendingTxData | null>(null);
+    const [visible, setVisible] = useState(false);
+    const { userAddress } = useRabbySelector((state) => ({
+      userAddress: state.account.currentAccount?.address || '',
+    }));
+    const preFulfilledRef = useRef<boolean>(true);
+
+    const fetchHistory = useCallback(async () => {
+      if (!userAddress) return;
+      const historyData = await wallet.getRecentPendingTxHistory(
+        userAddress,
+        type
+      );
+      setData(historyData as PendingTxData);
+    }, [type, userAddress]);
+
+    useEffect(() => {
+      fetchHistory();
+    }, [fetchHistory]);
+
+    const fetchRefreshLocalData = useMemoizedFn(
+      async (
+        data: PendingTxData,
+        type: 'send' | 'swap' | 'sendNft' | 'approveSwap'
+      ) => {
+        if (data.status !== 'pending') {
+          // has done
+          return;
+        }
+
+        const address = data.address;
+        const chainId = data.chainId;
+        const hash = data.hash;
+        const newData = await wallet.getRecentTxHistory(
+          address,
+          hash,
+          chainId!,
+          type
+        );
+
+        if (newData?.status !== 'pending') {
+          return newData;
+        }
+      }
+    );
+
+    useInterval(async () => {
+      if (data) {
+        const refreshTx = await fetchRefreshLocalData(data, type);
+        if (refreshTx) {
+          setData(refreshTx as PendingTxData);
+        }
+      }
+    }, 1000);
+
+    const isPending = data?.status === 'pending';
+    const isFailed = data?.status === 'failed';
+    const isCanceled = data?.isCanceled;
+
+    useEffect(() => {
+      const isCurrentFulfilled = !isPending;
+      if (isCurrentFulfilled && !preFulfilledRef.current) {
+        onFulfilled?.();
+      }
+      preFulfilledRef.current = isCurrentFulfilled;
+    }, [isPending, onFulfilled]);
+
+    const handlePress = useMemoizedFn(async () => {
+      if (isPending) {
+        setVisible(true);
+        return;
+      } else {
+        setData(null);
+        if (isDesktop) {
+          history.push(
+            `${
+              history.location.pathname.startsWith('/desktop/profile')
+                ? history.location.pathname
+                : '/desktop/profile'
+            }?action=activities`
+          );
+        } else {
+          history.push('/activities');
+        }
+      }
+    });
+
+    const sendTitleTextStr = useMemo(() => {
+      if ((type === 'send' || type === 'sendNft') && data) {
+        const sendData = data as SendTxHistoryItem;
+        const sendAmount = formatTokenAmount(sendData?.amount);
+        if (type === 'sendNft') {
+          return `-${sendAmount} NFT`;
+        } else {
+          return `-${sendAmount} ${getTokenSymbol(
+            sendData?.token as TokenItem
+          )}`;
+        }
+      }
+      return '';
+    }, [type, data]);
+
+    const statusText = useMemo(() => {
+      if (isPending) {
+        return t('page.transactions.detail.Pending');
+      }
+      if (isCanceled) {
+        return t('page.activities.signedTx.status.canceled');
+      }
+      if (isFailed) {
+        return t('page.transactions.detail.Failed');
+      }
+      return t('page.transactions.detail.Succeeded');
+    }, [isPending, isFailed, isCanceled, t]);
+
+    const statusClassName = useMemo(() => {
+      if (isPending) {
+        return 'text-r-orange-default';
+      }
+      if (isFailed || isCanceled) {
+        return 'text-r-red-default';
+      }
+      return 'text-r-green-default';
+    }, [isPending, isFailed, isCanceled]);
+
+    useImperativeHandle(ref, () => ({
+      fetchHistory: () => {
+        fetchHistory();
+      },
+    }));
+
+    if (!data) {
+      return null;
+    }
+
+    const sendChainItem =
+      type === 'send' || type === 'sendNft'
+        ? findChain({
+            serverId: (data as SendTxHistoryItem)?.token?.chain || '',
+          })
+        : undefined;
+
+    return (
+      <div>
+        <div
+          className={clsx(
+            'flex items-center justify-between cursor-pointer rounded-[8px] px-[16px] py-[14px]',
+            'hover:bg-blue-light hover:bg-opacity-[0.1] hover:border-rabby-blue-default border border-transparent',
+            'bg-r-neutral-card-1'
+          )}
+          onClick={handlePress}
+        >
+          <div className="flex items-center gap-12">
+            <div className="flex items-center gap-6">
+              {type === 'send' || type === 'sendNft' ? (
+                <>
+                  {type === 'sendNft' ? (
+                    <div className="relative w-20 h-20">
+                      <NFTAvatar
+                        content={(data as SendNftTxHistoryItem)?.token?.content}
+                        type={
+                          (data as SendNftTxHistoryItem)?.token?.content_type
+                        }
+                        className="w-[20px] h-[20px]"
+                      />
+                      <TooltipWithMagnetArrow
+                        title={sendChainItem?.name}
+                        className="rectangle w-[max-content]"
+                      >
+                        <img
+                          className="w-12 h-12 absolute right-[-4px] bottom-[-4px] rounded-full"
+                          src={sendChainItem?.logo || IconUnknown}
+                          alt={sendChainItem?.name}
+                        />
+                      </TooltipWithMagnetArrow>
+                    </div>
+                  ) : (
+                    <TokenWithChain
+                      token={(data as SendTxHistoryItem)?.token?.logo_url || ''}
+                      chain={(data as SendTxHistoryItem)?.token?.chain || ''}
+                    />
+                  )}
+                  <span className="text-15 font-medium text-r-neutral-title-1">
+                    {sendTitleTextStr}
+                  </span>
+                </>
+              ) : ['approveSwap'].includes(type) ? (
+                <>
+                  <TokenWithChain
+                    token={(data as ApproveTokenTxHistoryItem)?.token?.logo_url}
+                    chain={
+                      (data as ApproveTokenTxHistoryItem)?.token?.chain || ''
+                    }
+                  />
+                  <span className="text-15 font-medium text-r-neutral-title-1">
+                    {t('page.swap.approve-x-symbol', {
+                      symbol: `${
+                        (data as ApproveTokenTxHistoryItem).amount
+                      } ${getTokenSymbol(
+                        (data as ApproveTokenTxHistoryItem)?.token
+                      )}`,
+                    })}
+                  </span>
+                </>
+              ) : type === 'swap' ? (
+                <>
+                  <TokenWithChain
+                    token={(data as SwapTxHistoryItem)?.fromToken?.logo_url}
+                    chain={(data as SwapTxHistoryItem)?.fromToken?.chain || ''}
+                  />
+                  <span className="text-15 font-medium text-r-neutral-title-1">
+                    {getTokenSymbol((data as SwapTxHistoryItem)?.fromToken)}
+                  </span>
+                  <span className="text-15 font-medium text-r-neutral-foot mx-2">
+                    →
+                  </span>
+                  <TokenWithChain
+                    token={(data as SwapTxHistoryItem)?.toToken?.logo_url}
+                    chain={(data as SwapTxHistoryItem)?.toToken?.chain || ''}
+                  />
+                  <span className="text-15 font-medium text-r-neutral-title-1">
+                    {getTokenSymbol((data as SwapTxHistoryItem)?.toToken)}
+                  </span>
+                </>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {!isCanceled && <StatusIcon status={data.status} />}
+            <span className={clsx('text-15 font-medium', statusClassName)}>
+              {statusText}
+            </span>
+          </div>
+        </div>
+        <PendingTxStatusPopup
+          visible={visible}
+          onClose={() => {
+            setVisible(false);
+          }}
+          type={type === 'approveSwap' || type === 'swap' ? 'swap' : 'send'}
+          txHash={data.hash}
+          chainId={data.chainId}
+          getContainer={getContainer}
+        />
+      </div>
+    );
+  }
+);

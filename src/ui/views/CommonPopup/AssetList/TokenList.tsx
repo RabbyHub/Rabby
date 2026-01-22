@@ -18,6 +18,8 @@ export interface Props {
   blockedTokens?: TokenItemProps['item'][];
   customizeTokens?: TokenItemProps['item'][];
   isTestnet: boolean;
+  selectChainId?: string | null;
+  lpTokenMode?: boolean;
 }
 
 export const HomeTokenList = ({
@@ -29,16 +31,32 @@ export const HomeTokenList = ({
   blockedTokens,
   customizeTokens,
   isTestnet,
+  selectChainId,
+  lpTokenMode,
 }) => {
   const totalValue = React.useMemo(() => {
     return list
-      ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
+      ?.reduce(
+        (acc, item) => acc.plus(item.is_core ? item._usdValue || 0 : 0),
+        new BigNumber(0)
+      )
       .toNumber();
   }, [list]);
   const { result: currentList } = useExpandList(list, totalValue);
   const lowValueList = React.useMemo(() => {
-    return list?.filter((item) => currentList?.indexOf(item) === -1);
-  }, [currentList, list, isSearch]);
+    // 排除customized tokens
+    const customizedTokenIds = new Set(
+      customizeTokens?.map((token) => token.id) || []
+    );
+    return list?.filter(
+      (item) =>
+        currentList?.indexOf(item) === -1 &&
+        !customizedTokenIds.has(item.id) &&
+        !blockedTokens?.some(
+          (blocked) => blocked.id === item.id && blocked.chain === item.chain
+        )
+    );
+  }, [currentList, list, isSearch, customizeTokens]);
   const { t } = useTranslation();
 
   if (isNoResults) {
@@ -47,6 +65,20 @@ export const HomeTokenList = ({
         className="mt-[92px]"
         text={t('page.dashboard.assets.table.noMatch')}
       />
+    );
+  }
+  if (lpTokenMode && !list?.length) {
+    return (
+      <div className="no-token w-full flex flex-col items-center justify-center h-[154px] bg-r-neutral-card1 rounded-[8px]">
+        <img
+          className="w-[72px] h-[72px]"
+          src="/images/nodata-tx.png"
+          alt="no site"
+        />
+        <p className="text-r-neutral-foot text-13 mt-2 text-center mb-0">
+          {t('component.TokenSelector.noLpTokens')}
+        </p>
+      </div>
     );
   }
 
@@ -66,18 +98,23 @@ export const HomeTokenList = ({
           EmptyComponent={<div></div>}
         />
         {!isSearch && hasList && hasLowValueList && (
-          <TokenLowValueItem list={lowValueList} className="h-[40px]" />
+          <TokenLowValueItem list={lowValueList} className="h-[48px]" />
         )}
       </div>
-      {!isSearch && hasList && (
-        <div className="flex gap-12 pt-12 border-t-[0.5px] border-rabby-neutral-line mt-[1px]">
+      {/* {!isSearch && hasList && (
+        <div className="flex gap-12 pt-12 mt-[1px]">
           <CustomizedButton
             onClickButton={onOpenAddEntryPopup}
             isTestnet={isTestnet}
+            selectChainId={selectChainId}
           />
-          <BlockedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
+          <BlockedButton
+            onClickLink={onFocusInput}
+            isTestnet={isTestnet}
+            selectChainId={selectChainId}
+          />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

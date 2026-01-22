@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
 import AddTokenEntry, { AddTokenEntryInst } from './AddTokenEntry';
 import { useRabbySelector } from '@/ui/store';
@@ -13,6 +13,15 @@ import ProtocolList from './ProtocolList';
 import { useQueryProjects } from 'ui/utils/portfolio';
 import { Input } from 'antd';
 import { useFilterProtocolList } from './useFilterProtocolList';
+import { useAppChain } from '@/ui/hooks/useAppChain';
+import { useCommonPopupView } from '@/ui/utils';
+import { useTranslation } from 'react-i18next';
+import { LpTokenSwitch } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenSwitch';
+import clsx from 'clsx';
+import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
+import { HomePerpsPositionList } from './HomePerpsPositionList';
+import { uniqBy } from 'lodash';
+import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 
 interface Props {
   className?: string;
@@ -29,46 +38,58 @@ export const AssetListContainer: React.FC<Props> = ({
   onEmptyAssets,
   isTestnet = false,
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = React.useState<string>('');
+  const [lpTokenMode, setLpTokenMode] = React.useState(false);
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
   }, []);
-  const [isFocus, setIsFocus] = React.useState<boolean>(false);
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
+
+  const { setApps } = useCommonPopupView();
   const {
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     portfolios,
     tokens: tokenList,
     hasTokens,
     blockedTokens,
     customizeTokens,
-  } = useQueryProjects(currentAccount?.address, false, visible, isTestnet);
-
-  const isEmptyAssets =
-    !isTokensLoading &&
-    !tokenList.length &&
-    !isPortfoliosLoading &&
-    !portfolios?.length &&
-    !blockedTokens?.length &&
-    !customizeTokens?.length;
-
-  React.useEffect(() => {
-    onEmptyAssets(isEmptyAssets);
-  }, [isEmptyAssets]);
+    removeProtocol,
+  } = useQueryProjects(
+    currentAccount?.address,
+    false,
+    visible,
+    isTestnet,
+    lpTokenMode ? lpTokenMode : undefined,
+    undefined,
+    !!search
+  );
+  const {
+    data: appPortfolios,
+    isLoading: isAppPortfoliosLoading,
+  } = useAppChain(currentAccount?.address, visible, isTestnet);
 
   const inputRef = React.useRef<Input>(null);
   const { isLoading: isSearching, list } = useSearchToken(
     currentAccount?.address,
     search,
-    selectChainId ? selectChainId : undefined,
-    true,
-    isTestnet
+    {
+      chainServerId: selectChainId ? selectChainId : undefined,
+      withBalance: true,
+      isTestnet: isTestnet,
+    }
   );
   const displayTokenList = useMemo(() => {
-    const result = search ? list : tokenList;
+    const result = uniqBy(
+      search ? concatAndSort(list, tokenList, search) : tokenList,
+      (token) => {
+        return `${token.chain}-${token.id}`;
+      }
+    );
     if (selectChainId) {
       return result.filter((item) => item.chain === selectChainId);
     }
@@ -76,11 +97,43 @@ export const AssetListContainer: React.FC<Props> = ({
   }, [list, tokenList, search, selectChainId]);
 
   const displayPortfolios = useMemo(() => {
+    const combinedPortfolios = [
+      ...(portfolios || []),
+      ...(appPortfolios || []),
+    ].sort((m, n) => (n.netWorth || 0) - (m.netWorth || 0));
     if (selectChainId) {
-      return portfolios?.filter((item) => item.chain === selectChainId);
+      return combinedPortfolios?.filter((item) => item.chain === selectChainId);
     }
-    return portfolios;
-  }, [portfolios, selectChainId]);
+    return combinedPortfolios;
+  }, [portfolios, appPortfolios, selectChainId]);
+
+  const displayBlockedTokens = useMemo(() => {
+    if (selectChainId) {
+      return blockedTokens?.filter((item) => item.chain === selectChainId);
+    }
+    return blockedTokens;
+  }, [blockedTokens, selectChainId]);
+
+  const displayCustomizeTokens = useMemo(() => {
+    if (selectChainId) {
+      return customizeTokens?.filter((item) => item.chain === selectChainId);
+    }
+    return customizeTokens;
+  }, [customizeTokens, selectChainId]);
+
+  const isEmptyAssets =
+    !isTokensLoading &&
+    !displayTokenList.length &&
+    !isPortfoliosLoading &&
+    !displayPortfolios?.length &&
+    !displayBlockedTokens?.length &&
+    !displayCustomizeTokens?.length &&
+    !isAppPortfoliosLoading &&
+    !appPortfolios?.length;
+
+  React.useEffect(() => {
+    onEmptyAssets(isEmptyAssets && !lpTokenMode);
+  }, [isEmptyAssets, onEmptyAssets, lpTokenMode]);
 
   const sortTokens = useSortTokens(displayTokenList);
   const filteredPortfolios = useFilterProtocolList({
@@ -98,8 +151,25 @@ export const AssetListContainer: React.FC<Props> = ({
       inputRef.current?.setValue('');
       inputRef.current?.focus();
       inputRef.current?.blur();
+      setLpTokenMode(false);
     }
   }, [visible]);
+
+  useEffect(() => {
+    if (appPortfolios) {
+      setApps(
+        appPortfolios.map((item) => ({
+          logo: item.logo || '',
+          name: item.name,
+          id: item.id,
+          usd_value: item.netWorth || 0,
+        }))
+      );
+    }
+  }, [appPortfolios]);
+  const appIds = useMemo(() => {
+    return [...new Set(appPortfolios?.map((item) => item.id) || [])];
+  }, [appPortfolios]);
 
   const addTokenEntryRef = React.useRef<AddTokenEntryInst>(null);
 
@@ -111,6 +181,7 @@ export const AssetListContainer: React.FC<Props> = ({
     !isSearching &&
     !isTokensLoading &&
     !isPortfoliosLoading &&
+    !isAppPortfoliosLoading &&
     !!search &&
     !sortTokens.length &&
     !filteredPortfolios?.length;
@@ -118,23 +189,26 @@ export const AssetListContainer: React.FC<Props> = ({
   return (
     <div className={className}>
       <div className="flex items-center justify-between gap-x-12 widget-has-ant-input">
-        <TokenSearchInput
-          ref={inputRef}
-          onSearch={handleOnSearch}
-          onFocus={() => {
-            setIsFocus(true);
-          }}
-          onBlur={() => {
-            setIsFocus(false);
-          }}
-          className={isFocus || search ? 'w-[360px]' : 'w-[160px]'}
-        />
-        {isFocus || search ? null : <AddTokenEntry ref={addTokenEntryRef} />}
+        <div className="flex w-full items-center justify-between">
+          <div className="relative w-[60%] leading-[1]">
+            <TokenSearchInput
+              ref={inputRef}
+              placeholder={t('page.dashboard.assets.searchTokenPlaceholder')}
+              onSearch={handleOnSearch}
+              className="w-full"
+            />
+          </div>
+          <LpTokenSwitch
+            lpTokenMode={lpTokenMode}
+            onLpTokenModeChange={setLpTokenMode}
+          />
+        </div>
+        {/* {isFocus || search ? null : <AddTokenEntry ref={addTokenEntryRef} />} */}
       </div>
-      {isTokensLoading || isSearching ? (
+      {isTokensLoading || isSearching || (lpTokenMode && isAllTokenLoading) ? (
         <TokenListSkeleton />
       ) : (
-        <div className="mt-18">
+        <div className="mt-[12px]">
           <HomeTokenList
             list={sortTokens}
             onFocusInput={handleFocusInput}
@@ -142,10 +216,12 @@ export const AssetListContainer: React.FC<Props> = ({
               addTokenEntryRef.current?.startAddToken();
             }}
             isSearch={!!search}
+            lpTokenMode={lpTokenMode}
             isNoResults={isNoResults}
-            blockedTokens={blockedTokens}
-            customizeTokens={customizeTokens}
+            blockedTokens={displayBlockedTokens}
+            customizeTokens={displayCustomizeTokens}
             isTestnet={isTestnet}
+            selectChainId={selectChainId}
           />
         </div>
       )}
@@ -154,11 +230,21 @@ export const AssetListContainer: React.FC<Props> = ({
         style={{
           display: visible ? 'block' : 'none',
         }}
+        className="pt-[24px]"
       >
-        {isPortfoliosLoading ? (
+        {isPortfoliosLoading && isAppPortfoliosLoading ? (
           <TokenListSkeleton />
         ) : (
-          <ProtocolList isSearch={!!search} list={filteredPortfolios} />
+          <>
+            {visible && !search ? <HomePerpsPositionList /> : null}
+            <ProtocolList
+              removeProtocol={removeProtocol}
+              appIds={appIds}
+              isSearch={!!search}
+              list={filteredPortfolios}
+              className="mt-0"
+            />
+          </>
         )}
       </div>
     </div>

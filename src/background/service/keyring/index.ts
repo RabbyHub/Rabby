@@ -2,7 +2,7 @@
 
 import { EventEmitter } from 'events';
 import log from 'loglevel';
-import * as ethUtil from 'ethereumjs-util';
+import { stripHexPrefix } from '@ethereumjs/util';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { ObservableStore } from '@metamask/obs-store';
@@ -27,14 +27,19 @@ import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
 } from './eth-gnosis-keyring';
-import preference from '../preference';
+import preference, { Account } from '../preference';
 import i18n from '../i18n';
-import { KEYRING_TYPE, EVENTS, KEYRING_CLASS } from 'consts';
+import {
+  KEYRING_TYPE,
+  EVENTS,
+  KEYRING_CLASS,
+  HARDWARE_KEYRING_TYPES,
+} from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
 import contactBook from '../contactBook';
-import { generateAliasName } from '@/utils/account';
+import { filterKeyringData, generateAliasName } from '@/utils/account';
 import * as Sentry from '@sentry/browser';
 import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
 import { EthImKeyKeyring } from './eth-imkey-keyring/eth-imkey-keyring';
@@ -44,8 +49,10 @@ import {
   passwordEncrypt,
   passwordDecrypt,
   passwordClearKey,
+  PersistType,
 } from 'background/utils/password';
 import uninstalledMetricService from '../uninstalled';
+import { isEmpty } from 'lodash';
 
 const UNENCRYPTED_IGNORE_KEYRING = [
   KEYRING_TYPE.SimpleKeyring,
@@ -412,12 +419,12 @@ export class KeyringService extends EventEmitter {
    * @param {Object} opts - The constructor options for the keyring.
    * @returns {Promise<Keyring>} The new keyring.
    */
-  addNewKeyring(type: string, opts?: any): Promise<any> {
+  async addNewKeyring(type: string, opts?: any): Promise<any> {
     const Keyring = this.getKeyringClassForType(type);
     const keyring = new Keyring(
-      hasBridge(type)
+      (await hasBridge(type))
         ? {
-            bridge: getKeyringBridge(type),
+            bridge: await getKeyringBridge(type),
             ...(opts ?? {}),
           }
         : opts
@@ -477,8 +484,7 @@ export class KeyringService extends EventEmitter {
     const isIncluded = newAccountArray.find((account) => {
       return accounts.find(
         (key) =>
-          key === account.toLowerCase() ||
-          key === ethUtil.stripHexPrefix(account)
+          key === account.toLowerCase() || key === stripHexPrefix(account)
       );
     });
 
@@ -675,6 +681,21 @@ export class KeyringService extends EventEmitter {
       });
   }
 
+  async persistUpdate() {
+    if (!this.isUnlocked()) {
+      return Promise.reject(
+        new Error('KeyringController - password is not a string')
+      );
+    }
+
+    return this.persistAllKeyrings()
+      .then(this._updateMemStoreKeyrings.bind(this))
+      .then(this.fullUpdate.bind(this))
+      .catch((e) => {
+        return Promise.reject(e);
+      });
+  }
+
   //
   // SIGNING METHODS
   //
@@ -692,6 +713,29 @@ export class KeyringService extends EventEmitter {
   signTransaction(keyring, ethTx, _fromAddress, opts = {}) {
     const fromAddress = normalizeAddress(_fromAddress);
     return keyring.signTransaction(fromAddress, ethTx, opts);
+  }
+
+  signEip7702Authorization(
+    keyring,
+    authParams: {
+      from: string;
+      authorization: [chainId: number, contractAddress: string, nonce: number];
+    },
+    opts = {}
+  ) {
+    const address = normalizeAddress(authParams.from);
+    if (!keyring.signEip7702Authorization) {
+      return Promise.reject(
+        new Error(
+          `Keyring ${keyring.type} doesn't support signEip7702Authorization operation`
+        )
+      );
+    }
+    return keyring.signEip7702Authorization(
+      address,
+      authParams.authorization,
+      opts
+    );
   }
 
   /**
@@ -849,12 +893,17 @@ export class KeyringService extends EventEmitter {
     const encryptedString = await passwordEncrypt({
       data: serializedKeyrings,
       password: this.password,
+      persisted: true,
     });
 
     this.store.updateState({
       vault: encryptedString,
       unencryptedKeyringData,
       hasEncryptedKeyringData,
+    });
+
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.PERSIST_KEYRING,
     });
 
     return true;
@@ -879,6 +928,7 @@ export class KeyringService extends EventEmitter {
     const vault = await passwordDecrypt({
       password,
       encryptedData: encryptedVault,
+      persisted: true,
     });
     // TODO: FIXME
     await Promise.all(
@@ -920,9 +970,9 @@ export class KeyringService extends EventEmitter {
       Keyring?.type === KEYRING_CLASS.WALLETCONNECT
         ? new Keyring(GET_WALLETCONNECT_CONFIG())
         : new Keyring(
-            hasBridge(type)
+            (await hasBridge(type))
               ? {
-                  bridge: getKeyringBridge(type),
+                  bridge: await getKeyringBridge(type),
                 }
               : undefined
           );
@@ -1309,6 +1359,7 @@ export class KeyringService extends EventEmitter {
     const vault = await passwordEncrypt({
       data: unencryptedKeyringData,
       password,
+      persisted: true,
     });
 
     this.store.updateState({ vault, booted, hasEncryptedKeyringData: false });
@@ -1326,6 +1377,95 @@ export class KeyringService extends EventEmitter {
     return (this.store
       .getState()
       .unencryptedKeyringData?.map((item) => item.type) ?? []) as string[];
+  }
+
+  async getSyncVault(filteredAccounts: Account[]) {
+    const serializedKeyrings = await Promise.all(
+      this.keyrings.map((keyring) => {
+        return Promise.all([keyring.type, keyring.serialize()]).then(
+          async (serializedKeyringArray) => {
+            // Label the output values on each serialized Keyring:
+            return {
+              type: serializedKeyringArray[0] as string,
+              data: serializedKeyringArray[1] as any,
+              accounts: (await keyring.getAccounts()) as string[],
+            };
+          }
+        );
+      })
+    );
+
+    const accounts: string[] = [];
+
+    const syncKeyringData = serializedKeyrings
+      .map(({ type, data, accounts: _accounts }) => {
+        if (
+          filteredAccounts.find((item) =>
+            _accounts.find(
+              (address) =>
+                isSameAddress(address, item.address) && item.type === type
+            )
+          )
+        ) {
+          // clean mnemonic keyring
+          if (type === KEYRING_CLASS.MNEMONIC) {
+            data = {
+              mnemonic: data.mnemonic,
+              accountDetails: data.accountDetails,
+              publicKey: data.publicKey,
+            };
+          }
+
+          const currentAddresses = _accounts.filter((address) =>
+            filteredAccounts.find(
+              (item) =>
+                isSameAddress(address, item.address) && item.type === type
+            )
+          );
+          const currentData = filterKeyringData(data, currentAddresses);
+
+          accounts.push(...currentAddresses);
+
+          return { type, data: currentData };
+        }
+      })
+      .filter(Boolean) as KeyringSerializedData[];
+
+    const encryptedString = await passwordEncrypt({
+      data: syncKeyringData,
+      password: this.password,
+      persisted: false,
+    });
+
+    return { vault: encryptedString, accounts };
+  }
+
+  async encryptWithPassword(
+    content: any,
+    persisted?: boolean,
+    persistType?: PersistType
+  ) {
+    const encrypted = await passwordEncrypt({
+      data: content,
+      password: this.password,
+      persisted,
+      persistType,
+    });
+    return encrypted;
+  }
+
+  async decryptWithPassword(
+    str: string,
+    persisted?: boolean,
+    persistType?: PersistType
+  ) {
+    const decrypted = await passwordDecrypt({
+      encryptedData: str,
+      password: this.password,
+      persisted,
+      persistType,
+    });
+    return decrypted;
   }
 }
 

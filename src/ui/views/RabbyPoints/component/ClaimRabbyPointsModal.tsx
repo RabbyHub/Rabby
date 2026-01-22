@@ -18,7 +18,7 @@ import dayjs from 'dayjs';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { ClaimUserAvatar } from './ClaimUserAvatar';
 import { useRabbyPointsInvitedCodeCheck } from '../hooks';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
@@ -184,7 +184,7 @@ const ClaimPoints = ({
         .format('UTC+0 YYYY-MM-DD HH:mm:ss')
     : '';
 
-  const debounceInvitedCode = useDebounceValue(invitedCode, 200);
+  const debounceInvitedCode = useSyncStaleValue(invitedCode, 200);
   const { codeStatus, codeLoading } = useRabbyPointsInvitedCodeCheck(
     debounceInvitedCode
   );

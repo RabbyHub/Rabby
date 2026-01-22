@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Button, DrawerProps, Form, Input, message, Modal, Switch } from 'antd';
 import clsx from 'clsx';
@@ -14,7 +16,7 @@ import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconActivities } from 'ui/assets/dashboard/activities.svg';
 import { ReactComponent as RcIconPoints } from 'ui/assets/dashboard/rabby-points.svg';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
-
+import { ReactComponent as RCIconRabbyMobile } from 'ui/assets/dashboard/rabby-mobile.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
 import { ReactComponent as RcIconCustomRPC } from 'ui/assets/dashboard/custom-rpc.svg';
@@ -22,8 +24,11 @@ import { ReactComponent as RcIconCustomTestnet } from 'ui/assets/dashboard/icon-
 import { ReactComponent as RcIconPreferMetamask } from 'ui/assets/dashboard/icon-prefer-metamask.svg';
 import { ReactComponent as RcIconAutoLock } from 'ui/assets/dashboard/settings/icon-auto-lock.svg';
 import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings/lock.svg';
-import { ReactComponent as RcIconWhitelist } from 'ui/assets/dashboard/whitelist.svg';
+import { ReactComponent as RcIconSwitchPwdForNonWhitelistedTx } from 'ui/assets/dashboard/settings/switch-password-non-whitelisted-tx.svg';
+import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/dapp-switch-address.svg';
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
+import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
+import { ReactComponent as RcIconRabbyMobileCC } from 'ui/assets/settings/IconMobileSync-cc.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
@@ -34,7 +39,6 @@ import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import { ReactComponent as RcIconServerCC } from 'ui/assets/server-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { Checkbox, Field, PageHeader, Popup } from 'ui/component';
-import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
 import './style.less';
 
@@ -44,10 +48,12 @@ import { ReactComponent as RcIconSettingsAboutFollowUs } from 'ui/assets/dashboa
 import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets/dashboard/settings/supported-chains.svg';
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
 import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/settings/git-fork-cc.svg';
+import { ReactComponent as RcIconSettingsCodeCC } from 'ui/assets/dashboard/settings/code-cc.svg';
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
+import IconIntro from 'ui/assets/dashboard/dapp-account-intro.png';
 
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
@@ -59,6 +65,12 @@ import FeedbackPopup from '../Feedback';
 import { getChainList } from '@/utils/chain';
 import { SvgIconCross } from '@/ui/assets';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
+import { ga4 } from '@/utils/ga4';
+import { EcosystemBanner } from './components/EcosystemBanner';
+import { useMemoizedFn } from 'ahooks';
+import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
+import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
+import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -93,7 +105,6 @@ const useAutoLockOptions = () => {
 interface SettingsProps {
   visible?: boolean;
   onClose?: DrawerProps['onClose'];
-  onOpenBadgeModal: () => void;
 }
 
 const { confirm } = Modal;
@@ -117,7 +128,6 @@ const OpenApiModal = ({
   const [isVisible, setIsVisible] = useState(false);
   const [form] = useForm<{ host: string }>();
   const { t } = useTranslation();
-  const dispatch = useRabbyDispatch();
 
   title = title || t('page.dashboard.settings.backendServiceUrl');
 
@@ -200,6 +210,75 @@ const OpenApiModal = ({
           </Button>
         </div>
       </Form>
+    </div>
+  );
+};
+
+const DappAccountModal = ({
+  visible,
+  onFinish,
+  onCancel,
+}: {
+  visible: boolean;
+  onFinish(): void;
+  onCancel(): void;
+}) => {
+  const { useForm } = Form;
+  const [isVisible, setIsVisible] = useState(false);
+  const [form] = useForm<{ host: string }>();
+  const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
+
+  const handleSubmit = async () => {
+    setIsVisible(false);
+    dispatch.preference.enableDappAccount(true);
+    onFinish?.();
+  };
+
+  const handleCancel = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onCancel();
+    }, 500);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsVisible(visible);
+    }, 100);
+  }, [visible]);
+
+  return (
+    <div
+      className={clsx('dapp-account-modal flex flex-col', {
+        show: isVisible,
+        hidden: !visible,
+      })}
+    >
+      <PageHeader
+        closeable
+        onClose={handleCancel}
+        className="text-[16px] leading-[19px] mb-[20px]"
+        closeCn={'top-[-1px]'}
+      >
+        {t('page.dashboard.settings.DappAccount.title')}
+      </PageHeader>
+      <div className="flex-1">
+        <div className="text-r-neutral-body text-[13px] leading-[18px] text-center mb-[20px]">
+          {t('page.dashboard.settings.DappAccount.desc')}
+        </div>
+        <img src={IconIntro} alt="" />
+      </div>
+      <footer>
+        <Button
+          type="primary"
+          block
+          className="h-[48px] rounded-[8px] text-[16px]"
+          onClick={handleSubmit}
+        >
+          {t('page.dashboard.settings.DappAccount.button')}
+        </Button>
+      </footer>
     </div>
   );
 };
@@ -495,6 +574,8 @@ const SwitchLangModal = ({
 
 type SettingItem = {
   leftIcon: ThemeIconType;
+  leftIconClassName?: string;
+  leftIconStyle?: React.CSSProperties;
   content: React.ReactNode;
   description?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -504,8 +585,10 @@ type SettingItem = {
 const SettingsInner = ({
   visible,
   onClose,
-  onOpenBadgeModal,
-}: SettingsProps) => {
+  onPopupToggleShow,
+}: SettingsProps & {
+  onPopupToggleShow: (type: 'nonWhitelistedTxPwdModal') => void;
+}) => {
   const wallet = useWallet();
   const history = useHistory();
   const { t } = useTranslation();
@@ -516,12 +599,20 @@ const SettingsInner = ({
   const [isShowLangModal, setIsShowLangModal] = useState(false);
   const [isShowThemeModeModal, setIsShowThemeModeModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
-  const [whitelistEnable, setWhitelistEnable] = useState(true);
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
 
   const autoLockTime = useRabbySelector(
     (state) => state.preference.autoLockTime || 0
+  );
+
+  const isEnabledPwdForNonWhitelistedTx = useRabbySelector(
+    (state) => state.preference.isEnabledPwdForNonWhitelistedTx
+  );
+
+  const isEnabledDappAccount = useRabbySelector(
+    (state) => state.preference.isEnabledDappAccount
   );
   const locale = useRabbySelector((state) => state.preference.locale);
 
@@ -546,37 +637,46 @@ const SettingsInner = ({
     return LANGS.find((item) => item.code === locale)?.name;
   }, [locale]);
 
-  const handleSwitchWhitelistEnable = async (checked: boolean) => {
+  const handleTogglePwdForNonWhitelistedTx = useMemoizedFn(() => {
     matomoRequestEvent({
       category: 'Setting',
       action: 'clickToUse',
-      label: 'Whitelist',
+      label: 'PasswordForNonWhitelistedTx',
     });
-    reportSettings('Whitelist');
-    handleWhitelistEnableChange(checked);
-  };
 
-  const handleWhitelistEnableChange = async (value: boolean) => {
-    await AuthenticationModalPromise({
-      confirmText: t('global.confirm'),
-      cancelText: t('page.dashboard.settings.cancel'),
-      title: value
-        ? t('page.dashboard.settings.enableWhitelist')
-        : t('page.dashboard.settings.disableWhitelist'),
-      description: value
-        ? t('page.dashboard.settings.enableWhitelistTip')
-        : t('page.dashboard.settings.disableWhitelistTip'),
-      validationHandler: async (password: string) =>
-        await wallet.toggleWhitelist(password, value),
-      onFinished() {
-        setWhitelistEnable(value);
-      },
-      onCancel() {
-        // do nothing
-      },
-      wallet,
+    ga4.fireEvent('Password_For_NonWhitelisted_Tx', {
+      event_category: 'Click More',
     });
-  };
+
+    reportSettings('PasswordForNonWhitelistedTx');
+
+    // if (isEnabledPwdForNonWhitelistedTx) {
+    //   dispatch.preference.enablePwdForNonWhitelistedTx(false);
+    // } else {
+    //   setIsShowNonWhitelistedTxPwdModal(true);
+    // }
+    onPopupToggleShow('nonWhitelistedTxPwdModal');
+  });
+
+  const handleEnableDappAccount = useMemoizedFn(() => {
+    matomoRequestEvent({
+      category: 'Setting',
+      action: 'clickToUse',
+      label: 'DappAccount',
+    });
+
+    ga4.fireEvent('Dapp_Account', {
+      event_category: 'Click More',
+    });
+
+    reportSettings('DappAccount');
+
+    if (isEnabledDappAccount) {
+      dispatch.preference.enableDappAccount(false);
+    } else {
+      setIsShowDappAccountModal(true);
+    }
+  });
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -646,6 +746,10 @@ const SettingsInner = ({
     }
   };
 
+  const {
+    mockExposureRateGuide,
+    resetExposureRateGuide,
+  } = useMakeMockDataForRateGuideExposure();
   const renderData = {
     features: {
       label: t('page.dashboard.settings.features.label'),
@@ -660,6 +764,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Lock Wallet',
             });
+
+            ga4.fireEvent('More_LockWallet', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Lock Wallet');
           },
         },
@@ -673,6 +782,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Signature Record',
             });
+
+            ga4.fireEvent('More_SignatureRecord', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Signature Record');
           },
         },
@@ -686,16 +800,38 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Manage Address',
             });
+
+            ga4.fireEvent('More_ManageAddress', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Manage Address');
           },
         },
         {
-          leftIcon: RcIconPoints,
-          content: t('page.dashboard.settings.features.rabbyPoints'),
+          leftIcon: RcIconEcosystemCC,
+          leftIconClassName: 'text-r-neutral-body',
+          content: t('page.dashboard.settings.features.ecosystem'),
           onClick: () => {
-            history.push('/rabby-points');
+            setIsShowEcologyModal(true);
           },
         },
+        {
+          leftIcon: RcIconRabbyMobileCC,
+          leftIconClassName: 'text-r-neutral-body w-24 h-24',
+          leftIconStyle: { marginRight: '-2px', marginLeft: '-2px' },
+          content: t('page.dashboard.home.panel.mobile'),
+          onClick: () => {
+            openInternalPageInTab('sync');
+          },
+        },
+        // {
+        //   leftIcon: RcIconPoints,
+        //   content: t('page.dashboard.settings.features.rabbyPoints'),
+        //   onClick: () => {
+        //     history.push('/rabby-points');
+        //   },
+        // },
         {
           leftIcon: RcIconSettingsSearchDapps,
           content: t('page.dashboard.settings.features.searchDapps'),
@@ -705,6 +841,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Search Dapps',
             });
+
+            ga4.fireEvent('More_SearchDapps', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Search Dapps');
             openInternalPageInTab('dapp-search');
           },
@@ -719,6 +860,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Connected Dapps',
             });
+
+            ga4.fireEvent('More_ConnectedDapps', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Connected Dapps');
           },
         },
@@ -728,14 +874,25 @@ const SettingsInner = ({
       label: t('page.dashboard.settings.settings.label'),
       items: [
         {
-          leftIcon: RcIconWhitelist,
+          leftIcon: RcIconSwitchPwdForNonWhitelistedTx,
+          // Password for non-whitelisted transfers
           content: t(
-            'page.dashboard.settings.settings.enableWhitelistForSendingAssets'
+            'page.dashboard.settings.settings.switchPasswordForNonWhitelistedTx'
           ),
           rightIcon: (
             <Switch
-              checked={whitelistEnable}
-              onChange={handleSwitchWhitelistEnable}
+              checked={isEnabledPwdForNonWhitelistedTx}
+              onChange={handleTogglePwdForNonWhitelistedTx}
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconDappSwitchAddress,
+          content: t('page.dashboard.settings.settings.enableDappAccount'),
+          rightIcon: (
+            <Switch
+              checked={isEnabledDappAccount}
+              onChange={handleEnableDappAccount}
             />
           ),
         },
@@ -750,6 +907,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Custom Testnet',
             });
+
+            ga4.fireEvent('More_CustomTestnet', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Custom Testnet');
           },
         },
@@ -763,6 +925,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Custom RPC',
             });
+
+            ga4.fireEvent('More_CustomRPC', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Custom RPC');
           },
         },
@@ -775,6 +942,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Current Language',
             });
+
+            ga4.fireEvent('More_CurrentLanguage', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Current Language');
             setIsShowLangModal(true);
           },
@@ -802,6 +974,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Theme Mode',
             });
+
+            ga4.fireEvent('More_ThemeMode', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Theme Mode');
             setIsShowThemeModeModal(true);
           },
@@ -823,7 +1000,11 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconPreferMetamask,
-          content: t('page.dashboard.settings.settings.metamaskMode'),
+          content: (
+            <div className="text-[13px]">
+              {t('page.dashboard.settings.settings.metamaskMode')}
+            </div>
+          ),
           onClick: () => {
             history.push('/metamask-mode-dapps');
             matomoRequestEvent({
@@ -831,6 +1012,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'MetaMask Mode Dapps',
             });
+
+            ga4.fireEvent('More_MetaMaskModeDapps', {
+              event_category: 'Click More',
+            });
+
             reportSettings('MetaMask Mode Dapps');
           },
         },
@@ -843,6 +1029,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Auto lock time',
             });
+
+            ga4.fireEvent('More_AutoLockTime', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Auto lock time');
             setIsShowAutoLockModal(true);
           },
@@ -870,6 +1061,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Reset Account',
             });
+
+            ga4.fireEvent('More_ResetAccount', {
+              event_category: 'Click More',
+            });
+
             setShowResetAccountModal(true);
             reportSettings('Reset Account');
           },
@@ -917,6 +1113,44 @@ const SettingsInner = ({
           onClick: handleClickClearWatchMode,
         },
         {
+          leftIcon: RcIconSettingsCodeCC,
+          content: (
+            <div className="flex-shrink-0">Mock Exposure Rate Guidance</div>
+          ),
+          rightIcon: (
+            <div className="flex items-center justify-end gap-8">
+              <Button
+                type="link"
+                danger
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  mockExposureRateGuide();
+                  message.success({
+                    className: 'toast-message-2025',
+                    content: 'Mock exposure rate guide data',
+                  });
+                }}
+              >
+                Mock
+              </Button>
+              <Button
+                type="primary"
+                ghost
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  resetExposureRateGuide();
+                  message.success({
+                    className: 'toast-message-2025',
+                    content: 'Reset exposure rate guide mock data',
+                  });
+                }}
+              >
+                Reset
+              </Button>
+            </div>
+          ),
+        },
+        {
           leftIcon: RcIconSettingsGitForkCC,
           content: <span>Git Build Hash</span>,
           rightIcon: (
@@ -926,6 +1160,15 @@ const SettingsInner = ({
               </span>
             </>
           ),
+        },
+        {
+          leftIcon: RcIconSettingsGitForkCC,
+          content: <span>CreateAgent Wallet</span>,
+          onClick: async () => {
+            const currentAddress =
+              (await wallet.getCurrentAccount())?.address || '';
+            await wallet.createPerpsAgentWallet(currentAddress);
+          },
         },
         {
           leftIcon: RcIconSettingsGitForkCC,
@@ -948,6 +1191,17 @@ const SettingsInner = ({
             message.success('sendPersonalMessage result: ' + result.txHash);
           },
         },
+        {
+          leftIcon: RcIconSettingsGitForkCC,
+          content: 'Reset Perps Store',
+          onClick: async () => {
+            await wallet.resetPerpsStore();
+            message.success('Perps Store reset successfully');
+            setTimeout(() => {
+              window.close();
+            }, 1500);
+          },
+        },
       ] as SettingItem[],
     },
     about: {
@@ -962,6 +1216,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'feedback',
             });
+
+            ga4.fireEvent('More_Feedback', {
+              event_category: 'Click More',
+            });
+
             reportSettings('feedback');
             openInTab('https://debank.com/hi/0a110032');
           },
@@ -982,6 +1241,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Current Version',
             });
+
+            ga4.fireEvent('More_CurrentVersion', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Current Version');
           },
           rightIcon: (
@@ -1029,6 +1293,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Supported Chains',
             });
+
+            ga4.fireEvent('More_SupportedChains', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Supported Chains');
           },
           rightIcon: (
@@ -1062,6 +1331,11 @@ const SettingsInner = ({
                     action: 'clickToUse',
                     label: 'Find us|Twitter',
                   });
+
+                  ga4.fireEvent('More_FindUsTwitter', {
+                    event_category: 'Click More',
+                  });
+
                   reportSettings('twitter');
                 }}
                 className="ml-12 group"
@@ -1085,6 +1359,11 @@ const SettingsInner = ({
                     action: 'clickToUse',
                     label: 'Find us|Discord',
                   });
+
+                  ga4.fireEvent('More_FindUsDiscord', {
+                    event_category: 'Click More',
+                  });
+
                   reportSettings('discord');
                 }}
                 className="ml-12 group"
@@ -1111,11 +1390,6 @@ const SettingsInner = ({
   }
 
   const lockWallet = async () => {
-    matomoRequestEvent({
-      category: 'Setting',
-      action: 'clickToUse',
-      label: 'lockWallet',
-    });
     reportSettings('lockWallet');
     await wallet.lockWallet();
     history.push('/unlock');
@@ -1127,21 +1401,22 @@ const SettingsInner = ({
     onClose && onClose(e);
   };
 
-  const initWhitelistEnabled = async () => {
-    const enabled = await wallet.isWhitelistEnabled();
-    setWhitelistEnable(enabled);
-  };
-
   useEffect(() => {
-    initWhitelistEnabled();
     dispatch.openapi.getHost();
     dispatch.openapi.getTestnetHost();
-  }, []);
+  }, [dispatch.openapi]);
+
+  const [isShowEcology, setIsShowEcologyModal] = React.useState(false);
 
   return (
     <div className="popup-settings">
       <div className="content">
         {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
+        <EcosystemBanner
+          isVisible={isShowEcology}
+          onClose={() => setIsShowEcologyModal(false)}
+        />
+        <RateModalTriggerOnSettings className="mb-[16px]" />
         {Object.values(renderData).map((group, idxl1) => {
           return (
             <div key={`g-${idxl1}`} className="setting-block">
@@ -1151,7 +1426,11 @@ const SettingsInner = ({
                   <Field
                     key={`g-${idxl1}-item-${idxl2}`}
                     leftIcon={
-                      <ThemeIcon src={data.leftIcon} className="icon" />
+                      <ThemeIcon
+                        src={data.leftIcon}
+                        className={clsx('icon', data.leftIconClassName)}
+                        style={data.leftIconStyle}
+                      />
                     }
                     rightIcon={
                       data.rightIcon || (
@@ -1192,6 +1471,13 @@ const SettingsInner = ({
         onCancel={() => {
           setContactsVisible(false);
         }}
+      />
+      <DappAccountModal
+        visible={isShowDappAccountModal}
+        onFinish={() => {
+          setIsShowDappAccountModal(false);
+        }}
+        onCancel={() => setIsShowDappAccountModal(false)}
       />
       <OpenApiModal
         visible={showOpenApiModal}
@@ -1235,6 +1521,7 @@ const SettingsInner = ({
         onCancel={() => setIsShowThemeModeModal(false)}
       />
       <RecentConnections
+        canBack={true}
         visible={connectedDappsVisible}
         onClose={() => {
           setConnectedDappsVisible(false);
@@ -1250,18 +1537,41 @@ const SettingsInner = ({
 
 const Settings = (props: SettingsProps) => {
   const { visible, onClose } = props;
+
+  const [
+    isShowNonWhitelistedTxPwdModal,
+    setIsShowNonWhitelistedTxPwdModal,
+  ] = useState(false);
+
   return (
-    <Popup
-      visible={visible}
-      onClose={onClose}
-      height={488}
-      bodyStyle={{ height: '100%', padding: '20px 20px 0 20px' }}
-      destroyOnClose
-      className="settings-popup-wrapper"
-      isSupportDarkMode
-    >
-      <SettingsInner {...props} />
-    </Popup>
+    <>
+      <Popup
+        visible={visible}
+        onClose={onClose}
+        height={488}
+        bodyStyle={{ height: '100%', padding: '20px 20px 0 20px' }}
+        destroyOnClose
+        className="settings-popup-wrapper"
+        isSupportDarkMode
+      >
+        <SettingsInner
+          {...props}
+          onPopupToggleShow={(type) => {
+            if (type === 'nonWhitelistedTxPwdModal') {
+              setIsShowNonWhitelistedTxPwdModal(true);
+            }
+          }}
+        />
+      </Popup>
+
+      <PwdForNonWhitelistedTxModal
+        visible={isShowNonWhitelistedTxPwdModal}
+        onFinish={() => {
+          setIsShowNonWhitelistedTxPwdModal(false);
+        }}
+        onCancel={() => setIsShowNonWhitelistedTxPwdModal(false)}
+      />
+    </>
   );
 };
 

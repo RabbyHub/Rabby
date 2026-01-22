@@ -6,8 +6,8 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import { Input, Skeleton } from 'antd';
-import { TokenItem } from 'background/service/openapi';
+import { DrawerProps, Input, Skeleton } from 'antd';
+import { TokenItem, TokenItemWithEntity } from 'background/service/openapi';
 import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector, { isSwapTokenType } from '../TokenSelector';
@@ -15,13 +15,17 @@ import styled from 'styled-components';
 import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 import { useTokens } from '@/ui/utils/portfolio/token';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { uniqBy } from 'lodash';
 import { CHAINS_ENUM } from '@/constant';
 import useSearchToken from '@/ui/hooks/useSearchToken';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { useAsync } from 'react-use';
-import { useWallet } from '@/ui/utils';
+import { getUiType, useWallet } from '@/ui/utils';
+import { isAddress } from 'viem/utils';
+import { useTranslation } from 'react-i18next';
+import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
+const isTab = getUiType().isTab;
 
 const Wrapper = styled.div`
   background-color: transparent;
@@ -81,6 +85,8 @@ interface CommonProps {
   disabledTips?: React.ReactNode;
   drawerHeight?: string | number;
   supportChains?: CHAINS_ENUM[];
+  getContainer?: DrawerProps['getContainer'];
+  onStartSelectChain?: () => void;
 }
 
 interface BridgeFromProps extends CommonProps {
@@ -118,6 +124,8 @@ const TokenSelect = forwardRef<
       disabledTips = 'Not supported',
       drawerHeight,
       supportChains,
+      getContainer,
+      onStartSelectChain,
     },
     ref
   ) => {
@@ -126,19 +134,30 @@ const TokenSelect = forwardRef<
       chainServerId: chainId,
     });
     const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
+    const [initLoading, setInitLoading] = useState(true);
     const [updateNonce, setUpdateNonce] = useState(0);
-    const currentAccount = useRabbySelector(
-      (state) => state.account.currentAccount
-    );
+    const [lpTokenMode, setLpTokenMode] = useState(false);
+    const { currentAccount } = useRabbySelector((s) => ({
+      currentAccount: s.account.currentAccount,
+    }));
     const wallet = useWallet();
+    const { t } = useTranslation();
+    const isFromMode = useMemo(() => {
+      return type === 'swapFrom' || type === 'bridgeFrom' || type === 'send';
+    }, [type]);
 
     useImperativeHandle(ref, () => ({
       openTokenModal: setTokenSelectorVisible,
     }));
 
+    useEffect(() => {
+      setInitLoading(!tokenSelectorVisible);
+    }, [tokenSelectorVisible]);
+
     const handleCurrentTokenChange = (token: TokenItem) => {
       onChange && onChange('');
       onTokenChange(token);
+      setLpTokenMode(false);
       setTokenSelectorVisible(false);
 
       // const chainItem = findChainByServerID(token.chain);
@@ -151,6 +170,7 @@ const TokenSelect = forwardRef<
         ...prev,
         chainServerId: chainId,
       }));
+      setLpTokenMode(false);
     };
 
     const handleSelectToken = () => {
@@ -163,12 +183,20 @@ const TokenSelect = forwardRef<
     const isSwapType = isSwapTokenType(type);
 
     // when no any queryConds
-    const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
+    const {
+      tokens: allTokens,
+      isLoading: isLoadingAllTokens,
+      isAllTokenLoading, // 包含lp Token的请求
+    } = useTokens(
       useSwapTokenList ? undefined : currentAccount?.address,
       undefined,
       tokenSelectorVisible,
       updateNonce,
-      queryConds.chainServerId
+      queryConds.chainServerId,
+      undefined,
+      isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
+      undefined,
+      !!queryConds.keyword
     );
 
     const {
@@ -197,11 +225,25 @@ const TokenSelect = forwardRef<
     const {
       isLoading: isSearchLoading,
       list: searchedTokenByQuery,
-    } = useSearchToken(
-      currentAccount?.address,
-      queryConds.keyword,
-      queryConds.chainServerId,
-      isSwapType || type === 'bridgeFrom' ? false : true
+    } = useSearchToken(currentAccount?.address, queryConds.keyword, {
+      chainServerId: queryConds.chainServerId,
+      withBalance: isSwapType || type === 'bridgeFrom' ? false : true,
+    });
+
+    const isSwapTo = type === 'swapTo';
+
+    const {
+      value: remoteSwapToSearchTokens,
+      loading: remoteSwapToSearchTokensLoading,
+    } = useAsync(
+      () =>
+        queryConds?.keyword && isSwapTo
+          ? wallet.openapi.searchTokensV2({
+              q: queryConds?.keyword,
+              chain_id: queryConds.chainServerId || '',
+            })
+          : Promise.resolve([] as TokenItemWithEntity[]),
+      [queryConds?.keyword, isSwapTo, queryConds?.chainServerId]
     );
 
     const availableToken = useMemo(() => {
@@ -212,28 +254,51 @@ const TokenSelect = forwardRef<
         : allDisplayTokens;
       return uniqBy(
         queryConds.keyword
-          ? searchedTokenByQuery.map(abstractTokenToTokenItem)
+          ? isSwapTo
+            ? remoteSwapToSearchTokens
+                ?.filter((e) => e.chain === queryConds.chainServerId)
+                .filter((e) =>
+                  isAddress(queryConds.keyword, { strict: false })
+                    ? true
+                    : !!e.is_core
+                )
+            : concatAndSort(
+                searchedTokenByQuery.map(abstractTokenToTokenItem),
+                allTokens,
+                queryConds.keyword
+              )
           : allTokens,
         (token) => {
           return `${token.chain}-${token.id}`;
         }
       ).filter((e) => !excludeTokens.includes(e.id));
-    }, [allDisplayTokens, searchedTokenByQuery, excludeTokens, queryConds]);
+    }, [
+      allDisplayTokens,
+      searchedTokenByQuery,
+      excludeTokens,
+      queryConds,
+      isSwapTo,
+      remoteSwapToSearchTokens,
+    ]);
 
     const displaySortedTokenList = useSortToken(availableToken);
 
     const displayTokenList = useMemo(() => {
-      if (type === 'swapTo') {
+      if (isSwapTo) {
         return availableToken;
       }
-      return displaySortedTokenList;
-    }, [availableToken, displaySortedTokenList, type]);
+      return displaySortedTokenList?.length
+        ? displaySortedTokenList
+        : availableToken;
+    }, [availableToken, displaySortedTokenList, isSwapTo]);
 
-    const isListLoading = queryConds.keyword
-      ? isSearchLoading
-      : useSwapTokenList
-      ? swapTokenListLoading
-      : isLoadingAllTokens;
+    const isListLoading =
+      !!(queryConds.keyword
+        ? isSearchLoading || remoteSwapToSearchTokensLoading
+        : useSwapTokenList
+        ? swapTokenListLoading
+        : isLoadingAllTokens || (lpTokenMode && isAllTokenLoading)) ||
+      initLoading;
 
     const handleSearchTokens = React.useCallback(async (ctx) => {
       setQueryConds({
@@ -266,23 +331,26 @@ const TokenSelect = forwardRef<
           {typeof tokenRender === 'function'
             ? tokenRender?.({ token, openTokenModal: handleSelectToken })
             : tokenRender}
-          {type === 'bridgeFrom' && !queryConds.chainServerId ? null : (
-            <TokenSelector
-              drawerHeight={drawerHeight}
-              visible={tokenSelectorVisible}
-              list={displayTokenList}
-              onConfirm={handleCurrentTokenChange}
-              onCancel={handleTokenSelectorClose}
-              onSearch={handleSearchTokens}
-              isLoading={isListLoading}
-              type={type}
-              placeholder={placeholder}
-              chainId={queryConds.chainServerId!}
-              disabledTips={disabledTips}
-              supportChains={supportChains}
-              excludeTokens={excludeTokens}
-            />
-          )}
+          <TokenSelector
+            drawerHeight={drawerHeight}
+            visible={tokenSelectorVisible}
+            mainnetTokenList={displayTokenList}
+            onConfirm={handleCurrentTokenChange}
+            onCancel={handleTokenSelectorClose}
+            onSearch={handleSearchTokens}
+            isLoading={isListLoading}
+            type={type}
+            placeholder={placeholder}
+            chainId={queryConds.chainServerId!}
+            disabledTips={disabledTips}
+            supportChains={supportChains}
+            excludeTokens={excludeTokens}
+            getContainer={getContainer}
+            lpTokenMode={lpTokenMode}
+            setLpTokenMode={setLpTokenMode}
+            showLpTokenSwitch={isFromMode}
+            onStartSelectChain={onStartSelectChain}
+          />
         </>
       );
     }
@@ -307,7 +375,7 @@ const TokenSelect = forwardRef<
               </TokenWrapper>
             ) : (
               <SelectTips>
-                <span>Select Token</span>
+                <span>{t('page.sendToken.selectToken')}</span>
                 <SvgIconArrowDownTriangle className="brightness-[100] ml-[7px]" />
               </SelectTips>
             )}
@@ -325,7 +393,7 @@ const TokenSelect = forwardRef<
               className="h-[30px] max-w-"
               readOnly={type === 'swapTo'}
               placeholder={'0'}
-              autoFocus={type !== 'swapTo'}
+              autoFocus={type !== 'swapTo' && !isTab}
               autoCorrect="false"
               autoComplete="false"
               value={value ?? input}
@@ -333,23 +401,25 @@ const TokenSelect = forwardRef<
             />
           )}
         </Wrapper>
-        {type === 'bridgeFrom' && !queryConds.chainServerId ? null : (
-          <TokenSelector
-            visible={tokenSelectorVisible}
-            list={displayTokenList}
-            onConfirm={handleCurrentTokenChange}
-            onCancel={handleTokenSelectorClose}
-            onSearch={handleSearchTokens}
-            isLoading={isListLoading}
-            type={type}
-            placeholder={placeholder}
-            chainId={queryConds.chainServerId!}
-            disabledTips={disabledTips}
-            supportChains={supportChains}
-            drawerHeight={drawerHeight}
-            excludeTokens={excludeTokens}
-          />
-        )}
+        <TokenSelector
+          visible={tokenSelectorVisible}
+          mainnetTokenList={displayTokenList}
+          onConfirm={handleCurrentTokenChange}
+          onCancel={handleTokenSelectorClose}
+          onSearch={handleSearchTokens}
+          isLoading={isListLoading}
+          type={type}
+          placeholder={placeholder}
+          chainId={queryConds.chainServerId!}
+          disabledTips={disabledTips}
+          supportChains={supportChains}
+          drawerHeight={drawerHeight}
+          excludeTokens={excludeTokens}
+          lpTokenMode={lpTokenMode}
+          setLpTokenMode={setLpTokenMode}
+          showLpTokenSwitch={isFromMode}
+          onStartSelectChain={onStartSelectChain}
+        />
       </>
     );
   }

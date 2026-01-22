@@ -1,19 +1,33 @@
-import { useState } from 'react';
-import { useGasAccountSign } from './index';
-import { useAsyncFn, useDebounce } from 'react-use';
+import { useEffect, useState } from 'react';
+import { useGasAccountMethods, useGasAccountSign } from './index';
+import { useAsyncFn, useCss, useDebounce } from 'react-use';
 import { useWallet } from '@/ui/utils';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
+import React from 'react';
+import { Modal } from 'antd';
+import clsx from 'clsx';
+import { Account } from '@/background/service/preference';
+import { useRequest } from 'ahooks';
+import { nanoid } from 'nanoid';
+
+export const GAS_ACCOUNT_INSUFFICIENT_TIP =
+  'Gas balance is not enough for transaction';
 
 export const useGasAccountTxsCheck = ({
   isReady,
   txs,
   noCustomRPC,
   isSupportedAddr,
+  currentAccount,
 }: {
   isReady: boolean;
   txs: Tx[];
   noCustomRPC: boolean;
   isSupportedAddr: boolean;
+  currentAccount: Account;
 }) => {
   const wallet = useWallet();
   const [gasMethod, setGasMethod] = useState<'native' | 'gasAccount'>('native');
@@ -22,26 +36,34 @@ export const useGasAccountTxsCheck = ({
     !!sig && !!accountId
   );
 
-  const [{ value: gasAccountCost }, gasAccountCostFn] = useAsyncFn(async () => {
-    if (!isReady) {
-      return;
-    }
-    if (!sig || !accountId) {
-      setIsGasAccountLogin(false);
-    }
-    return wallet.openapi.checkGasAccountTxs({
-      sig: sig || '',
-      account_id: accountId!,
-      tx_list: txs,
-    });
-  }, [sig, accountId, isReady, txs]);
+  const [isFirstGasCostLoading, setIsFirstGasCostLoading] = useState(true);
+  const gasAccountAddress = accountId || currentAccount.address;
 
-  useDebounce(
-    () => {
-      gasAccountCostFn();
+  const { data: gasAccountCost, runAsync: gasAccountCostFn } = useRequest(
+    async () => {
+      if (!isReady) {
+        return;
+      }
+      if (!sig || !accountId) {
+        setIsGasAccountLogin(false);
+      }
+      const res = await wallet.openapi.checkGasAccountTxs({
+        sig: sig || '',
+        account_id: gasAccountAddress,
+        tx_list: txs,
+      });
+
+      return res;
     },
-    300,
-    [sig, accountId, isReady, txs]
+    {
+      debounceWait: 300,
+      refreshDeps: [sig, accountId, isReady, txs],
+      onFinally() {
+        if (isReady) {
+          setIsFirstGasCostLoading(false);
+        }
+      },
+    }
   );
 
   const gasAccountCanPay =
@@ -50,7 +72,8 @@ export const useGasAccountTxsCheck = ({
     noCustomRPC &&
     !!gasAccountCost?.balance_is_enough &&
     !gasAccountCost.chain_not_support &&
-    !!gasAccountCost.is_gas_account;
+    !!gasAccountCost.is_gas_account &&
+    !gasAccountCost.err_msg;
 
   const canGotoUseGasAccount =
     isSupportedAddr &&
@@ -58,6 +81,13 @@ export const useGasAccountTxsCheck = ({
     !!gasAccountCost?.balance_is_enough &&
     !gasAccountCost.chain_not_support &&
     !!gasAccountCost.is_gas_account;
+
+  const canDepositUseGasAccount =
+    isSupportedAddr &&
+    noCustomRPC &&
+    gasAccountCost &&
+    !gasAccountCost?.balance_is_enough &&
+    !gasAccountCost.chain_not_support;
 
   return {
     gasAccountCost,
@@ -67,5 +97,98 @@ export const useGasAccountTxsCheck = ({
     setIsGasAccountLogin,
     gasAccountCanPay,
     canGotoUseGasAccount,
+    canDepositUseGasAccount,
+    gasAccountCostFn,
+    gasAccountAddress,
+    sig,
+    isFirstGasCostLoading,
   };
+};
+
+export const useLoginDepositConfirm = (params: {
+  onGotoGasAccount?: () => void;
+}) => {
+  const { t } = useTranslation();
+  const currentAccount = useCurrentAccount();
+  const { login } = useGasAccountMethods();
+
+  const history = useHistory();
+  const gotoGasAccount = React.useCallback(() => {
+    params?.onGotoGasAccount?.();
+    history.push({
+      pathname: '/gas-account',
+      search: `?resetKey=${nanoid()}`,
+    });
+  }, [params?.onGotoGasAccount]);
+
+  const depositCn = useCss({
+    '& .ant-modal-content': {
+      background: 'var(--r-neutral-bg1, #FFF)',
+      borderRadius: '16px',
+    },
+    '& .ant-modal-confirm-title': {
+      color: 'var(--r-neutral-title1, #192945)',
+      textAlign: 'center',
+      fontSize: '15px',
+      fontStyle: 'normal',
+      fontWeight: 500,
+      lineHeight: 'normal',
+    },
+    '& .ant-modal-body': {
+      padding: '24px 16px 20px 16px',
+    },
+    '& .ant-modal-confirm-content': {
+      padding: '4px 0 0 0',
+    },
+    '& .ant-modal-confirm-btns': {
+      justifyContent: 'center',
+      '.ant-btn-primary': {
+        width: '260px',
+        height: '40px',
+      },
+    },
+  });
+
+  const modalConfirm = React.useCallback(
+    (type: 'login' | 'deposit') => {
+      const isLogin = type === 'login';
+      const title = isLogin
+        ? t('page.signFooterBar.gasAccount.loginTips')
+        : t('page.signFooterBar.gasAccount.depositTips');
+      Modal.confirm({
+        width: 320,
+        closable: false,
+        centered: true,
+        className: depositCn,
+        title: title,
+        content: null,
+        focusTriggerAfterClose: false,
+        okButtonProps: {
+          autoFocus: false,
+        },
+        cancelButtonProps: {
+          ghost: true,
+          className: clsx(
+            'h-[40px] border-blue-light text-blue-light',
+            'hover:bg-r-blue-light1 active:bg-[#0000001A]',
+            'rounded-[6px]',
+            'before:content-none',
+            'flex items-center justify-center'
+          ),
+        },
+        cancelText: t('global.Cancel'),
+        okText: t('global.Confirm'),
+        onOk() {
+          if (isLogin && currentAccount) {
+            login(currentAccount);
+          } else {
+            gotoGasAccount();
+          }
+        },
+      });
+    },
+    [t, depositCn, login, gotoGasAccount]
+  );
+
+  return modalConfirm;
 };

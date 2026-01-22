@@ -161,10 +161,12 @@ export const checkBridgeStatus = async ({
       const receipt = await clientL2.getTransactionReceipt({
         hash: l2Hash as `0x${string}`,
       });
-      return clientL1.getWithdrawalStatus({
+
+      const res = await clientL1.getWithdrawalStatus({
         receipt,
         targetChain: clientL2.chain as any,
       });
+      return res;
     } catch (e) {
       console.error(e);
       return 'withdraw-pending' as const;

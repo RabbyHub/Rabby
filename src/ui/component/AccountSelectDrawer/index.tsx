@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Drawer, Button } from 'antd';
+import { Drawer, Button, DrawerProps } from 'antd';
 import BN from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import FieldCheckbox from 'ui/component/FieldCheckbox';
@@ -15,6 +15,7 @@ import { useWalletConnectIcon } from '../WalletConnect/useWalletConnectIcon';
 import { findChain } from '@/utils/chain';
 import { ReactComponent as RcIconEmpty } from '@/ui/assets/empty-cc.svg';
 import clsx from 'clsx';
+import { sortBy } from 'lodash';
 
 interface AccountSelectDrawerProps {
   onChange(account: Account): void;
@@ -23,6 +24,8 @@ interface AccountSelectDrawerProps {
   visible: boolean;
   isLoading?: boolean;
   networkId: string;
+  owners?: string[];
+  getContainer?: DrawerProps['getContainer'];
 }
 
 interface AccountItemProps {
@@ -70,7 +73,8 @@ export const AccountItem = ({
         method: 'eth_getBalance',
         params: [account.address, 'latest'],
       },
-      chain.serverId
+      chain.serverId,
+      account
     );
     setNativeTokenBalance(new BN(balanceInWei).div(1e18).toFixed());
   };
@@ -137,6 +141,8 @@ const AccountSelectDrawer = ({
   visible,
   isLoading = false,
   networkId,
+  owners,
+  getContainer,
 }: AccountSelectDrawerProps) => {
   const [checkedAccount, setCheckedAccount] = useState<Account | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -145,19 +151,28 @@ const AccountSelectDrawer = ({
 
   const init = async () => {
     const visibleAccounts: Account[] = await wallet.getAllVisibleAccountsArray();
-    const watches: Account[] = [];
-    const others: Account[] = [];
-    for (let i = 0; i < visibleAccounts.length; i++) {
-      const account = visibleAccounts[i];
-      if (account.type !== KEYRING_TYPE.GnosisKeyring) {
-        if (account.type === KEYRING_TYPE.WatchAddressKeyring) {
-          watches.push(account);
-        } else {
-          others.push(account);
+    const result = sortBy(
+      visibleAccounts.filter(
+        (account) => account.type !== KEYRING_TYPE.GnosisKeyring
+      ),
+      (account) => {
+        return owners?.find((address) =>
+          isSameAddress(address, account.address)
+        )
+          ? -1
+          : 1;
+      },
+      (account) => {
+        if (account.type === KEYRING_TYPE.HdKeyring) {
+          return 1;
         }
+        if (account.type === KEYRING_TYPE.SimpleKeyring) {
+          return 2;
+        }
+        return account.type === KEYRING_TYPE.WatchAddressKeyring ? 10 : 3;
       }
-    }
-    setAccounts([...others, ...watches]);
+    );
+    setAccounts(result);
   };
 
   const handleSelectAccount = (account: Account) => {
@@ -166,7 +181,7 @@ const AccountSelectDrawer = ({
 
   useEffect(() => {
     init();
-  }, []);
+  }, [owners]);
 
   return (
     <Drawer
@@ -176,6 +191,7 @@ const AccountSelectDrawer = ({
       placement="bottom"
       maskClosable
       onClose={onCancel}
+      getContainer={getContainer}
     >
       <div className="title">{title}</div>
       <div className="list">

@@ -17,13 +17,17 @@ import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus'
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
   address: string;
   chainId?: number;
+  nonce?: string;
+  from?: string;
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
+  $account: Account;
   $ctx?: any;
   extra?: Record<string, any>;
   signingTxId?: string;
@@ -35,7 +39,13 @@ interface ApprovalParams {
   };
 }
 
-const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
+const CoinbaseWaiting = ({
+  params,
+  account: $account,
+}: {
+  params: ApprovalParams;
+  account: Account;
+}) => {
   const { setHeight, setVisible, closePopup } = useCommonPopupView();
   const wallet = useWallet();
   const [connectStatus, setConnectStatus] = useState(
@@ -63,9 +73,7 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
   const { t } = useTranslation();
 
   const initWalletConnect = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
     const status = await wallet.getWalletConnectStatus(
       account.address,
       account.brandName
@@ -85,19 +93,17 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
     rejectApproval('user cancel');
   };
 
-  const handleRetry = async () => {
+  const handleRetry = async (retry?: boolean) => {
     setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
     setConnectError(null);
-    await wallet.resendSign();
+    await wallet.resendSign(retry);
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
     emitSignComponentAmounted();
   };
 
   const init = async () => {
     const approval = await getApproval();
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
 
     setCurrentAccount(account);
 
@@ -175,6 +181,14 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
         action: 'Submit',
         label: chainInfo?.isTestnet ? 'Custom Network' : 'Integrated Network',
       });
+
+      ga4.fireEvent(
+        `Submit_${chainInfo?.isTestnet ? 'Custom' : 'Integrated'}`,
+        {
+          event_category: 'Transaction',
+        }
+      );
+
       isSignTriggered = true;
     }
     if (isText && !isSignTriggered) {
@@ -191,7 +205,7 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
 
   useEffect(() => {
     init();
-    setHeight(360);
+    setHeight('fit-content');
   }, []);
 
   useEffect(() => {
@@ -226,6 +240,9 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
             onCancel={handleCancel}
             account={currentAccount}
             onDone={() => setIsClickDone(true)}
+            chainId={params?.chainId}
+            nonce={params?.nonce}
+            from={params?.from}
           />
         )}
       </div>

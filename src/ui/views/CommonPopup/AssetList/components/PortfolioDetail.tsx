@@ -48,6 +48,8 @@ const TokenListWrapper = styled.div`
   .header {
     display: flex;
     margin-top: 16px;
+    padding-left: 4px;
+    padding-right: 4px;
     .td {
       font-size: 12px;
       line-height: 14px;
@@ -64,6 +66,8 @@ const TokenListWrapper = styled.div`
   .row {
     display: flex;
     margin-bottom: 16px;
+    padding-left: 4px;
+    padding-right: 4px;
     .td {
       width: 120px;
       font-size: 13px;

@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import './style.less';
 import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
 import { Button, message } from 'antd';
@@ -14,6 +13,9 @@ import {
 } from '@/constant';
 import IconSuccess from 'ui/assets/success.svg';
 import { useHistory } from 'react-router-dom';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { UI_TYPE } from '@/constant/ui';
+import { useHandleDeleteHdKeyringAndSimpleKeyringAccount } from '@/ui/hooks/useDeleteHdOrPrivateKeyringAddress';
 
 type AddressDeleteProps = {
   brandName?: string;
@@ -31,6 +33,7 @@ export const AddressDelete = ({
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const history = useHistory();
+  const { getContainer } = usePopupContainer();
 
   const handleDeleteAddress = async () => {
     await wallet.removeAddress(
@@ -49,32 +52,40 @@ export const AddressDelete = ({
       duration: 0.5,
     });
     setVisible(false);
-    setTimeout(() => {
-      history.goBack();
-    }, 500);
+    if (UI_TYPE.isDesktop) {
+      history.replace(history.location.pathname);
+    } else {
+      setTimeout(() => {
+        history.goBack();
+      }, 500);
+    }
   };
+
+  const {
+    deleteAccount,
+    renderDelete,
+  } = useHandleDeleteHdKeyringAndSimpleKeyringAccount();
 
   const handleClickDelete = async () => {
     if (
       type === KEYRING_TYPE.HdKeyring ||
       type === KEYRING_TYPE.SimpleKeyring
     ) {
-      await AuthenticationModalPromise({
-        confirmText: t('global.Confirm'),
-        cancelText: t('global.Cancel'),
-        title: t('page.addressDetail.delete-address'),
-        description: t('page.addressDetail.delete-desc'),
-        checklist: [
-          t('page.manageAddress.delete-checklist-1'),
-          t('page.manageAddress.delete-checklist-2'),
-        ],
-        onFinished() {
-          handleDeleteAddress();
+      await deleteAccount({
+        address,
+        type,
+        brandName,
+        getContainer,
+        onFinished: () => {
+          setVisible(false);
+          if (UI_TYPE.isDesktop) {
+            history.replace(history.location.pathname);
+          } else {
+            setTimeout(() => {
+              history.goBack();
+            }, 500);
+          }
         },
-        onCancel() {
-          // do nothing
-        },
-        wallet,
       });
     } else {
       setVisible(true);
@@ -117,6 +128,7 @@ export const AddressDelete = ({
           }}
         ></AddressDeleteModal>
       )}
+      <>{renderDelete()}</>
     </>
   );
 };
@@ -135,6 +147,7 @@ const AddressDeleteModal = ({
   brandName: string | undefined;
   type: string;
 }) => {
+  const { getContainer } = usePopupContainer();
   const { t } = useTranslation();
   const renderBrand = useMemo(() => {
     if (brandName && WALLET_BRAND_CONTENT[brandName]) {
@@ -153,6 +166,7 @@ const AddressDeleteModal = ({
       className="address-delete-modal"
       onClose={onClose}
       isSupportDarkMode
+      getContainer={getContainer}
     >
       <div className="desc">
         {t('page.addressDetail.direct-delete-desc', { renderBrand })}

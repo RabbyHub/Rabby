@@ -117,7 +117,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
           <div className="flex items-center gap-x-[12px]">
             <div
               className={clsx(
-                'rounded-[6px] bg-r-neutral-card2 px-[9px] py-[7px] cursor-pointer',
+                'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[7px] cursor-pointer',
                 'border-[1px] border-transparent min-w-[82px] text-center',
                 'hover:border-rabby-blue-default hover:bg-r-blue-light1'
               )}
@@ -145,7 +145,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
             </div>
             <div
               className={clsx(
-                'rounded-[6px] bg-r-neutral-card2 px-[9px] py-[7px] cursor-pointer',
+                'rounded-[6px] bg-r-neutral-card1 px-[9px] py-[7px] cursor-pointer',
                 'border-[1px] border-transparent min-w-[82px] text-center',
                 'hover:border-rabby-blue-default hover:bg-r-blue-light1'
               )}
@@ -224,7 +224,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
           setIsShowAddTestnetModal(false);
           refreshAsync();
         }}
-        height={488}
+        height={500}
         maskStyle={
           isDarkTheme
             ? {

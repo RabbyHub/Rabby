@@ -366,7 +366,7 @@ button:focus {
 
 .rabby-btn-ghost.ant-btn-primary.ant-btn-background-ghost:hover {
   // background: #f3f5fe !important;
-  background: var(--r-blue-light-1, #eef1ff) !important;
+  background: var(--r-blue-light-2, #eef1ff) !important;
   color: var(--r-blue-default, #7084ff);
   box-shadow: none;
   &::before {
@@ -429,6 +429,9 @@ button:focus {
   border-radius: 16px;
   overflow: hidden;
   padding-bottom: 0;
+  .ant-modal-confirm-title {
+    font-size: 16px;
+  }
   .ant-modal-confirm-content {
     padding: 0;
   }
@@ -444,5 +447,25 @@ button:focus {
   }
   .ant-modal-confirm-content {
     margin-bottom: 0 !important;
+  }
+}
+
+.js-rabby-popup-container {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.global-desktop-modal {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  .ant-modal-content {
+    border: none;
+  }
+  .ant-modal-body {
+    // position: relative;
+    // overflow: hidden;
+    // transform: translate(0);
   }
 }

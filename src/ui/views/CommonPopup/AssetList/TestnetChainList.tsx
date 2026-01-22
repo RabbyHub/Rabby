@@ -42,7 +42,7 @@ export const TestnetChainList = ({
     }
   }, [visible]);
 
-  const moreLen = chainList.length - COUNT;
+  const moreLen = chainList.length > COUNT ? chainList.length - COUNT : 0;
 
   // if (balanceLoading) {
   //   return (
@@ -60,7 +60,7 @@ export const TestnetChainList = ({
   return (
     <div
       className={clsx(
-        'bg-r-neutral-card-2 rounded-[6px] p-[12px]',
+        'bg-r-neutral-card-1 rounded-[8px] p-[12px]',
         'flex gap-12 flex-wrap'
       )}
     >
@@ -82,13 +82,13 @@ export const TestnetChainList = ({
               src={item.logo}
               alt={item.name}
             />
-            <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium">
+            <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium hover:text-r-blue-default">
               {item.name}
             </div>
           </div>
         );
       })}
-      {!showMore && moreLen > COUNT ? (
+      {!showMore && moreLen ? (
         <div
           className={clsx(
             'cursor-pointer text-12 underline text-r-neutral-foot leading-[20px]',

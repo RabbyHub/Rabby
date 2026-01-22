@@ -4,8 +4,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMount } from 'ahooks';
 import styled from 'styled-components';
+import { UI_TYPE } from '@/constant/ui';
 
-const Wraper = styled.div`
+const Warper = styled.div`
   .ant-form-item {
     margin-bottom: 16px;
   }
@@ -73,12 +74,15 @@ export const CustomTestnetForm = ({
 
   useMount(() => {
     setTimeout(() => {
+      if (UI_TYPE.isDesktop) {
+        return;
+      }
       inputRef?.current?.focus();
     });
   });
 
   return (
-    <Wraper>
+    <Warper>
       <Form
         layout="vertical"
         form={form}
@@ -91,6 +95,7 @@ export const CustomTestnetForm = ({
           rules={[
             {
               required: true,
+              pattern: /^\d+$/,
               message: t('page.customTestnet.CustomTestnetForm.idRequired'),
             },
           ]}
@@ -147,6 +152,6 @@ export const CustomTestnetForm = ({
           <Input autoComplete="off" disabled={disabled} />
         </Form.Item>
       </Form>
-    </Wraper>
+    </Warper>
   );
 };

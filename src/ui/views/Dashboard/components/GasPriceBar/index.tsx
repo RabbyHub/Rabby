@@ -94,33 +94,30 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
 
   return (
     <div
-      className={clsx('price-viewer h-32', {
-        'px-[17px] py-[7px]': isETH,
-        'px-[18px] py-[8px]': !isETH,
-      })}
+      className={clsx(
+        'rounded-[8px] bg-r-neutral-card-1 px-[12px] py-[8px]',
+        'flex items-center justify-between'
+      )}
     >
-      <div className="eth-price">
+      <div className="flex items-center gap-[6px]">
         {tokenLoading ? (
           <Skeleton.Avatar
             className="bg-transparent"
-            size={18}
+            size={20}
             active
             shape="circle"
           />
         ) : (
           <img
             src={tokenLogo || IconUnknown}
-            className={clsx('rounded-full', {
-              'w-[18px] h-[18px]': isETH,
-              'w-[16px] h-[16px]': !isETH,
-            })}
+            className={clsx('rounded-full', 'w-[20px] h-[20px]')}
           />
         )}
         {currentPriceLoading ? (
           <Skeleton.Button className="h-[14px] bg-transparent" active={true} />
         ) : (
-          <>
-            <div className="gasprice">
+          <div className="flex items-center gap-[3px]">
+            <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium">
               {currentPrice !== null
                 ? currentPrice < 0.01
                   ? '<$0.01'
@@ -129,22 +126,23 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
             </div>
             {percentage !== null && (
               <div
-                className={
+                className={clsx(
+                  'text-[12px] leading-[14px] font-medium',
                   percentage > 0
-                    ? 'positive'
+                    ? 'text-r-green-default'
                     : percentage === 0
-                    ? 'even'
-                    : 'depositive'
-                }
+                    ? 'text-r-neutral-body'
+                    : 'text-r-red-default'
+                )}
               >
                 {percentage >= 0 && '+'}
                 {percentage?.toFixed(2)}%
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
-      <div className="gas-container">
+      <div className="flex items-center gap-[4px]">
         <ThemeIcon
           src={RcIconGas}
           className="w-[16px] h-[16px] relative -top-1"
@@ -153,8 +151,12 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
           <Skeleton.Button className="h-[14px] bg-transparent" active={true} />
         ) : (
           <>
-            <div className="gasprice">{`${splitNumberByStep(gasPrice)}`}</div>
-            <div className="gwei">Gwei</div>
+            <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium">
+              {`${splitNumberByStep(gasPrice)}`}
+            </div>
+            <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
+              Gwei
+            </div>
           </>
         )}
       </div>
