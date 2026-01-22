@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const StyledSlider = styled(Slider)`
   .ant-slider-rail {
-    background-color: var(--r-neutral-line);
+    background-color: var(--rb-neutral-bg-2);
   }
 
   &:hover .ant-slider-rail {
@@ -72,8 +72,8 @@ const StyledSlider = styled(Slider)`
   .ant-slider-dot {
     width: 12px;
     height: 12px;
-    border: 6px solid var(--r-neutral-line);
-    background-color: transparent;
+    border: 6px solid var(--rb-neutral-line);
+    background-color: var(--rb-neutral-line);
     top: -4px;
   }
 

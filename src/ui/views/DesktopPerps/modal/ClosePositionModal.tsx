@@ -502,6 +502,11 @@ export const ClosePositionModal: React.FC<Props> = ({
       onCancel={onCancel}
       footer={null}
       width={400}
+      maskStyle={{
+        zIndex: 1000,
+        backdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      }}
       className="modal-support-darkmode"
       closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
     >

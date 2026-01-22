@@ -4,26 +4,8 @@ import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-// import {
-//   calculateDistanceToLiquidation,
-//   calLiquidationPrice,
-//   calTransferMarginRequired,
-//   formatPercent,
-//   formatPerpsPct,
-// } from '../utils';
-// import { DistanceToLiquidationTag } from '../components/DistanceToLiquidationTag';
-// import { TokenImg } from '../components/TokenImg';
-// import Popup from '@/ui/component/Popup';
-// import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
-// import { AssetPriceInfo } from '../components/AssetPriceInfo';
-// import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-// import { MarginInput } from '../components/MarginInput';
-// import { MarketData } from '@/ui/models/perps';
-// import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../constants';
-// import { MarginEditInput } from '../components/MarginEditInput';
 import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';
 import { useRequest } from 'ahooks';
-import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { MarketData } from '@/ui/models/perps';
 import {
   calculateDistanceToLiquidation,
@@ -32,9 +14,7 @@ import {
   formatPerpsPct,
 } from '../../Perps/utils';
 import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../../Perps/constants';
-import DistanceToLiquidationTag from '../../Perps/components/DistanceToLiquidationTag';
 import { TokenImg } from '../../Perps/components/TokenImg';
-import { AssetPriceInfo } from '../../Perps/components/AssetPriceInfo';
 import { MarginEditInput } from '../../Perps/components/MarginEditInput';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 
@@ -221,6 +201,11 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
       centered
       destroyOnClose
       closable
+      maskStyle={{
+        zIndex: 1000,
+        backdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      }}
       visible={visible}
       onCancel={onCancel}
       footer={null}

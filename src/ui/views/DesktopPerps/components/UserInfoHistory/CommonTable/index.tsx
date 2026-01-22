@@ -50,6 +50,7 @@ const Wrapper = styled.div`
     flex-shrink: 0;
     .ant-table-thead > tr > th.ant-table-cell-scrollbar:last-child {
       padding-right: 0;
+      display: none;
     }
 
     .ant-table-thead > tr > th:nth-last-child(2) {
@@ -67,7 +68,7 @@ const Wrapper = styled.div`
     color: var(--rb-neutral-foot, #6a7587);
     font-size: 13px;
     font-weight: 400;
-    background-color: var(--rb-neutral-card-1, #fff);
+    background-color: var(--rb-neutral-bg-1, #fff);
     border: none;
 
     padding: 12px 8px;

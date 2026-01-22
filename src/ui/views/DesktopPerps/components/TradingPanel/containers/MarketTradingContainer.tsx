@@ -174,16 +174,17 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         ? (Number(percentage) * marginRequired) / 100
         : 0;
     };
+    const orderValue = Number(tradeSize) * Number(markPrice);
     return {
       tpExpectedPnL: 1 * getExpectedPnL(tpslConfig.takeProfit.percentage),
       slExpectedPnL: -1 * getExpectedPnL(tpslConfig.stopLoss.percentage),
       liquidationPrice: estimatedLiquidationPrice,
       liquidationDistance: '',
       orderValue:
-        tradeUsdAmount > 0
-          ? formatUsdValue(tradeUsdAmount, BigNumber.ROUND_DOWN)
+        orderValue > 0
+          ? formatUsdValue(orderValue, BigNumber.ROUND_DOWN)
           : '$0.00',
-      marginRequired: reduceOnly ? '-' : formatUsdValue(marginRequired),
+      marginRequired: reduceOnly ? '-' : formatUsdValue(orderValue / leverage),
       marginUsage,
       slippage: `Est. ${formatPercent(
         Math.abs(estSlippage),
@@ -201,6 +202,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     marginUsage,
     marketSlippage,
     estPrice,
+    leverage,
   ]);
 
   const handleSetSlippage = () => {
