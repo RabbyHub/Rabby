@@ -71,7 +71,6 @@ export const usePerpsProInit = () => {
     const initIsLogin = async () => {
       try {
         const initAccount = currentPerpsAccount;
-        console.log('initIsLogin', initAccount);
         if (!initAccount) {
           return false;
         }

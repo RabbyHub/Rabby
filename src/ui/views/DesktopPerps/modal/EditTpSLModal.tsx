@@ -97,13 +97,10 @@ export const EditTpSlModal: React.FC<Props> = ({
       if (value.startsWith('$')) {
         value = value.slice(1);
       }
-      console.log('handlePriceChange', price);
-      console.log('validatePriceInput', validatePriceInput(value, szDecimals));
       if (
         (/^\d*\.?\d*$/.test(value) || value === '') &&
         validatePriceInput(value, szDecimals)
       ) {
-        console.log('validatePriceInput', value);
         if (type === 'tp') {
           setTpPrice(value);
           if (value && Number(value) > 0) {
