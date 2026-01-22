@@ -110,28 +110,16 @@ const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
 const TokenItemMarketInfo: React.FC<Props> = ({ item }) => {
   return (
     <TCell className={clsx('flex flex-col gap-2')}>
-<<<<<<< HEAD
-      <div className="text-r-neutral-title-1 text-13 font-medium text-right truncate">
-        {item._usdValueStr || '<$0.01'}
-      </div>
-      <div className="flex flex-row gap-4 items-center">
-        <div className="text-r-neutral-foot text-13 leading-[15px]">
-=======
       <div className="text-r-neutral-title-1 font-medium text-15 leading-[15px] text-right truncate">
         {item._usdValueStr || '<$0.01'}
       </div>
       <div className="flex flex-row gap-4 items-center justify-end">
         <div className="text-r-neutral-foot text-13 leading-[14px]">
->>>>>>> feat/token-render
           @${item._priceStr}
         </div>
         {isNil(item.price_24h_change) ? null : (
           <div
-<<<<<<< HEAD
-            className={clsx('font-normal text-13 leading-[14px]', {
-=======
             className={clsx('font-medium text-13 leading-[14px]', {
->>>>>>> feat/token-render
               'text-green': item.price_24h_change > 0,
               'text-red-forbidden': item.price_24h_change < 0,
             })}
