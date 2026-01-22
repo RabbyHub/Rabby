@@ -7,10 +7,8 @@ import clsx from 'clsx';
 import { ReactComponent as RcIconInfo } from 'ui/assets/perps/RcIconInfoCC.svg';
 import { useMemoizedFn } from 'ahooks';
 import { formatPercent } from '../utils';
-import { PERPS_MINI_USD_VALUE } from '../constants';
+import { PERPS_EXCHANGE_FEE_NUMBER, PERPS_MINI_USD_VALUE } from '../constants';
 import { PerpsSlider } from '../components/PerpsSlider';
-
-const PERPS_EXCHANGE_FEE_NUMBER = 0.0004;
 
 interface ClosePositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   visible: boolean;

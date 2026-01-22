@@ -12,7 +12,7 @@ import { ReactComponent as RcIconPerpsLeverageMinus } from 'ui/assets/perps/ImgL
 import { useMemoizedFn } from 'ahooks';
 import { calLiquidationPrice, formatPercent } from '../utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { PERPS_MAX_NTL_VALUE } from '../constants';
+import { PERPS_EXCHANGE_FEE_NUMBER, PERPS_MAX_NTL_VALUE } from '../constants';
 import { EditTpSlTag } from '../components/EditTpSlTag';
 import { AssetPriceInfo } from '../components/AssetPriceInfo';
 import { MarketData } from '@/ui/models/perps';
@@ -122,7 +122,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   }, [markPrice, leverage, leverageRange, margin, tradeSize]);
 
   const bothFee = React.useMemo(() => {
-    return providerFee;
+    return providerFee + PERPS_EXCHANGE_FEE_NUMBER;
   }, [providerFee]);
 
   // 验证 margin 输入
@@ -545,44 +545,50 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 ${splitNumberByStep(Number(estimatedLiquidationPrice))}
               </div>
             </div>
-            <div className="flex justify-between items-center">
-              <div className="text-13 text-r-neutral-body flex items-center gap-4">
-                {t('page.perpsDetail.PerpsOpenPositionPopup.rabbyFee')}
-              </div>
-              <div className="flex items-center gap-6">
-                <div className="h-[24px] px-6 text-12 text-r-blue-default bg-r-blue-light-1 rounded-[4px] flex items-center justify-center font-medium">
-                  {t('page.perpsDetail.PerpsOpenPositionPopup.free')}
-                </div>
-                <div className="text-13 text-r-neutral-title-1 font-medium">
-                  0%
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="text-13 text-r-neutral-body flex items-center gap-4">
-                {t('page.perpsDetail.PerpsOpenPositionPopup.providerFee')}
-              </div>
-              <div className="text-13 text-r-neutral-title-1 font-medium">
-                {formatPercent(providerFee, 4)}
-              </div>
-            </div>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
-          <Button
-            block
-            size="large"
-            type="primary"
-            className="h-[48px] text-15 font-medium flex-1"
-            onClick={openPosition}
-            loading={loading}
-          >
-            {direction === 'Long'
-              ? t('page.perps.openLong')
-              : t('page.perps.openShort')}
-          </Button>
+        <div className="fixed bottom-0 left-0 right-0">
+          <div className="flex items-center justify-center gap-4 text-13 text-r-neutral-foot mb-12">
+            <span>
+              {t('page.perpsDetail.PerpsClosePositionPopup.fee')}{' '}
+              {formatPercent(bothFee, 4)}
+            </span>
+            <Tooltip
+              overlayClassName={clsx('rectangle')}
+              placement="top"
+              title={
+                <div>
+                  <div className="text-13 text-r-neutral-title-2">
+                    {t('page.perps.rabbyFeeTipsV2')}
+                  </div>
+                  <div className="text-13 text-r-neutral-title-2">
+                    {t('page.perps.providerFeeTips', {
+                      fee: formatPercent(providerFee, 4),
+                    })}
+                  </div>
+                </div>
+              }
+              align={{ targetOffset: [0, 0] }}
+            >
+              <RcIconInfo className="text-rb-neutral-info w-15 h-15" />
+            </Tooltip>
+          </div>
+          <div className="border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
+            <Button
+              block
+              size="large"
+              type="primary"
+              className="h-[48px] text-15 font-medium flex-1"
+              onClick={openPosition}
+              loading={loading}
+            >
+              {direction === 'Long'
+                ? t('page.perps.openLong')
+                : t('page.perps.openShort')}
+            </Button>
+          </div>
         </div>
       </div>
     </>
