@@ -115,7 +115,7 @@ export const DesktopPerps: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex flex-1 min-h-[300px] max-h-[500px]">
+              <div className="flex flex-1 min-h-[300px] max-h-[max(300px,calc(100vh-850px))]">
                 <div className="flex-[4] min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
                   <UserInfoHistory />
                 </div>
