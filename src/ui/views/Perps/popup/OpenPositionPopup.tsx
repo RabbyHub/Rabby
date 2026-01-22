@@ -572,7 +572,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               }
               align={{ targetOffset: [0, 0] }}
             >
-              <RcIconInfo className="text-rb-neutral-info w-15 h-15" />
+              <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
             </Tooltip>
           </div>
           <div className="border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
