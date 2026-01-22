@@ -34,38 +34,30 @@ export const AccountActions: React.FC<{
 
   return (
     <div className="flex items-center gap-[12px]">
-      {/* Theme Toggle */}
-      {/* <div className="flex items-center gap-[4px] bg-rb-neutral-bg-3 rounded-[10px] p-[4px] border border-rb-neutral-bg-2">
-        <button
-          onClick={handleThemeToggle}
-          className={clsx(
-            'w-[48px] h-[36px] rounded-[8px] flex items-center justify-center',
-            !isDarkTheme ? 'bg-rb-neutral-foot' : ''
-          )}
-        >
-          <RcIconSun className="w-[20px] h-[20px]" />
-        </button>
-        <button
-          onClick={handleThemeToggle}
-          className={clsx(
-            'w-[48px] h-[36px] rounded-[8px] flex items-center justify-center',
-            isDarkTheme ? 'bg-rb-neutral-foot' : ''
-          )}
-        >
-          <RcIconMoon className="w-[20px] h-[20px]" />
-        </button>
-      </div> */}
-
       {/* Available Balance */}
       {Boolean(clearinghouseState) && (
-        <div className="flex items-center gap-[30px] pl-12 pr-8 py-[8px] bg-rb-neutral-bg-3 rounded-[12px] border border-rb-neutral-bg-2">
-          <div className="flex items-center gap-[6px]">
+        <div className="flex items-center gap-[8px] pl-12 pr-8 py-[8px] bg-rb-neutral-bg-3 rounded-[12px] border border-rb-neutral-bg-2">
+          <div className="flex items-center gap-[4px]">
             <IconPerpsWallet />
-            <span className="text-[15px] font-medium text-r-neutral-title-1">
-              {t('page.perpsPro.accountActions.available')}
-              {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
-            </span>
+            <div className="flex items-start flex-col">
+              <span className="text-[10px] leading-[12px] text-r-neutral-foot">
+                {t('page.perpsPro.accountActions.available')}
+              </span>
+              <span className="text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+                {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
+              </span>
+            </div>
           </div>
+
+          <button
+            onClick={handleDeposit}
+            className={clsx(
+              'ml-6 px-[12px] h-[28px] rounded-[6px] text-[15px] font-medium flex items-center justify-center',
+              'bg-rb-brand-light-1 text-rb-brand-default'
+            )}
+          >
+            {t('page.perpsPro.accountActions.deposit')}
+          </button>
 
           {/* Deposit Button */}
           {pendingCount > 0 ? (
@@ -79,17 +71,7 @@ export const AccountActions: React.FC<{
               {t('page.perpsPro.accountActions.pending')}
               <DepositPending pendingCount={pendingCount} />
             </div>
-          ) : (
-            <button
-              onClick={handleDeposit}
-              className={clsx(
-                'px-[12px] h-[28px] rounded-[6px] text-[15px] font-medium flex items-center justify-center',
-                'bg-rb-brand-light-1 text-rb-brand-default'
-              )}
-            >
-              {t('page.perpsPro.accountActions.deposit')}
-            </button>
-          )}
+          ) : null}
         </div>
       )}
     </div>
