@@ -26,6 +26,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
 import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
+import { TopPermissionTips } from './components/TopPermissionTips';
 
 const Wrap = styled.div`
   width: 100%;
@@ -98,6 +99,7 @@ export const DesktopPerps: React.FC = () => {
 
               <AccountActions handleSetPopupType={handleSetPopupType} />
             </div>
+            <TopPermissionTips />
             <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
               <div className="flex h-[670px] border-b border-solid border-rb-neutral-line">
                 <div className="flex-[4] flex min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">

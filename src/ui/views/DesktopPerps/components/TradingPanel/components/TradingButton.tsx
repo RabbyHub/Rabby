@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from 'antd';
 import { OrderSide } from '../../../types';
+import { useRabbySelector } from '@/ui/store';
+import { useTranslation } from 'react-i18next';
 
 interface TradingButtonProps {
   loading: boolean;
@@ -21,6 +23,8 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
   orderSide,
   titleText,
 }) => {
+  const hasPermission = useRabbySelector((state) => state.perps.hasPermission);
+  const { t } = useTranslation();
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -30,10 +34,10 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
       size="large"
       loading={loading}
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || !hasPermission}
       style={{
         boxShadow:
-          hovered && isValid && !error
+          hovered && isValid && !error && hasPermission
             ? orderSide === OrderSide.BUY
               ? '0px 8px 16px rgba(42, 187, 127, 0.3)'
               : '0px 8px 16px rgba(227, 73, 53, 0.3)'
@@ -42,14 +46,18 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
-        isValid && !error
+        isValid && !error && hasPermission
           ? orderSide === OrderSide.BUY
             ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
             : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
           : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
       }`}
     >
-      {error ? error : titleText}
+      {!hasPermission
+        ? t('page.perps.permissionTips')
+        : error
+        ? error
+        : titleText}
     </Button>
   );
 };
