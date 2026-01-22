@@ -37,6 +37,7 @@ import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
+import { isScreenSmall } from '../../../utils';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -144,6 +145,8 @@ export const PositionsInfo: React.FC = () => {
 
     return resArr;
   }, [clearinghouseState, openOrders, marketDataMap]);
+
+  const isSmallScreen = isScreenSmall();
 
   const [selectedCoin, setSelectedCoin] = useState<string>('');
   const currentPosition = useMemo(() => {
@@ -396,10 +399,12 @@ export const PositionsInfo: React.FC = () => {
                   <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
                     ${splitNumberByStep(record.liquidationPx)}
                   </div>
-                  <DistanceRiskTag
-                    isLong={record.direction === 'Long'}
-                    percent={record.liquidationDistancePercent}
-                  />
+                  {!isSmallScreen && (
+                    <DistanceRiskTag
+                      isLong={record.direction === 'Long'}
+                      percent={record.liquidationDistancePercent}
+                    />
+                  )}
                 </>
               ) : (
                 <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
@@ -630,7 +635,7 @@ export const PositionsInfo: React.FC = () => {
         },
       },
     ],
-    [marketDataMap]
+    [marketDataMap, isSmallScreen]
   );
 
   return (
