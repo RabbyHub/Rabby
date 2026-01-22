@@ -127,7 +127,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         coin: selectedCoin,
         szDecimals,
         isBuy: orderSide === OrderSide.BUY,
-        totalSize: scaleMaxTradeSize || '0',
+        totalSize: tradeSize,
         startPrice,
         endPrice,
         sizeSkew: Number(sizeSkew),
