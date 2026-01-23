@@ -20,4 +20,4 @@ jobs:
 workflows:
   my-custom-workflow:
     jobs:
-      - my-job-name
+      - rabby-wallet-hub
