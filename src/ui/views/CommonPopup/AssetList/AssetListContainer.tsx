@@ -20,6 +20,8 @@ import { LpTokenSwitch } from '../../DesktopProfile/components/TokensTabPane/com
 import clsx from 'clsx';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 import { HomePerpsPositionList } from './HomePerpsPositionList';
+import { uniqBy } from 'lodash';
+import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 
 interface Props {
   className?: string;
@@ -49,6 +51,7 @@ export const AssetListContainer: React.FC<Props> = ({
   const { setApps } = useCommonPopupView();
   const {
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     portfolios,
     tokens: tokenList,
@@ -61,7 +64,9 @@ export const AssetListContainer: React.FC<Props> = ({
     false,
     visible,
     isTestnet,
-    lpTokenMode
+    lpTokenMode ? lpTokenMode : undefined,
+    undefined,
+    !!search
   );
   const {
     data: appPortfolios,
@@ -79,7 +84,12 @@ export const AssetListContainer: React.FC<Props> = ({
     }
   );
   const displayTokenList = useMemo(() => {
-    const result = search ? list : tokenList;
+    const result = uniqBy(
+      search ? concatAndSort(list, tokenList, search) : tokenList,
+      (token) => {
+        return `${token.chain}-${token.id}`;
+      }
+    );
     if (selectChainId) {
       return result.filter((item) => item.chain === selectChainId);
     }
@@ -122,8 +132,8 @@ export const AssetListContainer: React.FC<Props> = ({
     !appPortfolios?.length;
 
   React.useEffect(() => {
-    onEmptyAssets(isEmptyAssets);
-  }, [isEmptyAssets, onEmptyAssets]);
+    onEmptyAssets(isEmptyAssets && !lpTokenMode);
+  }, [isEmptyAssets, onEmptyAssets, lpTokenMode]);
 
   const sortTokens = useSortTokens(displayTokenList);
   const filteredPortfolios = useFilterProtocolList({
@@ -195,7 +205,7 @@ export const AssetListContainer: React.FC<Props> = ({
         </div>
         {/* {isFocus || search ? null : <AddTokenEntry ref={addTokenEntryRef} />} */}
       </div>
-      {isTokensLoading || isSearching ? (
+      {isTokensLoading || isSearching || (lpTokenMode && isAllTokenLoading) ? (
         <TokenListSkeleton />
       ) : (
         <div className="mt-[12px]">
@@ -206,6 +216,7 @@ export const AssetListContainer: React.FC<Props> = ({
               addTokenEntryRef.current?.startAddToken();
             }}
             isSearch={!!search}
+            lpTokenMode={lpTokenMode}
             isNoResults={isNoResults}
             blockedTokens={displayBlockedTokens}
             customizeTokens={displayCustomizeTokens}

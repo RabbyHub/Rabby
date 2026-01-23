@@ -829,8 +829,8 @@
             "modalTitle_one": "Se requiere un total de <2>{{count}}</2> firmas",
             "modalContent": "Las aprobaciones del mismo contrato Permit2 se empaquetarían juntas bajo la misma firma."
           },
-          "notSupport7702Title": "No compatible con el tipo de dirección actual",
-          "notSupport7702Content": "Actualmente solo admite revocar la delegación EIP-7702 para direcciones de clave privada y frase semilla."
+          "notSupport7702Title": "Dirección de tipo no compatible",
+          "notSupport7702Content": "Revocar las delegaciones de EIP-7702 solo es compatible con direcciones de clave privada o frase semilla."
         },
         "ViewMore": {
           "text": "Ver más"
@@ -1098,7 +1098,8 @@
       "sort-address": "Ordenar dirección",
       "CurrentDappAddress": {
         "desc": "Cambiar dirección Dapp"
-      }
+      },
+      "noSeedPhraseAddress": "No se han agregado direcciones para esta frase semilla. Puedes agregar una dirección o eliminar la frase semilla."
     },
     "dashboard": {
       "home": {
@@ -1126,7 +1127,8 @@
           "setting": "Configuración",
           "settings": "Configuraciones",
           "perpsPositions_one": "{{count}} Posición",
-          "perpsPositions_other": "{{count}} Posiciones"
+          "perpsPositions_other": "{{count}} Posiciones",
+          "prediction": "Predicción"
         },
         "comingSoon": "Próximamente",
         "soon": "Pronto",
@@ -1297,7 +1299,8 @@
           "toggleThemeMode": "Modo de tema",
           "themeMode": "Modo de tema",
           "metamaskMode": "Conectar Rabby disfrazándolo como MetaMask",
-          "enableDappAccount": "Cambiar la dirección del Dapp de forma independiente\n"
+          "enableDappAccount": "Cambiar la dirección del Dapp de forma independiente\n",
+          "switchPasswordForNonWhitelistedTx": "Contraseña para transferencias no autorizadas"
         },
         "aboutUs": "Acerca de Nosotros",
         "currentVersion": "Versión Actual",
@@ -1324,6 +1327,14 @@
           "thxTitle": "¡Gracias!",
           "feedbackDesc": "¿Tienes comentarios? Estamos escuchando.",
           "thxDesc": "Si te gusta Rabby, una rápida valoración en la Chrome Store significaría mucho."
+        },
+        "PwdForNonWhitelistedTx": {
+          "titleDisable": "Introduce la contraseña para desactivar",
+          "inputPlaceholder": "Introduce la contraseña para confirmar",
+          "wrongPassword": "Contraseña incorrecta",
+          "titleEnable": "¿Habilitar verificación de contraseña?",
+          "descDisable": "Una vez deshabilitada, la verificación de contraseña ya no será necesaria para direcciones que no estén en la lista blanca.",
+          "descEnable": "Una vez habilitado, transferir a una dirección no autorizada en esta extensión requerirá su contraseña."
         }
       },
       "tokenDetail": {
@@ -1408,13 +1419,14 @@
           "noMatch": "Sin coincidencias",
           "lowValueDescription": "Los activos de bajo valor se mostrarán aquí",
           "lowValueAssets": "{{count}} activos de bajo valor",
-          "lowValueAssets_other": "{{count}} low value tokens",
-          "lowValueAssets_0": "{{count}} token de bajo valor",
-          "lowValueAssets_one": "{{count}} low value token",
           "review": "Revisión",
           "noTokens": "Sin tokens",
           "searchToken": "Buscar Token",
-          "lowValueDefis": "{{count}} defis de bajo valor"
+          "noLpTokens": "Sin Token de Proveedor de Liquidez (LP)",
+          "lowValueAssets_0": "{{count}} token de bajo valor",
+          "lowValueAssets_other": "{{count}} tokens de bajo valor",
+          "lowValueAssets_one": "{{count}} token de bajo valor",
+          "lowValueDefis": "{{count}} activos DeFi de bajo valor"
         },
         "noAssets": "No hay activos",
         "blockLinkText": "Buscar dirección para bloquear token",
@@ -1453,8 +1465,8 @@
         "addTokenEntryText": "Token",
         "price": "PRECIO",
         "side": "LADO",
-        "openInTab": "Abrir en pestaña",
-        "searchTokenPlaceholder": "Buscar Token"
+        "searchTokenPlaceholder": "Buscar Token",
+        "openInTab": "Abrir en Rabby Tab"
       },
       "hd": {
         "howToConnectLedger": "¿Cómo Conectar Ledger?",
@@ -1822,7 +1834,8 @@
         },
         "importBtn": "Importar ({{count}})",
         "manageImtokenOffline": "Administrar imToken",
-        "manageImKey": "Administrar imKey"
+        "manageImKey": "Administrar imKey",
+        "nonAddr": "No se han añadido direcciones para esta frase semilla. Puedes eliminar esta frase en Rabby Extension > Administrar Dirección."
       },
       "importYourKeystore": "Importar su KeyStore",
       "incorrectPassword": "Contraseña incorrecta",
@@ -2003,7 +2016,25 @@
       "safeModuleAddress": "Dirección del Módulo Safe",
       "manage-addresses-under": "Administra direcciones bajo este {{brand}}",
       "coboSafeErrorModule": "La dirección ha caducado, por favor elimínala e importa la dirección de nuevo.",
-      "importedDelegatedAddress": "Dirección delegada importada"
+      "importedDelegatedAddress": "Dirección delegada importada",
+      "deleteSeedPhrase": {
+        "option2": "Eliminar dirección y frase semilla",
+        "remainSeedPhrase": "Tu frase semilla permanece en tu dispositivo.",
+        "title2": "¿Eliminar la dirección?",
+        "option1": "Eliminar Dirección, Mantener Frase Semilla",
+        "keepSeedPhrase": "Esta es la única dirección vinculada a esta frase semilla. ¿Te gustaría conservar la frase semilla?",
+        "title": "¿Eliminar la dirección y la frase semilla?",
+        "check2": "Confirmo que he hecho una copia de seguridad de mi clave privada o frase semilla y estoy listo para eliminarla.",
+        "check1": "Entiendo que eliminar esta dirección también elimina su clave privada y frase semilla. Rabby no puede recuperarlas para mí.",
+        "onlyDeleteAddr": "Solo esta dirección será eliminada. Tu frase semilla no se verá afectada, ya que tus otras direcciones aún la utilizan.",
+        "sub-title": "Esta acción es permanente. Por favor, revise lo siguiente para proteger sus activos:"
+      },
+      "deletePrivateKey": {
+        "title": "¿Eliminar dirección y clave privada?",
+        "sub-title": "Esta acción es permanente. Por favor, revise lo siguiente para proteger sus activos:",
+        "check2": "Confirmo que he respaldado mi clave privada o frase semilla y estoy listo para eliminarla.",
+        "check1": "Entiendo que eliminar esta dirección también elimina su clave privada. Rabby no puede recuperarlas por mí."
+      }
     },
     "preferMetamaskDapps": {
       "title": "Dapps preferidos de MetaMask",
@@ -2821,8 +2852,7 @@
       "sectionHeader": {
         "token": "Tokens",
         "NFT": "NFT",
-        "AllChains": "Todas las cadenas",
-        "Defi": "DeFi"
+        "AllChains": "Todas las cadenas"
       },
       "header": {
         "placeHolder": "Buscar",
@@ -2902,7 +2932,11 @@
       "addSuccess": "Añadido con éxito",
       "exchangeAddress": "Dirección de intercambio",
       "enterAddress": "Introducir dirección",
-      "title": "Agregar dirección a la lista blanca"
+      "title": "Agregar dirección a la lista blanca",
+      "verifyPwd": {
+        "title": "Dirección no autorizada",
+        "inputPlaceholder": "Ingresa tu contraseña para confirmar esta transferencia"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3101,7 +3135,8 @@
         "liquidationDistance": "Distancia de Liquidación",
         "liquidationDistanceTips": "La Distancia de Liquidación (%) muestra qué tan lejos está el precio actual de tu precio de liquidación. Una mayor distancia indica una posición más segura, mientras que una distancia más pequeña significa un mayor riesgo de liquidación.",
         "distanceLabel": "Distancia de Liquidación",
-        "liqDistanceTipsShort": "Subiendo <1>{{distance}}</1> se activará la liquidación."
+        "liqDistanceTipsShort": "Subiendo <1>{{distance}}</1> se activará la liquidación.",
+        "liqDistanceTipsLong": "Bajar <1>{{distance}}</1> activará la liquidación."
       },
       "searchPerpsPopup": {
         "onePosition": "1 Posición",
@@ -3119,10 +3154,13 @@
         "description": "Utiliza el código de Rabby para habilitar",
         "activateFailed": "Fallido",
         "activatedSuccess": "Ahorros de tarifa del 4% de Hyperliquid activados",
-        "hyperliquidFee": "Comisiones de trading de Hyperliquid."
+        "hyperliquidFee": "Comisiones de trading de Hyperliquid.",
+        "activateNow": "Activa Ahora"
       },
       "close": "Cerrar",
-      "fundingRate": "Tasa de financiación"
+      "fundingRate": "Tasa de financiación",
+      "add": "Añadir",
+      "fundingGains": "Ganancias de financiamiento"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3135,7 +3173,10 @@
         "removeFromWhitelist": "Eliminar de la lista blanca",
         "addWhitelist": "Agregar dirección a la lista blanca",
         "notWhitelist": "No es una dirección en la lista blanca",
-        "addWhitelistDesc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---sin necesidad de confirmación la próxima vez."
+        "addWhitelistDesc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---sin necesidad de confirmación la próxima vez.",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Contraseña para transferencias no autorizadas"
+        }
       },
       "addWhitelist": {
         "desc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---sin necesidad de confirmación la próxima vez.",
@@ -3234,8 +3275,7 @@
       "tabs": {
         "tokens": "Tokens",
         "approvals": "Aprobaciones",
-        "transactions": "Transacciones",
-        "difi": "Defi"
+        "transactions": "Transacciones"
       },
       "nft": {
         "message": {
@@ -3364,7 +3404,8 @@
         "amountToAdd": "Cantidad a agregar",
         "reduceMarginSuccess": "Margen reducida con éxito",
         "upto": "Hasta",
-        "upTo": "Hasta"
+        "upTo": "Hasta",
+        "liqDistance": "Liq. Distancia"
       },
       "PerpsClosePositionPopup": {
         "confirm": "Confirmar",
@@ -3409,8 +3450,19 @@
         "addToShort": "Agregar a Short",
         "sizeTips": "El valor total o la cantidad de su operación, establecido por el margen y el apalancamiento.",
         "addSize": "Agregar Tamaño",
-        "liquidationPriceTips": "El precio al cual tu posición se cierra automáticamente por el intercambio para prevenir pérdidas adicionales cuando tu margen cae por debajo del nivel de margen de mantenimiento."
-      }
+        "liquidationPriceTips": "El precio al cual tu posición se cierra automáticamente por el intercambio para prevenir pérdidas adicionales cuando tu margen cae por debajo del nivel de margen de mantenimiento.",
+        "totalSize": "Tamaño Total"
+      },
+      "needDepositFirst": "Primero necesitas depositar fondos."
+    },
+    "dappIfame": {
+      "serviceUnavailable": "Servicio no disponible",
+      "openPolymarket": "Abriendo Polymarket...",
+      "predictionNotSupported": "La función de Predicción no es compatible en tu región actual.",
+      "reload": "Recargar",
+      "networkErrorTitle": "Este sitio no se puede alcanzar",
+      "networkErrorDescription": "{{site}} cerró la conexión inesperadamente. Por favor, verifica tu red.",
+      "networkErrorDescriptionFallback": "El sitio cerró inesperadamente la conexión. Por favor, revisa tu red."
     }
   },
   "component": {
@@ -3542,7 +3594,8 @@
       "chainNotSupport": "Esta cadena no es compatible",
       "chainFilterLine": {
         "filterAll": "Todas las cadenas"
-      }
+      },
+      "noLpTokens": "No hay Token de Proveedor de Liquidez (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3620,14 +3673,16 @@
       "portfolio": "Cartera",
       "lending": "Préstamo",
       "perps": "Perps",
-      "comingSoon": "Próximamente"
+      "comingSoon": "Próximamente",
+      "prediction": "Predicción"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Agregar dirección"
     },
     "LpTokenTag": {
       "title": "Este es un token de proveedor de liquidez (LP)",
-      "description": "Los tokens LP son emitidos por los protocolos DeFi donde has depositado tus activos. Sirven como prueba de esos activos, pero su valor no está incluido en tu saldo total."
+      "description": "Los tokens LP son emitidos por los protocolos DeFi donde has depositado tus activos. Sirven como prueba de esos activos, pero su valor no está incluido en tu saldo total.",
+      "descriptionFor": "Este es un token de Proveedor de Liquidez (LP) para {{ protocolName }}"
     }
   },
   "global": {

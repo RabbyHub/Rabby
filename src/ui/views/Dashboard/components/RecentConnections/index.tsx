@@ -215,7 +215,7 @@ export const RecentConnectionsPopup: React.FC<RecentConnectionsProps> = ({
       className="settings-popup-wrapper"
       isSupportDarkMode
     >
-      <RecentConnections visible={true} onClose={onClose} canBack={false} />;
+      <RecentConnections visible={true} onClose={onClose} canBack={false} />
     </Popup>
   );
 };

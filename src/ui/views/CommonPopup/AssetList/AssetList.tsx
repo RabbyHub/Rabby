@@ -145,15 +145,14 @@ export const AssetList = ({
           />
         </div>
       </div>
-      <footer
-        className={clsx('h-[69px] mt-[8px]', scroll?.top ? 'hidden' : '')}
-      >
+      <footer className={clsx('h-[69px] mt-[8px]')}>
         <div
           className={clsx(
             'fixed bottom-0 left-0 right-0',
             'px-[20px] py-[14px]',
             'border-t-[0.5px] border-solid border-rabby-neutral-line',
-            'bg-r-neutral-bg-2'
+            'bg-r-neutral-bg-2',
+            scroll?.top ? 'hidden' : ''
           )}
         >
           <button

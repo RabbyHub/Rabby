@@ -24,6 +24,7 @@ import { useAsync } from 'react-use';
 import { getUiType, useWallet } from '@/ui/utils';
 import { isAddress } from 'viem/utils';
 import { useTranslation } from 'react-i18next';
+import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 const isTab = getUiType().isTab;
 
 const Wrapper = styled.div`
@@ -156,6 +157,7 @@ const TokenSelect = forwardRef<
     const handleCurrentTokenChange = (token: TokenItem) => {
       onChange && onChange('');
       onTokenChange(token);
+      setLpTokenMode(false);
       setTokenSelectorVisible(false);
 
       // const chainItem = findChainByServerID(token.chain);
@@ -181,14 +183,20 @@ const TokenSelect = forwardRef<
     const isSwapType = isSwapTokenType(type);
 
     // when no any queryConds
-    const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
+    const {
+      tokens: allTokens,
+      isLoading: isLoadingAllTokens,
+      isAllTokenLoading, // 包含lp Token的请求
+    } = useTokens(
       useSwapTokenList ? undefined : currentAccount?.address,
       undefined,
       tokenSelectorVisible,
       updateNonce,
       queryConds.chainServerId,
       undefined,
-      isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
+      isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
+      undefined,
+      !!queryConds.keyword
     );
 
     const {
@@ -254,7 +262,11 @@ const TokenSelect = forwardRef<
                     ? true
                     : !!e.is_core
                 )
-            : searchedTokenByQuery.map(abstractTokenToTokenItem)
+            : concatAndSort(
+                searchedTokenByQuery.map(abstractTokenToTokenItem),
+                allTokens,
+                queryConds.keyword
+              )
           : allTokens,
         (token) => {
           return `${token.chain}-${token.id}`;
@@ -285,7 +297,8 @@ const TokenSelect = forwardRef<
         ? isSearchLoading || remoteSwapToSearchTokensLoading
         : useSwapTokenList
         ? swapTokenListLoading
-        : isLoadingAllTokens) || initLoading;
+        : isLoadingAllTokens || (lpTokenMode && isAllTokenLoading)) ||
+      initLoading;
 
     const handleSearchTokens = React.useCallback(async (ctx) => {
       setQueryConds({

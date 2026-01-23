@@ -34,6 +34,7 @@ import {
   RcIconSearchCC,
   RcIconDappsCC,
   RcIconManageCC,
+  RcIconPrediction,
 } from 'ui/assets/dashboard/panel';
 
 import { useGasAccountInfo } from '@/ui/views/GasAccount/hooks';
@@ -155,7 +156,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const { t } = useTranslation();
   const history = useHistory();
   usePerpsDefaultAccount();
-  const { perpsPositionInfo, isFetching } = usePerpsHomePnl();
+  const { perpsPositionInfo, isFetching, positionPnl } = usePerpsHomePnl();
   // useCheckBridgePendingItem();
 
   const [badgeModalVisible, setBadgeModalVisible] = useState(false);
@@ -391,14 +392,25 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           />
         </div>
       ) : perpsPositionInfo?.assetPositions?.length ? (
+        // <div
+        //   className={clsx(
+        //     'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-blue-default'
+        //   )}
+        // >
+        //   {t('page.dashboard.home.panel.perpsPositions', {
+        //     count: perpsPositionInfo?.assetPositions?.length,
+        //   })}
+        // </div>
         <div
           className={clsx(
-            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-blue-default'
+            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium',
+            positionPnl && positionPnl > 0
+              ? 'text-r-green-default'
+              : 'text-r-red-default'
           )}
         >
-          {t('page.dashboard.home.panel.perpsPositions', {
-            count: perpsPositionInfo?.assetPositions?.length,
-          })}
+          {positionPnl && positionPnl >= 0 ? '+' : '-'}$
+          {splitNumberByStep(Math.abs(positionPnl || 0).toFixed(2))}
         </div>
       ) : +(perpsPositionInfo?.marginSummary?.accountValue || '') ? (
         <div
@@ -439,6 +451,16 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         history.push('/settings/address');
       },
     } as IPanelItem,
+    prediction: {
+      icon: RcIconPrediction,
+      eventKey: 'Prediction',
+      content: t('page.dashboard.home.panel.prediction'),
+      onClick: async () => {
+        await wallet.openInDesktop('/desktop/dapp-iframe');
+        window.close();
+      },
+      isFullscreen: true,
+    } as IPanelItem,
   };
 
   const pickedPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
@@ -451,13 +473,14 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'transactions',
           'security',
           'perps',
+          'prediction',
           'points',
           'mobile',
           'nft',
           'gasAccount',
           'searchDapp',
           'dapps',
-          'manageAddress',
+          // 'manageAddress',
           'more',
         ]
       : [
@@ -468,13 +491,14 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           'transactions',
           'security',
           'perps',
+          'prediction',
           'points',
           'mobile',
           'nft',
           'gasAccount',
           'searchDapp',
           'dapps',
-          'manageAddress',
+          // 'manageAddress',
           'more',
         ];
   }, [isGnosis]);

@@ -73,7 +73,7 @@ export function AddressInfoFrom({
                   title={<MarkedHeadTailAddress address={account.address} />}
                 >
                   <div className="flex items-center ml-[12px]">
-                    <span className="text-[16px] font-bold leading-[20px] text-r-neutral-title-1">
+                    <span className="text-[16px] font-medium leading-[20px] text-r-neutral-title-1">
                       {aliasName || ellipsisAddress(account.address)}
                     </span>
                   </div>

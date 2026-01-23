@@ -13,6 +13,7 @@ import { groupBy } from 'lodash';
 import { findAccountByPriority, filterMyAccounts } from '@/utils/account';
 
 import type { Account } from '@/background/service/preference';
+import { VerifyPwdForNonWhitelisted } from '@/ui/component/Whitelist/Modal';
 
 const AccountItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
@@ -20,7 +21,7 @@ const AccountItemWrapper = styled.div`
   border-radius: 12px;
   margin-top: 12px;
   &:first-child {
-    margin-top: 9px;
+    margin-top: 0;
   }
   .whitelist-item {
     gap: 12px !important;
@@ -53,7 +54,7 @@ type RenderAccount = Account & {
 export default function TabImported({
   handleChange,
 }: {
-  handleChange: (address: string, type?: string) => void;
+  handleChange: (account: Account) => void;
 }) {
   const { accountsList, whitelist } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
@@ -86,7 +87,7 @@ export default function TabImported({
       const targetList =
         isMyImported || isGnosis ? ret.myImportedAccounts : ret.otherAccounts;
 
-      if (!isMyImported && !targetList.length) {
+      if (!(isMyImported || isGnosis) && !targetList.length) {
         value._isFirstOtherAccount = true;
       }
 
@@ -127,7 +128,7 @@ export default function TabImported({
                   type={item.type}
                   brandName={item.brandName}
                   onClick={() => {
-                    handleChange(item.address, item.type);
+                    handleChange(item);
                   }}
                 />
               </AccountItemWrapper>
