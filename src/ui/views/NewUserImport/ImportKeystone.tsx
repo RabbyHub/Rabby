@@ -1,6 +1,7 @@
 import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_TYPES } from '@/constant';
 import KeyStoneSVG from '@/ui/assets/walletlogo/keystone.svg';
 import NgraveSVG from '@/ui/assets/walletlogo/ngrave.svg';
+import AirgapSVG from '@/ui/assets/walletlogo/airgap.svg';
 import { Card } from '@/ui/component/NewUserImport';
 import PillsSwitch from '@/ui/component/PillsSwitch';
 import Progress from '@/ui/component/Progress';
@@ -32,6 +33,7 @@ enum ConnectType {
 const LOGO_MAP = {
   [WALLET_BRAND_TYPES.KEYSTONE]: KeyStoneSVG,
   [WALLET_BRAND_TYPES.NGRAVEZERO]: NgraveSVG,
+  [WALLET_BRAND_TYPES.AIRGAP]: AirgapSVG,
 };
 
 export const NewUserImportKeystone = () => {

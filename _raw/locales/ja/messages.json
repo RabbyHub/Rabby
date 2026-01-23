@@ -2748,15 +2748,15 @@
         "tip2": "2. BitBox02 を接続します。"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "KeystoneハードウェアウォレットのQRコードをスキャンしてください"
-        },
         "usb": {
           "tip2": "パスワードを入力してロックを解除してください。",
           "tip3": "コンピュータへの接続を承認してください",
           "connect": "Keystone を接続",
           "desc": "Keystone 3 Pro がホームページにあることを確認してください。",
           "tip1": "Keystone デバイスを接続してください"
+        },
+        "qrcode": {
+          "desc": "{{brandName}}ハードウェアウォレットのQRコードをスキャンしてください。"
         }
       },
       "importSafe": {
@@ -3584,8 +3584,6 @@
         "value": "値",
         "token": "トークン",
         "liquidity": "流動性",
-        "high": "高い",
-        "low": "低い",
         "liquidityTips": "過去の取引量が多いほど、ブリッジが成功する可能性が高くなります。"
       },
       "hot": "ホット",

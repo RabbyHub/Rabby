@@ -24,7 +24,11 @@ import { useAsync } from 'react-use';
 import { getUiType, useWallet } from '@/ui/utils';
 import { isAddress } from 'viem/utils';
 import { useTranslation } from 'react-i18next';
-import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
+import {
+  concatAndSort,
+  contactAmountTokens,
+  scamTokenFilter,
+} from '@/ui/utils/portfolio/tokenUtils';
 const isTab = getUiType().isTab;
 
 const Wrapper = styled.div`
@@ -87,6 +91,8 @@ interface CommonProps {
   supportChains?: CHAINS_ENUM[];
   getContainer?: DrawerProps['getContainer'];
   onStartSelectChain?: () => void;
+  onOpenTokenModal?: () => void;
+  onSelectRecentToken?: (token: TokenItem) => void;
 }
 
 interface BridgeFromProps extends CommonProps {
@@ -126,6 +132,8 @@ const TokenSelect = forwardRef<
       supportChains,
       getContainer,
       onStartSelectChain,
+      onOpenTokenModal,
+      onSelectRecentToken,
     },
     ref
   ) => {
@@ -178,6 +186,7 @@ const TokenSelect = forwardRef<
         setUpdateNonce(updateNonce + 1);
       }
       setTokenSelectorVisible(true);
+      onOpenTokenModal?.();
     };
 
     const isSwapType = isSwapTokenType(type);
@@ -255,12 +264,16 @@ const TokenSelect = forwardRef<
       return uniqBy(
         queryConds.keyword
           ? isSwapTo
-            ? remoteSwapToSearchTokens
+            ? contactAmountTokens(
+                // remoteSwapToSearchTokens获取的接口不好加amount，就从已推荐列表中找到amount合并进去
+                remoteSwapToSearchTokens || [],
+                swapTokenList || []
+              )
                 ?.filter((e) => e.chain === queryConds.chainServerId)
                 .filter((e) =>
                   isAddress(queryConds.keyword, { strict: false })
                     ? true
-                    : !!e.is_core
+                    : scamTokenFilter(e)
                 )
             : concatAndSort(
                 searchedTokenByQuery.map(abstractTokenToTokenItem),
@@ -278,6 +291,7 @@ const TokenSelect = forwardRef<
       excludeTokens,
       queryConds,
       isSwapTo,
+      swapTokenList,
       remoteSwapToSearchTokens,
     ]);
 
@@ -350,6 +364,7 @@ const TokenSelect = forwardRef<
             setLpTokenMode={setLpTokenMode}
             showLpTokenSwitch={isFromMode}
             onStartSelectChain={onStartSelectChain}
+            onSelectRecentToken={onSelectRecentToken}
           />
         </>
       );

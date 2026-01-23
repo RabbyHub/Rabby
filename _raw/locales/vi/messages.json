@@ -3571,9 +3571,7 @@
       "bridge": {
         "value": "Giá trị",
         "token": "Token",
-        "low": "Thấp",
         "liquidityTips": "Khối lượng giao dịch lịch sử càng cao, cầu càng có khả năng thành công hơn.",
-        "high": "Cao",
         "liquidity": "Tính thanh khoản"
       },
       "searchInput": {

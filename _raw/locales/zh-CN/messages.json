@@ -2825,15 +2825,15 @@
         "tip1": "1. 安装 <1>BitBoxBridge<1/>"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "扫描 Keystone 硬件钱包上的二维码"
-        },
         "usb": {
           "tip2": "请输入密码以解锁",
           "tip1": "请插入您的 Keystone 设备",
           "tip3": "批准与您的计算机连接",
           "connect": "连接 Keystone",
           "desc": "确保您的 Keystone 3 Pro 位于主页上"
+        },
+        "qrcode": {
+          "desc": "扫描{{brandName}}硬件钱包上的二维码"
         }
       },
       "importSafe": {
@@ -3619,8 +3619,6 @@
       "noMatch": "无匹配",
       "noMatchSuggestion": "尝试搜索 {{ chainName }} 上的合约地址",
       "bridge": {
-        "high": "高",
-        "low": "低",
         "value": "价值",
         "liquidityTips": "历史交易量越高，桥接成功的可能性就越大。",
         "liquidity": "流动性",

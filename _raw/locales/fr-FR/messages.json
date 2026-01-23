@@ -162,8 +162,6 @@
       },
       "bridge": {
         "value": "Valeur",
-        "high": "Élevé",
-        "low": "Faible",
         "token": "Token",
         "liquidity": "Liquidité",
         "liquidityTips": "Plus le volume des transactions historiques est élevé, plus il est probable que le bridge réussira."
@@ -3064,15 +3062,15 @@
         "connect": "Connecter BitBox02"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "Scannez le code QR sur le portefeuille matériel Keystone"
-        },
         "usb": {
           "connect": "Connecter Keystone",
           "tip1": "Branchez votre appareil Keystone",
           "tip3": "Approuvez la connexion à votre ordinateur",
           "desc": "Assurez-vous que votre Keystone 3 Pro est sur la page d'accueil",
           "tip2": "Entrez votre mot de passe pour déverrouiller"
+        },
+        "qrcode": {
+          "desc": "Scannez le code QR sur le portefeuille matériel {{brandName}}"
         }
       },
       "importSafe": {

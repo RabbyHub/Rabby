@@ -2748,15 +2748,15 @@
         "tip3": "3. Desbloqueie seu dispositivo"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "Escaneie o código QR na carteira de hardware Keystone"
-        },
         "usb": {
           "connect": "Conectar Keystone",
           "tip2": "Digite sua senha para desbloquear",
           "tip3": "Aprove a conexão com seu computador",
           "desc": "Certifique-se de que seu Keystone 3 Pro esteja na página inicial",
           "tip1": "Conecte seu dispositivo Keystone"
+        },
+        "qrcode": {
+          "desc": "Escaneie o código QR na carteira de hardware {{brandName}}"
         }
       },
       "importSafe": {
@@ -3585,8 +3585,6 @@
       "bridge": {
         "liquidity": "Liquidez",
         "value": "Valor",
-        "low": "Baixo",
-        "high": "Alto",
         "token": "Token",
         "liquidityTips": "Quanto maior o volume histórico de transações, mais provável é que a ponte tenha sucesso."
       },

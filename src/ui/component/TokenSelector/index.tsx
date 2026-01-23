@@ -36,10 +36,7 @@ import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-emp
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/riskWarning-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { getUiType, useWallet } from '@/ui/utils';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
-import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
-import { ExternalTokenRow } from './ExternalToken';
+import { useRabbySelector } from '@/ui/store';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { TokenDetailInTokenSelectProviderContext } from './context';
 import NetSwitchTabs, {
@@ -52,6 +49,9 @@ import { LpTokenSwitch } from '@/ui/views/DesktopProfile/components/TokensTabPan
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 import { ChainFilterV2Line } from './ChainFilterV2Line';
+import { isNil } from 'lodash';
+import { ExternalTokenRow } from './ExternalToken';
+import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
 
 const isTab = getUiType().isTab;
 
@@ -96,6 +96,7 @@ export interface TokenSelectorProps {
   lpTokenMode?: boolean;
   setLpTokenMode?: (value: boolean) => void;
   showLpTokenSwitch?: boolean;
+  onSelectRecentToken?: (token: TokenItem) => void;
 }
 
 const filterTestnetTokenItem = (token: TokenItem) => {
@@ -127,6 +128,7 @@ const TokenSelector = ({
   lpTokenMode,
   setLpTokenMode,
   showLpTokenSwitch,
+  onSelectRecentToken,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -389,28 +391,6 @@ const TokenSelector = ({
     }
   }, [type, query, isSwapType, displayList, chainServerId]);
 
-  const CommonHeader = React.useMemo(() => {
-    if (type === 'bridgeTo') {
-      return (
-        <li className={clsx('token-list__header')}>
-          <div>{t('component.TokenSelector.bridge.token')}</div>
-          <div />
-          <div className="flex items-center justify-end relative">
-            <span>{t('component.TokenSelector.bridge.liquidity')}</span>
-            <TooltipWithMagnetArrow
-              placement="top"
-              className="rectangle w-[max-content]"
-              title={t('component.TokenSelector.bridge.liquidityTips')}
-            >
-              <RcIconInfoCC className="w-12 h-12 ml-2" viewBox="0 0 14 14" />
-            </TooltipWithMagnetArrow>
-          </div>
-        </li>
-      );
-    }
-    return null;
-  }, [type, t]);
-
   const isSwapTo = type === 'swapTo';
   const isBridgeTo = type === 'bridgeTo';
 
@@ -451,6 +431,7 @@ const TokenSelector = ({
           warningText={disable ? shortReason : undefined}
           token={token}
           type={_type}
+          externalMode={!!query}
           hideUsdValue={showCustomTestnetAssetList && selectedTab === 'testnet'}
           supportChains={supportChains}
           updateToken={updateToken}
@@ -461,7 +442,14 @@ const TokenSelector = ({
         />
       );
     },
-    [onConfirm, supportChains, visible, showCustomTestnetAssetList, selectedTab]
+    [
+      visible,
+      onConfirm,
+      query,
+      showCustomTestnetAssetList,
+      selectedTab,
+      supportChains,
+    ]
   );
 
   const recentToTokens = useRabbySelector((s) => s.swap.recentToTokens || []);
@@ -597,7 +585,10 @@ const TokenSelector = ({
                         'bg-r-neutral-card1 hover:bg-r-blue-light-1',
                         'text-15 text-r-neutral-title1 font-medium'
                       )}
-                      onClick={() => onConfirm(token)}
+                      onClick={() => {
+                        onConfirm(token);
+                        onSelectRecentToken?.(token);
+                      }}
                     >
                       <TokenWithChain
                         token={token}
@@ -613,7 +604,6 @@ const TokenSelector = ({
               </div>
             ) : null}
 
-            {CommonHeader}
             {isEmpty
               ? NoDataUI
               : displayList.map((token) => {
@@ -682,7 +672,8 @@ const DefaultLoading = ({ type }: { type: TokenSelectorProps['type'] }) => (
 );
 
 function CommonTokenItem(props: {
-  token: TokenItem & {
+  externalMode?: boolean;
+  token: TokenItemWithEntity & {
     trade_volume_level?: 'low' | 'high';
   };
   disabledTips?: React.ReactNode;
@@ -696,6 +687,7 @@ function CommonTokenItem(props: {
   hideUsdValue?: boolean;
 }) {
   const {
+    externalMode,
     token,
     disabledTips,
     supportChains,
@@ -720,8 +712,6 @@ function CommonTokenItem(props: {
 
   const isSwapTo = type === 'swapTo';
   const isBridgeTo = type === 'bridgeTo';
-
-  const currentChainName = useMemo(() => chainItem?.name, [chainItem]);
 
   const onClickTokenSymbol: React.MouseEventHandler<HTMLSpanElement> = useCallback(
     (e) => {
@@ -759,9 +749,13 @@ function CommonTokenItem(props: {
     return disabled ? t('component.TokenSelector.chainNotSupport') : undefined;
   }, [disabled, t]);
 
+  const cexIds = useMemo(() => {
+    return getCexIds(token);
+  }, [token]);
+
   const showExchangeLogos = useMemo(() => {
-    return isBridgeTo && !!token.cex_ids?.length;
-  }, [isBridgeTo, token.cex_ids]);
+    return (isBridgeTo || isSwapTo) && !!cexIds?.length;
+  }, [isBridgeTo, isSwapTo, cexIds?.length]);
 
   const handleTokenPress = useCallback(() => {
     if (disabled) {
@@ -770,7 +764,7 @@ function CommonTokenItem(props: {
     onConfirm(value || token);
   }, [disabled, value, token, onConfirm]);
 
-  if (type === 'swapTo') {
+  if (externalMode) {
     return (
       <Tooltip
         trigger={['click', 'hover']}
@@ -818,7 +812,7 @@ function CommonTokenItem(props: {
               height="32px"
               hideConer
             />
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-2">
               {showExchangeLogos ? (
                 <div className="flex overflow-visible">
                   <span
@@ -835,12 +829,12 @@ function CommonTokenItem(props: {
                       protocolName={token.protocol_id || ''}
                     />
                   )}
-                  <ExchangeLogos cexIds={token.cex_ids || []} />
+                  <ExchangeLogos cexIds={cexIds} />
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
                   <span
-                    className="symbol_click flex-1"
+                    className="symbol_click overflow-visible"
                     onClick={onClickTokenSymbol}
                   >
                     {getTokenSymbol(token)}
@@ -855,46 +849,38 @@ function CommonTokenItem(props: {
                   )}
                 </div>
               )}
-              <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
-                {isSwapTo
-                  ? `$${formatPrice(token.price || 0)}`
-                  : currentChainName}
-              </span>
+              {isBridgeTo ? (
+                <div
+                  className={clsx(
+                    'flex items-center justify-center',
+                    'ml-10 py-2 px-8 rounded-full w-max',
+                    'font-medium',
+                    token.trade_volume_level === 'high'
+                      ? 'bg-r-green-light'
+                      : 'bg-r-orange-light',
+                    token.trade_volume_level === 'high'
+                      ? 'text-r-green-default'
+                      : 'text-r-orange-default'
+                  )}
+                >
+                  <span className="text-[11px] leading-[11px]">
+                    {token?.trade_volume_level === 'high'
+                      ? t('component.TokenSelector.bridge.high')
+                      : t('component.TokenSelector.bridge.low')}
+                  </span>
+                </div>
+              ) : (
+                <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
+                  {formatTokenAmount(value?.amount || 0)} {token.symbol}
+                </span>
+              )}
             </div>
           </div>
 
           <div className="flex flex-col"></div>
 
           <div className="flex flex-col text-right items-end">
-            {isBridgeTo ? (
-              <div
-                className={clsx(
-                  'flex items-center justify-center gap-4',
-                  'py-2 px-8 rounded-full',
-                  'text-13 font-normal',
-                  token.trade_volume_level === 'high'
-                    ? 'bg-r-green-light'
-                    : 'bg-r-orange-light',
-                  token.trade_volume_level === 'high'
-                    ? 'text-r-green-default'
-                    : 'text-r-orange-default'
-                )}
-              >
-                <div
-                  className={clsx(
-                    'w-[3px] h-[3px] rounded-full',
-                    token.trade_volume_level === 'high'
-                      ? 'bg-r-green-default'
-                      : 'bg-r-orange-default'
-                  )}
-                />
-                <span>
-                  {token?.trade_volume_level === 'high'
-                    ? t('component.TokenSelector.bridge.high')
-                    : t('component.TokenSelector.bridge.low')}
-                </span>
-              </div>
-            ) : !hideUsdValue ? (
+            {!hideUsdValue ? (
               <>
                 <div className={clsx('token_usd_value')}>
                   {formatUsdValue(
@@ -903,8 +889,25 @@ function CommonTokenItem(props: {
                       .toFixed()
                   )}
                 </div>
-                <div className="text-13 font-normal text-r-neutral-foot mb-2">
-                  {formatTokenAmount(value?.amount || 0)}
+                <div className="flex flex-row gap-4 items-center">
+                  <div className="text-r-neutral-foot text-13 font-normal leading-[15px]">
+                    @${formatPrice(value?.price || 0)}
+                  </div>
+                  {isNil(value?.price_24h_change) ? (
+                    <span className="text-r-neutral-foot text-13 font-medium leading-[14px]">
+                      0%
+                    </span>
+                  ) : (
+                    <div
+                      className={clsx('font-medium text-13 leading-[14px]', {
+                        'text-green': value?.price_24h_change > 0,
+                        'text-red-forbidden': value?.price_24h_change < 0,
+                      })}
+                    >
+                      {value?.price_24h_change > 0 ? '+' : ''}
+                      {(value?.price_24h_change * 100).toFixed(2)}%
+                    </div>
+                  )}
                 </div>
               </>
             ) : (

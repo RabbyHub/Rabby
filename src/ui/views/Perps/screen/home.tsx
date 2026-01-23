@@ -8,6 +8,7 @@ import React, {
 import { PageHeader, TokenWithChain } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { RcIconExternal1CC, RcIconExternalCC } from '@/ui/assets/dashboard';
 import {
   formatUsdValue,
   sleep,
@@ -57,6 +58,7 @@ import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
 import { BackToTopButton } from '../components/BackToTopButton';
 import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
+import { useScroll } from 'ahooks';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -123,6 +125,7 @@ export const Perps: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const headerInitialTopRef = useRef<number>(0);
+  const scroll = useScroll(scrollContainerRef);
 
   useEffect(() => {
     wallet.getHasDoneNewUserProcess().then((hasDoneNewUserProcess) => {
@@ -614,20 +617,38 @@ export const Perps: React.FC = () => {
 
         <BackToTopButton visible={showBackToTop} onClick={handleBackToTop} />
 
-        {isLogin && hasPermission && (
-          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20">
-            <Button
-              block
-              type="primary"
+        {/* {isLogin && hasPermission && ( */}
+        {isLogin && (
+          <div
+            className={clsx(
+              'fixed bottom-0 left-0 right-0',
+              'px-[20px] py-[14px]',
+              'border-t-[0.5px] border-solid border-rabby-neutral-line',
+              'bg-r-neutral-bg-2 z-20',
+              scroll?.top ? 'hidden' : ''
+            )}
+          >
+            <button
+              type="button"
+              className={clsx(
+                'w-full h-[40px] text-r-blue-default text-[13px] leading-[16px] font-medium',
+                'rounded-[8px]',
+                'border-[1px] border-solid border-rabby-blue-default',
+                'bg-r-neutral-bg-2 hover:bg-r-blue-light1'
+              )}
               onClick={() => {
-                setSearchPopupVisible(true);
-                setOpenFromSource('openPosition');
+                wallet.openInDesktop('/desktop/perps');
+                window.close();
               }}
-              size="large"
-              className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
             >
-              {t('page.perps.searchPerpsPopup.openPosition')}
-            </Button>
+              <div className="flex items-center justify-center gap-[4px]">
+                {t('page.dashboard.assets.openInTab')}
+                <RcIconExternalCC
+                  viewBox="0 0 18 18"
+                  className="w-[16px] h-[16px]"
+                />
+              </div>
+            </button>
           </div>
         )}
       </div>

@@ -1,5 +1,4 @@
 version: 2.1
-
 executors:
   my-custom-executor:
     docker:
@@ -9,7 +8,6 @@ executors:
           # visit app.circleci.com/settings/project/github/Dargon789/Rabby/environment-variables
           username: $DOCKER_HUB_USER
           password: $DOCKER_HUB_PASSWORD
-          
 jobs:
   my-job-name:
 
@@ -22,4 +20,4 @@ jobs:
 workflows:
   my-custom-workflow:
     jobs:
-       - rabby-wallet-hub
+      - rabby-wallet-hub
