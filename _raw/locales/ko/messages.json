@@ -3572,8 +3572,6 @@
         "value": "값",
         "liquidity": "유동성",
         "token": "토큰",
-        "low": "낮음",
-        "high": "높음",
         "liquidityTips": "역사적인 거래량이 높을수록 브릿지가 성공할 가능성이 높습니다."
       },
       "searchInput": {

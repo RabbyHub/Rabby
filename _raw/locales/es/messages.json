@@ -3583,8 +3583,6 @@
       "bridge": {
         "value": "Valor",
         "liquidity": "Liquidez",
-        "high": "Alto",
-        "low": "Bajo",
         "token": "Token",
         "liquidityTips": "Cuanto mayor sea el volumen de comercio histórico, más probable es que el puente tenga éxito."
       },

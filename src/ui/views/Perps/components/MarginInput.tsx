@@ -99,7 +99,7 @@ export const MarginInput: React.FC<MarginInputProps> = ({
       </div>
       <div className="flex items-center mb-[8px]">
         <div className="flex items-end gap-[6px]">
-          <div className="text-[20px] leading-[24px] font-medium text-r-neutral-black">
+          <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1">
             {formatUsdValue(availableAmount, BigNumber.ROUND_DOWN)}
           </div>
           <div className="text-[13px] leading-[16px] text-r-neutral-foot pb-[2px]">

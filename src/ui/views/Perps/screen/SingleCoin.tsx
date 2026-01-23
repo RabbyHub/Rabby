@@ -118,12 +118,16 @@ export const PerpsSingleCoin = () => {
       (order) =>
         order.orderType === 'Take Profit Market' &&
         order.isTrigger &&
+        order.isPositionTpsl &&
         order.reduceOnly
     );
 
     const slItem = currentPosition.openOrders.find(
       (order) =>
-        order.orderType === 'Stop Market' && order.isTrigger && order.reduceOnly
+        order.orderType === 'Stop Market' &&
+        order.isTrigger &&
+        order.isPositionTpsl &&
+        order.reduceOnly
     );
 
     return {

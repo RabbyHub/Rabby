@@ -80,6 +80,17 @@
     top: 50%;
     transform: translateY(-50%);
   }
+
+  &:has(.toast-right-bottom-wrapper) {
+    top: unset;
+    right: 24px;
+    bottom: 36px;
+    left: unset;
+
+    .ant-message-notice {
+      text-align: right;
+    }
+  }
 }
 .ant-message-notice-content {
   padding: 8px 12px;
@@ -633,7 +644,7 @@ textarea {
 
 html[desktop] {
   .ant-switch {
-    background: var(--r-neutral-line, #e0e5ec);
+    background: var(--rb-neutral-line, #e0e5ec);
 
     &:focus {
       box-shadow: none !important;
@@ -641,6 +652,22 @@ html[desktop] {
   }
 
   .ant-switch-checked {
-    background: var(--r-green-default, #27c193);
+    background: var(--rb-green-default, #27c193);
   }
+
+  .ant-select {
+    .ant-select-selector {
+      border-radius: 6px;
+      background-color: var(--rb-neutral-bg-1 #fff);
+      border-color: var(--rb-neutral-line, #e0e5ec);
+    }
+    .ant-select-arrow {
+      color: var(--rb-neutral-foot, #6a7587);
+    }
+  }
+
+  // .ant-select-dropdown {
+  //   background-color: var(--rb-neutral-bg-1 #fff);
+  // }
+  
 }

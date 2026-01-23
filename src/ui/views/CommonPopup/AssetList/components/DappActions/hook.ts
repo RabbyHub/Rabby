@@ -86,13 +86,9 @@ export const getMethodDesc = (fncName: string) => {
   if (fncName.trim().startsWith('function ')) {
     return fncName;
   }
-  let normalizedName = fncName.trim();
+  const normalizedName = fncName.trim();
   // 移除最后一个括号及其内容
-  const lastParenIndex = normalizedName.lastIndexOf('(');
-  if (lastParenIndex !== -1) {
-    normalizedName = normalizedName.substring(0, lastParenIndex);
-  }
-  return `function ${normalizedName}`;
+  return `function ${normalizedName.split(')(')[0] + ')'}`;
 };
 
 export const useDappAction = (
