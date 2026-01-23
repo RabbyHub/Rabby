@@ -48,6 +48,17 @@ const config = {
         'vendor/bitbox02/bitbox02-pairing.html',
         'sw.js',
       ],
+      scuttleKeepProps: [
+        'OffscreenCanvas',
+        'Reflect',
+        '__ru1n_qiuwen_scuttle_options__',
+        'getComputedStyle',
+        'Document',
+        'HTMLElement',
+        'SVGElement',
+        'TouchEvent',
+        'KeyboardEvent'
+      ],
     }),
   ].filter(Boolean),
 

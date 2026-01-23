@@ -56993,7 +56993,9 @@
     "node_modules/@walletconnect/window-getters/dist/cjs/index.js": {
         "dependency": [],
         "global": {
-            "exports": "r"
+            "document": "r",
+            "exports": "r",
+            "navigator": "r"
         },
         "enable": true
     },
@@ -59059,16 +59061,6 @@
     },
     "node_modules/antd/es/config-provider/SizeContext.js": {
         "dependency": [
-            "node_modules/react/index.js"
-        ],
-        "global": {},
-        "enable": true
-    },
-    "node_modules/antd/es/divider/index.js": {
-        "dependency": [
-            "node_modules/@babel/runtime/helpers/esm/defineProperty.js",
-            "node_modules/@babel/runtime/helpers/esm/extends.js",
-            "node_modules/classnames/index.js",
             "node_modules/react/index.js"
         ],
         "global": {},
