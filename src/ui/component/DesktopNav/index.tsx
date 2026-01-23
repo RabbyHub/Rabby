@@ -23,10 +23,22 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { KEYRING_TYPE } from '@/constant';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
+import { debounce } from 'lodash';
 
 type DesktopNavAction = 'swap' | 'send' | 'bridge' | 'gnosis-queue';
 
 export const DESKTOP_NAV_HEIGHT = 84;
+
+const reportNavEvent = debounce((eventKey: string) => {
+  matomoRequestEvent({
+    category: 'RabbyWeb_Active',
+    action: `RabbyWeb_${eventKey}`,
+  });
+
+  ga4.fireEvent('RabbyWeb_Active', {
+    event_category: `RabbyWeb_${eventKey}`,
+  });
+}, 300);
 
 export const DesktopNav: React.FC<{
   onActionSelect?: (action: DesktopNavAction) => void;
@@ -52,8 +64,13 @@ export const DesktopNav: React.FC<{
         key: '/desktop/perps',
         icon: RcIconPerpsCC,
         title: t('component.DesktopNav.perps'),
-        isSoon: true,
         eventKey: 'Perps',
+      },
+      {
+        key: '/desktop/dapp-iframe',
+        icon: RcIconPredictionCC,
+        title: t('component.DesktopNav.prediction'),
+        eventKey: 'Prediction',
       },
       {
         key: '/desktop/lending',
@@ -61,12 +78,6 @@ export const DesktopNav: React.FC<{
         title: t('component.DesktopNav.lending'),
         isSoon: true,
         eventKey: 'Lending',
-      },
-      {
-        key: '/desktop/dapp-iframe',
-        icon: RcIconPredictionCC,
-        title: t('component.DesktopNav.prediction'),
-        eventKey: 'Prediction',
       },
     ],
     [t]
@@ -119,14 +130,7 @@ export const DesktopNav: React.FC<{
     if (!activeNav?.eventKey) {
       return;
     }
-    matomoRequestEvent({
-      category: 'RabbyWeb_Active',
-      action: `RabbyWeb_${activeNav.eventKey}`,
-    });
-
-    ga4.fireEvent('RabbyWeb_Active', {
-      event_category: `RabbyWeb_${activeNav.eventKey}`,
-    });
+    reportNavEvent(activeNav.eventKey);
   }, [activeNav?.eventKey]);
 
   return (

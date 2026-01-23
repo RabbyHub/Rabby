@@ -1,11 +1,12 @@
 import { Account } from 'background/service/preference';
-import { MarketData } from '@/ui/models/perps';
+import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
 import { Meta, AssetCtx, MarginTable } from '@rabby-wallet/hyperliquid-sdk';
 import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
 import { PERPS_MAX_NTL_VALUE, PERPS_POSITION_RISK_LEVEL } from './constants';
 import { useWallet, WalletController } from '@/ui/utils';
 import { KEYRING_CLASS } from '@/constant';
 import { getPerpsSDK } from './sdkManager';
+import { maxBy } from 'lodash';
 
 export const formatMarkData = (
   marketData: [Meta, AssetCtx[]],
@@ -171,6 +172,9 @@ export const validatePriceInput = (
   value: string,
   szDecimals: number
 ): boolean => {
+  // not input '-' in price input
+  if (value.includes('-')) return false;
+
   if (!value || value === '0' || value === '0.') return true;
 
   // Check if it's an integer (no decimal point or ends with decimal point)
@@ -194,6 +198,15 @@ export const validatePriceInput = (
   }
 
   return true;
+};
+
+export const validateTradeAmount = (value: string, szDecimals: number) => {
+  if (!value || value === '0' || value === '0.') return true;
+};
+
+export const formatTradeAmount = (value: string, szDecimals: number) => {
+  if (!value || value === '0' || value === '0.') return '0';
+  return value;
 };
 
 /**
@@ -263,20 +276,13 @@ export const formatTpOrSlPrice = (
     return integerPart;
   }
 
-  // Some digits are in decimal part
+  // Calculate remaining digits allowed in decimal part
+  // Note: every digit in decimalPart counts toward allDigits length
   const remainingDigits = 5 - integerPartLength;
 
-  // Keep leading zeros but count significant digits after them
-  const leadingZerosInDecimal = decimalPart.match(/^0*/)?.[0] || '';
-  const sigDigitsInDecimal = decimalPart.slice(leadingZerosInDecimal.length);
-  const desiredSig = Math.min(remainingDigits, sigDigitsInDecimal.length);
-  const takenSig = sigDigitsInDecimal.slice(0, desiredSig);
-
-  // Compose decimal respecting maxDecimals
-  let composedDecimal = (leadingZerosInDecimal + takenSig).slice(
-    0,
-    maxDecimals
-  );
+  // Limit decimal part to the minimum of remainingDigits and maxDecimals
+  const maxDecimalLength = Math.min(remainingDigits, maxDecimals);
+  let composedDecimal = decimalPart.slice(0, maxDecimalLength);
 
   // Remove trailing zeros
   composedDecimal = composedDecimal.replace(/0+$/, '');
@@ -341,4 +347,20 @@ export const checkPerpsReference = async ({
     console.error('checkPerpsReference error', e);
     return false;
   }
+};
+
+export const getMaxTimeFromAccountHistory = (
+  historyList: AccountHistoryItem[]
+) => {
+  const depositList = historyList.filter((item) => item.type === 'deposit');
+  const withdrawList = historyList.filter((item) => item.type === 'withdraw');
+  const receiveList = historyList.filter((item) => item.type === 'receive');
+  const depositMaxTime = maxBy(depositList, 'time')?.time || 0;
+  const withdrawMaxTime = maxBy(withdrawList, 'time')?.time || 0;
+  const receiveMaxTime = maxBy(receiveList, 'time')?.time || 0;
+  return {
+    depositMaxTime,
+    withdrawMaxTime,
+    receiveMaxTime,
+  };
 };

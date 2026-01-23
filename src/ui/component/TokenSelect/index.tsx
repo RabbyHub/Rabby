@@ -24,7 +24,11 @@ import { useAsync } from 'react-use';
 import { getUiType, useWallet } from '@/ui/utils';
 import { isAddress } from 'viem/utils';
 import { useTranslation } from 'react-i18next';
-import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
+import {
+  concatAndSort,
+  contactAmountTokens,
+  scamTokenFilter,
+} from '@/ui/utils/portfolio/tokenUtils';
 const isTab = getUiType().isTab;
 
 const Wrapper = styled.div`
@@ -260,12 +264,16 @@ const TokenSelect = forwardRef<
       return uniqBy(
         queryConds.keyword
           ? isSwapTo
-            ? remoteSwapToSearchTokens
+            ? contactAmountTokens(
+                // remoteSwapToSearchTokens获取的接口不好加amount，就从已推荐列表中找到amount合并进去
+                remoteSwapToSearchTokens || [],
+                swapTokenList || []
+              )
                 ?.filter((e) => e.chain === queryConds.chainServerId)
                 .filter((e) =>
                   isAddress(queryConds.keyword, { strict: false })
                     ? true
-                    : !!e.is_core
+                    : scamTokenFilter(e)
                 )
             : concatAndSort(
                 searchedTokenByQuery.map(abstractTokenToTokenItem),
@@ -283,6 +291,7 @@ const TokenSelect = forwardRef<
       excludeTokens,
       queryConds,
       isSwapTo,
+      swapTokenList,
       remoteSwapToSearchTokens,
     ]);
 

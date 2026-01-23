@@ -325,6 +325,7 @@ export const usePerpsPosition = ({
             midPx,
             // tpTriggerPx,
             // slTriggerPx,
+            builder: PERPS_BUILDER_INFO,
           }),
         ];
 

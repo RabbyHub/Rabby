@@ -1,0 +1,79 @@
+import React, { useCallback } from 'react';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
+import { DARK_MODE_TYPE } from '@/constant';
+import clsx from 'clsx';
+import { ReactComponent as RcIconMoon } from '@/ui/assets/perps/icon-moon.svg';
+import { ReactComponent as RcIconSun } from '@/ui/assets/perps/icon-sun.svg';
+import { useTranslation } from 'react-i18next';
+import { ReactComponent as IconPerpsWallet } from '@/ui/assets/perps/IconPerpsWallet.svg';
+import { useHistory } from 'react-router-dom';
+import { DepositPending } from '../DepositWithdrawModal/DepositPending';
+import { PopupType } from '../../index';
+import BigNumber from 'bignumber.js';
+
+export const AccountActions: React.FC<{
+  handleSetPopupType: (type: PopupType) => void;
+}> = ({ handleSetPopupType }) => {
+  const dispatch = useRabbyDispatch();
+  const clearinghouseState = useRabbySelector(
+    (state) => state.perps.clearinghouseState
+  );
+  const { t } = useTranslation();
+  const availableBalance = Number(clearinghouseState?.withdrawable || 0);
+  // Get pending history count
+  const localLoadingHistory = useRabbySelector(
+    (state) => state.perps.localLoadingHistory
+  );
+  const pendingCount = localLoadingHistory.length;
+
+  const handleDeposit = useCallback(() => {
+    handleSetPopupType('deposit');
+  }, [handleSetPopupType]);
+
+  return (
+    <div className="flex items-center gap-[12px]">
+      {/* Available Balance */}
+      {Boolean(clearinghouseState) && (
+        <div className="flex items-center gap-[8px] pl-12 pr-8 py-[8px] bg-rb-neutral-bg-3 rounded-[12px] border border-rb-neutral-bg-2">
+          <div className="flex items-center gap-[4px]">
+            <IconPerpsWallet />
+            <div className="flex items-start flex-col">
+              <span className="text-[10px] leading-[12px] text-r-neutral-foot">
+                {t('page.perpsPro.accountActions.available')}
+              </span>
+              <span className="text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+                {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={handleDeposit}
+            className={clsx(
+              'ml-6 px-[12px] h-[28px] rounded-[6px] text-[15px] font-medium flex items-center justify-center',
+              'bg-rb-brand-light-1 text-rb-brand-default'
+            )}
+          >
+            {t('page.perpsPro.accountActions.deposit')}
+          </button>
+
+          {/* Deposit Button */}
+          {pendingCount > 0 ? (
+            <div
+              onClick={handleDeposit}
+              className={clsx(
+                'px-[12px] h-[28px] rounded-[6px] text-[15px] font-medium flex items-center gap-8 cursor-pointer justify-center',
+                'bg-rb-orange-light-1 text-rb-orange-default'
+              )}
+            >
+              {t('page.perpsPro.accountActions.pending')}
+              <DepositPending pendingCount={pendingCount} />
+            </div>
+          ) : null}
+        </div>
+      )}
+    </div>
+  );
+};
