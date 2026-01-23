@@ -22,7 +22,8 @@
       "filterScam": {
         "title": "スキャム取引を非表示にする",
         "btn": "スキャム取引を非表示",
-        "loading": "読み込みには時間がかかる場合があり、データの遅延が発生する可能性があります。"
+        "loading": "読み込みには時間がかかる場合があり、データの遅延が発生する可能性があります。",
+        "button": "スキャム取引を隠す"
       },
       "detail": {
         "Succeeded": "成功しました",
@@ -652,7 +653,8 @@
     "receive": {
       "title": "{{chain}}上で{{token}}を受け取る",
       "watchModeAlert1": "これはウォッチモードのアドレスです。",
-      "watchModeAlert2": "資産を受け取るためにこれを使用してもよろしいですか？"
+      "watchModeAlert2": "資産を受け取るためにこれを使用してもよろしいですか？",
+      "receiveOn": "{{token}}を受け取る"
     },
     "sendToken": {
       "addressNotInContract": "アドレスリストにありません。<1></1><2>連絡先に追加</2>",
@@ -1051,7 +1053,8 @@
       "loss-tips": "{{usd}}を失っています。小さな市場で少額を試してください。",
       "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。",
       "understandRisks": "リスクを理解しており、続けたいと思います。",
-      "approve": "承認"
+      "approve": "承認",
+      "search-by-token-name-address": "トークン名 / アドレスを検索"
     },
     "manageAddress": {
       "no-address": "アドレスがありません",
@@ -2997,7 +3000,11 @@
         "goSwapTips": "Arbitrumでは、直接入金にサポートされているのはUSDCのみです。入金する前に、現在のトークンをUSDCにスワップしてください。",
         "estReceiveTooltip": "クロスチェーンサービスの入金はLiFiを介して処理され、スリッページが発生する可能性があります。推定到着時間は{{number}}秒です。",
         "minimumWithdrawSize": "最低引き出し額は$2です。",
-        "goBridgeTips": "Arbitrumでは、直接入金に対応しているのはUSDCのみです。入金する前に、現在のトークンをArbitrumのUSDCにブリッジしてください。"
+        "goBridgeTips": "Arbitrumでは、直接入金に対応しているのはUSDCのみです。入金する前に、現在のトークンをArbitrumのUSDCにブリッジしてください。",
+        "estReceiveLabel": "推定受取",
+        "estTimeLabel": "推定時間",
+        "hyperliquidFeeLabel": "ハイパーリキッド手数料",
+        "estReceiveTooltipNoTime": "クロスチェーンデポジットはLiFiを介して処理され、スリッページが発生する場合があります。"
       },
       "home": {
         "size": "サイズ",
@@ -3099,7 +3106,35 @@
         "openPositionSuccess": "{{direction}} {{coin}}-USDをオープンしました: サイズ {{size}}、価格 ${{price}}",
         "closePositionSuccess": "クローズ {{direction}} {{coin}}-USD: サイズ {{size}} 価格 ${{price}} で",
         "stopLossSuccess": "ストップロスが正常に設定されました",
-        "takeProfitSuccess": "利益確定が正常に設定されました"
+        "takeProfitSuccess": "利益確定が正常に設定されました",
+        "success": "成功",
+        "deposit": "入金成功",
+        "orderFilled": "注文が成立しました",
+        "orderCancelled": "注文がキャンセルされました",
+        "orderPlaced": "注文が行われました",
+        "depositTip": "{{amount}} USDC を入金しました",
+        "cancelFailed": "キャンセルに失敗しました",
+        "cancelAllOrderSuccess": "{{count}} 件の注文が正常にキャンセルされました",
+        "terminalTwapSuccess": "端末のTWAP注文が成功しました",
+        "ordersCancelled": "すべての注文がキャンセルされました",
+        "marginUpdated": "マージンが更新されました",
+        "sellFilledContentNoPercentage": "{{sz}} {{coin}}を{{price}} USDCで売却しました。",
+        "cancelOrderError": "注文のキャンセルに失敗しました",
+        "marginModeUpdated": "マージンモードが変更されました: {{mode}}",
+        "terminalTwap": "ターミナル TWAP",
+        "withdraw": "出金に成功しました",
+        "twapSliceFilled": "TWAPスライスが約定しました",
+        "limitOrderFilled": "リミットオーダーが約定しました（{{percent}}%）",
+        "openTWAPOrderSuccess": "TWAP オーダーが {{direction}} {{coin}}-USD を開きました: サイズ {{size}}",
+        "openScaleOrderSuccess": "注文がスケールされました {{direction}} {{coin}}-USD: サイズ {{size}}",
+        "buyFilledContentNoPercentage": "{{sz}} {{coin}} を @{{price}} USDC で購入しました",
+        "sellFilledContent": "{{sz}} / {{origSz}} {{coin}} を @{{price}} USDC で売却しました",
+        "leverageChanged": "レバレッジが変更されました: {{leverage}}",
+        "cancelTWAPOrderSuccess": "TWAP注文が正常にキャンセルされました",
+        "closeAllPositionsSuccess": "すべてのポジションが正常にクローズされました",
+        "openLimitOrderSuccess": "リミットオーダーが {{direction}} {{coin}}-USD に配置されました: サイズ {{size}}、価格 ${{price}}",
+        "openTPSlLimitOrderSuccess": "{{tpsl}} リミットオーダーが {{direction}} {{coin}}-USD に置かれました: サイズ {{size}} 価格 ${{price}}で",
+        "openTPSlMarketOrderSuccess": "{{tpsl}} マーケットオーダーが {{direction}} {{coin}}-USD にて発注されました: サイズ {{size}}、価格 ${{price}}"
       },
       "closePositionPopup": {
         "closeShort": "ショートをクローズ",
@@ -3160,7 +3195,12 @@
       "fundingGains": "ファンディング利益",
       "close": "閉じる",
       "add": "追加",
-      "fundingRate": "資金調達率"
+      "fundingRate": "資金調達率",
+      "cancelAllOrdersPopup": {
+        "description": "すべてのオープン注文はキャンセルされます。",
+        "title": "すべての注文をキャンセルすることを確認してください"
+      },
+      "rabbyFeeTipsV2": "Rabby 手数料：0.02%"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3463,6 +3503,277 @@
       "networkErrorDescription": "{{site}}は予期せず接続を閉じました。ネットワークを確認してください。",
       "networkErrorTitle": "このサイトにアクセスできません",
       "networkErrorDescriptionFallback": "サイトが予期せず接続を閉じました。ネットワークを確認してください。"
+    },
+    "perpsPro": {
+      "chatArea": {
+        "lastPrice": "最終価格",
+        "oracle": "オラクル",
+        "volume": "ボリューム",
+        "searchMarkets": "マーケットを検索",
+        "symbol": "シンボル",
+        "fundingCountdown": "資金調達 / カウントダウン",
+        "8hrFunding": "8時間ファンディング",
+        "24hVol": "24時間取引量",
+        "24hChange": "24時間の変動",
+        "mark": "マーク",
+        "openInterest": "オープンポジション",
+        "oracleTips": "バリデーターによって報告された外部価格の中央値で、ファンディングレートを計算するために使用されます。",
+        "markTips": "マージン計算、未実現PNLの計算、清算、およびTP/SLオーダーのトリガーに使用されます。",
+        "fundingTips": "ロングがショートに支払う時間単位のレート（負の場合は、ショートがロングに支払います）。資金調達に関連する手数料はなく、これはユーザー間のピアツーピア転送で、価格をスポット価格に近づけます。詳細はDocsを参照してください。"
+      },
+      "userInfo": {
+        "tab": {
+          "direction": "方向",
+          "time": "時間",
+          "fundingTips": "ポジションがオープンしてからのネット資金支払い。マイナスの場合、資金利益を意味します。",
+          "closedPnlTooltip": "クローズドPNLには手数料とリベートが含まれます。",
+          "unrealizedPnlTooltip": "マーク価格は未実現のPNLを推定するために使用されます。実現したPNLには取引価格のみが使用されます。",
+          "side": "サイド",
+          "payment": "支払い",
+          "size": "サイズ",
+          "averagePrice": "平均価格",
+          "status": "ステータス",
+          "rate": "レート",
+          "slice": "スライス",
+          "fee": "手数料",
+          "margin": "マージン",
+          "funding": "ファンディング",
+          "trade": "取引",
+          "unrealizedPnl": "未実現PnL",
+          "tpSl": "TP/SL",
+          "tradeValue": "取引価値",
+          "trigger": "トリガー",
+          "liqPrice": "Liq.価格",
+          "type": "タイプ",
+          "creationTime": "作成時間",
+          "markEntry": "マーク / エントリー",
+          "value": "値",
+          "runningTimeTotal": "実行時間 / 合計",
+          "reduceOnly": "減少のみ",
+          "closedPnl": "クローズドPnl",
+          "positions": "ポジション",
+          "coin": "コイン",
+          "filled": "執行済み",
+          "terminate": "終了",
+          "order": "注文",
+          "price": "価格",
+          "openOrders": "オープンオーダー",
+          "tradeHistory": "取引履歴",
+          "fundingHistory": "資金履歴",
+          "orderHistory": "注文履歴",
+          "twap": "TWAP"
+        },
+        "emptyMessage": {
+          "tradeHistory": "取引履歴はありません",
+          "positions": "ポジションはありません",
+          "twapHistory": "TWAP履歴がありません",
+          "activeTwap": "アクティブなTWAPはありません",
+          "fillHistory": "履歴なし",
+          "fundingHistory": "資金履歴はありません",
+          "openOrders": "オープンオーダーはありません",
+          "orderHistory": "注文履歴はありません"
+        },
+        "positionInfo": {
+          "close": "クローズ",
+          "mid": "ミッド",
+          "limitPrice": "リミット価格",
+          "closeAll": "すべて閉じる",
+          "reverse": "リバース",
+          "receive": "受け取る",
+          "closeMarket": "マーケットクローズ",
+          "reversePosition": "ポジションを逆転する",
+          "configure": "設定する",
+          "newPosition": "新しいポジション",
+          "viewOrders": "注文を表示",
+          "closedPnl": "クローズドPNL",
+          "closeLimit": "クローズリミット",
+          "limitClose": "リミットクローズ",
+          "currentPosition": "現在のポジション",
+          "closePosition": "ポジションをクローズ",
+          "closePositionTips": "これは、選択したリミット価格でのクローズを試みます。",
+          "closePositionMarketTips": "これは現在の市場価格で即座にクローズされます。",
+          "confirm": "確認",
+          "closePositionReverseTips": "これは、現在の市場価格であなたのポジションを即座に閉じ、逆の方向で同じサイズのポジションを開くことになります。"
+        },
+        "openOrders": {
+          "cancel": "キャンセル",
+          "order": "注文",
+          "time": "時間",
+          "reduceOnly": "減少のみ",
+          "price": "価格",
+          "tpSl": "TP/SL",
+          "type": "タイプ",
+          "triggerConditions": "トリガー条件",
+          "filled": "執行済み",
+          "orderValueSize": "注文の価値 / サイズ",
+          "cancelAll": "すべてキャンセル"
+        },
+        "distanceRiskTag": {
+          "goingUp": "{{percent}}の上昇で清算が発生します",
+          "goingDown": "{{percent}} 下落すると清算が発生します"
+        },
+        "twap": {
+          "terminated": "終了しました",
+          "completed": "完了",
+          "activated": "アクティブ化されました"
+        },
+        "terminate": "終了",
+        "history": "履歴",
+        "fillHistory": "フィル履歴",
+        "active": "アクティブ",
+        "yes": "はい",
+        "randomized": "（ランダム化された）",
+        "no": "いいえ"
+      },
+      "statusBar": {
+        "offline": "オフライン",
+        "online": "オンライン",
+        "sound": "サウンドを有効にする"
+      },
+      "tradingPanel": {
+        "slippagePage": {
+          "maxError": "最大スリッページは100%です。",
+          "title": "最大スリッページを調整する",
+          "minError": "最小スリッページは0%です",
+          "maxSlippage": "最大スリッページ",
+          "description": "最大スリッページは、注文フォームから出されたマーケットオーダーにのみ影響します。ポジションのクローズには最大スリッページ8%が適用され、マーケットTP/SLオーダーには最大スリッページ10%が適用されます。"
+        },
+        "limitOrderTypeOptions": {
+          "Gtc": "GTC（取消まで有効）：注文は、約定またはキャンセルされるまで保持されます。",
+          "Ioc": "IOC（即時発注またはキャンセル）：直ちに執行されない部分はキャンセルされます。",
+          "Alo": "ALO（流动性追加のみ）：注文はブック上のリミットオーダーとしてのみ存在します。ポストオンリーとも呼ばれます。"
+        },
+        "atLeastTwoOrders": "少なくとも2つの注文が必要です。",
+        "end": "終了",
+        "threeThirtySeconds": "30秒",
+        "liquidationPriceTooltip": "ポジションリスクは低いため、現時点ではLiquidation価格はありません。ポジションを増やすか、マージンを減らすとリスクが増加することに注意してください。",
+        "startPrice": "開始価格",
+        "start": "開始",
+        "totalOrders": "合計注文",
+        "orderValue": "注文額",
+        "liquidationPrice": "清算価格",
+        "sizeSkew": "サイズスキュー",
+        "marginRequired": "必要なマージン",
+        "marginUsage": "マージン使用状況",
+        "reduceOnly": "減少のみ",
+        "takeProfitExpectedPnL": "利益確定の予想PnL",
+        "stopLossExpectedPnL": "ストップロス予想PnL",
+        "runtimeTooLong": "実行時間は24時間未満でなければなりません",
+        "sizePerSuborder": "サブオーダーごとのサイズ",
+        "runtimeTooShort": "ランタイムは5分以上でなければなりません。",
+        "frequency": "頻度",
+        "randomizeTooltip": "サブオーダーのタイミングとサイズをランダム化して、予測可能性を低減します。",
+        "numberOfOrders": "注文の数",
+        "enableTrading": "取引を有効にする",
+        "slippage": "スリッページ",
+        "endPrice": "終了価格",
+        "tpSlTips": "シンプルな市場のTP/SL注文を出します。制限価格や部分TP/SLなどの高度な機能を使用するには、オープンポジションでTP/SLを設定してください。",
+        "runtime": "ランタイム",
+        "type": "タイプ",
+        "marginCross": "クロス",
+        "minutes": "分",
+        "availableFunds": "利用可能な資金",
+        "insufficientBalance": "残高不足",
+        "tpSl": "TP / SL",
+        "marginIsolated": "アイソレーテッド",
+        "sellShort": "売却 / ショート",
+        "buyLong": "買う / ロング",
+        "limitPrice": "リミット価格",
+        "hours": "時間",
+        "startAndEndPriceMustBeDifferent": "開始価格と終了価格は異なる必要があります。",
+        "randomize": "ランダム化",
+        "reduceOnlyTooLarge": "減少するだけ（過大すぎる）",
+        "invalidTpPrice": "無効な利確価格",
+        "enterAmount": "金額を入力してください",
+        "placeOrder": "注文を出す",
+        "runtimeTips": "（5分-24時間）",
+        "currentPosition": "現在のポジション",
+        "triggerPrice": "トリガー価格",
+        "invalidSlPrice": "無効なストップロス価格",
+        "minimumSuborderSize": "最小 TWAP サブオーダーサイズは $10 です。",
+        "reduceOnlyTips": "この注文は、注文サイズがどれほど大きくても新しいポジションを開くことはありません。実行時に既存のポジションと比較されます。",
+        "maximumOrderSize": "最大注文サイズは{{amount}}です",
+        "aloTooLargeSell": "Aloの注文価格は、最良の入札価格よりも高くなければなりません。",
+        "sizeSkewTooltip": "終了価格と開始価格の比率。例えば、サイズの偏りが2.0であれば、終了価格に対する指値注文は開始価格の2倍のサイズで発注されます。サイズの偏りが1.0の場合、同じサイズの注文が作成されます。",
+        "minimumOrderSize": "最小注文サイズは$10です",
+        "aloTooLargeBuy": "Aloの注文価格は、最良の売り注文価格よりも低くなければなりません。",
+        "tpSellMustBeHigherThanMidPrice": "売り注文の価格はミッドよりも高くなければなりません。",
+        "slMustBeLowerThanCurrentPrice": "ストップロス価格は現在の価格よりも低くなければなりません。",
+        "tpMustBeLowerThanCurrentPrice": "利益確定価格は現在の価格よりも低くなければなりません",
+        "tpMustBeHigherThanCurrentPrice": "利益確定価格は現在の価格よりも高くなければなりません",
+        "slMustBeHigherThanCurrentPrice": "ストップロス価格は現在の価格よりも高くなければなりません",
+        "slBuyMustBeHigherThanMidPrice": "ストップバイ注文の価格はミッドより高くなければなりません。",
+        "tpBuyMustBeLowerThanMidPrice": "買い注文の価格はミッドより低くなければなりません。",
+        "slSellMustBeLowerThanMidPrice": "ストップセール注文価格はミッドよりも低くなければなりません。"
+      },
+      "marginMode": {
+        "title": "マージンモード",
+        "isolated": "分離",
+        "confirm": "確認",
+        "cross": "クロス",
+        "isolatedDescription": "個々のポジションに割り当てられたマージンの金額を調整することでリスクを管理します。分離されたポジションのマージン比率が100%に達すると、そのポジションは清算されます。このモードでは、個々のポジションにマージンを追加または削除することができます。",
+        "crossDescription": "すべてのクロスポジションは、担保として同じクロスマージンを共有します。清算が発生した場合、あなたのマージン残高とこのモードの下での残りのオープンポジションは没収される可能性があります。"
+      },
+      "leverage": {
+        "confirm": "確認",
+        "title": "レバレッジを調整する",
+        "maxError": "最大レバレッジは{{max}}xです",
+        "maxPositionSize": "最大ポジションサイズはレバレッジが高くなるほど減少します。",
+        "higherLeverageRisk": "高いレバレッジは清算のリスクを増加させます。",
+        "minError": "最小レバレッジは1倍です。",
+        "controlPositionLeverage": "{{coin}}ポジションに使用されるレバレッジを制御します。最大レバレッジは{{max}}xです。"
+      },
+      "editTpSl": {
+        "loss": "損失",
+        "stopLossExpectedPnl": "ストップロス期待PnL",
+        "cancelSl": "SLをキャンセル",
+        "gain": "獲得",
+        "markPrice": "マークプライス:",
+        "cancelTp": "TPをキャンセルする",
+        "title": "TP/SLを設定する",
+        "entryPrice": "エントリープライス:",
+        "takeProfitExpectedPnl": "利益確定を期待するPnL",
+        "confirm": "確認",
+        "sl": "SL",
+        "currentPosition": "現在のポジション",
+        "tp": "TP"
+      },
+      "accountInfo": {
+        "balance": "残高",
+        "withdraw": "出金",
+        "deposit": "入金",
+        "availableBalance": "利用可能な残高",
+        "totalBalance": "合計残高",
+        "crossMarginRatio": "クロスマージン比率",
+        "balanceTip": "合計純転送 + 合計実現利益 + 合計純ファンディング手数料",
+        "maintenanceMarginTips": "クロスポジションをオープンに維持するために必要な最小ポートフォリオ価値",
+        "unrealizedPnl": "未実現P&L",
+        "accountEquity": "アカウント資産",
+        "crossAccountLeverage": "クロスアカウントレバレッジ",
+        "crossAccountLeverageTips": "クロスアカウントレバレッジ = 総クロスポジション価値 / クロスアカウント価値。",
+        "accountEquityTip": "残高 + 未実現PNL（すべてのポジションがクローズされた場合の概算アカウント価値）",
+        "maintenanceMargin": "維持証拠金",
+        "crossMarginRatioTips": "維持証拠金 / ポートフォリオ価値。マージン比率が100%に達した場合、クロスポジションは強制決済されます。"
+      },
+      "accountActions": {
+        "pending": "保留中",
+        "deposit": "入金",
+        "positionCount": "{{count}} ポジション",
+        "available": "利用可能"
+      },
+      "orderBook": {
+        "total": "合計",
+        "price": "価格",
+        "markPrice": "マーク価格",
+        "amount": "金額",
+        "trades": "取引",
+        "time": "時間",
+        "title": "オーダーブック",
+        "viewBids": "入札",
+        "viewBoth": "両方",
+        "noTrades": "取引はありません",
+        "viewAsks": "売り注文"
+      }
     }
   },
   "component": {
@@ -3572,7 +3883,8 @@
         }
       },
       "searchInput": {
-        "placeholder": "名前またはアドレスで検索"
+        "placeholder": "名前またはアドレスで検索",
+        "placeholder1": "トークン名 / アドレスを検索"
       },
       "header": {
         "title": "トークンを選択"
@@ -3584,7 +3896,9 @@
         "value": "値",
         "token": "トークン",
         "liquidity": "流動性",
-        "liquidityTips": "過去の取引量が多いほど、ブリッジが成功する可能性が高くなります。"
+        "liquidityTips": "過去の取引量が多いほど、ブリッジが成功する可能性が高くなります。",
+        "high": "高い流動性",
+        "low": "流動性が低い"
       },
       "hot": "ホット",
       "recent": "最近",

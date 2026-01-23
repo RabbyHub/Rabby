@@ -21,7 +21,8 @@
       "filterScam": {
         "loading": "Đang tải có thể mất một lúc, và có thể có sự chậm trễ dữ liệu.",
         "title": "Ẩn giao dịch lừa đảo",
-        "btn": "Ẩn giao dịch lừa đảo"
+        "btn": "Ẩn giao dịch lừa đảo",
+        "button": "Ẩn giao dịch lừa đảo"
       },
       "title": "Giao dịch",
       "detail": {
@@ -652,7 +653,8 @@
     "receive": {
       "watchModeAlert1": "Đây là một địa chỉ Chế độ Theo dõi.",
       "title": "Nhận {{token}} trên {{chain}}",
-      "watchModeAlert2": "Bạn có chắc chắn sử dụng nó để nhận tài sản không?"
+      "watchModeAlert2": "Bạn có chắc chắn sử dụng nó để nhận tài sản không?",
+      "receiveOn": "Nhận {{token}} trên"
     },
     "sendToken": {
       "AddToContactsModal": {
@@ -1051,7 +1053,8 @@
       "loss-tips": "Bạn đang mất {{usd}}. Hãy thử một số tiền nhỏ hơn trong một thị trường nhỏ.",
       "no-quote-found": "Không tìm thấy báo giá",
       "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục",
-      "approve": "Chấp thuận"
+      "approve": "Chấp thuận",
+      "search-by-token-name-address": "Tìm kiếm Tên / Địa chỉ Token"
     },
     "bridge": {
       "showMore": {
@@ -2994,7 +2997,11 @@
         "fetchQuoteFailed": "Không thể lấy báo giá gửi tiền. Vui lòng chuyển đổi token.",
         "goSwapTips": "Chỉ có USDC trên Arbitrum được hỗ trợ cho việc gửi trực tiếp. Vui lòng hoán đổi token hiện tại của bạn sang USDC trước khi gửi.",
         "goBridgeTips": "Chỉ USDC trên Arbitrum được hỗ trợ cho việc gửi trực tiếp. Vui lòng chuyển đổi token hiện tại của bạn sang USDC trên Arbitrum trước khi gửi.",
-        "estReceiveTooltip": "Gửi tiền chéo chuỗi được xử lý qua LiFi, có thể phát sinh một số trượt giá. Dự kiến đến sau {{number}} giây."
+        "estReceiveTooltip": "Gửi tiền chéo chuỗi được xử lý qua LiFi, có thể phát sinh một số trượt giá. Dự kiến đến sau {{number}} giây.",
+        "estTimeLabel": "Thời gian ước tính",
+        "estReceiveLabel": "Est. Nhận",
+        "hyperliquidFeeLabel": "Phí Hyperliquid",
+        "estReceiveTooltipNoTime": "Gửi tiền qua chuỗi chéo được xử lý qua LiFi, có thể phát sinh một số trượt giá."
       },
       "home": {
         "pnl": "PNL",
@@ -3096,7 +3103,38 @@
         "openPositionSuccess": "Mở {{direction}} {{coin}}-USD: Kích thước {{size}} tại giá ${{price}}",
         "closePositionSuccess": "Đã đóng {{direction}} {{coin}}-USD: Kích thước {{size}} với giá ${{price}}",
         "takeProfitSuccess": "Đặt lợi nhuận thành công",
-        "stopLossSuccess": "Đặt lệnh dừng lỗ thành công"
+        "stopLossSuccess": "Đặt lệnh dừng lỗ thành công",
+        "terminalTwap": "Terminal TWAP",
+        "cancelOrderError": "Không thể hủy đơn hàng",
+        "withdraw": "Rút tiền thành công",
+        "success": "Thành công",
+        "cancelFailed": "Hủy không thành công",
+        "cancelOrderSuccess": "Đơn hàng đã bị hủy bỏ",
+        "marginUpdated": "Cập nhật ký quỹ",
+        "orderFilled": "Đơn hàng đã được hoàn thành",
+        "ordersCancelled": "Tất cả đơn hàng đã bị hủy",
+        "depositTip": "{{amount}} USDC đã được gửi",
+        "orderCancelled": "Đơn hàng đã bị hủy",
+        "deposit": "Nạp tiền thành công",
+        "limitOrderFilled": "Lệnh giới hạn đã được thực hiện ({{percent}}%)",
+        "cancelAllOrderSuccess": "Đã hủy thành công {{count}} đơn hàng",
+        "marginModeUpdated": "Chế độ ký quỹ đã thay đổi thành: {{mode}}",
+        "sellFilledContentNoPercentage": "đã bán {{sz}} {{coin}} đã hoàn tất @{{price}} USDC",
+        "orderPlaced": "Đơn hàng đã được đặt",
+        "withdrawTip": "{{amount}} USDC đã được rút thành công.",
+        "terminalTwapSuccess": "Đơn đặt hàng TWAP tại Terminal thành công",
+        "leverageChanged": "Tỉ lệ đòn bẩy đã thay đổi thành: {{leverage}}",
+        "openTWAPOrderSuccess": "Đơn hàng TWAP đã mở {{direction}} {{coin}}-USD: Kích thước {{size}}",
+        "sellFilledContent": "bán {{sz}} / {{origSz}} {{coin}} đã được lấp @{{price}} USDC",
+        "buyFilledContent": "mua {{sz}} / {{origSz}} {{coin}} đã được lấp @{{price}} USDC",
+        "openScaleOrderSuccess": "Đơn đặt hàng quy mô đã được thực hiện {{direction}} {{coin}}-USD: Kích thước {{size}}",
+        "buyFilledContentNoPercentage": "mua {{sz}} {{coin}} đã điền @{{price}} USDC",
+        "twapSliceFilled": "TWAP Slice Đã Được Điền",
+        "closeAllPositionsSuccess": "Tất cả các vị trí đã được đóng thành công",
+        "cancelTWAPOrderSuccess": "Đơn hàng TWAP đã bị hủy thành công",
+        "openTPSlMarketOrderSuccess": "Đơn hàng thị trường {{tpsl}} đã được đặt {{direction}} {{coin}}-USD: Kích thước {{size}} với Giá ${{price}}",
+        "openTPSlLimitOrderSuccess": "{{tpsl}} lệnh giới hạn đã được đặt {{direction}} {{coin}}-USD: Kích thước {{size}} tại Giá ${{price}}",
+        "openLimitOrderSuccess": "đơn đặt hàng giới hạn đã được đặt {{direction}} {{coin}}-USD: Kích thước {{size}} với Giá ${{price}}"
       },
       "closePositionPopup": {
         "closeLong": "Đóng Long",
@@ -3157,7 +3195,12 @@
       "close": "Đóng",
       "add": "Thêm",
       "fundingRate": "Tỷ lệ funding",
-      "fundingGains": "Lợi nhuận từ Funding"
+      "fundingGains": "Lợi nhuận từ Funding",
+      "cancelAllOrdersPopup": {
+        "description": "Tất cả các lệnh mở của bạn sẽ bị hủy.",
+        "title": "Xác nhận Hủy Tất cả Đơn hàng"
+      },
+      "rabbyFeeTipsV2": "Phí Rabby: 0,02%"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3460,6 +3503,278 @@
       "networkErrorTitle": "Trang web này không thể truy cập.",
       "networkErrorDescriptionFallback": "Trang web đã đóng kết nối một cách bất ngờ. Vui lòng kiểm tra mạng của bạn.",
       "networkErrorDescription": "{{site}} đã đóng kết nối một cách bất ngờ. Vui lòng kiểm tra mạng của bạn."
+    },
+    "perpsPro": {
+      "chatArea": {
+        "oracle": "Oracle",
+        "8hrFunding": "8h Funding",
+        "mark": "Đánh dấu",
+        "24hVol": "24h Khối lượng",
+        "volume": "Khối lượng",
+        "symbol": "Ký hiệu",
+        "24hChange": "24h Thay đổi",
+        "searchMarkets": "Tìm kiếm thị trường",
+        "fundingCountdown": "Funding / Đếm ngược",
+        "lastPrice": "Giá Cuối Cùng",
+        "openInterestTips": "Lợi ích mở hai chiều: tổng hợp các vị thế long và short trên hợp đồng này.",
+        "openInterest": "Lãi Mở",
+        "markTips": "Dùng để ký quỹ, tính toán PNL chưa thực hiện, thanh lý và kích hoạt đơn đặt hàng TP/SL.",
+        "oracleTips": "Giá trung vị của các mức giá bên ngoài được báo cáo bởi các trình xác thực, được sử dụng để tính toán mức lãi suất tài trợ.",
+        "fundingTips": "Tỷ lệ hàng giờ mà những người làm Long trả cho những người làm Short (nếu âm, những người làm Short trả cho những người làm Long). Không có phí liên quan đến việc cấp vốn, đó là một giao dịch ngang hàng giữa người dùng để đẩy giá về phía giá giao ngay. Xem tài liệu để biết thêm chi tiết."
+      },
+      "userInfo": {
+        "tab": {
+          "direction": "Hướng đi",
+          "time": "Thời gian",
+          "closedPnlTooltip": "PNL đã đóng bao gồm phí và hoàn lại.",
+          "fundingTips": "Net funding payments kể từ khi vị trí được mở. Nếu âm, có nghĩa là lợi nhuận từ funding.",
+          "unrealizedPnlTooltip": "Giá đánh dấu được sử dụng để ước tính PNL chưa thực hiện. Chỉ có giá giao dịch được sử dụng cho PNL đã thực hiện.",
+          "rate": "Tỷ lệ",
+          "coin": "Coin",
+          "order": "Đặt hàng",
+          "type": "Loại",
+          "funding": "Quỹ",
+          "creationTime": "Thời gian tạo",
+          "tradeValue": "Giá trị giao dịch",
+          "reduceOnly": "Chỉ giảm",
+          "side": "Bên",
+          "price": "Giá",
+          "status": "Trạng thái",
+          "positions": "Vị trí",
+          "payment": "Thanh toán",
+          "margin": "Ký quỹ",
+          "value": "Giá trị",
+          "slice": "Lát cắt",
+          "fee": "Phí",
+          "tpSl": "TP/SL",
+          "filled": "Đã khớp",
+          "terminate": "Kết thúc",
+          "liqPrice": "Giá thanh lý",
+          "trigger": "Kích hoạt",
+          "runningTimeTotal": "Thời gian chạy / Tổng cộng",
+          "unrealizedPnl": "Lợi nhuận và lỗ chưa thực hiện",
+          "averagePrice": "Giá trung bình",
+          "closedPnl": "Lợi nhuận đã đóng",
+          "openOrders": "Đơn Đặt Mở",
+          "trade": "Giao dịch",
+          "markEntry": "Đánh dấu / Vào lệnh",
+          "size": "Kích thước",
+          "orderHistory": "Lịch sử đơn hàng",
+          "twap": "TWAP",
+          "tradeHistory": "Lịch sử giao dịch",
+          "fundingHistory": "Lịch sử Funding"
+        },
+        "emptyMessage": {
+          "positions": "Không có vị thế",
+          "orderHistory": "Không có lịch sử đơn hàng",
+          "activeTwap": "Không có TWAP đang hoạt động",
+          "tradeHistory": "Không có lịch sử giao dịch",
+          "twapHistory": "Không có lịch sử TWAP",
+          "fundingHistory": "Không có lịch sử tài trợ",
+          "fillHistory": "Không có lịch sử giao dịch",
+          "openOrders": "Không có đơn hàng mở"
+        },
+        "positionInfo": {
+          "mid": "Giữa",
+          "receive": "Nhận",
+          "reverse": "Đảo ngược",
+          "newPosition": "Vị trí mới",
+          "reversePosition": "Đảo vị thế",
+          "close": "Đóng",
+          "configure": "Cấu hình",
+          "limitClose": "Giới hạn Đóng",
+          "closedPnl": "PNL Đã Đóng",
+          "limitPrice": "Giá Giới Hạn",
+          "closeLimit": "Đóng Giới Hạn",
+          "closeAll": "Đóng Tất Cả",
+          "viewOrders": "Xem Đơn Hàng",
+          "closePosition": "Đóng Vị Trí",
+          "closeMarket": "Đóng Thị Trường",
+          "closePositionMarketTips": "Điều này sẽ đóng ngay lập tức theo giá thị trường hiện tại.",
+          "currentPosition": "Vị trí hiện tại",
+          "closePositionTips": "Điều này sẽ cố gắng đóng tại mức giá giới hạn bạn đã chọn.",
+          "confirm": "Xác nhận",
+          "closePositionReverseTips": "Điều này sẽ ngay lập tức đóng vị trí của bạn theo giá thị trường hiện tại và mở một vị trí có kích thước bằng nhau theo hướng ngược lại."
+        },
+        "openOrders": {
+          "type": "Loại",
+          "tpSl": "TP/SL",
+          "price": "Giá",
+          "order": "Đơn hàng",
+          "cancelAll": "Hủy Tất Cả",
+          "cancel": "Hủy bỏ",
+          "time": "Thời gian",
+          "triggerConditions": "Điều kiện kích hoạt",
+          "filled": "Đã hoàn thành",
+          "reduceOnly": "Chỉ Giảm",
+          "orderValueSize": "Giá trị / Kích thước lệnh"
+        },
+        "distanceRiskTag": {
+          "goingUp": "Đi lên {{percent}} sẽ kích hoạt thanh lý",
+          "goingDown": "Giảm xuống {{percent}} sẽ kích hoạt thanh lý."
+        },
+        "twap": {
+          "terminated": "Ngừng hoạt động",
+          "completed": "Hoàn thành",
+          "activated": "Kích hoạt"
+        },
+        "yes": "Có",
+        "active": "Hoạt động",
+        "history": "Lịch sử",
+        "terminate": "Chấm dứt",
+        "fillHistory": "Lịch sử lấp đầy",
+        "randomized": "(biến thiên ngẫu nhiên)",
+        "no": "Không"
+      },
+      "statusBar": {
+        "offline": "Ngoại tuyến",
+        "online": "Trực tuyến",
+        "sound": "Bật Âm thanh"
+      },
+      "tradingPanel": {
+        "slippagePage": {
+          "maxSlippage": "Trượt giá tối đa",
+          "title": "Điều chỉnh Trượt tối đa",
+          "minError": "Slippage tối thiểu là 0%",
+          "maxError": "Tối đa trượt giá là 100%",
+          "description": "Tối đa trượt giá chỉ ảnh hưởng đến các lệnh thị trường đặt từ biểu mẫu đặt hàng. Đóng vị thế sẽ sử dụng trượt giá tối đa là 8% và các lệnh TP/SL thị trường sẽ sử dụng trượt giá tối đa là 10%."
+        },
+        "limitOrderTypeOptions": {
+          "Gtc": "GTC (Tốt đến khi hủy): Đơn hàng sẽ được giữ cho đến khi được hoàn thành hoặc hủy bỏ.",
+          "Alo": "ALO (Chỉ Thêm Thanh Khoản): Lệnh sẽ chỉ tồn tại như một lệnh giới hạn trong sổ. Cũng được biết đến là chỉ đăng.",
+          "Ioc": "IOC (Immediate Or Cancel): Bất kỳ phần nào không được lấp đầy ngay lập tức sẽ bị hủy."
+        },
+        "atLeastTwoOrders": "Cần ít nhất hai lệnh.",
+        "liquidationPriceTooltip": "Rủi ro vị trí là thấp, vì vậy hiện tại không có mức giá thanh lý. Lưu ý rằng việc tăng vị trí hoặc giảm biên độ sẽ làm tăng rủi ro.",
+        "reduceOnly": "Chỉ giảm",
+        "liquidationPrice": "Giá thanh lý",
+        "startPrice": "Giá bắt đầu",
+        "marginRequired": "Margin cần thiết",
+        "numberOfOrders": "Số lượng Đơn hàng",
+        "slippage": "Trượt giá",
+        "enableTrading": "Kích hoạt Giao dịch",
+        "start": "Bắt đầu",
+        "sizePerSuborder": "Kích thước mỗi đơn hàng phụ",
+        "marginUsage": "Sử dụng Margin",
+        "end": "Kết thúc",
+        "totalOrders": "Tổng Đơn Hàng",
+        "frequency": "Tần suất",
+        "takeProfitExpectedPnL": "Lợi nhuận kỳ vọng khi chốt lời",
+        "orderValue": "Giá trị đơn hàng",
+        "threeThirtySeconds": "30 Giây",
+        "runtimeTooShort": "Thời gian chạy phải hơn 5 phút",
+        "sizeSkew": "Kích thước lệch",
+        "endPrice": "Giá Kết Thúc",
+        "stopLossExpectedPnL": "Dừng lỗ lợi nhuận dự kiến",
+        "runtimeTooLong": "Thời gian chạy phải ít hơn 24 giờ",
+        "randomizeTooltip": "Ngẫu nhiên hóa thời gian và kích thước của các lệnh con để giảm tính dễ đoán.",
+        "tpSlTips": "Đặt các lệnh TP/SL thị trường đơn giản. Để sử dụng các tính năng nâng cao như giá giới hạn hoặc TP/SL một phần, hãy đặt TP/SL trong một vị thế mở.",
+        "reduceOnlyTips": "Lệnh này sẽ không mở một vị trí mới bất kể kích thước lệnh lớn thế nào. Nó sẽ so sánh với vị trí hiện có tại thời điểm thực hiện.",
+        "minutes": "Phút",
+        "sellShort": "Bán / Làm ngắn",
+        "tpSl": "TP / SL",
+        "hours": "Giờ",
+        "triggerPrice": "Giá Kích Hoạt",
+        "marginCross": "Giao thoa",
+        "reduceOnlyTooLarge": "Giảm chỉ khi quá lớn",
+        "enterAmount": "Vui lòng nhập số tiền",
+        "availableFunds": "Số Dư Có Sẵn",
+        "buyLong": "Mua / Mở dài",
+        "placeOrder": "Đặt lệnh",
+        "runtime": "Thời gian thực",
+        "type": "Loại",
+        "randomize": "Ngẫu nhiên",
+        "invalidSlPrice": "Giá dừng lỗ không hợp lệ",
+        "runtimeTips": "(5m-24h)",
+        "invalidTpPrice": "Giá chốt lời không hợp lệ",
+        "limitPrice": "Giá Giới Hạn",
+        "currentPosition": "Vị trí hiện tại",
+        "aloTooLargeBuy": "Giá lệnh Alo phải thấp hơn giá chào bán tốt nhất.",
+        "maximumOrderSize": "Kích thước lệnh tối đa là {{amount}}",
+        "aloTooLargeSell": "Giá đặt lệnh Alo phải cao hơn giá chào mua tốt nhất.",
+        "minimumOrderSize": "Kích thước đơn hàng tối thiểu là $10",
+        "minimumSuborderSize": "Kích thước đơn hàng phụ TWAP tối thiểu là $10",
+        "marginIsolated": "Cách ly",
+        "startAndEndPriceMustBeDifferent": "Giá khởi điểm và giá kết thúc phải khác nhau.",
+        "sizeSkewTooltip": "Tỷ lệ giữa giá kết thúc và giá bắt đầu. Ví dụ, nếu độ lệch kích thước là 2.0 thì một lệnh giới hạn cho giá kết thúc sẽ được đặt với kích thước gấp đôi so với giá bắt đầu. Một độ lệch kích thước là 1.0 tạo ra các đơn hàng có kích thước bằng nhau.",
+        "insufficientBalance": "Số dư không đủ",
+        "tpBuyMustBeLowerThanMidPrice": "Giá đặt lệnh mua phải thấp hơn mức giữa.",
+        "tpMustBeHigherThanCurrentPrice": "Giá chốt lời phải cao hơn giá hiện tại.",
+        "slMustBeHigherThanCurrentPrice": "Giá dừng lỗ phải cao hơn giá hiện tại.",
+        "tpMustBeLowerThanCurrentPrice": "Giá chốt lời phải thấp hơn giá hiện tại.",
+        "slBuyMustBeHigherThanMidPrice": "Giá lệnh mua dừng phải cao hơn mức trung bình.",
+        "slSellMustBeLowerThanMidPrice": "Giá bán lệnh dừng phải thấp hơn giá trung bình.",
+        "slMustBeLowerThanCurrentPrice": "Giá dừng lỗ phải thấp hơn giá hiện tại.",
+        "tpSellMustBeHigherThanMidPrice": "Giá đặt lệnh bán phải cao hơn giá giữa."
+      },
+      "marginMode": {
+        "isolated": "Isolated",
+        "title": "Chế độ Margin",
+        "confirm": "Xác nhận",
+        "cross": "Giao nhau",
+        "crossDescription": "Tất cả các vị trí chéo chia sẻ cùng một ký quỹ chéo làm tài sản đảm bảo. Trong trường hợp thanh lý, số dư ký quỹ của bạn và bất kỳ vị trí mở nào còn lại dưới chế độ chéo này có thể bị tịch thu.",
+        "isolatedDescription": "Quản lý rủi ro của bạn trên các vị trí cá nhân bằng cách phân bổ số tiền ký quỹ cho mỗi vị trí. Nếu tỷ lệ ký quỹ của một vị trí cách ly đạt 100%, vị trí đó sẽ bị thanh lý. Ký quỹ có thể được thêm hoặc gỡ bỏ cho các vị trí cá nhân trong chế độ này."
+      },
+      "leverage": {
+        "title": "Điều chỉnh Đòn bẩy",
+        "confirm": "Xác nhận",
+        "maxError": "Tỷ lệ đòn bẩy tối đa là {{max}}x",
+        "minError": "Leverage tối thiểu là 1x",
+        "higherLeverageRisk": "Đòn bẩy cao làm tăng rủi ro bị thanh lý.",
+        "controlPositionLeverage": "Kiểm soát đòn bẩy sử dụng cho các vị trí {{coin}}. Đòn bẩy tối đa là {{max}}x.",
+        "maxPositionSize": "Kích thước vị trí tối đa giảm khi đòn bẩy của bạn tăng."
+      },
+      "editTpSl": {
+        "gain": "Lợi nhuận",
+        "loss": "Lỗ",
+        "cancelSl": "Hủy SL",
+        "title": "Cấu hình TP/SL",
+        "entryPrice": "Giá Nhập:",
+        "cancelTp": "Hủy TP",
+        "markPrice": "Giá Thị Trường:",
+        "stopLossExpectedPnl": "Dự kiến PnL dừng lỗ",
+        "takeProfitExpectedPnl": "Lợi nhuận dự kiến khi chốt lời",
+        "confirm": "Xác nhận",
+        "tp": "TP",
+        "sl": "SL",
+        "currentPosition": "Vị trí hiện tại"
+      },
+      "accountInfo": {
+        "availableBalance": "Số dư có sẵn",
+        "accountEquity": "Vốn Tài Khoản",
+        "balance": "Số dư",
+        "withdraw": "Rút tiền",
+        "totalBalance": "Tổng Số Dư",
+        "maintenanceMargin": "Ký quỹ duy trì",
+        "deposit": "Gửi tiền",
+        "crossAccountLeverage": "Ký quỹ chéo giữa các tài khoản",
+        "crossMarginRatio": "Tỷ lệ Ký quỹ Chéo",
+        "unrealizedPnl": "Lợi nhuận & lỗ chưa thực hiện",
+        "maintenanceMarginTips": "Giá trị danh mục tối thiểu yêu cầu để giữ các vị thế chéo của bạn mở.",
+        "accountEquityTip": "Số dư + PNL chưa thực hiện (giá trị tài khoản gần đúng nếu tất cả các vị trí được đóng)",
+        "balanceTip": "Tổng Chuyển Khoản Ròng + Tổng Lợi Nhuận Thực Hiện + Tổng Phí Tài Trợ Ròng",
+        "crossAccountLeverageTips": "Tỷ lệ Đòn Bẩy Tài Khoản Chéo = Giá Trị Vị Thế Chéo Tổng / Giá Trị Tài Khoản Chéo.",
+        "crossMarginRatioTips": "Ký quỹ duy trì / Giá trị danh mục. Các vị thế chéo của bạn sẽ bị thanh lý nếu tỷ lệ ký quỹ đạt 100%."
+      },
+      "accountActions": {
+        "pending": "Đang chờ xử lý",
+        "available": "Có sẵn",
+        "positionCount": "{{count}} vị trí",
+        "deposit": "Gửi tiền"
+      },
+      "orderBook": {
+        "title": "Sổ Lệnh",
+        "time": "Thời gian",
+        "total": "Tổng cộng",
+        "amount": "Số lượng",
+        "price": "Giá",
+        "trades": "Giao dịch",
+        "markPrice": "Giá Đánh Dấu",
+        "noTrades": "Không có giao dịch",
+        "viewBoth": "Cả hai",
+        "viewBids": "Giá mua",
+        "viewAsks": "Hỏi giá"
+      }
     }
   },
   "component": {
@@ -3572,10 +3887,13 @@
         "value": "Giá trị",
         "token": "Token",
         "liquidityTips": "Khối lượng giao dịch lịch sử càng cao, cầu càng có khả năng thành công hơn.",
-        "liquidity": "Tính thanh khoản"
+        "liquidity": "Tính thanh khoản",
+        "low": "Thanh khoản thấp",
+        "high": "Thanh khoản cao"
       },
       "searchInput": {
-        "placeholder": "Tìm kiếm theo Tên / Địa chỉ"
+        "placeholder": "Tìm kiếm theo Tên / Địa chỉ",
+        "placeholder1": "Tìm kiếm Tên / Địa chỉ Token"
       },
       "header": {
         "title": "Chọn Token"
