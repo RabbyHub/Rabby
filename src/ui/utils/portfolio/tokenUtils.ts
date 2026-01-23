@@ -162,3 +162,17 @@ export const getCexIds = (token: TokenItemWithEntity) => {
     token.cex_ids || token.identity?.cex_list?.map((item) => item.id) || []
   );
 };
+
+export const scamTokenFilter = (item: {
+  is_suspicious?: boolean | null;
+  is_verified?: boolean | null;
+  is_core?: boolean | null;
+}) => {
+  const manualTagScam = item.is_verified === false;
+  const maybeScam = item.is_suspicious === true;
+  const manualTagNotCore = item.is_core === false;
+  if (manualTagScam || maybeScam || manualTagNotCore) {
+    return false;
+  }
+  return true;
+};
