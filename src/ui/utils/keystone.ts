@@ -7,27 +7,30 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import browser from 'webextension-polyfill';
 
-const navigator = window.navigator as any;
+const navigator = window.navigator;
+
+const isKeystoneDevice = (
+  device?: { vendorId?: number; productName?: string } | null
+) =>
+  device?.vendorId === keystoneUSBVendorId &&
+  !device?.productName?.toLowerCase()?.includes('onekey');
 
 export const hasConnectedKeystoneDevice = async () => {
   const devices = await navigator.usb?.getDevices();
-  return (
-    devices.filter((device) => device.vendorId === keystoneUSBVendorId).length >
-    0
-  );
+  return devices.filter((device) => isKeystoneDevice(device)).length > 0;
 };
 
 export const useKeystoneDeviceConnected = () => {
   const [connected, setConnected] = useState(false);
 
   const onConnect = async ({ device }) => {
-    if (device?.vendorId === keystoneUSBVendorId) {
+    if (isKeystoneDevice(device)) {
       setConnected(true);
     }
   };
 
   const onDisconnect = ({ device }) => {
-    if (device?.vendorId === keystoneUSBVendorId) {
+    if (isKeystoneDevice(device)) {
       setConnected(false);
     }
   };
