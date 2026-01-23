@@ -898,7 +898,11 @@ function CommonTokenItem(props: {
                   <div className="text-r-neutral-foot text-13 font-normal leading-[15px]">
                     @${formatPrice(value?.price || 0)}
                   </div>
-                  {isNil(value?.price_24h_change) ? null : (
+                  {isNil(value?.price_24h_change) ? (
+                    <span className="text-r-neutral-foot text-13 font-medium leading-[14px]">
+                      0%
+                    </span>
+                  ) : (
                     <div
                       className={clsx('font-medium text-13 leading-[14px]', {
                         'text-green': value?.price_24h_change > 0,
