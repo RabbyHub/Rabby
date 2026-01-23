@@ -1,20 +1,17 @@
-import { Modal, ModalProps } from 'antd';
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import clsx from 'clsx';
-import { useWallet } from '@/ui/utils';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useMemoizedFn, useRequest } from 'ahooks';
-import { DesktopLoading } from '../DesktopLoading';
-import { Empty } from '@/ui/component';
-import { DesktopHistoryItem } from '../DesktopHistoryItem';
-import { last } from 'lodash';
-import { SvgIconCross } from 'ui/assets';
 import { ReactComponent as RcIconClose } from '@/ui/assets/dapp-search/cc-close.svg';
+import { Empty } from '@/ui/component';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useWallet } from '@/ui/utils';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { Modal, ModalProps } from 'antd';
+import { last } from 'lodash';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { DesktopHistoryItem } from '../DesktopHistoryItem';
+import { DesktopLoading } from '../DesktopLoading';
 
-export const HideScamTransactionModal: React.FC<ModalProps> = (props) => {
+export const HideScamTransactionModal: React.FC<ModalProps> = (modalProps) => {
   const { t } = useTranslation();
-  const { ...modalProps } = props;
 
   const wallet = useWallet();
   const currentAccount = useCurrentAccount();

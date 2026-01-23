@@ -328,7 +328,7 @@ export const DesktopProfile = () => {
           </div>
         </div>
         <aside
-          className={clsx('min-w-[64px] flex-shrink-0 sticky z-20')}
+          className={clsx('min-w-[64px] flex-shrink-0 sticky z-20 top-0')}
           // style={{ top: DESKTOP_NAV_HEIGHT }}
         >
           <div
