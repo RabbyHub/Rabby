@@ -181,24 +181,6 @@ export const DesktopProfile = () => {
     handleUpdate();
   });
 
-  const isReportedRef = useRef(false);
-  useEffect(() => {
-    if (isReportedRef.current) {
-      return;
-    }
-    if (!action) {
-      matomoRequestEvent({
-        category: 'RabbyWeb_Active',
-        action: 'RabbyWeb_Portfolio',
-      });
-
-      ga4.fireEvent('RabbyWeb_Active', {
-        event_category: 'RabbyWeb_Portfolio',
-      });
-      isReportedRef.current = true;
-    }
-  }, [action]);
-
   return (
     <>
       <DesktopPageWrap
