@@ -478,5 +478,14 @@
       },
       "disallow": []
     }
+  },
+  "node_modules/@walletconnect/window-getters/dist/cjs/index.js": {
+    "global": {
+      "allow": {
+        "document": "r",
+        "navigator": "r"
+      },
+      "disallow": []
+    }
   }
 }

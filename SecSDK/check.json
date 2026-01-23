@@ -43,7 +43,8 @@
         "^node_modules/resize-observer-polyfill",
         "^node_modules/style-loader",
         "^node_modules/toggle-selection",
-        "^node_modules/use-sync-external-store"
+        "^node_modules/use-sync-external-store",
+        "^node_modules/@walletconnect/window-getters"
     ],
     "addEventListener": [
         "^node_modules/@metamask/post-message-stream",
