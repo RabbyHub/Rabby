@@ -57,7 +57,6 @@ export const DesktopPerpsPositionList: React.FC = () => {
               if (currentAccount) {
                 dispatch.perps.setSelectedCoin(assetPosition.position.coin);
                 wallet.setPerpsCurrentAccount(currentAccount);
-                dispatch.perps.setCurrentPerpsAccount(currentAccount);
                 history.push('/desktop/perps');
               }
             }}
