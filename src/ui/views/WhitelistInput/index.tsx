@@ -184,6 +184,8 @@ const WhitelistInput = () => {
     });
   };
 
+  const disabledSubmit = !isValidAddr || !inputAddress || !inputAlias;
+
   const handleSubmit = async () => {
     if (!isValidAddress(inputAddress)) {
       setIsValidAddr(false);
@@ -412,7 +414,7 @@ const WhitelistInput = () => {
           <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
             <Button
               onClick={handleSubmit}
-              disabled={!isValidAddr || !inputAddress}
+              disabled={disabledSubmit}
               type="primary"
               htmlType="submit"
               size="large"
