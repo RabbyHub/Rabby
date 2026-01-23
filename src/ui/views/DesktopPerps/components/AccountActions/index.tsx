@@ -50,7 +50,7 @@ export const AccountActions: React.FC<{
           </div>
 
           <button
-            onClick={handleDeposit}
+          onClick={handleDeposit}
             className={clsx(
               'ml-6 px-[12px] h-[28px] rounded-[6px] text-[15px] font-medium flex items-center justify-center',
               'bg-rb-brand-light-1 text-rb-brand-default'
