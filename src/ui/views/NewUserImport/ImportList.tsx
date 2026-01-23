@@ -75,6 +75,11 @@ export const ImportWalletList = () => {
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.NGRAVEZERO].icon,
           brand: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.NGRAVEZERO].brand,
         },
+        {
+          type: KEYRING_CLASS.HARDWARE.KEYSTONE,
+          logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.AIRGAP].icon,
+          brand: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.AIRGAP].brand,
+        },
       ].slice(0, !showMore ? 3 : undefined),
     [showMore]
   );
