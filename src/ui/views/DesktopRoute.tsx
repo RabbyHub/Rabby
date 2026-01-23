@@ -11,6 +11,7 @@ import {
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
 import { DesktopPerps } from './DesktopPerps';
+import { DesktopLending } from './DesktopLending';
 import clsx from 'clsx';
 
 declare global {
@@ -36,6 +37,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/desktop/perps">
           <DesktopPerps />
+        </PrivateRoute>
+        <PrivateRoute exact path="/desktop/lending">
+          <DesktopLending />
         </PrivateRoute>
       </Switch>
       {hasMountedDappIframeRef.current ? (

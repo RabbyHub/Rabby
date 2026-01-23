@@ -38,7 +38,12 @@ export const DesktopNav: React.FC<{
 
   const currentPathname = history.location.pathname;
 
-  const navs = useMemo(
+  const navs: {
+    key: string;
+    icon: React.FC<React.SVGProps<SVGSVGElement>>;
+    title: string;
+    isSoon?: boolean;
+  }[] = useMemo(
     () => [
       {
         key: '/desktop/profile',
@@ -60,7 +65,7 @@ export const DesktopNav: React.FC<{
         key: '/desktop/lending',
         icon: RcIconLeadingCC,
         title: t('component.DesktopNav.lending'),
-        isSoon: true,
+        //isSoon: true,
       },
     ],
     [t]

@@ -1389,6 +1389,57 @@
       },
       "needDepositFirst": "You need to deposit funds first."
     },
+    "lending": {
+      "title": "Lending",
+      "isolate": "isolated",
+      "isolateTip": "This is an isolated market",
+      "noData": "No data",
+      "supplyApy": "Supply APY",
+      "borrowApy": "Borrow APY",
+      "supplyBalance": "Supply Balance",
+      "borrowBalance": "Borrow Balance",
+      "totalSupply": "Total Supply",
+      "totalBorrow": "Total Borrow",
+      "type": {
+        "supplied": "Supplied",
+        "borrowed": "Borrowed"
+      },
+      "actions": {
+        "supply": "Supply",
+        "withdraw": "Withdraw",
+        "borrow": "Borrow",
+        "repay": "Repay",
+        "swap": "Swap"
+      },
+      "summary": {
+        "netWorth": "Net Worth",
+        "totalBorrowed": "Total Borrowed",
+        "totalSupplied": "Total Supplied",
+        "healthFactor": "Health Factor",
+        "healthFactorTip": "Health factor indicates the safety of your position",
+        "healthy": "Healthy",
+        "netApy": "Net APY",
+        "estDailyEarnings": "Est Daily Earnings",
+        "ethCorrelatedTip": "ETH correlated assets"
+      },
+      "market": {
+        "core": "Core Market",
+        "isolated": "Isolated Market"
+      },
+      "accountActions": {
+        "both": "Both",
+        "supply": "Supply",
+        "borrow": "Borrow"
+      },
+      "table": {
+        "token": "Token",
+        "type": "Type",
+        "apy": "APY",
+        "myAssets": "My assets",
+        "collateral": "Collateral",
+        "actions": "Actions"
+      }
+    },
     "sendPoly": {
       "title": "Send to",
       "enterAddress": "Enter address",
