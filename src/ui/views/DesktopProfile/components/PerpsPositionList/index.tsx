@@ -16,6 +16,7 @@ import { TokenImg } from '@/ui/views/Perps/components/TokenImg';
 import { usePerpsClearHouseState } from '@/ui/views/Perps/hooks/usePerpsClearingHouseState';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { DistanceRiskTag } from '@/ui/views/DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
+import { useWallet } from '@/ui/utils';
 import {
   calculateDistanceToLiquidation,
   formatPerpsPct,
@@ -23,7 +24,7 @@ import {
 
 export const DesktopPerpsPositionList: React.FC = () => {
   const currentAccount = useCurrentAccount();
-
+  const wallet = useWallet();
   const { data } = usePerpsClearHouseState({
     address: currentAccount?.address,
   });
@@ -55,6 +56,7 @@ export const DesktopPerpsPositionList: React.FC = () => {
             handleNavigate={() => {
               if (currentAccount) {
                 dispatch.perps.setSelectedCoin(assetPosition.position.coin);
+                wallet.setPerpsCurrentAccount(currentAccount);
                 dispatch.perps.setCurrentPerpsAccount(currentAccount);
                 history.push('/desktop/perps');
               }
@@ -86,8 +88,6 @@ const PositionItem: React.FC<{
   const marketData = useRabbySelector(
     (store) => store.perps.marketDataMap?.[position.coin?.toUpperCase() || '']
   );
-
-  console.log('marketData', marketData);
 
   const isUp = Number(unrealizedPnl) >= 0;
   const isLong = Number(szi) > 0;
