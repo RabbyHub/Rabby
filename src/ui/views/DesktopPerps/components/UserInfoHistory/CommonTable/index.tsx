@@ -46,6 +46,10 @@ const Wrapper = styled.div`
     flex-direction: column;
   }
 
+  .ant-table-container:after {
+    box-shadow: none !important;
+  }
+
   .ant-table-header {
     flex-shrink: 0;
     .ant-table-thead > tr > th.ant-table-cell-scrollbar:last-child {
@@ -54,7 +58,7 @@ const Wrapper = styled.div`
     }
 
     .ant-table-thead > tr > th:nth-last-child(2) {
-      padding-right: 20px; // add 4px for scrollbar
+      padding-right: 16px; // add 4px for scrollbar
     }
   }
 

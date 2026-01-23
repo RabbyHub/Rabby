@@ -178,7 +178,7 @@ export const Twap: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.coin'),
         key: 'coin',
-        width: 120,
+        width: 60,
         dataIndex: 'coin',
         sorter: (a, b) => a.fill.coin.localeCompare(b.fill.coin),
         render: (_, record) => (
@@ -215,7 +215,7 @@ export const Twap: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.averagePrice'),
         key: 'px',
-        width: 130,
+        width: 100,
         dataIndex: 'px',
         sorter: (a, b) => Number(a.fill.px) - Number(b.fill.px),
         render: (_, record) => {
@@ -232,7 +232,7 @@ export const Twap: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.size'),
         key: 'sz',
-        width: 130,
+        width: 120,
         dataIndex: 'sz',
         sorter: (a, b) => Number(a.fill.sz) - Number(b.fill.sz),
         render: (_, record) => (
@@ -244,7 +244,7 @@ export const Twap: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.tradeValue'),
         key: 'tradeValue',
-        width: 150,
+        width: 120,
         dataIndex: 'tradeValue',
         sorter: (a, b) =>
           new BigNumber(a.fill.px).times(a.fill.sz).toNumber() -
@@ -263,7 +263,7 @@ export const Twap: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.fee'),
         key: 'fee',
-        width: 100,
+        width: 80,
         dataIndex: 'fee',
         render: (_, record) => {
           const fee = (record.fill as any).fee;

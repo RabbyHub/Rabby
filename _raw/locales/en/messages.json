@@ -1261,7 +1261,6 @@
         "confirm": "Confirm"
       },
       "accountInfo": {
-        "available": "Available: ",
         "balance": "Balance",
         "balanceTip": "Total Net Transfers + Total Realized Profit + Total Net Funding Fees",
         "accountEquity": "Account Equity",
@@ -1280,7 +1279,7 @@
       },
       "accountActions": {
         "pending": "Pending",
-        "available": "Available:",
+        "available": "Available",
         "positionCount": "{{count}} positions",
         "deposit": "Deposit"
       },
