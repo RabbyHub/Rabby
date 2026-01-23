@@ -21,7 +21,8 @@
       "filterScam": {
         "title": "사기 거래 숨기기",
         "loading": "로딩하는 데 잠시 시간이 걸릴 수 있으며, 데이터 지연이 발생할 수 있습니다.",
-        "btn": "사기 거래 숨기기"
+        "btn": "사기 거래 숨기기",
+        "button": "스캠 tx 숨기기"
       },
       "title": "거래",
       "detail": {
@@ -652,7 +653,8 @@
     "receive": {
       "watchModeAlert2": "자산을 수신하는 데 사용하시겠습니까?",
       "title": "{{chain}}에서 {{token}} 받기",
-      "watchModeAlert1": "이것은 Watch Mode 주소입니다."
+      "watchModeAlert1": "이것은 Watch Mode 주소입니다.",
+      "receiveOn": "{{token}}를 받으십시오"
     },
     "sendToken": {
       "AddToContactsModal": {
@@ -1051,7 +1053,8 @@
       "No-available-quote": "사용 가능한 인용이 없습니다",
       "loss-tips": "당신은 {{usd}}를 잃고 있습니다. 작은 시장에서 더 적은 금액을 시도해 보세요.",
       "understandRisks": "나는 위험을 이해하고 계속 진행하고 싶다.",
-      "approve": "승인"
+      "approve": "승인",
+      "search-by-token-name-address": "토큰 이름 / 주소 검색"
     },
     "bridge": {
       "showMore": {
@@ -2994,7 +2997,11 @@
         "goSwapTips": "Arbitrum에서 직접 입금이 지원되는 것은 오직 USDC만 가능합니다. 입금하기 전에 현재 토큰을 USDC로 교환해 주세요.",
         "goBridgeTips": "Arbitrum에서 직접 입금을 위해서는 USDC만 지원됩니다. 입금 전에 현재 보유한 토큰을 Arbitrum의 USDC로 브릿지 해주세요.",
         "estReceiveTooltip": "크로스 체인 입금은 LiFi를 통해 처리되며, 일부 슬리피지가 발생할 수 있습니다. 예상 도착 시간은 {{number}}초입니다.",
-        "minimumWithdrawSize": "최소 출금 금액은 $2입니다."
+        "minimumWithdrawSize": "최소 출금 금액은 $2입니다.",
+        "estTimeLabel": "추정 시간",
+        "estReceiveLabel": "예상 수령",
+        "hyperliquidFeeLabel": "하이퍼리퀴드 수수료",
+        "estReceiveTooltipNoTime": "교차 체인 입금은 LiFi를 통해 처리되며, 약간의 슬ippage가 발생할 수 있습니다."
       },
       "home": {
         "size": "사이즈",
@@ -3096,7 +3103,37 @@
         "closePositionSuccess": "닫은 {{direction}} {{coin}}-USD: 크기 {{size}} 가격 ${{price}}에서",
         "openPositionSuccess": "열린 {{direction}} {{coin}}-USD: 규모 {{size}} 가격 ${{price}}에서",
         "stopLossSuccess": "손절매가 성공적으로 설정되었습니다",
-        "takeProfitSuccess": "이익 실현 설정 완료되었습니다."
+        "takeProfitSuccess": "이익 실현 설정 완료되었습니다.",
+        "marginUpdated": "마진 업데이트됨",
+        "cancelOrderError": "주문 취소 실패",
+        "cancelOrderSuccess": "주문이 취소되었습니다.",
+        "terminalTwap": "터미널 TWAP",
+        "orderCancelled": "주문이 취소되었습니다.",
+        "orderFilled": "주문 체결됨",
+        "withdrawTip": "{{amount}} USDC가 성공적으로 인출되었습니다.",
+        "withdraw": "인출 성공",
+        "twapSliceFilled": "TWAP 슬라이스 채워짐",
+        "orderPlaced": "주문이 생성되었습니다",
+        "limitOrderFilled": "리미트 주문 체결됨（{{percent}}%）",
+        "depositTip": "{{amount}} USDC가 입금되었습니다.",
+        "terminalTwapSuccess": "터미널 TWAP 주문이 성공적으로 완료되었습니다.",
+        "ordersCancelled": "모든 주문이 취소되었습니다.",
+        "deposit": "입금이 성공적으로 완료되었습니다",
+        "success": "성공",
+        "openScaleOrderSuccess": "주문이 제출되었습니다 {{direction}} {{coin}}-USD: 크기 {{size}}",
+        "sellFilledContent": "판매됨 {{sz}} / {{origSz}} {{coin}} @{{price}} USDC로 체결됨",
+        "marginModeUpdated": "마진 모드가 변경되었습니다: {{mode}}",
+        "openTWAPOrderSuccess": "TWAP 주문이 열렸습니다 {{direction}} {{coin}}-USD: 사이즈 {{size}}",
+        "leverageChanged": "레버리지가 변경되었습니다: {{leverage}}",
+        "sellFilledContentNoPercentage": "판매된 {{sz}} {{coin}} @{{price}} USDC가 채워졌습니다.",
+        "buyFilledContentNoPercentage": "구매한 {{sz}} {{coin}} @{{price}} USDC에 채워졌습니다.",
+        "cancelTWAPOrderSuccess": "TWAP 주문이 성공적으로 취소되었습니다.",
+        "closeAllPositionsSuccess": "모든 포지션이 성공적으로 종료되었습니다.",
+        "cancelAllOrderSuccess": "{{count}} 개의 주문이 성공적으로 취소되었습니다.",
+        "buyFilledContent": "{{sz}} / {{origSz}} {{coin}} 구매 완료 @{{price}} USDC",
+        "openLimitOrderSuccess": "제한 주문이 {{direction}} {{coin}}-USD에 배치되었습니다: 크기 {{size}} 가격 ${{price}}에서",
+        "openTPSlMarketOrderSuccess": "{{tpsl}} 시장 주문이 {{direction}} {{coin}}-USD에 따라 접수되었습니다: 크기 {{size}} 가격 ${{price}}",
+        "openTPSlLimitOrderSuccess": "{{tpsl}} 제한 주문이 {{direction}} {{coin}}-USD에 배치되었습니다: 크기 {{size}} 가격 ${{price}}"
       },
       "closePositionPopup": {
         "pnl": "손익",
@@ -3157,7 +3194,12 @@
       "add": "추가",
       "close": "닫기",
       "fundingRate": "펀딩 비율",
-      "fundingGains": "펀딩 수익"
+      "fundingGains": "펀딩 수익",
+      "cancelAllOrdersPopup": {
+        "title": "모든 주문 취소 확인",
+        "description": "모든 열린 주문이 취소됩니다."
+      },
+      "rabbyFeeTipsV2": "Rabby 수수료: 0.02%"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3460,6 +3502,277 @@
       "networkErrorDescriptionFallback": "사이트가 예기치 않게 연결을 종료했습니다. 네트워크를 확인해주세요.",
       "reload": "다시 로드",
       "networkErrorTitle": "이 사이트에 연결할 수 없습니다."
+    },
+    "perpsPro": {
+      "chatArea": {
+        "8hrFunding": "8시간 자금지원",
+        "volume": "볼륨",
+        "24hChange": "24시간 변동",
+        "openInterest": "열린 관심",
+        "searchMarkets": "시장 검색",
+        "lastPrice": "마지막 가격",
+        "24hVol": "24시간 거래량",
+        "oracle": "오라클",
+        "fundingCountdown": "펀딩 / 카운트다운",
+        "openInterestTips": "양면 개방 관심: 이 계약의 롱 및 숏 포지션 합계.",
+        "symbol": "기호",
+        "oracleTips": "검증자들이 보고한 외부 가격의 중간값으로, 자금 조달 비율 계산에 사용됩니다.",
+        "markTips": "마진, 실현되지 않은 PNL 계산, 청산 및 TP/SL 주문 실행에 사용됩니다.",
+        "fundingTips": "롱이 숏에게 지불하는 시간당 요금(음수일 경우 숏이 롱에게 지불합니다). 자금조달에 관련된 수수료는 없으며, 이는 가격을 현물 가격으로 가져가기 위해 사용자 간의 P2P 전송입니다. 자세한 내용은 문서를 참조하세요."
+      },
+      "userInfo": {
+        "tab": {
+          "time": "시간",
+          "direction": "방향",
+          "closedPnlTooltip": "닫힌 PNL에는 수수료 및 리베이트가 포함됩니다.",
+          "unrealizedPnlTooltip": "Mark price는 미실현 PNL을 추정하는 데 사용됩니다. 실현 PNL에는 거래 가격만 사용됩니다.",
+          "fundingTips": "포지션이 열린 이후 순 펀딩 지급액입니다. 음수일 경우, 펀딩 이익을 의미합니다.",
+          "trade": "거래",
+          "price": "가격",
+          "slice": "조각",
+          "tradeValue": "거래 가치",
+          "creationTime": "생성 시간",
+          "payment": "결제",
+          "unrealizedPnl": "미실현 PnL",
+          "reduceOnly": "감축 전용",
+          "rate": "비율",
+          "type": "유형",
+          "margin": "마진",
+          "filled": "채워짐",
+          "order": "주문",
+          "coin": "코인",
+          "liqPrice": "Liq. 가격",
+          "status": "상태",
+          "funding": "자금 조달",
+          "tpSl": "TP/SL",
+          "value": "값",
+          "fee": "수수료",
+          "positions": "포지션스",
+          "runningTimeTotal": "운영 시간 / 총계",
+          "openOrders": "미체결 주문",
+          "trigger": "트리거",
+          "size": "사이즈",
+          "side": "측면",
+          "averagePrice": "평균 가격",
+          "terminate": "종료",
+          "markEntry": "마크 / 진입",
+          "closedPnl": "닫힌 Pnl",
+          "tradeHistory": "거래 내역",
+          "fundingHistory": "펀딩 내역",
+          "twap": "TWAP",
+          "orderHistory": "주문 역사"
+        },
+        "emptyMessage": {
+          "openOrders": "주문이 없습니다",
+          "fillHistory": "체결 이력 없음",
+          "orderHistory": "주문 내역 없음",
+          "activeTwap": "활성화된 TWAP 없음",
+          "twapHistory": "TWAP 기록 없음",
+          "positions": "포지션 없음",
+          "tradeHistory": "거래 이력이 없습니다",
+          "fundingHistory": "자금 역사 없음"
+        },
+        "positionInfo": {
+          "closeMarket": "시장 종료",
+          "reverse": "역전",
+          "reversePosition": "포지션 반전",
+          "currentPosition": "현재 포지션",
+          "receive": "받기",
+          "closedPnl": "닫힌 PNL",
+          "newPosition": "새 포지션",
+          "close": "닫기",
+          "viewOrders": "주문 보기",
+          "closeLimit": "종가 제한",
+          "closeAll": "모두 닫기",
+          "limitClose": "리미트 클로즈",
+          "limitPrice": "제한 가격",
+          "closePositionTips": "이것은 선택한 리밋 가격에서 종료를 시도합니다.",
+          "closePositionMarketTips": "이 주문은 현재 시장 가격에서 즉시 체결됩니다.",
+          "closePosition": "포지션 닫기",
+          "confirm": "확인",
+          "configure": "구성하다",
+          "closePositionReverseTips": "이렇게 하면 현재 시장 가격에서 포지션이 즉시 닫히고 반대 방향으로 동일한 규모의 포지션이 열립니다.",
+          "mid": "중간"
+        },
+        "openOrders": {
+          "time": "시간",
+          "price": "가격",
+          "type": "유형",
+          "filled": "채우기",
+          "order": "주문",
+          "triggerConditions": "트리거 조건",
+          "reduceOnly": "축소 전용",
+          "cancel": "취소",
+          "tpSl": "TP/SL",
+          "orderValueSize": "주문 값 / 크기",
+          "cancelAll": "모두 취소"
+        },
+        "distanceRiskTag": {
+          "goingUp": "{{percent}} 상승 시 청산이 발생합니다.",
+          "goingDown": "{{percent}} 하락하면 청산이 실행됩니다."
+        },
+        "twap": {
+          "terminated": "종료됨",
+          "activated": "활성화됨",
+          "completed": "완료됨"
+        },
+        "terminate": "종료",
+        "fillHistory": "체결 이력",
+        "active": "활성",
+        "no": "아니요",
+        "history": "히스토리",
+        "yes": "예",
+        "randomized": "(무작위화됨)"
+      },
+      "statusBar": {
+        "online": "온라인",
+        "sound": "소리 켜기",
+        "offline": "오프라인"
+      },
+      "tradingPanel": {
+        "slippagePage": {
+          "maxSlippage": "최대 슬ippage",
+          "maxError": "최대 슬리피지는 100%입니다.",
+          "minError": "최소 슬리피지는 0%입니다.",
+          "title": "최대 슬리피지 조정",
+          "description": "최대 슬리피지는 주문 양식에서 제출된 시장 주문에만 영향을 미칩니다. 포지션을 닫는 경우 최대 슬리피지는 8%이며, 시장 TP/SL 주문은 최대 슬리피지가 10%입니다."
+        },
+        "limitOrderTypeOptions": {
+          "Gtc": "GTC (주문 유지): 주문은 체결되거나 취소될 때까지 유지됩니다.",
+          "Ioc": "IOC (즉시 체결 또는 취소): 즉시 체결되지 않은 부분은 취소됩니다.",
+          "Alo": "ALO (Add Liquidity Only): 주문은 장부에 한정 주문으로만 존재합니다. 포스트 전용이라고도 합니다."
+        },
+        "atLeastTwoOrders": "최소 두 개의 주문이 필요합니다.",
+        "liquidationPriceTooltip": "포지션 리스크가 낮기 때문에 현재 청산 가격이 없습니다. 포지션을 늘리거나 마진을 줄이면 리스크가 증가한다는 점에 유의하세요.",
+        "threeThirtySeconds": "30초",
+        "totalOrders": "총 주문",
+        "start": "시작",
+        "sizePerSuborder": "하위 주문당 크기",
+        "numberOfOrders": "주문 수",
+        "sizeSkew": "사이즈 스큐",
+        "enableTrading": "거래 활성화",
+        "marginUsage": "마진 사용량",
+        "stopLossExpectedPnL": "손절매 예상 PnL",
+        "takeProfitExpectedPnL": "이익 실현 예상 PnL",
+        "runtimeTooLong": "런타임은 24시간 미만이어야 합니다.",
+        "orderValue": "주문 가치",
+        "marginRequired": "필요한 마진",
+        "runtimeTooShort": "런타임은 5분 이상이어야 합니다.",
+        "endPrice": "종가",
+        "startPrice": "시작 가격",
+        "randomizeTooltip": "하위 주문의 타이밍과 크기를 무작위화하여 예측 가능성을 줄입니다.",
+        "end": "끝",
+        "frequency": "주기",
+        "reduceOnlyTips": "이 주문은 주문 크기가 얼마나 크든 관계없이 새로운 포지션을 열지 않습니다. 실행 시 기존 포지션과 비교하게 됩니다.",
+        "tpSlTips": "간단한 시장 TP/SL 주문을 합니다. 제한 가격이나 부분 TP/SL과 같은 고급 기능을 사용하려면 열린 포지션에서 TP/SL을 설정하십시오.",
+        "liquidationPrice": "청산가",
+        "slippage": "슬리피지",
+        "reduceOnly": "감소 전용",
+        "insufficientBalance": "잔액 부족",
+        "placeOrder": "주문하기",
+        "tpSl": "TP / SL",
+        "type": "유형",
+        "invalidSlPrice": "유효하지 않은 손절매 가격",
+        "hours": "시간",
+        "invalidTpPrice": "잘못된 이익 실현 가격",
+        "enterAmount": "금액을 입력하세요",
+        "limitPrice": "리미트 가격",
+        "triggerPrice": "트리거 가격",
+        "currentPosition": "현재 포지션",
+        "sellShort": "판매 / 공매도",
+        "runtime": "실행 시간",
+        "minimumSuborderSize": "최소 TWAP 하위 주문 크기는 $10입니다.",
+        "randomize": "무작위화",
+        "sizeSkewTooltip": "시작 가격과 종료 가격 사이의 비율입니다. 예를 들어, 사이즈 편향이 2.0이면 종료 가격에 대한 제한 주문이 시작 가격의 두 배 크기로 배치됩니다. 사이즈 편향이 1.0이면 동일한 크기의 주문이 생성됩니다.",
+        "runtimeTips": "(5m-24h)",
+        "reduceOnlyTooLarge": "너무 큰 축소만 가능",
+        "buyLong": "구매 / 매수",
+        "startAndEndPriceMustBeDifferent": "시작 가격과 종료 가격은 달라야 합니다.",
+        "minimumOrderSize": "최소 주문 금액은 $10입니다.",
+        "availableFunds": "사용 가능한 자금",
+        "aloTooLargeBuy": "최고 매도 가격보다 Alo 주문 가격이 낮아야 합니다.",
+        "maximumOrderSize": "최대 주문 크기는 {{amount}}입니다.",
+        "marginIsolated": "격리된",
+        "minutes": "분기",
+        "marginCross": "교차",
+        "aloTooLargeSell": "Alo 주문 가격은 최우선 매수 가격보다 높아야 합니다.",
+        "tpSellMustBeHigherThanMidPrice": "매도 주문 가격은 중간 가격보다 높아야 합니다.",
+        "slBuyMustBeHigherThanMidPrice": "중지 매수 주문 가격은 중앙값보다 높아야 합니다.",
+        "tpMustBeLowerThanCurrentPrice": "이익 실현 가격은 현재 가격보다 낮아야 합니다.",
+        "tpMustBeHigherThanCurrentPrice": "익절 가격은 현재 가격보다 높아야 합니다.",
+        "slMustBeHigherThanCurrentPrice": "손절 가격은 현재 가격보다 높아야 합니다.",
+        "slSellMustBeLowerThanMidPrice": "중지 매도 주문 가격은 중간 가격보다 낮아야 합니다.",
+        "slMustBeLowerThanCurrentPrice": "손실 중지 가격은 현재 가격보다 낮아야 합니다.",
+        "tpBuyMustBeLowerThanMidPrice": "매수 주문 가격은 중간 가격보다 낮아야 합니다."
+      },
+      "marginMode": {
+        "confirm": "확인",
+        "cross": "크로스",
+        "title": "마진 모드",
+        "isolated": "격리된",
+        "crossDescription": "모든 교차 포지션은 담보로서 동일한 교차 마진을 공유합니다. 청산이 발생할 경우, 이 모드에서의 마진 잔액과 남아있는 모든 교차 포지션은 몰수될 수 있습니다.",
+        "isolatedDescription": "위험 관리를 위해 각 포지션에 할당된 마진 금액을 조절하세요. 격리 포지션의 마진 비율이 100%에 도달하면 포지션이 청산됩니다. 이 모드에서는 개별 포지션에 마진을 추가하거나 제거할 수 있습니다."
+      },
+      "leverage": {
+        "title": "레버리지 조정",
+        "minError": "최소 레버리지는 1배입니다.",
+        "maxError": "최대 레버리지는 {{max}}x입니다.",
+        "higherLeverageRisk": "더 높은 레버리지는 청산의 위험을 증가시킵니다.",
+        "maxPositionSize": "레버리지가 높을수록 최대 포지션 크기가 줄어듭니다.",
+        "confirm": "확인",
+        "controlPositionLeverage": "{{coin}} 포지션에 사용되는 레버리지를 조절하세요. 최대 레버리지는 {{max}}x입니다."
+      },
+      "editTpSl": {
+        "loss": "손실",
+        "cancelTp": "TP 취소",
+        "markPrice": "마크 가격:",
+        "cancelSl": "SL 취소",
+        "entryPrice": "진입 가격:",
+        "takeProfitExpectedPnl": "이익 실현 예상 PnL",
+        "gain": "이익",
+        "stopLossExpectedPnl": "손절매 예상 PnL",
+        "title": "TP/SL 설정",
+        "sl": "SL",
+        "confirm": "확인",
+        "tp": "TP",
+        "currentPosition": "현재 포지션"
+      },
+      "accountInfo": {
+        "accountEquity": "계좌 자산",
+        "crossMarginRatio": "교차 마진 비율",
+        "deposit": "입금",
+        "withdraw": "출금",
+        "balance": "잔액",
+        "availableBalance": "사용 가능한 잔액",
+        "crossAccountLeverage": "크로스 계좌 레버리지",
+        "balanceTip": "총 순 이체 + 총 실현된 수익 + 총 순 자금 조달 수수료",
+        "totalBalance": "총 잔액",
+        "maintenanceMargin": "유지 Margin",
+        "maintenanceMarginTips": "크로스 포지션을 유지하는 데 필요한 최소 포트폴리오 가치",
+        "unrealizedPnl": "실현되지 않은 손익",
+        "accountEquityTip": "잔고 + 미실현 PNL (모든 포지션이 종료되었을 경우의 대략적인 계정 가치)",
+        "crossAccountLeverageTips": "크로스 계좌 레버리지 = 총 크로스 포지션 가치 / 크로스 계좌 가치.",
+        "crossMarginRatioTips": "유지 마진 / 포트폴리오 가치. 마진 비율이 100%에 도달하면 귀하의 교차 포지션이 청산됩니다."
+      },
+      "accountActions": {
+        "pending": "대기 중",
+        "positionCount": "{{count}} 포지션",
+        "available": "사용 가능",
+        "deposit": "예치"
+      },
+      "orderBook": {
+        "markPrice": "마크 가격",
+        "title": "주문서",
+        "trades": "거래",
+        "total": "총계",
+        "time": "시간",
+        "amount": "금액",
+        "price": "가격",
+        "viewBoth": "둘 다",
+        "viewAsks": "매도 요청",
+        "viewBids": "입찰",
+        "noTrades": "거래 없음"
+      }
     }
   },
   "component": {
@@ -3572,10 +3885,13 @@
         "value": "값",
         "liquidity": "유동성",
         "token": "토큰",
-        "liquidityTips": "역사적인 거래량이 높을수록 브릿지가 성공할 가능성이 높습니다."
+        "liquidityTips": "역사적인 거래량이 높을수록 브릿지가 성공할 가능성이 높습니다.",
+        "low": "낮은 유동성",
+        "high": "높은 유동성"
       },
       "searchInput": {
-        "placeholder": "이름 / 주소로 검색"
+        "placeholder": "이름 / 주소로 검색",
+        "placeholder1": "토큰 이름 / 주소 검색"
       },
       "header": {
         "title": "토큰 선택"
