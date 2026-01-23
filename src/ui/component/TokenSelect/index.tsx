@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import {
   concatAndSort,
   contactAmountTokens,
+  scamTokenFilter,
 } from '@/ui/utils/portfolio/tokenUtils';
 const isTab = getUiType().isTab;
 
@@ -267,7 +268,7 @@ const TokenSelect = forwardRef<
                 .filter((e) =>
                   isAddress(queryConds.keyword, { strict: false })
                     ? true
-                    : !!e.is_core
+                    : scamTokenFilter(e)
                 )
             : concatAndSort(
                 searchedTokenByQuery.map(abstractTokenToTokenItem),
