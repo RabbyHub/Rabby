@@ -51,7 +51,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.time'),
         key: 'time',
         dataIndex: 'time',
-        // width: 180,
+        width: 180,
         sorter: (a, b) => a.time - b.time,
         render: (_, record) => {
           return (
@@ -65,7 +65,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         key: 'coin',
         dataIndex: 'coin',
-        // width: 80,
+        width: 60,
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
           return (
