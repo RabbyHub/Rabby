@@ -33,48 +33,52 @@ export const Item = memo(
       const chainItem = findChainByEnum(item.chain);
       return (
         <div
-          className={clsx('item', className)}
+          className={clsx('site-item', className)}
           ref={ref}
           onClick={onClick}
           {...rest}
         >
-          <div className="logo cursor-pointer">
-            <FallbackSiteLogo
-              url={item.icon}
-              origin={item.origin}
-              width="24px"
-              style={{
-                borderRadius: '50%',
-              }}
-            />
-            <TooltipWithMagnetArrow
-              title={chainItem?.name}
-              className="rectangle w-[max-content]"
-            >
-              <img
-                className="connect-chain"
-                src={chainItem?.logo}
-                alt={chainItem?.name}
+          <div className="site-item-main">
+            <div className="logo cursor-pointer">
+              <FallbackSiteLogo
+                url={item.icon}
+                origin={item.origin}
+                width="24px"
+                style={{
+                  borderRadius: '50%',
+                }}
               />
-            </TooltipWithMagnetArrow>
-          </div>
-          <div className="flex items-center gap-[4px] min-w-0">
-            <div className="item-content flex-1 truncate">{item.origin}</div>
-            <div
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onPin?.(item);
-              }}
-            >
-              <ThemeIcon
-                src={item.isTop ? RcIconPinnedFill : RcIconPinned}
-                className={clsx('pin-website', item.isTop && 'is-active')}
-              />
+              <TooltipWithMagnetArrow
+                title={chainItem?.name}
+                className="rectangle w-[max-content]"
+              >
+                <img
+                  className="connect-chain"
+                  src={chainItem?.logo}
+                  alt={chainItem?.name}
+                />
+              </TooltipWithMagnetArrow>
+            </div>
+            <div className="flex items-center gap-[4px] min-w-0">
+              <div className="site-item-content flex-1 truncate">
+                {item.origin}
+              </div>
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onPin?.(item);
+                }}
+              >
+                <ThemeIcon
+                  src={item.isTop ? RcIconPinnedFill : RcIconPinned}
+                  className={clsx('pin-website', item.isTop && 'is-active')}
+                />
+              </div>
             </div>
           </div>
           <div
-            className="item-extra"
+            className="site-item-extra"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

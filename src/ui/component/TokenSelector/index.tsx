@@ -64,6 +64,7 @@ export interface SearchCallbackCtx {
 }
 export interface TokenSelectorProps {
   visible: boolean;
+  isHideTitle?: boolean;
   // list: TokenItem[];
   mainnetTokenList: TokenItem[];
   // testnetTokenList: TokenItem[];
@@ -107,6 +108,7 @@ const defaultExcludeTokens = [];
 
 const TokenSelector = ({
   visible,
+  isHideTitle,
   mainnetTokenList,
   // testnetTokenList,
   onConfirm,
@@ -485,12 +487,15 @@ const TokenSelector = ({
         closeIcon={
           <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
         }
+        closable={!isHideTitle}
         getContainer={getContainer}
       >
         {/* Select a token */}
-        <div className="header">
-          {t('component.TokenSelector.header.title')}
-        </div>
+        {isHideTitle ? null : (
+          <div className="header">
+            {t('component.TokenSelector.header.title')}
+          </div>
+        )}
         {showCustomTestnetAssetList && hasCustomTestnetTokenData && (
           <NetSwitchTabs value={selectedTab} onTabChange={onTabChange} />
         )}
@@ -533,7 +538,7 @@ const TokenSelector = ({
             // Search by Name / Address
             placeholder={
               placeholder ??
-              t('component.TokenSelector.searchInput.placeholder')
+              t('component.TokenSelector.searchInput.placeholder1')
             }
             allowClear
             value={query}

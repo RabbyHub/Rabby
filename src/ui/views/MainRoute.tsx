@@ -47,7 +47,6 @@ import ManageAddress from './ManageAddress';
 import { NFTView } from './NFTView';
 import { QRCodeConnect } from './ImportHardware/QRCodeConnect';
 import { KeystoneConnect } from './ImportHardware/KeystoneConnect';
-import ApprovalManagePage from './ApprovalManagePage';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
 import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 import { DappSearchPage } from './DappSearch';
@@ -408,11 +407,6 @@ const Main = () => {
 
         <PrivateRoute exact path="/bridge">
           <Bridge />
-        </PrivateRoute>
-
-        {/* todo remove */}
-        <PrivateRoute exact path="/approval-manage">
-          <ApprovalManagePage />
         </PrivateRoute>
 
         <PrivateRoute exact path="/dapp-search">

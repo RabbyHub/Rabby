@@ -223,12 +223,13 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
           }}
         >
           <TokenSelect
+            isHideTitle={true}
             ref={openTokenModalRef}
             token={token}
             onTokenChange={onTokenSelect}
             chainId={chainId}
             type={isFrom ? 'swapFrom' : 'swapTo'}
-            placeholder={t('page.swap.search-by-name-address')}
+            placeholder={t('page.swap.search-by-token-name-address')}
             // excludeTokens={excludeTokens}
             tokenRender={tokenRender}
             // supportChains={SWAP_SUPPORT_CHAINS}

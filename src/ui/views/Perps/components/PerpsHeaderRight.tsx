@@ -27,9 +27,9 @@ export const PerpsHeaderRight: React.FC<PerpsHeaderRightProps> = ({
   const coin = undefined;
 
   return (
-    <div className="flex items-center absolute top-[50%] translate-y-[-50%] right-0 gap-20">
+    <div className="flex items-center absolute top-[50%] translate-y-[-50%] right-0 gap-[16px]">
       <div
-        className="text-r-neutral-title1 cursor-pointer"
+        className="text-r-neutral-title1 cursor-pointer relative hit-slop-8"
         onClick={() => {
           wallet.openInDesktop('/desktop/perps');
         }}
@@ -52,7 +52,7 @@ export const PerpsHeaderRight: React.FC<PerpsHeaderRightProps> = ({
           </div>
         ) : (
           <div
-            className="flex items-center gap-20 cursor-pointer"
+            className="flex items-center gap-[16px] cursor-pointer relative hit-slop-8"
             onClick={() => {
               history.push(`/perps/history/${coin}`);
             }}
