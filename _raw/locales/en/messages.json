@@ -3906,8 +3906,8 @@
         "value": "Value",
         "liquidity": "Liquidity",
         "liquidityTips": "The higher the historical trade volume, the more likely the bridge will succeed.",
-        "low": "Low",
-        "high": "High"
+        "low": "Low liquidity",
+        "high": "High liquidity"
       },
       "searchInput": {
         "placeholder": "Search by Name / Address"

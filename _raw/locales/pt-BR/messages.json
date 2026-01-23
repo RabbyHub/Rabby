@@ -3585,8 +3585,6 @@
       "bridge": {
         "liquidity": "Liquidez",
         "value": "Valor",
-        "low": "Baixo",
-        "high": "Alto",
         "token": "Token",
         "liquidityTips": "Quanto maior o volume histórico de transações, mais provável é que a ponte tenha sucesso."
       },

@@ -3581,9 +3581,7 @@
       "noMatch": "Keine Übereinstimmung",
       "noMatchSuggestion": "Versuchen Sie, die Smart Contract-Adresse auf {{ chainName }} zu suchen",
       "bridge": {
-        "high": "Hoch",
         "value": "Wert",
-        "low": "Niedrig",
         "token": "Token",
         "liquidity": "Liquidität",
         "liquidityTips": "Je höher das historische Handelsvolumen, desto wahrscheinlicher ist es, dass die Brücke erfolgreich sein wird."
