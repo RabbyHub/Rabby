@@ -1913,7 +1913,8 @@
           "settings": "Settings",
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
-          "prediction": "Prediction"
+          "prediction": "Prediction",
+          "dragTip": "Long-press feature to reorder"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -3541,7 +3542,9 @@
     },
     "search": {
       "sectionHeader": {
-        "__skip_translation": ["Defi"],
+        "__skip_translation": [
+          "Defi"
+        ],
         "token": "Tokens",
         "Defi": "DeFi",
         "NFT": "NFT",
@@ -3621,7 +3624,9 @@
         "pending": "{{pendingTxCount}} Pending"
       },
       "tabs": {
-        "__skip_translation": ["defi"],
+        "__skip_translation": [
+          "defi"
+        ],
         "tokens": "Tokens",
         "transactions": "Transactions",
         "approvals": "Approvals",
@@ -3977,7 +3982,10 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
