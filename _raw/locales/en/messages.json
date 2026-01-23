@@ -27,7 +27,8 @@
       "filterScam": {
         "title": "Hide scam transactions",
         "loading": "Loading may take a moment, and data delays are possible",
-        "btn": "Hide scam transactions"
+        "btn": "Hide scam transactions",
+        "button": "Hide Scam tx"
       }
     },
     "chainList": {
@@ -652,7 +653,8 @@
     "receive": {
       "title": "Receive {{token}} on {{chain}}",
       "watchModeAlert1": "This is a Watch Mode address.",
-      "watchModeAlert2": "Are you sure to use it to receive assets?"
+      "watchModeAlert2": "Are you sure to use it to receive assets?",
+      "receiveOn": "Receive {{token}} on"
     },
     "sendToken": {
       "addressNotInContract": "Not on address list. <1></1><2>Add to contacts</2>",
@@ -1744,7 +1746,8 @@
         "title": "This token has a low credit value",
         "desc": "A low credit value often signals high risk, such as a honeypot token or very low liquidity."
       },
-      "understandRisks": "I understand the risks and want to continue"
+      "understandRisks": "I understand the risks and want to continue",
+      "search-by-token-name-address": "Search Token Name / Address"
     },
     "bridge": {
       "From": "From",
@@ -3915,7 +3918,8 @@
         "high": "High liquidity"
       },
       "searchInput": {
-        "placeholder": "Search by Name / Address"
+        "placeholder": "Search by Name / Address",
+        "placeholder1": "Search Token Name / Address"
       },
       "header": {
         "title": "Select Token"

@@ -49,7 +49,8 @@ export const useQueryProjects = (
     isTestnet,
     lpTokenMode,
     showBlocked,
-    searchMode
+    searchMode,
+    true // disableRecommended
   );
 
   const {

@@ -149,8 +149,6 @@ const PositionItem: React.FC<{
     (store) => store.perps.marketDataMap?.[position.coin?.toUpperCase() || '']
   );
 
-  console.log('marketData', marketData);
-
   const isUp = Number(unrealizedPnl) >= 0;
   const isLong = Number(szi) > 0;
   const side = isLong ? 'Long' : 'Short';

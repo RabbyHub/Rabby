@@ -67,7 +67,8 @@ export const useTokens = (
     : false,
   lpTokensOnly = false,
   showBlocked = false,
-  searchMode = false
+  searchMode = false,
+  disableRecommended = false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
@@ -472,7 +473,8 @@ export const useTokens = (
       isLoading ||
       isTestnet ||
       !visible ||
-      !!mainnetTokens.list.length
+      !!mainnetTokens.list.length ||
+      disableRecommended
     ) {
       return false;
     }
@@ -502,25 +504,10 @@ export const useTokens = (
       userAddr,
       chainServerId || ''
     );
-    const chainTokens = list.reduce((m, n) => {
-      m[n.chain] = m[n.chain] || [];
-      m[n.chain].push(n);
 
-      return m;
-    }, {} as Record<string, TokenItem[]>);
-    let _data = produce(walletProject, (draft) => {
-      draft.netWorth = 0;
-      draft._netWorth = '$0';
-      draft._netWorthChange = '-';
-      draft.netWorthChange = 0;
-      draft._netWorthChangePercent = '';
-    });
-    _data = produce(_data, (draft) => {
-      setWalletTokens(draft, chainTokens);
-    });
-
-    const _tokens: AbstractPortfolioToken[] = sortWalletTokens(_data);
-    return _tokens;
+    return list.map(
+      (token) => new DisplayedToken(token) as AbstractPortfolioToken
+    );
   }, [shouldLoadRecommended, userAddr, chainServerId]);
 
   const tokens = useMemo(() => {

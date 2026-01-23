@@ -572,7 +572,7 @@ export const useDepositWithdraw = (
             }),
             config: {
               account: account,
-              getContainer,
+              getContainer: '.desktop-perps-deposit-withdraw-content',
             },
             wallet,
           },

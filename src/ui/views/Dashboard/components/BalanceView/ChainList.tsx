@@ -19,6 +19,26 @@ export const ChainList: React.FC<{
           className="w-[18px] h-[18px]"
         />
       );
+    } else if (gnosisNetworks.length >= MAX_CHAINS) {
+      return (
+        <>
+          {gnosisNetworks.slice(0, MAX_CHAINS - 1).map((gnosisNetwork) => {
+            return (
+              <img
+                key={gnosisNetwork.id}
+                src={gnosisNetwork.whiteLogo || gnosisNetwork.logo}
+                className="w-[18px] h-[18px]"
+              />
+            );
+          })}
+          <div
+            key="more"
+            className="text-[12px] leading-[14px] font-normal text-r-neutral-title2"
+          >
+            +{gnosisNetworks.length - MAX_CHAINS + 1}
+          </div>
+        </>
+      );
     } else {
       return (
         <>

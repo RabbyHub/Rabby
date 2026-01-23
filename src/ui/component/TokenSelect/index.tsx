@@ -68,6 +68,7 @@ const Text = styled.span`
 `;
 
 interface CommonProps {
+  isHideTitle?: boolean;
   token?: TokenItem;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
@@ -122,6 +123,7 @@ const TokenSelect = forwardRef<
       excludeTokens = defaultExcludeTokens,
       type = 'default',
       placeholder,
+      isHideTitle,
       hideChainIcon = true,
       value,
       loading = false,
@@ -348,6 +350,7 @@ const TokenSelect = forwardRef<
           <TokenSelector
             drawerHeight={drawerHeight}
             visible={tokenSelectorVisible}
+            isHideTitle={isHideTitle}
             mainnetTokenList={displayTokenList}
             onConfirm={handleCurrentTokenChange}
             onCancel={handleTokenSelectorClose}
@@ -418,6 +421,7 @@ const TokenSelect = forwardRef<
         </Wrapper>
         <TokenSelector
           visible={tokenSelectorVisible}
+          isHideTitle={isHideTitle}
           mainnetTokenList={displayTokenList}
           onConfirm={handleCurrentTokenChange}
           onCancel={handleTokenSelectorClose}
