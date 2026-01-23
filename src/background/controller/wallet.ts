@@ -6038,6 +6038,8 @@ export class WalletController extends BaseController {
 
     return http.get(url).then((res) => res.data);
   };
+
+  updateDashboardPanelOrder = preferenceService.updateDashboardPanelOrder;
 }
 
 const wallet = new WalletController();

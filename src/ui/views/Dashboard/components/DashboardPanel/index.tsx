@@ -1,7 +1,7 @@
 import { CHAINS_ENUM, KEYRING_TYPE, ThemeIconType } from '@/constant';
 import RateModal from '@/ui/component/RateModal/RateModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { usePerpsHomePnl } from '@/ui/views/Perps/hooks/usePerpsHomePnl';
 import { findChainByID } from '@/utils/chain';
 import { appIsDev } from '@/utils/env';
@@ -51,6 +51,7 @@ import {
   RcIconDappsCC,
   RcIconManageCC,
   RcIconPrediction,
+  RcIconLampCC,
 } from 'ui/assets/dashboard/panel';
 
 import { useGasAccountInfo } from '@/ui/views/GasAccount/hooks';
@@ -68,10 +69,12 @@ import { Settings } from '../index';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
 import { RcIconExternal1CC, RcIconFullscreenCC } from '@/ui/assets/dashboard';
 import { RecentConnectionsPopup } from '../RecentConnections';
-import { useScroll, useSize } from 'ahooks';
+import { useMemoizedFn, useMount, useScroll, useSize } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
 import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
+import { is } from 'immer/dist/internal';
+import { isEqual } from 'lodash';
 
 const GlobalStyle = createGlobalStyle`
   .rabby-dashboard-panel-container {
@@ -80,6 +83,8 @@ const GlobalStyle = createGlobalStyle`
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1px;
+
+      scroll-snap-align: end;
     }
 
     .panel-item {
@@ -314,6 +319,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const [safeSupportChains, setSafeSupportChains] = useState<CHAINS_ENUM[]>([]);
 
   const account = useRabbySelector((state) => state.account.currentAccount);
+  const dashboardPanelOrder = useRabbySelector(
+    (state) => state.preference.dashboardPanelOrder
+  );
+
+  const dispatch = useRabbyDispatch();
 
   const [approvalRiskAlert, setApprovalRiskAlert] = useState(0);
 
@@ -585,99 +595,57 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   };
 
   const defaultPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
-    return isGnosis
-      ? [
-          'swap',
-          'send',
-          'bridge',
-          'receive',
-          'transactions',
-          'security',
-          'perps',
-          'prediction',
-          'points',
-          'mobile',
-          'nft',
-          'gasAccount',
-          'searchDapp',
-          'dapps',
-          // 'manageAddress',
-          'more',
-        ]
-      : [
-          'swap',
-          'send',
-          'bridge',
-          'receive',
-          'transactions',
-          'security',
-          'perps',
-          'prediction',
-          'points',
-          'mobile',
-          'nft',
-          'gasAccount',
-          'searchDapp',
-          'dapps',
-          // 'manageAddress',
-          'more',
-        ];
-  }, [isGnosis]);
+    return [
+      'swap',
+      'send',
+      'bridge',
+      'receive',
+      'transactions',
+      'security',
+      'perps',
+      'prediction',
+      'points',
+      'mobile',
+      'nft',
+      'gasAccount',
+      'searchDapp',
+      'dapps',
+      'more',
+    ];
+  }, []);
 
-  // Load saved panel order from localStorage
-  const loadPanelOrder = () => {
-    try {
-      const saved = localStorage.getItem('dashboard_panel_order');
-      if (saved) {
-        const parsed = JSON.parse(saved) as (keyof typeof panelItems)[];
-        // Validate that all items still exist and match current keys
-        const validKeys = parsed.filter((key) => panelItems[key]);
-        // Add any new keys that aren't in saved order
-        const missingKeys = defaultPanelKeys.filter(
-          (key) => !validKeys.includes(key)
-        );
-        return [...validKeys, ...missingKeys];
+  const getPanelKeys = useMemoizedFn(() => {
+    const orders = dashboardPanelOrder as (keyof typeof panelItems)[];
+    const validKeys = orders.filter(
+      (key) => panelItems[key] && defaultPanelKeys.includes(key)
+    );
+    defaultPanelKeys.forEach((key, index) => {
+      if (!validKeys.includes(key)) {
+        validKeys.splice(index, 0, key);
       }
-    } catch (e) {
-      console.error('Failed to load panel order:', e);
+    });
+    return validKeys;
+  });
+
+  const pickedPanelKeys = useMemo(() => {
+    return getPanelKeys();
+  }, [dashboardPanelOrder]);
+
+  const setPickedPanelKeys = useMemoizedFn(
+    (keys: (keyof typeof panelItems)[]) => {
+      dispatch.preference.setField({
+        dashboardPanelOrder: keys,
+      });
+      wallet.updateDashboardPanelOrder(keys);
     }
-    return defaultPanelKeys;
-  };
+  );
 
-  const [pickedPanelKeys, setPickedPanelKeys] = useState<
-    (keyof typeof panelItems)[]
-  >(() => loadPanelOrder());
-
-  // Save panel order to localStorage whenever it changes
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        'dashboard_panel_order',
-        JSON.stringify(pickedPanelKeys)
-      );
-    } catch (e) {
-      console.error('Failed to save panel order:', e);
+  useMount(() => {
+    const panelKeys = getPanelKeys();
+    if (!isEqual(dashboardPanelOrder, panelKeys)) {
+      setPickedPanelKeys(panelKeys);
     }
-  }, [pickedPanelKeys]);
-
-  // Update panel keys when defaultPanelKeys changes
-  useEffect(() => {
-    const currentKeys = new Set(pickedPanelKeys);
-    const defaultKeys = new Set(defaultPanelKeys);
-
-    // Check if there are new keys or removed keys
-    const hasNewKeys = defaultPanelKeys.some((key) => !currentKeys.has(key));
-    const hasRemovedKeys = pickedPanelKeys.some((key) => !defaultKeys.has(key));
-
-    if (hasNewKeys || hasRemovedKeys) {
-      // Keep existing order but add new items and remove deleted ones
-      const validKeys = pickedPanelKeys.filter((key) => defaultKeys.has(key));
-      const missingKeys = defaultPanelKeys.filter(
-        (key) => !currentKeys.has(key)
-      );
-      setPickedPanelKeys([...validKeys, ...missingKeys]);
-    }
-  }, [defaultPanelKeys]);
+  });
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -693,6 +661,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       const newKeys = [...pickedPanelKeys];
       const [removed] = newKeys.splice(oldIndex, 1);
       newKeys.splice(newIndex, 0, removed);
+      console.log('newKeys', newKeys);
       setPickedPanelKeys(newKeys);
     }
     setActiveId(null);
@@ -744,7 +713,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       <GlobalStyle />
       <div
         className="overflow-auto rounded-[8px] bg-r-neutral-card-2"
-        style={{ height: 264 }}
+        style={{
+          height: 264,
+          overscrollBehavior: 'contain',
+          scrollSnapType: 'both mandatory',
+        }}
         ref={ref}
       >
         <DndContext
@@ -800,14 +773,17 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           >
             <>
               {activeId && activeItem ? (
-                <div
-                  className="bg-r-neutral-bg-2"
-                  style={{
-                    opacity: 0.95,
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                  }}
-                >
-                  <div className="panel-item group">
+                <div>
+                  <div
+                    className={clsx(
+                      'panel-item group',
+                      'rounded-[8px] bg-r-blue-light1',
+                      'border border-rabby-blue-default'
+                    )}
+                    style={{
+                      boxShadow: '0 4px 16px 0 rgba(0, 0, 0, 0.13)',
+                    }}
+                  >
                     {activeItem.showAlert && (
                       <ThemeIcon
                         src={IconAlertRed}
@@ -862,8 +838,16 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
             </>
           </DragOverlay>
         </DndContext>
-        <footer className="bg-r-neutral-card-1 p-2 text-center text-sm text-r-neutral-foot mt-[1px]">
-          Long-press feature to reorder
+        <footer
+          className={clsx(
+            'bg-r-neutral-card-1 text-r-neutral-foot mt-[1px]',
+            'flex items-center justify-center py-[10px] gap-[2px]'
+          )}
+        >
+          <RcIconLampCC />
+          <div className="text-[12px] leading-[14px]">
+            {t('page.dashboard.home.panel.dragTip')}
+          </div>
         </footer>
       </div>
       <div className="absolute right-[8px] top-[50%] translate-y-[-50%]">

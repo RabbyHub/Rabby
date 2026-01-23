@@ -40,6 +40,7 @@ interface PreferenceState {
   isEnabledPwdForNonWhitelistedTx?: boolean;
   isEnabledDappAccount?: boolean;
   rateGuideLastExposure?: RateGuideLastExposure;
+  dashboardPanelOrder?: string[];
 
   /** @deprecated */
   desktopTokensAllMode?: boolean;
@@ -73,6 +74,7 @@ export const preference = createModel<RootModel>()({
     isEnabledDappAccount: false,
     rateGuideLastExposure: getDefaultRateGuideLastExposure(),
     desktopTokensAllMode: false,
+    dashboardPanelOrder: [],
   } as PreferenceState,
 
   reducers: {
