@@ -359,7 +359,7 @@ const TokenDetail = ({
                   className="rectangle w-[max-content]"
                 >
                   <img
-                    className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
+                    className="w-14 h-14 absolute right-[-2px] bottom-[-2px] rounded-full"
                     src={chain?.logo}
                   />
                 </TooltipWithMagnetArrow>
@@ -369,7 +369,12 @@ const TokenDetail = ({
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
-            {isLpToken(token) && <LpTokenTag className="ml-8" />}
+            {isLpToken(token) && (
+              <LpTokenTag
+                className="ml-8"
+                protocolName={token.protocol_id || ''}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -829,8 +829,8 @@
             "modalContent": "Genehmigungen desselben Permit2-Vertrags würden mit derselben Signatur zusammengefasst.",
             "modalTitle_one": "Insgesamt ist eine Signatur von <2>{{count}}</2> erforderlich."
           },
-          "notSupport7702Title": "Für den aktuellen Adresstyp nicht unterstützt",
-          "notSupport7702Content": "Derzeit wird nur das Widerrufen von EIP-7702-Delegierungen für private Schlüssel- und Seed-Phrasen-Adressen unterstützt."
+          "notSupport7702Title": "Nicht unterstützter Adresstyp",
+          "notSupport7702Content": "Das Widerrufen von EIP-7702-Delegierungen wird nur für Adressen mit privatem Schlüssel oder Seed-Phrase unterstützt."
         },
         "ViewMore": {
           "text": "Mehr anzeigen"
@@ -1098,7 +1098,8 @@
       "enterPassphraseTitle": "Geben Sie die Passphrase zum Signieren ein",
       "CurrentDappAddress": {
         "desc": "Wechseln Sie die Dapp-Adresse"
-      }
+      },
+      "noSeedPhraseAddress": "Es wurden keine Adressen für diesen Seed-Phrase hinzugefügt. Sie können eine Adresse hinzufügen oder den Seed-Phrase löschen."
     },
     "dashboard": {
       "home": {
@@ -1126,7 +1127,8 @@
           "dapps": "Dapps",
           "settings": "Einstellungen",
           "perpsPositions_one": "{{count}} Position",
-          "perpsPositions_other": "{{count}} Positionen"
+          "perpsPositions_other": "{{count}} Positionen",
+          "prediction": "Vorhersage"
         },
         "comingSoon": "Demnächst",
         "soon": "Bald",
@@ -1297,7 +1299,8 @@
           "themeMode": "Themenmodus",
           "customTestnet": "Benutzerdefiniertes Netzwerk hinzufügen",
           "metamaskMode": "Verbinden Sie Rabby, indem Sie sich als MetaMask ausgeben",
-          "enableDappAccount": "DApps-Adressen unabhängig wechseln\n"
+          "enableDappAccount": "DApps-Adressen unabhängig wechseln\n",
+          "switchPasswordForNonWhitelistedTx": "Passwort für nicht genehmigte Überweisungen"
         },
         "aboutUs": "Über uns",
         "currentVersion": "Aktuelle Version",
@@ -1324,6 +1327,14 @@
           "submitFeedbackButton": "Einreichen",
           "thxTitle": "Danke!",
           "rateOnChromeStoreButton": "Bewertung im Chrome Web Store"
+        },
+        "PwdForNonWhitelistedTx": {
+          "titleDisable": "Passwort eingeben, um zu deaktivieren",
+          "inputPlaceholder": "Geben Sie das Passwort zur Bestätigung ein",
+          "descEnable": "Sobald es aktiviert ist, erfordert das Übertragen an eine nicht genehmigte Adresse in dieser Erweiterung Ihr Passwort.",
+          "descDisable": "Sobald deaktiviert, ist die Passwortüberprüfung für nicht auf der Whitelist befindliche Adressen nicht mehr erforderlich.",
+          "titleEnable": "Passwortüberprüfung aktivieren?",
+          "wrongPassword": "Falsches Passwort"
         }
       },
       "tokenDetail": {
@@ -1408,13 +1419,14 @@
           "noMatch": "Keine Übereinstimmung",
           "lowValueDescription": "Vermögenswerte mit geringem Wert werden hier angezeigt",
           "lowValueAssets": "{{count}} Vermögenswerte mit geringem Wert",
-          "lowValueAssets_other": "{{count}} niedrigwertige Token",
-          "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_0": "{{count}} Low-Value-Token",
           "review": "Überprüfung",
           "noTokens": "Keine Token",
           "searchToken": "Token suchen",
-          "lowValueDefis": "{{count}} Low-Value DeFi-Angebote"
+          "lowValueAssets_one": "{{count}} geringwertige Token",
+          "noLpTokens": "Kein Liquiditätsanbieter (LP) Token",
+          "lowValueAssets_0": "{{count}} Token mit niedrigem Wert",
+          "lowValueAssets_other": "{{count}} Niedrigwertige Token",
+          "lowValueDefis": "{{count}} geringwertige DeFi-Vermögenswerte"
         },
         "noAssets": "Keine Vermögenswerte",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",
@@ -1453,8 +1465,8 @@
         "addTokenEntryText": "Token",
         "price": "PREIS",
         "side": "SEITE",
-        "openInTab": "Im Tab öffnen",
-        "searchTokenPlaceholder": "Token suchen"
+        "searchTokenPlaceholder": "Token suchen",
+        "openInTab": "Im Rabby Tab öffnen"
       },
       "hd": {
         "howToConnectLedger": "Wie man den Ledger verbindet",
@@ -1822,7 +1834,8 @@
         },
         "importBtn": "Importieren ({{count}})",
         "manageImtokenOffline": "Verwalten Sie imToken",
-        "manageImKey": "Verwalten Sie imKey"
+        "manageImKey": "Verwalten Sie imKey",
+        "nonAddr": "Es wurden keine Adressen für diesen Seed-Satz hinzugefügt. Sie können diesen Satz in Rabby Extension > Adresse verwalten löschen."
       },
       "importYourKeystore": "Importieren Sie Ihren KeyStore",
       "incorrectPassword": "Falsches Passwort",
@@ -1976,7 +1989,8 @@
         "desc": "Wählen Sie aus den Wallets, die Sie installiert haben"
       },
       "otherWalletBtn": "Mit einer anderen Wallet verbinden",
-      "connectAddress": "Adresse verbinden"
+      "connectAddress": "Adresse verbinden",
+      "connected": "Verbunden"
     },
     "addressDetail": {
       "add-to-whitelist": "Zur Whitelist hinzufügen",
@@ -2002,7 +2016,25 @@
       "safeModuleAddress": "Sichere Modul-Adresse",
       "coboSafeErrorModule": "Adresse ist abgelaufen. Bitte löschen und erneut importieren.",
       "importedDelegatedAddress": "Importierte Delegated-Adresse",
-      "manage-addresses-under": "Verwalte Adressen unter diesem {{brand}}"
+      "manage-addresses-under": "Verwalte Adressen unter diesem {{brand}}",
+      "deleteSeedPhrase": {
+        "title": "Adresse und Seed Phrase löschen?",
+        "title2": "Adresse löschen?",
+        "option1": "Adresse löschen, Seed-Phrase behalten",
+        "remainSeedPhrase": "Ihr Seed-Phrase bleibt auf Ihrem Gerät.",
+        "sub-title": "Diese Aktion ist dauerhaft. Bitte überprüfen Sie Folgendes, um Ihre Vermögenswerte zu schützen:",
+        "onlyDeleteAddr": "Nur diese Adresse wird entfernt. Ihr Seed-Phrase bleibt unbeeinträchtigt, da Ihre anderen Adressen sie weiterhin verwenden.",
+        "check2": "Ich bestätige, dass ich meinen Private Key oder Seed Phrase gesichert habe und bereit bin, ihn zu löschen.",
+        "keepSeedPhrase": "Dies ist die einzige Adresse, die mit diesem Seed-Phrase verknüpft ist. Möchten Sie die Seed-Phrase aufbewahren?",
+        "check1": "Ich verstehe, dass das Löschen dieser Adresse auch ihren Private Key und Seed Phrase entfernt. Rabby kann sie nicht für mich wiederherstellen.",
+        "option2": "Adresse und Seed Phrase löschen"
+      },
+      "deletePrivateKey": {
+        "title": "Adresse und privaten Schlüssel löschen?",
+        "sub-title": "Diese Aktion ist dauerhaft. Bitte überprüfen Sie Folgendes, um Ihre Vermögenswerte zu schützen:",
+        "check1": "Ich verstehe, dass das Löschen dieser Adresse auch ihren privaten Schlüssel entfernt. Rabby kann sie mir nicht wiederherstellen.",
+        "check2": "Ich bestätige, dass ich meinen Private Key oder Seed Phrase gesichert habe und bereit bin, ihn zu löschen."
+      }
     },
     "preferMetamaskDapps": {
       "title": "Bevorzugte Dapps von MetaMask",
@@ -2818,7 +2850,6 @@
     },
     "search": {
       "sectionHeader": {
-        "Defi": "DeFi",
         "NFT": "NFT",
         "token": "Tokens",
         "AllChains": "Alle Chains"
@@ -2901,7 +2932,11 @@
       "addSuccess": "Erfolgreich hinzugefügt",
       "nameYourAddress": "Benennen Sie Ihre Adresse",
       "enterAddress": "Adresse eingeben",
-      "title": "Adresse zur Whitelist hinzufügen"
+      "title": "Adresse zur Whitelist hinzufügen",
+      "verifyPwd": {
+        "title": "Nicht-Whitelist-Adresse",
+        "inputPlaceholder": "Geben Sie Ihr Passwort ein, um diese Übertragung zu bestätigen."
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3138,7 +3173,10 @@
         "addWhitelist": "Adresse zur Whitelist hinzufügen",
         "title": "Whitelist",
         "notWhitelist": "Nicht eine Whitelist-Adresse",
-        "addWhitelistDesc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Überweisungen – beim nächsten Mal sind keine Bestätigungen erforderlich."
+        "addWhitelistDesc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Überweisungen – beim nächsten Mal sind keine Bestätigungen erforderlich.",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Passwort für nicht whitelisted Überweisungen"
+        }
       },
       "addWhitelist": {
         "title": "Adresse zur Whitelist hinzufügen",
@@ -3237,9 +3275,7 @@
       "tabs": {
         "tokens": "Tokens",
         "transactions": "Transaktionen",
-        "approvals": "Genehmigungen",
-        "difi": "Defi",
-        "defi": "DeFi"
+        "approvals": "Genehmigungen"
       },
       "nft": {
         "message": {
@@ -3418,6 +3454,15 @@
         "sizeTips": "Der Gesamtwert oder die Menge Ihres Handels, festgelegt durch Margin und Hebel."
       },
       "needDepositFirst": "Sie müssen zuerst Geld einzahlen."
+    },
+    "dappIfame": {
+      "openPolymarket": "Öffne Polymarket...",
+      "serviceUnavailable": "Dienst nicht verfügbar",
+      "predictionNotSupported": "Die Prognosefunktion wird in Ihrer aktuellen Region nicht unterstützt.",
+      "reload": "Wiederladen",
+      "networkErrorTitle": "Diese Seite kann nicht erreicht werden",
+      "networkErrorDescription": "{{site}} hat die Verbindung unerwartet geschlossen. Bitte überprüfen Sie Ihr Netzwerk.",
+      "networkErrorDescriptionFallback": "Die Seite hat die Verbindung unerwartet geschlossen. Bitte überprüfen Sie Ihr Netzwerk."
     }
   },
   "component": {
@@ -3549,7 +3594,8 @@
       "chainNotSupport": "Diese Kette wird nicht unterstützt",
       "chainFilterLine": {
         "filterAll": "Alle Chains"
-      }
+      },
+      "noLpTokens": "Kein Liquiditätsanbieter (LP) Token"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3627,14 +3673,16 @@
       "lending": "Kreditvergabe",
       "portfolio": "Portfolio",
       "perps": "Perps",
-      "comingSoon": "Bald verfügbar"
+      "comingSoon": "Bald verfügbar",
+      "prediction": "Vorhersage"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adresse hinzufügen"
     },
     "LpTokenTag": {
       "title": "Dies ist ein Liquiditätsanbieter (LP) Token.",
-      "description": "LP-Token werden von den DeFi-Protokollen ausgegeben, bei denen Sie Ihre Vermögenswerte hinterlegt haben. Sie dienen als Nachweis für diese Vermögenswerte, aber ihr Wert ist nicht in Ihrem Gesamtkontostand enthalten."
+      "description": "LP-Token werden von den DeFi-Protokollen ausgegeben, bei denen Sie Ihre Vermögenswerte hinterlegt haben. Sie dienen als Nachweis für diese Vermögenswerte, aber ihr Wert ist nicht in Ihrem Gesamtkontostand enthalten.",
+      "descriptionFor": "Dies ist ein Liquiditätsanbieter (LP) Token für {{ protocolName }}."
     }
   },
   "global": {

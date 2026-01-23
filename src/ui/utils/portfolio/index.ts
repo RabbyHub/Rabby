@@ -13,8 +13,9 @@ export const useQueryProjects = (
   withHistory = false,
   visible: boolean,
   isTestnet = false,
-  isAll = false,
-  showBlocked = false
+  lpTokenMode = false,
+  showBlocked = false,
+  searchMode = false
 ) => {
   const [time, setTime] = useSafeState(dayjs().subtract(1, 'day'));
 
@@ -33,6 +34,7 @@ export const useQueryProjects = (
     tokens,
     netWorth: tokenNetWorth,
     isLoading: isTokensLoading,
+    isAllTokenLoading,
     hasValue: hasTokens,
     updateData: updateTokens,
     walletProject,
@@ -45,8 +47,9 @@ export const useQueryProjects = (
     0,
     undefined,
     isTestnet,
-    isAll,
-    showBlocked
+    lpTokenMode,
+    showBlocked,
+    searchMode
   );
 
   const {
@@ -83,6 +86,7 @@ export const useQueryProjects = (
     grossNetWorth,
     refreshPositions,
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     hasTokens,
     hasPortfolios,

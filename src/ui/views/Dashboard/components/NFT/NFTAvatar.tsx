@@ -23,14 +23,31 @@ type AvatarProps = {
   empty?: ReactNode;
 };
 
-// check if the url is a valid http(s) url
+// check if the url is a valid http(s) url and not obviously local/private
 const isValidHttpUrl = (url?: string): boolean => {
   if (!url) return false;
+  const trimmed = url.trim();
+  if (!trimmed) return false;
   try {
-    const urlObj = new URL(url);
-    // only allow http(s) URLs with a non-empty hostname
+    const urlObj = new URL(trimmed);
     const isHttp = urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
-    return isHttp && !!urlObj.hostname;
+    if (!isHttp || !urlObj.hostname) {
+      return false;
+    }
+
+    const hostname = urlObj.hostname.toLowerCase();
+    // Basic guard against localhost and common private IP ranges
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname.startsWith('10.') ||
+      hostname.startsWith('192.168.') ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname)
+    ) {
+      return false;
+    }
+
+    return true;
   } catch {
     return false;
   }

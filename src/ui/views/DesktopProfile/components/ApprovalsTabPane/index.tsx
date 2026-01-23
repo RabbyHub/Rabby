@@ -1440,7 +1440,7 @@ export const ApprovalsTabPane = ({
         {
           'with-switchnet-tabs': isShowTestnet && !isDesktop,
         },
-        'w-full max-w-full'
+        'w-full max-w-full flex'
       )}
     >
       <div

@@ -829,8 +829,8 @@
           "btnText_one": "Revoke ({{count}})",
           "btnText_other": "Revoke ({{count}})",
           "btnText_zero": "철회",
-          "notSupport7702Title": "현재 주소 유형에 대해 지원되지 않음",
-          "notSupport7702Content": "현재 개인 키 및 시드 구문 주소에 대한 EIP-7702 위임 철회만 지원합니다."
+          "notSupport7702Title": "지원하지 않는 주소 유형",
+          "notSupport7702Content": "EIP-7702 위임 취소는 개인 키 또는 시드 문구 주소에 대해서만 지원됩니다."
         },
         "ViewMore": {
           "text": "자세히 보기"
@@ -1190,7 +1190,8 @@
       "cancel": "취소",
       "CurrentDappAddress": {
         "desc": "Dapp 주소 전환\n"
-      }
+      },
+      "noSeedPhraseAddress": "이 시드 문구에 대해 추가된 주소가 없습니다. 주소를 추가하거나 시드 문구를 삭제할 수 있습니다."
     },
     "dashboard": {
       "home": {
@@ -1217,7 +1218,8 @@
           "searchDapp": "Dapp 검색",
           "settings": "설정",
           "perpsPositions_one": "{{count}} 포지션",
-          "perpsPositions_other": "{{count}} 포지션"
+          "perpsPositions_other": "{{count}} 포지션",
+          "prediction": "예측"
         },
         "queue": {
           "count": "{{count}} 에서",
@@ -1365,7 +1367,8 @@
           "currentLanguage": "현재 언어",
           "label": "설정",
           "customTestnet": "커스텀 네트워크 추가",
-          "enableDappAccount": "Dapp 주소를 독립적으로 전환\n"
+          "enableDappAccount": "Dapp 주소를 독립적으로 전환\n",
+          "switchPasswordForNonWhitelistedTx": "비공식 화이트리스트 전송을 위한 비밀번호"
         },
         "save": "저장",
         "inputOpenapiHost": "openapi 호스트를 입력하세요",
@@ -1416,6 +1419,14 @@
           "thxDesc": "Rabby를 좋아하신다면, Chrome Store에서 간단한 평가를 남겨주시면 큰 도움이 됩니다.",
           "feedbackDesc": "피드백이 있으신가요? 저희가 듣고 있습니다.",
           "feedbackPlaceholder": "Rabby는 귀하의 피드백을 소중히 여깁니다!"
+        },
+        "PwdForNonWhitelistedTx": {
+          "wrongPassword": "잘못된 비밀번호",
+          "titleDisable": "비밀번호를 입력하여 비활성화하세요",
+          "titleEnable": "비밀번호 확인을 활성화하시겠습니까?",
+          "inputPlaceholder": "비밀번호를 입력하여 확인하십시오.",
+          "descEnable": "이 확장 프로그램에서 비공식 화이트리스트 주소로 전송할 경우 암호가 필요합니다.",
+          "descDisable": "비활성화되면 화이트리스트에 없는 주소에 대해서는 비밀번호 확인이 더 이상 필요하지 않습니다."
         }
       },
       "tokenDetail": {
@@ -1486,14 +1497,11 @@
           "percent": "퍼센트",
           "tradePair": "거래 쌍",
           "side": "측면",
-          "lowValueAssets_other": "{{count}} 저가 토큰",
           "dailyUnlock": "일일 잠금 해제",
           "claimable": "청구 가능",
           "pool": "POOL",
-          "lowValueAssets_0": "{{count}} 저가 토큰",
           "type": "유형",
           "exerciseEnd": "운동 종료",
-          "lowValueAssets_one": "{{count}} 저가 토큰",
           "noMatch": "일치하지 않음",
           "lowValueDescription": "여기에는 저가 자산이 표시됩니다.",
           "summaryTips": "자산 가치는 총 순자산으로 나뉩니다.",
@@ -1503,7 +1511,11 @@
           "review": "리뷰",
           "noTokens": "토큰 없음",
           "searchToken": "토큰 검색",
-          "lowValueDefis": "{{count}} 저가 가치 디파이"
+          "lowValueDefis": "{{count}} 저가 DeFi 자산",
+          "lowValueAssets_one": "{{count}} 저가 토큰",
+          "lowValueAssets_other": "{{count}} 저가 토큰",
+          "noLpTokens": "유동성 제공자 (LP) 토큰 없음",
+          "lowValueAssets_0": "{{count}} 저가 토큰"
         },
         "AddMainnetToken": {
           "title": "맞춤형 토큰 추가",
@@ -1543,8 +1555,8 @@
         "searchPlaceholder": "토큰",
         "price": "가격",
         "side": "측면",
-        "openInTab": "탭에서 열기",
-        "searchTokenPlaceholder": "토큰 검색"
+        "searchTokenPlaceholder": "토큰 검색",
+        "openInTab": "Rabby 탭에서 열기"
       },
       "hd": {
         "ledger": {
@@ -1923,7 +1935,8 @@
         "manageCoolwallet": "CoolWallet 관리",
         "manageKeystone": "Keystone 관리",
         "advancedSettings": "고급 설정",
-        "customAddressHdPath": "사용자 정의 주소 HD 경로"
+        "customAddressHdPath": "사용자 정의 주소 HD 경로",
+        "nonAddr": "이 시드 문구에 대해 추가된 주소가 없습니다. Rabby Extension > 주소 관리에서 이 문구를 삭제할 수 있습니다."
       },
       "keystore": {
         "password": {
@@ -2092,7 +2105,25 @@
       "tx-requires": "모든 거래에는 <2>{{num}}</2> 확인이 필요합니다.",
       "coboSafeErrorModule": "주소가 만료되었습니다. 주소를 삭제하고 다시 가져오세요.",
       "direct-delete-desc": "이 주소는 {{renderBrand}} 주소입니다. Rabby는 이 주소의 개인 키나 시드 구문을 저장하지 않으므로, 그냥 삭제하셔도 됩니다.",
-      "delete-desc": "삭제하기 전에 자산을 보호하는 방법을 이해하기 위해 다음 사항을 염두에 두세요."
+      "delete-desc": "삭제하기 전에 자산을 보호하는 방법을 이해하기 위해 다음 사항을 염두에 두세요.",
+      "deleteSeedPhrase": {
+        "option2": "주소 및 시드 문구 삭제",
+        "option1": "주소 삭제, 시드 문구 유지",
+        "title": "주소와 시드 문구를 삭제하시겠습니까?",
+        "remainSeedPhrase": "당신의 시드 구문은 당신의 기기에 남아 있습니다.",
+        "title2": "주소를 삭제하시겠습니까?",
+        "keepSeedPhrase": "이 시드 문구와 연결된 유일한 주소입니다. 시드 문구를 보관하시겠습니까?",
+        "check2": "저는 개인 키 또는 시드 구문을 백업했음을 확인하며, 이를 삭제할 준비가 되었습니다.",
+        "onlyDeleteAddr": "이 주소만 삭제됩니다. 당신의 시드 문구는 영향을 받지 않으며, 다른 주소는 여전히 이를 사용합니다.",
+        "sub-title": "이 행동은 영구적입니다. 자산을 보호하기 위해 다음 내용을 검토해 주십시오:",
+        "check1": "이 주소를 삭제하면 개인 키와 시드 문구도 함께 제거된다는 것을 이해합니다. Rabby는 이를 복구할 수 없습니다."
+      },
+      "deletePrivateKey": {
+        "title": "주소 및 개인 키 삭제하시겠습니까?",
+        "check1": "이 주소를 삭제하면 해당 개인 키도 제거된다는 것을 이해합니다. Rabby는 이를 복구할 수 없습니다.",
+        "check2": "저는 Private Key 또는 Seed Phrase를 백업했음을 확인하며, 이를 삭제할 준비가 되었습니다.",
+        "sub-title": "이 작업은 영구적입니다. 귀하의 자산을 보호하기 위해 다음을 검토하십시오:"
+      }
     },
     "preferMetamaskDapps": {
       "title": "MetaMask 선호 Dapps",
@@ -2816,7 +2847,6 @@
     },
     "search": {
       "sectionHeader": {
-        "Defi": "DeFi",
         "token": "토큰",
         "NFT": "NFT",
         "AllChains": "모든 체인"
@@ -2899,7 +2929,11 @@
       "invalidAddress": "이 주소는 유효하지 않습니다",
       "address": "주소",
       "name": "이름",
-      "title": "주소를 화이트리스트에 추가하세요"
+      "title": "주소를 화이트리스트에 추가하세요",
+      "verifyPwd": {
+        "title": "비관리 주소",
+        "inputPlaceholder": "이 전송을 확인하려면 비밀번호를 입력하세요."
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3136,7 +3170,10 @@
         "title": "화이트리스트",
         "notWhitelist": "허가된 주소가 아닙니다",
         "addWhitelist": "주소를 화이트리스트에 추가하세요",
-        "addWhitelistDesc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 전송 --- 다음 번에는 확인이 필요하지 않습니다."
+        "addWhitelistDesc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 전송 --- 다음 번에는 확인이 필요하지 않습니다.",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "비허가 전송을 위한 비밀번호"
+        }
       },
       "addWhitelist": {
         "title": "주소를 화이트리스트에 추가하기",
@@ -3235,9 +3272,7 @@
       "tabs": {
         "approvals": "승인",
         "transactions": "거래",
-        "tokens": "토큰",
-        "difi": "Defi",
-        "defi": "디파이"
+        "tokens": "토큰"
       },
       "nft": {
         "message": {
@@ -3416,6 +3451,15 @@
         "liquidationPriceTips": "마진이 유지 마진 수준 이하로 떨어질 때, 추가 손실을 방지하기 위해 거래소가 자동으로 포지션을 종료하는 가격입니다."
       },
       "needDepositFirst": "먼저 자금을 입금해야 합니다."
+    },
+    "dappIfame": {
+      "serviceUnavailable": "서비스를 사용할 수 없습니다",
+      "openPolymarket": "Polymarket 열기...",
+      "predictionNotSupported": "예측 기능은 현재 귀하의 지역에서 지원되지 않습니다.",
+      "networkErrorDescription": "{{site}}가 예기치 않게 연결을 닫았습니다. 네트워크를 확인해주세요.",
+      "networkErrorDescriptionFallback": "사이트가 예기치 않게 연결을 종료했습니다. 네트워크를 확인해주세요.",
+      "reload": "다시 로드",
+      "networkErrorTitle": "이 사이트에 연결할 수 없습니다."
     }
   },
   "component": {
@@ -3547,7 +3591,8 @@
       "chainNotSupport": "이 체인은 지원되지 않습니다.",
       "chainFilterLine": {
         "filterAll": "모든 체인"
-      }
+      },
+      "noLpTokens": "유동성 공급자 (LP) 토큰 없음"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3625,14 +3670,16 @@
       "lending": "대출",
       "perps": "Perps",
       "comingSoon": "곧 출시됩니다",
-      "portfolio": "포트폴리오"
+      "portfolio": "포트폴리오",
+      "prediction": "예측"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "주소 추가"
     },
     "LpTokenTag": {
       "title": "이는 유동성 공급자(LP) 토큰입니다.",
-      "description": "LP 토큰은 자산을 예치한 DeFi 프로토콜에서 발행됩니다. 이들은 해당 자산의 증명 역할을 하지만, 그 가치는 총 잔액에 포함되지 않습니다."
+      "description": "LP 토큰은 자산을 예치한 DeFi 프로토콜에서 발행됩니다. 이들은 해당 자산의 증명 역할을 하지만, 그 가치는 총 잔액에 포함되지 않습니다.",
+      "descriptionFor": "이것은 {{ protocolName }}의 유동성 공급자(LP) 토큰입니다."
     }
   },
   "global": {

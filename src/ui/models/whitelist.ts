@@ -37,5 +37,11 @@ export const whitelist = createModel<RootModel>()({
       const enabled = await store.app.wallet.isWhitelistEnabled();
       dispatch.whitelist.setField({ enabled });
     },
+    isInWhitelist(address: string, store) {
+      const whitelist: string[] = store.whitelist.whitelist;
+      return whitelist
+        .map((item) => item.toLowerCase())
+        .includes(address.toLowerCase());
+    },
   }),
 });

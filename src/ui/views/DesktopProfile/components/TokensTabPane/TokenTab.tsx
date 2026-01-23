@@ -18,6 +18,7 @@ import { LpTokenSwitch } from './components/LpTokenSwitch';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import styled from 'styled-components';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
+import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
 
 interface Props {
   isTokensLoading: boolean;
@@ -27,6 +28,8 @@ interface Props {
   lpTokenMode: boolean;
   setLpTokenMode?: (value: boolean) => void;
   selectChainId?: string;
+  searchValue: string;
+  setSearchValue: (value: string) => void;
 }
 
 const StyledInput = styled(Input)`
@@ -44,6 +47,8 @@ export const TokenTab = ({
   selectChainId,
   lpTokenMode,
   setLpTokenMode,
+  searchValue,
+  setSearchValue,
 }: Props) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
@@ -58,9 +63,6 @@ export const TokenTab = ({
   };
 
   const { selectedTab, onTabChange, isShowTestnet } = useSwitchNetTab();
-
-  const [searchValue, setSearchValue] = React.useState('');
-
   const isMainnet = selectedTab === 'mainnet';
 
   const debouncedSearchValue = useDebounceValue(searchValue, 300);
@@ -84,7 +86,7 @@ export const TokenTab = ({
   const tokenListTotalValue = React.useMemo(() => {
     return sortTokens
       ?.reduce(
-        (acc, item) => acc.plus(isLpToken(item) ? 0 : item._usdValue || 0),
+        (acc, item) => acc.plus(item.is_core ? item._usdValue || 0 : 0),
         new BigNumber(0)
       )
       .toNumber();
@@ -105,7 +107,7 @@ export const TokenTab = ({
           'bg-rb-neutral-bg-1',
           'sticky z-10'
         )}
-        style={{ top: 103 + 57 }}
+        style={{ top: DESKTOP_NAV_HEIGHT + 57 }}
       >
         <div className="flex items-center gap-[16px] widget-has-ant-input">
           <StyledInput
@@ -161,6 +163,7 @@ export const TokenTab = ({
           searchList={searchList}
           isSearch={!!searchValue}
           search={searchValue}
+          lpTokenMode={lpTokenMode}
         />
       )}
     </>

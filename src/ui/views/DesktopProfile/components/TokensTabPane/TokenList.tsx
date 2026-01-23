@@ -12,6 +12,7 @@ import type { NetSwitchTabsKey } from '@/ui/component/PillsSwitch/NetSwitchTabs'
 import { CustomTestnetAssetList } from './TestTokenlist';
 
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
+import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -21,6 +22,7 @@ export interface Props {
   isSearch: boolean;
   searchList: AbstractPortfolioToken[];
   search?: string;
+  lpTokenMode?: boolean;
 }
 
 const ListContainer = styled.div`
@@ -38,6 +40,7 @@ export const TokenList = ({
   isSearch,
   searchList,
   search,
+  lpTokenMode,
 }: Props) => {
   const {
     result: currentList,
@@ -53,16 +56,30 @@ export const TokenList = ({
       <ListContainer>
         {selectedTab === 'mainnet' ? (
           isNoResults ? (
-            <TokenListEmpty text={t('page.dashboard.assets.table.noTokens')} />
+            <TokenListEmpty
+              text={
+                lpTokenMode
+                  ? t('page.dashboard.assets.table.noLpTokens')
+                  : t('page.dashboard.assets.table.noTokens')
+              }
+            />
           ) : (
             <>
               <TokenTable
-                list={isSearch ? searchList : currentList}
+                list={
+                  isSearch
+                    ? concatAndSort(searchList, list || [], search || '')
+                    : currentList
+                }
                 EmptyComponent={
                   isSearch ? (
                     <TokenListEmpty
                       // className="mt-[92px]"
                       text={t('page.dashboard.assets.table.noMatch')}
+                    />
+                  ) : lpTokenMode ? (
+                    <TokenListEmpty
+                      text={t('page.dashboard.assets.table.noLpTokens')}
                     />
                   ) : (
                     <div></div>

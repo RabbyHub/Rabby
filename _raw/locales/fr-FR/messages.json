@@ -174,7 +174,8 @@
       "chainNotSupport": "Cette chaîne n'est pas prise en charge",
       "chainFilterLine": {
         "filterAll": "Toutes les chaînes"
-      }
+      },
+      "noLpTokens": "Aucun jeton de fournisseur de liquidité (LP)"
     },
     "Uploader": {
       "placeholder": "Sélectionner un fichier JSON"
@@ -253,14 +254,16 @@
       "perps": "Perps",
       "portfolio": "Portefeuille",
       "lending": "Prêt",
-      "comingSoon": "Bientôt disponible"
+      "comingSoon": "Bientôt disponible",
+      "prediction": "Prédiction"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Ajouter une adresse"
     },
     "LpTokenTag": {
       "title": "Ceci est un jeton de fournisseur de liquidité (LP)",
-      "description": "Les tokens LP sont émis par les protocoles DeFi où vous avez déposé vos actifs. Ils servent de preuve de ces actifs, mais leur valeur n'est pas incluse dans votre solde total."
+      "description": "Les tokens LP sont émis par les protocoles DeFi où vous avez déposé vos actifs. Ils servent de preuve de ces actifs, mais leur valeur n'est pas incluse dans votre solde total.",
+      "descriptionFor": "Ceci est un jeton de Fournisseur de Liquidité (LP) pour {{ protocolName }}"
     }
   },
   "constant": {
@@ -456,7 +459,25 @@
       "safeModuleAddress": "Adresse du module sécurisé",
       "source": "Source",
       "tx-requires": "Toute transaction nécessite <2>{{num}}</2> confirmations",
-      "manage-addresses-under": "Gérer les adresses sous ce {{brand}}"
+      "manage-addresses-under": "Gérer les adresses sous ce {{brand}}",
+      "deleteSeedPhrase": {
+        "option2": "Supprimer l'adresse et la phrase de récupération",
+        "remainSeedPhrase": "Votre phrase de récupération reste sur votre appareil.",
+        "sub-title": "Cette action est permanente. Veuillez examiner ce qui suit pour protéger vos actifs :",
+        "title2": "Supprimer l'adresse ?",
+        "keepSeedPhrase": "C'est la seule adresse liée à cette phrase de récupération. Souhaitez-vous conserver la phrase de récupération ?",
+        "check1": "Je comprends que supprimer cette adresse supprime également sa clé privée et sa phrase de récupération. Rabby ne peut pas les restaurer pour moi.",
+        "onlyDeleteAddr": "Seule cette adresse sera supprimée. Votre phrase de récupération n'est pas affectée, car vos autres adresses l'utilisent toujours.",
+        "title": "Supprimer l'adresse et la phrase de récupération ?",
+        "option1": "Supprimer l'adresse, conserver la phrase de récupération",
+        "check2": "Je confirme que j'ai sauvegardé ma Private Key ou Seed Phrase et je suis prêt à la supprimer."
+      },
+      "deletePrivateKey": {
+        "title": "Supprimer l'adresse et la clé privée ?",
+        "sub-title": "Cette action est permanente. Veuillez examiner ce qui suit pour protéger vos actifs :",
+        "check2": "Je confirme que j'ai sauvegardé ma clé privée ou ma phrase secrète et que je suis prêt à la supprimer.",
+        "check1": "Je comprends que la suppression de cette adresse supprime également sa clé privée. Rabby ne peut pas les récupérer pour moi."
+      }
     },
     "approvals": {
       "RevokeApprovalModal": {
@@ -482,8 +503,8 @@
             "modalContent": "Les approbations du même contrat Permit2 seraient regroupées sous la même signature.",
             "modalTitle_one": "Un total de <2>{{count}}</2> signature est requis"
           },
-          "notSupport7702Title": "Non pris en charge pour le type d'adresse actuel",
-          "notSupport7702Content": "Actuellement, seuls les retraits de délégation EIP-7702 pour les adresses de clé privée et de phrase de graine sont supportés."
+          "notSupport7702Title": "Type d'adresse non pris en charge",
+          "notSupport7702Content": "Révoquer les délégations EIP-7702 n'est pris en charge que pour les adresses de clé privée ou de phrase de récupération."
         },
         "ViewMore": {
           "text": "Voir plus"
@@ -717,13 +738,14 @@
           "unlockAt": "Débloquer à",
           "unsupportedPoolType": "Type de pool non pris en charge",
           "useValue": "Valeur en USD",
-          "lowValueAssets_0": "{{count}} jeton de faible valeur",
-          "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} low value tokens",
           "review": "Revue",
           "noTokens": "Aucun Token",
           "searchToken": "Recherche de Token",
-          "lowValueDefis": "{{count}} defis de faible valeur"
+          "lowValueAssets_one": "{{count}} jeton de faible valeur",
+          "lowValueDefis": "{{count}} actifs DeFi de faible valeur",
+          "noLpTokens": "Aucun jeton de fournisseur de liquidité (LP)",
+          "lowValueAssets_other": "{{count}} tokens de faible valeur",
+          "lowValueAssets_0": "{{count}} jeton de faible valeur"
         },
         "tokenButton": {
           "subTitle": "Le token de cette liste ne sera pas ajouté au solde total"
@@ -759,8 +781,8 @@
         "addTokenEntryText": "Jeton",
         "price": "PRIX",
         "side": "CÔTÉ",
-        "openInTab": "Ouvrir dans un onglet",
-        "searchTokenPlaceholder": "Rechercher Token"
+        "searchTokenPlaceholder": "Rechercher Token",
+        "openInTab": "Ouvrir dans l'onglet Rabby"
       },
       "contacts": {
         "noData": "Pas de données",
@@ -844,7 +866,8 @@
           "searchDapp": "Rechercher Dapp",
           "settings": "Paramètres",
           "perpsPositions_one": "{{count}} Position",
-          "perpsPositions_other": "{{count}} Positions"
+          "perpsPositions_other": "{{count}} Positions",
+          "prediction": "Prédiction"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",
@@ -992,7 +1015,8 @@
           "toggleThemeMode": "Thème",
           "customTestnet": "Ajouter un réseau personnalisé",
           "metamaskMode": "Connectez Rabby en se faisant passer pour MetaMask",
-          "enableDappAccount": "Changer indépendamment l'adresse du DApp\n"
+          "enableDappAccount": "Changer indépendamment l'adresse du DApp\n",
+          "switchPasswordForNonWhitelistedTx": "Mot de passe pour les transferts non autorisés"
         },
         "supportedChains": "Chaînes prises en charge",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -1021,6 +1045,14 @@
           "rateOnChromeStoreButton": "Évaluez sur le Chrome Web Store",
           "feedbackPlaceholder": "Rabby apprécie vos retours !",
           "thxDesc": "Si vous aimez Rabby, un rapide avis sur le Chrome Store serait très apprécié."
+        },
+        "PwdForNonWhitelistedTx": {
+          "wrongPassword": "Mot de passe incorrect",
+          "inputPlaceholder": "Entrez le mot de passe pour confirmer",
+          "titleEnable": "Activer la vérification du mot de passe ?",
+          "descEnable": "Une fois activée, le transfert vers une adresse non blanche dans cette extension nécessitera votre mot de passe.",
+          "titleDisable": "Entrez le mot de passe pour désactiver",
+          "descDisable": "Une fois désactivée, la vérification du mot de passe ne sera plus requise pour les adresses non-blanchies."
         }
       },
       "tokenDetail": {
@@ -1184,7 +1216,8 @@
       "addNewAddress": "Ajouter une nouvelle adresse",
       "CurrentDappAddress": {
         "desc": "Changer l'adresse Dapp"
-      }
+      },
+      "noSeedPhraseAddress": "Aucune adresse n'a été ajoutée pour cette phrase de récupération. Vous pouvez ajouter une adresse ou supprimer la phrase de récupération."
     },
     "newAddress": {
       "addContacts": {
@@ -1342,7 +1375,8 @@
         "waiting": "En attente",
         "manageImtokenOffline": "Gérer imToken",
         "importBtn": "Importer ({{count}})",
-        "manageImKey": "Gérer imKey"
+        "manageImKey": "Gérer imKey",
+        "nonAddr": "Aucune adresse n'a été ajoutée pour cette phrase de récupération. Vous pouvez supprimer cette phrase dans Rabby Extension > Gérer l'adresse."
       },
       "importKeystore": "Importer un \"keystore\"",
       "importMyMetamaskAccount": "Importer mon compte MetaMask",
@@ -3132,7 +3166,6 @@
     },
     "search": {
       "sectionHeader": {
-        "Defi": "DeFi",
         "NFT": "NFT",
         "token": "Jetons",
         "AllChains": "Toutes les chaînes"
@@ -3215,7 +3248,11 @@
       "confirmPassword": "Confirmer le mot de passe",
       "enterAddress": "Entrez l'adresse",
       "name": "Nom",
-      "title": "Ajouter l'adresse à la liste blanche"
+      "title": "Ajouter l'adresse à la liste blanche",
+      "verifyPwd": {
+        "title": "Adresse non autorisée",
+        "inputPlaceholder": "Entrez votre mot de passe pour confirmer ce transfert"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3452,7 +3489,10 @@
         "addWhitelist": "Ajouter l'adresse à la liste blanche",
         "title": "Liste blanche",
         "removeFromWhitelist": "Retirer de la liste blanche",
-        "addWhitelistDesc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides---aucune confirmation nécessaire la prochaine fois"
+        "addWhitelistDesc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides---aucune confirmation nécessaire la prochaine fois",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Mot de passe pour les transferts non autorisés"
+        }
       },
       "addWhitelist": {
         "title": "Ajouter l'adresse à la liste blanche",
@@ -3551,9 +3591,7 @@
       "tabs": {
         "transactions": "Transactions",
         "tokens": "Jetons",
-        "approvals": "Approbations",
-        "difi": "Defi",
-        "defi": "DeFi"
+        "approvals": "Approbations"
       },
       "nft": {
         "message": {
@@ -3732,6 +3770,15 @@
         "sizeTips": "La valeur totale ou la quantité de votre trade, définie par la marge et l'effet de levier."
       },
       "needDepositFirst": "Vous devez d'abord déposer des fonds."
+    },
+    "dappIfame": {
+      "serviceUnavailable": "Service Indisponible",
+      "openPolymarket": "Ouverture de Polymarket...",
+      "predictionNotSupported": "La fonctionnalité de prédiction n'est pas prise en charge dans votre région actuelle.",
+      "networkErrorTitle": "Ce site est inaccessible",
+      "networkErrorDescriptionFallback": "Le site a fermé la connexion de manière inattendue. Veuillez vérifier votre réseau.",
+      "networkErrorDescription": "{{site}} a fermé la connexion de manière inattendue. Veuillez vérifier votre réseau.",
+      "reload": "Recharger"
     }
   }
 }

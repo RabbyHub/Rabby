@@ -123,7 +123,8 @@
           "searchDapp": "搜索 Dapp",
           "settings": "设置",
           "perpsPositions_one": "{{count}} 头寸",
-          "perpsPositions_other": "{{count}} 头寸"
+          "perpsPositions_other": "{{count}} 头寸",
+          "prediction": "预测"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -260,7 +261,8 @@
           "themeMode": "主题模式",
           "customTestnet": "添加自定义网络",
           "metamaskMode": "通过伪装成 MetaMask 连接 Rabby",
-          "enableDappAccount": "独立切换 Dapp 地址\n"
+          "enableDappAccount": "独立切换 Dapp 地址\n",
+          "switchPasswordForNonWhitelistedTx": "非白名单转账的密码"
         },
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "更新版本",
@@ -291,6 +293,14 @@
           "thxDesc": "如果你喜欢 Rabby，在 Chrome 商店给个快速评分会对我们意义重大。",
           "feedbackPlaceholder": "Rabby 重视您的反馈！",
           "submitFeedbackButton": "提交"
+        },
+        "PwdForNonWhitelistedTx": {
+          "descDisable": "禁用后，非白名单地址将不再需要密码验证。",
+          "inputPlaceholder": "输入密码以确认",
+          "wrongPassword": "密码错误",
+          "titleDisable": "输入密码以禁用",
+          "titleEnable": "启用密码检查？",
+          "descEnable": "一旦启用，将需要您的密码才能向此扩展中的非白名单地址转账。"
         }
       },
       "tokenDetail": {
@@ -375,13 +385,14 @@
           "noMatch": "没有匹配",
           "lowValueDescription": "低价值资产将显示在这里",
           "lowValueAssets": "{{count}} 个低价值资产",
-          "lowValueAssets_one": "{{count}} 个低价值代币",
-          "lowValueAssets_other": "{{count}} 个低价值代币",
-          "lowValueAssets_0": "{{count}} 个低价值代币",
           "review": "审核",
           "noTokens": "没有代币",
           "searchToken": "搜索 Token",
-          "lowValueDefis": "{{count}} 低价值 defis"
+          "lowValueDefis": "{{count}} 低价值 DeFi 资产",
+          "lowValueAssets_one": "{{count}} 低价值代币",
+          "lowValueAssets_0": "{{count}} 低价值代币",
+          "lowValueAssets_other": "{{count}} 低价值代币",
+          "noLpTokens": "没有流动性提供者（LP）代币"
         },
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址，隐藏代币",
@@ -420,8 +431,8 @@
         "addTokenEntryText": "代币",
         "side": "侧边",
         "price": "价格",
-        "openInTab": "在新标签页中打开",
-        "searchTokenPlaceholder": "搜索代币"
+        "searchTokenPlaceholder": "搜索代币",
+        "openInTab": "在 Rabby Tab 中打开"
       },
       "hd": {
         "howToConnectLedger": "如何连接 Ledger",
@@ -816,7 +827,8 @@
           "switchAnother": "切换到另一个{{0}}"
         },
         "manageImKey": "管理 imKey",
-        "importBtn": "导入 ({{count}})"
+        "importBtn": "导入 ({{count}})",
+        "nonAddr": "尚未为此种子短语添加任何地址。您可以在 Rabby Extension > 管理地址 中删除此短语。"
       },
       "importYourKeystore": "导入你的 KeyStore",
       "incorrectPassword": "密码错误",
@@ -995,8 +1007,8 @@
             "modalTitle_one": "共需 <2>{{count}}</2> 个签名",
             "modalContent": "来自相同 Permit2 合约的授权将会在相同的签名下打包在一起。"
           },
-          "notSupport7702Title": "当前地址类型不支持",
-          "notSupport7702Content": "当前仅支持撤销私钥和助记词地址的 EIP-7702 授权。"
+          "notSupport7702Title": "不支持的地址类型",
+          "notSupport7702Content": "撤销 EIP-7702 委托仅支持私钥或助记词地址"
         },
         "ViewMore": {
           "text": "查看更多"
@@ -1197,7 +1209,8 @@
       "addNewAddress": "添加新地址",
       "CurrentDappAddress": {
         "desc": "切换 Dapp 地址\n"
-      }
+      },
+      "noSeedPhraseAddress": "还没有为这个种子短语添加地址。您可以添加一个地址或删除该种子短语。"
     },
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
@@ -2041,7 +2054,25 @@
       "coboSafeErrorModule": "地址已过期，请删除并重新导入地址。",
       "importedDelegatedAddress": "导入的委托地址",
       "safeModuleAddress": "Safe Module Address",
-      "manage-addresses-under": "在此 {{brand}} 下管理地址"
+      "manage-addresses-under": "在此 {{brand}} 下管理地址",
+      "deleteSeedPhrase": {
+        "title2": "删除地址？",
+        "option2": "删除地址和种子短语",
+        "option1": "删除地址，保留助记词",
+        "sub-title": "此操作是永久性的。请查看以下内容以保护您的资产：",
+        "remainSeedPhrase": "您的种子短语保留在您的设备上。",
+        "check2": "我确认我已经备份了我的 Private Key 或 Seed Phrase，并且我准备删除它。",
+        "title": "删除地址和种子短语吗？",
+        "keepSeedPhrase": "这是唯一与这个助记词关联的地址。您想保留这个助记词吗？",
+        "onlyDeleteAddr": "只有这个地址将被移除。您的种子短语不受影响，因为您的其他地址仍然使用它。",
+        "check1": "我明白，删除该地址也会删除它的私钥和种子短语。Rabby 无法为我恢复它们。"
+      },
+      "deletePrivateKey": {
+        "title": "删除地址和私钥吗？",
+        "check2": "我确认我已备份我的 Private Key 或 Seed Phrase，并且我准备删除它。",
+        "sub-title": "此操作是永久性的。请查看以下内容以保护您的资产：",
+        "check1": "我明白，删除这个地址也会删除它的私钥。Rabby 不能为我恢复它们。"
+      }
     },
     "preferMetamaskDapps": {
       "title": "优先使用MetaMask连接的Dapp",
@@ -2859,8 +2890,7 @@
       "sectionHeader": {
         "NFT": "NFT",
         "token": "代币",
-        "AllChains": "所有链",
-        "Defi": "DeFi"
+        "AllChains": "所有链"
       },
       "header": {
         "placeHolder": "搜索",
@@ -2940,7 +2970,11 @@
       "nameYourAddress": "命名您的地址",
       "address": "地址",
       "invalidAddress": "该地址无效",
-      "title": "添加地址到白名单"
+      "title": "添加地址到白名单",
+      "verifyPwd": {
+        "inputPlaceholder": "输入您的密码以确认此转账",
+        "title": "非白名单地址"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3177,7 +3211,10 @@
         "title": "白名单",
         "addWhitelist": "将地址添加到白名单",
         "removeFromWhitelist": "从白名单中移除",
-        "addWhitelistDesc": "将可信地址添加到白名单以快速转账---下次无需确认"
+        "addWhitelistDesc": "将可信地址添加到白名单以快速转账---下次无需确认",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "非白名单转账的密码"
+        }
       },
       "addWhitelist": {
         "title": "添加地址到白名单",
@@ -3276,9 +3313,7 @@
       "tabs": {
         "tokens": "代币",
         "approvals": "授权",
-        "transactions": "交易",
-        "difi": "Defi",
-        "defi": "去中心化金融"
+        "transactions": "交易"
       },
       "nft": {
         "message": {
@@ -3457,6 +3492,15 @@
         "liquidationPriceTips": "在您的保证金跌至维持保证金水平以下时，交易所自动平仓以防止进一步损失的价格。"
       },
       "needDepositFirst": "您需要先存入资金。"
+    },
+    "dappIfame": {
+      "serviceUnavailable": "服务不可用",
+      "predictionNotSupported": "当前区域不支持预测功能。",
+      "openPolymarket": "打开 Polymarket...",
+      "reload": "重新加载",
+      "networkErrorTitle": "此网站无法访问",
+      "networkErrorDescription": "{{site}} 意外关闭了连接。请检查您的网络。",
+      "networkErrorDescriptionFallback": "网站意外关闭了连接。请检查您的网络。"
     }
   },
   "component": {
@@ -3588,7 +3632,8 @@
       "chainNotSupport": "此链不受支持",
       "chainFilterLine": {
         "filterAll": "所有区块链"
-      }
+      },
+      "noLpTokens": "没有流动性提供者 (LP) 代币"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3666,14 +3711,16 @@
       "perps": "永久合约",
       "comingSoon": "即将推出",
       "portfolio": "投资组合",
-      "lending": "借贷"
+      "lending": "借贷",
+      "prediction": "预测"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "添加地址"
     },
     "LpTokenTag": {
       "title": "这是一个流动性提供者(LP)代币",
-      "description": "LP 代币由您存入资产的 DeFi 协议发行。它们作为这些资产的证明，但其价值不包括在您的总余额中。"
+      "description": "LP 代币由您存入资产的 DeFi 协议发行。它们作为这些资产的证明，但其价值不包括在您的总余额中。",
+      "descriptionFor": "这是{{ protocolName }}的流动性提供者（LP）代币。"
     }
   },
   "background": {

@@ -22,6 +22,7 @@ import { Chain } from '@debank/common';
 import i18n from '@/i18n';
 import { Account } from 'background/service/preference';
 import { AuthorizationList, AuthorizationListBytes } from '@ethereumjs/common';
+import { TX_GAS_LIMIT_CHAIN_MAPPING } from '@/constant/txGasLimit';
 
 export interface ApprovalRes extends Tx {
   type?: string;
@@ -229,6 +230,15 @@ export async function calcGasLimit({
     const buffer = SAFE_GAS_LIMIT_BUFFER[chain.id] || DEFAULT_GAS_LIMIT_BUFFER;
     recommendGasLimit = new BigNumber(block.gasLimit).times(buffer).toFixed(0);
   }
+
+  const singleTxGasLimit =
+    TX_GAS_LIMIT_CHAIN_MAPPING[chain.enum] || Number(recommendGasLimit);
+
+  recommendGasLimit =
+    Number(recommendGasLimit) > singleTxGasLimit
+      ? singleTxGasLimit + ''
+      : recommendGasLimit;
+
   const gasLimit = intToHex(
     Math.max(Number(recommendGasLimit), Number(tx.gas || 0))
   );

@@ -33,6 +33,7 @@ import { RiskWarningTitle } from '../RiskWarningTitle';
 import BigNumber from 'bignumber.js';
 import { ChainSelectorInSend } from '@/ui/views/SendToken/components/ChainSelectorInSend';
 import { Chain } from '@debank/common';
+import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 
 interface TokenAmountInputProps {
   token: TokenItem | null;
@@ -174,6 +175,7 @@ const TokenAmountInput = ({
       onChange && onChange('');
       onTokenChange(token);
       setTokenSelectorVisible(false);
+      setLpTokenMode(false);
       tokenInputRef.current?.focus();
       setChainServerId(token?.chain);
     },
@@ -182,8 +184,8 @@ const TokenAmountInput = ({
 
   const handleTokenSelectorClose = useCallback(() => {
     setChainServerId(token?.chain);
-    setTokenSelectorVisible(false);
     setLpTokenMode(false);
+    setTokenSelectorVisible(false);
   }, [token?.chain, setChainServerId]);
 
   const checkBeforeConfirm = useCallback(
@@ -223,14 +225,20 @@ const TokenAmountInput = ({
   );
 
   // when no any queryConds
-  const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
+  const {
+    tokens: allTokens,
+    isLoading: isLoadingAllTokens,
+    isAllTokenLoading, // 包含lpToken
+  } = useTokens(
     currentAccount?.address,
     undefined,
     selectorOpened.current ? tokenSelectorVisible : true,
     updateNonce,
     mainnetChainServerId,
     undefined,
-    isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
+    isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
+    undefined,
+    !!keyword
   );
 
   const handleSelectToken = useCallback(() => {
@@ -269,7 +277,13 @@ const TokenAmountInput = ({
       : allDisplayTokens;
 
     return uniqBy(
-      keyword ? searchedTokenByQuery.map(abstractTokenToTokenItem) : allTokens,
+      keyword
+        ? concatAndSort(
+            searchedTokenByQuery.map(abstractTokenToTokenItem),
+            allTokens,
+            keyword
+          )
+        : allTokens,
       (token) => {
         return `${token.chain}-${token.id}`;
       }
@@ -432,7 +446,7 @@ const TokenAmountInput = ({
         onConfirm={checkBeforeConfirm}
         onCancel={handleTokenSelectorClose}
         onSearch={handleSearchTokens}
-        isLoading={isListLoading}
+        isLoading={isListLoading || (lpTokenMode && isAllTokenLoading)}
         type={type}
         disableItemCheck={disableItemCheck}
         showCustomTestnetAssetList

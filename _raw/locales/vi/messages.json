@@ -829,8 +829,8 @@
           "btnText_other": "Hủy bỏ ({{count}})",
           "btnText_zero": "Hủy bỏ",
           "btnText_one": "Thu hồi ({{count}})",
-          "notSupport7702Title": "Không hỗ trợ cho loại địa chỉ hiện tại",
-          "notSupport7702Content": "Hiện tại chỉ hỗ trợ thu hồi ủy quyền EIP-7702 cho các địa chỉ khóa riêng & cụm từ hạt giống."
+          "notSupport7702Title": "Địa chỉ loại không được hỗ trợ",
+          "notSupport7702Content": "Việt văn: Việc thu hồi các ủy quyền EIP-7702 chỉ được hỗ trợ cho các địa chỉ khóa riêng tư hoặc cụm từ hạt giống."
         },
         "ViewMore": {
           "text": "Xem thêm"
@@ -1190,7 +1190,8 @@
       "delete-seed-phrase": "Xóa cụm từ hạt giống",
       "CurrentDappAddress": {
         "desc": "Đổi địa chỉ Dapp\n"
-      }
+      },
+      "noSeedPhraseAddress": "Không có địa chỉ nào được thêm cho cụm từ hạt giống này. Bạn có thể thêm một địa chỉ hoặc xóa cụm từ hạt giống."
     },
     "dashboard": {
       "home": {
@@ -1217,7 +1218,8 @@
           "dapps": "Dapps",
           "settings": "Cài đặt",
           "perpsPositions_other": "{{count}} Vị trí",
-          "perpsPositions_one": "{{count}} Vị trí"
+          "perpsPositions_one": "{{count}} Vị trí",
+          "prediction": "Dự đoán"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -1365,7 +1367,8 @@
           "enableWhitelistForSendingAssets": "Kích hoạt Danh sách Trắng Để Gửi Tài sản",
           "metamaskPreferredDapps": "MetaMask Dapps Ưa Thích",
           "themeMode": "Chế độ chủ đề",
-          "enableDappAccount": "Thay đổi địa chỉ Dapp độc lập\n"
+          "enableDappAccount": "Thay đổi địa chỉ Dapp độc lập\n",
+          "switchPasswordForNonWhitelistedTx": "Mật khẩu cho các giao dịch không nằm trong danh sách trắng"
         },
         "1Hour": "1 giờ",
         "7Days": "7 ngày",
@@ -1416,6 +1419,14 @@
           "feedbackDesc": "Có ý kiến phản hồi? Chúng tôi đang lắng nghe.",
           "thxDesc": "Nếu bạn thích Rabby, một đánh giá nhanh trên Chrome Store sẽ có ý nghĩa rất nhiều.",
           "feedbackSuccess": "Cảm ơn bạn đã góp ý!"
+        },
+        "PwdForNonWhitelistedTx": {
+          "wrongPassword": "Mật khẩu sai",
+          "titleDisable": "Nhập mật khẩu để tắt",
+          "titleEnable": "Bật kiểm tra mật khẩu?",
+          "inputPlaceholder": "Nhập Mật khẩu để Xác nhận",
+          "descDisable": "Một khi bị tắt, xác minh mật khẩu sẽ không còn được yêu cầu đối với các địa chỉ không được đưa vào danh sách trắng.",
+          "descEnable": "Khi đã được bật, việc chuyển tài sản đến một địa chỉ không có trong danh sách trắng trong tiện ích mở rộng này sẽ yêu cầu mật khẩu của bạn."
         }
       },
       "tokenDetail": {
@@ -1480,7 +1491,6 @@
           "debtRatio": "Tỷ lệ nợ",
           "type": "Loại",
           "unlockAt": "Mở khóa tại",
-          "lowValueAssets_0": "{{count}} token giá trị thấp",
           "PL": "P&L",
           "pool": "POOL",
           "side": "Bên",
@@ -1492,18 +1502,20 @@
           "dailyUnlock": "Mở khóa hàng ngày",
           "tradePair": "Cặp giao dịch",
           "noMatch": "Không khớp",
-          "lowValueAssets_other": "{{count}} token giá trị thấp",
           "claimable": "Có thể yêu cầu",
           "endAt": "Kết thúc tại",
           "percent": "Phần trăm",
-          "lowValueAssets_one": "{{count}} token giá thấp",
           "summaryTips": "Giá trị tài sản chia cho tổng giá trị ròng",
           "summaryDescription": "Tất cả tài sản trong các giao thức (ví dụ: LP tokens) đều được quy đổi thành tài sản cơ sở để thực hiện các phép tính thống kê.",
           "lowValueDescription": "Tài sản có giá trị thấp sẽ được hiển thị ở đây",
           "review": "Xem lại",
           "noTokens": "Không có Token",
-          "lowValueDefis": "{{count}} defi giá thấp",
-          "searchToken": "Tìm kiếm Token"
+          "searchToken": "Tìm kiếm Token",
+          "lowValueDefis": "{{count}} tài sản DeFi giá trị thấp",
+          "lowValueAssets_one": "{{count}} token giá trị thấp",
+          "lowValueAssets_0": "{{count}} token giá trị thấp",
+          "noLpTokens": "Không có Token Nhà Cung Cấp Thanh Khoản (LP)",
+          "lowValueAssets_other": "{{count}} token giá trị thấp"
         },
         "AddMainnetToken": {
           "title": "Thêm Token Tùy Chỉnh",
@@ -1543,8 +1555,8 @@
         "customButtonText": "Thêm token tùy chỉnh",
         "side": "BÊN",
         "price": "GIÁ",
-        "openInTab": "Mở trong tab",
-        "searchTokenPlaceholder": "Tìm kiếm Token"
+        "searchTokenPlaceholder": "Tìm kiếm Token",
+        "openInTab": "Mở trong Rabby Tab"
       },
       "hd": {
         "ledger": {
@@ -1923,7 +1935,8 @@
         "manageGridplus": "Quản lý GridPlus",
         "manageBitbox02": "Quản lý BitBox02",
         "importBtn": "Nhập ({{count}})",
-        "addressesIn": "Địa chỉ trong {{0}}"
+        "addressesIn": "Địa chỉ trong {{0}}",
+        "nonAddr": "Chưa có địa chỉ nào được thêm cho cụm từ hạt giống này. Bạn có thể xóa cụm từ này trong Rabby Extension > Quản lý Địa chỉ."
       },
       "keystore": {
         "password": {
@@ -2092,7 +2105,25 @@
       "coboSafeErrorModule": "Địa chỉ đã hết hạn, vui lòng xóa và nhập lại địa chỉ.",
       "delete-desc": "Trước khi bạn xóa, hãy lưu ý những điểm sau để hiểu cách bảo vệ tài sản của bạn.",
       "address": "Địa chỉ",
-      "direct-delete-desc": "Địa chỉ này là địa chỉ {{renderBrand}}, Rabby không lưu trữ khóa riêng hoặc cụm từ hạt giống cho địa chỉ này, bạn có thể xóa nó."
+      "direct-delete-desc": "Địa chỉ này là địa chỉ {{renderBrand}}, Rabby không lưu trữ khóa riêng hoặc cụm từ hạt giống cho địa chỉ này, bạn có thể xóa nó.",
+      "deleteSeedPhrase": {
+        "title": "Xóa Địa Chỉ và Cụm Từ Khôi Phục?",
+        "title2": "Xóa địa chỉ?",
+        "option2": "Xóa địa chỉ và cụm từ hạt giống",
+        "option1": "Xóa Địa Chỉ, Giữ Câu Chuyện Hạt Giống",
+        "remainSeedPhrase": "Những cụm từ khôi phục của bạn vẫn được lưu trữ trên thiết bị của bạn.",
+        "keepSeedPhrase": "Đây là địa chỉ duy nhất liên kết với cụm từ hạt giống này. Bạn có muốn giữ cụm từ hạt giống không?",
+        "sub-title": "Hành động này là vĩnh viễn. Vui lòng xem xét các điều sau để bảo vệ tài sản của bạn:",
+        "onlyDeleteAddr": "Chỉ địa chỉ này sẽ bị xóa. Câu bí mật của bạn không bị ảnh hưởng, vì các địa chỉ khác của bạn vẫn sử dụng nó.",
+        "check2": "Tôi xác nhận rằng tôi đã sao lưu Khóa Riêng hoặc Cụm Hạt giống của mình và tôi đã sẵn sàng để xóa nó.",
+        "check1": "Tôi hiểu rằng xóa địa chỉ này cũng sẽ xóa cả Khóa Riêng và Câu Câu Gốc của nó. Rabby không thể khôi phục chúng cho tôi."
+      },
+      "deletePrivateKey": {
+        "check1": "Tôi hiểu rằng việc xóa địa chỉ này cũng sẽ xóa Khóa Riêng của nó. Rabby không thể khôi phục cho tôi.",
+        "sub-title": "Hành động này là vĩnh viễn. Vui lòng xem xét những điều sau để bảo vệ tài sản của bạn:",
+        "check2": "Tôi xác nhận rằng tôi đã sao lưu Khóa Riêng hoặc Câu Gốc của mình và tôi sẵn sàng xóa nó.",
+        "title": "Xóa địa chỉ và khóa riêng tư?"
+      }
     },
     "preferMetamaskDapps": {
       "howToAdd": "Cách thêm",
@@ -2817,7 +2848,6 @@
     "search": {
       "sectionHeader": {
         "AllChains": "Tất cả Các Chuỗi",
-        "Defi": "DeFi",
         "token": "Token",
         "NFT": "NFT"
       },
@@ -2899,7 +2929,11 @@
       "exchangeAddress": "Địa chỉ Sàn giao dịch",
       "riskTitle": "Thêm Địa chỉ Danh sách Trắng",
       "addSuccess": "Thêm thành công",
-      "title": "Thêm địa chỉ vào danh sách trắng"
+      "title": "Thêm địa chỉ vào danh sách trắng",
+      "verifyPwd": {
+        "title": "Địa chỉ không trong danh sách trắng",
+        "inputPlaceholder": "Nhập mật khẩu của bạn để xác nhận giao dịch này"
+      }
     },
     "perps": {
       "candleMenuKey": {
@@ -3136,7 +3170,10 @@
         "title": "Danh sách trắng",
         "addWhitelist": "Thêm địa chỉ vào danh sách trắng",
         "addWhitelistDesc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển tiền nhanh chóng—không cần xác nhận lần sau.",
-        "notWhitelist": "Không phải địa chỉ trong danh sách trắng"
+        "notWhitelist": "Không phải địa chỉ trong danh sách trắng",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Mật khẩu cho các giao dịch không nằm trong danh sách trắng"
+        }
       },
       "addWhitelist": {
         "title": "Thêm địa chỉ vào danh sách trắng",
@@ -3235,9 +3272,7 @@
       "tabs": {
         "tokens": "Tokens",
         "transactions": "Giao dịch",
-        "approvals": "Phê duyệt",
-        "difi": "Defi",
-        "defi": "DeFi"
+        "approvals": "Phê duyệt"
       },
       "nft": {
         "message": {
@@ -3416,6 +3451,15 @@
         "liquidationPriceTips": "Giá mà vị thế của bạn sẽ tự động bị đóng bởi sàn giao dịch để ngăn chặn tổn thất thêm khi ký quỹ của bạn giảm xuống dưới mức ký quỹ duy trì."
       },
       "needDepositFirst": "Bạn cần phải gửi tiền trước."
+    },
+    "dappIfame": {
+      "openPolymarket": "Mở Polymarket...",
+      "serviceUnavailable": "Dịch vụ không khả dụng",
+      "predictionNotSupported": "Tính năng Dự đoán không được hỗ trợ trong khu vực hiện tại của bạn.",
+      "reload": "Tải lại",
+      "networkErrorTitle": "Trang web này không thể truy cập.",
+      "networkErrorDescriptionFallback": "Trang web đã đóng kết nối một cách bất ngờ. Vui lòng kiểm tra mạng của bạn.",
+      "networkErrorDescription": "{{site}} đã đóng kết nối một cách bất ngờ. Vui lòng kiểm tra mạng của bạn."
     }
   },
   "component": {
@@ -3547,7 +3591,8 @@
       "chainNotSupport": "Chuỗi này không được hỗ trợ",
       "chainFilterLine": {
         "filterAll": "Tất cả các chuỗi"
-      }
+      },
+      "noLpTokens": "Không có Token Nhà cung cấp thanh khoản (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3625,14 +3670,16 @@
       "perps": "Perps",
       "portfolio": "Danh mục đầu tư",
       "lending": "Cho vay",
-      "comingSoon": "Sắp ra mắt"
+      "comingSoon": "Sắp ra mắt",
+      "prediction": "Dự đoán"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Thêm địa chỉ"
     },
     "LpTokenTag": {
       "title": "Đây là một token nhà cung cấp thanh khoản (LP)",
-      "description": "LP tokens được cấp bởi các giao thức DeFi nơi bạn đã gửi tài sản của mình. Chúng phục vụ như bằng chứng cho những tài sản đó, nhưng giá trị của chúng không được tính vào tổng số dư của bạn."
+      "description": "LP tokens được cấp bởi các giao thức DeFi nơi bạn đã gửi tài sản của mình. Chúng phục vụ như bằng chứng cho những tài sản đó, nhưng giá trị của chúng không được tính vào tổng số dư của bạn.",
+      "descriptionFor": "Đây là một Token Cung cấp tính thanh khoản (LP) cho {{ protocolName }}"
     }
   },
   "global": {
