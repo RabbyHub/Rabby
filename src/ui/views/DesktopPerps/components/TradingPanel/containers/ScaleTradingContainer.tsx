@@ -405,7 +405,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
-        price={scaleAveragePrice}
+        price={markPrice}
         maxTradeSize={scaleMaxTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
