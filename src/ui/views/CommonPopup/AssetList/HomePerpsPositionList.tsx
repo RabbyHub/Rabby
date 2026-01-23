@@ -99,7 +99,10 @@ export const HomePerpsPositionList: React.FC = () => {
               if (currentAccount) {
                 dispatch.perps.setCurrentPerpsAccount(currentAccount);
                 sdk.initAccount(currentAccount.address);
-                dispatch.perps.subscribeToUserData(currentAccount.address);
+                dispatch.perps.subscribeToUserData({
+                  address: currentAccount.address,
+                  isPro: false,
+                });
               }
               closePopup();
               history.push('/perps');
