@@ -18,6 +18,8 @@ they will be encrypt with `aes`, and store in chrome local storage.
 
 the other data like `preference`, `chain`... will store directly in the local storage.
 
+**⚠️ Security Warning:** Private keys and mnemonics are extremely sensitive. Exposing them will result in permanent loss of all funds in the associated wallet. Always handle this data with extreme caution and never expose it in logs, error messages, or external communications.
+
 ## Provider Handle Flow
 
 when message received from `runtime.onConnect`, it will be send to _rpcFlow.ts_.
