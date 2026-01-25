@@ -193,8 +193,33 @@ const SignTypedData = ({
     if (!isSignTypedDataV1) {
       try {
         const v = JSON.parse(data[1]);
-        const displayData = cloneDeep(v);
-        const normalized = normalizeTypeData(v);
+        const v2 = Object.create(null);
+        if (
+          typeof v.primaryType === 'string' &&
+          typeof v.types === 'object' &&
+          typeof v.message === 'object' &&
+          typeof v.domain === 'object'
+        ) {
+          // normalize EIP-712 data
+          // https://docs.metamask.io/wallet/reference/json-rpc-methods/eth_signtypeddata_v4
+          const domainFields = v.types.EIP712Domain.map((it) => it.name);
+          const messageFields = v.types[v.primaryType].map((it) => it.name);
+          v2.domain = Object.fromEntries(
+            Object.entries(v.domain).filter(([key]) =>
+              domainFields.includes(key)
+            )
+          );
+          v2.message = Object.fromEntries(
+            Object.entries(v.message).filter(([key]) =>
+              messageFields.includes(key)
+            )
+          );
+          v2.primaryType = v.primaryType;
+          v2.types = v.types;
+        }
+
+        const displayData = cloneDeep(v2);
+        const normalized = normalizeTypeData(v2);
         return [normalized, displayData];
       } catch (error) {
         console.error('parse signTypedData error: ', error);
