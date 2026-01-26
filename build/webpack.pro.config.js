@@ -41,7 +41,6 @@ const config = {
       scuttleFiles: [
         'desktop.html',
         'index.html',
-        'offscreen.html',
         'popup.html',
         'notification.html',
         'background.html',

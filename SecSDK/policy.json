@@ -60805,7 +60805,7 @@
             "node_modules/bitbox-api/bitbox_api_bg.wasm"
         ],
         "global": {},
-        "enable": true
+        "enable": false
     },
     "node_modules/bitbox-api/bitbox_api_bg.js": {
         "dependency": [
@@ -60821,7 +60821,7 @@
             "queueMicrotask": "r",
             "toString": "r"
         },
-        "enable": true
+        "enable": false
     },
     "node_modules/bitbox-api/webhid.js": {
         "dependency": [],
@@ -60832,7 +60832,7 @@
             "navigator": "r",
             "setTimeout": "r"
         },
-        "enable": true
+        "enable": false
     },
     "node_modules/bn.js/lib/bn.js": {
         "dependency": [
