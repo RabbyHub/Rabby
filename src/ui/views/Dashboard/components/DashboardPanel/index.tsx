@@ -295,6 +295,8 @@ const SortablePanelItem: React.FC<{
   );
 };
 
+const FOOTER_HEIGHT = 150;
+
 export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   onSettingClick,
 }) => {
@@ -698,8 +700,8 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     const top = scroll?.top ?? 0;
     const height = ref.current?.getBoundingClientRect()?.height ?? 0;
     const scrollHeight = ref.current?.scrollHeight ?? 440;
-    const ratio = top / (scrollHeight - height);
-    return ratio;
+    const ratio = top / (scrollHeight - FOOTER_HEIGHT - height);
+    return ratio > 1 ? 1 : ratio;
   }, [scroll?.top]);
   const { isDarkTheme } = useThemeMode();
 
@@ -720,135 +722,134 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         }}
         ref={ref}
       >
-        <DndContext
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          onDragCancel={handleDragCancel}
-          measuring={{
-            droppable: { strategy: MeasuringStrategy.Always },
-          }}
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          autoScroll={{
-            threshold: {
-              x: 0.2,
-              y: 0.2,
-            },
-            acceleration: 10,
+        <div
+          style={{
+            backgroundColor: isDarkTheme ? 'rgb(41,43,57)' : 'unset',
           }}
         >
-          <SortableContext items={pickedPanelKeys}>
-            <div
-              className="dashboard-panel-grid"
-              style={
-                isDarkTheme
-                  ? {
-                      backgroundColor: 'rgb(41,43,57)',
-                    }
-                  : undefined
-              }
-            >
-              {pickedPanelKeys.map((panelKey, index) => {
-                const item = panelItems[panelKey] as IPanelItem;
-                return (
-                  <SortablePanelItem
-                    key={panelKey}
-                    panelKey={panelKey}
-                    item={item}
-                    isGnosis={isGnosis}
-                    index={index}
-                  />
-                );
-              })}
-            </div>
-          </SortableContext>
-          <DragOverlay
-            dropAnimation={{
-              duration: 200,
-              easing: 'ease',
+          <DndContext
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+            measuring={{
+              droppable: { strategy: MeasuringStrategy.Always },
             }}
-            style={{
-              cursor: 'grabbing',
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            autoScroll={{
+              threshold: {
+                x: 0.2,
+                y: 0.2,
+              },
+              acceleration: 10,
             }}
           >
-            <>
-              {activeId && activeItem ? (
-                <div>
-                  <div
-                    className={clsx(
-                      'panel-item group',
-                      'rounded-[8px] bg-r-blue-light1',
-                      'border border-rabby-blue-default'
-                    )}
-                    style={{
-                      boxShadow: '0 4px 16px 0 rgba(0, 0, 0, 0.13)',
-                    }}
-                  >
-                    {activeItem.showAlert && (
-                      <ThemeIcon
-                        src={IconAlertRed}
-                        className="icon icon-alert"
-                      />
-                    )}
-                    {activeItem.badge ? (
-                      <Badge
-                        count={activeItem.badge}
-                        size="small"
-                        className={clsx(
-                          {
-                            alert:
-                              activeItem.badgeAlert &&
-                              !activeItem.badgeClassName,
-                          },
-                          activeItem.badgeClassName
-                        )}
-                      >
+            <SortableContext items={pickedPanelKeys}>
+              <div className="dashboard-panel-grid">
+                {pickedPanelKeys.map((panelKey, index) => {
+                  const item = panelItems[panelKey] as IPanelItem;
+                  return (
+                    <SortablePanelItem
+                      key={panelKey}
+                      panelKey={panelKey}
+                      item={item}
+                      isGnosis={isGnosis}
+                      index={index}
+                    />
+                  );
+                })}
+              </div>
+            </SortableContext>
+            <DragOverlay
+              dropAnimation={{
+                duration: 200,
+                easing: 'ease',
+              }}
+              style={{
+                cursor: 'grabbing',
+              }}
+            >
+              <>
+                {activeId && activeItem ? (
+                  <div>
+                    <div
+                      className={clsx(
+                        'panel-item group',
+                        'rounded-[8px] bg-r-blue-light1',
+                        'border border-rabby-blue-default'
+                      )}
+                      style={{
+                        boxShadow: '0 4px 16px 0 rgba(0, 0, 0, 0.13)',
+                      }}
+                    >
+                      {activeItem.showAlert && (
+                        <ThemeIcon
+                          src={IconAlertRed}
+                          className="icon icon-alert"
+                        />
+                      )}
+                      {activeItem.badge ? (
+                        <Badge
+                          count={activeItem.badge}
+                          size="small"
+                          className={clsx(
+                            {
+                              alert:
+                                activeItem.badgeAlert &&
+                                !activeItem.badgeClassName,
+                            },
+                            activeItem.badgeClassName
+                          )}
+                        >
+                          <ThemeIcon
+                            src={activeItem.icon}
+                            className={clsx([
+                              activeItem.iconSpin && 'icon-spin',
+                              'panel-item-icon',
+                            ])}
+                          />
+                        </Badge>
+                      ) : (
                         <ThemeIcon
                           src={activeItem.icon}
                           className={clsx([
-                            activeItem.iconSpin && 'icon-spin',
                             'panel-item-icon',
+                            activeItem.iconClassName,
                           ])}
                         />
-                      </Badge>
-                    ) : (
-                      <ThemeIcon
-                        src={activeItem.icon}
-                        className={clsx([
-                          'panel-item-icon',
-                          activeItem.iconClassName,
-                        ])}
-                      />
-                    )}
-                    <div className="panel-item-label">{activeItem.content}</div>
-                    {activeItem.subContent}
-                    {activeItem.commingSoonBadge && (
-                      <div className="coming-soon-badge">
-                        {t('page.dashboard.home.soon')}
+                      )}
+                      <div className="panel-item-label">
+                        {activeItem.content}
                       </div>
-                    )}
-                    {activeItem.isFullscreen && (
-                      <div className="absolute top-[6px] right-[6px] opacity-50 text-r-neutral-foot hidden group-hover:block">
-                        <RcIconExternal1CC />
-                      </div>
-                    )}
+                      {activeItem.subContent}
+                      {activeItem.commingSoonBadge && (
+                        <div className="coming-soon-badge">
+                          {t('page.dashboard.home.soon')}
+                        </div>
+                      )}
+                      {activeItem.isFullscreen && (
+                        <div className="absolute top-[6px] right-[6px] opacity-50 text-r-neutral-foot hidden group-hover:block">
+                          <RcIconExternal1CC />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ) : null}
-            </>
-          </DragOverlay>
-        </DndContext>
-        <footer
-          className={clsx(
-            'bg-r-neutral-card-1 text-r-neutral-foot mt-[1px]',
-            'flex items-center justify-center py-[10px] gap-[2px]'
-          )}
-        >
-          <RcIconLampCC />
-          <div className="text-[12px] leading-[14px]">
-            {t('page.dashboard.home.panel.dragTip')}
-          </div>
-        </footer>
+                ) : null}
+              </>
+            </DragOverlay>
+          </DndContext>
+          <footer className={clsx('bg-r-neutral-bg-2 mt-[1px]')}>
+            <div
+              className="bg-r-neutral-card-1 flex items-start justify-center py-[10px] gap-[2px] text-r-neutral-foot"
+              style={{ height: FOOTER_HEIGHT }}
+            >
+              <RcIconLampCC />
+              <div className="text-[12px] leading-[14px]">
+                {t('page.dashboard.home.panel.dragTip')}
+              </div>
+            </div>
+          </footer>
+        </div>
       </div>
       <div className="absolute right-[8px] top-[50%] translate-y-[-50%]">
         <div className="w-[3px] h-[80px] rounded-full relative">
