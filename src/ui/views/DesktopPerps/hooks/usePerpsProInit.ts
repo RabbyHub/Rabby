@@ -23,6 +23,7 @@ export const usePerpsProInit = () => {
   const wallet = useWallet();
 
   useEffect(() => {
+    dispatch.perps.initQuoteUnit(undefined);
     dispatch.perps.initFavoritedCoins(undefined);
     dispatch.perps.initMarketSlippage(undefined);
     dispatch.perps.initSoundEnabled(undefined);
