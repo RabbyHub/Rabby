@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
-import { ReactComponent as RcIconInfo } from '@/ui/assets/icon-info.svg';
+import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 
 export const IsolateTag: React.FC<{
   className?: string;
@@ -19,7 +19,7 @@ export const IsolateTag: React.FC<{
         )}
       >
         {t('page.lending.isolate')}
-        <RcIconInfo className="w-[12px] h-[12px]" />
+        <RcIconInfo width={12} height={12} />
       </span>
     </Tooltip>
   );

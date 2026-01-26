@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { Tooltip } from 'antd';
-import { ReactComponent as RcIconInfo } from '@/ui/assets/icon-info.svg';
+import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 import styled from 'styled-components';
 
 const SummaryBarContainer = styled.div`
@@ -12,10 +12,10 @@ const SummaryBarContainer = styled.div`
 `;
 
 const HealthyBadge = styled.div`
-  background: #dbffeb;
+  background: var(--rb-light-green-light-1);
   color: var(--r-green-default);
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
   line-height: 16px;
@@ -37,6 +37,20 @@ const EthCorrelatedTag = styled.div`
   gap: 4px;
 `;
 
+const InfoTitle = styled.span`
+  color: var(--r-neutral-foot, #707280);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 16px;
+`;
+
+const InfoValue = styled.span`
+  color: var(--r-neutral-title-1, #192945);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+`;
+
 export const SummaryBar: React.FC = () => {
   const { t } = useTranslation();
 
@@ -52,64 +66,52 @@ export const SummaryBar: React.FC = () => {
     <div className="absolute bottom-0 left-0 right-0 z-30 border-t border-solid border-rb-neutral-line">
       <SummaryBarContainer className="h-[56px] flex items-center px-[24px]">
         <div className="flex items-center gap-[24px] w-full">
-          <div className="flex items-center gap-[8px]">
-            <span className="text-[13px] leading-[16px] text-rb-neutral-foot">
-              {t('page.lending.summary.netWorth')}:
-            </span>
-            <span className="text-[15px] leading-[18px] font-bold text-r-neutral-title-1">
+          <div className="flex items-center gap-[6px]">
+            <InfoTitle>{t('page.lending.summary.netWorth')}:</InfoTitle>
+            <InfoValue>
               {formatUsdValue(netWorth, BigNumber.ROUND_DOWN)}
-            </span>
+            </InfoValue>
           </div>
 
-          <div className="flex items-center gap-[8px]">
-            <span className="text-[13px] leading-[16px] text-rb-neutral-foot">
-              {t('page.lending.summary.totalBorrowed')}:
-            </span>
-            <span className="text-[15px] leading-[18px] font-bold text-r-neutral-title-1">
+          <div className="flex items-center gap-[6px]">
+            <InfoTitle>{t('page.lending.summary.totalBorrowed')}:</InfoTitle>
+            <InfoValue>
               {formatUsdValue(totalBorrowed, BigNumber.ROUND_DOWN)}
-            </span>
+            </InfoValue>
           </div>
 
-          <div className="flex items-center gap-[8px]">
-            <span className="text-[13px] leading-[16px] text-rb-neutral-foot">
-              {t('page.lending.summary.totalSupplied')}:
-            </span>
-            <span className="text-[15px] leading-[18px] font-bold text-r-neutral-title-1">
+          <div className="flex items-center gap-[6px]">
+            <InfoTitle>{t('page.lending.summary.totalSupplied')}:</InfoTitle>
+            <InfoValue>
               {formatUsdValue(totalSupplied, BigNumber.ROUND_DOWN)}
-            </span>
+            </InfoValue>
           </div>
 
-          <div className="flex items-center gap-[8px]">
-            <span className="text-[13px] leading-[16px] text-rb-neutral-foot">
-              {t('page.lending.summary.healthFactor')}
-            </span>
+          <div className="flex items-center gap-[6px]">
+            <InfoTitle>{t('page.lending.summary.healthFactor')}</InfoTitle>
             <Tooltip title={t('page.lending.summary.healthFactorTip')}>
-              <RcIconInfo className="w-[14px] h-[14px] cursor-pointer text-rb-neutral-foot" />
+              <RcIconInfo
+                width={12}
+                height={12}
+                className="cursor-pointer text-rb-neutral-foot ml-[2px]"
+              />
             </Tooltip>
-            <span className="text-[15px] leading-[18px] font-bold text-r-neutral-title-1">
-              {healthFactor.toFixed(2)}
-            </span>
+            <InfoValue>{healthFactor.toFixed(2)}</InfoValue>
             {isHealthy && (
               <HealthyBadge>{t('page.lending.summary.healthy')}</HealthyBadge>
             )}
           </div>
 
           <div className="flex items-center gap-[8px]">
-            <span className="text-[13px] leading-[16px] text-rb-neutral-foot">
-              {t('page.lending.summary.netApy')}:
-            </span>
-            <span className="text-[15px] leading-[18px] font-bold text-rb-green-default">
-              {(netApy * 100).toFixed(1)}%
-            </span>
+            <InfoTitle>{t('page.lending.summary.netApy')}:</InfoTitle>
+            <InfoValue>{(netApy * 100).toFixed(1)}%</InfoValue>
           </div>
 
           <div className="flex items-center gap-[8px]">
-            <span className="text-[13px] leading-[16px] text-rb-neutral-foot">
-              {t('page.lending.summary.estDailyEarnings')}:
-            </span>
-            <span className="text-[15px] leading-[18px] font-bold text-r-neutral-title-1">
+            <InfoTitle>{t('page.lending.summary.estDailyEarnings')}:</InfoTitle>
+            <InfoValue>
               +{formatUsdValue(estDailyEarnings, BigNumber.ROUND_DOWN)}
-            </span>
+            </InfoValue>
           </div>
 
           <div className="">
@@ -123,7 +125,11 @@ export const SummaryBar: React.FC = () => {
                   <span className="text-[#CB8EFF]"> CORRELATED</span>
                 </span>
                 <Tooltip title={t('page.lending.summary.ethCorrelatedTip')}>
-                  <RcIconInfo className="w-[12px] h-[12px] cursor-pointer text-[#CB8EFF]" />
+                  <RcIconInfo
+                    width={12}
+                    height={12}
+                    className="cursor-pointer text-[#CB8EFF]"
+                  />
                 </Tooltip>
               </EthCorrelatedTag>
             </EthCorrelatedTagWrapper>

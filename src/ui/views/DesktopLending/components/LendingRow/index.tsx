@@ -83,8 +83,8 @@ export const LendingRow: React.FC<{
           </span>
         </div>
       </TCell>
-      <TCell className="w-[80px] flex-shrink-0">
-        <div className="flex items-center justify-center">
+      <TCell className="w-[130px] flex-shrink-0">
+        <div className="flex items-center justify-start">
           {isSupplied ? (
             <CollateralSwitch
               checked={data.isCollateral}
@@ -93,9 +93,7 @@ export const LendingRow: React.FC<{
               unCheckedChildren=""
             />
           ) : (
-            <span className="text-[14px] leading-[17px] text-rb-neutral-foot">
-              --
-            </span>
+            <span />
           )}
         </div>
       </TCell>
@@ -107,8 +105,7 @@ export const LendingRow: React.FC<{
                 onClick={data.onSupply}
                 className={clsx(
                   'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
-                  'bg-rb-neutral-bg-3 text-r-neutral-title-1',
-                  'hover:bg-rb-neutral-bg-4',
+                  'bg-rb-neutral-bg-4 text-r-neutral-title-1',
                   'flex items-center justify-center'
                 )}
               >
@@ -132,8 +129,7 @@ export const LendingRow: React.FC<{
                 onClick={data.onSwap}
                 className={clsx(
                   'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
-                  'bg-rb-neutral-bg-3 text-r-neutral-title-1',
-                  'hover:bg-rb-neutral-bg-4',
+                  'bg-rb-neutral-bg-4 text-r-neutral-title-1',
                   'flex items-center justify-center'
                 )}
               >
@@ -143,8 +139,7 @@ export const LendingRow: React.FC<{
                 onClick={data.onBorrow}
                 className={clsx(
                   'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
-                  'bg-rb-neutral-bg-3 text-r-neutral-title-1',
-                  'hover:bg-rb-neutral-bg-4',
+                  'bg-rb-neutral-bg-4 text-r-neutral-title-1',
                   'flex items-center justify-center'
                 )}
               >
@@ -154,8 +149,7 @@ export const LendingRow: React.FC<{
                 onClick={data.onRepay}
                 className={clsx(
                   'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
-                  'bg-rb-neutral-bg-3 text-r-neutral-title-1',
-                  'hover:bg-rb-neutral-bg-4',
+                  'bg-rb-neutral-bg-4 text-r-neutral-title-1',
                   'flex items-center justify-center'
                 )}
               >

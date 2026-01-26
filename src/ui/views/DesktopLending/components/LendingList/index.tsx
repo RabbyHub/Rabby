@@ -113,7 +113,7 @@ export const LendingList: React.FC = () => {
         {filteredData.length > 0 ? (
           <Table className="!w-full ml-0 mr-0">
             <THeader
-              className="w-full justify-between bg-rb-neutral-bg-1 py-[12px] sticky top-0 z-10"
+              className="w-full justify-between bg-rb-neutral-bg-1 px-[20px] py-[12px] sticky top-0 z-10"
               rowClassName="px-[16px]"
             >
               <THeadCell className="flex-1 min-w-0 normal-case">
@@ -132,7 +132,7 @@ export const LendingList: React.FC = () => {
                   </span>
                 </div>
               </THeadCell>
-              <THeadCell className="w-[80px] flex-shrink-0 normal-case">
+              <THeadCell className="w-[130px] flex-shrink-0 normal-case flex justify-start">
                 <div className="flex items-center justify-center">
                   {t('page.lending.table.collateral')}
                 </div>
