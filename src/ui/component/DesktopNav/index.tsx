@@ -57,6 +57,7 @@ export const DesktopNav: React.FC<{
     icon: React.FC<React.SVGProps<SVGSVGElement>>;
     title: string;
     isSoon?: boolean;
+    eventKey?: string;
   }[] = useMemo(
     () => [
       {
