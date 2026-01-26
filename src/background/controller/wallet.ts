@@ -1067,9 +1067,11 @@ export class WalletController extends BaseController {
       swapPreferMEVGuarded?: boolean;
       isBridge?: boolean;
     },
-    isBuild = false
+    isBuild = false,
+    currentAccount?: Account
   ) => {
-    const account = await preferenceService.getCurrentAccount();
+    const account =
+      currentAccount || (await preferenceService.getCurrentAccount());
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const chainId = findChain({
       serverId: chainServerId,
