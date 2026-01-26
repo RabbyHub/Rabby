@@ -38,11 +38,10 @@ export const usePerpsDefaultAccount = ({
 
           if (!isPro) {
             sdk.initAccount(recentlyAccount.address);
-            !isPro &&
-              dispatch.perps.subscribeToUserData({
-                address: recentlyAccount.address,
-                isPro,
-              });
+            dispatch.perps.subscribeToUserData({
+              address: recentlyAccount.address,
+              isPro,
+            });
           }
         } else {
           const top10 = uniqBy(accounts, (item) => item.address.toLowerCase())
