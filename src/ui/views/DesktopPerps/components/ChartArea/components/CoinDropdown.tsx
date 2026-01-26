@@ -31,6 +31,7 @@ const SearchInput = styled(Input)`
   }
   .ant-input {
     background-color: transparent !important;
+    color: var(--rb-neutral-title-1, #192945) !important;
   }
   height: 46px !important;
   border-radius: 6px !important;
@@ -380,6 +381,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
           prefix={<RcIconSearch className="text-r-neutral-foot" />}
           placeholder={t('page.perpsPro.chatArea.searchMarkets')}
           value={searchText}
+          spellCheck={false}
           onChange={(e) => setSearchText(e.target.value)}
           allowClear
         />

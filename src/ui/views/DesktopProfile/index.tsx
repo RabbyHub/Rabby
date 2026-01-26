@@ -181,24 +181,6 @@ export const DesktopProfile = () => {
     handleUpdate();
   });
 
-  const isReportedRef = useRef(false);
-  useEffect(() => {
-    if (isReportedRef.current) {
-      return;
-    }
-    if (!action) {
-      matomoRequestEvent({
-        category: 'RabbyWeb_Active',
-        action: 'RabbyWeb_Portfolio',
-      });
-
-      ga4.fireEvent('RabbyWeb_Active', {
-        event_category: 'RabbyWeb_Portfolio',
-      });
-      isReportedRef.current = true;
-    }
-  }, [action]);
-
   return (
     <>
       <DesktopPageWrap
@@ -346,7 +328,7 @@ export const DesktopProfile = () => {
           </div>
         </div>
         <aside
-          className={clsx('min-w-[64px] flex-shrink-0 sticky z-20')}
+          className={clsx('min-w-[64px] flex-shrink-0 sticky z-20 top-0')}
           // style={{ top: DESKTOP_NAV_HEIGHT }}
         >
           <div

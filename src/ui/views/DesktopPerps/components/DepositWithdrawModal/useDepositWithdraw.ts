@@ -306,7 +306,7 @@ export const useDepositWithdraw = (
         if (controller.signal.aborted) {
           return;
         }
-        if (res.tx) {
+        if (res.tx && currentPerpsAccount) {
           if (!tokenApproved) {
             if (shouldTwoStepApprove) {
               const resp = await wallet.approveToken(
@@ -323,7 +323,8 @@ export const useDepositWithdraw = (
                 },
                 undefined,
                 undefined,
-                true
+                true,
+                currentPerpsAccount
               );
               txs.push(resp.params[0]);
             }
@@ -342,7 +343,8 @@ export const useDepositWithdraw = (
               },
               undefined,
               undefined,
-              true
+              true,
+              currentPerpsAccount
             );
 
             txs.push(resp.params[0]);
@@ -572,7 +574,7 @@ export const useDepositWithdraw = (
             }),
             config: {
               account: account,
-              getContainer,
+              getContainer: '.desktop-perps-deposit-withdraw-content',
             },
             wallet,
           },

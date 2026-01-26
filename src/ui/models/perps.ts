@@ -126,6 +126,7 @@ export interface PerpsState {
   soundEnabled: boolean;
   marketEstSize: string;
   marketEstPrice: string;
+  quoteUnit: 'base' | 'usd';
 }
 
 export const perps = createModel<RootModel>()({
@@ -172,6 +173,7 @@ export const perps = createModel<RootModel>()({
     marketSlippage: 0.08, // default 8%
     marketEstSize: '',
     marketEstPrice: '',
+    quoteUnit: 'base',
   } as PerpsState,
 
   reducers: {
@@ -669,6 +671,10 @@ export const perps = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
+    async updateQuoteUnit(payload: 'base' | 'usd', rootState) {
+      dispatch.perps.patchState({ quoteUnit: payload });
+      await rootState.app.wallet.setPerpsQuoteUnit(payload);
+    },
     async saveApproveSignatures(
       payload: {
         approveSignatures: ApproveSignatures;
@@ -1130,6 +1136,16 @@ export const perps = createModel<RootModel>()({
         console.error('Failed to load favorited coins:', error);
         // Fallback to default
         dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
+      }
+    },
+
+    async initQuoteUnit(_, rootState) {
+      try {
+        const quoteUnit = await rootState.app.wallet.getPerpsQuoteUnit();
+        dispatch.perps.patchState({ quoteUnit: quoteUnit ?? 'base' });
+      } catch (error) {
+        console.error('Failed to load quote unit:', error);
+        dispatch.perps.patchState({ quoteUnit: 'base' });
       }
     },
 

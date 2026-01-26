@@ -23,10 +23,15 @@ import { query2obj } from 'ui/utils/url';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { copyAddress } from '@/ui/utils/clipboard';
+import clsx from 'clsx';
+import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
+import { CHAINS_ENUM } from '@/types/chain';
+import { useRequest } from 'ahooks';
+import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -86,9 +91,35 @@ const Receive = () => {
   const qs = useMemo(() => query2obj(history.location.search), [
     history.location.search,
   ]);
-  const chain = findChainByEnum(qs.chain)?.name ?? 'Ethereum';
+  const [chainEnum, setChainEnum] = useState<CHAINS_ENUM | undefined>(
+    qs.chain ? (qs.chain as CHAINS_ENUM) : undefined
+  );
+  const chain = useMemo(() => findChainByEnum(chainEnum), [chainEnum]);
+  const [isShowReceiveModal, setIsShowReceiveModal] = useState(false);
 
   const { t } = useTranslation();
+
+  const { data: safeSupportChains } = useRequest(
+    async () => {
+      if (!account?.address || account.type !== KEYRING_CLASS.GNOSIS) {
+        return;
+      }
+      const chainIds = await wallet.getGnosisNetworkIds(account.address);
+      const chains: CHAINS_ENUM[] = [];
+      chainIds.forEach((id) => {
+        const chain = findChain({
+          networkId: id,
+        });
+        if (chain) {
+          chains.push(chain.enum);
+        }
+      });
+      return chains;
+    },
+    {
+      refreshDeps: [account?.address, account?.type],
+    }
+  );
 
   const handleCopyAddress = () => {
     matomoRequestEvent({
@@ -228,7 +259,35 @@ const Receive = () => {
       </div>
 
       <div className="qr-card">
-        <div className="qr-card-header">{title}</div>
+        <div className="qr-card-header">
+          <div className="text-[17px] leading-[20px] font-medium text-r-neutral-title1 mb-[8px]">
+            {t('page.receive.receiveOn', {
+              token: qs.token || t('global.assets'),
+            })}
+          </div>
+          <div
+            className={clsx(
+              'px-[12px] py-[8px] bg-r-neutral-card-2 rounded-[8px]',
+              'inline-flex items-center',
+              'text-[13px] leading-[16px] font-medium text-r-neutral-title1',
+              'hover:bg-r-blue-light-1 hover:text-r-blue-default',
+              'cursor-pointer'
+            )}
+            onClick={() => {
+              setIsShowReceiveModal(true);
+            }}
+          >
+            {chain?.logo ? (
+              <img
+                src={chain?.logo}
+                alt=""
+                className="w-[14px] h-[14px] mr-[4px]"
+              />
+            ) : null}
+            <div>{chain?.name || 'All EVM Chains'}</div>
+            <RcIconArrowRightCC />
+          </div>
+        </div>
         <div className="qr-card-img">
           {account?.address && <QRCode value={account.address} size={175} />}
         </div>
@@ -252,6 +311,22 @@ const Receive = () => {
           alt=""
         />
       </div>
+      <ChainSelectorModal
+        className="receive-chain-select-modal"
+        showClosableIcon={false}
+        value={chainEnum}
+        visible={isShowReceiveModal}
+        showRPCStatus
+        onChange={(chain) => {
+          setChainEnum(chain);
+          setIsShowReceiveModal(false);
+        }}
+        onCancel={() => {
+          setIsShowReceiveModal(false);
+        }}
+        supportChains={safeSupportChains}
+        disabledTips={t('page.dashboard.GnosisWrongChainAlertBar.notDeployed')}
+      />
     </div>
   );
 };

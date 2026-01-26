@@ -96,6 +96,7 @@ import { add, debounce } from 'lodash';
 import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
 import { ChainSelectorInSend } from './components/ChainSelectorInSend';
+import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -350,8 +351,7 @@ const SendToken = () => {
         (cex) => cex.id === toCexId
       );
       if (toCexId && isSupportCEX) {
-        const cex_ids =
-          token.cex_ids || token.identity?.cex_list?.map((item) => item.id);
+        const cex_ids = getCexIds(token);
         const noSupportToken = cex_ids?.every?.(
           (id) => id.toLowerCase() !== toCexId.toLowerCase()
         );
@@ -1923,7 +1923,7 @@ const SendToken = () => {
           rightSlot={
             isTab || isDesktop ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer absolute right-0"
+                className="text-r-neutral-title1 cursor-pointer absolute right-0 hit-slop-8"
                 onClick={() => {
                   // openInternalPageInTab(`send-token${history.location.search}`);
                   wallet.openInDesktop(

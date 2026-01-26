@@ -33,6 +33,7 @@ import {
   includeLpTokensFilter,
   isLpToken,
 } from './lpToken';
+import { useAsync } from 'react-use';
 
 let lastResetTokenListAddr = '';
 // export const tokenChangeLoadingAtom = atom(false);
@@ -66,7 +67,8 @@ export const useTokens = (
     : false,
   lpTokensOnly = false,
   showBlocked = false,
-  searchMode = false
+  searchMode = false,
+  disableRecommended = false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
@@ -463,8 +465,55 @@ export const useTokens = (
     };
   }, []);
 
+  const shouldLoadRecommended = useMemo(() => {
+    if (
+      !userAddr ||
+      lpTokensOnly ||
+      searchMode ||
+      isLoading ||
+      isTestnet ||
+      !visible ||
+      !!mainnetTokens.list.length ||
+      disableRecommended
+    ) {
+      return false;
+    }
+    const currentChainTokenLength = mainnetTokens.list.filter(
+      (token) => token.chain === chainServerId
+    ).length;
+    return currentChainTokenLength === 0;
+  }, [
+    userAddr,
+    lpTokensOnly,
+    searchMode,
+    isLoading,
+    isTestnet,
+    visible,
+    mainnetTokens.list,
+    chainServerId,
+  ]);
+
+  const {
+    value: recommendedTokens,
+    loading: loadingRecommendedTokens,
+  } = useAsync(async () => {
+    if (!shouldLoadRecommended || !userAddr) {
+      return [];
+    }
+    const list = await wallet.openapi.getSwapTokenList(
+      userAddr,
+      chainServerId || ''
+    );
+
+    return list.map(
+      (token) => new DisplayedToken(token) as AbstractPortfolioToken
+    );
+  }, [shouldLoadRecommended, userAddr, chainServerId]);
+
   const tokens = useMemo(() => {
-    const list = isTestnet ? testnetTokens.list : mainnetTokens.list;
+    const list = isTestnet
+      ? testnetTokens.list
+      : [...mainnetTokens.list, ...(recommendedTokens || [])];
     if (searchMode) {
       return list.filter(includeLpTokensFilter);
     }
@@ -476,14 +525,15 @@ export const useTokens = (
     isTestnet,
     testnetTokens.list,
     mainnetTokens.list,
-    lpTokensOnly,
+    recommendedTokens,
     searchMode,
+    lpTokensOnly,
   ]);
 
   return {
     netWorth: data?.netWorth || 0,
-    isLoading,
-    isAllTokenLoading,
+    isLoading: isLoading || loadingRecommendedTokens,
+    isAllTokenLoading: isAllTokenLoading || loadingRecommendedTokens,
     tokens,
     customizeTokens: isTestnet
       ? testnetTokens.customize

@@ -16,6 +16,7 @@ import { TokenImg } from '@/ui/views/Perps/components/TokenImg';
 import { usePerpsClearHouseState } from '@/ui/views/Perps/hooks/usePerpsClearingHouseState';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { DistanceRiskTag } from '@/ui/views/DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
+import { useWallet } from '@/ui/utils';
 import {
   calculateDistanceToLiquidation,
   formatPerpsPct,
@@ -23,7 +24,7 @@ import {
 
 export const DesktopPerpsPositionList: React.FC = () => {
   const currentAccount = useCurrentAccount();
-
+  const wallet = useWallet();
   const { data } = usePerpsClearHouseState({
     address: currentAccount?.address,
   });
@@ -55,7 +56,7 @@ export const DesktopPerpsPositionList: React.FC = () => {
             handleNavigate={() => {
               if (currentAccount) {
                 dispatch.perps.setSelectedCoin(assetPosition.position.coin);
-                dispatch.perps.setCurrentPerpsAccount(currentAccount);
+                wallet.setPerpsCurrentAccount(currentAccount);
                 history.push('/desktop/perps');
               }
             }}
@@ -86,8 +87,6 @@ const PositionItem: React.FC<{
   const marketData = useRabbySelector(
     (store) => store.perps.marketDataMap?.[position.coin?.toUpperCase() || '']
   );
-
-  console.log('marketData', marketData);
 
   const isUp = Number(unrealizedPnl) >= 0;
   const isLong = Number(szi) > 0;
@@ -176,7 +175,7 @@ const PositionItem: React.FC<{
         <div
           className={clsx(
             'cursor-pointer text-r-blue-default font-medium text-[12px] text-center',
-            'px-[12px] w-min',
+            'px-[12px]',
             'h-[24px] leading-[24px]',
             'border-[0.5px] border-r-blue-default rounded-[6px]',
             'hover:bg-r-blue-light1'

@@ -320,6 +320,7 @@ export class DisplayedToken implements AbstractPortfolioToken {
   name: string;
   optimized_symbol: string;
   is_verified: boolean | null;
+  is_suspicious: boolean | undefined;
   time_at: number;
   price_24h_change?: number | null;
   low_credit_score?: boolean;
@@ -359,6 +360,7 @@ export class DisplayedToken implements AbstractPortfolioToken {
     this.is_core = token.is_core;
     this.display_symbol = token.display_symbol;
     this.is_verified = token.is_verified;
+    this.is_suspicious = token.is_suspicious;
     this.optimized_symbol = token.optimized_symbol;
     this.is_wallet = token.is_wallet;
     this.name = token.name;

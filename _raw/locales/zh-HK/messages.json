@@ -58,7 +58,8 @@
       "filterScam": {
         "title": "隱藏欺詐交易",
         "loading": "數據加載需要一定時間，且可能會有延遲",
-        "btn": "隱藏欺詐交易"
+        "btn": "隱藏欺詐交易",
+        "button": "隱藏詐騙交易"
       },
       "detail": {
         "Pending": "待处理",
@@ -1215,7 +1216,8 @@
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
       "watchModeAlert1": "這是一個觀察地址",
-      "watchModeAlert2": "你確定用它來接收資產嗎？"
+      "watchModeAlert2": "你確定用它來接收資產嗎？",
+      "receiveOn": "在 {{token}} 上接收"
     },
     "securityEngine": {
       "alertTriggerReason": "警報觸發原因：",
@@ -2001,7 +2003,8 @@
       "loss-tips": "您正在损失 {{usd}}。嘗試在小型市場中投入較少的金額。",
       "two-step-approve": "簽署 2 筆交易以更改允許額",
       "understandRisks": "我明白風險並想繼續",
-      "approve": "批准"
+      "approve": "批准",
+      "search-by-token-name-address": "搜尋代幣名稱 / 地址"
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持請求的鏈",
@@ -2786,15 +2789,15 @@
         "tip2": "2. 插入你的 BitBox02"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "請掃描 Keystone 硬件錢包上的 QR 碼"
-        },
         "usb": {
           "tip1": "插入您的 Keystone 裝置",
           "tip2": "輸入你的密碼以解鎖",
           "connect": "連接 Keystone",
           "desc": "確保你的 Keystone 3 Pro 在主頁上",
           "tip3": "批准連接到你的電腦"
+        },
+        "qrcode": {
+          "desc": "掃描{{brandName}}硬件錢包上的QR碼"
         }
       },
       "importSafe": {
@@ -3035,7 +3038,11 @@
         "minimumWithdrawSize": "最低撤回金额是 2 美元",
         "goSwapTips": "僅支援在 Arbitrum 上直接存入 USDC。請在存入之前將您當前的代幣換成 USDC。",
         "goBridgeTips": "僅支持在 Arbitrum 上直接存入 USDC。請在存入前將您目前的代幣橋接到 Arbitrum 上的 USDC。",
-        "feeTip": "$1 费用"
+        "feeTip": "$1 费用",
+        "hyperliquidFeeLabel": "Hyperliquid 費用",
+        "estReceiveLabel": "估计接收",
+        "estTimeLabel": "估计时间",
+        "estReceiveTooltipNoTime": "跨链存款是通过 LiFi 处理的，可能会产生一些滑点。"
       },
       "home": {
         "margin": "保证金",
@@ -3137,7 +3144,38 @@
         "openPositionSuccess": "已开立 {{direction}} {{coin}}-USD：数量 {{size}}，价格 ${{price}}",
         "closePositionSuccess": "已关闭 {{direction}} {{coin}}-USD: 数量 {{size}}，价格 ${{price}}",
         "stopLossSuccess": "止损设置成功",
-        "takeProfitSuccess": "獲利設置成功"
+        "takeProfitSuccess": "獲利設置成功",
+        "cancelFailed": "取消失敗",
+        "success": "成功",
+        "orderPlaced": "已下单",
+        "orderCancelled": "訂單已取消",
+        "orderFilled": "訂單已完成",
+        "cancelOrderError": "取消订单失败",
+        "marginUpdated": "保證金已更新",
+        "marginModeUpdated": "保證金模式已更改為：{{mode}}",
+        "terminalTwap": "终端 TWAP",
+        "leverageChanged": "杠杆已更改为：{{leverage}}",
+        "withdraw": "提取成功",
+        "deposit": "存款成功",
+        "cancelAllOrderSuccess": "成功取消了 {{count}} 個訂單",
+        "ordersCancelled": "所有訂單已取消",
+        "terminalTwapSuccess": "成功提交 Terminal TWAP 订单",
+        "depositTip": "{{amount}} USDC 已存入",
+        "sellFilledContentNoPercentage": "已售出 {{sz}} {{coin}}，成交价格 @{{price}} USDC",
+        "limitOrderFilled": "漲幅限價單已成交（{{percent}}%）",
+        "buyFilledContentNoPercentage": "以 {{price}} USDC 买入 {{sz}} {{coin}} 成交",
+        "openTWAPOrderSuccess": "TWAP 訂單已開啟 {{direction}} {{coin}}-USD: 大小 {{size}}",
+        "sellFilledContent": "已售出 {{sz}} / {{origSz}} {{coin}} 以 @{{price}} USDC 成交",
+        "buyFilledContent": "以 @{{price}} USDC 買入 {{sz}} / {{origSz}} {{coin}}",
+        "cancelOrderSuccess": "訂單已被取消",
+        "withdrawTip": "{{amount}} USDC 已成功提取",
+        "twapSliceFilled": "TWAP 切片已完成",
+        "openScaleOrderSuccess": "规模订单已下单 {{direction}} {{coin}}-USD：规模 {{size}}",
+        "cancelTWAPOrderSuccess": "TWAP 訂單已成功取消",
+        "closeAllPositionsSuccess": "所有倉位已成功關閉",
+        "openTPSlLimitOrderSuccess": "{{tpsl}} 限价单已下 {{direction}} {{coin}}-USD：大小 {{size}} 价格 ${{price}}",
+        "openLimitOrderSuccess": "限价单已下单 {{direction}} {{coin}}-USD：数量 {{size}}，价格 ${{price}}",
+        "openTPSlMarketOrderSuccess": "{{tpsl}} 市场订单已下单 {{direction}} {{coin}}-USD: 数量 {{size}} 价格 ${{price}}"
       },
       "closePositionPopup": {
         "closeLong": "平仓做多",
@@ -3198,7 +3236,12 @@
       "add": "添加",
       "fundingRate": "資金費率",
       "close": "關閉",
-      "fundingGains": "資金收益"
+      "fundingGains": "資金收益",
+      "cancelAllOrdersPopup": {
+        "title": "確認取消所有訂單",
+        "description": "所有未完成的訂單將被取消。"
+      },
+      "rabbyFeeTipsV2": "Rabby 佣金：0.02%"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3501,6 +3544,278 @@
       "networkErrorTitle": "此網站無法訪問",
       "networkErrorDescription": "{{site}} 意外地关闭了连接。請檢查你的網絡。",
       "networkErrorDescriptionFallback": "網站意外關閉了連接。請檢查您的網絡。"
+    },
+    "perpsPro": {
+      "chatArea": {
+        "oracle": "預言機",
+        "lastPrice": "最後價格",
+        "symbol": "符号",
+        "volume": "交易量",
+        "mark": "标记",
+        "8hrFunding": "8小時資金費用",
+        "openInterest": "未平仓合约",
+        "24hVol": "24小時交易量",
+        "searchMarkets": "搜尋市場",
+        "24hChange": "24小時變動",
+        "oracleTips": "由验证者报告的外部价格的中位数，用于计算资金费率。",
+        "openInterestTips": "雙邊未平倉合約：該合約的做多和做空頭寸的總和。",
+        "fundingCountdown": "資金 / 倒數",
+        "markTips": "用於保證金、計算未實現的 PNL、清算以及觸發 TP/SL 訂單。",
+        "fundingTips": "多头支付空头的小时利率（如果为负，空头支付多头）。资金费用为零，该费用是用户之间的点对点转移，以推动价格接近现货价格。详情请参见文档。"
+      },
+      "userInfo": {
+        "tab": {
+          "direction": "方向",
+          "closedPnlTooltip": "已结算的盈亏包括费用和折扣",
+          "time": "时间",
+          "fundingTips": "自仓位开启以来的净资金支付。如果为负，则表示资金收益。",
+          "unrealizedPnlTooltip": "标记价格用于估算未实现的盈亏。仅使用交易价格计算已实现的盈亏。",
+          "margin": "保证金",
+          "terminate": "終止",
+          "status": "狀態",
+          "size": "规模",
+          "type": "類型",
+          "value": "值",
+          "filled": "已成交",
+          "coin": "硬币",
+          "trade": "交易",
+          "payment": "支付",
+          "fee": "手續費",
+          "trigger": "触发器",
+          "order": "訂單",
+          "funding": "融資",
+          "tradeValue": "交易價值",
+          "price": "價格",
+          "slice": "切片",
+          "averagePrice": "平均價格",
+          "creationTime": "創建時間",
+          "unrealizedPnl": "未实现盈亏",
+          "reduceOnly": "僅限減少",
+          "closedPnl": "已平仓盈亏",
+          "rate": "费率",
+          "liqPrice": "Liq.价格",
+          "markEntry": "標記 / 進場",
+          "positions": "持仓",
+          "tpSl": "止盈/止损",
+          "openOrders": "未完成的訂單",
+          "runningTimeTotal": "運行時間 / 總計",
+          "side": "方向",
+          "orderHistory": "訂單記錄",
+          "tradeHistory": "交易歷史",
+          "fundingHistory": "資金紀錄",
+          "twap": "时间加权平均价格"
+        },
+        "emptyMessage": {
+          "fundingHistory": "沒有資金歷史",
+          "tradeHistory": "無交易歷史",
+          "fillHistory": "無成交歷史",
+          "orderHistory": "沒有訂單歷史",
+          "openOrders": "沒有未成交的訂單",
+          "twapHistory": "沒有 TWAP 歷史",
+          "positions": "無持倉",
+          "activeTwap": "暫無活動的 TWAP"
+        },
+        "positionInfo": {
+          "reverse": "反向",
+          "viewOrders": "查看訂單",
+          "newPosition": "新倉位",
+          "close": "關閉",
+          "configure": "配置",
+          "receive": "接收",
+          "limitPrice": "限价",
+          "limitClose": "限价平仓",
+          "closePositionTips": "這將嘗試在您選擇的限價平倉。",
+          "closePosition": "關閉倉位",
+          "closeMarket": "關閉市場",
+          "closedPnl": "已平仓盈亏",
+          "reversePosition": "反向持仓",
+          "closeAll": "關閉所有",
+          "currentPosition": "當前倉位",
+          "mid": "中立",
+          "closePositionMarketTips": "這將立即以當前市場價格平倉",
+          "closeLimit": "平倉限價",
+          "confirm": "確認",
+          "closePositionReverseTips": "這將立即以當前市場價格平倉您的頭寸，並在相反方向開設等大小的頭寸。"
+        },
+        "openOrders": {
+          "cancel": "取消",
+          "time": "時間",
+          "reduceOnly": "只减仓",
+          "orderValueSize": "訂單價值 / 大小",
+          "price": "價格",
+          "cancelAll": "取消全部",
+          "type": "类型",
+          "filled": "已填充",
+          "order": "訂單",
+          "triggerConditions": "觸發條件",
+          "tpSl": "止盈/止损"
+        },
+        "distanceRiskTag": {
+          "goingUp": "上升 {{percent}} 将触发清算",
+          "goingDown": "下跌 {{percent}} 将触发清算"
+        },
+        "twap": {
+          "terminated": "已終止",
+          "activated": "已激活",
+          "completed": "已完成"
+        },
+        "yes": "是",
+        "no": "否",
+        "terminate": "終止",
+        "active": "活跃",
+        "fillHistory": "填充歷史",
+        "history": "歷史",
+        "randomized": "（隨機化）"
+      },
+      "statusBar": {
+        "sound": "啟用聲音",
+        "offline": "離線",
+        "online": "在線"
+      },
+      "tradingPanel": {
+        "slippagePage": {
+          "minError": "最低滑点為 0%",
+          "maxSlippage": "最大滑点",
+          "maxError": "最高滑点是 100%",
+          "title": "調整最大滑點",
+          "description": "最大滑点仅影响从订单表单下的市场订单。平仓时将使用最大滑点为 8%，市场止盈/止损订单将使用最大滑点为 10%。"
+        },
+        "limitOrderTypeOptions": {
+          "Gtc": "GTC（有效直至取消）：订单将保持有效，直到成交或被取消",
+          "Ioc": "IOC（立即成交或取消）：任何未能立即成交的部分将被取消。",
+          "Alo": "ALO（只添加流动性）：订单将仅作为限价单存在于订单簿上。也称为仅发布。"
+        },
+        "atLeastTwoOrders": "至少需要兩個訂單",
+        "liquidationPriceTooltip": "仓位风险较低，因此暂时没有清算价格。请注意，增加仓位或减少保证金将会增加风险。",
+        "threeThirtySeconds": "30秒",
+        "totalOrders": "總訂單",
+        "numberOfOrders": "訂單數量",
+        "start": "開始",
+        "slippage": "滑点",
+        "end": "结束",
+        "reduceOnly": "僅可減少",
+        "marginUsage": "保证金使用率",
+        "enableTrading": "啟用交易",
+        "liquidationPrice": "清算价格",
+        "frequency": "頻率",
+        "endPrice": "結束價",
+        "marginRequired": "所需保证金",
+        "sizePerSuborder": "每个子订单的大小",
+        "orderValue": "訂單價值",
+        "stopLossExpectedPnL": "止损预期盈亏",
+        "startPrice": "起始價格",
+        "takeProfitExpectedPnL": "獲利預期 PnL",
+        "runtimeTooLong": "運行時間必須少於24小時",
+        "runtimeTooShort": "運行時間必須超過 5 分鐘",
+        "randomizeTooltip": "隨機化子訂單的時間和大小，以降低可預測性。",
+        "sizeSkew": "數量偏斜",
+        "reduceOnlyTips": "此訂單不會開啟新的倉位，無論訂單大小如何。在執行時，它將與當前的倉位進行比較。",
+        "minutes": "分鐘",
+        "hours": "小时",
+        "limitPrice": "限价",
+        "sellShort": "賣出 / 做空",
+        "marginCross": "交叉",
+        "randomize": "隨機化",
+        "tpSlTips": "下单简单市场的止盈/止损订单。若需高级功能，如限价或部分止盈/止损，请在持仓中设置止盈/止损。",
+        "enterAmount": "請輸入金額",
+        "tpSl": "TP / SL",
+        "invalidTpPrice": "無效的平倉價格",
+        "maximumOrderSize": "最大订单大小为 {{amount}}",
+        "insufficientBalance": "餘額不足",
+        "buyLong": "買入 / 做多",
+        "invalidSlPrice": "無效的止損價格",
+        "reduceOnlyTooLarge": "僅減少過大",
+        "type": "类型",
+        "startAndEndPriceMustBeDifferent": "起始價格和結束價格必須不同",
+        "minimumOrderSize": "最低訂單額為 $10",
+        "placeOrder": "下單",
+        "currentPosition": "當前持倉",
+        "aloTooLargeSell": "限价单的价格必须高于最佳买价。",
+        "runtimeTips": "(5分钟-24小时)",
+        "minimumSuborderSize": "最低 TWAP 子订单大小为 $10",
+        "runtime": "運行時",
+        "triggerPrice": "觸發價格",
+        "marginIsolated": "孤立",
+        "sizeSkewTooltip": "起始价格与结束价格之间的比例。例如，如果大小偏差为 2.0，则会以结束价格下达的限价单的规模将是起始价格的两倍。大小偏差为 1.0 则会创建大小相等的订单。",
+        "availableFunds": "可用資金",
+        "aloTooLargeBuy": "Alo 订单价格必须低于最佳买入价",
+        "tpSellMustBeHigherThanMidPrice": "出售订单价格必须高于中间价。",
+        "tpMustBeLowerThanCurrentPrice": "止盈价格必须低于当前价格",
+        "tpBuyMustBeLowerThanMidPrice": "買入訂單價格必須低於中間價",
+        "slBuyMustBeHigherThanMidPrice": "止損買單價格必須高於中間價",
+        "tpMustBeHigherThanCurrentPrice": "止盈价格必须高于当前价格",
+        "slMustBeLowerThanCurrentPrice": "止損價格必須低於當前價格",
+        "slSellMustBeLowerThanMidPrice": "止賣單價格必須低於中位數",
+        "slMustBeHigherThanCurrentPrice": "止損價格必須高於當前價格"
+      },
+      "marginMode": {
+        "cross": "交叉",
+        "confirm": "確認",
+        "title": "保證金模式",
+        "isolated": "隔离",
+        "crossDescription": "所有跨仓位共享相同的交叉保证金作为抵押。在强平事件发生时，您的保证金余额和在此模式下交叉的任何剩余开仓可能会被没收。",
+        "isolatedDescription": "管理您在每个单独头寸上的风险，通过分配给每个头寸的保证金金额。如果孤立头寸的保证金比例达到 100%，该头寸将被强制平仓。在此模式下，可以向单独头寸添加或移除保证金。"
+      },
+      "leverage": {
+        "confirm": "確認",
+        "higherLeverageRisk": "更高的杠杆增加了被清算的风险。",
+        "minError": "最低杠杆为 1x",
+        "title": "調整槓桿",
+        "maxError": "最大杠杆为 {{max}} 倍",
+        "maxPositionSize": "最大持仓规模随着杠杆的增加而减少。",
+        "controlPositionLeverage": "控制 {{coin}} 头寸使用的杠杆。最大杠杆为 {{max}}x。"
+      },
+      "editTpSl": {
+        "loss": "損失",
+        "cancelTp": "取消止盈",
+        "entryPrice": "入市价格：",
+        "markPrice": "標記價格：",
+        "title": "配置 TP/SL",
+        "takeProfitExpectedPnl": "預期獲利 PnL",
+        "gain": "收益",
+        "cancelSl": "取消止損",
+        "stopLossExpectedPnl": "止损预期盈亏",
+        "tp": "TP",
+        "confirm": "確認",
+        "sl": "止损",
+        "currentPosition": "當前頭寸"
+      },
+      "accountInfo": {
+        "totalBalance": "總餘額",
+        "unrealizedPnl": "未实现盈亏",
+        "deposit": "存款",
+        "availableBalance": "可用余额",
+        "accountEquity": "账户权益",
+        "withdraw": "提取",
+        "crossAccountLeverageTips": "跨账户杠杆 = 总跨仓位价值 / 跨账户价值。",
+        "crossMarginRatio": "交叉保证金比率",
+        "maintenanceMarginTips": "保持您的跨仓位所需的最低投资组合价值",
+        "crossMarginRatioTips": "維持保證金 / 投資組合價值。如果保證金比率達到 100%，您的交叉持倉將被平倉。",
+        "accountEquityTip": "余额 + 未实现PNL（如果所有头寸平仓的估计账户价值）",
+        "balance": "餘額",
+        "balanceTip": "總淨轉帳 + 總已實現利潤 + 總淨資金費用",
+        "maintenanceMargin": "維持保證金",
+        "crossAccountLeverage": "跨账户杠杆"
+      },
+      "accountActions": {
+        "available": "可用",
+        "deposit": "存款",
+        "positionCount": "{{count}} 位置",
+        "pending": "待处理"
+      },
+      "orderBook": {
+        "title": "訂單簿",
+        "markPrice": "标记价格",
+        "amount": "金额",
+        "price": "價格",
+        "time": "时间",
+        "total": "总计",
+        "trades": "交易",
+        "viewAsks": "卖盘",
+        "noTrades": "沒有交易",
+        "viewBids": "買入價格",
+        "viewBoth": "兩者"
+      }
     }
   },
   "component": {
@@ -3610,7 +3925,8 @@
         }
       },
       "searchInput": {
-        "placeholder": "搜索名稱/地址"
+        "placeholder": "搜索名稱/地址",
+        "placeholder1": "搜索 Token 名称 / 地址"
       },
       "header": {
         "title": "選擇代幣"
@@ -3621,10 +3937,10 @@
       "bridge": {
         "value": "價值",
         "token": "代幣",
-        "low": "低",
-        "high": "高",
         "liquidityTips": "歷史交易量越高，橋接成功的可能性就越大。",
-        "liquidity": "流動性"
+        "liquidity": "流動性",
+        "high": "高流动性",
+        "low": "低流动性"
       },
       "hot": "熱門",
       "recent": "最近",

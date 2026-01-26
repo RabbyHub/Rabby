@@ -22,7 +22,8 @@
       "filterScam": {
         "loading": "La carga puede tardar un momento y es posible que haya retrasos en los datos.",
         "title": "Ocultar transacciones fraudulentas",
-        "btn": "Ocultar transacciones de estafa"
+        "btn": "Ocultar transacciones de estafa",
+        "button": "Ocultar transacciones de estafa"
       },
       "detail": {
         "Pending": "Pendiente",
@@ -652,7 +653,8 @@
     "receive": {
       "title": "Recibir {{token}} en {{chain}}",
       "watchModeAlert1": "Esta es una dirección en Modo de Observación.",
-      "watchModeAlert2": "¿Estás seguro de que quieres usarla para recibir activos?"
+      "watchModeAlert2": "¿Estás seguro de que quieres usarla para recibir activos?",
+      "receiveOn": "Recibir {{token}} en"
     },
     "sendToken": {
       "addressNotInContract": "No en la lista de direcciones. <1></1><2>Agregar a contactos</2>",
@@ -1051,7 +1053,8 @@
       "no-quote-found": "No quote found",
       "usd-after-fees": "≈ {{usd}}",
       "understandRisks": "Entiendo los riesgos y quiero continuar",
-      "approve": "Aprobar"
+      "approve": "Aprobar",
+      "search-by-token-name-address": "Buscar nombre de token / dirección"
     },
     "manageAddress": {
       "no-address": "Sin dirección",
@@ -2748,15 +2751,15 @@
         "tip2": "2. Conecta tu BitBox02"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "Escanee el código QR en el monedero de hardware Keystone"
-        },
         "usb": {
           "connect": "Conectar Keystone",
           "tip1": "Conecte su dispositivo Keystone",
           "tip3": "Aprobar la conexión a su computadora",
           "tip2": "Ingrese su contraseña para desbloquear",
           "desc": "Asegúrate de que tu Keystone 3 Pro esté en la página de inicio"
+        },
+        "qrcode": {
+          "desc": "Escanea el código QR en la billetera hardware {{brandName}}"
         }
       },
       "importSafe": {
@@ -2997,7 +3000,10 @@
         "minimumWithdrawSize": "La cantidad mínima de retiro es de $2",
         "estReceiveTooltip": "El depósito entre cadenas se procesa a través de LiFi y puede incurrir en algún deslizamiento. Llegada estimada en {{number}}s.",
         "goSwapTips": "Solo se admite USDC en Arbitrum para depósitos directos. Por favor, intercambia tu token actual por USDC antes de depositar.",
-        "goBridgeTips": "Solo se admite USDC en Arbitrum para depósitos directos. Por favor, transfiere tu token actual a USDC en Arbitrum antes de hacer el depósito."
+        "goBridgeTips": "Solo se admite USDC en Arbitrum para depósitos directos. Por favor, transfiere tu token actual a USDC en Arbitrum antes de hacer el depósito.",
+        "estReceiveLabel": "Est. Recibir",
+        "hyperliquidFeeLabel": "Hyperliquid Tarifa",
+        "estReceiveTooltipNoTime": "El depósito cruzado se procesa a través de LiFi, puede incurrir en algún deslizamiento."
       },
       "home": {
         "margin": "Margen",
@@ -3099,7 +3105,37 @@
         "closePositionSuccess": "Cerrado {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}",
         "openPositionSuccess": "Abierto {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}",
         "stopLossSuccess": "Stop loss configurado con éxito",
-        "takeProfitSuccess": "Toma de ganancias establecida con éxito"
+        "takeProfitSuccess": "Toma de ganancias establecida con éxito",
+        "orderCancelled": "Orden Cancelada",
+        "success": "Éxito",
+        "orderPlaced": "Orden Colocada",
+        "marginUpdated": "Margen actualizada",
+        "deposit": "Depósito exitoso",
+        "terminalTwap": "Terminal TWAP",
+        "terminalTwapSuccess": "Orden TWAP en terminal realizada con éxito",
+        "twapSliceFilled": "TWAP Slice Lleno",
+        "marginModeUpdated": "Modo de margen cambiado a: {{mode}}",
+        "limitOrderFilled": "Orden Límite Ejecutada ({{percent}}%)",
+        "withdrawTip": "{{amount}} USDC se ha retirado correctamente",
+        "depositTip": "{{amount}} USDC depositado",
+        "cancelFailed": "Cancelación fallida",
+        "ordersCancelled": "Todas las órdenes canceladas",
+        "sellFilledContentNoPercentage": "vendió {{sz}} {{coin}} lleno @{{price}} USDC",
+        "leverageChanged": "El apalancamiento cambió a: {{leverage}}",
+        "buyFilledContentNoPercentage": "comprado {{sz}} {{coin}} llenado a @{{price}} USDC",
+        "openTWAPOrderSuccess": "Orden TWAP abierta {{direction}} {{coin}}-USD: Tamaño {{size}}",
+        "cancelOrderError": "Error al cancelar el pedido",
+        "cancelAllOrderSuccess": "Cancelaste exitosamente {{count}} órdenes",
+        "sellFilledContent": "vendido {{sz}} / {{origSz}} {{coin}} completado a @{{price}} USDC",
+        "openScaleOrderSuccess": "Orden de escala colocada {{direction}} {{coin}}-USD: Tamaño {{size}}",
+        "orderFilled": "Orden completada",
+        "buyFilledContent": "comprado {{sz}} / {{origSz}} {{coin}} llenado a @{{price}} USDC",
+        "cancelTWAPOrderSuccess": "Orden TWAP cancelada con éxito",
+        "withdraw": "Retiro exitoso",
+        "openTPSlMarketOrderSuccess": "Orden de mercado {{tpsl}} colocada {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}",
+        "closeAllPositionsSuccess": "Todas las posiciones se cerraron con éxito",
+        "openLimitOrderSuccess": "orden limitada colocada {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}",
+        "openTPSlLimitOrderSuccess": "Orden limitada {{tpsl}} colocada {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}"
       },
       "closePositionPopup": {
         "closeLong": "Cerrar Long",
@@ -3160,7 +3196,12 @@
       "close": "Cerrar",
       "fundingRate": "Tasa de financiación",
       "add": "Añadir",
-      "fundingGains": "Ganancias de financiamiento"
+      "fundingGains": "Ganancias de financiamiento",
+      "cancelAllOrdersPopup": {
+        "description": "Todas tus órdenes abiertas serán canceladas.",
+        "title": "Confirmar cancelar todas las órdenes"
+      },
+      "rabbyFeeTipsV2": "Tarifa de Rabby: 0.02%"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3463,6 +3504,278 @@
       "networkErrorTitle": "Este sitio no se puede alcanzar",
       "networkErrorDescription": "{{site}} cerró la conexión inesperadamente. Por favor, verifica tu red.",
       "networkErrorDescriptionFallback": "El sitio cerró inesperadamente la conexión. Por favor, revisa tu red."
+    },
+    "perpsPro": {
+      "chatArea": {
+        "oracle": "Oracle",
+        "searchMarkets": "Buscar mercados",
+        "lastPrice": "Último Precio",
+        "fundingCountdown": "Financiamiento / Cuenta regresiva",
+        "mark": "Marca",
+        "24hChange": "Cambio en 24h",
+        "8hrFunding": "8h Financiamiento",
+        "24hVol": "Vol 24h",
+        "openInterest": "Interés Abierto",
+        "volume": "Volumen",
+        "openInterestTips": "Interés abierto bidireccional: la suma de posiciones long y short en este contrato.",
+        "symbol": "Símbolo",
+        "oracleTips": "El mediano de los precios externos reportados por los validadores, utilizado para calcular las tasas de financiamiento.",
+        "markTips": "Utilizado para margen, calcular PNL no realizado, liquidaciones y activar órdenes de TP/SL.",
+        "fundingTips": "La tasa horaria a la que los longs pagan a los shorts (si es negativa, los shorts pagan a los longs). No hay tarifas asociadas con el financiamiento, que es una transferencia entre usuarios para empujar los precios hacia el precio al contado. Consulta la documentación para más detalles."
+      },
+      "userInfo": {
+        "tab": {
+          "direction": "Dirección",
+          "closedPnlTooltip": "El PNL cerrado incluye tarifas y reembolsos",
+          "unrealizedPnlTooltip": "El precio de marcado se utiliza para estimar el PNL no realizado. Solo se utilizan los precios de negociación para el PNL realizado.",
+          "fundingTips": "Pagos de financiamiento netos desde que se abrió la posición. Si es negativo, significa ganancias de financiamiento.",
+          "slice": "Porción",
+          "positions": "Posiciones",
+          "rate": "Tasa",
+          "coin": "Moneda",
+          "terminate": "Terminar",
+          "payment": "Pago",
+          "price": "Precio",
+          "unrealizedPnl": "PnL no realizado",
+          "averagePrice": "Precio Promedio",
+          "fee": "Tarifa",
+          "side": "Lado",
+          "funding": "Financiamiento",
+          "trigger": "Desencadenar",
+          "size": "Tamaño",
+          "tpSl": "TP/SL",
+          "value": "Valor",
+          "trade": "Comercio",
+          "openOrders": "Órdenes Abiertas",
+          "reduceOnly": "Reducir Solo",
+          "closedPnl": "Pnl Cerrado",
+          "type": "Tipo",
+          "margin": "Margen",
+          "status": "Estado",
+          "liqPrice": "Precio de liquidación",
+          "tradeValue": "Valor de Comercio",
+          "filled": "Lleno",
+          "runningTimeTotal": "Tiempo de ejecución / Total",
+          "time": "Tiempo",
+          "creationTime": "Hora de creación",
+          "markEntry": "Marcado / Entrada",
+          "order": "Orden",
+          "tradeHistory": "Historial de Comercio",
+          "twap": "TWAP",
+          "orderHistory": "Historial de Órdenes",
+          "fundingHistory": "Historial de Financiamiento"
+        },
+        "emptyMessage": {
+          "tradeHistory": "Sin historial de operaciones",
+          "positions": "Sin posiciones",
+          "twapHistory": "Sin historial de TWAP",
+          "orderHistory": "Sin historial de órdenes",
+          "activeTwap": "No hay TWAP activo",
+          "fillHistory": "Sin historial de llenado",
+          "openOrders": "No hay órdenes abiertas",
+          "fundingHistory": "Sin historial de financiación"
+        },
+        "positionInfo": {
+          "closedPnl": "PNL Cerrado",
+          "receive": "Recibir",
+          "closeMarket": "Cerrar Mercado",
+          "reversePosition": "Invertir posición",
+          "configure": "Configurar",
+          "reverse": "Reversar",
+          "closeLimit": "Cerrar Límite",
+          "closePosition": "Cerrar posición",
+          "newPosition": "Nueva Posición",
+          "limitPrice": "Precio Límite",
+          "viewOrders": "Ver Órdenes",
+          "currentPosition": "Posición actual",
+          "closePositionMarketTips": "Esto se cerrará inmediatamente al precio de mercado actual.",
+          "closeAll": "Cerrar todo",
+          "mid": "Medio",
+          "close": "Cerrar",
+          "closePositionTips": "Esto intentará cerrarse a su precio límite elegido.",
+          "limitClose": "Cierre Límite",
+          "confirm": "Confirmar",
+          "closePositionReverseTips": "Esto cerrará inmediatamente tu posición al precio de mercado actual y abrirá una posición de igual tamaño en la dirección opuesta."
+        },
+        "openOrders": {
+          "tpSl": "TP/SL",
+          "reduceOnly": "Reduce Only",
+          "time": "Tiempo",
+          "orderValueSize": "Valor / Tamaño del Pedido",
+          "triggerConditions": "Condiciones de activación",
+          "order": "Orden",
+          "filled": "Lleno",
+          "cancel": "Cancelar",
+          "type": "Tipo",
+          "price": "Precio",
+          "cancelAll": "Cancelar todo"
+        },
+        "distanceRiskTag": {
+          "goingDown": "Bajar {{percent}} activará la liquidación",
+          "goingUp": "Subir {{percent}} activará la liquidación"
+        },
+        "twap": {
+          "completed": "Completado",
+          "terminated": "Terminado",
+          "activated": "Activado"
+        },
+        "yes": "Sí",
+        "terminate": "Terminar",
+        "no": "No",
+        "history": "Historia",
+        "randomized": "(randomized)",
+        "fillHistory": "Historial de Llenado",
+        "active": "Activo"
+      },
+      "statusBar": {
+        "sound": "Habilitar sonido",
+        "online": "En línea",
+        "offline": "Sin conexión"
+      },
+      "tradingPanel": {
+        "slippagePage": {
+          "maxSlippage": "Deslizamiento máximo",
+          "title": "Ajustar el deslizamiento máximo",
+          "maxError": "El deslizamiento máximo es del 100%",
+          "minError": "El deslizamiento mínimo es del 0%.",
+          "description": "El deslizamiento máximo solo afecta a las órdenes de mercado realizadas desde el formulario de órdenes. El cierre de posiciones utilizará un deslizamiento máximo del 8% y las órdenes de TP/SL de mercado utilizarán un deslizamiento máximo del 10%."
+        },
+        "limitOrderTypeOptions": {
+          "Gtc": "GTC (Bueno Hasta Cancelar): El pedido permanecerá hasta que se llene o se cancele.",
+          "Alo": "ALO (Añadir Liquidez Solo): La orden existirá solo como una orden limitada en el libro. También conocido como solo publicación.",
+          "Ioc": "IOC (Inmediato o Cancelar): Cualquier parte que no se complete de inmediato será cancelada."
+        },
+        "atLeastTwoOrders": "Se requieren al menos dos órdenes",
+        "liquidationPriceTooltip": "El riesgo de posición es bajo, por lo que no hay un precio de liquidación por el momento. Ten en cuenta que aumentar la posición o reducir el margen aumentará el riesgo.",
+        "endPrice": "Precio Final",
+        "end": "Fin",
+        "numberOfOrders": "Número de órdenes",
+        "frequency": "Frecuencia",
+        "enableTrading": "Habilitar Comercio",
+        "orderValue": "Valor de la orden",
+        "takeProfitExpectedPnL": "Toma de ganancias PnL esperado",
+        "reduceOnly": "Reduce Only",
+        "threeThirtySeconds": "30 Segundos",
+        "marginUsage": "Uso de Margen",
+        "marginRequired": "Margen Requerida",
+        "stopLossExpectedPnL": "Stop loss PnL esperado",
+        "liquidationPrice": "Precio de Liquidación",
+        "startPrice": "Precio de Inicio",
+        "totalOrders": "Órdenes Totales",
+        "sizePerSuborder": "Tamaño por Suborden",
+        "runtimeTooLong": "El tiempo de ejecución debe ser inferior a 24 horas.",
+        "randomizeTooltip": "Aleatoriza el momento y el tamaño de las subórdenes para reducir la previsibilidad.",
+        "sizeSkew": "Sesgo de tamaño",
+        "start": "Comenzar",
+        "slippage": "Deslizamiento",
+        "runtimeTooShort": "El tiempo de ejecución debe ser superior a 5 minutos.",
+        "reduceOnlyTips": "Este orden no abrirá una nueva posición sin importar cuán grande sea el tamaño del orden. Se comparará con la posición existente en el momento de la ejecución.",
+        "currentPosition": "Posición actual",
+        "hours": "Horas",
+        "randomize": "Aleatorizar",
+        "minutes": "Minutos",
+        "marginCross": "Cruz",
+        "marginIsolated": "Aislado",
+        "type": "Tipo",
+        "placeOrder": "Realizar Pedido",
+        "runtime": "Tiempo de ejecución",
+        "tpSl": "TP / SL",
+        "enterAmount": "Por favor, introduce la cantidad",
+        "invalidSlPrice": "Precio de stop loss inválido",
+        "minimumSuborderSize": "El tamaño mínimo de suborden TWAP es $10",
+        "invalidTpPrice": "Precio de toma de ganancias inválido",
+        "insufficientBalance": "Saldo insuficiente",
+        "startAndEndPriceMustBeDifferent": "El precio de inicio y el precio final deben ser diferentes.",
+        "runtimeTips": "(5m-24h)",
+        "buyLong": "Comprar / Long",
+        "maximumOrderSize": "El tamaño máximo de la orden es {{amount}}",
+        "limitPrice": "Precio Límite",
+        "sizeSkewTooltip": "Ratio entre los precios de inicio y fin. Por ejemplo, si la desviación de tamaño es 2.0, entonces se colocará una orden limitada para el precio final con el doble del tamaño del precio de inicio. Una desviación de tamaño de 1.0 crea órdenes de tamaño igual.",
+        "availableFunds": "Fondos disponibles",
+        "aloTooLargeSell": "El precio de la orden de compra debe ser superior al mejor precio de oferta.",
+        "sellShort": "Vender / Hacer corto",
+        "aloTooLargeBuy": "El precio de la orden Alo debe ser inferior al mejor precio de venta.",
+        "reduceOnlyTooLarge": "Reducir solo demasiado grande",
+        "minimumOrderSize": "El tamaño mínimo de la orden es de $10.",
+        "triggerPrice": "Precio de activación",
+        "slBuyMustBeHigherThanMidPrice": "El precio de la orden de compra stop debe ser más alto que el medio.",
+        "tpBuyMustBeLowerThanMidPrice": "El precio de la orden de compra debe ser inferior al medio.",
+        "tpSellMustBeHigherThanMidPrice": "El precio de la orden de venta debe ser superior al medio.",
+        "tpMustBeHigherThanCurrentPrice": "El precio de toma de ganancias debe ser más alto que el precio actual.",
+        "tpMustBeLowerThanCurrentPrice": "El precio de toma de ganancias debe ser inferior al precio actual.",
+        "slSellMustBeLowerThanMidPrice": "El precio de la orden de venta stop debe ser inferior al medio.",
+        "slMustBeHigherThanCurrentPrice": "El precio de stop loss debe ser más alto que el precio actual.",
+        "slMustBeLowerThanCurrentPrice": "El precio de stop loss debe ser inferior al precio actual.",
+        "tpSlTips": "Realiza órdenes de TP/SL de mercado simples. Para funciones avanzadas como precios limitados o TP/SL parciales, establece el TP/SL en una posición abierta."
+      },
+      "marginMode": {
+        "confirm": "Confirmar",
+        "cross": "Cruz",
+        "title": "Modo de Margen",
+        "isolated": "Aislado",
+        "crossDescription": "Todas las posiciones cruzadas comparten el mismo margen cruzado como colateral. En caso de liquidación, su saldo de margen y cualquier posición abierta restante bajo cruce en este modo pueden ser confiscados.",
+        "isolatedDescription": "Administra tu riesgo en posiciones individuales al asignar la cantidad de margen correspondiente a cada una. Si la tasa de margen de una posición aislada alcanza el 100%, la posición será liquidada. El margen puede ser agregado o retirado de posiciones individuales en este modo."
+      },
+      "leverage": {
+        "confirm": "Confirmar",
+        "maxError": "El apalancamiento máximo es de {{max}}x",
+        "minError": "El apalancamiento mínimo es de 1x.",
+        "maxPositionSize": "El tamaño máximo de la posición disminuye a medida que aumenta tu apalancamiento.",
+        "higherLeverageRisk": "Un mayor apalancamiento aumenta el riesgo de liquidación.",
+        "title": "Ajustar el apalancamiento",
+        "controlPositionLeverage": "Controla el apalancamiento utilizado para las posiciones de {{coin}}. El apalancamiento máximo es de {{max}}x."
+      },
+      "editTpSl": {
+        "gain": "Ganancia",
+        "stopLossExpectedPnl": "Stop loss PnL esperado",
+        "markPrice": "Precio de Marcar:",
+        "takeProfitExpectedPnl": "Tomar ganancias PnL esperado",
+        "cancelSl": "Cancelar SL",
+        "title": "Configurar TP/SL",
+        "cancelTp": "Cancelar TP",
+        "entryPrice": "Precio de Entrada:",
+        "sl": "SL",
+        "confirm": "Confirmar",
+        "tp": "TP",
+        "currentPosition": "Posición Actual",
+        "loss": "Pérdida"
+      },
+      "accountInfo": {
+        "totalBalance": "Saldo Total",
+        "maintenanceMargin": "Margen de mantenimiento",
+        "deposit": "Depósito",
+        "unrealizedPnl": "P&L no realizado",
+        "crossAccountLeverage": "Apalancamiento de Cuenta Cruzada",
+        "accountEquity": "Equidad de la cuenta",
+        "withdraw": "Retirar",
+        "crossMarginRatio": "Tasa de margen cruzado",
+        "crossAccountLeverageTips": "Apalancamiento de Cuenta Cruzada = Valor Total de Posición Cruzada / Valor de Cuenta Cruzada.",
+        "accountEquityTip": "Balance + PNL no realizado (valor aproximado de la cuenta si todas las posiciones fueran cerradas)",
+        "maintenanceMarginTips": "El valor mínimo de cartera requerido para mantener tus posiciones cruzadas abiertas",
+        "balance": "Saldo",
+        "availableBalance": "Saldo disponible",
+        "crossMarginRatioTips": "Margen de Mantenimiento / Valor de la Cartera. Tus posiciones cruzadas serán liquidadas si la Relación de Margen alcanza el 100%.",
+        "balanceTip": "Transferencias Netas Totales + Beneficio Realizado Total + Tarifas de Financiación Netas Totales"
+      },
+      "accountActions": {
+        "pending": "Pendiente",
+        "available": "Disponible",
+        "positionCount": "{{count}} posiciones",
+        "deposit": "Depositar"
+      },
+      "orderBook": {
+        "trades": "Comercio",
+        "price": "Precio",
+        "total": "Total",
+        "amount": "Cantidad",
+        "time": "Tiempo",
+        "markPrice": "Precio de Marcado",
+        "title": "Libro de Órdenes",
+        "viewBids": "Ofertas",
+        "noTrades": "No hay operaciones",
+        "viewBoth": "Ambos",
+        "viewAsks": "Ofertas"
+      }
     }
   },
   "component": {
@@ -3572,7 +3885,8 @@
         }
       },
       "searchInput": {
-        "placeholder": "Buscar por Nombre / Dirección"
+        "placeholder": "Buscar por Nombre / Dirección",
+        "placeholder1": "Buscar nombre de token / dirección"
       },
       "header": {
         "title": "Seleccionar un token"
@@ -3583,10 +3897,10 @@
       "bridge": {
         "value": "Valor",
         "liquidity": "Liquidez",
-        "high": "Alto",
-        "low": "Bajo",
         "token": "Token",
-        "liquidityTips": "Cuanto mayor sea el volumen de comercio histórico, más probable es que el puente tenga éxito."
+        "liquidityTips": "Cuanto mayor sea el volumen de comercio histórico, más probable es que el puente tenga éxito.",
+        "low": "Baja liquidez",
+        "high": "Alta liquidez"
       },
       "recent": "Reciente",
       "common": "Común",
