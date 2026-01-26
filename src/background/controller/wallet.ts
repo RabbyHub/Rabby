@@ -1067,9 +1067,11 @@ export class WalletController extends BaseController {
       swapPreferMEVGuarded?: boolean;
       isBridge?: boolean;
     },
-    isBuild = false
+    isBuild = false,
+    currentAccount?: Account
   ) => {
-    const account = await preferenceService.getCurrentAccount();
+    const account =
+      currentAccount || (await preferenceService.getCurrentAccount());
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const chainId = findChain({
       serverId: chainServerId,
@@ -5723,6 +5725,8 @@ export class WalletController extends BaseController {
   getSendApproveAfterDeposit = async (masterAddress: string) => {
     return perpsService.getSendApproveAfterDeposit(masterAddress);
   };
+  getPerpsQuoteUnit = perpsService.getQuoteUnit;
+  setPerpsQuoteUnit = perpsService.setQuoteUnit;
   setHasDoneNewUserProcess = perpsService.setHasDoneNewUserProcess;
   getHasDoneNewUserProcess = perpsService.getHasDoneNewUserProcess;
   getPerpsAgentWallet = async (masterWallet: string) => {

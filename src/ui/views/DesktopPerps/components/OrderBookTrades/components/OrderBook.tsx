@@ -19,9 +19,6 @@ import { getPerpTickOptions } from '../../../utils';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
 
-// Quote unit
-type QuoteUnit = 'base' | 'usd';
-
 // Aggregation level config
 interface AggregationConfig {
   nSigFigs?: number;
@@ -45,10 +42,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     wsActiveAssetCtx,
     isInitialized,
     marketEstSize,
+    quoteUnit,
   } = useRabbySelector((state) => state.perps);
   const dispatch = useRabbyDispatch();
   const [viewMode, setViewMode] = useState<ViewMode>('Both');
-  const [quoteUnit, setQuoteUnit] = useState<QuoteUnit>('base');
   const [aggregationIndex, setAggregationIndex] = useState<number>(0);
   const [bids, setBids] = useState<OrderBookLevel[]>([]);
   const [asks, setAsks] = useState<OrderBookLevel[]>([]);
@@ -320,7 +317,11 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
             transitionName=""
             forceRender={true}
             overlay={
-              <Menu onClick={(info) => setQuoteUnit(info.key as QuoteUnit)}>
+              <Menu
+                onClick={(info) =>
+                  dispatch.perps.updateQuoteUnit(info.key as 'base' | 'usd')
+                }
+              >
                 <Menu.Item key="base">{selectedCoin}</Menu.Item>
                 <Menu.Item key="usd">USD</Menu.Item>
               </Menu>
