@@ -9,14 +9,12 @@ const tsImportPluginFactory = require('ts-import-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const ReactRefreshTypeScript = require('react-refresh-typescript');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
   .default;
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const useForkTsChecker = process.env.FORK_TS_CHECKER === 'enable';
-const isHot = process.env.HOT === 'true';
 
 const paths = require('./paths');
 
@@ -100,8 +98,7 @@ const config = {
                         libraryDirectory: 'lib',
                         style: true,
                       }),
-                      isHot && ReactRefreshTypeScript(),
-                    ].filter(Boolean),
+                    ],
                   }),
                   compilerOptions: {
                     module: 'es2015',
@@ -137,8 +134,7 @@ const config = {
                 before: [
                   // @see https://github.com/Igorbek/typescript-plugin-styled-components#ts-loader
                   tsStyledComponentTransformer,
-                  isHot && ReactRefreshTypeScript(),
-                ].filter(Boolean),
+                ],
               }),
             },
           },

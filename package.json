@@ -6,7 +6,7 @@
     "clean": "node build/clean.js",
     "make-theme": "node ./scripts/make-theme.js",
     "build:dev:default": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && webpack --progress --env config=dev",
-    "build:hot": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && webpack serve --progress --env config=dev",
+    "build:hot": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && node build/dev-server.js",
     "build:dev:turbo": "cross-env NODE_OPTIONS='--max-old-space-size=24576' TAILWIND_MODE=watch npm run clean && npm run make-theme && NODE_OPTIONS='--max-old-space-size=24576' webpack --progress --env config=dev",
     "build:pro:default": "npm run clean && npm run make-theme && cross-env NODE_OPTIONS='--max-old-space-size=12288' webpack --progress --env config=pro",
     "build:debug:default": "npm run clean && npm run make-theme && cross-env NODE_OPTIONS='--max-old-space-size=12288' webpack --progress --env config=debug",
@@ -193,6 +193,7 @@
     "eslint-plugin-react": "7.23.2",
     "eslint-plugin-react-hooks": "4.6.0",
     "eslint-webpack-plugin": "2.5.4",
+    "express": "5.2.1",
     "file-loader": "6.2.0",
     "fork-ts-checker-webpack-plugin": "9.0.2",
     "fs-extra": "10.0.0",
@@ -234,7 +235,9 @@
     "webpack": "5.76.0",
     "webpack-bundle-analyzer": "4.4.0",
     "webpack-cli": "4.10.0",
+    "webpack-dev-middleware": "7.4.5",
     "webpack-dev-server": "4.7.4",
+    "webpack-hot-middleware": "2.26.1",
     "webpack-merge": "5.7.3"
   },
   "resolutions": {
