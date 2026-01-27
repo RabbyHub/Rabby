@@ -112,8 +112,9 @@ export const BalanceView = ({
     const balanceValue = latestBalance || currentHomeBalanceCache?.balance;
     const evmBalanceValue =
       latestEvmBalance || currentHomeBalanceCache?.evmBalance;
-    const appChainIds =
-      latestAppChainIds || currentHomeBalanceCache?.appChainIds;
+    const appChainIds = latestAppChainIds?.length
+      ? latestAppChainIds
+      : currentHomeBalanceCache?.appChainIds || [];
     return {
       appChainIds,
       balance: balanceValue,
