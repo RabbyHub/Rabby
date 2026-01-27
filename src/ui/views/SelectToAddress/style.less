@@ -1,6 +1,9 @@
 .select-to-address-tabs {
   .ant-tabs-nav {
     border-bottom: 1px var(--r-neutral-line) solid;
+    &:before {
+      border-bottom: 1px var(--r-neutral-line) solid;
+    }
   }
 
   .ant-tabs-tab {
@@ -13,7 +16,7 @@
 }
 
 html.dark .select-to-address-tabs {
-  .ant-tabs-top > .ant-tabs-nav::before {
+  &.ant-tabs-top > .ant-tabs-nav::before {
     border-bottom-color: transparent;
   }
 }

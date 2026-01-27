@@ -99,7 +99,10 @@ export const HomePerpsPositionList: React.FC = () => {
               if (currentAccount) {
                 dispatch.perps.setCurrentPerpsAccount(currentAccount);
                 sdk.initAccount(currentAccount.address);
-                dispatch.perps.subscribeToUserData(currentAccount.address);
+                dispatch.perps.subscribeToUserData({
+                  address: currentAccount.address,
+                  isPro: false,
+                });
               }
               closePopup();
               history.push('/perps');
@@ -145,8 +148,6 @@ const PositionItem: React.FC<{
   const marketData = useRabbySelector(
     (store) => store.perps.marketDataMap?.[position.coin?.toUpperCase() || '']
   );
-
-  console.log('marketData', marketData);
 
   const isUp = Number(unrealizedPnl) >= 0;
   const isLong = Number(szi) > 0;
@@ -235,7 +236,7 @@ const PositionItem: React.FC<{
         <div
           className={clsx(
             'cursor-pointer text-r-blue-default font-medium text-[12px] text-center',
-            'px-[12px] w-min',
+            'px-[12px]',
             'h-[24px] leading-[24px]',
             'border-[0.5px] border-r-blue-default rounded-[6px]',
             'hover:bg-r-blue-light1'

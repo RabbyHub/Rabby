@@ -302,7 +302,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
-  usePerpsDefaultAccount();
+  usePerpsDefaultAccount({
+    isPro: false,
+  });
   const { perpsPositionInfo, isFetching, positionPnl } = usePerpsHomePnl();
   // useCheckBridgePendingItem();
 
@@ -310,15 +312,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const [badgeModalVisible, setBadgeModalVisible] = useState(false);
 
-  const [isShowReceiveModal, setIsShowReceiveModal] = useState(false);
-
   const [isShowEcology, setIsShowEcologyModal] = useState(false);
 
   const [isShowRabbyPoints, setIsShowRabbyPoints] = useState(false);
 
   const [isShowDappsPopup, setIsShowDappsPopup] = useState(false);
-
-  const [safeSupportChains, setSafeSupportChains] = useState<CHAINS_ENUM[]>([]);
 
   const account = useRabbySelector((state) => state.account.currentAccount);
   const dashboardPanelOrder = useRabbySelector(
@@ -358,24 +356,24 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     }
   }, [approvalState]);
 
-  const getSafeNetworks = async () => {
-    if (!account) return;
-    const chainIds = await wallet.getGnosisNetworkIds(account.address);
-    const chains: CHAINS_ENUM[] = [];
-    chainIds.forEach((id) => {
-      const chain = findChainByID(Number(id));
-      if (chain) {
-        chains.push(chain.enum);
-      }
-    });
-    setSafeSupportChains(chains);
+  type IPanelItem = {
+    icon: ThemeIconType;
+    content: string;
+    onClick: import('react').MouseEventHandler<HTMLElement>;
+    badge?: number;
+    badgeAlert?: boolean;
+    badgeClassName?: string;
+    iconSpin?: boolean;
+    hideForGnosis?: boolean;
+    showAlert?: boolean;
+    disabled?: boolean;
+    commingSoonBadge?: boolean;
+    disableReason?: string;
+    eventKey: string;
+    iconClassName?: string;
+    subContent?: React.ReactNode;
+    isFullscreen?: boolean;
   };
-
-  useEffect(() => {
-    if (isGnosis) {
-      getSafeNetworks();
-    }
-  }, [isGnosis]);
 
   const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
   const hasClaimedGift = useRabbySelector((s) => s.gift.hasClaimedGift);
@@ -414,7 +412,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       eventKey: 'Receive',
       content: t('page.dashboard.home.panel.receive'),
       onClick: () => {
-        setIsShowReceiveModal(true);
+        history.push('/receive?rbisource=dashboard');
       },
     } as IPanelItem,
     // queue: {
@@ -862,21 +860,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           <div className="rounded-full absolute top-0 left-0 right-0 bottom-0 bg-r-blue-disable opacity-50"></div>
         </div>
       </div>
-      <ChainSelectorModal
-        className="receive-chain-select-modal"
-        value={CHAINS_ENUM.ETH}
-        visible={isShowReceiveModal}
-        showRPCStatus
-        onChange={(chain) => {
-          history.push(`/receive?rbisource=dashboard&chain=${chain}`);
-          setIsShowReceiveModal(false);
-        }}
-        onCancel={() => {
-          setIsShowReceiveModal(false);
-        }}
-        supportChains={isGnosis ? safeSupportChains : undefined}
-        disabledTips={t('page.dashboard.GnosisWrongChainAlertBar.notDeployed')}
-      />
 
       <ClaimRabbyFreeGasBadgeModal
         visible={badgeModalVisible}

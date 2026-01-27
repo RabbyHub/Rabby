@@ -148,6 +148,9 @@ module.exports = {
     },
     /** @notice configuration here would override the default config above */
     extend: {
+      fontWeight: {
+        510: '510',
+      },
       colors: {
         [`${rabbyCssPrefix.replace(/\-$/, '')}`]: rabbyColors.auto,
         [`${'rabby-'.replace(/\-$/, '')}`]: rabbyColors.auto,

@@ -652,7 +652,8 @@
     "receive": {
       "title": "Terima {{token}} di {{chain}}",
       "watchModeAlert1": "Ini adalah alamat Watch Mode.",
-      "watchModeAlert2": "Apakah Anda yakin ingin menggunakannya untuk menerima aset?"
+      "watchModeAlert2": "Apakah Anda yakin ingin menggunakannya untuk menerima aset?",
+      "receiveOn": "Terima {{token}} di"
     },
     "sendToken": {
       "AddToContactsModal": {
@@ -1051,7 +1052,8 @@
       "two-step-approve-details": "Token USDT memerlukan 2 transaksi untuk mengubah allowance. Pertama, Anda perlu mengatur allowance ke nol, dan hanya kemudian menetapkan nilai allowance yang baru.",
       "estimate": "Perkiraan:",
       "understandRisks": "Saya memahami risikonya dan ingin melanjutkan",
-      "approve": "Setujui"
+      "approve": "Setujui",
+      "search-by-token-name-address": "Cari Nama Token / Alamat"
     },
     "bridge": {
       "showMore": {
@@ -2745,15 +2747,15 @@
         "tip2": "2. Colokkan BitBox02 Anda"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "Pindai kode QR pada dompet keras {{brandName}}"
-        },
         "usb": {
           "tip1": "Sambungkan perangkat Keystone Anda",
           "tip3": "Setujui koneksi ke komputer Anda",
           "desc": "Pastikan Keystone 3 Pro Anda ada di halaman utama",
           "connect": "Sambungkan Keystone",
           "tip2": "Masukkan kata sandi Anda untuk membuka kunci"
+        },
+        "qrcode": {
+          "desc": "Pindai kode QR di dompet keras {{brandName}}"
         }
       },
       "importSafe": {
@@ -2994,7 +2996,11 @@
         "estReceive": "Est. Terima: {{balance}}",
         "estReceiveTooltip": "Deposit lintas rantai diproses melalui LiFi, mungkin mengalami slippage. Perkiraan kedatangan dalam {{number}} detik.",
         "goSwapTips": "Hanya USDC di Arbitrum yang didukung untuk setoran langsung. Harap tukar token Anda saat ini dengan USDC sebelum melakukan setoran.",
-        "goBridgeTips": "Hanya USDC di Arbitrum yang didukung untuk setoran langsung. Silakan jembatani token Anda saat ini ke USDC di Arbitrum sebelum melakukan setoran."
+        "goBridgeTips": "Hanya USDC di Arbitrum yang didukung untuk setoran langsung. Silakan jembatani token Anda saat ini ke USDC di Arbitrum sebelum melakukan setoran.",
+        "hyperliquidFeeLabel": "Hyperliquid Fee",
+        "estTimeLabel": "Waktu Est.",
+        "estReceiveLabel": "Est. Terima",
+        "estReceiveTooltipNoTime": "Setoran lintas rantai diproses melalui LiFi, mungkin akan dikenakan sedikit slippage."
       },
       "home": {
         "pnl": "PNL",
@@ -3096,7 +3102,36 @@
         "closePositionSuccess": "Tutup {{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
         "openPositionSuccess": "Dibuka {{direction}} {{coin}}-USD: Ukuran {{size}} dengan Harga ${{price}}",
         "stopLossSuccess": "Stop loss berhasil diatur",
-        "takeProfitSuccess": "Take profit telah disetel dengan sukses"
+        "takeProfitSuccess": "Take profit telah disetel dengan sukses",
+        "orderFilled": "Pesanan Terisi",
+        "marginUpdated": "Margin diperbarui",
+        "cancelAllOrderSuccess": "Berhasil membatalkan {{count}} pesanan",
+        "terminalTwap": "Terminal TWAP",
+        "terminalTwapSuccess": "Terminal TWAP order berhasil",
+        "orderCancelled": "Pesanan Dibatalkan",
+        "deposit": "Setoran berhasil",
+        "ordersCancelled": "Semua pesanan dibatalkan",
+        "withdraw": "Penarikan Berhasil",
+        "marginModeUpdated": "Mode margin diubah menjadi: {{mode}}",
+        "leverageChanged": "Leverage diubah menjadi: {{leverage}}",
+        "twapSliceFilled": "TWAP Slice Terisi",
+        "cancelOrderSuccess": "Pesanan telah dibatalkan",
+        "depositTip": "{{amount}} USDC terdeposito",
+        "limitOrderFilled": "Limit Order Terpenuhi ({{percent}}%)",
+        "buyFilledContent": "dibeli {{sz}} / {{origSz}} {{coin}} terisi @{{price}} USDC",
+        "success": "Sukses",
+        "sellFilledContent": "terjual {{sz}} / {{origSz}} {{coin}} terisi @{{price}} USDC",
+        "buyFilledContentNoPercentage": "dibeli {{sz}} {{coin}} terisi @{{price}} USDC",
+        "openScaleOrderSuccess": "Pesanan skala ditempatkan {{direction}} {{coin}}-USD: Ukuran {{size}}",
+        "sellFilledContentNoPercentage": "dijual {{sz}} {{coin}} terisi @{{price}} USDC",
+        "withdrawTip": "{{amount}} USDC telah berhasil ditarik.",
+        "closeAllPositionsSuccess": "Semua posisi ditutup dengan sukses",
+        "cancelTWAPOrderSuccess": "Pesanan TWAP dibatalkan dengan sukses",
+        "openTPSlLimitOrderSuccess": "{{tpsl}} order limit ditempatkan {{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
+        "openLimitOrderSuccess": "perintah batas ditempatkan {{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
+        "cancelFailed": "Pembatalan Gagal",
+        "openTPSlMarketOrderSuccess": "{{tpsl}} pesanan pasar ditempatkan {{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
+        "orderPlaced": "Pesanan Ditempatkan"
       },
       "closePositionPopup": {
         "positionSize": "Ukuran Posisi",
@@ -3157,7 +3192,12 @@
       "add": "Tambahkan",
       "close": "Tutup",
       "fundingRate": "Tingkat Pendanaan",
-      "fundingGains": "Pendapatan Pembiayaan"
+      "fundingGains": "Pendapatan Pembiayaan",
+      "cancelAllOrdersPopup": {
+        "title": "Konfirmasi Batalkan Semua Pesanan",
+        "description": "Semua pesanan terbuka Anda akan dibatalkan."
+      },
+      "rabbyFeeTipsV2": "Rabby biaya: 0,02%"
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3460,6 +3500,277 @@
       "networkErrorDescriptionFallback": "Situs secara tiba-tiba menutup koneksi. Silakan periksa jaringan Anda.",
       "networkErrorTitle": "Situs ini tidak dapat diakses",
       "networkErrorDescription": "{{site}} secara tiba-tiba menutup koneksi. Silakan periksa jaringan Anda."
+    },
+    "perpsPro": {
+      "chatArea": {
+        "searchMarkets": "Cari pasar",
+        "symbol": "Simbol",
+        "24hChange": "Perubahan 24 Jam",
+        "24hVol": "24h Vol",
+        "volume": "Volume",
+        "fundingCountdown": "Pendanaan / Hitung Mundur",
+        "oracle": "Oracle",
+        "lastPrice": "Harga Terakhir",
+        "mark": "Tandai",
+        "oracleTips": "Median dari harga eksternal yang dilaporkan oleh validator, digunakan untuk menghitung tingkat pendanaan.",
+        "openInterest": "Minat Terbuka",
+        "openInterestTips": "Dua sisi bunga terbuka: jumlah posisi long dan short pada kontrak ini.",
+        "8hrFunding": "8h Pembiayaan",
+        "markTips": "Digunakan untuk margin, menghitung PNL yang belum direalisasikan, likuidasi, dan memicu perintah TP/SL.",
+        "fundingTips": "Tarif per jam di mana longs membayar shorts (jika negatif, shorts membayar longs). Tidak ada biaya yang terkait dengan pembiayaan, yang merupakan transfer peer-to-peer antara pengguna untuk mendorong harga menuju harga spot. Lihat Dokumen untuk detailnya."
+      },
+      "userInfo": {
+        "tab": {
+          "direction": "Arah",
+          "time": "Waktu",
+          "fundingTips": "Pembayaran pendanaan bersih sejak posisi dibuka. Jika negatif, itu berarti keuntungan pendanaan.",
+          "unrealizedPnlTooltip": "Harga mark digunakan untuk memperkirakan PNL yang belum direalisasikan. Hanya harga perdagangan yang digunakan untuk PNL yang direalisasikan.",
+          "price": "Harga",
+          "trigger": "Pemicu",
+          "terminate": "Menghentikan",
+          "fee": "Biaya",
+          "rate": "Tarif",
+          "funding": "Pendanaan",
+          "margin": "Margin",
+          "order": "Pesanan",
+          "tpSl": "TP/SL",
+          "side": "Sisi",
+          "payment": "Pembayaran",
+          "positions": "Posisi",
+          "creationTime": "Waktu Pembentukan",
+          "tradeValue": "Nilai Perdagangan",
+          "coin": "Koin",
+          "type": "Tipe",
+          "filled": "Diisi",
+          "size": "Ukuran",
+          "openOrders": "Pesanan Terbuka",
+          "trade": "Perdagangan",
+          "value": "Nilai",
+          "averagePrice": "Harga Rata-rata",
+          "reduceOnly": "Hanya Kurangi",
+          "markEntry": "Tandai / Masuk",
+          "closedPnl": "Closed PnL",
+          "liqPrice": "Liq.harga",
+          "status": "Status",
+          "unrealizedPnl": "Unrealized PnL",
+          "runningTimeTotal": "Waktu Berjalan / Total",
+          "twap": "TWAP",
+          "tradeHistory": "Riwayat Perdagangan",
+          "orderHistory": "Riwayat Pesanan",
+          "fundingHistory": "Sejarah Pembiayaan",
+          "slice": "Potong"
+        },
+        "emptyMessage": {
+          "twapHistory": "Tidak ada riwayat TWAP",
+          "openOrders": "Tidak ada pesanan terbuka",
+          "fundingHistory": "Tidak ada riwayat pendanaan",
+          "tradeHistory": "Tidak ada riwayat perdagangan",
+          "positions": "Tidak ada posisi",
+          "activeTwap": "Tidak ada TWAP aktif",
+          "fillHistory": "Tidak ada riwayat pengisian",
+          "orderHistory": "Tidak ada riwayat pesanan"
+        },
+        "positionInfo": {
+          "mid": "Tengah",
+          "receive": "Terima",
+          "closeLimit": "Tutup Batas",
+          "limitClose": "Limit Close",
+          "limitPrice": "Harga Batas",
+          "configure": "Konfigurasi",
+          "viewOrders": "Lihat Pesanan",
+          "closeAll": "Tutup Semua",
+          "closePosition": "Tutup Posisi",
+          "reversePosition": "Balikan Posisi",
+          "currentPosition": "Posisi Saat Ini",
+          "reverse": "Membalik",
+          "closedPnl": "PNL Tertutup",
+          "closePositionTips": "Ini akan mencoba untuk menutup pada harga batas yang Anda pilih.",
+          "newPosition": "Posisi Baru",
+          "closePositionMarketTips": "Ini akan ditutup segera pada harga pasar saat ini.",
+          "closeMarket": "Tutup Pasar",
+          "confirm": "Konfirmasi",
+          "closePositionReverseTips": "Ini akan segera menutup posisi Anda pada harga pasar saat ini dan membuka posisi dengan ukuran yang sama di arah yang berlawanan.",
+          "close": "Tutup"
+        },
+        "openOrders": {
+          "filled": "Terisi",
+          "type": "Jenis",
+          "price": "Harga",
+          "cancel": "Batalkan",
+          "reduceOnly": "Kurangi Saja",
+          "time": "Waktu",
+          "tpSl": "TP/SL",
+          "cancelAll": "Batalkan Semua",
+          "triggerConditions": "Kondisi Pemicu",
+          "orderValueSize": "Nilai / Ukuran Pesanan",
+          "order": "Pesanan"
+        },
+        "distanceRiskTag": {
+          "goingUp": "Naik {{percent}} akan memicu likuidasi",
+          "goingDown": "Menurun {{percent}} akan memicu likuidasi"
+        },
+        "twap": {
+          "completed": "Selesai",
+          "terminated": "Dihentikan",
+          "activated": "Diaktifkan"
+        },
+        "yes": "Ya",
+        "active": "Aktif",
+        "no": "Tidak",
+        "history": "Sejarah",
+        "randomized": "(randomized)",
+        "fillHistory": "Riwayat Pengisian",
+        "terminate": "Menghentikan"
+      },
+      "statusBar": {
+        "sound": "Aktifkan Suara",
+        "offline": "Offline",
+        "online": "Dalam Talian"
+      },
+      "tradingPanel": {
+        "slippagePage": {
+          "maxSlippage": "Slippage maksimum",
+          "title": "Sesuaikan Slippage Maksimum",
+          "minError": "Slippage minimum adalah 0%",
+          "maxError": "Slippage maksimum adalah 100%",
+          "description": "Slippage maksimum hanya mempengaruhi order pasar yang ditempatkan dari formulir order. Penutupan posisi akan menggunakan slippage maksimum sebesar 8% dan order TP/SL pasar akan menggunakan slippage maksimum sebesar 10%."
+        },
+        "limitOrderTypeOptions": {
+          "Ioc": "IOC (Immediate Or Cancel): Setiap bagian yang tidak terisi segera akan dibatalkan.",
+          "Alo": "ALO (Add Liquidity Only): Pesanan hanya akan ada sebagai pesanan limit di buku. Juga dikenal sebagai post-only.",
+          "Gtc": "GTC (Baik Sampai Dibatalkan): Pesanan akan tetap ada sampai terisi atau dibatalkan"
+        },
+        "atLeastTwoOrders": "Setidaknya dua pesanan diperlukan",
+        "liquidationPriceTooltip": "Risiko posisi rendah, jadi saat ini tidak ada harga likuidasi. Perlu dicatat bahwa meningkatkan posisi atau mengurangi margin akan meningkatkan risiko.",
+        "orderValue": "Nilai Pesanan",
+        "totalOrders": "Total Orders",
+        "sizeSkew": "Ukuran miring",
+        "slippage": "Slippage",
+        "frequency": "Frekuensi",
+        "numberOfOrders": "Jumlah Pesanan",
+        "threeThirtySeconds": "30 Detik",
+        "enableTrading": "Aktifkan Perdagangan",
+        "startPrice": "Harga Awal",
+        "end": "Akhir",
+        "reduceOnly": "Hanya Mengurangi",
+        "marginRequired": "Margin Diperlukan",
+        "endPrice": "Harga Akhir",
+        "start": "Mulai",
+        "runtimeTooShort": "Runtime harus lebih dari 5 menit",
+        "randomizeTooltip": "Mengacak waktu dan ukuran sub-order untuk mengurangi keterprediksian.",
+        "liquidationPrice": "Harga Likuidasi",
+        "marginUsage": "Penggunaan Margin",
+        "sizePerSuborder": "Ukuran per Suborder",
+        "stopLossExpectedPnL": "Stop loss yang diharapkan PnL",
+        "takeProfitExpectedPnL": "Ambil untung yang diharapkan PnL",
+        "tpSlTips": "Tempatkan pesanan TP/SL pasar sederhana. Untuk fitur lanjutan seperti harga terbatas atau TP/SL parsial, atur TP/SL di posisi terbuka.",
+        "runtimeTooLong": "Waktu eksekusi harus kurang dari 24 jam",
+        "reduceOnlyTips": "Pesanan ini tidak akan membuka posisi baru terlepas dari seberapa besar ukuran pesanan. Ini akan dibandingkan dengan posisi yang ada pada saat eksekusi.",
+        "sizeSkewTooltip": "Rasio antara harga akhir dan harga awal. Misalnya, jika ukuran skew adalah 2.0, maka pesanan batas untuk harga akhir akan ditempatkan dengan ukuran dua kali dari harga awal. Skew ukuran 1.0 menciptakan pesanan dengan ukuran yang sama.",
+        "marginCross": "Silang",
+        "randomize": "Acak",
+        "minutes": "Menit",
+        "runtime": "Runtime",
+        "buyLong": "Beli / Long",
+        "limitPrice": "Harga Batas",
+        "triggerPrice": "Harga Pemicu",
+        "invalidTpPrice": "Harga ambil untung tidak valid",
+        "startAndEndPriceMustBeDifferent": "Harga awal dan harga akhir harus berbeda",
+        "insufficientBalance": "Saldo tidak mencukupi",
+        "invalidSlPrice": "Harga stop loss tidak valid",
+        "hours": "Jam",
+        "enterAmount": "Silakan masukkan jumlah",
+        "currentPosition": "Posisi Saat Ini",
+        "sellShort": "Jual / Short",
+        "maximumOrderSize": "Ukuran pesanan maksimum adalah {{amount}}",
+        "availableFunds": "Dana Tersedia",
+        "minimumSuborderSize": "Ukuran suborder TWAP minimum adalah $10",
+        "marginIsolated": "Terisolasi",
+        "tpSl": "TP / SL",
+        "placeOrder": "Tempatkan Pesanan",
+        "aloTooLargeBuy": "Harga order Alo harus lebih rendah dari harga tawaran terbaik.",
+        "aloTooLargeSell": "Harga order Alo harus lebih tinggi dari harga tawaran terbaik.",
+        "type": "Tipe",
+        "reduceOnlyTooLarge": "Kurangi Hanya Terlalu Besar",
+        "runtimeTips": "(5m-24j)",
+        "minimumOrderSize": "Ukuran pesanan minimum adalah $10",
+        "tpMustBeLowerThanCurrentPrice": "Harga ambil untung harus lebih rendah dari harga saat ini",
+        "tpBuyMustBeLowerThanMidPrice": "Ambil harga order beli harus lebih rendah dari mid",
+        "slSellMustBeLowerThanMidPrice": "Harga order jual stop harus lebih rendah dari mid",
+        "slMustBeHigherThanCurrentPrice": "Harga stop loss harus lebih tinggi dari harga saat ini",
+        "slBuyMustBeHigherThanMidPrice": "Harga pesanan beli stop harus lebih tinggi dari mid.",
+        "tpSellMustBeHigherThanMidPrice": "Harga order jual harus lebih tinggi dari mid",
+        "tpMustBeHigherThanCurrentPrice": "Harga ambil untung harus lebih tinggi dari harga saat ini",
+        "slMustBeLowerThanCurrentPrice": "Harga stop loss harus lebih rendah dari harga saat ini"
+      },
+      "marginMode": {
+        "title": "Mode Margin",
+        "isolated": "Isolasi",
+        "cross": "Lintas",
+        "confirm": "Konfirmasi",
+        "isolatedDescription": "Kelola risiko Anda pada posisi individu dengan mengalokasikan jumlah margin yang ditetapkan untuk setiap posisi. Jika rasio margin dari posisi terisolasi mencapai 100%, posisi tersebut akan dilikuidasi. Margin dapat ditambahkan atau dihapus dari posisi individu dalam mode ini.",
+        "crossDescription": "Semua posisi silang berbagi marjin silang yang sama sebagai jaminan. Dalam hal likuidasi, saldo margin Anda dan posisi terbuka lainnya yang tersisa di bawah silang dalam mode ini dapat dilikuidasi."
+      },
+      "leverage": {
+        "confirm": "Konfirmasi",
+        "higherLeverageRisk": "Leverage yang lebih tinggi meningkatkan risiko likuidasi.",
+        "title": "Sesuaikan Leverage",
+        "maxError": "Leverage maksimum adalah {{max}}x",
+        "maxPositionSize": "Ukuran posisi maksimal semakin kecil semakin tinggi leverage Anda.",
+        "minError": "Leverage minimum adalah 1x",
+        "controlPositionLeverage": "Kontrol leverage yang digunakan untuk posisi {{coin}}. Leverage maksimum adalah {{max}}x."
+      },
+      "editTpSl": {
+        "cancelTp": "Batalkan TP",
+        "title": "Atur TP/SL",
+        "entryPrice": "Harga Masuk:",
+        "markPrice": "Harga Mark:",
+        "loss": "Kerugian",
+        "cancelSl": "Batalkan SL",
+        "stopLossExpectedPnl": "Stop loss yang diharapkan PnL",
+        "gain": "Keuntungan",
+        "takeProfitExpectedPnl": "Ambil keuntungan yang diharapkan PnL",
+        "sl": "SL",
+        "currentPosition": "Posisi Saat Ini",
+        "tp": "TP",
+        "confirm": "Konfirmasi"
+      },
+      "accountInfo": {
+        "totalBalance": "Total Balance",
+        "crossAccountLeverage": "Leverage Akun Silang",
+        "availableBalance": "Saldo Tersedia",
+        "deposit": "Setor",
+        "accountEquity": "Equitas Akun",
+        "maintenanceMargin": "Margin pemeliharaan",
+        "crossMarginRatio": "Rasio Margin Silang",
+        "unrealizedPnl": "P&L yang Belum Direalisasikan",
+        "crossAccountLeverageTips": "Cross Account Leverage = Total Cross Position Value / Cross Account Value.",
+        "accountEquityTip": "Saldo + PNL yang Belum Direalisasi (nilai akun yang mendekati jika semua posisi ditutup)",
+        "balance": "Saldo",
+        "withdraw": "Tarik uang",
+        "maintenanceMarginTips": "Nilai portofolio minimum yang diperlukan untuk menjaga posisi silang Anda tetap terbuka",
+        "balanceTip": "Total Net Transfers + Total Realized Profit + Total Net Funding Fees",
+        "crossMarginRatioTips": "Margin Pemeliharaan / Nilai Portofolio. Posisi cross Anda akan dilikuidasi jika Rasio Margin mencapai 100%."
+      },
+      "accountActions": {
+        "pending": "Menunggu",
+        "available": "Tersedia",
+        "deposit": "Setor uang",
+        "positionCount": "{{count}} posisi"
+      },
+      "orderBook": {
+        "markPrice": "Harga Mark",
+        "trades": "Perdagangan",
+        "amount": "Jumlah",
+        "title": "Order Book",
+        "time": "Waktu",
+        "total": "Total",
+        "price": "Harga",
+        "viewBids": "Tawaran",
+        "viewBoth": "Keduanya",
+        "viewAsks": "Permintaan",
+        "noTrades": "Tidak ada perdagangan"
+      }
     }
   },
   "component": {
@@ -3573,11 +3884,12 @@
         "token": "Token",
         "liquidityTips": "Semakin tinggi volume perdagangan historis, semakin besar kemungkinan jembatan akan berhasil.",
         "value": "Nilai",
-        "low": "Rendah",
-        "high": "Tinggi"
+        "high": "Likuiditas tinggi",
+        "low": "Likuiditas rendah"
       },
       "searchInput": {
-        "placeholder": "Cari berdasarkan Nama / Alamat"
+        "placeholder": "Cari berdasarkan Nama / Alamat",
+        "placeholder1": "Cari Nama Token / Alamat"
       },
       "header": {
         "title": "Pilih Token"

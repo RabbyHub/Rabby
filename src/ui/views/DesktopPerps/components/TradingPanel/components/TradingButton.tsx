@@ -1,0 +1,63 @@
+import React, { useState } from 'react';
+import { Button } from 'antd';
+import { OrderSide } from '../../../types';
+import { useRabbySelector } from '@/ui/store';
+import { useTranslation } from 'react-i18next';
+
+interface TradingButtonProps {
+  loading: boolean;
+  onClick: () => void;
+  disabled: boolean;
+  error?: string;
+  isValid: boolean;
+  orderSide: OrderSide;
+  titleText: string;
+}
+
+export const TradingButton: React.FC<TradingButtonProps> = ({
+  loading,
+  onClick,
+  disabled,
+  error,
+  isValid,
+  orderSide,
+  titleText,
+}) => {
+  const hasPermission = useRabbySelector((state) => state.perps.hasPermission);
+  const { t } = useTranslation();
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <Button
+      type="primary"
+      block
+      size="large"
+      loading={loading}
+      onClick={onClick}
+      disabled={disabled || !hasPermission}
+      style={{
+        boxShadow:
+          hovered && isValid && !error && hasPermission
+            ? orderSide === OrderSide.BUY
+              ? '0px 8px 16px rgba(42, 187, 127, 0.3)'
+              : '0px 8px 16px rgba(227, 73, 53, 0.3)'
+            : 'none',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
+        isValid && !error && hasPermission
+          ? orderSide === OrderSide.BUY
+            ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
+            : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
+          : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
+      }`}
+    >
+      {!hasPermission
+        ? t('page.perps.permissionTips')
+        : error
+        ? error
+        : titleText}
+    </Button>
+  );
+};
