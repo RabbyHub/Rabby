@@ -41,6 +41,10 @@ export interface PerpsServiceStore {
   currentAccount: StoreAccount | null;
   lastUsedAccount: StoreAccount | null;
   hasDoneNewUserProcess: boolean;
+  favoritedCoins: string[];
+  soundEnabled: boolean;
+  marketSlippage: number; // 0-1, default 0.08 (8%)
+  quoteUnit: 'base' | 'usd';
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -68,6 +72,10 @@ class PerpsService {
         // no clear account , just cache for last used
         lastUsedAccount: null,
         hasDoneNewUserProcess: false,
+        favoritedCoins: ['BTC', 'ETH', 'SOL'],
+        marketSlippage: 0.08, // default 8%
+        soundEnabled: true,
+        quoteUnit: 'base',
       },
     });
 
@@ -384,6 +392,49 @@ class PerpsService {
     return preference;
   };
 
+  getPerpsFavoritedCoins = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.favoritedCoins || ['BTC', 'ETH', 'SOL'];
+  };
+
+  setPerpsFavoritedCoins = async (coins: string[]) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.favoritedCoins = coins;
+  };
+
+  getMarketSlippage = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.marketSlippage ?? 0.08;
+  };
+
+  setMarketSlippage = async (slippage: number) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    // Clamp between 0 and 1
+    this.store.marketSlippage = Math.max(0, Math.min(1, slippage));
+  };
+
+  getSoundEnabled = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.soundEnabled ?? true;
+  };
+
+  setSoundEnabled = async (soundEnabled: boolean) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.soundEnabled = soundEnabled;
+  };
+
   getInviteConfig = async (address: string) => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
@@ -404,6 +455,20 @@ class PerpsService {
     };
   };
 
+  getQuoteUnit = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.quoteUnit ?? 'base';
+  };
+
+  setQuoteUnit = async (quoteUnit: 'base' | 'usd') => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.quoteUnit = quoteUnit;
+  };
+
   // only test use
   resetStore = async () => {
     if (!this.store) {
@@ -416,6 +481,10 @@ class PerpsService {
       lastUsedAccount: null,
       hasDoneNewUserProcess: false,
       inviteConfig: {},
+      favoritedCoins: ['BTC', 'ETH', 'SOL'],
+      marketSlippage: 0.08,
+      soundEnabled: true,
+      quoteUnit: 'base',
     };
     this.memoryState.agentWallets = {};
   };

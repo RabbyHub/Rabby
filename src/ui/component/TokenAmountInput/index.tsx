@@ -440,6 +440,7 @@ const TokenAmountInput = ({
       </div>
       <TokenSelector
         visible={tokenSelectorVisible}
+        isHideTitle={true}
         mainnetTokenList={displayTokenList}
         // testnetTokenList={testnetTokenList}
         // list={chainItem?.isTestnet ? testnetTokenList : displayTokenList}

@@ -27,7 +27,8 @@
       "filterScam": {
         "title": "Hide scam transactions",
         "loading": "Loading may take a moment, and data delays are possible",
-        "btn": "Hide scam transactions"
+        "btn": "Hide scam transactions",
+        "button": "Hide Scam tx"
       }
     },
     "chainList": {
@@ -652,7 +653,8 @@
     "receive": {
       "title": "Receive {{token}} on {{chain}}",
       "watchModeAlert1": "This is a Watch Mode address.",
-      "watchModeAlert2": "Are you sure to use it to receive assets?"
+      "watchModeAlert2": "Are you sure to use it to receive assets?",
+      "receiveOn": "Receive {{token}} on"
     },
     "sendToken": {
       "addressNotInContract": "Not on address list. <1></1><2>Add to contacts</2>",
@@ -769,11 +771,47 @@
         "title": "Confirm Close All Positions",
         "description": "All your open positions will be closed at market price."
       },
+      "cancelAllOrdersPopup": {
+        "title": "Confirm Cancel All Orders",
+        "description": "All your open orders will be cancelled."
+      },
       "toast": {
+        "deposit": "Deposit successful",
+        "depositTip": "{{amount}} USDC deposited",
+        "success": "Success",
+        "withdraw": "Withdrawal Successful",
+        "withdrawTip": "{{amount}} USDC has been withdrawn successfully",
+        "twapSliceFilled": "TWAP Slice Filled",
+        "buyFilledContentNoPercentage": "bought {{sz}} {{coin}} filled @{{price}} USDC",
+        "sellFilledContentNoPercentage": "sold {{sz}} {{coin}} filled @{{price}} USDC",
+        "limitOrderFilled": "Limit Order Filled（{{percent}}%）",
+        "buyFilledContent": "bought {{sz}} / {{origSz}} {{coin}} filled @{{price}} USDC",
+        "sellFilledContent": "sold {{sz}} / {{origSz}} {{coin}} filled @{{price}} USDC",
+        "orderFilled": "Order Filled",
+        "orderPlaced": "Order Placed",
+        "terminalTwap": "Terminal TWAP",
+        "terminalTwapSuccess": "Terminal TWAP order successfully",
+        "orderCancelled": "Order Cancelled",
+        "ordersCancelled": "All order cancelled",
+        "leverageChanged": "Leverage changed to: {{leverage}}",
+        "marginUpdated": "Margin updated",
+        "marginModeUpdated": "Margin mode changed to: {{mode}}",
+        "cancelFailed": "Cancel Failed",
+        "cancelOrderSuccess": "Order has been cancelled",
+        "cancelAllOrderSuccess": "Successfully cancelled {{count}} orders",
+        "cancelOrderError": "Failed to cancel order",
+        "openScaleOrderSuccess": "Scale order placed {{direction}} {{coin}}-USD: Size {{size}}",
         "takeProfitSuccess": "Take profit set successfully",
         "stopLossSuccess": "Stop loss set successfully",
+        "setAutoCloseSuccess": "Auto close set successfully",
+        "openTWAPOrderSuccess": "TWAP order opened {{direction}} {{coin}}-USD: Size {{size}}",
+        "cancelTWAPOrderSuccess": "TWAP order canceled successfully",
+        "openTPSlMarketOrderSuccess": "{{tpsl}} market order placed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
+        "openTPSlLimitOrderSuccess": "{{tpsl}} limit order placed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
+        "openLimitOrderSuccess": "limit order placed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
         "closePositionSuccess": "Closed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
-        "openPositionSuccess": "Opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}"
+        "closeAllPositionsSuccess": "All positions closed successfully",
+        "openPositionSuccess": "{{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}"
       },
       "closePositionPopup": {
         "title": "Close {{coin}}-USD {{direction}}",
@@ -836,8 +874,12 @@
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
         "receiveToken": "Receive Token",
+        "estReceiveLabel": "Est. Receive",
+        "estTimeLabel": "Est. Time",
+        "hyperliquidFeeLabel": "Hyperliquid Fee",
         "estReceive": "Est. Receive: {{balance}}",
         "estReceiveTooltip": "Cross-chain deposit is processed via LiFi, may incur some slippage. Estimated arrival in {{number}}s.",
+        "estReceiveTooltipNoTime": "Cross-chain deposit is processed via LiFi, may incur some slippage.",
         "fetchQuoteFailed": "Failed to fetch deposit quote. Please switch token.",
         "goSwapTips": "Only USDC on Arbitrum is supported for direct deposit. Please swap your current token to USDC before depositing.",
         "goBridgeTips": "Only USDC on Arbitrum is supported for direct deposit. Please bridge your current token to USDC on Arbitrum before depositing.",
@@ -900,7 +942,7 @@
       "openPositionTips": "Trading perpetual contracts involves significant risk, including the potential for sudden and total loss of your investment and collateral due to high leverage and market volatility, and may not be suitable for all users. Prices may be influenced by funding rates and liquidity and you may be subject to automatic liquidations without notice. Market data provided by Hyperliquid.",
       "liquidationPriceTips": "The price at which your position is automatically closed by the exchange to prevent further losses when your margin falls below the maintenance margin level.",
       "sizeTips": "The total value or quantity of your trade, set by margin and leverage.",
-      "rabbyFeeTips": "Rabby fee: 0.04%",
+      "rabbyFeeTipsV2": "Rabby fee: 0.02%",
       "rabbyFeeTipsZero": "Rabby fee: 0%",
       "providerFeeTips": "Hyperliquid fee: {{fee}}",
       "timeAgo": "{{time}} ago",
@@ -980,6 +1022,279 @@
         "description": "Use Rabby’s code to enable",
         "hyperliquidFee": "Hyperliquid trading fees.",
         "activateNow": "Activate Now"
+      }
+    },
+    "perpsPro": {
+      "__skip_translation": ["TWAP", "TP", "SL"],
+      "chatArea": {
+        "markTips": "Used for margining, computing unrealized PNL, liquidations, and triggering TP/SL orders.",
+        "oracleTips": "The median of external prices reported by validators, used for computing funding rates.",
+        "openInterestTips": "Two sided-open interest: the sum of long and short positions on this contract.",
+        "fundingTips": "The hourly rate at which longs pay shorts (if negative, shorts pay longs). There are no fees associated with funding, which is a peer-to-peer transfer between users to push prices towards the spot price. See Docs for details.",
+        "symbol": "Symbol",
+        "searchMarkets": "Search markets",
+        "lastPrice": "Last Price",
+        "mark": "Mark",
+        "oracle": "Oracle",
+        "24hChange": "24h Change",
+        "openInterest": "Open Interest",
+        "24hVol": "24h Vol",
+        "volume": "Volume",
+        "fundingCountdown": "Funding / Countdown",
+        "8hrFunding": "8h Funding"
+      },
+      "userInfo": {
+        "tab": {
+          "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
+          "fundingTips": "Net funding payments since the position was opened. If negative, it means funding gains.",
+          "closedPnlTooltip": "Closed PNL includes fees and rebates",
+          "direction": "Direction",
+          "time": "Time",
+          "type": "Type",
+          "value": "Value",
+          "price": "Price",
+          "trigger": "Trigger",
+          "filled": "Filled",
+          "rate": "Rate",
+          "payment": "Payment",
+          "side": "Side",
+          "trade": "Trade",
+          "tradeValue": "Trade Value",
+          "closedPnl": "Closed Pnl",
+          "fee": "Fee",
+          "slice": "Slice",
+          "averagePrice": "Average Price",
+          "runningTimeTotal": "Running Time / Total",
+          "status": "Status",
+          "reduceOnly": "Reduce Only",
+          "creationTime": "Creation Time",
+          "terminate": "Terminate",
+          "order": "Order",
+          "coin": "Coin",
+          "size": "Size",
+          "markEntry": "Mark / Entry",
+          "unrealizedPnl": "Unrealized PnL",
+          "liqPrice": "Liq.price",
+          "margin": "Margin",
+          "funding": "Funding",
+          "tpSl": "TP/SL",
+          "positions": "Positions",
+          "openOrders": "Open Orders",
+          "twap": "TWAP",
+          "tradeHistory": "Trade History",
+          "fundingHistory": "Funding History",
+          "orderHistory": "Order History"
+        },
+        "emptyMessage": {
+          "openOrders": "No open orders",
+          "positions": "No positions",
+          "activeTwap": "No active TWAP",
+          "twapHistory": "No TWAP history",
+          "tradeHistory": "No trade history",
+          "fillHistory": "No fill history",
+          "fundingHistory": "No funding history",
+          "orderHistory": "No order history"
+        },
+        "positionInfo": {
+          "viewOrders": "View Orders",
+          "currentPosition": "Current Position",
+          "reversePosition": "Reverse Position",
+          "configure": "Configure",
+          "closeAll": "Close All",
+          "reverse": "Reverse",
+          "closeLimit": "Close Limit",
+          "closeMarket": "Close Market",
+          "close": "Close",
+          "limitPrice": "Limit Price",
+          "closePosition": "Close Position",
+          "closePositionTips": "This will attempt to close at your chosen limit price.",
+          "limitClose": "Limit Close",
+          "closePositionMarketTips": "This will close immediately at the current market price",
+          "mid": "Mid",
+          "receive": "Receive",
+          "closedPnl": "Closed PNL",
+          "newPosition": "New Position",
+          "closePositionReverseTips": "This will immediately close your position at the current market price and open a position of equal size in the opposite direction.",
+          "confirm": "Confirm"
+        },
+        "openOrders": {
+          "order": "Order",
+          "time": "Time",
+          "triggerConditions": "Trigger Conditions",
+          "tpSl": "TP/SL",
+          "type": "Type",
+          "orderValueSize": "Order Value / Size",
+          "filled": "Filled",
+          "cancelAll": "Cancel All",
+          "price": "Price",
+          "cancel": "Cancel",
+          "reduceOnly": "Reduce Only"
+        },
+        "distanceRiskTag": {
+          "goingDown": "Going down {{percent}} will trigger liquidation",
+          "goingUp": "Going up {{percent}} will trigger liquidation"
+        },
+        "twap": {
+          "activated": "Activated",
+          "completed": "Completed",
+          "terminated": "Terminated"
+        },
+        "history": "History",
+        "active": "Active",
+        "fillHistory": "Fill History",
+        "terminate": "Terminate",
+        "yes": "Yes",
+        "no": "No",
+        "randomized": "(randomized)"
+      },
+      "statusBar": {
+        "online": "Online",
+        "offline": "Offline",
+        "sound": "Enable Sound"
+      },
+      "tradingPanel": {
+        "atLeastTwoOrders": "At least two orders are required",
+        "liquidationPriceTooltip": "Position risk is low, so there is no liquidation price for the time being. Note that increasing the position or reducing the margin will increase the risk.",
+        "tpSlTips": "Places simple market TP/SL orders. For advanced features such as limited prices or partial TP/SL, set the TP/SL in an open position.",
+        "reduceOnlyTips": "This order will not open a new position no matter how large the order size is. It will compare to the existing position at the time of execution.",
+        "runtimeTooShort": "Runtime must be more than 5 minutes",
+        "runtimeTooLong": "Runtime must be less than 24 hours",
+        "slippagePage": {
+          "title": "Adjust Max Slippage",
+          "description": "Max slippage only affects market orders placed from the order form. Closing positions will use max slippage of 8% and market TP/SL orders will use max slippage of 10%.",
+          "maxSlippage": "Max slippage",
+          "minError": "Minimum slippage is 0%",
+          "maxError": "Maximum slippage is 100%"
+        },
+        "sizeSkewTooltip": "Ratio between end and start prices. For example, if size skew is 2.0 then a limit order for end price will be placed with twice the size of the start price. A size skew of 1.0 creates equally sized orders.",
+        "randomizeTooltip": "Randomizes the timing and size of sub-orders to reduce predictability.",
+        "reduceOnly": "Reduce Only",
+        "enableTrading": "Enable Trading",
+        "startPrice": "Start Price",
+        "endPrice": "End Price",
+        "start": "Start",
+        "end": "End",
+        "totalOrders": "Total Orders",
+        "sizeSkew": "Size skew",
+        "takeProfitExpectedPnL": "Take profit expected PnL",
+        "stopLossExpectedPnL": "Stop loss expected PnL",
+        "liquidationPrice": "Liquidation Price",
+        "orderValue": "Order Value",
+        "slippage": "Slippage",
+        "frequency": "Frequency",
+        "threeThirtySeconds": "30 Seconds",
+        "numberOfOrders": "Number of Orders",
+        "sizePerSuborder": "Size per Suborder",
+        "marginRequired": "Margin Required",
+        "marginUsage": "Margin Usage",
+        "marginIsolated": "Isolated",
+        "marginCross": "Cross",
+        "buyLong": "Buy / Long",
+        "sellShort": "Sell / Short",
+        "availableFunds": "Available Funds",
+        "currentPosition": "Current Position",
+        "tpSl": "TP / SL",
+        "placeOrder": "Place Order",
+        "type": "Type",
+        "limitPrice": "Limit Price",
+        "triggerPrice": "Trigger Price",
+        "enterAmount": "Please enter amount",
+        "insufficientBalance": "Insufficient balance",
+        "reduceOnlyTooLarge": "Reduce Only Too Large",
+        "minimumSuborderSize": "The minimum TWAP suborder size is $10",
+        "startAndEndPriceMustBeDifferent": "Start price and end price must be different",
+        "minimumOrderSize": "Minimum order size is $10",
+        "maximumOrderSize": "Maximum order size is {{amount}}",
+        "invalidTpPrice": "Invalid take profit price",
+        "limitOrderTypeOptions": {
+          "Gtc": "GTC (Good Til Cancel):Order will rest until filled or canceled",
+          "Ioc": "IOC (Immediate Or Cancel):Any portion that is not immediately filled will be canceled",
+          "Alo": "ALO (Add Liquidity Only):Order will exist only as a limit order on the book. Also known as post-only."
+        },
+        "aloTooLargeBuy" : "Alo order price must be lower than best ask price",
+        "aloTooLargeSell" : "Alo order price must be higher than best bid price",
+        "runtime": "Runtime",
+        "randomize": "Randomize",
+        "runtimeTips": "(5m-24h)",
+        "hours": "Hours",
+        "minutes": "Minutes",
+        "invalidSlPrice": "Invalid stop loss price",
+        "slBuyMustBeHigherThanMidPrice": "Stop buy order price must be higher than mid",
+        "slSellMustBeLowerThanMidPrice": "Stop sell order price must be lower than mid",
+        "tpBuyMustBeLowerThanMidPrice": "Take buy order price must be lower than mid",
+        "tpSellMustBeHigherThanMidPrice": "Take sell order price must be higher than mid",
+        "tpMustBeHigherThanCurrentPrice": "Take profit price must be higher than current price",
+        "slMustBeLowerThanCurrentPrice": "Stop loss price must be lower than current price",
+        "tpMustBeLowerThanCurrentPrice": "Take profit price must be lower than current price",
+        "slMustBeHigherThanCurrentPrice": "Stop loss price must be higher than current price"
+      },
+      "marginMode": {
+        "title": "Margin Mode",
+        "cross": "Cross",
+        "crossDescription": "All cross positions share the same cross margin as collateral. In the event of liquidation, your margin balance and any remaining open positions under cross in this mode may be forfeited.",
+        "isolated": "Isolated",
+        "isolatedDescription": "Manage your risk on individual positions by allocating the amount of margin allocated to each. If the margin ratio of an isolated position reaches 100%, the position will be liquidated. Margin can be added or removed to individual positions in this mode.",
+        "confirm": "Confirm"
+      },
+      "leverage": {
+        "title": "Adjust Leverage",
+        "controlPositionLeverage" : "Control the leverage used for {{coin}} positions. The maximum leverage is {{max}}x.",
+        "maxPositionSize": "Max position size decreases the higher your leverage.",
+        "higherLeverageRisk": "Higher leverage increases the risk of liquidation.",
+        "minError": "Minimum leverage is 1x",
+        "maxError": "Maximum leverage is {{max}}x",
+        "confirm": "Confirm"
+      },
+      "editTpSl": {
+        "entryPrice": "Entry Price:",
+        "markPrice": "Mark Price:",
+        "title": "Configure TP/SL",
+        "gain": "Gain",
+        "loss": "Loss",
+        "cancelTp": "Cancel TP",
+        "cancelSl": "Cancel SL",
+        "takeProfitExpectedPnl": "Take profit expected PnL",
+        "stopLossExpectedPnl": "Stop loss expected PnL",
+        "currentPosition": "Current Position",
+        "tp": "TP",
+        "sl": "SL",
+        "confirm": "Confirm"
+      },
+      "accountInfo": {
+        "balance": "Balance",
+        "balanceTip": "Total Net Transfers + Total Realized Profit + Total Net Funding Fees",
+        "accountEquity": "Account Equity",
+        "accountEquityTip": "Balance + Unrealized PNL (approximate account value if all positions were closed)",
+        "deposit": "Deposit",
+        "withdraw": "Withdraw",
+        "totalBalance": "Total Balance",
+        "availableBalance": "Available Balance",
+        "unrealizedPnl": "Unrealized P&L",
+        "crossMarginRatio": "Cross Margin Ratio",
+        "crossMarginRatioTips": "Maintenance Margin / Portfolio Value. Your cross positions will be liquidated if Margin Ratio reaches 100%.",
+        "crossAccountLeverage": "Cross Account Leverage",
+        "crossAccountLeverageTips": "Cross Account Leverage = Total Cross Position Value / Cross Account Value.",
+        "maintenanceMargin": "Maintenance margin",
+        "maintenanceMarginTips": "The minimum portfolio value required to keep your cross positions open"
+      },
+      "accountActions": {
+        "pending": "Pending",
+        "available": "Available",
+        "positionCount": "{{count}} positions",
+        "deposit": "Deposit"
+      },
+      "orderBook": {
+        "title": "Order Book",
+        "trades": "Trades",
+        "price": "Price",
+        "amount": "Amount",
+        "total": "Total",
+        "markPrice": "Mark Price",
+        "time": "Time",
+        "noTrades": "No trades",
+        "viewBoth": "Both",
+        "viewBids": "Bids",
+        "viewAsks": "Asks"
       }
     },
     "perpsDetail": {
@@ -1431,7 +1746,8 @@
         "title": "This token has a low credit value",
         "desc": "A low credit value often signals high risk, such as a honeypot token or very low liquidity."
       },
-      "understandRisks": "I understand the risks and want to continue"
+      "understandRisks": "I understand the risks and want to continue",
+      "search-by-token-name-address": "Search Token Name / Address"
     },
     "bridge": {
       "From": "From",
@@ -3228,7 +3544,9 @@
     },
     "search": {
       "sectionHeader": {
-        "__skip_translation": ["Defi"],
+        "__skip_translation": [
+          "Defi"
+        ],
         "token": "Tokens",
         "Defi": "DeFi",
         "NFT": "NFT",
@@ -3308,7 +3626,9 @@
         "pending": "{{pendingTxCount}} Pending"
       },
       "tabs": {
-        "__skip_translation": ["defi"],
+        "__skip_translation": [
+          "defi"
+        ],
         "tokens": "Tokens",
         "transactions": "Transactions",
         "approvals": "Approvals",
@@ -3593,11 +3913,12 @@
         "value": "Value",
         "liquidity": "Liquidity",
         "liquidityTips": "The higher the historical trade volume, the more likely the bridge will succeed.",
-        "low": "Low",
-        "high": "High"
+        "low": "Low liquidity",
+        "high": "High liquidity"
       },
       "searchInput": {
-        "placeholder": "Search by Name / Address"
+        "placeholder": "Search by Name / Address",
+        "placeholder1": "Search Token Name / Address"
       },
       "header": {
         "title": "Select Token"
@@ -3664,7 +3985,10 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
@@ -3677,6 +4001,7 @@
       "portfolio": "Portfolio",
       "perps": "Perps",
       "lending": "Lending",
+      "prediction": "Prediction",
       "comingSoon": "Coming Soon",
       "prediction": "Prediction"
     },

@@ -56,12 +56,12 @@ const ImportPrivateKey: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
       });
       clearClipboard();
       if (UI_TYPE.isDesktop) {
+        const searchParams = new URLSearchParams(history.location.search);
+        searchParams.set('action', 'add-address');
+        searchParams.set('import', 'success');
         history.replace({
           pathname: history.location.pathname,
-          search: `?${qs.stringify({
-            action: 'add-address',
-            import: 'success',
-          })}`,
+          search: searchParams.toString(),
           state: {
             accounts: successShowAccounts,
             title: t('page.newAddress.importedSuccessfully'),

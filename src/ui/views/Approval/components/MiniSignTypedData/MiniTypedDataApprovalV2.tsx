@@ -222,6 +222,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
       >
         <MiniFooterBar
           // directSubmit={directSubmit}
+          getContainer={config?.getContainer}
           directSubmit={config?.mode !== 'UI'}
           hasShadow={false}
           origin={INTERNAL_REQUEST_SESSION.origin}

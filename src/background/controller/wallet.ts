@@ -1067,9 +1067,11 @@ export class WalletController extends BaseController {
       swapPreferMEVGuarded?: boolean;
       isBridge?: boolean;
     },
-    isBuild = false
+    isBuild = false,
+    currentAccount?: Account
   ) => {
-    const account = await preferenceService.getCurrentAccount();
+    const account =
+      currentAccount || (await preferenceService.getCurrentAccount());
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const chainId = findChain({
       serverId: chainServerId,
@@ -5712,11 +5714,19 @@ export class WalletController extends BaseController {
   getAgentWalletPreference = async (masterWallet: string) => {
     return perpsService.getAgentWalletPreference(masterWallet);
   };
+  getPerpsFavoritedCoins = perpsService.getPerpsFavoritedCoins;
+  setPerpsFavoritedCoins = perpsService.setPerpsFavoritedCoins;
+  getMarketSlippage = perpsService.getMarketSlippage;
+  setMarketSlippage = perpsService.setMarketSlippage;
+  getSoundEnabled = perpsService.getSoundEnabled;
+  setSoundEnabled = perpsService.setSoundEnabled;
   updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
   setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;
   getSendApproveAfterDeposit = async (masterAddress: string) => {
     return perpsService.getSendApproveAfterDeposit(masterAddress);
   };
+  getPerpsQuoteUnit = perpsService.getQuoteUnit;
+  setPerpsQuoteUnit = perpsService.setQuoteUnit;
   setHasDoneNewUserProcess = perpsService.setHasDoneNewUserProcess;
   getHasDoneNewUserProcess = perpsService.getHasDoneNewUserProcess;
   getPerpsAgentWallet = async (masterWallet: string) => {

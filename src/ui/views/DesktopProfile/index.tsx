@@ -43,6 +43,7 @@ import { TokenTab } from './components/TokensTabPane/TokenTab';
 import { DIFITab } from './components/TokensTabPane/DifiTab';
 import { useTokenAndDIFIData } from './components/TokensTabPane/hook';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
+import { SwitchThemeBtn } from './components/SwitchThemeBtn';
 
 const StickyBorderTop = () => (
   <div className="sticky h-0 z-50" style={{ top: DESKTOP_NAV_HEIGHT }}>
@@ -179,24 +180,6 @@ export const DesktopProfile = () => {
     // window.location.reload();
     handleUpdate();
   });
-
-  const isReportedRef = useRef(false);
-  useEffect(() => {
-    if (isReportedRef.current) {
-      return;
-    }
-    if (!action) {
-      matomoRequestEvent({
-        category: 'RabbyWeb_Active',
-        action: 'RabbyWeb_Portfolio',
-      });
-
-      ga4.fireEvent('RabbyWeb_Active', {
-        event_category: 'RabbyWeb_Portfolio',
-      });
-      isReportedRef.current = true;
-    }
-  }, [action]);
 
   return (
     <>
@@ -345,9 +328,15 @@ export const DesktopProfile = () => {
           </div>
         </div>
         <aside
-          className={clsx('min-w-[64px] flex-shrink-0 sticky z-20')}
-          style={{ top: DESKTOP_NAV_HEIGHT }}
+          className={clsx('min-w-[64px] flex-shrink-0 sticky z-20 top-0')}
+          // style={{ top: DESKTOP_NAV_HEIGHT }}
         >
+          <div
+            className="flex items-center justify-end"
+            style={{ height: `${DESKTOP_NAV_HEIGHT}px` }}
+          >
+            <SwitchThemeBtn />
+          </div>
           <DesktopSelectAccountList />
         </aside>
       </DesktopPageWrap>

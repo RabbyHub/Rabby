@@ -2,6 +2,7 @@ import {
   PortfolioItem,
   PortfolioItemToken,
   TokenItem,
+  TokenItemWithEntity,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { CHAINS } from 'consts';
 import { DisplayedProject } from './project';
@@ -10,6 +11,7 @@ import { requestOpenApiWithChainId } from '@/ui/utils/openapi';
 import { isTestnet as checkIsTestnet } from '@/utils/chain';
 import { pQueue } from './utils';
 import { flatten } from 'lodash';
+import { isSameAddress } from '..';
 
 export const queryTokensCache = async (
   user_id: string,
@@ -135,4 +137,42 @@ export const concatAndSort = <
       const bValue = (b.price ?? 0) * (b.amount ?? 0);
       return bValue - aValue;
     });
+};
+
+export const contactAmountTokens = (
+  withoutAmountTokens: TokenItemWithEntity[],
+  withAmountTokens: TokenItem[]
+) => {
+  return withoutAmountTokens.map((item) => {
+    const _targetToken = withAmountTokens.find(
+      (token) => isSameAddress(token.id, item.id) && token.chain === item.chain
+    );
+    return {
+      ...item,
+      amount: _targetToken?.amount || item.amount || 0,
+      raw_amount: _targetToken?.raw_amount || item.raw_amount || '0',
+      raw_amount_hex_str:
+        _targetToken?.raw_amount_hex_str || item.raw_amount_hex_str || '',
+    };
+  });
+};
+
+export const getCexIds = (token: TokenItemWithEntity) => {
+  return (
+    token.cex_ids || token.identity?.cex_list?.map((item) => item.id) || []
+  );
+};
+
+export const scamTokenFilter = (item: {
+  is_suspicious?: boolean | null;
+  is_verified?: boolean | null;
+  is_core?: boolean | null;
+}) => {
+  const manualTagScam = item.is_verified === false;
+  const maybeScam = item.is_suspicious === true;
+  const manualTagNotCore = item.is_core === false;
+  if (manualTagScam || maybeScam || manualTagNotCore) {
+    return false;
+  }
+  return true;
 };

@@ -54,11 +54,8 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
         </TooltipWithMagnetArrow>
       </div>
       <div className="flex flex-1 flex-col gap-2 overflow-hidden">
-        <span className="text-r-neutral-title-1 text-13 font-medium leading-[15px] truncate">
-          {item._amountStr}
-        </span>
         <LpContainer>
-          <span className="text-r-neutral-foot text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden inner-symbol">
+          <span className="text-r-neutral-title-1 font-medium text-15 leading-[15px] whitespace-nowrap overflow-ellipsis overflow-hidden inner-symbol">
             {item.symbol}
           </span>
           {isLpToken(item) && (
@@ -70,6 +67,9 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
             />
           )}
         </LpContainer>
+        <span className="text-r-neutral-foot text-13 leading-[14px] truncate whitespace-nowrap overflow-ellipsis overflow-hidden">
+          {item._amountStr} {item.symbol}
+        </span>
       </div>
     </TCell>
   );
@@ -84,7 +84,11 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
       )}
     >
       <div>${item._priceStr}</div>
-      {isNil(item.price_24h_change) ? null : (
+      {isNil(item.price_24h_change) ? (
+        <span className="text-r-neutral-foot text-13 font-medium leading-[14px]">
+          0%
+        </span>
+      ) : (
         <div
           className={clsx('font-normal text-12', {
             'text-green': item.price_24h_change > 0,
@@ -107,6 +111,36 @@ const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
   );
 };
 
+const TokenItemMarketInfo: React.FC<Props> = ({ item }) => {
+  return (
+    <TCell className={clsx('flex flex-col gap-2')}>
+      <div className="text-r-neutral-title-1 font-medium text-15 leading-[15px] text-right truncate">
+        {item._usdValueStr || '<$0.01'}
+      </div>
+      <div className="flex flex-row gap-4 items-center justify-end">
+        <div className="text-r-neutral-foot text-13 leading-[14px]">
+          @${item._priceStr}
+        </div>
+        {isNil(item.price_24h_change) ? (
+          <span className="text-r-neutral-foot text-13 font-medium leading-[14px]">
+            0%
+          </span>
+        ) : (
+          <div
+            className={clsx('font-medium text-13 leading-[14px]', {
+              'text-green': item.price_24h_change > 0,
+              'text-red-forbidden': item.price_24h_change < 0,
+            })}
+          >
+            {item.price_24h_change > 0 ? '+' : ''}
+            {(item.price_24h_change * 100).toFixed(2)}%
+          </div>
+        )}
+      </div>
+    </TCell>
+  );
+};
+
 export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
   return (
     <TRow
@@ -117,13 +151,13 @@ export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
       }}
       className={clsx(
         'cursor-pointer',
-        'rounded-[8px] border border-transparent bg-r-neutral-card1 h-[60px] mt-8 pl-12 pr-16',
+        'h-[60px] mt-8 pl-12 pr-16 justify-between',
+        'rounded-[8px] border border-transparent bg-r-neutral-card1',
         'hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10'
       )}
     >
       <TokenItemAsset item={item} />
-      <TokenItemPrice item={item} />
-      <TokenItemUSDValue item={item} />
+      <TokenItemMarketInfo item={item} />
     </TRow>
   );
 };
