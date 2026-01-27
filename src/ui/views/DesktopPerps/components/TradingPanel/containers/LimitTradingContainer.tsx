@@ -223,8 +223,10 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         isBuy: orderSide === OrderSide.BUY,
         size: tradeSize,
         limitPx: limitPrice,
-        tpTriggerPx: tpslConfig.takeProfit.price,
-        slTriggerPx: tpslConfig.stopLoss.price,
+        tpTriggerPx: tpslConfig.enabled
+          ? tpslConfig.takeProfit.price
+          : undefined,
+        slTriggerPx: tpslConfig.enabled ? tpslConfig.stopLoss.price : undefined,
         reduceOnly,
         orderType: limitOrderType,
       });

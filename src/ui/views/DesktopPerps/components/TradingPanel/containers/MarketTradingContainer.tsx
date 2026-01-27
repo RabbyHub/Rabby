@@ -149,8 +149,10 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         isBuy: orderSide === OrderSide.BUY,
         size: tradeSize,
         midPx: midPrice.toString(),
-        tpTriggerPx: tpslConfig.takeProfit.price,
-        slTriggerPx: tpslConfig.stopLoss.price,
+        tpTriggerPx: tpslConfig.enabled
+          ? tpslConfig.takeProfit.price
+          : undefined,
+        slTriggerPx: tpslConfig.enabled ? tpslConfig.stopLoss.price : undefined,
         reduceOnly,
         slippage: marketSlippage,
       });
