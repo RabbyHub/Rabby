@@ -74,7 +74,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
 import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
 import { is } from 'immer/dist/internal';
-import { isEqual } from 'lodash';
+import { isEqual, transform } from 'lodash';
 
 const GlobalStyle = createGlobalStyle`
   .rabby-dashboard-panel-container {
@@ -694,13 +694,18 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const ref = useRef<HTMLDivElement | null>(null);
   const scroll = useScroll(ref);
-  const scrollRatio = useMemo(() => {
+  const { scrollRatio, scrollOffset, visibleFooterHeight } = useMemo(() => {
     const top = scroll?.top ?? 0;
     const height = ref.current?.getBoundingClientRect()?.height ?? 0;
-    const scrollHeight = ref.current?.scrollHeight ?? 440;
+    const scrollHeight = ref.current?.scrollHeight ?? 440 + FOOTER_HEIGHT;
     const ratio = top / (scrollHeight - FOOTER_HEIGHT - height);
-    return ratio > 1 ? 1 : ratio;
+    return {
+      scrollRatio: ratio > 1 ? 1 : ratio,
+      scrollOffset: scrollHeight - height - top,
+      visibleFooterHeight: FOOTER_HEIGHT - (scrollHeight - height - top),
+    };
   }, [scroll?.top]);
+
   const { isDarkTheme } = useThemeMode();
 
   return (
@@ -838,12 +843,21 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           </DndContext>
           <footer className={clsx('bg-r-neutral-bg-2 mt-[1px]')}>
             <div
-              className="bg-r-neutral-card-1 flex items-start justify-center py-[10px] gap-[2px] text-r-neutral-foot"
+              className="bg-r-neutral-card-1  text-r-neutral-foot"
               style={{ height: FOOTER_HEIGHT }}
             >
-              <RcIconLampCC />
-              <div className="text-[12px] leading-[14px]">
-                {t('page.dashboard.home.panel.dragTip')}
+              <div
+                className="flex items-end justify-center py-[10px] gap-[2px]"
+                style={{
+                  height: visibleFooterHeight,
+                  maxHeight: FOOTER_HEIGHT,
+                  minHeight: 35,
+                }}
+              >
+                <RcIconLampCC />
+                <div className="text-[12px] leading-[14px]">
+                  {t('page.dashboard.home.panel.dragTip')}
+                </div>
               </div>
             </div>
           </footer>
