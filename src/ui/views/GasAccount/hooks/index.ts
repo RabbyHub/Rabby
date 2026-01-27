@@ -20,6 +20,8 @@ import {
   supportedDirectSign,
   supportedHardwareDirectSign,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { SignatureSteps } from '@/ui/component/MiniSignV2';
+import { KEYRING_TYPE } from '@/constant';
 
 export const useGasAccountRefresh = () => {
   const refreshId = useGasAccountRefreshId();
@@ -116,7 +118,6 @@ export const useGasAccountMethods = () => {
         const miniSign = supportedHardwareDirectSign(account.type);
         let signature = '';
         if (miniSign) {
-          // startDirectSigning(true);
           const [hash] = (await personalMessagePromise.present({
             autoSign: true,
             account,
@@ -127,6 +128,12 @@ export const useGasAccountMethods = () => {
 
           signature = hash;
         } else {
+          if (account.type === KEYRING_TYPE.HdKeyring) {
+            await SignatureSteps.invokeEnterPassphraseModal({
+              wallet: wallet,
+              value: account.address,
+            });
+          }
           const { txHash } = await sendPersonalMessage({
             data: [text, account.address],
             wallet,
