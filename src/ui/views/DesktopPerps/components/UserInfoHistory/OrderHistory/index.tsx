@@ -30,7 +30,7 @@ export const OrderHistory: React.FC = () => {
   const fetchHistoricalOrders = useCallback(() => {
     const sdk = getPerpsSDK();
     sdk.info.getUserHistoricalOrders().then((res) => {
-      dispatch.perps.patchState({ historicalOrders: res.slice(0, 200) });
+      dispatch.perps.patchState({ historicalOrders: res.slice(0, 2000) });
     });
   }, []);
 
@@ -264,6 +264,8 @@ export const OrderHistory: React.FC = () => {
       rowKey={(record) => `${record.order.oid}-${record.status}`}
       defaultSortField="statusTimestamp"
       defaultSortOrder="descend"
-    ></CommonTable>
+      virtual
+      rowHeight={32}
+    />
   );
 };

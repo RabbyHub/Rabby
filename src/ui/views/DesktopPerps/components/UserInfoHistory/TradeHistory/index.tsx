@@ -32,7 +32,7 @@ export const TradeHistory: React.FC = () => {
     const sdk = getPerpsSDK();
     sdk.info.getUserFills().then((res) => {
       dispatch.perps.patchState({
-        userFills: res.slice(0, 200),
+        userFills: res.slice(0, 2000),
       });
     });
   }, []);
@@ -65,7 +65,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         key: 'coin',
         dataIndex: 'coin',
-        width: 60,
+        width: 80,
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
           return (
@@ -223,6 +223,8 @@ export const TradeHistory: React.FC = () => {
       rowKey="hash"
       defaultSortField="time"
       defaultSortOrder="descend"
+      virtual
+      rowHeight={48}
     ></CommonTable>
   );
 };

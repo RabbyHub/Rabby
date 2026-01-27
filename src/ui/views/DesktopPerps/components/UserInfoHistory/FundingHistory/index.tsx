@@ -137,6 +137,8 @@ export const FundingHistory: React.FC = () => {
       showSorterTooltip={false}
       defaultSortField="time"
       defaultSortOrder="descend"
+      virtual
+      rowHeight={32}
     />
   );
 };

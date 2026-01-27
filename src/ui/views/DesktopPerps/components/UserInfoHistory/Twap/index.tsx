@@ -1,5 +1,5 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CommonTable } from '../CommonTable';
 import { ColumnType } from 'antd/lib/table';
 import {
@@ -72,6 +72,17 @@ export const Twap: React.FC = () => {
 
     return orders;
   }, [twapStates, twapHistory, twapSliceFills]);
+
+  const fetchUserTwapSliceFills = useCallback(() => {
+    const sdk = getPerpsSDK();
+    sdk.info.getUserTwapSliceFills().then((res) => {
+      dispatch.perps.patchState({ twapSliceFills: res.slice(0, 2000) });
+    });
+  }, []);
+
+  useEffect(() => {
+    activeTab === 'active' && fetchUserTwapSliceFills();
+  }, [activeTab]);
 
   const historyTwapOrders = useMemo(() => {
     const orders: TwapOrder[] = [];
@@ -691,6 +702,8 @@ export const Twap: React.FC = () => {
             rowKey={(record) => `${record.twapId}-${record.fill.tid}`}
             defaultSortField="time"
             defaultSortOrder="descend"
+            virtual
+            rowHeight={32}
           />
         ) : (
           <CommonTable
