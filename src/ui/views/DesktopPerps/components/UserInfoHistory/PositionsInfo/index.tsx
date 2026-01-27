@@ -37,7 +37,7 @@ import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
-import { isScreenSmall } from '../../../utils';
+import { handleDisplayFundingPayments, isScreenSmall } from '../../../utils';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -461,12 +461,7 @@ export const PositionsInfo: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
-              {Number(record.sinceOpenFunding || 0) === 0
-                ? ''
-                : Number(record.sinceOpenFunding || 0) < 0
-                ? ''
-                : '-'}
-              {formatUsdValue(Math.abs(Number(record.sinceOpenFunding || 0)))}
+              {handleDisplayFundingPayments(record.sinceOpenFunding)}
             </div>
           );
         },

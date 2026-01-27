@@ -7,6 +7,7 @@ import { perpsToast } from './components/PerpsToast';
 import i18n from '@/i18n';
 import { splitNumberByStep } from '@/ui/utils';
 import { playSound } from '@/ui/utils/sound';
+import BigNumber from 'bignumber.js';
 
 export const getPositionDirection = (
   position: PositionAndOpenOrder['position']
@@ -166,4 +167,17 @@ function createOption(
 
 export const isScreenSmall = () => {
   return window.innerWidth < 1680;
+};
+
+export const handleDisplayFundingPayments = (fundingPayments: string) => {
+  const bn = new BigNumber(fundingPayments || 0);
+  if (bn.isZero()) {
+    return '$0.00';
+  }
+  const sign = bn.isNegative() ? '-' : '';
+  if (bn.abs().lt(0.01)) {
+    return sign + '$0.01';
+  }
+
+  return sign + '$' + bn.toFixed(2);
 };

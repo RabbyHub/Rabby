@@ -1280,6 +1280,7 @@
       "accountActions": {
         "pending": "Pending",
         "available": "Available",
+        "onePosition": "1 position",
         "positionCount": "{{count}} positions",
         "deposit": "Deposit"
       },
