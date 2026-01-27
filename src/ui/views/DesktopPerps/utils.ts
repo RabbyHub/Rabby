@@ -179,5 +179,5 @@ export const handleDisplayFundingPayments = (fundingPayments: string) => {
     return sign + '$0.01';
   }
 
-  return sign + '$' + bn.toFixed(2);
+  return sign + '$' + bn.abs().toFixed(2);
 };
