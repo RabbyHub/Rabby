@@ -1,35 +1,30 @@
-import { CHAINS_ENUM, KEYRING_TYPE, ThemeIconType } from '@/constant';
+import { KEYRING_TYPE, ThemeIconType } from '@/constant';
 import RateModal from '@/ui/component/RateModal/RateModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { usePerpsHomePnl } from '@/ui/views/Perps/hooks/usePerpsHomePnl';
-import { findChainByID } from '@/utils/chain';
 import { appIsDev } from '@/utils/env';
 import { ga4 } from '@/utils/ga4';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { Badge, Col, Row, Skeleton, Tooltip } from 'antd';
+import {
+  closestCenter,
+  DndContext,
+  DragOverlay,
+  MeasuringStrategy,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { DragEndEvent } from '@dnd-kit/core/dist/types';
+import { SortableContext, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { Badge, Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import styled, { createGlobalStyle } from 'styled-components';
-import {
-  DndContext,
-  MeasuringStrategy,
-  MouseSensor,
-  useSensor,
-  useSensors,
-  DragOverlay,
-  closestCenter,
-  pointerWithin,
-  rectIntersection,
-  getFirstCollision,
-  PointerSensor,
-} from '@dnd-kit/core';
-import { DragEndEvent } from '@dnd-kit/core/dist/types';
-import { SortableContext, useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { createGlobalStyle } from 'styled-components';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 import { ReactComponent as RcIconGift } from 'ui/assets/gift-14.svg';
@@ -37,25 +32,28 @@ import { ReactComponent as RcIconGift } from 'ui/assets/gift-14.svg';
 import {
   RcIconApprovalsCC,
   RcIconBridgeCC,
+  RcIconDappsCC,
   RcIconGasAccountCC,
+  RcIconLampCC,
+  RcIconManageCC,
   RcIconMobileSyncCC,
-  RcIconSettingCC,
   RcIconNftCC,
   RcIconPerpsCC,
   RcIconPointsCC,
+  RcIconPrediction,
   RcIconReceiveCC,
+  RcIconSearchCC,
   RcIconSendCC,
+  RcIconSettingCC,
   RcIconSwapCC,
   RcIconTransactionsCC,
-  RcIconSearchCC,
-  RcIconDappsCC,
-  RcIconManageCC,
-  RcIconPrediction,
-  RcIconLampCC,
 } from 'ui/assets/dashboard/panel';
 
-import { useGasAccountInfo } from '@/ui/views/GasAccount/hooks';
-import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
+import { RcIconExternal1CC } from '@/ui/assets/dashboard';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
+import { useMemoizedFn, useMount, useScroll } from 'ahooks';
+import { isEqual } from 'lodash';
 import {
   formatGasAccountUsdValueV2,
   formatUsdValue,
@@ -65,16 +63,10 @@ import {
 } from 'ui/utils';
 import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadgeModal';
 import { EcologyPopup } from '../EcologyPopup';
-import { Settings } from '../index';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
-import { RcIconExternal1CC, RcIconFullscreenCC } from '@/ui/assets/dashboard';
 import { RecentConnectionsPopup } from '../RecentConnections';
-import { useMemoizedFn, useMount, useScroll, useSize } from 'ahooks';
-import { useThemeMode } from '@/ui/hooks/usePreference';
-import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
-import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
-import { is } from 'immer/dist/internal';
-import { isEqual, transform } from 'lodash';
+
+const FOOTER_HEIGHT = 160;
 
 const GlobalStyle = createGlobalStyle`
   .rabby-dashboard-panel-container {
@@ -85,6 +77,27 @@ const GlobalStyle = createGlobalStyle`
       gap: 1px;
 
       scroll-snap-align: end;
+    }
+
+    .dashboard-panel-footer {
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      margin-top: 1px;
+      background-color: var(--r-neutral-bg-2, #f2f4f7);
+      height: ${FOOTER_HEIGHT}px;
+
+      position: relative;
+
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--r-neutral-card1, #fff);
+      }
     }
 
     .panel-item {
@@ -294,8 +307,6 @@ const SortablePanelItem: React.FC<{
     </div>
   );
 };
-
-const FOOTER_HEIGHT = 150;
 
 export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   onSettingClick,
@@ -694,16 +705,12 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const ref = useRef<HTMLDivElement | null>(null);
   const scroll = useScroll(ref);
-  const { scrollRatio, scrollOffset, visibleFooterHeight } = useMemo(() => {
+  const scrollRatio = useMemo(() => {
     const top = scroll?.top ?? 0;
     const height = ref.current?.getBoundingClientRect()?.height ?? 0;
     const scrollHeight = ref.current?.scrollHeight ?? 440 + FOOTER_HEIGHT;
     const ratio = top / (scrollHeight - FOOTER_HEIGHT - height);
-    return {
-      scrollRatio: ratio > 1 ? 1 : ratio,
-      scrollOffset: scrollHeight - height - top,
-      visibleFooterHeight: FOOTER_HEIGHT - (scrollHeight - height - top),
-    };
+    return ratio > 1 ? 1 : ratio;
   }, [scroll?.top]);
 
   const { isDarkTheme } = useThemeMode();
@@ -841,23 +848,17 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
               </>
             </DragOverlay>
           </DndContext>
-          <footer className={clsx('bg-r-neutral-bg-2 mt-[1px]')}>
+          <footer className="dashboard-panel-footer">
             <div
-              className="bg-r-neutral-card-1  text-r-neutral-foot"
-              style={{ height: FOOTER_HEIGHT }}
+              className={clsx(
+                'text-r-neutral-foot ',
+                'flex items-center justify-center py-[10px] gap-[2px]',
+                'sticky bottom-0'
+              )}
             >
-              <div
-                className="flex items-end justify-center py-[10px] gap-[2px]"
-                style={{
-                  height: visibleFooterHeight,
-                  maxHeight: FOOTER_HEIGHT,
-                  minHeight: 35,
-                }}
-              >
-                <RcIconLampCC />
-                <div className="text-[12px] leading-[14px]">
-                  {t('page.dashboard.home.panel.dragTip')}
-                </div>
+              <RcIconLampCC />
+              <div className="text-[12px] leading-[14px]">
+                {t('page.dashboard.home.panel.dragTip')}
               </div>
             </div>
           </footer>
