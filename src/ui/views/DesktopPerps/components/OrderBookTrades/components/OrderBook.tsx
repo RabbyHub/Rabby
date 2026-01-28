@@ -237,16 +237,16 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     if (!marketEstSize) return;
     let estPrice = '';
     const isBuy = Number(marketEstSize) > 0;
-    const arr = isBuy ? asks : bids;
-    arr.forEach((item, index) => {
-      if (
-        item.total > Math.abs(Number(marketEstSize)) ||
-        index === arr.length - 1
-      ) {
+    const arr = isBuy ? bids : asks;
+    for (const item of arr) {
+      if (item.total >= Math.abs(Number(marketEstSize))) {
         estPrice = item.price;
-        return;
+        break;
       }
-    });
+    }
+    if (!estPrice) {
+      estPrice = arr[arr.length - 1].price;
+    }
     dispatch.perps.patchState({
       marketEstPrice: estPrice,
     });
@@ -263,10 +263,6 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const priceChange = currentMarketData?.prevDayPx
     ? Number(currentMarketData.markPx) - Number(currentMarketData.prevDayPx)
     : 0;
-  const priceChangePercent = currentMarketData?.prevDayPx
-    ? (priceChange / Number(currentMarketData.prevDayPx)) * 100
-    : 0;
-  const isPositive = priceChange >= 0;
 
   return (
     <div className="h-full flex flex-col bg-rb-neutral-bg-1 whitespace-nowrap">

@@ -169,7 +169,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   const orderSummary: OrderSummaryData = React.useMemo(() => {
     const estSlippage =
       estPrice && Number(positionSize.amount) > 0
-        ? (Number(estPrice) - Number(markPrice)) / Number(markPrice)
+        ? (Number(estPrice) - Number(midPrice)) / Number(midPrice)
         : 0;
 
     const getExpectedPnL = (percentage: string) => {
@@ -177,7 +177,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         ? (Number(percentage) * marginRequired) / 100
         : 0;
     };
-    const orderValue = Number(tradeSize) * Number(markPrice);
+    const orderValue = Number(tradeSize) * Number(midPrice);
     return {
       tpExpectedPnL: 1 * getExpectedPnL(tpslConfig.takeProfit.percentage),
       slExpectedPnL: -1 * getExpectedPnL(tpslConfig.stopLoss.percentage),
