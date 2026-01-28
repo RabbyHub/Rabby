@@ -60816,7 +60816,9 @@
             "TextDecoder": "r",
             "TextEncoder": "r",
             "Window": "r",
+            "crypto": "r",
             "global": "r",
+            "localStorage": "r",
             "module": "r",
             "queueMicrotask": "r",
             "toString": "r"
