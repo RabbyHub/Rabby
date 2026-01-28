@@ -81,8 +81,8 @@ export const Twap: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    activeTab === 'active' && fetchUserTwapSliceFills();
-  }, [activeTab]);
+    fetchUserTwapSliceFills();
+  }, []);
 
   const historyTwapOrders = useMemo(() => {
     const orders: TwapOrder[] = [];
