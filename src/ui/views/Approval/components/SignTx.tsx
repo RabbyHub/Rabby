@@ -598,6 +598,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     reqId,
     safeTxGas,
     authorizationList,
+    operation,
   } = useMemo(() => {
     return normalizeTxParams(params.data[0]);
   }, [params.data]);
@@ -652,6 +653,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         value,
         authorizationList:
           params?.$ctx?.eip7702RevokeAuthorization || authorizationList,
+        operation,
       },
       !enable7702 ? ['authorizationList'] : []
     ) as any
@@ -1104,6 +1106,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         data: tx.data,
         value: tx.value,
         safeTxGas: safeTxGas,
+        operation: (tx as any).operation,
       };
       params.nonce = realNonce;
       await wallet.buildGnosisTransaction(
