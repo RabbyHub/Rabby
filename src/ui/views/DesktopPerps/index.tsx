@@ -39,7 +39,9 @@ const Wrap = styled.div`
 
 export type PopupType = DepositWithdrawModalType | 'add-address' | null;
 
-export const DesktopPerps: React.FC = () => {
+export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
+  isActive = true,
+}) => {
   usePerpsProInit();
 
   const history = useHistory();
