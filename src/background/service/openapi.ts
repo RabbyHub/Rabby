@@ -103,9 +103,6 @@ const service = new OpenApiService({
   store: proxyStore,
 });
 
-// TODO: 移动端抄过来的，放在这不一定合适，用的组件调用也行？
-service.initSync();
-
 export const testnetOpenapiService = new OpenApiService({
   plugin: WebSignApiPlugin,
   adapter: fetchAdapter,
