@@ -236,7 +236,7 @@ const PositionItem: React.FC<{
         <div
           className={clsx(
             'cursor-pointer text-r-blue-default font-medium text-[12px] text-center',
-            'px-[12px] w-min',
+            'px-[12px]',
             'h-[24px] leading-[24px]',
             'border-[0.5px] border-r-blue-default rounded-[6px]',
             'hover:bg-r-blue-light1'

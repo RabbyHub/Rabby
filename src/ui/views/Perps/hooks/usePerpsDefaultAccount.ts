@@ -36,12 +36,13 @@ export const usePerpsDefaultAccount = ({
         if (recentlyAccount && isExist) {
           dispatch.perps.setCurrentPerpsAccount(recentlyAccount);
 
-          sdk.initAccount(recentlyAccount.address);
-          !isPro &&
+          if (!isPro) {
+            sdk.initAccount(recentlyAccount.address);
             dispatch.perps.subscribeToUserData({
               address: recentlyAccount.address,
               isPro,
             });
+          }
         } else {
           const top10 = uniqBy(accounts, (item) => item.address.toLowerCase())
             .filter((item) => {
@@ -87,21 +88,23 @@ export const usePerpsDefaultAccount = ({
               Number(best.info?.marginSummary.accountValue || 0) > 0
             ) {
               dispatch.perps.setCurrentPerpsAccount(best.account);
-              sdk.initAccount(best.account.address);
-              !isPro &&
+              if (!isPro) {
+                sdk.initAccount(best.account.address);
                 dispatch.perps.subscribeToUserData({
                   address: best.account.address,
                   isPro,
                 });
+              }
             } else {
               const fallbackAccount = top10[0] || accounts[0];
               dispatch.perps.setCurrentPerpsAccount(fallbackAccount);
-              sdk.initAccount(fallbackAccount.address);
-              !isPro &&
+              if (!isPro) {
+                sdk.initAccount(fallbackAccount.address);
                 dispatch.perps.subscribeToUserData({
                   address: fallbackAccount.address,
                   isPro,
                 });
+              }
             }
           }
         }
