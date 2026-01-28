@@ -66,7 +66,7 @@ import { EcologyPopup } from '../EcologyPopup';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
 import { RecentConnectionsPopup } from '../RecentConnections';
 
-const FOOTER_HEIGHT = 160;
+const FOOTER_HEIGHT = 88;
 
 const GlobalStyle = createGlobalStyle`
   .rabby-dashboard-panel-container {
@@ -81,7 +81,7 @@ const GlobalStyle = createGlobalStyle`
 
     .dashboard-panel-footer {
       display: flex;
-      align-items: end;
+      align-items: start;
       justify-content: center;
       margin-top: 1px;
       background-color: var(--r-neutral-bg-2, #f2f4f7);
@@ -851,9 +851,10 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           <footer className="dashboard-panel-footer">
             <div
               className={clsx(
-                'text-r-neutral-foot ',
+                'text-r-neutral-foot',
                 'flex items-center justify-center py-[10px] gap-[2px]',
-                'sticky bottom-0'
+                // 'sticky bottom-0'
+                'relative z-10'
               )}
             >
               <RcIconLampCC />
