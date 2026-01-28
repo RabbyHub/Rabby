@@ -71,6 +71,18 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     formatTpOrSlPrice(midPrice, szDecimals)
   );
 
+  const limitMaxTradeSize = React.useMemo(() => {
+    const price = new BigNumber(limitPrice);
+    const balance = new BigNumber(availableBalance);
+    if (price.gt(0) && balance.gt(0)) {
+      return balance
+        .multipliedBy(leverage)
+        .div(price)
+        .toFixed(szDecimals, BigNumber.ROUND_DOWN);
+    }
+    return maxTradeSize;
+  }, [limitPrice, availableBalance, leverage, maxTradeSize, szDecimals]);
+
   // Calculate liquidation price
   const estimatedLiquidationPrice = React.useMemo(() => {
     if (!limitPrice || !Number(limitPrice) || !leverage || !tradeUsdAmount)
@@ -169,7 +181,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       return { isValid: false, error };
     }
 
-    if (maxTradeSize && tradeSize > Number(maxTradeSize)) {
+    if (limitMaxTradeSize && tradeSize > Number(limitMaxTradeSize)) {
       error = reduceOnly
         ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
         : t('page.perpsPro.tradingPanel.insufficientBalance');
@@ -192,7 +204,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     };
   }, [
     positionSize.amount,
-    maxTradeSize,
+    limitMaxTradeSize,
     reduceOnly,
     limitOrderType,
     limitPrice,
@@ -358,7 +370,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
         price={limitPrice}
-        maxTradeSize={maxTradeSize}
+        maxTradeSize={limitMaxTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
         percentage={percentage}
