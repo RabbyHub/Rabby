@@ -275,6 +275,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
             orderSide={orderSide}
             price={midPrice}
             leverage={leverage}
+            priceChangeUpdate={true}
           />
         )}
 

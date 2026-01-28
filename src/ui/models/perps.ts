@@ -92,8 +92,8 @@ export interface AccountHistoryItem {
 
 export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
   enabled: false,
-  takeProfit: { price: '', percentage: '', error: '' },
-  stopLoss: { price: '', percentage: '', error: '' },
+  takeProfit: { price: '', percentage: '', error: '', inputMode: 'percentage' },
+  stopLoss: { price: '', percentage: '', error: '', inputMode: 'percentage' },
 };
 
 const INIT_TRADING_STATE = {

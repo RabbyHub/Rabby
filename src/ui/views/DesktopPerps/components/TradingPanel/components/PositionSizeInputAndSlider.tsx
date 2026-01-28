@@ -54,22 +54,16 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     percentageInputValue,
     setPercentageInputValue,
   ] = React.useState<string>(percentage.toString());
-  const [
-    isInputNotionalValue,
-    setIsInputNotionalValue,
-  ] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setPercentageInputValue(isNaN(percentage) ? '' : percentage.toString());
   }, [percentage]);
 
   const handleSliderChange = useMemoizedFn((value: number) => {
-    setIsInputNotionalValue(false);
     handlePercentageChange(value);
   });
 
   const handlePresetClick = useMemoizedFn((value: number) => {
-    setIsInputNotionalValue(false);
     handlePercentageChange(value);
   });
 
@@ -114,7 +108,6 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   );
 
   const handleAmountChange = useMemoizedFn((amount: string) => {
-    setIsInputNotionalValue(false);
     if (!price) {
       setPositionSize({ amount, notionalValue: '' });
       setPercentage(0);
@@ -144,16 +137,19 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
 
   useEffect(() => {
     if (priceChangeUsdValue && positionSize.amount) {
-      isInputNotionalValue
+      positionSize.isInputNotionalValue
         ? handleNotionalChange(positionSize.notionalValue)
         : handleAmountChange(positionSize.amount);
     }
-  }, [price, priceChangeUsdValue, isInputNotionalValue]);
+  }, [price, priceChangeUsdValue, positionSize.isInputNotionalValue]);
 
   const handleNotionalChange = useMemoizedFn((notional: string) => {
-    setIsInputNotionalValue(true);
     if (!price) {
-      setPositionSize({ amount: '', notionalValue: notional });
+      setPositionSize({
+        amount: '',
+        notionalValue: notional,
+        isInputNotionalValue: true,
+      });
       setPercentage(0);
       return;
     }
@@ -164,6 +160,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     setPositionSize({
       amount,
       notionalValue: notional,
+      isInputNotionalValue: true,
     });
 
     if (maxTradeSize && Number(maxTradeSize) > 0) {
