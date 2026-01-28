@@ -1,5 +1,5 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CommonTable } from '../CommonTable';
 import { ColumnType } from 'antd/lib/table';
 import {
@@ -17,6 +17,7 @@ import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
+import { formatPerpsCoin } from '../../../utils';
 
 type TwapOrder = {
   twapId: number;
@@ -72,6 +73,17 @@ export const Twap: React.FC = () => {
 
     return orders;
   }, [twapStates, twapHistory, twapSliceFills]);
+
+  const fetchUserTwapSliceFills = useCallback(() => {
+    const sdk = getPerpsSDK();
+    sdk.info.getUserTwapSliceFills().then((res) => {
+      dispatch.perps.patchState({ twapSliceFills: res.slice(0, 2000) });
+    });
+  }, []);
+
+  useEffect(() => {
+    fetchUserTwapSliceFills();
+  }, []);
 
   const historyTwapOrders = useMemo(() => {
     const orders: TwapOrder[] = [];
@@ -188,7 +200,7 @@ export const Twap: React.FC = () => {
               dispatch.perps.setSelectedCoin(record.fill.coin);
             }}
           >
-            {record.fill.coin}
+            {formatPerpsCoin(record.fill.coin)}
           </div>
         ),
       },
@@ -237,7 +249,8 @@ export const Twap: React.FC = () => {
         sorter: (a, b) => Number(a.fill.sz) - Number(b.fill.sz),
         render: (_, record) => (
           <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
-            {splitNumberByStep(Number(record.fill.sz))} {record.fill.coin}
+            {splitNumberByStep(Number(record.fill.sz))}{' '}
+            {formatPerpsCoin(record.fill.coin)}
           </div>
         ),
       },
@@ -397,7 +410,7 @@ export const Twap: React.FC = () => {
                         dispatch.perps.setSelectedCoin(record.coin);
                       }}
                     >
-                      {record.coin}{' '}
+                      {formatPerpsCoin(record.coin)}{' '}
                     </span>
                   </div>
                   <div className="text-[12px] leading-[14px] text-r-neutral-foot">
@@ -691,6 +704,8 @@ export const Twap: React.FC = () => {
             rowKey={(record) => `${record.twapId}-${record.fill.tid}`}
             defaultSortField="time"
             defaultSortOrder="descend"
+            virtual
+            rowHeight={32}
           />
         ) : (
           <CommonTable

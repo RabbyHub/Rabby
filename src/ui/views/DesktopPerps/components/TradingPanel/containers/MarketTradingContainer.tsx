@@ -149,8 +149,10 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         isBuy: orderSide === OrderSide.BUY,
         size: tradeSize,
         midPx: midPrice.toString(),
-        tpTriggerPx: tpslConfig.takeProfit.price,
-        slTriggerPx: tpslConfig.stopLoss.price,
+        tpTriggerPx: tpslConfig.enabled
+          ? tpslConfig.takeProfit.price
+          : undefined,
+        slTriggerPx: tpslConfig.enabled ? tpslConfig.stopLoss.price : undefined,
         reduceOnly,
         slippage: marketSlippage,
       });
@@ -167,7 +169,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   const orderSummary: OrderSummaryData = React.useMemo(() => {
     const estSlippage =
       estPrice && Number(positionSize.amount) > 0
-        ? (Number(estPrice) - Number(markPrice)) / Number(markPrice)
+        ? (Number(estPrice) - Number(midPrice)) / Number(midPrice)
         : 0;
 
     const getExpectedPnL = (percentage: string) => {
@@ -175,7 +177,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         ? (Number(percentage) * marginRequired) / 100
         : 0;
     };
-    const orderValue = Number(tradeSize) * Number(markPrice);
+    const orderValue = Number(tradeSize) * Number(midPrice);
     return {
       tpExpectedPnL: 1 * getExpectedPnL(tpslConfig.takeProfit.percentage),
       slExpectedPnL: -1 * getExpectedPnL(tpslConfig.stopLoss.percentage),
@@ -233,6 +235,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           baseAsset={selectedCoin}
           quoteAsset="USDC"
           szDecimals={szDecimals}
+          priceChangeUsdValue={true}
           reduceOnly={reduceOnly}
         />
 
@@ -272,6 +275,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
             orderSide={orderSide}
             price={midPrice}
             leverage={leverage}
+            priceChangeUpdate={true}
           />
         )}
 

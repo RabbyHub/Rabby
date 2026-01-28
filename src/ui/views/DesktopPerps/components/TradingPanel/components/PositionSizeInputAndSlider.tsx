@@ -137,13 +137,19 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
 
   useEffect(() => {
     if (priceChangeUsdValue && positionSize.amount) {
-      handleAmountChange(positionSize.amount);
+      positionSize.isInputNotionalValue
+        ? handleNotionalChange(positionSize.notionalValue)
+        : handleAmountChange(positionSize.amount);
     }
-  }, [price, priceChangeUsdValue]);
+  }, [price, priceChangeUsdValue, positionSize.isInputNotionalValue]);
 
   const handleNotionalChange = useMemoizedFn((notional: string) => {
     if (!price) {
-      setPositionSize({ amount: '', notionalValue: notional });
+      setPositionSize({
+        amount: '',
+        notionalValue: notional,
+        isInputNotionalValue: true,
+      });
       setPercentage(0);
       return;
     }
@@ -154,6 +160,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     setPositionSize({
       amount,
       notionalValue: notional,
+      isInputNotionalValue: true,
     });
 
     if (maxTradeSize && Number(maxTradeSize) > 0) {

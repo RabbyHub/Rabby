@@ -10,6 +10,7 @@ import { ReactComponent as RcIconDocs } from '@/ui/assets/perps/IconDocument.svg
 import { useTranslation } from 'react-i18next';
 import { openInTab } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { playSound } from '@/ui/utils/sound';
 
 const VERSION = 'v1.001';
 
@@ -68,6 +69,13 @@ export const StatusBar: React.FC = () => {
     openInTab('https://support.rabby.io/');
   };
 
+  const handleToggleSound = () => {
+    if (!soundEnabled) {
+      playSound('/sounds/order-filled.mp3');
+    }
+    dispatch.perps.updateEnabledSound(!soundEnabled);
+  };
+
   const RcIconVolume = soundEnabled ? RcIconOpenVolume : RcIconClosedVolume;
 
   return (
@@ -78,7 +86,7 @@ export const StatusBar: React.FC = () => {
 
         <RcIconVolume
           className="text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
-          onClick={() => dispatch.perps.updateEnabledSound(!soundEnabled)}
+          onClick={handleToggleSound}
         />
       </div>
       <div className="flex items-center gap-[12px]">

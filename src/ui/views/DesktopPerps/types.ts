@@ -29,6 +29,7 @@ export interface OrderSettings {
 export interface PositionSize {
   amount: string;
   notionalValue: string;
+  isInputNotionalValue?: boolean;
 }
 
 export type LimitOrderType = 'Gtc' | 'Alo' | 'Ioc';
@@ -42,17 +43,22 @@ export interface Position {
   liquidationPrice: number;
   unrealizedPnl: number;
 }
+// Input mode type: 'price' means user input price, 'percentage' means user input percentage
+export type TPSLInputMode = 'price' | 'percentage';
+
 export interface TPSLConfig {
   enabled: boolean;
   takeProfit: {
     price: string;
     percentage: string;
     error: string;
+    inputMode: TPSLInputMode;
   };
   stopLoss: {
     price: string;
     error: string;
     percentage: string;
+    inputMode: TPSLInputMode;
   };
 }
 

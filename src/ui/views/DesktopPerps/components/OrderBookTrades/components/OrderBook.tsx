@@ -237,16 +237,16 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     if (!marketEstSize) return;
     let estPrice = '';
     const isBuy = Number(marketEstSize) > 0;
-    const arr = isBuy ? asks : bids;
-    arr.forEach((item, index) => {
-      if (
-        item.total > Math.abs(Number(marketEstSize)) ||
-        index === arr.length - 1
-      ) {
+    const arr = isBuy ? bids : asks;
+    for (const item of arr) {
+      if (item.total >= Math.abs(Number(marketEstSize))) {
         estPrice = item.price;
-        return;
+        break;
       }
-    });
+    }
+    if (!estPrice) {
+      estPrice = arr[arr.length - 1].price;
+    }
     dispatch.perps.patchState({
       marketEstPrice: estPrice,
     });
@@ -263,10 +263,6 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const priceChange = currentMarketData?.prevDayPx
     ? Number(currentMarketData.markPx) - Number(currentMarketData.prevDayPx)
     : 0;
-  const priceChangePercent = currentMarketData?.prevDayPx
-    ? (priceChange / Number(currentMarketData.prevDayPx)) * 100
-    : 0;
-  const isPositive = priceChange >= 0;
 
   return (
     <div className="h-full flex flex-col bg-rb-neutral-bg-1 whitespace-nowrap">
@@ -318,12 +314,23 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
             forceRender={true}
             overlay={
               <Menu
+                className="bg-r-neutral-bg1"
                 onClick={(info) =>
                   dispatch.perps.updateQuoteUnit(info.key as 'base' | 'usd')
                 }
               >
-                <Menu.Item key="base">{selectedCoin}</Menu.Item>
-                <Menu.Item key="usd">USD</Menu.Item>
+                <Menu.Item
+                  className="text-r-neutral-title1 hover:bg-r-blue-light1"
+                  key="base"
+                >
+                  {selectedCoin}
+                </Menu.Item>
+                <Menu.Item
+                  className="text-r-neutral-title1 hover:bg-r-blue-light1"
+                  key="usd"
+                >
+                  USD
+                </Menu.Item>
               </Menu>
             }
           >
@@ -345,9 +352,17 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
             forceRender={true}
             transitionName=""
             overlay={
-              <Menu onClick={(info) => setAggregationIndex(info.key as number)}>
+              <Menu
+                className="bg-r-neutral-bg1"
+                onClick={(info) => setAggregationIndex(info.key as number)}
+              >
                 {aggregationLevels.map((level, index) => (
-                  <Menu.Item key={index}>{level.label}</Menu.Item>
+                  <Menu.Item
+                    className="text-r-neutral-title1 hover:bg-r-blue-light1"
+                    key={index}
+                  >
+                    {level.label}
+                  </Menu.Item>
                 ))}
               </Menu>
             }

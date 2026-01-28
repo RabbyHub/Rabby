@@ -74,7 +74,7 @@ export const showSuccessToast = ({ title, description }: ShowToastOptions) => {
       <PerpsToastContent
         type="success"
         title={title}
-        description={String(description)}
+        description={description}
         messageKey={key}
       />
     ),
@@ -95,7 +95,7 @@ export const showErrorToast = ({ title, description }: ShowToastOptions) => {
       <PerpsToastContent
         type="error"
         title={title}
-        description={String(description)}
+        description={description}
         messageKey={key}
       />
     ),
@@ -116,7 +116,7 @@ export const showInfoToast = ({ title, description }: ShowToastOptions) => {
       <PerpsToastContent
         type="info"
         title={title}
-        description={String(description)}
+        description={description}
         messageKey={key}
       />
     ),

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { TPSLConfig, OrderSide } from '../../../types';
+import React, { useEffect, useRef } from 'react';
+import { TPSLConfig, OrderSide, TPSLInputMode } from '../../../types';
 import { formatTpOrSlPrice, validatePriceInput } from '@/ui/views/Perps/utils';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +25,10 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
   priceChangeUpdate = false,
 }) => {
   const { t } = useTranslation();
+
+  // Use ref to track if this is the first render (to skip initial effect)
+  const isFirstRender = useRef(true);
+
   const validatePercentageInput = (value: string): boolean => {
     // Allow empty, numbers, decimal point, and minus sign at the start
     return value === '' || /^-?\d*\.?\d*$/.test(value);
@@ -33,12 +37,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
   const handleTPSLConfigValidation = useMemoizedFn(
     (
       type: 'takeProfit' | 'stopLoss',
-      currentConfig: {
-        price: string;
-        percentage: string;
-        // expectedPnL: string;
-        error: string;
-      }
+      currentConfig: TPSLConfig['takeProfit'] | TPSLConfig['stopLoss']
     ) => {
       const direction = orderSide === OrderSide.BUY ? 'Long' : 'Short';
       const currentPrice = Number(currentConfig.price);
@@ -74,12 +73,14 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
   const createTPSLChangeHandler = useMemoizedFn(
     (type: 'takeProfit' | 'stopLoss') => (
       field: 'price' | 'percentage',
-      value: string
+      value: string,
+      inputMode: TPSLInputMode
     ) => {
       const currentConfig = config[type];
       const newConfig = {
         ...currentConfig,
         [field]: value,
+        inputMode, // Update inputMode based on which field user is editing
       };
 
       if (field === 'price' && value && price) {
@@ -130,69 +131,12 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     createTPSLChangeHandler('stopLoss')
   );
 
-  // Update both TP and SL in a single setConfig call to avoid race conditions
-  const handleBothTPSLPercentageChange = useMemoizedFn(
-    (tpPercentage: string | null, slPercentage: string | null) => {
-      const newConfig = { ...config };
-
-      // Process Take Profit
-      if (tpPercentage !== null && price) {
-        const tpConfig = { ...config.takeProfit };
-        tpConfig.percentage = tpPercentage;
-
-        if (tpPercentage && Number(tpPercentage)) {
-          const pnlPercent = Number(tpPercentage);
-          const side = orderSide === OrderSide.BUY ? 1 : -1;
-          const targetPrice =
-            Number(price) * (1 + ((pnlPercent / 100) * side) / leverage);
-          tpConfig.price =
-            targetPrice > 0 ? formatTpOrSlPrice(targetPrice, szDecimals) : '';
-        }
-
-        if (tpPercentage === '') {
-          tpConfig.error = '';
-          tpConfig.price = '';
-          tpConfig.percentage = '';
-        }
-
-        newConfig.takeProfit = handleTPSLConfigValidation(
-          'takeProfit',
-          tpConfig
-        );
-      }
-
-      // Process Stop Loss
-      if (slPercentage !== null && price) {
-        const slConfig = { ...config.stopLoss };
-        slConfig.percentage = slPercentage;
-
-        if (slPercentage && Number(slPercentage)) {
-          const pnlPercent = Number(slPercentage);
-          const side = orderSide === OrderSide.BUY ? 1 : -1;
-          const targetPrice =
-            Number(price) * (1 - ((pnlPercent / 100) * side) / leverage);
-          slConfig.price =
-            targetPrice > 0 ? formatTpOrSlPrice(targetPrice, szDecimals) : '';
-        }
-
-        if (slPercentage === '') {
-          slConfig.error = '';
-          slConfig.price = '';
-          slConfig.percentage = '';
-        }
-
-        newConfig.stopLoss = handleTPSLConfigValidation('stopLoss', slConfig);
-      }
-
-      setConfig(newConfig);
-    }
-  );
-
   const handleTPPriceChange = useMemoizedFn(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       if (validatePriceInput(value, szDecimals)) {
-        handleTakeProfitChange('price', value);
+        // User is inputting price, set inputMode to 'price' in config
+        handleTakeProfitChange('price', value, 'price');
       }
     }
   );
@@ -201,7 +145,8 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       if (validatePercentageInput(value)) {
-        handleTakeProfitChange('percentage', value);
+        // User is inputting percentage, set inputMode to 'percentage' in config
+        handleTakeProfitChange('percentage', value, 'percentage');
       }
     }
   );
@@ -210,7 +155,8 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       if (validatePriceInput(value, szDecimals)) {
-        handleStopLossChange('price', value);
+        // User is inputting price, set inputMode to 'price' in config
+        handleStopLossChange('price', value, 'price');
       }
     }
   );
@@ -219,23 +165,114 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       if (validatePercentageInput(value)) {
-        handleStopLossChange('percentage', value);
+        // User is inputting percentage, set inputMode to 'percentage' in config
+        handleStopLossChange('percentage', value, 'percentage');
       }
     }
   );
 
-  useEffect(() => {
-    if (priceChangeUpdate && Number(price) > 0) {
-      const slPercentage = Number(config.stopLoss.percentage)
-        ? config.stopLoss.percentage
-        : null;
-      const tpPercentage = Number(config.takeProfit.percentage)
-        ? config.takeProfit.percentage
-        : null;
-
-      if (slPercentage !== null || tpPercentage !== null) {
-        handleBothTPSLPercentageChange(tpPercentage, slPercentage);
+  // Recalculate percentage from price (for price input mode)
+  const calcPercentageFromPrice = useMemoizedFn(
+    (type: 'takeProfit' | 'stopLoss', tpSlPrice: string) => {
+      if (!tpSlPrice || !price || !Number(tpSlPrice)) {
+        return '';
       }
+      const targetPrice = Number(tpSlPrice);
+      const side = orderSide === OrderSide.BUY ? 1 : -1;
+      const priceDiff = (targetPrice - Number(price)) / Number(price);
+      const pnlPercent =
+        type === 'takeProfit'
+          ? priceDiff * 100 * leverage * side
+          : -priceDiff * 100 * leverage * side;
+      return pnlPercent.toFixed(2);
+    }
+  );
+
+  // Recalculate price from percentage (for percentage input mode)
+  const calcPriceFromPercentage = useMemoizedFn(
+    (type: 'takeProfit' | 'stopLoss', percentage: string) => {
+      if (!percentage || !price || !Number(percentage)) {
+        return '';
+      }
+      const pnlPercent = Number(percentage);
+      const side = orderSide === OrderSide.BUY ? 1 : -1;
+      const targetPrice =
+        type === 'takeProfit'
+          ? Number(price) * (1 + ((pnlPercent / 100) * side) / leverage)
+          : Number(price) * (1 - ((pnlPercent / 100) * side) / leverage);
+      return targetPrice > 0 ? formatTpOrSlPrice(targetPrice, szDecimals) : '';
+    }
+  );
+
+  // Handle price change based on input mode for both TP and SL
+  useEffect(() => {
+    // Skip first render
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (!priceChangeUpdate || Number(price) <= 0) {
+      return;
+    }
+
+    const newConfig = { ...config };
+    let hasChanges = false;
+
+    // Handle Take Profit based on config.takeProfit.inputMode
+    if (config.takeProfit.price || config.takeProfit.percentage) {
+      const tpConfig = { ...config.takeProfit };
+
+      if (tpConfig.inputMode === 'price' && config.takeProfit.price) {
+        // User input price, recalculate percentage
+        tpConfig.percentage = calcPercentageFromPrice(
+          'takeProfit',
+          config.takeProfit.price
+        );
+        hasChanges = true;
+      } else if (
+        tpConfig.inputMode === 'percentage' &&
+        config.takeProfit.percentage
+      ) {
+        // User input percentage, recalculate price
+        tpConfig.price = calcPriceFromPercentage(
+          'takeProfit',
+          config.takeProfit.percentage
+        );
+        hasChanges = true;
+      }
+
+      newConfig.takeProfit = handleTPSLConfigValidation('takeProfit', tpConfig);
+    }
+
+    // Handle Stop Loss based on config.stopLoss.inputMode
+    if (config.stopLoss.price || config.stopLoss.percentage) {
+      const slConfig = { ...config.stopLoss };
+
+      if (slConfig.inputMode === 'price' && config.stopLoss.price) {
+        // User input price, recalculate percentage
+        slConfig.percentage = calcPercentageFromPrice(
+          'stopLoss',
+          config.stopLoss.price
+        );
+        hasChanges = true;
+      } else if (
+        slConfig.inputMode === 'percentage' &&
+        config.stopLoss.percentage
+      ) {
+        // User input percentage, recalculate price
+        slConfig.price = calcPriceFromPercentage(
+          'stopLoss',
+          config.stopLoss.percentage
+        );
+        hasChanges = true;
+      }
+
+      newConfig.stopLoss = handleTPSLConfigValidation('stopLoss', slConfig);
+    }
+
+    if (hasChanges) {
+      setConfig(newConfig);
     }
   }, [price]);
 

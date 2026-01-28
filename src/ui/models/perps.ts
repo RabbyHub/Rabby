@@ -38,6 +38,13 @@ import {
   handleUpdateTwapSliceFills,
   showDepositAndWithdrawToast,
 } from '../views/DesktopPerps/utils';
+import {
+  OrderType,
+  OrderSide,
+  PositionSize,
+  TPSLConfig,
+} from '../views/DesktopPerps/types';
+import { message } from 'antd';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -84,6 +91,20 @@ export interface AccountHistoryItem {
   usdValue: string;
 }
 
+export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
+  enabled: false,
+  takeProfit: { price: '', percentage: '', error: '', inputMode: 'percentage' },
+  stopLoss: { price: '', percentage: '', error: '', inputMode: 'percentage' },
+};
+
+const INIT_TRADING_STATE = {
+  tradingOrderSide: OrderSide.BUY,
+  tradingPositionSize: { amount: '', notionalValue: '' },
+  tradingPercentage: 0,
+  tradingReduceOnly: false,
+  tradingTpslConfig: DEFAULT_TPSL_CONFIG,
+};
+
 export interface PerpsState {
   positionAndOpenOrders: PositionAndOpenOrder[];
   accountSummary: AccountSummary | null;
@@ -127,6 +148,13 @@ export interface PerpsState {
   marketEstSize: string;
   marketEstPrice: string;
   quoteUnit: 'base' | 'usd';
+  // Trading panel state (preserved across orderType switches)
+  // tradingOrderType: OrderType;
+  tradingOrderSide: OrderSide;
+  tradingPositionSize: PositionSize;
+  tradingTpslConfig: TPSLConfig;
+  tradingPercentage: number;
+  tradingReduceOnly: boolean;
 }
 
 export const perps = createModel<RootModel>()({
@@ -174,6 +202,9 @@ export const perps = createModel<RootModel>()({
     marketEstSize: '',
     marketEstPrice: '',
     quoteUnit: 'base',
+    // Trading panel state (preserved across orderType switches)
+    // tradingOrderType: OrderType.MARKET,
+    ...INIT_TRADING_STATE,
   } as PerpsState,
 
   reducers: {
@@ -602,10 +633,23 @@ export const perps = createModel<RootModel>()({
       };
     },
 
-    // Desktop Pro reducers
-    setSelectedCoin(state, payload: string) {
+    resetTradingState(state) {
       return {
         ...state,
+        ...INIT_TRADING_STATE,
+      };
+    },
+
+    // Desktop Pro reducers
+    setSelectedCoin(state, payload: string) {
+      if (payload.includes(':')) {
+        message.error('HIP-3 coin is not supported');
+        return state;
+      }
+
+      return {
+        ...state,
+        ...INIT_TRADING_STATE,
         selectedCoin: payload,
       };
     },
