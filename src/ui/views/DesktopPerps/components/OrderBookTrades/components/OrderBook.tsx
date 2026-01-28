@@ -314,7 +314,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
             forceRender={true}
             overlay={
               <Menu
-                className="bg-r-neutral-bg1 border border-r-neutral-line"
+                className="bg-r-neutral-bg1"
                 onClick={(info) =>
                   dispatch.perps.updateQuoteUnit(info.key as 'base' | 'usd')
                 }
@@ -353,7 +353,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
             transitionName=""
             overlay={
               <Menu
-                className="bg-r-neutral-bg1 border border-r-neutral-line"
+                className="bg-r-neutral-bg1"
                 onClick={(info) => setAggregationIndex(info.key as number)}
               >
                 {aggregationLevels.map((level, index) => (

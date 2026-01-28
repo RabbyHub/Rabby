@@ -606,7 +606,7 @@ export const PositionsInfo: React.FC = () => {
                 forceRender={true}
                 overlay={
                   <Menu
-                    className="bg-r-neutral-bg1 border border-r-neutral-line"
+                    className="bg-r-neutral-bg1"
                     onClick={(info) => {
                       setSelectedCoin(record.coin);
                       setClosePositionType(

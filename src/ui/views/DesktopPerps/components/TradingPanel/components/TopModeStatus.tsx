@@ -120,7 +120,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
           transitionName=""
           overlay={
             <Menu
-              className="bg-r-neutral-bg1 border border-r-neutral-line"
+              className="bg-r-neutral-bg1"
               onClick={(info) => {
                 onOrderTypeChange(info.key as OrderType);
               }}

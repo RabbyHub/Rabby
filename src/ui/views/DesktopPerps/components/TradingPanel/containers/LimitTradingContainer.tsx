@@ -415,7 +415,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
             forceRender={true}
             overlay={
               <Menu
-                className="bg-r-neutral-bg1 border border-r-neutral-line"
+                className="bg-r-neutral-bg1"
                 onClick={(info) =>
                   setLimitOrderType(info.key as LimitOrderType)
                 }
