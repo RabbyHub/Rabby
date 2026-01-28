@@ -39,9 +39,8 @@ import { useLendingService } from './useLendingService';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { UpdaterOrPartials, resolveValFromUpdater } from '../types/store';
 import { useLendingDataContext } from './LendingDataContext';
-import { getProvider } from '../utils/provider';
-import { OpenApiService } from '@rabby-wallet/rabby-api';
-import { openapiService } from '@/background/service';
+import { getProviderByWallet } from '../utils/provider';
+import { useWallet } from '@/ui/utils/WalletContext';
 
 //TODO: 有点乱，要整理下
 const getMarketInfo = (market?: CustomMarket) => {
@@ -101,8 +100,16 @@ const poolsMap = new Map<
   }
 >();
 
-openapiService.initSync();
-const getCachePools = async (marketKey?: CustomMarket) => {
+//openapiService.initSync();
+const getCachePools = async (
+  wallet: ReturnType<typeof useWallet>,
+  marketKey?: CustomMarket,
+  account?: {
+    address: string;
+    type: string;
+    brandName: string;
+  }
+) => {
   const { marketData: selectedMarketData, chainInfo } = getMarketInfo(
     marketKey
   );
@@ -114,10 +121,8 @@ const getCachePools = async (marketKey?: CustomMarket) => {
     return existingPools;
   }
 
-  // chainInfo.network 就是 chainInfo.id.toString()，使用 network 更直接
-  // 如果 network 不存在，使用 id.toString()
-  const chainId = chainInfo?.id?.toString() || '1';
-  if (!chainId) {
+  const chainServerId = chainInfo?.serverId || '';
+  if (!chainServerId || !selectedMarketData) {
     console.error('Failed to get chainId for market:', {
       marketKey,
       chainInfo,
@@ -126,7 +131,7 @@ const getCachePools = async (marketKey?: CustomMarket) => {
     return undefined;
   }
 
-  const provider = getProvider(chainId);
+  const provider = getProviderByWallet(wallet, chainServerId, account);
   const newPools = {
     provider,
     uiPoolDataProvider: new UiPoolDataProvider({
@@ -160,15 +165,26 @@ const getCachePools = async (marketKey?: CustomMarket) => {
 };
 
 const fetchContractData = async (
+  wallet: ReturnType<typeof useWallet>,
   address: string,
   marketKey?: CustomMarket,
-  getMarketKeyFromContext?: () => CustomMarket
+  getMarketKeyFromContext?: () => CustomMarket,
+  account?: {
+    address: string;
+    type: string;
+    brandName: string;
+  }
 ) => {
   const selectedMarketData = getSelectedMarketInfo(
     marketKey,
     getMarketKeyFromContext
   ).marketData;
-  const pools = await getPools(getMarketKeyFromContext, address);
+  const pools = await getPools(
+    wallet,
+    getMarketKeyFromContext,
+    address,
+    account
+  );
   if (!selectedMarketData || !pools) {
     return {};
   }
@@ -208,6 +224,7 @@ const fetchContractData = async (
 };
 export const usePoolDataProviderContract = () => {
   const { selectedMarketData, marketKey, chainEnum } = useSelectedMarket();
+  const wallet = useWallet();
   const [pools, setPools] = useState<
     | {
         provider: ethers.providers.Web3Provider;
@@ -224,13 +241,13 @@ export const usePoolDataProviderContract = () => {
       setPools(undefined);
       return;
     }
-    getCachePools(marketKey)
+    getCachePools(wallet, marketKey)
       .then(setPools)
       .catch((error) => {
         console.error('Failed to get pools:', error);
         setPools(undefined);
       });
-  }, [marketKey, selectedMarketData]);
+  }, [wallet, marketKey, selectedMarketData]);
 
   return {
     pools,
@@ -732,17 +749,27 @@ const createGlobalSets = (
 
 const createFetchLendingData = (
   globalSets: ReturnType<typeof createGlobalSets>,
-  getMarketKeyFromContext: () => CustomMarket
+  getMarketKeyFromContext: () => CustomMarket,
+  wallet: ReturnType<typeof useWallet>
 ) => {
   return debounce(
     async (options?: {
       accountAddress?: string;
+      account?: {
+        address: string;
+        type: string;
+        brandName: string;
+      };
       ignoreLoading?: boolean;
       persistOnly?: boolean;
       marketKey?: CustomMarket;
     }) => {
-      const { accountAddress, ignoreLoading, marketKey: paramMarketKey } =
-        options || {};
+      const {
+        accountAddress,
+        account,
+        ignoreLoading,
+        marketKey: paramMarketKey,
+      } = options || {};
 
       const requestAddress = accountAddress;
       if (!requestAddress) {
@@ -763,9 +790,11 @@ const createFetchLendingData = (
         globalSets.setLoading(true, { address: requestAddress, marketKey });
       }
       return fetchContractData(
+        wallet,
         requestAddress,
         marketKey,
-        getMarketKeyFromContext
+        getMarketKeyFromContext,
+        account
       )
         .then(async (data) => {
           globalSets.setRemoteData(requestAddress, marketKey, data);
@@ -792,8 +821,14 @@ function getMarketKey(getMarketKeyFromContext?: () => CustomMarket) {
   return getMarketKeyFromContext?.() || CustomMarket.proto_mainnet_v3;
 }
 async function getPools(
+  wallet: ReturnType<typeof useWallet>,
   getMarketKeyFromContext?: () => CustomMarket,
-  accountAddress?: string
+  accountAddress?: string,
+  account?: {
+    address: string;
+    type: string;
+    brandName: string;
+  }
 ) {
   const marketKey = getMarketKey(getMarketKeyFromContext);
   const selectedMarketData = getSelectedMarketInfo(
@@ -803,10 +838,11 @@ async function getPools(
   if (!marketKey || !selectedMarketData) {
     return undefined;
   }
-  return getCachePools(marketKey);
+  return getCachePools(wallet, marketKey, account);
 }
 
 export const useApisLending = () => {
+  const wallet = useWallet();
   const {
     setRemoteData,
     setComputedInfo,
@@ -837,10 +873,9 @@ export const useApisLending = () => {
     ]
   );
 
-  const fetchLendingData = useMemo(
-    () => createFetchLendingData(globalSets, getMarketKeyFromContext),
-    [globalSets, getMarketKeyFromContext]
-  );
+  const fetchLendingData = useMemo(() => {
+    return createFetchLendingData(globalSets, getMarketKeyFromContext, wallet);
+  }, [globalSets, getMarketKeyFromContext, wallet]);
 
   return {
     fetchLendingData,
@@ -857,11 +892,24 @@ const useFetchLendingData = () => {
     (ignoreLoading?: boolean) => {
       return fetchLendingData({
         accountAddress: currentAccount?.address,
+        account: currentAccount
+          ? {
+              address: currentAccount.address,
+              type: currentAccount.type,
+              brandName: currentAccount.brandName,
+            }
+          : undefined,
         ignoreLoading,
         marketKey,
       });
     },
-    [currentAccount?.address, marketKey, fetchLendingData]
+    [
+      currentAccount?.address,
+      currentAccount?.type,
+      currentAccount?.brandName,
+      marketKey,
+      fetchLendingData,
+    ]
   );
 
   return {
