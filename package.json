@@ -214,7 +214,7 @@
     "sinon-chrome": "3.0.1",
     "style-loader": "2.0.0",
     "style-resources-loader": "1.5.0",
-    "supplychain_security_sdk": "1.3.1",
+    "supplychain_security_sdk": "1.3.3",
     "tailwindcss": "2.2.2",
     "tinycolor2": "1.6.0",
     "ts-import-plugin": "1.6.7",
