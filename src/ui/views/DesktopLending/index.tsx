@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
@@ -9,6 +9,9 @@ import { DesktopLendingSelectAccountList } from '@/ui/component/DesktopSelectAcc
 import { LendingList } from './components/LendingList';
 import { SummaryBar } from './components/SummaryBar';
 import { AddAddressModal } from '../DesktopProfile/components/AddAddressModal';
+import { LendingProvider } from './hooks/useLendingService';
+import { LendingDataProvider } from './hooks/LendingDataContext';
+import { useFetchLendingData } from './hooks';
 import './index.less';
 
 const Wrap = styled.div`
@@ -22,11 +25,18 @@ const Wrap = styled.div`
 
 export type PopupType = 'add-address' | null;
 
-export const DesktopLending: React.FC = () => {
+const DesktopLendingContent: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
   const dispatch = useRabbyDispatch();
   const [popupType, setPopupType] = useState<PopupType>(null);
+
+  const { fetchData } = useFetchLendingData();
+
+  useEffect(() => {
+    fetchData();
+    // TODO: 有循环，待排查
+  }, []);
 
   const handleSetPopupType = useCallback((type: PopupType) => {
     setPopupType(type);
@@ -76,5 +86,15 @@ export const DesktopLending: React.FC = () => {
         destroyOnClose
       />
     </>
+  );
+};
+
+export const DesktopLending = () => {
+  return (
+    <LendingProvider>
+      <LendingDataProvider>
+        <DesktopLendingContent />
+      </LendingDataProvider>
+    </LendingProvider>
   );
 };

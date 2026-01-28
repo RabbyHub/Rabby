@@ -25,6 +25,9 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@aave/contract-helpers": "1.36.1",
+    "@aave/math-utils": "1.36.1",
+    "@bgd-labs/aave-address-book": "4.36.0",
     "@coinbase/wallet-sdk": "3.8.0-beta.3",
     "@debank/common": "0.3.60",
     "@debank/festats": "1.0.1",
@@ -57,6 +60,7 @@
     "@onekeyfe/hd-core": "1.1.0",
     "@onekeyfe/hd-web-sdk": "1.1.0",
     "@opensea/seaport-js": "4.0.5",
+    "@paraswap/sdk": "6.10.0",
     "@rabby-wallet/eth-coinbase-keyring": "0.0.0-beta.8",
     "@rabby-wallet/eth-hd-keyring": "4.3.2",
     "@rabby-wallet/eth-lattice-keyring": "1.2.4",

@@ -9,80 +9,133 @@ import {
   THeader,
   Table,
 } from '@/ui/views/CommonPopup/AssetList/components/Table';
+import {
+  useLendingRemoteData,
+  useLendingSummary,
+  useSelectedMarket,
+} from '../../hooks';
+import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
+import { isSameAddress } from '@/ui/utils';
+import wrapperToken from '../../config/wrapperToken';
+import { displayGhoForMintableMarket } from '../../utils/supply';
+import BigNumber from 'bignumber.js';
+import { assetCanBeBorrowedByUser } from '../../utils/borrow';
+
+type MyAssetItem =
+  | {
+      type: 'borrow';
+      usdValue: number;
+      data: LendingRowData;
+    }
+  | {
+      type: 'supply';
+      usdValue: number;
+      data: LendingRowData;
+    };
 
 export const LendingList: React.FC = () => {
   const { t } = useTranslation();
   const [selectedMarket, setSelectedMarket] = useState<string>('core');
+  const { reserves } = useLendingRemoteData();
+  const { displayPoolReserves, iUserSummary, apyInfo } = useLendingSummary();
+  const { chainEnum, marketKey } = useSelectedMarket();
 
-  const mockData: LendingRowData[] = useMemo(() => {
-    return [
-      {
-        id: '1',
-        asset: 'WBTC',
-        type: 'supplied',
-        apy: 0.0041,
-        myAssets: 622.43,
-        isCollateral: true,
-        isIsolated: false,
-        onCollateralChange: (checked) =>
-          console.log('Collateral changed:', checked),
-        onSupply: () => console.log('Supply'),
-        onWithdraw: () => console.log('Withdraw'),
-      },
-      {
-        id: '2',
-        asset: 'ETH',
-        type: 'borrowed',
-        apy: 0.0042,
-        myAssets: 522.43,
-        isIsolated: false,
-        onSwap: () => console.log('Swap'),
-        onBorrow: () => console.log('Borrow'),
-        onRepay: () => console.log('Repay'),
-      },
-      {
-        id: '3',
-        asset: 'USDC',
-        type: 'supplied',
-        apy: 0.0442,
-        myAssets: 422.43,
-        isCollateral: true,
-        isIsolated: false,
-        onCollateralChange: (checked) =>
-          console.log('Collateral changed:', checked),
-        onSupply: () => console.log('Supply'),
-        onWithdraw: () => console.log('Withdraw'),
-      },
-      {
-        id: '4',
-        asset: 'USDT',
-        type: 'supplied',
-        apy: 0.0243,
-        myAssets: 322.43,
-        isCollateral: true,
-        isIsolated: true,
-        onCollateralChange: (checked) =>
-          console.log('Collateral changed:', checked),
-        onSupply: () => console.log('Supply'),
-        onWithdraw: () => console.log('Withdraw'),
-      },
-      {
-        id: '5',
-        asset: 'USDT',
-        type: 'borrowed',
-        apy: 0.0342,
-        myAssets: 122.43,
-        isIsolated: false,
-        onSwap: () => console.log('Swap'),
-        onBorrow: () => console.log('Borrow'),
-        onRepay: () => console.log('Repay'),
-      },
-    ];
-  }, []);
+  const myAssetList: MyAssetItem[] = useMemo(() => {
+    const list: MyAssetItem[] = [];
+    const supplyList = displayPoolReserves?.filter((item) => {
+      if (item.underlyingBalance && item.underlyingBalance !== '0') {
+        return true;
+      }
+      const realUnderlyingAsset =
+        isSameAddress(item.underlyingAsset, API_ETH_MOCK_ADDRESS) && chainEnum
+          ? wrapperToken?.[chainEnum]?.address
+          : item.reserve.underlyingAsset;
+      const reserve = reserves?.reservesData?.find((x) =>
+        isSameAddress(x.underlyingAsset, realUnderlyingAsset)
+      );
+      if (!reserve) {
+        return false;
+      }
+      return (
+        !(reserve?.isFrozen || reserve.isPaused) &&
+        !displayGhoForMintableMarket({
+          symbol: reserve.symbol,
+          currentMarket: marketKey,
+        })
+      );
+    });
+    const borrowList = displayPoolReserves?.filter((item) => {
+      if (isSameAddress(item.underlyingAsset, API_ETH_MOCK_ADDRESS)) {
+        return false;
+      }
+      if (item.variableBorrows && item.variableBorrows !== '0') {
+        return true;
+      }
+      const bgTotalDebt = new BigNumber(item.reserve.totalDebt);
+      if (bgTotalDebt.gte(item.reserve.borrowCap)) {
+        return false;
+      }
+      const reserve = reserves?.reservesData?.find((x) =>
+        isSameAddress(x.underlyingAsset, item.reserve.underlyingAsset)
+      );
+      if (!reserve || !iUserSummary) {
+        return false;
+      }
+      return assetCanBeBorrowedByUser(
+        reserve,
+        iUserSummary,
+        item.reserve.eModes
+      );
+    });
+    supplyList?.forEach((item) => {
+      const supplyUsd = Number(item.underlyingBalanceUSD || '0');
+      if (supplyUsd > 0) {
+        list.push({
+          type: 'supply',
+          usdValue: supplyUsd,
+          data: {
+            id: `${item.underlyingAsset}-supply`,
+            asset: item.underlyingAsset,
+            type: 'supplied',
+            apy: item.reserve.supplyAPY,
+            myAssets: Number(item.walletBalanceUSD || '0'),
+            isCollateral: item.usageAsCollateralEnabledOnUser,
+            isIsolated: item.reserve.isIsolated,
+          },
+        });
+      }
+    });
+    borrowList.forEach((item) => {
+      const borrowUsd = Number(item.totalBorrowsUSD || '0');
+      if (borrowUsd > 0) {
+        list.push({
+          type: 'borrow',
+          usdValue: borrowUsd,
+          data: {
+            id: `${item.underlyingAsset}-borrow`,
+            asset: item.underlyingAsset,
+            type: 'borrowed',
+            apy: item.reserve.variableBorrowAPY,
+            myAssets: Number(item.totalBorrowsUSD || '0'),
+            isCollateral: false,
+            isIsolated: item.reserve.isIsolated,
+          },
+        });
+      }
+    });
+
+    return list.sort((a, b) => b.usdValue - a.usdValue);
+  }, [
+    chainEnum,
+    displayPoolReserves,
+    iUserSummary,
+    marketKey,
+    reserves?.reservesData,
+  ]);
 
   const filteredData = useMemo(() => {
-    return mockData;
-  }, [mockData]);
+    return myAssetList;
+  }, [myAssetList]);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -143,7 +196,12 @@ export const LendingList: React.FC = () => {
             </THeader>
             <TBody className="mt-0 px-20 flex flex-col gap-[12px]">
               {filteredData.map((item) => {
-                return <LendingRow key={item.id} data={item} />;
+                return (
+                  <LendingRow
+                    key={`${item.data.id}-${item.type}`}
+                    data={item.data}
+                  />
+                );
               })}
             </TBody>
           </Table>

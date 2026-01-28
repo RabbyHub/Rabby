@@ -9,6 +9,7 @@ import { Switch } from 'antd';
 import { Tooltip } from 'antd';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/icon-info.svg';
 import styled from 'styled-components';
+import { formatApy } from '../../utils/format';
 
 const CollateralSwitch = styled(Switch)`
   &.ant-switch-checked {
@@ -21,7 +22,7 @@ export interface LendingRowData {
   asset: string;
   assetLogo?: string;
   type: 'supplied' | 'borrowed';
-  apy: number;
+  apy: string;
   myAssets: number;
   isCollateral?: boolean;
   isIsolated?: boolean;
@@ -76,7 +77,7 @@ export const LendingRow: React.FC<{
               isSupplied ? 'text-rb-green-default' : 'text-r-neutral-title-1'
             )}
           >
-            {(data.apy * 100).toFixed(2)}%
+            {formatApy(Number(data.apy))}
           </span>
           <span className="text-[14px] leading-[17px] font-medium text-r-neutral-title-1 flex-shrink-0 min-w-[100px]">
             {formatUsdValue(data.myAssets, BigNumber.ROUND_DOWN)}

@@ -1392,6 +1392,14 @@
       "needDepositFirst": "You need to deposit funds first."
     },
     "lending": {
+      "__skip_translation": [
+        "isolated",
+        "apy",
+        "marketSlot",
+        "market",
+        "maxLtv",
+        "tvl"
+      ],
       "title": "Lending",
       "isolate": "isolated",
       "isolateTip": "This is an isolated market",
@@ -1402,6 +1410,266 @@
       "borrowBalance": "Borrow Balance",
       "totalSupply": "Total Supply",
       "totalBorrow": "Total Borrow",
+      "isolated": "isolated",
+      "apy": "APY",
+      "tvl": "TVL",
+      "maxLtv": "Max LTV",
+      "gotIt": "Got it",
+      "marketSlot": "{{market}} Market",
+      "submitted": "submitted",
+      "netWorth": "Net worth",
+      "totalBorrowed": "Total borrowed",
+      "totalSupplied": "Total supplied",
+      "netApy": "Net APY",
+      "supplied": "Supplied",
+      "borrowed": "Borrowed",
+      "estDailyEarning": "Est.Daily Earning",
+      "estNetApy": "Est. net APY",
+      "selectChain": "Select Chain",
+      "selectMarket": "Select Market",
+      "searchMarket": "Search Market",
+      "hf": "Health factor",
+      "hfTitle": "Health Factor",
+      "enterAmount": "Enter Amount",
+      "disabled": "DISABLED",
+      "availableCard": {
+        "canBorrow": "You can borrow based on your supplied collateral, up to the borrow cap.",
+        "needSupply": "To borrow, you need to supply assets as collateral.",
+        "isolated": "Borrowing power and assets are limited due to Isolation mode.",
+        "emode": "Some assets are unavailable to borrow in E-Mode. Exit E-Mode to access all assets.",
+        "emodeNoAssets": "We couldn't find any assets related to your search. Try again with a different category."
+      },
+      "list": {
+        "headers": {
+          "token": "Token",
+          "token_balance": "Token/Balance",
+          "token_tvl": "Token/TVL",
+          "myBorrows": "My borrows",
+          "totalBorrowed": "Total Borrowed",
+          "mySupplies": "My supplies"
+        },
+        "item": {
+          "__skip_translation": ["tvl"],
+          "tvl": "TVL",
+          "wrapperToken": "Wrapped token for {{name}}"
+        }
+      },
+      "repayDetail": {
+        "actions": "Repay",
+        "approveAndRepay": "Approve and Repay",
+        "repayWith": "Repay with",
+        "tabs": {
+          "wallet": "Wallet balance",
+          "collateral": "Collateral"
+        }
+      },
+      "supplyDetail": {
+        "actions": "Supply",
+        "supplied": "Supplied",
+        "approveAndSupply": "Approve and Supply",
+        "availableToBorrow": "Available to borrow",
+        "supplyAPY": "Supply APY",
+        "supplyBalance": "Supply Balance",
+        "collateralization": "Collateralization",
+        "enabled": "Enabled",
+        "unavailable": "Unavailable",
+        "isolatedTips": "Your existing lending/borrowing assets are not supported."
+      },
+      "withdrawDetail": {
+        "actions": "Withdraw",
+        "remainingSupply": "Remaining supply"
+      },
+      "toggleCollateralDetail": {
+        "actions": "Toggle {{asset}} Collateral",
+        "enable": "Enable {{asset}} as Collateral",
+        "disable": "Disable {{asset}} as Collateral",
+        "error": "There is some error with the AAVE service. Please try again later."
+      },
+      "toggleCollateralModal": {
+        "openTitle": "Review Enabling",
+        "closeTitle": "Review Disabling",
+        "enableIsolationModeTitle": "Enable Isolation Mode",
+        "exitIsolationModeTitle": "Exit Isolation Mode",
+        "openDesc": "Enabling this asset as collateral increases your borrowing power and Health Factor. However, it can get liquidated if your health factor drops below 1.",
+        "closeDesc": "Disabling this asset as collateral affects your borrowing power and Health Factor.",
+        "enableIsolationModeDesc": "You are entering Isolation mode. In Isolation mode, you cannot supply other assets as collateral. A global debt ceiling limits the borrowing power of the isolated asset. To exit isolation mode disable CRV as collateral before borrowing another asset.",
+        "exitIsolationModeDesc": "You will exit Isolation mode and other tokens can now be used as collateral.",
+        "riskToLiquidationText": "You can not switch usage as collateral mode for this currency, because it will cause collateral call",
+        "toggleRiskTexts": {
+          "doNotHaveSuppliesInThisCurrency": "You do not have supplies in this currency",
+          "canNotUseThisCurrencyAsCollateral": "You can not use this currency as collateral",
+          "canNotSwitchUsageAsCollateralMode": "You can not switch usage as collateral mode for this currency, because it will cause collateral call",
+          "zeroLTVWithdrawBlocked": "Assets with zero LTV ({{assets}}) must be withdrawn or disabled as collateral to perform this action"
+        }
+      },
+      "borrowDetail": {
+        "actions": "Borrow",
+        "swapDebt": "Swap",
+        "borrowed": "Borrowed",
+        "approveAndBorrow": "Approve and Borrow",
+        "almostReachedWarning": "Protocol borrow cap is at 100% for this asset. Further borrowing unavailable.",
+        "almostReachedError": "Maximum amount available to borrow is limited because protocol borrow cap is nearly reached."
+      },
+      "popup": {
+        "amount": "Amount",
+        "available": "available",
+        "title": "Transaction Overview",
+        "liquidationAt": "Liquidation at < 1.0",
+        "remainingDebt": "Remaining debt"
+      },
+      "borrowOverview": {
+        "title": "Borrow Details",
+        "totalBorrowed": "Total Borrowed",
+        "borrowCap": "Borrow Cap",
+        "myBorrow": "My Borrow",
+        "availableToBorrow": "Available to borrow",
+        "liquidityPenalty": "Liquidation Penalty",
+        "reachCapTip": "This asset has reached the borrow cap. "
+      },
+      "supplyOverview": {
+        "title": "Supply Details",
+        "totalSupplied": "Total Supplied",
+        "mySupply": "My Supply",
+        "walletBalance": "Wallet Balance",
+        "availableToSupply": "Available to Supply",
+        "useAsCollateral": "Use as collateral",
+        "collateral": "Collateral",
+        "reachCap": "This asset has reached its supply cap. Nothing is available to be supplied from this market.",
+        "almostCap": "This asset has almost reached its borrow cap. There is only {{available}} available to be borrowed from this market."
+      },
+      "risk": {
+        "warning": "Borrowing this amount will lower your Health Factor to a risky level for liquidation.",
+        "withdrawWarning": "Withdrawing this amount will lower your Health Factor to a risky level for liquidation.",
+        "toggleCollateralWarning": "Disabling this asset as collateral will lower your Health Factor to a risky level for liquidation.",
+        "checkbox": "I understand the alert and want to continue.",
+        "emodeBlockWarning": "Disabling E-mode will lower your Health Factor to a risky level for liquidation.",
+        "blockEmodeWarning": "You can not disable E-Mode because that could cause liquidation. To exit E-Mode supply or repay borrowed positions."
+      },
+      "lqDescription": {
+        "desc": "Liquidation value",
+        "risky": "Risky",
+        "introText": " Your Health Factor shows how safe your borrowing position is. If it drops too low, your collateral could be liquidated.",
+        "over3title": "Health factor > 3.0:",
+        "over3desc": "Your positions are safe",
+        "below1title": "Health Factor ≤ 1.0:",
+        "below1desc": "Your position is at risk of liquidation.",
+        "liquidation": "Liquidation: If your Health Factor falls below 1.0, part of your collateral may be automatically sold to repay the debt. A liquidation penalty will apply, resulting in a partial loss of your collateral.",
+        "warningText": "Your Health Factor is too low. To avoid liquidation:\n1. Repay part or all of your loan\n2. Add more collateral"
+      },
+      "modalDesc": {
+        "availableToBorrow": "Available to borrow",
+        "maxAmount": "This is the maximum amount you can borrow based on all your supplied collateral. Your total borrowing power is calculated by multiplying the market value of each collateral asset by its Max LTV, then summing the results.",
+        "lqDesc": "When a liquidation occurs, liquidators repay up to 50% of the outstanding borrowed amount on behalf of the borrower. In return, they can buy the collateral at a discount and keep the difference (liquidation penalty) as a bonus.",
+        "availableToBorrowDesc": "You can borrow based on your supplied collateral and until the borrow cap is reached.",
+        "isolatedTitle": "Asset cannot be used as collateral",
+        "isolatedDesc": "This asset can only be used as collateral in isolation mode, where you cannot supply other asset collateral for borrowing. Assets used as collateral in isolation mode can only be borrowed to a specific debt ceiling.",
+        "globalIsolatedDesc": "In Isolation mode, you cannot supply other assets as collateral. A global debt ceiling limits the borrowing power of the isolated asset. To exit isolation mode disable UNI as collateral before borrowing another asset. ",
+        "isolatedSupplyDesc": "Collateral usage is limited because of isolation mode.",
+        "maxLTV": "The Maximum LTV ratio represents the maximum borrowing power of a specific collateral. For example, if a collateral has an LTV of 75%, the user can borrow up to 0.75 worth of ETH in the principal currency for every 1 ETH worth of collateral."
+      },
+      "repayWithAToken": {
+        "title": "Select Repay Token",
+        "header": {
+          "assets": "Token",
+          "balance": "Balance"
+        }
+      },
+      "manageEmode": {
+        "__skip_translation": ["emode"],
+        "emode": "E-Mode",
+        "title": "Manage E-Mode",
+        "disableTitle": "Disable",
+        "unavailable": "• Unavailable",
+        "unavailableTips": "Your existing lending/borrowing assets are not supported.",
+        "enabled": "• Enabled",
+        "description": "Enabling E-Mode allows you to maximize your borrowing power. However, borrowing is restricted to assets within the selected category.",
+        "actions": {
+          "enable": "Enable E-Mode",
+          "disable": "Disable E-Mode"
+        },
+        "guide": {
+          "title": "Efficiency mode (E-Mode)",
+          "description": "E-Mode increases your LTV for a selected category of assets.",
+          "buttonTitle": "Manage E-Mode"
+        },
+        "categorySelector": {
+          "label": "Asset category",
+          "header": {
+            "asset": "Assets"
+          },
+          "desc": "All borrow positions outside of this category must be closed to enable this category.",
+          "placeholder": "Select"
+        },
+        "debtSwapSelector": {
+          "title": "Select Borrow Token",
+          "header": {
+            "assets": "Token/Balance",
+            "apy": "APY",
+            "borrow": "My borrows"
+          }
+        },
+        "collateralSwapSelector": {
+          "title": "Select Collateral Token",
+          "header": {
+            "assets": "Token",
+            "collateral": "My collateral"
+          }
+        },
+        "overview": {
+          "title": "Asset category",
+          "row": {
+            "asset": "Asset",
+            "collateral": "Collateral",
+            "borrowable": "Borrowable"
+          }
+        }
+      },
+      "debtSwap": {
+        "entryTips": "One-click to swap your borrowed asset, reducing steps and fees.",
+        "title": "Swap Borrow Position",
+        "borrowBalance": "Borrow balance",
+        "actions": {
+          "title": "Debt Swap",
+          "amount": "Amount",
+          "borrowed": "Borrowed",
+          "swapTo": "Swap to",
+          "select": "Select"
+        },
+        "overview": {
+          "title": "Transaction Overview",
+          "borrowAPY": "Borrow apy",
+          "borrowValueAfter": "Borrow balance after swap"
+        },
+        "button": {
+          "swap": "Swap"
+        },
+        "priceImpactTips": "High price impact ({{lostValue}}). This route may return more due to low liquidity or small order size.",
+        "lpRiskWarning": "Low health factor after swap. Your position will carry a higher risk of liquidation.",
+        "lpDangerWarning": "Your health factor after this swap will be critically low and may result in liquidation. Please choose a different asset or reduce the swap amount to stay safe."
+      },
+      "repayWithCollateral": {
+        "toRepay": "Expected amount to repay",
+        "repayWith": "Collateral to repay with",
+        "action": {
+          "title": "Repay with {{collateral}}"
+        },
+        "collateralNotEnough": "Your collateral balance is lower than the selected amount.",
+        "overview": {
+          "title": "Transaction Overview",
+          "borrowValueAfter": "Borrow balance after repay",
+          "collateralValueAfter": "Collateral balance after repay"
+        },
+        "button": {
+          "repay": "Repay"
+        }
+      },
+      "hfTips": {
+        "desc": "If it drops below 1.0, your collateral may be liquidated.",
+        "more": "More"
+      },
+      "disableBorrowTip": {
+        "desc": "No supply: To borrow you need to supply assets as collateral."
+      },
       "type": {
         "supplied": "Supplied",
         "borrowed": "Borrowed"
@@ -1422,7 +1690,15 @@
         "healthy": "Healthy",
         "netApy": "Net APY",
         "estDailyEarnings": "Est Daily Earnings",
-        "ethCorrelatedTip": "ETH correlated assets"
+        "ethCorrelatedTip": "ETH correlated assets",
+        "empty": {
+          "title": "Earn Interest with your assets",
+          "description": "Powered by AAVE. Secure and zero fees.",
+          "endDesc": "You don’t have any deposits yet. Check out below recommended assets to start earning interest."
+        },
+        "lq": "If goes below 1, the liquidation might be triggered.",
+        "more": "More",
+        "risky": "Risky"
       },
       "market": {
         "core": "Core Market",
@@ -4054,8 +4330,7 @@
       "perps": "Perps",
       "lending": "Lending",
       "prediction": "Prediction",
-      "comingSoon": "Coming Soon",
-      "prediction": "Prediction"
+      "comingSoon": "Coming Soon"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Add address"
