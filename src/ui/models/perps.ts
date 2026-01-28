@@ -602,6 +602,24 @@ export const perps = createModel<RootModel>()({
       };
     },
 
+    resetProAccountInfo(state) {
+      return {
+        ...state,
+        currentPerpsAccount: null,
+        isInitialized: false,
+        isLogin: false,
+        clearinghouseState: null,
+        openOrders: [],
+        historicalOrders: [],
+        userFunding: [],
+        nonFundingLedgerUpdates: [],
+        twapStates: [],
+        twapHistory: [],
+        twapSliceFills: [],
+        localLoadingHistory: [],
+      };
+    },
+
     // Desktop Pro reducers
     setSelectedCoin(state, payload: string) {
       return {
