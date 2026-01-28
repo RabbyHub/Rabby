@@ -235,6 +235,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           baseAsset={selectedCoin}
           quoteAsset="USDC"
           szDecimals={szDecimals}
+          priceChangeUsdValue={true}
           reduceOnly={reduceOnly}
         />
 

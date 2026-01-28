@@ -54,16 +54,22 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     percentageInputValue,
     setPercentageInputValue,
   ] = React.useState<string>(percentage.toString());
+  const [
+    isInputNotionalValue,
+    setIsInputNotionalValue,
+  ] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setPercentageInputValue(isNaN(percentage) ? '' : percentage.toString());
   }, [percentage]);
 
   const handleSliderChange = useMemoizedFn((value: number) => {
+    setIsInputNotionalValue(false);
     handlePercentageChange(value);
   });
 
   const handlePresetClick = useMemoizedFn((value: number) => {
+    setIsInputNotionalValue(false);
     handlePercentageChange(value);
   });
 
@@ -108,6 +114,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   );
 
   const handleAmountChange = useMemoizedFn((amount: string) => {
+    setIsInputNotionalValue(false);
     if (!price) {
       setPositionSize({ amount, notionalValue: '' });
       setPercentage(0);
@@ -137,11 +144,14 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
 
   useEffect(() => {
     if (priceChangeUsdValue && positionSize.amount) {
-      handleAmountChange(positionSize.amount);
+      isInputNotionalValue
+        ? handleNotionalChange(positionSize.notionalValue)
+        : handleAmountChange(positionSize.amount);
     }
-  }, [price, priceChangeUsdValue]);
+  }, [price, priceChangeUsdValue, isInputNotionalValue]);
 
   const handleNotionalChange = useMemoizedFn((notional: string) => {
+    setIsInputNotionalValue(true);
     if (!price) {
       setPositionSize({ amount: '', notionalValue: notional });
       setPercentage(0);
