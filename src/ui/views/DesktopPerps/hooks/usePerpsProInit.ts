@@ -6,6 +6,7 @@ import { useWallet } from '@/ui/utils';
 import { PERPS_AGENT_NAME } from '../../Perps/constants';
 import { usePerpsProState } from './usePerpsProState';
 import { preloadSound } from '@/ui/utils/sound';
+import { DARK_MODE_TYPE } from '@/constant';
 
 export const usePerpsProInit = () => {
   usePerpsDefaultAccount({
@@ -27,7 +28,18 @@ export const usePerpsProInit = () => {
     dispatch.perps.initFavoritedCoins(undefined);
     dispatch.perps.initMarketSlippage(undefined);
     dispatch.perps.initSoundEnabled(undefined);
-  }, [dispatch]);
+  }, []);
+
+  const checkIsNeedSetDarkTheme = async () => {
+    const isNeedSetDarkTheme = await wallet.getPerpsIsNeedSetDarkTheme();
+    if (isNeedSetDarkTheme) {
+      dispatch.preference.switchThemeMode(DARK_MODE_TYPE.dark);
+    }
+  };
+
+  useEffect(() => {
+    checkIsNeedSetDarkTheme();
+  }, []);
 
   useEffect(() => {
     preloadSound('/sounds/order-filled.mp3');

@@ -122,8 +122,15 @@ const PositionItem: React.FC<{
             size={32}
           />
           <div className="flex flex-col gap-[2px]">
-            <div className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
-              {coin}
+            <div className="flex items-center gap-[6px]">
+              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
+                {coin}
+              </span>
+              <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-rb-blue-light-1 text-rb-blue-default">
+                {leverageType === 'cross'
+                  ? t('page.perps.cross')
+                  : t('page.perps.isolated')}
+              </span>
             </div>
             <div className="flex items-center gap-[6px]">
               <span
@@ -136,11 +143,6 @@ const PositionItem: React.FC<{
               >
                 {side} {leverageText}
               </span>
-              {leverageType === 'cross' && (
-                <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-rb-blue-light-1 text-rb-blue-default">
-                  {t('page.perps.cross')}
-                </span>
-              )}
               <DistanceRiskTag
                 isLong={isLong}
                 percent={formatPerpsPct(

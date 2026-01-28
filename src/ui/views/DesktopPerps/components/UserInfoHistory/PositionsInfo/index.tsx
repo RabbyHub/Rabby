@@ -37,7 +37,7 @@ import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
-import { isScreenSmall } from '../../../utils';
+import { handleDisplayFundingPayments, isScreenSmall } from '../../../utils';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -461,12 +461,7 @@ export const PositionsInfo: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
-              {Number(record.sinceOpenFunding || 0) === 0
-                ? ''
-                : Number(record.sinceOpenFunding || 0) < 0
-                ? ''
-                : '-'}
-              {formatUsdValue(Math.abs(Number(record.sinceOpenFunding || 0)))}
+              {handleDisplayFundingPayments(record.sinceOpenFunding)}
             </div>
           );
         },
@@ -589,6 +584,21 @@ export const PositionsInfo: React.FC = () => {
         dataIndex: 'oid',
         // width: 160,
         render: (_, record) => {
+          const CLOSE_POSITION_OPTIONS = [
+            {
+              label: t('page.perpsPro.userInfo.positionInfo.reverse'),
+              value: 'reverse',
+            },
+            {
+              label: t('page.perpsPro.userInfo.positionInfo.limit'),
+              value: 'limit',
+            },
+            {
+              label: t('page.perpsPro.userInfo.positionInfo.market'),
+              value: 'market',
+            },
+          ];
+
           return (
             <div className="flex justify-center">
               <Dropdown
@@ -596,6 +606,7 @@ export const PositionsInfo: React.FC = () => {
                 forceRender={true}
                 overlay={
                   <Menu
+                    className="bg-r-neutral-bg1"
                     onClick={(info) => {
                       setSelectedCoin(record.coin);
                       setClosePositionType(
@@ -604,15 +615,14 @@ export const PositionsInfo: React.FC = () => {
                       setClosePositionVisible(true);
                     }}
                   >
-                    <Menu.Item key="reverse">
-                      {t('page.perpsPro.userInfo.positionInfo.reverse')}
-                    </Menu.Item>
-                    <Menu.Item key="limit">
-                      {t('page.perpsPro.userInfo.positionInfo.closeLimit')}
-                    </Menu.Item>
-                    <Menu.Item key="market">
-                      {t('page.perpsPro.userInfo.positionInfo.closeMarket')}
-                    </Menu.Item>
+                    {CLOSE_POSITION_OPTIONS.map((option) => (
+                      <Menu.Item
+                        className="text-r-neutral-title1 hover:bg-r-blue-light1"
+                        key={option.value}
+                      >
+                        {option.label}
+                      </Menu.Item>
+                    ))}
                   </Menu>
                 }
               >

@@ -27,6 +27,7 @@ import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
 import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
 import { TopPermissionTips } from './components/TopPermissionTips';
+import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 
 const Wrap = styled.div`
   width: 100%;
@@ -99,7 +100,10 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
             <div className="flex items-center justify-between">
               <DesktopNav showRightItems={false} />
 
-              <AccountActions handleSetPopupType={handleSetPopupType} />
+              <div className="flex items-center gap-16">
+                <AccountActions handleSetPopupType={handleSetPopupType} />
+                <SwitchThemeBtn />
+              </div>
             </div>
             <TopPermissionTips />
             <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
@@ -117,7 +121,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                 </div>
               </div>
 
-              <div className="flex flex-1 min-h-[300px] max-h-[max(300px,calc(100vh-860px))]">
+              <div className="flex flex-1 min-h-[300px] max-h-[max(300px,calc(100vh-820px))]">
                 <div className="flex-[4] min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
                   <UserInfoHistory />
                 </div>

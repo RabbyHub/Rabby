@@ -1128,6 +1128,7 @@
           "cancelAll": "Cancel All",
           "price": "Price",
           "cancel": "Cancel",
+          "ro": "R.O.",
           "reduceOnly": "Reduce Only"
         },
         "distanceRiskTag": {
@@ -1280,6 +1281,7 @@
       "accountActions": {
         "pending": "Pending",
         "available": "Available",
+        "onePosition": "1 position",
         "positionCount": "{{count}} positions",
         "deposit": "Deposit"
       },
