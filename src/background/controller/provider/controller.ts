@@ -73,6 +73,7 @@ import { hexToNumber, isAddress, numberToHex, stringToHex, toHex } from 'viem';
 import {
   ProviderRequest,
   Eip7702AuthorizationRequest,
+  Eip7702BatchAuthorizationRequest,
   SignedEip7702Authorization,
 } from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
@@ -1545,9 +1546,7 @@ class ProviderController extends BaseController {
         !authRequest.contractAddress ||
         !isAddress(authRequest.contractAddress)
       ) {
-        throw ethErrors.rpc.invalidParams(
-          'Valid contractAddress is required'
-        );
+        throw ethErrors.rpc.invalidParams('Valid contractAddress is required');
       }
 
       if (!authRequest.from || !isAddress(authRequest.from)) {
@@ -1584,74 +1583,213 @@ class ProviderController extends BaseController {
 
     const authRequest = params[0] as Eip7702AuthorizationRequest;
 
-    try {
-      const keyring = await this._checkAddress(authRequest.from, req);
+    const keyring = await this._checkAddress(authRequest.from, req);
 
-      // Get nonce if not provided
-      let nonce = authRequest.nonce;
-      if (nonce === undefined) {
-        const nonceHex = await this.ethRpc({
-          ...req,
-          data: {
-            method: 'eth_getTransactionCount',
-            params: [authRequest.from, 'pending'],
-          },
-        });
-        nonce = hexToNumber(nonceHex as `0x${string}`);
-      } else if (typeof nonce === 'string') {
-        nonce = hexToNumber(nonce as `0x${string}`);
+    // Get nonce if not provided
+    let nonce = authRequest.nonce;
+    if (nonce === undefined) {
+      const nonceHex = await this.ethRpc({
+        ...req,
+        data: {
+          method: 'eth_getTransactionCount',
+          params: [authRequest.from, 'pending'],
+        },
+      });
+      nonce = hexToNumber(nonceHex as `0x${string}`);
+    } else if (typeof nonce === 'string') {
+      nonce = hexToNumber(nonce as `0x${string}`);
+    }
+
+    // Get chainId if not provided
+    let chainId = authRequest.chainId;
+    if (chainId === undefined) {
+      const site = permissionService.getConnectedSite(session.origin);
+      const chain = site ? findChainByEnum(site.chain) : null;
+      chainId = chain?.id ?? 1;
+    }
+
+    const authorization: [number, string, number] = [
+      chainId,
+      authRequest.contractAddress,
+      nonce as number,
+    ];
+
+    const signature: string = await keyringService.signEip7702Authorization(
+      keyring,
+      {
+        from: authRequest.from,
+        authorization,
+      }
+    );
+
+    // Parse signature into EIP-7702 format
+    // Signature format: 0x + r(64) + s(64) + v(2)
+    const r = ('0x' + signature.slice(2, 66)) as `0x${string}`;
+    const s = ('0x' + signature.slice(66, 130)) as `0x${string}`;
+    const v = parseInt(signature.slice(130, 132), 16);
+    const yParity = v >= 27 ? v - 27 : v;
+
+    const result: SignedEip7702Authorization = {
+      chainId: toHex(chainId) as `0x${string}`,
+      address: authRequest.contractAddress,
+      nonce: toHex(nonce as number) as `0x${string}`,
+      yParity: toHex(yParity) as `0x${string}`,
+      r,
+      s,
+    };
+
+    // Log the authorization for audit trail
+    signTextHistoryService.createHistory({
+      address: authRequest.from,
+      text: `EIP-7702 Authorization: Delegate to ${authRequest.contractAddress} on chain ${chainId}`,
+      origin: session.origin,
+      type: 'eip7702Authorization',
+    });
+
+    return result;
+  };
+
+  /**
+   * EIP-7702: Sign multiple authorizations in batch
+   * Allows a dApp to request the user sign multiple authorizations at once
+   * (e.g., for sweep + revoke flows)
+   */
+  @Reflect.metadata('APPROVAL', [
+    'SignBatchAuthorization',
+    (req: ProviderRequest) => {
+      assertProviderRequest(req);
+      const {
+        data: { params },
+        account,
+      } = req;
+
+      const batchRequest = params?.[0] as Eip7702BatchAuthorizationRequest;
+      if (!batchRequest) {
+        throw ethErrors.rpc.invalidParams(
+          'Batch authorization request is required'
+        );
       }
 
-      // Get chainId if not provided
-      let chainId = authRequest.chainId;
-      if (chainId === undefined) {
-        const site = permissionService.getConnectedSite(session.origin);
-        const chain = site ? findChainByEnum(site.chain) : null;
-        chainId = chain?.id ?? 1;
+      if (!batchRequest.from || !isAddress(batchRequest.from)) {
+        throw ethErrors.rpc.invalidParams('Valid from address is required');
+      }
+
+      if (
+        !batchRequest.authorizations ||
+        !Array.isArray(batchRequest.authorizations) ||
+        batchRequest.authorizations.length === 0
+      ) {
+        throw ethErrors.rpc.invalidParams(
+          'At least one authorization is required'
+        );
+      }
+
+      const currentAddress = account?.address?.toLowerCase();
+      if (batchRequest.from.toLowerCase() !== currentAddress) {
+        throw ethErrors.rpc.invalidParams(
+          'from should be same as current address'
+        );
+      }
+
+      // Validate each authorization
+      for (const auth of batchRequest.authorizations) {
+        if (!auth.contractAddress || !isAddress(auth.contractAddress)) {
+          throw ethErrors.rpc.invalidParams(
+            'Valid contractAddress is required for each authorization'
+          );
+        }
+
+        if (auth.nonce === undefined) {
+          throw ethErrors.rpc.invalidParams(
+            'Nonce is required for batch authorization signing'
+          );
+        }
+
+        if (
+          auth.chainId !== undefined &&
+          auth.chainId !== 0 &&
+          auth.chainId < 0
+        ) {
+          throw ethErrors.rpc.invalidParams('Invalid chainId');
+        }
+      }
+    },
+    { height: 650 },
+  ])
+  walletSignBatchAuthorization = async (
+    req: ProviderRequest
+  ): Promise<SignedEip7702Authorization[]> => {
+    assertProviderRequest(req);
+    const {
+      data: { params },
+      session,
+      account: currentAccount,
+    } = req;
+
+    const batchRequest = params[0] as Eip7702BatchAuthorizationRequest;
+    const results: SignedEip7702Authorization[] = [];
+
+    const keyring = await this._checkAddress(batchRequest.from, req);
+
+    // Get default chainId from connected site
+    const site = permissionService.getConnectedSite(session.origin);
+    const defaultChain = site ? findChainByEnum(site.chain) : null;
+    const defaultChainId = defaultChain?.id ?? 1;
+
+    // Sign each authorization
+    for (const authItem of batchRequest.authorizations) {
+      const chainId = authItem.chainId ?? defaultChainId;
+      let nonce = authItem.nonce;
+      if (typeof nonce === 'string') {
+        nonce = hexToNumber(nonce as `0x${string}`);
       }
 
       const authorization: [number, string, number] = [
         chainId,
-        authRequest.contractAddress,
+        authItem.contractAddress,
         nonce as number,
       ];
 
       const signature: string = await keyringService.signEip7702Authorization(
         keyring,
         {
-          from: authRequest.from,
+          from: batchRequest.from,
           authorization,
         }
       );
 
       // Parse signature into EIP-7702 format
-      // Signature format: 0x + r(64) + s(64) + v(2)
       const r = ('0x' + signature.slice(2, 66)) as `0x${string}`;
       const s = ('0x' + signature.slice(66, 130)) as `0x${string}`;
       const v = parseInt(signature.slice(130, 132), 16);
       const yParity = v >= 27 ? v - 27 : v;
 
-      const result: SignedEip7702Authorization = {
+      results.push({
         chainId: toHex(chainId) as `0x${string}`,
-        address: authRequest.contractAddress,
+        address: authItem.contractAddress,
         nonce: toHex(nonce as number) as `0x${string}`,
         yParity: toHex(yParity) as `0x${string}`,
         r,
         s,
-      };
-
-      // Log the authorization for audit trail
-      signTextHistoryService.createHistory({
-        address: authRequest.from,
-        text: `EIP-7702 Authorization: Delegate to ${authRequest.contractAddress} on chain ${chainId}`,
-        origin: session.origin,
-        type: 'eip7702Authorization',
       });
-
-      return result;
-    } catch (e) {
-      throw e;
     }
+
+    // Log the batch authorization for audit trail
+    const authDescriptions = batchRequest.authorizations
+      .map((auth, i) => {
+        const label = auth.label || `Authorization ${i + 1}`;
+        return `${label}: ${auth.contractAddress}`;
+      })
+      .join(', ');
+
+    signTextHistoryService.createHistory({
+      address: batchRequest.from,
+      text: `EIP-7702 Batch Authorization (${batchRequest.authorizations.length}): ${authDescriptions}`,
+      origin: session.origin,
+      type: 'eip7702BatchAuthorization',
+    });
+
+    return results;
   };
 
   personalEcRecover = ({

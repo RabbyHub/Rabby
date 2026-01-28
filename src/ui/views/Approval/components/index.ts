@@ -2,6 +2,7 @@ export { default as SignText } from './SignText';
 export { default as SignTx } from './SignTx';
 export { default as SignTypedData } from './SignTypedData';
 export { default as SignAuthorization } from './SignAuthorization';
+export { default as SignBatchAuthorization } from './SignBatchAuthorization';
 export { default as Connect } from './Connect';
 export { default as WatchAddressWaiting } from './WatchAddressWaiting';
 export { default as CoinbaseWaiting } from './CoinbaseWaiting';

@@ -30,6 +30,7 @@ const isSignApproval = (type: string) => {
     'SignTypedData',
     'SignTx',
     'SignAuthorization',
+    'SignBatchAuthorization',
   ];
   return SIGN_APPROVALS.includes(type);
 };

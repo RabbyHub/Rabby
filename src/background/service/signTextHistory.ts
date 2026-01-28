@@ -13,7 +13,9 @@ export interface SignTextHistoryItem {
     | 'ethSignTypedData'
     | 'ethSignTypedDataV1'
     | 'ethSignTypedDataV3'
-    | 'ethSignTypedDataV4';
+    | 'ethSignTypedDataV4'
+    | 'eip7702Authorization'
+    | 'eip7702BatchAuthorization';
 }
 
 interface SignTextHistoryStore {
