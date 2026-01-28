@@ -171,6 +171,7 @@ export const filterKeyringData = (
   }
 
   const keys = Object.keys(data);
+  const KEYSTONE_KEEP_KEYS = ['paths', 'indexes'];
 
   for (const key of keys) {
     const value = data[key];
@@ -183,8 +184,21 @@ export const filterKeyringData = (
       }
     } else if (isObject(value)) {
       const subKeys = Object.keys(value);
+      const keyringMeta = data as {
+        keyringMode?: string;
+        name?: string;
+      };
+      const isKeystonePubkey =
+        keyringMeta?.keyringMode === 'pubkey' &&
+        keyringMeta.name === 'Keystone';
+      const shouldSkipAddressFiltering =
+        isKeystonePubkey && KEYSTONE_KEEP_KEYS.includes(key);
 
-      if (isAddress(subKeys[0])) {
+      if (
+        !shouldSkipAddressFiltering &&
+        subKeys.length > 0 &&
+        isAddress(subKeys[0])
+      ) {
         const filteredSubKeys = subKeys.filter((item) =>
           addresses.some((address) => isSameAddress(item, address))
         );
