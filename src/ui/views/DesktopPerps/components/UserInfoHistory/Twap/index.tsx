@@ -17,6 +17,7 @@ import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
+import { formatPerpsCoin } from '../../../utils';
 
 type TwapOrder = {
   twapId: number;
@@ -199,7 +200,7 @@ export const Twap: React.FC = () => {
               dispatch.perps.setSelectedCoin(record.fill.coin);
             }}
           >
-            {record.fill.coin}
+            {formatPerpsCoin(record.fill.coin)}
           </div>
         ),
       },
@@ -248,7 +249,8 @@ export const Twap: React.FC = () => {
         sorter: (a, b) => Number(a.fill.sz) - Number(b.fill.sz),
         render: (_, record) => (
           <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
-            {splitNumberByStep(Number(record.fill.sz))} {record.fill.coin}
+            {splitNumberByStep(Number(record.fill.sz))}{' '}
+            {formatPerpsCoin(record.fill.coin)}
           </div>
         ),
       },
@@ -408,7 +410,7 @@ export const Twap: React.FC = () => {
                         dispatch.perps.setSelectedCoin(record.coin);
                       }}
                     >
-                      {record.coin}{' '}
+                      {formatPerpsCoin(record.coin)}{' '}
                     </span>
                   </div>
                   <div className="text-[12px] leading-[14px] text-r-neutral-foot">

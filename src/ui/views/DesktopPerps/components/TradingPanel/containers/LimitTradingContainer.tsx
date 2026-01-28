@@ -403,12 +403,16 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
             forceRender={true}
             overlay={
               <Menu
+                className="bg-r-neutral-bg1 border border-r-neutral-line"
                 onClick={(info) =>
                   setLimitOrderType(info.key as LimitOrderType)
                 }
               >
                 {limitOrderTypeOptions.map((option) => (
-                  <Menu.Item key={option.value}>
+                  <Menu.Item
+                    className="text-r-neutral-title1 hover:bg-r-blue-light1"
+                    key={option.value}
+                  >
                     <Tooltip key={option.value} title={option.title}>
                       {option.label}
                     </Tooltip>

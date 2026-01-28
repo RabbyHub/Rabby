@@ -239,6 +239,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   const [sortField, setSortField] = useState<SortField>('dayNtlVlm');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<Input | null>(null);
   const listRef = useRef<FixedSizeList>(null);
   const { marketData, favoritedCoins, marketDataMap } = useRabbySelector(
     (state) => state.perps
@@ -253,6 +254,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
       // Reset virtual list scroll position
       setTimeout(() => {
         listRef.current?.scrollTo(0);
+        searchInputRef.current?.focus();
       }, 0);
     }
   }, [dropdownVisible]);
@@ -381,6 +383,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
           prefix={<RcIconSearch className="text-r-neutral-foot" />}
           placeholder={t('page.perpsPro.chatArea.searchMarkets')}
           value={searchText}
+          ref={searchInputRef}
           spellCheck={false}
           onChange={(e) => setSearchText(e.target.value)}
           allowClear

@@ -44,6 +44,7 @@ import {
   PositionSize,
   TPSLConfig,
 } from '../views/DesktopPerps/types';
+import { message } from 'antd';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -641,6 +642,11 @@ export const perps = createModel<RootModel>()({
 
     // Desktop Pro reducers
     setSelectedCoin(state, payload: string) {
+      if (payload.includes(':')) {
+        message.error('HIP-3 coin is not supported');
+        return state;
+      }
+
       return {
         ...state,
         ...INIT_TRADING_STATE,

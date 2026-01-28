@@ -27,6 +27,7 @@ import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
 import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
 import { TopPermissionTips } from './components/TopPermissionTips';
+import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 
 const Wrap = styled.div`
   width: 100%;
@@ -97,7 +98,10 @@ export const DesktopPerps: React.FC = () => {
             <div className="flex items-center justify-between">
               <DesktopNav showRightItems={false} />
 
-              <AccountActions handleSetPopupType={handleSetPopupType} />
+              <div className="flex items-center gap-16">
+                <AccountActions handleSetPopupType={handleSetPopupType} />
+                <SwitchThemeBtn />
+              </div>
             </div>
             <TopPermissionTips />
             <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">

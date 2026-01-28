@@ -9,6 +9,7 @@ import React, { useMemo } from 'react';
 import { CommonTable } from '../CommonTable';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
 
 export const FundingHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -52,7 +53,7 @@ export const FundingHistory: React.FC = () => {
                 dispatch.perps.setSelectedCoin(record.coin);
               }}
             >
-              {record.coin}
+              {formatPerpsCoin(record.coin)}
             </div>
           );
         },
@@ -67,7 +68,8 @@ export const FundingHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-              {splitNumberByStep(Math.abs(Number(record.szi)))} {record.coin}
+              {splitNumberByStep(Math.abs(Number(record.szi)))}{' '}
+              {formatPerpsCoin(record.coin)}
             </div>
           );
         },

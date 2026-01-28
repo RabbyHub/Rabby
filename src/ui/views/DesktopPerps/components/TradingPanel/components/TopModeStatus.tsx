@@ -120,12 +120,18 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
           transitionName=""
           overlay={
             <Menu
+              className="bg-r-neutral-bg1 border border-r-neutral-line"
               onClick={(info) => {
                 onOrderTypeChange(info.key as OrderType);
               }}
             >
               {ORDER_TYPE_OPTIONS.map((option) => (
-                <Menu.Item key={option.value}>{option.label}</Menu.Item>
+                <Menu.Item
+                  className="text-r-neutral-title1 hover:bg-r-blue-light1"
+                  key={option.value}
+                >
+                  {option.label}
+                </Menu.Item>
               ))}
             </Menu>
           }

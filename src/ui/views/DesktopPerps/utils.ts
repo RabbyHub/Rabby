@@ -181,3 +181,12 @@ export const handleDisplayFundingPayments = (fundingPayments: string) => {
 
   return sign + '$' + bn.abs().toFixed(2);
 };
+
+export const formatPerpsCoin = (coin: string) => {
+  if (coin.includes(':')) {
+    // is hip-3 coin
+    return coin.split(':')[1].toUpperCase();
+  } else {
+    return coin.toUpperCase();
+  }
+};

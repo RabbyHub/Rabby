@@ -1128,6 +1128,7 @@
           "cancelAll": "Cancel All",
           "price": "Price",
           "cancel": "Cancel",
+          "ro": "R.O.",
           "reduceOnly": "Reduce Only"
         },
         "distanceRiskTag": {
