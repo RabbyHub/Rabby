@@ -73,7 +73,7 @@ function useSelectedMarketKey() {
 }
 
 export const useSelectedMarket = () => {
-  const { marketKey, setMarketKey: setMarket } = useSelectedMarketKey();
+  const { marketKey, setMarketKey } = useSelectedMarketKey();
   const { marketData, chainEnum, chainInfo, isMainnet } = useMemo(
     () => getMarketInfo(marketKey),
     [marketKey]
@@ -82,7 +82,7 @@ export const useSelectedMarket = () => {
   return {
     marketKey: marketKey,
     selectedMarketData: marketData,
-    setMarketKey: setMarket,
+    setMarketKey,
     chainEnum,
     chainInfo,
     isMainnet,

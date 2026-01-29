@@ -35,10 +35,9 @@ type MyAssetItem =
 
 export const LendingList: React.FC = () => {
   const { t } = useTranslation();
-  const [selectedMarket, setSelectedMarket] = useState<string>('core');
   const { reserves } = useLendingRemoteData();
-  const { displayPoolReserves, iUserSummary, apyInfo } = useLendingSummary();
-  const { chainEnum, marketKey } = useSelectedMarket();
+  const { displayPoolReserves, iUserSummary } = useLendingSummary();
+  const { chainEnum, marketKey, setMarketKey } = useSelectedMarket();
 
   const myAssetList: MyAssetItem[] = useMemo(() => {
     const list: MyAssetItem[] = [];
@@ -142,7 +141,7 @@ export const LendingList: React.FC = () => {
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex items-center justify-between px-[16px] py-[12px]">
-        <MarketSelector value={selectedMarket} onChange={setSelectedMarket} />
+        <MarketSelector value={marketKey} onChange={setMarketKey} />
         <div className="flex items-center gap-[8px]">
           <button
             className={clsx(
