@@ -4,11 +4,13 @@ import { CHAINS_ENUM } from '@/types/chain';
 
 export interface DesktopProfileState {
   chain?: CHAINS_ENUM;
+  activeTab?: string;
 }
 
 export const desktopProfile = createModel<RootModel>()({
   state: {
     chain: undefined,
+    activeTab: 'tokens',
   } as DesktopProfileState,
 
   reducers: {
