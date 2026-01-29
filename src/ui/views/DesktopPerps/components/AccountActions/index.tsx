@@ -36,7 +36,7 @@ export const AccountActions: React.FC<{
     <div className="flex items-center gap-[12px]">
       {/* Available Balance */}
       {Boolean(clearinghouseState) && (
-        <div className="flex items-center gap-[8px] pl-12 pr-8 py-[8px] bg-rb-neutral-bg-3 rounded-[12px] border border-rb-neutral-bg-2">
+        <div className="flex items-center gap-[8px] pl-[11px] pr-[7px] py-[6px] rounded-[16px] border border-rb-neutral-line">
           <div className="flex items-center gap-[4px]">
             <IconPerpsWallet />
             <div className="flex items-start flex-col">
@@ -52,7 +52,7 @@ export const AccountActions: React.FC<{
           <button
             onClick={handleDeposit}
             className={clsx(
-              'ml-6 px-[12px] h-[28px] rounded-[6px] text-[15px] font-medium flex items-center justify-center',
+              'ml-6 px-[12px] h-[28px] rounded-[6px] text-[15px] leading-[18px] font-medium flex items-center justify-center',
               'bg-rb-brand-light-1 text-rb-brand-default'
             )}
           >
@@ -64,7 +64,7 @@ export const AccountActions: React.FC<{
             <div
               onClick={handleDeposit}
               className={clsx(
-                'px-[12px] h-[28px] rounded-[6px] text-[15px] font-medium flex items-center gap-8 cursor-pointer justify-center',
+                'px-[12px] h-[28px] rounded-[6px] text-[15px] leading-[18px] font-medium flex items-center gap-[8px] cursor-pointer justify-center',
                 'bg-rb-orange-light-1 text-rb-orange-default'
               )}
             >
