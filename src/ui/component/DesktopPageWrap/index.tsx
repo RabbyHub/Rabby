@@ -10,7 +10,6 @@ export const DesktopPageWrap = styled.div`
   align-items: flex-start;
   justify-content: center;
   gap: 16px;
-  padding-bottom: 120px;
 
   .main-content {
     padding-left: 80px;

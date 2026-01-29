@@ -1901,12 +1901,39 @@ export class WalletController extends BaseController {
     });
     sessionService.broadcastEvent(
       'accountsChanged',
-      currentAccount?.address ? [currentAccount?.address] : []
+      currentAccount?.address ? [currentAccount?.address] : [],
+      undefined,
+      undefined,
+      false
     );
   };
 
   updateGa4EventTime = (timestamp: number) => {
     preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
+  };
+
+  switchSceneAccount = ({
+    scene,
+    account,
+    origin,
+  }: {
+    scene: string;
+    account: Account;
+    origin?: string;
+  }) => {
+    const prev = preferenceService.getPreference('sceneAccountMap') || {};
+    preferenceService.setPreferencePartials({
+      sceneAccountMap: { ...prev, [scene]: account },
+    });
+    if (origin) {
+      sessionService.broadcastEvent(
+        'accountsChanged',
+        [account.address],
+        origin,
+        undefined,
+        true
+      );
+    }
   };
 
   getLastTimeSendToken = () => preferenceService.getLastTimeSendToken();
@@ -2137,7 +2164,9 @@ export class WalletController extends BaseController {
       sessionService.broadcastEvent(
         'accountsChanged',
         site?.account?.address ? [site.account.address.toLowerCase()] : [],
-        site.origin
+        site.origin,
+        undefined,
+        false
       );
     }
   };
@@ -2192,7 +2221,9 @@ export class WalletController extends BaseController {
       sessionService.broadcastEvent(
         'defaultWalletChanged',
         currentIsDefaultWallet ? 'rabby' : 'metamask',
-        site.origin
+        site.origin,
+        undefined,
+        false
       );
     }
   };
