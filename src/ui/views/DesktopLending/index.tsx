@@ -11,7 +11,7 @@ import { SummaryBar } from './components/SummaryBar';
 import { AddAddressModal } from '../DesktopProfile/components/AddAddressModal';
 import { LendingProvider } from './hooks/useLendingService';
 import { LendingDataProvider } from './hooks/LendingDataContext';
-import { useFetchLendingData } from './hooks';
+import { useFetchLendingData, useLendingSummaryCard } from './hooks';
 import './index.less';
 
 const Wrap = styled.div`
@@ -32,6 +32,7 @@ const DesktopLendingContent: React.FC = () => {
   const [popupType, setPopupType] = useState<PopupType>(null);
 
   const { fetchData } = useFetchLendingData();
+  const { iUserSummary, apyInfo } = useLendingSummaryCard();
 
   useEffect(() => {
     fetchData();
@@ -58,12 +59,18 @@ const DesktopLendingContent: React.FC = () => {
               <DesktopNav showRightItems={false} />
             </div>
             <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1 mt-[16px] relative">
-              <div className="flex flex-1 min-h-[300px]">
-                <div className="flex-1 min-w-0 overflow-hidden">
-                  <LendingList />
-                </div>
+              <div className="flex-1 min-h-[300px] overflow-hidden">
+                <LendingList />
               </div>
-              <SummaryBar />
+              <div className="flex-shrink-0">
+                <SummaryBar
+                  netWorth={iUserSummary?.netWorthUSD || ''}
+                  supplied={iUserSummary?.totalLiquidityUSD || ''}
+                  borrowed={iUserSummary?.totalBorrowsUSD || ''}
+                  netApy={apyInfo?.netAPY || 0}
+                  healthFactor={iUserSummary?.healthFactor || ''}
+                />
+              </div>
             </div>
           </div>
           <aside

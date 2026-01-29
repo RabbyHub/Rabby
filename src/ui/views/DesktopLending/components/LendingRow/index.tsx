@@ -6,10 +6,9 @@ import BigNumber from 'bignumber.js';
 import { IsolateTag } from '../IsolateTag';
 import { TCell, TRow } from '@/ui/views/CommonPopup/AssetList/components/Table';
 import { Switch } from 'antd';
-import { Tooltip } from 'antd';
-import { ReactComponent as RcIconInfo } from '@/ui/assets/icon-info.svg';
 import styled from 'styled-components';
 import { formatApy } from '../../utils/format';
+import TokenIcon from '../SymbolIcon';
 
 const CollateralSwitch = styled(Switch)`
   &.ant-switch-checked {
@@ -20,6 +19,7 @@ const CollateralSwitch = styled(Switch)`
 export interface LendingRowData {
   id: string;
   asset: string;
+  symbol: string;
   assetLogo?: string;
   type: 'supplied' | 'borrowed';
   apy: string;
@@ -46,17 +46,11 @@ export const LendingRow: React.FC<{
     >
       <TCell className="flex-1 min-w-0">
         <div className="flex items-center gap-[32px]">
-          <div className="flex items-center gap-[8px] flex-shrink-0 min-w-[120px]">
-            {data.assetLogo && (
-              <img
-                src={data.assetLogo}
-                alt={data.asset}
-                className="w-[24px] h-[24px] rounded-full flex-shrink-0"
-              />
-            )}
+          <div className="flex items-center gap-[8px] flex-shrink-0 min-w-[140px]">
+            {data.symbol && <TokenIcon tokenSymbol={data.symbol} size={24} />}
             <div className="flex items-center gap-[6px]">
               <span className="text-[14px] leading-[17px] font-medium text-r-neutral-title-1">
-                {data.asset}
+                {data.symbol}
               </span>
               {data.isIsolated && <IsolateTag />}
             </div>
@@ -74,7 +68,7 @@ export const LendingRow: React.FC<{
           <span
             className={clsx(
               'text-[14px] leading-[17px] font-medium flex-shrink-0 min-w-[80px]',
-              isSupplied ? 'text-rb-green-default' : 'text-r-neutral-title-1'
+              isSupplied ? 'text-rb-green-default' : 'text-rb-red-default'
             )}
           >
             {formatApy(Number(data.apy))}

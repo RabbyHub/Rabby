@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue } from '@/ui/utils';
@@ -6,6 +6,11 @@ import BigNumber from 'bignumber.js';
 import { Tooltip } from 'antd';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 import styled from 'styled-components';
+import { getHealthStatusColor, isHFEmpty } from '../../utils';
+import { HF_COLOR_GOOD_THRESHOLD } from '../../utils/constant';
+import { estDaily, formatApy } from '../../utils/format';
+import { getHealthFactorText } from '../../utils/health';
+import RightMarketTabInfo from './RightTag';
 
 const SummaryBarContainer = styled.div`
   /*  */
@@ -19,22 +24,6 @@ const HealthyBadge = styled.div`
   font-size: 12px;
   font-weight: 500;
   line-height: 16px;
-`;
-
-const EthCorrelatedTagWrapper = styled.div`
-  background: white;
-  border-radius: 6px;
-  padding: 1.5px;
-  background: linear-gradient(135deg, #9ae8ff 0%, #cb8eff 100%);
-`;
-
-const EthCorrelatedTag = styled.div`
-  background: white;
-  border-radius: 5px;
-  padding: 4px 8px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 `;
 
 const InfoTitle = styled.span`
@@ -51,19 +40,54 @@ const InfoValue = styled.span`
   font-weight: 500;
 `;
 
-export const SummaryBar: React.FC = () => {
+interface SummaryItemProps {
+  netWorth: string;
+  supplied: string;
+  borrowed: string;
+  netApy: number;
+  healthFactor: string;
+}
+
+export const SummaryBar: React.FC<SummaryItemProps> = ({
+  netWorth,
+  supplied,
+  borrowed,
+  netApy,
+  healthFactor,
+}) => {
   const { t } = useTranslation();
 
-  const netWorth = 1023;
-  const totalBorrowed = 2224;
-  const totalSupplied = 12224;
-  const healthFactor = 16.84;
-  const netApy = 0.041;
-  const estDailyEarnings = 4.5;
-  const isHealthy = healthFactor > 1.5;
+  const healthStatus = useMemo(() => {
+    const numHF = Number(healthFactor || '0');
+    const hfColorInfo = getHealthStatusColor(numHF);
+    const label =
+      numHF < HF_COLOR_GOOD_THRESHOLD
+        ? t('page.lending.summary.risky')
+        : t('page.lending.summary.healthy');
+    return {
+      ...hfColorInfo,
+      label,
+    };
+  }, [healthFactor, t]);
+
+  const netApyText = useMemo(() => {
+    const apyAbs = Math.abs(Number(netApy || 0));
+    const formatted = formatApy(apyAbs);
+    return `${netApy > 0 ? '+' : '-'}${formatted}`;
+  }, [netApy]);
+
+  const estDailyText = useMemo(() => {
+    return estDaily(netWorth, netApy);
+  }, [netApy, netWorth]);
+
+  const onlySupply = useMemo(() => {
+    return (
+      Number(borrowed || '0') === 0 && isHFEmpty(Number(healthFactor || '0'))
+    );
+  }, [borrowed, healthFactor]);
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-30 border-t border-solid border-rb-neutral-line">
+    <div className="border-t border-solid border-rb-neutral-line">
       <SummaryBarContainer className="h-[56px] flex items-center px-[24px]">
         <div className="flex items-center gap-[24px] w-full">
           <div className="flex items-center gap-[6px]">
@@ -76,14 +100,14 @@ export const SummaryBar: React.FC = () => {
           <div className="flex items-center gap-[6px]">
             <InfoTitle>{t('page.lending.summary.totalBorrowed')}:</InfoTitle>
             <InfoValue>
-              {formatUsdValue(totalBorrowed, BigNumber.ROUND_DOWN)}
+              {formatUsdValue(borrowed, BigNumber.ROUND_DOWN)}
             </InfoValue>
           </div>
 
           <div className="flex items-center gap-[6px]">
             <InfoTitle>{t('page.lending.summary.totalSupplied')}:</InfoTitle>
             <InfoValue>
-              {formatUsdValue(totalSupplied, BigNumber.ROUND_DOWN)}
+              {formatUsdValue(supplied, BigNumber.ROUND_DOWN)}
             </InfoValue>
           </div>
 
@@ -96,10 +120,17 @@ export const SummaryBar: React.FC = () => {
                 className="cursor-pointer text-rb-neutral-foot ml-[2px]"
               />
             </Tooltip>
-            <InfoValue>{healthFactor.toFixed(2)}</InfoValue>
-            {isHealthy && (
-              <HealthyBadge>{t('page.lending.summary.healthy')}</HealthyBadge>
-            )}
+            <InfoValue style={{ color: healthStatus.color }}>
+              {getHealthFactorText(healthFactor)}
+            </InfoValue>
+            <HealthyBadge
+              style={{
+                color: healthStatus.color,
+                backgroundColor: healthStatus.backgroundColor,
+              }}
+            >
+              {healthStatus.label}
+            </HealthyBadge>
           </div>
 
           <div className="flex items-center gap-[8px]">
@@ -109,31 +140,9 @@ export const SummaryBar: React.FC = () => {
 
           <div className="flex items-center gap-[8px]">
             <InfoTitle>{t('page.lending.summary.estDailyEarnings')}:</InfoTitle>
-            <InfoValue>
-              +{formatUsdValue(estDailyEarnings, BigNumber.ROUND_DOWN)}
-            </InfoValue>
+            <InfoValue>{estDailyText}</InfoValue>
           </div>
-
-          <div className="">
-            <EthCorrelatedTagWrapper>
-              <EthCorrelatedTag>
-                <span className="text-[12px] leading-[14px] font-medium text-[#9AE8FF]">
-                  +
-                </span>
-                <span className="text-[12px] leading-[14px] font-medium">
-                  <span className="text-[#9AE8FF]">ETH</span>
-                  <span className="text-[#CB8EFF]"> CORRELATED</span>
-                </span>
-                <Tooltip title={t('page.lending.summary.ethCorrelatedTip')}>
-                  <RcIconInfo
-                    width={12}
-                    height={12}
-                    className="cursor-pointer text-[#CB8EFF]"
-                  />
-                </Tooltip>
-              </EthCorrelatedTag>
-            </EthCorrelatedTagWrapper>
-          </div>
+          <RightMarketTabInfo />
         </div>
       </SummaryBarContainer>
     </div>

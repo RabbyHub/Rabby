@@ -96,6 +96,7 @@ export const LendingList: React.FC = () => {
           data: {
             id: `${item.underlyingAsset}-supply`,
             asset: item.underlyingAsset,
+            symbol: item.reserve.symbol,
             type: 'supplied',
             apy: item.reserve.supplyAPY,
             myAssets: Number(item.walletBalanceUSD || '0'),
@@ -114,6 +115,7 @@ export const LendingList: React.FC = () => {
           data: {
             id: `${item.underlyingAsset}-borrow`,
             asset: item.underlyingAsset,
+            symbol: item.reserve.symbol,
             type: 'borrowed',
             apy: item.reserve.variableBorrowAPY,
             myAssets: Number(item.totalBorrowsUSD || '0'),
@@ -171,7 +173,7 @@ export const LendingList: React.FC = () => {
             >
               <THeadCell className="flex-1 min-w-0 normal-case">
                 <div className="flex items-center gap-[32px]">
-                  <span className="flex-shrink-0 min-w-[120px]">
+                  <span className="flex-shrink-0 min-w-[140px]">
                     {t('page.lending.table.token')}
                   </span>
                   <span className="flex-shrink-0 min-w-[80px]">

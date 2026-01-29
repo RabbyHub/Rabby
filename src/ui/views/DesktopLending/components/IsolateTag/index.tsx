@@ -6,7 +6,8 @@ import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 
 export const IsolateTag: React.FC<{
   className?: string;
-}> = ({ className }) => {
+  isGlobal?: boolean;
+}> = ({ className, isGlobal }) => {
   const { t } = useTranslation();
 
   return (

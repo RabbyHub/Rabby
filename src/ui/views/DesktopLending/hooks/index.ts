@@ -100,7 +100,6 @@ const poolsMap = new Map<
   }
 >();
 
-//openapiService.initSync();
 const getCachePools = async (
   wallet: ReturnType<typeof useWallet>,
   marketKey?: CustomMarket,
@@ -986,10 +985,10 @@ export function useLendingSummaryCard() {
     }),
     [computedInfo]
   );
-  const apyInfo = computedInfo.apyInfo;
-  const netAPY = apyInfo?.netAPY || 0;
+  const apyInfo = useMemo(() => computedInfo.apyInfo, [computedInfo]);
+  const netAPY = useMemo(() => apyInfo?.netAPY || 0, [apyInfo]);
 
-  return { iUserSummary, netAPY };
+  return { iUserSummary, netAPY, apyInfo };
 }
 export function useLendingIsLoading() {
   const currentAccount = useCurrentAccount();

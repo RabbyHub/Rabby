@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 
 // TODO： 下面三个format都要check下看和移动端能不能对齐
 import { formatUsdValueKMB } from '../../Dashboard/components/TokenDetailPopup/utils';
-import { formatPercent } from '../../Perps/utils';
 import { formatUsdValue } from '@/ui/utils/number';
 
 export const estDaily = (netWorth: string, netApy: number) => {
@@ -23,6 +22,15 @@ export const formatListNetWorth = (num?: number) => {
     return formatUsdValueKMB(num);
   }
   return formatUsdValue(num);
+};
+
+const formatPercent = (value: number) => {
+  const percentNumber = value * 100;
+  const decimalsNumber = Math.min(
+    String(percentNumber).split('.')[1]?.length || 0,
+    2
+  );
+  return `${percentNumber.toFixed(decimalsNumber)}%`;
 };
 
 export const formatApy = (apy: number) => {
