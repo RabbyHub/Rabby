@@ -3449,7 +3449,7 @@
           "funding": "Finansman",
           "filled": "Dolduruldu",
           "openOrders": "Açık Emirler",
-          "twap": "Zaman Ağırlıklı Ortalama Fiyatı",
+          "twap": "TWAP",
           "direction": "Pozisyon Yönü",
           "averagePrice": "Ortalama Fiyat",
           "price": "Fiyat",

@@ -3483,7 +3483,7 @@
           "price": "價格",
           "funding": "資金費率",
           "unrealizedPnl": "未實現盈虧",
-          "twap": "TWAP（時間加權平均價）",
+          "twap": "TWAP",
           "terminate": "終止",
           "fundingHistory": "資金費率歷史",
           "coin": "幣",
@@ -3516,10 +3516,10 @@
           "positions": "無持倉",
           "fillHistory": "暫無成交歷史",
           "orderHistory": "尚無訂單歷史",
-          "activeTwap": "現時沒有活躍的時間加權平均價格（TWAP）",
+          "activeTwap": "現時沒有活躍的TWAP",
           "openOrders": "目前沒有未成交的委託單",
           "tradeHistory": "暫無成交紀錄",
-          "twapHistory": "沒有時間加權平均價的歷史"
+          "twapHistory": "沒有TWAP歷史"
         },
         "positionInfo": {
           "limitPrice": "限價",

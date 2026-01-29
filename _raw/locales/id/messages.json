@@ -3459,7 +3459,7 @@
           "type": "Tipe",
           "averagePrice": "Harga Rata-rata",
           "liqPrice": "Harga likuidasi",
-          "twap": "Harga Rata-rata Tertimbang Waktu",
+          "twap": "TWAP",
           "margin": "Jaminan",
           "side": "Arah",
           "markEntry": "Harga Mark / Harga Entri",
