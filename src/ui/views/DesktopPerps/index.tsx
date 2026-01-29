@@ -65,6 +65,9 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
 
   // Initialize coin from URL on mount or when URL coin changes
   useEffect(() => {
+    if (!isActive) {
+      return;
+    }
     if (coin && coin.toUpperCase() !== selectedCoin.toUpperCase()) {
       isUpdatingFromUrl.current = true;
       dispatch.perps.setSelectedCoin(coin.toUpperCase());
@@ -73,10 +76,14 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
         isUpdatingFromUrl.current = false;
       }, 0);
     }
-  }, [coin, dispatch]); // Run when URL coin param changes
+  }, [coin, dispatch, isActive]); // Run when URL coin param changes
 
   // Update URL when selectedCoin changes (but not from URL change)
   useEffect(() => {
+    if (!isActive) {
+      return;
+    }
+
     if (
       !isUpdatingFromUrl.current &&
       selectedCoin &&
@@ -89,7 +96,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
         search: searchParams.toString(),
       });
     }
-  }, [selectedCoin, coin, history, location]);
+  }, [selectedCoin, coin, history, location, isActive]);
 
   return (
     <>
