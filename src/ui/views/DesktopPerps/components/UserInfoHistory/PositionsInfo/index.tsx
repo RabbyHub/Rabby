@@ -128,8 +128,8 @@ export const PositionsInfo: React.FC = () => {
         leverage: item.position.leverage.value,
         maxLeverage: marketData.maxLeverage || 25,
         positionValue: item.position.positionValue,
-        markPx: marketData.markPx || '0',
-        entryPx: item.position.entryPx || '0',
+        markPx: Number(marketData.markPx || 0).toFixed(pxDecimals),
+        entryPx: Number(item.position.entryPx || 0).toFixed(pxDecimals),
         liquidationPx:
           Number(item.position.liquidationPx || 0).toFixed(pxDecimals) || '0',
         marginUsed: item.position.marginUsed || '0',
@@ -590,11 +590,11 @@ export const PositionsInfo: React.FC = () => {
               value: 'reverse',
             },
             {
-              label: t('page.perpsPro.userInfo.positionInfo.limit'),
+              label: t('page.perpsPro.userInfo.positionInfo.closeLimit'),
               value: 'limit',
             },
             {
-              label: t('page.perpsPro.userInfo.positionInfo.market'),
+              label: t('page.perpsPro.userInfo.positionInfo.closeMarket'),
               value: 'market',
             },
           ];

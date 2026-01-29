@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { ReactComponent as RcIconEmpty } from '@/ui/assets/perps/IconHistoryEmpty.svg';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import ResizeObserver from 'rc-resize-observer';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -156,7 +157,7 @@ const Wrapper = styled.div`
 `;
 
 // Virtual table wrapper - renders header separately from virtualized body
-const VirtualWrapper = styled.div`
+const VirtualWrapper = styled.div<{ isDarkTheme: boolean }>`
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -224,6 +225,10 @@ const VirtualWrapper = styled.div`
   }
 
   .virtual-row {
+    &:hover {
+      background-color: ${({ isDarkTheme }) =>
+        !isDarkTheme ? 'var(--rb-neutral-bg-0)' : 'var(--r-neutral-card-1)'};
+    }
     display: flex;
     align-items: center;
     box-sizing: border-box;
@@ -331,6 +336,7 @@ export const CommonTable = <T extends object>({
   rowHeight = 48,
   ...restProps
 }: CommonTableProps<T>) => {
+  const { isDarkTheme } = useThemeMode();
   const [sortedInfo, setSortedInfo] = useState<{
     field: string | null;
     order: SortOrder | null;
@@ -494,7 +500,7 @@ export const CommonTable = <T extends object>({
   if (virtual) {
     return (
       <ResizeObserver onResize={handleContainerResize}>
-        <VirtualWrapper>
+        <VirtualWrapper isDarkTheme={isDarkTheme}>
           {/* Header-only table */}
           <div className="virtual-table-header" ref={headerRef}>
             <Table<T>

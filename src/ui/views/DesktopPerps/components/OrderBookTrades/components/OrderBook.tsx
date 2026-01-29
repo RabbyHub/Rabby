@@ -16,6 +16,7 @@ import {
 } from '@/ui/assets/desktop/common';
 import { Trade } from '..';
 import { getPerpTickOptions } from '../../../utils';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
 
@@ -44,6 +45,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     marketEstSize,
     quoteUnit,
   } = useRabbySelector((state) => state.perps);
+  const { isDarkTheme } = useThemeMode();
   const dispatch = useRabbyDispatch();
   const [viewMode, setViewMode] = useState<ViewMode>('Both');
   const [aggregationIndex, setAggregationIndex] = useState<number>(0);
@@ -183,7 +185,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
       <div
         key={`${type}-${order.price}`}
         onClick={() => handleClickPrice(Number(order.price))}
-        className="relative flex items-center justify-between px-[12px] h-[24px] text-[12px] hover:bg-rb-neutral-bg-0 cursor-pointer group"
+        className={clsx(
+          'relative flex items-center justify-between px-[12px] h-[24px] text-[12px] cursor-pointer group',
+          isDarkTheme ? 'hover:bg-r-neutral-card-1' : 'hover:bg-rb-neutral-bg-0'
+        )}
       >
         {/* Depth background */}
         <div
@@ -194,19 +199,19 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           style={{ width: `${depthPercent}%` }}
         />
 
-        <div className="relative z-10 flex items-center justify-between w-full">
+        <div className="relative z-10 grid grid-cols-10 items-center justify-between w-full">
           <span
             className={clsx(
-              'font-medium min-w-[60px] text-left group-hover:font-bold',
+              'font-medium col-span-3 text-left group-hover:font-bold',
               type === 'bid' ? 'text-rb-green-default' : 'text-rb-red-default'
             )}
           >
             {splitNumberByStep(order.price)}
           </span>
-          <span className="text-r-neutral-title-1 font-medium min-w-[60px] text-right">
+          <span className="text-r-neutral-title-1 font-medium col-span-3 text-right">
             {formatValue(order.size)}
           </span>
-          <span className="text-r-neutral-title-1 font-medium min-w-[60px] text-right">
+          <span className="text-r-neutral-title-1 font-medium col-span-4 text-right">
             {formatValue(order.total)}
           </span>
         </div>
@@ -384,15 +389,15 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-[12px] py-[5px] text-[11px] text-r-neutral-foot flex-shrink-0">
-        <span className="min-w-[60px] text-left">
+      <div className="grid grid-cols-10 px-[12px] py-[5px] text-[11px] text-r-neutral-foot flex-shrink-0">
+        <span className="col-span-3 text-left">
           {t('page.perpsPro.orderBook.price')}
         </span>
-        <span className="min-w-[60px] text-right">
+        <span className="col-span-3 text-right">
           {t('page.perpsPro.orderBook.amount')} (
           {quoteUnit === 'base' ? selectedCoin : 'USD'})
         </span>
-        <span className="min-w-[60px] text-right">
+        <span className="col-span-4 text-right">
           {t('page.perpsPro.orderBook.total')} (
           {quoteUnit === 'base' ? selectedCoin : 'USD'})
         </span>

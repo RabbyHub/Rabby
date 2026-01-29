@@ -160,19 +160,14 @@ const MarketRowComponent = memo(
             {/* 24h Change - 1.5x width */}
             <div
               className={clsx(
-                'text-[13px] text-r-neutral-title-1 text-start flex-[1.5]'
+                'text-[13px] text-start flex-[1.5]',
+                isPositive ? 'text-r-green-default' : 'text-r-red-default'
               )}
             >
               {isPositive ? '+' : '-'}$
-              {splitNumberByStep(Math.abs(priceChangeVal))}{' '}
-              <span
-                className={clsx(
-                  isPositive ? 'text-r-green-default' : 'text-r-red-default'
-                )}
-              >
-                {isPositive ? '+' : ''}
-                {priceChange.toFixed(2)}%
-              </span>
+              {splitNumberByStep(Math.abs(priceChangeVal))} /{' '}
+              {isPositive ? '+' : ''}
+              {priceChange.toFixed(2)}%
             </div>
 
             {/* 8hr Funding */}
