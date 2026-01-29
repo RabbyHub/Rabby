@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { LendingRow, LendingRowData } from '../LendingRow';
+import { LendingRow } from '../LendingRow';
 import { MarketSelector } from '../MarketSelector';
 import {
   TBody,
@@ -20,18 +20,13 @@ import wrapperToken from '../../config/wrapperToken';
 import { displayGhoForMintableMarket } from '../../utils/supply';
 import BigNumber from 'bignumber.js';
 import { assetCanBeBorrowedByUser } from '../../utils/borrow';
+import { DisplayPoolReserveInfo } from '../../types';
 
-type MyAssetItem =
-  | {
-      type: 'borrow';
-      usdValue: number;
-      data: LendingRowData;
-    }
-  | {
-      type: 'supply';
-      usdValue: number;
-      data: LendingRowData;
-    };
+type MyAssetItem = {
+  type: 'borrow' | 'supply';
+  usdValue: number;
+  data: DisplayPoolReserveInfo;
+};
 
 export const LendingList: React.FC = () => {
   const { t } = useTranslation();
@@ -92,16 +87,7 @@ export const LendingList: React.FC = () => {
         list.push({
           type: 'supply',
           usdValue: supplyUsd,
-          data: {
-            id: `${item.underlyingAsset}-supply`,
-            asset: item.underlyingAsset,
-            symbol: item.reserve.symbol,
-            type: 'supplied',
-            apy: item.reserve.supplyAPY,
-            myAssets: Number(item.walletBalanceUSD || '0'),
-            isCollateral: item.usageAsCollateralEnabledOnUser,
-            isIsolated: item.reserve.isIsolated,
-          },
+          data: item,
         });
       }
     });
@@ -111,16 +97,7 @@ export const LendingList: React.FC = () => {
         list.push({
           type: 'borrow',
           usdValue: borrowUsd,
-          data: {
-            id: `${item.underlyingAsset}-borrow`,
-            asset: item.underlyingAsset,
-            symbol: item.reserve.symbol,
-            type: 'borrowed',
-            apy: item.reserve.variableBorrowAPY,
-            myAssets: Number(item.totalBorrowsUSD || '0'),
-            isCollateral: false,
-            isIsolated: item.reserve.isIsolated,
-          },
+          data: item,
         });
       }
     });
@@ -199,7 +176,8 @@ export const LendingList: React.FC = () => {
               {filteredData.map((item) => {
                 return (
                   <LendingRow
-                    key={`${item.data.id}-${item.type}`}
+                    key={`${item.data.underlyingAsset}-${item.type}`}
+                    type={item.type}
                     data={item.data}
                   />
                 );
