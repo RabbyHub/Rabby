@@ -3452,7 +3452,7 @@
           "creationTime": "Data de Criação",
           "coin": "Moeda",
           "status": "Status",
-          "twap": "Preço Médio Ponderado no Tempo (TWAP)",
+          "twap": "TWAP",
           "rate": "Taxa de financiamento",
           "positions": "Posições",
           "direction": "Direção",

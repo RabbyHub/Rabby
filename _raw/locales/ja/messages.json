@@ -3467,7 +3467,7 @@
           "reduceOnly": "建玉削減のみ",
           "averagePrice": "平均価格",
           "fundingTips": "ポジションを開設してからの純ファンディング支払い。負の値の場合はファンディング益を意味します。",
-          "twap": "TWAP（時間加重平均価格）",
+          "twap": "TWAP",
           "terminate": "契約を終了",
           "tradeHistory": "約定履歴",
           "runningTimeTotal": "経過時間 / 合計",

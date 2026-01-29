@@ -3454,7 +3454,7 @@
           "liqPrice": "Liquidationspreis",
           "runningTimeTotal": "Laufzeit / Gesamtzeit",
           "creationTime": "Eröffnungszeit",
-          "twap": "zeitgewichteter Durchschnittspreis (TWAP)",
+          "twap": "TWAP",
           "funding": "Finanzierungsrate",
           "coin": "Kryptowährung",
           "fee": "Gebühr",

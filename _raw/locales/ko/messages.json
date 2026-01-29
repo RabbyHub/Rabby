@@ -3463,7 +3463,7 @@
           "tpSl": "이익 실현/손절",
           "trade": "거래",
           "rate": "펀딩 비율",
-          "twap": "시간가중평균가격",
+          "twap": "TWAP",
           "slice": "슬라이스",
           "filled": "체결",
           "funding": "펀딩 비율",
