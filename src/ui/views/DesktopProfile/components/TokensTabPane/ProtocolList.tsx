@@ -108,6 +108,7 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
             protocolLogo={logo}
             data={v.map((i) => i._originPortfolio).filter(Boolean)}
             siteUrl={data.site_url}
+            protocolName={data.name}
             name={tag}
           />
         );

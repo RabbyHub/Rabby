@@ -14,6 +14,8 @@ import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import stats from '@/stats';
+import { last } from 'lodash';
 
 const Wrapper = styled.div`
   display: flex;
@@ -95,10 +97,12 @@ const DappActionsForPopup = ({
   data,
   chain,
   protocolLogo,
+  protocolName,
 }: {
   data?: WithdrawAction[];
   chain?: string;
   protocolLogo?: string;
+  protocolName?: string;
 }) => {
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
@@ -126,6 +130,10 @@ const DappActionsForPopup = ({
     [withdrawAction?.type]
   );
 
+  const simulationRef = React.useRef<{
+    usdValueChange?: number;
+  }>({});
+
   const { valid: showWithdraw, action: actionWithdraw } = useDappAction(
     withdrawAction,
     chain
@@ -137,6 +145,9 @@ const DappActionsForPopup = ({
 
   const onPreExecChange = useCallback(
     (r: ExplainTxResponse) => {
+      simulationRef.current = {
+        usdValueChange: r?.balance_change?.usd_value_change,
+      };
       if (!r.pre_exec.success) {
         updateConfig({
           disableSignBtn: true,
@@ -168,17 +179,44 @@ const DappActionsForPopup = ({
   );
 
   const handleSubmit = useCallback(
-    async (action: () => Promise<Tx[]>, title?: string) => {
+    async (action: () => Promise<Tx[]>, title?: string, type?: ActionType) => {
+      simulationRef.current = {};
+
+      const now = Date.now();
+      const base = {
+        tx_type: type || '',
+        chain: chain || '',
+        user_addr: currentAccount?.address || '',
+        address_type: currentAccount?.type || '',
+        protocol_name: protocolName || '',
+        create_at: now,
+      } as const;
+
+      const getSimulationFields = () => {
+        const s = simulationRef.current;
+        return {
+          simulation_result:
+            typeof s.usdValueChange === 'number' ? s.usdValueChange : '',
+        } as const;
+      };
+
       const txs = await action();
       if (!txs?.length) return;
 
       const runFallback = async () => {
+        let lastHash = '';
         for (const tx of txs) {
-          await wallet.sendRequest<string>({
+          lastHash = await wallet.sendRequest<string>({
             method: 'eth_sendTransaction',
             params: [tx],
           });
         }
+        stats.report('defiDirectTx', {
+          ...base,
+          tx_id: lastHash || '',
+          tx_status: 'success',
+          ...getSimulationFields(),
+        });
         setVisible(false);
       };
 
@@ -211,7 +249,14 @@ const DappActionsForPopup = ({
           },
         } as const;
         try {
-          await openUI(signerConfig);
+          const hashes = await openUI(signerConfig);
+          const hash = last(hashes);
+          stats.report('defiDirectTx', {
+            ...base,
+            tx_id: typeof hash === 'string' ? hash : '',
+            tx_status: 'success',
+            ...getSimulationFields(),
+          });
           setVisible(false);
           return;
         } catch (error) {
@@ -220,6 +265,12 @@ const DappActionsForPopup = ({
             console.error('Dapp action direct sign error', error);
             await runFallback().catch((fallbackError) => {
               console.error('Dapp action fallback error', fallbackError);
+              stats.report('defiDirectTx', {
+                ...base,
+                tx_id: '',
+                tx_status: 'fail',
+                ...getSimulationFields(),
+              });
               const fallbackMsg =
                 typeof (fallbackError as any)?.message === 'string'
                   ? (fallbackError as any).message
@@ -235,6 +286,12 @@ const DappActionsForPopup = ({
         await runFallback();
       } catch (error) {
         console.error('Transaction failed:', error);
+        stats.report('defiDirectTx', {
+          ...base,
+          tx_id: '',
+          tx_status: 'fail',
+          ...getSimulationFields(),
+        });
         message.error(
           typeof error?.message === 'string'
             ? error?.message
@@ -248,6 +305,7 @@ const DappActionsForPopup = ({
       openUI,
       protocolLogo,
       chain,
+      protocolName,
       isQueueWithdraw,
       t,
       onPreExecChange,
@@ -267,7 +325,11 @@ const DappActionsForPopup = ({
           text={t('component.DappActions.withdraw')}
           className={`${showClaim ? 'w-[216px]' : 'flex-1'}`}
           onClick={() =>
-            handleSubmit(actionWithdraw, t('component.DappActions.withdraw'))
+            handleSubmit(
+              actionWithdraw,
+              t('component.DappActions.withdraw'),
+              isQueueWithdraw ? ActionType.Queue : ActionType.Withdraw
+            )
           }
         />
       )}
@@ -276,7 +338,11 @@ const DappActionsForPopup = ({
           text={t('component.DappActions.claim')}
           className={`${showWithdraw ? 'w-[108px]' : 'flex-1'}`}
           onClick={() =>
-            handleSubmit(actionClaim, t('component.DappActions.claim'))
+            handleSubmit(
+              actionClaim,
+              t('component.DappActions.claim'),
+              ActionType.Claim
+            )
           }
         />
       )}

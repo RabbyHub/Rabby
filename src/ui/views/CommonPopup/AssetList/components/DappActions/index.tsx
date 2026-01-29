@@ -1,10 +1,9 @@
 import {
-  ComplexProtocol,
   ExplainTxResponse,
   Tx,
   WithdrawAction,
 } from '@rabby-wallet/rabby-api/dist/types';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { message } from 'antd';
 import { useDappAction } from './hook';
@@ -13,10 +12,11 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
-import { useMiniSignGasStore } from '@/ui/hooks/miniSignGasStore';
 import { Value } from '@/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import stats from '@/stats';
+import { last } from 'lodash';
 
 const Wrapper = styled.div`
   & > div {
@@ -97,11 +97,13 @@ const DappActions = ({
   data,
   chain,
   protocolLogo,
+  protocolName,
   type,
 }: {
   data?: WithdrawAction[];
   chain?: string;
   protocolLogo?: string;
+  protocolName?: string;
   type: 'withdraw' | 'claim';
 }) => {
   const currentAccount = useCurrentAccount();
@@ -136,8 +138,15 @@ const DappActions = ({
 
   const { valid: show, action } = useDappAction(targetAction, chain);
 
+  const simulationRef = React.useRef<{
+    usdValueChange?: number;
+  }>({});
+
   const onPreExecChange = useCallback(
     (r: ExplainTxResponse) => {
+      simulationRef.current = {
+        usdValueChange: r?.balance_change?.usd_value_change,
+      };
       if (!r.pre_exec.success) {
         updateConfig({
           disableSignBtn: true,
@@ -170,16 +179,43 @@ const DappActions = ({
 
   const handleSubmit = useCallback(
     async (action: () => Promise<Tx[]>, title?: string) => {
+      simulationRef.current = {};
+
+      const now = Date.now();
+      const base = {
+        tx_type: targetAction?.type || '',
+        chain: chain || '',
+        user_addr: currentAccount?.address || '',
+        address_type: currentAccount?.type || '',
+        protocol_name: protocolName || '',
+        create_at: now,
+      } as const;
+
+      const getSimulationFields = () => {
+        const s = simulationRef.current;
+        return {
+          simulation_result:
+            typeof s.usdValueChange === 'number' ? s.usdValueChange : '',
+        } as const;
+      };
+
       const txs = await action();
       if (!txs?.length) return;
 
       const runFallback = async () => {
+        let lastHash = '';
         for (const tx of txs) {
-          await wallet.sendRequest<string>({
+          lastHash = await wallet.sendRequest<string>({
             method: 'eth_sendTransaction',
             params: [tx],
           });
         }
+        stats.report('defiDirectTx', {
+          ...base,
+          tx_id: lastHash || '',
+          tx_status: 'success',
+          ...getSimulationFields(),
+        });
         setVisible(false);
       };
 
@@ -212,7 +248,14 @@ const DappActions = ({
           },
         } as const;
         try {
-          await openUI(signerConfig);
+          const hashes = await openUI(signerConfig);
+          const hash = last(hashes);
+          stats.report('defiDirectTx', {
+            ...base,
+            tx_id: typeof hash === 'string' ? hash : '',
+            tx_status: 'success',
+            ...getSimulationFields(),
+          });
           setVisible(false);
           return;
         } catch (error) {
@@ -221,6 +264,12 @@ const DappActions = ({
             console.error('Dapp action direct sign error', error);
             await runFallback().catch((fallbackError) => {
               console.error('Dapp action fallback error', fallbackError);
+              stats.report('defiDirectTx', {
+                ...base,
+                tx_id: '',
+                tx_status: 'fail',
+                ...getSimulationFields(),
+              });
               const fallbackMsg =
                 typeof (fallbackError as any)?.message === 'string'
                   ? (fallbackError as any).message
@@ -236,6 +285,12 @@ const DappActions = ({
         await runFallback();
       } catch (error) {
         console.error('Transaction failed:', error);
+        stats.report('defiDirectTx', {
+          ...base,
+          tx_id: '',
+          tx_status: 'fail',
+          ...getSimulationFields(),
+        });
         message.error(
           typeof error?.message === 'string'
             ? error?.message
@@ -252,6 +307,11 @@ const DappActions = ({
       isQueueWithdraw,
       t,
       onPreExecChange,
+      protocolName,
+      targetAction?.type,
+      type,
+      chain,
+      currentAccount?.address,
       setVisible,
       wallet,
     ]
