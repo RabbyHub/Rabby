@@ -3,6 +3,7 @@ import { Button } from 'antd';
 import { OrderSide } from '../../../types';
 import { useRabbySelector } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
+import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 
 interface TradingButtonProps {
   loading: boolean;
@@ -28,36 +29,42 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
   const [hovered, setHovered] = useState(false);
 
   return (
-    <Button
-      type="primary"
-      block
-      size="large"
-      loading={loading}
-      onClick={onClick}
-      disabled={disabled || !hasPermission}
-      style={{
-        boxShadow:
-          hovered && isValid && !error && hasPermission
+    <div className="flex flex-col gap-[12px]">
+      {Boolean(error) && (
+        <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px]">
+          <RcIconInfoCC className="text-r-orange-default" />
+          <div className="flex-1 text-left font-medium text-[12px] leading-[14px] text-r-orange-default">
+            {error}
+          </div>
+        </div>
+      )}
+      <Button
+        type="primary"
+        block
+        size="large"
+        loading={loading}
+        onClick={onClick}
+        disabled={disabled || !hasPermission}
+        style={{
+          boxShadow:
+            hovered && isValid && !error && hasPermission
+              ? orderSide === OrderSide.BUY
+                ? '0px 8px 16px rgba(42, 187, 127, 0.3)'
+                : '0px 8px 16px rgba(227, 73, 53, 0.3)'
+              : 'none',
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] border-transparent ${
+          isValid && !error && hasPermission
             ? orderSide === OrderSide.BUY
-              ? '0px 8px 16px rgba(42, 187, 127, 0.3)'
-              : '0px 8px 16px rgba(227, 73, 53, 0.3)'
-            : 'none',
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent ${
-        isValid && !error && hasPermission
-          ? orderSide === OrderSide.BUY
-            ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
-            : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
-          : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
-      }`}
-    >
-      {!hasPermission
-        ? t('page.perps.permissionTips')
-        : error
-        ? error
-        : titleText}
-    </Button>
+              ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
+              : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
+            : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
+        }`}
+      >
+        {titleText}
+      </Button>
+    </div>
   );
 };

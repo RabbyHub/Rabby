@@ -23,14 +23,28 @@ export const PerpsPositionCard: React.FC<PerpsPositionCardProps> = ({
   const direction = position.direction;
 
   return (
-    <div className="flex items-center justify-between p-12 mb-12 h-[78px] bg-r-neutral-card1 rounded-[8px]">
-      <div className="flex flex-col gap-8">
+    <div className="flex items-center p-12 mb-12 h-[78px] bg-r-neutral-card1 rounded-[8px] gap-8 flex-col">
+      <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-6">
           <TokenImg logoUrl={marketData?.logoUrl} size={28} />
           <span className="text-[16px] font-bold text-rb-neutral-title-1">
             {position.coin}
           </span>
         </div>
+        <div className="flex flex-row gap-4">
+          <span className="text-[16px] leading-[20px] font-bold text-rb-neutral-title-1">
+            {formatUsdValue(position.marginUsed || 0)}
+          </span>
+          <span className="text-[16px] leading-[20px] font-medium text-rb-neutral-foot">
+            (
+            {splitNumberByStep(
+              new BigNumber(position.size || '0').abs().toFixed()
+            )}{' '}
+            {position.coin})
+          </span>
+        </div>
+      </div>
+      <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-4">
           <div
             className={clsx(
@@ -47,37 +61,25 @@ export const PerpsPositionCard: React.FC<PerpsPositionCardProps> = ({
             percent={position.liquidationDistancePercent}
           />
         </div>
-      </div>
-      <div className="flex flex-col items-end gap-4">
-        <div className="flex flex-row gap-4">
-          <span className="text-[16px] leading-[20px] font-bold text-rb-neutral-title-1">
-            {formatUsdValue(position.marginUsed || 0)}
-          </span>
-          <span className="text-[16px] leading-[20px] font-medium text-rb-neutral-foot">
-            (
-            {splitNumberByStep(
-              new BigNumber(position.size || '0').abs().toFixed()
-            )}{' '}
-            {position.coin})
-          </span>
+        <div className="flex flex-col items-end gap-4">
+          {isShowPnl ? (
+            <span
+              className={clsx(
+                'text-[14px] leading-[18px] font-medium',
+                Number(position.unrealizedPnl) >= 0
+                  ? 'text-rb-green-default'
+                  : 'text-rb-red-default'
+              )}
+            >
+              {Number(position.unrealizedPnl) >= 0 ? '+' : '-'}$
+              {splitNumberByStep(
+                Math.abs(Number(position.unrealizedPnl || 0)).toFixed(2)
+              )}
+            </span>
+          ) : (
+            <span />
+          )}
         </div>
-        {isShowPnl ? (
-          <span
-            className={clsx(
-              'text-[14px] leading-[18px] font-medium',
-              Number(position.unrealizedPnl) >= 0
-                ? 'text-rb-green-default'
-                : 'text-rb-red-default'
-            )}
-          >
-            {Number(position.unrealizedPnl) >= 0 ? '+' : '-'}$
-            {splitNumberByStep(
-              Math.abs(Number(position.unrealizedPnl || 0)).toFixed(2)
-            )}
-          </span>
-        ) : (
-          <span />
-        )}
       </div>
     </div>
   );

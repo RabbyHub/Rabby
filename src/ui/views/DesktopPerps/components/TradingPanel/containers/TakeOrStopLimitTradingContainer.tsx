@@ -136,11 +136,11 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     const tradeSize = Number(positionSize.amount) || 0;
     const notionalNum = tradeSize * Number(limitPrice || 0);
 
-    if (notionalNum === 0) {
+    if (notionalNum === 0 || !Number(triggerPrice)) {
       return {
         isValid: false,
         error:
-          reduceOnly && percentage > 0
+          reduceOnly && percentage > 0 && Number(triggerPrice)
             ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
             : '',
       };
@@ -162,6 +162,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'sl' &&
       orderSide === OrderSide.BUY &&
+      Number(triggerPrice) &&
       Number(triggerPrice) < Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice');
@@ -171,6 +172,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'sl' &&
       orderSide === OrderSide.SELL &&
+      Number(triggerPrice) &&
       Number(triggerPrice) > Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice');
@@ -180,6 +182,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'tp' &&
       orderSide === OrderSide.BUY &&
+      Number(triggerPrice) &&
       Number(triggerPrice) > Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice');
@@ -189,6 +192,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'tp' &&
       orderSide === OrderSide.SELL &&
+      Number(triggerPrice) &&
       Number(triggerPrice) < Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice');
