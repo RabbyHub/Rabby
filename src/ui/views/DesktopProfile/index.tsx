@@ -75,11 +75,14 @@ export const DesktopProfile: React.FC<{ isActive?: boolean }> = ({
 
   const history = useHistory();
   const location = useLocation();
+  const dispatch = useRabbyDispatch();
   const activeTab = useMemo(() => {
     const match = location.pathname.match(/^\/desktop\/profile(?:\/([^/?]+))?/);
     return match?.[1] || 'tokens';
   }, [location.pathname]);
+
   const handleTabChange = (key: string) => {
+    dispatch.desktopProfile.setField({ activeTab: key });
     history.replace(`/desktop/profile/${key}`);
   };
   const { action, sendPageType } = useMemo(() => {
@@ -90,7 +93,6 @@ export const DesktopProfile: React.FC<{ isActive?: boolean }> = ({
     };
   }, [location.search]);
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
-  const dispatch = useRabbyDispatch();
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
