@@ -5,7 +5,10 @@ import styled from 'styled-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { DESKTOP_NAV_HEIGHT, DesktopNav } from '@/ui/component/DesktopNav';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import {
+  useCurrentAccount,
+  useSceneAccount,
+} from '@/ui/hooks/backgroundState/useAccount';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 import { ReactComponent as IconGlobalSiteIconCC } from '@/ui/assets/global-cc.svg';
 import { KEYRING_TYPE } from '@/constant';
@@ -20,6 +23,7 @@ import PolyMarketLostConnectedPng from '@/ui/assets/dapp-iframe/polymarket-lost.
 import { DappIframeLoading } from './component/loading';
 import { DappIframeError } from './component/error';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 const HANDSHAKE_MESSAGE_TYPE = 'rabby-dapp-iframe-handshake';
 const SYNC_MESSAGE_TYPE = 'rabby-dapp-iframe-sync-url';
 const IFRAME_LOAD_TIMEOUT = 20 * 1000;
@@ -104,6 +108,10 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
   >(null);
   const [isIframeLoading, setIsIframeLoading] = React.useState(true);
   const connectedRef = React.useRef(false);
+
+  const [currentSceneAccount, switchCurrentSceneAccount] = useSceneAccount({
+    scene: 'prediction',
+  });
 
   const [defaultUrl] = React.useState(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -315,10 +323,20 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
     <>
       <DesktopPageWrap className="w-full h-full bg-rb-neutral-bg-1 px-[20px] pb-0">
         <div className="main-content flex-1 pl-0">
-          <div className="layout-container">
+          <div className="layout-container flex items-center justify-between">
             <DesktopNav
               onActionSelect={handleActionSelect}
               showRightItems={false}
+            />
+            <DesktopAccountSelector
+              value={currentSceneAccount}
+              onChange={(account) =>
+                switchCurrentSceneAccount({
+                  account,
+                  origin: iframeOrigin,
+                })
+              }
+              scene="prediction"
             />
           </div>
           <div className="layout-container">
@@ -384,12 +402,6 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
             </div>
           </div>
         </div>
-        <aside
-          className={clsx('aside-list sticky z-20')}
-          style={{ top: DESKTOP_NAV_HEIGHT }}
-        >
-          <DesktopSelectAccountList autoCollapse />
-        </aside>
 
         <AddAddressModal
           visible={isActive && action === 'add-address'}

@@ -61,6 +61,32 @@ export function useCurrentAccount(options?: {
   return currentAccount;
 }
 
+export function useSceneAccount(options?: { scene: 'prediction' }) {
+  const dispatch = useRabbyDispatch();
+  const { scene } = options || {};
+
+  const currentAccount = useRabbySelector((s) => {
+    return scene
+      ? s.account.sceneAccountMap?.[scene] || s.account.currentAccount
+      : s.account.currentAccount;
+  });
+
+  const switchCurrentAccount = useMemoizedFn(
+    ({ account, origin }: { account: Account; origin?: string }) => {
+      if (!scene) {
+        return dispatch.account.changeAccountAsync(account);
+      }
+      return dispatch.account.switchSceneAccount({
+        scene,
+        account,
+        origin,
+      });
+    }
+  );
+
+  return [currentAccount, switchCurrentAccount] as const;
+}
+
 export function useSubscribeCurrentAccountChanged() {
   const dispatch = useRabbyDispatch();
 

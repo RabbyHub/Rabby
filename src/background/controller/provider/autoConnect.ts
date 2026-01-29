@@ -4,6 +4,8 @@ import { KEYRING_CLASS } from '@/constant';
 import { hex2Text } from '@/ui/utils';
 import { fromHex } from 'viem';
 
+export const POLYMARKET_ORIGIN = 'https://polymarket.com';
+
 const AUTO_CONNECT_SILENTLY_ORIGINS = new Set<string>([
   'https://polymarket.com',
 ]);

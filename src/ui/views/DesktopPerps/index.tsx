@@ -27,6 +27,8 @@ import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
 import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
 import { TopPermissionTips } from './components/TopPermissionTips';
+import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
+import usePerpsProState from './hooks/usePerpsProState';
 
 const Wrap = styled.div`
   width: 100%;
@@ -48,6 +50,11 @@ export const DesktopPerps: React.FC = () => {
   const selectedCoin = useRabbySelector((state) => state.perps.selectedCoin);
   const isUpdatingFromUrl = useRef(false);
   const [popupType, setPopupType] = useState<PopupType>(null);
+
+  const currentPerpsAccount = useRabbySelector(
+    (s) => s.perps.currentPerpsAccount
+  );
+  const { login: switchPerpsAccount } = usePerpsProState();
 
   const handleSetPopupType = useCallback((type: PopupType) => {
     setPopupType(type);
@@ -92,12 +99,18 @@ export const DesktopPerps: React.FC = () => {
   return (
     <>
       <Wrap>
-        <div className="flex flex-1 pl-16 pr-8 pb-16">
+        <div className="flex flex-1 px-16 pb-16">
           <div className="flex flex-col flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <DesktopNav showRightItems={false} />
-
-              <AccountActions handleSetPopupType={handleSetPopupType} />
+              <div className="flex items-center gap-[16px]">
+                <DesktopAccountSelector
+                  scene="perps"
+                  value={currentPerpsAccount}
+                  onChange={switchPerpsAccount}
+                />
+                <AccountActions handleSetPopupType={handleSetPopupType} />
+              </div>
             </div>
             <TopPermissionTips />
             <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
@@ -125,16 +138,6 @@ export const DesktopPerps: React.FC = () => {
               </div>
             </div>
           </div>
-          <aside
-            className={clsx(
-              'min-w-[64px] flex-shrink-0 z-20 h-full overflow-auto pl-[16px] sticky'
-            )}
-            style={{ top: DESKTOP_NAV_HEIGHT }}
-          >
-            <DesktopPerpsSelectAccountList
-              handleSetPopupType={handleSetPopupType}
-            />
-          </aside>
         </div>
 
         <StatusBar />

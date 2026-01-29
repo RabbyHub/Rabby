@@ -1,25 +1,14 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { AddressViewer } from 'ui/component';
-
-// import './style.less';
 import { useRabbyDispatch } from '@/ui/store';
 import clsx from 'clsx';
-
 import { EVENTS, KEYRING_TYPE } from '@/constant';
-// import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
 import { RcIconCopyCC } from '@/ui/assets/desktop/common';
 import { RcIconAddWalletCC, RcIconMoreCC } from '@/ui/assets/desktop/profile';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useAccounts } from '@/ui/hooks/useAccounts';
-import { useApprovalDangerCount } from '@/ui/hooks/useApprovalDangerCount';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
@@ -35,7 +24,6 @@ import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
 import { CopyChecked } from '../CopyChecked';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import './styles.less';
-import { Account } from '@/background/service/preference';
 
 interface DesktopSelectAccountListProps {
   isShowApprovalAlert?: boolean;
@@ -53,17 +41,12 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   const currentAccount = useCurrentAccount();
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const shouldScrollRef = useRef(true);
-  const [isAbsolute, setIsAbsolute] = useState(autoCollapse);
 
   const {
     sortedAccountsList,
-    watchSortedAccountsList,
-    addressSortStore,
     accountsList,
     highlightedAddresses,
     fetchAllAccounts,
-    loadingAccounts,
-    allSortedAccountList,
   } = useAccounts();
 
   const filteredAccounts = useMemo(() => {
@@ -116,56 +99,16 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
     return Math.min(filteredAccounts.length + 1, 8) * 74 - 12;
   }, [filteredAccounts.length]);
 
-  const ref = useRef<HTMLDivElement>(null);
-  const handleResize = useMemoizedFn(() => {
-    if (!ref.current || !autoCollapse) {
-      return;
-    }
-    const left = ref.current.getBoundingClientRect().left;
-    const clientWidth = document.body.clientWidth;
-    setIsAbsolute(clientWidth - left > 256);
-  });
-
-  useEffect(() => {
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
   return (
     <div
       className={clsx(
-        'desktop-select-account-list flex flex-col gap-[12px] rounded-[20px]',
-        autoCollapse && 'auto-narrow'
+        'desktop-select-account-list',
+        'h-full flex flex-col gap-[12px] rounded-[20px] pb-[20px]'
       )}
-      style={{ height, position: isAbsolute ? 'absolute' : undefined }}
-      ref={ref}
-      onMouseEnter={
-        autoCollapse
-          ? () => {
-              if (!isAbsolute) {
-                document
-                  .querySelector('.main-content')
-                  ?.classList?.add('is-open');
-              }
-            }
-          : undefined
-      }
-      onMouseLeave={
-        autoCollapse
-          ? () => {
-              document
-                .querySelector('.main-content')
-                ?.classList?.remove('is-open');
-            }
-          : undefined
-      }
     >
       <Virtuoso
         ref={virtuosoRef}
-        className={clsx('h-full')}
+        className={'flex-1'}
         data={filteredAccounts}
         totalCount={filteredAccounts.length}
         defaultItemHeight={72 + 12}
@@ -194,33 +137,24 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
             </AccountItem>
           );
         }}
-        components={{
-          Footer: () => (
-            <div
-              onClick={() => {
-                if (!isAbsolute) {
-                  document
-                    .querySelector('.main-content')
-                    ?.classList?.remove('is-open');
-                }
-                history.replace(`${location.pathname}?action=add-address`);
-              }}
-              className={clsx(
-                // 'bg-rb-neutral-bg-3',
-                'cursor-pointer rounded-[20px] h-[62px] p-[16px] flex items-center gap-[8px] text-r-blue-default',
-                'desktop-account-item',
-                'bg-rb-brand-light-1 hover:bg-rb-brand-light-2'
-              )}
-            >
-              <RcIconAddWalletCC className="flex-shrink-0" />
-              <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
-                {t('component.DesktopSelectAccountList.addAddresses')}
-              </div>
-            </div>
-          ),
-        }}
+
         // increaseViewportBy={100}
       />
+      <div
+        onClick={() => {
+          history.replace(`${location.pathname}?action=add-address`);
+        }}
+        className={clsx(
+          'cursor-pointer rounded-[20px] h-[62px] p-[16px] flex items-center gap-[8px] text-rb-neutral-body',
+          'desktop-account-item',
+          'bg-rb-neutral-bg-3'
+        )}
+      >
+        <RcIconAddWalletCC className="flex-shrink-0" />
+        <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
+          {t('component.DesktopSelectAccountList.addAddresses')}
+        </div>
+      </div>
     </div>
   );
 };
@@ -236,32 +170,24 @@ const AccountItem: React.FC<{
   const history = useHistory();
   const addressTypeIcon = useBrandIcon({
     ...item,
-    // forceLight: isSelected,
-  });
-
-  const approvalCount = useApprovalDangerCount({
-    address: isShowApprovalCount ? item.address : undefined,
   });
 
   return (
     <div className="pb-[12px] group">
       <div
         className={clsx(
-          'rounded-[20px] px-[15px] py-[10px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
-          'border-solid border-[1px]',
+          'rounded-[20px] px-[15px] py-[11px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
+          'border-solid border-[0.5px]',
           'desktop-account-item',
           isSelected
-            ? ' border-rb-neutral-line bg-rb-neutral-card-1'
-            : 'border-transparent bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-2 '
+            ? 'border-transparent bg-rb-brand-light-1'
+            : 'border-rb-neutral-line hover:bg-rb-neutral-card-2'
         )}
         onClick={onClick}
       >
         <img
           src={addressTypeIcon}
-          className={clsx(
-            'w-[24px] h-[24px]',
-            !isSelected ? 'opacity-40 group-hover:opacity-100' : ''
-          )}
+          className={clsx('w-[24px] h-[24px]')}
           alt=""
         />
         <div className="flex flex-1 flex-col gap-[2px] min-w-0 desktop-account-item-content">
@@ -312,24 +238,6 @@ const AccountItem: React.FC<{
             >
               <RcIconMoreCC />
             </div>
-
-            {/* {approvalCount ? (
-            <div className="ml-auto">
-              <div
-                className={clsx(
-                  'text-r-neutral-title-2 text-[13px] leading-[16px] font-medium text-center',
-                  'px-[1px] min-w-[20px] rounded-[4px]',
-                  'bg-r-red-default',
-                  'border-[1px] border-solid',
-                  isSelected
-                    ? 'border-rabby-neutral-title2'
-                    : 'border-transparent'
-                )}
-              >
-                {approvalCount}
-              </div>
-            </div>
-          ) : null} */}
           </div>
           <div className="flex items-center">
             <AddressViewer

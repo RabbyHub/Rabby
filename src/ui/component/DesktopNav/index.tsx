@@ -211,7 +211,7 @@ export const DesktopNav: React.FC<{
               {title}
             </div>
           ))}
-          {isGnosis ? (
+          {isGnosis && showRightItems ? (
             <div
               className={clsx(
                 'min-w-[88px] p-[12px] rounded-[14px]',

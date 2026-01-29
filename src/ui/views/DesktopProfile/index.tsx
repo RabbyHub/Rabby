@@ -187,7 +187,7 @@ export const DesktopProfile = () => {
         className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px]"
         ref={scrollContainerRef}
       >
-        <div className="main-content is-open flex-1">
+        <div className="main-content is-open flex-1 pb-[20px]">
           <div className="layout-container">
             <DesktopNav />
             <div
@@ -328,16 +328,20 @@ export const DesktopProfile = () => {
           </div>
         </div>
         <aside
-          className={clsx('min-w-[64px] flex-shrink-0 sticky z-20 top-0')}
+          className={clsx(
+            'flex-shrink-0 sticky z-20 top-0 h-full flex flex-col'
+          )}
           // style={{ top: DESKTOP_NAV_HEIGHT }}
         >
           <div
-            className="flex items-center justify-end"
+            className="flex items-center justify-end flex-shrink-0"
             style={{ height: `${DESKTOP_NAV_HEIGHT}px` }}
           >
             <SwitchThemeBtn />
           </div>
-          <DesktopSelectAccountList />
+          <div className="flex-1">
+            <DesktopSelectAccountList />
+          </div>
         </aside>
       </DesktopPageWrap>
       <SendTokenModal

@@ -61,6 +61,8 @@ export interface AccountState {
   [symLoaderMatteredBalance]: Promise<MatteredChainBalancesResult> | null;
 
   approvalStatus: Record<string, ApprovalStatus[]>;
+
+  sceneAccountMap: Record<string, Account | null>;
 }
 
 /**
@@ -115,6 +117,8 @@ export const account = createModel<RootModel>()({
     [symLoaderMatteredBalance]: null,
 
     approvalStatus: {},
+
+    sceneAccountMap: {},
   } as AccountState,
 
   reducers: {
@@ -240,6 +244,7 @@ export const account = createModel<RootModel>()({
 
       // 初始化gift状态
       await dispatch.gift.initGiftStateAsync();
+      await dispatch.account.getSceneAccountMap();
 
       return account;
     },
@@ -267,6 +272,28 @@ export const account = createModel<RootModel>()({
       }
 
       return account;
+    },
+
+    async getSceneAccountMap(_: void, store) {
+      const sceneAccountMap = await store.app.wallet.getPreference(
+        'sceneAccountMap'
+      );
+      if (sceneAccountMap) {
+        dispatch.account.setField({ sceneAccountMap });
+      }
+    },
+
+    async switchSceneAccount(
+      payload: { scene: string; account: Account; origin?: string },
+      store
+    ) {
+      await store.app.wallet.switchSceneAccount(payload);
+      dispatch.account.setField({
+        sceneAccountMap: {
+          ...store.account.sceneAccountMap,
+          [payload.scene]: payload.account,
+        },
+      });
     },
 
     async changeAccountAsync(account: Account, store) {
