@@ -137,7 +137,7 @@ const signTypedDataVlidation = ({
 }: ProviderRequest) => {
   let jsonData;
   try {
-    jsonData = JSON.parse(data);
+    jsonData = typeof data === 'string' ? JSON.parse(data) : data;
   } catch (e) {
     throw ethErrors.rpc.invalidParams('data is not a validate JSON string');
   }
