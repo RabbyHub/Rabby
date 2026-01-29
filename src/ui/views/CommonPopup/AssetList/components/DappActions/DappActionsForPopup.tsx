@@ -215,7 +215,6 @@ const DappActionsForPopup = ({
         stats.report('defiDirectTx', {
           ...base,
           tx_id: lastHash || '',
-          tx_status: 'success',
           ...getSimulationFields(),
         });
         setVisible(false);
@@ -255,7 +254,6 @@ const DappActionsForPopup = ({
           stats.report('defiDirectTx', {
             ...base,
             tx_id: typeof hash === 'string' ? hash : '',
-            tx_status: 'success',
             ...getSimulationFields(),
           });
           setVisible(false);
