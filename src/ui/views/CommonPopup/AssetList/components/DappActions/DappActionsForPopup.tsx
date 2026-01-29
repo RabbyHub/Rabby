@@ -211,7 +211,7 @@ const DappActionsForPopup = ({
             params: [tx],
           });
         }
-        stats.report('Defi_Direct_Tx', {
+        stats.report('defiDirectTx', {
           ...base,
           tx_id: lastHash || '',
           tx_status: 'success',
@@ -251,7 +251,7 @@ const DappActionsForPopup = ({
         try {
           const hashes = await openUI(signerConfig);
           const hash = last(hashes);
-          stats.report('Defi_Direct_Tx', {
+          stats.report('defiDirectTx', {
             ...base,
             tx_id: typeof hash === 'string' ? hash : '',
             tx_status: 'success',
@@ -265,7 +265,7 @@ const DappActionsForPopup = ({
             console.error('Dapp action direct sign error', error);
             await runFallback().catch((fallbackError) => {
               console.error('Dapp action fallback error', fallbackError);
-              stats.report('Defi_Direct_Tx', {
+              stats.report('defiDirectTx', {
                 ...base,
                 tx_id: '',
                 tx_status: 'fail',
@@ -286,7 +286,7 @@ const DappActionsForPopup = ({
         await runFallback();
       } catch (error) {
         console.error('Transaction failed:', error);
-        stats.report('Defi_Direct_Tx', {
+        stats.report('defiDirectTx', {
           ...base,
           tx_id: '',
           tx_status: 'fail',
