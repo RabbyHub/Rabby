@@ -48,9 +48,9 @@ export const MarketSelector: React.FC<{
     <div className={clsx('relative', className)}>
       <div
         className={clsx(
-          'flex items-center gap-[8px] px-[12px] h-[32px] rounded-[8px]',
+          'flex items-center gap-[6px] px-[12px] h-[32px] rounded-[8px]',
           'border border-solid border-rb-neutral-line bg-rb-neutral-bg-1',
-          'cursor-pointer hover:border-rb-brand-default',
+          'cursor-pointer hover:border-rb-brand-default hover:bg-rb-brand-light-1',
           'text-[14px] leading-[17px] font-medium text-r-neutral-title-1'
         )}
         onClick={() => setIsOpen(!isOpen)}
@@ -60,9 +60,13 @@ export const MarketSelector: React.FC<{
           alt={currentOption.label}
           width={20}
           height={20}
-          className="rounded-full mr-[8px]"
+          className="rounded-full"
         />
-        <span>{currentOption.label}</span>
+        <span>
+          {t('page.lending.marketSlot', {
+            market: currentOption.label,
+          })}
+        </span>
         <RcIconArrowDownCC
           className={clsx(
             'w-[16px] h-[16px] transition-transform',
@@ -98,7 +102,7 @@ export const MarketSelector: React.FC<{
                         alt={option.label}
                         width={20}
                         height={20}
-                        className="rounded-full mr-[8px]"
+                        className="rounded-full"
                       />
                       <span>{option.label}</span>
                     </div>
