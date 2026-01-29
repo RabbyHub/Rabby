@@ -70,7 +70,11 @@ export default function useCurrentBalance(
       onError(e) {
         setBalanceLoading(false);
         try {
-          const { error_code, err_chain_ids } = JSON.parse(e.message);
+          const msg = typeof (e as any)?.message === 'string' ? (e as any).message : '';
+          if (!msg || msg[0] !== '{') {
+            throw new Error('non-json error message');
+          }
+          const { error_code, err_chain_ids } = JSON.parse(msg);
           if (error_code === 2) {
             const chainNames = err_chain_ids.map((serverId: string) => {
               const chain = findChainByServerID(serverId);
