@@ -22,24 +22,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useMount } from 'react-use';
-
-const GlobalStyle = createGlobalStyle`
-  .desktop-account-selector-popover {
-    .ant-popover-arrow {
-      display: none;
-    }
-    .ant-popover-inner {
-      border-radius: 16px;
-      border: 1px solid var(--rb-neutral-line, #E0E5EC);
-      background: var(--rb-neutral-bg-1, #FFF);
-      box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.10);
-    }
-    .ant-popover-inner-content {
-      padding: 12px;
-     
-    }
-  }
-`;
+import './styles.less';
 
 interface DesktopAccountSelectorProps {
   value?: Account | null;
@@ -72,7 +55,6 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
 
   return (
     <>
-      <GlobalStyle />
       <Popover
         placement="bottomRight"
         trigger={['click']}
@@ -265,6 +247,10 @@ const AccountList: React.FC<{
     return Math.min(accounts.length, 8) * 74 - 12;
   }, [accounts.length]);
 
+  const hasScrollbar = useMemo(() => {
+    return accounts.length > 8;
+  }, [accounts.length]);
+
   // useEffect(() => {
   //   setTimeout(() => {
   //     const index = accounts.findIndex((item) =>
@@ -280,10 +266,15 @@ const AccountList: React.FC<{
   // }, [accounts]);
 
   return (
-    <div>
+    <div
+      className={clsx(
+        'py-[12px] pl-[12px]',
+        hasScrollbar ? 'pr-[4px]' : 'pr-[12px]'
+      )}
+    >
       <Virtuoso
         ref={virtuosoRef}
-        className={'w-[248px]'}
+        className={'w-[256px]'}
         style={{ height: height }}
         data={accounts}
         totalCount={accounts.length}
@@ -295,21 +286,25 @@ const AccountList: React.FC<{
             : false;
 
           return (
-            <AccountItem
+            <div
               key={`${item.address}-${item.type}-${item.brandName}`}
-              onClick={() => {
-                onSelectAccount?.(item);
-              }}
-              isSelected={isSelected}
-              item={item}
-              isLast={isLast}
-              scene={scene}
-              clearinghouseState={
-                clearinghouseStateMap[item.address.toLowerCase()]
-              }
+              className={clsx(hasScrollbar ? 'pr-[4px]' : '')}
             >
-              {item.address}
-            </AccountItem>
+              <AccountItem
+                onClick={() => {
+                  onSelectAccount?.(item);
+                }}
+                isSelected={isSelected}
+                item={item}
+                isLast={isLast}
+                scene={scene}
+                clearinghouseState={
+                  clearinghouseStateMap[item.address.toLowerCase()]
+                }
+              >
+                {item.address}
+              </AccountItem>
+            </div>
           );
         }}
       />
@@ -339,7 +334,7 @@ const AccountItem: React.FC<{
           'desktop-account-item',
           isSelected
             ? 'border-transparent bg-rb-brand-light-1'
-            : 'border-rb-neutral-line hover:bg-rb-neutral-card-2'
+            : 'border-rb-neutral-line hover:bg-rb-neutral-bg-2'
         )}
         onClick={onClick}
       >
@@ -352,7 +347,7 @@ const AccountItem: React.FC<{
           <div className="flex items-center gap-[4px]">
             <div
               className={clsx(
-                'truncate',
+                'truncate flex-1',
                 isSelected
                   ? 'text-[16px] leading-[19px] font-bold text-rb-neutral-title-1'
                   : 'text-[16px] text-rb-neutral-body leading-[19px] font-medium'
@@ -367,8 +362,8 @@ const AccountItem: React.FC<{
                     className={clsx(
                       'ml-[10px] truncate flex-1 block text-right',
                       isSelected
-                        ? 'text-[14px] font-bold text-rb-neutral-title-1'
-                        : 'text-[14px] font-medium text-rb-neutral-body'
+                        ? 'text-[14px] leading-[19px] font-bold text-rb-neutral-title-1'
+                        : 'text-[14px] leading-[19px] font-medium text-rb-neutral-body'
                     )}
                   >
                     {formatUsdValue(Number(clearinghouseState?.withdrawable))}
@@ -404,9 +399,7 @@ const AccountItem: React.FC<{
                   <div
                     className={clsx(
                       'ml-[10px] truncate flex-1 block text-right',
-                      isSelected
-                        ? 'text-[12px] text-rb-neutral-foot'
-                        : 'text-[12px] text-rb-neutral-foot'
+                      'text-[12px] leading-[14px] text-rb-neutral-foot'
                     )}
                   >
                     {t('page.perpsPro.accountActions.positionCount', {

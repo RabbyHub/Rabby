@@ -99,7 +99,7 @@ export const DesktopPerps: React.FC = () => {
   return (
     <>
       <Wrap>
-        <div className="flex flex-1 px-16 pb-16">
+        <div className="flex flex-1 px-[20px] pb-16">
           <div className="flex flex-col flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <DesktopNav showRightItems={false} />

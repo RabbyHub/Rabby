@@ -181,7 +181,7 @@ const AccountItem: React.FC<{
           'desktop-account-item',
           isSelected
             ? 'border-transparent bg-rb-brand-light-1'
-            : 'border-rb-neutral-line hover:bg-rb-neutral-card-2'
+            : 'border-rb-neutral-line hover:bg-rb-neutral-bg-2'
         )}
         onClick={onClick}
       >

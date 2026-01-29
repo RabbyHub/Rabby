@@ -187,7 +187,7 @@ export const DesktopProfile = () => {
         className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px]"
         ref={scrollContainerRef}
       >
-        <div className="main-content is-open flex-1 pb-[20px]">
+        <div className="main-content flex-1 pb-[20px]">
           <div className="layout-container">
             <DesktopNav />
             <div
