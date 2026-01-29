@@ -224,6 +224,10 @@ const SortablePanelItem: React.FC<{
     opacity: isDragging ? 0.4 : 1,
   };
 
+  if (!item) {
+    return null;
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -426,15 +430,15 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         history.push('/receive?rbisource=dashboard');
       },
     } as IPanelItem,
-    // queue: {
-    //   icon: RcIconTransactionsCC,
-    //   eventKey: 'Queue',
-    //   content: t('page.dashboard.home.panel.queue'),
-    //   badge: gnosisPendingCount,
-    //   onClick: () => {
-    //     history.push('/gnosis-queue');
-    //   },
-    // } as IPanelItem,
+    queue: {
+      icon: RcIconTransactionsCC,
+      eventKey: 'Queue',
+      content: t('page.dashboard.home.panel.queue'),
+      // badge: gnosisPendingCount,
+      onClick: () => {
+        history.push('/gnosis-queue');
+      },
+    } as IPanelItem,
     transactions: {
       icon: RcIconTransactionsCC,
       eventKey: 'Transactions',
@@ -608,6 +612,17 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   };
 
   const defaultPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
+    const local = localStorage.getItem('defaultDashboardPanelKeys');
+    if (local) {
+      try {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
     return [
       'swap',
       'send',
@@ -674,9 +689,18 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       const newKeys = [...pickedPanelKeys];
       const [removed] = newKeys.splice(oldIndex, 1);
       newKeys.splice(newIndex, 0, removed);
-      console.log('newKeys', newKeys);
+      console.log('drag end', {
+        active: active.id,
+        keys: newKeys.map((key) => {
+          return {
+            key,
+            name: panelItems[key]?.content,
+          };
+        }),
+      });
       setPickedPanelKeys(newKeys);
     }
+
     setActiveId(null);
   };
 
@@ -692,6 +716,15 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const handleDragStart = (event: any) => {
     setActiveId(event.active.id);
+    console.log('drag start', {
+      active: event.active.id,
+      keys: pickedPanelKeys.map((key) => {
+        return {
+          key,
+          name: panelItems[key]?.content,
+        };
+      }),
+    });
   };
 
   const handleDragCancel = () => {
