@@ -3683,7 +3683,7 @@
         "tp": "止盈",
         "gain": "盈利",
         "cancelTp": "取消止盈",
-        "takeProfitExpectedPnl": "止盈，预期盈亏",
+        "takeProfitExpectedPnl": "止盈的预期盈亏",
         "stopLossExpectedPnl": "止损的预期盈亏"
       },
       "accountInfo": {
