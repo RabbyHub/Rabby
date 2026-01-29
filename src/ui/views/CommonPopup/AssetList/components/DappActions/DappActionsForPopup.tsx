@@ -190,6 +190,7 @@ const DappActionsForPopup = ({
         address_type: currentAccount?.type || '',
         protocol_name: protocolName || '',
         create_at: now,
+        app_version: process.env.release || '0',
       } as const;
 
       const getSimulationFields = () => {
@@ -265,12 +266,6 @@ const DappActionsForPopup = ({
             console.error('Dapp action direct sign error', error);
             await runFallback().catch((fallbackError) => {
               console.error('Dapp action fallback error', fallbackError);
-              stats.report('defiDirectTx', {
-                ...base,
-                tx_id: '',
-                tx_status: 'fail',
-                ...getSimulationFields(),
-              });
               const fallbackMsg =
                 typeof (fallbackError as any)?.message === 'string'
                   ? (fallbackError as any).message
@@ -286,12 +281,6 @@ const DappActionsForPopup = ({
         await runFallback();
       } catch (error) {
         console.error('Transaction failed:', error);
-        stats.report('defiDirectTx', {
-          ...base,
-          tx_id: '',
-          tx_status: 'fail',
-          ...getSimulationFields(),
-        });
         message.error(
           typeof error?.message === 'string'
             ? error?.message
