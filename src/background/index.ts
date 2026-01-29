@@ -55,6 +55,7 @@ import { GasAccountServiceStore } from './service/gasAccount';
 import { testnetOpenapiService } from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
+import lendingService from './service/lending';
 import { isSameAddress } from './utils';
 import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
@@ -126,6 +127,7 @@ async function restoreAppState() {
   await syncChainService.init();
   await perpsService.init();
   await transactionsService.init();
+  await lendingService.init();
 
   await walletController.tryUnlock();
 

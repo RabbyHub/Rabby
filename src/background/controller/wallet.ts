@@ -34,6 +34,7 @@ import {
   OfflineChainsService,
   perpsService,
   miscService,
+  lendingService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -1968,6 +1969,11 @@ export class WalletController extends BaseController {
   setRabbyPointsSignature = RabbyPointsService.setSignature;
   getRabbyPointsSignature = RabbyPointsService.getSignature;
   clearRabbyPointsSignature = RabbyPointsService.clearSignature;
+
+  getLastSelectedLendingChain = lendingService.getLastSelectedChain;
+  setLastSelectedLendingChain = lendingService.setLastSelectedChain;
+  getSkipHealthFactorWarning = lendingService.getSkipHealthFactorWarning;
+  setSkipHealthFactorWarning = lendingService.setSkipHealthFactorWarning;
 
   addHDKeyRingLastAddAddrTime = HDKeyRingLastAddAddrTimeService.addUnixRecord;
   getHDKeyRingLastAddAddrTimeStore = HDKeyRingLastAddAddrTimeService.getStore;
