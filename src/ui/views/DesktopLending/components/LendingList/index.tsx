@@ -27,6 +27,7 @@ import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetail
 import { SupplyModal } from '../SupplyModal';
 import { BorrowModal } from '../BorrowModal';
 import { WithdrawModal } from '../WithdrawModal';
+import { RepayModal } from '../RepayModal';
 
 export type LendingModalType =
   | 'supply'
@@ -284,11 +285,15 @@ export const LendingList: React.FC = () => {
         visible={activeModal === 'repay'}
         onCancel={closeModal}
       >
-        <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
-          <p className="text-[16px] text-r-neutral-title-1">
-            {t('page.lending.actions.repay')}
-          </p>
-        </div>
+        {selectedItem && (
+          <RepayModal
+            visible={activeModal === 'repay'}
+            onCancel={closeModal}
+            reserve={selectedItem}
+            userSummary={iUserSummary}
+            onSuccess={() => fetchData()}
+          />
+        )}
       </Modal>
       <Modal
         {...modalCommonProps}
