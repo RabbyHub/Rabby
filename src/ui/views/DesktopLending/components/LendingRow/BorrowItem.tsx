@@ -1,6 +1,7 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { Modal } from 'antd';
 import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { IsolateTag } from '../IsolateTag';
@@ -8,11 +9,13 @@ import { TCell, TRow } from '@/ui/views/CommonPopup/AssetList/components/Table';
 import { formatApy } from '../../utils/format';
 import TokenIcon from '../SymbolIcon';
 import { DisplayPoolReserveInfo } from '../../types';
+import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
 
 export const BorrowItem: React.FC<{
   data: DisplayPoolReserveInfo;
 }> = ({ data }) => {
   const { t } = useTranslation();
+  const [repayModalVisible, setRepayModalVisible] = useState(false);
 
   const apy = useMemo(() => {
     return formatApy(Number(data.reserve.variableBorrowAPY));
@@ -31,7 +34,7 @@ export const BorrowItem: React.FC<{
   }, []);
 
   const handleRepay = useCallback(() => {
-    console.log('repay');
+    setRepayModalVisible(true);
   }, []);
 
   return (
@@ -111,6 +114,30 @@ export const BorrowItem: React.FC<{
           </button>
         </div>
       </TCell>
+      <Modal
+        visible={repayModalVisible}
+        onCancel={() => setRepayModalVisible(false)}
+        width={400}
+        title={null}
+        bodyStyle={{ background: 'transparent', padding: 0 }}
+        maskClosable={true}
+        footer={null}
+        zIndex={1000}
+        className="modal-support-darkmode"
+        closeIcon={ModalCloseIcon}
+        centered
+        maskStyle={{
+          zIndex: 1000,
+          backdropFilter: 'blur(8px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        }}
+      >
+        <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
+          <p className="text-[16px] text-r-neutral-title-1">
+            {t('page.lending.actions.repay')}
+          </p>
+        </div>
+      </Modal>
     </TRow>
   );
 };
