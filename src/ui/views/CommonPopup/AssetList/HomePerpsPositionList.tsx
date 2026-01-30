@@ -178,7 +178,7 @@ const PositionItem: React.FC<{
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-[2px]">
+        <div className="flex flex-col items-end gap-[8px]">
           <div className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
             {formatUsdValue(Number(marginUsed))}
           </div>
