@@ -22,6 +22,9 @@ import {
   formatPerpsPct,
 } from '@/ui/views/Perps/utils';
 
+/**
+ * @deprecated top remove this file
+ */
 export const DesktopPerpsPositionList: React.FC = () => {
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
@@ -123,12 +126,12 @@ const PositionItem: React.FC<{
             withDirection={false}
             size={32}
           />
-          <div className="flex flex-col gap-[2px]">
-            <div className="flex items-center gap-[6px]">
+          <div className="flex flex-col gap-[8px]">
+            <div className="flex items-center gap-[4px]">
               <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
                 {coin}
               </span>
-              <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-rb-blue-light-1 text-rb-blue-default">
+              <span className="text-[11px] leading-[14px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-rb-blue-light-1 text-rb-blue-default">
                 {leverageType === 'cross'
                   ? t('page.perps.cross')
                   : t('page.perps.isolated')}
@@ -137,7 +140,7 @@ const PositionItem: React.FC<{
             <div className="flex items-center gap-[6px]">
               <span
                 className={clsx(
-                  'text-[11px] leading-[13px] font-medium px-[4px] h-[18px] flex items-center justify-center rounded-[4px]',
+                  'text-[11px] leading-[14px] font-medium px-[4px] h-[18px] flex items-center justify-center rounded-[4px]',
                   isLong
                     ? 'text-rb-green-default bg-rb-green-light-1'
                     : 'text-rb-red-default bg-rb-red-light-1'
