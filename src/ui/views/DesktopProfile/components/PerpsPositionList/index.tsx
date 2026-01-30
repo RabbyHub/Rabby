@@ -58,6 +58,8 @@ export const DesktopPerpsPositionList: React.FC = () => {
             position={assetPosition.position}
             handleNavigate={() => {
               if (currentAccount) {
+                dispatch.perps.resetProAccountInfo();
+                dispatch.perps.setCurrentPerpsAccount(currentAccount);
                 dispatch.perps.setSelectedCoin(assetPosition.position.coin);
                 wallet.setPerpsCurrentAccount(currentAccount);
                 history.push('/desktop/perps');

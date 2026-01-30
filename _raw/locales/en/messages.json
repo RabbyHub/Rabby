@@ -1045,6 +1045,9 @@
       },
       "userInfo": {
         "tab": {
+          "__skip_translation": [
+            "twap"
+          ],
           "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
           "fundingTips": "Net funding payments since the position was opened. If negative, it means funding gains.",
           "closedPnlTooltip": "Closed PNL includes fees and rebates",

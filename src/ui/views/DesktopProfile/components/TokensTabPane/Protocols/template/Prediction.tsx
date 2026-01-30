@@ -11,6 +11,7 @@ export default memo(
     name: string;
     siteUrl?: string;
     protocolLogo?: string;
+    protocolName?: string;
   }) => {
     const { tag } = props;
     const data = props.data;

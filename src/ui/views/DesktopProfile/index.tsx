@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { DESKTOP_NAV_HEIGHT, DesktopNav } from '@/ui/component/DesktopNav';
 import { ProfileHeader } from './components/ProfileHeader';
 import { BackTop, Tabs } from 'antd';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { SendTokenModal } from './components/SendTokenModal';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
 import { SwapTokenModal } from './components/SwapTokenModal';
@@ -67,16 +67,24 @@ const StickyBorderTop = () => (
   </div>
 );
 
-export const DesktopProfile = () => {
+export const DesktopProfile: React.FC<{ isActive?: boolean }> = ({
+  isActive = true,
+}) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
 
   const history = useHistory();
-  const activeTab = useParams<{ activeTab: string }>().activeTab || 'tokens';
+  const location = useLocation();
+  const dispatch = useRabbyDispatch();
+  const activeTab = useMemo(() => {
+    const match = location.pathname.match(/^\/desktop\/profile(?:\/([^/?]+))?/);
+    return match?.[1] || 'tokens';
+  }, [location.pathname]);
+
   const handleTabChange = (key: string) => {
+    dispatch.desktopProfile.setField({ activeTab: key });
     history.replace(`/desktop/profile/${key}`);
   };
-  const location = useLocation();
   const { action, sendPageType } = useMemo(() => {
     const searchParams = new URLSearchParams(location.search);
     return {
@@ -85,7 +93,6 @@ export const DesktopProfile = () => {
     };
   }, [location.search]);
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
-  const dispatch = useRabbyDispatch();
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
@@ -187,7 +194,7 @@ export const DesktopProfile = () => {
         className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px]"
         ref={scrollContainerRef}
       >
-        <div className="main-content is-open flex-1">
+        <div className="main-content flex-1 pb-[20px]">
           <div className="layout-container">
             <DesktopNav />
             <div
@@ -328,16 +335,20 @@ export const DesktopProfile = () => {
           </div>
         </div>
         <aside
-          className={clsx('min-w-[64px] flex-shrink-0 sticky z-20 top-0')}
+          className={clsx(
+            'flex-shrink-0 sticky z-20 top-0 h-full flex flex-col'
+          )}
           // style={{ top: DESKTOP_NAV_HEIGHT }}
         >
           <div
-            className="flex items-center justify-end"
+            className="flex items-center justify-end flex-shrink-0"
             style={{ height: `${DESKTOP_NAV_HEIGHT}px` }}
           >
             <SwitchThemeBtn />
           </div>
-          <DesktopSelectAccountList />
+          <div className="flex-1">
+            <DesktopSelectAccountList />
+          </div>
         </aside>
       </DesktopPageWrap>
       <SendTokenModal

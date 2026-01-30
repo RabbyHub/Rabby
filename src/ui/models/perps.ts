@@ -633,6 +633,25 @@ export const perps = createModel<RootModel>()({
       };
     },
 
+    // Desktop Pro reducers
+    resetProAccountInfo(state) {
+      return {
+        ...state,
+        currentPerpsAccount: null,
+        isInitialized: false,
+        isLogin: false,
+        clearinghouseState: null,
+        openOrders: [],
+        historicalOrders: [],
+        userFunding: [],
+        nonFundingLedgerUpdates: [],
+        twapStates: [],
+        twapHistory: [],
+        twapSliceFills: [],
+        localLoadingHistory: [],
+      };
+    },
+
     resetTradingState(state) {
       return {
         ...state,
@@ -640,7 +659,6 @@ export const perps = createModel<RootModel>()({
       };
     },
 
-    // Desktop Pro reducers
     setSelectedCoin(state, payload: string) {
       if (payload.includes(':')) {
         message.error('HIP-3 coin is not supported');
