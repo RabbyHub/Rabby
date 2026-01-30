@@ -43,12 +43,10 @@ const Main = () => {
     <>
       {hasMountedProfileRef.current ? (
         <PrivateRouteGuard>
-          <div
-            style={{ display: isProfileRoute ? 'block' : 'none' }}
-            className={clsx('h-full', isProfileRoute ? 'block' : 'hidden')}
-          >
-            <DesktopProfile isActive={isProfileRoute} />
-          </div>
+          <DesktopProfile
+            isActive={isProfileRoute}
+            style={isProfileRoute ? undefined : { display: 'none' }}
+          />
         </PrivateRouteGuard>
       ) : null}
       {hasMountedPerpsRef.current ? (
