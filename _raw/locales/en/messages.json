@@ -1118,6 +1118,9 @@
           "confirm": "Confirm"
         },
         "openOrders": {
+          "__skip_translation": [
+            "ro"
+          ],
           "order": "Order",
           "time": "Time",
           "triggerConditions": "Trigger Conditions",
