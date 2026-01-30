@@ -3776,7 +3776,7 @@
           "fundingHistory": "Historique du taux de financement",
           "margin": "Marge",
           "unrealizedPnlTooltip": "Le prix de marquage est utilisé pour estimer le P&L non réalisé. Seuls les prix de transaction sont utilisés pour le P&L réalisé.",
-          "twap": "Prix moyen pondéré dans le temps",
+          "twap": "TWAP",
           "liqPrice": "Prix de liquidation",
           "runningTimeTotal": "Temps écoulé / Total",
           "size": "Taille de position",

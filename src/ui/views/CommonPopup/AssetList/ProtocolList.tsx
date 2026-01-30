@@ -56,10 +56,12 @@ const PoolItem = ({
   item,
   chain,
   protocolLogo,
+  protocolName,
 }: {
   item: AbstractPortfolio;
   chain?: string;
   protocolLogo?: string;
+  protocolName?: string;
 }) => {
   const types = item._originPortfolio.detail_types?.reverse();
   const type =
@@ -74,6 +76,7 @@ const PoolItem = ({
             data={item.withdrawActions}
             chain={chain}
             protocolLogo={protocolLogo}
+            protocolName={protocolName}
           />
         )}
     </PoolItemWrapper>
@@ -308,6 +311,7 @@ export const ProtocolItem = ({
                 <PoolItem
                   protocolLogo={protocol.logo}
                   chain={protocol.chain}
+                  protocolName={protocol.name}
                   item={portfolio}
                 />
                 {index !== protocol._portfolios.length - 1 && (

@@ -3471,7 +3471,7 @@
           "fee": "Tarifa",
           "slice": "Segmento",
           "tpSl": "Objetivo de ganancia / Límite de pérdidas",
-          "twap": "Precio Promedio Ponderado en el Tiempo (TWAP)"
+          "twap": "TWAP"
         },
         "emptyMessage": {
           "orderHistory": "Sin historial de órdenes",

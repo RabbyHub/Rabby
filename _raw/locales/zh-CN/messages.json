@@ -3503,7 +3503,7 @@
           "terminate": "终止",
           "type": "类型",
           "runningTimeTotal": "运行时间 / 总时长",
-          "twap": "时间加权平均价格",
+          "twap": "TWAP",
           "openOrders": "挂单",
           "unrealizedPnlTooltip": "标记价格用于估算未实现盈亏。只有交易价格用于计算已实现盈亏。",
           "tradeValue": "名义价值",
@@ -3519,7 +3519,7 @@
           "orderHistory": "暂无订单记录",
           "tradeHistory": "暂无成交记录",
           "twapHistory": "暂无 TWAP 历史",
-          "activeTwap": "当前无活跃的时间加权平均价（TWAP）策略"
+          "activeTwap": "当前无活跃的TWAP"
         },
         "positionInfo": {
           "configure": "配置",

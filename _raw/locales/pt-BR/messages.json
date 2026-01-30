@@ -3443,7 +3443,7 @@
           "unrealizedPnlTooltip": "O preço de marca é usado para estimar o P&L não realizado. Apenas os preços de negociação são usados para o P&L realizado.",
           "runningTimeTotal": "Tempo decorrido / Total",
           "payment": "Pagamento",
-          "twap": "Preço Médio Ponderado no Tempo",
+          "twap": "TWAP",
           "openOrders": "Ordens em aberto",
           "orderHistory": "Histórico de ordens",
           "creationTime": "Data de Criação",
