@@ -13,6 +13,7 @@ import { CustomTestnetAssetList } from './TestTokenlist';
 
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
+import { uniqBy } from 'lodash';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -68,7 +69,12 @@ export const TokenList = ({
               <TokenTable
                 list={
                   isSearch
-                    ? concatAndSort(searchList, list || [], search || '')
+                    ? uniqBy(
+                        concatAndSort(searchList, list || [], search || ''),
+                        (token) => {
+                          return `${token.chain}-${token.id}`;
+                        }
+                      )
                     : currentList
                 }
                 EmptyComponent={
