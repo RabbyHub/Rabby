@@ -251,6 +251,24 @@ export const usePerpsTradingState = () => {
     [dispatch]
   );
 
+  useEffect(() => {
+    setTpslConfig((prev) => ({
+      ...prev,
+      takeProfit: {
+        percentage: '',
+        error: '',
+        inputMode: 'percentage',
+        price: '',
+      },
+      stopLoss: {
+        percentage: '',
+        error: '',
+        inputMode: 'percentage',
+        price: '',
+      },
+    }));
+  }, [leverage]);
+
   const tpslConfigHasError = useMemo(() => {
     return (
       tpslConfig.enabled &&
