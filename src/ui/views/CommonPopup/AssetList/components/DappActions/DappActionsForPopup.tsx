@@ -145,8 +145,14 @@ const DappActionsForPopup = ({
 
   const onPreExecChange = useCallback(
     (r: ExplainTxResponse) => {
+      const totalReceiveUsdValue = r?.balance_change?.receive_token_list?.reduce(
+        (acc, token) => {
+          return acc + (Number(token.usd_value) || 0);
+        },
+        0
+      );
       simulationRef.current = {
-        usdValueChange: r?.balance_change?.usd_value_change,
+        usdValueChange: totalReceiveUsdValue,
       };
       if (!r.pre_exec.success) {
         updateConfig({
