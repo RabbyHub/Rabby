@@ -9,9 +9,6 @@ const configs = {
 };
 
 const config = (env) => {
-  if (env.config === 'hot') {
-    return require('./build/webpack.hot.config');
-  }
   if (env.config) {
     return webpackMerge.merge(commonConfig, configs[env.config]);
   }
