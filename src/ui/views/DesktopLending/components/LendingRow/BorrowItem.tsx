@@ -1,7 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Modal } from 'antd';
 import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { IsolateTag } from '../IsolateTag';
@@ -9,13 +8,13 @@ import { TCell, TRow } from '@/ui/views/CommonPopup/AssetList/components/Table';
 import { formatApy } from '../../utils/format';
 import TokenIcon from '../SymbolIcon';
 import { DisplayPoolReserveInfo } from '../../types';
-import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
 
 export const BorrowItem: React.FC<{
   data: DisplayPoolReserveInfo;
-}> = ({ data }) => {
+  onBorrow?: (data: DisplayPoolReserveInfo) => void;
+  onRepay?: (data: DisplayPoolReserveInfo) => void;
+}> = ({ data, onBorrow, onRepay }) => {
   const { t } = useTranslation();
-  const [repayModalVisible, setRepayModalVisible] = useState(false);
 
   const apy = useMemo(() => {
     return formatApy(Number(data.reserve.variableBorrowAPY));
@@ -25,17 +24,13 @@ export const BorrowItem: React.FC<{
     return formatUsdValue(Number(data.totalBorrowsUSD), BigNumber.ROUND_DOWN);
   }, [data.totalBorrowsUSD]);
 
-  const handleSwap = useCallback(() => {
-    console.log('swap');
-  }, []);
-
   const handleBorrow = useCallback(() => {
-    console.log('borrow');
-  }, []);
+    onBorrow?.(data);
+  }, [data, onBorrow]);
 
   const handleRepay = useCallback(() => {
-    setRepayModalVisible(true);
-  }, []);
+    onRepay?.(data);
+  }, [data, onRepay]);
 
   return (
     <TRow
@@ -83,16 +78,6 @@ export const BorrowItem: React.FC<{
       <TCell className="w-[360px] flex-shrink-0">
         <div className="flex items-center justify-end gap-[10px]">
           <button
-            onClick={handleSwap}
-            className={clsx(
-              'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
-              'bg-rb-neutral-bg-4 text-r-neutral-title-1',
-              'flex items-center justify-center'
-            )}
-          >
-            {t('page.lending.actions.swap')}
-          </button>
-          <button
             onClick={handleBorrow}
             className={clsx(
               'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
@@ -114,30 +99,6 @@ export const BorrowItem: React.FC<{
           </button>
         </div>
       </TCell>
-      <Modal
-        visible={repayModalVisible}
-        onCancel={() => setRepayModalVisible(false)}
-        width={400}
-        title={null}
-        bodyStyle={{ background: 'transparent', padding: 0 }}
-        maskClosable={true}
-        footer={null}
-        zIndex={1000}
-        className="modal-support-darkmode"
-        closeIcon={ModalCloseIcon}
-        centered
-        maskStyle={{
-          zIndex: 1000,
-          backdropFilter: 'blur(8px)',
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        }}
-      >
-        <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
-          <p className="text-[16px] text-r-neutral-title-1">
-            {t('page.lending.actions.repay')}
-          </p>
-        </div>
-      </Modal>
     </TRow>
   );
 };

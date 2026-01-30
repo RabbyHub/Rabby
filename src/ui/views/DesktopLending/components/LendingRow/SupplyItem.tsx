@@ -19,7 +19,10 @@ const CollateralSwitch = styled(Switch)`
 
 export const SupplyItem: React.FC<{
   data: DisplayPoolReserveInfo;
-}> = ({ data }) => {
+  onSupply?: (data: DisplayPoolReserveInfo) => void;
+  onWithdraw?: (data: DisplayPoolReserveInfo) => void;
+  onToggleCollateral?: (data: DisplayPoolReserveInfo) => void;
+}> = ({ data, onSupply, onWithdraw, onToggleCollateral }) => {
   const { t } = useTranslation();
 
   const apy = useMemo(() => {
@@ -34,14 +37,14 @@ export const SupplyItem: React.FC<{
   }, [data.underlyingBalanceUSD]);
 
   const handleCollateralChange = useCallback(() => {
-    console.log('collateral change');
-  }, []);
+    onToggleCollateral?.(data);
+  }, [data, onToggleCollateral]);
   const handleSupply = useCallback(() => {
-    console.log('supply');
-  }, []);
+    onSupply?.(data);
+  }, [data, onSupply]);
   const handleWithdraw = useCallback(() => {
-    console.log('withdraw');
-  }, []);
+    onWithdraw?.(data);
+  }, [data, onWithdraw]);
 
   return (
     <TRow

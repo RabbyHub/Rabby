@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { Modal } from 'antd';
 import { LendingRow } from '../LendingRow';
 import { MarketSelector } from '../MarketSelector';
 import {
@@ -21,6 +22,32 @@ import { displayGhoForMintableMarket } from '../../utils/supply';
 import BigNumber from 'bignumber.js';
 import { assetCanBeBorrowedByUser } from '../../utils/borrow';
 import { DisplayPoolReserveInfo } from '../../types';
+import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
+
+export type LendingModalType =
+  | 'supply'
+  | 'borrow'
+  | 'repay'
+  | 'withdraw'
+  | 'toggleCollateral'
+  | null;
+
+const modalCommonProps = {
+  width: 400,
+  title: null,
+  bodyStyle: { background: 'transparent', padding: 0 } as const,
+  maskClosable: true,
+  footer: null,
+  zIndex: 1000,
+  className: 'modal-support-darkmode',
+  closeIcon: ModalCloseIcon,
+  centered: true,
+  maskStyle: {
+    zIndex: 1000,
+    backdropFilter: 'blur(8px)',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+};
 
 type MyAssetItem = {
   type: 'borrow' | 'supply';
@@ -33,6 +60,25 @@ export const LendingList: React.FC = () => {
   const { reserves } = useLendingRemoteData();
   const { displayPoolReserves, iUserSummary } = useLendingSummary();
   const { chainEnum, marketKey, setMarketKey } = useSelectedMarket();
+
+  const [activeModal, setActiveModal] = useState<LendingModalType>(null);
+  const [
+    selectedItem,
+    setSelectedItem,
+  ] = useState<DisplayPoolReserveInfo | null>(null);
+
+  const closeModal = useCallback(() => {
+    setActiveModal(null);
+    setSelectedItem(null);
+  }, []);
+
+  const onAction = useCallback(
+    (action: LendingModalType, data: DisplayPoolReserveInfo) => {
+      setSelectedItem(data);
+      setActiveModal(action);
+    },
+    [setSelectedItem, setActiveModal]
+  );
 
   const myAssetList: MyAssetItem[] = useMemo(() => {
     const list: MyAssetItem[] = [];
@@ -179,6 +225,13 @@ export const LendingList: React.FC = () => {
                     key={`${item.data.underlyingAsset}-${item.type}`}
                     type={item.type}
                     data={item.data}
+                    onSupply={() => onAction('supply', item.data)}
+                    onBorrow={() => onAction('borrow', item.data)}
+                    onRepay={() => onAction('repay', item.data)}
+                    onWithdraw={() => onAction('withdraw', item.data)}
+                    onToggleCollateral={() =>
+                      onAction('toggleCollateral', item.data)
+                    }
                   />
                 );
               })}
@@ -190,6 +243,62 @@ export const LendingList: React.FC = () => {
           </div>
         )}
       </div>
+
+      <Modal
+        {...modalCommonProps}
+        visible={activeModal === 'supply'}
+        onCancel={closeModal}
+      >
+        <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
+          <p className="text-[16px] text-r-neutral-title-1">
+            {t('page.lending.actions.supply')}
+          </p>
+        </div>
+      </Modal>
+      <Modal
+        {...modalCommonProps}
+        visible={activeModal === 'borrow'}
+        onCancel={closeModal}
+      >
+        <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
+          <p className="text-[16px] text-r-neutral-title-1">
+            {t('page.lending.actions.borrow')}
+          </p>
+        </div>
+      </Modal>
+      <Modal
+        {...modalCommonProps}
+        visible={activeModal === 'repay'}
+        onCancel={closeModal}
+      >
+        <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
+          <p className="text-[16px] text-r-neutral-title-1">
+            {t('page.lending.actions.repay')}
+          </p>
+        </div>
+      </Modal>
+      <Modal
+        {...modalCommonProps}
+        visible={activeModal === 'withdraw'}
+        onCancel={closeModal}
+      >
+        <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
+          <p className="text-[16px] text-r-neutral-title-1">
+            {t('page.lending.actions.withdraw')}
+          </p>
+        </div>
+      </Modal>
+      <Modal
+        {...modalCommonProps}
+        visible={activeModal === 'toggleCollateral'}
+        onCancel={closeModal}
+      >
+        <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
+          <p className="text-[16px] text-r-neutral-title-1">
+            {t('page.lending.table.collateral')}
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 };
