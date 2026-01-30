@@ -47,7 +47,7 @@ export const DesktopPerpsPositionList: React.FC = () => {
   }
 
   return (
-    <div className="grid grid-cols-4 gap-[16px] px-20 mt-24">
+    <div className="grid grid-cols-3 gap-[16px] px-20 mt-24">
       {data?.assetPositions?.map((assetPosition) => {
         return (
           <PositionItem

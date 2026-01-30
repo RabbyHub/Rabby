@@ -1,6 +1,6 @@
 import { MarketData } from '@/ui/models/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { splitNumberByStep } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { CancelOrderParams, OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import { useMemoizedFn } from 'ahooks';
@@ -168,13 +168,12 @@ export const OpenOrders: React.FC = () => {
           ) : (
             <div className="space-y-[4px]">
               <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-                $
                 {record.orderType.includes('Market')
                   ? 'Market'
-                  : splitNumberByStep(
+                  : formatUsdValue(
                       new BigNumber(record.origSz)
                         .times(record.limitPx)
-                        .toFixed(2)
+                        .toNumber()
                     )}
               </div>
               <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
@@ -210,7 +209,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.price'),
-        // width: 120,
+        width: 80,
         key: 'limitPx',
         dataIndex: 'limitPx',
         render: (_, record) => {

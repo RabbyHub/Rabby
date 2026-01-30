@@ -437,16 +437,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       )}
 
       {/* Order Summary */}
-      <OrderSummary
-        data={orderSummary}
-        showTPSLExpected={tpslConfig.enabled}
-        tpExpectedPnL={
-          tpslConfig.enabled ? orderSummary?.tpExpectedPnL : undefined
-        }
-        slExpectedPnL={
-          tpslConfig.enabled ? orderSummary?.slExpectedPnL : undefined
-        }
-      />
+      <OrderSummary data={orderSummary} />
     </div>
   );
 };
