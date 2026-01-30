@@ -134,7 +134,12 @@ export const DesktopNav: React.FC<{
   }, [activeNav?.eventKey]);
 
   return (
-    <div className="sticky top-0 z-10 pt-[20px] pb-[16px] bg-rb-neutral-bg-1">
+    <div
+      className="sticky top-0 z-10 pt-[20px] pb-[16px] bg-rb-neutral-bg-1"
+      style={{
+        minHeight: DESKTOP_NAV_HEIGHT,
+      }}
+    >
       <div className="flex items-center justify-between">
         <div className="flex">
           <div

@@ -168,7 +168,7 @@ export const BalanceView: React.FC<{
             <div className={clsx('group w-[100%] flex gap-[8px] items-end')}>
               <div
                 className={clsx(
-                  'text-[48px] leading-[60px] font-bold text-r-neutral-title1 max-w-full'
+                  'text-[48px] leading-[60px] min-h-[60px] font-bold text-r-neutral-title1 max-w-full'
                 )}
               >
                 {isLoading ? (
