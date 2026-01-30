@@ -132,7 +132,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
 
   return (
     <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px] pb-8 w-full h-full min-h-0 flex flex-col">
-      <h2 className="text-[20px] leading-[24px] font-bold text-center text-r-neutral-title-1 mb-12">
+      <h2 className="text-[20px] leading-[24px] font-bold text-r-neutral-title-1 mb-12 px-12">
         {t('page.lending.supplyDetail.actions')}
       </h2>
       {loading ? (
@@ -154,6 +154,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                 <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[80px] text-right">
                   {t('page.lending.apy')}
                 </span>
+                <span className="w-[80px] flex-shrink-0" />
               </div>
               {dataList.map((row) => {
                 if (row.type === 'toggle_fold') {
@@ -175,27 +176,44 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                 }
                 const data = row.data;
                 return (
-                  <button
+                  <div
                     key={`${data.reserve.underlyingAsset}-${data.reserve.symbol}`}
-                    type="button"
-                    className="w-full mt-8 flex items-center justify-between px-12 py-14 rounded-[16px] bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-4 text-left"
-                    onClick={() => handlePressItem(data)}
+                    className="mt-8 flex items-center justify-between px-12 py-14 rounded-[16px] bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-4"
                   >
-                    <div className="flex-1 flex items-center gap-8 min-w-0">
-                      <SymbolIcon tokenSymbol={data.reserve.symbol} size={24} />
-                      <span className="text-[16px] leading-[20px] font-medium text-r-neutral-title-1 truncate max-w-[80px]">
-                        {data.reserve.symbol}
+                    <button
+                      type="button"
+                      className="flex-1 flex items-center justify-between min-w-0 text-left"
+                      onClick={() => handlePressItem(data)}
+                    >
+                      <div className="flex items-center gap-8 min-w-0">
+                        <SymbolIcon
+                          tokenSymbol={data.reserve.symbol}
+                          size={24}
+                        />
+                        <span className="text-[16px] leading-[20px] font-bold text-r-neutral-title-1 truncate max-w-[80px]">
+                          {data.reserve.symbol}
+                        </span>
+                      </div>
+                      <span className="text-[14px] leading-[18px] font-medium text-r-neutral-foot w-[80px] text-right flex-shrink-0">
+                        {formatListNetWorth(
+                          Number(data.reserve.totalLiquidityUSD || '0')
+                        )}
                       </span>
-                    </div>
-                    <span className="text-[14px] leading-[18px] font-medium text-r-neutral-foot w-[80px] text-right flex-shrink-0">
-                      {formatListNetWorth(
-                        Number(data.reserve.totalLiquidityUSD || '0')
-                      )}
-                    </span>
-                    <span className="text-[16px] leading-[20px] font-bold text-rb-green-default w-[80px] text-right flex-shrink-0">
-                      {formatApy(Number(data.reserve.supplyAPY || '0'))}
-                    </span>
-                  </button>
+                      <span className="text-[16px] leading-[20px] font-bold text-rb-green-default w-[80px] text-right flex-shrink-0">
+                        {formatApy(Number(data.reserve.supplyAPY || '0'))}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className="ml-8 px-16 py-8 rounded-[8px] bg-rb-neutral-bg-4 text-[14px] font-medium text-r-neutral-foot hover:bg-rb-neutral-bg-5 flex-shrink-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePressItem(data);
+                      }}
+                    >
+                      {t('page.lending.supplyDetail.actions')}
+                    </button>
+                  </div>
                 );
               })}
             </>
