@@ -67,9 +67,10 @@ const StickyBorderTop = () => (
   </div>
 );
 
-export const DesktopProfile: React.FC<{ isActive?: boolean }> = ({
-  isActive = true,
-}) => {
+export const DesktopProfile: React.FC<{
+  isActive?: boolean;
+  style?: React.CSSProperties;
+}> = ({ isActive = true, style }) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
 
@@ -193,6 +194,7 @@ export const DesktopProfile: React.FC<{ isActive?: boolean }> = ({
       <DesktopPageWrap
         className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px]"
         ref={scrollContainerRef}
+        style={style}
       >
         <div className="main-content flex-1 pb-[20px]">
           <div className="layout-container">
