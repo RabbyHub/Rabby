@@ -80,11 +80,11 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     const tradeSize = Number(positionSize.amount) || 0;
     const notionalNum = tradeSize * Number(markPrice || 0);
 
-    if (notionalNum === 0) {
+    if (notionalNum === 0 || !Number(triggerPrice)) {
       return {
         isValid: false,
         error:
-          reduceOnly && percentage > 0
+          reduceOnly && percentage > 0 && Number(triggerPrice)
             ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
             : '',
       };
