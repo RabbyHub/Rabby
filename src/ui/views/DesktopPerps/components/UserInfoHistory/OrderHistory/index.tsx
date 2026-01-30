@@ -15,7 +15,10 @@ import { formatPercent } from '@/ui/views/Perps/utils';
 import { useTranslation } from 'react-i18next';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
-import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
+import {
+  formatPerpsCoin,
+  formatPerpsOrderStatus,
+} from '@/ui/views/DesktopPerps/utils';
 
 export const OrderHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -242,13 +245,17 @@ export const OrderHistory: React.FC = () => {
         dataIndex: 'status',
         // width: 100,
         render: (_, record) => {
-          // todo
-          const isPartiallyFilled =
-            Number(record.order.sz) !== 0 &&
-            Number(record.order.sz) < Number(record.order.origSz);
-          return (
+          const { statusStr, tipsStr } = formatPerpsOrderStatus(record);
+          return tipsStr ? (
+            <DashedUnderlineText
+              className="text-[12px] leading-[14px]  text-r-neutral-title-1"
+              tooltipText={tipsStr}
+            >
+              {statusStr}
+            </DashedUnderlineText>
+          ) : (
             <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-              {isPartiallyFilled ? 'Partially Filled' : record.status}
+              {statusStr}
             </div>
           );
         },
