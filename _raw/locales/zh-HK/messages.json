@@ -3680,7 +3680,7 @@
         "title": "設定止盈/止損",
         "currentPosition": "當前倉位",
         "cancelSl": "取消止損",
-        "takeProfitExpectedPnl": "止盈 預期盈虧",
+        "takeProfitExpectedPnl": "止盈預期盈虧",
         "stopLossExpectedPnl": "止損預期盈虧",
         "sl": "止蝕",
         "entryPrice": "入場價：",
