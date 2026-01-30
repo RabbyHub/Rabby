@@ -179,6 +179,7 @@ import { buildCreateListingTypedData } from '@/utils/nft';
 import { http } from '../utils/http';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
+import { AccountScene, SCENE_ACCOUNT_CONFIG } from '@/constant/scene-account';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1915,24 +1916,25 @@ export class WalletController extends BaseController {
   switchSceneAccount = ({
     scene,
     account,
-    origin,
   }: {
-    scene: string;
+    scene: AccountScene;
     account: Account;
-    origin?: string;
   }) => {
     const prev = preferenceService.getPreference('sceneAccountMap') || {};
     preferenceService.setPreferencePartials({
       sceneAccountMap: { ...prev, [scene]: account },
     });
-    if (origin) {
-      sessionService.broadcastEvent(
-        'accountsChanged',
-        [account.address],
-        origin,
-        undefined,
-        true
-      );
+    const config = SCENE_ACCOUNT_CONFIG[scene];
+    if (config?.dapps) {
+      config.dapps.forEach((origin) => {
+        sessionService.broadcastEvent(
+          'accountsChanged',
+          [account.address],
+          origin,
+          undefined,
+          true
+        );
+      });
     }
   };
 

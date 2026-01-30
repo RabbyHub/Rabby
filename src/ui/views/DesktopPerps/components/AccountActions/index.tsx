@@ -36,13 +36,10 @@ export const AccountActions: React.FC<{
     <div className="flex items-center gap-[12px]">
       {/* Available Balance */}
       {Boolean(clearinghouseState) && (
-        <div className="flex items-center gap-[8px] pl-[11px] pr-[7px] py-[6px] rounded-[16px] border border-rb-neutral-line">
+        <div className="flex items-center gap-[8px] pl-[11px] pr-[7px] py-[7px] rounded-[16px] border border-rb-neutral-line">
           <div className="flex items-center gap-[4px]">
             <IconPerpsWallet />
             <div className="flex items-start flex-col">
-              <span className="text-[10px] leading-[12px] text-r-neutral-foot">
-                {t('page.perpsPro.accountActions.available')}
-              </span>
               <span className="text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
                 {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
               </span>

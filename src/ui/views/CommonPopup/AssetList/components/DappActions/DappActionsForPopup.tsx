@@ -145,8 +145,14 @@ const DappActionsForPopup = ({
 
   const onPreExecChange = useCallback(
     (r: ExplainTxResponse) => {
+      const totalReceiveUsdValue = r?.balance_change?.receive_token_list?.reduce(
+        (acc, token) => {
+          return acc + (Number(token.usd_value) || 0);
+        },
+        0
+      );
       simulationRef.current = {
-        usdValueChange: r?.balance_change?.usd_value_change,
+        usdValueChange: totalReceiveUsdValue,
       };
       if (!r.pre_exec.success) {
         updateConfig({
@@ -190,6 +196,7 @@ const DappActionsForPopup = ({
         address_type: currentAccount?.type || '',
         protocol_name: protocolName || '',
         create_at: now,
+        app_version: process.env.release || '0',
       } as const;
 
       const getSimulationFields = () => {
@@ -214,7 +221,6 @@ const DappActionsForPopup = ({
         stats.report('defiDirectTx', {
           ...base,
           tx_id: lastHash || '',
-          tx_status: 'success',
           ...getSimulationFields(),
         });
         setVisible(false);
@@ -254,7 +260,6 @@ const DappActionsForPopup = ({
           stats.report('defiDirectTx', {
             ...base,
             tx_id: typeof hash === 'string' ? hash : '',
-            tx_status: 'success',
             ...getSimulationFields(),
           });
           setVisible(false);
@@ -265,12 +270,6 @@ const DappActionsForPopup = ({
             console.error('Dapp action direct sign error', error);
             await runFallback().catch((fallbackError) => {
               console.error('Dapp action fallback error', fallbackError);
-              stats.report('defiDirectTx', {
-                ...base,
-                tx_id: '',
-                tx_status: 'fail',
-                ...getSimulationFields(),
-              });
               const fallbackMsg =
                 typeof (fallbackError as any)?.message === 'string'
                   ? (fallbackError as any).message
@@ -286,12 +285,6 @@ const DappActionsForPopup = ({
         await runFallback();
       } catch (error) {
         console.error('Transaction failed:', error);
-        stats.report('defiDirectTx', {
-          ...base,
-          tx_id: '',
-          tx_status: 'fail',
-          ...getSimulationFields(),
-        });
         message.error(
           typeof error?.message === 'string'
             ? error?.message

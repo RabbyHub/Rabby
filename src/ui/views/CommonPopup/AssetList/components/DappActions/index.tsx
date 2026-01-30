@@ -144,8 +144,14 @@ const DappActions = ({
 
   const onPreExecChange = useCallback(
     (r: ExplainTxResponse) => {
+      const totalReceiveUsdValue = r?.balance_change?.receive_token_list?.reduce(
+        (acc, token) => {
+          return acc + (Number(token.usd_value) || 0);
+        },
+        0
+      );
       simulationRef.current = {
-        usdValueChange: r?.balance_change?.usd_value_change,
+        usdValueChange: totalReceiveUsdValue,
       };
       if (!r.pre_exec.success) {
         updateConfig({
@@ -188,6 +194,7 @@ const DappActions = ({
         user_addr: currentAccount?.address || '',
         address_type: currentAccount?.type || '',
         protocol_name: protocolName || '',
+        app_version: process.env.release || '0',
         create_at: now,
       } as const;
 
@@ -264,12 +271,6 @@ const DappActions = ({
             console.error('Dapp action direct sign error', error);
             await runFallback().catch((fallbackError) => {
               console.error('Dapp action fallback error', fallbackError);
-              stats.report('defiDirectTx', {
-                ...base,
-                tx_id: '',
-                tx_status: 'fail',
-                ...getSimulationFields(),
-              });
               const fallbackMsg =
                 typeof (fallbackError as any)?.message === 'string'
                   ? (fallbackError as any).message
@@ -285,12 +286,6 @@ const DappActions = ({
         await runFallback();
       } catch (error) {
         console.error('Transaction failed:', error);
-        stats.report('defiDirectTx', {
-          ...base,
-          tx_id: '',
-          tx_status: 'fail',
-          ...getSimulationFields(),
-        });
         message.error(
           typeof error?.message === 'string'
             ? error?.message

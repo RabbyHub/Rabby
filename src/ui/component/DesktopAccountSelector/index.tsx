@@ -68,7 +68,7 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
         }
         visible={isOpen}
         onVisibleChange={setIsOpen}
-        // destroyTooltipOnHide
+        destroyTooltipOnHide
       >
         <div
           className={clsx(
@@ -274,7 +274,7 @@ const AccountList: React.FC<{
     >
       <Virtuoso
         ref={virtuosoRef}
-        className={'w-[256px]'}
+        className={'w-[300px]'}
         style={{ height: height }}
         data={accounts}
         totalCount={accounts.length}
@@ -329,11 +329,11 @@ const AccountItem: React.FC<{
     <div className={clsx(!isLast ? 'pb-[12px]' : '', 'group min-h-[1px]')}>
       <div
         className={clsx(
-          'rounded-[12px] px-[15px] py-[11px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
+          'rounded-[12px] px-[12px] py-[11px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
           'border-solid border-[0.5px]',
           'desktop-account-item',
           isSelected
-            ? 'border-transparent bg-rb-brand-light-1'
+            ? 'border-transparent bg-r-blue-light-2'
             : 'border-rb-neutral-line hover:bg-rb-neutral-bg-2'
         )}
         onClick={onClick}
@@ -357,7 +357,8 @@ const AccountItem: React.FC<{
             </div>
             {scene === 'perps' ? (
               <>
-                {Number(clearinghouseState?.withdrawable) > 0 ? (
+                {clearinghouseState?.assetPositions?.length ||
+                Number(clearinghouseState?.withdrawable) > 0 ? (
                   <div
                     className={clsx(
                       'ml-[10px] truncate flex-1 block text-right',
@@ -366,7 +367,9 @@ const AccountItem: React.FC<{
                         : 'text-[14px] leading-[19px] font-medium text-rb-neutral-body'
                     )}
                   >
-                    {formatUsdValue(Number(clearinghouseState?.withdrawable))}
+                    {formatUsdValue(
+                      Number(clearinghouseState?.withdrawable || 0)
+                    )}
                   </div>
                 ) : null}
               </>
