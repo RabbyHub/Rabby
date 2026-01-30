@@ -105,8 +105,8 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
           className="h-[32px] w-[80px] rounded-[6px] flex items-center justify-center text-[13px] text-rb-neutral-title-1 border border-solid border-rb-neutral-line font-medium cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
         >
           {marginMode === MarginMode.ISOLATED
-            ? t('page.perpsPro.tradingPanel.marginIsolated')
-            : t('page.perpsPro.tradingPanel.marginCross')}
+            ? t('page.perpsPro.marginMode.isolated')
+            : t('page.perpsPro.marginMode.cross')}
         </div>
 
         <div
