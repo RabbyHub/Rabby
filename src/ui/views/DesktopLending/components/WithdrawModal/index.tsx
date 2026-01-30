@@ -514,7 +514,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
       {canShowDirectSubmit && currentAccount?.type ? (
         <DirectSignToConfirmBtn
-          className="mt-6"
+          className="mt-20"
           title={
             <>
               {t('page.lending.withdrawDetail.actions')}{' '}
@@ -531,7 +531,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
           type="primary"
           block
           size="large"
-          className="mt-6 h-[48px] rounded-[8px] font-medium text-[16px]"
+          className="mt-20 h-[48px] rounded-[8px] font-medium text-[16px]"
           loading={isLoading}
           disabled={!canSubmit}
           onClick={() => handleWithdraw()}

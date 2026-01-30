@@ -621,7 +621,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
 
       {canShowDirectSubmit && currentAccount?.type ? (
         <DirectSignToConfirmBtn
-          className="mt-6"
+          className="mt-20"
           title={
             <>
               {t('page.lending.supplyDetail.actions')} {reserve.reserve.symbol}
@@ -637,7 +637,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
           type="primary"
           block
           size="large"
-          className="mt-6 h-[48px] rounded-[8px] font-medium text-[16px]"
+          className="mt-20 h-[48px] rounded-[8px] font-medium text-[16px]"
           loading={isLoading}
           disabled={!canSubmit}
           onClick={() => handleSupply()}

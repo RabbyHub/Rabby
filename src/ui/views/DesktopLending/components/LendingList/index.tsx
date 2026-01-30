@@ -28,6 +28,7 @@ import { SupplyModal } from '../SupplyModal';
 import { BorrowModal } from '../BorrowModal';
 import { WithdrawModal } from '../WithdrawModal';
 import { RepayModal } from '../RepayModal';
+import { ToggleCollateralModal } from '../ToggleCollateralModal';
 
 export type LendingModalType =
   | 'supply'
@@ -315,11 +316,15 @@ export const LendingList: React.FC = () => {
         visible={activeModal === 'toggleCollateral'}
         onCancel={closeModal}
       >
-        <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
-          <p className="text-[16px] text-r-neutral-title-1">
-            {t('page.lending.table.collateral')}
-          </p>
-        </div>
+        {selectedItem && (
+          <ToggleCollateralModal
+            visible={activeModal === 'toggleCollateral'}
+            onCancel={closeModal}
+            reserve={selectedItem}
+            userSummary={iUserSummary}
+            onSuccess={() => fetchData()}
+          />
+        )}
       </Modal>
     </div>
   );

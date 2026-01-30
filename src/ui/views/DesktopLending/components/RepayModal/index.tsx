@@ -587,7 +587,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
 
       {canShowDirectSubmit && currentAccount?.type ? (
         <DirectSignToConfirmBtn
-          className="mt-6"
+          className="mt-20"
           title={
             <>
               {t('page.lending.repayDetail.actions')} {reserve.reserve.symbol}
@@ -603,7 +603,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
           type="primary"
           block
           size="large"
-          className="mt-6 h-[48px] rounded-[8px] font-medium text-[16px]"
+          className="mt-20 h-[48px] rounded-[8px] font-medium text-[16px]"
           loading={isLoading}
           disabled={!canSubmit}
           onClick={() => handleRepay()}
