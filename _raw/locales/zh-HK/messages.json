@@ -3571,7 +3571,20 @@
         "history": "歷史",
         "fillHistory": "成交紀錄",
         "randomized": "(隨機化的)",
-        "active": "啟用"
+        "active": "啟用",
+        "status": {
+          "rejected": "拒绝",
+          "canceled": "已取消",
+          "partiallyFilled": "部分成交",
+          "filled": "已成交",
+          "open": "開盤",
+          "triggered": "觸發",
+          "iocCancelRejected": "因 IOC 取消而被拒绝",
+          "minTradeNtlRejected": "由於最低交易 NTL 被拒絕",
+          "perpMarginRejected": "拒绝的永续合约保证金",
+          "reduceOnlyCanceled": "由於僅可減少而被取消",
+          "badAloPxRejected": "因不良 ALO PX 被拒绝"
+        }
       },
       "statusBar": {
         "offline": "離線",
@@ -3707,7 +3720,8 @@
         "available": "可用",
         "pending": "待處理",
         "deposit": "充值",
-        "positionCount": "{{count}} 個持倉"
+        "positionCount": "{{count}} 個持倉",
+        "onePosition": "1 個倉位"
       },
       "orderBook": {
         "markPrice": "標記價格",

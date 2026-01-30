@@ -3530,7 +3530,20 @@
         "no": "Không",
         "history": "Lịch sử",
         "terminate": "Đóng vị thế",
-        "fillHistory": "Lịch sử khớp lệnh"
+        "fillHistory": "Lịch sử khớp lệnh",
+        "status": {
+          "triggered": "Kích hoạt",
+          "open": "Mở",
+          "rejected": "Từ chối",
+          "iocCancelRejected": "Bị từ chối do hủy IOC",
+          "canceled": "Đã hủy",
+          "filled": "Đã hoàn thành",
+          "partiallyFilled": "Đã lấp đầy một phần",
+          "reduceOnlyCanceled": "Hủy bỏ do chỉ giảm bớt",
+          "badAloPxRejected": "Bị từ chối do ALO PX xấu",
+          "minTradeNtlRejected": "Bị từ chối do min trade NTL",
+          "perpMarginRejected": "Đã từ chối ký quỹ Perp"
+        }
       },
       "statusBar": {
         "offline": "Ngoại tuyến",
@@ -3666,7 +3679,8 @@
         "available": "Có sẵn",
         "pending": "Đang chờ xử lý",
         "positionCount": "{{count}} vị thế",
-        "deposit": "Nạp ký quỹ"
+        "deposit": "Nạp ký quỹ",
+        "onePosition": "1 vị trí"
       },
       "orderBook": {
         "viewBoth": "Cả hai",

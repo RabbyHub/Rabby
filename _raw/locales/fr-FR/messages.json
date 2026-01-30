@@ -3850,7 +3850,20 @@
         "terminate": "Terminer",
         "fillHistory": "Historique des exécutions",
         "active": "Actif",
-        "history": "Historique"
+        "history": "Historique",
+        "status": {
+          "rejected": "Rejeté",
+          "canceled": "Annulé",
+          "filled": "Rempli",
+          "open": "Ouvrir",
+          "triggered": "Déclenché",
+          "partiallyFilled": "Partiellement Rempli",
+          "perpMarginRejected": "Rejet de marge Perp rejeté",
+          "badAloPxRejected": "Rejeté en raison d'un mauvais ALO PX",
+          "minTradeNtlRejected": "Rejeté en raison du min trade NTL",
+          "reduceOnlyCanceled": "Annulé en raison de la réduction uniquement",
+          "iocCancelRejected": "Rejeté en raison de l'annulation IOC"
+        }
       },
       "statusBar": {
         "sound": "Activer le son",
@@ -3986,7 +3999,8 @@
         "pending": "En attente",
         "available": "Disponible",
         "deposit": "Dépôt",
-        "positionCount": "{count, plural, one {1 position} other {# positions}}"
+        "positionCount": "{count, plural, one {1 position} other {# positions}}",
+        "onePosition": "1 position"
       },
       "orderBook": {
         "total": "Total",

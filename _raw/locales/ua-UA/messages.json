@@ -3481,7 +3481,7 @@
           "tpSl": "Тейк-профіт/Стоп-лосс",
           "closedPnlTooltip": "Закритий PNL включає комісії та відшкодування.",
           "fundingTips": "Нетто виплати за фінансування з моменту відкриття позиції. Якщо значення від’ємне, це означає прибуток від фінансування.",
-        "twap": "TWAP",
+          "twap": "TWAP",
           "liqPrice": "Ліквідаційна ціна",
           "unrealizedPnlTooltip": "Ціна позначки використовується для оцінки PNL, що не реалізовано. Для реалізованого PNL використовуються лише ціни угод."
         },
@@ -3545,7 +3545,20 @@
         "history": "Історія",
         "randomized": "(рандомізований)",
         "fillHistory": "Історія виконань",
-        "terminate": "Завершити"
+        "terminate": "Завершити",
+        "status": {
+          "filled": "Заповнено",
+          "open": "Відкрити",
+          "rejected": "Відхилено",
+          "partiallyFilled": "Частково виконано",
+          "canceled": "Скасовано",
+          "triggered": "Запущено",
+          "badAloPxRejected": "Відхилено через поганий ALO PX",
+          "reduceOnlyCanceled": "Скасовано через тільки зменшення",
+          "perpMarginRejected": "Відхилено маржу Perp",
+          "iocCancelRejected": "Відхилено через скасування IOC",
+          "minTradeNtlRejected": "Відхилено через мінімальну торгівлю NTL"
+        }
       },
       "statusBar": {
         "sound": "Увімкнути звук",
@@ -3681,7 +3694,8 @@
         "available": "Доступно",
         "pending": "Очікується",
         "deposit": "Поповнити",
-        "positionCount": "{{count}} позиції"
+        "positionCount": "{{count}} позиції",
+        "onePosition": "1 позиція"
       },
       "orderBook": {
         "time": "Час",

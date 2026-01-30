@@ -3530,7 +3530,20 @@
         "yes": "Ya",
         "randomized": "(acak)",
         "terminate": "Akhiri",
-        "fillHistory": "Riwayat Eksekusi"
+        "fillHistory": "Riwayat Eksekusi",
+        "status": {
+          "rejected": "Ditolak",
+          "open": "Buka",
+          "partiallyFilled": "Sebagian Terisi",
+          "filled": "Terisi",
+          "canceled": "Dibatalkan",
+          "triggered": "D触angkap",
+          "perpMarginRejected": "Ditolak Margin Perp Ditolak",
+          "badAloPxRejected": "Ditolak karena ALO PX buruk",
+          "iocCancelRejected": "Ditolak karena pembatalan IOC",
+          "reduceOnlyCanceled": "Dibatalkan karena hanya pengurangan",
+          "minTradeNtlRejected": "Ditolak karena min perdagangan NTL"
+        }
       },
       "statusBar": {
         "sound": "Nyalakan Suara",
@@ -3666,7 +3679,8 @@
         "pending": "Menunggu",
         "positionCount": "{{count}} posisi",
         "available": "Tersedia",
-        "deposit": "Setor"
+        "deposit": "Setor",
+        "onePosition": "1 posisi"
       },
       "orderBook": {
         "amount": "Jumlah",

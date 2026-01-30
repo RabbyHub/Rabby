@@ -3536,7 +3536,20 @@
         "history": "Geçmiş",
         "terminate": "Sonlandır",
         "randomized": "(rastgeleleştirilmiş)",
-        "fillHistory": "Gerçekleşen Emirler Geçmişi"
+        "fillHistory": "Gerçekleşen Emirler Geçmişi",
+        "status": {
+          "triggered": "Tetiklendi",
+          "open": "Açık",
+          "rejected": "Reddedildi",
+          "filled": "Dolduruldu",
+          "iocCancelRejected": "IOC iptal nedeniyle reddedildi",
+          "canceled": "İptal Edildi",
+          "partiallyFilled": "Kısmen Doldurulmuş",
+          "reduceOnlyCanceled": "Sadece azaltma nedeniyle iptal edildi",
+          "badAloPxRejected": "Kötü ALO PX nedeniyle reddedildi",
+          "perpMarginRejected": "Reddedilen Perp Marjı Reddedildi",
+          "minTradeNtlRejected": "Min tic NTL nedeniyle reddedildi"
+        }
       },
       "statusBar": {
         "offline": "Çevrimdışı",
@@ -3672,7 +3685,8 @@
         "pending": "Beklemede",
         "available": "Kullanılabilir",
         "deposit": "Yatır",
-        "positionCount": "{{count}} pozisyonlar"
+        "positionCount": "{{count}} pozisyonlar",
+        "onePosition": "1 pozisyon"
       },
       "orderBook": {
         "total": "Toplam",

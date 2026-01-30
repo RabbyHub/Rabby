@@ -3535,7 +3535,20 @@
         "fillHistory": "Histórico de execuções",
         "terminate": "Encerrar",
         "randomized": "(aleatório)",
-        "history": "Histórico"
+        "history": "Histórico",
+        "status": {
+          "rejected": "Rejeitado",
+          "filled": "Preenchido",
+          "triggered": "Acionado",
+          "canceled": "Cancelado",
+          "partiallyFilled": "Parcialmente Preenchido",
+          "reduceOnlyCanceled": "Cancelado devido a apenas redução",
+          "perpMarginRejected": "Margem Perp Rejeitada",
+          "iocCancelRejected": "Rejeitado devido ao cancelamento IOC",
+          "badAloPxRejected": "Rejeitado devido a ALO PX ruim",
+          "minTradeNtlRejected": "Rejeitado devido ao min trade NTL",
+          "open": "Abrir"
+        }
       },
       "statusBar": {
         "sound": "Ativar Som",
@@ -3671,7 +3684,8 @@
         "deposit": "Depósito",
         "positionCount": "{{count}} posições",
         "available": "Disponível",
-        "pending": "Pendente"
+        "pending": "Pendente",
+        "onePosition": "1 posição"
       },
       "orderBook": {
         "amount": "Quantidade",
