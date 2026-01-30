@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js';
 import { IsolateTag } from '../IsolateTag';
 import { TCell, TRow } from '@/ui/views/CommonPopup/AssetList/components/Table';
 import { formatApy } from '../../utils/format';
-import TokenIcon from '../SymbolIcon';
+import SymbolIcon from '../SymbolIcon';
 import { DisplayPoolReserveInfo } from '../../types';
 
 export const BorrowItem: React.FC<{
@@ -40,7 +40,7 @@ export const BorrowItem: React.FC<{
         <div className="flex items-center gap-[32px]">
           <div className="flex items-center gap-[8px] flex-shrink-0 min-w-[140px]">
             {data.reserve.symbol && (
-              <TokenIcon tokenSymbol={data.reserve.symbol} size={24} />
+              <SymbolIcon tokenSymbol={data.reserve.symbol} size={24} />
             )}
             <div className="flex items-center gap-[6px]">
               <span className="text-[14px] leading-[17px] font-medium text-r-neutral-title-1">

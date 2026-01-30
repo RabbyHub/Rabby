@@ -14,6 +14,7 @@ import {
   useLendingRemoteData,
   useLendingSummary,
   useSelectedMarket,
+  useFetchLendingData,
 } from '../../hooks';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import { isSameAddress } from '@/ui/utils';
@@ -23,6 +24,7 @@ import BigNumber from 'bignumber.js';
 import { assetCanBeBorrowedByUser } from '../../utils/borrow';
 import { DisplayPoolReserveInfo } from '../../types';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
+import { SupplyModal } from '../SupplyModal';
 
 export type LendingModalType =
   | 'supply'
@@ -60,6 +62,7 @@ export const LendingList: React.FC = () => {
   const { reserves } = useLendingRemoteData();
   const { displayPoolReserves, iUserSummary } = useLendingSummary();
   const { chainEnum, marketKey, setMarketKey } = useSelectedMarket();
+  const { fetchData } = useFetchLendingData();
 
   const [activeModal, setActiveModal] = useState<LendingModalType>(null);
   const [
@@ -249,11 +252,15 @@ export const LendingList: React.FC = () => {
         visible={activeModal === 'supply'}
         onCancel={closeModal}
       >
-        <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
-          <p className="text-[16px] text-r-neutral-title-1">
-            {t('page.lending.actions.supply')}
-          </p>
-        </div>
+        {selectedItem && (
+          <SupplyModal
+            visible={activeModal === 'supply'}
+            onCancel={closeModal}
+            reserve={selectedItem}
+            userSummary={iUserSummary}
+            onSuccess={() => fetchData()}
+          />
+        )}
       </Modal>
       <Modal
         {...modalCommonProps}

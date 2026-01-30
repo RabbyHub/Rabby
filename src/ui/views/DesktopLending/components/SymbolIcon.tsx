@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { getTokenIcon } from '../utils/tokenIcon';
 
-const TokenIcon = ({
+const SymbolIcon = ({
   tokenSymbol,
   size,
 }: {
@@ -20,4 +20,4 @@ const TokenIcon = ({
   );
 };
 
-export default TokenIcon;
+export default SymbolIcon;

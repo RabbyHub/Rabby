@@ -8,7 +8,7 @@ import { TCell, TRow } from '@/ui/views/CommonPopup/AssetList/components/Table';
 import { Switch } from 'antd';
 import styled from 'styled-components';
 import { formatApy } from '../../utils/format';
-import TokenIcon from '../SymbolIcon';
+import SymbolIcon from '../SymbolIcon';
 import { DisplayPoolReserveInfo } from '../../types';
 
 const CollateralSwitch = styled(Switch)`
@@ -54,7 +54,7 @@ export const SupplyItem: React.FC<{
         <div className="flex items-center gap-[32px]">
           <div className="flex items-center gap-[8px] flex-shrink-0 min-w-[140px]">
             {data.reserve.symbol && (
-              <TokenIcon tokenSymbol={data.reserve.symbol} size={24} />
+              <SymbolIcon tokenSymbol={data.reserve.symbol} size={24} />
             )}
             <div className="flex items-center gap-[6px]">
               <span className="text-[14px] leading-[17px] font-medium text-r-neutral-title-1">
