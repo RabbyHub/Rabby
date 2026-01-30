@@ -154,13 +154,6 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
 
         <StatusBar />
       </Wrap>
-      <AddAddressModal
-        visible={action === 'add-address'}
-        onCancel={() => {
-          setPopupType(null);
-        }}
-        destroyOnClose
-      />
 
       <DepositWithdrawModal
         visible={popupType === 'deposit' || popupType === 'withdraw'}

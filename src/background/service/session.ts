@@ -97,7 +97,7 @@ const broadcastEvent = (
   sessionMap.forEach((session, key) => {
     if (
       session &&
-      (isFromDesktopDapp === undefined
+      (isFromDesktopDapp == undefined
         ? true
         : !!session.isFromDesktopDapp === !!isFromDesktopDapp) &&
       (permissionService.hasPermission(session.origin) || ignorePermission)
