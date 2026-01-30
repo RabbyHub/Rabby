@@ -1134,6 +1134,19 @@
           "ro": "R.O.",
           "reduceOnly": "Reduce Only"
         },
+        "status": {
+          "partiallyFilled": "Partially Filled",
+          "filled": "Filled",
+          "open": "Open",
+          "canceled": "Canceled",
+          "triggered": "Triggered",
+          "rejected": "Rejected",
+          "perpMarginRejected": "Rejected Perp Margin Rejected",
+          "reduceOnlyCanceled": "Canceled due to reduce only ",
+          "minTradeNtlRejected": "Rejected due to min trade NTL",
+          "iocCancelRejected": "Rejected due to IOC cancel",
+          "badAloPxRejected": "Rejected due to bad ALO PX"
+        },
         "distanceRiskTag": {
           "goingDown": "Going down {{percent}} will trigger liquidation",
           "goingUp": "Going up {{percent}} will trigger liquidation"
