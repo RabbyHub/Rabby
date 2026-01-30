@@ -31,6 +31,11 @@ import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 
 type SupplyModalProps = {
   visible: boolean;
@@ -67,6 +72,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
   const [amount, setAmount] = useState<string | undefined>(undefined);
   const [needApprove, setNeedApprove] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [miniSignLoading, setMiniSignLoading] = useState(false);
   const [supplyTx, setSupplyTx] = useState<Tx | null>(null);
   const [approveTxs, setApproveTxs] = useState<Tx[] | null>(null);
 
@@ -151,6 +157,32 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     reserve.reserve.formattedPriceInMarketReferenceCurrency,
     reserve.reserve.formattedBaseLTVasCollateral,
   ]);
+
+  const txsForMiniApproval = useMemo(() => {
+    const list: Tx[] = [];
+    if (approveTxs?.length) {
+      list.push(...approveTxs);
+    }
+    if (supplyTx) {
+      list.push(supplyTx);
+    }
+    return list;
+  }, [approveTxs, supplyTx]);
+
+  const canShowDirectSubmit = useMemo(
+    () =>
+      !!currentAccount &&
+      !!chainInfo &&
+      !chainInfo.isTestnet &&
+      supportedDirectSign(currentAccount.type || ''),
+    [currentAccount, chainInfo]
+  );
+
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+    account: currentAccount!,
+    chainServerId: chainInfo?.serverId || '',
+    autoResetGasStoreOnChainChange: true,
+  });
 
   const checkApproveStatus = useCallback(async () => {
     if (!amount || amount === '0' || !currentAccount || !selectedMarketData) {
@@ -312,6 +344,43 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
   ]);
 
   useEffect(() => {
+    if (!currentAccount || !canShowDirectSubmit) {
+      prefetch({
+        txs: [],
+      });
+      return;
+    }
+
+    closeSign();
+    if (!txsForMiniApproval.length) {
+      prefetch({
+        txs: [],
+      });
+      return;
+    }
+
+    prefetch({
+      txs: txsForMiniApproval,
+      ga: {
+        category: 'Lending',
+        source: 'Lending',
+        trigger: 'Supply',
+      },
+    }).catch((error) => {
+      if (error !== MINI_SIGN_ERROR.PREFETCH_FAILURE) {
+        // eslint-disable-next-line no-console
+        console.error('lending supply prefetch error', error);
+      }
+    });
+  }, [
+    currentAccount,
+    canShowDirectSubmit,
+    txsForMiniApproval,
+    prefetch,
+    closeSign,
+  ]);
+
+  useEffect(() => {
     if (!visible) {
       setAmount(undefined);
       setSupplyTx(null);
@@ -327,58 +396,106 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     if (visible) buildTransactions();
   }, [visible, buildTransactions]);
 
-  const handleSupply = useCallback(async () => {
-    if (
-      !currentAccount ||
-      !supplyTx ||
-      !amount ||
-      amount === '0' ||
-      !chainInfo
-    ) {
-      return;
-    }
-    const allTxs: Tx[] = [...(approveTxs || []), supplyTx];
-    if (!allTxs.length) {
-      message.info(t('page.lending.submitted') || 'Please retry');
-      return;
-    }
-    try {
-      setIsLoading(true);
-      for (let i = 0; i < allTxs.length; i++) {
-        const tx = allTxs[i];
-        await sendTransaction({
-          tx,
-          chainServerId: chainInfo.serverId,
-          wallet,
-          waitCompleted: i === allTxs.length - 1,
-          session: INTERNAL_REQUEST_SESSION,
-          ga: { category: 'Lending', source: 'Lending', trigger: 'Supply' },
-        });
+  const handleSupply = useCallback(
+    async (forceFullSign?: boolean) => {
+      if (
+        !currentAccount ||
+        !supplyTx ||
+        !amount ||
+        amount === '0' ||
+        !chainInfo
+      ) {
+        return;
       }
-      message.success(
-        `${t('page.lending.supplyDetail.actions')} ${t(
-          'page.lending.submitted'
-        )}`
-      );
-      setAmount(undefined);
-      onCancel();
-      onSuccess?.();
-    } catch (error) {
-      console.error('Supply error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [
-    currentAccount,
-    supplyTx,
-    amount,
-    approveTxs,
-    chainInfo,
-    wallet,
-    onCancel,
-    onSuccess,
-    t,
-  ]);
+      const allTxs: Tx[] = [...(approveTxs || []), supplyTx];
+      if (!allTxs.length) {
+        message.info(t('page.lending.submitted') || 'Please retry');
+        return;
+      }
+
+      try {
+        if (canShowDirectSubmit && !forceFullSign) {
+          setMiniSignLoading(true);
+          try {
+            const hashes = await openDirect({
+              txs: allTxs,
+              ga: {
+                category: 'Lending',
+                source: 'Lending',
+                trigger: 'Supply',
+              },
+            });
+            const hash = hashes[hashes.length - 1];
+            if (hash) {
+              message.success(
+                `${t('page.lending.supplyDetail.actions')} ${t(
+                  'page.lending.submitted'
+                )}`
+              );
+              setAmount(undefined);
+              onCancel();
+              onSuccess?.();
+            }
+          } catch (error) {
+            if (
+              error === MINI_SIGN_ERROR.USER_CANCELLED ||
+              error === MINI_SIGN_ERROR.CANT_PROCESS
+            ) {
+              return;
+            }
+            await handleSupply(true);
+            return;
+          } finally {
+            setMiniSignLoading(false);
+          }
+          return;
+        }
+
+        setIsLoading(true);
+        for (let i = 0; i < allTxs.length; i++) {
+          const tx = allTxs[i];
+          // 完整签名走签名页
+          await wallet.sendRequest({
+            method: 'eth_sendTransaction',
+            params: [tx],
+            $ctx: {
+              ga: {
+                category: 'Lending',
+                source: 'Lending',
+                trigger: 'Supply',
+              },
+            },
+          });
+        }
+        message.success(
+          `${t('page.lending.supplyDetail.actions')} ${t(
+            'page.lending.submitted'
+          )}`
+        );
+        setAmount(undefined);
+        onCancel();
+        onSuccess?.();
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Supply error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [
+      currentAccount,
+      supplyTx,
+      amount,
+      approveTxs,
+      chainInfo,
+      wallet,
+      onCancel,
+      onSuccess,
+      t,
+      canShowDirectSubmit,
+      openDirect,
+    ]
+  );
 
   const onAmountChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -487,23 +604,47 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
         />
       )}
 
-      <div className="mt-16 text-[12px] leading-[15px] text-r-neutral-foot">
-        Gas fee: Normal · $0.01
-      </div>
+      {canShowDirectSubmit && chainInfo?.serverId ? (
+        <div className="mt-16">
+          <DirectSignGasInfo
+            supportDirectSign
+            loading={isLoading}
+            openShowMore={() => {}}
+            chainServeId={chainInfo.serverId}
+            noQuote={false}
+            type="send"
+          />
+        </div>
+      ) : null}
 
       <ReserveErrorTip reserve={reserve} className="mt-4" />
 
-      <Button
-        type="primary"
-        block
-        size="large"
-        className="mt-6 h-[48px] rounded-[8px] font-medium text-[16px]"
-        loading={isLoading}
-        disabled={!canSubmit}
-        onClick={handleSupply}
-      >
-        {t('page.lending.supplyDetail.actions')} {reserve.reserve.symbol}
-      </Button>
+      {canShowDirectSubmit && currentAccount?.type ? (
+        <DirectSignToConfirmBtn
+          className="mt-6"
+          title={
+            <>
+              {t('page.lending.supplyDetail.actions')} {reserve.reserve.symbol}
+            </>
+          }
+          disabled={!canSubmit}
+          loading={miniSignLoading}
+          onConfirm={() => handleSupply()}
+          accountType={currentAccount.type}
+        />
+      ) : (
+        <Button
+          type="primary"
+          block
+          size="large"
+          className="mt-6 h-[48px] rounded-[8px] font-medium text-[16px]"
+          loading={isLoading}
+          disabled={!canSubmit}
+          onClick={() => handleSupply()}
+        >
+          {t('page.lending.supplyDetail.actions')} {reserve.reserve.symbol}
+        </Button>
+      )}
     </div>
   );
 };
