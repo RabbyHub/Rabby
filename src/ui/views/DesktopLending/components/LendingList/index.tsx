@@ -29,6 +29,8 @@ import { BorrowModal } from '../BorrowModal';
 import { WithdrawModal } from '../WithdrawModal';
 import { RepayModal } from '../RepayModal';
 import { ToggleCollateralModal } from '../ToggleCollateralModal';
+import { SupplyListModal } from '../SupplyListModal';
+import { BorrowListModal } from '../BorrowListModal';
 
 export type LendingModalType =
   | 'supply'
@@ -73,11 +75,33 @@ export const LendingList: React.FC = () => {
     selectedItem,
     setSelectedItem,
   ] = useState<DisplayPoolReserveInfo | null>(null);
+  const [listModalType, setListModalType] = useState<
+    'supplyList' | 'borrowList' | null
+  >(null);
 
   const closeModal = useCallback(() => {
     setActiveModal(null);
     setSelectedItem(null);
+    setListModalType(null);
   }, []);
+
+  const handleSupplyListSelect = useCallback(
+    (reserve: DisplayPoolReserveInfo) => {
+      setSelectedItem(reserve);
+      setListModalType(null);
+      setActiveModal('supply');
+    },
+    []
+  );
+
+  const handleBorrowListSelect = useCallback(
+    (reserve: DisplayPoolReserveInfo) => {
+      setSelectedItem(reserve);
+      setListModalType(null);
+      setActiveModal('borrow');
+    },
+    []
+  );
 
   const onAction = useCallback(
     (action: LendingModalType, data: DisplayPoolReserveInfo) => {
@@ -174,20 +198,24 @@ export const LendingList: React.FC = () => {
         <MarketSelector value={marketKey} onChange={setMarketKey} />
         <div className="flex items-center gap-[8px]">
           <button
+            type="button"
             className={clsx(
               'px-[16px] h-[44px] w-[160px] rounded-[12px] text-[14px] font-medium',
               'bg-rb-brand-light-1 text-rb-brand-default',
               'hover:bg-rb-brand-light-2'
             )}
+            onClick={() => setListModalType('supplyList')}
           >
             {t('page.lending.actions.supply')}
           </button>
           <button
+            type="button"
             className={clsx(
               'px-[16px] h-[44px] w-[160px] rounded-[12px] text-[14px] font-medium',
               'bg-rb-brand-default text-white',
               'hover:bg-rb-brand-default/90'
             )}
+            onClick={() => setListModalType('borrowList')}
           >
             {t('page.lending.actions.borrow')}
           </button>
@@ -251,6 +279,36 @@ export const LendingList: React.FC = () => {
         )}
       </div>
 
+      <Modal
+        {...modalCommonProps}
+        width={1040}
+        bodyStyle={{
+          ...modalCommonProps.bodyStyle,
+          minHeight: 770,
+        }}
+        visible={listModalType === 'supplyList'}
+        onCancel={closeModal}
+      >
+        <SupplyListModal
+          onSelect={handleSupplyListSelect}
+          onCancel={closeModal}
+        />
+      </Modal>
+      <Modal
+        {...modalCommonProps}
+        width={1040}
+        bodyStyle={{
+          ...modalCommonProps.bodyStyle,
+          minHeight: 770,
+        }}
+        visible={listModalType === 'borrowList'}
+        onCancel={closeModal}
+      >
+        <BorrowListModal
+          onSelect={handleBorrowListSelect}
+          onCancel={closeModal}
+        />
+      </Modal>
       <Modal
         {...modalCommonProps}
         visible={activeModal === 'supply'}

@@ -1716,6 +1716,14 @@
         "myAssets": "My assets",
         "collateral": "Collateral",
         "actions": "Actions"
+      },
+      "supplyList": {
+        "more": "More tokens to supply",
+        "collapse": "Collapse"
+      },
+      "borrowList": {
+        "more": "More tokens to borrow",
+        "collapse": "Collapse"
       }
     },
     "sendPoly": {
