@@ -3,11 +3,5 @@
   "i18n-ally.keystyle": "nested",
   "i18n-ally.extract.ignored": ["Gwei"],
   "i18n-ally.sourceLanguage": "en",
-  "cSpell.words": [
-    "Favorited",
-    "hyperliquid",
-    "Perps",
-    "rabby",
-    "TWAP"
-  ]
+  "cSpell.words": ["Favorited", "hyperliquid", "Perps", "rabby", "TWAP"]
 }

@@ -148,6 +148,8 @@ export interface PreferenceStore {
 
   /** @deprecated */
   desktopTokensAllMode?: boolean;
+
+  sceneAccountMap?: Record<string, Account | null>;
 }
 
 export interface AddressSortStore {
@@ -227,6 +229,7 @@ class PreferenceService {
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
         desktopTabId: undefined,
         desktopTokensAllMode: false,
+        sceneAccountMap: {},
       },
     });
 
@@ -339,6 +342,9 @@ class PreferenceService {
 
     if (this.store.ga4EventTime) {
       this.store.ga4EventTime = 0;
+    }
+    if (!this.store.sceneAccountMap) {
+      this.store.sceneAccountMap = {};
     }
   };
 
@@ -538,9 +544,13 @@ class PreferenceService {
     this.store.currentAccount = account;
     if (account) {
       if (!this.store.isEnabledDappAccount) {
-        sessionService.broadcastEvent('accountsChanged', [
-          account.address.toLowerCase(),
-        ]);
+        sessionService.broadcastEvent(
+          'accountsChanged',
+          [account.address.toLowerCase()],
+          undefined,
+          undefined,
+          false
+        );
       }
       syncStateToUI(BROADCAST_TO_UI_EVENTS.accountsChanged, account);
     }

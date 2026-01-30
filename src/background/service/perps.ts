@@ -45,6 +45,7 @@ export interface PerpsServiceStore {
   soundEnabled: boolean;
   marketSlippage: number; // 0-1, default 0.08 (8%)
   quoteUnit: 'base' | 'usd';
+  firstOpenPerpsNeedDark: boolean;
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -76,6 +77,7 @@ class PerpsService {
         marketSlippage: 0.08, // default 8%
         soundEnabled: true,
         quoteUnit: 'base',
+        firstOpenPerpsNeedDark: true,
       },
     });
 
@@ -469,6 +471,18 @@ class PerpsService {
     this.store.quoteUnit = quoteUnit;
   };
 
+  getIsNeedSetDarkTheme = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    if (this.store.firstOpenPerpsNeedDark) {
+      this.store.firstOpenPerpsNeedDark = false;
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   // only test use
   resetStore = async () => {
     if (!this.store) {
@@ -485,6 +499,7 @@ class PerpsService {
       marketSlippage: 0.08,
       soundEnabled: true,
       quoteUnit: 'base',
+      firstOpenPerpsNeedDark: true,
     };
     this.memoryState.agentWallets = {};
   };

@@ -315,7 +315,8 @@ export const EditTpSlModal: React.FC<Props> = ({
           },
         });
         perpsToast.success({
-          title: t('page.perps.toast.setAutoCloseSuccess'),
+          title: t('page.perps.toast.success'),
+          description: t('page.perps.toast.setAutoCloseSuccess'),
         });
       } else if (!position.tpItem && !position.slItem) {
         // both not have tp and sl

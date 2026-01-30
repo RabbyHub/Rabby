@@ -1045,6 +1045,9 @@
       },
       "userInfo": {
         "tab": {
+          "__skip_translation": [
+            "twap"
+          ],
           "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
           "fundingTips": "Net funding payments since the position was opened. If negative, it means funding gains.",
           "closedPnlTooltip": "Closed PNL includes fees and rebates",
@@ -1118,6 +1121,9 @@
           "confirm": "Confirm"
         },
         "openOrders": {
+          "__skip_translation": [
+            "ro"
+          ],
           "order": "Order",
           "time": "Time",
           "triggerConditions": "Trigger Conditions",
@@ -1128,7 +1134,21 @@
           "cancelAll": "Cancel All",
           "price": "Price",
           "cancel": "Cancel",
+          "ro": "R.O.",
           "reduceOnly": "Reduce Only"
+        },
+        "status": {
+          "partiallyFilled": "Partially Filled",
+          "filled": "Filled",
+          "open": "Open",
+          "canceled": "Canceled",
+          "triggered": "Triggered",
+          "rejected": "Rejected",
+          "perpMarginRejected": "Rejected Perp Margin Rejected",
+          "reduceOnlyCanceled": "Canceled due to reduce only ",
+          "minTradeNtlRejected": "Rejected due to min trade NTL",
+          "iocCancelRejected": "Rejected due to IOC cancel",
+          "badAloPxRejected": "Rejected due to bad ALO PX"
         },
         "distanceRiskTag": {
           "goingDown": "Going down {{percent}} will trigger liquidation",
@@ -1281,6 +1301,7 @@
       "accountActions": {
         "pending": "Pending",
         "available": "Available",
+        "onePosition": "1 position",
         "positionCount": "{{count}} positions",
         "deposit": "Deposit"
       },

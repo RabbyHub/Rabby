@@ -7,6 +7,7 @@ import { perpsToast } from './components/PerpsToast';
 import i18n from '@/i18n';
 import { splitNumberByStep } from '@/ui/utils';
 import { playSound } from '@/ui/utils/sound';
+import BigNumber from 'bignumber.js';
 
 export const getPositionDirection = (
   position: PositionAndOpenOrder['position']
@@ -166,4 +167,95 @@ function createOption(
 
 export const isScreenSmall = () => {
   return window.innerWidth < 1680;
+};
+
+export const handleDisplayFundingPayments = (fundingPayments: string) => {
+  const bn = new BigNumber(fundingPayments || 0);
+  if (bn.isZero()) {
+    return '$0.00';
+  }
+  const sign = bn.isNegative() ? '-' : '';
+  if (bn.abs().lt(0.01)) {
+    return sign + '$0.01';
+  }
+
+  return sign + '$' + bn.abs().toFixed(2);
+};
+
+export const formatPerpsCoin = (coin: string) => {
+  if (coin.includes(':')) {
+    // is hip-3 coin
+    return coin.split(':')[1].toUpperCase();
+  } else {
+    return coin.toUpperCase();
+  }
+};
+
+const STATUS_ENUM = {
+  FILLED: 'filled',
+  OPEN: 'open',
+  TRIGGERED: 'triggered',
+  CANCELED: 'canceled',
+  PERP_MARGIN_REJECTED: 'perpMarginRejected',
+  REDUCE_ONLY_CANCELED: 'reduceOnlyCanceled',
+  MIN_TRADE_NTL_REJECTED: 'minTradeNtlRejected',
+  IOC_CANCEL_REJECTED: 'iocCancelRejected',
+  BAD_ALO_PX_REJECTED: 'badAloPxRejected',
+};
+
+export const formatPerpsOrderStatus = (record: UserHistoricalOrders) => {
+  const { status } = record;
+  let statusStr = '';
+  let tipsStr = '';
+  const isPartiallyFilled =
+    Number(record.order.sz) !== 0 &&
+    Number(record.order.sz) < Number(record.order.origSz);
+  switch (status) {
+    case STATUS_ENUM.OPEN:
+      statusStr = i18n.t('page.perpsPro.userInfo.status.open');
+      tipsStr = '';
+      break;
+    case STATUS_ENUM.FILLED:
+      statusStr = i18n.t('page.perpsPro.userInfo.status.filled');
+      tipsStr = isPartiallyFilled
+        ? i18n.t('page.perpsPro.userInfo.status.partiallyFilledTip')
+        : '';
+      break;
+    case STATUS_ENUM.TRIGGERED:
+      statusStr = i18n.t('page.perpsPro.userInfo.status.triggered');
+      tipsStr = '';
+      break;
+    case STATUS_ENUM.CANCELED:
+      statusStr = i18n.t('page.perpsPro.userInfo.status.canceled');
+      tipsStr = '';
+      break;
+    case STATUS_ENUM.PERP_MARGIN_REJECTED:
+      statusStr = i18n.t('page.perpsPro.userInfo.status.rejected');
+      tipsStr = i18n.t('page.perpsPro.userInfo.status.perpMarginRejected');
+      break;
+    case STATUS_ENUM.REDUCE_ONLY_CANCELED:
+      statusStr = i18n.t('page.perpsPro.userInfo.status.canceled');
+      tipsStr = i18n.t('page.perpsPro.userInfo.status.reduceOnlyCanceled');
+      break;
+    case STATUS_ENUM.MIN_TRADE_NTL_REJECTED:
+      statusStr = i18n.t('page.perpsPro.userInfo.status.rejected');
+      tipsStr = i18n.t('page.perpsPro.userInfo.status.minTradeNtlRejected');
+      break;
+    case STATUS_ENUM.IOC_CANCEL_REJECTED:
+      statusStr = i18n.t('page.perpsPro.userInfo.status.rejected');
+      tipsStr = i18n.t('page.perpsPro.userInfo.status.iocCancelRejected');
+      break;
+    case STATUS_ENUM.BAD_ALO_PX_REJECTED:
+      statusStr = i18n.t('page.perpsPro.userInfo.status.rejected');
+      tipsStr = i18n.t('page.perpsPro.userInfo.status.badAloPxRejected');
+      break;
+    default:
+      statusStr = status;
+      tipsStr = '';
+      break;
+  }
+  return {
+    statusStr,
+    tipsStr,
+  };
 };

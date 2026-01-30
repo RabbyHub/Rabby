@@ -401,9 +401,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         </div>
       ) : null,
       content: t('page.dashboard.home.panel.perps'),
-      onClick: () => {
-        history.push('/perps');
+      onClick: async () => {
+        await wallet.openInDesktop('/desktop/perps');
+        window.close();
       },
+      isFullscreen: true,
     } as IPanelItem,
     searchDapp: {
       icon: RcIconSearchCC,

@@ -24,6 +24,7 @@ import { KEYRING_TYPE } from '@/constant';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 import { debounce } from 'lodash';
+import { useRabbySelector } from '@/ui/store';
 
 type DesktopNavAction = 'swap' | 'send' | 'bridge' | 'gnosis-queue';
 
@@ -47,6 +48,9 @@ export const DesktopNav: React.FC<{
   const { t } = useTranslation();
   const history = useHistory();
   const currentAccount = useCurrentAccount();
+  const activeProfileTab = useRabbySelector(
+    (state) => state.desktopProfile.activeTab || 'tokens'
+  );
 
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
 
@@ -139,7 +143,12 @@ export const DesktopNav: React.FC<{
   }, [activeNav?.eventKey]);
 
   return (
-    <div className="sticky top-0 z-10 pt-[20px] pb-[16px] bg-rb-neutral-bg-1">
+    <div
+      className="sticky top-0 z-10 pt-[20px] pb-[16px] bg-rb-neutral-bg-1"
+      style={{
+        minHeight: DESKTOP_NAV_HEIGHT,
+      }}
+    >
       <div className="flex items-center justify-between">
         <div className="flex">
           <div
@@ -181,7 +190,11 @@ export const DesktopNav: React.FC<{
                       if (item.isSoon) {
                         return;
                       }
-                      history.push(item.key);
+                      if (item.key === '/desktop/profile') {
+                        history.push(`/desktop/profile/${activeProfileTab}`);
+                      } else {
+                        history.push(item.key);
+                      }
                     }}
                   >
                     <Icon
@@ -216,7 +229,7 @@ export const DesktopNav: React.FC<{
               {title}
             </div>
           ))}
-          {isGnosis ? (
+          {isGnosis && showRightItems ? (
             <div
               className={clsx(
                 'min-w-[88px] p-[12px] rounded-[14px]',

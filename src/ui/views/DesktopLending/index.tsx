@@ -96,7 +96,9 @@ const DesktopLendingContent: React.FC = () => {
   );
 };
 
-export const DesktopLending = () => {
+export const DesktopLending: React.FC<{
+  isActive?: boolean;
+}> = ({ isActive = true }) => {
   return (
     <LendingProvider>
       <LendingDataProvider>

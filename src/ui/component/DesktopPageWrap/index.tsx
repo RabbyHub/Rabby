@@ -10,22 +10,10 @@ export const DesktopPageWrap = styled.div`
   align-items: flex-start;
   justify-content: center;
   gap: 16px;
-  padding-bottom: 120px;
-
-  .main-content {
-    padding-left: 80px;
-    flex-shrink: 0;
-
-    transition: padding 0.3s;
-
-    &.is-open {
-      padding-left: 0;
-    }
-  }
 
   .layout-container {
     /* max-width: 1440px; */
-    min-width: 1120px;
+    /* min-width: 1120px; */
     /* margin-left: auto; */
     /* margin-right: auto; */
     background-color: var(--rb-neutral-bg-1, #ffffff);
@@ -66,14 +54,5 @@ export const DesktopPageWrap = styled.div`
   }
   .ant-tabs-top > .ant-tabs-nav::before {
     border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
-  }
-
-  .aside-list {
-    width: 60px;
-    transition: width 0.3s;
-  }
-
-  .is-open + .aside-list {
-    width: 256px;
   }
 `;

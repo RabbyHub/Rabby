@@ -25,10 +25,11 @@ export default memo(
     name: string;
     siteUrl?: string;
     protocolLogo?: string;
+    protocolName?: string;
   }) => {
     const { t } = useTranslation();
 
-    const { tag, protocolLogo } = props;
+    const { tag, protocolLogo, protocolName } = props;
     const data = props.data;
 
     return (
@@ -112,6 +113,7 @@ export default memo(
                           actionKeys={['default', 'withdraw', 'default']}
                           portfolio={p}
                           protocolLogo={protocolLogo || ''}
+                          protocolName={protocolName}
                         />
                       )}
                     </Table.Body>
@@ -178,6 +180,7 @@ export default memo(
                             actionKeys={['default', 'claim', 'default']}
                             portfolio={p}
                             protocolLogo={protocolLogo || ''}
+                            protocolName={protocolName}
                           />
                         )}
                       </Table.Body>

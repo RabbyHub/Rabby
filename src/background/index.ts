@@ -463,6 +463,7 @@ browser.runtime.onConnect.addListener((port) => {
         origin,
         name: tabInfo.title || '',
         icon: tabInfo.favIconUrl || '',
+        isFromDesktopDapp: req.isFromDesktopDapp,
       });
     }
     // for background push to respective page
@@ -499,8 +500,10 @@ function startEnableUser() {
     action: 'enable',
   });
 
-  ga4.fireEvent('User_Enable', {
-    event_category: 'User Enable',
+  browser.action.getUserSettings().then((res) => {
+    ga4.fireEvent(`User_Enable_${res ? 'Pin' : 'unPin'}`, {
+      event_category: 'User Enable',
+    });
   });
   preferenceService.updateSendEnableTime(Date.now());
 }

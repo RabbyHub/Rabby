@@ -14,6 +14,11 @@ import { sortBy } from 'lodash';
 import { formatPercent } from '@/ui/views/Perps/utils';
 import { useTranslation } from 'react-i18next';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { DashedUnderlineText } from '../../DashedUnderlineText';
+import {
+  formatPerpsCoin,
+  formatPerpsOrderStatus,
+} from '@/ui/views/DesktopPerps/utils';
 
 export const OrderHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -30,7 +35,7 @@ export const OrderHistory: React.FC = () => {
   const fetchHistoricalOrders = useCallback(() => {
     const sdk = getPerpsSDK();
     sdk.info.getUserHistoricalOrders().then((res) => {
-      dispatch.perps.patchState({ historicalOrders: res.slice(0, 200) });
+      dispatch.perps.patchState({ historicalOrders: res.slice(0, 2000) });
     });
   }, []);
 
@@ -85,7 +90,7 @@ export const OrderHistory: React.FC = () => {
                 dispatch.perps.setSelectedCoin(record.order.coin);
               }}
             >
-              {record.order.coin}
+              {formatPerpsCoin(record.order.coin)}
             </div>
           );
         },
@@ -123,9 +128,7 @@ export const OrderHistory: React.FC = () => {
               {Number(record.order.origSz) === 0 ? (
                 '-'
               ) : (
-                <>
-                  {splitNumberByStep(record.order.origSz)} {record.order.coin}
-                </>
+                <>{splitNumberByStep(record.order.origSz)}</>
               )}
             </div>
           );
@@ -149,10 +152,7 @@ export const OrderHistory: React.FC = () => {
               {record.status !== 'filled' ? (
                 '-'
               ) : (
-                <>
-                  {splitNumberByStep(new BigNumber(fillSz).toString())}{' '}
-                  {record.order.coin}
-                </>
+                <>{splitNumberByStep(new BigNumber(fillSz).toString())}</>
               )}
             </div>
           );
@@ -184,7 +184,7 @@ export const OrderHistory: React.FC = () => {
                       new BigNumber(record.order.limitPx)
                         .times(new BigNumber(fillSz).abs())
                         .toFixed(2)
-                    )} USD`}
+                    )}`}
               </div>
             </div>
           );
@@ -208,10 +208,16 @@ export const OrderHistory: React.FC = () => {
         },
       },
       {
-        title: t('page.perpsPro.userInfo.tab.reduceOnly'),
+        title: (
+          <DashedUnderlineText
+            tooltipText={t('page.perpsPro.userInfo.openOrders.reduceOnly')}
+          >
+            {t('page.perpsPro.userInfo.openOrders.ro')}
+          </DashedUnderlineText>
+        ),
         key: 'reduceOnly',
         dataIndex: 'reduceOnly',
-        // width: 100,
+        width: 60,
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
@@ -239,13 +245,17 @@ export const OrderHistory: React.FC = () => {
         dataIndex: 'status',
         // width: 100,
         render: (_, record) => {
-          // todo
-          const isPartiallyFilled =
-            Number(record.order.sz) !== 0 &&
-            Number(record.order.sz) < Number(record.order.origSz);
-          return (
+          const { statusStr, tipsStr } = formatPerpsOrderStatus(record);
+          return tipsStr ? (
+            <DashedUnderlineText
+              className="text-[12px] leading-[14px]  text-r-neutral-title-1"
+              tooltipText={tipsStr}
+            >
+              {statusStr}
+            </DashedUnderlineText>
+          ) : (
             <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-              {isPartiallyFilled ? 'Partially Filled' : record.status}
+              {statusStr}
             </div>
           );
         },
@@ -264,6 +274,8 @@ export const OrderHistory: React.FC = () => {
       rowKey={(record) => `${record.order.oid}-${record.status}`}
       defaultSortField="statusTimestamp"
       defaultSortOrder="descend"
-    ></CommonTable>
+      virtual
+      rowHeight={32}
+    />
   );
 };

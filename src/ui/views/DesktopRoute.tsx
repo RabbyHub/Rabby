@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import { Switch, useLocation } from 'react-router-dom';
-import { PrivateRoute, PrivateRouteGuard } from 'ui/component';
+import { useLocation } from 'react-router-dom';
+import { PrivateRouteGuard } from 'ui/component';
 
 import { PortalHost } from '../component/PortalHost';
 import { CommonPopup } from './CommonPopup';
@@ -23,25 +23,45 @@ declare global {
 const Main = () => {
   const location = useLocation();
   const isDappIframeRoute = location.pathname === '/desktop/dapp-iframe';
+  const isPerpsRoute = location.pathname === '/desktop/perps';
+  const isProfileRoute = location.pathname.startsWith('/desktop/profile');
+  const isLendingRoute = location.pathname === '/desktop/lending';
+
   const hasMountedDappIframeRef = useRef(false);
+  const hasMountedPerpsRef = useRef(false);
+  const hasMountedProfileRef = useRef(false);
+  const hasMountedLendingRef = useRef(false);
 
   if (isDappIframeRoute) {
     hasMountedDappIframeRef.current = true;
   }
+  if (isPerpsRoute) {
+    hasMountedPerpsRef.current = true;
+  }
+  if (isProfileRoute) {
+    hasMountedProfileRef.current = true;
+  }
 
   return (
     <>
-      <Switch>
-        <PrivateRoute exact path="/desktop/profile/:activeTab?">
-          <DesktopProfile />
-        </PrivateRoute>
-        <PrivateRoute exact path="/desktop/perps">
-          <DesktopPerps />
-        </PrivateRoute>
-        <PrivateRoute exact path="/desktop/lending">
-          <DesktopLending />
-        </PrivateRoute>
-      </Switch>
+      {hasMountedProfileRef.current ? (
+        <PrivateRouteGuard>
+          <DesktopProfile
+            isActive={isProfileRoute}
+            style={isProfileRoute ? undefined : { display: 'none' }}
+          />
+        </PrivateRouteGuard>
+      ) : null}
+      {hasMountedPerpsRef.current ? (
+        <PrivateRouteGuard>
+          <div
+            style={{ display: isPerpsRoute ? 'block' : 'none' }}
+            className={clsx('h-full', isPerpsRoute ? 'block' : 'hidden')}
+          >
+            <DesktopPerps isActive={isPerpsRoute} />
+          </div>
+        </PrivateRouteGuard>
+      ) : null}
       {hasMountedDappIframeRef.current ? (
         <PrivateRouteGuard>
           <div
@@ -49,6 +69,17 @@ const Main = () => {
             className={clsx('h-full', isDappIframeRoute ? 'block' : 'hidden')}
           >
             <DesktopDappIframe isActive={isDappIframeRoute} />
+          </div>
+        </PrivateRouteGuard>
+      ) : null}
+
+      {hasMountedLendingRef.current ? (
+        <PrivateRouteGuard>
+          <div
+            style={{ display: isLendingRoute ? 'block' : 'none' }}
+            className={clsx('h-full', isLendingRoute ? 'block' : 'hidden')}
+          >
+            <DesktopLending isActive={isLendingRoute} />
           </div>
         </PrivateRouteGuard>
       ) : null}

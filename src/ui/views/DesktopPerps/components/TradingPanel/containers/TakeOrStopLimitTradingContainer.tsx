@@ -80,6 +80,18 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     formatTpOrSlPrice(midPrice, szDecimals)
   );
 
+  const limitMaxTradeSize = React.useMemo(() => {
+    const price = new BigNumber(limitPrice);
+    const balance = new BigNumber(availableBalance);
+    if (price.gt(0) && balance.gt(0)) {
+      return balance
+        .multipliedBy(leverage)
+        .div(price)
+        .toFixed(szDecimals, BigNumber.ROUND_DOWN);
+    }
+    return maxTradeSize;
+  }, [limitPrice, availableBalance, leverage, maxTradeSize, szDecimals]);
+
   // Calculate liquidation price
   const estimatedLiquidationPrice = React.useMemo(() => {
     if (!limitPrice || !Number(limitPrice) || !leverage || !tradeUsdAmount)
@@ -124,11 +136,11 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     const tradeSize = Number(positionSize.amount) || 0;
     const notionalNum = tradeSize * Number(limitPrice || 0);
 
-    if (notionalNum === 0) {
+    if (notionalNum === 0 || !Number(triggerPrice)) {
       return {
         isValid: false,
         error:
-          reduceOnly && percentage > 0
+          reduceOnly && percentage > 0 && Number(triggerPrice)
             ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
             : '',
       };
@@ -140,7 +152,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       return { isValid: false, error };
     }
 
-    if (maxTradeSize && tradeSize > Number(maxTradeSize)) {
+    if (limitMaxTradeSize && tradeSize > Number(limitMaxTradeSize)) {
       error = reduceOnly
         ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
         : t('page.perpsPro.tradingPanel.insufficientBalance');
@@ -150,6 +162,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'sl' &&
       orderSide === OrderSide.BUY &&
+      Number(triggerPrice) &&
       Number(triggerPrice) < Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice');
@@ -159,6 +172,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'sl' &&
       orderSide === OrderSide.SELL &&
+      Number(triggerPrice) &&
       Number(triggerPrice) > Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice');
@@ -168,6 +182,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'tp' &&
       orderSide === OrderSide.BUY &&
+      Number(triggerPrice) &&
       Number(triggerPrice) > Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice');
@@ -177,6 +192,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'tp' &&
       orderSide === OrderSide.SELL &&
+      Number(triggerPrice) &&
       Number(triggerPrice) < Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice');
@@ -200,7 +216,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
   }, [
     tradeSize,
     limitPrice,
-    maxTradeSize,
+    limitMaxTradeSize,
     reduceOnly,
     percentage,
     midPrice,
@@ -374,7 +390,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
         price={limitPrice}
-        maxTradeSize={maxTradeSize}
+        maxTradeSize={limitMaxTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
         percentage={percentage}
@@ -421,16 +437,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       )}
 
       {/* Order Summary */}
-      <OrderSummary
-        data={orderSummary}
-        showTPSLExpected={tpslConfig.enabled}
-        tpExpectedPnL={
-          tpslConfig.enabled ? orderSummary?.tpExpectedPnL : undefined
-        }
-        slExpectedPnL={
-          tpslConfig.enabled ? orderSummary?.slExpectedPnL : undefined
-        }
-      />
+      <OrderSummary data={orderSummary} />
     </div>
   );
 };
