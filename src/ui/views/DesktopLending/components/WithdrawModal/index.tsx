@@ -2,29 +2,26 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, message, Checkbox } from 'antd';
 import BigNumber from 'bignumber.js';
-import { parseUnits } from 'ethers/lib/utils';
+import { isSameAddress } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
+import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
+import wrapperToken from '../../config/wrapperToken';
+import { calculateHFAfterWithdraw } from '../../utils/hfUtils';
+import { calculateMaxWithdrawAmount } from '../../utils/calculateMaxWithdrawAmount';
+import { buildWithdrawTx, optimizedPath } from '../../utils/poolService';
 import {
-  calculateHealthFactorFromBalancesBigUnits,
-  valueToBigNumber,
-} from '@aave/math-utils';
-import { buildBorrowTx, optimizedPath } from '../../utils/poolService';
-import {
-  BORROW_SAFE_MARGIN,
   HF_RISK_CHECKBOX_THRESHOLD,
+  MAX_CLICK_WITHDRAW_HF_THRESHOLD,
 } from '../../utils/constant';
-import { BorrowOverView } from './BorrowOverView';
-import { BorrowErrorTip } from './BorrowErrorTip';
-import { BorrowToCapTip } from './BorrowToCapTip';
+import { WithdrawOverView } from './WithdrawOverView';
 import SymbolIcon from '../SymbolIcon';
 import {
   useLendingSummary,
   useSelectedMarket,
   usePoolDataProviderContract,
 } from '../../hooks';
-import { INTERNAL_REQUEST_SESSION } from '@/constant';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -36,7 +33,7 @@ import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 
-type BorrowModalProps = {
+type WithdrawModalProps = {
   visible: boolean;
   onCancel: () => void;
   reserve: DisplayPoolReserveInfo;
@@ -44,7 +41,7 @@ type BorrowModalProps = {
   onSuccess?: () => void;
 };
 
-export const BorrowModal: React.FC<BorrowModalProps> = ({
+export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   visible,
   onCancel,
   reserve,
@@ -56,6 +53,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   const currentAccount = useCurrentAccount();
   const {
     formattedPoolReservesAndIncentives,
+    wrapperPoolReserve,
     iUserSummary: contextUserSummary,
   } = useLendingSummary();
   const { selectedMarketData, chainInfo, chainEnum } = useSelectedMarket();
@@ -63,68 +61,84 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
 
   const summary = userSummary ?? contextUserSummary;
 
-  const [amount, setAmount] = useState<string | undefined>(undefined);
+  const [_amount, setAmount] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [miniSignLoading, setMiniSignLoading] = useState(false);
-  const [borrowTx, setBorrowTx] = useState<Tx | null>(null);
+  const [withdrawTxs, setWithdrawTxs] = useState<Tx[]>([]);
   const [isChecked, setIsChecked] = useState(false);
+
+  const isNativeToken = useMemo(
+    () => isSameAddress(reserve.underlyingAsset, API_ETH_MOCK_ADDRESS),
+    [reserve.underlyingAsset]
+  );
 
   const targetPool = useMemo(() => {
     if (!formattedPoolReservesAndIncentives?.length) return undefined;
-    return formattedPoolReservesAndIncentives.find(
-      (item) => item.underlyingAsset === reserve.underlyingAsset
-    );
-  }, [formattedPoolReservesAndIncentives, reserve.underlyingAsset]);
-
-  const availableToBorrow = useMemo(() => {
-    const myAmount = new BigNumber(summary?.availableBorrowsUSD || '0')
-      .dividedBy(
-        new BigNumber(
-          reserve.reserve.formattedPriceInMarketReferenceCurrency || '0'
-        )
-      )
-      .multipliedBy(BORROW_SAFE_MARGIN);
-    const poolAmount = new BigNumber(reserve.reserve.borrowCap)
-      .minus(new BigNumber(reserve.reserve.totalDebt))
-      .multipliedBy(BORROW_SAFE_MARGIN);
-    const formattedPoolAmount = poolAmount.lt(0)
-      ? new BigNumber(0)
-      : poolAmount;
-    const miniAmount = myAmount.gte(formattedPoolAmount)
-      ? formattedPoolAmount
-      : myAmount;
-    const usdValue = miniAmount
-      .multipliedBy(
-        new BigNumber(
-          reserve.reserve.formattedPriceInMarketReferenceCurrency || '0'
-        )
-      )
-      .toString();
-    return {
-      isLteZero: miniAmount.lte(0),
-      amount: miniAmount.toString(),
-      usdValue,
-    };
+    return formattedPoolReservesAndIncentives.find((item) => {
+      return isSameAddress(reserve.underlyingAsset, API_ETH_MOCK_ADDRESS)
+        ? isSameAddress(
+            item.underlyingAsset,
+            wrapperToken?.[reserve.chain]?.address
+          )
+        : isSameAddress(item.underlyingAsset, reserve.underlyingAsset);
+    });
   }, [
-    summary?.availableBorrowsUSD,
-    reserve.reserve.borrowCap,
-    reserve.reserve.totalDebt,
-    reserve.reserve.formattedPriceInMarketReferenceCurrency,
+    formattedPoolReservesAndIncentives,
+    reserve.underlyingAsset,
+    isNativeToken,
+    chainEnum,
+    wrapperPoolReserve,
   ]);
+
+  const withdrawAmount = useMemo(() => {
+    if (!summary || !targetPool) {
+      return new BigNumber(reserve.underlyingBalance || '0').toString();
+    }
+    if (!summary.totalBorrowsUSD || summary.totalBorrowsUSD === '0') {
+      return reserve.underlyingBalance || '0';
+    }
+    const max = calculateMaxWithdrawAmount(
+      summary,
+      reserve,
+      targetPool,
+      MAX_CLICK_WITHDRAW_HF_THRESHOLD
+    );
+    return max.toString();
+  }, [summary, targetPool, reserve]);
+
+  const amount = useMemo(() => {
+    return _amount === '-1' ? withdrawAmount.toString() : _amount;
+  }, [_amount, withdrawAmount]);
 
   const afterHF = useMemo(() => {
     if (!amount || amount === '0' || !summary || !targetPool) return undefined;
-    const borrowAmountInUsd = new BigNumber(amount)
-      .multipliedBy(targetPool.formattedPriceInMarketReferenceCurrency)
-      .toString();
-    return calculateHealthFactorFromBalancesBigUnits({
-      collateralBalanceMarketReferenceCurrency: summary.totalCollateralUSD,
-      borrowBalanceMarketReferenceCurrency: valueToBigNumber(
-        summary.totalBorrowsUSD
-      ).plus(borrowAmountInUsd),
-      currentLiquidationThreshold: summary.currentLiquidationThreshold,
+    return calculateHFAfterWithdraw({
+      user: summary,
+      userReserve: reserve,
+      poolReserve: targetPool,
+      withdrawAmount: amount,
     }).toString();
-  }, [amount, targetPool, summary]);
+  }, [amount, targetPool, summary, reserve]);
+
+  const afterSupply = useMemo(() => {
+    if (!amount || amount === '0') return undefined;
+    const balance = new BigNumber(reserve.underlyingBalance || '0').minus(
+      new BigNumber(amount)
+    );
+    const balanceUSD = balance.multipliedBy(
+      new BigNumber(
+        reserve.reserve.formattedPriceInMarketReferenceCurrency || '0'
+      )
+    );
+    return {
+      balance: balance.toString(),
+      balanceUSD: balanceUSD.toString(),
+    };
+  }, [
+    amount,
+    reserve.reserve.formattedPriceInMarketReferenceCurrency,
+    reserve.underlyingBalance,
+  ]);
 
   const isRisky = useMemo(() => {
     if (!afterHF || Number(afterHF) < 0) {
@@ -133,22 +147,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     return Number(afterHF) < HF_RISK_CHECKBOX_THRESHOLD;
   }, [afterHF]);
 
-  const showBorrowToCapTip = useMemo(() => {
-    if (!reserve?.reserve?.totalDebt || !reserve?.reserve?.borrowCap) {
-      return false;
-    }
-    return new BigNumber(reserve.reserve.totalDebt).gte(
-      reserve.reserve.borrowCap
-    );
-  }, [reserve?.reserve?.totalDebt, reserve?.reserve?.borrowCap]);
-
-  const txsForMiniApproval = useMemo(() => {
-    const list: Tx[] = [];
-    if (borrowTx) {
-      list.push(borrowTx);
-    }
-    return list;
-  }, [borrowTx]);
+  const txsForMiniApproval = useMemo(() => withdrawTxs, [withdrawTxs]);
 
   const canShowDirectSubmit = useMemo(
     () =>
@@ -175,46 +174,45 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       !chainInfo ||
       !targetPool
     ) {
-      setBorrowTx(null);
+      setWithdrawTxs([]);
       setIsLoading(false);
       return;
     }
     try {
       setIsLoading(true);
-      if (!targetPool.variableDebtTokenAddress) {
+      if (!targetPool.aTokenAddress) {
         return;
       }
 
-      const borrowResult = await buildBorrowTx({
-        poolBundle: pools.poolBundle,
-        amount: parseUnits(amount, reserve.reserve.decimals).toString(),
+      const withdrawResult = await buildWithdrawTx({
+        pool: pools.pool,
+        amount: _amount === '-1' ? '-1' : amount,
         address: currentAccount.address,
-        reserve: reserve.underlyingAsset,
-        debtTokenAddress: targetPool.variableDebtTokenAddress,
+        reserve: targetPool.underlyingAsset,
+        aTokenAddress: targetPool.aTokenAddress,
         useOptimizedPath: optimizedPath(selectedMarketData.chainId),
       });
-      const result = borrowResult as {
-        to?: string;
-        data?: string;
-        value?: { toHexString?: () => string };
-        from?: string;
-        gasLimit?: number;
-      };
-      delete (result as Record<string, unknown>).gasLimit;
-      const formattedBorrowResult: Tx = {
-        ...result,
-        from: result.from || currentAccount.address,
-        value:
-          typeof result.value === 'object' && result.value?.toHexString
-            ? result.value.toHexString()
-            : (result.value as string) || '0x0',
-        chainId: chainInfo.id,
-      } as Tx;
-      setBorrowTx(formattedBorrowResult);
+
+      const txItems = Array.isArray(withdrawResult)
+        ? withdrawResult
+        : [withdrawResult];
+      const txs = await Promise.all(
+        txItems.map((item: { tx: () => Promise<Record<string, unknown>> }) =>
+          item.tx()
+        )
+      );
+      const formatTxs = txs.map((item) => {
+        delete item.gasLimit;
+        return {
+          ...item,
+          chainId: chainInfo.id,
+        };
+      });
+      setWithdrawTxs(formatTxs as Tx[]);
     } catch (error) {
       console.error('Build transactions error:', error);
       message.error(t('page.lending.submitted') || 'Something error');
-      setBorrowTx(null);
+      setWithdrawTxs([]);
     } finally {
       setIsLoading(false);
     }
@@ -224,39 +222,32 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     selectedMarketData,
     pools,
     chainInfo,
-    reserve.underlyingAsset,
     reserve.reserve.decimals,
     targetPool,
-    wallet,
+    reserve.underlyingAsset,
     t,
   ]);
 
   useEffect(() => {
     if (!currentAccount || !canShowDirectSubmit) {
-      prefetch({
-        txs: [],
-      });
+      prefetch({ txs: [] });
       return;
     }
-
     closeSign();
     if (!txsForMiniApproval.length) {
-      prefetch({
-        txs: [],
-      });
+      prefetch({ txs: [] });
       return;
     }
-
     prefetch({
       txs: txsForMiniApproval,
       ga: {
         category: 'Lending',
         source: 'Lending',
-        trigger: 'Borrow',
+        trigger: 'Withdraw',
       },
     }).catch((error) => {
       if (error !== MINI_SIGN_ERROR.PREFETCH_FAILURE) {
-        console.error('lending borrow prefetch error', error);
+        console.error('lending withdraw prefetch error', error);
       }
     });
   }, [
@@ -270,7 +261,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   useEffect(() => {
     if (!visible) {
       setAmount(undefined);
-      setBorrowTx(null);
+      setWithdrawTxs([]);
       setIsChecked(false);
     }
   }, [visible]);
@@ -279,19 +270,15 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     if (visible) buildTransactions();
   }, [visible, buildTransactions]);
 
-  const handleBorrow = useCallback(
+  const handleWithdraw = useCallback(
     async (forceFullSign?: boolean) => {
       if (
         !currentAccount ||
-        !borrowTx ||
+        !withdrawTxs.length ||
         !amount ||
         amount === '0' ||
         !chainInfo
       ) {
-        return;
-      }
-      if (!borrowTx) {
-        message.info(t('page.lending.submitted') || 'Please retry');
         return;
       }
 
@@ -300,17 +287,17 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
           setMiniSignLoading(true);
           try {
             const hashes = await openDirect({
-              txs: [borrowTx],
+              txs: withdrawTxs,
               ga: {
                 category: 'Lending',
                 source: 'Lending',
-                trigger: 'Borrow',
+                trigger: 'Withdraw',
               },
             });
             const hash = hashes[hashes.length - 1];
             if (hash) {
               message.success(
-                `${t('page.lending.borrowDetail.actions')} ${t(
+                `${t('page.lending.withdrawDetail.actions')} ${t(
                   'page.lending.submitted'
                 )}`
               );
@@ -325,7 +312,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
             ) {
               return;
             }
-            await handleBorrow(true);
+            await handleWithdraw(true);
             return;
           } finally {
             setMiniSignLoading(false);
@@ -334,19 +321,22 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         }
 
         setIsLoading(true);
-        await wallet.sendRequest({
-          method: 'eth_sendTransaction',
-          params: [borrowTx],
-          $ctx: {
-            ga: {
-              category: 'Lending',
-              source: 'Lending',
-              trigger: 'Borrow',
+        for (let i = 0; i < withdrawTxs.length; i++) {
+          const tx = withdrawTxs[i];
+          await wallet.sendRequest({
+            method: 'eth_sendTransaction',
+            params: [tx],
+            $ctx: {
+              ga: {
+                category: 'Lending',
+                source: 'Lending',
+                trigger: 'Withdraw',
+              },
             },
-          },
-        });
+          });
+        }
         message.success(
-          `${t('page.lending.borrowDetail.actions')} ${t(
+          `${t('page.lending.withdrawDetail.actions')} ${t(
             'page.lending.submitted'
           )}`
         );
@@ -354,14 +344,14 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         onCancel();
         onSuccess?.();
       } catch (error) {
-        console.error('Borrow error:', error);
+        console.error('Withdraw error:', error);
       } finally {
         setIsLoading(false);
       }
     },
     [
       currentAccount,
-      borrowTx,
+      withdrawTxs,
       amount,
       chainInfo,
       wallet,
@@ -379,10 +369,10 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       if (v === '' || INPUT_NUMBER_RE.test(v)) {
         const filtered = v === '' ? undefined : filterNumber(v);
         if (filtered) {
-          const maxAmount = new BigNumber(availableToBorrow.amount || '0');
+          const maxAmount = new BigNumber(withdrawAmount || '0');
           const inputAmount = new BigNumber(filtered);
           if (inputAmount.gt(maxAmount)) {
-            setAmount(availableToBorrow.amount || '0');
+            setAmount(withdrawAmount || '0');
           } else {
             setAmount(filtered);
           }
@@ -391,15 +381,14 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         }
       }
     },
-    [availableToBorrow.amount]
+    [withdrawAmount]
   );
 
-  const emptyAmount =
-    !availableToBorrow.amount || availableToBorrow.amount === '0';
+  const emptyAmount = !withdrawAmount || withdrawAmount === '0';
   const canSubmit =
     amount &&
     amount !== '0' &&
-    borrowTx &&
+    withdrawTxs.length > 0 &&
     currentAccount &&
     !isLoading &&
     (!isRisky || isChecked);
@@ -409,10 +398,8 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   return (
     <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
       <h2 className="text-[20px] leading-[24px] font-bold text-center text-r-neutral-title-1">
-        {t('page.lending.borrowDetail.actions')} {reserve.reserve.symbol}
+        {t('page.lending.withdrawDetail.actions')} {reserve.reserve.symbol}
       </h2>
-
-      <BorrowErrorTip reserve={reserve} className="mt-16" />
 
       <div className="mt-16">
         <div className="flex items-center justify-between mb-8">
@@ -434,7 +421,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
                 className="w-16 h-16 text-r-neutral-foot"
               />
               <span className="text-[13px] leading-[16px] text-r-neutral-foot">
-                {formatTokenAmount(availableToBorrow.amount || '0')}
+                {formatTokenAmount(withdrawAmount || '0')}
               </span>
               <button
                 type="button"
@@ -444,7 +431,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
                   text-rb-brand-default font-medium text-[11px] leading-[13px] 
                   hover:bg-rb-brand-light-2 disabled:opacity-50 disabled:cursor-not-allowed
                   `}
-                onClick={() => setAmount(availableToBorrow.amount || '0')}
+                onClick={() => setAmount(withdrawAmount || '0')}
                 disabled={emptyAmount}
               >
                 MAX
@@ -480,10 +467,12 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       </div>
 
       {summary && (
-        <BorrowOverView
+        <WithdrawOverView
           reserve={reserve}
           userSummary={summary}
           afterHF={afterHF}
+          amount={amount}
+          afterSupply={afterSupply}
         />
       )}
 
@@ -500,8 +489,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         </div>
       ) : null}
 
-      {showBorrowToCapTip && <BorrowToCapTip className="mt-16" />}
-
       {isRisky && (
         <div className="mt-16 flex flex-col gap-12">
           <div className="flex items-center gap-8 py-8 px-10 rounded-[8px] bg-rb-red-light-1">
@@ -510,7 +497,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
               className="w-15 h-15 text-rb-red-default flex-shrink-0"
             />
             <span className="text-[14px] leading-[18px] font-medium text-rb-red-default flex-1">
-              {t('page.lending.risk.warning')}
+              {t('page.lending.risk.withdrawWarning')}
             </span>
           </div>
           <div className="flex items-center justify-center gap-8">
@@ -530,12 +517,13 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
           className="mt-6"
           title={
             <>
-              {t('page.lending.borrowDetail.actions')} {reserve.reserve.symbol}
+              {t('page.lending.withdrawDetail.actions')}{' '}
+              {reserve.reserve.symbol}
             </>
           }
           disabled={!canSubmit}
           loading={miniSignLoading}
-          onConfirm={() => handleBorrow()}
+          onConfirm={() => handleWithdraw()}
           accountType={currentAccount.type}
         />
       ) : (
@@ -546,9 +534,9 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
           className="mt-6 h-[48px] rounded-[8px] font-medium text-[16px]"
           loading={isLoading}
           disabled={!canSubmit}
-          onClick={() => handleBorrow()}
+          onClick={() => handleWithdraw()}
         >
-          {t('page.lending.borrowDetail.actions')} {reserve.reserve.symbol}
+          {t('page.lending.withdrawDetail.actions')} {reserve.reserve.symbol}
         </Button>
       )}
     </div>

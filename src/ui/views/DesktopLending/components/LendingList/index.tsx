@@ -26,6 +26,7 @@ import { DisplayPoolReserveInfo } from '../../types';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
 import { SupplyModal } from '../SupplyModal';
 import { BorrowModal } from '../BorrowModal';
+import { WithdrawModal } from '../WithdrawModal';
 
 export type LendingModalType =
   | 'supply'
@@ -294,11 +295,15 @@ export const LendingList: React.FC = () => {
         visible={activeModal === 'withdraw'}
         onCancel={closeModal}
       >
-        <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
-          <p className="text-[16px] text-r-neutral-title-1">
-            {t('page.lending.actions.withdraw')}
-          </p>
-        </div>
+        {selectedItem && (
+          <WithdrawModal
+            visible={activeModal === 'withdraw'}
+            onCancel={closeModal}
+            reserve={selectedItem}
+            userSummary={iUserSummary}
+            onSuccess={() => fetchData()}
+          />
+        )}
       </Modal>
       <Modal
         {...modalCommonProps}
