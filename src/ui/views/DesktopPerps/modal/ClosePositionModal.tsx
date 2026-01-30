@@ -362,13 +362,17 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                   </div>
                   {validation.isValid ? (
                     <div
-                      className={clsx('font-medium text-[12px] leading-[14px]')}
+                      className={clsx(
+                        'font-medium text-r-neutral-title-1 text-[12px] leading-[14px]'
+                      )}
                     >
                       {formatUsdValue(receiveAmount.toNumber())}
                     </div>
                   ) : (
                     <div
-                      className={clsx('font-medium text-[12px] leading-[14px]')}
+                      className={clsx(
+                        'font-medium text-r-neutral-title-1  text-[12px] leading-[14px]'
+                      )}
                     >
                       -
                     </div>
@@ -393,7 +397,9 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                   </div>
                 ) : (
                   <div
-                    className={clsx('font-medium text-[12px] leading-[14px]')}
+                    className={clsx(
+                      'font-medium text-r-neutral-title-1 text-[12px] leading-[14px]'
+                    )}
                   >
                     -
                   </div>

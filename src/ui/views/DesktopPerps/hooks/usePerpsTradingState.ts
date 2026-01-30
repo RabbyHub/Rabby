@@ -252,8 +252,15 @@ export const usePerpsTradingState = () => {
   );
 
   const tpslConfigHasError = useMemo(() => {
-    return Boolean(tpslConfig.takeProfit.error || tpslConfig.stopLoss.error);
-  }, [tpslConfig.takeProfit.error, tpslConfig.stopLoss.error]);
+    return (
+      tpslConfig.enabled &&
+      Boolean(tpslConfig.takeProfit.error || tpslConfig.stopLoss.error)
+    );
+  }, [
+    tpslConfig.enabled,
+    tpslConfig.takeProfit.error,
+    tpslConfig.stopLoss.error,
+  ]);
 
   return {
     leverageType,

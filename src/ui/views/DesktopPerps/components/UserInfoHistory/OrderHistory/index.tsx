@@ -214,7 +214,7 @@ export const OrderHistory: React.FC = () => {
         ),
         key: 'reduceOnly',
         dataIndex: 'reduceOnly',
-        // width: 100,
+        width: 60,
         render: (_, record) => {
           return (
             <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
