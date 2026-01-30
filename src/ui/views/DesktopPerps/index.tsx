@@ -39,7 +39,9 @@ const Wrap = styled.div`
 
 export type PopupType = DepositWithdrawModalType | 'add-address' | null;
 
-export const DesktopPerps: React.FC = () => {
+export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
+  isActive = true,
+}) => {
   usePerpsProInit();
 
   const history = useHistory();
@@ -63,6 +65,9 @@ export const DesktopPerps: React.FC = () => {
 
   // Initialize coin from URL on mount or when URL coin changes
   useEffect(() => {
+    if (!isActive) {
+      return;
+    }
     if (coin && coin.toUpperCase() !== selectedCoin.toUpperCase()) {
       isUpdatingFromUrl.current = true;
       dispatch.perps.setSelectedCoin(coin.toUpperCase());
@@ -71,10 +76,14 @@ export const DesktopPerps: React.FC = () => {
         isUpdatingFromUrl.current = false;
       }, 0);
     }
-  }, [coin, dispatch]); // Run when URL coin param changes
+  }, [coin, dispatch, isActive]); // Run when URL coin param changes
 
   // Update URL when selectedCoin changes (but not from URL change)
   useEffect(() => {
+    if (!isActive) {
+      return;
+    }
+
     if (
       !isUpdatingFromUrl.current &&
       selectedCoin &&
@@ -87,7 +96,7 @@ export const DesktopPerps: React.FC = () => {
         search: searchParams.toString(),
       });
     }
-  }, [selectedCoin, coin, history, location]);
+  }, [selectedCoin, coin, history, location, isActive]);
 
   return (
     <>
