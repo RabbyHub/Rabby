@@ -357,7 +357,8 @@ const AccountItem: React.FC<{
             </div>
             {scene === 'perps' ? (
               <>
-                {Number(clearinghouseState?.withdrawable) > 0 ? (
+                {clearinghouseState?.assetPositions?.length ||
+                Number(clearinghouseState?.withdrawable) > 0 ? (
                   <div
                     className={clsx(
                       'ml-[10px] truncate flex-1 block text-right',
@@ -366,7 +367,9 @@ const AccountItem: React.FC<{
                         : 'text-[14px] leading-[19px] font-medium text-rb-neutral-body'
                     )}
                   >
-                    {formatUsdValue(Number(clearinghouseState?.withdrawable))}
+                    {formatUsdValue(
+                      Number(clearinghouseState?.withdrawable || 0)
+                    )}
                   </div>
                 ) : null}
               </>
