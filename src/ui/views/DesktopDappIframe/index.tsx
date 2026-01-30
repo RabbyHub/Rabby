@@ -330,12 +330,7 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
             />
             <DesktopAccountSelector
               value={currentSceneAccount}
-              onChange={(account) =>
-                switchCurrentSceneAccount({
-                  account,
-                  origin: iframeOrigin,
-                })
-              }
+              onChange={switchCurrentSceneAccount}
               scene="prediction"
             />
           </div>

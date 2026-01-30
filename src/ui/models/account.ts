@@ -17,6 +17,7 @@ import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
 import { coerceFloat, sleep } from '../utils';
 import { isTestnet as checkIsTestnet } from '@/utils/chain';
 import { requestOpenApiMultipleNets } from '../utils/openapi';
+import { AccountScene } from '@/constant/scene-account';
 
 interface TotalBalanceWithEvmUsdValue extends TotalBalanceResponse {
   evmUsdValue?: number;
@@ -62,7 +63,7 @@ export interface AccountState {
 
   approvalStatus: Record<string, ApprovalStatus[]>;
 
-  sceneAccountMap: Record<string, Account | null>;
+  sceneAccountMap: Partial<Record<AccountScene, Account | null>>;
 }
 
 /**
@@ -284,7 +285,7 @@ export const account = createModel<RootModel>()({
     },
 
     async switchSceneAccount(
-      payload: { scene: string; account: Account; origin?: string },
+      payload: { scene: AccountScene; account: Account },
       store
     ) {
       await store.app.wallet.switchSceneAccount(payload);
