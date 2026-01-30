@@ -397,14 +397,6 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
             </div>
           </div>
         </div>
-
-        <AddAddressModal
-          visible={isActive && action === 'add-address'}
-          onCancel={() => {
-            history.replace(history.location.pathname);
-          }}
-          destroyOnClose
-        />
       </DesktopPageWrap>
     </>
   );
