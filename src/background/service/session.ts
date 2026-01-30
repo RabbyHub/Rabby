@@ -114,8 +114,6 @@ const broadcastEvent = (
     sessions = sessions.filter((session) => session.data.origin === origin);
   }
 
-  console.log('broadcastEvent', ev, data, origin, sessions, isFromDesktopDapp);
-
   sessions.forEach((session) => {
     try {
       session.data.pushMessage?.(ev, data);

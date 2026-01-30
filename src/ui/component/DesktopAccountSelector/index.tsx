@@ -234,7 +234,7 @@ const useAccountList = (options?: { scene?: Scene }) => {
 
 const AccountList: React.FC<{
   scene?: Scene;
-  onSelectAccount?(account: IDisplayedAccountWithBalance): void;
+  onSelectAccount?(account: Account): void;
   selectedAccount?: Account | null;
 }> = ({ onSelectAccount, selectedAccount, scene }) => {
   const { accounts, clearinghouseStateMap } = useAccountList({
