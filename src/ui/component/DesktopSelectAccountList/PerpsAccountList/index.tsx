@@ -41,6 +41,10 @@ import { PopupType } from '@/ui/views/DesktopPerps';
 // 10 minutes
 const CLEARINGHOUSE_STATE_EXPIRE_TIME = 1000 * 60 * 10;
 
+/**
+ *
+ * @deprecated todo remove this code
+ */
 export const DesktopPerpsSelectAccountList: React.FC<{
   handleSetPopupType: (type: PopupType) => void;
 }> = ({ handleSetPopupType }) => {

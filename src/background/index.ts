@@ -461,6 +461,7 @@ browser.runtime.onConnect.addListener((port) => {
         origin,
         name: tabInfo.title || '',
         icon: tabInfo.favIconUrl || '',
+        isFromDesktopDapp: req.isFromDesktopDapp,
       });
     }
     // for background push to respective page
