@@ -3533,7 +3533,20 @@
         "no": "No",
         "terminate": "Terminar",
         "active": "Activo",
-        "fillHistory": "Historial de ejecuciones"
+        "fillHistory": "Historial de ejecuciones",
+        "status": {
+          "rejected": "Rechazado",
+          "triggered": "Activado",
+          "canceled": "Cancelado",
+          "open": "Abierto",
+          "filled": "Lleno",
+          "perpMarginRejected": "Margen de Perp Rechazada",
+          "partiallyFilled": "Parcialmente Lleno",
+          "badAloPxRejected": "Rechazado debido a mal ALO PX",
+          "iocCancelRejected": "Rechazado debido a cancelación de IOC",
+          "minTradeNtlRejected": "Rechazado debido a min trade NTL",
+          "reduceOnlyCanceled": "Cancelado debido a reducción solamente"
+        }
       },
       "statusBar": {
         "online": "En línea",
@@ -3669,7 +3682,8 @@
         "available": "Disponible",
         "deposit": "Depósito",
         "positionCount": "{{count}} posiciones",
-        "pending": "Pendiente"
+        "pending": "Pendiente",
+        "onePosition": "1 posición"
       },
       "orderBook": {
         "total": "Total",

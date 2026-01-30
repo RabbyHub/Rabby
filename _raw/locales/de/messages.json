@@ -3533,7 +3533,20 @@
         "history": "Verlauf",
         "fillHistory": "Ausführungsverlauf",
         "randomized": "(randomisiert)",
-        "terminate": "Beenden"
+        "terminate": "Beenden",
+        "status": {
+          "open": "Öffnen",
+          "rejected": "Abgelehnt",
+          "triggered": "Ausgelöst",
+          "partiallyFilled": "Teilweise Ausgefüllt",
+          "canceled": "Storniert",
+          "iocCancelRejected": "Abgelehnt aufgrund der IOC-Stornierung",
+          "filled": "Ausgefüllt",
+          "badAloPxRejected": "Abgelehnt aufgrund eines schlechten ALO PX",
+          "perpMarginRejected": "Abgelehntes Perp Margin Abgelehnt",
+          "minTradeNtlRejected": "Abgelehnt aufgrund des minimalen Handels NTL",
+          "reduceOnlyCanceled": "Wegen Reduzierung nur storniert"
+        }
       },
       "statusBar": {
         "offline": "Offline",
@@ -3669,7 +3682,8 @@
         "available": "Verfügbar",
         "pending": "Ausstehend",
         "deposit": "Einzahlen",
-        "positionCount": "{{count}} Positionen"
+        "positionCount": "{{count}} Positionen",
+        "onePosition": "1 Position"
       },
       "orderBook": {
         "price": "Preis",

@@ -3535,7 +3535,20 @@
         "randomized": "(рандомизировано)",
         "active": "Активен",
         "fillHistory": "История исполнений",
-        "terminate": "Завершить"
+        "terminate": "Завершить",
+        "status": {
+          "rejected": "Отклонено",
+          "open": "Открыть",
+          "triggered": "Срабатывало",
+          "filled": "Заполнено",
+          "partiallyFilled": "Частично заполнено",
+          "canceled": "Отменено",
+          "iocCancelRejected": "Отклонено из-за отмены IOC",
+          "badAloPxRejected": "Отклонено из-за плохого ALO PX",
+          "minTradeNtlRejected": "Отклонено из-за минимальной сделки NTL",
+          "reduceOnlyCanceled": "Отменено из-за только сокращения",
+          "perpMarginRejected": "Отклонено маржинальное обеспечение перпетуаций"
+        }
       },
       "statusBar": {
         "sound": "Включить звук",
@@ -3671,7 +3684,8 @@
         "pending": "Ожидание",
         "available": "Доступно",
         "deposit": "Пополнить",
-        "positionCount": "{count, plural, one {# позиция} few {# позиции} many {# позиций} other {# позиций}}"
+        "positionCount": "{count, plural, one {# позиция} few {# позиции} many {# позиций} other {# позиций}}",
+        "onePosition": "1 позиция"
       },
       "orderBook": {
         "noTrades": "Нет сделок",

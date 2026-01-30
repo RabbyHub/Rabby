@@ -3533,7 +3533,20 @@
         "history": "履歴",
         "randomized": "(ランダム化済み)",
         "terminate": "終了",
-        "active": "アクティブ"
+        "active": "アクティブ",
+        "status": {
+          "canceled": "キャンセルされた",
+          "triggered": "トリガーされた",
+          "rejected": "拒否されました",
+          "partiallyFilled": "部分約定",
+          "filled": "約定済み",
+          "reduceOnlyCanceled": "減少のみのためキャンセルされました",
+          "open": "オープン",
+          "badAloPxRejected": "不正な ALO PX のため拒否されました",
+          "minTradeNtlRejected": "最小取引NTLのため拒否されました",
+          "perpMarginRejected": "拒否されたパーペッツマージン",
+          "iocCancelRejected": "IOCキャンセルのため拒否されました"
+        }
       },
       "statusBar": {
         "online": "オンライン",
@@ -3669,7 +3682,8 @@
         "available": "利用可能",
         "pending": "保留中",
         "deposit": "入金",
-        "positionCount": "{{count}} ポジション"
+        "positionCount": "{{count}} ポジション",
+        "onePosition": "1 ポジション"
       },
       "orderBook": {
         "total": "合計",

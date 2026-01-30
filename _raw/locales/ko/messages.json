@@ -3530,7 +3530,20 @@
         "yes": "네",
         "randomized": "(랜덤화된)",
         "terminate": "종료",
-        "no": "아니요"
+        "no": "아니요",
+        "status": {
+          "rejected": "거부됨",
+          "canceled": "취소됨",
+          "perpMarginRejected": "거부된 Perp 마진 거부",
+          "filled": "체결됨",
+          "badAloPxRejected": "잘못된 ALO PX로 인해 거부되었습니다.",
+          "iocCancelRejected": "IOC 취소로 인한 거부",
+          "open": "열기",
+          "partiallyFilled": "부분 체결",
+          "triggered": "트리거됨",
+          "reduceOnlyCanceled": "단순 축소로 인해 취소됨",
+          "minTradeNtlRejected": "최소 거래 NTL로 인해 거부되었습니다."
+        }
       },
       "statusBar": {
         "online": "온라인",
@@ -3666,7 +3679,8 @@
         "positionCount": "{{count}} 포지션",
         "deposit": "입금",
         "pending": "대기 중",
-        "available": "이용 가능"
+        "available": "이용 가능",
+        "onePosition": "1 포지션"
       },
       "orderBook": {
         "total": "합계",
