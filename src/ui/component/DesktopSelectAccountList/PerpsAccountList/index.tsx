@@ -329,55 +329,16 @@ const PerpsAccountItem: React.FC<{
             >
               {item.alianName}
             </div>
-            {/* <div
-              className={isPined ? '' : 'opacity-0 group-hover:opacity-100'}
-              onClick={(e) => {
-                e.stopPropagation();
-                dispatch.addressManagement.toggleHighlightedAddressAsync({
-                  address: item.address,
-                  brandName: item.brandName,
-                });
-              }}
+            <div
+              className={clsx(
+                'ml-[10px] truncate flex-1 block text-right',
+                isSelected
+                  ? 'text-[14px] font-bold text-rb-neutral-title-1'
+                  : 'text-[14px] font-medium text-rb-neutral-body'
+              )}
             >
-              <ThemeIcon
-                className="w-[16px] h-[16px]"
-                src={isPined ? RcIconPinnedFill : RcIconPinned}
-              />
-            </div> */}
-
-            {/* <div
-              className="ml-auto opacity-0 group-hover:opacity-100 text-r-neutral-body cursor-pointer"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                history.replace(
-                  `${history.location.pathname}?${obj2query({
-                    action: 'address-detail',
-                    address: item.address,
-                    type: item.type,
-                    brandName: item.brandName,
-                    //@ts-expect-error byImport is boolean
-                    byImport: item.byImport || '',
-                  })}`
-                );
-              }}
-            >
-              <RcIconMoreCC />
-            </div> */}
-
-            {Number(clearinghouseState?.withdrawable) > 0 ? (
-              <div
-                className={clsx(
-                  'ml-[10px] truncate flex-1 block text-right',
-                  isSelected
-                    ? 'text-[14px] font-bold text-rb-neutral-title-1'
-                    : 'text-[14px] font-medium text-rb-neutral-body'
-                )}
-              >
-                {formatUsdValue(Number(clearinghouseState?.withdrawable))}
-              </div>
-            ) : null}
+              {formatUsdValue(Number(clearinghouseState?.withdrawable))}
+            </div>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -412,9 +373,11 @@ const PerpsAccountItem: React.FC<{
                     : 'text-[12px] text-rb-neutral-foot'
                 )}
               >
-                {t('page.perpsPro.accountActions.positionCount', {
-                  count: Number(clearinghouseState?.assetPositions?.length),
-                })}
+                {Number(clearinghouseState?.assetPositions?.length) === 1
+                  ? t('page.perpsPro.accountActions.onePosition')
+                  : t('page.perpsPro.accountActions.positionCount', {
+                      count: Number(clearinghouseState?.assetPositions?.length),
+                    })}
               </div>
             ) : null}
           </div>

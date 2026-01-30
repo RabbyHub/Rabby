@@ -27,6 +27,7 @@ import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
 import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
 import { TopPermissionTips } from './components/TopPermissionTips';
+import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import usePerpsProState from './hooks/usePerpsProState';
 
@@ -112,6 +113,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
           <div className="flex flex-col flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <DesktopNav showRightItems={false} />
+
               <div className="flex items-center gap-[16px]">
                 <DesktopAccountSelector
                   scene="perps"
@@ -119,6 +121,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                   onChange={switchPerpsAccount}
                 />
                 <AccountActions handleSetPopupType={handleSetPopupType} />
+                <SwitchThemeBtn />
               </div>
             </div>
             <TopPermissionTips />
@@ -137,7 +140,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                 </div>
               </div>
 
-              <div className="flex flex-1 min-h-[300px] max-h-[max(300px,calc(100vh-860px))]">
+              <div className="flex flex-1 min-h-[280px] max-h-[max(280px,calc(100vh-820px))]">
                 <div className="flex-[4] min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
                   <UserInfoHistory />
                 </div>
@@ -151,6 +154,13 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
 
         <StatusBar />
       </Wrap>
+      {/* <AddAddressModal
+        visible={action === 'add-address'}
+        onCancel={() => {
+          setPopupType(null);
+        }}
+        destroyOnClose
+      /> */}
 
       <DepositWithdrawModal
         visible={popupType === 'deposit' || popupType === 'withdraw'}

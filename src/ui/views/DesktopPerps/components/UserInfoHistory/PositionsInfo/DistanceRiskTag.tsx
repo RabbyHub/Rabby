@@ -20,9 +20,9 @@ export const DistanceRiskTag = ({
           : t('page.perpsPro.userInfo.distanceRiskTag.goingUp', { percent })
       }
     >
-      <div className="flex items-center gap-[2px] border border-rb-neutral-line rounded-[4px] px-[4px]">
+      <div className="flex items-center justify-center gap-[2px] border border-rb-neutral-line rounded-[4px] h-[18px] px-[4px]">
         <RcIconAlarmCC className="text-rb-neutral-info" />
-        <div className="text-rb-neutral-foot font-510 text-[12px] leading-[16px]">
+        <div className="text-rb-neutral-foot font-510 text-[11px] leading-[14px]">
           {percent}
         </div>
       </div>

@@ -8,7 +8,7 @@ export const calcAssetAmountByNotional = (
 ) => {
   const amount = new BigNumber(notional)
     .div(new BigNumber(markPrice))
-    .toFixed(szDecimals);
+    .toFixed(szDecimals, BigNumber.ROUND_DOWN);
   return amount;
 };
 

@@ -5753,6 +5753,7 @@ export class WalletController extends BaseController {
   setMarketSlippage = perpsService.setMarketSlippage;
   getSoundEnabled = perpsService.getSoundEnabled;
   setSoundEnabled = perpsService.setSoundEnabled;
+  getPerpsIsNeedSetDarkTheme = perpsService.getIsNeedSetDarkTheme;
   updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
   setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;
   getSendApproveAfterDeposit = async (masterAddress: string) => {

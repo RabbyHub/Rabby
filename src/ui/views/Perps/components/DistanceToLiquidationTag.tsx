@@ -42,7 +42,7 @@ export const DistanceToLiquidationTag: React.FC<DistanceToLiquidationTagProps> =
       }}
     >
       <IconAlarmCC />
-      <span className={clsx('text-12 font-medium')}>
+      <span className={clsx('text-[11px] font-medium')}>
         {formatPct(distanceLiquidation)}
       </span>
       <IconArrowCC className={clsx('w-8 h-6')} />

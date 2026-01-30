@@ -160,19 +160,14 @@ const MarketRowComponent = memo(
             {/* 24h Change - 1.5x width */}
             <div
               className={clsx(
-                'text-[13px] text-r-neutral-title-1 text-start flex-[1.5]'
+                'text-[13px] text-start flex-[1.5]',
+                isPositive ? 'text-r-green-default' : 'text-r-red-default'
               )}
             >
               {isPositive ? '+' : '-'}$
-              {splitNumberByStep(Math.abs(priceChangeVal))}{' '}
-              <span
-                className={clsx(
-                  isPositive ? 'text-r-green-default' : 'text-r-red-default'
-                )}
-              >
-                {isPositive ? '+' : ''}
-                {priceChange.toFixed(2)}%
-              </span>
+              {splitNumberByStep(Math.abs(priceChangeVal))} /{' '}
+              {isPositive ? '+' : ''}
+              {priceChange.toFixed(2)}%
             </div>
 
             {/* 8hr Funding */}
@@ -239,6 +234,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   const [sortField, setSortField] = useState<SortField>('dayNtlVlm');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<Input | null>(null);
   const listRef = useRef<FixedSizeList>(null);
   const { marketData, favoritedCoins, marketDataMap } = useRabbySelector(
     (state) => state.perps
@@ -253,6 +249,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
       // Reset virtual list scroll position
       setTimeout(() => {
         listRef.current?.scrollTo(0);
+        searchInputRef.current?.focus();
       }, 0);
     }
   }, [dropdownVisible]);
@@ -381,6 +378,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
           prefix={<RcIconSearch className="text-r-neutral-foot" />}
           placeholder={t('page.perpsPro.chatArea.searchMarkets')}
           value={searchText}
+          ref={searchInputRef}
           spellCheck={false}
           onChange={(e) => setSearchText(e.target.value)}
           allowClear
