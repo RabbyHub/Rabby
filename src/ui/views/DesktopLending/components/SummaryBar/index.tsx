@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue } from '@/ui/utils';
@@ -11,6 +11,7 @@ import { HF_COLOR_GOOD_THRESHOLD } from '../../utils/constant';
 import { estDaily, formatApy } from '../../utils/format';
 import { getHealthFactorText } from '../../utils/health';
 import RightMarketTabInfo from './RightTag';
+import { HFDescription } from '../HFDescription';
 
 const SummaryBarContainer = styled.div`
   /*  */
@@ -56,6 +57,9 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
   healthFactor,
 }) => {
   const { t } = useTranslation();
+  const [hfDescVisible, setHfDescVisible] = useState(false);
+  const openHfDesc = useCallback(() => setHfDescVisible(true), []);
+  const closeHfDesc = useCallback(() => setHfDescVisible(false), []);
 
   const healthStatus = useMemo(() => {
     const numHF = Number(healthFactor || '0');
@@ -118,6 +122,7 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
                 width={12}
                 height={12}
                 className="cursor-pointer text-rb-neutral-foot ml-[2px]"
+                onClick={openHfDesc}
               />
             </Tooltip>
             <InfoValue style={{ color: healthStatus.color }}>
@@ -131,6 +136,11 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
             >
               {healthStatus.label}
             </HealthyBadge>
+            <HFDescription
+              visible={hfDescVisible}
+              hf={healthFactor}
+              onClose={closeHfDesc}
+            />
           </div>
 
           <div className="flex items-center gap-[8px]">
