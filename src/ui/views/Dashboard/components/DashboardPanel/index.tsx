@@ -81,7 +81,7 @@ const GlobalStyle = createGlobalStyle`
 
     .dashboard-panel-footer {
       display: flex;
-      align-items: start;
+      align-items: end;
       justify-content: center;
       margin-top: 1px;
       background-color: var(--r-neutral-bg-2, #f2f4f7);
@@ -855,8 +855,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
               className={clsx(
                 'text-r-neutral-foot',
                 'flex items-center justify-center py-[10px] gap-[2px]',
-                // 'sticky bottom-0'
-                'relative z-10'
+                'sticky bottom-0'
               )}
             >
               <RcIconLampCC />
