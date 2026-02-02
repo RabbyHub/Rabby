@@ -689,43 +689,45 @@ const SettingsInner = ({
     }
   });
 
-  const handleToggleBiometricUnlock = useMemoizedFn(async (checked: boolean) => {
-    if (checked) {
-      if (!biometricSupported) {
-        message.error(
-          t(
-            'page.dashboard.settings.biometricUnlockUnsupported',
-            'This device does not support biometric unlock.'
-          )
-        );
+  const handleToggleBiometricUnlock = useMemoizedFn(
+    async (checked: boolean) => {
+      if (checked) {
+        if (!biometricSupported) {
+          message.error(
+            t(
+              'page.dashboard.settings.biometricUnlockUnsupported',
+              'This device does not support biometric unlock.'
+            )
+          );
+          return;
+        }
+        biometricForm.resetFields();
+        setIsShowBiometricModal(true);
         return;
       }
-      biometricForm.resetFields();
-      setIsShowBiometricModal(true);
-      return;
-    }
 
-    setBiometricBusy(true);
-    try {
-      await dispatch.preference.setBiometricUnlock({ enabled: false });
-      message.success(
-        t(
-          'page.dashboard.settings.biometricUnlockDisabled',
-          'Biometric unlock disabled.'
-        )
-      );
-    } catch (error) {
-      message.error(
-        (error as Error)?.message ||
+      setBiometricBusy(true);
+      try {
+        await dispatch.preference.setBiometricUnlock({ enabled: false });
+        message.success(
           t(
-            'page.dashboard.settings.biometricUnlockDisableFailed',
-            'Failed to disable biometric unlock.'
+            'page.dashboard.settings.biometricUnlockDisabled',
+            'Biometric unlock disabled.'
           )
-      );
-    } finally {
-      setBiometricBusy(false);
+        );
+      } catch (error) {
+        message.error(
+          (error as Error)?.message ||
+            t(
+              'page.dashboard.settings.biometricUnlockDisableFailed',
+              'Failed to disable biometric unlock.'
+            )
+        );
+      } finally {
+        setBiometricBusy(false);
+      }
     }
-  });
+  );
 
   const handleConfirmEnableBiometric = useMemoizedFn(async () => {
     try {
@@ -1027,7 +1029,8 @@ const SettingsInner = ({
             <Switch
               checked={!!biometricUnlockEnabled}
               disabled={
-                biometricBusy || (!biometricSupported && !biometricUnlockEnabled)
+                biometricBusy ||
+                (!biometricSupported && !biometricUnlockEnabled)
               }
               loading={biometricBusy}
               onChange={handleToggleBiometricUnlock}
