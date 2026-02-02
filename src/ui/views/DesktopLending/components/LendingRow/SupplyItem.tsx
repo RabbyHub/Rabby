@@ -39,12 +39,6 @@ export const SupplyItem: React.FC<{
   const handleCollateralChange = useCallback(() => {
     onToggleCollateral?.(data);
   }, [data, onToggleCollateral]);
-  const handleSupply = useCallback(() => {
-    onSupply?.(data);
-  }, [data, onSupply]);
-  const handleWithdraw = useCallback(() => {
-    onWithdraw?.(data);
-  }, [data, onWithdraw]);
 
   return (
     <TRow
@@ -97,7 +91,7 @@ export const SupplyItem: React.FC<{
       <TCell className="w-[360px] flex-shrink-0">
         <div className="flex items-center justify-end gap-[10px]">
           <button
-            onClick={handleSupply}
+            onClick={() => onSupply?.(data)}
             className={clsx(
               'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
               'bg-rb-neutral-bg-4 text-r-neutral-title-1',
@@ -107,7 +101,7 @@ export const SupplyItem: React.FC<{
             {t('page.lending.actions.supply')}
           </button>
           <button
-            onClick={handleWithdraw}
+            onClick={() => onWithdraw?.(data)}
             className={clsx(
               'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
               'bg-rb-brand-light-1 text-rb-brand-default',

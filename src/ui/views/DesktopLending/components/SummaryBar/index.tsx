@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue } from '@/ui/utils';
@@ -58,8 +58,6 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
 }) => {
   const { t } = useTranslation();
   const [hfDescVisible, setHfDescVisible] = useState(false);
-  const openHfDesc = useCallback(() => setHfDescVisible(true), []);
-  const closeHfDesc = useCallback(() => setHfDescVisible(false), []);
 
   const healthStatus = useMemo(() => {
     const numHF = Number(healthFactor || '0');
@@ -122,7 +120,7 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
                 width={12}
                 height={12}
                 className="cursor-pointer text-rb-neutral-foot ml-[2px]"
-                onClick={openHfDesc}
+                onClick={() => setHfDescVisible(true)}
               />
             </Tooltip>
             <InfoValue style={{ color: healthStatus.color }}>
@@ -139,7 +137,7 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
             <HFDescription
               visible={hfDescVisible}
               hf={healthFactor}
-              onClose={closeHfDesc}
+              onClose={() => setHfDescVisible(false)}
             />
           </div>
 

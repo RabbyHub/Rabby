@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
 import { useMode } from '../../hooks/useMode';
@@ -34,30 +34,10 @@ export const RightMarketTabInfo: React.FC = () => {
   const { isInIsolationMode, currentEmode, emodeEnabled, eModes } = useMode();
   const { fetchData } = useFetchLendingData();
 
-  const openEnableIntro = useCallback(() => setEnableIntroVisible(true), []);
-  const closeEnableIntro = useCallback(() => setEnableIntroVisible(false), []);
-
-  const openDisableOverview = useCallback(
-    () => setDisableOverviewVisible(true),
-    []
-  );
-  const closeDisableOverview = useCallback(
-    () => setDisableOverviewVisible(false),
-    []
-  );
-
-  const openFullModal = useCallback(() => {
-    setEnableIntroVisible(false);
-    setDisableOverviewVisible(false);
-    setFullModalVisible(true);
-  }, []);
-
-  const closeFullModal = useCallback(() => setFullModalVisible(false), []);
-
-  const handleEmodeSuccess = useCallback(() => {
-    closeFullModal();
+  const handleEmodeSuccess = () => {
+    setFullModalVisible(false);
     fetchData();
-  }, [closeFullModal, fetchData]);
+  };
 
   // 隔离模式：只展示一个全局 Isolated 标签
   if (isInIsolationMode) {
@@ -75,7 +55,7 @@ export const RightMarketTabInfo: React.FC = () => {
         <EthCorrelatedTagWrapper>
           <EthCorrelatedTag
             role="button"
-            onClick={openDisableOverview}
+            onClick={() => setDisableOverviewVisible(true)}
             className="cursor-pointer"
           >
             <span className="text-[12px] leading-[14px] font-medium text-[#9AE8FF]">
@@ -100,12 +80,16 @@ export const RightMarketTabInfo: React.FC = () => {
         </EthCorrelatedTagWrapper>
         <DisableEmodeModal
           visible={disableOverviewVisible}
-          onCancel={closeDisableOverview}
-          onDisableEmode={openFullModal}
+          onCancel={() => setDisableOverviewVisible(false)}
+          onDisableEmode={() => {
+            setEnableIntroVisible(false);
+            setDisableOverviewVisible(false);
+            setFullModalVisible(true);
+          }}
         />
         <ManageEmodeFullModal
           visible={fullModalVisible}
-          onCancel={closeFullModal}
+          onCancel={() => setFullModalVisible(false)}
           onSuccess={handleEmodeSuccess}
         />
       </>
@@ -126,7 +110,7 @@ export const RightMarketTabInfo: React.FC = () => {
     <>
       <button
         type="button"
-        onClick={openEnableIntro}
+        onClick={() => setEnableIntroVisible(true)}
         className="flex items-center gap-[6px] bg-transparent border-0 p-0 cursor-pointer"
       >
         <span className="text-[12px] leading-[16px] text-rb-neutral-foot hover:text-r-neutral-title-1">
@@ -135,12 +119,16 @@ export const RightMarketTabInfo: React.FC = () => {
       </button>
       <ManageEmodeModal
         visible={enableIntroVisible}
-        onCancel={closeEnableIntro}
-        onManageEmode={openFullModal}
+        onCancel={() => setEnableIntroVisible(false)}
+        onManageEmode={() => {
+          setEnableIntroVisible(false);
+          setDisableOverviewVisible(false);
+          setFullModalVisible(true);
+        }}
       />
       <ManageEmodeFullModal
         visible={fullModalVisible}
-        onCancel={closeFullModal}
+        onCancel={() => setFullModalVisible(false)}
         onSuccess={handleEmodeSuccess}
       />
     </>

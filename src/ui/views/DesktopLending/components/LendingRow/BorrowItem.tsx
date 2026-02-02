@@ -24,14 +24,6 @@ export const BorrowItem: React.FC<{
     return formatUsdValue(Number(data.totalBorrowsUSD), BigNumber.ROUND_DOWN);
   }, [data.totalBorrowsUSD]);
 
-  const handleBorrow = useCallback(() => {
-    onBorrow?.(data);
-  }, [data, onBorrow]);
-
-  const handleRepay = useCallback(() => {
-    onRepay?.(data);
-  }, [data, onRepay]);
-
   return (
     <TRow
       className={clsx('px-[16px] py-[12px] bg-rb-neutral-bg-3 rounded-[12px]')}
@@ -78,7 +70,7 @@ export const BorrowItem: React.FC<{
       <TCell className="w-[360px] flex-shrink-0">
         <div className="flex items-center justify-end gap-[10px]">
           <button
-            onClick={handleBorrow}
+            onClick={() => onBorrow?.(data)}
             className={clsx(
               'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
               'bg-rb-neutral-bg-4 text-r-neutral-title-1',
@@ -88,7 +80,7 @@ export const BorrowItem: React.FC<{
             {t('page.lending.actions.borrow')}
           </button>
           <button
-            onClick={handleRepay}
+            onClick={() => onRepay?.(data)}
             className={clsx(
               'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
               'bg-rb-neutral-bg-4 text-r-neutral-title-1',
