@@ -5,6 +5,7 @@ import { Modal } from 'antd';
 import { LendingRow } from '../LendingRow';
 import { MarketSelector } from '../MarketSelector';
 import { DesktopPending } from '@/ui/views/DesktopProfile/components/DesktopPending';
+import { useHistory, useLocation } from 'react-router-dom';
 import {
   TBody,
   THeadCell,
@@ -70,6 +71,8 @@ export const LendingList: React.FC = () => {
   const { displayPoolReserves, iUserSummary } = useLendingSummary();
   const { chainEnum, marketKey, setMarketKey } = useSelectedMarket();
   const { fetchData } = useFetchLendingData();
+  const history = useHistory();
+  const location = useLocation();
 
   const [activeModal, setActiveModal] = useState<LendingModalType>(null);
   const [
@@ -193,10 +196,27 @@ export const LendingList: React.FC = () => {
     return myAssetList;
   }, [myAssetList]);
 
+  const handleMarketChange = useCallback(
+    (value: typeof marketKey) => {
+      setMarketKey(value);
+      const searchParams = new URLSearchParams(location.search);
+      if (value) {
+        searchParams.set('marketKey', value);
+      } else {
+        searchParams.delete('marketKey');
+      }
+      history.replace({
+        pathname: location.pathname,
+        search: searchParams.toString(),
+      });
+    },
+    [history, location.pathname, location.search, setMarketKey]
+  );
+
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex items-center justify-between px-[16px] py-[12px]">
-        <MarketSelector value={marketKey} onChange={setMarketKey} />
+        <MarketSelector value={marketKey} onChange={handleMarketChange} />
         <div className="flex items-center gap-[8px]">
           <DesktopPending className="min-w-[160px] h-[44px] rounded-[12px] text-[15px]" />
           <button

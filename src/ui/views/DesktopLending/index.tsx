@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import styled from 'styled-components';
 import { useRabbyDispatch } from '@/ui/store';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
@@ -16,6 +16,8 @@ import {
 import './index.less';
 import { useHistory, useLocation } from 'react-router-dom';
 import { SignatureRecordModal } from '../DesktopProfile/components/SignatureRecordModal';
+import { useLendingService } from './hooks/useLendingService';
+import { CustomMarket } from './config/market';
 
 const Wrap = styled.div`
   width: 100%;
@@ -75,6 +77,25 @@ const DesktopLendingContent: React.FC = () => {
   );
 };
 
+const DesktopLendingWithRoute: React.FC = () => {
+  const { setLastSelectedChain } = useLendingService();
+  const location = useLocation();
+
+  const syncMarketFromQuery = useCallback(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const marketKey = searchParams.get('marketKey') as CustomMarket | null;
+    if (marketKey) {
+      setLastSelectedChain(marketKey);
+    }
+  }, [location.search, setLastSelectedChain]);
+
+  useEffect(() => {
+    syncMarketFromQuery();
+  }, [syncMarketFromQuery]);
+
+  return <DesktopLendingContent />;
+};
+
 export const DesktopLending: React.FC<{
   isActive?: boolean;
 }> = ({ isActive = true }) => {
@@ -92,7 +113,7 @@ export const DesktopLending: React.FC<{
     <>
       <LendingProvider>
         <LendingDataProvider>
-          <DesktopLendingContent />
+          <DesktopLendingWithRoute />
         </LendingDataProvider>
       </LendingProvider>
       <SignatureRecordModal
