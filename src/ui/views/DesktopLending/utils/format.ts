@@ -24,7 +24,7 @@ export const formatListNetWorth = (num?: number) => {
   return formatUsdValue(num);
 };
 
-const formatPercent = (value: number) => {
+export const formatPercent = (value: number) => {
   const percentNumber = value * 100;
   const decimalsNumber = Math.min(
     String(percentNumber).split('.')[1]?.length || 0,

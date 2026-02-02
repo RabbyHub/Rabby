@@ -41,6 +41,9 @@ const Main = () => {
   if (isProfileRoute) {
     hasMountedProfileRef.current = true;
   }
+  if (isLendingRoute) {
+    hasMountedLendingRef.current = true;
+  }
 
   return (
     <>

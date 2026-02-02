@@ -28,11 +28,8 @@ import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { CopyChecked } from '../../CopyChecked';
 import './styles.less';
 import { Account } from '@/background/service/preference';
-import { PopupType } from '@/ui/views/DesktopLending';
 
-export const DesktopLendingSelectAccountList: React.FC<{
-  handleSetPopupType: (type: PopupType) => void;
-}> = ({ handleSetPopupType }) => {
+export const DesktopLendingSelectAccountList: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   const currentAccount = useRabbySelector((s) => s.account.currentAccount);

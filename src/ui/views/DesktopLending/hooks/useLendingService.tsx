@@ -6,10 +6,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import lendingService from 'background/service/lending';
-import type { LendingServiceStore } from 'background/service/lending';
 import { useMemoizedFn } from 'ahooks';
 import { CustomMarket } from '../config/market';
+import { useWallet } from '@/ui/utils';
+
+interface LendingServiceStore {
+  lastSelectedChain: CustomMarket;
+  skipHealthFactorWarning: boolean;
+}
 
 type LendingContextValue = {
   lastSelectedChain: CustomMarket;
@@ -35,6 +39,7 @@ export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
   const [lendingStore, setLendingStore] = useState<LendingServiceStore>(
     defaultStore
   );
+  const wallet = useWallet();
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -47,8 +52,8 @@ export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
     const initAndLoad = async () => {
       try {
         const [chainId, skipWarning] = await Promise.all([
-          lendingService.getLastSelectedChain(),
-          lendingService.getSkipHealthFactorWarning(),
+          wallet.getLastSelectedLendingChain(),
+          wallet.getSkipHealthFactorWarning(),
         ]);
 
         if (!mountedRef.current) return;
@@ -69,7 +74,7 @@ export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const setLastSelectedChain = useMemoizedFn(async (chainId: CustomMarket) => {
     try {
-      await lendingService.setLastSelectedChain(chainId);
+      await wallet.setLastSelectedLendingChain(chainId);
       setLendingStore((prev) => ({
         ...prev,
         lastSelectedChain: chainId,
@@ -81,7 +86,7 @@ export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const getLastSelectedChain = useMemoizedFn(async () => {
     try {
-      const chainId = await lendingService.getLastSelectedChain();
+      const chainId = await wallet.getLastSelectedLendingChain();
       setLendingStore((prev) => ({
         ...prev,
         lastSelectedChain: chainId,
@@ -95,7 +100,7 @@ export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const setSkipHealthFactorWarning = useMemoizedFn(async (skip: boolean) => {
     try {
-      await lendingService.setSkipHealthFactorWarning(skip);
+      await wallet.setSkipHealthFactorWarning(skip);
       setLendingStore((prev) => ({
         ...prev,
         skipHealthFactorWarning: skip,
@@ -107,7 +112,7 @@ export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const getSkipHealthFactorWarning = useMemoizedFn(async () => {
     try {
-      const skip = await lendingService.getSkipHealthFactorWarning();
+      const skip = await wallet.getSkipHealthFactorWarning();
       setLendingStore((prev) => ({
         ...prev,
         skipHealthFactorWarning: skip,
@@ -122,8 +127,8 @@ export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
   const syncState = useMemoizedFn(async () => {
     try {
       const [chainId, skipWarning] = await Promise.all([
-        lendingService.getLastSelectedChain(),
-        lendingService.getSkipHealthFactorWarning(),
+        wallet.getLastSelectedLendingChain(),
+        wallet.getSkipHealthFactorWarning(),
       ]);
       setLendingStore({
         lastSelectedChain: chainId,
