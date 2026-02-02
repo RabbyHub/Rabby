@@ -146,6 +146,8 @@ export interface PreferenceStore {
 
   desktopTabId?: number;
 
+  dashboardPanelOrder?: string[];
+
   /** @deprecated */
   desktopTokensAllMode?: boolean;
 
@@ -229,6 +231,7 @@ class PreferenceService {
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
         desktopTabId: undefined,
         desktopTokensAllMode: false,
+        dashboardPanelOrder: [],
         sceneAccountMap: {},
       },
     });
@@ -952,6 +955,10 @@ class PreferenceService {
         ...exposure[LAST_EXPOSURE_VERSIONED_KEY],
       },
     };
+  };
+
+  updateDashboardPanelOrder = (order: string[]) => {
+    this.store.dashboardPanelOrder = order;
   };
 }
 
