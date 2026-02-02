@@ -26,7 +26,7 @@ import { ApprovalsTabPane } from './components/ApprovalsTabPane';
 import { AddressDetailModal } from './components/AddressDetailModal';
 import { AddressBackupModal } from './components/AddressBackupModal';
 import { AddAddressModal } from './components/AddAddressModal';
-import { RcIconBackTop } from '@/ui/assets/desktop/profile';
+import { RcIconBackTopCC } from '@/ui/assets/desktop/profile';
 import { ReachedEnd } from './components/ReachedEnd';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import TopShortcut, {
@@ -329,7 +329,18 @@ export const DesktopProfile: React.FC<{
                       right: 'initial',
                     }}
                   >
-                    <ThemeIcon src={RcIconBackTop} />
+                    <div
+                      className={clsx(
+                        'flex items-center justify-center w-[32px] h-[32px] rounded-full',
+                        'bg-rb-neutral-bg-1 dark:bg-rb-neutral-bg-4',
+                        'text-rb-neutral-foot'
+                      )}
+                      style={{
+                        boxShadow: '0 2px 8px 0 rgba(0, 0, 0, 0.12)',
+                      }}
+                    >
+                      <RcIconBackTopCC />
+                    </div>
                   </BackTop>
                 </div>
               </main>
