@@ -72,7 +72,7 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
       >
         <div
           className={clsx(
-            'py-[11px] pl-[15px] pr-[11px] rounded-[16px]',
+            'py-[9px] px-[11px] rounded-[12px]',
             'flex items-center gap-[6px] cursor-pointer',
             'border border-rb-neutral-line',
             'hover:bg-rb-brand-light-1 hover:border-rb-brand-default'
@@ -81,7 +81,7 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
           {value ? (
             <CurrentAccount account={value} />
           ) : (
-            <div className="flex-1 text-[15px] leading-[18px] font-medium text-rb-neutral-title-1">
+            <div className="flex-1 text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
               Select Address
             </div>
           )}
@@ -107,8 +107,8 @@ const CurrentAccount = ({ account }: { account: Account }) => {
 
   return (
     <>
-      <img src={addressTypeIcon} className="w-[20px] h-[20px]" alt="" />
-      <div className="flex-1 text-[15px] leading-[18px] font-medium text-rb-neutral-title-1">
+      <img src={addressTypeIcon} className="w-[16px] h-[16px]" alt="" />
+      <div className="flex-1 text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
         {alias}
       </div>
     </>
