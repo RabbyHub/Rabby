@@ -444,7 +444,7 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
   return (
     <Modal {...modalStyle} visible={visible} onCancel={onCancel}>
       <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
-        <h2 className="text-[20px] leading-[24px] font-bold text-center text-r-neutral-title-1">
+        <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
           {wantDisableEmode
             ? t('page.lending.manageEmode.actions.disable')
             : t('page.lending.manageEmode.title')}
@@ -461,7 +461,7 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
               {t('page.lending.manageEmode.overview.title')}
             </div>
             {wantDisableEmode ? (
-              <div className="text-[17px] leading-[22px] font-bold text-r-neutral-title-1">
+              <div className="text-[17px] leading-[22px] font-medium text-r-neutral-title-1">
                 {emodeCategoryId ? eModes?.[emodeCategoryId]?.label || '' : ''}
               </div>
             ) : (
@@ -493,7 +493,7 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
             <span className="text-[14px] leading-[18px] font-medium text-r-neutral-foot">
               {t('page.lending.maxLtv')}
             </span>
-            <span className="text-[16px] leading-[22px] font-bold text-r-neutral-title-1">
+            <span className="text-[16px] leading-[22px] font-medium text-r-neutral-title-1">
               {ltvLineContent}
             </span>
           </div>
@@ -503,7 +503,7 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
               <span className="text-[14px] leading-[18px] font-medium text-r-neutral-foot">
                 {t('page.lending.hfTitle')}
               </span>
-              <span className="text-[16px] leading-[22px] font-medium text-r-neutral-title-1">
+              <span className="text-[16px] leading-[22px] font-normal text-r-neutral-title-1">
                 {afterHealthFactor ? (
                   <>
                     {getHealthFactorText(healthFactor)} →{' '}

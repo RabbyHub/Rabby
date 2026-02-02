@@ -36,6 +36,10 @@ type RemoteDataState = {
   eModes: EmodeDataHumanized[] | undefined;
 };
 
+export const getDataKey = (addr: string, marketKey: CustomMarket) => {
+  return `${marketKey}::${addr}` as RemoteDataKey;
+};
+
 function getInitRemoteData(): RemoteDataState {
   return {
     reserves: undefined,
@@ -131,7 +135,7 @@ export const LendingDataProvider: React.FC<{ children: React.ReactNode }> = ({
       marketKey: CustomMarket,
       valOrFunc: UpdaterOrPartials<RemoteDataState>
     ) => {
-      const lendingDataKey = `${marketKey}::${addr}` as RemoteDataKey;
+      const lendingDataKey = getDataKey(addr, marketKey);
       setRemoteDataState((prev) => {
         const prevData = prev[lendingDataKey] || getInitRemoteData();
         const { newVal } = resolveValFromUpdater(prevData, valOrFunc, {
@@ -169,7 +173,7 @@ export const LendingDataProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
 
-      const lendingDataKey = `${indexes.marketKey}::${indexes.address}`;
+      const lendingDataKey = getDataKey(indexes.address, indexes.marketKey);
       setLendingLoadState((prev) => ({
         ...prev,
         addrMarketLoading: {

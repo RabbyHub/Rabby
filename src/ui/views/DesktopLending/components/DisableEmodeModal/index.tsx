@@ -99,7 +99,7 @@ export const DisableEmodeModal: React.FC<DisableEmodeModalProps> = ({
   return (
     <Modal {...modalStyle} visible={visible} onCancel={onCancel}>
       <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
-        <p className="text-[20px] leading-[28px] font-bold text-r-neutral-title-1 text-center">
+        <p className="text-[20px] leading-[28px] font-medium text-r-neutral-title-1 text-center">
           {t('page.lending.manageEmode.guide.title')}
         </p>
         <p className="text-[16px] leading-[24px] text-r-neutral-foot text-center mt-[8px] px-[25px]">
@@ -110,7 +110,7 @@ export const DisableEmodeModal: React.FC<DisableEmodeModalProps> = ({
             <div className="text-[14px] leading-[18px] font-medium text-r-neutral-foot mb-[12px]">
               {t('page.lending.manageEmode.categorySelector.label')}
             </div>
-            <div className="text-[17px] leading-[22px] font-bold text-r-neutral-title-1">
+            <div className="text-[17px] leading-[22px] font-medium text-r-neutral-title-1">
               {emodeCategoryId ? eModes?.[emodeCategoryId]?.label || '' : ''}
             </div>
           </div>
@@ -118,7 +118,7 @@ export const DisableEmodeModal: React.FC<DisableEmodeModalProps> = ({
             <span className="text-[16px] leading-[20px] font-medium text-r-neutral-foot">
               {t('page.lending.maxLtv')}
             </span>
-            <span className="text-[16px] leading-[22px] font-bold text-r-neutral-title-1">
+            <span className="text-[16px] leading-[22px] font-medium text-r-neutral-title-1">
               {formatPercent(Number(currentEmode?.ltv || '0') / 10000)}
             </span>
           </div>

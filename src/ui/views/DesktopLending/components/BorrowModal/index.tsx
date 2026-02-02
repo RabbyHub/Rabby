@@ -408,7 +408,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
 
   return (
     <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
-      <h2 className="text-[20px] leading-[24px] font-bold text-center text-r-neutral-title-1">
+      <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
         {t('page.lending.borrowDetail.actions')} {reserve.reserve.symbol}
       </h2>
 

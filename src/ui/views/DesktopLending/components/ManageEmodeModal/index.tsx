@@ -41,7 +41,7 @@ export const ManageEmodeModal: React.FC<ManageEmodeModalProps> = ({
   return (
     <Modal {...modalStyle} visible={visible} onCancel={onCancel}>
       <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px] flex flex-col items-center">
-        <p className="text-[20px] leading-[24px] font-bold text-r-neutral-title-1 text-center">
+        <p className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1 text-center">
           {t('page.lending.manageEmode.guide.title')}
         </p>
         <p className="text-[16px] leading-[24px] text-r-neutral-foot text-center mt-[8px] px-[20px]">

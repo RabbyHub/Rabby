@@ -47,7 +47,7 @@ export const HealthFactorBar: React.FC<HealthFactorBarProps> = ({
       >
         <div className="flex items-center gap-[5px] mb-[2px]">
           <span
-            className="text-[15px] leading-[20px] font-bold text-center"
+            className="text-[15px] leading-[20px] font-medium text-center"
             style={{ color: hfColor.color }}
           >
             {getHealthFactorText(healthFactor)}
@@ -79,7 +79,7 @@ export const HealthFactorBar: React.FC<HealthFactorBarProps> = ({
           className="w-[3px] h-[12px] shrink-0"
           style={{ backgroundColor: 'var(--rb-red-default)' }}
         />
-        <span className="text-[15px] leading-[20px] font-bold text-rb-red-default text-center">
+        <span className="text-[15px] leading-[20px] font-medium text-rb-red-default text-center">
           1.00
         </span>
         <span className="text-[12px] leading-[16px] font-normal text-rb-red-default text-center">

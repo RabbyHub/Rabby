@@ -17,6 +17,7 @@ import {
   useLendingSummary,
   useSelectedMarket,
   useFetchLendingData,
+  useLendingIsLoading,
 } from '../../hooks';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import { isSameAddress } from '@/ui/utils';
@@ -33,6 +34,7 @@ import { RepayModal } from '../RepayModal';
 import { ToggleCollateralModal } from '../ToggleCollateralModal';
 import { SupplyListModal } from '../SupplyListModal';
 import { BorrowListModal } from '../BorrowListModal';
+import { LendingEmptyState } from '../LendingEmptyState';
 
 export type LendingModalType =
   | 'supply'
@@ -65,12 +67,41 @@ type MyAssetItem = {
   data: DisplayPoolReserveInfo;
 };
 
+const LendingListSkeletonItem: React.FC = () => {
+  return (
+    <div className="relative h-[68px] rounded-[12px] bg-rb-neutral-bg-3">
+      <div className="absolute left-[20px] top-1/2 -translate-y-1/2 w-[24px] h-[24px] rounded-full bg-rb-neutral-bg-4" />
+
+      <div className="absolute left-[53px] top-[26px] h-[17px] w-[82px] rounded-[4px] bg-rb-neutral-bg-4" />
+      <div className="absolute left-[198px] top-[26px] h-[17px] w-[82px] rounded-[4px] bg-rb-neutral-bg-4" />
+      <div className="absolute left-[358px] top-[26px] h-[17px] w-[51px] rounded-[4px] bg-rb-neutral-bg-4" />
+      <div className="absolute left-[502px] top-[26px] h-[17px] w-[92px] rounded-[4px] bg-rb-neutral-bg-4" />
+
+      <div className="absolute right-[20px] top-1/2 -translate-y-1/2 flex items-center gap-[16px]">
+        <div className="h-[36px] w-[120px] rounded-[6px] bg-rb-neutral-bg-4" />
+        <div className="h-[36px] w-[120px] rounded-[6px] bg-rb-neutral-bg-4" />
+      </div>
+    </div>
+  );
+};
+
+const LendingListSkeleton: React.FC = () => {
+  return (
+    <div className="mt-0 px-20 flex flex-col gap-[12px]">
+      {Array.from({ length: 6 }).map((_, idx) => (
+        <LendingListSkeletonItem key={idx} />
+      ))}
+    </div>
+  );
+};
+
 export const LendingList: React.FC = () => {
   const { t } = useTranslation();
   const { reserves } = useLendingRemoteData();
   const { displayPoolReserves, iUserSummary } = useLendingSummary();
   const { chainEnum, marketKey, setMarketKey } = useSelectedMarket();
   const { fetchData } = useFetchLendingData();
+  const { loading } = useLendingIsLoading();
   const history = useHistory();
   const location = useLocation();
 
@@ -244,7 +275,9 @@ export const LendingList: React.FC = () => {
         </div>
       </div>
       <div className="flex-1 overflow-auto">
-        {filteredData.length > 0 ? (
+        {loading ? (
+          <LendingListSkeleton />
+        ) : filteredData.length > 0 ? (
           <Table className="!w-full ml-0 mr-0">
             <THeader
               className="w-full justify-between bg-rb-neutral-bg-1 px-[20px] py-[12px] sticky top-0 z-10"
@@ -295,9 +328,7 @@ export const LendingList: React.FC = () => {
             </TBody>
           </Table>
         ) : (
-          <div className="flex items-center justify-center h-[200px] text-rb-neutral-foot">
-            {t('page.lending.noData')}
-          </div>
+          <LendingEmptyState onSelect={handleSupplyListSelect} />
         )}
       </div>
 

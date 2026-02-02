@@ -154,7 +154,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
             />
           )}
           <span
-            className={`text-[14px] leading-[18px] font-bold ${
+            className={`text-[14px] leading-[18px] font-medium ${
               showOrange ? 'text-rb-orange-default' : 'text-r-neutral-title-1'
             }`}
           >
@@ -196,12 +196,12 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
 
   return (
     <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px] pb-8 w-full h-full min-h-0 flex flex-col">
-      <h2 className="text-[20px] leading-[24px] font-bold text-center text-r-neutral-title-1 mb-12">
+      <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1 mb-12">
         {t('page.lending.borrowDetail.actions')}
       </h2>
       {loading ? (
         <div className="flex-1 flex items-center justify-center py-32 text-r-neutral-foot">
-          {t('page.lending.loading') || 'Loading...'}
+          Loading...
         </div>
       ) : (
         <div className="flex-1 overflow-auto min-h-0">
@@ -255,7 +255,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                           tokenSymbol={data.reserve.symbol}
                           size={24}
                         />
-                        <span className="text-[16px] leading-[20px] font-bold text-r-neutral-title-1 truncate max-w-[80px]">
+                        <span className="text-[16px] leading-[20px] font-medium text-r-neutral-title-1 truncate max-w-[80px]">
                           {data.reserve.symbol}
                         </span>
                       </div>
@@ -264,7 +264,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                           Number(data.reserve.totalDebtUSD || '0')
                         )}
                       </span>
-                      <span className="text-[16px] leading-[20px] font-bold text-r-neutral-title-1 w-[80px] text-right flex-shrink-0">
+                      <span className="text-[16px] leading-[20px] font-medium text-r-neutral-title-1 w-[80px] text-right flex-shrink-0">
                         {formatApy(
                           Number(data.reserve.variableBorrowAPY || '0')
                         )}

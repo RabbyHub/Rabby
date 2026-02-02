@@ -38,7 +38,7 @@ import { isSameAddress } from '@/ui/utils';
 import { useLendingService } from './useLendingService';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { UpdaterOrPartials, resolveValFromUpdater } from '../types/store';
-import { useLendingDataContext } from './LendingDataContext';
+import { getDataKey, useLendingDataContext } from './LendingDataContext';
 import { getProviderByWallet } from '../utils/provider';
 import { useWallet } from '@/ui/utils/WalletContext';
 
@@ -638,14 +638,6 @@ const useRefreshHistoryId = () => {
   return { refreshHistoryId, refresh };
 };
 
-const preQueryParams: {
-  address?: string;
-  marketKey?: CustomMarket;
-} = {
-  address: undefined,
-  marketKey: undefined,
-};
-
 // const setRemoteTaskRef: RefLikeObject<null | ReturnType<
 //   typeof InteractionManager.runAfterInteractions
 // >> = { current: null };
@@ -763,12 +755,8 @@ const createFetchLendingData = (
       persistOnly?: boolean;
       marketKey?: CustomMarket;
     }) => {
-      const {
-        accountAddress,
-        account,
-        ignoreLoading,
-        marketKey: paramMarketKey,
-      } = options || {};
+      const { accountAddress, account, marketKey: paramMarketKey } =
+        options || {};
 
       const requestAddress = accountAddress;
       if (!requestAddress) {
@@ -778,16 +766,7 @@ const createFetchLendingData = (
       const marketKey = paramMarketKey || getMarketKey(getMarketKeyFromContext);
       if (!marketKey) return;
 
-      // 用户强制忽略loading、前后params一样
-      const isSameParams =
-        preQueryParams.address === requestAddress &&
-        preQueryParams.marketKey === marketKey;
-      const isForceIgnoreLoading = ignoreLoading || isSameParams;
-      preQueryParams.address = requestAddress;
-      preQueryParams.marketKey = marketKey;
-      if (!isForceIgnoreLoading) {
-        globalSets.setLoading(true, { address: requestAddress, marketKey });
-      }
+      globalSets.setLoading(true, { address: requestAddress, marketKey });
       return fetchContractData(
         wallet,
         requestAddress,
@@ -885,34 +864,38 @@ export const useApisLending = () => {
 const useFetchLendingData = () => {
   const currentAccount = useCurrentAccount();
   const { marketKey } = useSelectedMarketKey();
-  const { fetchLendingData } = useApisLending();
+  const { fetchLendingData, setLoading } = useApisLending();
 
-  const fetchData = useCallback(
-    (ignoreLoading?: boolean) => {
-      return fetchLendingData({
-        accountAddress: currentAccount?.address,
-        account: currentAccount
-          ? {
-              address: currentAccount.address,
-              type: currentAccount.type,
-              brandName: currentAccount.brandName,
-            }
-          : undefined,
-        ignoreLoading,
-        marketKey,
-      });
-    },
-    [
-      currentAccount?.address,
-      currentAccount?.type,
-      currentAccount?.brandName,
+  const fetchData = useCallback(() => {
+    return fetchLendingData({
+      accountAddress: currentAccount?.address,
+      account: currentAccount
+        ? {
+            address: currentAccount.address,
+            type: currentAccount.type,
+            brandName: currentAccount.brandName,
+          }
+        : undefined,
       marketKey,
-      fetchLendingData,
-    ]
+    });
+  }, [
+    currentAccount?.address,
+    currentAccount?.type,
+    currentAccount?.brandName,
+    marketKey,
+    fetchLendingData,
+  ]);
+
+  const setFetchLoading = useCallback(
+    (loading: boolean) => {
+      setLoading(loading, { address: currentAccount?.address, marketKey });
+    },
+    [currentAccount?.address, marketKey, setLoading]
   );
 
   return {
     fetchData,
+    setFetchLoading,
   };
 };
 
@@ -994,8 +977,12 @@ export function useLendingIsLoading() {
   const currentAccount = useCurrentAccount();
   const currentAddress = currentAccount?.address || '';
   const { lendingLoadState } = useLendingDataContext();
+  const { marketKey } = useSelectedMarketKey();
   const loading = useMemo(
-    () => lendingLoadState.addrMarketLoading[currentAddress] || false,
+    () =>
+      lendingLoadState.addrMarketLoading[
+        getDataKey(currentAddress, marketKey)
+      ] || false,
     [lendingLoadState.addrMarketLoading, currentAddress]
   );
 

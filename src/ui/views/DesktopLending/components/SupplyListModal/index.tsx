@@ -11,10 +11,9 @@ import { DisplayPoolReserveInfo } from '../../types';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import wrapperToken from '../../config/wrapperToken';
 import { displayGhoForMintableMarket } from '../../utils/supply';
-import { formatApy, formatListNetWorth } from '../../utils/format';
 import { isUnFoldToken } from '../../config/unfold';
-import SymbolIcon from '../SymbolIcon';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+import { SupplyItem } from './SupplyItem';
 
 type SupplyListModalProps = {
   onSelect: (reserve: DisplayPoolReserveInfo) => void;
@@ -132,12 +131,12 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
 
   return (
     <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px] pb-8 w-full h-full min-h-0 flex flex-col">
-      <h2 className="text-[20px] leading-[24px] font-bold text-r-neutral-title-1 mb-12 px-12">
+      <h2 className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1 mb-12 px-12">
         {t('page.lending.supplyDetail.actions')}
       </h2>
       {loading ? (
         <div className="flex-1 flex items-center justify-center py-32 text-r-neutral-foot">
-          {t('page.lending.loading') || 'Loading...'}
+          Loading...
         </div>
       ) : (
         <div className="flex-1 overflow-auto min-h-0">
@@ -175,46 +174,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                   );
                 }
                 const data = row.data;
-                return (
-                  <div
-                    key={`${data.reserve.underlyingAsset}-${data.reserve.symbol}`}
-                    className="mt-8 flex items-center justify-between px-12 py-14 rounded-[16px] bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-4"
-                  >
-                    <button
-                      type="button"
-                      className="flex-1 flex items-center justify-between min-w-0 text-left"
-                      onClick={() => handlePressItem(data)}
-                    >
-                      <div className="flex items-center gap-8 min-w-0">
-                        <SymbolIcon
-                          tokenSymbol={data.reserve.symbol}
-                          size={24}
-                        />
-                        <span className="text-[16px] leading-[20px] font-bold text-r-neutral-title-1 truncate max-w-[80px]">
-                          {data.reserve.symbol}
-                        </span>
-                      </div>
-                      <span className="text-[14px] leading-[18px] font-medium text-r-neutral-foot w-[80px] text-right flex-shrink-0">
-                        {formatListNetWorth(
-                          Number(data.reserve.totalLiquidityUSD || '0')
-                        )}
-                      </span>
-                      <span className="text-[16px] leading-[20px] font-bold text-rb-green-default w-[80px] text-right flex-shrink-0">
-                        {formatApy(Number(data.reserve.supplyAPY || '0'))}
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      className="ml-8 px-16 py-8 rounded-[8px] bg-rb-neutral-bg-4 text-[14px] font-medium text-r-neutral-foot hover:bg-rb-neutral-bg-5 flex-shrink-0"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePressItem(data);
-                      }}
-                    >
-                      {t('page.lending.supplyDetail.actions')}
-                    </button>
-                  </div>
-                );
+                return <SupplyItem data={data} onSelect={handlePressItem} />;
               })}
             </>
           )}

@@ -35,7 +35,7 @@ export const HFDescription: React.FC<{
   return (
     <Modal {...modalStyle} visible={visible} onCancel={onClose}>
       <div className="bg-rb-neutral-bg-1 rounded-[12px] p-[24px]">
-        <p className="text-[18px] leading-[24px] font-bold text-rb-neutral-title-1 text-center">
+        <p className="text-[18px] leading-[24px] font-medium text-rb-neutral-title-1 text-center">
           {t('page.lending.hfTitle')}
         </p>
         <div className="pt-[8px] w-full">

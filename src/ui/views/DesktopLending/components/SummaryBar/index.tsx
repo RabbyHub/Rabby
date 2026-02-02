@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
@@ -92,64 +91,96 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
     <div className="border-t border-solid border-rb-neutral-line">
       <SummaryBarContainer className="h-[56px] flex items-center px-[24px]">
         <div className="flex items-center gap-[24px] w-full">
-          <div className="flex items-center gap-[6px]">
-            <InfoTitle>{t('page.lending.summary.netWorth')}:</InfoTitle>
-            <InfoValue>
-              {formatUsdValue(netWorth, BigNumber.ROUND_DOWN)}
-            </InfoValue>
-          </div>
+          {onlySupply ? (
+            <>
+              <div className="flex items-center gap-[6px]">
+                <InfoTitle>
+                  {t('page.lending.summary.totalSupplied')}:
+                </InfoTitle>
+                <InfoValue>
+                  {formatUsdValue(supplied, BigNumber.ROUND_DOWN)}
+                </InfoValue>
+              </div>
+              <div className="flex items-center gap-[8px]">
+                <InfoTitle>{t('page.lending.summary.netApy')}:</InfoTitle>
+                <InfoValue>{(netApy * 100).toFixed(1)}%</InfoValue>
+              </div>
 
-          <div className="flex items-center gap-[6px]">
-            <InfoTitle>{t('page.lending.summary.totalBorrowed')}:</InfoTitle>
-            <InfoValue>
-              {formatUsdValue(borrowed, BigNumber.ROUND_DOWN)}
-            </InfoValue>
-          </div>
+              <div className="flex items-center gap-[8px]">
+                <InfoTitle>
+                  {t('page.lending.summary.estDailyEarnings')}:
+                </InfoTitle>
+                <InfoValue>{estDailyText}</InfoValue>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-[6px]">
+                <InfoTitle>{t('page.lending.summary.netWorth')}:</InfoTitle>
+                <InfoValue>
+                  {formatUsdValue(netWorth, BigNumber.ROUND_DOWN)}
+                </InfoValue>
+              </div>
 
-          <div className="flex items-center gap-[6px]">
-            <InfoTitle>{t('page.lending.summary.totalSupplied')}:</InfoTitle>
-            <InfoValue>
-              {formatUsdValue(supplied, BigNumber.ROUND_DOWN)}
-            </InfoValue>
-          </div>
+              <div className="flex items-center gap-[6px]">
+                <InfoTitle>
+                  {t('page.lending.summary.totalBorrowed')}:
+                </InfoTitle>
+                <InfoValue>
+                  {formatUsdValue(borrowed, BigNumber.ROUND_DOWN)}
+                </InfoValue>
+              </div>
 
-          <div className="flex items-center gap-[6px]">
-            <InfoTitle>{t('page.lending.summary.healthFactor')}</InfoTitle>
-            <Tooltip title={t('page.lending.summary.healthFactorTip')}>
-              <RcIconInfo
-                width={12}
-                height={12}
-                className="cursor-pointer text-rb-neutral-foot ml-[2px]"
-                onClick={() => setHfDescVisible(true)}
-              />
-            </Tooltip>
-            <InfoValue style={{ color: healthStatus.color }}>
-              {getHealthFactorText(healthFactor)}
-            </InfoValue>
-            <HealthyBadge
-              style={{
-                color: healthStatus.color,
-                backgroundColor: healthStatus.backgroundColor,
-              }}
-            >
-              {healthStatus.label}
-            </HealthyBadge>
-            <HFDescription
-              visible={hfDescVisible}
-              hf={healthFactor}
-              onClose={() => setHfDescVisible(false)}
-            />
-          </div>
+              <div className="flex items-center gap-[6px]">
+                <InfoTitle>
+                  {t('page.lending.summary.totalSupplied')}:
+                </InfoTitle>
+                <InfoValue>
+                  {formatUsdValue(supplied, BigNumber.ROUND_DOWN)}
+                </InfoValue>
+              </div>
 
-          <div className="flex items-center gap-[8px]">
-            <InfoTitle>{t('page.lending.summary.netApy')}:</InfoTitle>
-            <InfoValue>{(netApy * 100).toFixed(1)}%</InfoValue>
-          </div>
+              <div className="flex items-center gap-[6px]">
+                <InfoTitle>{t('page.lending.summary.healthFactor')}</InfoTitle>
+                <Tooltip title={t('page.lending.summary.healthFactorTip')}>
+                  <RcIconInfo
+                    width={12}
+                    height={12}
+                    className="cursor-pointer text-rb-neutral-foot ml-[2px]"
+                    onClick={() => setHfDescVisible(true)}
+                  />
+                </Tooltip>
+                <InfoValue style={{ color: healthStatus.color }}>
+                  {getHealthFactorText(healthFactor)}
+                </InfoValue>
+                <HealthyBadge
+                  style={{
+                    color: healthStatus.color,
+                    backgroundColor: healthStatus.backgroundColor,
+                  }}
+                >
+                  {healthStatus.label}
+                </HealthyBadge>
+                <HFDescription
+                  visible={hfDescVisible}
+                  hf={healthFactor}
+                  onClose={() => setHfDescVisible(false)}
+                />
+              </div>
 
-          <div className="flex items-center gap-[8px]">
-            <InfoTitle>{t('page.lending.summary.estDailyEarnings')}:</InfoTitle>
-            <InfoValue>{estDailyText}</InfoValue>
-          </div>
+              <div className="flex items-center gap-[8px]">
+                <InfoTitle>{t('page.lending.summary.netApy')}:</InfoTitle>
+                <InfoValue>{(netApy * 100).toFixed(1)}%</InfoValue>
+              </div>
+
+              <div className="flex items-center gap-[8px]">
+                <InfoTitle>
+                  {t('page.lending.summary.estDailyEarnings')}:
+                </InfoTitle>
+                <InfoValue>{estDailyText}</InfoValue>
+              </div>
+            </>
+          )}
           <RightMarketTabInfo />
         </div>
       </SummaryBarContainer>

@@ -31,11 +31,12 @@ const Wrap = styled.div`
 const DesktopLendingContent: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const currentAccount = useCurrentAccount();
-  const { fetchData } = useFetchLendingData();
+  const { fetchData, setFetchLoading } = useFetchLendingData();
   const { iUserSummary, apyInfo } = useLendingSummaryCard();
   const { marketKey } = useSelectedMarket();
 
   useEffect(() => {
+    setFetchLoading(true);
     fetchData();
     // TODO: 有循环，待排查
   }, [marketKey]);
