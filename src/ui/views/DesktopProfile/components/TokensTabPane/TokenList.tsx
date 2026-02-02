@@ -128,7 +128,7 @@ export const TokenList = ({
                         <div className="h-[40px] flex items-center justify-center pointer-events-none">
                           <div
                             className={clsx(
-                              'flex items-center gap-[4px] rounded-full bg-r-neutral-card-1',
+                              'flex items-center gap-[4px] rounded-full bg-rb-neutral-bg-1 dark:bg-rb-neutral-bg-4',
                               'px-[16px] py-[8px] pointer-events-auto cursor-pointer'
                             )}
                             style={{
@@ -141,14 +141,14 @@ export const TokenList = ({
                               });
                             }}
                           >
-                            <div className="text-rb-neutral-secondary text-[13px] leading-[16px]">
+                            <div className="text-rb-neutral-foot text-[13px] leading-[16px]">
                               {t(
                                 'page.desktopProfile.portfolio.hidden.hideSmall'
                               )}
                             </div>
                             <RcIconDropdown
                               className={clsx(
-                                'ml-0 text-rb-neutral-secondary',
+                                'ml-0 text-rb-neutral-foot mb-[-2px]',
                                 'transform rotate-180'
                               )}
                             />

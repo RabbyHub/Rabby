@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
   <g filter="url(#filter0_d_136553_86639)">
-    <rect x="8" y="6" width="32" height="32" rx="16" fill="var(--r-neutral-card1, #FFF)"/>
-    <path d="M29 26L24 21L19 26" stroke="var(--r-neutral-secondary, #9A9CA9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    <line x1="19" y1="19" x2="29" y2="19" stroke="var(--r-neutral-secondary, #9A9CA9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="8" y="6" width="32" height="32" rx="16" fill="var(--r-neutral-bg-1, #FFF)"/>
+    <path d="M29 26L24 21L19 26" stroke="var(---r-neutral-body, #3E495E)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="19" y1="19" x2="29" y2="19" stroke="var(---r-neutral-body, #3E495E)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
   <defs>
     <filter id="filter0_d_136553_86639" x="0" y="0" width="48" height="48" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
