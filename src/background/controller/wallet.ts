@@ -1909,6 +1909,33 @@ export class WalletController extends BaseController {
     );
   };
 
+  setBiometricUnlock = (payload: {
+    enabled: boolean;
+    credentialId?: string;
+    encryptedPassword?: string;
+    iv?: string;
+    prfSalt?: string;
+  }) => {
+    if (!payload.enabled) {
+      preferenceService.setPreferencePartials({
+        biometricUnlockEnabled: false,
+        biometricUnlockCredentialId: '',
+        biometricUnlockEncryptedPassword: '',
+        biometricUnlockIv: '',
+        biometricUnlockPrfSalt: '',
+      });
+      return;
+    }
+
+    preferenceService.setPreferencePartials({
+      biometricUnlockEnabled: true,
+      biometricUnlockCredentialId: payload.credentialId || '',
+      biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
+      biometricUnlockIv: payload.iv || '',
+      biometricUnlockPrfSalt: payload.prfSalt || '',
+    });
+  };
+
   updateGa4EventTime = (timestamp: number) => {
     preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
   };

@@ -39,6 +39,11 @@ interface PreferenceState {
   isHideEcologyNoticeDict: Record<string | number, boolean>;
   isEnabledPwdForNonWhitelistedTx?: boolean;
   isEnabledDappAccount?: boolean;
+  biometricUnlockEnabled?: boolean;
+  biometricUnlockCredentialId?: string;
+  biometricUnlockEncryptedPassword?: string;
+  biometricUnlockIv?: string;
+  biometricUnlockPrfSalt?: string;
   rateGuideLastExposure?: RateGuideLastExposure;
 
   /** @deprecated */
@@ -71,6 +76,11 @@ export const preference = createModel<RootModel>()({
     isHideEcologyNoticeDict: {},
     isEnabledPwdForNonWhitelistedTx: false,
     isEnabledDappAccount: false,
+    biometricUnlockEnabled: false,
+    biometricUnlockCredentialId: '',
+    biometricUnlockEncryptedPassword: '',
+    biometricUnlockIv: '',
+    biometricUnlockPrfSalt: '',
     rateGuideLastExposure: getDefaultRateGuideLastExposure(),
     desktopTokensAllMode: false,
   } as PreferenceState,
@@ -312,6 +322,29 @@ export const preference = createModel<RootModel>()({
       await store.app.wallet.enableDappAccount(v);
       dispatch.preference.getPreference('isEnabledDappAccount');
       ga4.fireEvent(`DappAccount_${v ? 'On' : 'Off'}`, {
+        event_category: 'Settings Snapshot',
+      });
+    },
+
+    async setBiometricUnlock(
+      payload: {
+        enabled: boolean;
+        credentialId?: string;
+        encryptedPassword?: string;
+        iv?: string;
+        prfSalt?: string;
+      },
+      store
+    ) {
+      await store.app.wallet.setBiometricUnlock(payload);
+      dispatch.preference.setField({
+        biometricUnlockEnabled: payload.enabled,
+        biometricUnlockCredentialId: payload.credentialId || '',
+        biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
+        biometricUnlockIv: payload.iv || '',
+        biometricUnlockPrfSalt: payload.prfSalt || '',
+      });
+      ga4.fireEvent(`BiometricUnlock_${payload.enabled ? 'On' : 'Off'}`, {
         event_category: 'Settings Snapshot',
       });
     },

@@ -141,6 +141,11 @@ export interface PreferenceStore {
 
   isEnabledPwdForNonWhitelistedTx?: boolean;
   isEnabledDappAccount?: boolean;
+  biometricUnlockEnabled?: boolean;
+  biometricUnlockCredentialId?: string;
+  biometricUnlockEncryptedPassword?: string;
+  biometricUnlockIv?: string;
+  biometricUnlockPrfSalt?: string;
 
   rateGuideLastExposure?: RateGuideLastExposure;
 
@@ -225,6 +230,11 @@ class PreferenceService {
         safeSelfHostConfirm: {},
         isEnabledPwdForNonWhitelistedTx: false,
         isEnabledDappAccount: false,
+        biometricUnlockEnabled: false,
+        biometricUnlockCredentialId: '',
+        biometricUnlockEncryptedPassword: '',
+        biometricUnlockIv: '',
+        biometricUnlockPrfSalt: '',
         ga4EventTime: 0,
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
         desktopTabId: undefined,
@@ -325,6 +335,21 @@ class PreferenceService {
     }
     if (!this.store.safeSelfHostConfirm) {
       this.store.safeSelfHostConfirm = {};
+    }
+    if (this.store.biometricUnlockEnabled == null) {
+      this.store.biometricUnlockEnabled = false;
+    }
+    if (!this.store.biometricUnlockCredentialId) {
+      this.store.biometricUnlockCredentialId = '';
+    }
+    if (!this.store.biometricUnlockEncryptedPassword) {
+      this.store.biometricUnlockEncryptedPassword = '';
+    }
+    if (!this.store.biometricUnlockIv) {
+      this.store.biometricUnlockIv = '';
+    }
+    if (!this.store.biometricUnlockPrfSalt) {
+      this.store.biometricUnlockPrfSalt = '';
     }
 
     if (

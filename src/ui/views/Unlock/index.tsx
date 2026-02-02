@@ -17,7 +17,11 @@ import styled from 'styled-components';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import qs from 'qs';
 import { isString } from 'lodash';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import {
+  decryptBiometricUnlockPassword,
+  isBiometricUnlockSupported,
+} from '@/ui/utils/biometric';
 
 const InputFormStyled = styled(Form.Item)`
   .ant-form-item-explain {
@@ -41,8 +45,25 @@ const Unlock = () => {
   const history = useHistory();
   const isUnlockingRef = useRef(false);
   const [hasForgotPassword, setHasForgotPassword] = React.useState(false);
+  const [biometricSupported, setBiometricSupported] = React.useState(false);
+  const [biometricUnlocking, setBiometricUnlocking] = React.useState(false);
   const location = useLocation();
   const [inputError, setInputError] = React.useState('');
+  const biometricUnlockEnabled = useRabbySelector(
+    (state) => state.preference.biometricUnlockEnabled
+  );
+  const biometricUnlockCredentialId = useRabbySelector(
+    (state) => state.preference.biometricUnlockCredentialId
+  );
+  const biometricUnlockEncryptedPassword = useRabbySelector(
+    (state) => state.preference.biometricUnlockEncryptedPassword
+  );
+  const biometricUnlockIv = useRabbySelector(
+    (state) => state.preference.biometricUnlockIv
+  );
+  const biometricUnlockPrfSalt = useRabbySelector(
+    (state) => state.preference.biometricUnlockPrfSalt
+  );
   const query = useMemo(() => {
     return qs.parse(location.search, {
       ignoreQueryPrefix: true,
@@ -53,6 +74,18 @@ const Unlock = () => {
   useEffect(() => {
     if (!inputEl.current) return;
     inputEl.current.focus();
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    isBiometricUnlockSupported().then((supported) => {
+      if (mounted) {
+        setBiometricSupported(supported);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const [run] = useWalletRequest(wallet.unlock, {
@@ -102,6 +135,42 @@ const Unlock = () => {
     isUnlockingRef.current = true;
     await run(password);
     isUnlockingRef.current = false;
+  };
+
+  const biometricAvailable =
+    biometricSupported &&
+    biometricUnlockEnabled &&
+    !!biometricUnlockCredentialId &&
+    !!biometricUnlockEncryptedPassword &&
+    !!biometricUnlockIv &&
+    !!biometricUnlockPrfSalt;
+
+  const handleBiometricUnlock = async () => {
+    if (!biometricAvailable) return;
+    if (isUnlockingRef.current || biometricUnlocking) return;
+    isUnlockingRef.current = true;
+    setBiometricUnlocking(true);
+    setInputError('');
+    try {
+      const password = await decryptBiometricUnlockPassword({
+        credentialId: biometricUnlockCredentialId!,
+        encryptedPassword: biometricUnlockEncryptedPassword!,
+        iv: biometricUnlockIv!,
+        prfSalt: biometricUnlockPrfSalt!,
+      });
+      await run(password);
+    } catch (error: any) {
+      const errorMessage =
+        error?.message ||
+        t('page.unlock.biometricFailed', 'Biometric unlock failed.');
+      if (!String(errorMessage).toLowerCase().includes('canceled')) {
+        setInputError(errorMessage);
+        form.validateFields(['password']);
+      }
+    } finally {
+      isUnlockingRef.current = false;
+      setBiometricUnlocking(false);
+    }
   };
 
   useEffect(() => {
@@ -212,6 +281,24 @@ const Unlock = () => {
                 {t('page.unlock.btn.unlock')}
               </Button>
             </Form.Item>
+            {biometricAvailable && (
+              <Form.Item className="mx-20 mb-16">
+                <Button
+                  block
+                  type="default"
+                  htmlType="button"
+                  className={clsx(
+                    'w-full py-18 h-auto rounded-[8px]',
+                    'text-[15px] leading-[20px]',
+                    'font-medium'
+                  )}
+                  loading={biometricUnlocking}
+                  onClick={handleBiometricUnlock}
+                >
+                  {t('page.unlock.btn.biometric', 'Unlock with biometrics')}
+                </Button>
+              </Form.Item>
+            )}
 
             {hasForgotPassword && (
               <button
