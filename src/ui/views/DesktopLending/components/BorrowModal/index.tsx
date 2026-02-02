@@ -487,7 +487,10 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         />
       )}
 
-      {canShowDirectSubmit && chainInfo?.serverId ? (
+      {canShowDirectSubmit &&
+      chainInfo?.serverId &&
+      !!amount &&
+      amount !== '0' ? (
         <div className="mt-16">
           <DirectSignGasInfo
             supportDirectSign

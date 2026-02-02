@@ -476,7 +476,10 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         />
       )}
 
-      {canShowDirectSubmit && chainInfo?.serverId ? (
+      {canShowDirectSubmit &&
+      chainInfo?.serverId &&
+      !!amount &&
+      amount !== '0' ? (
         <div className="mt-16">
           <DirectSignGasInfo
             supportDirectSign
