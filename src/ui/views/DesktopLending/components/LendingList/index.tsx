@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Modal } from 'antd';
 import { LendingRow } from '../LendingRow';
 import { MarketSelector } from '../MarketSelector';
+import { DesktopPending } from '@/ui/views/DesktopProfile/components/DesktopPending';
 import {
   TBody,
   THeadCell,
@@ -197,6 +198,7 @@ export const LendingList: React.FC = () => {
       <div className="flex items-center justify-between px-[16px] py-[12px]">
         <MarketSelector value={marketKey} onChange={setMarketKey} />
         <div className="flex items-center gap-[8px]">
+          <DesktopPending className="min-w-[160px] h-[44px] rounded-[12px] text-[15px]" />
           <button
             type="button"
             className={clsx(

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { useRabbyDispatch } from '@/ui/store';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
@@ -14,6 +14,8 @@ import {
   useSelectedMarket,
 } from './hooks';
 import './index.less';
+import { useHistory, useLocation } from 'react-router-dom';
+import { SignatureRecordModal } from '../DesktopProfile/components/SignatureRecordModal';
 
 const Wrap = styled.div`
   width: 100%;
@@ -76,11 +78,30 @@ const DesktopLendingContent: React.FC = () => {
 export const DesktopLending: React.FC<{
   isActive?: boolean;
 }> = ({ isActive = true }) => {
+  const history = useHistory();
+  const location = useLocation();
+
+  const { action } = useMemo(() => {
+    const searchParams = new URLSearchParams(location.search);
+    return {
+      action: searchParams.get('action'),
+    };
+  }, [location.search]);
+
   return (
-    <LendingProvider>
-      <LendingDataProvider>
-        <DesktopLendingContent />
-      </LendingDataProvider>
-    </LendingProvider>
+    <>
+      <LendingProvider>
+        <LendingDataProvider>
+          <DesktopLendingContent />
+        </LendingDataProvider>
+      </LendingProvider>
+      <SignatureRecordModal
+        visible={action === 'activities'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+    </>
   );
 };
