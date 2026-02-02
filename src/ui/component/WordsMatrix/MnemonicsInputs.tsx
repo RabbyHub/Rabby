@@ -470,6 +470,7 @@ function MnemonicsInputs({
                       setMnemonicsCount(count);
                       setNeedPassphrase(false);
                       onSlip39Change(false);
+                      handleDropdownVisibleChange(false);
                     }}
                   >
                     <div className="text-wrapper">
@@ -501,6 +502,7 @@ function MnemonicsInputs({
                           setMnemonicsCount(count);
                           setNeedPassphrase(true);
                           onSlip39Change(false);
+                          handleDropdownVisibleChange(false);
                         }}
                       >
                         <div className="text-wrapper">
@@ -533,6 +535,7 @@ function MnemonicsInputs({
                         onClick={() => {
                           onSlip39Change(true);
                           setNeedPassphrase(passphrase);
+                          handleDropdownVisibleChange(false);
                         }}
                       >
                         <div className="text-wrapper">

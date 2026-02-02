@@ -8,11 +8,14 @@ export const ScrollToDomById = (id: string, stickAnchor?: boolean) => {
   if (!dom) return;
 
   const y = dom.getBoundingClientRect().y;
-  const scrollElement = document.getElementById('root')
-    ?.firstChild as HTMLElement;
+  const scrollElement = document.querySelector('.js-scroll-element');
+
+  if (!scrollElement) {
+    return;
+  }
+
   const scrollY = scrollElement.scrollTop;
 
-  if (!scrollElement) return;
   scrollElement?.scrollTo({
     top: scrollY + y - 103 - (stickAnchor ? 60 + 57 : 0), // 103 是stick header的高度
     behavior: 'smooth',
