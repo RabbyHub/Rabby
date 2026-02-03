@@ -10,10 +10,10 @@ import {
   getCollateralState,
 } from '../../utils/collateral';
 import { formatApy } from '../../utils/format';
-import { getHealthFactorText } from '../../utils/health';
 import { formatUsdValue } from '@/ui/utils/number';
 import { IsolateTag } from '../IsolateTag';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
+import { HealthFactorText } from '../HealthFactorText';
 
 const formatNetworth = (num: number) => {
   if (num >= 1e9) return `${(num / 1e9).toFixed(2)}B`;
@@ -56,9 +56,9 @@ export const SupplyOverView: React.FC<
 
   return (
     <div className="w-full mt-16">
-      <h3 className="text-[13px] leading-[15px] text-r-neutral-foot mb-8">
+      <div className="text-[13px] leading-[13px] font-normal text-r-neutral-foot mb-8">
         {t('page.lending.popup.title')}
-      </h3>
+      </div>
       <div className="rounded-[8px] bg-rb-neutral-card-1">
         <div className="flex items-center justify-between p-16">
           <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
@@ -77,7 +77,10 @@ export const SupplyOverView: React.FC<
                   )}`
                 : availableText}
             </span>
-            <Tooltip title={t('page.lending.modalDesc.availableToBorrowDesc')}>
+            <Tooltip
+              overlayClassName="rectangle"
+              title={t('page.lending.modalDesc.maxAmount')}
+            >
               <RcIconInfo
                 width={12}
                 height={12}
@@ -116,18 +119,19 @@ export const SupplyOverView: React.FC<
 
         {showHF && (
           <>
-            <div className="flex items-center justify-between p-16">
+            <div className="flex items-center justify-between p-16 pb-2">
               <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
                 {t('page.lending.hfTitle')}
               </span>
-              <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
+              <span className="text-[13px] leading-[15px] font-medium text-r-neutral-foot flex items-center">
                 {afterHF ? (
                   <>
-                    {getHealthFactorText(healthFactor)} →{' '}
-                    {getHealthFactorText(afterHF)}
+                    <HealthFactorText healthFactor={healthFactor} />{' '}
+                    <span className="mx-1">→</span>
+                    <HealthFactorText healthFactor={afterHF} />
                   </>
                 ) : (
-                  getHealthFactorText(healthFactor)
+                  <HealthFactorText healthFactor={healthFactor} />
                 )}
               </span>
             </div>

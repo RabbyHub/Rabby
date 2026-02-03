@@ -6,7 +6,7 @@ import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetail
 const modalStyle = {
   width: 400,
   title: null as React.ReactNode,
-  bodyStyle: { background: 'transparent', padding: 0 } as const,
+  bodyStyle: { background: 'transparent', padding: 0, height: 212 } as const,
   maskClosable: true,
   footer: null as React.ReactNode,
   zIndex: 1000,
@@ -40,16 +40,16 @@ export const ManageEmodeModal: React.FC<ManageEmodeModalProps> = ({
 
   return (
     <Modal {...modalStyle} visible={visible} onCancel={onCancel}>
-      <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px] flex flex-col items-center">
-        <p className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1 text-center">
+      <div className="bg-r-neutral-bg-2 h-full px-[20px] py-[16px] flex flex-col items-center">
+        <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1 text-center">
           {t('page.lending.manageEmode.guide.title')}
-        </p>
-        <p className="text-[16px] leading-[24px] text-r-neutral-foot text-center mt-[8px] px-[20px]">
+        </div>
+        <div className="text-[13px] leading-[16px] text-r-neutral-foot mt-[8px]">
           {t('page.lending.manageEmode.guide.description')}
-        </p>
+        </div>
         <Button
           type="primary"
-          className="w-full mt-[32px] h-[44px] rounded-[8px] font-medium"
+          className="w-full mt-auto h-[44px] rounded-[8px] font-medium"
           onClick={handleManageEmode}
         >
           {t('page.lending.manageEmode.guide.buttonTitle')}

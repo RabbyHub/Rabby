@@ -11,11 +11,11 @@ import {
 import { DisplayPoolReserveInfo } from '../../types';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import { assetCanBeBorrowedByUser } from '../../utils/borrow';
-import { formatApy, formatListNetWorth } from '../../utils/format';
+import { formatListNetWorth } from '../../utils/format';
 import { isUnFoldToken } from '../../config/unfold';
-import SymbolIcon from '../SymbolIcon';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
-import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
+import { ReactComponent as RcIconArrowCC } from '@/ui/assets/lending/arrow-cc.svg';
+import { BorrowItem } from './BorrowItem';
 
 type BorrowListModalProps = {
   onSelect: (reserve: DisplayPoolReserveInfo) => void;
@@ -40,15 +40,20 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
   } = useLendingSummary();
   const { marketKey } = useSelectedMarket();
 
+  type SortField = 'debt' | 'apy';
+  type SortDirection = 'asc' | 'desc';
+
   const [foldHideList, setFoldHideList] = useState(true);
+  const [sortField, setSortField] = useState<SortField>('debt');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const isInIsolationMode = useMemo(() => !!iUserSummary?.isInIsolationMode, [
     iUserSummary?.isInIsolationMode,
   ]);
 
   const sortReserves = useMemo(() => {
-    return (displayPoolReserves ?? [])
-      .filter((item) => {
+    const list =
+      displayPoolReserves?.filter((item) => {
         if (isSameAddress(item.underlyingAsset, API_ETH_MOCK_ADDRESS)) {
           return false;
         }
@@ -70,11 +75,33 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
           iUserSummary,
           item.reserve.eModes
         );
-      })
-      .sort((a, b) => {
-        return Number(b.reserve.totalDebtUSD) - Number(a.reserve.totalDebtUSD);
-      });
-  }, [displayPoolReserves, iUserSummary, reserves?.reservesData]);
+      }) ?? [];
+
+    const getSortValue = (item: DisplayPoolReserveInfo) => {
+      if (sortField === 'debt') {
+        return Number(item.reserve.totalDebtUSD || '0');
+      }
+      // apy
+      return Number(item.reserve.variableBorrowAPY || '0');
+    };
+
+    return [...list].sort((a, b) => {
+      const av = getSortValue(a);
+      const bv = getSortValue(b);
+      if (sortDirection === 'desc') {
+        return bv - av;
+      }
+      return av - bv;
+    });
+  }, [
+    API_ETH_MOCK_ADDRESS,
+    assetCanBeBorrowedByUser,
+    displayPoolReserves,
+    iUserSummary,
+    reserves?.reservesData,
+    sortField,
+    sortDirection,
+  ]);
 
   const listReserves = sortReserves ?? [];
 
@@ -138,7 +165,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
     return (
       <div
         className={`mt-8 px-12 py-14 rounded-[6px] gap-2 ${
-          showOrange ? 'bg-rb-orange-light-1' : 'bg-rb-neutral-bg-5'
+          showOrange ? 'bg-rb-orange-light-1' : 'bg-rb-neutral-bg-1'
         }`}
       >
         <div className="flex items-center gap-4">
@@ -167,13 +194,13 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
             </span>
           </span>
         </div>
-        <p
-          className={`text-[14px] leading-[18px] mt-2 ${
+        <div
+          className={`text-[13px] leading-[18px] mt-2 ${
             showOrange ? 'text-rb-orange-default' : 'text-r-neutral-foot'
           }`}
         >
           {desc}
-        </p>
+        </div>
       </div>
     );
   }, [
@@ -195,12 +222,20 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
     [getTargetReserve, iUserSummary, onSelect]
   );
 
+  const handleSortClick = useCallback((field: SortField) => {
+    setSortField((prevField) => {
+      if (prevField === field) {
+        setSortDirection((prevDir) => (prevDir === 'desc' ? 'asc' : 'desc'));
+        return prevField;
+      }
+      setSortDirection('desc');
+      return field;
+    });
+  }, []);
+
   return (
     <div
-      className={clsx(
-        'w-full h-full min-h-0 flex flex-col',
-        'bg-r-neutral-bg-2 rounded-[12px] p-[24px] pb-8'
-      )}
+      className={clsx('w-full h-full min-h-0 flex flex-col', 'p-[24px] pb-8')}
     >
       <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1 mb-12">
         {t('page.lending.borrowDetail.actions')}
@@ -214,22 +249,52 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
           {availableCard}
           {listReserves.length > 0 && (
             <>
-              <div className="mt-16 mb-2 flex items-center justify-between px-8">
-                <span className="text-[14px] leading-[18px] text-r-neutral-foot flex-1">
+              <div className="mt-16 mb-2 flex items-center justify-start px-16">
+                <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[150px]">
                   {t('page.lending.list.headers.token')}
                 </span>
-                <span
+                <div
                   className={clsx(
-                    'text-[14px] leading-[18px] text-r-neutral-foot w-[100px]',
-                    'flex items-center justify-end gap-4 text-right'
+                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center justify-end gap-3',
+                    sortField === 'debt'
+                      ? 'text-r-neutral-title-1 font-medium'
+                      : 'text-r-neutral-foot'
                   )}
+                  onClick={() => handleSortClick('debt')}
                 >
-                  {t('page.lending.list.headers.totalBorrowed')}
-                  <RcIconArrowDownCC className="w-4 h-4 text-r-neutral-foot flex-shrink-0" />
-                </span>
-                <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[80px] text-right">
-                  {t('page.lending.apy')}
-                </span>
+                  <span>{t('page.lending.list.headers.totalBorrowed')}</span>
+                  {sortField === 'debt' && (
+                    <RcIconArrowCC
+                      width={12}
+                      height={12}
+                      className={clsx(
+                        'ml-[3px] flex-shrink-0 inline-block',
+                        sortDirection === 'desc' ? 'rotate-90' : '-rotate-90'
+                      )}
+                    />
+                  )}
+                </div>
+                <div
+                  className={clsx(
+                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center justify-end gap-3',
+                    sortField === 'apy'
+                      ? 'text-r-neutral-title-1 font-medium'
+                      : 'text-r-neutral-foot'
+                  )}
+                  onClick={() => handleSortClick('apy')}
+                >
+                  <span>{t('page.lending.apy')}</span>
+                  {sortField === 'apy' && (
+                    <RcIconArrowCC
+                      width={12}
+                      height={12}
+                      className={clsx(
+                        'ml-[3px] flex-shrink-0 inline-block',
+                        sortDirection === 'desc' ? 'rotate-90' : '-rotate-90'
+                      )}
+                    />
+                  )}
+                </div>
                 <span className="w-[80px] flex-shrink-0" />
               </div>
               {dataList.map((row) => {
@@ -239,84 +304,29 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                       key="toggle-fold"
                       className={clsx(
                         'w-full pt-20 pb-20 py-8 px-12 cursor-pointer text-left',
-                        'text-[14px] text-r-neutral-foot'
+                        'text-[14px] text-r-neutral-foot flex items-center justify-start gap-2'
                       )}
                       onClick={() => setFoldHideList((prev) => !prev)}
                     >
-                      {foldHideList
-                        ? `+ ${foldList.length} ${
-                            t('page.lending.borrowList.more') || 'More'
-                          }`
-                        : `- ${
-                            t('page.lending.borrowList.collapse') || 'Collapse'
-                          }`}
+                      <span>{t('page.lending.borrowList.more')}</span>
+                      <RcIconArrowCC
+                        width={12}
+                        height={12}
+                        className={clsx(
+                          'text-r-neutral-foot flex-shrink-0 inline-block transition-transform',
+                          !foldHideList && '-rotate-90'
+                        )}
+                      />
                     </div>
                   );
                 }
                 const data = row.data;
                 return (
-                  <div
+                  <BorrowItem
                     key={`${data.reserve.underlyingAsset}-${data.reserve.symbol}`}
-                    className={clsx(
-                      'mt-8 flex items-center justify-between px-12 py-14 rounded-[16px]',
-                      'bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-4'
-                    )}
-                  >
-                    <button
-                      type="button"
-                      className="flex-1 flex items-center justify-between min-w-0 text-left"
-                      onClick={() => handlePressItem(data)}
-                    >
-                      <div className="flex items-center gap-8 min-w-0">
-                        <SymbolIcon
-                          tokenSymbol={data.reserve.symbol}
-                          size={24}
-                        />
-                        <span
-                          className={clsx(
-                            'text-[16px] leading-[20px] font-medium text-r-neutral-title-1',
-                            'truncate max-w-[80px]'
-                          )}
-                        >
-                          {data.reserve.symbol}
-                        </span>
-                      </div>
-                      <span
-                        className={clsx(
-                          'text-[14px] leading-[18px] font-medium text-r-neutral-foot w-[100px]',
-                          'flex-shrink-0 text-right'
-                        )}
-                      >
-                        {formatListNetWorth(
-                          Number(data.reserve.totalDebtUSD || '0')
-                        )}
-                      </span>
-                      <span
-                        className={clsx(
-                          'text-[16px] leading-[20px] font-medium text-r-neutral-title-1 w-[80px]',
-                          'flex-shrink-0 text-right'
-                        )}
-                      >
-                        {formatApy(
-                          Number(data.reserve.variableBorrowAPY || '0')
-                        )}
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      className={clsx(
-                        'ml-8 px-16 py-8 rounded-[8px] flex-shrink-0',
-                        'bg-rb-neutral-bg-4 text-[14px] font-medium text-r-neutral-foot',
-                        'hover:bg-rb-neutral-bg-5'
-                      )}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePressItem(data);
-                      }}
-                    >
-                      {t('page.lending.borrowDetail.actions')}
-                    </button>
-                  </div>
+                    data={data}
+                    handlePressItem={handlePressItem}
+                  />
                 );
               })}
             </>

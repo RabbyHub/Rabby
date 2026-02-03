@@ -1464,6 +1464,7 @@
         "headers": {
           "token": "Token",
           "token_balance": "Token/Balance",
+          "my_balance": "My Balance",
           "token_tvl": "Token/TVL",
           "myBorrows": "My borrows",
           "totalBorrowed": "Total Borrowed",

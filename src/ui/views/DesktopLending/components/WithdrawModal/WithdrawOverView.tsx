@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PopupDetailProps } from '../../types';
-import { getHealthFactorText } from '../../utils/health';
 import { isHFEmpty } from '../../utils';
+import { HealthFactorText } from '../HealthFactorText';
 import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
 
 const formatNetworth = (num: number) => {
@@ -34,9 +34,9 @@ export const WithdrawOverView: React.FC<
 
   return (
     <div className="w-full mt-16">
-      <h3 className="text-[13px] leading-[15px] text-r-neutral-foot mb-8">
+      <div className="text-[13px] leading-[15px] text-r-neutral-foot mb-8">
         {t('page.lending.popup.title')}
-      </h3>
+      </div>
       <div className="rounded-[8px] bg-rb-neutral-card-1">
         <div className="flex items-center justify-between p-16">
           <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
@@ -56,7 +56,7 @@ export const WithdrawOverView: React.FC<
         </div>
 
         <div className="flex items-center justify-between p-16">
-          <span className="text-[13px] leading-[15px] text-r-neutral-foot">
+          <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
             {t('page.lending.supplyDetail.supplyBalance')}
           </span>
           <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
@@ -70,18 +70,22 @@ export const WithdrawOverView: React.FC<
 
         {showHF && (
           <>
-            <div className="flex items-center justify-between p-16">
+            <div className="flex items-center justify-between p-16 pb-2">
               <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
                 {t('page.lending.hfTitle')}
               </span>
-              <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
+              <span className="text-[13px] leading-[15px] font-medium text-r-neutral-foot flex items-center">
                 {afterHF ? (
                   <>
-                    {getHealthFactorText(healthFactor)} →{' '}
-                    {getHealthFactorText(afterHF)}
+                    <HealthFactorText healthFactor={healthFactor} />{' '}
+                    <span className="mx-1">→</span>
+                    <HealthFactorText
+                      healthFactor={afterHF}
+                      limitless={afterHF === '-1'}
+                    />
                   </>
                 ) : (
-                  getHealthFactorText(healthFactor)
+                  <HealthFactorText healthFactor={healthFactor} />
                 )}
               </span>
             </div>

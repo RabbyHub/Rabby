@@ -100,7 +100,7 @@ const poolsMap = new Map<
   }
 >();
 
-const getCachePools = async (
+const getCachePools = (
   wallet: ReturnType<typeof useWallet>,
   marketKey?: CustomMarket,
   account?: {
@@ -178,12 +178,7 @@ const fetchContractData = async (
     marketKey,
     getMarketKeyFromContext
   ).marketData;
-  const pools = await getPools(
-    wallet,
-    getMarketKeyFromContext,
-    address,
-    account
-  );
+  const pools = getPools(wallet, getMarketKeyFromContext, address, account);
   if (!selectedMarketData || !pools) {
     return {};
   }
@@ -240,12 +235,10 @@ export const usePoolDataProviderContract = () => {
       setPools(undefined);
       return;
     }
-    getCachePools(wallet, marketKey)
-      .then(setPools)
-      .catch((error) => {
-        console.error('Failed to get pools:', error);
-        setPools(undefined);
-      });
+    const pools = getCachePools(wallet, marketKey);
+    if (pools) {
+      setPools(pools);
+    }
   }, [wallet, marketKey, selectedMarketData]);
 
   return {
@@ -339,7 +332,7 @@ const DEFAULT_RESERVES_AND_INCENTIVES = {
   formattedPoolReservesAndIncentives: [] as FormattedReservesAndIncentives[],
 };
 
-async function computeFormattedReservesAndIncentives({
+function computeFormattedReservesAndIncentives({
   reserves,
   eModes,
 }: {
@@ -411,7 +404,7 @@ export function useFormattedPoolReservesAndIncentivesAtom() {
   );
 }
 
-async function computeIUserSummary({
+function computeIUserSummary({
   userReserves,
   reserves,
   formattedReserves,
@@ -663,7 +656,7 @@ const createGlobalSets = (
 ) => {
   return {
     setRemoteData: debounce(
-      async (
+      (
         addr: string,
         marketKey: CustomMarket,
         valOrFunc: UpdaterOrPartials<RemoteDataState>
@@ -677,11 +670,11 @@ const createGlobalSets = (
           strict: false,
         });
 
-        const formattedReservesAndIncentives = await computeFormattedReservesAndIncentives(
+        const formattedReservesAndIncentives = computeFormattedReservesAndIncentives(
           newVal
         );
 
-        const iUserSummary = await computeIUserSummary({
+        const iUserSummary = computeIUserSummary({
           ...newVal,
           formattedReserves: formattedReservesAndIncentives.formattedReserves,
         });
@@ -777,7 +770,10 @@ const createFetchLendingData = (
         .then(async (data) => {
           globalSets.setRemoteData(requestAddress, marketKey, data);
 
-          globalSets.setLoading(false, { address: requestAddress, marketKey });
+          globalSets.setLoading(false, {
+            address: requestAddress,
+            marketKey,
+          });
         })
         .catch(() => {
           globalSets.setLoading(false, { address: requestAddress, marketKey });
@@ -798,7 +794,7 @@ function getSelectedMarketInfo(
 function getMarketKey(getMarketKeyFromContext?: () => CustomMarket) {
   return getMarketKeyFromContext?.() || CustomMarket.proto_mainnet_v3;
 }
-async function getPools(
+function getPools(
   wallet: ReturnType<typeof useWallet>,
   getMarketKeyFromContext?: () => CustomMarket,
   accountAddress?: string,
@@ -903,13 +899,6 @@ const useLendingSummary = () => {
   const { iUserSummary } = useLendingISummary();
   const { lendingDataKey } = useCurrentLendingDataKey();
   const { getComputedInfo } = useLendingDataContext();
-  const computedInfo = useMemo(
-    () =>
-      lendingDataKey
-        ? getComputedInfo(lendingDataKey as RemoteDataKey)
-        : getInitComputedInfo(),
-    [lendingDataKey, getComputedInfo]
-  );
   const {
     formattedReservesAndIncentivesState: { formattedPoolReservesAndIncentives },
     wrapperPoolReserveAndFinalDisplayPoolReserves: {
@@ -917,7 +906,13 @@ const useLendingSummary = () => {
       wrapperPoolReserve,
     },
     apyInfo,
-  } = computedInfo;
+  } = useMemo(
+    () =>
+      lendingDataKey
+        ? getComputedInfo(lendingDataKey as RemoteDataKey)
+        : getInitComputedInfo(),
+    [lendingDataKey, getComputedInfo]
+  );
 
   const getTargetReserve = useCallback(
     (underlyingAsset: string) => {

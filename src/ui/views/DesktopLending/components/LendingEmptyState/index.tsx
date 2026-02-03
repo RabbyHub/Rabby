@@ -7,18 +7,24 @@ import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import { CustomMarket } from '../../config/market';
 import { SupplyItem } from '../SupplyListModal/SupplyItem';
 import { DisplayPoolReserveInfo } from '../../types';
+import { ReactComponent as RcIconAAVE } from '@/ui/assets/lending/aave.svg';
+import emptyBg from '@/ui/assets/lending/empty-bg.png';
 
 const EmptyStateContainer = styled.div`
   position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 400px;
+  height: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--rb-neutral-bg-1, #f7f7fa);
+  background-color: var(--rb-neutral-bg-2, #f7f7fa);
+  background-image: url(${emptyBg});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   overflow: hidden;
+  margin: 0 20px;
+  border-radius: 8px;
 
   &::before {
     content: '';
@@ -58,56 +64,10 @@ const PoweredByText = styled.div`
   z-index: 1;
   font-size: 12px;
   line-height: 16px;
+  font-weight: 500;
   color: var(--r-neutral-foot, #6d6d78);
-  margin-bottom: 40px;
+  margin-bottom: 16px;
   text-align: center;
-`;
-
-const IconContainer = styled.div`
-  position: relative;
-  z-index: 1;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--rb-brand-default, #7c66e3);
-  border: 2px solid rgba(124, 102, 227, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-`;
-
-const IconInner = styled.div`
-  position: relative;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
-const IconArc = styled.div`
-  width: 32px;
-  height: 16px;
-  border: 2px solid white;
-  border-bottom: none;
-  border-radius: 32px 32px 0 0;
-  margin-bottom: 8px;
-`;
-
-const IconDots = styled.div`
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-`;
-
-const IconDot = styled.div`
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: white;
 `;
 
 const MainHeading = styled.h2`
@@ -117,20 +77,19 @@ const MainHeading = styled.h2`
   font-weight: 600;
   line-height: 28px;
   color: var(--r-neutral-title-1, #2c2c2c);
-  margin: 0 0 8px 0;
+  margin: 18px 0 8px 0;
   text-align: center;
 `;
 
 const SubText = styled.p`
   position: relative;
   z-index: 1;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 20px;
+  font-weight: 500;
   color: var(--r-neutral-foot, #a6a6a6);
   margin: 0;
   text-align: center;
-  max-width: 400px;
-  padding: 0 20px;
 `;
 
 export const LendingEmptyState: React.FC<{
@@ -169,15 +128,7 @@ export const LendingEmptyState: React.FC<{
         <PoweredByText>
           {t('page.lending.summary.empty.description')}
         </PoweredByText>
-        <IconContainer>
-          <IconInner>
-            <IconArc />
-            <IconDots>
-              <IconDot />
-              <IconDot />
-            </IconDots>
-          </IconInner>
-        </IconContainer>
+        <RcIconAAVE width={59} height={59} />
         <MainHeading>{t('page.lending.summary.empty.title')}</MainHeading>
         <SubText>{t('page.lending.summary.empty.endDesc')}</SubText>
       </EmptyStateContainer>

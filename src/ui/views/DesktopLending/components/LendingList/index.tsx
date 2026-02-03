@@ -47,7 +47,7 @@ export type LendingModalType =
 const modalCommonProps = {
   width: 400,
   title: null,
-  bodyStyle: { background: 'transparent', padding: 0 } as const,
+  bodyStyle: { background: 'var(--r-neutral-bg-2)', padding: 0 } as const,
   maskClosable: true,
   footer: null,
   zIndex: 1000,
@@ -385,6 +385,10 @@ export const LendingList: React.FC = () => {
       </Modal>
       <Modal
         {...modalCommonProps}
+        bodyStyle={{
+          ...modalCommonProps.bodyStyle,
+          minHeight: 600,
+        }}
         visible={activeModal === 'supply'}
         onCancel={closeModal}
       >
@@ -400,6 +404,10 @@ export const LendingList: React.FC = () => {
       </Modal>
       <Modal
         {...modalCommonProps}
+        bodyStyle={{
+          ...modalCommonProps.bodyStyle,
+          minHeight: 600,
+        }}
         visible={activeModal === 'borrow'}
         onCancel={closeModal}
       >
@@ -415,6 +423,10 @@ export const LendingList: React.FC = () => {
       </Modal>
       <Modal
         {...modalCommonProps}
+        bodyStyle={{
+          ...modalCommonProps.bodyStyle,
+          minHeight: 600,
+        }}
         visible={activeModal === 'repay'}
         onCancel={closeModal}
       >
@@ -430,6 +442,10 @@ export const LendingList: React.FC = () => {
       </Modal>
       <Modal
         {...modalCommonProps}
+        bodyStyle={{
+          ...modalCommonProps.bodyStyle,
+          minHeight: 600,
+        }}
         visible={activeModal === 'withdraw'}
         onCancel={closeModal}
       >

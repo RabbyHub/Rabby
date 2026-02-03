@@ -370,9 +370,6 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
 
   if (!reserve?.reserve?.symbol) return null;
 
-  const descCardBg = reserve?.reserve.isIsolated
-    ? 'bg-rb-neutral-bg-2'
-    : 'bg-rb-orange-light-1';
   const descCardText = reserve?.reserve.isIsolated
     ? 'text-r-neutral-foot'
     : 'text-rb-orange-default';
@@ -385,13 +382,13 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
 
       {!!desc && (
         <div
-          className={`mt-16 flex items-start gap-8 py-12 px-16 rounded-[8px] ${descCardBg} ${descCardText}`}
+          className={`mt-16 flex items-start gap-2 py-12 px-16 rounded-[8px] bg-rb-neutral-card-1 ${descCardText}`}
         >
           <RcIconWarningCC
             viewBox="0 0 16 16"
-            className="w-15 h-15 flex-shrink-0 mt-2"
+            className="w-12 h-12 flex-shrink-0 mt-2"
           />
-          <span className="text-[14px] leading-[18px] font-medium flex-1">
+          <span className="text-[13px] leading-[16px] font-medium flex-1">
             {desc}
           </span>
         </div>

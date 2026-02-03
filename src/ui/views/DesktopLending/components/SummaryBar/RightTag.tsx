@@ -9,6 +9,8 @@ import { ManageEmodeModal } from '../ManageEmodeModal';
 import { DisableEmodeModal } from '../DisableEmodeModal';
 import { ManageEmodeFullModal } from '../ManageEmodeFullModal';
 import { useFetchLendingData } from '../../hooks';
+import { ReactComponent as RcIconLightingCC } from '@/ui/assets/lending/lighting-cc.svg';
+import { ReactComponent as RcIconSettingCC } from '@/ui/assets/lending/setting.svg';
 
 const EthCorrelatedTagWrapper = styled.div`
   background: white;
@@ -59,15 +61,21 @@ export const RightMarketTabInfo: React.FC = () => {
             className="cursor-pointer"
           >
             <span className="text-[12px] leading-[14px] font-medium text-[#9AE8FF]">
-              +
+              <RcIconLightingCC
+                width={16}
+                height={16}
+                className="text-[#9AE8FF]"
+              />
             </span>
             <span className="text-[12px] leading-[14px] font-medium">
-              <span className="text-[#9AE8FF]">
+              <div className="text-[#9AE8FF] max-w-[100px] overflow-ellipsis overflow-hidden">
                 {currentEmode?.label || ''}
-              </span>
-              <span className="text-[#CB8EFF]"> CORRELATED</span>
+              </div>
             </span>
-            <Tooltip title={t('page.lending.summary.ethCorrelatedTip')}>
+            <Tooltip
+              overlayClassName="rectangle"
+              title={t('page.lending.summary.ethCorrelatedTip')}
+            >
               <span onClick={(e) => e.stopPropagation()}>
                 <RcIconInfo
                   width={12}
@@ -91,6 +99,7 @@ export const RightMarketTabInfo: React.FC = () => {
           visible={fullModalVisible}
           onCancel={() => setFullModalVisible(false)}
           onSuccess={handleEmodeSuccess}
+          height={415}
         />
       </>
     );
@@ -108,15 +117,24 @@ export const RightMarketTabInfo: React.FC = () => {
   // 未开启 eMode：点击打开启用引导弹窗
   return (
     <>
-      <button
-        type="button"
+      <div
         onClick={() => setEnableIntroVisible(true)}
-        className="flex items-center gap-[6px] bg-r-neutral-card2 rounded-[4px] border-0 py-2 px-6 cursor-pointer"
+        className="flex items-center gap-[0px] bg-rb-neutral-bg-5 rounded-[6px] border-0 py-6 px-[5px] cursor-pointer"
       >
-        <span className="text-[12px] leading-[16px] text-rb-neutral-foot hover:text-r-neutral-title-1">
-          {t('page.lending.manageEmode.emode')}
-        </span>
-      </button>
+        <RcIconLightingCC
+          width={16}
+          height={16}
+          className="text-rb-neutral-foot"
+        />
+        <div className="text-[12px] leading-[16px] text-rb-neutral-foot font-semibold">
+          {t('page.lending.disabled')}
+        </div>
+        <RcIconSettingCC
+          width={16}
+          height={16}
+          className="text-rb-neutral-foot"
+        />
+      </div>
       <ManageEmodeModal
         visible={enableIntroVisible}
         onCancel={() => setEnableIntroVisible(false)}

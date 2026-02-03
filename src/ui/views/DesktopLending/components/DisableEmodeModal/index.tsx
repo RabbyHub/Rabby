@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Modal, Button } from 'antd';
+import { Modal, Button, Tooltip } from 'antd';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
 import { useMode } from '../../hooks/useMode';
 import { formatPercent } from '../../utils/format';
 import SymbolIcon from '../SymbolIcon';
+import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 import { EmodeCategory } from '../../types';
 
 const modalStyle = {
@@ -25,7 +26,7 @@ const modalStyle = {
   },
 };
 
-const PairTable: React.FC<{
+export const PairTable: React.FC<{
   data: EmodeCategory['assets'];
 }> = ({ data }) => {
   const { t } = useTranslation();
@@ -33,8 +34,8 @@ const PairTable: React.FC<{
   if (!data?.length) return null;
 
   return (
-    <div className="mt-[12px]">
-      <div className="flex bg-rb-neutral-bg-3 rounded-[6px] px-[12px] py-[8px]">
+    <div className="mt-[8px] rounded-[6px] border border-rb-neutral-line">
+      <div className="flex px-[12px] pb-0 pt-[8px]">
         <div className="flex-1 text-left text-[12px] leading-[16px] font-medium text-rb-neutral-body">
           {t('page.lending.manageEmode.overview.row.asset')}
         </div>
@@ -45,7 +46,7 @@ const PairTable: React.FC<{
           {t('page.lending.manageEmode.overview.row.borrowable')}
         </div>
       </div>
-      <div className="mt-[12px] space-y-[12px]">
+      <div className="space-y-[12px] px-12 pr-0 mt-[8px] pb-20 max-h-[120px] overflow-y-auto">
         {data.map((item) => (
           <div key={item.underlyingAsset} className="flex items-center">
             <div className="flex-1 flex items-center gap-[8px]">
@@ -104,42 +105,62 @@ export const DisableEmodeModal: React.FC<DisableEmodeModalProps> = ({
 
   return (
     <Modal {...modalStyle} visible={visible} onCancel={onCancel}>
-      <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
-        <p className="text-[20px] leading-[28px] font-medium text-r-neutral-title-1 text-center">
+      <div className="bg-r-neutral-bg-2 px-[20px] pt-[16px] pb-[16px] flex flex-col">
+        <div className="text-[20px] leading-[28px] font-medium text-r-neutral-title-1 text-center">
           {t('page.lending.manageEmode.guide.title')}
-        </p>
-        <p className="text-[16px] leading-[24px] text-r-neutral-foot text-center mt-[8px] px-[25px]">
+        </div>
+        <div className="text-[14px] leading-[17px] text-r-neutral-foot mt-[8px]">
           {t('page.lending.manageEmode.guide.description')}
-        </p>
-        <div className="mt-[8px] border border-rb-neutral-line rounded-[16px] p-[20px] space-y-[24px]">
-          <div>
-            <div className="text-[14px] leading-[18px] font-medium text-r-neutral-foot mb-[12px]">
-              {t('page.lending.manageEmode.categorySelector.label')}
-            </div>
-            <div className="text-[17px] leading-[22px] font-medium text-r-neutral-title-1">
+        </div>
+        <div className="mt-[11px] bg-r-neutral-card-1 rounded-[8px] p-[16px]">
+          <div className="flex items-center justify-between border border-rb-neutral-line rounded-[6px] h-[48px] px-[12px]">
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1 max-w-[180px] truncate">
               {emodeCategoryId ? eModes?.[emodeCategoryId]?.label || '' : ''}
             </div>
+            <div>
+              <span
+                className={
+                  'text-[13px] leading-[15px] font-medium text-rb-green-default'
+                }
+              >
+                {t('page.lending.manageEmode.enabled')}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[16px] leading-[20px] font-medium text-r-neutral-foot">
-              {t('page.lending.maxLtv')}
-            </span>
-            <span className="text-[16px] leading-[22px] font-medium text-r-neutral-title-1">
+          <div className="flex items-center justify-between mt-[16px]">
+            <div className="flex items-center gap-[4px]">
+              <span className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
+                {t('page.lending.maxLtv')}
+              </span>
+              <Tooltip
+                overlayClassName="rectangle"
+                title={t('page.lending.modalDesc.maxLTV')}
+              >
+                <RcIconInfo
+                  width={12}
+                  height={12}
+                  className="cursor-pointer text-rb-neutral-foot"
+                />
+              </Tooltip>
+            </div>
+            <span className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
               {formatPercent(Number(currentEmode?.ltv || '0') / 10000)}
             </span>
           </div>
           <PairTable data={currentEmode?.assets || []} />
         </div>
-        <Button
-          className={clsx(
-            'w-full mt-[24px] h-[44px] rounded-[8px] font-medium',
-            'border-rb-neutral-line bg-rb-neutral-line text-r-neutral-title-1',
-            'hover:!border-rb-neutral-line hover:!bg-rb-neutral-line'
-          )}
-          onClick={handleDisable}
-        >
-          {t('page.lending.manageEmode.disableTitle')}
-        </Button>
+        <div className="mt-auto w-full">
+          <Button
+            className={clsx(
+              'w-full mt-[24px] h-[44px] rounded-[8px] font-medium',
+              'border-rb-neutral-line bg-rb-neutral-line text-r-neutral-title-1',
+              'hover:!border-rb-neutral-line hover:!bg-rb-neutral-line'
+            )}
+            onClick={handleDisable}
+          >
+            {t('page.lending.manageEmode.disableTitle')}
+          </Button>
+        </div>
       </div>
     </Modal>
   );

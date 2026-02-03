@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PopupDetailProps } from '../../types';
-import { getHealthFactorText } from '../../utils/health';
 import { isHFEmpty } from '../../utils';
+import { HealthFactorText } from '../HealthFactorText';
 
 export const BorrowOverView: React.FC<
   PopupDetailProps & {
@@ -16,24 +16,31 @@ export const BorrowOverView: React.FC<
 
   return (
     <div className="w-full mt-16">
-      <h3 className="text-[13px] leading-[15px] text-r-neutral-foot mb-8">
+      <div className="text-[13px] leading-[15px] text-r-neutral-foot mb-8">
         {t('page.lending.popup.title')}
-      </h3>
+      </div>
       <div className="rounded-[8px] bg-rb-neutral-card-1">
         {showHF && (
           <>
-            <div className="flex items-center justify-between p-16">
+            <div className="flex items-center justify-between p-16 pb-2">
               <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
                 {t('page.lending.hfTitle')}
               </span>
-              <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
+              <span className="text-[13px] leading-[15px] font-medium text-r-neutral-foot flex items-center">
                 {afterHF ? (
                   <>
-                    {getHealthFactorText(healthFactor)} →{' '}
-                    {getHealthFactorText(afterHF)}
+                    <HealthFactorText
+                      limitless={healthFactor === '-1'}
+                      healthFactor={healthFactor}
+                    />{' '}
+                    <span className="mx-1">→</span>
+                    <HealthFactorText healthFactor={afterHF} />
                   </>
                 ) : (
-                  getHealthFactorText(healthFactor)
+                  <HealthFactorText
+                    limitless={healthFactor === '-1'}
+                    healthFactor={healthFactor}
+                  />
                 )}
               </span>
             </div>

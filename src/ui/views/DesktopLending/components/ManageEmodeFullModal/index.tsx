@@ -1,7 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Modal, Button, Select, Checkbox } from 'antd';
+import { Modal, Button } from 'antd';
 import { formatUserSummary } from '@aave/math-utils';
 import dayjs from 'dayjs';
 import { useWallet } from '@/ui/utils/WalletContext';
@@ -13,7 +19,7 @@ import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManage
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
-import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/lending/warning-2.svg';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 
 import { useMode } from '../../hooks/useMode';
@@ -30,16 +36,14 @@ import {
   HF_RISK_CHECKBOX_THRESHOLD,
 } from '../../utils/constant';
 import { isEModeCategoryAvailable } from '../../utils/emode';
-import { getHealthFactorText } from '../../utils/health';
-import { formatPercent } from '../../utils/format';
-import { isHFEmpty } from '../../utils';
-import SymbolIcon from '../SymbolIcon';
-import { EmodeCategory } from '../../types';
+import { StyledCheckbox } from '../BorrowModal';
+import { ManageEmodeFullModalOverview } from './Overview';
+import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 
 const modalStyle = {
   width: 400,
   title: null as React.ReactNode,
-  bodyStyle: { background: 'transparent', padding: 0 } as const,
+  bodyStyle: { background: 'transparent', padding: 0, minHeight: 600 } as const,
   maskClosable: true,
   footer: null as React.ReactNode,
   zIndex: 1000,
@@ -53,71 +57,18 @@ const modalStyle = {
   },
 };
 
-const PairTable: React.FC<{ data: EmodeCategory['assets'] }> = ({ data }) => {
-  const { t } = useTranslation();
-  if (!data?.length) return null;
-
-  return (
-    <div className="mt-[12px]">
-      <div className="flex bg-rb-neutral-bg-3 rounded-[6px] px-[12px] py-[8px]">
-        <div className="flex-1 text-left text-[12px] leading-[16px] font-medium text-rb-neutral-body">
-          {t('page.lending.manageEmode.overview.row.asset')}
-        </div>
-        <div className="flex-1 text-center text-[12px] leading-[16px] font-medium text-rb-neutral-body">
-          {t('page.lending.manageEmode.overview.row.collateral')}
-        </div>
-        <div className="flex-1 text-center text-[12px] leading-[16px] font-medium text-rb-neutral-body">
-          {t('page.lending.manageEmode.overview.row.borrowable')}
-        </div>
-      </div>
-      <div className="mt-[12px] space-y-[12px]">
-        {data.map((item) => (
-          <div key={item.underlyingAsset} className="flex items-center">
-            <div className="flex-1 flex items-center gap-[8px]">
-              <SymbolIcon
-                tokenSymbol={item.iconSymbol || item.symbol}
-                size={24}
-              />
-              <span
-                className={clsx(
-                  'text-[12px] leading-[16px] font-medium text-r-neutral-title-1',
-                  'truncate max-w-[100px]'
-                )}
-              >
-                {item.symbol}
-              </span>
-            </div>
-            <div className="flex-1 flex justify-center">
-              {item.collateral ? (
-                <span className="text-[16px] text-r-green-default">✓</span>
-              ) : (
-                <span className="text-[16px] text-r-red-default">✗</span>
-              )}
-            </div>
-            <div className="flex-1 flex justify-center">
-              {item.borrowable ? (
-                <span className="text-[16px] text-r-green-default">✓</span>
-              ) : (
-                <span className="text-[16px] text-r-red-default">✗</span>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 type ManageEmodeFullModalProps = {
   visible: boolean;
   onCancel: () => void;
   onSuccess?: () => void;
+  height?: number;
 };
 
 export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
   visible,
   onCancel,
   onSuccess,
+  height = 600,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -131,7 +82,6 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
     formattedPoolReservesAndIncentives,
   } = useLendingSummary();
   const { pools } = usePoolDataProviderContract();
-
   const [isLoading, setIsLoading] = useState(false);
   const [miniSignLoading, setMiniSignLoading] = useState(false);
   const [txs, setTxs] = useState<Tx[]>([]);
@@ -140,7 +90,7 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
     emodeCategoryId || 0
   );
 
-  const wantDisableEmode = emodeEnabled;
+  const wantDisableEmode = useMemo(() => emodeEnabled, [emodeEnabled]);
 
   const isTargetCategoryAvailable = useMemo(() => {
     const targetCategory = eModes?.[selectedCategoryId];
@@ -397,46 +347,6 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
     ]
   );
 
-  const categoryOptions = useMemo(() => {
-    if (!eModes || !iUserSummary) return [];
-    return Object.values(eModes)
-      .filter((e) => e.id !== 0 && e.assets?.length > 0)
-      .map((e) => {
-        const available = isEModeCategoryAvailable(iUserSummary, e);
-        return {
-          value: e.id,
-          label: available
-            ? e.label
-            : `${e.label} ${t('page.lending.manageEmode.unavailable')}`,
-          available,
-        };
-      });
-  }, [eModes, iUserSummary, t]);
-
-  const targetMode = eModes?.[selectedCategoryId];
-  const healthFactor = iUserSummary?.healthFactor || '';
-  const afterHealthFactor = newSummary?.healthFactor || '';
-  const showLTVChange =
-    iUserSummary?.currentLoanToValue !== '0' &&
-    Number(newSummary.currentLoanToValue).toFixed(3) !==
-      Number(iUserSummary?.currentLoanToValue).toFixed(3);
-  const isEmptyHF =
-    isHFEmpty(Number(healthFactor || '0')) &&
-    isHFEmpty(Number(afterHealthFactor || '0'));
-
-  const ltvLineContent =
-    wantDisableEmode || !selectedCategoryId
-      ? showLTVChange
-        ? `${formatPercent(
-            Number(iUserSummary?.currentLoanToValue || '0')
-          )} → ${formatPercent(Number(newSummary.currentLoanToValue || '0'))}`
-        : formatPercent(Number(newSummary.currentLoanToValue))
-      : showLTVChange
-      ? `${formatPercent(
-          Number(iUserSummary?.currentLoanToValue || '0')
-        )} → ${formatPercent(Number(targetMode?.ltv) / 10000)}`
-      : formatPercent(Number(targetMode?.ltv) / 10000);
-
   const canSubmit =
     txs.length > 0 &&
     currentAccount &&
@@ -448,175 +358,119 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
   if (!visible) return null;
 
   return (
-    <Modal {...modalStyle} visible={visible} onCancel={onCancel}>
-      <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
-        <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
-          {wantDisableEmode
-            ? t('page.lending.manageEmode.actions.disable')
-            : t('page.lending.manageEmode.title')}
-        </h2>
-        {!wantDisableEmode && (
-          <p className="text-[16px] leading-[24px] text-r-neutral-foot text-center mt-[8px]">
-            {t('page.lending.manageEmode.description')}
-          </p>
-        )}
-
-        <div className="mt-[24px] rounded-[8px] bg-rb-neutral-card-1 p-[20px] space-y-[26px]">
-          <div>
-            <div className="text-[14px] leading-[18px] font-medium text-r-neutral-foot mb-[12px]">
-              {t('page.lending.manageEmode.overview.title')}
-            </div>
-            {wantDisableEmode ? (
-              <div className="text-[17px] leading-[22px] font-medium text-r-neutral-title-1">
-                {emodeCategoryId ? eModes?.[emodeCategoryId]?.label || '' : ''}
-              </div>
-            ) : (
-              <Select
-                className="w-full"
-                placeholder={t(
-                  'page.lending.manageEmode.categorySelector.placeholder'
-                )}
-                value={selectedCategoryId || undefined}
-                onChange={(v) => setSelectedCategoryId(v ?? 0)}
-                options={categoryOptions.map(({ value, label, available }) => ({
-                  value,
-                  label,
-                  disabled: !available,
-                }))}
-                disabled={wantDisableEmode}
-              />
-            )}
-            {!wantDisableEmode &&
-              !isTargetCategoryAvailable &&
-              selectedCategoryId && (
-                <p className="text-[16px] leading-[24px] text-r-neutral-foot mt-[4px]">
-                  {t('page.lending.manageEmode.categorySelector.desc')}
-                </p>
-              )}
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-[14px] leading-[18px] font-medium text-r-neutral-foot">
-              {t('page.lending.maxLtv')}
-            </span>
-            <span className="text-[16px] leading-[22px] font-medium text-r-neutral-title-1">
-              {ltvLineContent}
-            </span>
-          </div>
-
-          {!isEmptyHF && (
-            <div className="flex items-center justify-between">
-              <span className="text-[14px] leading-[18px] font-medium text-r-neutral-foot">
-                {t('page.lending.hfTitle')}
-              </span>
-              <span className="text-[16px] leading-[22px] font-normal text-r-neutral-title-1">
-                {afterHealthFactor ? (
-                  <>
-                    {getHealthFactorText(healthFactor)} →{' '}
-                    {getHealthFactorText(afterHealthFactor)}
-                  </>
-                ) : (
-                  getHealthFactorText(healthFactor)
-                )}
-              </span>
-            </div>
+    <Modal
+      {...modalStyle}
+      bodyStyle={{ ...modalStyle.bodyStyle, minHeight: height }}
+      visible={visible}
+      onCancel={onCancel}
+    >
+      <PopupContainer>
+        <div
+          className={clsx(
+            'bg-r-neutral-bg-2 flex flex-col px-[20px] py-[16px]'
           )}
-
-          {!isEmptyHF && (
-            <div className="flex justify-end">
-              <span className="text-[12px] leading-[15px] text-r-neutral-foot">
-                {t('page.lending.popup.liquidationAt')}
-              </span>
-            </div>
-          )}
-
-          {!wantDisableEmode && (
-            <PairTable
-              data={
-                selectedCategoryId
-                  ? eModes?.[selectedCategoryId]?.assets || []
-                  : []
-              }
-            />
-          )}
-        </div>
-
-        {canShowDirectSubmit &&
-          hasChangeCategory &&
-          !isBlock &&
-          isTargetCategoryAvailable &&
-          chainInfo?.serverId &&
-          txs.length > 0 && (
-            <div className="mt-[12px]">
-              <DirectSignGasInfo
-                supportDirectSign
-                loading={isLoading}
-                openShowMore={() => {}}
-                chainServeId={chainInfo.serverId}
-                noQuote={false}
-                type="send"
-              />
-            </div>
-          )}
-
-        {isRisky && (
-          <div className="mt-[16px] flex flex-col gap-[12px]">
-            <div className="flex items-center gap-[8px] py-[8px] px-[10px] rounded-[8px] bg-rb-red-light-1">
-              <RcIconWarningCC
-                viewBox="0 0 16 16"
-                className="w-15 h-15 text-rb-red-default flex-shrink-0"
-              />
-              <span className="text-[14px] leading-[18px] font-medium text-rb-red-default flex-1">
-                {desc}
-              </span>
-            </div>
-            {!isBlock && (
-              <div className="flex items-center justify-center gap-[8px]">
-                <Checkbox
-                  checked={isChecked}
-                  onChange={(e) => setIsChecked(e.target.checked)}
-                  className="text-[13px] text-r-neutral-foot"
-                >
-                  {t('page.lending.risk.checkbox')}
-                </Checkbox>
-              </div>
-            )}
-          </div>
-        )}
-
-        {canShowDirectSubmit && currentAccount?.type ? (
-          <DirectSignToConfirmBtn
-            className="mt-[20px]"
-            title={
-              wantDisableEmode
-                ? t('page.lending.manageEmode.actions.disable')
-                : t('page.lending.manageEmode.actions.enable')
-            }
-            disabled={!canSubmit}
-            loading={miniSignLoading}
-            onConfirm={() => handleSubmit()}
-            accountType={currentAccount.type}
-          />
-        ) : (
-          <Button
-            type={wantDisableEmode ? 'default' : 'primary'}
-            block
-            size="large"
-            className={`mt-[20px] h-[48px] rounded-[8px] font-medium text-[16px] ${
-              wantDisableEmode
-                ? '!border-rb-neutral-line !bg-rb-neutral-line !text-r-neutral-title-1'
-                : ''
-            }`}
-            loading={isLoading}
-            disabled={!canSubmit}
-            onClick={() => handleSubmit()}
-          >
+          style={{ height }}
+        >
+          <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
             {wantDisableEmode
               ? t('page.lending.manageEmode.actions.disable')
-              : t('page.lending.manageEmode.actions.enable')}
-          </Button>
-        )}
-      </div>
+              : t('page.lending.manageEmode.title')}
+          </h2>
+          {!wantDisableEmode && (
+            <div className="text-[14px] leading-[17px] text-r-neutral-foot mt-[8px]">
+              {t('page.lending.manageEmode.description')}
+            </div>
+          )}
+
+          <ManageEmodeFullModalOverview
+            selectedCategoryId={
+              wantDisableEmode ? emodeCategoryId : selectedCategoryId
+            }
+            newSummary={newSummary}
+            disabled={wantDisableEmode}
+            onSelectCategory={setSelectedCategoryId}
+            isUnAvailable={!isTargetCategoryAvailable && !!selectedCategoryId}
+          />
+
+          {canShowDirectSubmit &&
+            hasChangeCategory &&
+            !isBlock &&
+            isTargetCategoryAvailable &&
+            chainInfo?.serverId &&
+            txs.length > 0 && (
+              <div className="mt-[12px]">
+                <DirectSignGasInfo
+                  supportDirectSign
+                  loading={isLoading}
+                  openShowMore={() => {}}
+                  chainServeId={chainInfo.serverId}
+                  noQuote={false}
+                  type="send"
+                />
+              </div>
+            )}
+
+          <div className="mt-auto flex flex-col justify-end">
+            {isRisky && (
+              <div className="mt-[16px] flex flex-col gap-[12px]">
+                <div className="flex items-center gap-8 py-8 px-10 rounded-[8px] bg-rb-neutral-card-1">
+                  <RcIconWarningCC
+                    viewBox="0 0 16 16"
+                    className="w-12 h-12 text-rb-red-default flex-shrink-0 -mt-2"
+                  />
+                  <span className="text-[14px] leading-[18px] font-medium text-rb-red-default flex-1">
+                    {desc}
+                  </span>
+                </div>
+                {!isBlock && (
+                  <div className="flex items-center justify-center gap-[8px]">
+                    <StyledCheckbox
+                      checked={isChecked}
+                      onChange={(e) => setIsChecked(e.target.checked)}
+                      className="text-[13px] text-r-neutral-foot"
+                    >
+                      {t('page.lending.risk.checkbox')}
+                    </StyledCheckbox>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {canShowDirectSubmit && currentAccount?.type ? (
+              <DirectSignToConfirmBtn
+                className="mt-[20px]"
+                title={
+                  wantDisableEmode
+                    ? t('page.lending.manageEmode.actions.disable')
+                    : t('page.lending.manageEmode.actions.enable')
+                }
+                disabled={!canSubmit}
+                loading={miniSignLoading}
+                onConfirm={() => handleSubmit()}
+                accountType={currentAccount.type}
+              />
+            ) : (
+              <Button
+                type={wantDisableEmode ? 'default' : 'primary'}
+                block
+                size="large"
+                className={`mt-[20px] h-[48px] rounded-[8px] font-medium text-[16px] ${
+                  wantDisableEmode
+                    ? '!border-rb-neutral-line !bg-rb-neutral-line !text-r-neutral-title-1'
+                    : ''
+                }`}
+                loading={isLoading}
+                disabled={!canSubmit}
+                onClick={() => handleSubmit()}
+              >
+                {wantDisableEmode
+                  ? t('page.lending.manageEmode.actions.disable')
+                  : t('page.lending.manageEmode.actions.enable')}
+              </Button>
+            )}
+          </div>
+        </div>
+      </PopupContainer>
     </Modal>
   );
 };

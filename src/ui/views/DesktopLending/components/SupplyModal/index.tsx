@@ -36,6 +36,7 @@ import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManage
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
+import { StyledInput } from '../StyledInput';
 
 type SupplyModalProps = {
   visible: boolean;
@@ -525,7 +526,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
   if (!reserve?.reserve?.symbol) return null;
 
   return (
-    <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
+    <div className="bg-r-neutral-bg-2 rounded-[8px] px-[20px] pt-[16px] pb-[16px] min-h-[600px] flex flex-col">
       <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
         {t('page.lending.supplyDetail.actions')} {reserve.reserve.symbol}
       </h2>
@@ -557,7 +558,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
                 className={`
                   px-4 py-2 rounded-[2px] 
                   bg-rb-brand-light-1 
-                  text-rb-brand-default font-medium text-[11px] leading-[13px] 
+                  text-rb-brand-default font-medium text-[11px] leading-[11px] 
                   hover:bg-rb-brand-light-2 disabled:opacity-50 disabled:cursor-not-allowed
                   `}
                 onClick={() => setAmount(supplyAmount.amount || '0')}
@@ -568,17 +569,11 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             </div>
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0">
-            <Input
+            <StyledInput
               value={amount ?? ''}
               onChange={onAmountChange}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"
-              style={{
-                fontSize: '20px',
-                lineHeight: '28px',
-                fontWeight: 500,
-                color: 'var(--r-neutral-title-1)',
-              }}
             />
             {amount && amount !== '0' && (
               <span className="text-[13px] leading-[15px] text-r-neutral-foot mt-1">
@@ -608,7 +603,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
       chainInfo?.serverId &&
       !!amount &&
       amount !== '0' ? (
-        <div className="mt-16">
+        <div className="mt-16 px-16">
           <DirectSignGasInfo
             supportDirectSign
             loading={isLoading}
@@ -619,35 +614,36 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
           />
         </div>
       ) : null}
-
-      <ReserveErrorTip reserve={reserve} className="mt-4" />
-
-      {canShowDirectSubmit && currentAccount?.type ? (
-        <DirectSignToConfirmBtn
-          className="mt-20"
-          title={
-            <>
-              {t('page.lending.supplyDetail.actions')} {reserve.reserve.symbol}
-            </>
-          }
-          disabled={!canSubmit}
-          loading={miniSignLoading}
-          onConfirm={() => handleSupply()}
-          accountType={currentAccount.type}
-        />
-      ) : (
-        <Button
-          type="primary"
-          block
-          size="large"
-          className="mt-20 h-[48px] rounded-[8px] font-medium text-[16px]"
-          loading={isLoading}
-          disabled={!canSubmit}
-          onClick={() => handleSupply()}
-        >
-          {t('page.lending.supplyDetail.actions')} {reserve.reserve.symbol}
-        </Button>
-      )}
+      <div className="mt-auto w-full">
+        <ReserveErrorTip reserve={reserve} />
+        {canShowDirectSubmit && currentAccount?.type ? (
+          <DirectSignToConfirmBtn
+            className="mt-20"
+            title={
+              <>
+                {t('page.lending.supplyDetail.actions')}{' '}
+                {reserve.reserve.symbol}
+              </>
+            }
+            disabled={!canSubmit}
+            loading={miniSignLoading}
+            onConfirm={() => handleSupply()}
+            accountType={currentAccount.type}
+          />
+        ) : (
+          <Button
+            type="primary"
+            block
+            size="large"
+            className="mt-20 h-[48px] rounded-[8px] font-medium text-[16px]"
+            loading={isLoading}
+            disabled={!canSubmit}
+            onClick={() => handleSupply()}
+          >
+            {t('page.lending.supplyDetail.actions')} {reserve.reserve.symbol}
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

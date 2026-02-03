@@ -15,6 +15,7 @@ import { displayGhoForMintableMarket } from '../../utils/supply';
 import { isUnFoldToken } from '../../config/unfold';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { SupplyItem } from './SupplyItem';
+import { ReactComponent as RcIconArrowCC } from '@/ui/assets/lending/arrow-cc.svg';
 
 type SupplyListModalProps = {
   onSelect: (reserve: DisplayPoolReserveInfo) => void;
@@ -39,15 +40,20 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
   } = useLendingSummary();
   const { chainEnum, marketKey } = useSelectedMarket();
 
+  type SortField = 'tvl' | 'apy' | 'balance';
+  type SortDirection = 'asc' | 'desc';
+
   const [foldHideList, setFoldHideList] = useState(true);
+  const [sortField, setSortField] = useState<SortField>('tvl');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const isInIsolationMode = useMemo(() => !!iUserSummary?.isInIsolationMode, [
     iUserSummary?.isInIsolationMode,
   ]);
 
   const sortReserves = useMemo(() => {
-    return (displayPoolReserves ?? [])
-      .filter((item) => {
+    const list =
+      displayPoolReserves?.filter((item) => {
         if (item.underlyingBalance && item.underlyingBalance !== '0') {
           return true;
         }
@@ -66,14 +72,36 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
             currentMarket: marketKey,
           })
         );
-      })
-      .sort((a, b) => {
-        return (
-          Number(b.reserve.totalLiquidityUSD) -
-          Number(a.reserve.totalLiquidityUSD)
-        );
-      });
-  }, [chainEnum, displayPoolReserves, marketKey, reserves?.reservesData]);
+      }) ?? [];
+
+    const getSortValue = (item: DisplayPoolReserveInfo) => {
+      if (sortField === 'tvl') {
+        return Number(item.reserve.totalLiquidityUSD || '0');
+      }
+      if (sortField === 'apy') {
+        return Number(item.reserve.supplyAPY || '0');
+      }
+      // balance
+      return Number(item.walletBalanceUSD || '0');
+    };
+
+    return [...list].sort((a, b) => {
+      const av = getSortValue(a);
+      const bv = getSortValue(b);
+      if (sortDirection === 'desc') {
+        return bv - av;
+      }
+      return av - bv;
+    });
+  }, [
+    API_ETH_MOCK_ADDRESS,
+    chainEnum,
+    displayPoolReserves,
+    marketKey,
+    reserves?.reservesData,
+    sortField,
+    sortDirection,
+  ]);
 
   const listReserves = sortReserves ?? [];
 
@@ -115,6 +143,17 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
     [getTargetReserve, iUserSummary, onSelect]
   );
 
+  const handleSortClick = useCallback((field: SortField) => {
+    setSortField((prevField) => {
+      if (prevField === field) {
+        setSortDirection((prevDir) => (prevDir === 'desc' ? 'asc' : 'desc'));
+        return prevField;
+      }
+      setSortDirection('desc');
+      return field;
+    });
+  }, []);
+
   const isolatedCard = useMemo(() => {
     if (loading || !isInIsolationMode) return null;
     return (
@@ -132,10 +171,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
 
   return (
     <div
-      className={clsx(
-        'w-full h-full min-h-0 flex flex-col',
-        'bg-r-neutral-bg-2 rounded-[12px] p-[24px] pb-8'
-      )}
+      className={clsx('w-full h-full min-h-0 flex flex-col', 'p-[24px] pb-8')}
     >
       <h2 className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1 mb-12 px-12">
         {t('page.lending.supplyDetail.actions')}
@@ -149,15 +185,72 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
           {isolatedCard}
           {listReserves.length > 0 && (
             <>
-              <div className="mt-16 mb-2 flex items-center justify-between px-8">
-                <span className="text-[14px] leading-[18px] text-r-neutral-foot flex-1">
+              <div className="mt-16 mb-2 flex items-center justify-start px-16">
+                <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[150px]">
                   {t('page.lending.list.headers.token')}
                 </span>
-                <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[80px] text-right">
+                <span
+                  className={clsx(
+                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center justify-end gap-1',
+                    sortField === 'tvl'
+                      ? 'text-r-neutral-title-1 font-medium'
+                      : 'text-r-neutral-foot'
+                  )}
+                  onClick={() => handleSortClick('tvl')}
+                >
                   {t('page.lending.tvl')}
+                  {sortField === 'tvl' && (
+                    <RcIconArrowCC
+                      width={12}
+                      height={12}
+                      className={clsx(
+                        'w-3 h-3 flex-shrink-0 inline-block',
+                        sortDirection === 'desc' ? 'rotate-90' : '-rotate-90'
+                      )}
+                    />
+                  )}
                 </span>
-                <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[80px] text-right">
+                <span
+                  className={clsx(
+                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center justify-end gap-1',
+                    sortField === 'apy'
+                      ? 'text-r-neutral-title-1 font-medium'
+                      : 'text-r-neutral-foot'
+                  )}
+                  onClick={() => handleSortClick('apy')}
+                >
                   {t('page.lending.apy')}
+                  {sortField === 'apy' && (
+                    <RcIconArrowCC
+                      width={12}
+                      height={12}
+                      className={clsx(
+                        'w-3 h-3 flex-shrink-0 inline-block',
+                        sortDirection === 'desc' ? 'rotate-90' : '-rotate-90'
+                      )}
+                    />
+                  )}
+                </span>
+                <span
+                  className={clsx(
+                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center justify-end gap-1',
+                    sortField === 'balance'
+                      ? 'text-r-neutral-title-1 font-medium'
+                      : 'text-r-neutral-foot'
+                  )}
+                  onClick={() => handleSortClick('balance')}
+                >
+                  {t('page.lending.list.headers.my_balance')}
+                  {sortField === 'balance' && (
+                    <RcIconArrowCC
+                      width={12}
+                      height={12}
+                      className={clsx(
+                        'w-3 h-3 flex-shrink-0 inline-block',
+                        sortDirection === 'desc' ? 'rotate-90' : '-rotate-90'
+                      )}
+                    />
+                  )}
                 </span>
                 <span className="w-[80px] flex-shrink-0" />
               </div>
@@ -167,23 +260,31 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                     <div
                       key="toggle-fold"
                       className={clsx(
-                        'w-full pt-20 pb-20 py-8 px-12 cursor-pointer text-left',
-                        'text-[14px] text-r-neutral-foot'
+                        'w-full pt-20 pb-12 py-8 px-12 cursor-pointer text-left',
+                        'text-[12px] text-r-neutral-foot flex items-center justify-start gap-2'
                       )}
                       onClick={() => setFoldHideList((prev) => !prev)}
                     >
-                      {foldHideList
-                        ? `+ ${foldList.length} ${
-                            t('page.lending.supplyList.more') || 'More'
-                          }`
-                        : `- ${
-                            t('page.lending.supplyList.collapse') || 'Collapse'
-                          }`}
+                      <span>{t('page.lending.supplyList.more')}</span>
+                      <RcIconArrowCC
+                        width={12}
+                        height={12}
+                        className={clsx(
+                          'text-r-neutral-foot flex-shrink-0 inline-block transition-transform',
+                          !foldHideList && '-rotate-90'
+                        )}
+                      />
                     </div>
                   );
                 }
                 const data = row.data;
-                return <SupplyItem data={data} onSelect={handlePressItem} />;
+                return (
+                  <SupplyItem
+                    key={`${data.reserve.underlyingAsset}-${data.reserve.symbol}`}
+                    data={data}
+                    onSelect={handlePressItem}
+                  />
+                );
               })}
             </>
           )}

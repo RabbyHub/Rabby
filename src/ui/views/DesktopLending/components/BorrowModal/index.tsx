@@ -34,7 +34,9 @@ import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManage
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
-import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/lending/warning-2.svg';
+import styled from 'styled-components';
+import { StyledInput } from '../StyledInput';
 
 type BorrowModalProps = {
   visible: boolean;
@@ -43,6 +45,12 @@ type BorrowModalProps = {
   userSummary: UserSummary | null;
   onSuccess?: () => void;
 };
+
+export const StyledCheckbox = styled(Checkbox)`
+  .ant-checkbox {
+    border-radius: 0 !important;
+  }
+`;
 
 export const BorrowModal: React.FC<BorrowModalProps> = ({
   visible,
@@ -407,7 +415,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   if (!reserve?.reserve?.symbol) return null;
 
   return (
-    <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px]">
+    <div className="bg-r-neutral-bg-2 rounded-[8px] px-[20px] pt-[16px] pb-[16px] min-h-[600px] flex flex-col">
       <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
         {t('page.lending.borrowDetail.actions')} {reserve.reserve.symbol}
       </h2>
@@ -441,7 +449,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
                 className={`
                   px-4 py-2 rounded-[2px] 
                   bg-rb-brand-light-1 
-                  text-rb-brand-default font-medium text-[11px] leading-[13px] 
+                  text-rb-brand-default font-medium text-[11px] leading-[11px] 
                   hover:bg-rb-brand-light-2 disabled:opacity-50 disabled:cursor-not-allowed
                   `}
                 onClick={() => setAmount(availableToBorrow.amount || '0')}
@@ -452,17 +460,11 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
             </div>
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0">
-            <Input
+            <StyledInput
               value={amount ?? ''}
               onChange={onAmountChange}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"
-              style={{
-                fontSize: '20px',
-                lineHeight: '28px',
-                fontWeight: 500,
-                color: 'var(--r-neutral-title-1)',
-              }}
             />
             {amount && amount !== '0' && (
               <span className="text-[13px] leading-[15px] text-r-neutral-foot mt-1">
@@ -491,7 +493,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       chainInfo?.serverId &&
       !!amount &&
       amount !== '0' ? (
-        <div className="mt-16">
+        <div className="mt-16 px-16">
           <DirectSignGasInfo
             supportDirectSign
             loading={isLoading}
@@ -503,57 +505,59 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         </div>
       ) : null}
 
-      {showBorrowToCapTip && <BorrowToCapTip className="mt-16" />}
-
-      {isRisky && (
-        <div className="mt-16 flex flex-col gap-12">
-          <div className="flex items-center gap-8 py-8 px-10 rounded-[8px] bg-rb-red-light-1">
-            <RcIconWarningCC
-              viewBox="0 0 16 16"
-              className="w-15 h-15 text-rb-red-default flex-shrink-0"
-            />
-            <span className="text-[14px] leading-[18px] font-medium text-rb-red-default flex-1">
-              {t('page.lending.risk.warning')}
-            </span>
+      <div className="mt-auto w-full flex flex-col justify-end">
+        {showBorrowToCapTip && <BorrowToCapTip className="mb-16" />}
+        {isRisky && (
+          <div className="mt-16 flex flex-col gap-12">
+            <div className="flex items-center gap-8 py-8 px-10 rounded-[8px] bg-rb-neutral-card-1">
+              <span className="text-[13px] leading-[15px] font-medium text-rb-red-default flex-1">
+                <RcIconWarningCC
+                  width={12}
+                  height={12}
+                  className="text-rb-red-default flex-shrink-0 inline -mt-2 mr-2"
+                />
+                {t('page.lending.risk.warning')}
+              </span>
+            </div>
+            <div className="flex items-center justify-center gap-8">
+              <StyledCheckbox
+                checked={isChecked}
+                onChange={(e) => setIsChecked(e.target.checked)}
+                className="text-[13px] text-r-neutral-foot"
+              >
+                {t('page.lending.risk.checkbox')}
+              </StyledCheckbox>
+            </div>
           </div>
-          <div className="flex items-center justify-center gap-8">
-            <Checkbox
-              checked={isChecked}
-              onChange={(e) => setIsChecked(e.target.checked)}
-              className="text-[13px] text-r-neutral-foot"
-            >
-              {t('page.lending.risk.checkbox')}
-            </Checkbox>
-          </div>
-        </div>
-      )}
-
-      {canShowDirectSubmit && currentAccount?.type ? (
-        <DirectSignToConfirmBtn
-          className="mt-20"
-          title={
-            <>
-              {t('page.lending.borrowDetail.actions')} {reserve.reserve.symbol}
-            </>
-          }
-          disabled={!canSubmit}
-          loading={miniSignLoading}
-          onConfirm={() => handleBorrow()}
-          accountType={currentAccount.type}
-        />
-      ) : (
-        <Button
-          type="primary"
-          block
-          size="large"
-          className="mt-20 h-[48px] rounded-[8px] font-medium text-[16px]"
-          loading={isLoading}
-          disabled={!canSubmit}
-          onClick={() => handleBorrow()}
-        >
-          {t('page.lending.borrowDetail.actions')} {reserve.reserve.symbol}
-        </Button>
-      )}
+        )}
+        {canShowDirectSubmit && currentAccount?.type ? (
+          <DirectSignToConfirmBtn
+            className="mt-20"
+            title={
+              <>
+                {t('page.lending.borrowDetail.actions')}{' '}
+                {reserve.reserve.symbol}
+              </>
+            }
+            disabled={!canSubmit}
+            loading={miniSignLoading}
+            onConfirm={() => handleBorrow()}
+            accountType={currentAccount.type}
+          />
+        ) : (
+          <Button
+            type="primary"
+            block
+            size="large"
+            className="mt-20 h-[48px] rounded-[8px] font-medium text-[16px]"
+            loading={isLoading}
+            disabled={!canSubmit}
+            onClick={() => handleBorrow()}
+          >
+            {t('page.lending.borrowDetail.actions')} {reserve.reserve.symbol}
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
