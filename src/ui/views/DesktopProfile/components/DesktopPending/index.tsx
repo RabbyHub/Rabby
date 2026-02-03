@@ -9,7 +9,7 @@ import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { RcIconSpinCC } from '@/ui/assets/desktop/profile';
 import React from 'react';
 
-export const DesktopPending = () => {
+export const DesktopPending = ({ className }: { className?: string }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const currentAccount = useCurrentAccount();
@@ -49,7 +49,8 @@ export const DesktopPending = () => {
           'min-w-[112px] h-[32px] px-[10px] rounded-[8px]',
           'flex items-center justify-center gap-[8px] cursor-pointer',
           'text-[14px] font-semibold text-r-orange-default',
-          'bg-rb-orange-light-1'
+          'bg-rb-orange-light-1',
+          className
         )}
         onClick={() => {
           history.replace(history.location.pathname + '?action=activities');

@@ -111,6 +111,7 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
             data={v.map((i) => i._originPortfolio).filter(Boolean)}
             siteUrl={data.site_url}
             protocolName={data.name}
+            protocolId={data.id}
             name={tag}
           />
         );
