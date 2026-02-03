@@ -278,8 +278,6 @@ const config = {
       'process.env.version': JSON.stringify(`version: ${process.env.VERSION}`),
       'process.env.release': JSON.stringify(process.env.VERSION),
       'process.env.RABBY_BUILD_GIT_HASH': JSON.stringify(BUILD_GIT_HASH),
-      'process.env.ETHERSCAN_KEY': JSON.stringify(process.env.ETHERSCAN_KEY),
-      'process.env.SAFE_API_KEY': JSON.stringify(process.env.SAFE_API_KEY),
     }),
     new CopyPlugin({
       patterns: [
