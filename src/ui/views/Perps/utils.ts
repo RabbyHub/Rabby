@@ -10,7 +10,8 @@ import { maxBy } from 'lodash';
 
 export const formatMarkData = (
   marketData: [Meta, AssetCtx[]],
-  topAssets: PerpTopToken[]
+  topAssets: PerpTopToken[],
+  xyzMarketData?: [Meta, AssetCtx[]]
 ): MarketData[] => {
   try {
     if (!Array.isArray(marketData) || marketData.length < 2) {
@@ -88,6 +89,60 @@ export const formatMarkData = (
         return item;
       })
       .filter(Boolean) as MarketData[];
+
+    if (xyzMarketData) {
+      const xyzMeta = xyzMarketData[0];
+      const xyzMetrics = xyzMarketData[1];
+      const marginTableMap: Record<number, MarginTable> = {};
+      if (Array.isArray(xyzMeta.marginTables)) {
+        for (const entry of xyzMeta.marginTables) {
+          const [id, table] = entry || [];
+          if (id != null) marginTableMap[id] = table;
+        }
+      }
+
+      xyzMetrics.forEach((xyzItem, index) => {
+        const hlDataAsset = xyzMeta.universe[index];
+        if (!hlDataAsset) return null;
+        if (hlDataAsset.isDelisted) return null;
+        const table = marginTableMap[hlDataAsset?.marginTableId];
+        const tiers = table?.marginTiers || [];
+        const firstTier =
+          Array.isArray(tiers) && tiers.length > 0 ? tiers[0] : undefined;
+        const nextTier =
+          Array.isArray(tiers) && tiers.length > 1 ? tiers[1] : undefined;
+        const item: MarketData = {
+          index: 100000 + 10000 * index,
+          name: String(hlDataAsset.name ?? ''),
+          // 取保证金表第一档的最大杠杆；若无表则回退 asset.maxLeverage
+          maxLeverage: Number(
+            firstTier?.maxLeverage ?? hlDataAsset?.maxLeverage
+          ),
+          minLeverage: 1,
+          // 第一档的最大名义值 = 下一档的 lowerBound；若不存在下一档则为兜底1000000
+          maxUsdValueSize: String(nextTier?.lowerBound ?? PERPS_MAX_NTL_VALUE),
+          szDecimals: Number(hlDataAsset.szDecimals ?? 0),
+          // 根据 markPx 推断价格精度
+          pxDecimals: (() => {
+            const markPx = xyzItem?.markPx;
+            if (!markPx) return 2;
+            const parts = markPx.split('.');
+            return parts.length > 1 ? parts[1].length : 2;
+          })(),
+          dayBaseVlm: String(xyzItem?.dayBaseVlm ?? '0'),
+          dayNtlVlm: String(xyzItem?.dayNtlVlm ?? '0'),
+          funding: String(xyzItem?.funding ?? '0'),
+          markPx: String(xyzItem?.markPx ?? ''),
+          midPx: String(xyzItem?.midPx ?? ''),
+          openInterest: String(xyzItem?.openInterest ?? '0'),
+          oraclePx: String(xyzItem?.oraclePx ?? ''),
+          premium: String(xyzItem?.premium ?? '0'),
+          prevDayPx: String(xyzItem?.prevDayPx ?? ''),
+          logoUrl: `https://app.hyperliquid.xyz/coins/${hlDataAsset.name}.svg`,
+        };
+        result.push(item);
+      });
+    }
 
     return result;
   } catch (e) {

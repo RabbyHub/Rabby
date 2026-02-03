@@ -13,6 +13,7 @@ import {
   formatNotional,
 } from '../utils';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
+import { formatPerpsCoin } from '../../../utils';
 const PRESET_POINTS = [0, 25, 50, 75, 100];
 
 // Create marks for the slider
@@ -243,7 +244,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
           onChange={handleAmountChangeFormatted}
           suffix={
             <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-              {baseAsset}
+              {formatPerpsCoin(baseAsset)}
             </span>
           }
         />

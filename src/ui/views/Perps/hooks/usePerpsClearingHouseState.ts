@@ -1,5 +1,6 @@
 import { useRequest } from 'ahooks';
 import { getPerpsSDK } from '../sdkManager';
+import { getCustomClearinghouseState } from '../../DesktopPerps/utils';
 
 export const usePerpsClearHouseState = (params?: { address?: string }) => {
   const { address } = params || {};
@@ -9,8 +10,7 @@ export const usePerpsClearHouseState = (params?: { address?: string }) => {
       if (!address) {
         return null;
       }
-      const sdk = getPerpsSDK();
-      const res = await sdk.info.getClearingHouseState(address);
+      const res = await getCustomClearinghouseState(address);
       return res;
     },
     {

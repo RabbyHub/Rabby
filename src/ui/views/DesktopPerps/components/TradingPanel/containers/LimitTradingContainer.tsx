@@ -125,10 +125,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   );
 
   const { currentBestAskPrice, currentBestBidPrice } = React.useMemo(() => {
-    if (
-      wsActiveAssetCtx &&
-      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
-    ) {
+    if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
       const impactPxs = wsActiveAssetCtx?.ctx.impactPxs;
       return {
         currentBestAskPrice: Number(impactPxs[1] || 0),

@@ -738,7 +738,6 @@ export const usePerpsProPosition = () => {
                   : 'page.perpsDetail.PerpsEditMarginPopup.reduceMarginSuccess'
               ),
             });
-            dispatch.perps.fetchClearinghouseState();
           } else {
             const msg = res?.response?.data?.statuses[0];
             throw new Error(msg || 'Update margin failed');

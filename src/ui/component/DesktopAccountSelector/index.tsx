@@ -23,6 +23,7 @@ import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useMount } from 'react-use';
 import './styles.less';
+import { getCustomClearinghouseState } from '@/ui/views/DesktopPerps/utils';
 
 interface DesktopAccountSelectorProps {
   value?: Account | null;
@@ -164,7 +165,7 @@ const useAccountList = (options?: { scene?: Scene }) => {
         const newMap: Record<string, ClearinghouseState | null> = {};
         const promises = accountsToFetch.map(async (item) => {
           try {
-            const res = await sdk.info.getClearingHouseState(item.address);
+            const res = await getCustomClearinghouseState(item.address);
             newMap[item.address.toLowerCase()] = res;
           } catch (error) {
             console.error(

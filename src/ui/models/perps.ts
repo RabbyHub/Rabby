@@ -19,6 +19,7 @@ import {
   WsTwapStates,
   UserTwapHistory,
   UserTwapSliceFill,
+  WsAllClearinghouseStates,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
 import { RootModel } from '.';
@@ -78,7 +79,7 @@ export type MarketDataMap = Record<string, MarketData>;
 
 const buildMarketDataMap = (list: MarketData[]): MarketDataMap => {
   return list.reduce((acc, item) => {
-    acc[item.name.toUpperCase()] = item;
+    acc[item.name] = item;
     return acc;
   }, {} as MarketDataMap);
 };
@@ -135,6 +136,8 @@ export interface PerpsState {
   wsActiveAssetCtx: WsActiveAssetCtx | null;
   wsActiveAssetData: WsActiveAssetData | null;
   clearinghouseState: ClearinghouseState | null;
+  allDexsPositions: AssetPosition[];
+  allDexsClearinghouseState: [string, ClearinghouseState][];
   openOrders: OpenOrder[];
   clearinghouseStateMap: Record<string, ClearinghouseState | null>;
   historicalOrders: UserHistoricalOrders[];
@@ -190,6 +193,8 @@ export const perps = createModel<RootModel>()({
     wsActiveAssetData: null,
     clearinghouseState: null,
     clearinghouseStateMap: {},
+    allDexsPositions: [],
+    allDexsClearinghouseState: [],
     openOrders: [],
     historicalOrders: [],
     userFunding: [],
@@ -660,10 +665,10 @@ export const perps = createModel<RootModel>()({
     },
 
     setSelectedCoin(state, payload: string) {
-      if (payload.includes(':')) {
-        message.error('HIP-3 coin is not supported');
-        return state;
-      }
+      // if (payload.includes(':')) {
+      //   message.error('HIP-3 coin is not supported');
+      //   return state;
+      // }
 
       return {
         ...state,
@@ -940,11 +945,14 @@ export const perps = createModel<RootModel>()({
         }
       };
 
-      const [topAssets, marketData] = await Promise.all([
+      const [topAssets, marketData, xyzMarketData] = await Promise.all([
         fetchTopTokenList(),
-        sdk.info.metaAndAssetCtxs(true),
+        sdk.info.metaAndAssetCtxs(),
+        sdk.info.metaAndAssetCtxs('xyz'),
       ]);
-      dispatch.perps.setMarketData(formatMarkData(marketData, topAssets));
+      dispatch.perps.setMarketData(
+        formatMarkData(marketData, topAssets, xyzMarketData)
+      );
     },
 
     async fetchPerpFee() {
@@ -994,14 +1002,20 @@ export const perps = createModel<RootModel>()({
       if (isPro) {
         const {
           unsubscribe: unsubscribeClearinghouseState,
-        } = sdk.ws.subscribeToClearinghouseState(address, (data) => {
-          const { clearinghouseState, user } = data;
+        } = sdk.ws.subscribeToAllDexsClearinghouseState(address, (data) => {
+          const { clearinghouseStates } = data;
+          const user = (data as any).user;
           if (!isSameAddress(user, address)) {
             return;
           }
-          dispatch.perps.patchClearinghouseState(clearinghouseState);
-          dispatch.perps.setClearinghouseStateMap({
-            [address.toLowerCase()]: clearinghouseState,
+          const hyperDex = clearinghouseStates[0][1];
+          dispatch.perps.patchClearinghouseState(hyperDex);
+          const allDexsPositions = clearinghouseStates
+            .map((item) => item[1].assetPositions)
+            .flat();
+          dispatch.perps.patchState({
+            allDexsPositions,
+            allDexsClearinghouseState: clearinghouseStates,
           });
         });
         subscriptions.push(unsubscribeClearinghouseState);

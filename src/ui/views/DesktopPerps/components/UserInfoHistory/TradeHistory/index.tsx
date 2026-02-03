@@ -118,8 +118,7 @@ export const TradeHistory: React.FC = () => {
         width: '10%',
         sorter: (a, b) => Number(a.px) - Number(b.px),
         render: (_, record) => {
-          const pxDecimals =
-            marketDataMap[record.coin.toUpperCase()]?.pxDecimals || 2;
+          const pxDecimals = marketDataMap[record.coin]?.pxDecimals || 2;
           const px = new BigNumber(record.px).toFixed(pxDecimals);
           return (
             <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">

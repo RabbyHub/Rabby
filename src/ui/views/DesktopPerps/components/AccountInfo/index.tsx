@@ -19,14 +19,20 @@ export const AccountInfo: React.FC<{
   const clearinghouseState = useRabbySelector(
     (store) => store.perps.clearinghouseState
   );
+  const allDexsPositions = useRabbySelector(
+    (store) => store.perps.allDexsPositions
+  );
+  const allDexsClearinghouseState = useRabbySelector(
+    (store) => store.perps.allDexsClearinghouseState
+  );
 
   const positionAllPnl = useMemo(() => {
     return (
-      clearinghouseState?.assetPositions.reduce((acc, asset) => {
+      allDexsPositions?.reduce((acc, asset) => {
         return acc + Number(asset.position.unrealizedPnl || 0);
       }, 0) || 0
     );
-  }, [clearinghouseState]);
+  }, [allDexsPositions]);
 
   const crossMarginRatio = useMemo(() => {
     const num = new BigNumber(
@@ -42,12 +48,17 @@ export const AccountInfo: React.FC<{
     handleSetPopupType('withdraw');
   };
 
-  const customBalance = useMemo(() => {
+  const accountValue = useMemo(() => {
     return (
-      Number(clearinghouseState?.marginSummary?.accountValue || 0) -
-      Number(positionAllPnl || 0)
+      allDexsClearinghouseState?.reduce((acc, item) => {
+        return acc + Number(item[1].marginSummary.accountValue || 0);
+      }, 0) || 0
     );
-  }, [clearinghouseState, positionAllPnl]);
+  }, [allDexsClearinghouseState]);
+
+  const customBalance = useMemo(() => {
+    return Number(accountValue) - Number(positionAllPnl || 0);
+  }, [accountValue, positionAllPnl]);
 
   const crossAccountLeverage = useMemo(() => {
     return (
@@ -91,10 +102,7 @@ export const AccountInfo: React.FC<{
               {t('page.perpsPro.accountInfo.accountEquity')}
             </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
-              {formatUsdValue(
-                Number(clearinghouseState?.marginSummary?.accountValue || 0),
-                BigNumber.ROUND_DOWN
-              )}
+              {formatUsdValue(Number(accountValue))}
             </div>
           </div>
           <div className="flex items-center justify-between">

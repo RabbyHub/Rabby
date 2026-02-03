@@ -76,9 +76,9 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
     if (!isActive) {
       return;
     }
-    if (coin && coin.toUpperCase() !== selectedCoin.toUpperCase()) {
+    if (coin && coin !== selectedCoin) {
       isUpdatingFromUrl.current = true;
-      dispatch.perps.setSelectedCoin(coin.toUpperCase());
+      dispatch.perps.setSelectedCoin(coin);
       // Reset flag after state update
       setTimeout(() => {
         isUpdatingFromUrl.current = false;
@@ -92,11 +92,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
       return;
     }
 
-    if (
-      !isUpdatingFromUrl.current &&
-      selectedCoin &&
-      coin?.toUpperCase() !== selectedCoin.toUpperCase()
-    ) {
+    if (!isUpdatingFromUrl.current && selectedCoin && coin !== selectedCoin) {
       const searchParams = new URLSearchParams(location.search);
       searchParams.set('coin', selectedCoin);
       history.replace({
