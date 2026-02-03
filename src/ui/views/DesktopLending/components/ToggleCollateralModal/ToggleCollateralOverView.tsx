@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PopupDetailProps } from '../../types';
 import { getHealthFactorText } from '../../utils/health';
@@ -15,7 +15,9 @@ export const ToggleCollateralOverView: React.FC<
   const { t } = useTranslation();
   const { healthFactor = '0' } = userSummary;
 
-  const showHF = !isHFEmpty(Number(healthFactor || '0'));
+  const showHF = useMemo(() => !isHFEmpty(Number(healthFactor || '0')), [
+    healthFactor,
+  ]);
 
   return (
     <div className="w-full mt-16">

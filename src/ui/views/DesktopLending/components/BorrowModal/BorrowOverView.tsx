@@ -12,7 +12,9 @@ export const BorrowOverView: React.FC<
   const { t } = useTranslation();
   const { healthFactor = '0' } = userSummary;
 
-  const showHF = !isHFEmpty(Number(healthFactor || '0'));
+  const showHF = useMemo(() => !isHFEmpty(Number(healthFactor || '0')), [
+    healthFactor,
+  ]);
 
   return (
     <div className="w-full mt-16">

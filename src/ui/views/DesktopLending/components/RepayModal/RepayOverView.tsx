@@ -30,7 +30,22 @@ export const RepayOverView: React.FC<
   const { t } = useTranslation();
   const { healthFactor = '0' } = userSummary;
 
-  const showHF = !isHFEmpty(Number(healthFactor || '0'));
+  const showHF = useMemo(() => !isHFEmpty(Number(healthFactor || '0')), [
+    healthFactor,
+  ]);
+
+  const currentDebtUSDText = useMemo(
+    () => formatNetworth(Number(reserve.variableBorrowsUSD || '0')),
+    [reserve.variableBorrowsUSD]
+  );
+
+  const afterRepayUsdValueText = useMemo(
+    () =>
+      afterRepayUsdValue !== undefined
+        ? formatNetworth(Number(afterRepayUsdValue || '0'))
+        : null,
+    [afterRepayUsdValue]
+  );
 
   return (
     <div className="w-full mt-16">
@@ -60,11 +75,9 @@ export const RepayOverView: React.FC<
             {t('page.lending.popup.remainingDebt')} (USD)
           </span>
           <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
-            {amount && amount !== '0' && afterRepayUsdValue !== undefined
-              ? `${formatNetworth(
-                  Number(reserve.variableBorrowsUSD || '0')
-                )} → ${formatNetworth(Number(afterRepayUsdValue || '0'))}`
-              : formatNetworth(Number(reserve.variableBorrowsUSD || '0'))}
+            {amount && amount !== '0' && afterRepayUsdValueText
+              ? `${currentDebtUSDText} → ${afterRepayUsdValueText}`
+              : currentDebtUSDText}
           </span>
         </div>
 

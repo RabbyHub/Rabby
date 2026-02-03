@@ -30,7 +30,17 @@ export const WithdrawOverView: React.FC<
     [reserve.underlyingBalanceUSD]
   );
 
-  const showHF = !isHFEmpty(Number(healthFactor || '0'));
+  const showHF = useMemo(() => !isHFEmpty(Number(healthFactor || '0')), [
+    healthFactor,
+  ]);
+
+  const afterSupplyBalanceUSDText = useMemo(
+    () =>
+      afterSupply
+        ? formatNetworth(Number(afterSupply.balanceUSD || '0'))
+        : null,
+    [afterSupply]
+  );
 
   return (
     <div className="w-full mt-16">
@@ -60,10 +70,8 @@ export const WithdrawOverView: React.FC<
             {t('page.lending.supplyDetail.supplyBalance')}
           </span>
           <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
-            {amount && amount !== '0' && afterSupply
-              ? `${availableText} → ${formatNetworth(
-                  Number(afterSupply.balanceUSD || '0')
-                )}`
+            {amount && amount !== '0' && afterSupplyBalanceUSDText
+              ? `${availableText} → ${afterSupplyBalanceUSDText}`
               : availableText}
           </span>
         </div>
