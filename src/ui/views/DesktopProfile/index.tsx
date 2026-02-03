@@ -120,12 +120,6 @@ export const DesktopProfile: React.FC<{
     }
   }, [isUpdating]);
 
-  const handleUpdate = useMemoizedFn(async () => {
-    setRefreshKey((prev) => prev + 1);
-    refreshPositions();
-    await refreshBalance();
-    await refreshCurve();
-  });
   const [cacheProjectOverviewList, setCacheProjectOverviewList] = useState<
     AbstractProject[]
   >([]);
@@ -161,12 +155,17 @@ export const DesktopProfile: React.FC<{
     allTokenMode: !!searchValue,
   });
 
+  const handleUpdate = useMemoizedFn(async () => {
+    setRefreshKey((prev) => prev + 1);
+    refreshPositions();
+    refreshBalance();
+    refreshCurve();
+  });
+
   useListenTxReload(async () => {
-    if (['tokens', 'transactions'].includes(activeTab)) {
-      setRefreshKey((prev) => prev + 1);
-    }
-    await refreshBalance();
-    await refreshCurve();
+    refreshBalance();
+    refreshCurve();
+    refreshPositions();
   });
 
   useEffect(
