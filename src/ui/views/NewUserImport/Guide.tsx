@@ -18,7 +18,7 @@ export const Guide = () => {
   }, []);
 
   const gotoImport = React.useCallback(() => {
-    history.push('/new-user/import-list');
+    history.push('/new-user/import-wallet-type');
   }, []);
 
   const { isDarkTheme } = useThemeMode();

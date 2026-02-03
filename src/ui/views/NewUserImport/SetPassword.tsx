@@ -231,7 +231,5 @@ export const NewUserSetPassword = () => {
     }
   });
 
-  return (
-    <PasswordCard step={step} onBack={handleBack} onSubmit={handleSubmit} />
-  );
+  return <PasswordCard step={1} onBack={handleBack} onSubmit={handleSubmit} />;
 };

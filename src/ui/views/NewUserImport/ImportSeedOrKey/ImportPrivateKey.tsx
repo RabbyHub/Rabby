@@ -4,8 +4,8 @@ import { Button, Form, Input, message } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
-import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
+import { Link, useHistory } from 'react-router-dom';
+import { useNewUserGuideStore } from '../hooks/useNewUserGuideStore';
 import { clearClipboard } from '@/ui/utils/clipboard';
 import IconSuccess from 'ui/assets/success.svg';
 import styled from 'styled-components';
@@ -28,19 +28,17 @@ const Container = styled.div`
   .ant-input:focus,
   .ant-input-focused {
     border-color: var(--r-blue-default, #7084ff);
-    border-width: 1.5px;
-    border-right-width: 1.5px !important;
   }
 
   .ant-form-item-has-error .ant-input {
-    border: 1.5px solid var(--r-red-default, #e34935);
+    border: 1px solid var(--r-red-default, #e34935);
   }
   .ant-form-item-explain.ant-form-item-explain-error {
     font-size: 14px !important;
   }
 `;
 
-export const NewUserImportPrivateKey = () => {
+export const ImportPrivateKey = () => {
   const { t } = useTranslation();
   const { setStore, clearStore } = useNewUserGuideStore();
   const [value, setValue] = useState('');
@@ -73,67 +71,61 @@ export const NewUserImportPrivateKey = () => {
   );
 
   return (
-    <Container>
-      <Card
-        onBack={() => {
-          history.goBack();
-          clearStore();
-        }}
-        step={1}
-        className="flex flex-col"
-      >
-        <div className="flex-1 mt-[18px]">
-          <div className="text-r-neutral-title1 text-center text-[20px] font-semibold leading-[24px]">
-            {t('page.newUserImport.importPrivateKey.title')}
-          </div>
-          <Form form={form} className="mt-[20px]">
-            <Form.Item
-              name="privateKey"
-              rules={[
-                {
-                  validator: privateKeyValidator,
-                },
-              ]}
-            >
-              <Input
-                className="h-[52px]"
-                type="password"
-                autoFocus
-                spellCheck={false}
-                placeholder="Input private key"
-                onChange={(e) => {
-                  setValue(e.target.value);
-                }}
-                onPaste={() => {
-                  clearClipboard();
-                  message.success({
-                    icon: (
-                      <img src={IconSuccess} className="icon icon-success" />
-                    ),
-                    content: t(
-                      'page.newUserImport.importPrivateKey.pasteCleared'
-                    ),
-                    duration: 2,
-                  });
-                }}
-              />
-            </Form.Item>
-          </Form>
-        </div>
+    <Container className="flex flex-col flex-1">
+      <div className="flex-1">
+        <Form form={form} className="mt-[20px]">
+          <Form.Item
+            name="privateKey"
+            rules={[
+              {
+                validator: privateKeyValidator,
+              },
+            ]}
+          >
+            <Input
+              className="h-[52px]"
+              type="password"
+              autoFocus
+              spellCheck={false}
+              placeholder="Input private key"
+              onChange={(e) => {
+                setValue(e.target.value);
+              }}
+              onPaste={() => {
+                clearClipboard();
+                message.success({
+                  icon: <img src={IconSuccess} className="icon icon-success" />,
+                  content: t(
+                    'page.newUserImport.importPrivateKey.pasteCleared'
+                  ),
+                  duration: 2,
+                });
+              }}
+            />
+          </Form.Item>
+        </Form>
+      </div>
 
+      <footer className="mt-auto">
+        <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px]">
+          Don't have seed phrase or private key yet?{' '}
+          <Link to="/new-user/create-wallet" className="text-r-blue-default">
+            Create a wallet
+          </Link>
+        </div>
         <Button
           onClick={handleSubmit}
           block
           type="primary"
           disabled={!!error || loading || !value}
           className={clsx(
-            'mt-[48px] h-[56px] shadow-none rounded-[8px]',
-            'text-[17px] font-medium'
+            'mt-auto h-[52px] shadow-none rounded-[8px]',
+            'text-[15px] leading-[18px] font-medium'
           )}
         >
-          {t('global.Confirm')}
+          {t('global.next')}
         </Button>
-      </Card>
+      </footer>
     </Container>
   );
 };

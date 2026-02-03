@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Card } from '@/ui/component/NewUserImport';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Button, Form, Input } from 'antd';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import clsx from 'clsx';
@@ -8,7 +8,7 @@ import { useRabbyDispatch } from '@/ui/store';
 import { getUiType, useWallet } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
+import { useNewUserGuideStore } from '../hooks/useNewUserGuideStore';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 
@@ -175,20 +175,7 @@ export const ImportSeedPhrase = () => {
   );
 
   return (
-    <Card
-      onBack={() => {
-        if (history.length) {
-          history.goBack();
-        } else {
-          history.replace('/new-user/import-list');
-        }
-      }}
-      step={1}
-      className="flex flex-col"
-    >
-      <div className="mt-18 mb-16 text-center text-20 font-medium text-r-neutral-title1">
-        {t('page.newUserImport.importSeedPhrase.title')}
-      </div>
+    <div className="flex flex-col flex-1 pt-[12px]">
       <Form
         form={form}
         className={clsx('flex flex-col flex-1')}
@@ -198,7 +185,7 @@ export const ImportSeedPhrase = () => {
           setSlip39ErrorIndex(-1);
         }}
       >
-        <FormItemWrapper className="relative mb-16">
+        <FormItemWrapper className="relative">
           <Form.Item
             name="mnemonics"
             className={clsx(
@@ -233,19 +220,27 @@ export const ImportSeedPhrase = () => {
           )}
         </FormItemWrapper>
 
-        <Button
-          htmlType="submit"
-          disabled={disabledButton}
-          block
-          type="primary"
-          className={clsx(
-            'mt-auto h-[56px] shadow-none rounded-[8px]',
-            'text-[17px] font-medium'
-          )}
-        >
-          {t('global.confirm')}
-        </Button>
+        <footer className="mt-auto">
+          <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px]">
+            Don't have seed phrase or private key yet?{' '}
+            <Link to="/new-user/create-wallet" className="text-r-blue-default">
+              Create a wallet
+            </Link>
+          </div>
+          <Button
+            htmlType="submit"
+            disabled={disabledButton}
+            block
+            type="primary"
+            className={clsx(
+              'h-[52px] shadow-none rounded-[8px]',
+              'text-[15px] leading-[18px] font-medium'
+            )}
+          >
+            {t('global.next')}
+          </Button>
+        </footer>
       </Form>
-    </Card>
+    </div>
   );
 };

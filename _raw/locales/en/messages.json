@@ -1025,7 +1025,11 @@
       }
     },
     "perpsPro": {
-      "__skip_translation": ["TWAP", "TP", "SL"],
+      "__skip_translation": [
+        "TWAP",
+        "TP",
+        "SL"
+      ],
       "chatArea": {
         "markTips": "Used for margining, computing unrealized PNL, liquidations, and triggering TP/SL orders.",
         "oracleTips": "The median of external prices reported by validators, used for computing funding rates.",
@@ -1231,8 +1235,8 @@
           "Ioc": "IOC (Immediate Or Cancel):Any portion that is not immediately filled will be canceled",
           "Alo": "ALO (Add Liquidity Only):Order will exist only as a limit order on the book. Also known as post-only."
         },
-        "aloTooLargeBuy" : "Alo order price must be lower than best ask price",
-        "aloTooLargeSell" : "Alo order price must be higher than best bid price",
+        "aloTooLargeBuy": "Alo order price must be lower than best ask price",
+        "aloTooLargeSell": "Alo order price must be higher than best bid price",
         "runtime": "Runtime",
         "randomize": "Randomize",
         "runtimeTips": "(5m-24h)",
@@ -1258,7 +1262,7 @@
       },
       "leverage": {
         "title": "Adjust Leverage",
-        "controlPositionLeverage" : "Control the leverage used for {{coin}} positions. The maximum leverage is {{max}}x.",
+        "controlPositionLeverage": "Control the leverage used for {{coin}} positions. The maximum leverage is {{max}}x.",
         "maxPositionSize": "Max position size decreases the higher your leverage.",
         "higherLeverageRisk": "Higher leverage increases the risk of liquidation.",
         "minError": "Minimum leverage is 1x",
@@ -3482,6 +3486,9 @@
         },
         "placeholder": "Input safe address",
         "loading": "Searching the deployed chain of this address"
+      },
+      "importHardwareList": {
+        "title": "Select Hardware Wallet"
       }
     },
     "metamaskModeDapps": {
@@ -4023,8 +4030,7 @@
       "perps": "Perps",
       "lending": "Lending",
       "prediction": "Prediction",
-      "comingSoon": "Coming Soon",
-      "prediction": "Prediction"
+      "comingSoon": "Coming Soon"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Add address"
