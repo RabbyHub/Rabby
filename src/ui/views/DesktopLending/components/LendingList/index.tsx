@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Modal } from 'antd';
+import { Modal, Skeleton } from 'antd';
 import { LendingRow } from '../LendingRow';
 import { MarketSelector } from '../MarketSelector';
 import { DesktopPending } from '@/ui/views/DesktopProfile/components/DesktopPending';
@@ -71,57 +71,37 @@ type MyAssetItem = {
 const LendingListSkeletonItem: React.FC = () => {
   return (
     <div
-      className={clsx('relative h-[68px] rounded-[12px]', 'bg-rb-neutral-bg-3')}
+      className={clsx(
+        'flex items-center h-[68px] rounded-[12px] px-20 gap-24',
+        'bg-rb-neutral-bg-3'
+      )}
     >
-      <div
-        className={clsx(
-          'absolute left-[20px] top-1/2 -translate-y-1/2',
-          'w-[24px] h-[24px] rounded-full bg-rb-neutral-bg-4'
-        )}
+      <Skeleton.Avatar size={24} shape="circle" />
+      <Skeleton.Button
+        className="h-[17px] block rounded-[4px]"
+        style={{ width: 82 }}
       />
-
-      <div
-        className={clsx(
-          'absolute left-[53px] top-[26px] h-[17px] w-[82px] rounded-[4px]',
-          'bg-rb-neutral-bg-4'
-        )}
+      <Skeleton.Button
+        className="h-[17px] block rounded-[4px]"
+        style={{ width: 82 }}
       />
-      <div
-        className={clsx(
-          'absolute left-[198px] top-[26px] h-[17px] w-[82px] rounded-[4px]',
-          'bg-rb-neutral-bg-4'
-        )}
+      <Skeleton.Button
+        className="h-[17px] block rounded-[4px]"
+        style={{ width: 51 }}
       />
-      <div
-        className={clsx(
-          'absolute left-[358px] top-[26px] h-[17px] w-[51px] rounded-[4px]',
-          'bg-rb-neutral-bg-4'
-        )}
+      <Skeleton.Button
+        className="h-[17px] block rounded-[4px]"
+        style={{ width: 92 }}
       />
-      <div
-        className={clsx(
-          'absolute left-[502px] top-[26px] h-[17px] w-[92px] rounded-[4px]',
-          'bg-rb-neutral-bg-4'
-        )}
-      />
-
-      <div
-        className={clsx(
-          'absolute right-[20px] top-1/2 -translate-y-1/2',
-          'flex items-center gap-[16px]'
-        )}
-      >
-        <div
-          className={clsx(
-            'h-[36px] w-[120px] rounded-[6px]',
-            'bg-rb-neutral-bg-4'
-          )}
+      <div className="flex-1" />
+      <div className="flex items-center gap-16">
+        <Skeleton.Button
+          className="h-[36px] block rounded-[6px]"
+          style={{ width: 120 }}
         />
-        <div
-          className={clsx(
-            'h-[36px] w-[120px] rounded-[6px]',
-            'bg-rb-neutral-bg-4'
-          )}
+        <Skeleton.Button
+          className="h-[36px] block rounded-[6px]"
+          style={{ width: 120 }}
         />
       </div>
     </div>
@@ -131,7 +111,7 @@ const LendingListSkeletonItem: React.FC = () => {
 const LendingListSkeleton: React.FC = () => {
   return (
     <div className="mt-0 px-20 flex flex-col gap-[12px]">
-      {Array.from({ length: 6 }).map((_, idx) => (
+      {Array.from({ length: 10 }).map((_, idx) => (
         <LendingListSkeletonItem key={idx} />
       ))}
     </div>

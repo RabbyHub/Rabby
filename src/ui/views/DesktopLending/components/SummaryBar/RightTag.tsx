@@ -111,7 +111,7 @@ export const RightMarketTabInfo: React.FC = () => {
       <button
         type="button"
         onClick={() => setEnableIntroVisible(true)}
-        className="flex items-center gap-[6px] bg-transparent border-0 p-0 cursor-pointer"
+        className="flex items-center gap-[6px] bg-r-neutral-card2 rounded-[4px] border-0 py-2 px-6 cursor-pointer"
       >
         <span className="text-[12px] leading-[16px] text-rb-neutral-foot hover:text-r-neutral-title-1">
           {t('page.lending.manageEmode.emode')}

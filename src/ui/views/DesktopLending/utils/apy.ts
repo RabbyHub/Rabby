@@ -91,3 +91,13 @@ export const formatUserYield = (
     netAPY,
   };
 };
+
+export const getApyColor = (apy: number) => {
+  if (apy > 0) {
+    return 'var(--rb-green-default)';
+  }
+  if (apy < 0) {
+    return 'var(--rb-red-default)';
+  }
+  return 'var(--rb-neutral-foot)';
+};

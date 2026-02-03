@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
-import { Tooltip } from 'antd';
+import { Skeleton, Tooltip } from 'antd';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 import styled from 'styled-components';
 import { getHealthStatusColor, isHFEmpty } from '../../utils';
@@ -11,6 +11,8 @@ import { estDaily, formatApy } from '../../utils/format';
 import { getHealthFactorText } from '../../utils/health';
 import RightMarketTabInfo from './RightTag';
 import { HFDescription } from '../HFDescription';
+import { getApyColor } from '../../utils/apy';
+import { useLendingIsLoading } from '../../hooks';
 
 const SummaryBarContainer = styled.div`
   /*  */
@@ -18,7 +20,7 @@ const SummaryBarContainer = styled.div`
 
 const HealthyBadge = styled.div`
   background: var(--rb-light-green-light-1);
-  color: var(--r-green-default);
+  color: white;
   padding: 2px 8px;
   border-radius: 6px;
   font-size: 12px;
@@ -48,6 +50,35 @@ interface SummaryItemProps {
   healthFactor: string;
 }
 
+const SummaryBarSkeleton: React.FC = () => (
+  <div className="flex items-center gap-[24px]">
+    <Skeleton.Button
+      className="h-[17px] block rounded-[4px]"
+      style={{ width: 82 }}
+    />
+    <Skeleton.Button
+      className="h-[17px] block rounded-[4px]"
+      style={{ width: 82 }}
+    />
+    <Skeleton.Button
+      className="h-[17px] block rounded-[4px]"
+      style={{ width: 82 }}
+    />
+    <Skeleton.Button
+      className="h-[17px] block rounded-[4px]"
+      style={{ width: 82 }}
+    />
+    <Skeleton.Button
+      className="h-[17px] block rounded-[4px]"
+      style={{ width: 82 }}
+    />
+    <Skeleton.Button
+      className="h-[17px] block rounded-[4px]"
+      style={{ width: 82 }}
+    />
+  </div>
+);
+
 export const SummaryBar: React.FC<SummaryItemProps> = ({
   netWorth,
   supplied,
@@ -57,7 +88,7 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
 }) => {
   const { t } = useTranslation();
   const [hfDescVisible, setHfDescVisible] = useState(false);
-
+  const { loading } = useLendingIsLoading();
   const healthStatus = useMemo(() => {
     const numHF = Number(healthFactor || '0');
     const hfColorInfo = getHealthStatusColor(numHF);
@@ -89,100 +120,120 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
 
   return (
     <div className="border-t border-solid border-rb-neutral-line">
-      <SummaryBarContainer className="h-[56px] flex items-center px-[24px]">
-        <div className="flex items-center gap-[24px] w-full">
-          {onlySupply ? (
-            <>
-              <div className="flex items-center gap-[6px]">
-                <InfoTitle>
-                  {t('page.lending.summary.totalSupplied')}:
-                </InfoTitle>
-                <InfoValue>
-                  {formatUsdValue(supplied, BigNumber.ROUND_DOWN)}
-                </InfoValue>
-              </div>
-              <div className="flex items-center gap-[8px]">
-                <InfoTitle>{t('page.lending.summary.netApy')}:</InfoTitle>
-                <InfoValue>{(netApy * 100).toFixed(1)}%</InfoValue>
-              </div>
+      <SummaryBarContainer className="h-[40px] flex items-center px-[40px]">
+        {loading ? (
+          <SummaryBarSkeleton />
+        ) : (
+          <div className="flex items-center gap-[24px] w-full">
+            {onlySupply ? (
+              <>
+                <div className="flex items-center gap-[6px]">
+                  <InfoTitle>
+                    {t('page.lending.summary.totalSupplied')}:
+                  </InfoTitle>
+                  <InfoValue>
+                    {formatUsdValue(supplied, BigNumber.ROUND_DOWN)}
+                  </InfoValue>
+                </div>
+                <div className="flex items-center gap-[8px]">
+                  <InfoTitle>{t('page.lending.summary.netApy')}:</InfoTitle>
+                  <InfoValue
+                    style={{
+                      color: getApyColor(netApy),
+                    }}
+                  >
+                    {netApyText}
+                  </InfoValue>
+                </div>
 
-              <div className="flex items-center gap-[8px]">
-                <InfoTitle>
-                  {t('page.lending.summary.estDailyEarnings')}:
-                </InfoTitle>
-                <InfoValue>{estDailyText}</InfoValue>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center gap-[6px]">
-                <InfoTitle>{t('page.lending.summary.netWorth')}:</InfoTitle>
-                <InfoValue>
-                  {formatUsdValue(netWorth, BigNumber.ROUND_DOWN)}
-                </InfoValue>
-              </div>
+                <div className="flex items-center gap-[8px]">
+                  <InfoTitle>
+                    {t('page.lending.summary.estDailyEarnings')}:
+                  </InfoTitle>
+                  <InfoValue>{estDailyText}</InfoValue>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-[6px]">
+                  <InfoTitle>{t('page.lending.summary.netWorth')}:</InfoTitle>
+                  <InfoValue>
+                    {formatUsdValue(netWorth, BigNumber.ROUND_DOWN)}
+                  </InfoValue>
+                </div>
 
-              <div className="flex items-center gap-[6px]">
-                <InfoTitle>
-                  {t('page.lending.summary.totalBorrowed')}:
-                </InfoTitle>
-                <InfoValue>
-                  {formatUsdValue(borrowed, BigNumber.ROUND_DOWN)}
-                </InfoValue>
-              </div>
+                <div className="flex items-center gap-[6px]">
+                  <InfoTitle>
+                    {t('page.lending.summary.totalBorrowed')}:
+                  </InfoTitle>
+                  <InfoValue>
+                    {formatUsdValue(borrowed, BigNumber.ROUND_DOWN)}
+                  </InfoValue>
+                </div>
 
-              <div className="flex items-center gap-[6px]">
-                <InfoTitle>
-                  {t('page.lending.summary.totalSupplied')}:
-                </InfoTitle>
-                <InfoValue>
-                  {formatUsdValue(supplied, BigNumber.ROUND_DOWN)}
-                </InfoValue>
-              </div>
+                <div className="flex items-center gap-[6px]">
+                  <InfoTitle>
+                    {t('page.lending.summary.totalSupplied')}:
+                  </InfoTitle>
+                  <InfoValue>
+                    {formatUsdValue(supplied, BigNumber.ROUND_DOWN)}
+                  </InfoValue>
+                </div>
 
-              <div className="flex items-center gap-[6px]">
-                <InfoTitle>{t('page.lending.summary.healthFactor')}</InfoTitle>
-                <Tooltip title={t('page.lending.summary.healthFactorTip')}>
-                  <RcIconInfo
-                    width={12}
-                    height={12}
-                    className="cursor-pointer text-rb-neutral-foot ml-[2px]"
-                    onClick={() => setHfDescVisible(true)}
+                <div className="flex items-center gap-[6px]">
+                  <div className="flex items-center gap-[2px]">
+                    <InfoTitle>
+                      {t('page.lending.summary.healthFactor')}
+                    </InfoTitle>
+                    <Tooltip title={t('page.lending.summary.healthFactorTip')}>
+                      <RcIconInfo
+                        width={12}
+                        height={12}
+                        className="cursor-pointer text-rb-neutral-foot ml-[2px]"
+                        onClick={() => setHfDescVisible(true)}
+                      />
+                    </Tooltip>
+                  </div>
+                  <InfoValue style={{ color: healthStatus.color }}>
+                    {getHealthFactorText(healthFactor)}
+                  </InfoValue>
+                  <HealthyBadge
+                    style={{
+                      backgroundColor: healthStatus.backgroundColor,
+                      color: healthStatus.textColor,
+                    }}
+                  >
+                    {healthStatus.label}
+                  </HealthyBadge>
+                  <HFDescription
+                    visible={hfDescVisible}
+                    hf={healthFactor}
+                    onClose={() => setHfDescVisible(false)}
                   />
-                </Tooltip>
-                <InfoValue style={{ color: healthStatus.color }}>
-                  {getHealthFactorText(healthFactor)}
-                </InfoValue>
-                <HealthyBadge
-                  style={{
-                    color: healthStatus.color,
-                    backgroundColor: healthStatus.backgroundColor,
-                  }}
-                >
-                  {healthStatus.label}
-                </HealthyBadge>
-                <HFDescription
-                  visible={hfDescVisible}
-                  hf={healthFactor}
-                  onClose={() => setHfDescVisible(false)}
-                />
-              </div>
+                </div>
 
-              <div className="flex items-center gap-[8px]">
-                <InfoTitle>{t('page.lending.summary.netApy')}:</InfoTitle>
-                <InfoValue>{(netApy * 100).toFixed(1)}%</InfoValue>
-              </div>
+                <div className="flex items-center gap-[8px]">
+                  <InfoTitle>{t('page.lending.summary.netApy')}:</InfoTitle>
+                  <InfoValue
+                    style={{
+                      color: getApyColor(netApy),
+                    }}
+                  >
+                    {netApyText}
+                  </InfoValue>
+                </div>
 
-              <div className="flex items-center gap-[8px]">
-                <InfoTitle>
-                  {t('page.lending.summary.estDailyEarnings')}:
-                </InfoTitle>
-                <InfoValue>{estDailyText}</InfoValue>
-              </div>
-            </>
-          )}
-          <RightMarketTabInfo />
-        </div>
+                <div className="flex items-center gap-[8px]">
+                  <InfoTitle>
+                    {t('page.lending.summary.estDailyEarnings')}:
+                  </InfoTitle>
+                  <InfoValue>{estDailyText}</InfoValue>
+                </div>
+              </>
+            )}
+            <RightMarketTabInfo />
+          </div>
+        )}
       </SummaryBarContainer>
     </div>
   );
