@@ -1,6 +1,7 @@
 import React from 'react';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Modal, Button } from 'antd';
+import { Modal } from 'antd';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { HealthFactorBar } from './HealthFactorBar';
@@ -74,13 +75,23 @@ export const HFDescription: React.FC<{
         </div>
 
         {showWarning && (
-          <div className="mt-[20px] flex items-start gap-[10px] py-[12px] px-[10px] rounded-[8px] bg-rb-red-light-1">
+          <div
+            className={clsx(
+              'mt-[20px] flex items-start gap-[10px] py-[12px] px-[10px] rounded-[8px]',
+              'bg-rb-red-light-1'
+            )}
+          >
             <RcIconWarningCC
               width={16}
               height={16}
               className="text-rb-red-default shrink-0 mt-[2px]"
             />
-            <p className="text-[14px] leading-[18px] font-medium text-rb-red-default flex-1 whitespace-pre-line">
+            <p
+              className={clsx(
+                'text-[14px] leading-[18px] font-medium text-rb-red-default',
+                'flex-1 whitespace-pre-line'
+              )}
+            >
               {t('page.lending.lqDescription.warningText')}
             </p>
           </div>

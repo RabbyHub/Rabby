@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { DisplayPoolReserveInfo } from '../../types';
@@ -49,7 +50,13 @@ export const BorrowErrorTip: React.FC<{
         className || ''
       }`}
     >
-      <span className="flex-shrink-0 w-[18px] h-[18px] rounded-full bg-rb-orange-default/20 flex items-center justify-center text-[12px]">
+      <span
+        className={clsx(
+          'flex-shrink-0 w-[18px] h-[18px] rounded-full',
+          'flex items-center justify-center',
+          'bg-rb-orange-default text-[12px]'
+        )}
+      >
         !
       </span>
       <span>{errorMessage}</span>

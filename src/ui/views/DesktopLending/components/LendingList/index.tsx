@@ -70,17 +70,59 @@ type MyAssetItem = {
 
 const LendingListSkeletonItem: React.FC = () => {
   return (
-    <div className="relative h-[68px] rounded-[12px] bg-rb-neutral-bg-3">
-      <div className="absolute left-[20px] top-1/2 -translate-y-1/2 w-[24px] h-[24px] rounded-full bg-rb-neutral-bg-4" />
+    <div
+      className={clsx('relative h-[68px] rounded-[12px]', 'bg-rb-neutral-bg-3')}
+    >
+      <div
+        className={clsx(
+          'absolute left-[20px] top-1/2 -translate-y-1/2',
+          'w-[24px] h-[24px] rounded-full bg-rb-neutral-bg-4'
+        )}
+      />
 
-      <div className="absolute left-[53px] top-[26px] h-[17px] w-[82px] rounded-[4px] bg-rb-neutral-bg-4" />
-      <div className="absolute left-[198px] top-[26px] h-[17px] w-[82px] rounded-[4px] bg-rb-neutral-bg-4" />
-      <div className="absolute left-[358px] top-[26px] h-[17px] w-[51px] rounded-[4px] bg-rb-neutral-bg-4" />
-      <div className="absolute left-[502px] top-[26px] h-[17px] w-[92px] rounded-[4px] bg-rb-neutral-bg-4" />
+      <div
+        className={clsx(
+          'absolute left-[53px] top-[26px] h-[17px] w-[82px] rounded-[4px]',
+          'bg-rb-neutral-bg-4'
+        )}
+      />
+      <div
+        className={clsx(
+          'absolute left-[198px] top-[26px] h-[17px] w-[82px] rounded-[4px]',
+          'bg-rb-neutral-bg-4'
+        )}
+      />
+      <div
+        className={clsx(
+          'absolute left-[358px] top-[26px] h-[17px] w-[51px] rounded-[4px]',
+          'bg-rb-neutral-bg-4'
+        )}
+      />
+      <div
+        className={clsx(
+          'absolute left-[502px] top-[26px] h-[17px] w-[92px] rounded-[4px]',
+          'bg-rb-neutral-bg-4'
+        )}
+      />
 
-      <div className="absolute right-[20px] top-1/2 -translate-y-1/2 flex items-center gap-[16px]">
-        <div className="h-[36px] w-[120px] rounded-[6px] bg-rb-neutral-bg-4" />
-        <div className="h-[36px] w-[120px] rounded-[6px] bg-rb-neutral-bg-4" />
+      <div
+        className={clsx(
+          'absolute right-[20px] top-1/2 -translate-y-1/2',
+          'flex items-center gap-[16px]'
+        )}
+      >
+        <div
+          className={clsx(
+            'h-[36px] w-[120px] rounded-[6px]',
+            'bg-rb-neutral-bg-4'
+          )}
+        />
+        <div
+          className={clsx(
+            'h-[36px] w-[120px] rounded-[6px]',
+            'bg-rb-neutral-bg-4'
+          )}
+        />
       </div>
     </div>
   );
@@ -255,8 +297,7 @@ export const LendingList: React.FC = () => {
             type="button"
             className={clsx(
               'px-[16px] h-[44px] w-[160px] rounded-[12px] text-[14px] font-medium',
-              'bg-rb-brand-light-1 text-rb-brand-default',
-              'hover:bg-rb-brand-light-2'
+              'bg-rb-brand-light-1 text-rb-brand-default'
             )}
             onClick={() => setListModalType('supplyList')}
           >
@@ -266,8 +307,7 @@ export const LendingList: React.FC = () => {
             type="button"
             className={clsx(
               'px-[16px] h-[44px] w-[160px] rounded-[12px] text-[14px] font-medium',
-              'bg-rb-brand-default text-white',
-              'hover:bg-rb-brand-default/90'
+              'bg-rb-brand-default text-white'
             )}
             onClick={() => setListModalType('borrowList')}
           >

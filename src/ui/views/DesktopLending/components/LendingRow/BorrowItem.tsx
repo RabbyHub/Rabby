@@ -35,7 +35,7 @@ export const BorrowItem: React.FC<{
               <SymbolIcon tokenSymbol={data.reserve.symbol} size={24} />
             )}
             <div className="flex items-center gap-[6px]">
-              <span className="text-[14px] leading-[17px] font-medium text-r-neutral-title-1">
+              <span className="text-[14px] leading-[17px] font-semibold text-r-neutral-title-1">
                 {data.reserve.symbol}
               </span>
               {data.reserve.isIsolated && <IsolateTag />}
@@ -57,7 +57,12 @@ export const BorrowItem: React.FC<{
           >
             {apy}
           </span>
-          <span className="text-[14px] leading-[17px] font-medium text-r-neutral-title-1 flex-shrink-0 min-w-[100px]">
+          <span
+            className={clsx(
+              'text-[14px] leading-[17px] font-medium text-r-neutral-title-1',
+              'flex-shrink-0 min-w-[100px]'
+            )}
+          >
             {totalBorrowsUSD}
           </span>
         </div>

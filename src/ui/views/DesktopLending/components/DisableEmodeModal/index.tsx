@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Modal, Button } from 'antd';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
@@ -52,7 +53,12 @@ const PairTable: React.FC<{
                 tokenSymbol={item.iconSymbol || item.symbol}
                 size={24}
               />
-              <span className="text-[12px] leading-[16px] font-medium text-r-neutral-title-1 truncate max-w-[100px]">
+              <span
+                className={clsx(
+                  'text-[12px] leading-[16px] font-medium text-r-neutral-title-1',
+                  'truncate max-w-[100px]'
+                )}
+              >
                 {item.symbol}
               </span>
             </div>
@@ -125,7 +131,11 @@ export const DisableEmodeModal: React.FC<DisableEmodeModalProps> = ({
           <PairTable data={currentEmode?.assets || []} />
         </div>
         <Button
-          className="w-full mt-[24px] h-[44px] rounded-[8px] font-medium border-rb-neutral-line bg-rb-neutral-line text-r-neutral-title-1 hover:!border-rb-neutral-line hover:!bg-rb-neutral-line"
+          className={clsx(
+            'w-full mt-[24px] h-[44px] rounded-[8px] font-medium',
+            'border-rb-neutral-line bg-rb-neutral-line text-r-neutral-title-1',
+            'hover:!border-rb-neutral-line hover:!bg-rb-neutral-line'
+          )}
           onClick={handleDisable}
         >
           {t('page.lending.manageEmode.disableTitle')}

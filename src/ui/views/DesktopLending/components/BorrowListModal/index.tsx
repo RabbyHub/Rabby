@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { isSameAddress } from '@/ui/utils';
 import {
@@ -195,7 +196,12 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
   );
 
   return (
-    <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px] pb-8 w-full h-full min-h-0 flex flex-col">
+    <div
+      className={clsx(
+        'w-full h-full min-h-0 flex flex-col',
+        'bg-r-neutral-bg-2 rounded-[12px] p-[24px] pb-8'
+      )}
+    >
       <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1 mb-12">
         {t('page.lending.borrowDetail.actions')}
       </h2>
@@ -212,7 +218,12 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                 <span className="text-[14px] leading-[18px] text-r-neutral-foot flex-1">
                   {t('page.lending.list.headers.token')}
                 </span>
-                <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[100px] text-right flex items-center justify-end gap-4">
+                <span
+                  className={clsx(
+                    'text-[14px] leading-[18px] text-r-neutral-foot w-[100px]',
+                    'flex items-center justify-end gap-4 text-right'
+                  )}
+                >
                   {t('page.lending.list.headers.totalBorrowed')}
                   <RcIconArrowDownCC className="w-4 h-4 text-r-neutral-foot flex-shrink-0" />
                 </span>
@@ -226,7 +237,10 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                   return (
                     <div
                       key="toggle-fold"
-                      className="w-full pt-20 pb-20 py-8 px-12 text-[14px] text-r-neutral-foot text-left cursor-pointer"
+                      className={clsx(
+                        'w-full pt-20 pb-20 py-8 px-12 cursor-pointer text-left',
+                        'text-[14px] text-r-neutral-foot'
+                      )}
                       onClick={() => setFoldHideList((prev) => !prev)}
                     >
                       {foldHideList
@@ -243,7 +257,10 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                 return (
                   <div
                     key={`${data.reserve.underlyingAsset}-${data.reserve.symbol}`}
-                    className="mt-8 flex items-center justify-between px-12 py-14 rounded-[16px] bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-4"
+                    className={clsx(
+                      'mt-8 flex items-center justify-between px-12 py-14 rounded-[16px]',
+                      'bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-4'
+                    )}
                   >
                     <button
                       type="button"
@@ -255,16 +272,31 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                           tokenSymbol={data.reserve.symbol}
                           size={24}
                         />
-                        <span className="text-[16px] leading-[20px] font-medium text-r-neutral-title-1 truncate max-w-[80px]">
+                        <span
+                          className={clsx(
+                            'text-[16px] leading-[20px] font-medium text-r-neutral-title-1',
+                            'truncate max-w-[80px]'
+                          )}
+                        >
                           {data.reserve.symbol}
                         </span>
                       </div>
-                      <span className="text-[14px] leading-[18px] font-medium text-r-neutral-foot w-[100px] text-right flex-shrink-0">
+                      <span
+                        className={clsx(
+                          'text-[14px] leading-[18px] font-medium text-r-neutral-foot w-[100px]',
+                          'flex-shrink-0 text-right'
+                        )}
+                      >
                         {formatListNetWorth(
                           Number(data.reserve.totalDebtUSD || '0')
                         )}
                       </span>
-                      <span className="text-[16px] leading-[20px] font-medium text-r-neutral-title-1 w-[80px] text-right flex-shrink-0">
+                      <span
+                        className={clsx(
+                          'text-[16px] leading-[20px] font-medium text-r-neutral-title-1 w-[80px]',
+                          'flex-shrink-0 text-right'
+                        )}
+                      >
                         {formatApy(
                           Number(data.reserve.variableBorrowAPY || '0')
                         )}
@@ -272,7 +304,11 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                     </button>
                     <button
                       type="button"
-                      className="ml-8 px-16 py-8 rounded-[8px] bg-rb-neutral-bg-4 text-[14px] font-medium text-r-neutral-foot hover:bg-rb-neutral-bg-5 flex-shrink-0"
+                      className={clsx(
+                        'ml-8 px-16 py-8 rounded-[8px] flex-shrink-0',
+                        'bg-rb-neutral-bg-4 text-[14px] font-medium text-r-neutral-foot',
+                        'hover:bg-rb-neutral-bg-5'
+                      )}
                       onClick={(e) => {
                         e.stopPropagation();
                         handlePressItem(data);

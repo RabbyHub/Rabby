@@ -181,27 +181,29 @@ export const LendingEmptyState: React.FC<{
         <MainHeading>{t('page.lending.summary.empty.title')}</MainHeading>
         <SubText>{t('page.lending.summary.empty.endDesc')}</SubText>
       </EmptyStateContainer>
-      <div className="px-20">
-        <div className="mt-16 mb-2 flex items-center justify-between px-8">
-          <span className="text-[14px] leading-[18px] text-r-neutral-foot flex-1">
-            {t('page.lending.list.headers.token')}
-          </span>
-          <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[80px] text-right">
-            {t('page.lending.tvl')}
-          </span>
-          <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[80px] text-right">
-            {t('page.lending.apy')}
-          </span>
-          <span className="w-[80px] flex-shrink-0" />
+      {filterReserves.length > 0 && (
+        <div className="px-20">
+          <div className="mt-16 mb-2 flex items-center justify-between px-8">
+            <span className="text-[14px] leading-[18px] text-r-neutral-foot flex-1">
+              {t('page.lending.list.headers.token')}
+            </span>
+            <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[80px] text-right">
+              {t('page.lending.tvl')}
+            </span>
+            <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[80px] text-right">
+              {t('page.lending.apy')}
+            </span>
+            <span className="w-[80px] flex-shrink-0" />
+          </div>
+          {filterReserves.map((item) => (
+            <SupplyItem
+              key={item.reserve.underlyingAsset}
+              data={item}
+              onSelect={onSelect}
+            />
+          ))}
         </div>
-        {filterReserves.map((item) => (
-          <SupplyItem
-            key={item.reserve.underlyingAsset}
-            data={item}
-            onSelect={onSelect}
-          />
-        ))}
-      </div>
+      )}
     </div>
   );
 };

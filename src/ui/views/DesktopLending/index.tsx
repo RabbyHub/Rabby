@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
+import clsx from 'clsx';
 import styled from 'styled-components';
 import { useRabbyDispatch } from '@/ui/store';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
@@ -21,11 +22,12 @@ import { CustomMarket } from './config/market';
 
 const Wrap = styled.div`
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   background: var(--rb-neutral-bg-1, #fff);
+  padding: 0 20px 16px;
   display: flex;
   flex-direction: column;
-  padding-bottom: 88px;
+  min-height: 0;
 `;
 
 const DesktopLendingContent: React.FC = () => {
@@ -39,42 +41,40 @@ const DesktopLendingContent: React.FC = () => {
     setFetchLoading(true);
     fetchData();
     // TODO: 有循环，待排查
-  }, [marketKey]);
+  }, [marketKey, currentAccount?.address]);
 
   return (
-    <>
-      <Wrap>
-        <div className="flex flex-1 pl-16 pr-8 pb-16">
-          <div className="flex flex-col flex-1 min-w-0">
-            <div className="flex items-center justify-between">
-              <DesktopNav showRightItems={false} />
-              <div className="flex items-center gap-[16px]">
-                <DesktopAccountSelector
-                  value={currentAccount}
-                  onChange={(account) => {
-                    dispatch.account.changeAccountAsync(account);
-                  }}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1 mt-[16px] relative">
-              <div className="flex-1 min-h-[300px] overflow-hidden">
-                <LendingList />
-              </div>
-              <div className="flex-shrink-0">
-                <SummaryBar
-                  netWorth={iUserSummary?.netWorthUSD || ''}
-                  supplied={iUserSummary?.totalLiquidityUSD || ''}
-                  borrowed={iUserSummary?.totalBorrowsUSD || ''}
-                  netApy={apyInfo?.netAPY || 0}
-                  healthFactor={iUserSummary?.healthFactor || ''}
-                />
-              </div>
-            </div>
-          </div>
+    <Wrap>
+      <div className="flex items-center justify-between">
+        <DesktopNav showRightItems={false} />
+        <DesktopAccountSelector
+          value={currentAccount}
+          onChange={(account) => {
+            dispatch.account.changeAccountAsync(account);
+          }}
+        />
+      </div>
+      <div
+        className={clsx(
+          'flex flex-col flex-1 min-h-0 min-w-0 mt-[4px] relative',
+          'border border-solid border-rb-neutral-line rounded-[20px] overflow-hidden',
+          'bg-rb-neutral-bg-1'
+        )}
+      >
+        <div className="flex-1 min-h-0 overflow-y-auto pb-20">
+          <LendingList />
         </div>
-      </Wrap>
-    </>
+        <div className="flex-shrink-0">
+          <SummaryBar
+            netWorth={iUserSummary?.netWorthUSD || ''}
+            supplied={iUserSummary?.totalLiquidityUSD || ''}
+            borrowed={iUserSummary?.totalBorrowsUSD || ''}
+            netApy={apyInfo?.netAPY || 0}
+            healthFactor={iUserSummary?.healthFactor || ''}
+          />
+        </div>
+      </div>
+    </Wrap>
   );
 };
 

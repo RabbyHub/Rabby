@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { getHealthStatusColor } from '../../utils';
 import { HF_COLOR_GOOD_THRESHOLD } from '../../utils/constant';
@@ -53,7 +54,11 @@ export const HealthFactorBar: React.FC<HealthFactorBarProps> = ({
             {getHealthFactorText(healthFactor)}
           </span>
           <span
-            className="inline-block w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent"
+            className={clsx(
+              'inline-block w-0 h-0',
+              'border-l-[6px] border-r-[6px] border-t-[6px]',
+              'border-l-transparent border-r-transparent'
+            )}
             style={{ borderTopColor: hfColor.color }}
           />
         </div>

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
 import { PopupDetailProps } from '../../types';
@@ -64,7 +65,12 @@ export const SupplyOverView: React.FC<
             {t('page.lending.supplyDetail.availableToBorrow')}
           </span>
           <div className="flex items-center flex-1 justify-end min-w-0">
-            <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1 text-right truncate">
+            <span
+              className={clsx(
+                'text-[13px] leading-[15px] font-medium text-r-neutral-title-1',
+                'text-right truncate'
+              )}
+            >
               {afterAvailable
                 ? `${availableText} → ${formatNetworth(
                     Number(afterAvailable || '0')

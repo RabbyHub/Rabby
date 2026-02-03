@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { isSameAddress } from '@/ui/utils';
 import {
@@ -130,7 +131,12 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
   }, [isInIsolationMode, loading, t]);
 
   return (
-    <div className="bg-r-neutral-bg-2 rounded-[12px] p-[24px] pb-8 w-full h-full min-h-0 flex flex-col">
+    <div
+      className={clsx(
+        'w-full h-full min-h-0 flex flex-col',
+        'bg-r-neutral-bg-2 rounded-[12px] p-[24px] pb-8'
+      )}
+    >
       <h2 className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1 mb-12 px-12">
         {t('page.lending.supplyDetail.actions')}
       </h2>
@@ -160,7 +166,10 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                   return (
                     <div
                       key="toggle-fold"
-                      className="w-full pt-20 pb-20 py-8 px-12 text-[14px] text-r-neutral-foot text-left cursor-pointer"
+                      className={clsx(
+                        'w-full pt-20 pb-20 py-8 px-12 cursor-pointer text-left',
+                        'text-[14px] text-r-neutral-foot'
+                      )}
                       onClick={() => setFoldHideList((prev) => !prev)}
                     >
                       {foldHideList

@@ -11,7 +11,15 @@ export const IsolateTag: React.FC<{
   const { t } = useTranslation();
 
   return (
-    <Tooltip title={t('page.lending.isolateTip')}>
+    <Tooltip
+      overlayClassName="rectangle"
+      trigger="hover"
+      title={
+        isGlobal
+          ? t('page.lending.modalDesc.isolatedDesc')
+          : t('page.lending.modalDesc.globalIsolatedDesc')
+      }
+    >
       <span
         className={clsx(
           'text-[12px] font-medium px-[6px] h-[20px] flex items-center gap-[4px] rounded-[4px]',

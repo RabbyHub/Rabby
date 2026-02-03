@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Modal, Button, Select, Checkbox } from 'antd';
 import { formatUserSummary } from '@aave/math-utils';
@@ -77,7 +78,12 @@ const PairTable: React.FC<{ data: EmodeCategory['assets'] }> = ({ data }) => {
                 tokenSymbol={item.iconSymbol || item.symbol}
                 size={24}
               />
-              <span className="text-[12px] leading-[16px] font-medium text-r-neutral-title-1 truncate max-w-[100px]">
+              <span
+                className={clsx(
+                  'text-[12px] leading-[16px] font-medium text-r-neutral-title-1',
+                  'truncate max-w-[100px]'
+                )}
+              >
                 {item.symbol}
               </span>
             </div>

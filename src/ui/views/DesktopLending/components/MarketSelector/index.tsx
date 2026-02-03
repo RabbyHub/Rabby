@@ -80,7 +80,13 @@ export const MarketSelector: React.FC<{
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-[36px] left-0 z-20 w-[360px] bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line rounded-[12px] shadow-lg">
+          <div
+            className={clsx(
+              'absolute top-[36px] left-0 z-20 w-[360px]',
+              'bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line',
+              'rounded-[12px] shadow-lg'
+            )}
+          >
             <div className="grid grid-cols-2">
               {options.map((option) => {
                 const isSelected = value === option.value;
@@ -91,7 +97,6 @@ export const MarketSelector: React.FC<{
                       'h-[44px] flex items-center justify-between cursor-pointer',
                       'px-[16px] pr-[20px]',
                       'hover:bg-rb-neutral-bg-3',
-                      isSelected && 'bg-rb-neutral-bg-3',
                       'text-[14px] leading-[17px] font-medium text-r-neutral-title-1'
                     )}
                     onClick={() => handleSelect(option.value)}
