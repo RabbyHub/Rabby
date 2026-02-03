@@ -30,51 +30,50 @@ export const HFDescription: React.FC<{
   onClose: () => void;
 }> = ({ visible, hf, onClose }) => {
   const { t } = useTranslation();
-  const numHf = Number(hf || '0');
-  const showWarning = numHf < HF_COLOR_GOOD_THRESHOLD;
+  //const numHf = Number(hf || '0');
+  //const showWarning = numHf < HF_COLOR_GOOD_THRESHOLD;
 
   return (
     <Modal {...modalStyle} visible={visible} onCancel={onClose}>
-      <div className="bg-rb-neutral-bg-1 rounded-[12px] p-[24px]">
-        <p className="text-[18px] leading-[24px] font-medium text-rb-neutral-title-1 text-center">
+      <div className=" bg-r-neutral-bg2 rounded-[12px] px-[20px] py-[16px]">
+        <p className="text-[20px] leading-[24px] font-medium text-rb-neutral-title-1 text-center mb-0">
           {t('page.lending.hfTitle')}
         </p>
-        <div className="pt-[8px] w-full">
-          <p className="text-[14px] leading-[20px] font-normal text-rb-neutral-body mb-[20px]">
+        <div className="pt-[16px] w-full">
+          <p className="text-[13px] leading-[18px] font-normal text-rb-neutral-foot mb-[12px]">
             {t('page.lending.lqDescription.introText')}
           </p>
 
-          <div className="mb-[20px] space-y-[6px]">
-            <div className="flex items-start gap-[12px]">
-              <div className="w-[6px] h-[6px] rounded-full bg-rb-neutral-foot mt-[6px] shrink-0" />
-              <p className="text-[14px] leading-[20px] font-normal text-rb-neutral-body flex-1">
+          <div className="mb-[20px] bg-r-neutral-card1 rounded-[8px] p-[16px]">
+            <div className="flex items-start">
+              <div className="text-[13px] leading-[15px] font-normal text-rb-neutral-foot flex-1">
                 <span className="font-semibold text-r-green-default">
                   {t('page.lending.lqDescription.over3title')}
                 </span>{' '}
                 {t('page.lending.lqDescription.over3desc')}
-              </p>
+              </div>
             </div>
-            <div className="flex items-start gap-[12px]">
-              <div className="w-[6px] h-[6px] rounded-full bg-rb-neutral-foot mt-[6px] shrink-0" />
-              <p className="text-[14px] leading-[20px] font-normal text-rb-neutral-body flex-1">
+            <div className="flex items-start mt-[10px]">
+              <div className="text-[13px] leading-[15px] font-normal text-rb-neutral-foot flex-1">
                 <span className="font-semibold text-rb-red-default">
                   {t('page.lending.lqDescription.below1title')}
                 </span>{' '}
                 {t('page.lending.lqDescription.below1desc')}
-              </p>
+              </div>
             </div>
-            <div className="flex items-start gap-[12px]">
-              <div className="w-[6px] h-[6px] rounded-full bg-rb-neutral-foot mt-[6px] shrink-0" />
-              <p className="text-[14px] leading-[20px] font-normal text-rb-neutral-body flex-1">
+            <div className="flex items-start mt-[12px]">
+              <div className="text-[13px] leading-[15px] font-normal text-rb-neutral-foot flex-1">
+                <span className="font-semibold text-rb-neutral-title-1">
+                  {t('page.lending.lqDescription.liquidationTitle')}
+                </span>{' '}
                 {t('page.lending.lqDescription.liquidation')}
-              </p>
+              </div>
             </div>
+            <HealthFactorBar healthFactor={hf} />
           </div>
-
-          <HealthFactorBar healthFactor={hf} />
         </div>
 
-        {showWarning && (
+        {/*{showWarning && (
           <div
             className={clsx(
               'mt-[20px] flex items-start gap-[10px] py-[12px] px-[10px] rounded-[8px]',
@@ -95,7 +94,7 @@ export const HFDescription: React.FC<{
               {t('page.lending.lqDescription.warningText')}
             </p>
           </div>
-        )}
+        )}*/}
       </div>
     </Modal>
   );

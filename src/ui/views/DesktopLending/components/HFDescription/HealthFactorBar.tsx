@@ -31,7 +31,7 @@ export const HealthFactorBar: React.FC<HealthFactorBarProps> = ({
   const hfColor = useMemo(() => getHealthStatusColor(hfNumber), [hfNumber]);
 
   return (
-    <div className="relative mt-[20px] mb-[56px] w-full">
+    <div className="relative mt-[50px] mb-[56px] w-full">
       <div
         className="h-[6px] rounded-[3px] w-full"
         style={{
@@ -40,13 +40,13 @@ export const HealthFactorBar: React.FC<HealthFactorBarProps> = ({
         }}
       />
       <div
-        className="absolute bottom-[130%] mb-[6px] z-[3] flex flex-col items-center"
+        className="absolute bottom-[130%] z-[3] flex items-center"
         style={{
           left: `${Math.min(dotPosition, 100)}%`,
-          transform: 'translateX(-50%)',
+          transform: 'translateX(-20%)',
         }}
       >
-        <div className="flex items-center gap-[5px] mb-[2px]">
+        <div className="flex flex-col items-center gap-[5px] mb-[2px]">
           <span
             className="text-[15px] leading-[20px] font-medium text-center"
             style={{ color: hfColor.color }}
@@ -65,10 +65,10 @@ export const HealthFactorBar: React.FC<HealthFactorBarProps> = ({
         {hfNumber < HF_COLOR_GOOD_THRESHOLD && (
           <div
             className="flex items-center py-[1px] px-[4px] rounded-[4px] overflow-hidden"
-            style={{ backgroundColor: hfColor.backgroundColor }}
+            style={{ backgroundColor: hfColor.tooltipBgColor }}
           >
             <span
-              className="text-[12px] leading-[16px] font-normal text-center"
+              className="text-[12px] leading-[16px] font-medium text-center"
               style={{ color: hfColor.color }}
             >
               {t('page.lending.lqDescription.risky')}
@@ -77,7 +77,7 @@ export const HealthFactorBar: React.FC<HealthFactorBarProps> = ({
         )}
       </div>
       <div
-        className="absolute left-0 top-[150%] flex flex-col items-center"
+        className="absolute left-0 top-[-50%] flex flex-col items-center"
         style={{ maxWidth: '20%' }}
       >
         <div

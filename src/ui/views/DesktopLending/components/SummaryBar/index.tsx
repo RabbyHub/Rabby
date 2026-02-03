@@ -4,7 +4,7 @@ import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { Skeleton, Tooltip } from 'antd';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { getHealthStatusColor, isHFEmpty } from '../../utils';
 import { HF_COLOR_GOOD_THRESHOLD } from '../../utils/constant';
 import { estDaily, formatApy } from '../../utils/format';
@@ -13,6 +13,7 @@ import RightMarketTabInfo from './RightTag';
 import { HFDescription } from '../HFDescription';
 import { getApyColor } from '../../utils/apy';
 import { useLendingIsLoading } from '../../hooks';
+import { HealthTip } from './HealthTip';
 
 const SummaryBarContainer = styled.div`
   /*  */
@@ -42,6 +43,21 @@ const InfoValue = styled.span`
   font-weight: 500;
 `;
 
+const LendingHfTooltipStyle = createGlobalStyle`
+  .lending-hf-tooltip {
+    max-width: fit-content !important;
+    .ant-tooltip-inner {
+      background-color: var(--lending-hf-tooltip-bg) !important;
+      border-radius: 4px !important;
+      display: flex;
+      align-items: center;
+    }
+    .ant-tooltip-arrow-content {
+      background-color: var(--lending-hf-tooltip-bg) !important;
+    }
+  }
+`;
+
 interface SummaryItemProps {
   netWorth: string;
   supplied: string;
@@ -52,30 +68,13 @@ interface SummaryItemProps {
 
 const SummaryBarSkeleton: React.FC = () => (
   <div className="flex items-center gap-[24px]">
-    <Skeleton.Button
-      className="h-[17px] block rounded-[4px]"
-      style={{ width: 82 }}
-    />
-    <Skeleton.Button
-      className="h-[17px] block rounded-[4px]"
-      style={{ width: 82 }}
-    />
-    <Skeleton.Button
-      className="h-[17px] block rounded-[4px]"
-      style={{ width: 82 }}
-    />
-    <Skeleton.Button
-      className="h-[17px] block rounded-[4px]"
-      style={{ width: 82 }}
-    />
-    <Skeleton.Button
-      className="h-[17px] block rounded-[4px]"
-      style={{ width: 82 }}
-    />
-    <Skeleton.Button
-      className="h-[17px] block rounded-[4px]"
-      style={{ width: 82 }}
-    />
+    {Array.from({ length: 6 }).map((_, index) => (
+      <Skeleton.Button
+        key={index}
+        className="h-[17px] block rounded-[4px]"
+        style={{ width: 82 }}
+      />
+    ))}
   </div>
 );
 
@@ -120,6 +119,7 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
 
   return (
     <div className="border-t border-solid border-rb-neutral-line">
+      <LendingHfTooltipStyle />
       <SummaryBarContainer className="h-[40px] flex items-center px-[40px]">
         {loading ? (
           <SummaryBarSkeleton />
@@ -185,12 +185,25 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
                     <InfoTitle>
                       {t('page.lending.summary.healthFactor')}
                     </InfoTitle>
-                    <Tooltip title={t('page.lending.summary.healthFactorTip')}>
+                    <Tooltip
+                      overlay={
+                        <HealthTip
+                          onMoreClick={() => setHfDescVisible(true)}
+                          healthFactor={healthFactor}
+                        />
+                      }
+                      overlayClassName="rectangle lending-hf-tooltip max-w-fit"
+                      overlayStyle={
+                        {
+                          '--lending-hf-tooltip-bg':
+                            healthStatus.tooltipBgColor,
+                        } as React.CSSProperties
+                      }
+                    >
                       <RcIconInfo
                         width={12}
                         height={12}
                         className="cursor-pointer text-rb-neutral-foot ml-[2px]"
-                        onClick={() => setHfDescVisible(true)}
                       />
                     </Tooltip>
                   </div>

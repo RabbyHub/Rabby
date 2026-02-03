@@ -1574,7 +1574,8 @@
         "over3desc": "Your positions are safe",
         "below1title": "Health Factor ≤ 1.0:",
         "below1desc": "Your position is at risk of liquidation.",
-        "liquidation": "Liquidation: If your Health Factor falls below 1.0, part of your collateral may be automatically sold to repay the debt. A liquidation penalty will apply, resulting in a partial loss of your collateral.",
+        "liquidationTitle": "Liquidation:",
+        "liquidation": "If your Health Factor falls below 1.0, part of your collateral may be automatically sold to repay the debt. A liquidation penalty will apply, resulting in a partial loss of your collateral.",
         "warningText": "Your Health Factor is too low. To avoid liquidation:\n1. Repay part or all of your loan\n2. Add more collateral"
       },
       "modalDesc": {
