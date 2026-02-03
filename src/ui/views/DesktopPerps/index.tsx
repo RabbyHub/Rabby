@@ -1,10 +1,4 @@
-import React, {
-  useMemo,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-} from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { ChartArea } from './components/ChartArea';
 import { OrderBookTrades } from './components/OrderBookTrades';
@@ -13,10 +7,7 @@ import { UserInfoHistory } from './components/UserInfoHistory';
 import { AccountInfo } from './components/AccountInfo';
 import { StatusBar } from './components/StatusBar';
 import './index.less';
-import { DesktopPerpsSelectAccountList } from '@/ui/component/DesktopSelectAccountList/PerpsAccountList';
-import clsx from 'clsx';
 import { usePerpsProInit } from './hooks/usePerpsProInit';
-import { AddAddressModal } from '../DesktopProfile/components/AddAddressModal';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
   DepositWithdrawModal,
@@ -25,7 +16,6 @@ import {
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
-import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
 import { TopPermissionTips } from './components/TopPermissionTips';
 import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
@@ -52,16 +42,11 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   const dispatch = useRabbyDispatch();
   const selectedCoin = useRabbySelector((state) => state.perps.selectedCoin);
   const isUpdatingFromUrl = useRef(false);
-  const [popupType, setPopupType] = useState<PopupType>(null);
 
   const currentPerpsAccount = useRabbySelector(
     (s) => s.perps.currentPerpsAccount
   );
   const { login: switchPerpsAccount } = usePerpsProState();
-
-  const handleSetPopupType = useCallback((type: PopupType) => {
-    setPopupType(type);
-  }, []);
 
   const { action, coin } = useMemo(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -116,7 +101,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                   value={currentPerpsAccount}
                   onChange={switchPerpsAccount}
                 />
-                <AccountActions handleSetPopupType={handleSetPopupType} />
+                <AccountActions />
                 <SwitchThemeBtn />
               </div>
             </div>
@@ -141,7 +126,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                   <UserInfoHistory />
                 </div>
                 <div className="flex-1 flex-shrink-0 overflow-auto">
-                  <AccountInfo handleSetPopupType={handleSetPopupType} />
+                  <AccountInfo />
                 </div>
               </div>
             </div>
@@ -159,10 +144,15 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
       /> */}
 
       <DepositWithdrawModal
-        visible={popupType === 'deposit' || popupType === 'withdraw'}
-        type={popupType === 'deposit' ? 'deposit' : 'withdraw'}
+        visible={action === 'deposit' || action === 'withdraw'}
+        type={action === 'deposit' ? 'deposit' : 'withdraw'}
         onCancel={() => {
-          setPopupType(null);
+          const searchParams = new URLSearchParams(location.search);
+          searchParams.delete('action');
+          history.push({
+            pathname: location.pathname,
+            search: searchParams.toString(),
+          });
         }}
       />
     </>

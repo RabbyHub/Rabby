@@ -5,17 +5,14 @@ import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { DashedUnderlineText } from '../DashedUnderlineText';
-import { Tooltip } from 'antd';
-import { PopupType } from '../../index';
 import { isNaN } from 'lodash';
 
-export const AccountInfo: React.FC<{
-  handleSetPopupType: (type: PopupType) => void;
-}> = ({ handleSetPopupType }) => {
+export const AccountInfo: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
+  const location = useLocation();
   const clearinghouseState = useRabbySelector(
     (store) => store.perps.clearinghouseState
   );
@@ -42,10 +39,20 @@ export const AccountInfo: React.FC<{
   }, [clearinghouseState]);
 
   const handleDepositClick = () => {
-    handleSetPopupType('deposit');
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('action', 'deposit');
+    history.push({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    });
   };
   const handleWithdrawClick = () => {
-    handleSetPopupType('withdraw');
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('action', 'withdraw');
+    history.push({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    });
   };
 
   const accountValue = useMemo(() => {
