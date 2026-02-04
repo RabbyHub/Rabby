@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Card } from '@/ui/component/NewUserImport';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -17,7 +23,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useAsync, useClickAway } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
-import { useDocumentVisibility, useRequest } from 'ahooks';
+import { useDocumentVisibility, useMemoizedFn, useRequest } from 'ahooks';
 import { GnosisChainList } from './GnosisChainList';
 import { findChain } from '@/utils/chain';
 import { Chain } from '@/types/chain';
@@ -25,6 +31,7 @@ import styled from 'styled-components';
 import stats from '@/stats';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
+import browser from 'webextension-polyfill';
 
 const AccountItem = ({ account }: { account: Account }) => {
   const [edit, setEdit] = useState(false);
@@ -71,7 +78,7 @@ const AccountItem = ({ account }: { account: Account }) => {
       className={clsx(
         'flex flex-col justify-center',
         'border border-solid border-rabby-neutral-line',
-        'rounded-[8px] p-16 pt-8'
+        'rounded-[8px] px-[16px] py-[12px]'
       )}
     >
       <div
@@ -85,10 +92,10 @@ const AccountItem = ({ account }: { account: Account }) => {
             autoCorrect="false"
             className={clsx(
               'relative left-[-8px]',
-              'w-[260px] h-[38px]',
+              'w-[180px] h-[20px]',
               'border-none bg-r-neutral-card2 text-r-neutral-title-1',
               'p-8 rounded',
-              'text-[20px] font-medium'
+              'text-[15px] leading-[18px] font-medium'
             )}
             value={localName}
             onChange={(e) => {
@@ -96,17 +103,17 @@ const AccountItem = ({ account }: { account: Account }) => {
             }}
           />
         ) : (
-          <div className="flex items-center justify-center h-[38px] ">
-            <span className="max-w-[300px] truncate text-r-neutral-title1">
+          <div className="flex items-center justify-center h-[20px]">
+            <div className="max-w-[300px] text-[15px] leading-[18px] truncate text-r-neutral-title1">
               {name}
-            </span>
+            </div>
           </div>
         )}
 
         {edit ? (
           <>
             <RcIconConfirm
-              className="w-20 h20 -ml-8px cursor-pointer"
+              className="w-[16px] h-[16px] cursor-pointer"
               viewBox="0 0 20 20"
               onClick={() => {
                 update();
@@ -121,8 +128,7 @@ const AccountItem = ({ account }: { account: Account }) => {
           </>
         ) : (
           <RcIconPen
-            className="w-[18px] h-[19px] cursor-pointer ml-6"
-            viewBox="0 0 18 19"
+            className="cursor-pointer ml-6"
             onClick={() => {
               setEdit(true);
               setLocalName(name || '');
@@ -134,8 +140,8 @@ const AccountItem = ({ account }: { account: Account }) => {
           />
         )}
       </div>
-      <div className="text-[15px] text-r-neutral-foot">
-        {ellipsisAddress(account.address)}
+      <div className="text-[13px] leading-[16px] mt-[4px] text-r-neutral-foot">
+        {ellipsisAddress(account.address, true)}
       </div>
     </div>
   );
@@ -171,6 +177,8 @@ export const ImportOrCreatedSuccess = () => {
 
   const isSeedPhrase = React.useMemo(() => hd === KEYRING_CLASS.MNEMONIC, [hd]);
 
+  const [hasBackup, setHasBackup] = useState(false);
+
   const documentVisibility = useDocumentVisibility();
   const hasReportedRef = useRef(false);
   const { isExistedKeyring, finalMnemonics, stashKeyringId } = useRabbySelector(
@@ -204,19 +212,21 @@ export const ImportOrCreatedSuccess = () => {
     []
   );
 
-  const isNewUserImport = React.useMemo(() => {
-    return allAccounts?.length === 1;
-  }, [!!allAccounts?.length]);
+  // const isNewUserImport = React.useMemo(() => {
+  //   return allAccounts?.length === 1;
+  // }, [!!allAccounts?.length]);
 
   const getStarted = React.useCallback(() => {
-    if (isNewUserImport) {
-      history.push({
-        pathname: '/new-user/ready',
-      });
-    } else {
-      window.close();
-    }
-  }, [isNewUserImport]);
+    window.close();
+    browser.action.openPopup();
+    // if (isNewUserImport) {
+    //   history.push({
+    //     pathname: '/new-user/ready',
+    //   });
+    // } else {
+    //   window.close();
+    // }
+  }, []);
 
   const addMoreAddr = () => {
     const oBrand = brand !== 'null' ? brand : undefined;
@@ -229,6 +239,12 @@ export const ImportOrCreatedSuccess = () => {
       '_blank'
     );
   };
+
+  const handleBackup = useMemoizedFn(() => {
+    history.push(
+      `/new-user/backup-seed-phrase?address=${accounts?.[0]?.address}`
+    );
+  });
 
   const closeConnect = React.useCallback(() => {
     if (store.clearKeyringId) {
@@ -308,18 +324,22 @@ export const ImportOrCreatedSuccess = () => {
   );
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col pt-[40px]">
       <RcIconChecked
-        className="w-[52px] h-[52px] mt-[60px] mb-20 mx-auto"
+        className="w-[40px] h-[40px] mb-[16px] mx-auto"
         viewBox="0 0 16 16"
       />
 
-      <div className="text-24 font-medium text-r-neutral-title1 text-center">
+      <div className="text-[24px] leading-[29px] font-medium text-r-neutral-title1 text-center">
         {t(
           isCreated
             ? 'page.newUserImport.successful.create'
             : 'page.newUserImport.successful.import'
         )}
+      </div>
+
+      <div className="text-center text-[15px] leading-[18px] text-r-neutral-foot mt-[8px]">
+        Rabby Wallet is Ready to Use!
       </div>
 
       <ScrollBarDiv className="flex flex-col gap-16 pt-24 overflow-y-scroll max-h-[324px] mb-20">
@@ -337,32 +357,39 @@ export const ImportOrCreatedSuccess = () => {
         block
         type="primary"
         className={clsx(
-          'mt-auto h-[56px] shadow-none rounded-[8px]',
-          'text-[17px] font-medium'
+          'mt-auto h-[52px] shadow-none rounded-[8px]',
+          'text-[15px] leading-[18px] font-medium'
         )}
       >
-        {isNewUserImport
-          ? t('page.newUserImport.successful.start')
-          : t('global.Done')}
+        Open Wallet
       </Button>
 
-      {!!hd && (
-        <div
-          onClick={addMoreAddr}
-          className="flex items-center justify-center gap-2 text-[14px] text-r-neutral-foot mt-[23px] cursor-pointer"
-        >
-          {isSeedPhrase ? (
-            <span>{t('page.newUserImport.successful.addMoreAddr')}</span>
-          ) : (
-            <span>
-              {t('page.newUserImport.successful.addMoreFrom', {
-                name: brand || BRAND_ALIAN_TYPE_TEXT[hd] || hd,
-              })}
-            </span>
-          )}
-          <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
-        </div>
-      )}
+      {hd ? (
+        isCreated && isSeedPhrase && store.seedPhrase && !hasBackup ? (
+          <div
+            onClick={handleBackup}
+            className="flex items-center justify-center gap-2 text-[13px] leading-[16px] min-h-[20px] text-r-neutral-foot mt-[16px] cursor-pointer"
+          >
+            <span>Backup Seed phrase Now</span>
+          </div>
+        ) : (
+          <div
+            onClick={addMoreAddr}
+            className="flex items-center justify-center gap-2 text-[13px] leading-[16px] text-r-neutral-foot mt-[16px] cursor-pointer"
+          >
+            {isSeedPhrase ? (
+              <span>{t('page.newUserImport.successful.addMoreAddr')}</span>
+            ) : (
+              <span>
+                {t('page.newUserImport.successful.addMoreFrom', {
+                  name: brand || BRAND_ALIAN_TYPE_TEXT[hd] || hd,
+                })}
+              </span>
+            )}
+            <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
+          </div>
+        )
+      ) : null}
     </Card>
   );
 };

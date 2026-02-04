@@ -3243,6 +3243,33 @@ export class WalletController extends BaseController {
     return seedWords;
   };
 
+  checkSeedPhraseBackup = async (address: string) => {
+    const keyring = await keyringService.getKeyringForAccount(
+      address,
+      KEYRING_CLASS.MNEMONIC
+    );
+
+    console.log(keyring);
+    return keyring.backedUp == null ? true : keyring.backedUp;
+    // const serialized = await keyring.serialize();
+    // const seedWords = serialized.mnemonic;
+
+    // return seedWords;
+  };
+
+  backUpSeedPhrase = async (address: string) => {
+    const keyring = await keyringService.getKeyringForAccount(
+      address,
+      KEYRING_CLASS.MNEMONIC
+    );
+    if (!keyring) {
+      throw new Error('Keyring not found');
+    }
+
+    keyring.backedUp = true;
+    await keyringService.persistAllKeyrings();
+  };
+
   clearAddressPendingTransactions = (address: string, chainId?: number) => {
     transactionHistoryService.clearPendingTransactions(address, chainId);
     transactionWatcher.clearPendingTx(address, chainId);

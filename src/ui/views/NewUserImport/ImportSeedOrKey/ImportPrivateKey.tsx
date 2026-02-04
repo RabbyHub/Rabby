@@ -15,13 +15,16 @@ const Container = styled.div`
   .ant-input {
     border-radius: 8px;
     border: 1px solid var(--r-neutral-line, #e0e5ec);
-    font-size: 16px;
-    &:not(:placeholder-shown) {
+    font-size: 15px;
+    line-height: 18px;
+    /* &:not(:placeholder-shown) {
       font-size: 24px;
-    }
+    } */
     &::placeholder {
       color: var(--r-neutral-foot, #6a7587);
       font-weight: 400;
+      font-size: 15px;
+      line-height: 18px;
     }
   }
 
@@ -107,7 +110,7 @@ export const ImportPrivateKey = () => {
       </div>
 
       <footer className="mt-auto">
-        <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px]">
+        <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
           Don't have seed phrase or private key yet?{' '}
           <Link to="/new-user/create-wallet" className="text-r-blue-default">
             Create a wallet

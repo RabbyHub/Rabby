@@ -155,7 +155,7 @@ const AddressBackupMnemonics: React.FC<{
               <Slip39TextareaContainer data={data} />
             ) : (
               <WordsMatrix
-                className="w-full bg-r-neutral-card-2"
+                className="w-full bg-r-neutral-card-1"
                 focusable={false}
                 closable={false}
                 words={data.split(' ')}
@@ -164,14 +164,15 @@ const AddressBackupMnemonics: React.FC<{
           </div>
         </div>
       </div>
-      <div className="footer pb-[20px] z-20">
+      <div className="footer py-[18px] z-20 border-t-[0.5px] border-rabby-neutral-line bg-transparent">
         <Button
           type="primary"
           className="w-full"
           size="large"
           onClick={() => history.goBack()}
         >
-          {t('global.Done')}
+          {/* {t('global.Done')} */}
+          I've Saved the Seed Phrase
         </Button>
       </div>
     </div>
