@@ -32,6 +32,7 @@ import stats from '@/stats';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 import browser from 'webextension-polyfill';
+import { useCheckSeedPhraseBackup } from '@/ui/utils/useCheckSeedPhraseBackup';
 
 const AccountItem = ({ account }: { account: Account }) => {
   const [edit, setEdit] = useState(false);
@@ -177,8 +178,6 @@ export const ImportOrCreatedSuccess = () => {
 
   const isSeedPhrase = React.useMemo(() => hd === KEYRING_CLASS.MNEMONIC, [hd]);
 
-  const [hasBackup, setHasBackup] = useState(false);
-
   const documentVisibility = useDocumentVisibility();
   const hasReportedRef = useRef(false);
   const { isExistedKeyring, finalMnemonics, stashKeyringId } = useRabbySelector(
@@ -207,10 +206,12 @@ export const ImportOrCreatedSuccess = () => {
     return [];
   }, [documentVisibility, keyringId]);
 
-  const { value: allAccounts } = useAsync(
-    wallet.getAllVisibleAccountsArray,
-    []
-  );
+  const { hasBackup } = useCheckSeedPhraseBackup(accounts?.[0]?.address || '');
+
+  // const { value: allAccounts } = useAsync(
+  //   wallet.getAllVisibleAccountsArray,
+  //   []
+  // );
 
   // const isNewUserImport = React.useMemo(() => {
   //   return allAccounts?.length === 1;

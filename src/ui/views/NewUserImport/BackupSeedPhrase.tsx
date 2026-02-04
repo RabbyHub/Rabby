@@ -45,7 +45,11 @@ export const BackupSeedPhrase = () => {
       message.error('Address is missing');
       return;
     }
-    await wallet.backUpSeedPhrase(address);
+    await wallet.backupSeedPhraseConfirmed(address);
+    setStore({
+      passphrase: '',
+      seedPhrase: '',
+    });
     if (history.length > 1) {
       history.goBack();
     } else {

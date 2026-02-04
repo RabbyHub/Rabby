@@ -11,6 +11,9 @@ import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { UI_TYPE } from '@/constant/ui';
 import { obj2query } from '@/ui/utils/url';
+import { useCheckSeedPhraseBackup } from '@/ui/utils/useCheckSeedPhraseBackup';
+import clsx from 'clsx';
+import { ReactComponent as RcIconInfoCC } from '@/ui/assets/dashboard/warning-cc.svg';
 
 type Props = {
   address: string;
@@ -31,6 +34,8 @@ export const AddressBackup = ({ address, type }: Props) => {
     return null;
   }
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
+
+  const { hasBackup } = useCheckSeedPhraseBackup(address);
 
   const handleBackup = async (path: 'mneonics' | 'private-key') => {
     form.resetFields();
@@ -98,6 +103,16 @@ export const AddressBackup = ({ address, type }: Props) => {
           <div className="rabby-list-item-content">
             <div className="rabby-list-item-label">
               {t('page.addressDetail.backup-seed-phrase')}
+            </div>
+            <div
+              className={clsx(
+                'text-[13px] leading-[16px] font-medium text-r-red-default',
+                'py-[4px] px-[10px] bg-r-red-light rounded-[4px]',
+                'flex items-center gap-[4px] mx-[4px]'
+              )}
+            >
+              <RcIconInfoCC />
+              Not Backup
             </div>
             <div className="rabby-list-item-arrow">
               <IconArrowRight

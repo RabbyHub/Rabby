@@ -3250,14 +3250,14 @@ export class WalletController extends BaseController {
     );
 
     console.log(keyring);
-    return keyring.backedUp == null ? true : keyring.backedUp;
+    return keyring.hasBackup == null ? true : keyring.hasBackup;
     // const serialized = await keyring.serialize();
     // const seedWords = serialized.mnemonic;
 
     // return seedWords;
   };
 
-  backUpSeedPhrase = async (address: string) => {
+  backupSeedPhraseConfirmed = async (address: string) => {
     const keyring = await keyringService.getKeyringForAccount(
       address,
       KEYRING_CLASS.MNEMONIC
@@ -3266,7 +3266,7 @@ export class WalletController extends BaseController {
       throw new Error('Keyring not found');
     }
 
-    keyring.backedUp = true;
+    keyring.hasBackup = true;
     await keyringService.persistAllKeyrings();
   };
 
@@ -3367,8 +3367,16 @@ export class WalletController extends BaseController {
   getPreMnemonics = () => keyringService.getPreMnemonics();
   generatePreMnemonic = () => keyringService.generatePreMnemonic();
   removePreMnemonics = () => keyringService.removePreMnemonics();
-  createKeyringWithMnemonics = async (mnemonic: string) => {
-    const keyring = await keyringService.createKeyringWithMnemonics(mnemonic);
+  createKeyringWithMnemonics = async (
+    mnemonic: string,
+    options?: {
+      hasBackup?: boolean;
+    }
+  ) => {
+    const keyring = await keyringService.createKeyringWithMnemonics(
+      mnemonic,
+      options
+    );
     keyringService.removePreMnemonics();
     // return this._setCurrentAccountFromKeyring(keyring);
   };

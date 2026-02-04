@@ -21,15 +21,6 @@ export const CreateSeedPhrase = () => {
 
   const { setStore } = useNewUserGuideStore();
 
-  const tipList = React.useMemo(
-    () => [
-      t('page.newUserImport.createNewAddress.tip1'),
-      t('page.newUserImport.createNewAddress.tip2'),
-      t('page.newUserImport.createNewAddress.tip3'),
-    ],
-    []
-  );
-
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
 
@@ -37,7 +28,7 @@ export const CreateSeedPhrase = () => {
     try {
       await wallet.boot(password);
       const seedPhrase = await wallet.generateMnemonic();
-      await wallet.createKeyringWithMnemonics(seedPhrase);
+      await wallet.createKeyringWithMnemonics(seedPhrase, { hasBackup: false });
       const keyring = await wallet.getKeyringByMnemonic(seedPhrase, '');
       setStore({ seedPhrase, passphrase: '' });
 
