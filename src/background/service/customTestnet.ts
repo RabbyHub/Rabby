@@ -740,6 +740,12 @@ class CustomTestnetService {
   // todo
   getTokenWithBalance = this.getTokenList;
 
+  hasCustomTokens = () => {
+    const hasCustomNetwork = Object.values(this.store.customTestnet).length > 0;
+    const hasCustomTokens = this.store.customTokenList.length > 0;
+    return hasCustomNetwork || hasCustomTokens;
+  };
+
   syncChainList = () => {
     const testnetList = this.getList();
     updateChainStore({
