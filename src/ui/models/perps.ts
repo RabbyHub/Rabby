@@ -505,7 +505,7 @@ export const perps = createModel<RootModel>()({
         const dexName = item.dexId ? item.dexId : 'hyperliquid';
         const assetCtx = marketByDexName[dexName];
         return {
-        ...item,
+          ...item,
           ...assetCtx[item.index],
         };
       });
