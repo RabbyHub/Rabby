@@ -767,7 +767,11 @@ const SettingsInner = ({
           content: t('page.dashboard.settings.features.lockWallet'),
           rightIcon: (
             <div className="setting-shortcut">
-              <span className="setting-shortcut-text">{lockShortcutLabel}</span>
+              {lockShortcutLabel.split(' + ').map((label) => (
+                <span key={label} className="setting-shortcut-key">
+                  {label}
+                </span>
+              ))}
               <ThemeIcon
                 src={RcIconArrowRight}
                 className="icon icon-arrow-right"
