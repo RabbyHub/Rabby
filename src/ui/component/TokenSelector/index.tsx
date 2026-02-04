@@ -29,7 +29,6 @@ import { findChain, findChainByServerID } from '@/utils/chain';
 
 import MatchImage from 'ui/assets/match.svg';
 import IconSearch from 'ui/assets/search.svg';
-import { ReactComponent as RcIconChainFilterCloseCC } from 'ui/assets/chain-select/chain-filter-close-cc.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
@@ -130,7 +129,6 @@ const TokenSelector = ({
   lpTokenMode,
   setLpTokenMode,
   showLpTokenSwitch,
-  onSelectRecentToken,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -454,19 +452,6 @@ const TokenSelector = ({
     ]
   );
 
-  const recentToTokens = useRabbySelector((s) => s.swap.recentToTokens || []);
-
-  const recentDisplayToTokens = useMemo(() => {
-    if (type === 'swapTo' && query.length < 1) {
-      return recentToTokens.filter((item) => {
-        return (
-          item.chain === chainServerId && !excludeTokens?.includes(item.id)
-        );
-      });
-    }
-    return [];
-  }, [chainServerId, recentToTokens, type, query, excludeTokens]);
-
   const handleInTokenDetails = useCallback(
     (token: TokenItemWithEntity) => {
       onConfirm(token);
@@ -578,37 +563,6 @@ const TokenSelector = ({
 
         {selectedTab === 'mainnet' ? (
           <ul className={clsx('token-list', { empty: isEmpty })}>
-            {recentDisplayToTokens.length ? (
-              <div className="mb-12">
-                <div className={clsx('flex flex-wrap gap-12', 'px-20')}>
-                  {recentDisplayToTokens.map((token) => (
-                    <div
-                      key={token.id}
-                      className={clsx(
-                        'flex items-center justify-center gap-6',
-                        'cursor-pointer py-8 px-12 rounded-[8px]',
-                        'bg-r-neutral-card1 hover:bg-r-blue-light-1',
-                        'text-15 text-r-neutral-title1 font-medium'
-                      )}
-                      onClick={() => {
-                        onConfirm(token);
-                        onSelectRecentToken?.(token);
-                      }}
-                    >
-                      <TokenWithChain
-                        token={token}
-                        width="20px"
-                        height="20px"
-                        chainClassName="-top-4 -right-4"
-                      />
-
-                      <span>{getTokenSymbol(token)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
             {isEmpty
               ? NoDataUI
               : displayList.map((token) => {
