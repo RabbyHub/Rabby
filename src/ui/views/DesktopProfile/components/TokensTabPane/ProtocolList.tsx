@@ -301,7 +301,7 @@ const ProjectOverview = ({
         observe();
       });
     }
-  }, [location.pathname]);
+  }, [location.pathname, list]);
 
   if (!list) return null;
 

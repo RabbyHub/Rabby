@@ -65,7 +65,7 @@ export const TokenList = ({
         observe();
       });
     }
-  }, [location.pathname]);
+  }, [location.pathname, currentList]);
 
   return (
     <div className="protocol-item-wrapper" id={TOKEN_WALLET_ANCHOR_ID}>
