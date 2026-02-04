@@ -44,6 +44,7 @@ const Unlock = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const isUnlockingRef = useRef(false);
+  const autoBiometricTriggeredRef = useRef(false);
   const [hasForgotPassword, setHasForgotPassword] = React.useState(false);
   const [biometricSupported, setBiometricSupported] = React.useState(false);
   const [biometricUnlocking, setBiometricUnlocking] = React.useState(false);
@@ -172,6 +173,13 @@ const Unlock = () => {
       setBiometricUnlocking(false);
     }
   };
+
+  useEffect(() => {
+    if (!biometricAvailable) return;
+    if (autoBiometricTriggeredRef.current) return;
+    autoBiometricTriggeredRef.current = true;
+    handleBiometricUnlock();
+  }, [biometricAvailable]);
 
   useEffect(() => {
     wallet.savedUnencryptedKeyringData().then(setHasForgotPassword);
