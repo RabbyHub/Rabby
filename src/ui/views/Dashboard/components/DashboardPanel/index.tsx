@@ -66,7 +66,7 @@ import { EcologyPopup } from '../EcologyPopup';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
 import { RecentConnectionsPopup } from '../RecentConnections';
 
-const FOOTER_HEIGHT = 88;
+const FOOTER_HEIGHT = 66;
 
 const GlobalStyle = createGlobalStyle`
   .rabby-dashboard-panel-container {
@@ -760,6 +760,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
               <div className="dashboard-panel-grid">
                 {pickedPanelKeys.map((panelKey, index) => {
                   const item = panelItems[panelKey] as IPanelItem;
+                  if (!item) {
+                    return null;
+                  }
                   return (
                     <SortablePanelItem
                       key={panelKey}
@@ -855,7 +858,8 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
               className={clsx(
                 'text-r-neutral-foot',
                 'flex items-center justify-center py-[10px] gap-[2px]',
-                'sticky bottom-0'
+                'relative z-10'
+                // 'sticky bottom-0 pt-[50px]'
               )}
             >
               <RcIconLampCC />
