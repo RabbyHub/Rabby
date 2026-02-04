@@ -5,13 +5,14 @@ import { PrivateRouteGuard } from 'ui/component';
 import { PortalHost } from '../component/PortalHost';
 import { CommonPopup } from './CommonPopup';
 import { DesktopProfile } from './DesktopProfile';
-import { DesktopDappIframe } from './DesktopDappIframe';
+import { DesktopInnerDapp } from './DesktopDappIframe';
 import {
   GlobalSignerPortal,
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
 import { DesktopPerps } from './DesktopPerps';
 import clsx from 'clsx';
+import { DesktopPerpsEntry } from './DesktopPerps/entry';
 
 declare global {
   interface Window {
@@ -21,7 +22,7 @@ declare global {
 
 const Main = () => {
   const location = useLocation();
-  const isDappIframeRoute = location.pathname === '/desktop/dapp-iframe';
+  const isDappIframeRoute = location.pathname === '/desktop/prediction';
   const isPerpsRoute = location.pathname === '/desktop/perps';
   const isProfileRoute = location.pathname.startsWith('/desktop/profile');
 
@@ -55,7 +56,8 @@ const Main = () => {
             style={{ display: isPerpsRoute ? 'block' : 'none' }}
             className={clsx('h-full', isPerpsRoute ? 'block' : 'hidden')}
           >
-            <DesktopPerps isActive={isPerpsRoute} />
+            {/* <DesktopPerps isActive={isPerpsRoute} /> */}
+            <DesktopPerpsEntry isActive={isPerpsRoute} />
           </div>
         </PrivateRouteGuard>
       ) : null}
@@ -65,7 +67,10 @@ const Main = () => {
             style={{ display: isDappIframeRoute ? 'block' : 'none' }}
             className={clsx('h-full', isDappIframeRoute ? 'block' : 'hidden')}
           >
-            <DesktopDappIframe isActive={isDappIframeRoute} />
+            <DesktopInnerDapp
+              isActive={isDappIframeRoute}
+              type={'prediction'}
+            />
           </div>
         </PrivateRouteGuard>
       ) : null}

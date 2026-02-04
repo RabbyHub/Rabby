@@ -25,6 +25,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 import { debounce } from 'lodash';
 import { useRabbySelector } from '@/ui/store';
+import { INNER_DAPP_LIST } from '@/constant/dappIframe';
 
 type DesktopNavAction = 'swap' | 'send' | 'bridge' | 'gnosis-queue';
 
@@ -55,9 +56,29 @@ export const DesktopNav: React.FC<{
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
 
   const currentPathname = history.location.pathname;
+  const lendingId = useRabbySelector((state) => state.innerDappFrame.lending);
+  const perpsId = useRabbySelector((state) => state.innerDappFrame.perps);
+  const predictionId = useRabbySelector(
+    (state) => state.innerDappFrame.prediction
+  );
 
-  const navs = useMemo(
-    () => [
+  const IconLending = useMemo(() => {
+    const dapp = INNER_DAPP_LIST.LENDING.find((item) => item.id === lendingId);
+    return dapp?.NavIcon || RcIconLeadingCC;
+  }, [lendingId]);
+  const IconPerps = useMemo(() => {
+    const dapp = INNER_DAPP_LIST.PERPS.find((item) => item.id === perpsId);
+    return dapp?.NavIcon || RcIconPerpsCC;
+  }, [perpsId]);
+  const IconPrediction = useMemo(() => {
+    const dapp = INNER_DAPP_LIST.PREDICTION.find(
+      (item) => item.id === predictionId
+    );
+    return dapp?.NavIcon || RcIconPredictionCC;
+  }, [predictionId]);
+
+  const navs = useMemo(() => {
+    return [
       {
         key: '/desktop/profile',
         icon: RcIconHomeCC,
@@ -66,26 +87,25 @@ export const DesktopNav: React.FC<{
       },
       {
         key: '/desktop/perps',
-        icon: RcIconPerpsCC,
+        icon: IconPerps,
         title: t('component.DesktopNav.perps'),
         eventKey: 'Perps',
       },
       {
-        key: '/desktop/dapp-iframe',
-        icon: RcIconPredictionCC,
+        key: '/desktop/prediction',
+        icon: IconPrediction,
         title: t('component.DesktopNav.prediction'),
         eventKey: 'Prediction',
       },
       {
         key: '/desktop/lending',
-        icon: RcIconLeadingCC,
+        icon: IconLending,
         title: t('component.DesktopNav.lending'),
         isSoon: true,
         eventKey: 'Lending',
       },
-    ],
-    [t]
-  );
+    ];
+  }, [t, IconLending, IconPerps, IconPrediction]);
 
   const activeNav = useMemo(
     () => navs.find((item) => currentPathname.startsWith(item.key)),

@@ -437,7 +437,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       eventKey: 'Prediction',
       content: t('page.dashboard.home.panel.prediction'),
       onClick: async () => {
-        await wallet.openInDesktop('/desktop/dapp-iframe');
+        await wallet.openInDesktop('/desktop/prediction');
         window.close();
       },
       isFullscreen: true,

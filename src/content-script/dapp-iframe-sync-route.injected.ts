@@ -1,4 +1,4 @@
-import { runFlow } from './auto-clik-runner';
+import { runFlow } from './auto-click-runner';
 const HANDSHAKE_MESSAGE_TYPE = 'rabby-dapp-iframe-handshake';
 const SYNC_MESSAGE_TYPE = 'rabby-dapp-iframe-sync-url';
 const INSTALL_FLAG = '__rabbyDappIframeSyncRouteInstalled';

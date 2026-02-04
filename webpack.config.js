@@ -1,5 +1,4 @@
 const webpackMerge = require('webpack-merge');
-const commonConfig = require('./build/webpack.common.config');
 
 const configs = {
   dev: require('./build/webpack.dev.config'),
@@ -8,11 +7,14 @@ const configs = {
   sourcemap: require('./build/webpack.sourcemap.config'),
 };
 
-const config = (env) => {
+const config = (env = {}) => {
   if (env.config) {
+    process.env.RABBY_BUILD_ENV = env.config;
+    const commonConfig = require('./build/webpack.common.config');
     return webpackMerge.merge(commonConfig, configs[env.config]);
   }
 
+  const commonConfig = require('./build/webpack.common.config');
   return commonConfig;
 };
 

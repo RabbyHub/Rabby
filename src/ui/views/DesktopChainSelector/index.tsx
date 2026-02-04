@@ -84,6 +84,7 @@ export const DesktopChainSelector: React.FC<Props> = ({
                 (chain, idx) => {
                   return (
                     <div
+                      key={chain}
                       className={clsx(
                         'relative',
                         'p-2 rounded-[8px] bg-rb-neutral-bg-1'
