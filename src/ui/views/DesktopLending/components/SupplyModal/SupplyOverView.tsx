@@ -52,7 +52,15 @@ export const SupplyOverView: React.FC<
     return getCollateralState({ collateralType });
   }, [reserve, userSummary]);
 
-  const showHF = !isHFEmpty(Number(healthFactor || '0'));
+  const showHF = useMemo(() => !isHFEmpty(Number(healthFactor || '0')), [
+    healthFactor,
+  ]);
+
+  const afterAvailableText = useMemo(
+    () =>
+      afterAvailable ? formatNetworth(Number(afterAvailable || '0')) : null,
+    [afterAvailable]
+  );
 
   return (
     <div className="w-full mt-16">
@@ -71,10 +79,8 @@ export const SupplyOverView: React.FC<
                 'text-right truncate'
               )}
             >
-              {afterAvailable
-                ? `${availableText} → ${formatNetworth(
-                    Number(afterAvailable || '0')
-                  )}`
+              {afterAvailableText
+                ? `${availableText} → ${afterAvailableText}`
                 : availableText}
             </span>
             <Tooltip
