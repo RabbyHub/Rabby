@@ -7,6 +7,7 @@ import {
   keyringService,
   preferenceService,
   permissionService,
+  innerDappFrameService,
 } from 'background/service';
 
 import rpcFlow from './rpcFlow';
@@ -31,6 +32,7 @@ export default async <T = void>(req: ProviderRequest): Promise<T> => {
   if (req.isFromDesktopDapp && DAPP_SCENE_MAP[origin || '']) {
     account =
       req.account ||
+      innerDappFrameService.getInnerDappAccountByOrigin(origin || '') ||
       preferenceService.getPreference('sceneAccountMap')[
         DAPP_SCENE_MAP[origin || '']
       ] ||

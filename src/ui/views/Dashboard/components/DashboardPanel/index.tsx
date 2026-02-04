@@ -32,21 +32,28 @@ import { ReactComponent as RcIconGift } from 'ui/assets/gift-14.svg';
 import {
   RcIconApprovalsCC,
   RcIconBridgeCC,
-  RcIconDappsCC,
   RcIconGasAccountCC,
   RcIconLampCC,
-  RcIconManageCC,
   RcIconMobileSyncCC,
   RcIconNftCC,
   RcIconPerpsCC,
   RcIconPointsCC,
-  RcIconPrediction,
   RcIconReceiveCC,
-  RcIconSearchCC,
   RcIconSendCC,
   RcIconSettingCC,
   RcIconSwapCC,
   RcIconTransactionsCC,
+  RcIconAsterPerpsCC,
+  RcIconLighterPerpsCC,
+  RcIconAaveLendingCC,
+  RcIconSparkLendingCC,
+  RcIconVenusLendingCC,
+  RcIconProbablePredictionCC,
+  RcIconOpinionPredictionCC,
+  RcIconPrediction,
+  RcIconSearchCC,
+  RcIconDappsCC,
+  RcIconManageCC,
 } from 'ui/assets/dashboard/panel';
 
 import { RcIconExternal1CC } from '@/ui/assets/dashboard';
@@ -65,6 +72,8 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { EcologyPopup } from '../EcologyPopup';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
 import { RecentConnectionsPopup } from '../RecentConnections';
+import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
+import { RcIconLeadingCC } from '@/ui/assets/desktop/nav';
 
 const FOOTER_HEIGHT = 66;
 
@@ -397,6 +406,41 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     return giftUsdValue > 0 && !hasClaimedGift;
   }, [giftUsdValue, hasClaimedGift]);
 
+  const lendingId = useRabbySelector((state) => state.innerDappFrame.lending);
+  const perpsId = useRabbySelector((state) => state.innerDappFrame.perps);
+  const predictionId = useRabbySelector(
+    (state) => state.innerDappFrame.prediction
+  );
+
+  const IconLending = useMemo(() => {
+    if (lendingId === 'venus') {
+      return RcIconVenusLendingCC;
+    }
+    if (lendingId === 'spark') {
+      return RcIconSparkLendingCC;
+    }
+    return RcIconAaveLendingCC;
+  }, [lendingId]);
+
+  const IconPerps = useMemo(() => {
+    if (perpsId === 'aster') {
+      return RcIconAsterPerpsCC;
+    }
+    if (perpsId === 'lighter') {
+      return RcIconLighterPerpsCC;
+    }
+    return RcIconPerpsCC;
+  }, [perpsId]);
+  const IconPrediction = useMemo(() => {
+    if (predictionId === 'opinion') {
+      return RcIconOpinionPredictionCC;
+    }
+    if (predictionId === 'probable') {
+      return RcIconProbablePredictionCC;
+    }
+    return RcIconPrediction;
+  }, [predictionId]);
+
   const panelItems = {
     swap: {
       icon: RcIconSwapCC,
@@ -526,7 +570,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       isFullscreen: true,
     } as IPanelItem,
     perps: {
-      icon: RcIconPerpsCC,
+      icon: IconPerps,
       eventKey: 'Perps',
       iconClassName: 'icon-perps',
       subContent: isFetching ? (
@@ -600,11 +644,21 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       },
     } as IPanelItem,
     prediction: {
-      icon: RcIconPrediction,
+      icon: IconPrediction,
       eventKey: 'Prediction',
       content: t('page.dashboard.home.panel.prediction'),
       onClick: async () => {
-        await wallet.openInDesktop('/desktop/dapp-iframe');
+        await wallet.openInDesktop('/desktop/prediction');
+        window.close();
+      },
+      isFullscreen: true,
+    } as IPanelItem,
+    lending: {
+      icon: IconLending,
+      eventKey: 'Lending',
+      content: t('page.dashboard.home.panel.lending'),
+      onClick: async () => {
+        await wallet.openInDesktop('/desktop/lending');
         window.close();
       },
       isFullscreen: true,
