@@ -1177,6 +1177,7 @@
         "sound": "Enable Sound"
       },
       "tradingPanel": {
+        "deposit":"Deposit",
         "atLeastTwoOrders": "At least two orders are required",
         "liquidationPriceTooltip": "Position risk is low, so there is no liquidation price for the time being. Note that increasing the position or reducing the margin will increase the risk.",
         "tpSlTips": "Places simple market TP/SL orders. For advanced features such as limited prices or partial TP/SL, set the TP/SL in an open position.",
@@ -1194,6 +1195,7 @@
         "randomizeTooltip": "Randomizes the timing and size of sub-orders to reduce predictability.",
         "reduceOnly": "Reduce Only",
         "enableTrading": "Enable Trading",
+        "addFundsToGetStarted": "Add funds to get started",
         "startPrice": "Start Price",
         "endPrice": "End Price",
         "start": "Start",

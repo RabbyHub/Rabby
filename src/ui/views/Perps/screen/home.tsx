@@ -340,7 +340,7 @@ export const Perps: React.FC = () => {
           coin: item.position.coin,
           size: Math.abs(Number(item.position.szi || 0)).toString() || '0',
           direction: Number(item.position.szi || 0) > 0 ? 'Long' : 'Short',
-          price: marketDataMap[item.position.coin.toUpperCase()]?.markPx || '0',
+          price: marketDataMap[item.position.coin]?.markPx || '0',
         });
         await sleep(10);
       }
@@ -568,7 +568,7 @@ export const Perps: React.FC = () => {
                     position={asset.position}
                     openOrders={asset.openOrders}
                     marketData={
-                      marketDataMap[asset.position.coin.toUpperCase()]
+                      marketDataMap[asset.position.coin]
                     }
                     handleClosePosition={(position) => {
                       setClosePosition(position);
@@ -764,7 +764,7 @@ export const Perps: React.FC = () => {
           pxDecimals={riskPopupData?.pxDecimals || 2}
           liquidationPrice={riskPopupData.liquidationPrice}
           markPrice={Number(
-            marketDataMap[riskPopupCoin.toUpperCase()]?.markPx || 0
+            marketDataMap[riskPopupCoin]?.markPx || 0
           )}
           onClose={() => {
             setRiskPopupVisible(false);

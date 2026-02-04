@@ -17,6 +17,7 @@ import {
 import { Trade } from '..';
 import { getPerpTickOptions } from '../../../utils';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { formatPerpsCoin } from '../../../utils';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
 
@@ -52,25 +53,19 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const [bids, setBids] = useState<OrderBookLevel[]>([]);
   const [asks, setAsks] = useState<OrderBookLevel[]>([]);
   const currentMarketData = useMemo(() => {
-    if (
-      wsActiveAssetCtx &&
-      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
-    ) {
+    if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
       return wsActiveAssetCtx.ctx;
     }
 
-    return marketDataMap[selectedCoin.toUpperCase()];
+    return marketDataMap[selectedCoin];
   }, [marketDataMap, selectedCoin, wsActiveAssetCtx]);
 
   const szDecimals = useMemo(() => {
-    return marketDataMap[selectedCoin.toUpperCase()]?.szDecimals ?? 5;
+    return marketDataMap[selectedCoin]?.szDecimals ?? 5;
   }, [currentMarketData, selectedCoin]);
 
   const markPx = useMemo(() => {
-    if (
-      wsActiveAssetCtx &&
-      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
-    ) {
+    if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
       return Number(wsActiveAssetCtx.ctx.markPx || 0);
     }
 
@@ -328,7 +323,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                   className="text-r-neutral-title1 hover:bg-r-blue-light1"
                   key="base"
                 >
-                  {selectedCoin}
+                  {formatPerpsCoin(selectedCoin)}
                 </Menu.Item>
                 <Menu.Item
                   className="text-r-neutral-title1 hover:bg-r-blue-light1"
@@ -349,7 +344,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
               )}
             >
-              {quoteUnit === 'base' ? selectedCoin : 'USD'}
+              {quoteUnit === 'base' ? formatPerpsCoin(selectedCoin) : 'USD'}
               <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
             </button>
           </Dropdown>
@@ -395,11 +390,11 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </span>
         <span className="col-span-3 text-right">
           {t('page.perpsPro.orderBook.amount')} (
-          {quoteUnit === 'base' ? selectedCoin : 'USD'})
+          {quoteUnit === 'base' ? formatPerpsCoin(selectedCoin) : 'USD'})
         </span>
         <span className="col-span-4 text-right">
           {t('page.perpsPro.orderBook.total')} (
-          {quoteUnit === 'base' ? selectedCoin : 'USD'})
+          {quoteUnit === 'base' ? formatPerpsCoin(selectedCoin) : 'USD'})
         </span>
       </div>
 

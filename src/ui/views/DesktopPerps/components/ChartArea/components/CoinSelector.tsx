@@ -25,13 +25,10 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
   );
   const countdown = useHourlyCountdown();
   const currentMarketData = useMemo(() => {
-    if (
-      wsActiveAssetCtx &&
-      wsActiveAssetCtx.coin.toUpperCase() === coin.toUpperCase()
-    ) {
+    if (wsActiveAssetCtx && wsActiveAssetCtx.coin === coin) {
       return wsActiveAssetCtx.ctx;
     }
-    return marketDataMap[coin.toUpperCase()] || {};
+    return marketDataMap[coin] || {};
   }, [marketDataMap, wsActiveAssetCtx, coin]);
 
   // Update browser tab title with market data

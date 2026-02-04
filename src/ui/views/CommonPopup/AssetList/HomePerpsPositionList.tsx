@@ -24,6 +24,7 @@ import {
   formatPerpsPct,
 } from '../../Perps/utils';
 import { UI_TYPE } from '@/constant/ui';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
 
 const isDesktop = UI_TYPE.isDesktop;
 
@@ -152,7 +153,7 @@ const PositionItem: React.FC<{
           <div className="flex flex-col gap-[8px]">
             <div className="flex items-center gap-[4px]">
               <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
-                {coin}
+                {formatPerpsCoin(coin)}
               </span>
               <span className="text-[11px] leading-[14px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-rb-blue-light-1 text-rb-blue-default">
                 {leverageType === 'cross'

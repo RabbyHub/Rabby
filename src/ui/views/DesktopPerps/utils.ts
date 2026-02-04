@@ -2,12 +2,14 @@ import { AccountHistoryItem, PositionAndOpenOrder } from '@/ui/models/perps';
 import {
   UserHistoricalOrders,
   UserTwapSliceFill,
+  ClearinghouseState,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { perpsToast } from './components/PerpsToast';
 import i18n from '@/i18n';
 import { splitNumberByStep } from '@/ui/utils';
 import { playSound } from '@/ui/utils/sound';
 import BigNumber from 'bignumber.js';
+import { getPerpsSDK } from '../Perps/sdkManager';
 
 export const getPositionDirection = (
   position: PositionAndOpenOrder['position']
@@ -185,9 +187,9 @@ export const handleDisplayFundingPayments = (fundingPayments: string) => {
 export const formatPerpsCoin = (coin: string) => {
   if (coin.includes(':')) {
     // is hip-3 coin
-    return coin.split(':')[1].toUpperCase();
+    return coin.split(':')[1];
   } else {
-    return coin.toUpperCase();
+    return coin;
   }
 };
 
@@ -258,4 +260,43 @@ export const formatPerpsOrderStatus = (record: UserHistoricalOrders) => {
     statusStr,
     tipsStr,
   };
+};
+
+export const getCustomClearinghouseState = async (address: string) => {
+  const sdk = getPerpsSDK();
+  const getDefault = async () => {
+    const res = await sdk.info.getClearingHouseState(address);
+    return res;
+  };
+  const getXYX = async () => {
+    const res = await sdk.info.getClearingHouseState(address, 'xyz');
+    return res;
+  };
+  const [defaultRes, xyzRes] = await Promise.all([getDefault(), getXYX()]);
+
+  return {
+    assetPositions: [...defaultRes.assetPositions, ...xyzRes.assetPositions],
+    crossMaintenanceMarginUsed: new BigNumber(
+      defaultRes.crossMaintenanceMarginUsed
+    )
+      .plus(xyzRes.crossMaintenanceMarginUsed)
+      .toString(),
+    crossMarginSummary: defaultRes.crossMarginSummary,
+    marginSummary: {
+      accountValue: new BigNumber(defaultRes.marginSummary.accountValue)
+        .plus(xyzRes.marginSummary.accountValue)
+        .toString(),
+      totalMarginUsed: new BigNumber(defaultRes.marginSummary.totalMarginUsed)
+        .plus(xyzRes.marginSummary.totalMarginUsed)
+        .toString(),
+      totalNtlPos: new BigNumber(defaultRes.marginSummary.totalNtlPos)
+        .plus(xyzRes.marginSummary.totalNtlPos)
+        .toString(),
+      totalRawUsd: new BigNumber(defaultRes.marginSummary.totalRawUsd)
+        .plus(xyzRes.marginSummary.totalRawUsd)
+        .toString(),
+    },
+    time: defaultRes.time,
+    withdrawable: defaultRes.withdrawable,
+  } as ClearinghouseState;
 };

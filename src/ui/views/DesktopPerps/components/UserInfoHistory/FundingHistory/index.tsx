@@ -5,11 +5,12 @@ import { ColumnType } from 'antd/lib/table';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { CommonTable } from '../CommonTable';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 
 export const FundingHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -21,6 +22,26 @@ export const FundingHistory: React.FC = () => {
   const list = useMemo(() => {
     return sortBy(userFunding, (item) => -item.time);
   }, [userFunding]);
+
+  const fetchFundingHistory = useCallback(() => {
+    const sdk = getPerpsSDK();
+    sdk.info.getUserFunding().then((res) => {
+      dispatch.perps.patchState({
+        userFunding: res.map((item) => ({
+          coin: item.delta.coin,
+          fundingRate: item.delta.fundingRate,
+          nSamples: (item.delta as any).nSamples,
+          szi: item.delta.szi,
+          time: item.time,
+          usdc: item.delta.usdc,
+        })),
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    fetchFundingHistory();
+  }, []);
 
   const columns = useMemo<ColumnType<WsUserFunding['fundings'][number]>[]>(
     () => [

@@ -8,18 +8,18 @@ import { ReactComponent as RcIconMoon } from '@/ui/assets/perps/icon-moon.svg';
 import { ReactComponent as RcIconSun } from '@/ui/assets/perps/icon-sun.svg';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as IconPerpsWallet } from '@/ui/assets/perps/IconPerpsWallet.svg';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { DepositPending } from '../DepositWithdrawModal/DepositPending';
 import { PopupType } from '../../index';
 import BigNumber from 'bignumber.js';
 
-export const AccountActions: React.FC<{
-  handleSetPopupType: (type: PopupType) => void;
-}> = ({ handleSetPopupType }) => {
+export const AccountActions: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const clearinghouseState = useRabbySelector(
     (state) => state.perps.clearinghouseState
   );
+  const history = useHistory();
+  const location = useLocation();
   const { t } = useTranslation();
   const availableBalance = Number(clearinghouseState?.withdrawable || 0);
   // Get pending history count
@@ -29,8 +29,13 @@ export const AccountActions: React.FC<{
   const pendingCount = localLoadingHistory.length;
 
   const handleDeposit = useCallback(() => {
-    handleSetPopupType('deposit');
-  }, [handleSetPopupType]);
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('action', 'deposit');
+    history.push({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    });
+  }, [history, location]);
 
   return (
     <div className="flex items-center gap-[12px]">
