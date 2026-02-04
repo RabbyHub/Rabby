@@ -49,6 +49,7 @@ import {
   OfflineChainsService,
   perpsService,
   transactionsService,
+  innerDappFrameService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
@@ -128,6 +129,7 @@ async function restoreAppState() {
   await perpsService.init();
   await transactionsService.init();
   await lendingService.init();
+  await innerDappFrameService.init();
 
   await walletController.tryUnlock();
 
@@ -453,7 +455,7 @@ browser.runtime.onConnect.addListener((port) => {
       isFromDesktopDapp:
         port.sender.id === browser.runtime.id &&
         port.sender?.tab?.url?.startsWith(
-          `${browser.runtime.getURL('')}desktop.html#/desktop/dapp-iframe`
+          `${browser.runtime.getURL('')}desktop.html#/desktop/`
         ),
     };
     if (!session?.origin) {

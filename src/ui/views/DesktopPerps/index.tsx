@@ -30,6 +30,7 @@ import { TopPermissionTips } from './components/TopPermissionTips';
 import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import usePerpsProState from './hooks/usePerpsProState';
+import { DesktopDappSelector } from '@/ui/component/DesktopDappSelector';
 
 const Wrap = styled.div`
   width: 100%;
@@ -115,6 +116,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
               <DesktopNav showRightItems={false} />
 
               <div className="flex items-center gap-[16px]">
+                <DesktopDappSelector type={'perps'} />
                 <DesktopAccountSelector
                   scene="perps"
                   value={currentPerpsAccount}

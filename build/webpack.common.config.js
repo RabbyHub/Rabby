@@ -9,6 +9,7 @@ const tsImportPluginFactory = require('ts-import-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const { createManifestTransform } = require('./manifest-utils');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
   .default;
@@ -38,6 +39,11 @@ const MANIFEST_TYPE = process.env.MANIFEST_TYPE || 'chrome-mv2';
 const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
 const FINAL_DIST = IS_MANIFEST_MV3 ? paths.dist : paths.distMv2;
 const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
+const BUILD_ENV = process.env.RABBY_BUILD_ENV || '';
+const MANIFEST_TRANSFORM = createManifestTransform({
+  manifestType: MANIFEST_TYPE,
+  buildEnv: BUILD_ENV,
+});
 
 const config = {
   entry: {
@@ -289,6 +295,7 @@ const config = {
             `src/manifest/${MANIFEST_TYPE}/manifest.json`
           ),
           to: FINAL_DIST,
+          ...(MANIFEST_TRANSFORM ? { transform: MANIFEST_TRANSFORM } : {}),
         },
         IS_MANIFEST_MV3
           ? {

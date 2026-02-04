@@ -19,6 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { SignatureRecordModal } from '../DesktopProfile/components/SignatureRecordModal';
 import { useLendingService } from './hooks/useLendingService';
 import { CustomMarket } from './config/market';
+import { DesktopDappSelector } from '@/ui/component/DesktopDappSelector';
 
 const Wrap = styled.div`
   width: 100%;
@@ -47,12 +48,15 @@ const DesktopLendingContent: React.FC = () => {
     <Wrap>
       <div className="flex items-center justify-between">
         <DesktopNav showRightItems={false} />
-        <DesktopAccountSelector
-          value={currentAccount}
-          onChange={(account) => {
-            dispatch.account.changeAccountAsync(account);
-          }}
-        />
+        <div className="flex items-center gap-12">
+          <DesktopDappSelector type="lending" />
+          <DesktopAccountSelector
+            value={currentAccount}
+            onChange={(account) => {
+              dispatch.account.changeAccountAsync(account);
+            }}
+          />
+        </div>
       </div>
       <div
         className={clsx(

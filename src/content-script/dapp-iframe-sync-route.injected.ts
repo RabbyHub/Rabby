@@ -1,4 +1,4 @@
-import { runFlow } from './auto-clik-runner';
+import { runFlow } from './auto-click-runner';
 const HANDSHAKE_MESSAGE_TYPE = 'rabby-dapp-iframe-handshake';
 const SYNC_MESSAGE_TYPE = 'rabby-dapp-iframe-sync-url';
 const INSTALL_FLAG = '__rabbyDappIframeSyncRouteInstalled';
@@ -130,12 +130,25 @@ const setupDappIframeSyncRoute = () => {
     postSyncUrl(true);
 
     if (data.token && data.rules) {
+      const autoRunner = () => {
+        try {
+          runFlow(data.rules).catch((e) => {
+            console.log('[iframe] [Flow] rule run error:', e, data.rules);
+          });
+        } catch (error) {
+          console.log('[iframe] [Flow] parse rules error:', error, data.rules);
+        }
+      };
       try {
-        runFlow(data.rules).catch((e) => {
-          console.log('[iframe] [Flow] rule run error:', e, data.rules);
-        });
+        const store = JSON.parse(
+          window.localStorage.getItem('wagmi.store') || ''
+        );
+        if (!store?.state?.current) {
+          autoRunner();
+        }
       } catch (error) {
-        console.log('[iframe] [Flow] parse rules error:', error, data.rules);
+        console.log('[iframe] [Flow] autoRunner error:', error, data.rules);
+        autoRunner();
       }
     }
   };

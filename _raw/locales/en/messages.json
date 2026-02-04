@@ -1025,7 +1025,11 @@
       }
     },
     "perpsPro": {
-      "__skip_translation": ["TWAP", "TP", "SL"],
+      "__skip_translation": [
+        "TWAP",
+        "TP",
+        "SL"
+      ],
       "chatArea": {
         "markTips": "Used for margining, computing unrealized PNL, liquidations, and triggering TP/SL orders.",
         "oracleTips": "The median of external prices reported by validators, used for computing funding rates.",
@@ -1231,8 +1235,8 @@
           "Ioc": "IOC (Immediate Or Cancel):Any portion that is not immediately filled will be canceled",
           "Alo": "ALO (Add Liquidity Only):Order will exist only as a limit order on the book. Also known as post-only."
         },
-        "aloTooLargeBuy" : "Alo order price must be lower than best ask price",
-        "aloTooLargeSell" : "Alo order price must be higher than best bid price",
+        "aloTooLargeBuy": "Alo order price must be lower than best ask price",
+        "aloTooLargeSell": "Alo order price must be higher than best bid price",
         "runtime": "Runtime",
         "randomize": "Randomize",
         "runtimeTips": "(5m-24h)",
@@ -1258,7 +1262,7 @@
       },
       "leverage": {
         "title": "Adjust Leverage",
-        "controlPositionLeverage" : "Control the leverage used for {{coin}} positions. The maximum leverage is {{max}}x.",
+        "controlPositionLeverage": "Control the leverage used for {{coin}} positions. The maximum leverage is {{max}}x.",
         "maxPositionSize": "Max position size decreases the higher your leverage.",
         "higherLeverageRisk": "Higher leverage increases the risk of liquidation.",
         "minError": "Minimum leverage is 1x",
@@ -1471,7 +1475,9 @@
           "mySupplies": "My supplies"
         },
         "item": {
-          "__skip_translation": ["tvl"],
+          "__skip_translation": [
+            "tvl"
+          ],
           "tvl": "TVL",
           "wrapperToken": "Wrapped token for {{name}}"
         }
@@ -1598,7 +1604,9 @@
         }
       },
       "manageEmode": {
-        "__skip_translation": ["emode"],
+        "__skip_translation": [
+          "emode"
+        ],
         "emode": "E-Mode",
         "title": "Manage E-Mode",
         "disableTitle": "Disable",
@@ -2275,7 +2283,8 @@
           "settings": "Settings",
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
-          "prediction": "Prediction"
+          "prediction": "Prediction",
+          "lending": "Lending"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -4138,6 +4147,8 @@
     "dappIfame": {
       "serviceUnavailable": "Service Unavailable",
       "predictionNotSupported": "The Prediction feature is not supported in your current region.",
+      "serviceNotSupported": "The service is not supported in your current region.",
+      "opening":"Opening {{name}}...",
       "openPolymarket": "Opening Polymarket...",
       "networkErrorTitle": "This site can't be reached",
       "networkErrorDescription": "{{site}} unexpectedly closed the connection. Please check your network.",
