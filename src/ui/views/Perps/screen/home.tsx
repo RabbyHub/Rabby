@@ -567,9 +567,7 @@ export const Perps: React.FC = () => {
                     key={asset.position.coin}
                     position={asset.position}
                     openOrders={asset.openOrders}
-                    marketData={
-                      marketDataMap[asset.position.coin]
-                    }
+                    marketData={marketDataMap[asset.position.coin]}
                     handleClosePosition={(position) => {
                       setClosePosition(position);
                       setClosePositionVisible(true);
@@ -763,9 +761,7 @@ export const Perps: React.FC = () => {
           direction={riskPopupData.direction}
           pxDecimals={riskPopupData?.pxDecimals || 2}
           liquidationPrice={riskPopupData.liquidationPrice}
-          markPrice={Number(
-            marketDataMap[riskPopupCoin]?.markPx || 0
-          )}
+          markPrice={Number(marketDataMap[riskPopupCoin]?.markPx || 0)}
           onClose={() => {
             setRiskPopupVisible(false);
             setRiskPopupCoin('');
