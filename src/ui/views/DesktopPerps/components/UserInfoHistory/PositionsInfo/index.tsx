@@ -39,6 +39,7 @@ import { EVENTS } from '@/constant';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import { handleDisplayFundingPayments, isScreenSmall } from '../../../utils';
 import { formatPerpsCoin } from '../../../utils';
+import perpsToast from '../../PerpsToast';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -63,9 +64,6 @@ export interface PositionFormatData {
 
 export const PositionsInfo: React.FC = () => {
   const {
-    // pro no use this
-    positionAndOpenOrders,
-
     clearinghouseState,
     allDexsPositions,
     openOrders,
@@ -188,20 +186,20 @@ export const PositionsInfo: React.FC = () => {
       currentPosition?.type === 'cross'
         ? MarginMode.CROSS
         : MarginMode.ISOLATED;
-    await handleUpdateMarginModeLeverage(
+    const res = await handleUpdateMarginModeLeverage(
       selectedCoin,
       newLeverage,
       marginMode,
       'leverage'
     );
-    message.success({
-      // duration: 1.5,
-      content: 'Leverage changed to: ' + newLeverage,
-    });
+    res &&
+      perpsToast.success({
+        title: t('page.perps.toast.success'),
+        description: t('page.perps.toast.leverageChanged', {
+          leverage: newLeverage,
+        }),
+      });
     setShowLeverageModal(false);
-    setTimeout(() => {
-      dispatch.perps.fetchClearinghouseState();
-    }, 100);
   });
 
   const handleClickCloseAll = useMemoizedFn(async () => {

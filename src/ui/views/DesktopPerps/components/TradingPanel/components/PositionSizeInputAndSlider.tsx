@@ -190,7 +190,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
 
     if (notionalValue === 0 || !price) {
       setPositionSize({ amount: '', notionalValue: '' });
-      setPercentage(0);
+      // setPercentage(0);
       return;
     }
 

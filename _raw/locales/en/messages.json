@@ -1191,6 +1191,7 @@
         "randomizeTooltip": "Randomizes the timing and size of sub-orders to reduce predictability.",
         "reduceOnly": "Reduce Only",
         "enableTrading": "Enable Trading",
+        "addFundsToGetStarted": "Add funds to get started",
         "startPrice": "Start Price",
         "endPrice": "End Price",
         "start": "Start",

@@ -4966,10 +4966,10 @@
     ethers "5.5.1"
     semver "7.5.4"
 
-"@rabby-wallet/hyperliquid-sdk@1.1.4-beta.2":
-  version "1.1.4-beta.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/hyperliquid-sdk/-/hyperliquid-sdk-1.1.4-beta.2.tgz#63eb1e8b5905eae92ff0013487cfd0c864368438"
-  integrity sha512-cMGNvGEEGp1GPbHpHXY8c2lKsxhtNbOug+ySK+zmiOiZC2XFwNE4TYgaX71VT019+ncHGHh4DHHof8gSoy8m2w==
+"@rabby-wallet/hyperliquid-sdk@1.1.4-beta.3":
+  version "1.1.4-beta.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/hyperliquid-sdk/-/hyperliquid-sdk-1.1.4-beta.3.tgz#229930d956243ab2d91e2e61763f00ea3187fc10"
+  integrity sha512-zVO2foUyAlpj1I4uiJF995gHI8pqIWwqq7Tx49fWMt+WNMx5bI8EBZWwB1jmR6EQww8Gd/N9O84qMtu1l7RRTQ==
   dependencies:
     "@ethereumjs/util" "9.0.0"
     "@metamask/eth-sig-util" "5.1.0"
@@ -5000,10 +5000,10 @@
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.14.tgz#f382909ca99aa306f8670e9befdebadb978c9837"
   integrity sha512-KSG+MGJjxj+nzNqneQaTtOXPlZHxWmWSv8KG5aac4xEdStkGzZXogURqrDVwKwnF+fXgMFyKRjUfrAwiBOpSEg==
 
-"@rabby-wallet/rabby-api@0.9.53":
-  version "0.9.53"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.9.53.tgz#8b50960a82326cd261545a5017ef9aba0cf0be82"
-  integrity sha512-NZg85vQUXocUnAuF4pDAZSh/iPq6tHR0Bl2yZGS4aJ5lEdcs90kyxwKXPX5/yFzfZyQ7/xJOxtlYFuveyM7ysA==
+"@rabby-wallet/rabby-api@0.9.55-beta.1":
+  version "0.9.55-beta.1"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.9.55-beta.1.tgz#8f5b4cd2bf3b078fd32462c405f5f37cb073b380"
+  integrity sha512-1R76frwIF1tzW2T+VX04KGIQmfRHvH3DLgeXbZDDCCnonWXp3Q2FFVAVTtaRGu+egtSt8a50GLwMkHECHIwdtw==
   dependencies:
     "@rabby-wallet/rabby-sign" "0.4.0"
     axios "^0.27.2"

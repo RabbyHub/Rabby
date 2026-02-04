@@ -42,7 +42,6 @@ export const usePerpsProState = () => {
     isInitialized,
     currentPerpsAccount,
     isLogin,
-    positionAndOpenOrders,
     hasPermission,
     accountNeedApproveAgent,
     accountNeedApproveBuilderFee,
@@ -453,8 +452,6 @@ export const usePerpsProState = () => {
       account.type === KEYRING_CLASS.PRIVATE_KEY ||
       account.type === KEYRING_CLASS.MNEMONIC
     ) {
-      await executeSignatures(signActions, account);
-
       let isNeedDepositBeforeApprove = true;
       const info = await sdk.info.getClearingHouseState(account.address);
       if ((Number(info?.marginSummary.accountValue) || 0) > 0) {
@@ -467,6 +464,8 @@ export const usePerpsProState = () => {
       if (isNeedDepositBeforeApprove) {
         handleSetLaterApproveStatus(signActions);
       } else {
+        await executeSignatures(signActions, account);
+
         await handleDirectApprove(signActions);
         setTimeout(() => {
           handleSafeSetReference();
@@ -571,7 +570,6 @@ export const usePerpsProState = () => {
     // State
     marketData: perpsState.marketData,
     marketDataMap: perpsState.marketDataMap,
-    positionAndOpenOrders: perpsState.positionAndOpenOrders,
     accountSummary: perpsState.accountSummary,
     currentPerpsAccount: perpsState.currentPerpsAccount,
     isLogin: perpsState.isLogin,
