@@ -2,8 +2,6 @@ import React, { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { formatUserSummary } from '@aave/math-utils';
-import SymbolIcon from '../SymbolIcon';
-import { EmodeCategory } from '../../types';
 import { useMode } from '../../hooks/useMode';
 import { useLendingISummary } from '../../hooks';
 import { isHFEmpty } from '../../utils';
@@ -252,7 +250,7 @@ export const ManageEmodeFullModalOverview: React.FC<{
           getContainer={getContainer}
         >
           <div className="bg-r-neutral-bg-2 h-full rounded-t-[12px] overflow-hidden">
-            <div className="h-[56px] flex items-center justify-center relative border-b border-rb-neutral-line">
+            <div className="h-[56px] flex items-center justify-center relative">
               <span className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1">
                 {t('page.lending.manageEmode.overview.title')}
               </span>
@@ -267,7 +265,7 @@ export const ManageEmodeFullModalOverview: React.FC<{
               </div>
             </div>
 
-            <div className="px-[18px] pt-[4px] pb-[16px] space-y-[8px] max-h-[360px] overflow-y-auto">
+            <div className="px-[18px] pt-[4px] pb-[30px] space-y-[8px] max-h-[400px] overflow-y-auto">
               {categoryOptions.map(({ value, label, available }) => {
                 const category = eModes?.[value];
                 const ltvText = category
