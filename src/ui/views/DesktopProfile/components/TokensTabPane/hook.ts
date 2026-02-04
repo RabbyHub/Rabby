@@ -30,6 +30,8 @@ export const useTokenAndDIFIData = ({
     removeProtocol,
     portfolioNetWorth,
     refreshPositions,
+    refreshTokens,
+    refreshPortfolios,
   } = useQueryProjects(
     currentAccount?.address,
     false,
@@ -119,5 +121,7 @@ export const useTokenAndDIFIData = ({
     appIds,
     isNoResults,
     refreshPositions,
+    refreshTokens,
+    refreshPortfolios,
   };
 };

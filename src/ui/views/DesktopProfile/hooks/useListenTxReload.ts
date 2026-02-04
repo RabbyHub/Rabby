@@ -14,7 +14,7 @@ export const useListenTxReload = (callback?: () => void) => {
   });
 
   const { run: handleReload } = useDebounceFn(_handleReload, {
-    wait: 2000,
+    wait: 2500,
   });
 
   useEffect(() => {

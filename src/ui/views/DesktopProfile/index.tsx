@@ -150,6 +150,7 @@ export const DesktopProfile: React.FC<{
     appIds,
     isNoResults,
     refreshPositions,
+    refreshTokens,
   } = useTokenAndDIFIData({
     selectChainId: chainInfo?.serverId,
     allTokenMode: !!searchValue,
@@ -165,7 +166,7 @@ export const DesktopProfile: React.FC<{
   useListenTxReload(async () => {
     refreshBalance();
     refreshCurve();
-    refreshPositions();
+    refreshTokens();
   });
 
   useEffect(
