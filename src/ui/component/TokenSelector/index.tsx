@@ -323,7 +323,9 @@ const TokenSelector = ({
 
   const NoDataUI = useMemo(
     () =>
-      isLoading ? (
+      (
+        selectedTab === 'mainnet' ? isLoading : customTestnetTokenListLoading
+      ) ? (
         <div>
           {Array(isSwapType ? 8 : 10)
             .fill(1)
@@ -334,7 +336,12 @@ const TokenSelector = ({
       ) : isSwapOrBridge ? (
         <>{swapAndBridgeNoDataTip}</>
       ) : (
-        <div className="no-token w-full">
+        <div
+          className={clsx(
+            'no-token w-full',
+            selectedTab === 'mainnet' ? '' : 'hidden'
+          )}
+        >
           <img
             className={
               !query || isSearchAddr
@@ -370,16 +377,18 @@ const TokenSelector = ({
         </div>
       ),
     [
+      selectedTab,
       isLoading,
+      customTestnetTokenListLoading,
       isSwapType,
-      t,
-      isSearchAddr,
-      chainServerId,
-      swapAndBridgeNoDataTip,
-      type,
       isSwapOrBridge,
+      swapAndBridgeNoDataTip,
       query,
+      isSearchAddr,
       lpTokenMode,
+      t,
+      chainServerId,
+      type,
     ]
   );
 

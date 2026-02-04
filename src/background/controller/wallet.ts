@@ -5425,6 +5425,7 @@ export class WalletController extends BaseController {
   removeCustomTestnetToken = customTestnetService.removeToken;
   addCustomTestnetToken = customTestnetService.addToken;
   getCustomTestnetTokenList = customTestnetService.getTokenList;
+  hasCustomTestnetTokens = customTestnetService.hasCustomTokens;
   isAddedCustomTestnetToken = customTestnetService.hasToken;
   getCustomTestnetTx = customTestnetService.getTx;
   getCustomTestnetTxReceipt = customTestnetService.getTransactionReceipt;
