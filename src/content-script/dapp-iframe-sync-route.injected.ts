@@ -1,6 +1,7 @@
 import { runFlow } from './auto-click-runner';
 import {
   IFRAME_BRIDGE_MESSAGE_TYPES,
+  INJECTED_THEME_METHOD,
   ensureInjectedNamespace,
   getBridgeMessageType,
   normalizeArgs,
@@ -10,9 +11,55 @@ import {
 import type {
   IframeBridgeCallMessage,
   IframeBridgeHandshakeMessage,
+  IframeBridgeTheme,
 } from '@/ui/utils/iframeBridge';
 
 const INSTALL_FLAG = '__rabbyDappIframeSyncRouteInstalled';
+
+const applyIframeTheme = (theme?: IframeBridgeTheme | null) => {
+  if (theme !== 'dark' && theme !== 'light') {
+    return false;
+  }
+
+  if (location.origin === 'https://polymarket.com') {
+    localStorage?.setItem?.('color-mode', theme);
+    document?.documentElement?.setAttribute('data-theme', theme);
+    if (document?.documentElement?.style) {
+      document.documentElement.style['colorScheme'] = theme;
+    }
+    return true;
+  }
+
+  if (location.origin === 'https://probable.markets') {
+    const switchBTN = document?.documentElement?.querySelector?.(
+      'header label[data-scope=[switch]'
+    ) as HTMLLabelElement | null;
+    if (switchBTN) {
+      if (
+        !document?.documentElement
+          ?.querySelector?.('html')
+          ?.classList?.contains(theme)
+      ) {
+        switchBTN?.click?.();
+      }
+    } else {
+      localStorage?.setItem?.('theme', theme);
+      document?.documentElement
+        ?.querySelector?.('html')
+        ?.classList.remove('light', 'dark');
+      document?.documentElement?.querySelector?.('html')?.classList.add(theme);
+    }
+    return true;
+  }
+
+  return false;
+};
+
+const registerInjectedThemeHandler = () => {
+  const registry = ensureInjectedNamespace();
+  registry[INJECTED_THEME_METHOD] = (theme?: IframeBridgeTheme) =>
+    applyIframeTheme(theme);
+};
 
 const setupDappIframeSyncRoute = () => {
   if (window === window.top) {
@@ -110,13 +157,7 @@ const setupDappIframeSyncRoute = () => {
     parentOrigin = origin;
     handshakeToken = data.token;
 
-    if (data.theme) {
-      if (location.origin === 'https://polymarket.com') {
-        localStorage.setItem('color-mode', data.theme);
-        document?.documentElement?.setAttribute('data-theme', data.theme);
-        document.documentElement.style['colorScheme'] = data.theme;
-      }
-    }
+    applyIframeTheme(data.theme);
     ensureListening();
     postSyncUrl(true);
 
@@ -132,7 +173,9 @@ const setupDappIframeSyncRoute = () => {
       };
       try {
         const store = JSON.parse(
-          window.localStorage.getItem('wagmi.store') || ''
+          window.localStorage.getItem('wagmi.store') ||
+            window.localStorage.getItem('polymarket.cache.wagmi.v2.store') ||
+            '{}'
         );
         if (!store?.state?.current) {
           autoRunner();
@@ -218,6 +261,7 @@ const domReadyCall = (callback) => {
     callback();
   }
 };
+registerInjectedThemeHandler();
 
 domReadyCall(() => {
   setTimeout(() => {
