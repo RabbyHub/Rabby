@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, message, Checkbox } from 'antd';
+import { Button, message, Checkbox } from 'antd';
 import BigNumber from 'bignumber.js';
 import { isSameAddress } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
@@ -33,13 +33,14 @@ import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { StyledInput } from '../StyledInput';
+import stats from '@/stats';
+import { LendingReportType } from '../../types/tx';
 
 type WithdrawModalProps = {
   visible: boolean;
   onCancel: () => void;
   reserve: DisplayPoolReserveInfo;
   userSummary: UserSummary | null;
-  onSuccess?: () => void;
 };
 
 export const WithdrawModal: React.FC<WithdrawModalProps> = ({
@@ -47,7 +48,6 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   onCancel,
   reserve,
   userSummary,
-  onSuccess,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -86,9 +86,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   }, [
     formattedPoolReservesAndIncentives,
     reserve.underlyingAsset,
-    isNativeToken,
-    chainEnum,
-    wrapperPoolReserve,
+    reserve.chain,
   ]);
 
   const withdrawAmount = useMemo(() => {
@@ -223,9 +221,8 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
     selectedMarketData,
     pools,
     chainInfo,
-    reserve.reserve.decimals,
     targetPool,
-    reserve.underlyingAsset,
+    _amount,
     t,
   ]);
 
@@ -282,6 +279,33 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
       ) {
         return;
       }
+      const report = (lastHash: string) => {
+        const targetPool = formattedPoolReservesAndIncentives.find((item) => {
+          return isSameAddress(reserve.underlyingAsset, API_ETH_MOCK_ADDRESS)
+            ? isSameAddress(
+                item.underlyingAsset,
+                wrapperToken?.[reserve.chain]?.address
+              )
+            : isSameAddress(item.underlyingAsset, reserve.underlyingAsset);
+        });
+        const bgCurrency = new BigNumber(
+          targetPool?.formattedPriceInMarketReferenceCurrency || '0'
+        );
+        const usdValue = targetPool
+          ? new BigNumber(amount || '0').multipliedBy(bgCurrency).toString()
+          : '0';
+
+        stats.report('aaveInternalTx', {
+          tx_type: LendingReportType.Withdraw,
+          chain: chainInfo?.serverId || '',
+          tx_id: lastHash || '',
+          user_addr: currentAccount.address || '',
+          address_type: currentAccount.type || '',
+          usd_value: usdValue,
+          create_at: Date.now(),
+          app_version: process.env.release || '0',
+        });
+      };
 
       try {
         if (canShowDirectSubmit && !forceFullSign) {
@@ -297,6 +321,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
             });
             const hash = hashes[hashes.length - 1];
             if (hash) {
+              report(hash);
               message.success(
                 `${t('page.lending.withdrawDetail.actions')} ${t(
                   'page.lending.submitted'
@@ -304,7 +329,6 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
               );
               setAmount(undefined);
               onCancel();
-              onSuccess?.();
             }
           } catch (error) {
             if (
@@ -322,9 +346,10 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         }
 
         setIsLoading(true);
+        let lastHash: string = '';
         for (let i = 0; i < withdrawTxs.length; i++) {
           const tx = withdrawTxs[i];
-          await wallet.sendRequest({
+          lastHash = await wallet.sendRequest({
             method: 'eth_sendTransaction',
             params: [tx],
             $ctx: {
@@ -336,6 +361,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
             },
           });
         }
+        report(lastHash);
         message.success(
           `${t('page.lending.withdrawDetail.actions')} ${t(
             'page.lending.submitted'
@@ -343,7 +369,6 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         );
         setAmount(undefined);
         onCancel();
-        onSuccess?.();
       } catch (error) {
         console.error('Withdraw error:', error);
       } finally {
@@ -355,12 +380,14 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
       withdrawTxs,
       amount,
       chainInfo,
-      wallet,
-      onCancel,
-      onSuccess,
-      t,
+      formattedPoolReservesAndIncentives,
+      reserve.underlyingAsset,
+      reserve.chain,
       canShowDirectSubmit,
+      t,
+      onCancel,
       openDirect,
+      wallet,
     ]
   );
 

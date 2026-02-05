@@ -14,6 +14,7 @@ import {
   useLendingSummaryCard,
   useSelectedMarket,
 } from './hooks';
+import { useListenTxReload } from '../DesktopProfile/hooks/useListenTxReload';
 import './index.less';
 import { useHistory, useLocation } from 'react-router-dom';
 import { SignatureRecordModal } from '../DesktopProfile/components/SignatureRecordModal';
@@ -40,8 +41,9 @@ const DesktopLendingContent: React.FC = () => {
   useEffect(() => {
     setFetchLoading(true);
     fetchData();
-    // TODO: 有循环，待排查
   }, [marketKey, currentAccount?.address]);
+
+  useListenTxReload(fetchData);
 
   return (
     <Wrap>

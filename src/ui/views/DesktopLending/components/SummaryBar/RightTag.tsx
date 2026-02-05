@@ -34,11 +34,9 @@ export const RightMarketTabInfo: React.FC = () => {
   const [disableOverviewVisible, setDisableOverviewVisible] = useState(false);
   const [fullModalVisible, setFullModalVisible] = useState(false);
   const { isInIsolationMode, currentEmode, emodeEnabled, eModes } = useMode();
-  const { fetchData } = useFetchLendingData();
 
   const handleEmodeSuccess = () => {
     setFullModalVisible(false);
-    fetchData();
   };
 
   // 隔离模式：只展示一个全局 Isolated 标签
