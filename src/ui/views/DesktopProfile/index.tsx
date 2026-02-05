@@ -85,6 +85,14 @@ export const DesktopProfile: React.FC<{
   const handleTabChange = (key: string) => {
     dispatch.desktopProfile.setField({ activeTab: key });
     history.replace(`/desktop/profile/${key}`);
+    const $scrollElement = scrollContainerRef.current;
+    if (!$scrollElement) {
+      return;
+    }
+    const profileHeight = 136;
+    if ($scrollElement.scrollTop > profileHeight) {
+      $scrollElement.scrollTo(0, profileHeight);
+    }
   };
   const { action, sendPageType } = useMemo(() => {
     const searchParams = new URLSearchParams(location.search);
