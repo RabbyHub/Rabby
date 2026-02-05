@@ -15,7 +15,9 @@ import qs from 'qs';
 
 export const ImportMyMetaMaskAccount: React.FC<{
   isInModal?: boolean;
-}> = ({ isInModal }) => {
+  onBack?(): void;
+  onNavigate?(type: string, state?: Record<string, any>): void;
+}> = ({ isInModal, onBack, onNavigate }) => {
   const history = useHistory();
   const { t } = useTranslation();
 
@@ -49,7 +51,7 @@ export const ImportMyMetaMaskAccount: React.FC<{
         isInModal ? 'min-h-0 h-[600px] overflow-auto' : ''
       )}
     >
-      <BlueHeader className="mx-[-20px]">
+      <BlueHeader className="mx-[-20px]" onBack={onBack}>
         {t('page.newAddress.importMyMetamaskAccount')}
       </BlueHeader>
       <div
@@ -160,12 +162,7 @@ export const ImportMyMetaMaskAccount: React.FC<{
               )}
               onClick={() => {
                 if (UI_TYPE.isDesktop) {
-                  history.push(
-                    `${history.location.pathname}?${qs.stringify({
-                      action: 'add-address',
-                      import: 'key',
-                    })}`
-                  );
+                  onNavigate?.('key');
                 } else {
                   history.push('/import/key');
                 }

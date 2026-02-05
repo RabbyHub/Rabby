@@ -2,26 +2,25 @@ import { Account } from '@/background/service/preference';
 import { KEYRING_TYPE } from '@/constant';
 import { ReactComponent as RcArrowDownSVG } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import { RcIconCopyCC } from '@/ui/assets/desktop/common';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { RcIconAddWalletCC } from '@/ui/assets/desktop/profile';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep, useAlias } from '@/ui/utils';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { isSameAccount } from '@/utils/account';
+import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { Popover } from 'antd';
 import clsx from 'clsx';
 import { flatten, sortBy } from 'lodash';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMount } from 'react-use';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
-import { createGlobalStyle } from 'styled-components';
 import { AddressViewer } from 'ui/component';
 import { CopyChecked } from '../CopyChecked';
-import { useMemoizedFn, useRequest } from 'ahooks';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
-import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import { useMount } from 'react-use';
 import './styles.less';
 import { getCustomClearinghouseState } from '@/ui/views/DesktopPerps/utils';
 import BigNumber from 'bignumber.js';
@@ -77,6 +76,9 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
             scene={scene}
             selectedAccount={value}
             onSelectAccount={handleChange}
+            onClose={() => {
+              setIsOpen(false);
+            }}
           />
         }
         visible={isOpen}
@@ -249,20 +251,24 @@ const AccountList: React.FC<{
   scene?: Scene;
   onSelectAccount?(account: Account): void;
   selectedAccount?: Account | null;
-}> = ({ onSelectAccount, selectedAccount, scene }) => {
+  onClose?(): void;
+}> = ({ onSelectAccount, selectedAccount, scene, onClose }) => {
   const { accounts, clearinghouseStateMap } = useAccountList({
     scene,
   });
 
   const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const { t } = useTranslation();
 
   const height = useMemo(() => {
-    return Math.min(accounts.length, 8) * 74 - 12;
+    return Math.min(accounts.length + 1, 8) * 74 - 12;
   }, [accounts.length]);
 
   const hasScrollbar = useMemo(() => {
-    return accounts.length > 8;
+    return accounts.length + 1 > 8;
   }, [accounts.length]);
+
+  const dispatch = useRabbyDispatch();
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -293,7 +299,6 @@ const AccountList: React.FC<{
         totalCount={accounts.length}
         defaultItemHeight={72 + 12}
         itemContent={(index, item) => {
-          const isLast = index + 1 === accounts?.length;
           const isSelected = selectedAccount
             ? isSameAccount(item, selectedAccount)
             : false;
@@ -309,7 +314,7 @@ const AccountList: React.FC<{
                 }}
                 isSelected={isSelected}
                 item={item}
-                isLast={isLast}
+                // isLast={isLast}
                 scene={scene}
                 clearinghouseState={
                   clearinghouseStateMap[item.address.toLowerCase()]
@@ -319,6 +324,32 @@ const AccountList: React.FC<{
               </AccountItem>
             </div>
           );
+        }}
+        components={{
+          Footer: () => (
+            <div
+              onClick={() => {
+                dispatch.desktopProfile.setField({
+                  addAddress: {
+                    visible: true,
+                    importType: '',
+                    state: {},
+                  },
+                });
+                onClose?.();
+              }}
+              className={clsx(
+                'cursor-pointer rounded-[12px] h-[62px] p-[16px] flex items-center gap-[8px] text-rb-neutral-body',
+                'desktop-account-item',
+                'bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-2'
+              )}
+            >
+              <RcIconAddWalletCC className="flex-shrink-0" />
+              <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
+                {t('component.DesktopSelectAccountList.addAddresses')}
+              </div>
+            </div>
+          ),
         }}
       />
     </div>

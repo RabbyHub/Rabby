@@ -16,9 +16,11 @@ import qs from 'qs';
 
 const COINBASE = WALLET_BRAND_CONTENT.Coinbase;
 
-export const ImportCoinbase: React.FC<{ isInModal?: boolean }> = ({
-  isInModal,
-}) => {
+export const ImportCoinbase: React.FC<{
+  isInModal?: boolean;
+  onBack?(): void;
+  onNavigate?(type: string, state?: Record<string, any>): void;
+}> = ({ isInModal, onBack, onNavigate }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
@@ -34,18 +36,11 @@ export const ImportCoinbase: React.FC<{ isInModal?: boolean }> = ({
   const [run, loading] = useWalletRequest(wallet.importCoinbase, {
     onSuccess(accounts) {
       if (UI_TYPE.isDesktop) {
-        history.replace({
-          pathname: history.location.pathname,
-          search: `?${qs.stringify({
-            action: 'add-address',
-            import: 'success',
-          })}`,
-          state: {
-            accounts,
-            editing: true,
-            title: t('page.newAddress.walletConnect.connectedSuccessfully'),
-            importedAccount: true,
-          },
+        onNavigate?.('success', {
+          accounts,
+          editing: true,
+          title: t('page.newAddress.walletConnect.connectedSuccessfully'),
+          importedAccount: true,
         });
       } else {
         history.replace({
@@ -90,6 +85,10 @@ export const ImportCoinbase: React.FC<{ isInModal?: boolean }> = ({
   }, [sessionStatus, runParams]);
 
   const handleClickBack = () => {
+    if (onBack) {
+      onBack();
+      return;
+    }
     if (history.length > 1) {
       history.goBack();
     } else {

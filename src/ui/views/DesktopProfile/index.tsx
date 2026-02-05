@@ -435,13 +435,6 @@ export const DesktopProfile: React.FC<{
         }}
         destroyOnClose
       />
-      <AddAddressModal
-        visible={action === 'add-address'}
-        onCancel={() => {
-          history.replace(history.location.pathname);
-        }}
-        destroyOnClose
-      />
     </>
   );
 };

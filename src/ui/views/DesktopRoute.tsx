@@ -13,6 +13,7 @@ import {
 import { DesktopPerps } from './DesktopPerps';
 import { DesktopLending } from './DesktopLending';
 import clsx from 'clsx';
+import { AddAddressModal } from './DesktopProfile/components/AddAddressModal';
 
 declare global {
   interface Window {
@@ -93,6 +94,7 @@ const Main = () => {
           <PortalHost />
           <GlobalSignerPortal isDesktop />
           <GlobalTypedDataSignerPortal isDesktop />
+          <AddAddressModal />
         </>
       ) : null}
     </>
