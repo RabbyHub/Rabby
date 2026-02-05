@@ -46,7 +46,10 @@ export const formatMarkData = (
     }
 
     const xyzMarginTableMap: Record<number, MarginTable> = {};
-    if (Array.isArray(xyzMarketData[0].marginTables)) {
+    if (
+      xyzMarketData?.[0]?.marginTables &&
+      Array.isArray(xyzMarketData[0].marginTables)
+    ) {
       for (const entry of xyzMarketData[0].marginTables) {
         const [id, table] = entry || [];
         if (id != null) xyzMarginTableMap[id] = table;
