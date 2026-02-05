@@ -26,17 +26,16 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
   orderSide,
   titleText,
 }) => {
-  const allDexsClearinghouseState = useRabbySelector(
-    (store) => store.perps.allDexsClearinghouseState
+  const clearinghouseState = useRabbySelector(
+    (store) => store.perps.clearinghouseState
   );
 
   const needDepositFirst = useMemo(() => {
-    const accountValue =
-      allDexsClearinghouseState?.reduce((acc, item) => {
-        return acc + Number(item[1].marginSummary.accountValue || 0);
-      }, 0) || 0;
-    return accountValue === 0 && allDexsClearinghouseState.length > 0;
-  }, [allDexsClearinghouseState]);
+    const accountValue = Number(
+      clearinghouseState?.marginSummary?.accountValue || 0
+    );
+    return clearinghouseState && accountValue === 0;
+  }, [clearinghouseState]);
 
   const hasPermission = useRabbySelector((state) => state.perps.hasPermission);
   const { t } = useTranslation();

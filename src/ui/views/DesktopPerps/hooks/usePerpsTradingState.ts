@@ -12,7 +12,6 @@ export const usePerpsTradingState = () => {
   // Read trading state from Redux (preserved across orderType switches)
   const {
     clearinghouseState,
-    allDexsPositions,
     wsActiveAssetCtx,
     selectedCoin = 'ETH',
     currentPerpsAccount,
@@ -86,7 +85,7 @@ export const usePerpsTradingState = () => {
 
   // Get current position for selected coin
   const currentPosition: Position | null = React.useMemo(() => {
-    const position = allDexsPositions?.find(
+    const position = clearinghouseState?.assetPositions?.find(
       (item) => item.position.coin === selectedCoin
     );
     if (!position) return null;
@@ -101,7 +100,7 @@ export const usePerpsTradingState = () => {
       liquidationPrice: Number(p.liquidationPx || 0),
       unrealizedPnl: Number(p.unrealizedPnl || 0),
     };
-  }, [allDexsPositions, selectedCoin]);
+  }, [clearinghouseState, selectedCoin]);
 
   const markPrice = React.useMemo(() => {
     if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {

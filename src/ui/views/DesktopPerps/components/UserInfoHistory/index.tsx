@@ -25,7 +25,7 @@ interface Tab {
 }
 
 export const UserInfoHistory: React.FC = () => {
-  const { allDexsPositions, openOrders, twapStates } = useRabbySelector(
+  const { clearinghouseState, openOrders, twapStates } = useRabbySelector(
     (store) => store.perps
   );
   const { t } = useTranslation();
@@ -38,7 +38,7 @@ export const UserInfoHistory: React.FC = () => {
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
 
   const tabs: Tab[] = useMemo(() => {
-    const assetPositionNum = allDexsPositions.length || 0;
+    const assetPositionNum = clearinghouseState?.assetPositions?.length || 0;
     const openOrdersNum = openOrders.length;
     const twapNum = twapStates.length;
 
@@ -78,7 +78,7 @@ export const UserInfoHistory: React.FC = () => {
       },
     ];
   }, [
-    allDexsPositions.length,
+    clearinghouseState?.assetPositions?.length,
     openOrders.length,
     twapStates.length,
     activeTab,

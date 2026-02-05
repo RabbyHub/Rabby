@@ -5742,6 +5742,12 @@ export class WalletController extends BaseController {
     return perpsService.createAgentWallet(masterWallet);
   };
   setPerpsCurrentAccount = perpsService.setCurrentAccount;
+  switchDesktopPerpsAccount = (account: Account) => {
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.DESKTOP.SWITCH_PERPS_ACCOUNT,
+      params: account,
+    });
+  };
   getPerpsCurrentAccount = perpsService.getCurrentAccount;
   getPerpsLastUsedAccount = perpsService.getLastUsedAccount;
   getAgentWalletPreference = async (masterWallet: string) => {

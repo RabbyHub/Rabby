@@ -16,20 +16,13 @@ export const AccountInfo: React.FC = () => {
   const clearinghouseState = useRabbySelector(
     (store) => store.perps.clearinghouseState
   );
-  const allDexsPositions = useRabbySelector(
-    (store) => store.perps.allDexsPositions
-  );
-  const allDexsClearinghouseState = useRabbySelector(
-    (store) => store.perps.allDexsClearinghouseState
-  );
-
   const positionAllPnl = useMemo(() => {
     return (
-      allDexsPositions?.reduce((acc, asset) => {
+      clearinghouseState?.assetPositions?.reduce((acc, asset) => {
         return acc + Number(asset.position.unrealizedPnl || 0);
       }, 0) || 0
     );
-  }, [allDexsPositions]);
+  }, [clearinghouseState]);
 
   const crossMarginRatio = useMemo(() => {
     const num = new BigNumber(
@@ -56,12 +49,8 @@ export const AccountInfo: React.FC = () => {
   };
 
   const accountValue = useMemo(() => {
-    return (
-      allDexsClearinghouseState?.reduce((acc, item) => {
-        return acc + Number(item[1].marginSummary.accountValue || 0);
-      }, 0) || 0
-    );
-  }, [allDexsClearinghouseState]);
+    return Number(clearinghouseState?.marginSummary?.accountValue || 0);
+  }, [clearinghouseState]);
 
   const customBalance = useMemo(() => {
     return Number(accountValue) - Number(positionAllPnl || 0);

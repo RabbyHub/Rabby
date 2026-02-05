@@ -25,6 +25,8 @@ import { useMount } from 'react-use';
 import './styles.less';
 import { getCustomClearinghouseState } from '@/ui/views/DesktopPerps/utils';
 import BigNumber from 'bignumber.js';
+import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
+import { EVENTS } from '@/constant';
 
 interface DesktopAccountSelectorProps {
   value?: Account | null;
@@ -54,6 +56,15 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
       dispatch.accountToDisplay.getAllAccountsToDisplay();
     });
   });
+
+  useEventBusListener(
+    EVENTS.DESKTOP.SWITCH_PERPS_ACCOUNT,
+    (account: Account) => {
+      if (value && !isSameAccount(value, account)) {
+        onChange?.(account);
+      }
+    }
+  );
 
   return (
     <>
