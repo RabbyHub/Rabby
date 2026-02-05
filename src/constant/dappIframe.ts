@@ -110,3 +110,9 @@ export const INNER_DAPP_LIST = {
   LENDING,
   PERPS,
 } as const;
+
+export const ALL_SUPPORTED_INNER_DAPP_ORIGINS = [
+  ...PREDICTION.map((item) => new URL(item.url).origin),
+  ...LENDING.map((item) => new URL(item.url).origin),
+  ...PERPS.map((item) => new URL(item.url).origin),
+];

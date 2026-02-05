@@ -129,7 +129,7 @@ export const DesktopDappSelectorInner: React.FC<DesktopDappSelectorProps> = ({
       <button
         type="button"
         className={clsx(
-          'h-[44px] px-[12px] rounded-[16px]',
+          'h-[40px] px-[12px] rounded-[16px]',
           'border border-solid border-rb-neutral-line',
           'flex items-center gap-[6px]',
           'bg-rb-neutral-bg-1 hover:bg-rb-neutral-bg-2',

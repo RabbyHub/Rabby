@@ -113,7 +113,7 @@ export interface StepConfig {
   gapMs?: number;
 }
 
-interface FlowConfig {
+export interface FlowConfig {
   steps: StepConfig[];
   timeoutMs?: number;
   debug?: boolean;
@@ -492,7 +492,7 @@ function resolveObserveRoots(
   if (root === 'waitScope') {
     if (!waitResolvedEl)
       throw new Error(
-        `observe.root="waitScope" requires step.wait to resolve an element`
+        'observe.root="waitScope" requires step.wait to resolve an element'
       );
     return [waitResolvedEl];
   }
@@ -513,7 +513,7 @@ function resolveObserveRoots(
   if (Array.isArray(root)) {
     const roots = root.map(resolveOne).filter((x): x is Element => !!x);
     if (!roots.length)
-      throw new Error(`observe.root array resolved to no elements`);
+      throw new Error('observe.root array resolved to no elements');
     return roots;
   }
 
@@ -718,7 +718,7 @@ function dispatchInputEvents(el: Element) {
 async function runAction(el: Element | null, action: Action, debug: boolean) {
   switch (action.type) {
     case 'click':
-      if (!el) throw new Error(`Action "click" requires step.wait`);
+      if (!el) throw new Error('Action "click" requires step.wait');
       if (!isElementEnabled(el))
         throw new Error('Target not clickable/enabled.');
       if (action.scroll !== false)
@@ -730,7 +730,7 @@ async function runAction(el: Element | null, action: Action, debug: boolean) {
       return;
 
     case 'input':
-      if (!el) throw new Error(`Action "input" requires step.wait`);
+      if (!el) throw new Error('Action "input" requires step.wait');
       (el as HTMLElement).focus?.();
       setNativeValue(
         el as HTMLInputElement | HTMLTextAreaElement,
