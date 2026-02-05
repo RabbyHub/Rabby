@@ -59,6 +59,7 @@ export type IframeBridgeMessage =
 
 export const IFRAME_BRIDGE_DEFAULT_CALL_TIMEOUT = 12 * 1000;
 export const INJECTED_NAMESPACE = '__rabbyDesktopInjected';
+export const INJECTED_THEME_METHOD = 'setRabbyTheme' as const;
 
 const MESSAGE_TYPE_SET = new Set(
   Object.values(IFRAME_BRIDGE_MESSAGE_TYPES) as string[]

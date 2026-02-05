@@ -1,6 +1,7 @@
 import { runFlow } from './auto-click-runner';
 import {
   IFRAME_BRIDGE_MESSAGE_TYPES,
+  INJECTED_THEME_METHOD,
   ensureInjectedNamespace,
   getBridgeMessageType,
   normalizeArgs,
@@ -10,9 +11,55 @@ import {
 import type {
   IframeBridgeCallMessage,
   IframeBridgeHandshakeMessage,
+  IframeBridgeTheme,
 } from '@/ui/utils/iframeBridge';
 
 const INSTALL_FLAG = '__rabbyDappIframeSyncRouteInstalled';
+
+const applyIframeTheme = (theme?: IframeBridgeTheme | null) => {
+  if (theme !== 'dark' && theme !== 'light') {
+    return false;
+  }
+
+  if (location.origin === 'https://polymarket.com') {
+    localStorage?.setItem?.('color-mode', theme);
+    document?.documentElement?.setAttribute('data-theme', theme);
+    if (document?.documentElement?.style) {
+      document.documentElement.style['colorScheme'] = theme;
+    }
+    return true;
+  }
+
+  if (location.origin === 'https://probable.markets') {
+    const switchBTN = document?.documentElement?.querySelector?.(
+      'header label[data-scope=[switch]'
+    ) as HTMLLabelElement | null;
+    if (switchBTN) {
+      if (
+        !document?.documentElement
+          ?.querySelector?.('html')
+          ?.classList?.contains(theme)
+      ) {
+        switchBTN?.click?.();
+      }
+    } else {
+      localStorage?.setItem?.('theme', theme);
+      document?.documentElement
+        ?.querySelector?.('html')
+        ?.classList.remove('light', 'dark');
+      document?.documentElement?.querySelector?.('html')?.classList.add(theme);
+    }
+    return true;
+  }
+
+  return false;
+};
+
+const registerInjectedThemeHandler = () => {
+  const registry = ensureInjectedNamespace();
+  registry[INJECTED_THEME_METHOD] = (theme?: IframeBridgeTheme) =>
+    applyIframeTheme(theme);
+};
 
 const setupDappIframeSyncRoute = () => {
   if (window === window.top) {
@@ -141,6 +188,39 @@ const setupDappIframeSyncRoute = () => {
         console.log('[iframe] [Flow] autoRunner error:', error, data.rules);
         autoRunner();
       }
+      return;
+    }
+
+    parentOrigin = origin;
+    handshakeToken = data.token;
+
+    applyIframeTheme(data.theme);
+    ensureListening();
+    postSyncUrl(true);
+
+    if (data.token && data.rules) {
+      const autoRunner = () => {
+        try {
+          runFlow(data.rules!).catch((e) => {
+            console.log('[iframe] [Flow] rule run error:', e, data.rules);
+          });
+        } catch (error) {
+          console.log('[iframe] [Flow] parse rules error:', error, data.rules);
+        }
+      };
+      try {
+        const store = JSON.parse(
+          window.localStorage.getItem('wagmi.store') ||
+            window.localStorage.getItem('polymarket.cache.wagmi.v2.store') ||
+            '{}'
+        );
+        if (!store?.state?.current) {
+          autoRunner();
+        }
+      } catch (error) {
+        console.log('[iframe] [Flow] autoRunner error:', error, data.rules);
+        autoRunner();
+      }
     }
   };
 
@@ -218,6 +298,7 @@ const domReadyCall = (callback) => {
     callback();
   }
 };
+registerInjectedThemeHandler();
 
 domReadyCall(() => {
   setTimeout(() => {

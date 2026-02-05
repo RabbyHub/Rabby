@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { INJECTED_THEME_METHOD } from '@/ui/utils/iframeBridge';
 import { createIframeBridge } from '@/ui/utils/iframeBridgeCore';
 
 import type { RefObject } from 'react';
@@ -39,6 +40,26 @@ export const useIframeBridge = ({
   currentAddress,
 }: UseIframeBridgeOptions): UseIframeBridgeReturn => {
   const bridgeRef = useRef<IframeBridgeInstance | null>(null);
+  const themeRef = useRef<IframeBridgeTheme>(theme);
+
+  useEffect(() => {
+    themeRef.current = theme;
+  }, [theme]);
+
+  const syncTheme = useCallback((nextTheme: IframeBridgeTheme) => {
+    const bridge = bridgeRef.current;
+    if (!bridge?.connectedRef.current) {
+      return;
+    }
+    bridge.callInjectedMethod(INJECTED_THEME_METHOD, [nextTheme]).catch(() => {
+      // Ignore theme sync errors to avoid breaking bridge flow.
+    });
+  }, []);
+
+  const handleConnected = useCallback(() => {
+    onConnected?.();
+    syncTheme(themeRef.current);
+  }, [onConnected, syncTheme]);
 
   if (!bridgeRef.current) {
     bridgeRef.current = createIframeBridge({
@@ -46,7 +67,7 @@ export const useIframeBridge = ({
       iframeOrigin,
       rules,
       theme,
-      onConnected,
+      onConnected: handleConnected,
       syncUrl,
       currentAddress,
     });
@@ -58,10 +79,14 @@ export const useIframeBridge = ({
       iframeOrigin,
       rules,
       theme,
-      onConnected,
+      onConnected: handleConnected,
       syncUrl,
     });
-  }, [iframeOrigin, iframeRef, onConnected, rules, syncUrl, theme]);
+  }, [handleConnected, iframeOrigin, iframeRef, rules, syncUrl, theme]);
+
+  useEffect(() => {
+    syncTheme(theme);
+  }, [syncTheme, theme]);
 
   useEffect(() => {
     return () => {
