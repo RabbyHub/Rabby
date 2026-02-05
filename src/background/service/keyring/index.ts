@@ -439,7 +439,6 @@ export class KeyringService extends EventEmitter {
           }
         : opts
     );
-    console.log('Adding new keyring of type', type, keyring, opts);
     this.updateHdKeyringIndex(keyring);
     return this.addKeyring(keyring);
   }

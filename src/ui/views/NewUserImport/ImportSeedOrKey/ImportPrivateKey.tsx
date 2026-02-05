@@ -3,7 +3,7 @@ import { useMemoizedFn, useRequest } from 'ahooks';
 import { Button, Form, Input, message } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import { useNewUserGuideStore } from '../hooks/useNewUserGuideStore';
 import { clearClipboard } from '@/ui/utils/clipboard';
@@ -111,12 +111,12 @@ export const ImportPrivateKey = () => {
 
       <footer className="mt-auto">
         <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
-          Don't have seed phrase or private key yet?{' '}
+          {t('page.newUserImport.importPrivateKey.noWallet')}{' '}
           <Link
             to="/new-user/create-seed-phrase"
             className="text-r-blue-default"
           >
-            Create a wallet
+            {t('page.newUserImport.importPrivateKey.createWallet')}
           </Link>
         </div>
         <Button

@@ -2845,7 +2845,8 @@
         "sub-title": "This action is permanent. Please review the following to protect your assets:",
         "check1": "I understand that deleting this address also removes its Private Key. Rabby cannot recover them for me.",
         "check2": "I confirm that I have backed up my Private Key or Seed Phrase and I am ready to delete it."
-      }
+      },
+      "notBackup": "Not Backup"
     },
     "preferMetamaskDapps": {
       "title": "MetaMask Preferred Dapps",
@@ -3389,7 +3390,9 @@
       },
       "importPrivateKey": {
         "title": "Import Private Key",
-        "pasteCleared": "Pasted and clipboard cleared"
+        "pasteCleared": "Pasted and clipboard cleared",
+        "noWallet": "Don't have seed phrase or private key yet?",
+        "createWallet": "Create a wallet"
       },
       "PasswordCard": {
         "title": "Set Password",
@@ -3415,7 +3418,10 @@
         "import": "Imported Successfully",
         "start": "Get Started",
         "addMoreAddr": "Add more addresses from this Seed Phrase",
-        "addMoreFrom": "Add more addresses from {{name}}"
+        "addMoreFrom": "Add more addresses from {{name}}",
+        "desc": "Rabby Wallet is Ready to Use!",
+        "openWallet": "Open Wallet",
+        "backupSeedPhraseNow": "Backup Seed phrase Now"
       },
       "readyToUse": {
         "title": "Your Rabby Wallet is Ready !",
@@ -3428,7 +3434,9 @@
         }
       },
       "importSeedPhrase": {
-        "title": "Import Seed Phrase"
+        "title": "Import Seed Phrase",
+        "noWallet": "Don't have seed phrase or private key yet?",
+        "createWallet": "Create a wallet"
       },
       "importOneKey": {
         "qrcode": {
@@ -4039,6 +4047,9 @@
       "title": "This is a liquidity provider(LP) token",
       "descriptionFor": "This is a Liquidity Provider(LP) Token for {{ protocolName }}",
       "description": "LP tokens are issued by the DeFi protocols where you've deposited your assets. They serve as the proof of those assets, but their value isn't included in your total balance"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Wallet Not Backed Up. Start Backup."
     }
   },
   "global": {

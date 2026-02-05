@@ -87,7 +87,9 @@ export const SeedPhraseBackupAlert: React.FC<{
   return (
     <AlertContainer style={style} className={className} onClick={handleBackup}>
       <RcIconInfoCC />
-      <div className="truncate flex-1">Wallet Not Backed Up. Start Backup.</div>
+      <div className="truncate flex-1">
+        {t('component.SeedPhraseBackupAlert.message')}
+      </div>
       <RcIconArrowRightCC />
     </AlertContainer>
   );

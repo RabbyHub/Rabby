@@ -33,6 +33,11 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 import browser from 'webextension-polyfill';
 import { useCheckSeedPhraseBackup } from '@/ui/utils/useCheckSeedPhraseBackup';
+import { ReactComponent as RcIconTriangle } from '@/ui/assets/new-user-import/triangle.svg';
+import UserGuide1 from '@/ui/assets/new-user-import/guide-1.png';
+import UserGuide2 from '@/ui/assets/new-user-import/guide-2.png';
+import { ReactComponent as UserGuide1Icon } from '@/ui/assets/new-user-import/guide1.svg';
+import { ReactComponent as UserGuide2Icon } from '@/ui/assets/new-user-import/guide2.svg';
 
 const AccountItem = ({ account }: { account: Account }) => {
   const [edit, setEdit] = useState(false);
@@ -325,72 +330,114 @@ export const ImportOrCreatedSuccess = () => {
   );
 
   return (
-    <Card className="flex flex-col pt-[40px]">
-      <RcIconChecked
-        className="w-[40px] h-[40px] mb-[16px] mx-auto"
-        viewBox="0 0 16 16"
-      />
+    <>
+      <Card className="flex flex-col pt-[40px]">
+        <RcIconChecked
+          className="w-[40px] h-[40px] mb-[16px] mx-auto"
+          viewBox="0 0 16 16"
+        />
 
-      <div className="text-[24px] leading-[29px] font-medium text-r-neutral-title1 text-center">
-        {t(
-          isCreated
-            ? 'page.newUserImport.successful.create'
-            : 'page.newUserImport.successful.import'
-        )}
-      </div>
+        <div className="text-[24px] leading-[29px] font-medium text-r-neutral-title1 text-center">
+          {t(
+            isCreated
+              ? 'page.newUserImport.successful.create'
+              : 'page.newUserImport.successful.import'
+          )}
+        </div>
 
-      <div className="text-center text-[15px] leading-[18px] text-r-neutral-foot mt-[8px]">
-        Rabby Wallet is Ready to Use!
-      </div>
+        <div className="text-center text-[15px] leading-[18px] text-r-neutral-foot mt-[8px]">
+          {t('page.newUserImport.successful.desc')}
+        </div>
 
-      <ScrollBarDiv className="flex flex-col gap-16 pt-24 overflow-y-scroll max-h-[324px] mb-20">
-        {accounts?.map((account) => {
-          if (!account?.address) {
-            return null;
-          }
-          return <AccountItem key={account.address} account={account} />;
-        })}
-        <GnosisChainList chainList={chainList} className="mt-[-4px]" />
-      </ScrollBarDiv>
+        <ScrollBarDiv className="flex flex-col gap-16 pt-24 overflow-y-scroll max-h-[324px] mb-20">
+          {accounts?.map((account) => {
+            if (!account?.address) {
+              return null;
+            }
+            return <AccountItem key={account.address} account={account} />;
+          })}
+          <GnosisChainList chainList={chainList} className="mt-[-4px]" />
+        </ScrollBarDiv>
 
-      <Button
-        onClick={getStarted}
-        block
-        type="primary"
+        <Button
+          onClick={getStarted}
+          block
+          type="primary"
+          className={clsx(
+            'mt-auto h-[52px] shadow-none rounded-[8px]',
+            'text-[15px] leading-[18px] font-medium'
+          )}
+        >
+          {t('page.newUserImport.successful.openWallet')}
+        </Button>
+
+        {hd ? (
+          isCreated && isSeedPhrase && store.seedPhrase && !hasBackup ? (
+            <div
+              onClick={handleBackup}
+              className="flex items-center justify-center gap-2 text-[13px] leading-[16px] min-h-[20px] text-r-neutral-foot mt-[16px] cursor-pointer"
+            >
+              <span>
+                {t('page.newUserImport.successful.backupSeedPhraseNow')}
+              </span>
+            </div>
+          ) : (
+            <div
+              onClick={addMoreAddr}
+              className="flex items-center justify-center gap-2 text-[13px] leading-[16px] text-r-neutral-foot mt-[16px] cursor-pointer"
+            >
+              {isSeedPhrase ? (
+                <span>{t('page.newUserImport.successful.addMoreAddr')}</span>
+              ) : (
+                <span>
+                  {t('page.newUserImport.successful.addMoreFrom', {
+                    name: brand || BRAND_ALIAN_TYPE_TEXT[hd] || hd,
+                  })}
+                </span>
+              )}
+              <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
+            </div>
+          )
+        ) : null}
+      </Card>
+      <div
         className={clsx(
-          'mt-auto h-[52px] shadow-none rounded-[8px]',
-          'text-[15px] leading-[18px] font-medium'
+          'fixed top-[40px] right-[90px]',
+          'w-[242px] h-[300px]',
+          'py-12 px-12',
+          'bg-r-neutral-card-1 rounded-[12px]'
         )}
       >
-        Open Wallet
-      </Button>
-
-      {hd ? (
-        isCreated && isSeedPhrase && store.seedPhrase && !hasBackup ? (
-          <div
-            onClick={handleBackup}
-            className="flex items-center justify-center gap-2 text-[13px] leading-[16px] min-h-[20px] text-r-neutral-foot mt-[16px] cursor-pointer"
-          >
-            <span>Backup Seed phrase Now</span>
-          </div>
-        ) : (
-          <div
-            onClick={addMoreAddr}
-            className="flex items-center justify-center gap-2 text-[13px] leading-[16px] text-r-neutral-foot mt-[16px] cursor-pointer"
-          >
-            {isSeedPhrase ? (
-              <span>{t('page.newUserImport.successful.addMoreAddr')}</span>
-            ) : (
-              <span>
-                {t('page.newUserImport.successful.addMoreFrom', {
-                  name: brand || BRAND_ALIAN_TYPE_TEXT[hd] || hd,
-                })}
+        <RcIconTriangle className="absolute top-[-39px] right-[22px]" />
+        <div className="flex flex-col gap-[11px]">
+          <div className="flex flex-col">
+            <div className="flex items-center">
+              <UserGuide1Icon className="w-[20px] h-[20px] mr-[5px]" />
+              <span className="text-[12px] font-semibold text-r-neutral-title1">
+                {t('page.newUserImport.readyToUse.guides.step1')}
               </span>
-            )}
-            <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
+            </div>
+            <img
+              src={UserGuide1}
+              alt="user-guide-1"
+              className="w-[186px] h-[96px] mt-[10px] ml-[25px]"
+            />
           </div>
-        )
-      ) : null}
-    </Card>
+          <div className="flex flex-col">
+            <div className="flex items-center">
+              <UserGuide2Icon className="w-[20px] h-[20px] mr-[5px]" />
+              <span className="text-[12px] font-semibold text-r-neutral-title1">
+                {t('page.newUserImport.readyToUse.guides.step2')}
+              </span>
+            </div>
+            <img
+              src={UserGuide2}
+              alt="user-guide-2"
+              className="w-[183px] h-[114px] mt-[10px] ml-[25px]"
+            />
+          </div>
+        </div>
+      </div>
+    </>
   );
 };

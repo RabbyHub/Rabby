@@ -104,16 +104,18 @@ export const AddressBackup = ({ address, type }: Props) => {
             <div className="rabby-list-item-label">
               {t('page.addressDetail.backup-seed-phrase')}
             </div>
-            <div
-              className={clsx(
-                'text-[13px] leading-[16px] font-medium text-r-red-default',
-                'py-[4px] px-[10px] bg-r-red-light rounded-[4px]',
-                'flex items-center gap-[4px] mx-[4px]'
-              )}
-            >
-              <RcIconInfoCC />
-              Not Backup
-            </div>
+            {hasBackup ? null : (
+              <div
+                className={clsx(
+                  'text-[13px] leading-[16px] font-medium text-r-red-default',
+                  'py-[4px] px-[10px] bg-r-red-light rounded-[4px]',
+                  'flex items-center gap-[4px] mx-[4px]'
+                )}
+              >
+                <RcIconInfoCC />
+                {t('page.addressDetail.notBackup')}
+              </div>
+            )}
             <div className="rabby-list-item-arrow">
               <IconArrowRight
                 width={16}

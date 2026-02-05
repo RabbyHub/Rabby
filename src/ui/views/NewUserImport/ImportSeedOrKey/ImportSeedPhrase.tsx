@@ -222,13 +222,15 @@ export const ImportSeedPhrase = () => {
 
         <footer className="mt-auto">
           <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
-            Don't have seed phrase or private key yet?{' '}
-            <Link
-              to="/new-user/create-seed-phrase"
-              className="text-r-blue-default"
-            >
-              Create a wallet
-            </Link>
+            <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
+              {t('page.newUserImport.importSeedPhrase.noWallet')}{' '}
+              <Link
+                to="/new-user/create-seed-phrase"
+                className="text-r-blue-default"
+              >
+                {t('page.newUserImport.importSeedPhrase.createWallet')}
+              </Link>
+            </div>
           </div>
           <Button
             htmlType="submit"
