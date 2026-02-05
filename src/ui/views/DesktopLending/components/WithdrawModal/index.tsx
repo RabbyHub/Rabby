@@ -39,7 +39,6 @@ type WithdrawModalProps = {
   onCancel: () => void;
   reserve: DisplayPoolReserveInfo;
   userSummary: UserSummary | null;
-  onSuccess?: () => void;
 };
 
 export const WithdrawModal: React.FC<WithdrawModalProps> = ({
@@ -47,7 +46,6 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   onCancel,
   reserve,
   userSummary,
-  onSuccess,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -304,7 +302,6 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
               );
               setAmount(undefined);
               onCancel();
-              onSuccess?.();
             }
           } catch (error) {
             if (
@@ -343,7 +340,6 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         );
         setAmount(undefined);
         onCancel();
-        onSuccess?.();
       } catch (error) {
         console.error('Withdraw error:', error);
       } finally {
@@ -357,7 +353,6 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
       chainInfo,
       wallet,
       onCancel,
-      onSuccess,
       t,
       canShowDirectSubmit,
       openDirect,

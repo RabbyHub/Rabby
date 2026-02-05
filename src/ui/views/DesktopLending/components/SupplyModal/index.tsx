@@ -43,7 +43,6 @@ type SupplyModalProps = {
   onCancel: () => void;
   reserve: DisplayPoolReserveInfo;
   userSummary: UserSummary | null;
-  onSuccess?: () => void;
 };
 
 export const SupplyModal: React.FC<SupplyModalProps> = ({
@@ -51,7 +50,6 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
   onCancel,
   reserve,
   userSummary,
-  onSuccess,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -435,7 +433,6 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
               );
               setAmount(undefined);
               onCancel();
-              onSuccess?.();
             }
           } catch (error) {
             if (
@@ -475,7 +472,6 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
         );
         setAmount(undefined);
         onCancel();
-        onSuccess?.();
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Supply error:', error);
@@ -491,7 +487,6 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
       chainInfo,
       wallet,
       onCancel,
-      onSuccess,
       t,
       canShowDirectSubmit,
       openDirect,

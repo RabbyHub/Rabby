@@ -43,7 +43,6 @@ type BorrowModalProps = {
   onCancel: () => void;
   reserve: DisplayPoolReserveInfo;
   userSummary: UserSummary | null;
-  onSuccess?: () => void;
 };
 
 export const StyledCheckbox = styled(Checkbox)`
@@ -57,7 +56,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   onCancel,
   reserve,
   userSummary,
-  onSuccess,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -324,7 +322,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
               );
               setAmount(undefined);
               onCancel();
-              onSuccess?.();
             }
           } catch (error) {
             if (
@@ -360,7 +357,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         );
         setAmount(undefined);
         onCancel();
-        onSuccess?.();
       } catch (error) {
         console.error('Borrow error:', error);
       } finally {
@@ -374,7 +370,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       chainInfo,
       wallet,
       onCancel,
-      onSuccess,
       t,
       canShowDirectSubmit,
       openDirect,

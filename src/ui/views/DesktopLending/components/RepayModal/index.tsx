@@ -99,7 +99,6 @@ type RepayModalProps = {
   onCancel: () => void;
   reserve: DisplayPoolReserveInfo;
   userSummary: UserSummary | null;
-  onSuccess?: () => void;
 };
 
 export const RepayModal: React.FC<RepayModalProps> = ({
@@ -107,7 +106,6 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   onCancel,
   reserve,
   userSummary,
-  onSuccess,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -545,7 +543,6 @@ export const RepayModal: React.FC<RepayModalProps> = ({
               );
               setAmount(undefined);
               onCancel();
-              onSuccess?.();
             }
           } catch (error) {
             if (
@@ -584,7 +581,6 @@ export const RepayModal: React.FC<RepayModalProps> = ({
         );
         setAmount(undefined);
         onCancel();
-        onSuccess?.();
       } catch (error) {
         console.error('Repay error:', error);
       } finally {
@@ -599,7 +595,6 @@ export const RepayModal: React.FC<RepayModalProps> = ({
       chainInfo,
       wallet,
       onCancel,
-      onSuccess,
       t,
       canShowDirectSubmit,
       openDirect,
