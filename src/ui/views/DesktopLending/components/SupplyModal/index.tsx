@@ -68,7 +68,10 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
 
   const { getContainer } = usePopupContainer();
 
-  const summary = userSummary ?? contextUserSummary;
+  const summary = useMemo(() => userSummary ?? contextUserSummary, [
+    userSummary,
+    contextUserSummary,
+  ]);
 
   const [amount, setAmount] = useState<string | undefined>(undefined);
   const [needApprove, setNeedApprove] = useState(false);
@@ -553,9 +556,15 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     () => !supplyAmount.amount || isZeroAmount(supplyAmount.amount),
     [supplyAmount.amount]
   );
-  const canSubmit =
-    amount && !isZeroAmount(amount) && supplyTx && currentAccount && !isLoading;
-
+  const canSubmit = useMemo(() => {
+    return (
+      amount &&
+      !isZeroAmount(amount) &&
+      supplyTx &&
+      currentAccount &&
+      !isLoading
+    );
+  }, [amount, currentAccount, isLoading, supplyTx]);
   if (!reserve?.reserve?.symbol) return null;
 
   return (

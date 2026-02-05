@@ -52,7 +52,10 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
 
   const { getContainer } = usePopupContainer();
 
-  const summary = userSummary ?? contextUserSummary;
+  const summary = useMemo(() => userSummary ?? contextUserSummary, [
+    userSummary,
+    contextUserSummary,
+  ]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [miniSignLoading, setMiniSignLoading] = useState(false);
@@ -359,13 +362,24 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
     ]
   );
 
-  const canSubmit =
-    txs.length > 0 &&
-    currentAccount &&
-    !isLoading &&
-    !isRiskToLiquidation &&
-    !isError &&
-    (!showRisk || isChecked);
+  const canSubmit = useMemo(() => {
+    return (
+      txs.length > 0 &&
+      currentAccount &&
+      !isLoading &&
+      !isRiskToLiquidation &&
+      !isError &&
+      (!showRisk || isChecked)
+    );
+  }, [
+    currentAccount,
+    isChecked,
+    isError,
+    isLoading,
+    isRiskToLiquidation,
+    showRisk,
+    txs.length,
+  ]);
 
   if (!reserve?.reserve?.symbol) return null;
 

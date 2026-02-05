@@ -233,9 +233,17 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
 
   return (
     <div
-      className={clsx('w-full h-full min-h-0 flex flex-col', 'p-[24px] pb-8')}
+      className={clsx(
+        'w-full h-full min-h-0 flex flex-col max-h-[770px]',
+        'p-[24px] pb-8'
+      )}
     >
-      <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1 mb-12">
+      <h2
+        className={clsx(
+          'text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1 mb-12',
+          'flex-shrink-0 h-[24px]'
+        )}
+      >
         {t('page.lending.borrowDetail.actions')}
       </h2>
       {loading ? (
@@ -243,7 +251,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
           Loading...
         </div>
       ) : (
-        <div className="flex-1 overflow-auto min-h-0">
+        <div className="flex-1 overflow-auto min-h-0 overflow-y-auto">
           {availableCard}
           {listReserves.length > 0 && (
             <>

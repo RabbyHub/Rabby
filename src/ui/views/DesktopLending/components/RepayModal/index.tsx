@@ -121,7 +121,10 @@ export const RepayModal: React.FC<RepayModalProps> = ({
 
   const { getContainer } = usePopupContainer();
 
-  const summary = userSummary ?? contextUserSummary;
+  const summary = useMemo(() => userSummary ?? contextUserSummary, [
+    userSummary,
+    contextUserSummary,
+  ]);
 
   const [isAtTokenRepay, setIsAtTokenRepay] = useState(false);
 
@@ -672,8 +675,11 @@ export const RepayModal: React.FC<RepayModalProps> = ({
     () => !repayAmount.amount || isZeroAmount(repayAmount.amount),
     [repayAmount.amount]
   );
-  const canSubmit =
-    amount && !isZeroAmount(amount) && repayTx && currentAccount && !isLoading;
+  const canSubmit = useMemo(() => {
+    return (
+      amount && !isZeroAmount(amount) && repayTx && currentAccount && !isLoading
+    );
+  }, [amount, currentAccount, isLoading, repayTx]);
 
   if (!reserve?.reserve?.symbol) return null;
 

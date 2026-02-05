@@ -338,14 +338,24 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
     ]
   );
 
-  const canSubmit =
-    txs.length > 0 &&
-    currentAccount &&
-    !isLoading &&
-    !isBlock &&
-    isTargetCategoryAvailable &&
-    (!isRisky || isChecked);
-
+  const canSubmit = useMemo(() => {
+    return (
+      txs.length > 0 &&
+      currentAccount &&
+      !isLoading &&
+      !isBlock &&
+      isTargetCategoryAvailable &&
+      (!isRisky || isChecked)
+    );
+  }, [
+    txs.length,
+    currentAccount,
+    isLoading,
+    isBlock,
+    isTargetCategoryAvailable,
+    isRisky,
+    isChecked,
+  ]);
   if (!visible) return null;
 
   return (

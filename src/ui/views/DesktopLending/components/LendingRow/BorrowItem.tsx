@@ -52,7 +52,7 @@ export const BorrowItem: React.FC<{
           <span
             className={clsx(
               'text-[14px] leading-[17px] font-medium flex-shrink-0 min-w-[80px]',
-              'text-rb-red-default'
+              'text-r-neutral-foot'
             )}
           >
             {apy}

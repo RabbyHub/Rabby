@@ -71,7 +71,10 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
 
   const { getContainer } = usePopupContainer();
 
-  const summary = userSummary ?? contextUserSummary;
+  const summary = useMemo(() => userSummary ?? contextUserSummary, [
+    userSummary,
+    contextUserSummary,
+  ]);
 
   const [amount, setAmount] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,6 +106,10 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     const miniAmount = myAmount.gte(formattedPoolAmount)
       ? formattedPoolAmount
       : myAmount;
+    const formattedMiniAmount = miniAmount.decimalPlaces(
+      reserve.reserve.decimals,
+      BigNumber.ROUND_DOWN
+    );
     const usdValue = miniAmount
       .multipliedBy(
         new BigNumber(
@@ -112,14 +119,15 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       .toString();
     return {
       isLteZero: miniAmount.lte(0),
-      amount: miniAmount.toString(),
+      amount: formattedMiniAmount.toString(10),
       usdValue,
     };
   }, [
     summary?.availableBorrowsUSD,
+    reserve.reserve.formattedPriceInMarketReferenceCurrency,
     reserve.reserve.borrowCap,
     reserve.reserve.totalDebt,
-    reserve.reserve.formattedPriceInMarketReferenceCurrency,
+    reserve.reserve.decimals,
   ]);
 
   const afterHF = useMemo(() => {
@@ -433,13 +441,16 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     () => !availableToBorrow.amount || isZeroAmount(availableToBorrow.amount),
     [availableToBorrow.amount]
   );
-  const canSubmit =
-    amount &&
-    !isZeroAmount(amount) &&
-    borrowTx &&
-    currentAccount &&
-    !isLoading &&
-    (!isRisky || isChecked);
+  const canSubmit = useMemo(() => {
+    return (
+      amount &&
+      !isZeroAmount(amount) &&
+      borrowTx &&
+      currentAccount &&
+      !isLoading &&
+      (!isRisky || isChecked)
+    );
+  }, [amount, borrowTx, currentAccount, isChecked, isLoading, isRisky]);
 
   if (!reserve?.reserve?.symbol) return null;
 

@@ -63,7 +63,10 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
   const { getContainer } = usePopupContainer();
 
-  const summary = userSummary ?? contextUserSummary;
+  const summary = useMemo(() => userSummary ?? contextUserSummary, [
+    userSummary,
+    contextUserSummary,
+  ]);
 
   const [_amount, setAmount] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
@@ -433,14 +436,23 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
     () => !withdrawAmount || isZeroAmount(withdrawAmount),
     [withdrawAmount]
   );
-  const canSubmit =
-    amount &&
-    !isZeroAmount(amount) &&
-    withdrawTxs.length > 0 &&
-    currentAccount &&
-    !isLoading &&
-    (!isRisky || isChecked);
-
+  const canSubmit = useMemo(() => {
+    return (
+      amount &&
+      !isZeroAmount(amount) &&
+      withdrawTxs.length > 0 &&
+      currentAccount &&
+      !isLoading &&
+      (!isRisky || isChecked)
+    );
+  }, [
+    amount,
+    currentAccount,
+    isChecked,
+    isLoading,
+    isRisky,
+    withdrawTxs.length,
+  ]);
   if (!reserve?.reserve?.symbol) return null;
 
   return (
