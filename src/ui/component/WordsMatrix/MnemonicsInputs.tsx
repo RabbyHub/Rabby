@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import styled, { css } from 'styled-components';
-import { Dropdown, Input, Menu, message } from 'antd';
+import { Dropdown, Input, Menu, message, Popover } from 'antd';
 import type { MenuProps } from 'antd';
 import { wordlist } from '@scure/bip39/wordlists/english';
 
@@ -674,81 +674,122 @@ function MnemonicsInputs({
 
           const isCurrentFocusing = focusing.index === idx;
           const isCurrentVisible = focusing.visible && focusing.index === idx;
+          const suggestionList = word
+            ? wordlist.filter((w) => w.startsWith(word)).slice(0, 6)
+            : [];
+          const valid = word && wordlist.includes(word);
 
           return (
-            <div
+            <Popover
               key={`word-item-${idx}`}
-              className={clsx('matrix-word-item is-mnemonics-input', {
-                invalid: invalidWords.includes(idx),
-              })}
-              onClick={() => {
-                setFocusing({ index: idx, visible: isCurrentVisible });
-                setMnemonics(word);
+              overlayClassName="mnemonics-input-suggestions-popover"
+              align={{
+                offset: [0, -4],
               }}
-              onMouseEnter={() => handleMouseEnter(idx)}
-              onMouseLeave={() => handleMouseLeave(idx)}
+              content={
+                <div className="max-w-[324px] flex items-center flex-wrap">
+                  {suggestionList.map((suggestion) => (
+                    <div
+                      key={`suggestion-${suggestion}`}
+                      className={clsx(
+                        'w-[108px] h-[44px] flex items-center justify-center',
+                        'text-[13px] leading-[16px] text-r-neutral-title-1 font-medium',
+                        'rounded-[6px] cursor-pointer',
+                        'hover:bg-r-blue-light1'
+                      )}
+                      onMouseDown={(e) => {
+                        // 阻止默认行为，防止触发 input 的 blur 事件
+                        e.preventDefault();
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onWordUpdated(idx, suggestion);
+                      }}
+                    >
+                      {suggestion}
+                    </div>
+                  ))}
+                </div>
+              }
+              placement="bottomRight"
+              visible={isCurrentFocusing && suggestionList.length > 0 && !valid}
             >
-              <TooltipWithMagnetArrow
-                overlayClassName="rectangle w-[max-content] top-[-20px]"
-                title={word}
-                disableLeft
-                placement="top"
-                visible={
-                  !!(
-                    word &&
-                    (focusing.index === idx ||
-                      (hovering.index === idx && hovering.isHovering))
-                  )
-                }
-              >
-                <DebouncedInput
-                  debounce={150}
-                  key={`word-input-${ver}-${word}-${idx}`}
-                  className={clsx(
-                    'mnemonics-input  pr-10',
-                    newUserImport ? 'pl-[10px]' : 'pl-[46px]',
-                    isCurrentFocusing && 'ant-input-focused',
-                    {
-                      'opacity-50':
-                        focusing.index !== -1 && focusing.index !== idx,
-                    }
-                  )}
-                  type={isCurrentVisible ? 'text' : 'password'}
-                  value={word}
-                  autoFocus={isCurrentFocusing}
-                  onFocus={() => {
-                    setFocusing({ index: idx, visible: isCurrentVisible });
-                  }}
-                  onBlur={() => {
-                    setFocusing(DFLT_FOCUSING);
-                    validateWords();
-                  }}
-                  onPaste={(e) => {
-                    clearClipboardToast();
-                    const input = e.target as HTMLInputElement;
-                    input.select();
-                  }}
-                  onContextMenu={(e) => {
-                    const input = e.target as HTMLInputElement;
-                    input.select();
-                  }}
-                  onChange={(text: string) => {
-                    const newVal = text.trim();
-
-                    if (newVal === word) return;
-
-                    onWordUpdated(idx, newVal);
-                  }}
-                />
-              </TooltipWithMagnetArrow>
-              <NumberFlag
-                className={clsx({
-                  'opacity-50': focusing.index !== -1 && focusing.index !== idx,
+              <div
+                key={`word-item-${idx}`}
+                className={clsx('matrix-word-item is-mnemonics-input', {
+                  invalid: invalidWords.includes(idx),
                 })}
+                onClick={() => {
+                  setFocusing({ index: idx, visible: isCurrentVisible });
+                  setMnemonics(word);
+                }}
+                onMouseEnter={() => handleMouseEnter(idx)}
+                onMouseLeave={() => handleMouseLeave(idx)}
               >
-                {number}.
-              </NumberFlag>
-            </div>
+                <TooltipWithMagnetArrow
+                  overlayClassName="rectangle w-[max-content] top-[-20px]"
+                  title={word}
+                  disableLeft
+                  placement="top"
+                  visible={
+                    !!(
+                      word &&
+                      (focusing.index === idx ||
+                        (hovering.index === idx && hovering.isHovering))
+                    )
+                  }
+                >
+                  <DebouncedInput
+                    debounce={150}
+                    key={`word-input-${ver}-${word}-${idx}`}
+                    className={clsx(
+                      'mnemonics-input  pr-10',
+                      newUserImport ? 'pl-[10px]' : 'pl-[46px]',
+                      isCurrentFocusing && 'ant-input-focused',
+                      {
+                        'opacity-50':
+                          focusing.index !== -1 && focusing.index !== idx,
+                      }
+                    )}
+                    type={isCurrentVisible ? 'text' : 'password'}
+                    value={word}
+                    autoFocus={isCurrentFocusing}
+                    onFocus={() => {
+                      setFocusing({ index: idx, visible: isCurrentVisible });
+                    }}
+                    onBlur={() => {
+                      setFocusing(DFLT_FOCUSING);
+                      validateWords();
+                    }}
+                    onPaste={(e) => {
+                      clearClipboardToast();
+                      const input = e.target as HTMLInputElement;
+                      input.select();
+                    }}
+                    onContextMenu={(e) => {
+                      const input = e.target as HTMLInputElement;
+                      input.select();
+                    }}
+                    onChange={(text: string) => {
+                      const newVal = text.trim();
+
+                      if (newVal === word) return;
+
+                      onWordUpdated(idx, newVal);
+                    }}
+                  />
+                </TooltipWithMagnetArrow>
+                <NumberFlag
+                  className={clsx({
+                    'opacity-50':
+                      focusing.index !== -1 && focusing.index !== idx,
+                  })}
+                >
+                  {number}.
+                </NumberFlag>
+              </div>
+            </Popover>
           );
         })}
       </MatrixWrapper>
