@@ -1,5 +1,6 @@
 import { SvgIconCross } from '@/ui/assets';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import AddAddress from '@/ui/views/AddAddress';
 import { AddFromCurrentSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase';
 import { ImportCoboArgus } from '@/ui/views/ImportCoboArgus/ImportCoboArgus';
@@ -11,19 +12,29 @@ import ImportPrivateKey from '@/ui/views/ImportPrivateKey';
 import ImportSuccess from '@/ui/views/ImportSuccess';
 import ImportWatchAddress from '@/ui/views/ImportWatchAddress';
 import WalletConnectTemplate from '@/ui/views/WalletConnect';
+import { useMemoizedFn } from 'ahooks';
 import { Modal, ModalProps } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 
-export const AddAddressModal: React.FC<ModalProps & { onCancel?(): void }> = (
-  props
-) => {
-  const location = useLocation();
-  const importType = new URLSearchParams(location.search).get('import');
+export const AddAddressModal: React.FC = () => {
+  const state = useRabbySelector(
+    (store) =>
+      store.desktopProfile.addAddress || {
+        visible: false,
+        importType: '',
+      }
+  );
+  const dispatch = useRabbyDispatch();
+  const importType = state.importType;
   return (
     <Modal
-      {...props}
+      visible={state.visible}
+      onCancel={() => {
+        dispatch.desktopProfile.setField({
+          addAddress: { visible: false, importType: '' },
+        });
+      }}
       width={400}
       centered
       closable
@@ -55,33 +66,77 @@ export const AddAddressModal: React.FC<ModalProps & { onCancel?(): void }> = (
 };
 
 const AddAddressModalContent: React.FC = () => {
-  const location = useLocation();
-  const importType = new URLSearchParams(location.search).get('import');
-
+  const { importType, state } = useRabbySelector(
+    (store) =>
+      store.desktopProfile.addAddress || {
+        visible: false,
+        importType: '',
+      }
+  );
+  const dispatch = useRabbyDispatch();
+  const onNavigate = useMemoizedFn(
+    (type: string, state?: Record<string, any>) => {
+      dispatch.desktopProfile.setField({
+        addAddress: {
+          visible: type === 'done' ? false : true,
+          importType: type,
+          state: state || {},
+        },
+      });
+    }
+  );
+  const onBack = useMemoizedFn(() => {
+    dispatch.desktopProfile.setField({
+      addAddress: {
+        visible: true,
+        importType: '',
+        state: {},
+      },
+    });
+  });
   return (
     <PopupContainer>
       {importType === 'add-from-current-seed-phrase' ? (
         <AddFromCurrentSeedPhrase isInModal />
       ) : importType === 'key' ? (
-        <ImportPrivateKey isInModal />
+        <ImportPrivateKey isInModal onBack={onBack} onNavigate={onNavigate} />
       ) : importType === 'json' ? (
-        <ImportJson isInModal />
+        <ImportJson isInModal onBack={onBack} onNavigate={onNavigate} />
       ) : importType === 'metamask' ? (
-        <ImportMyMetaMaskAccount isInModal />
+        <ImportMyMetaMaskAccount
+          isInModal
+          onBack={onBack}
+          onNavigate={onNavigate}
+        />
       ) : importType === 'watch-address' ? (
-        <ImportWatchAddress isInModal />
+        <ImportWatchAddress isInModal onBack={onBack} onNavigate={onNavigate} />
       ) : importType === 'wallet-connect' ? (
-        <WalletConnectTemplate isInModal />
+        <WalletConnectTemplate
+          isInModal
+          onBack={onBack}
+          onNavigate={onNavigate}
+          state={state}
+        />
       ) : importType === 'coinbase' ? (
-        <ImportCoinbase isInModal />
+        <ImportCoinbase isInModal onBack={onBack} onNavigate={onNavigate} />
       ) : importType === 'gnosis' ? (
-        <ImportGnosisAddress isInModal />
+        <ImportGnosisAddress
+          isInModal
+          onBack={onBack}
+          onNavigate={onNavigate}
+        />
       ) : importType === 'cobo-argus' ? (
-        <ImportCoboArgus isInModal />
+        <ImportCoboArgus isInModal onBack={onBack} onNavigate={onNavigate} />
       ) : importType === 'success' ? (
-        <ImportSuccess isPopup isInModal />
+        <ImportSuccess
+          isPopup
+          isInModal
+          onBack={onBack}
+          onNavigate={onNavigate}
+          state={state}
+        />
       ) : (
-        <AddAddress isInModal />
+        <AddAddress isInModal onNavigate={onNavigate} />
       )}
     </PopupContainer>
   );

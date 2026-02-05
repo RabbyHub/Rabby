@@ -2,29 +2,26 @@ import { Account } from '@/background/service/preference';
 import { KEYRING_TYPE } from '@/constant';
 import { ReactComponent as RcArrowDownSVG } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import { RcIconCopyCC } from '@/ui/assets/desktop/common';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { RcIconAddWalletCC } from '@/ui/assets/desktop/profile';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep, useAlias } from '@/ui/utils';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { isSameAccount } from '@/utils/account';
+import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { Popover } from 'antd';
 import clsx from 'clsx';
 import { flatten, sortBy } from 'lodash';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMount } from 'react-use';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
-import { createGlobalStyle } from 'styled-components';
 import { AddressViewer } from 'ui/component';
 import { CopyChecked } from '../CopyChecked';
-import { useMemoizedFn, useRequest } from 'ahooks';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
-import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import { useMount } from 'react-use';
-import { RcIconAddWalletCC, RcIconMoreCC } from '@/ui/assets/desktop/profile';
 import './styles.less';
-import { useHistory, useLocation, useLocation } from 'react-router-dom';
 
 interface DesktopAccountSelectorProps {
   value?: Account | null;
@@ -66,6 +63,9 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
             scene={scene}
             selectedAccount={value}
             onSelectAccount={handleChange}
+            onClose={() => {
+              setIsOpen(false);
+            }}
           />
         }
         visible={isOpen}
@@ -238,7 +238,8 @@ const AccountList: React.FC<{
   scene?: Scene;
   onSelectAccount?(account: Account): void;
   selectedAccount?: Account | null;
-}> = ({ onSelectAccount, selectedAccount, scene }) => {
+  onClose?(): void;
+}> = ({ onSelectAccount, selectedAccount, scene, onClose }) => {
   const { accounts, clearinghouseStateMap } = useAccountList({
     scene,
   });
@@ -254,8 +255,7 @@ const AccountList: React.FC<{
     return accounts.length + 1 > 8;
   }, [accounts.length]);
 
-  const history = useHistory();
-  const location = useLocation();
+  const dispatch = useRabbyDispatch();
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -316,7 +316,14 @@ const AccountList: React.FC<{
           Footer: () => (
             <div
               onClick={() => {
-                history.replace(`${location.pathname}?action=add-address`);
+                dispatch.desktopProfile.setField({
+                  addAddress: {
+                    visible: true,
+                    importType: '',
+                    state: {},
+                  },
+                });
+                onClose?.();
               }}
               className={clsx(
                 'cursor-pointer rounded-[12px] h-[62px] p-[16px] flex items-center gap-[8px] text-rb-neutral-body',
