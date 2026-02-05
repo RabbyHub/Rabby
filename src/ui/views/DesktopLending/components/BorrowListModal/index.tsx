@@ -269,16 +269,16 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                   onClick={() => handleSortClick('debt')}
                 >
                   <span>{t('page.lending.list.headers.totalBorrowed')}</span>
-                  {sortField === 'debt' && (
-                    <RcIconArrowCC
-                      width={12}
-                      height={12}
-                      className={clsx(
-                        'ml-[3px] flex-shrink-0 inline-block',
-                        sortDirection === 'desc' ? 'rotate-90' : '-rotate-90'
-                      )}
-                    />
-                  )}
+                  <RcIconArrowCC
+                    width={12}
+                    height={12}
+                    className={clsx(
+                      'ml-[3px] flex-shrink-0 inline-block',
+                      sortDirection === 'asc' && sortField === 'debt'
+                        ? '-rotate-90'
+                        : 'rotate-90'
+                    )}
+                  />
                 </div>
                 <div
                   className={clsx(
@@ -290,16 +290,16 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                   onClick={() => handleSortClick('apy')}
                 >
                   <span>{t('page.lending.apy')}</span>
-                  {sortField === 'apy' && (
-                    <RcIconArrowCC
-                      width={12}
-                      height={12}
-                      className={clsx(
-                        'ml-[3px] flex-shrink-0 inline-block',
-                        sortDirection === 'desc' ? 'rotate-90' : '-rotate-90'
-                      )}
-                    />
-                  )}
+                  <RcIconArrowCC
+                    width={12}
+                    height={12}
+                    className={clsx(
+                      'ml-[3px] flex-shrink-0 inline-block',
+                      sortDirection === 'asc' && sortField === 'apy'
+                        ? '-rotate-90'
+                        : 'rotate-90'
+                    )}
+                  />
                 </div>
                 <span className="w-[80px] flex-shrink-0" />
               </div>

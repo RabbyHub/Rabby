@@ -10,8 +10,8 @@ export const estDaily = (netWorth: string, netApy: number) => {
   }
   const dailyEarnings = new BigNumber(netWorth);
   const bigApy = new BigNumber(netApy);
-  return `${netApy > 0 ? '+' : ''}${formatUsdValue(
-    dailyEarnings.multipliedBy(bigApy).dividedBy(365).toNumber()
+  return `${netApy > 0 ? '+' : '-'}${formatUsdValue(
+    Math.abs(dailyEarnings.multipliedBy(bigApy).dividedBy(365).toNumber())
   )}`;
 };
 export const formatListNetWorth = (num?: number) => {

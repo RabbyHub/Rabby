@@ -40,7 +40,7 @@ export const ManageEmodeFullModalOverview: React.FC<{
   const categoryOptions = useMemo(() => {
     if (!eModes || !iUserSummary) return [];
     return Object.values(eModes)
-      .filter((e) => e.id !== 0 && e.assets?.length > 0)
+      .filter((e) => e.id !== 0 && e.label !== 'USYC GHO')
       .map((e) => {
         const available = isEModeCategoryAvailable(iUserSummary, e);
         return {
@@ -50,6 +50,13 @@ export const ManageEmodeFullModalOverview: React.FC<{
             : `${e.label} ${t('page.lending.manageEmode.unavailable')}`,
           available,
         };
+      })
+      .sort((a, b) => {
+        if (a.available !== b.available) {
+          return a.available ? -1 : 1;
+        }
+
+        return a.value - b.value;
       });
   }, [eModes, iUserSummary, t]);
 
