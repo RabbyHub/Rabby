@@ -143,7 +143,7 @@ export const DesktopDappSelectorInner: React.FC<DesktopDappSelectorProps> = ({
             className="w-[20px] h-[20px] rounded-full"
           />
         ) : null}
-        <span className="text-[15px] leading-normal font-medium text-rb-neutral-title-1">
+        <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
           {activeItem.name}
         </span>
         <RcIconDropdown className="text-rb-neutral-foot" />
