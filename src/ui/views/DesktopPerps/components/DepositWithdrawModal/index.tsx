@@ -73,7 +73,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
     availableBalance,
     depositMaxUsdValue,
     isDirectDeposit,
-    isMissingRole,
+    // isMissingRole,
     estReceiveUsdValue,
 
     // Actions
@@ -341,7 +341,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
 
                 {type === 'deposit' && isValidAmount && (
                   <>
-                    {!isDirectDeposit && isMissingRole && (
+                    {/* {!isDirectDeposit && isMissingRole && (
                       <div className="flex items-center justify-between text-13">
                         <Tooltip
                           overlayClassName={clsx('rectangle')}
@@ -358,7 +358,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                         </Tooltip>
                         <span className="text-r-neutral-title-1">$1</span>
                       </div>
-                    )}
+                    )} */}
                     <div className="flex items-center justify-between text-13">
                       {isDirectDeposit ? (
                         <span className="text-r-neutral-foot">

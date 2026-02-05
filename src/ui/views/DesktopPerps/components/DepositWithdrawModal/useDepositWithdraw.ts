@@ -99,14 +99,15 @@ export const useDepositWithdraw = (
     selectedToken?.id,
   ]);
 
+  const isMissingRole = false;
   // Check if user is missing role
-  const { value: isMissingRole } = useAsync(async () => {
-    if (Number(clearinghouseState?.marginSummary?.accountValue)) return false;
-    if (!currentPerpsAccount?.address || !visible) return false;
-    const sdk = getPerpsSDK();
-    const { role } = await sdk.info.getUserRole(currentPerpsAccount.address);
-    return role === 'missing';
-  }, [currentPerpsAccount?.address, visible]);
+  // const { value: isMissingRole } = useAsync(async () => {
+  //   if (Number(clearinghouseState?.marginSummary?.accountValue)) return false;
+  //   if (!currentPerpsAccount?.address || !visible) return false;
+  //   const sdk = getPerpsSDK();
+  //   const { role } = await sdk.info.getUserRole(currentPerpsAccount.address);
+  //   return role === 'missing';
+  // }, [currentPerpsAccount?.address, visible]);
 
   const tokenInfo = useMemo(() => {
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
@@ -796,7 +797,6 @@ export const useDepositWithdraw = (
     isDirectDeposit,
     estReceiveUsdValue,
     tokenInfo,
-    isMissingRole,
 
     // Actions
     handlePercentageClick,

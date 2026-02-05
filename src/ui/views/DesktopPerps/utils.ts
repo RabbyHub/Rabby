@@ -348,3 +348,41 @@ export const sortTokenList = (
   }
   return items;
 };
+
+const calcAccountValueByAllDexs = (
+  allClearinghouseState: [string, ClearinghouseState][]
+) => {
+  return allClearinghouseState.reduce((acc, item) => {
+    return acc + Number(item[1]?.marginSummary?.accountValue || 0);
+  }, 0);
+};
+
+export const formatAllDexsClearinghouseState = (
+  allClearinghouseState: [string, ClearinghouseState][]
+): ClearinghouseState | null => {
+  if (!allClearinghouseState || !allClearinghouseState[0]) {
+    return null;
+  }
+  const hyperDexState = allClearinghouseState[0][1];
+
+  const assetPositions = allClearinghouseState
+    .map((item) => item[1]?.assetPositions || [])
+    .flat();
+
+  const withdrawable = allClearinghouseState.reduce((acc, item) => {
+    return acc + Number(item[1]?.withdrawable || 0);
+  }, 0);
+
+  return {
+    assetPositions: assetPositions,
+    crossMaintenanceMarginUsed:
+      hyperDexState?.crossMaintenanceMarginUsed || '0',
+    crossMarginSummary: hyperDexState?.crossMarginSummary || {},
+    marginSummary: {
+      ...hyperDexState.marginSummary,
+      accountValue: calcAccountValueByAllDexs(allClearinghouseState).toString(),
+    },
+    time: hyperDexState?.time || 0,
+    withdrawable: withdrawable.toString(),
+  };
+};

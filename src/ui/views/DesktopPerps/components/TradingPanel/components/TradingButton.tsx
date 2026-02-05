@@ -26,17 +26,29 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
   orderSide,
   titleText,
 }) => {
-  const allDexsClearinghouseState = useRabbySelector(
-    (store) => store.perps.allDexsClearinghouseState
+  const clearinghouseState = useRabbySelector(
+    (store) => store.perps.clearinghouseState
+  );
+
+  const wsActiveAssetData = useRabbySelector(
+    (store) => store.perps.wsActiveAssetData
   );
 
   const needDepositFirst = useMemo(() => {
-    const accountValue =
-      allDexsClearinghouseState?.reduce((acc, item) => {
-        return acc + Number(item[1].marginSummary.accountValue || 0);
-      }, 0) || 0;
-    return accountValue === 0 && allDexsClearinghouseState.length > 0;
-  }, [allDexsClearinghouseState]);
+    const accountValue = Number(
+      clearinghouseState?.marginSummary?.accountValue || 0
+    );
+    const orderSideAvailableBalance = Number(
+      wsActiveAssetData?.availableToTrade[
+        orderSide === OrderSide.BUY ? 0 : 1
+      ] || 0
+    );
+    return (
+      clearinghouseState &&
+      accountValue === 0 &&
+      orderSideAvailableBalance === 0
+    );
+  }, [clearinghouseState, wsActiveAssetData?.availableToTrade, orderSide]);
 
   const hasPermission = useRabbySelector((state) => state.perps.hasPermission);
   const { t } = useTranslation();

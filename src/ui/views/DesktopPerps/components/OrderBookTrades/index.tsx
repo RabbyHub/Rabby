@@ -21,6 +21,10 @@ export const OrderBookTrades: React.FC = () => {
 
   const [trades, setTrades] = useState<Trade[]>([]);
 
+  useEffect(() => {
+    setTrades([]);
+  }, [selectedCoin]);
+
   // Subscribe to trades via WebSocket
   useEffect(() => {
     if (!selectedCoin) return;
@@ -29,8 +33,8 @@ export const OrderBookTrades: React.FC = () => {
 
     // Subscribe to trades updates
     const { unsubscribe } = sdk.ws.subscribeToTrades(selectedCoin, (data) => {
-      if (data && Array.isArray(data)) {
-        const newTrades: Trade[] = data.reverse().map((trade: any) => ({
+      if (data && Array.isArray(data) && data[0]?.coin === selectedCoin) {
+        const newTrades: Trade[] = data.reverse().map((trade) => ({
           time: trade.time as number,
           price: trade.px as string,
           size: trade.sz as string,

@@ -77,6 +77,7 @@ export const HomePerpsPositionList: React.FC = () => {
                 history.push('/desktop/perps');
               } else {
                 wallet.setPerpsCurrentAccount(currentAccount);
+                wallet.switchDesktopPerpsAccount(currentAccount!);
                 wallet.openInDesktop(
                   `/desktop/perps?${obj2query({
                     coin: assetPosition.position.coin,

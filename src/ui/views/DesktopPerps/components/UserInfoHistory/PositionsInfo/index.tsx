@@ -37,7 +37,11 @@ import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
-import { handleDisplayFundingPayments, isScreenSmall } from '../../../utils';
+import {
+  formatAllDexsClearinghouseState,
+  handleDisplayFundingPayments,
+  isScreenSmall,
+} from '../../../utils';
 import { formatPerpsCoin } from '../../../utils';
 import perpsToast from '../../PerpsToast';
 
@@ -65,7 +69,6 @@ export interface PositionFormatData {
 export const PositionsInfo: React.FC = () => {
   const {
     clearinghouseState,
-    allDexsPositions,
     openOrders,
 
     marketDataMap,
@@ -87,7 +90,7 @@ export const PositionsInfo: React.FC = () => {
   const positionFormatData = useMemo(() => {
     const resArr = [] as PositionFormatData[];
 
-    allDexsPositions.forEach((item) => {
+    clearinghouseState?.assetPositions.forEach((item) => {
       const isLong = Number(item.position.szi || 0) > 0;
       const marketData = marketDataMap[item.position.coin] || {};
 
@@ -144,7 +147,7 @@ export const PositionsInfo: React.FC = () => {
     });
 
     return resArr;
-  }, [allDexsPositions, openOrders, marketDataMap]);
+  }, [clearinghouseState, openOrders, marketDataMap]);
 
   const isSmallScreen = isScreenSmall();
 
@@ -169,9 +172,6 @@ export const PositionsInfo: React.FC = () => {
     }
 
     await handleCloseAllPositions(clearinghouseState);
-    setTimeout(() => {
-      dispatch.perps.fetchClearinghouseState();
-    }, 100);
   });
 
   const handleClickLeverage = useMemoizedFn(

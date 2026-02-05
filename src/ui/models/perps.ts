@@ -35,6 +35,7 @@ import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { isSameAddress } from '../utils';
 import {
+  formatAllDexsClearinghouseState,
   handleUpdateHistoricalOrders,
   handleUpdateTwapSliceFills,
   showDepositAndWithdrawToast,
@@ -133,8 +134,6 @@ export interface PerpsState {
   wsActiveAssetCtx: WsActiveAssetCtx | null;
   wsActiveAssetData: WsActiveAssetData | null;
   clearinghouseState: ClearinghouseState | null;
-  allDexsPositions: AssetPosition[];
-  allDexsClearinghouseState: [string, ClearinghouseState][];
   openOrders: OpenOrder[];
   clearinghouseStateMap: Record<string, ClearinghouseState | null>;
   historicalOrders: UserHistoricalOrders[];
@@ -188,8 +187,6 @@ export const perps = createModel<RootModel>()({
     wsActiveAssetData: null,
     clearinghouseState: null,
     clearinghouseStateMap: {},
-    allDexsPositions: [],
-    allDexsClearinghouseState: [],
     openOrders: [],
     historicalOrders: [],
     userFunding: [],
@@ -339,6 +336,30 @@ export const perps = createModel<RootModel>()({
         clearinghouseStateMap: {
           ...state.clearinghouseStateMap,
           ...payload,
+        },
+      };
+    },
+    setClearinghouseStateMapBySingle(
+      state,
+      payload: {
+        address: string;
+        clearinghouseState: [string, ClearinghouseState][];
+      }
+    ) {
+      if (
+        !payload.address ||
+        !payload.clearinghouseState ||
+        !payload.clearinghouseState[0]
+      ) {
+        return state;
+      }
+      return {
+        ...state,
+        clearinghouseStateMap: {
+          ...state.clearinghouseStateMap,
+          [payload.address.toLowerCase()]: formatAllDexsClearinghouseState(
+            payload.clearinghouseState
+          ),
         },
       };
     },
@@ -1004,15 +1025,16 @@ export const perps = createModel<RootModel>()({
           if (!isSameAddress(user, address)) {
             return;
           }
-          const hyperDex = clearinghouseStates[0][1];
-          dispatch.perps.patchClearinghouseState(hyperDex);
-          const allDexsPositions = clearinghouseStates
-            .map((item) => item[1].assetPositions)
-            .flat();
-          dispatch.perps.patchState({
-            clearinghouseState: hyperDex,
-            allDexsPositions,
-            allDexsClearinghouseState: clearinghouseStates,
+          const clearinghouseState = formatAllDexsClearinghouseState(
+            clearinghouseStates
+          );
+          if (!clearinghouseState) {
+            return;
+          }
+          dispatch.perps.patchClearinghouseState(clearinghouseState);
+          dispatch.perps.setClearinghouseStateMapBySingle({
+            address,
+            clearinghouseState: clearinghouseStates,
           });
         });
         subscriptions.push(unsubscribeClearinghouseState);
