@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from 'react';
 
 import clsx from 'clsx';
 import styled from 'styled-components';
@@ -22,9 +28,8 @@ import { Account } from '@/background/service/preference';
 import { DappSelectItem, INNER_DAPP_LIST } from '@/constant/dappIframe';
 import { InnerDappType } from '@/background/service';
 import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
+import { useIframeBridge } from '@/ui/hooks/useIframeBridge';
 
-const HANDSHAKE_MESSAGE_TYPE = 'rabby-dapp-iframe-handshake';
-const SYNC_MESSAGE_TYPE = 'rabby-dapp-iframe-sync-url';
 const IFRAME_LOAD_TIMEOUT = 20 * 1000;
 const RULE_OBSERVER_TIMEOUT = 20 * 1000;
 
@@ -37,37 +42,12 @@ const Iframe = styled.iframe`
   background: var(--rb-neutral-bg-1, #fff);
 `;
 
-const createHandshakeToken = () => {
-  if (
-    typeof crypto !== 'undefined' &&
-    typeof crypto.randomUUID === 'function'
-  ) {
-    return crypto.randomUUID();
-  }
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-};
-
 const getOriginFromUrl = (value?: string | null) => {
   if (!value) {
     return '';
   }
   try {
     return new URL(value).origin;
-  } catch (err) {
-    return '';
-  }
-};
-
-const getSafeSyncUrl = (value?: string | null) => {
-  if (!value) {
-    return '';
-  }
-  try {
-    const parsed = new URL(value);
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      return '';
-    }
-    return parsed.toString();
   } catch (err) {
     return '';
   }
@@ -89,6 +69,14 @@ type DesktopDappIframeProps = {
   url?: string;
   dappList: DappSelectItem[];
   type: InnerDappType;
+};
+
+export type DesktopDappIframeRef = {
+  callInjectedMethod: (
+    method: string,
+    args?: any[],
+    options?: { timeoutMs?: number }
+  ) => Promise<any>;
 };
 
 const getDappByDappId = (list: DappSelectItem[], dappId?: string | null) => {
@@ -120,8 +108,6 @@ export const DesktopInnerDapp = (props: {
     return null;
   }
 
-  console.log('DesktopInnerDapp dappList:', dappList, 'dappId:', dappId);
-
   return (
     <DesktopDappIframe
       key={dappId}
@@ -132,25 +118,20 @@ export const DesktopInnerDapp = (props: {
   );
 };
 
-export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
-  isActive = true,
-  // url: urlProp,
-  dappList: dappListProp,
-  type,
-}) => {
+export const DesktopDappIframe = React.forwardRef<
+  DesktopDappIframeRef,
+  DesktopDappIframeProps
+>(({ isActive = true, dappList: dappListProp, type }, ref) => {
   const { isDarkTheme } = useThemeMode();
   const wallet = useWallet();
   const history = useHistory();
   const location = useLocation();
   const { t } = useTranslation();
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const handshakeTokenRef = useRef<string>(createHandshakeToken());
-  const latestSyncUrlRef = useRef<string | null>(null);
   const [iframeError, setIframeError] = React.useState<
     'network' | 'timeout' | null
   >(null);
   const [isIframeLoading, setIsIframeLoading] = React.useState(true);
-  const connectedRef = React.useRef(false);
 
   const [_currentSceneAccount] = useSceneAccount({
     scene: 'prediction',
@@ -161,7 +142,6 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
   const dappList = dappListProp;
 
   const dappId = useRabbySelector((s) => s.innerDappFrame[type]);
-  const innerDappFrame = useRabbySelector((s) => s.innerDappFrame);
 
   const currentDapp = useMemo(
     () => getDappByDappId(dappList, dappId) || dappList[0] || null,
@@ -218,14 +198,6 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
     return rules[rulesKey];
   }, [currentDapp]);
 
-  const resetIframeState = useCallback(() => {
-    setIframeError(null);
-    setIsIframeLoading(true);
-    connectedRef.current = false;
-    latestSyncUrlRef.current = null;
-    handshakeTokenRef.current = createHandshakeToken();
-  }, []);
-
   const updateSearchParams = useCallback(
     (updater: (params: URLSearchParams) => void) => {
       const params = new URLSearchParams(location.search);
@@ -234,12 +206,57 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
       const nextPath = next
         ? `${location.pathname}?${next}`
         : location.pathname;
-      console.log("'updateSearchParams called in DappIframe'", nextPath);
 
       // history.replace(nextPath);
     },
     [history, location.pathname, location.search]
   );
+
+  const bridgeRules = useMemo(() => {
+    if (!dappRules) {
+      return undefined;
+    }
+    return {
+      debug: true,
+      timeouts: RULE_OBSERVER_TIMEOUT,
+      steps: dappRules,
+    };
+  }, [dappRules]);
+
+  const syncUrlConfig = useMemo(
+    () => ({
+      isActive,
+      locationSearch: location.search,
+      updateSearchParams,
+      initialUrl: iframeSrc,
+      syncUrlParam,
+    }),
+    [iframeSrc, isActive, location.search, syncUrlParam, updateSearchParams]
+  );
+
+  const handleBridgeConnected = useCallback(() => {
+    if (!isActive) {
+      return;
+    }
+    setIsIframeLoading(false);
+    setIframeError(null);
+  }, [isActive]);
+
+  const { callInjectedMethod, resetBridge, connectedRef } = useIframeBridge({
+    iframeRef,
+    iframeOrigin,
+    rules: bridgeRules,
+    theme: isDarkTheme ? 'dark' : 'light',
+    onConnected: handleBridgeConnected,
+    syncUrl: syncUrlConfig,
+    currentAddress: currentSceneAccount?.address,
+  });
+
+  const resetIframeState = useCallback(() => {
+    setIframeError(null);
+    setIsIframeLoading(true);
+    resetBridge('Iframe reloaded');
+  }, [resetBridge]);
 
   const handleActionSelect = useCallback(
     (nextAction: 'swap' | 'send' | 'bridge' | 'gnosis-queue') => {
@@ -294,51 +311,13 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
     [dappList, resetIframeState, updateSearchParams]
   );
 
-  const syncUrlToQuery = useCallback(
-    (nextUrl?: string | null) => {
-      const safeUrl = getSafeSyncUrl(nextUrl);
-      if (!safeUrl) {
-        return;
-      }
-      latestSyncUrlRef.current = safeUrl;
-      if (!isActive) {
-        return;
-      }
-      const currentSyncUrl = new URLSearchParams(location.search).get(
-        'syncUrl'
-      );
-      if (currentSyncUrl === safeUrl) {
-        return;
-      }
-      updateSearchParams((params) => params.set('syncUrl', safeUrl));
-    },
-    [isActive, location.search, updateSearchParams]
+  useImperativeHandle(
+    ref,
+    () => ({
+      callInjectedMethod,
+    }),
+    [callInjectedMethod]
   );
-
-  const postHandshake = useCallback(() => {
-    const contentWindow = iframeRef.current?.contentWindow;
-    if (!contentWindow) {
-      return;
-    }
-    const nextRules = dappRules
-      ? {
-          debug: true,
-          timeouts: RULE_OBSERVER_TIMEOUT,
-          steps: dappRules,
-        }
-      : undefined;
-
-    console.log('[rabby-desktop] iframeOrigin', iframeOrigin);
-    contentWindow.postMessage(
-      {
-        type: HANDSHAKE_MESSAGE_TYPE,
-        token: handshakeTokenRef.current,
-        ...(nextRules ? { rules: nextRules } : {}),
-        theme: isDarkTheme ? 'dark' : 'light',
-      },
-      iframeOrigin
-    );
-  }, [dappRules, iframeOrigin, isDarkTheme]);
 
   useEffect(() => {
     if (!isActive || !isIframeLoading || iframeError) {
@@ -352,78 +331,6 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
       window.clearTimeout(timer);
     };
   }, [iframeError, isActive, isIframeLoading]);
-
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      const data = event.data;
-
-      console.log(
-        '[rabby-desktop] receive message',
-        event.source !== iframeRef.current?.contentWindow,
-        !data || typeof data !== 'object',
-        event.data,
-        data.token !== handshakeTokenRef.current,
-        data.type !== SYNC_MESSAGE_TYPE,
-        event
-      );
-      if (event.source !== iframeRef.current?.contentWindow) {
-        return;
-      }
-      if (!data || typeof data !== 'object') {
-        return;
-      }
-      if (data.type !== SYNC_MESSAGE_TYPE) {
-        return;
-      }
-
-      if (!data.token) {
-        postHandshake();
-        setIsIframeLoading(false);
-        setIframeError(null);
-        connectedRef.current = true;
-        return;
-      }
-
-      if (data.token !== handshakeTokenRef.current) {
-        return;
-      }
-      console.log('[rabby-desktop] handleMessage', event);
-      const nextUrl =
-        data?.payload?.url || data?.url || data?.syncUrl || data?.href;
-      console.log('updateSearchParams ifram');
-      syncUrlToQuery(nextUrl);
-    };
-    window.addEventListener('message', handleMessage);
-    return () => {
-      window.removeEventListener('message', handleMessage);
-    };
-  }, [syncUrlToQuery]);
-
-  useEffect(() => {
-    if (!isActive) {
-      return;
-    }
-    if (!syncUrlParam && iframeSrc) {
-      console.log('updateSearchParams iframeSrc');
-
-      syncUrlToQuery(iframeSrc);
-    }
-  }, [iframeSrc, isActive, syncUrlParam, syncUrlToQuery]);
-
-  useEffect(() => {
-    if (!isActive) {
-      return;
-    }
-    const latestSyncUrl = latestSyncUrlRef.current;
-    if (!latestSyncUrl) {
-      return;
-    }
-    const currentSyncUrl = new URLSearchParams(location.search).get('syncUrl');
-    if (currentSyncUrl === latestSyncUrl) {
-      return;
-    }
-    // updateSearchParams((params) => params.set('syncUrl', latestSyncUrl));
-  }, [isActive, location.search, updateSearchParams]);
 
   return (
     <>
@@ -510,4 +417,4 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
       </DesktopPageWrap>
     </>
   );
-};
+});

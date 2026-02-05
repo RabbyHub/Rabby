@@ -15,6 +15,7 @@ import internalMethod from './internalMethod';
 import { Account } from '@/background/service/preference';
 import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 import { DAPP_SCENE_MAP } from '@/constant/scene-account';
+import { ALL_SUPPORTED_INNER_DAPP_ORIGINS } from '@/constant/dappIframe';
 
 const IGNORE_CHECK = ['wallet_importAddress'];
 
@@ -29,7 +30,10 @@ export default async <T = void>(req: ProviderRequest): Promise<T> => {
 
   const origin = req.session?.origin || req.origin;
   let account: Account | undefined = undefined;
-  if (req.isFromDesktopDapp && DAPP_SCENE_MAP[origin || '']) {
+  if (
+    req.isFromDesktopDapp &&
+    ALL_SUPPORTED_INNER_DAPP_ORIGINS.includes(origin || '')
+  ) {
     account =
       req.account ||
       innerDappFrameService.getInnerDappAccountByOrigin(origin || '') ||
