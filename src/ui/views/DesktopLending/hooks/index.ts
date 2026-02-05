@@ -551,7 +551,6 @@ const createFetchLendingData = (
       const marketKey = paramMarketKey || getMarketKey(getMarketKeyFromContext);
       if (!marketKey) return;
 
-      globalSets.setLoading(true);
       return fetchContractData(
         wallet,
         requestAddress,
