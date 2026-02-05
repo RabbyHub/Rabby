@@ -22,7 +22,9 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useMount } from 'react-use';
+import { RcIconAddWalletCC, RcIconMoreCC } from '@/ui/assets/desktop/profile';
 import './styles.less';
+import { useHistory, useLocation, useLocation } from 'react-router-dom';
 
 interface DesktopAccountSelectorProps {
   value?: Account | null;
@@ -242,14 +244,18 @@ const AccountList: React.FC<{
   });
 
   const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const { t } = useTranslation();
 
   const height = useMemo(() => {
-    return Math.min(accounts.length, 8) * 74 - 12;
+    return Math.min(accounts.length + 1, 8) * 74 - 12;
   }, [accounts.length]);
 
   const hasScrollbar = useMemo(() => {
-    return accounts.length > 8;
+    return accounts.length + 1 > 8;
   }, [accounts.length]);
+
+  const history = useHistory();
+  const location = useLocation();
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -280,7 +286,6 @@ const AccountList: React.FC<{
         totalCount={accounts.length}
         defaultItemHeight={72 + 12}
         itemContent={(index, item) => {
-          const isLast = index + 1 === accounts?.length;
           const isSelected = selectedAccount
             ? isSameAccount(item, selectedAccount)
             : false;
@@ -296,7 +301,7 @@ const AccountList: React.FC<{
                 }}
                 isSelected={isSelected}
                 item={item}
-                isLast={isLast}
+                // isLast={isLast}
                 scene={scene}
                 clearinghouseState={
                   clearinghouseStateMap[item.address.toLowerCase()]
@@ -306,6 +311,25 @@ const AccountList: React.FC<{
               </AccountItem>
             </div>
           );
+        }}
+        components={{
+          Footer: () => (
+            <div
+              onClick={() => {
+                history.replace(`${location.pathname}?action=add-address`);
+              }}
+              className={clsx(
+                'cursor-pointer rounded-[12px] h-[62px] p-[16px] flex items-center gap-[8px] text-rb-neutral-body',
+                'desktop-account-item',
+                'bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-2'
+              )}
+            >
+              <RcIconAddWalletCC className="flex-shrink-0" />
+              <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
+                {t('component.DesktopSelectAccountList.addAddresses')}
+              </div>
+            </div>
+          ),
         }}
       />
     </div>
