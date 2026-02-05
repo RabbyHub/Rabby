@@ -873,6 +873,7 @@
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
+        "hyperliquidFeeLabelTooltip": "New users are charged a one-time activation fee by Hyperliquid.",
         "receiveToken": "Receive Token",
         "estReceiveLabel": "Est. Receive",
         "estTimeLabel": "Est. Time",

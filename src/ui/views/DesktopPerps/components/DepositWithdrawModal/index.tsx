@@ -73,6 +73,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
     availableBalance,
     depositMaxUsdValue,
     isDirectDeposit,
+    isMissingRole,
     estReceiveUsdValue,
 
     // Actions
@@ -340,6 +341,24 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
 
                 {type === 'deposit' && isValidAmount && (
                   <>
+                    {!isDirectDeposit && isMissingRole && (
+                      <div className="flex items-center justify-between text-13">
+                        <Tooltip
+                          overlayClassName={clsx('rectangle')}
+                          placement="top"
+                          title={t(
+                            'page.perps.depositAmountPopup.hyperliquidFeeLabelTooltip'
+                          )}
+                        >
+                          <DashedUnderlineText className="text-r-neutral-foot">
+                            {t(
+                              'page.perps.depositAmountPopup.hyperliquidFeeLabel'
+                            )}
+                          </DashedUnderlineText>
+                        </Tooltip>
+                        <span className="text-r-neutral-title-1">$1</span>
+                      </div>
+                    )}
                     <div className="flex items-center justify-between text-13">
                       {isDirectDeposit ? (
                         <span className="text-r-neutral-foot">
