@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
 import { isSameAddress } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
 import {
   calculateHFAfterRepay,
@@ -111,7 +111,9 @@ export const RepayModal: React.FC<RepayModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const {
     formattedPoolReservesAndIncentives,
     iUserSummary: contextUserSummary,
@@ -597,17 +599,22 @@ export const RepayModal: React.FC<RepayModalProps> = ({
         let lastHash: string = '';
         for (let i = 0; i < allTxs.length; i++) {
           const tx = allTxs[i];
-          lastHash = await wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [tx],
-            $ctx: {
-              ga: {
-                category: 'Lending',
-                source: 'Lending',
-                trigger: 'Repay',
+          lastHash = await wallet.sendRequest(
+            {
+              method: 'eth_sendTransaction',
+              params: [tx],
+              $ctx: {
+                ga: {
+                  category: 'Lending',
+                  source: 'Lending',
+                  trigger: 'Repay',
+                },
               },
             },
-          });
+            {
+              account: currentAccount,
+            }
+          );
         }
         report(lastHash);
         message.success(

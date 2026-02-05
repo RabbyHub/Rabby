@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
 import { isSameAddress } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import wrapperToken from '../../config/wrapperToken';
@@ -53,7 +53,9 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const {
     formattedPoolReservesAndIncentives,
     iUserSummary: contextUserSummary,
@@ -489,17 +491,22 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
         for (let i = 0; i < allTxs.length; i++) {
           const tx = allTxs[i];
           // 完整签名走签名页
-          lastHash = await wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [tx],
-            $ctx: {
-              ga: {
-                category: 'Lending',
-                source: 'Lending',
-                trigger: 'Supply',
+          lastHash = await wallet.sendRequest(
+            {
+              method: 'eth_sendTransaction',
+              params: [tx],
+              $ctx: {
+                ga: {
+                  category: 'Lending',
+                  source: 'Lending',
+                  trigger: 'Supply',
+                },
               },
             },
-          });
+            {
+              account: currentAccount,
+            }
+          );
         }
         report(lastHash);
         message.success(

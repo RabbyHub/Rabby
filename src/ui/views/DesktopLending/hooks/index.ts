@@ -31,7 +31,7 @@ import { CustomMarket, marketsData } from '../config/market';
 import { FormattedReservesAndIncentives, formatUserYield } from '../utils/apy';
 import { isSameAddress } from '@/ui/utils';
 import { useLendingService } from './useLendingService';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { UpdaterOrPartials, resolveValFromUpdater } from '../types/store';
 import { useLendingDataContext } from './LendingDataContext';
 import { useWallet } from '@/ui/utils/WalletContext';
@@ -121,8 +121,12 @@ function getInitRemoteData() {
 
 function useCurrentLendingDataKey() {
   const { marketKey } = useSelectedMarket();
-  const currentAccount = useCurrentAccount();
-  const currentAddress = currentAccount?.address || '';
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
+  const currentAddress = useMemo(() => currentAccount?.address, [
+    currentAccount,
+  ]);
   const lendingDataKey = useMemo(() => {
     if (!currentAddress || !marketKey) {
       return '';
@@ -612,7 +616,9 @@ export const useApisLending = () => {
 };
 
 const useFetchLendingData = () => {
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const { fetchLendingData, setLoading } = useApisLending();
   const wallet = useWallet();
 
@@ -630,7 +636,7 @@ const useFetchLendingData = () => {
         : undefined,
       marketKey: currentMarketKey,
     });
-  }, [fetchLendingData, currentAccount]);
+  }, [wallet, fetchLendingData, currentAccount]);
 
   const setFetchLoading = useCallback(
     (loading: boolean) => {

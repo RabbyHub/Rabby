@@ -4,7 +4,7 @@ import { Button, message, Checkbox } from 'antd';
 import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
 import {
   calculateHealthFactorFromBalancesBigUnits,
@@ -61,7 +61,9 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const {
     formattedPoolReservesAndIncentives,
     iUserSummary: contextUserSummary,
@@ -376,17 +378,22 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         }
 
         setIsLoading(true);
-        const lastHash = await wallet.sendRequest({
-          method: 'eth_sendTransaction',
-          params: [borrowTx],
-          $ctx: {
-            ga: {
-              category: 'Lending',
-              source: 'Lending',
-              trigger: 'Borrow',
+        const lastHash = await wallet.sendRequest(
+          {
+            method: 'eth_sendTransaction',
+            params: [borrowTx],
+            $ctx: {
+              ga: {
+                category: 'Lending',
+                source: 'Lending',
+                trigger: 'Borrow',
+              },
             },
           },
-        });
+          {
+            account: currentAccount,
+          }
+        );
         report(lastHash as string);
         message.success(
           `${t('page.lending.borrowDetail.actions')} ${t(

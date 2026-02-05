@@ -4,7 +4,7 @@ import { Modal, Button } from 'antd';
 import { formatUserSummary } from '@aave/math-utils';
 import dayjs from 'dayjs';
 import { useWallet } from '@/ui/utils/WalletContext';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { message } from 'antd';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
@@ -64,7 +64,9 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const { emodeEnabled, emodeCategoryId, eModes } = useMode();
   const { chainInfo } = useSelectedMarket();
   const { userReserves, reserves } = useLendingRemoteData();
@@ -296,19 +298,24 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
         setIsLoading(true);
         onCancel();
         for (let i = 0; i < txs.length; i++) {
-          await wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [txs[i]],
-            $ctx: {
-              ga: {
-                category: 'Lending',
-                source: 'Lending',
-                trigger: wantDisableEmode
-                  ? 'ManageEmodeDisable'
-                  : 'ManageEmodeEnable',
+          await wallet.sendRequest(
+            {
+              method: 'eth_sendTransaction',
+              params: [txs[i]],
+              $ctx: {
+                ga: {
+                  category: 'Lending',
+                  source: 'Lending',
+                  trigger: wantDisableEmode
+                    ? 'ManageEmodeDisable'
+                    : 'ManageEmodeEnable',
+                },
               },
             },
-          });
+            {
+              account: currentAccount,
+            }
+          );
         }
         message.success(
           `${

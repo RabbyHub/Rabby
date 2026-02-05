@@ -4,7 +4,7 @@ import { Button, message, Checkbox } from 'antd';
 import BigNumber from 'bignumber.js';
 import { isSameAddress } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import wrapperToken from '../../config/wrapperToken';
@@ -52,7 +52,9 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const {
     formattedPoolReservesAndIncentives,
     wrapperPoolReserve,
@@ -359,17 +361,22 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         let lastHash: string = '';
         for (let i = 0; i < withdrawTxs.length; i++) {
           const tx = withdrawTxs[i];
-          lastHash = await wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [tx],
-            $ctx: {
-              ga: {
-                category: 'Lending',
-                source: 'Lending',
-                trigger: 'Withdraw',
+          lastHash = await wallet.sendRequest(
+            {
+              method: 'eth_sendTransaction',
+              params: [tx],
+              $ctx: {
+                ga: {
+                  category: 'Lending',
+                  source: 'Lending',
+                  trigger: 'Withdraw',
+                },
               },
             },
-          });
+            {
+              account: currentAccount,
+            }
+          );
         }
         report(lastHash);
         message.success(

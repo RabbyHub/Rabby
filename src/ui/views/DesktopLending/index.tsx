@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
 import clsx from 'clsx';
 import styled from 'styled-components';
-import { useRabbyDispatch } from '@/ui/store';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import { LendingList } from './components/LendingList';
@@ -30,8 +29,9 @@ const Wrap = styled.div`
 `;
 
 const DesktopLendingContent: React.FC = () => {
-  const dispatch = useRabbyDispatch();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount, switchCurrentSceneAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const { fetchData, setFetchLoading } = useFetchLendingData();
   const { iUserSummary, apyInfo } = useLendingSummaryCard();
   const { marketKey } = useSelectedMarket();
@@ -56,7 +56,7 @@ const DesktopLendingContent: React.FC = () => {
           <DesktopAccountSelector
             value={currentAccount}
             onChange={(account) => {
-              dispatch.account.changeAccountAsync(account);
+              switchCurrentSceneAccount(account);
             }}
           />
           <SwitchThemeBtn />

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, message } from 'antd';
 import { isSameAddress } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import { calculateHFAfterToggleCollateral } from '../../utils/hfUtils';
@@ -41,7 +41,9 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const {
     formattedPoolReservesAndIncentives,
     wrapperPoolReserve,
@@ -327,19 +329,24 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
         setIsLoading(true);
         onCancel();
         for (let i = 0; i < txs.length; i++) {
-          await wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [txs[i]],
-            $ctx: {
-              ga: {
-                category: 'Lending',
-                source: 'Lending',
-                trigger: reserve?.usageAsCollateralEnabledOnUser
-                  ? 'ToggleCollateralOff'
-                  : 'ToggleCollateralOn',
+          await wallet.sendRequest(
+            {
+              method: 'eth_sendTransaction',
+              params: [txs[i]],
+              $ctx: {
+                ga: {
+                  category: 'Lending',
+                  source: 'Lending',
+                  trigger: reserve?.usageAsCollateralEnabledOnUser
+                    ? 'ToggleCollateralOff'
+                    : 'ToggleCollateralOn',
+                },
               },
             },
-          });
+            {
+              account: currentAccount,
+            }
+          );
         }
         message.success(`${btnTitle} ${t('page.lending.submitted')}`);
       } catch (error) {
