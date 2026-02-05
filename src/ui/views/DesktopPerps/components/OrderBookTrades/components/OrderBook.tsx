@@ -245,7 +245,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
       }
     }
     if (!estPrice) {
-      estPrice = arr[arr.length - 1].price;
+      estPrice = arr[arr.length - 1]?.price || '';
     }
     dispatch.perps.patchState({
       marketEstPrice: estPrice,

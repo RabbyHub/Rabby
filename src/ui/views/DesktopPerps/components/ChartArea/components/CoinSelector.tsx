@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { HorizontalScrollContainer } from './HorizontalScrollContainer';
 import BigNumber from 'bignumber.js';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
+import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
+import { useLocation } from 'react-router-dom';
 
 interface CoinSelectorProps {
   coin: string;
@@ -31,20 +33,25 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
     return marketDataMap[coin] || {};
   }, [marketDataMap, wsActiveAssetCtx, coin]);
 
+  const location = useLocation();
+  const isPerpsRoute = location.pathname.startsWith('/desktop/perps');
+
   // Update browser tab title with market data
   useEffect(() => {
     const originalTitle = 'Rabby Wallet';
     const markPx = currentMarketData?.markPx;
 
-    if (markPx) {
+    if (markPx && isPerpsRoute) {
       const price = splitNumberByStep(Number(markPx));
-      document.title = `$${price} | ${coin}-USD | Rabby`;
+      document.title = `$${price} | ${formatPerpsCoin(coin)} | Rabby`;
+    } else {
+      document.title = originalTitle;
     }
 
     return () => {
       document.title = originalTitle;
     };
-  }, [coin, currentMarketData?.markPx]);
+  }, [coin, currentMarketData?.markPx, isPerpsRoute]);
 
   const priceChange = currentMarketData.prevDayPx
     ? Number(currentMarketData.markPx) - Number(currentMarketData.prevDayPx)

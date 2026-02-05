@@ -25,6 +25,7 @@ import {
 } from '../../Perps/utils';
 import { UI_TYPE } from '@/constant/ui';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { obj2query } from '@/ui/utils/url';
 
 const isDesktop = UI_TYPE.isDesktop;
 
@@ -75,17 +76,12 @@ export const HomePerpsPositionList: React.FC = () => {
                 wallet.setPerpsCurrentAccount(currentAccount);
                 history.push('/desktop/perps');
               } else {
-                const sdk = getPerpsSDK();
-                if (currentAccount) {
-                  dispatch.perps.setCurrentPerpsAccount(currentAccount);
-                  sdk.initAccount(currentAccount.address);
-                  dispatch.perps.subscribeToUserData({
-                    address: currentAccount.address,
-                    isPro: false,
-                  });
-                }
-                closePopup();
-                history.push('/perps');
+                wallet.openInDesktop(
+                  `/desktop/perps?${obj2query({
+                    coin: assetPosition.position.coin,
+                  })}`
+                );
+                window.close();
               }
             }}
           />
@@ -113,7 +109,7 @@ const PositionItem: React.FC<{
   } = position;
 
   const marketData = useRabbySelector(
-    (store) => store.perps.marketDataMap?.[position.coin?.toUpperCase() || '']
+    (store) => store.perps.marketDataMap?.[position.coin || '']
   );
 
   const isUp = Number(unrealizedPnl) >= 0;

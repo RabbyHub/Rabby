@@ -1271,6 +1271,13 @@
         "maxError": "Maximum leverage is {{max}}x",
         "confirm": "Confirm"
       },
+      "editMargin": {
+        "title": "Manage Margin",
+        "configureMargin": "Configure Margin",
+        "longLiquidationTips": "Going down {{percent}} will trigger liquidation",
+        "shortLiquidationTips": "Going up {{percent}} will trigger liquidation",
+        "currentPosition": "Current Position"
+      },
       "editTpSl": {
         "entryPrice": "Entry Price:",
         "markPrice": "Mark Price:",
@@ -1308,6 +1315,7 @@
         "pending": "Pending",
         "available": "Available",
         "onePosition": "1 position",
+        "availableBalanceTips": "Available Funds",
         "positionCount": "{{count}} positions",
         "deposit": "Deposit"
       },
