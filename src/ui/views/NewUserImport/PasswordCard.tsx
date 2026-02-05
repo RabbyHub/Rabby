@@ -3,13 +3,15 @@ import { openInTab } from '@/ui/utils';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Form, Input } from 'antd';
 import clsx from 'clsx';
-import { sum } from 'lodash';
+import { divide, sum } from 'lodash';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { ReactComponent as RcIconCheckCC } from 'ui/assets/IconCheckedSquare.svg';
+import { ReactComponent as RcIconCheckCC } from 'ui/assets/icon-checked-cc.svg';
 import { ReactComponent as RcIconSuccessCC } from 'ui/assets/icon-checked-success-cc.svg';
-import { ReactComponent as RcIconUnCheckCC } from 'ui/assets/IconUncheckSquare.svg';
+import { ReactComponent as RcIconUnCheckCC } from 'ui/assets/icon-unchecked-cc.svg';
+import { ReactComponent as RcIconEyeCC } from 'ui/assets/new-user-import/eye-cc.svg';
+import { ReactComponent as RcIconEyeCloseCC } from 'ui/assets/new-user-import/eye-close-cc.svg';
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -23,13 +25,15 @@ const Container = styled.div`
     }
   }
   .ant-form-item {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
 
   .ant-input {
     border-radius: 8px;
     color: var(--r-neutral-title1);
     font-size: 15px;
+    line-height: 18px;
+    font-weight: 400;
     height: 52px;
     background: transparent !important;
   }
@@ -61,27 +65,28 @@ const Container = styled.div`
     &:hover,
     &-focused,
     &-focused:hover {
-      border: 2px solid var(--r-blue-default, #7084ff);
-      border-right-width: 2px !important;
-      border-bottom-width: 2px !important;
+      border: 1px solid var(--r-blue-default, #7084ff);
     }
     border-radius: 8px;
-    border: 2px solid var(--r-neutral-line, #e0e5ec);
+    border: 1px solid var(--r-neutral-line, #e0e5ec);
     .ant-input {
       border: none !important;
       border-radius: 0 !important;
-      font-size: 16px;
-      &:not(:placeholder-shown) {
-        font-size: 24px;
-      }
+      font-size: 15px;
+      line-height: 18px;
+      font-weight: 400;
+      transition: none;
+
       &::placeholder {
-        font-size: 16px;
+        font-size: 15px;
+        line-height: 18px;
+        color: var(--r-neutral-foot, #6a7587);
       }
     }
   }
   .ant-form-item-has-error {
     .ant-input-affix-wrapper {
-      border: 2px solid var(--r-red-default, #e34935);
+      border: 1px solid var(--r-red-default, #e34935);
     }
   }
 
@@ -89,22 +94,26 @@ const Container = styled.div`
     transition: none;
   }
 
-  .ant-form-item-explain.ant-form-item-explain-error {
+  .ant-form-item-explain {
     color: var(--r-red-default, #e34935);
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 400;
     line-height: 16px;
     min-height: unset;
-    margin-top: 10px;
+    margin-top: 8px;
   }
 
   .ant-input-suffix {
-    display: none;
+    .icon-check {
+      display: none;
+    }
   }
 
   .ant-form-item-has-success {
     .ant-input-suffix {
-      display: flex;
+      .icon-check {
+        display: block;
+      }
     }
   }
 `;
@@ -112,12 +121,14 @@ const Container = styled.div`
 interface Props {
   onSubmit?(password: string): void;
   onBack?(): void;
-  step: 1 | 2;
+  step?: 1 | 2;
 }
 
 export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
   const { t } = useTranslation();
   const [agreeTerm, setAgreeTerm] = useState(true);
+  const [isShowPassword, setIsShowPassword] = useState(false);
+  const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
 
   const [form] = Form.useForm<{
     password: string;
@@ -139,23 +150,24 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
 
   return (
     <Container>
-      <Card onBack={onBack} step={step} className="flex flex-col">
+      <Card
+        onBack={onBack}
+        step={step}
+        className="flex flex-col"
+        title={t('page.newUserImport.PasswordCard.title')}
+      >
+        <header className="mt-[14px] mb-[32px]">
+          <div className="text-center text-r-neutral-foot text-[14px] leading-[16px]">
+            {t('page.newUserImport.PasswordCard.desc')}
+          </div>
+        </header>
         <Form
           form={form}
           layout="vertical"
           requiredMark={false}
           className="flex flex-col flex-1"
         >
-          <div className="flex-1 mt-[18px]">
-            <hgroup className="mb-[24px]">
-              <h1 className="text-r-neutral-title1 text-center font-semibold text-[28px] leading-[29px] mb-[9px]">
-                {t('page.newUserImport.PasswordCard.title')}
-              </h1>
-              <p className="text-center text-rabby-blue-default font-normal text-[16px] leading-[20px] mx-28">
-                {t('page.newUserImport.PasswordCard.desc')}
-              </p>
-            </hgroup>
-
+          <div className="flex-1">
             <Form.Item
               name="password"
               validateTrigger={['onChange', 'onSubmit']}
@@ -180,14 +192,24 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                 placeholder={t(
                   'page.newUserImport.PasswordCard.form.password.placeholder'
                 )}
-                className="text-[24px]"
-                type="password"
+                type={isShowPassword ? 'text' : 'password'}
                 autoFocus
                 spellCheck={false}
                 suffix={
-                  <span className="text-r-green-default">
-                    <RcIconSuccessCC />
-                  </span>
+                  <div className="flex items-center gap-[4px]">
+                    <div className="icon-check text-r-green-default p-[6px]">
+                      <RcIconSuccessCC />
+                    </div>
+                    <div
+                      className="text-r-neutral-body p-[6px] cursor-pointer rounded-[4px] hover:bg-r-neutral-card-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsShowPassword((prev) => !prev);
+                      }}
+                    >
+                      {isShowPassword ? <RcIconEyeCloseCC /> : <RcIconEyeCC />}
+                    </div>
+                  </div>
                 }
               />
             </Form.Item>
@@ -224,13 +246,27 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                 placeholder={t(
                   'page.newUserImport.PasswordCard.form.confirmPassword.placeholder'
                 )}
-                className="text-[24px]"
-                type="password"
+                type={isShowConfirmPassword ? 'text' : 'password'}
                 spellCheck={false}
                 suffix={
-                  <span className="text-r-green-default">
-                    <RcIconSuccessCC />
-                  </span>
+                  <div className="flex items-center gap-[4px]">
+                    <div className="icon-check text-r-green-default p-[6px]">
+                      <RcIconSuccessCC />
+                    </div>
+                    <div
+                      className="text-r-neutral-body p-[6px] cursor-pointer rounded-[4px] hover:bg-r-neutral-card-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsShowConfirmPassword((prev) => !prev);
+                      }}
+                    >
+                      {isShowConfirmPassword ? (
+                        <RcIconEyeCloseCC />
+                      ) : (
+                        <RcIconEyeCC />
+                      )}
+                    </div>
+                  </div>
                 }
               />
             </Form.Item>
@@ -253,14 +289,20 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                   >
                     {agreeTerm ? (
                       <div className={'text-rabby-blue-default'}>
-                        <RcIconCheckCC className="w-[18px] h-[18px]" />
+                        <RcIconCheckCC
+                          viewBox="0 0 20 20"
+                          className="w-[16px] h-[16px]"
+                        />
                       </div>
                     ) : (
                       <div className={'text-r-neutral-foot'}>
-                        <RcIconUnCheckCC className="w-[18px] h-[18px]" />
+                        <RcIconUnCheckCC
+                          viewBox="0 0 20 20"
+                          className="w-[16px] h-[16px]"
+                        />
                       </div>
                     )}
-                    <div className="text-[13px] text-r-neutral-body leading-[16px]">
+                    <div className="text-[13px] text-r-neutral-foot leading-[16px]">
                       <Trans
                         t={t}
                         i18nKey="page.newUserImport.PasswordCard.agree"
@@ -295,8 +337,8 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                     disabled={!agreeTerm || isDisabled}
                     type="primary"
                     className={clsx(
-                      'mt-[24px] h-[56px] shadow-none rounded-[8px]',
-                      'text-[17px] font-medium'
+                      'mt-[20px] h-[52px] shadow-none rounded-[8px]',
+                      'text-[15px] leading-[18px] font-medium'
                     )}
                   >
                     {t('global.Confirm')}
