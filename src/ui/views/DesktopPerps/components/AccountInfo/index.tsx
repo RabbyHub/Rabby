@@ -109,7 +109,7 @@ export const AccountInfo: React.FC = () => {
               {t('page.perpsPro.accountInfo.accountEquity')}
             </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
-              {formatUsdValue(Number(accountValue))}
+              {formatUsdValue(Number(accountValue), BigNumber.ROUND_DOWN)}
             </div>
           </div>
           <div className="flex items-center justify-between">
@@ -121,7 +121,7 @@ export const AccountInfo: React.FC = () => {
               {t('page.perpsPro.accountInfo.balance')}
             </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
-              {formatUsdValue(customBalance)}
+              {formatUsdValue(customBalance, BigNumber.ROUND_DOWN)}
             </div>
           </div>
           <div className="flex items-center justify-between">
@@ -137,7 +137,7 @@ export const AccountInfo: React.FC = () => {
               )}
             >
               {positionAllPnl >= 0 ? '+' : '-'}
-              {formatUsdValue(Math.abs(positionAllPnl))}
+              {formatUsdValue(Math.abs(positionAllPnl), BigNumber.ROUND_DOWN)}
             </div>
           </div>
           <div className="flex items-center justify-between">
@@ -162,7 +162,8 @@ export const AccountInfo: React.FC = () => {
             </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(
-                Number(clearinghouseState?.crossMaintenanceMarginUsed || 0)
+                Number(clearinghouseState?.crossMaintenanceMarginUsed || 0),
+                BigNumber.ROUND_DOWN
               )}
             </div>
           </div>

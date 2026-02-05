@@ -216,13 +216,13 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
     >
       <div className="flex flex-col min-h-[520px] bg-r-neutral-bg2">
         <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-2">
-          {'Manage Margin'}
+          {t('page.perpsPro.editMargin.title')}
         </div>
 
         <div className="flex-1 px-20 overflow-y-auto pb-24">
           <section className="mb-[12px]">
             <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-              Current position
+              {t('page.perpsPro.editMargin.currentPosition')}
             </div>
             <div className="flex items-center justify-between p-12 mb-12 h-[78px] bg-r-neutral-card1 rounded-[8px]">
               <div className="flex flex-col gap-8">
@@ -247,8 +247,12 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
                     overlayClassName="rectangle"
                     title={
                       direction === 'Long'
-                        ? `Going down ${currentDistanceToLiquidationPercent} will trigger liquidation`
-                        : `Going up ${currentDistanceToLiquidationPercent} will trigger liquidation`
+                        ? t('page.perpsPro.editMargin.longLiquidationTips', {
+                            percent: currentDistanceToLiquidationPercent,
+                          })
+                        : t('page.perpsPro.editMargin.shortLiquidationTips', {
+                            percent: currentDistanceToLiquidationPercent,
+                          })
                     }
                   >
                     <div className="flex items-center gap-[2px] border border-rb-neutral-line rounded-[4px] px-[4px]">
@@ -279,7 +283,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
 
           <section>
             <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-              Configure Margin
+              {t('page.perpsPro.editMargin.configureMargin')}
             </div>
             <MarginEditInput
               title={t('page.perpsDetail.PerpsEditMarginPopup.margin')}

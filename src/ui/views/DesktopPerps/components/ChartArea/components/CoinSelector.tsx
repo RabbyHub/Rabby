@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { HorizontalScrollContainer } from './HorizontalScrollContainer';
 import BigNumber from 'bignumber.js';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
+import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
 
 interface CoinSelectorProps {
   coin: string;
@@ -38,7 +39,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
 
     if (markPx) {
       const price = splitNumberByStep(Number(markPx));
-      document.title = `$${price} | ${coin}-USD | Rabby`;
+      document.title = `$${price} | ${formatPerpsCoin(coin)} | Rabby`;
     }
 
     return () => {

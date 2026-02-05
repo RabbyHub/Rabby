@@ -10,6 +10,14 @@ import { splitNumberByStep } from '@/ui/utils';
 import { playSound } from '@/ui/utils/sound';
 import BigNumber from 'bignumber.js';
 import { getPerpsSDK } from '../Perps/sdkManager';
+import { TokenItem } from '@/background/service/openapi';
+import { CHAINS_ENUM } from '@/types/chain';
+import { findChainByServerID } from '@/utils/chain';
+import {
+  ARB_USDC_TOKEN_ID,
+  ARB_USDC_TOKEN_ITEM,
+  ARB_USDC_TOKEN_SERVER_CHAIN,
+} from '../Perps/constants';
 
 export const getPositionDirection = (
   position: PositionAndOpenOrder['position']
@@ -299,4 +307,44 @@ export const getCustomClearinghouseState = async (address: string) => {
     time: defaultRes.time,
     withdrawable: defaultRes.withdrawable,
   } as ClearinghouseState;
+};
+
+export const sortTokenList = (
+  tokenList: TokenItem[],
+  supportedChains: CHAINS_ENUM[]
+) => {
+  const items = [...(tokenList || [])];
+
+  // Sort by amount * price (descending)
+  items.sort((a, b) => {
+    const aValue = b.amount * b.price;
+    const bValue = a.amount * a.price;
+
+    // Check if tokens are in supported chains
+    const aChain = findChainByServerID(a.chain)?.enum || CHAINS_ENUM.ETH;
+    const bChain = findChainByServerID(b.chain)?.enum || CHAINS_ENUM.ETH;
+    const aIsSupported = supportedChains.includes(aChain);
+    const bIsSupported = supportedChains.includes(bChain);
+
+    // Supported chains first, then by value
+    if (aIsSupported && !bIsSupported) return -1;
+    if (!aIsSupported && bIsSupported) return 1;
+
+    // Both supported or both not supported, sort by value
+    return aValue - bValue;
+  });
+
+  // Move ARB USDC to the front if it exists
+  const idx = items.findIndex(
+    (token) =>
+      token.id === ARB_USDC_TOKEN_ID &&
+      token.chain === ARB_USDC_TOKEN_SERVER_CHAIN
+  );
+  if (idx > 0) {
+    const [hit] = items.splice(idx, 1);
+    items.unshift(hit);
+  } else if (idx === -1) {
+    items.unshift(ARB_USDC_TOKEN_ITEM);
+  }
+  return items;
 };

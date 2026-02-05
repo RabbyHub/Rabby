@@ -24,6 +24,7 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useMount } from 'react-use';
 import './styles.less';
 import { getCustomClearinghouseState } from '@/ui/views/DesktopPerps/utils';
+import BigNumber from 'bignumber.js';
 
 interface DesktopAccountSelectorProps {
   value?: Account | null;
@@ -326,6 +327,10 @@ const AccountItem: React.FC<{
     ...item,
   });
 
+  const positionCount = useMemo(() => {
+    return clearinghouseState?.assetPositions?.length || 0;
+  }, [clearinghouseState]);
+
   return (
     <div className={clsx(!isLast ? 'pb-[12px]' : '', 'group min-h-[1px]')}>
       <div
@@ -358,7 +363,7 @@ const AccountItem: React.FC<{
             </div>
             {scene === 'perps' ? (
               <>
-                {clearinghouseState?.assetPositions?.length ||
+                {positionCount ||
                 Number(clearinghouseState?.withdrawable) > 0 ? (
                   <div
                     className={clsx(
@@ -369,7 +374,8 @@ const AccountItem: React.FC<{
                     )}
                   >
                     {formatUsdValue(
-                      Number(clearinghouseState?.withdrawable || 0)
+                      Number(clearinghouseState?.withdrawable || 0),
+                      BigNumber.ROUND_DOWN
                     )}
                   </div>
                 ) : null}
@@ -399,16 +405,18 @@ const AccountItem: React.FC<{
             />
             {scene === 'perps' ? (
               <>
-                {clearinghouseState?.assetPositions?.length ? (
+                {positionCount > 0 ? (
                   <div
                     className={clsx(
                       'ml-[10px] truncate flex-1 block text-right',
                       'text-[12px] leading-[14px] text-rb-neutral-foot'
                     )}
                   >
-                    {t('page.perpsPro.accountActions.positionCount', {
-                      count: Number(clearinghouseState?.assetPositions?.length),
-                    })}
+                    {positionCount === 1
+                      ? t('page.perpsPro.accountActions.onePosition')
+                      : t('page.perpsPro.accountActions.positionCount', {
+                          count: positionCount,
+                        })}
                   </div>
                 ) : null}
               </>
