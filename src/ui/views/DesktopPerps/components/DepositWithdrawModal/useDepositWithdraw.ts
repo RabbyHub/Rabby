@@ -786,6 +786,7 @@ export const useDepositWithdraw = (
     isDirectDeposit,
     estReceiveUsdValue,
     tokenInfo,
+    isMissingRole,
 
     // Actions
     handlePercentageClick,
