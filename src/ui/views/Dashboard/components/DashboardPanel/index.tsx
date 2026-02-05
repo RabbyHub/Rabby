@@ -638,7 +638,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'gasAccount',
       'searchDapp',
       'dapps',
-      'more',
     ];
   }, []);
 
