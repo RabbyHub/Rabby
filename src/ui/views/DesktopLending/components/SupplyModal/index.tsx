@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, message } from 'antd';
+import { Button, message } from 'antd';
 import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
 import { isSameAddress } from '@/ui/utils';
@@ -18,11 +18,10 @@ import { SUPPLY_UI_SAFE_MARGIN } from '../../utils/constant';
 import { SupplyOverView } from './SupplyOverView';
 import { ReserveErrorTip } from './ReserveErrorTip';
 import SymbolIcon from '../SymbolIcon';
-import {
-  useLendingSummary,
-  useSelectedMarket,
-  usePoolDataProviderContract,
-} from '../../hooks';
+import { useLendingSummary } from '../../hooks';
+import { useSelectedMarket } from '../../hooks/market';
+import { usePoolDataProviderContract } from '../../hooks/pool';
+
 import { ETH_USDT_CONTRACT } from '@/constant';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
@@ -33,11 +32,11 @@ import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManage
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
-import { StyledInput } from '../StyledInput';
+import { LendingStyledInput } from '../StyledInput';
 import stats from '@/stats';
 import { LendingReportType } from '../../types/tx';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
-import { getContainerByScreen } from '@/ui/utils';
+import { isZeroAmount } from '../../utils/number';
 
 type SupplyModalProps = {
   visible: boolean;
@@ -132,7 +131,9 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
   ]);
 
   const afterHF = useMemo(() => {
-    if (!amount || amount === '0' || !summary || !targetPool) return undefined;
+    if (!amount || isZeroAmount(amount) || !summary || !targetPool) {
+      return undefined;
+    }
     const bgAmount = new BigNumber(amount);
     return calculateHFAfterSupply(
       summary,
@@ -142,7 +143,9 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
   }, [amount, targetPool, summary]);
 
   const afterAvailable = useMemo(() => {
-    if (!amount || amount === '0' || !summary || !targetPool) return undefined;
+    if (!amount || isZeroAmount(amount) || !summary || !targetPool) {
+      return undefined;
+    }
     if (effectUserAvailable(summary, targetPool)) {
       const bgAmount = new BigNumber(amount);
       return bgAmount
@@ -187,7 +190,12 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
   });
 
   const checkApproveStatus = useCallback(async () => {
-    if (!amount || amount === '0' || !currentAccount || !selectedMarketData) {
+    if (
+      !amount ||
+      isZeroAmount(amount) ||
+      !currentAccount ||
+      !selectedMarketData
+    ) {
       setNeedApprove(false);
       return;
     }
@@ -227,7 +235,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
   const buildTransactions = useCallback(async () => {
     if (
       !amount ||
-      amount === '0' ||
+      isZeroAmount(amount) ||
       !currentAccount ||
       !selectedMarketData ||
       !pools ||
@@ -325,7 +333,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
       setSupplyTx(formattedSupplyResult);
     } catch (error) {
       console.error('Build transactions error:', error);
-      message.error(t('page.lending.submitted') || 'Something error');
+      message.error('Something error');
       setSupplyTx(null);
       setApproveTxs(null);
     } finally {
@@ -342,7 +350,6 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     isNativeToken,
     isMainnet,
     wallet,
-    t,
   ]);
 
   useEffect(() => {
@@ -404,7 +411,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
         !currentAccount ||
         !supplyTx ||
         !amount ||
-        amount === '0' ||
+        isZeroAmount(amount) ||
         !chainInfo
       ) {
         return;
@@ -523,8 +530,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
   );
 
   const onAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const v = e.target.value;
+    (v: string) => {
       if (v === '' || INPUT_NUMBER_RE.test(v)) {
         const filtered = v === '' ? undefined : filterNumber(v);
         if (filtered) {
@@ -543,9 +549,12 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     [supplyAmount.amount]
   );
 
-  const emptyAmount = !supplyAmount.amount || supplyAmount.amount === '0';
+  const emptyAmount = useMemo(
+    () => !supplyAmount.amount || isZeroAmount(supplyAmount.amount),
+    [supplyAmount.amount]
+  );
   const canSubmit =
-    amount && amount !== '0' && supplyTx && currentAccount && !isLoading;
+    amount && !isZeroAmount(amount) && supplyTx && currentAccount && !isLoading;
 
   if (!reserve?.reserve?.symbol) return null;
 
@@ -593,13 +602,13 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             </div>
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0">
-            <StyledInput
+            <LendingStyledInput
               value={amount ?? ''}
-              onChange={onAmountChange}
+              onValueChange={onAmountChange}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"
             />
-            {amount && amount !== '0' && (
+            {amount && !isZeroAmount(amount) && (
               <span className="text-[13px] leading-[15px] text-r-neutral-foot mt-1">
                 {formatUsdValue(
                   Number(amount) *
@@ -626,7 +635,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
       {canShowDirectSubmit &&
       chainInfo?.serverId &&
       !!amount &&
-      amount !== '0' ? (
+      !isZeroAmount(amount) ? (
         <div className="mt-16 px-16">
           <DirectSignGasInfo
             supportDirectSign

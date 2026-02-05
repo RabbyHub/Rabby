@@ -3,9 +3,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'antd';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
-import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { HealthFactorBar } from './HealthFactorBar';
-import { HF_COLOR_GOOD_THRESHOLD } from '../../utils/constant';
 
 const modalStyle = {
   width: 400,

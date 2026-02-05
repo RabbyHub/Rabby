@@ -17,13 +17,9 @@ import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 
 import { useMode } from '../../hooks/useMode';
 import { buildManageEmodeTx } from '../../utils/poolService';
-import {
-  useLendingSummary,
-  useLendingRemoteData,
-  usePoolDataProviderContract,
-  useRefreshHistoryId,
-  useSelectedMarket,
-} from '../../hooks';
+import { useLendingSummary, useLendingRemoteData } from '../../hooks';
+import { useSelectedMarket } from '../../hooks/market';
+import { usePoolDataProviderContract } from '../../hooks/pool';
 import {
   HF_BLOCK_THRESHOLD,
   HF_RISK_CHECKBOX_THRESHOLD,
@@ -35,7 +31,6 @@ import {
   PopupContainer,
   usePopupContainer,
 } from '@/ui/hooks/usePopupContainer';
-import { getContainerByScreen } from '@/ui/utils';
 
 const modalStyle = {
   width: 400,
@@ -72,7 +67,6 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
   const currentAccount = useCurrentAccount();
   const { emodeEnabled, emodeCategoryId, eModes } = useMode();
   const { chainInfo } = useSelectedMarket();
-  const { refresh } = useRefreshHistoryId();
   const { userReserves, reserves } = useLendingRemoteData();
   const {
     iUserSummary,
@@ -282,7 +276,6 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
               } ${t('page.lending.submitted')}`
             );
             onCancel();
-            refresh();
             onSuccess?.();
           } catch (error) {
             if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
@@ -324,7 +317,6 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
               : t('page.lending.manageEmode.actions.enable')
           } ${t('page.lending.submitted')}`
         );
-        refresh();
         onSuccess?.();
       } catch (error) {
         console.error('Manage emode error:', error);
@@ -339,7 +331,6 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
       onCancel,
       wantDisableEmode,
       t,
-      refresh,
       onSuccess,
       openDirect,
       getContainer,

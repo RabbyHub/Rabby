@@ -5,7 +5,6 @@ import { isSameAddress } from '@/ui/utils';
 import {
   useLendingRemoteData,
   useLendingSummary,
-  useSelectedMarket,
   useLendingIsLoading,
 } from '../../hooks';
 import { DisplayPoolReserveInfo } from '../../types';
@@ -16,6 +15,7 @@ import { isUnFoldToken } from '../../config/unfold';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconArrowCC } from '@/ui/assets/lending/arrow-cc.svg';
 import { BorrowItem } from './BorrowItem';
+import { useSelectedMarket } from '../../hooks/market';
 
 type BorrowListModalProps = {
   onSelect: (reserve: DisplayPoolReserveInfo) => void;

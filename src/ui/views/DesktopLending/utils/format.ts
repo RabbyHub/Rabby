@@ -42,3 +42,17 @@ export const formatApy = (apy: number) => {
   }
   return formatPercent(apy);
 };
+
+export const EXTRACT_AMOUNT_REGEX = /^[0-9]+(\.|,)\d*/;
+export function formatSpeicalAmount(input: number | string) {
+  const inputStr = String(input);
+
+  const matched = inputStr.match(EXTRACT_AMOUNT_REGEX);
+
+  const firstSep = matched?.[1];
+  if (firstSep && firstSep !== '.') {
+    return inputStr.replace(new RegExp(firstSep), '.');
+  }
+
+  return input.toString();
+}

@@ -5,9 +5,9 @@ import { isSameAddress } from '@/ui/utils';
 import {
   useLendingRemoteData,
   useLendingSummary,
-  useSelectedMarket,
   useLendingIsLoading,
 } from '../../hooks';
+import { useSelectedMarket } from '../../hooks/market';
 import { DisplayPoolReserveInfo } from '../../types';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import wrapperToken from '../../config/wrapperToken';
@@ -172,7 +172,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
     <div
       className={clsx('w-full h-full min-h-0 flex flex-col', 'p-[24px] pb-8')}
     >
-      <h2 className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1 mb-12 px-12">
+      <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1 mb-12 px-12">
         {t('page.lending.supplyDetail.actions')}
       </h2>
       {loading ? (

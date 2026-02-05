@@ -10,11 +10,10 @@ import { calculateHFAfterToggleCollateral } from '../../utils/hfUtils';
 import { collateralSwitchTx, optimizedPath } from '../../utils/poolService';
 import { HF_RISK_CHECKBOX_THRESHOLD } from '../../utils/constant';
 import { ToggleCollateralOverView } from './ToggleCollateralOverView';
-import {
-  useLendingSummary,
-  useSelectedMarket,
-  usePoolDataProviderContract,
-} from '../../hooks';
+import { useLendingSummary } from '../../hooks';
+import { useSelectedMarket } from '../../hooks/market';
+import { usePoolDataProviderContract } from '../../hooks/pool';
+
 import { useCollateralWaring } from '../../hooks/useCollateralWaring';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
@@ -26,7 +25,6 @@ import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { Checkbox } from 'antd';
 import { ReserveDataHumanized } from '@aave/contract-helpers';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
-import { getContainerByScreen } from '@/ui/utils';
 
 type ToggleCollateralModalProps = {
   visible: boolean;

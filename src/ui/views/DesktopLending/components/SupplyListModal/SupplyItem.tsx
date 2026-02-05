@@ -11,9 +11,11 @@ import { Tooltip } from 'antd';
 export const SupplyItem = ({
   data,
   onSelect,
+  className,
 }: {
   data: DisplayPoolReserveInfo;
   onSelect: (data: DisplayPoolReserveInfo) => void;
+  className?: string;
 }) => {
   const { t } = useTranslation();
   const disableSupplyButton = useMemo(() => {
@@ -38,7 +40,8 @@ export const SupplyItem = ({
       key={`${data.reserve.underlyingAsset}-${data.reserve.symbol}`}
       className={clsx(
         'mt-8 flex items-center justify-between px-16 h-[56px] rounded-[12px]',
-        'bg-rb-neutral-bg-1'
+        'bg-rb-neutral-bg-1',
+        className
       )}
     >
       <div className="flex-1 flex items-center justify-start min-w-0 text-left">

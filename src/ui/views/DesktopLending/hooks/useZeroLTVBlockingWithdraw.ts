@@ -1,4 +1,5 @@
-import { useLendingISummary, useSelectedMarket } from '../hooks';
+import { useLendingISummary } from '../hooks';
+import { useSelectedMarket } from './market';
 
 export const useZeroLTVBlockingWithdraw = () => {
   const { iUserSummary: userSummary } = useLendingISummary();

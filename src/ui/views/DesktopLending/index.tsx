@@ -9,17 +9,15 @@ import { LendingList } from './components/LendingList';
 import { SummaryBar } from './components/SummaryBar';
 import { LendingProvider } from './hooks/useLendingService';
 import { LendingDataProvider } from './hooks/LendingDataContext';
-import {
-  useFetchLendingData,
-  useLendingSummaryCard,
-  useSelectedMarket,
-} from './hooks';
+import { useFetchLendingData, useLendingSummaryCard } from './hooks';
 import { useListenTxReload } from '../DesktopProfile/hooks/useListenTxReload';
 import './index.less';
 import { useHistory, useLocation } from 'react-router-dom';
 import { SignatureRecordModal } from '../DesktopProfile/components/SignatureRecordModal';
 import { useLendingService } from './hooks/useLendingService';
 import { CustomMarket } from './config/market';
+import { useSelectedMarket } from './hooks/market';
+import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 
 const Wrap = styled.div`
   width: 100%;
@@ -40,6 +38,11 @@ const DesktopLendingContent: React.FC = () => {
 
   useEffect(() => {
     setFetchLoading(true);
+    console.log(
+      'CUSTOM_LOGGER:=>: fetchData',
+      marketKey,
+      currentAccount?.address
+    );
     fetchData();
   }, [marketKey, currentAccount?.address]);
 
@@ -49,12 +52,15 @@ const DesktopLendingContent: React.FC = () => {
     <Wrap>
       <div className="flex items-center justify-between">
         <DesktopNav showRightItems={false} />
-        <DesktopAccountSelector
-          value={currentAccount}
-          onChange={(account) => {
-            dispatch.account.changeAccountAsync(account);
-          }}
-        />
+        <div className="flex items-center gap-[16px]">
+          <DesktopAccountSelector
+            value={currentAccount}
+            onChange={(account) => {
+              dispatch.account.changeAccountAsync(account);
+            }}
+          />
+          <SwitchThemeBtn />
+        </div>
       </div>
       <div
         className={clsx(

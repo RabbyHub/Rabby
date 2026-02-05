@@ -15,8 +15,6 @@ import {
 import {
   useLendingRemoteData,
   useLendingSummary,
-  useSelectedMarket,
-  useFetchLendingData,
   useLendingIsLoading,
 } from '../../hooks';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
@@ -36,6 +34,7 @@ import { SupplyListModal } from '../SupplyListModal';
 import { BorrowListModal } from '../BorrowListModal';
 import { LendingEmptyState } from '../LendingEmptyState';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
+import { useSelectedMarket } from '../../hooks/market';
 
 export type LendingModalType =
   | 'supply'

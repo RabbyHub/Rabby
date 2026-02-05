@@ -13,7 +13,6 @@ import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 import Popup from '@/ui/component/Popup';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { ReactComponent as RcIconArrowCC } from '@/ui/assets/lending/arrow-cc.svg';
-import { getContainerByScreen } from '@/ui/utils';
 import { PairTable } from '../DisableEmodeModal';
 
 export const ManageEmodeFullModalOverview: React.FC<{
@@ -55,10 +54,6 @@ export const ManageEmodeFullModalOverview: React.FC<{
   }, [eModes, iUserSummary, t]);
 
   // Shown only if the user has a collateral asset which is changing in LTV
-  console.log('CUSTOM_LOGGER:=>: showLTVChange', {
-    aa: iUserSummary?.currentLoanToValue,
-    bb: newSummary.currentLoanToValue,
-  });
   const showLTVChange = useMemo(() => {
     return (
       iUserSummary?.currentLoanToValue !== '0' &&
