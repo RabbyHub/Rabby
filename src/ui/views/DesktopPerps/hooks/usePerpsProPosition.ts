@@ -124,7 +124,7 @@ export const usePerpsProPosition = () => {
         console.error('PERPS', errorMessage, error);
         perpsToast.error({
           title: errorMessage,
-          description: error?.message,
+          description: error?.message?.toString() || 'unknown error',
         });
         Sentry.captureException(
           new Error(

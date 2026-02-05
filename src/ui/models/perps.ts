@@ -1009,6 +1009,7 @@ export const perps = createModel<RootModel>()({
             .map((item) => item[1].assetPositions)
             .flat();
           dispatch.perps.patchState({
+            clearinghouseState: hyperDex,
             allDexsPositions,
             allDexsClearinghouseState: clearinghouseStates,
           });

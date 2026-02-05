@@ -12,6 +12,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { DepositPending } from '../DepositWithdrawModal/DepositPending';
 import { PopupType } from '../../index';
 import BigNumber from 'bignumber.js';
+import { Skeleton, Tooltip } from 'antd';
 
 export const AccountActions: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -40,42 +41,55 @@ export const AccountActions: React.FC = () => {
   return (
     <div className="flex items-center gap-[12px]">
       {/* Available Balance */}
-      {Boolean(clearinghouseState) && (
-        <div className="flex items-center gap-[8px] pl-[11px] pr-[7px] py-[7px] rounded-[16px] border border-rb-neutral-line">
+      <div className="flex items-center gap-[8px] pl-[11px] pr-[7px] py-[7px] rounded-[16px] border border-rb-neutral-line">
+        <Tooltip
+          overlayClassName="rectangle"
+          placement="bottom"
+          trigger="hover"
+          title={t('page.perpsPro.accountActions.availableBalanceTips')}
+        >
           <div className="flex items-center gap-[4px]">
             <IconPerpsWallet />
             <div className="flex items-start flex-col">
-              <span className="text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
-                {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
-              </span>
+              {!clearinghouseState ? (
+                <Skeleton.Button
+                  active={true}
+                  className="h-[18px] block rounded-[4px]"
+                  style={{ width: 80 }}
+                />
+              ) : (
+                <span className="text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+                  {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
+                </span>
+              )}
             </div>
           </div>
+        </Tooltip>
 
-          <button
+        <button
+          onClick={handleDeposit}
+          className={clsx(
+            'ml-6 px-[12px] h-[28px] rounded-[6px] text-[15px] leading-[18px] font-medium flex items-center justify-center',
+            'bg-rb-brand-light-1 text-rb-brand-default'
+          )}
+        >
+          {t('page.perpsPro.accountActions.deposit')}
+        </button>
+
+        {/* Deposit Button */}
+        {pendingCount > 0 ? (
+          <div
             onClick={handleDeposit}
             className={clsx(
-              'ml-6 px-[12px] h-[28px] rounded-[6px] text-[15px] leading-[18px] font-medium flex items-center justify-center',
-              'bg-rb-brand-light-1 text-rb-brand-default'
+              'px-[12px] h-[28px] rounded-[6px] text-[15px] leading-[18px] font-medium flex items-center gap-[8px] cursor-pointer justify-center',
+              'bg-rb-orange-light-1 text-rb-orange-default'
             )}
           >
-            {t('page.perpsPro.accountActions.deposit')}
-          </button>
-
-          {/* Deposit Button */}
-          {pendingCount > 0 ? (
-            <div
-              onClick={handleDeposit}
-              className={clsx(
-                'px-[12px] h-[28px] rounded-[6px] text-[15px] leading-[18px] font-medium flex items-center gap-[8px] cursor-pointer justify-center',
-                'bg-rb-orange-light-1 text-rb-orange-default'
-              )}
-            >
-              {t('page.perpsPro.accountActions.pending')}
-              <DepositPending pendingCount={pendingCount} />
-            </div>
-          ) : null}
-        </div>
-      )}
+            {t('page.perpsPro.accountActions.pending')}
+            <DepositPending pendingCount={pendingCount} />
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 };

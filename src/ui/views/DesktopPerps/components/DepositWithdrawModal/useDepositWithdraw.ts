@@ -31,6 +31,7 @@ import { DepositWithdrawModalType } from './index';
 import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { Account } from '@/background/service/preference';
+import { sortTokenList } from '../../utils';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -111,19 +112,22 @@ export const useDepositWithdraw = (
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
   }, [_tokenInfo, selectedToken]);
 
+  const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
+
   // Fetch token list
   const fetchTokenList = useCallback(async () => {
     setTokenListLoading(true);
     if (!currentPerpsAccount?.address || !visible || type === 'withdraw')
-      return [];
+      return;
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
+    const sortedTokenList = sortTokenList(res, supportedChains);
     setTokenListLoading(false);
-    setTokenList(res);
-    const usdcToken = res.find(
-      (t) =>
-        t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
-    );
-    usdcToken && setSelectedToken(usdcToken);
+    setTokenList(sortedTokenList);
+    if (!sortedTokenList[0]?.amount && sortedTokenList.length > 1) {
+      setSelectedToken(sortedTokenList[1]);
+    } else {
+      setSelectedToken(sortedTokenList[0]);
+    }
 
     const tokenRes = await batchQueryTokens(
       currentPerpsAccount.address,
@@ -132,9 +136,14 @@ export const useDepositWithdraw = (
       false,
       false
     );
-    setTokenList(tokenRes);
-    return res;
-  }, [currentPerpsAccount?.address, visible, wallet, type]);
+    setTokenList(sortTokenList(tokenRes, supportedChains));
+    if (!sortedTokenList[0]?.amount && sortedTokenList.length > 1) {
+      setSelectedToken(sortedTokenList[1]);
+    } else {
+      setSelectedToken(sortedTokenList[0]);
+    }
+    return;
+  }, [currentPerpsAccount?.address, visible, wallet, type, supportedChains]);
 
   useEffect(() => {
     if (visible) {
