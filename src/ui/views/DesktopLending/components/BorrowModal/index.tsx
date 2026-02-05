@@ -24,7 +24,6 @@ import {
   useSelectedMarket,
   usePoolDataProviderContract,
 } from '../../hooks';
-import { INTERNAL_REQUEST_SESSION } from '@/constant';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -37,6 +36,9 @@ import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/lending/warning-2.svg';
 import styled from 'styled-components';
 import { StyledInput } from '../StyledInput';
+import stats from '@/stats';
+import { LendingReportType } from '../../types/tx';
+import { isSameAddress } from '@/ui/utils';
 
 type BorrowModalProps = {
   visible: boolean;
@@ -233,7 +235,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     reserve.underlyingAsset,
     reserve.reserve.decimals,
     targetPool,
-    wallet,
     t,
   ]);
 
@@ -301,6 +302,29 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         return;
       }
 
+      const report = (lastHash: string) => {
+        const targetPool = formattedPoolReservesAndIncentives.find((item) =>
+          isSameAddress(item.underlyingAsset, reserve.underlyingAsset)
+        );
+        const bgCurrency = new BigNumber(
+          targetPool?.formattedPriceInMarketReferenceCurrency || '0'
+        );
+        const usdValue = targetPool
+          ? new BigNumber(amount || '0').multipliedBy(bgCurrency).toString()
+          : '0';
+
+        stats.report('aaveInternalTx', {
+          tx_type: LendingReportType.Borrow,
+          chain: chainInfo?.serverId || '',
+          tx_id: lastHash || '',
+          user_addr: currentAccount.address || '',
+          address_type: currentAccount.type || '',
+          usd_value: usdValue,
+          create_at: Date.now(),
+          app_version: process.env.release || '0',
+        });
+      };
+
       try {
         if (canShowDirectSubmit && !forceFullSign) {
           setMiniSignLoading(true);
@@ -315,6 +339,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
             });
             const hash = hashes[hashes.length - 1];
             if (hash) {
+              report(hash);
               message.success(
                 `${t('page.lending.borrowDetail.actions')} ${t(
                   'page.lending.submitted'
@@ -339,7 +364,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         }
 
         setIsLoading(true);
-        await wallet.sendRequest({
+        const lastHash = await wallet.sendRequest({
           method: 'eth_sendTransaction',
           params: [borrowTx],
           $ctx: {
@@ -350,6 +375,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
             },
           },
         });
+        report(lastHash as string);
         message.success(
           `${t('page.lending.borrowDetail.actions')} ${t(
             'page.lending.submitted'
@@ -368,10 +394,12 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       borrowTx,
       amount,
       chainInfo,
+      t,
+      formattedPoolReservesAndIncentives,
+      reserve.underlyingAsset,
+      canShowDirectSubmit,
       wallet,
       onCancel,
-      t,
-      canShowDirectSubmit,
       openDirect,
     ]
   );

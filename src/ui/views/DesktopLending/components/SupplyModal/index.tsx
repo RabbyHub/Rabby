@@ -23,9 +23,6 @@ import {
   useSelectedMarket,
   usePoolDataProviderContract,
 } from '../../hooks';
-import { sendTransaction } from '@/ui/utils/sendTransaction';
-import { INTERNAL_REQUEST_SESSION } from '@/constant';
-import { CHAINS_ENUM } from '@debank/common';
 import { ETH_USDT_CONTRACT } from '@/constant';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
@@ -37,6 +34,8 @@ import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { StyledInput } from '../StyledInput';
+import stats from '@/stats';
+import { LendingReportType } from '../../types/tx';
 
 type SupplyModalProps = {
   visible: boolean;
@@ -412,6 +411,26 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
         return;
       }
 
+      const report = (lastHash: string) => {
+        const bgCurrency = new BigNumber(
+          reserve.reserve.formattedPriceInMarketReferenceCurrency || '0'
+        );
+        const usdValue = new BigNumber(amount || '0')
+          .multipliedBy(bgCurrency)
+          .toString();
+
+        stats.report('aaveInternalTx', {
+          tx_type: LendingReportType.Supply,
+          chain: chainInfo?.serverId || '',
+          tx_id: lastHash || '',
+          user_addr: currentAccount.address || '',
+          address_type: currentAccount.type || '',
+          usd_value: usdValue,
+          create_at: Date.now(),
+          app_version: process.env.release || '0',
+        });
+      };
+
       try {
         if (canShowDirectSubmit && !forceFullSign) {
           setMiniSignLoading(true);
@@ -426,6 +445,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             });
             const hash = hashes[hashes.length - 1];
             if (hash) {
+              report(hash);
               message.success(
                 `${t('page.lending.supplyDetail.actions')} ${t(
                   'page.lending.submitted'
@@ -450,10 +470,11 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
         }
 
         setIsLoading(true);
+        let lastHash: string = '';
         for (let i = 0; i < allTxs.length; i++) {
           const tx = allTxs[i];
           // 完整签名走签名页
-          await wallet.sendRequest({
+          lastHash = await wallet.sendRequest({
             method: 'eth_sendTransaction',
             params: [tx],
             $ctx: {
@@ -465,6 +486,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             },
           });
         }
+        report(lastHash);
         message.success(
           `${t('page.lending.supplyDetail.actions')} ${t(
             'page.lending.submitted'
@@ -483,13 +505,14 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
       currentAccount,
       supplyTx,
       amount,
-      approveTxs,
       chainInfo,
-      wallet,
-      onCancel,
+      approveTxs,
       t,
+      reserve.reserve.formattedPriceInMarketReferenceCurrency,
       canShowDirectSubmit,
+      onCancel,
       openDirect,
+      wallet,
     ]
   );
 
