@@ -123,7 +123,6 @@ export const LendingList: React.FC = () => {
   const { reserves } = useLendingRemoteData();
   const { displayPoolReserves, iUserSummary } = useLendingSummary();
   const { chainEnum, marketKey, setMarketKey } = useSelectedMarket();
-  const { fetchData } = useFetchLendingData();
   const { loading } = useLendingIsLoading();
   const history = useHistory();
   const location = useLocation();
@@ -398,7 +397,6 @@ export const LendingList: React.FC = () => {
             onCancel={closeModal}
             reserve={selectedItem}
             userSummary={iUserSummary}
-            onSuccess={() => fetchData()}
           />
         )}
       </Modal>
@@ -417,7 +415,6 @@ export const LendingList: React.FC = () => {
             onCancel={closeModal}
             reserve={selectedItem}
             userSummary={iUserSummary}
-            onSuccess={() => fetchData()}
           />
         )}
       </Modal>
@@ -436,7 +433,6 @@ export const LendingList: React.FC = () => {
             onCancel={closeModal}
             reserve={selectedItem}
             userSummary={iUserSummary}
-            onSuccess={() => fetchData()}
           />
         )}
       </Modal>
@@ -455,7 +451,6 @@ export const LendingList: React.FC = () => {
             onCancel={closeModal}
             reserve={selectedItem}
             userSummary={iUserSummary}
-            onSuccess={() => fetchData()}
           />
         )}
       </Modal>
@@ -470,7 +465,6 @@ export const LendingList: React.FC = () => {
             onCancel={closeModal}
             reserve={selectedItem}
             userSummary={iUserSummary}
-            onSuccess={() => fetchData()}
           />
         )}
       </Modal>

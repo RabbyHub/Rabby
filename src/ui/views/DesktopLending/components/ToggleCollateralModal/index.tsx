@@ -31,7 +31,6 @@ type ToggleCollateralModalProps = {
   onCancel: () => void;
   reserve: DisplayPoolReserveInfo;
   userSummary: UserSummary | null;
-  onSuccess?: () => void;
 };
 
 export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
@@ -39,7 +38,6 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
   onCancel,
   reserve,
   userSummary,
-  onSuccess,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -303,7 +301,6 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
             if (hash) {
               message.success(`${btnTitle} ${t('page.lending.submitted')}`);
               onCancel();
-              onSuccess?.();
             }
           } catch (error) {
             if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
@@ -339,7 +336,6 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
           });
         }
         message.success(`${btnTitle} ${t('page.lending.submitted')}`);
-        onSuccess?.();
       } catch (error) {
         console.error('Toggle collateral error:', error);
       } finally {
@@ -353,7 +349,6 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
       openDirect,
       wallet,
       onCancel,
-      onSuccess,
       btnTitle,
       t,
       reserve?.usageAsCollateralEnabledOnUser,

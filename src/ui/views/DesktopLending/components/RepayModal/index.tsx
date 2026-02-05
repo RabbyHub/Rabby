@@ -34,6 +34,8 @@ import { displayGhoForMintableMarket } from '../../utils/supply';
 import { ReactComponent as RcImgArrowDownCC } from '@/ui/assets/swap/arrow-down-cc.svg';
 import { getTokenIcon } from '../../utils/tokenIcon';
 import { StyledInput } from '../StyledInput';
+import stats from '@/stats';
+import { LendingReportType } from '../../types/tx';
 
 const StyledSelect = styled(Select)`
   display: flex;
@@ -99,7 +101,6 @@ type RepayModalProps = {
   onCancel: () => void;
   reserve: DisplayPoolReserveInfo;
   userSummary: UserSummary | null;
-  onSuccess?: () => void;
 };
 
 export const RepayModal: React.FC<RepayModalProps> = ({
@@ -107,7 +108,6 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   onCancel,
   reserve,
   userSummary,
-  onSuccess,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -523,6 +523,30 @@ export const RepayModal: React.FC<RepayModalProps> = ({
         message.info(t('page.lending.submitted') || 'Please retry');
         return;
       }
+      const report = (lastHash: string) => {
+        const poolReserve = formattedPoolReservesAndIncentives.find((item) =>
+          isSameAddress(item.underlyingAsset, reserve.underlyingAsset)
+        );
+        const bgCurrency = new BigNumber(
+          poolReserve?.formattedPriceInMarketReferenceCurrency || '0'
+        );
+        const usdValue = poolReserve
+          ? new BigNumber(amount || '0').multipliedBy(bgCurrency).toString()
+          : '0';
+
+        stats.report('aaveInternalTx', {
+          tx_type: isAtTokenRepay
+            ? LendingReportType.RepayWithAToken
+            : LendingReportType.Repay,
+          chain: chainInfo?.serverId || '',
+          tx_id: lastHash || '',
+          user_addr: currentAccount.address || '',
+          address_type: currentAccount.type || '',
+          usd_value: usdValue,
+          create_at: Date.now(),
+          app_version: process.env.release || '0',
+        });
+      };
 
       try {
         if (canShowDirectSubmit && !forceFullSign) {
@@ -538,6 +562,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
             });
             const hash = hashes[hashes.length - 1];
             if (hash) {
+              report(hash);
               message.success(
                 `${t('page.lending.repayDetail.actions')} ${t(
                   'page.lending.submitted'
@@ -545,7 +570,6 @@ export const RepayModal: React.FC<RepayModalProps> = ({
               );
               setAmount(undefined);
               onCancel();
-              onSuccess?.();
             }
           } catch (error) {
             if (
@@ -563,9 +587,10 @@ export const RepayModal: React.FC<RepayModalProps> = ({
         }
 
         setIsLoading(true);
+        let lastHash: string = '';
         for (let i = 0; i < allTxs.length; i++) {
           const tx = allTxs[i];
-          await wallet.sendRequest({
+          lastHash = await wallet.sendRequest({
             method: 'eth_sendTransaction',
             params: [tx],
             $ctx: {
@@ -577,6 +602,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
             },
           });
         }
+        report(lastHash);
         message.success(
           `${t('page.lending.repayDetail.actions')} ${t(
             'page.lending.submitted'
@@ -584,7 +610,6 @@ export const RepayModal: React.FC<RepayModalProps> = ({
         );
         setAmount(undefined);
         onCancel();
-        onSuccess?.();
       } catch (error) {
         console.error('Repay error:', error);
       } finally {
@@ -595,14 +620,16 @@ export const RepayModal: React.FC<RepayModalProps> = ({
       currentAccount,
       repayTx,
       amount,
-      approveTxs,
       chainInfo,
-      wallet,
-      onCancel,
-      onSuccess,
+      approveTxs,
       t,
+      formattedPoolReservesAndIncentives,
+      isAtTokenRepay,
+      reserve.underlyingAsset,
       canShowDirectSubmit,
+      onCancel,
       openDirect,
+      wallet,
     ]
   );
 
