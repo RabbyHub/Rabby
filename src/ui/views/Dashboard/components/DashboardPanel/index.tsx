@@ -686,6 +686,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'security',
       'perps',
       'prediction',
+      'lending',
       'points',
       'mobile',
       'nft',
