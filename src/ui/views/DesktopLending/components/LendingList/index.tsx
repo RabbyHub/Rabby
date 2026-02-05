@@ -35,6 +35,7 @@ import { ToggleCollateralModal } from '../ToggleCollateralModal';
 import { SupplyListModal } from '../SupplyListModal';
 import { BorrowListModal } from '../BorrowListModal';
 import { LendingEmptyState } from '../LendingEmptyState';
+import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 
 export type LendingModalType =
   | 'supply'
@@ -392,12 +393,14 @@ export const LendingList: React.FC = () => {
         onCancel={closeModal}
       >
         {selectedItem && (
-          <SupplyModal
-            visible={activeModal === 'supply'}
-            onCancel={closeModal}
-            reserve={selectedItem}
-            userSummary={iUserSummary}
-          />
+          <PopupContainer>
+            <SupplyModal
+              visible={activeModal === 'supply'}
+              onCancel={closeModal}
+              reserve={selectedItem}
+              userSummary={iUserSummary}
+            />
+          </PopupContainer>
         )}
       </Modal>
       <Modal
@@ -410,12 +413,14 @@ export const LendingList: React.FC = () => {
         onCancel={closeModal}
       >
         {selectedItem && (
-          <BorrowModal
-            visible={activeModal === 'borrow'}
-            onCancel={closeModal}
-            reserve={selectedItem}
-            userSummary={iUserSummary}
-          />
+          <PopupContainer>
+            <BorrowModal
+              visible={activeModal === 'borrow'}
+              onCancel={closeModal}
+              reserve={selectedItem}
+              userSummary={iUserSummary}
+            />
+          </PopupContainer>
         )}
       </Modal>
       <Modal
@@ -428,12 +433,14 @@ export const LendingList: React.FC = () => {
         onCancel={closeModal}
       >
         {selectedItem && (
-          <RepayModal
-            visible={activeModal === 'repay'}
-            onCancel={closeModal}
-            reserve={selectedItem}
-            userSummary={iUserSummary}
-          />
+          <PopupContainer>
+            <RepayModal
+              visible={activeModal === 'repay'}
+              onCancel={closeModal}
+              reserve={selectedItem}
+              userSummary={iUserSummary}
+            />
+          </PopupContainer>
         )}
       </Modal>
       <Modal
@@ -446,12 +453,14 @@ export const LendingList: React.FC = () => {
         onCancel={closeModal}
       >
         {selectedItem && (
-          <WithdrawModal
-            visible={activeModal === 'withdraw'}
-            onCancel={closeModal}
-            reserve={selectedItem}
-            userSummary={iUserSummary}
-          />
+          <PopupContainer>
+            <WithdrawModal
+              visible={activeModal === 'withdraw'}
+              onCancel={closeModal}
+              reserve={selectedItem}
+              userSummary={iUserSummary}
+            />
+          </PopupContainer>
         )}
       </Modal>
       <Modal
@@ -460,12 +469,14 @@ export const LendingList: React.FC = () => {
         onCancel={closeModal}
       >
         {selectedItem && (
-          <ToggleCollateralModal
-            visible={activeModal === 'toggleCollateral'}
-            onCancel={closeModal}
-            reserve={selectedItem}
-            userSummary={iUserSummary}
-          />
+          <PopupContainer>
+            <ToggleCollateralModal
+              visible={activeModal === 'toggleCollateral'}
+              onCancel={closeModal}
+              reserve={selectedItem}
+              userSummary={iUserSummary}
+            />
+          </PopupContainer>
         )}
       </Modal>
     </div>

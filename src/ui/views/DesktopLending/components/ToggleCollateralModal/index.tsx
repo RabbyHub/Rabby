@@ -25,6 +25,8 @@ import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { Checkbox } from 'antd';
 import { ReserveDataHumanized } from '@aave/contract-helpers';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { getContainerByScreen } from '@/ui/utils';
 
 type ToggleCollateralModalProps = {
   visible: boolean;
@@ -49,6 +51,9 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
   } = useLendingSummary();
   const { selectedMarketData, chainInfo, chainEnum } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
+
+  const { getContainer: getContainerFromContext } = usePopupContainer();
+  const getContainer = getContainerFromContext || getContainerByScreen;
 
   const summary = userSummary ?? contextUserSummary;
 
@@ -289,6 +294,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
           try {
             const hashes = await openDirect({
               txs,
+              getContainer,
               ga: {
                 category: 'Lending',
                 source: 'Lending',

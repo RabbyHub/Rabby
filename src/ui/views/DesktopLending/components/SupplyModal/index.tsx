@@ -36,6 +36,8 @@ import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { StyledInput } from '../StyledInput';
 import stats from '@/stats';
 import { LendingReportType } from '../../types/tx';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { getContainerByScreen } from '@/ui/utils';
 
 type SupplyModalProps = {
   visible: boolean;
@@ -64,6 +66,9 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     isMainnet,
   } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
+
+  const { getContainer: getContainerFromContext } = usePopupContainer();
+  const getContainer = getContainerFromContext || getContainerByScreen;
 
   const summary = userSummary ?? contextUserSummary;
 
@@ -437,6 +442,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
           try {
             const hashes = await openDirect({
               txs: allTxs,
+              getContainer,
               ga: {
                 category: 'Lending',
                 source: 'Lending',

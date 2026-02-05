@@ -39,6 +39,8 @@ import { StyledInput } from '../StyledInput';
 import stats from '@/stats';
 import { LendingReportType } from '../../types/tx';
 import { isSameAddress } from '@/ui/utils';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { getContainerByScreen } from '@/ui/utils';
 
 type BorrowModalProps = {
   visible: boolean;
@@ -68,6 +70,9 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   } = useLendingSummary();
   const { selectedMarketData, chainInfo, chainEnum } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
+
+  const { getContainer: getContainerFromContext } = usePopupContainer();
+  const getContainer = getContainerFromContext || getContainerByScreen;
 
   const summary = userSummary ?? contextUserSummary;
 
@@ -331,6 +336,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
           try {
             const hashes = await openDirect({
               txs: [borrowTx],
+              getContainer,
               ga: {
                 category: 'Lending',
                 source: 'Lending',

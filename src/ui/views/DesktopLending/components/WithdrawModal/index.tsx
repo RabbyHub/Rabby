@@ -35,6 +35,8 @@ import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { StyledInput } from '../StyledInput';
 import stats from '@/stats';
 import { LendingReportType } from '../../types/tx';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { getContainerByScreen } from '@/ui/utils';
 
 type WithdrawModalProps = {
   visible: boolean;
@@ -59,6 +61,9 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   } = useLendingSummary();
   const { selectedMarketData, chainInfo, chainEnum } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
+
+  const { getContainer: getContainerFromContext } = usePopupContainer();
+  const getContainer = getContainerFromContext || getContainerByScreen;
 
   const summary = userSummary ?? contextUserSummary;
 
@@ -313,6 +318,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
           try {
             const hashes = await openDirect({
               txs: withdrawTxs,
+              getContainer,
               ga: {
                 category: 'Lending',
                 source: 'Lending',

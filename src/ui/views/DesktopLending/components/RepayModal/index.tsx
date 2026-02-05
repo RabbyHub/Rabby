@@ -36,6 +36,8 @@ import { getTokenIcon } from '../../utils/tokenIcon';
 import { StyledInput } from '../StyledInput';
 import stats from '@/stats';
 import { LendingReportType } from '../../types/tx';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { getContainerByScreen } from '@/ui/utils';
 
 const StyledSelect = styled(Select)`
   display: flex;
@@ -118,6 +120,9 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   } = useLendingSummary();
   const { selectedMarketData, chainInfo, isMainnet } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
+
+  const { getContainer: getContainerFromContext } = usePopupContainer();
+  const getContainer = getContainerFromContext || getContainerByScreen;
 
   const summary = userSummary ?? contextUserSummary;
 
@@ -554,6 +559,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
           try {
             const hashes = await openDirect({
               txs: allTxs,
+              getContainer,
               ga: {
                 category: 'Lending',
                 source: 'Lending',
