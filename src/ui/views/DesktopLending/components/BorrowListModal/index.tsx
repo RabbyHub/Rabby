@@ -94,8 +94,6 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
       return av - bv;
     });
   }, [
-    API_ETH_MOCK_ADDRESS,
-    assetCanBeBorrowedByUser,
     displayPoolReserves,
     iUserSummary,
     reserves?.reservesData,
@@ -103,7 +101,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
     sortDirection,
   ]);
 
-  const listReserves = sortReserves ?? [];
+  const listReserves = useMemo(() => sortReserves ?? [], [sortReserves]);
 
   const unFoldList = useMemo(
     () =>

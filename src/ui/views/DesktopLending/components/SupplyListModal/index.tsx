@@ -94,7 +94,6 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
       return av - bv;
     });
   }, [
-    API_ETH_MOCK_ADDRESS,
     chainEnum,
     displayPoolReserves,
     marketKey,
@@ -103,7 +102,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
     sortDirection,
   ]);
 
-  const listReserves = sortReserves ?? [];
+  const listReserves = useMemo(() => sortReserves ?? [], [sortReserves]);
 
   const unFoldList = useMemo(
     () =>

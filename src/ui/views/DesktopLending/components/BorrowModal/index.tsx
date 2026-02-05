@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, message, Checkbox } from 'antd';
+import { Button, message, Checkbox } from 'antd';
 import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
@@ -71,8 +71,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   const { selectedMarketData, chainInfo, chainEnum } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
 
-  const { getContainer: getContainerFromContext } = usePopupContainer();
-  const getContainer = getContainerFromContext || getContainerByScreen;
+  const { getContainer } = usePopupContainer();
 
   const summary = userSummary ?? contextUserSummary;
 
@@ -407,6 +406,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       wallet,
       onCancel,
       openDirect,
+      getContainer,
     ]
   );
 

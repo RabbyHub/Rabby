@@ -108,8 +108,7 @@ export const ManageEmodeFullModalOverview: React.FC<{
     [eModes, selectedCategoryId]
   );
 
-  const { getContainer: getContainerFromContext } = usePopupContainer();
-  const getContainer = getContainerFromContext || getContainerByScreen;
+  const { getContainer } = usePopupContainer();
 
   return (
     <div>

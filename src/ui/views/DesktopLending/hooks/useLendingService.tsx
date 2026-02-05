@@ -152,8 +152,6 @@ export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
       syncState,
     }),
     [
-      lendingStore.lastSelectedChain,
-      lendingStore.skipHealthFactorWarning,
       lendingStore,
       setLastSelectedChain,
       getLastSelectedChain,

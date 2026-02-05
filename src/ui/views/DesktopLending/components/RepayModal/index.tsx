@@ -121,8 +121,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   const { selectedMarketData, chainInfo, isMainnet } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
 
-  const { getContainer: getContainerFromContext } = usePopupContainer();
-  const getContainer = getContainerFromContext || getContainerByScreen;
+  const { getContainer } = usePopupContainer();
 
   const summary = userSummary ?? contextUserSummary;
 
@@ -635,6 +634,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
       canShowDirectSubmit,
       onCancel,
       openDirect,
+      getContainer,
       wallet,
     ]
   );

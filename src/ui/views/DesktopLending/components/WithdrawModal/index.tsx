@@ -62,8 +62,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   const { selectedMarketData, chainInfo, chainEnum } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
 
-  const { getContainer: getContainerFromContext } = usePopupContainer();
-  const getContainer = getContainerFromContext || getContainerByScreen;
+  const { getContainer } = usePopupContainer();
 
   const summary = userSummary ?? contextUserSummary;
 
@@ -394,6 +393,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
       onCancel,
       openDirect,
       wallet,
+      getContainer,
     ]
   );
 

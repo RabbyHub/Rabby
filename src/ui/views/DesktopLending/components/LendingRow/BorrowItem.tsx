@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue } from '@/ui/utils';

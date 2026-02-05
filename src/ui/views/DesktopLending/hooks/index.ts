@@ -874,13 +874,7 @@ const useFetchLendingData = () => {
         : undefined,
       marketKey,
     });
-  }, [
-    currentAccount?.address,
-    currentAccount?.type,
-    currentAccount?.brandName,
-    marketKey,
-    fetchLendingData,
-  ]);
+  }, [fetchLendingData, currentAccount, marketKey]);
 
   const setFetchLoading = useCallback(
     (loading: boolean) => {
@@ -978,7 +972,7 @@ export function useLendingIsLoading() {
       lendingLoadState.addrMarketLoading[
         getDataKey(currentAddress, marketKey)
       ] || false,
-    [lendingLoadState.addrMarketLoading, currentAddress]
+    [lendingLoadState.addrMarketLoading, currentAddress, marketKey]
   );
 
   return { loading };

@@ -1,11 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import clsx from 'clsx';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Button } from 'antd';
 import { formatUserSummary } from '@aave/math-utils';
@@ -95,8 +88,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
   );
 
   const wantDisableEmode = useMemo(() => emodeEnabled, [emodeEnabled]);
-  const { getContainer: getContainerFromContext } = usePopupContainer();
-  const getContainer = getContainerFromContext || getContainerByScreen;
+  const { getContainer } = usePopupContainer();
 
   const isTargetCategoryAvailable = useMemo(() => {
     const targetCategory = eModes?.[selectedCategoryId];
@@ -344,13 +336,14 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
       currentAccount,
       txs,
       canShowDirectSubmit,
-      openDirect,
-      wallet,
       onCancel,
-      onSuccess,
       wantDisableEmode,
       t,
       refresh,
+      onSuccess,
+      openDirect,
+      getContainer,
+      wallet,
     ]
   );
 
@@ -366,7 +359,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
 
   return (
     <div
-      className={clsx('bg-r-neutral-bg-2 flex flex-col px-[20px] py-[16px]')}
+      className="bg-r-neutral-bg-2 flex flex-col px-[20px] py-[16px] overscroll-y-auto"
       style={{ height }}
     >
       <div className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
