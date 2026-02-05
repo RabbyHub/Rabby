@@ -192,7 +192,7 @@ export const DesktopProfile: React.FC<{
   return (
     <>
       <DesktopPageWrap
-        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px]"
+        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] no-scrollbar"
         ref={scrollContainerRef}
         style={style}
       >
