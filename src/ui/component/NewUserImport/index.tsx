@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ReactComponent as IconBackCC } from '@/ui/assets/new-user-import/back-cc.svg';
+import { ReactComponent as IconBackCC } from '@/ui/assets/back-with-line-cc.svg';
 import { ReactComponent as IconDotCC } from '@/ui/assets/new-user-import/dot-cc.svg';
 import clsx from 'clsx';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -25,7 +25,7 @@ const StyledCard = styled.div`
   border-radius: 16px;
   background-color: var(--r-neutral-bg1, #fff);
   box-shadow: 0px 40px 80px 0px rgba(43, 57, 143, 0.4);
-  padding: 0px 20px 20px;
+  padding: 0px 24px 20px;
   .header {
     display: flex;
     align-items: center;
@@ -112,7 +112,7 @@ export const Card = ({
             'header',
             headerClassName,
             step && 'mt-18',
-            title && 'mt-[14px]',
+            title && 'mt-16',
             !step && !title && onBack && 'mt-18'
           )}
         >

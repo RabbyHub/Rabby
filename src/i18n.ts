@@ -24,11 +24,6 @@ i18n
     },
     returnNull: false,
     returnEmptyString: false,
-    react: {
-      bindI18n: 'loaded languageChanged',
-      bindI18nStore: 'added',
-      useSuspense: true,
-    },
   });
 
 export const I18N_NS = 'translations';

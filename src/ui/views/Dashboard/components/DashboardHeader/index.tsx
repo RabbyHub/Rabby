@@ -40,7 +40,6 @@ import PendingTxs from '../PendingTxs';
 import Queue from '../Queue';
 import { Popover } from 'antd';
 import QRCode from 'qrcode.react';
-import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
 
 const Container = styled.div`
   width: 100%;
@@ -263,7 +262,6 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
       ) : (
         pendingTxCount > 0 && <PendingTxs pendingTxCount={pendingTxCount} />
       )}
-      <SeedPhraseBackupAlert className="absolute left-0 right-0 bottom-0" />
     </Container>
   );
 };

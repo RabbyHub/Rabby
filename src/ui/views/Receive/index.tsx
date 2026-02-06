@@ -32,7 +32,6 @@ import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
 import { CHAINS_ENUM } from '@/types/chain';
 import { useRequest } from 'ahooks';
 import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
-import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -258,13 +257,6 @@ const Receive = () => {
           {isShowAccount ? <img src={IconEye} /> : <img src={IconEyeHide} />}
         </div>
       </div>
-
-      <SeedPhraseBackupAlert
-        className={clsx(
-          'text-r-red-default bg-r-red-light rounded-[8px]',
-          'mb-[8px] mt-[-12px]'
-        )}
-      />
 
       <div className="qr-card">
         <div className="qr-card-header">

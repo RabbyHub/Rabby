@@ -5,9 +5,8 @@ import { Button } from 'antd';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import BackgroundSVG from '@/ui/assets/new-user-import/guide-bg.svg';
+import BackgroundSVG from '@/ui/assets/new-user-import/background.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-import { LangSelector } from '@/ui/component/LangSelector';
 
 export const Guide = () => {
   const { t } = useTranslation();
@@ -18,61 +17,59 @@ export const Guide = () => {
   }, []);
 
   const gotoImport = React.useCallback(() => {
-    history.push('/new-user/import-wallet-type');
+    history.push('/new-user/import-list');
   }, []);
 
   const { isDarkTheme } = useThemeMode();
 
   return (
-    <div
-      className="h-full flex items-center justify-center"
-      style={{
-        backgroundImage: `url(${BackgroundSVG})`,
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-      }}
+    <Card
+      cardStyle={
+        isDarkTheme
+          ? {}
+          : {
+              backgroundImage: `url(${BackgroundSVG})`,
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat',
+            }
+      }
     >
-      <div className="fixed top-[40px] right-[40px]">
-        <LangSelector />
-      </div>
-      <div className="">
-        <div className="flex flex-col items-center">
-          <img src={rabbyLogo} className="w-[100px] h-[100px]" />
-          <div className="my-12 text-24 font-medium text-r-neutral-title1">
-            {t('page.newUserImport.guide.title')}
-          </div>
-          <div className="text-14 font-normal text-r-neutral-foot text-center">
-            {t('page.newUserImport.guide.desc')}
-          </div>
-
-          <Button
-            onClick={gotoCreate}
-            block
-            type="primary"
-            className={clsx(
-              'mt-[40px] mb-16 w-[360px]',
-              'h-[56px] shadow-none rounded-[8px]',
-              'text-[17px] font-medium bg-r-blue-default'
-            )}
-          >
-            {t('page.newUserImport.guide.createNewAddress')}
-          </Button>
-
-          <Button
-            onClick={gotoImport}
-            block
-            type="primary"
-            ghost
-            className={clsx(
-              'h-[56px] shadow-none rounded-[8px] w-[360px]',
-              'text-[17px] font-medium',
-              'hover:bg-light-r-blue-light1 hover:before:hidden hover:border-rabby-blue-default hover:text-r-blue-default'
-            )}
-          >
-            {t('page.newUserImport.guide.importAddress')}
-          </Button>
+      <div className="flex flex-col items-center">
+        <img src={rabbyLogo} className="mt-[100px] w-[100px] h-[100px]" />
+        <div className="my-12 text-24 font-medium text-r-neutral-title1">
+          {t('page.newUserImport.guide.title')}
         </div>
+        <div className="max-w-[320px] text-14 font-normal text-r-neutral-foot text-center">
+          {t('page.newUserImport.guide.desc')}
+        </div>
+
+        <Button
+          onClick={gotoCreate}
+          block
+          type="primary"
+          className={clsx(
+            'mt-[85px] mb-16',
+            'h-[56px] shadow-none rounded-[8px]',
+            'text-[17px] font-medium bg-r-blue-default'
+          )}
+        >
+          {t('page.newUserImport.guide.createNewAddress')}
+        </Button>
+
+        <Button
+          onClick={gotoImport}
+          block
+          type="primary"
+          ghost
+          className={clsx(
+            'h-[56px] shadow-none rounded-[8px]',
+            'text-[17px] font-medium',
+            'hover:bg-light-r-blue-light1 hover:before:hidden hover:border-rabby-blue-default hover:text-r-blue-default'
+          )}
+        >
+          {t('page.newUserImport.guide.importAddress')}
+        </Button>
       </div>
-    </div>
+    </Card>
   );
 };
