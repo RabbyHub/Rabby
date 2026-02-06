@@ -765,7 +765,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
                       key={panelKey}
                       panelKey={panelKey}
                       item={item}
-                      isGnosis={isGnosis}
                       index={index}
                     />
                   );
