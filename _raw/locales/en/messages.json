@@ -1473,6 +1473,7 @@
         "needSupply": "To borrow, you need to supply assets as collateral.",
         "isolated": "Borrowing power and assets are limited due to Isolation mode.",
         "emode": "Some assets are unavailable to borrow in E-Mode. Exit E-Mode to access all assets.",
+        "singleAssetUnavailableForEmode": "Unavailable to borrow. Exit E-Mode to access.",
         "emodeNoAssets": "We couldn't find any assets related to your search. Try again with a different category."
       },
       "list": {

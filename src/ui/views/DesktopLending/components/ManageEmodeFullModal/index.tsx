@@ -118,7 +118,8 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
   ]);
 
   const { isRisky, isBlock, desc } = useMemo(() => {
-    if (Number(newSummary?.healthFactor || '0') <= 0) {
+    // 无风险 或 用户未操作
+    if (Number(newSummary?.healthFactor || '0') <= 0 || !hasChangeCategory) {
       return { isRisky: false, isBlock: false, desc: '' };
     }
     const _isRisky =
@@ -134,7 +135,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
         ? t('page.lending.risk.emodeBlockWarning')
         : '',
     };
-  }, [newSummary?.healthFactor, t]);
+  }, [newSummary?.healthFactor, t, hasChangeCategory]);
 
   const canShowDirectSubmit = useMemo(
     () =>

@@ -21,7 +21,6 @@ const EmptyStateContainer = styled.div<{ isDark: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--rb-neutral-bg-2, #f7f7fa);
   background-image: ${({ isDark }) =>
     isDark ? `url(${emptyDarkBg})` : `url(${emptyBg})`};
   background-position: center;
@@ -30,38 +29,6 @@ const EmptyStateContainer = styled.div<{ isDark: boolean }>`
   overflow: hidden;
   margin: 0 20px;
   border-radius: 8px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(
-      circle,
-      rgba(235, 237, 240, 0.3) 0%,
-      transparent 70%
-    );
-    border-radius: 50%;
-    pointer-events: none;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(
-      circle,
-      rgba(235, 237, 240, 0.3) 0%,
-      transparent 70%
-    );
-    border-radius: 50%;
-    pointer-events: none;
-  }
 `;
 
 const PoweredByText = styled.div`

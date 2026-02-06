@@ -17,9 +17,9 @@ export const BorrowItem = ({
 }) => {
   const { t } = useTranslation();
   const { iUserSummary: userSummary } = useLendingSummary();
-  const disableBorrowButton = useMemo(() => {
+  const [disableBorrowButton, tips] = useMemo(() => {
     if (!data) {
-      return false;
+      return [false, ''];
     }
     // emode开启，但是不支持该池子借贷
     const eModeBorrowDisabled =
@@ -28,20 +28,27 @@ export const BorrowItem = ({
         (e) => e.id === userSummary.userEmodeCategoryId
       );
     if (eModeBorrowDisabled) {
-      return true;
+      return [
+        true,
+        t('page.lending.availableCard.singleAssetUnavailableForEmode'),
+      ];
     }
     const bgTotalDebt = new BigNumber(data.reserve.totalDebt || '0');
     if (bgTotalDebt.gte(data.reserve.borrowCap || '0')) {
-      return true;
+      return [true, t('page.lending.borrowDetail.almostReachedWarning')];
     }
-    return (
+    if (
       !userSummary?.availableBorrowsUSD ||
       userSummary?.availableBorrowsUSD === '0'
-    );
+    ) {
+      return [true, t('page.lending.disableBorrowTip.noSupply')];
+    }
+    return [false, ''];
   }, [
     data,
     userSummary?.availableBorrowsUSD,
     userSummary?.userEmodeCategoryId,
+    t,
   ]);
   return (
     <div
@@ -83,25 +90,16 @@ export const BorrowItem = ({
           {formatApy(Number(data.reserve.variableBorrowAPY || '0'))}
         </span>
       </button>
-      {disableBorrowButton &&
-      (!userSummary?.availableBorrowsUSD ||
-        userSummary?.availableBorrowsUSD === '0') ? (
-        <Tooltip
-          overlayClassName="rectangle"
-          title={t('page.lending.disableBorrowTip.noSupply')}
-        >
+      {disableBorrowButton ? (
+        <Tooltip overlayClassName="rectangle" title={tips}>
           <button
             type="button"
-            disabled={disableBorrowButton}
+            disabled
             className={clsx(
               'ml-8 min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] flex-shrink-0',
               'bg-rb-neutral-bg-2 text-[13px] font-medium text-r-neutral-title-1',
               'opacity-50 bg-rb-neutral-bg-4'
             )}
-            onClick={(e) => {
-              e.stopPropagation();
-              handlePressItem(data);
-            }}
           >
             <span>{t('page.lending.borrowDetail.actions')}</span>
           </button>
@@ -109,13 +107,10 @@ export const BorrowItem = ({
       ) : (
         <button
           type="button"
-          disabled={disableBorrowButton}
           className={clsx(
             'ml-8 min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] flex-shrink-0',
             'bg-rb-neutral-bg-2 text-[13px] font-medium text-r-neutral-title-1',
-            !disableBorrowButton &&
-              'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
-            disableBorrowButton && 'opacity-50 bg-rb-neutral-bg-4'
+            'hover:bg-rb-brand-light-1 hover:text-rb-brand-default'
           )}
           onClick={(e) => {
             handlePressItem(data);
