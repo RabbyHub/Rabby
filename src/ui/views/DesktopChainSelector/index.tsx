@@ -88,6 +88,7 @@ export const DesktopChainSelector: React.FC<Props> = ({
                         'relative',
                         'p-2 rounded-[8px] bg-rb-neutral-bg-1'
                       )}
+                      key={chain}
                       style={{
                         left: 0 - idx * 4,
                       }}

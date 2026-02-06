@@ -11,6 +11,7 @@ import {
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
 import { DesktopPerps } from './DesktopPerps';
+import { DesktopLending } from './DesktopLending';
 import clsx from 'clsx';
 import { AddAddressModal } from './DesktopProfile/components/AddAddressModal';
 import { useRabbyDispatch } from '../store';
@@ -30,10 +31,12 @@ const Main = () => {
   const isDappIframeRoute = location.pathname === '/desktop/dapp-iframe';
   const isPerpsRoute = location.pathname === '/desktop/perps';
   const isProfileRoute = location.pathname.startsWith('/desktop/profile');
+  const isLendingRoute = location.pathname === '/desktop/lending';
 
   const hasMountedDappIframeRef = useRef(false);
   const hasMountedPerpsRef = useRef(false);
   const hasMountedProfileRef = useRef(false);
+  const hasMountedLendingRef = useRef(false);
 
   if (isDappIframeRoute) {
     hasMountedDappIframeRef.current = true;
@@ -43,6 +46,9 @@ const Main = () => {
   }
   if (isProfileRoute) {
     hasMountedProfileRef.current = true;
+  }
+  if (isLendingRoute) {
+    hasMountedLendingRef.current = true;
   }
 
   const dispatch = useRabbyDispatch();
@@ -92,6 +98,17 @@ const Main = () => {
             className={clsx('h-full', isDappIframeRoute ? 'block' : 'hidden')}
           >
             <DesktopDappIframe isActive={isDappIframeRoute} />
+          </div>
+        </PrivateRouteGuard>
+      ) : null}
+
+      {hasMountedLendingRef.current ? (
+        <PrivateRouteGuard>
+          <div
+            style={{ display: isLendingRoute ? 'block' : 'none' }}
+            className={clsx('h-full', isLendingRoute ? 'block' : 'hidden')}
+          >
+            <DesktopLending isActive={isLendingRoute} />
           </div>
         </PrivateRouteGuard>
       ) : null}
