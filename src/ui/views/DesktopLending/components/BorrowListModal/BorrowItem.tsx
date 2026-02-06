@@ -6,6 +6,7 @@ import { formatApy, formatListNetWorth } from '../../utils/format';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { useLendingSummary } from '../../hooks';
+import { Tooltip } from 'antd';
 
 export const BorrowItem = ({
   data,
@@ -83,23 +84,48 @@ export const BorrowItem = ({
           {formatApy(Number(data.reserve.variableBorrowAPY || '0'))}
         </span>
       </button>
-      <button
-        type="button"
-        disabled={disableBorrowButton}
-        className={clsx(
-          'ml-8 min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] flex-shrink-0',
-          'bg-rb-neutral-bg-2 text-[13px] font-medium text-r-neutral-title-1',
-          !disableBorrowButton &&
-            'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
-          disableBorrowButton && 'opacity-50 bg-rb-neutral-bg-4'
-        )}
-        onClick={(e) => {
-          e.stopPropagation();
-          handlePressItem(data);
-        }}
-      >
-        {t('page.lending.borrowDetail.actions')}
-      </button>
+      {disableBorrowButton &&
+      (!userSummary?.availableBorrowsUSD ||
+        userSummary?.availableBorrowsUSD === '0') ? (
+        <Tooltip
+          overlayClassName="rectangle"
+          title={t('page.lending.disableBorrowTip.desc')}
+        >
+          <button
+            type="button"
+            disabled={disableBorrowButton}
+            className={clsx(
+              'ml-8 min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] flex-shrink-0',
+              'bg-rb-neutral-bg-2 text-[13px] font-medium text-r-neutral-title-1',
+              'opacity-50 bg-rb-neutral-bg-4'
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePressItem(data);
+            }}
+          >
+            <span>{t('page.lending.borrowDetail.actions')}</span>
+          </button>
+        </Tooltip>
+      ) : (
+        <button
+          type="button"
+          disabled={disableBorrowButton}
+          className={clsx(
+            'ml-8 min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] flex-shrink-0',
+            'bg-rb-neutral-bg-2 text-[13px] font-medium text-r-neutral-title-1',
+            !disableBorrowButton &&
+              'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
+            disableBorrowButton && 'opacity-50 bg-rb-neutral-bg-4'
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePressItem(data);
+          }}
+        >
+          {t('page.lending.borrowDetail.actions')}
+        </button>
+      )}
     </div>
   );
 };
