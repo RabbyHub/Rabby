@@ -14,9 +14,11 @@ export const SupplyItem = ({
   data,
   onSelect,
   className,
+  noBg = false,
 }: {
   data: DisplayPoolReserveInfo;
   onSelect: (data: DisplayPoolReserveInfo) => void;
+  noBg?: boolean;
   className?: string;
 }) => {
   const { t } = useTranslation();
@@ -53,7 +55,11 @@ export const SupplyItem = ({
       key={`${data.reserve.underlyingAsset}-${data.reserve.symbol}`}
       className={clsx(
         'mt-8 flex items-center justify-between px-16 h-[56px] rounded-[12px]',
-        isWrapperToken ? 'bg-r-neutral-line relative' : 'bg-rb-neutral-bg-1',
+        noBg
+          ? ''
+          : isWrapperToken
+          ? 'bg-r-neutral-line relative'
+          : 'bg-rb-neutral-bg-1',
         className
       )}
     >

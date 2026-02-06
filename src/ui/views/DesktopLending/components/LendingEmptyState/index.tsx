@@ -49,7 +49,7 @@ const MainHeading = styled.h2`
   font-weight: 600;
   line-height: 28px;
   color: var(--r-neutral-title-1, #2c2c2c);
-  margin: 18px 0 8px 0;
+  margin: 7px 0 8px 0;
   text-align: center;
 `;
 
@@ -100,7 +100,7 @@ export const LendingEmptyState: React.FC<{
         <PoweredByText>
           {t('page.lending.summary.empty.description')}
         </PoweredByText>
-        <RcIconAAVE width={59} height={59} />
+        <RcIconAAVE width={142} height={70} />
         <MainHeading>{t('page.lending.summary.empty.title')}</MainHeading>
         <SubText>{t('page.lending.summary.empty.endDesc')}</SubText>
       </EmptyStateContainer>
@@ -139,6 +139,7 @@ export const LendingEmptyState: React.FC<{
           {filterReserves.map((item) => (
             <SupplyItem
               key={item.reserve.underlyingAsset}
+              noBg
               className="bg-rb-neutral-bg-3 rounded-[12px]"
               data={item}
               onSelect={onSelect}

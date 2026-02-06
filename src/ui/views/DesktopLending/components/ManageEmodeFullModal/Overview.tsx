@@ -150,7 +150,14 @@ export const ManageEmodeFullModalOverview: React.FC<{
                 }
               }}
             >
-              <span className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1 max-w-[220px] truncate text-left">
+              <span
+                className={clsx(
+                  'text-[13px] leading-[16px] font-medium max-w-[220px] truncate text-left',
+                  isUnAvailable
+                    ? 'text-r-neutral-foot'
+                    : 'text-r-neutral-title-1'
+                )}
+              >
                 {selectedCategory?.label ||
                   t('page.lending.manageEmode.categorySelector.placeholder')}
               </span>
