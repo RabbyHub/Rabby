@@ -71,7 +71,7 @@
     "@rabby-wallet/eth-walletconnect-keyring": "2.1.7",
     "@rabby-wallet/eth-watch-keyring": "1.0.0",
     "@rabby-wallet/gnosis-sdk": "1.4.6",
-    "@rabby-wallet/hyperliquid-sdk": "1.1.4-beta.5",
+    "@rabby-wallet/hyperliquid-sdk": "1.1.4-beta.6",
     "@rabby-wallet/page-provider": "0.4.10",
     "@rabby-wallet/rabby-action": "0.1.14",
     "@rabby-wallet/rabby-api": "0.9.55-beta.1",
