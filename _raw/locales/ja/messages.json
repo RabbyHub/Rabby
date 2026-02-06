@@ -1131,7 +1131,9 @@
           "settings": "設定",
           "perpsPositions_other": "{{count}} ポジション",
           "perpsPositions_one": "{{count}} ポジション",
-          "prediction": "予測"
+          "prediction": "予測",
+          "lending": "レンディング",
+          "dragTip": "長押しで並び替え"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -3029,7 +3031,9 @@
           "hideSmall": "小さい残高のトークンを非表示にします。",
           "hideSmallDesc": "小額残高のトークンは表示されません。",
           "hideDefiWithSmallDeposits": "少額の入金でDeFiを隠す。",
-          "hideDefiWithSmallDepositsDesc": "小額入金のDefisは表示されません。"
+          "hideDefiWithSmallDepositsDesc": "小額入金のDefisは表示されません。",
+          "hideDeFiWithSmallDeposits": "少額の預金でDeFiを非表示にします。",
+          "hideDeFiWithSmallDepositsDesc": "少額の預金のあるDeFiは表示されません。"
         },
         "table": {
           "tokenAddress": "トークンアドレス",
@@ -3148,7 +3152,9 @@
       "reload": "リロード",
       "networkErrorDescription": "{{site}}は予期せず接続を閉じました。ネットワークを確認してください。",
       "networkErrorTitle": "このサイトにアクセスできません",
-      "networkErrorDescriptionFallback": "サイトが予期せず接続を閉じました。ネットワークを確認してください。"
+      "networkErrorDescriptionFallback": "サイトが予期せず接続を閉じました。ネットワークを確認してください。",
+      "opening": "{{name}}を開いています...",
+      "serviceNotSupported": "このサービスは現在の地域ではサポートされていません。"
     },
     "perps": {
       "closeAllPopup": {
@@ -3266,7 +3272,8 @@
         "estReceiveTooltip": "クロスチェーンデポジットは LiFi を介して処理され、若干のスリッページが発生する場合があります。到着まであと {{number}} 秒です。",
         "minimumWithdrawSize": "最小出金額は $2",
         "feeTipTooltip": "Hyperliquid が請求する出金手数料：$1",
-        "hyperliquidFeeLabel": "Hyperliquidの手数料"
+        "hyperliquidFeeLabel": "Hyperliquidの手数料",
+        "hyperliquidFeeLabelTooltip": "新規ユーザーはHyperliquidによって一度限りのアクティベーション手数料が課されます。"
       },
       "home": {
         "markPrice": "マーク価格",
@@ -3627,7 +3634,9 @@
         "reduceOnlyTooLarge": "リデュース・オンリー設定が大きすぎます",
         "sizeSkewTooltip": "終値と開始価格の比率。例えば、サイズスキューが2.0の場合、終値を指値とする注文は開始価格の2倍の数量で出されます。サイズスキューが1.0の場合、等しい数量の注文が作成されます。",
         "tpSl": "利確 / 損切り",
-        "tpSlTips": "シンプルな成行の利確/損切り注文を出します。限定価格や部分的な利確/損切りといった高度な機能を使う場合は、開いているポジションで利確/損切りを設定してください。"
+        "tpSlTips": "シンプルな成行の利確/損切り注文を出します。限定価格や部分的な利確/損切りといった高度な機能を使う場合は、開いているポジションで利確/損切りを設定してください。",
+        "deposit": "入金",
+        "addFundsToGetStarted": "資金を追加して開始します"
       },
       "marginMode": {
         "cross": "クロス証拠金",
@@ -3676,14 +3685,16 @@
         "crossMarginRatio": "クロスマージン比率",
         "crossAccountLeverageTips": "クロスアカウント・レバレッジ = 総クロスポジション価値 / クロスアカウント価値",
         "crossMarginRatioTips": "維持証拠金 / ポートフォリオ価値。クロス建玉は証拠金率が100%に達した場合に清算されます。",
-        "accountEquityTip": "残高 + 未実現損益（全ポジションを決済した場合の概算口座価値）"
+        "accountEquityTip": "残高 + 未実現損益（全ポジションを決済した場合の概算口座価値）",
+        "available": "利用可能:"
       },
       "accountActions": {
         "available": "利用可能",
         "pending": "保留中",
         "deposit": "入金",
         "positionCount": "{{count}} ポジション",
-        "onePosition": "1 ポジション"
+        "onePosition": "1 ポジション",
+        "availableBalanceTips": "利用可能な資金"
       },
       "orderBook": {
         "total": "合計",
@@ -3697,6 +3708,13 @@
         "viewAsks": "売り板",
         "trades": "取引履歴",
         "title": "オーダーブック"
+      },
+      "editMargin": {
+        "longLiquidationTips": "{{percent}} 減少すると清算が発動します",
+        "title": "マージン管理",
+        "configureMargin": "マージンを設定する",
+        "currentPosition": "現在のポジション",
+        "shortLiquidationTips": "{{percent}} 上昇すると、清算が発動します。"
       }
     },
     "perpsDetail": {
@@ -3791,6 +3809,331 @@
         "stopLossExpectedPNL": "ストップロス 予想P/L"
       },
       "needDepositFirst": "先に資金を入金してください。"
+    },
+    "lending": {
+      "availableCard": {
+        "needSupply": "借り入れるには、担保として資産を提供する必要があります。",
+        "canBorrow": "あなたは提供した担保に基づいて、借入上限まで借りることができます。",
+        "singleAssetUnavailableForEmode": "借入不可用。退出 E-Mode 以访问。",
+        "emode": "E-Modeでは一部の資産は借りることができません。すべての資産にアクセスするにはE-Modeを終了してください。",
+        "emodeNoAssets": "関連する資産が見つかりませんでした。別のカテゴリで再度お試しください。"
+      },
+      "list": {
+        "headers": {
+          "token": "トークン",
+          "token_balance": "トークン/残高",
+          "mySupplies": "私の供給",
+          "my_balance": "私の残高",
+          "my_assets": "私の資産",
+          "token_tvl": "トークン/TVL",
+          "totalBorrowed": "総借入額",
+          "myBorrows": "私の借り入れ"
+        },
+        "item": {
+          "wrapperToken": "{{name}}のラップトークン"
+        }
+      },
+      "repayDetail": {
+        "tabs": {
+          "wallet": "ウォレット残高",
+          "collateral": "担保"
+        },
+        "repayWith": "返済するには",
+        "amountTitle": "残高：",
+        "actions": "返済",
+        "approveAndRepay": "承認と返済"
+      },
+      "supplyDetail": {
+        "amountTitle": "利用可能:",
+        "actions": "供給",
+        "supplied": "提供されました",
+        "enabled": "有効",
+        "availableToBorrow": "借入可能",
+        "supplyAPY": "供給APY",
+        "unavailable": "利用できません",
+        "supplyBalance": "供給残高",
+        "collateralization": "担保化",
+        "isolatedTips": "あなたの既存の貸し出し/借入資産はサポートされていません。",
+        "approveAndSupply": "承認と供給"
+      },
+      "withdrawDetail": {
+        "remainingSupply": "残りの供給",
+        "amountTitle": "残高:",
+        "actions": "引き出す"
+      },
+      "toggleCollateralDetail": {
+        "disable": "{{asset}}を担保として無効にする",
+        "enable": "{{asset}}を担保として有効にする",
+        "actions": "{{asset}} の担保を切り替える",
+        "error": "AAVEサービスにエラーが発生しました。後でもう一度お試しください。"
+      },
+      "toggleCollateralModal": {
+        "toggleRiskTexts": {
+          "doNotHaveSuppliesInThisCurrency": "この通貨には供給がありません。",
+          "canNotUseThisCurrencyAsCollateral": "この通貨を担保として使用することはできません",
+          "zeroLTVWithdrawBlocked": "LTVがゼロの資産（{{assets}}）は、このアクションを実行するために引き出すか、担保として無効にする必要があります。",
+          "canNotSwitchUsageAsCollateralMode": "この通貨の担保モードとしての使用を切り替えることはできません。なぜなら、担保コールを引き起こす可能性があるからです。"
+        },
+        "closeTitle": "レビュー無効化",
+        "openTitle": "レビューの有効化",
+        "exitIsolationModeTitle": "アイソレーションモードを終了する",
+        "exitIsolationModeDesc": "隔離モードを終了し、他のトークンを担保として使用できるようになります。",
+        "closeDesc": "この資産を担保として無効にすると、あなたの借入力とヘルスファクターに影響します。",
+        "riskToLiquidationText": "この通貨の担保モードに切り替えることはできません。担保コールが発生するためです。",
+        "enableIsolationModeTitle": "イソレーションモードを有効にする",
+        "openDesc": "この資産を担保として有効にすることで、借入能力とヘルスファクターが向上します。ただし、ヘルスファクターが1未満に下がると清算される可能性があります。",
+        "enableIsolationModeDesc": "アイソレーションモードに入ります。アイソレーションモードでは、他の資産を担保として提供することはできません。グローバルな負債上限が隔離された資産の借入可能額を制限します。別の資産を借りる前に、担保としてCRVを無効にしてアイソレーションモードを終了してください。"
+      },
+      "borrowDetail": {
+        "actions": "借りる",
+        "swapDebt": "スワップ",
+        "amountTitle": "利用可能:",
+        "borrowed": "借入",
+        "approveAndBorrow": "承認して借りる",
+        "almostReachedError": "借入可能的最大金额受到限制，因为协议借入上限快要达到。",
+        "almostReachedWarning": "この資産のプロトコル借入上限は100％です。これ以上の借入はできません。"
+      },
+      "popup": {
+        "amount": "金額",
+        "remainingDebt": "残りの借金",
+        "liquidationAt": "1.0未満の清算",
+        "available": "利用可能",
+        "title": "取引概要"
+      },
+      "borrowOverview": {
+        "availableToBorrow": "借入可能",
+        "title": "借入詳細情報",
+        "liquidityPenalty": "清算ペナルティ",
+        "totalBorrowed": "総借入額",
+        "myBorrow": "私の借入",
+        "borrowCap": "借入上限",
+        "reachCapTip": "この資産は借入上限に達しました。"
+      },
+      "supplyOverview": {
+        "collateral": "担保",
+        "availableToSupply": "提供可能性",
+        "mySupply": "私の供給",
+        "walletBalance": "ウォレット残高",
+        "noBalance": "残高がありません",
+        "useAsCollateral": "担保として使用",
+        "title": "供給の詳細",
+        "totalSupplied": "供給総量",
+        "almostCap": "この資産は、ほぼ借入上限に達しています。この市場から借りられるのは、{{available}} のみです。",
+        "reachCap": "この資産は供給上限に達しました。この市場から供給できるものはありません。"
+      },
+      "risk": {
+        "warning": "この金額を借りると、あなたのヘルスファクターが清算のリスクがあるレベルに下がります。",
+        "toggleCollateralWarning": "この資産を担保として無効にすると、あなたのヘルスファクターは清算のリスクがあるレベルに低下します。",
+        "withdrawWarning": "この金額を引き出すと、あなたのヘルスファクターが清算に対してリスクの高いレベルに下がります。",
+        "checkbox": "アラートを理解しましたので、続行します。",
+        "emodeBlockWarning": "Eモードを無効にすると、清算のリスクがあるレベルまでヘルスファクターが低下します。",
+        "blockEmodeWarning": "Eモードを無効にすることはできません。それは清算を引き起こす可能性があります。Eモードを終了するには、供給または借入ポジションを返済してください。"
+      },
+      "lqDescription": {
+        "desc": "清算価値",
+        "below1title": "ヘルスファクター ≤ 1.0:",
+        "risky": "リスキー",
+        "over3desc": "あなたのポジションは安全です",
+        "below1desc": "あなたのポジションは清算のリスクにさらされています。",
+        "over3title": "ヘルスファクター > 3.0:",
+        "liquidationTitle": "清算:",
+        "introText": "あなたの健康係数は、あなたの借入ポジションがどれほど安全であるかを示しています。もしそれが低すぎると、あなたの担保が清算される可能性があります。",
+        "warningText": "あなたのヘルスファクターは低すぎます。清算を避けるために：\n1. ローンの一部または全額を返済してください\n2. さらに担保を追加してください",
+        "liquidation": "あなたのヘルスファクターが1.0未満になると、債務を返済するために一部の担保が自動的に売却される可能性があります。清算ペナルティが適用され、担保の一部が失われることになります。"
+      },
+      "modalDesc": {
+        "availableToBorrow": "借りられる金額",
+        "isolatedTitle": "資産は担保として使用できません",
+        "availableToBorrowDesc": "担保資産に基づいて借り入れることができ、借入上限に達するまで可能です。",
+        "isolatedSupplyDesc": "担保の使用は、隔離モードのため制限されています。",
+        "maxAmount": "これは、提供した担保に基づいて借りられる最大額です。あなたの総借入力は、各担保資産の市場価値にその最大LTVを掛け算し、結果を合算することで計算されます。",
+        "globalIsolatedDesc": "孤立モードでは、他の資産を担保として提供することはできません。グローバルな借入制限が孤立資産の借入力を制限します。孤立モードを終了するには、他の資産を借りる前にUNIを担保として無効にしてください。",
+        "isolatedDesc": "この資産はアイソレーションモードでのみ担保として使用できます。このモードでは、借入に他の資産担保を供給することはできません。アイソレーションモードで担保として使用される資産は、特定の借入上限までしか借りることができません。",
+        "maxLTV": "最大LTV比率は、特定の担保の最大借入可能額を示します。例えば、担保のLTVが75%の場合、ユーザーは1 ETHの担保に対して0.75に相当するETHを主通貨で借りることができます。",
+        "lqDesc": "清算が発生すると、清算者は借入者に代わって未返済の借入金額の最大50%を返済します。その見返りに、彼らは担保を割引価格で購入でき、差額（清算ペナルティ）をボーナスとして保持することができます。"
+      },
+      "repayWithAToken": {
+        "header": {
+          "balance": "残高",
+          "assets": "トークン"
+        },
+        "title": "返済トークンを選択"
+      },
+      "manageEmode": {
+        "actions": {
+          "enable": "E-Modeを有効にする",
+          "disable": "Eモードを無効にする"
+        },
+        "guide": {
+          "buttonTitle": "E-Modeを管理する",
+          "title": "効率モード (E-Mode)",
+          "description": "E-Modeは選択した資産のカテゴリーに対するLTVを増加させます。"
+        },
+        "categorySelector": {
+          "header": {
+            "asset": "資産"
+          },
+          "placeholder": "選択する",
+          "label": "資産カテゴリ",
+          "desc": "このカテゴリを有効にするには、このカテゴリの外にあるすべての借り入れポジションを閉じる必要があります。"
+        },
+        "debtSwapSelector": {
+          "header": {
+            "borrow": "私の借入",
+            "assets": "トークン/残高"
+          },
+          "title": "借入トークンを選択"
+        },
+        "collateralSwapSelector": {
+          "header": {
+            "collateral": "私の担保",
+            "assets": "トークン"
+          },
+          "title": "担保トークンを選択してください"
+        },
+        "overview": {
+          "row": {
+            "borrowable": "借入可能",
+            "collateral": "担保",
+            "asset": "資産"
+          },
+          "title": "資産カテゴリ"
+        },
+        "disableTitle": "無効にする",
+        "unavailable": "• 利用不可用",
+        "title": "E-Modeを管理する",
+        "enabled": "• 有効化",
+        "unavailableTips": "既存の貸し出し/借入資産はサポートされていません。",
+        "description": "E-Modeを有効にすると、借入力を最大化できます。ただし、借入は選択したカテゴリ内の資産に制限されています。"
+      },
+      "debtSwap": {
+        "actions": {
+          "amount": "金額",
+          "borrowed": "借入した",
+          "select": "選択してください",
+          "swapTo": "スワップする",
+          "title": "債務スワップ"
+        },
+        "overview": {
+          "title": "取引概要",
+          "borrowAPY": "借入年利率",
+          "borrowValueAfter": "スワップ後の借入残高"
+        },
+        "button": {
+          "swap": "スワップ"
+        },
+        "borrowBalance": "借入残高",
+        "title": "スワップ 借りポジション",
+        "entryTips": "ワンクリックで借りた資産をスワップし、ステップと手数料を削減します。",
+        "lpRiskWarning": "スワップ後のヘルスファクターが低下しました。あなたのポジションは清算のリスクが高くなります。",
+        "priceImpactTips": "高い価格影響 ({{lostValue}})。このルートは流動性が低いか注文サイズが小さいために、より多くのリターンを得られる場合があります。",
+        "lpDangerWarning": "このスワップ後の健康係数は非常に低くなり、清算のリスクがあります。安全を保つために、別の資産を選択するか、スワップ金額を減らしてください。"
+      },
+      "repayWithCollateral": {
+        "action": {
+          "title": "{{collateral}}で返済"
+        },
+        "overview": {
+          "collateralValueAfter": "返済後の担保残高",
+          "borrowValueAfter": "返済後の借入残高",
+          "title": "取引概要"
+        },
+        "button": {
+          "repay": "返済"
+        },
+        "toRepay": "返済予定額",
+        "repayWith": "返済に使用する担保",
+        "collateralNotEnough": "あなたの担保残高は選択した金額よりも少なくなっています。"
+      },
+      "hfTips": {
+        "more": "もっと見る",
+        "desc": "1.0を下回ると、あなたの担保が清算される可能性があります。"
+      },
+      "disableBorrowTip": {
+        "noSupply": "資産を供給して、借入を可能にします。",
+        "desc": "供給なし：借りるには資産を担保として供給する必要があります。"
+      },
+      "type": {
+        "supplied": "供給済み",
+        "borrowed": "借りた"
+      },
+      "actions": {
+        "repay": "返済",
+        "borrow": "借りる",
+        "swap": "スワップ",
+        "supply": "供給",
+        "withdraw": "引き出す"
+      },
+      "summary": {
+        "empty": {
+          "description": "AAVEによって提供されます。安全で手数料ゼロ。",
+          "title": "資産で利息を得る",
+          "endDesc": "まだ預金はありません。下記の推奨資産をチェックして、利息を得るために始めましょう。"
+        },
+        "netWorth": "ネット資産",
+        "healthFactor": "ヘルスファクター",
+        "eMode": "E-モード",
+        "totalBorrowed": "総借入額",
+        "totalSupplied": "供給合計",
+        "healthFactorTip": "ヘルスファクターは、あなたのポジションの安全性を示します。",
+        "risky": "リスキー",
+        "more": "もっと",
+        "ethCorrelatedTip": "ETH相関資産",
+        "netApy": "ネットAPY",
+        "estDailyEarnings": "推定日収入",
+        "healthy": "健康",
+        "lq": "1を下回ると、清算がトリガーされる可能性があります。"
+      },
+      "market": {
+        "core": "コアマーケット"
+      },
+      "accountActions": {
+        "supply": "供給",
+        "both": "両方",
+        "borrow": "借りる"
+      },
+      "table": {
+        "token": "トークン",
+        "type": "タイプ",
+        "actions": "アクション",
+        "myAssets": "私の資産",
+        "collateral": "担保"
+      },
+      "supplyList": {
+        "more": "より多くのトークンを供給",
+        "collapse": "崩壊"
+      },
+      "borrowList": {
+        "collapse": "崩壊",
+        "more": "借りるためのトークンがさらに多くあります"
+      },
+      "noData": "データがありません",
+      "borrowed": "借入",
+      "supplyApy": "供給APY",
+      "submitted": "提出されました",
+      "totalSupplied": "総供給量",
+      "gotIt": "わかった",
+      "borrowApy": "借入APY",
+      "isolateTip": "これは隔離された市場です",
+      "estNetApy": "推定ネットAPY",
+      "estDailyEarning": "推定日収益",
+      "totalSupply": "総供給量",
+      "totalBorrowed": "合計借入額",
+      "title": "貸出",
+      "supplied": "供給済み",
+      "supplyBalance": "供給残高",
+      "netWorth": "純資産",
+      "isolate": "孤立",
+      "borrowBalance": "借入残高",
+      "totalBorrow": "合計借入",
+      "netApy": "ネットAPY",
+      "disabled": "無効",
+      "hf": "ヘルスファクター",
+      "enterAmount": "金額を入力してください",
+      "hfTitle": "ヘルスファクター",
+      "selectMarket": "マーケットを選択",
+      "searchMarket": "マーケットを検索",
+      "selectChain": "チェーンを選択"
     }
   },
   "component": {
@@ -4012,6 +4355,9 @@
       "title": "これは流動性プロバイダー(LP)トークンです。",
       "description": "LPトークンは、あなたが資産を預けたDeFiプロトコルによって発行されます。これらはその資産の証明として機能しますが、あなたの総残高にはその価値が含まれていません。",
       "descriptionFor": "これは{{ protocolName }}の流動性プロバイダー（LP）トークンです"
+    },
+    "DesktopAccountSelector": {
+      "selectAddress": "アドレスを選択してください"
     }
   },
   "global": {
