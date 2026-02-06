@@ -164,39 +164,13 @@ export const DesktopDappSelector = (
   const history = useHistory();
   const location = useLocation();
 
-  const updateSearchParams = React.useCallback(
-    (updater: (params: URLSearchParams) => void) => {
-      const params = new URLSearchParams(location.search);
-      updater(params);
-      const next = params.toString();
-      // const nextPath = next
-      //   ? `${location.pathname}?syncUrl=`
-      //   : location.pathname;
-      // console.log('nextPath', nextPath, next);
-      console.log(
-        'updateSearchParams called dapp select',
-        `${location.pathname}?${next}`
-      );
-
-      history.replace(`${location.pathname}?${next}`);
-    },
-    [history, location]
-  );
-
   const onSelect = React.useCallback(
     (id: string) => {
       const nextDapp = dappList.find((item) => item.id === id);
       if (!nextDapp) {
         return;
       }
-      updateSearchParams((params) => {
-        params.delete('syncUrl');
-        params.set('syncUrl', nextDapp?.url);
-      });
-      // updateSearchParams((params) => {
-      //   params.delete('syncUrl');
-      // });
-      // dispatch.innerDappFrame.setInnerDappId({ type: props.type, dappId: id });
+      history.replace(`/desktop/${props.type}`);
       props?.onSelect?.(id);
     },
     [props.type, props.onSelect, dispatch]
