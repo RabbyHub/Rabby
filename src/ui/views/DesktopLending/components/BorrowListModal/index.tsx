@@ -327,7 +327,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                           height={12}
                           className={clsx(
                             'text-r-neutral-foot flex-shrink-0 inline-block transition-transform',
-                            !foldHideList && '-rotate-90'
+                            !foldHideList ? '-rotate-90' : 'rotate-90'
                           )}
                         />
                       </div>

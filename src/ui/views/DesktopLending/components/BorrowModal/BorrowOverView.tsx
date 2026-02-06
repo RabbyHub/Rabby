@@ -29,7 +29,7 @@ export const BorrowOverView: React.FC<
                   limitless={healthFactor === '-1'}
                   healthFactor={healthFactor}
                 />{' '}
-                <span className="mx-1">→</span>
+                <span className="mx-4">→</span>
                 <HealthFactorText healthFactor={afterHF} />
               </>
             ) : (
