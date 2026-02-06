@@ -873,6 +873,7 @@
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
+        "hyperliquidFeeLabelTooltip": "New users are charged a one-time activation fee by Hyperliquid.",
         "receiveToken": "Receive Token",
         "estReceiveLabel": "Est. Receive",
         "estTimeLabel": "Est. Time",
@@ -1177,6 +1178,7 @@
         "sound": "Enable Sound"
       },
       "tradingPanel": {
+        "deposit":"Deposit",
         "atLeastTwoOrders": "At least two orders are required",
         "liquidationPriceTooltip": "Position risk is low, so there is no liquidation price for the time being. Note that increasing the position or reducing the margin will increase the risk.",
         "tpSlTips": "Places simple market TP/SL orders. For advanced features such as limited prices or partial TP/SL, set the TP/SL in an open position.",
@@ -1194,6 +1196,7 @@
         "randomizeTooltip": "Randomizes the timing and size of sub-orders to reduce predictability.",
         "reduceOnly": "Reduce Only",
         "enableTrading": "Enable Trading",
+        "addFundsToGetStarted": "Add funds to get started",
         "startPrice": "Start Price",
         "endPrice": "End Price",
         "start": "Start",
@@ -1269,6 +1272,13 @@
         "maxError": "Maximum leverage is {{max}}x",
         "confirm": "Confirm"
       },
+      "editMargin": {
+        "title": "Manage Margin",
+        "configureMargin": "Configure Margin",
+        "longLiquidationTips": "Going down {{percent}} will trigger liquidation",
+        "shortLiquidationTips": "Going up {{percent}} will trigger liquidation",
+        "currentPosition": "Current Position"
+      },
       "editTpSl": {
         "entryPrice": "Entry Price:",
         "markPrice": "Mark Price:",
@@ -1306,6 +1316,7 @@
         "pending": "Pending",
         "available": "Available",
         "onePosition": "1 position",
+        "availableBalanceTips": "Available Funds",
         "positionCount": "{{count}} positions",
         "deposit": "Deposit"
       },

@@ -97,7 +97,7 @@ export const PerpsSingleCoin = () => {
   }, [perpFee]);
 
   const currentAssetCtx = useMemo(() => {
-    return marketDataMap[coin.toUpperCase()];
+    return marketDataMap[coin];
   }, [marketDataMap, coin]);
 
   const { tpPrice, slPrice, tpOid, slOid } = useMemo(() => {

@@ -24,6 +24,7 @@ import { formatTpOrSlPrice } from '../../Perps/utils';
 import { SignAction, usePerpsProState } from './usePerpsProState';
 import { useMemo } from 'react';
 import { KEYRING_CLASS } from '@/constant';
+import { formatPerpsCoin } from '../utils';
 
 const formatTriggerPx = (px?: string) => {
   // avoid '.15' input error from hy validator
@@ -124,7 +125,7 @@ export const usePerpsProPosition = () => {
         console.error('PERPS', errorMessage, error);
         perpsToast.error({
           title: errorMessage,
-          description: error?.message,
+          description: error?.message?.toString() || 'unknown error',
         });
         Sentry.captureException(
           new Error(
@@ -188,7 +189,7 @@ export const usePerpsProPosition = () => {
               title: t('page.perps.toast.orderFilled'),
               description: t('page.perps.toast.openPositionSuccess', {
                 direction: isBuy ? 'Long' : 'Short',
-                coin,
+                coin: formatPerpsCoin(coin),
                 size: totalSz,
                 price: avgPx,
               }),
@@ -254,7 +255,7 @@ export const usePerpsProPosition = () => {
                 title: t('page.perps.toast.orderFilled'),
                 description: t('page.perps.toast.openPositionSuccess', {
                   direction: isBuy ? 'Bought' : 'Sold',
-                  coin,
+                  coin: formatPerpsCoin(coin),
                   size: totalSz,
                   price: avgPx,
                 }),
@@ -264,7 +265,7 @@ export const usePerpsProPosition = () => {
                 title: t('page.perps.toast.orderPlaced'),
                 description: t('page.perps.toast.openLimitOrderSuccess', {
                   direction: isBuy ? 'Long' : 'Short',
-                  coin,
+                  coin: formatPerpsCoin(coin),
                   size: size,
                   price: limitPx,
                 }),
@@ -311,7 +312,7 @@ export const usePerpsProPosition = () => {
               description: t('page.perps.toast.openTPSlMarketOrderSuccess', {
                 tpsl: p.tpsl === 'tp' ? 'Take profit' : 'Stop loss',
                 direction: isBuy ? 'Long' : 'Short',
-                coin,
+                coin: formatPerpsCoin(coin),
                 size: size,
                 price: triggerPx,
               }),
@@ -359,7 +360,7 @@ export const usePerpsProPosition = () => {
               description: t('page.perps.toast.openTPSlLimitOrderSuccess', {
                 tpsl: p.tpsl === 'tp' ? 'Take profit' : 'Stop loss',
                 direction: isBuy ? 'Long' : 'Short',
-                coin,
+                coin: formatPerpsCoin(coin),
                 size: size,
                 price: triggerPx,
               }),
@@ -412,7 +413,7 @@ export const usePerpsProPosition = () => {
               title: t('page.perps.toast.orderPlaced'),
               description: t('page.perps.toast.openTWAPOrderSuccess', {
                 direction: isBuy ? 'Long' : 'Short',
-                coin,
+                coin: formatPerpsCoin(coin),
                 size: size,
               }),
             });
@@ -626,7 +627,7 @@ export const usePerpsProPosition = () => {
               title: t('page.perps.toast.orderPlaced'),
               description: t('page.perps.toast.openScaleOrderSuccess', {
                 direction: isBuy ? 'Long' : 'Short',
-                coin,
+                coin: formatPerpsCoin(coin),
                 size: totalSize,
               }),
             });
@@ -673,7 +674,7 @@ export const usePerpsProPosition = () => {
               title: t('page.perps.toast.orderFilled'),
               description: t('page.perps.toast.closePositionSuccess', {
                 direction: isBuy ? 'Short' : 'Long',
-                coin,
+                coin: formatPerpsCoin(coin),
                 size: totalSz,
                 price: avgPx,
               }),
@@ -738,7 +739,6 @@ export const usePerpsProPosition = () => {
                   : 'page.perpsDetail.PerpsEditMarginPopup.reduceMarginSuccess'
               ),
             });
-            dispatch.perps.fetchClearinghouseState();
           } else {
             const msg = res?.response?.data?.statuses[0];
             throw new Error(msg || 'Update margin failed');

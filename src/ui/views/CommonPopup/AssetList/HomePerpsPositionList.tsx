@@ -24,6 +24,9 @@ import {
   formatPerpsPct,
 } from '../../Perps/utils';
 import { UI_TYPE } from '@/constant/ui';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { obj2query } from '@/ui/utils/url';
+import { ga4 } from '@/utils/ga4';
 
 const isDesktop = UI_TYPE.isDesktop;
 
@@ -73,18 +76,21 @@ export const HomePerpsPositionList: React.FC = () => {
                 dispatch.perps.setSelectedCoin(assetPosition.position.coin);
                 wallet.setPerpsCurrentAccount(currentAccount);
                 history.push('/desktop/perps');
+                ga4.fireEvent('Perps_CardToPerps_Web', {
+                  event_category: 'Rabby Perps',
+                });
               } else {
-                const sdk = getPerpsSDK();
-                if (currentAccount) {
-                  dispatch.perps.setCurrentPerpsAccount(currentAccount);
-                  sdk.initAccount(currentAccount.address);
-                  dispatch.perps.subscribeToUserData({
-                    address: currentAccount.address,
-                    isPro: false,
-                  });
-                }
-                closePopup();
-                history.push('/perps');
+                wallet.setPerpsCurrentAccount(currentAccount);
+                wallet.switchDesktopPerpsAccount(currentAccount!);
+                wallet.openInDesktop(
+                  `/desktop/perps?${obj2query({
+                    coin: assetPosition.position.coin,
+                  })}`
+                );
+                ga4.fireEvent('Perps_CardToPerps', {
+                  event_category: 'Rabby Perps',
+                });
+                window.close();
               }
             }}
           />
@@ -112,7 +118,7 @@ const PositionItem: React.FC<{
   } = position;
 
   const marketData = useRabbySelector(
-    (store) => store.perps.marketDataMap?.[position.coin?.toUpperCase() || '']
+    (store) => store.perps.marketDataMap?.[position.coin || '']
   );
 
   const isUp = Number(unrealizedPnl) >= 0;
@@ -152,7 +158,7 @@ const PositionItem: React.FC<{
           <div className="flex flex-col gap-[8px]">
             <div className="flex items-center gap-[4px]">
               <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
-                {coin}
+                {formatPerpsCoin(coin)}
               </span>
               <span className="text-[11px] leading-[14px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-rb-blue-light-1 text-rb-blue-default">
                 {leverageType === 'cross'
