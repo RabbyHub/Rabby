@@ -47,6 +47,8 @@ import {
   TPSLConfig,
 } from '../views/DesktopPerps/types';
 import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
+import stats from '@/stats';
+import BigNumber from 'bignumber.js';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -805,7 +807,11 @@ export const perps = createModel<RootModel>()({
       }
 
       // 订阅实时数据更新
-      dispatch.perps.subscribeToUserData({ address: account.address, isPro });
+      dispatch.perps.subscribeToUserData({
+        address: account.address,
+        type: account.type,
+        isPro,
+      });
 
       // dispatch.perps.startPolling(undefined);
 
@@ -979,10 +985,10 @@ export const perps = createModel<RootModel>()({
     },
 
     subscribeToUserData(
-      payload: { address: string; isPro: boolean },
+      payload: { address: string; type: Account['type']; isPro: boolean },
       rootState
     ) {
-      const { address, isPro } = payload;
+      const { address, type: addressType, isPro } = payload;
       const sdk = getPerpsSDK();
       const subscriptions: (() => void)[] = [];
       dispatch.perps.unsubscribeAll(undefined);
@@ -1161,6 +1167,27 @@ export const perps = createModel<RootModel>()({
           const { fills, isSnapshot, user } = data;
           if (!isSameAddress(user, address)) {
             return;
+          }
+
+          if (!isSnapshot) {
+            fills.forEach((item) => {
+              stats.report('PerpsTradeHistory', {
+                created_at: item.time,
+                user_addr: address || '',
+                trade_type: item.dir,
+                coin: item.coin,
+                size: item.sz,
+                price: item.px,
+                trade_usd_value: new BigNumber(item.px)
+                  .times(item.sz)
+                  .toFixed(2),
+                builder_fee: item.builderFee || '',
+                closed_pnl: item.closedPnl,
+                service_provider: 'hyperliquid',
+                app_version: process.env.release || '0',
+                address_type: addressType || '',
+              });
+            });
           }
 
           dispatch.perps.patchStatsListBySnapshot({
