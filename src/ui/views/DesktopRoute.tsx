@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PrivateRouteGuard } from 'ui/component';
 
@@ -14,6 +14,11 @@ import { DesktopPerps } from './DesktopPerps';
 import { DesktopLending } from './DesktopLending';
 import clsx from 'clsx';
 import { AddAddressModal } from './DesktopProfile/components/AddAddressModal';
+import { useRabbyDispatch } from '../store';
+import { useEventBusListener } from '../hooks/useEventBusListener';
+import { EVENTS } from '@/constant';
+import { useMemoizedFn } from 'ahooks';
+import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
 
 declare global {
   interface Window {
@@ -45,6 +50,26 @@ const Main = () => {
   if (isLendingRoute) {
     hasMountedLendingRef.current = true;
   }
+
+  const dispatch = useRabbyDispatch();
+
+  const fetchAllAccounts = useMemoizedFn(() =>
+    dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
+    })
+  );
+
+  useEventBusListener(EVENTS.PERSIST_KEYRING, fetchAllAccounts);
+  useEventBusListener(EVENTS.RELOAD_ACCOUNT_LIST, async () => {
+    await dispatch.preference.getPreference('addressSortStore');
+    fetchAllAccounts();
+  });
+
+  useEffect(() => {
+    return onBackgroundStoreChanged('contactBook', (payload) => {
+      fetchAllAccounts();
+    });
+  }, [fetchAllAccounts]);
 
   return (
     <>
