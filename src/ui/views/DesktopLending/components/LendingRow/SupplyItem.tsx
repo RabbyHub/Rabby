@@ -100,6 +100,7 @@ export const SupplyItem: React.FC<{
             className={clsx(
               'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
               'bg-rb-neutral-bg-4 text-r-neutral-title-1',
+              'hover:bg-rb-brand-light-1',
               'flex items-center justify-center'
             )}
           >

@@ -96,7 +96,7 @@ export const MarketSelector: React.FC<{
                     className={clsx(
                       'h-[44px] flex items-center justify-between cursor-pointer',
                       'px-[16px] pr-[20px]',
-                      'hover:bg-rb-neutral-bg-3',
+                      'hover:bg-rb-brand-light-1',
                       'text-[14px] leading-[17px] font-medium text-r-neutral-title-1'
                     )}
                     onClick={() => handleSelect(option.value)}

@@ -270,20 +270,28 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                     <div
                       key="toggle-fold"
                       className={clsx(
-                        'w-full pt-20 pb-12 py-8 px-12 cursor-pointer text-left',
-                        'text-[12px] text-r-neutral-foot flex items-center justify-start gap-2'
+                        'w-full pt-20 pb-12 text-left',
+                        'flex items-center '
                       )}
-                      onClick={() => setFoldHideList((prev) => !prev)}
                     >
-                      <span>{t('page.lending.supplyList.more')}</span>
-                      <RcIconArrowCC
-                        width={12}
-                        height={12}
+                      <div
                         className={clsx(
-                          'text-r-neutral-foot flex-shrink-0 inline-block transition-transform',
-                          !foldHideList && '-rotate-90'
+                          'pl-[26.5px] pr-[16.5px] py-8 rounded-full bg-r-neutral-card-1',
+                          'flex items-center justify-center gap-2',
+                          'cursor-pointer text-[12px] text-r-neutral-foot'
                         )}
-                      />
+                        onClick={() => setFoldHideList((prev) => !prev)}
+                      >
+                        <span>{t('page.lending.supplyList.more')}</span>
+                        <RcIconArrowCC
+                          width={12}
+                          height={12}
+                          className={clsx(
+                            'text-r-neutral-foot flex-shrink-0 inline-block transition-transform',
+                            !foldHideList && '-rotate-90'
+                          )}
+                        />
+                      </div>
                     </div>
                   );
                 }

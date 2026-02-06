@@ -284,9 +284,10 @@ export const LendingList: React.FC = () => {
           />
           <button
             type="button"
+            disabled={loading}
             className={clsx(
               'px-[16px] h-[44px] w-[160px] rounded-[12px] text-[14px] font-medium',
-              'bg-rb-brand-light-1 text-rb-brand-default'
+              'bg-rb-brand-light-1 hover:bg-rb-brand-light-2 text-rb-brand-default'
             )}
             onClick={() => setListModalType('supplyList')}
           >
@@ -295,7 +296,7 @@ export const LendingList: React.FC = () => {
           {disableBorrowButton ? (
             <Tooltip
               overlayClassName="rectangle"
-              title={t('page.lending.disableBorrowTip.desc')}
+              title={t('page.lending.disableBorrowTip.noSupply')}
             >
               <button
                 type="button"
@@ -312,6 +313,7 @@ export const LendingList: React.FC = () => {
           ) : (
             <button
               type="button"
+              disabled={loading}
               className={clsx(
                 'px-[16px] h-[44px] w-[160px] rounded-[12px] text-[14px] font-medium',
                 'bg-rb-brand-default text-white'
