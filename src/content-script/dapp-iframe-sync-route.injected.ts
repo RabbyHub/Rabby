@@ -1,30 +1,64 @@
-import { runFlow } from './auto-clik-runner';
-const HANDSHAKE_MESSAGE_TYPE = 'rabby-dapp-iframe-handshake';
-const SYNC_MESSAGE_TYPE = 'rabby-dapp-iframe-sync-url';
+import { runFlow } from './auto-click-runner';
+import {
+  IFRAME_BRIDGE_MESSAGE_TYPES,
+  INJECTED_THEME_METHOD,
+  ensureInjectedNamespace,
+  getBridgeMessageType,
+  normalizeArgs,
+  serializeError,
+} from '@/ui/utils/iframeBridge';
+
+import type {
+  IframeBridgeCallMessage,
+  IframeBridgeHandshakeMessage,
+  IframeBridgeTheme,
+} from '@/ui/utils/iframeBridge';
+
 const INSTALL_FLAG = '__rabbyDappIframeSyncRouteInstalled';
 
-const getExtensionOrigin = () => {
-  const currentScript = document.currentScript as HTMLScriptElement | null;
-  const fromDataset = currentScript?.dataset?.extensionOrigin;
-  if (fromDataset) {
-    return fromDataset;
+const applyIframeTheme = (theme?: IframeBridgeTheme | null) => {
+  if (theme !== 'dark' && theme !== 'light') {
+    return false;
   }
-  const fallbackScript = document.querySelector(
-    'script[data-rabby-dapp-iframe-sync-route="1"]'
-  ) as HTMLScriptElement | null;
-  const fromFallbackDataset = fallbackScript?.dataset?.extensionOrigin;
-  if (fromFallbackDataset) {
-    return fromFallbackDataset;
+
+  if (location.origin === 'https://polymarket.com') {
+    localStorage?.setItem?.('color-mode', theme);
+    document?.documentElement?.setAttribute('data-theme', theme);
+    if (document?.documentElement?.style) {
+      document.documentElement.style['colorScheme'] = theme;
+    }
+    return true;
   }
-  const src = currentScript?.src || fallbackScript?.src;
-  if (!src) {
-    return '';
+
+  if (location.origin === 'https://probable.markets') {
+    const switchBTN = document?.documentElement?.querySelector?.(
+      'header label[data-scope="switch"]'
+    ) as HTMLLabelElement | null;
+    if (switchBTN) {
+      if (
+        !document?.documentElement
+          ?.querySelector?.('html')
+          ?.classList?.contains(theme)
+      ) {
+        switchBTN?.click?.();
+      }
+    } else {
+      localStorage?.setItem?.('theme', theme);
+      document?.documentElement
+        ?.querySelector?.('html')
+        ?.classList.remove('light', 'dark');
+      document?.documentElement?.querySelector?.('html')?.classList.add(theme);
+    }
+    return true;
   }
-  try {
-    return new URL(src).origin;
-  } catch (err) {
-    return '';
-  }
+
+  return false;
+};
+
+const registerInjectedThemeHandler = () => {
+  const registry = ensureInjectedNamespace();
+  registry[INJECTED_THEME_METHOD] = (theme?: IframeBridgeTheme) =>
+    applyIframeTheme(theme);
 };
 
 const setupDappIframeSyncRoute = () => {
@@ -43,6 +77,18 @@ const setupDappIframeSyncRoute = () => {
   let listening = false;
   let parentOrigin = '*';
 
+  const postMessageToParent = (payload: Record<string, any>) => {
+    window.parent.postMessage(payload, parentOrigin || '*');
+  };
+
+  const postSyncMessage = (token: string | null, url: string) => {
+    postMessageToParent({
+      type: IFRAME_BRIDGE_MESSAGE_TYPES.SYNC_URL,
+      token,
+      payload: { url },
+    });
+  };
+
   const postSyncUrl = (force = false) => {
     if (!handshakeToken) {
       return;
@@ -56,14 +102,7 @@ const setupDappIframeSyncRoute = () => {
 
     lastUrl = nextUrl;
 
-    window.parent.postMessage(
-      {
-        type: SYNC_MESSAGE_TYPE,
-        token: handshakeToken,
-        payload: { url: nextUrl },
-      },
-      parentOrigin || '*'
-    );
+    postSyncMessage(handshakeToken, nextUrl);
   };
 
   const ensureListening = () => {
@@ -93,8 +132,91 @@ const setupDappIframeSyncRoute = () => {
     wrapHistoryMethod('replaceState');
   };
 
-  const handleHandshake = (event: MessageEvent) => {
-    console.log('[iframe] in handleshake', event.origin, event);
+  const postCallResult = (
+    id: string,
+    success: boolean,
+    payload: { result?: any; error?: any }
+  ) => {
+    postMessageToParent({
+      type: IFRAME_BRIDGE_MESSAGE_TYPES.CALL_RESULT,
+      token: handshakeToken,
+      id,
+      success,
+      ...payload,
+    });
+  };
+
+  const handleHandshakeMessage = (
+    data: IframeBridgeHandshakeMessage,
+    origin: string
+  ) => {
+    if (typeof data.token !== 'string') {
+      return;
+    }
+
+    parentOrigin = origin;
+    handshakeToken = data.token;
+
+    applyIframeTheme(data.theme);
+    ensureListening();
+    postSyncUrl(true);
+
+    if (data.token && data.rules) {
+      const autoRunner = () => {
+        try {
+          runFlow(data.rules!).catch((e) => {
+            console.log('[iframe] [Flow] rule run error:', e, data.rules);
+          });
+        } catch (error) {
+          console.log('[iframe] [Flow] parse rules error:', error, data.rules);
+        }
+      };
+      try {
+        const store = JSON.parse(
+          window.localStorage.getItem('wagmi.store') ||
+            window.localStorage.getItem('polymarket.cache.wagmi.v2.store') ||
+            '{}'
+        );
+        if (!store?.state?.current) {
+          autoRunner();
+        }
+      } catch (error) {
+        console.log('[iframe] [Flow] autoRunner error:', error, data.rules);
+        autoRunner();
+      }
+    }
+  };
+
+  const handleCallMessage = (data: IframeBridgeCallMessage) => {
+    if (!handshakeToken || data.token !== handshakeToken) {
+      return;
+    }
+    if (typeof data.id !== 'string' || typeof data.method !== 'string') {
+      return;
+    }
+    const args = normalizeArgs(data.args);
+    const registry = ensureInjectedNamespace();
+    const fn = registry[data.method];
+    if (typeof fn !== 'function') {
+      postCallResult(data.id, false, {
+        error: {
+          message: `Injected method not found: ${data.method}`,
+        },
+      });
+      return;
+    }
+    Promise.resolve()
+      .then(() => fn(...args))
+      .then((result) => {
+        postCallResult(data.id, true, { result });
+      })
+      .catch((error) => {
+        postCallResult(data.id, false, { error: serializeError(error) });
+      });
+  };
+
+  const handleMessage = (event: MessageEvent) => {
+    console.log('[iframe] in handleMessage', event.origin, event);
 
     if (event.source !== window.parent) {
       return;
@@ -102,57 +224,30 @@ const setupDappIframeSyncRoute = () => {
     // if (event.origin !== extensionOrigin) {
     //   return;
     // }
-    const data = event.data;
-    if (!data || typeof data !== 'object') {
-      return;
-    }
-    if (data.type !== HANDSHAKE_MESSAGE_TYPE) {
+    const messageType = getBridgeMessageType(event.data);
+    if (!messageType) {
       return;
     }
 
-    console.log(`[iframe] in dapp:${location.origin}`, event);
-
-    if (typeof data.token !== 'string') {
+    if (messageType === IFRAME_BRIDGE_MESSAGE_TYPES.HANDSHAKE) {
+      handleHandshakeMessage(
+        event.data as IframeBridgeHandshakeMessage,
+        event.origin
+      );
       return;
     }
 
-    parentOrigin = event.origin;
-    handshakeToken = data.token;
-
-    if (data.theme) {
-      if (location.origin === 'https://polymarket.com') {
-        localStorage.setItem('color-mode', data.theme);
-        document?.documentElement?.setAttribute('data-theme', data.theme);
-        document.documentElement.style['colorScheme'] = data.theme;
-      }
-    }
-    ensureListening();
-    postSyncUrl(true);
-
-    if (data.token && data.rules) {
-      try {
-        runFlow(data.rules).catch((e) => {
-          console.log('[iframe] [Flow] rule run error:', e, data.rules);
-        });
-      } catch (error) {
-        console.log('[iframe] [Flow] parse rules error:', error, data.rules);
-      }
+    if (messageType === IFRAME_BRIDGE_MESSAGE_TYPES.CALL) {
+      handleCallMessage(event.data as IframeBridgeCallMessage);
     }
   };
 
   const getHandshakeToken = () => {
-    window.parent.postMessage(
-      {
-        type: SYNC_MESSAGE_TYPE,
-        token: handshakeToken,
-        payload: { url: lastUrl },
-      },
-      parentOrigin
-    );
+    postSyncMessage(handshakeToken, lastUrl);
   };
   getHandshakeToken();
 
-  window.addEventListener('message', handleHandshake);
+  window.addEventListener('message', handleMessage);
 };
 
 const domReadyCall = (callback) => {
@@ -166,6 +261,7 @@ const domReadyCall = (callback) => {
     callback();
   }
 };
+registerInjectedThemeHandler();
 
 domReadyCall(() => {
   setTimeout(() => {

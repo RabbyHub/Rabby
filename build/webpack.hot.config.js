@@ -12,6 +12,7 @@ const tsImportPluginFactory = require('ts-import-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const { resolveManifestFilename } = require('./manifest-utils');
 const ReactRefreshTypeScript = require('react-refresh-typescript');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
@@ -42,6 +43,11 @@ const MANIFEST_TYPE = process.env.MANIFEST_TYPE || 'chrome-mv2';
 const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
 const FINAL_DIST = IS_MANIFEST_MV3 ? paths.dist : paths.distMv2;
 const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
+
+const MANIFEST_FILENAME = resolveManifestFilename({
+  manifestType: MANIFEST_TYPE,
+  buildEnv: 'dev',
+});
 
 // 通用配置
 const commonConfig = {
@@ -157,8 +163,10 @@ const commonPlugins = [
     patterns: [
       { from: paths.rootResolve('_raw'), to: FINAL_DIST },
       {
-        from: paths.rootResolve(`src/manifest/${MANIFEST_TYPE}/manifest.json`),
-        to: FINAL_DIST,
+        from: paths.rootResolve(
+          `src/manifest/${MANIFEST_TYPE}/${MANIFEST_FILENAME}`
+        ),
+        to: path.resolve(FINAL_DIST, 'manifest.json'),
       },
       IS_MANIFEST_MV3
         ? {

@@ -5,14 +5,14 @@ import { PrivateRouteGuard } from 'ui/component';
 import { PortalHost } from '../component/PortalHost';
 import { CommonPopup } from './CommonPopup';
 import { DesktopProfile } from './DesktopProfile';
-import { DesktopDappIframe } from './DesktopDappIframe';
+import { DesktopInnerDapp } from './DesktopDappIframe';
 import {
   GlobalSignerPortal,
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
-import { DesktopPerps } from './DesktopPerps';
-import { DesktopLending } from './DesktopLending';
 import clsx from 'clsx';
+import { DesktopPerpsEntry } from './DesktopPerps/entry';
+import { DesktopLendingEntry } from './DesktopLending/entry';
 import { AddAddressModal } from './DesktopProfile/components/AddAddressModal';
 import { useRabbyDispatch } from '../store';
 import { useEventBusListener } from '../hooks/useEventBusListener';
@@ -28,7 +28,7 @@ declare global {
 
 const Main = () => {
   const location = useLocation();
-  const isDappIframeRoute = location.pathname === '/desktop/dapp-iframe';
+  const isDappIframeRoute = location.pathname === '/desktop/prediction';
   const isPerpsRoute = location.pathname === '/desktop/perps';
   const isProfileRoute = location.pathname.startsWith('/desktop/profile');
   const isLendingRoute = location.pathname === '/desktop/lending';
@@ -83,32 +83,28 @@ const Main = () => {
       ) : null}
       {hasMountedPerpsRef.current ? (
         <PrivateRouteGuard>
-          <div
-            style={{ display: isPerpsRoute ? 'block' : 'none' }}
-            className={clsx('h-full', isPerpsRoute ? 'block' : 'hidden')}
-          >
-            <DesktopPerps isActive={isPerpsRoute} />
+          <div className={clsx('h-full', isPerpsRoute ? 'block' : 'hidden')}>
+            <DesktopPerpsEntry isActive={isPerpsRoute} />
           </div>
         </PrivateRouteGuard>
       ) : null}
       {hasMountedDappIframeRef.current ? (
         <PrivateRouteGuard>
           <div
-            style={{ display: isDappIframeRoute ? 'block' : 'none' }}
             className={clsx('h-full', isDappIframeRoute ? 'block' : 'hidden')}
           >
-            <DesktopDappIframe isActive={isDappIframeRoute} />
+            <DesktopInnerDapp
+              isActive={isDappIframeRoute}
+              type={'prediction'}
+            />
           </div>
         </PrivateRouteGuard>
       ) : null}
 
       {hasMountedLendingRef.current ? (
         <PrivateRouteGuard>
-          <div
-            style={{ display: isLendingRoute ? 'block' : 'none' }}
-            className={clsx('h-full', isLendingRoute ? 'block' : 'hidden')}
-          >
-            <DesktopLending isActive={isLendingRoute} />
+          <div className={clsx('h-full', isLendingRoute ? 'block' : 'hidden')}>
+            <DesktopLendingEntry isActive={isLendingRoute} />
           </div>
         </PrivateRouteGuard>
       ) : null}
