@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, message, Select } from 'antd';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
 import { isSameAddress } from '@/ui/utils';
@@ -94,6 +94,20 @@ const TokenSymbolText = styled.span`
   font-size: 14px;
   line-height: 15px;
   color: var(--r-neutral-title-1, #13141a);
+`;
+
+const RepayDropdownGlobalStyle = createGlobalStyle`
+  .repay-dropdown {
+    .rc-virtual-list-holder-inner {
+      background: var(--r-neutral-bg-1, #120f21) !important;
+      .ant-select-item  {
+        background: var(--r-neutral-bg-1, #120f21) !important;
+      }
+      .ant-select-item-option-selected {
+        background: var(--r-neutral-bg-2) !important;
+      }
+    }
+  }
 `;
 
 type RepayModalProps = {
@@ -692,6 +706,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
 
   return (
     <div className="bg-r-neutral-bg-2 rounded-[8px] px-[20px] pt-[16px] pb-[16px] min-h-[600px] flex flex-col">
+      <RepayDropdownGlobalStyle />
       <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
         {t('page.lending.repayDetail.actions')} {reserve.reserve.symbol}
       </h2>
@@ -710,6 +725,8 @@ export const RepayModal: React.FC<RepayModalProps> = ({
                 <StyledSelect
                   value={isAtTokenRepay ? 'aToken' : 'underlying'}
                   onChange={(value) => setIsAtTokenRepay(value === 'aToken')}
+                  dropdownClassName="bg-r-neutral-bg-1 repay-dropdown"
+                  className="bg-r-neutral-bg-1"
                   suffixIcon={
                     <RcImgArrowDownCC
                       viewBox="0 0 16 16"
