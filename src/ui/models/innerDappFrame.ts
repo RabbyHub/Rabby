@@ -39,7 +39,6 @@ export const innerDappFrame = createModel<RootModel>()({
     },
     async syncState(_: void, store) {
       const data = await store.app.wallet.getInnerDappFrames();
-      console.log('innerDappFrame syncState', data);
       this.setField({ ...data });
     },
     async setInnerDappAccount([origin, account]: [string, Account], store) {
@@ -49,7 +48,6 @@ export const innerDappFrame = createModel<RootModel>()({
           [origin]: account,
         },
       });
-      console.log('setInnerDappAccount', origin, account);
       await store.app.wallet.setInnerDappAccount(origin, account);
     },
     async setInnerDappId(

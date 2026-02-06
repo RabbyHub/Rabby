@@ -82,7 +82,7 @@ export const rules: Record<string, StepConfig[]> = {
       wait: {
         path: [
           {
-            css: 'nav button>span:only-child:not(:has(*)',
+            css: 'nav button>span:only-child:not(:has(*))',
           },
           { enabled: true },
         ],

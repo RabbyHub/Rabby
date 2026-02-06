@@ -51,7 +51,6 @@ class InnerDappFrameService {
         true
       );
     }
-    console.log('setInnerDappAccount', origin, account);
     this.store.innerDappAccounts[origin] = account;
   };
 

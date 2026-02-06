@@ -10,7 +10,6 @@ import {
   GlobalSignerPortal,
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
-import { DesktopLending } from './DesktopLending';
 import clsx from 'clsx';
 import { DesktopPerpsEntry } from './DesktopPerps/entry';
 import { DesktopLendingEntry } from './DesktopLending/entry';
@@ -84,11 +83,7 @@ const Main = () => {
       ) : null}
       {hasMountedPerpsRef.current ? (
         <PrivateRouteGuard>
-          <div
-            style={{ display: isPerpsRoute ? 'block' : 'none' }}
-            className={clsx('h-full', isPerpsRoute ? 'block' : 'hidden')}
-          >
-            {/* <DesktopPerps isActive={isPerpsRoute} /> */}
+          <div className={clsx('h-full', isPerpsRoute ? 'block' : 'hidden')}>
             <DesktopPerpsEntry isActive={isPerpsRoute} />
           </div>
         </PrivateRouteGuard>
@@ -96,7 +91,6 @@ const Main = () => {
       {hasMountedDappIframeRef.current ? (
         <PrivateRouteGuard>
           <div
-            style={{ display: isDappIframeRoute ? 'block' : 'none' }}
             className={clsx('h-full', isDappIframeRoute ? 'block' : 'hidden')}
           >
             <DesktopInnerDapp
@@ -109,22 +103,8 @@ const Main = () => {
 
       {hasMountedLendingRef.current ? (
         <PrivateRouteGuard>
-          <div
-            style={{ display: isLendingRoute ? 'block' : 'none' }}
-            className={clsx('h-full', isLendingRoute ? 'block' : 'hidden')}
-          >
+          <div className={clsx('h-full', isLendingRoute ? 'block' : 'hidden')}>
             <DesktopLendingEntry isActive={isLendingRoute} />
-          </div>
-        </PrivateRouteGuard>
-      ) : null}
-
-      {hasMountedLendingRef.current ? (
-        <PrivateRouteGuard>
-          <div
-            style={{ display: isLendingRoute ? 'block' : 'none' }}
-            className={clsx('h-full', isLendingRoute ? 'block' : 'hidden')}
-          >
-            <DesktopLending isActive={isLendingRoute} />
           </div>
         </PrivateRouteGuard>
       ) : null}

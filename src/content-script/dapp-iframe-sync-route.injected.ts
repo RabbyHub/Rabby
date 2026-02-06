@@ -32,7 +32,7 @@ const applyIframeTheme = (theme?: IframeBridgeTheme | null) => {
 
   if (location.origin === 'https://probable.markets') {
     const switchBTN = document?.documentElement?.querySelector?.(
-      'header label[data-scope=[switch]'
+      'header label[data-scope="switch"]'
     ) as HTMLLabelElement | null;
     if (switchBTN) {
       if (
