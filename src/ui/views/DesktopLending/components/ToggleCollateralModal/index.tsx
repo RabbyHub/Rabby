@@ -188,6 +188,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
       setTxs(formatTxs);
     } catch (error) {
       console.error('Toggle collateral build tx error:', error);
+      message.error('Something error');
       setTxs([]);
     }
   }, [

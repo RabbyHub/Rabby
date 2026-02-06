@@ -41,11 +41,11 @@ const StyledSelect = styled(Select)`
   display: flex;
   align-items: center;
   background: var(--r-neutral-card2) !important;
-  padding: 4px 6px !important;
   border-radius: 6px !important;
   .ant-select-selector {
     border: none !important;
     padding: 0 !important;
+    padding: 4px 0 4px 6px !important;
     background: transparent !important;
     height: auto !important;
     box-shadow: none !important;

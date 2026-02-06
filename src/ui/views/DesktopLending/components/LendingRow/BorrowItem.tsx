@@ -40,7 +40,7 @@ export const BorrowItem: React.FC<{
     >
       <TCell className="flex-1 min-w-0">
         <div className="flex items-center gap-[32px]">
-          <div className="flex items-center gap-[8px] flex-shrink-0 min-w-[140px]">
+          <div className="flex items-center gap-[8px] flex-shrink-0 min-w-[180px]">
             {data.reserve.symbol && (
               <SymbolIcon tokenSymbol={data.reserve.symbol} size={24} />
             )}
@@ -53,7 +53,7 @@ export const BorrowItem: React.FC<{
           </div>
           <span
             className={clsx(
-              'text-[14px] leading-[17px] font-medium flex-shrink-0 min-w-[80px]',
+              'text-[14px] leading-[17px] font-medium flex-shrink-0 min-w-[120px]',
               'text-rb-red-default'
             )}
           >
@@ -61,7 +61,7 @@ export const BorrowItem: React.FC<{
           </span>
           <span
             className={clsx(
-              'text-[14px] leading-[17px] font-medium flex-shrink-0 min-w-[80px]',
+              'text-[14px] leading-[17px] font-medium flex-shrink-0 min-w-[120px]',
               'text-r-neutral-foot'
             )}
           >
@@ -77,12 +77,12 @@ export const BorrowItem: React.FC<{
           </span>
         </div>
       </TCell>
-      <TCell className="w-[130px] flex-shrink-0">
+      <TCell className="w-[88px] flex-shrink-0">
         <div className="flex items-center justify-start">
           <span />
         </div>
       </TCell>
-      <TCell className="w-[360px] flex-shrink-0">
+      <TCell className="w-[300px] flex-shrink-0">
         <div className="flex items-center justify-end gap-[10px]">
           {disableBorrowButton ? (
             <Tooltip

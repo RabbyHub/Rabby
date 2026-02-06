@@ -75,14 +75,15 @@ export const SupplyItem: React.FC<{
   return (
     <TRow
       className={clsx(
-        'px-[16px] py-[12px] bg-rb-neutral-bg-3 rounded-[12px] relative'
+        'px-[16px] py-[12px] rounded-[12px]',
+        isWrapperToken ? 'bg-r-neutral-line relative' : 'bg-rb-neutral-bg-3'
       )}
     >
       {isWrapperToken && (
         <div
           className="absolute left-[20px] top-[-6px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px]"
           style={{
-            borderBottomColor: 'var(--rb-neutral-bg-3)',
+            borderBottomColor: 'var(--r-neutral-line)',
             borderLeftColor: 'transparent',
             borderRightColor: 'transparent',
           }}
@@ -90,7 +91,7 @@ export const SupplyItem: React.FC<{
       )}
       <TCell className="flex-1 min-w-0">
         <div className="flex items-center gap-[32px]">
-          <div className="flex items-center gap-[8px] flex-shrink-0 min-w-[140px]">
+          <div className="flex items-center gap-[8px] flex-shrink-0 min-w-[180px]">
             {data.reserve.symbol && (
               <SymbolIcon tokenSymbol={data.reserve.symbol} size={24} />
             )}
@@ -103,7 +104,7 @@ export const SupplyItem: React.FC<{
           </div>
           <span
             className={clsx(
-              'text-[14px] leading-[17px] font-medium flex-shrink-0 min-w-[80px]',
+              'text-[14px] leading-[17px] font-medium flex-shrink-0 min-w-[120px]',
               'text-rb-green-default'
             )}
           >
@@ -111,7 +112,7 @@ export const SupplyItem: React.FC<{
           </span>
           <span
             className={clsx(
-              'text-[14px] leading-[17px] font-medium flex-shrink-0 min-w-[80px]',
+              'text-[14px] leading-[17px] font-medium flex-shrink-0 min-w-[120px]',
               'text-rb-green-default'
             )}
           >
@@ -127,7 +128,7 @@ export const SupplyItem: React.FC<{
           </span>
         </div>
       </TCell>
-      <TCell className="w-[130px] flex-shrink-0">
+      <TCell className="w-[88px] flex-shrink-0">
         <div className="flex items-center justify-start">
           {canBeEnabledAsCollateral ? (
             <CollateralSwitch
@@ -151,7 +152,7 @@ export const SupplyItem: React.FC<{
           )}
         </div>
       </TCell>
-      <TCell className="w-[360px] flex-shrink-0">
+      <TCell className="w-[300px] flex-shrink-0">
         <div className="flex items-center justify-end gap-[10px]">
           <button
             onClick={() => onSupply?.(data)}

@@ -201,6 +201,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
       setTxs(formatTxs);
     } catch (error) {
       console.error('Manage emode build tx error:', error);
+      message.error('Something error');
       setTxs([]);
     }
   }, [

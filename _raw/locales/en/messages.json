@@ -1508,7 +1508,7 @@
       "supplyDetail": {
         "actions": "Supply",
         "supplied": "Supplied",
-        "amountTitle": "Balance: ",
+        "amountTitle": "Available: ",
         "approveAndSupply": "Approve and Supply",
         "availableToBorrow": "Available to borrow",
         "supplyAPY": "Supply APY",
@@ -1521,7 +1521,7 @@
       "withdrawDetail": {
         "actions": "Withdraw",
         "remainingSupply": "Remaining supply",
-        "amountTitle": "Available: "
+        "amountTitle": "Balance: "
       },
       "toggleCollateralDetail": {
         "actions": "Toggle {{asset}} Collateral",
