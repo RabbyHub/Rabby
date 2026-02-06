@@ -114,7 +114,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
             <div className="flex items-center justify-between">
               <DesktopNav showRightItems={false} />
 
-              <div className="flex items-center gap-[16px]">
+              <div className="flex items-center gap-[12px]">
                 <DesktopAccountSelector
                   scene="perps"
                   value={currentPerpsAccount}

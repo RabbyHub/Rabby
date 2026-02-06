@@ -36,11 +36,14 @@ export const AccountActions: React.FC<{
     <div className="flex items-center gap-[12px]">
       {/* Available Balance */}
       {Boolean(clearinghouseState) && (
-        <div className="flex items-center gap-[8px] pl-[11px] pr-[7px] py-[7px] rounded-[16px] border border-rb-neutral-line">
+        <div className="flex items-center gap-[8px] pl-[11px] pr-[7px] py-[5px] rounded-[12px] border border-rb-neutral-line">
           <div className="flex items-center gap-[4px]">
-            <IconPerpsWallet />
+            <IconPerpsWallet
+              viewBox="0 0 20 20"
+              className="w-[16px] h-[16px]"
+            />
             <div className="flex items-start flex-col">
-              <span className="text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+              <span className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
                 {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
               </span>
             </div>
@@ -49,7 +52,7 @@ export const AccountActions: React.FC<{
           <button
             onClick={handleDeposit}
             className={clsx(
-              'ml-6 px-[12px] h-[28px] rounded-[6px] text-[15px] leading-[18px] font-medium flex items-center justify-center',
+              'ml-[4px] px-[12px] h-[24px] rounded-[6px] text-[12px] leading-[14px] font-medium flex items-center justify-center',
               'bg-rb-brand-light-1 text-rb-brand-default'
             )}
           >
@@ -61,7 +64,7 @@ export const AccountActions: React.FC<{
             <div
               onClick={handleDeposit}
               className={clsx(
-                'px-[12px] h-[28px] rounded-[6px] text-[15px] leading-[18px] font-medium flex items-center gap-[8px] cursor-pointer justify-center',
+                'px-[12px] h-[24px] rounded-[6px] text-[12px] leading-[14px] font-medium flex items-center gap-[8px] cursor-pointer justify-center',
                 'bg-rb-orange-light-1 text-rb-orange-default'
               )}
             >

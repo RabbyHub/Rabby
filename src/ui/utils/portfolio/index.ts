@@ -86,6 +86,8 @@ export const useQueryProjects = (
     portfolioNetWorth,
     grossNetWorth,
     refreshPositions,
+    refreshTokens: updateTokens,
+    refreshPortfolios: updatePortfolio,
     isTokensLoading,
     isAllTokenLoading,
     isPortfoliosLoading,
