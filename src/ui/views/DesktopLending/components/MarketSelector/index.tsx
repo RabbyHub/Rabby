@@ -48,10 +48,10 @@ export const MarketSelector: React.FC<{
     <div className={clsx('relative', className)}>
       <div
         className={clsx(
-          'flex items-center gap-[6px] px-[12px] h-[32px] rounded-[8px]',
-          'border border-solid border-rb-neutral-line bg-rb-neutral-bg-1',
+          'flex items-center gap-[6px] px-[16px] h-[44px] rounded-[12px]',
+          'bg-rb-neutral-bg-3',
           'cursor-pointer hover:border-rb-brand-default hover:bg-rb-brand-light-1',
-          'text-[14px] leading-[17px] font-medium text-r-neutral-title-1'
+          'text-[16px] leading-[17px] font-medium text-r-neutral-title-1'
         )}
         onClick={() => setIsOpen(!isOpen)}
       >

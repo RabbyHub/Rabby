@@ -317,7 +317,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                       <div
                         className={clsx(
                           'pl-[26.5px] pr-[16.5px] py-8 rounded-full bg-r-neutral-card-1',
-                          'flex items-center justify-center gap-2',
+                          'flex items-center justify-center gap-4',
                           'cursor-pointer text-[12px] text-r-neutral-foot'
                         )}
                         onClick={() => setFoldHideList((prev) => !prev)}

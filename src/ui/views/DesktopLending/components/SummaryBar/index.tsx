@@ -15,10 +15,6 @@ import { getApyColor } from '../../utils/apy';
 import { useLendingIsLoading } from '../../hooks';
 import { HealthTip } from './HealthTip';
 
-const SummaryBarContainer = styled.div`
-  /*  */
-`;
-
 const HealthyBadge = styled.div`
   background: var(--rb-light-green-light-1);
   color: white;
@@ -29,16 +25,16 @@ const HealthyBadge = styled.div`
   line-height: 16px;
 `;
 
-const InfoTitle = styled.span`
+export const InfoTitle = styled.span`
   color: var(--r-neutral-foot, #707280);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   line-height: 16px;
 `;
 
 const InfoValue = styled.span`
   color: var(--r-neutral-title-1, #192945);
-  font-size: 13px;
+  font-size: 12px;
   line-height: 16px;
   font-weight: 500;
 `;
@@ -104,6 +100,9 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
   const netApyText = useMemo(() => {
     const apyAbs = Math.abs(Number(netApy || 0));
     const formatted = formatApy(apyAbs);
+    if (!apyAbs) {
+      return '0.00%';
+    }
     return `${netApy > 0 ? '+' : '-'}${formatted}`;
   }, [netApy]);
 
@@ -120,13 +119,19 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
   return (
     <div className="border-t border-solid border-rb-neutral-line">
       <LendingHfTooltipStyle />
-      <SummaryBarContainer className="h-[40px] flex items-center px-[20px]">
+      <div className="h-[40px] flex items-center px-[20px]">
         {loading ? (
           <SummaryBarSkeleton />
         ) : (
           <div className="flex items-center gap-[24px] w-full">
             {onlySupply ? (
               <>
+                <div className="flex items-center gap-[6px]">
+                  <InfoTitle>{t('page.lending.summary.netWorth')}:</InfoTitle>
+                  <InfoValue>
+                    {formatUsdValue(netWorth, BigNumber.ROUND_DOWN)}
+                  </InfoValue>
+                </div>
                 <div className="flex items-center gap-[6px]">
                   <InfoTitle>
                     {t('page.lending.summary.totalSupplied')}:
@@ -248,7 +253,7 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
             <RightMarketTabInfo />
           </div>
         )}
-      </SummaryBarContainer>
+      </div>
     </div>
   );
 };

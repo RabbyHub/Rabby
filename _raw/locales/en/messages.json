@@ -1497,6 +1497,7 @@
       },
       "repayDetail": {
         "actions": "Repay",
+        "amountTitle": "Balance: ",
         "approveAndRepay": "Approve and Repay",
         "repayWith": "Repay with",
         "tabs": {
@@ -1507,6 +1508,7 @@
       "supplyDetail": {
         "actions": "Supply",
         "supplied": "Supplied",
+        "amountTitle": "Available: ",
         "approveAndSupply": "Approve and Supply",
         "availableToBorrow": "Available to borrow",
         "supplyAPY": "Supply APY",
@@ -1518,7 +1520,8 @@
       },
       "withdrawDetail": {
         "actions": "Withdraw",
-        "remainingSupply": "Remaining supply"
+        "remainingSupply": "Remaining supply",
+        "amountTitle": "Balance: "
       },
       "toggleCollateralDetail": {
         "actions": "Toggle {{asset}} Collateral",
@@ -1546,6 +1549,7 @@
       "borrowDetail": {
         "actions": "Borrow",
         "swapDebt": "Swap",
+        "amountTitle": "Available: ",
         "borrowed": "Borrowed",
         "approveAndBorrow": "Approve and Borrow",
         "almostReachedWarning": "Protocol borrow cap is at 100% for this asset. Further borrowing unavailable.",
@@ -1730,6 +1734,7 @@
       "summary": {
         "netWorth": "Net Worth",
         "totalBorrowed": "Total Borrowed",
+        "eMode": "E-Mode",
         "totalSupplied": "Total Supplied",
         "healthFactor": "Health Factor",
         "healthFactorTip": "Health factor indicates the safety of your position",
@@ -4399,6 +4404,9 @@
       "title": "This is a liquidity provider(LP) token",
       "descriptionFor": "This is a Liquidity Provider(LP) Token for {{ protocolName }}",
       "description": "LP tokens are issued by the DeFi protocols where you've deposited your assets. They serve as the proof of those assets, but their value isn't included in your total balance"
+    },
+    "DesktopAccountSelector": {
+      "selectAddress": "Select Address"
     }
   },
   "global": {

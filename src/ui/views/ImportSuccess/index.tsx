@@ -51,10 +51,10 @@ const ImportSuccess = ({
     supportChainList?: Chain[];
   }>();
 
-  const state = _state || location.state;
+  const state = _state || location.state || {};
 
   const dispatch = useRabbyDispatch();
-  const addressItems = useRef(new Array(state.accounts.length));
+  const addressItems = useRef(new Array(state.accounts?.length));
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)') && isPopup;
   const {

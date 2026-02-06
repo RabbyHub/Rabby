@@ -600,7 +600,9 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
                 className="w-16 h-16 text-r-neutral-foot"
               />
               <span className="text-[13px] leading-[16px] text-r-neutral-foot">
-                {formatTokenAmount(supplyAmount.amount || '0')}
+                {t('page.lending.supplyDetail.amountTitle')}
+                {formatTokenAmount(supplyAmount.amount || '0')}(
+                {formatUsdValue(Number(supplyAmount.usdValue))})
               </span>
               <button
                 type="button"
@@ -617,7 +619,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
               </button>
             </div>
           </div>
-          <div className="flex-1 flex flex-col items-end min-w-0">
+          <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
               value={amount ?? ''}
               onValueChange={onAmountChange}

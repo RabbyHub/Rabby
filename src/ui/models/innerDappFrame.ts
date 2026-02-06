@@ -5,6 +5,8 @@ import type {
   InnerDappType,
 } from '@/background/service';
 import { Account } from '@/background/service/preference';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 export const innerDappFrame = createModel<RootModel>()({
   name: 'innerDappFrame',
@@ -30,6 +32,9 @@ export const innerDappFrame = createModel<RootModel>()({
 
   effects: (dispatch) => ({
     init() {
+      eventBus.addEventListener(EVENTS.INNER_DAPP_ACCOUNT.CHANGED, () => {
+        this.syncState();
+      });
       return this.syncState();
     },
     async syncState(_: void, store) {
@@ -51,7 +56,6 @@ export const innerDappFrame = createModel<RootModel>()({
       payload: { type: InnerDappType; dappId: string },
       store
     ) {
-      const data = await store.app.wallet.getInnerDappFrames();
       this.setField({ [payload.type]: payload.dappId });
       await store.app.wallet.setInnerDappId(payload.type, payload.dappId);
     },

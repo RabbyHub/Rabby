@@ -6,7 +6,7 @@ import { formatUsdValue } from '@/ui/utils/number';
 
 export const estDaily = (netWorth: string, netApy: number) => {
   if (!netWorth || !netApy) {
-    return '--';
+    return '$0.00';
   }
   const dailyEarnings = new BigNumber(netWorth);
   const bigApy = new BigNumber(netApy);
