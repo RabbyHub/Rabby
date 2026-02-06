@@ -229,6 +229,16 @@ export const usePerpsProState = () => {
     }
   }, []);
 
+  const handleSafeSetDexAbstraction = useCallback(async () => {
+    try {
+      const sdk = getPerpsSDK();
+      const res = await sdk.exchange?.agentEnableDexAbstraction();
+      console.log('handleSafeSetDexAbstraction res', res);
+    } catch (e) {
+      console.log('Failed to handleSafeSetDexAbstraction:', e);
+    }
+  }, []);
+
   const handleDirectApprove = useCallback(
     async (signActions: SignAction[]): Promise<void> => {
       const sdk = getPerpsSDK();
@@ -256,6 +266,7 @@ export const usePerpsProState = () => {
 
       setTimeout(() => {
         handleSafeSetReference();
+        handleSafeSetDexAbstraction();
       }, 500);
       const [approveAgentRes, approveBuilderFeeRes] = results;
       console.log('sendApproveAgentRes', approveAgentRes);
@@ -309,6 +320,7 @@ export const usePerpsProState = () => {
         if (signActions.length === 0) {
           dispatch.perps.setAccountNeedApproveAgent(false);
           dispatch.perps.setAccountNeedApproveBuilderFee(false);
+          handleSafeSetDexAbstraction();
           return;
         }
 
@@ -584,6 +596,7 @@ export const usePerpsProState = () => {
     login,
     logout,
     handleActionApproveStatus,
+    handleSafeSetDexAbstraction,
     needEnableTrading,
     handleSafeSetReference,
 
