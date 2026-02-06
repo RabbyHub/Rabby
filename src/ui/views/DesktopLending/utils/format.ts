@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
 
-// TODO： 下面三个format都要check下看和移动端能不能对齐
 import { formatUsdValueKMB } from '../../Dashboard/components/TokenDetailPopup/utils';
 import { formatUsdValue } from '@/ui/utils/number';
 
