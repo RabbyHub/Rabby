@@ -86,7 +86,7 @@ export const WithdrawOverView: React.FC<
                 {afterHF ? (
                   <>
                     <HealthFactorText healthFactor={healthFactor} />{' '}
-                    <span className="mx-1">→</span>
+                    <span className="mx-4">→</span>
                     <HealthFactorText
                       healthFactor={afterHF}
                       limitless={afterHF === '-1'}

@@ -54,7 +54,6 @@ export const BorrowItem = ({
       <button
         type="button"
         className="flex-1 flex items-center justify-start min-w-0 text-left"
-        onClick={() => handlePressItem(data)}
       >
         <div className="flex items-center gap-8 min-w-0 w-[150px]">
           <SymbolIcon tokenSymbol={data.reserve.symbol} size={24} />
@@ -119,7 +118,6 @@ export const BorrowItem = ({
             disableBorrowButton && 'opacity-50 bg-rb-neutral-bg-4'
           )}
           onClick={(e) => {
-            e.stopPropagation();
             handlePressItem(data);
           }}
         >

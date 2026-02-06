@@ -24,6 +24,7 @@ import { DappIframeLoading } from './component/loading';
 import { DappIframeError } from './component/error';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
+import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 const HANDSHAKE_MESSAGE_TYPE = 'rabby-dapp-iframe-handshake';
 const SYNC_MESSAGE_TYPE = 'rabby-dapp-iframe-sync-url';
 const IFRAME_LOAD_TIMEOUT = 20 * 1000;
@@ -328,11 +329,14 @@ export const DesktopDappIframe: React.FC<DesktopDappIframeProps> = ({
               onActionSelect={handleActionSelect}
               showRightItems={false}
             />
-            <DesktopAccountSelector
-              value={currentSceneAccount}
-              onChange={switchCurrentSceneAccount}
-              scene="prediction"
-            />
+            <div className="flex items-center gap-[16px]">
+              <DesktopAccountSelector
+                value={currentSceneAccount}
+                onChange={switchCurrentSceneAccount}
+                scene="prediction"
+              />
+              <SwitchThemeBtn />
+            </div>
           </div>
           <div className="layout-container">
             <div className="">
