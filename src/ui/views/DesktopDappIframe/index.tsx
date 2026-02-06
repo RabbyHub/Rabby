@@ -344,6 +344,7 @@ export const DesktopDappIframe = React.forwardRef<
               showRightItems={false}
             />
             <div className="flex items-center gap-[16px]">
+              <DesktopDappSelector type={type} />
               <DesktopAccountSelector
                 value={currentSceneAccount}
                 onChange={switchCurrentSceneAccount}
