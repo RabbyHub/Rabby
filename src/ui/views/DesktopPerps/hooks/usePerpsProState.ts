@@ -267,7 +267,7 @@ export const usePerpsProState = () => {
       setTimeout(() => {
         handleSafeSetReference();
         handleSafeSetDexAbstraction();
-      }, 500);
+      }, 100);
       const [approveAgentRes, approveBuilderFeeRes] = results;
       console.log('sendApproveAgentRes', approveAgentRes);
       console.log('sendApproveBuilderFeeRes', approveBuilderFeeRes);
