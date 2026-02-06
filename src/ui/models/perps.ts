@@ -1171,7 +1171,7 @@ export const perps = createModel<RootModel>()({
 
           if (!isSnapshot) {
             fills.forEach((item) => {
-              stats.report('PerpsTradeHistory', {
+              stats.report('perpsTradeHistory', {
                 created_at: item.time,
                 user_addr: address || '',
                 trade_type: item.dir,
