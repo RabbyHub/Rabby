@@ -38,11 +38,6 @@ const DesktopLendingContent: React.FC = () => {
 
   useEffect(() => {
     setFetchLoading(true);
-    console.log(
-      'CUSTOM_LOGGER:=>: fetchData',
-      marketKey,
-      currentAccount?.address
-    );
     fetchData();
   }, [marketKey, currentAccount?.address]);
 

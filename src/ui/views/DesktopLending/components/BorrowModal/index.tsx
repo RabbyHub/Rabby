@@ -86,8 +86,8 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
 
   const targetPool = useMemo(() => {
     if (!formattedPoolReservesAndIncentives?.length) return undefined;
-    return formattedPoolReservesAndIncentives.find(
-      (item) => item.underlyingAsset === reserve.underlyingAsset
+    return formattedPoolReservesAndIncentives.find((item) =>
+      isSameAddress(item.underlyingAsset, reserve.underlyingAsset)
     );
   }, [formattedPoolReservesAndIncentives, reserve.underlyingAsset]);
 
