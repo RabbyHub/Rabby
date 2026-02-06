@@ -81,7 +81,7 @@ export const SupplyItem: React.FC<{
     >
       {isWrapperToken && (
         <div
-          className="absolute left-[20px] top-[-6px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px]"
+          className="absolute left-[20px] top-[-8px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px]"
           style={{
             borderBottomColor: 'var(--r-neutral-line)',
             borderLeftColor: 'transparent',

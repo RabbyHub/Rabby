@@ -13,14 +13,14 @@ import { ReactComponent as RcIconSettingCC } from '@/ui/assets/lending/setting.s
 import { InfoTitle } from '.';
 
 const EthCorrelatedTagWrapper = styled.div`
-  background: white;
+  background-color: var(--rb-neutral-bg-1);
   border-radius: 6px;
   padding: 1.5px;
   background: linear-gradient(135deg, #9ae8ff 0%, #cb8eff 100%);
 `;
 
 const EthCorrelatedTag = styled.div`
-  background: white;
+  background-color: var(--rb-neutral-bg-1);
   border-radius: 5px;
   padding: 4px 8px;
   display: flex;
@@ -67,7 +67,7 @@ export const RightMarketTabInfo: React.FC = () => {
                   className="text-[#9AE8FF]"
                 />
               </span>
-              <span className="text-[12px] leading-[14px] font-medium">
+              <span className="text-[12px] leading-[14px] font-medium whitespace-nowrap">
                 <div className="text-[#9AE8FF] max-w-[100px] overflow-ellipsis overflow-hidden">
                   {currentEmode?.label || ''}
                 </div>
