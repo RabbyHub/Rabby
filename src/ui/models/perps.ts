@@ -100,7 +100,7 @@ export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
 };
 
 const INIT_TRADING_STATE = {
-  tradingOrderSide: OrderSide.BUY,
+  // tradingOrderSide: OrderSide.BUY,
   tradingPositionSize: { amount: '', notionalValue: '' },
   tradingPercentage: 0,
   tradingReduceOnly: false,
@@ -204,6 +204,7 @@ export const perps = createModel<RootModel>()({
     quoteUnit: 'base',
     // Trading panel state (preserved across orderType switches)
     // tradingOrderType: OrderType.MARKET,
+    tradingOrderSide: OrderSide.BUY,
     ...INIT_TRADING_STATE,
   } as PerpsState,
 
