@@ -89,8 +89,6 @@ class Analytics {
         }?measurement_id=${MEASUREMENT_ID}&api_secret=${API_SECRET}`,
         {
           method: 'POST',
-          // keepalive ensures the request completes even if the page is closed
-          keepalive: true,
           body: JSON.stringify({
             client_id: await this.getOrCreateClientId(),
             events: [
