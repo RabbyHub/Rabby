@@ -171,7 +171,7 @@ export const usePerpsProState = () => {
       }
 
       let result: string[] = [];
-      await dispatch.account.changeAccountAsync(account);
+      // await dispatch.account.changeAccountAsync(account);
 
       if (
         account.type === KEYRING_CLASS.PRIVATE_KEY ||
@@ -197,10 +197,15 @@ export const usePerpsProState = () => {
         typedDataSignatureStore.close();
       } else {
         for (const actionObj of actions) {
-          const signature = await wallet.sendRequest<string>({
-            method: 'eth_signTypedDataV4',
-            params: [account.address, JSON.stringify(actionObj)],
-          });
+          const signature = await wallet.sendRequest<string>(
+            {
+              method: 'eth_signTypedDataV4',
+              params: [account.address, JSON.stringify(actionObj)],
+            },
+            {
+              account,
+            }
+          );
           result.push(signature);
         }
       }
