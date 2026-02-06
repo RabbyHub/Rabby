@@ -15,7 +15,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { DragEndEvent } from '@dnd-kit/core/dist/types';
+import { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Badge, Skeleton, Tooltip } from 'antd';
@@ -202,9 +202,8 @@ type IPanelItem = {
 const SortablePanelItem: React.FC<{
   panelKey: string;
   item: IPanelItem;
-  isGnosis: boolean;
   index: number;
-}> = ({ panelKey, item, isGnosis, index }) => {
+}> = ({ panelKey, item, index }) => {
   const { t } = useTranslation();
   const {
     attributes,
@@ -349,9 +348,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     return;
   }, [account?.address]);
 
-  const isGnosis = useMemo(() => {
-    return account?.type === KEYRING_TYPE.GnosisKeyring;
-  }, [account]);
+  // const isGnosis = useMemo(() => {
+  //   return account?.type === KEYRING_TYPE.GnosisKeyring;
+  // }, [account]);
 
   useEffect(() => {
     if (approvalState) {
@@ -673,7 +672,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       const newKeys = [...pickedPanelKeys];
       const [removed] = newKeys.splice(oldIndex, 1);
       newKeys.splice(newIndex, 0, removed);
-      console.log('newKeys', newKeys);
       setPickedPanelKeys(newKeys);
     }
     setActiveId(null);
@@ -689,13 +687,13 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  const handleDragStart = (event: any) => {
+  const handleDragStart = useMemoizedFn((event: DragStartEvent) => {
     setActiveId(event.active.id);
-  };
+  });
 
-  const handleDragCancel = () => {
+  const handleDragCancel = useMemoizedFn(() => {
     setActiveId(null);
-  };
+  });
 
   const activeItem = useMemo(() => {
     if (!activeId) return null;
