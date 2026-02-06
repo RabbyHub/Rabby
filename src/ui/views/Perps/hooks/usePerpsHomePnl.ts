@@ -23,7 +23,7 @@ export const usePerpsHomePnl = () => {
 
   useEffect(() => {
     if (existPosition) {
-      ga4.fireEvent('Perps_ExistPosotion', {
+      ga4.fireEvent('Perps_ExistPosition', {
         event_category: 'Rabby Perps',
       });
     }

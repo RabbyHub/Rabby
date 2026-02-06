@@ -260,6 +260,7 @@ export const perps = createModel<RootModel>()({
           if (
             item.delta.type === 'deposit' ||
             item.delta.type === 'withdraw' ||
+            item.delta.type === 'send' ||
             item.delta.type === 'internalTransfer' ||
             item.delta.type === 'accountClassTransfer'
           ) {
@@ -277,6 +278,20 @@ export const perps = createModel<RootModel>()({
               type: 'receive' as const,
               status: 'success' as const,
               usdValue: realUsdValue.toString(),
+            };
+          }
+
+          const { destination, usdcValue } = item.delta as any;
+          if (
+            item.delta.type === 'send' &&
+            destination === state.currentPerpsAccount?.address
+          ) {
+            return {
+              time: item.time,
+              hash: item.hash,
+              type: 'receive' as const,
+              status: 'success' as const,
+              usdValue: usdcValue.toString(),
             };
           }
 
