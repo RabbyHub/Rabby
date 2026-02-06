@@ -1201,6 +1201,7 @@ export const perps = createModel<RootModel>()({
                 service_provider: 'hyperliquid',
                 app_version: process.env.release || '0',
                 address_type: addressType || '',
+                hash: item.hash,
               });
             });
           }
