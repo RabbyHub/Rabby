@@ -15,9 +15,11 @@ export const useQueryProjects = (
   isTestnet = false,
   lpTokenMode = false,
   showBlocked = false,
-  searchMode = false
+  searchMode = false,
+  autoLoad = true
 ) => {
   const [time, setTime] = useSafeState(dayjs().subtract(1, 'day'));
+  const shouldAutoLoad = visible && autoLoad;
 
   useEffect(() => {
     if (time!.add(1, 'day').add(Cache_Timeout, 's').isBefore(dayjs())) {
@@ -43,7 +45,7 @@ export const useQueryProjects = (
   } = useTokens(
     userAddr,
     historyTime,
-    visible,
+    shouldAutoLoad,
     0,
     undefined,
     isTestnet,
@@ -60,10 +62,10 @@ export const useQueryProjects = (
     netWorth: portfolioNetWorth,
     updateData: updatePortfolio,
     removeProtocol,
-  } = usePortfolios(userAddr, historyTime, visible, isTestnet);
+  } = usePortfolios(userAddr, historyTime, shouldAutoLoad, isTestnet);
 
   const refreshPositions = useCallback(() => {
-    if (!isTokensLoading && !isPortfoliosLoading) {
+    if (!autoLoad || (!isTokensLoading && !isPortfoliosLoading)) {
       updatePortfolio();
       updateTokens();
       setTime(dayjs().subtract(1, 'day'));
@@ -74,6 +76,7 @@ export const useQueryProjects = (
     isTokensLoading,
     isPortfoliosLoading,
     setTime,
+    autoLoad,
   ]);
 
   const grossNetWorth = useMemo(() => tokenNetWorth + portfolioNetWorth!, [
