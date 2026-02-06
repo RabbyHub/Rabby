@@ -5,13 +5,11 @@ import { PrivateRouteGuard } from 'ui/component';
 import { PortalHost } from '../component/PortalHost';
 import { CommonPopup } from './CommonPopup';
 import { DesktopProfile } from './DesktopProfile';
-import { DesktopDappIframe } from './DesktopDappIframe';
+import { DesktopInnerDapp } from './DesktopDappIframe';
 import {
   GlobalSignerPortal,
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
-import { DesktopPerps } from './DesktopPerps';
-import { DesktopLending } from './DesktopLending';
 import clsx from 'clsx';
 import { AddAddressModal } from './DesktopProfile/components/AddAddressModal';
 import { useRabbyDispatch } from '../store';
@@ -19,6 +17,8 @@ import { useEventBusListener } from '../hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
 import { useMemoizedFn } from 'ahooks';
 import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
+import { DesktopPerpsEntry } from './DesktopPerps/entry';
+import { DesktopLendingEntry } from './DesktopLending/entry';
 
 declare global {
   interface Window {
@@ -28,7 +28,7 @@ declare global {
 
 const Main = () => {
   const location = useLocation();
-  const isDappIframeRoute = location.pathname === '/desktop/dapp-iframe';
+  const isDappIframeRoute = location.pathname === '/desktop/prediction';
   const isPerpsRoute = location.pathname === '/desktop/perps';
   const isProfileRoute = location.pathname.startsWith('/desktop/profile');
   const isLendingRoute = location.pathname === '/desktop/lending';
@@ -87,7 +87,8 @@ const Main = () => {
             style={{ display: isPerpsRoute ? 'block' : 'none' }}
             className={clsx('h-full', isPerpsRoute ? 'block' : 'hidden')}
           >
-            <DesktopPerps isActive={isPerpsRoute} />
+            {/* <DesktopPerps isActive={isPerpsRoute} /> */}
+            <DesktopPerpsEntry isActive={isPerpsRoute} />
           </div>
         </PrivateRouteGuard>
       ) : null}
@@ -97,7 +98,10 @@ const Main = () => {
             style={{ display: isDappIframeRoute ? 'block' : 'none' }}
             className={clsx('h-full', isDappIframeRoute ? 'block' : 'hidden')}
           >
-            <DesktopDappIframe isActive={isDappIframeRoute} />
+            <DesktopInnerDapp
+              isActive={isDappIframeRoute}
+              type={'prediction'}
+            />
           </div>
         </PrivateRouteGuard>
       ) : null}
@@ -108,7 +112,7 @@ const Main = () => {
             style={{ display: isLendingRoute ? 'block' : 'none' }}
             className={clsx('h-full', isLendingRoute ? 'block' : 'hidden')}
           >
-            <DesktopLending isActive={isLendingRoute} />
+            <DesktopLendingEntry isActive={isLendingRoute} />
           </div>
         </PrivateRouteGuard>
       ) : null}

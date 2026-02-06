@@ -17,6 +17,7 @@ import { useLendingService } from './hooks/useLendingService';
 import { CustomMarket } from './config/market';
 import { useSelectedMarket } from './hooks/market';
 import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
+import { DesktopDappSelector } from '@/ui/component/DesktopDappSelector';
 
 const Wrap = styled.div`
   width: 100%;
@@ -53,6 +54,7 @@ const DesktopLendingContent: React.FC = () => {
       <div className="flex items-center justify-between">
         <DesktopNav showRightItems={false} />
         <div className="flex items-center gap-[16px]">
+          <DesktopDappSelector type="lending" />
           <DesktopAccountSelector
             value={currentAccount}
             onChange={(account) => {

@@ -1487,7 +1487,9 @@
           "mySupplies": "My supplies"
         },
         "item": {
-          "__skip_translation": ["tvl"],
+          "__skip_translation": [
+            "tvl"
+          ],
           "tvl": "TVL",
           "wrapperToken": "Wrapped token for {{name}}"
         }
@@ -1615,7 +1617,9 @@
         }
       },
       "manageEmode": {
-        "__skip_translation": ["emode"],
+        "__skip_translation": [
+          "emode"
+        ],
         "emode": "E-Mode",
         "title": "Manage E-Mode",
         "disableTitle": "Disable",
@@ -2294,7 +2298,8 @@
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
           "prediction": "Prediction",
-          "dragTip": "Long-press feature to reorder"
+          "dragTip": "Long-press feature to reorder",
+          "lending": "Lending"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -4170,6 +4175,8 @@
     "dappIfame": {
       "serviceUnavailable": "Service Unavailable",
       "predictionNotSupported": "The Prediction feature is not supported in your current region.",
+      "serviceNotSupported": "The service is not supported in your current region.",
+      "opening":"Opening {{name}}...",
       "openPolymarket": "Opening Polymarket...",
       "networkErrorTitle": "This site can't be reached",
       "networkErrorDescription": "{{site}} unexpectedly closed the connection. Please check your network.",

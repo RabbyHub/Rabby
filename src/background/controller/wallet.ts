@@ -35,6 +35,7 @@ import {
   perpsService,
   miscService,
   lendingService,
+  innerDappFrameService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -6132,6 +6133,11 @@ export class WalletController extends BaseController {
   };
 
   updateDashboardPanelOrder = preferenceService.updateDashboardPanelOrder;
+  getInnerDappFrames = innerDappFrameService.getInnerDappFrames;
+  getInnerDappAccountByOrigin =
+    innerDappFrameService.getInnerDappAccountByOrigin;
+  setInnerDappAccount = innerDappFrameService.setInnerDappAccount;
+  setInnerDappId = innerDappFrameService.setInnerDappId;
 }
 
 const wallet = new WalletController();
