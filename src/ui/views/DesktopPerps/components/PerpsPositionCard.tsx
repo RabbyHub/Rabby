@@ -7,6 +7,7 @@ import { TokenImg } from '../../Perps/components/TokenImg';
 import BigNumber from 'bignumber.js';
 import { PositionFormatData } from './UserInfoHistory/PositionsInfo';
 import { DistanceRiskTag } from './UserInfoHistory/PositionsInfo/DistanceRiskTag';
+import { formatPerpsCoin } from '../utils';
 
 interface PerpsPositionCardProps {
   position: PositionFormatData;
@@ -28,7 +29,7 @@ export const PerpsPositionCard: React.FC<PerpsPositionCardProps> = ({
         <div className="flex items-center gap-6">
           <TokenImg logoUrl={marketData?.logoUrl} size={28} />
           <span className="text-[16px] font-bold text-rb-neutral-title-1">
-            {position.coin}
+            {formatPerpsCoin(position.coin)}
           </span>
         </div>
         <div className="flex flex-row gap-4">
@@ -40,7 +41,7 @@ export const PerpsPositionCard: React.FC<PerpsPositionCardProps> = ({
             {splitNumberByStep(
               new BigNumber(position.size || '0').abs().toFixed()
             )}{' '}
-            {position.coin})
+            {formatPerpsCoin(position.coin)})
           </span>
         </div>
       </div>

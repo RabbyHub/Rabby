@@ -67,18 +67,6 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
     [dispatch?.account?.changeAccountAsync]
   );
 
-  useEventBusListener(EVENTS.PERSIST_KEYRING, fetchAllAccounts);
-  useEventBusListener(EVENTS.RELOAD_ACCOUNT_LIST, async () => {
-    await dispatch.preference.getPreference('addressSortStore');
-    fetchAllAccounts();
-  });
-
-  useEffect(() => {
-    return onBackgroundStoreChanged('contactBook', (payload) => {
-      fetchAllAccounts();
-    });
-  }, [fetchAllAccounts]);
-
   const scrollToCurrent = useMemoizedFn(() => {
     const index = filteredAccounts.findIndex(
       (item) => currentAccount && isSameAccount(item, currentAccount)
@@ -142,7 +130,12 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
       />
       <div
         onClick={() => {
-          history.replace(`${location.pathname}?action=add-address`);
+          dispatch.desktopProfile.setField({
+            addAddress: {
+              visible: true,
+              importType: '',
+            },
+          });
         }}
         className={clsx(
           'cursor-pointer rounded-[20px] h-[62px] p-[16px] flex items-center gap-[8px] text-rb-neutral-body',

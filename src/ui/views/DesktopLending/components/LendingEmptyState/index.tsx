@@ -21,7 +21,6 @@ const EmptyStateContainer = styled.div<{ isDark: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--rb-neutral-bg-2, #f7f7fa);
   background-image: ${({ isDark }) =>
     isDark ? `url(${emptyDarkBg})` : `url(${emptyBg})`};
   background-position: center;
@@ -30,38 +29,6 @@ const EmptyStateContainer = styled.div<{ isDark: boolean }>`
   overflow: hidden;
   margin: 0 20px;
   border-radius: 8px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(
-      circle,
-      rgba(235, 237, 240, 0.3) 0%,
-      transparent 70%
-    );
-    border-radius: 50%;
-    pointer-events: none;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(
-      circle,
-      rgba(235, 237, 240, 0.3) 0%,
-      transparent 70%
-    );
-    border-radius: 50%;
-    pointer-events: none;
-  }
 `;
 
 const PoweredByText = styled.div`
@@ -82,7 +49,7 @@ const MainHeading = styled.h2`
   font-weight: 600;
   line-height: 28px;
   color: var(--r-neutral-title-1, #2c2c2c);
-  margin: 18px 0 8px 0;
+  margin: 7px 0 8px 0;
   text-align: center;
 `;
 
@@ -133,7 +100,7 @@ export const LendingEmptyState: React.FC<{
         <PoweredByText>
           {t('page.lending.summary.empty.description')}
         </PoweredByText>
-        <RcIconAAVE width={59} height={59} />
+        <RcIconAAVE width={142} height={70} />
         <MainHeading>{t('page.lending.summary.empty.title')}</MainHeading>
         <SubText>{t('page.lending.summary.empty.endDesc')}</SubText>
       </EmptyStateContainer>
@@ -172,6 +139,7 @@ export const LendingEmptyState: React.FC<{
           {filterReserves.map((item) => (
             <SupplyItem
               key={item.reserve.underlyingAsset}
+              noBg
               className="bg-rb-neutral-bg-3 rounded-[12px]"
               data={item}
               onSelect={onSelect}

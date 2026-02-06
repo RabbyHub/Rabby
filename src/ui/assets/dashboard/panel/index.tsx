@@ -23,3 +23,4 @@ export { ReactComponent as RcIconOpinionPredictionCC } from './opinion-cc.svg';
 export { ReactComponent as RcIconAaveLendingCC } from './aave-cc.svg';
 export { ReactComponent as RcIconSparkLendingCC } from './spark-cc.svg';
 export { ReactComponent as RcIconVenusLendingCC } from './venus-cc.svg';
+export { ReactComponent as RcIconLampCC } from './lamp-cc.svg';

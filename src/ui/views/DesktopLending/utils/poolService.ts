@@ -276,8 +276,6 @@ export const buildDebtSwitchTx = ({
   return debtSwitchTx;
 };
 
-type NewType = InterestRate;
-
 export const buildRepayWithCollateralTx = ({
   pool,
   address,
@@ -300,7 +298,7 @@ export const buildRepayWithCollateralTx = ({
   repayWithAmount: string;
   repayAmount: string;
   repayAllDebt: boolean;
-  rateMode: NewType;
+  rateMode: InterestRate;
   useFlashLoan: boolean;
   swapCallData: string;
   augustus: string;

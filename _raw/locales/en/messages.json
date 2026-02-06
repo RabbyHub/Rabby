@@ -873,6 +873,7 @@
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
+        "hyperliquidFeeLabelTooltip": "New users are charged a one-time activation fee by Hyperliquid.",
         "receiveToken": "Receive Token",
         "estReceiveLabel": "Est. Receive",
         "estTimeLabel": "Est. Time",
@@ -1177,6 +1178,7 @@
         "sound": "Enable Sound"
       },
       "tradingPanel": {
+        "deposit":"Deposit",
         "atLeastTwoOrders": "At least two orders are required",
         "liquidationPriceTooltip": "Position risk is low, so there is no liquidation price for the time being. Note that increasing the position or reducing the margin will increase the risk.",
         "tpSlTips": "Places simple market TP/SL orders. For advanced features such as limited prices or partial TP/SL, set the TP/SL in an open position.",
@@ -1194,6 +1196,7 @@
         "randomizeTooltip": "Randomizes the timing and size of sub-orders to reduce predictability.",
         "reduceOnly": "Reduce Only",
         "enableTrading": "Enable Trading",
+        "addFundsToGetStarted": "Add funds to get started",
         "startPrice": "Start Price",
         "endPrice": "End Price",
         "start": "Start",
@@ -1269,6 +1272,13 @@
         "maxError": "Maximum leverage is {{max}}x",
         "confirm": "Confirm"
       },
+      "editMargin": {
+        "title": "Manage Margin",
+        "configureMargin": "Configure Margin",
+        "longLiquidationTips": "Going down {{percent}} will trigger liquidation",
+        "shortLiquidationTips": "Going up {{percent}} will trigger liquidation",
+        "currentPosition": "Current Position"
+      },
       "editTpSl": {
         "entryPrice": "Entry Price:",
         "markPrice": "Mark Price:",
@@ -1306,6 +1316,7 @@
         "pending": "Pending",
         "available": "Available",
         "onePosition": "1 position",
+        "availableBalanceTips": "Available Funds",
         "positionCount": "{{count}} positions",
         "deposit": "Deposit"
       },
@@ -1462,6 +1473,7 @@
         "needSupply": "To borrow, you need to supply assets as collateral.",
         "isolated": "Borrowing power and assets are limited due to Isolation mode.",
         "emode": "Some assets are unavailable to borrow in E-Mode. Exit E-Mode to access all assets.",
+        "singleAssetUnavailableForEmode": "Unavailable to borrow. Exit E-Mode to access.",
         "emodeNoAssets": "We couldn't find any assets related to your search. Try again with a different category."
       },
       "list": {
@@ -1476,15 +1488,14 @@
           "mySupplies": "My supplies"
         },
         "item": {
-          "__skip_translation": [
-            "tvl"
-          ],
+          "__skip_translation": ["tvl"],
           "tvl": "TVL",
           "wrapperToken": "Wrapped token for {{name}}"
         }
       },
       "repayDetail": {
         "actions": "Repay",
+        "amountTitle": "Balance: ",
         "approveAndRepay": "Approve and Repay",
         "repayWith": "Repay with",
         "tabs": {
@@ -1495,6 +1506,7 @@
       "supplyDetail": {
         "actions": "Supply",
         "supplied": "Supplied",
+        "amountTitle": "Available: ",
         "approveAndSupply": "Approve and Supply",
         "availableToBorrow": "Available to borrow",
         "supplyAPY": "Supply APY",
@@ -1506,7 +1518,8 @@
       },
       "withdrawDetail": {
         "actions": "Withdraw",
-        "remainingSupply": "Remaining supply"
+        "remainingSupply": "Remaining supply",
+        "amountTitle": "Balance: "
       },
       "toggleCollateralDetail": {
         "actions": "Toggle {{asset}} Collateral",
@@ -1534,6 +1547,7 @@
       "borrowDetail": {
         "actions": "Borrow",
         "swapDebt": "Swap",
+        "amountTitle": "Available: ",
         "borrowed": "Borrowed",
         "approveAndBorrow": "Approve and Borrow",
         "almostReachedWarning": "Protocol borrow cap is at 100% for this asset. Further borrowing unavailable.",
@@ -1606,9 +1620,7 @@
         }
       },
       "manageEmode": {
-        "__skip_translation": [
-          "emode"
-        ],
+        "__skip_translation": ["emode"],
         "emode": "E-Mode",
         "title": "Manage E-Mode",
         "disableTitle": "Disable",
@@ -1718,6 +1730,7 @@
       "summary": {
         "netWorth": "Net Worth",
         "totalBorrowed": "Total Borrowed",
+        "eMode": "E-Mode",
         "totalSupplied": "Total Supplied",
         "healthFactor": "Health Factor",
         "healthFactorTip": "Health factor indicates the safety of your position",
@@ -2287,7 +2300,8 @@
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
           "prediction": "Prediction",
-          "lending": "Lending"
+          "lending": "Lending",
+          "dragTip": "Long-press feature to reorder"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -3974,7 +3988,9 @@
           "hideProtocolsWithSmallDeposits": "Hide protocols with small deposits.",
           "hideProtocolsWithSmallDepositsDesc": "Protocols with small deposits are not displayed.",
           "hideDefiWithSmallDeposits": "Hide Defis with small deposits.",
-          "hideDefiWithSmallDepositsDesc": "Defis with small deposits are not displayed."
+          "hideDefiWithSmallDepositsDesc": "Defis with small deposits are not displayed.",
+          "hideDeFiWithSmallDeposits": "Hide DeFis with small deposits.",
+          "hideDeFiWithSmallDepositsDesc": "DeFis with small deposits are not displayed."
         },
         "table": {
           "token": "Token",
@@ -4384,6 +4400,9 @@
       "title": "This is a liquidity provider(LP) token",
       "descriptionFor": "This is a Liquidity Provider(LP) Token for {{ protocolName }}",
       "description": "LP tokens are issued by the DeFi protocols where you've deposited your assets. They serve as the proof of those assets, but their value isn't included in your total balance"
+    },
+    "DesktopAccountSelector": {
+      "selectAddress": "Select Address"
     }
   },
   "global": {

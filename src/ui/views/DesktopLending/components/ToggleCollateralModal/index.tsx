@@ -22,9 +22,9 @@ import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
-import { Checkbox } from 'antd';
 import { ReserveDataHumanized } from '@aave/contract-helpers';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { StyledCheckbox } from '../BorrowModal';
 
 type ToggleCollateralModalProps = {
   visible: boolean;
@@ -188,6 +188,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
       setTxs(formatTxs);
     } catch (error) {
       console.error('Toggle collateral build tx error:', error);
+      message.error('Something error');
       setTxs([]);
     }
   }, [
@@ -467,13 +468,13 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
             </span>
           </div>
           <div className="flex items-center justify-center gap-8">
-            <Checkbox
+            <StyledCheckbox
               checked={isChecked}
               onChange={(e) => setIsChecked(e.target.checked)}
               className="text-[13px] text-r-neutral-foot"
             >
               {t('page.lending.risk.checkbox')}
-            </Checkbox>
+            </StyledCheckbox>
           </div>
         </div>
       )}

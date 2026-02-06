@@ -103,10 +103,7 @@ export const usePerpsTradingState = () => {
   }, [clearinghouseState, selectedCoin]);
 
   const markPrice = React.useMemo(() => {
-    if (
-      wsActiveAssetCtx &&
-      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
-    ) {
+    if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
       return Number(wsActiveAssetCtx.ctx.markPx || 0);
     }
 
@@ -114,10 +111,7 @@ export const usePerpsTradingState = () => {
   }, [wsActiveAssetCtx, currentMarketData]);
 
   const midPrice = React.useMemo(() => {
-    if (
-      wsActiveAssetCtx &&
-      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
-    ) {
+    if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
       return Number(wsActiveAssetCtx.ctx.midPx || 0);
     }
     return Number(currentMarketData?.midPx || 0);

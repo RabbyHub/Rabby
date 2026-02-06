@@ -281,7 +281,6 @@ export function fetchIconSymbolAndName({
   };
 
   const lowerUnderlyingAsset = underlyingAsset.toLowerCase();
-  // TODO： 这里是不是应该用in判断？
   if (lowerUnderlyingAsset in underlyingAssetMap) {
     return {
       symbol,

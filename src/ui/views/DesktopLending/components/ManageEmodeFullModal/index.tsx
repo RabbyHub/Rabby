@@ -31,6 +31,7 @@ import {
   PopupContainer,
   usePopupContainer,
 } from '@/ui/hooks/usePopupContainer';
+import clsx from 'clsx';
 
 const modalStyle = {
   width: 400,
@@ -118,7 +119,8 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
   ]);
 
   const { isRisky, isBlock, desc } = useMemo(() => {
-    if (Number(newSummary?.healthFactor || '0') <= 0) {
+    // 无风险 或 用户未操作
+    if (Number(newSummary?.healthFactor || '0') <= 0 || !hasChangeCategory) {
       return { isRisky: false, isBlock: false, desc: '' };
     }
     const _isRisky =
@@ -134,7 +136,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
         ? t('page.lending.risk.emodeBlockWarning')
         : '',
     };
-  }, [newSummary?.healthFactor, t]);
+  }, [newSummary?.healthFactor, t, hasChangeCategory]);
 
   const canShowDirectSubmit = useMemo(
     () =>
@@ -199,6 +201,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
       setTxs(formatTxs);
     } catch (error) {
       console.error('Manage emode build tx error:', error);
+      message.error('Something error');
       setTxs([]);
     }
   }, [
@@ -363,6 +366,9 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
     isRisky,
     isChecked,
   ]);
+  const isUnAvailable = useMemo(() => {
+    return !isTargetCategoryAvailable && !!selectedCategoryId;
+  }, [isTargetCategoryAvailable, selectedCategoryId]);
   if (!visible) return null;
 
   return (
@@ -388,7 +394,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
         newSummary={newSummary}
         disabled={wantDisableEmode}
         onSelectCategory={setSelectedCategoryId}
-        isUnAvailable={!isTargetCategoryAvailable && !!selectedCategoryId}
+        isUnAvailable={isUnAvailable}
       />
 
       {canShowDirectSubmit &&
@@ -409,7 +415,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
           </div>
         )}
 
-      <div className="mt-auto flex flex-col justify-end">
+      <div className={clsx('mt-auto flex flex-col justify-end')}>
         {isRisky && (
           <div className="mt-[16px] flex flex-col gap-[12px]">
             <div className="flex items-center gap-8 py-8 px-10 rounded-[8px] bg-rb-neutral-card-1">

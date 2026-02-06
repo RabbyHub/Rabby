@@ -30,7 +30,7 @@ export const HistoryContent: React.FC<{
   const handleItemClick = useMemoizedFn((fill: WsFill) => {
     const obj = {
       ...fill,
-      logoUrl: marketData[fill.coin.toUpperCase()]?.logoUrl || '',
+      logoUrl: marketData[fill.coin]?.logoUrl || '',
     };
     setSelectedFill(obj);
     setDetailVisible(true);

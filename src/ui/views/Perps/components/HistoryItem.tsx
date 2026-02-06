@@ -161,7 +161,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
     return fill?.dir;
   }, [fill, orderTpOrSl]);
 
-  const itemData = marketData[coin.toUpperCase()];
+  const itemData = marketData[coin];
   const logoUrl = itemData?.logoUrl;
   const isClose = (dir === 'Close Long' || dir === 'Close Short') && _closedPnl;
   const direction =

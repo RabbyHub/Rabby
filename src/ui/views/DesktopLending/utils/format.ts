@@ -1,12 +1,11 @@
 import BigNumber from 'bignumber.js';
 
-// TODO： 下面三个format都要check下看和移动端能不能对齐
 import { formatUsdValueKMB } from '../../Dashboard/components/TokenDetailPopup/utils';
 import { formatUsdValue } from '@/ui/utils/number';
 
 export const estDaily = (netWorth: string, netApy: number) => {
   if (!netWorth || !netApy) {
-    return '--';
+    return '$0.00';
   }
   const dailyEarnings = new BigNumber(netWorth);
   const bigApy = new BigNumber(netApy);

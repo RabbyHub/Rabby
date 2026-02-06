@@ -130,7 +130,7 @@ export const MarginEditInput: React.FC<MarginEditInputProps> = ({
         showPercentage={false}
         min={Number(minMargin)}
         max={maxMargin}
-        step={0.1}
+        step={0.01}
       />
       {errorMessage ? (
         <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px] mt-[14px]">

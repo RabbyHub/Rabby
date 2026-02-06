@@ -16,6 +16,7 @@ import { isUnFoldToken } from '../../config/unfold';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { SupplyItem } from './SupplyItem';
 import { ReactComponent as RcIconArrowCC } from '@/ui/assets/lending/arrow-cc.svg';
+import { getMaxModalHeight } from '../LendingList/window';
 
 type SupplyListModalProps = {
   onSelect: (reserve: DisplayPoolReserveInfo) => void;
@@ -170,10 +171,10 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
 
   return (
     <div
-      className={clsx(
-        'w-full h-full min-h-0 flex flex-col max-h-[770px]',
-        'p-[24px] pb-8'
-      )}
+      className={clsx('w-full h-full min-h-0 flex flex-col', 'p-[24px] pb-8')}
+      style={{
+        maxHeight: getMaxModalHeight(),
+      }}
     >
       <h2
         className={clsx(
@@ -277,7 +278,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                       <div
                         className={clsx(
                           'pl-[26.5px] pr-[16.5px] py-8 rounded-full bg-r-neutral-card-1',
-                          'flex items-center justify-center gap-2',
+                          'flex items-center justify-center gap-4',
                           'cursor-pointer text-[12px] text-r-neutral-foot'
                         )}
                         onClick={() => setFoldHideList((prev) => !prev)}

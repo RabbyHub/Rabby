@@ -29,7 +29,6 @@ import { findChain, findChainByServerID } from '@/utils/chain';
 
 import MatchImage from 'ui/assets/match.svg';
 import IconSearch from 'ui/assets/search.svg';
-import { ReactComponent as RcIconChainFilterCloseCC } from 'ui/assets/chain-select/chain-filter-close-cc.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
@@ -130,7 +129,6 @@ const TokenSelector = ({
   lpTokenMode,
   setLpTokenMode,
   showLpTokenSwitch,
-  onSelectRecentToken,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -323,7 +321,9 @@ const TokenSelector = ({
 
   const NoDataUI = useMemo(
     () =>
-      isLoading ? (
+      (
+        selectedTab === 'mainnet' ? isLoading : customTestnetTokenListLoading
+      ) ? (
         <div>
           {Array(isSwapType ? 8 : 10)
             .fill(1)
@@ -334,7 +334,12 @@ const TokenSelector = ({
       ) : isSwapOrBridge ? (
         <>{swapAndBridgeNoDataTip}</>
       ) : (
-        <div className="no-token w-full">
+        <div
+          className={clsx(
+            'no-token w-full',
+            selectedTab === 'mainnet' ? '' : 'hidden'
+          )}
+        >
           <img
             className={
               !query || isSearchAddr
@@ -370,16 +375,18 @@ const TokenSelector = ({
         </div>
       ),
     [
+      selectedTab,
       isLoading,
+      customTestnetTokenListLoading,
       isSwapType,
-      t,
-      isSearchAddr,
-      chainServerId,
-      swapAndBridgeNoDataTip,
-      type,
       isSwapOrBridge,
+      swapAndBridgeNoDataTip,
       query,
+      isSearchAddr,
       lpTokenMode,
+      t,
+      chainServerId,
+      type,
     ]
   );
 
@@ -453,19 +460,6 @@ const TokenSelector = ({
       supportChains,
     ]
   );
-
-  const recentToTokens = useRabbySelector((s) => s.swap.recentToTokens || []);
-
-  const recentDisplayToTokens = useMemo(() => {
-    if (type === 'swapTo' && query.length < 1) {
-      return recentToTokens.filter((item) => {
-        return (
-          item.chain === chainServerId && !excludeTokens?.includes(item.id)
-        );
-      });
-    }
-    return [];
-  }, [chainServerId, recentToTokens, type, query, excludeTokens]);
 
   const handleInTokenDetails = useCallback(
     (token: TokenItemWithEntity) => {
@@ -578,37 +572,6 @@ const TokenSelector = ({
 
         {selectedTab === 'mainnet' ? (
           <ul className={clsx('token-list', { empty: isEmpty })}>
-            {recentDisplayToTokens.length ? (
-              <div className="mb-12">
-                <div className={clsx('flex flex-wrap gap-12', 'px-20')}>
-                  {recentDisplayToTokens.map((token) => (
-                    <div
-                      key={token.id}
-                      className={clsx(
-                        'flex items-center justify-center gap-6',
-                        'cursor-pointer py-8 px-12 rounded-[8px]',
-                        'bg-r-neutral-card1 hover:bg-r-blue-light-1',
-                        'text-15 text-r-neutral-title1 font-medium'
-                      )}
-                      onClick={() => {
-                        onConfirm(token);
-                        onSelectRecentToken?.(token);
-                      }}
-                    >
-                      <TokenWithChain
-                        token={token}
-                        width="20px"
-                        height="20px"
-                        chainClassName="-top-4 -right-4"
-                      />
-
-                      <span>{getTokenSymbol(token)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
             {isEmpty
               ? NoDataUI
               : displayList.map((token) => {

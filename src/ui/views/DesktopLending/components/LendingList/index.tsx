@@ -35,6 +35,14 @@ import { BorrowListModal } from '../BorrowListModal';
 import { LendingEmptyState } from '../LendingEmptyState';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useSelectedMarket } from '../../hooks/market';
+import { getMaxModalHeight } from './window';
+import styled from 'styled-components';
+
+const HoverButton = styled.button`
+  &:hover {
+    box-shadow: 0 4px 8px 0 rgba(76, 101, 255, 0.2);
+  }
+`;
 
 export type LendingModalType =
   | 'supply'
@@ -311,7 +319,7 @@ export const LendingList: React.FC = () => {
               </button>
             </Tooltip>
           ) : (
-            <button
+            <HoverButton
               type="button"
               disabled={loading}
               className={clsx(
@@ -321,7 +329,7 @@ export const LendingList: React.FC = () => {
               onClick={() => setListModalType('borrowList')}
             >
               {t('page.lending.actions.borrow')}
-            </button>
+            </HoverButton>
           )}
         </div>
       </div>
@@ -336,13 +344,13 @@ export const LendingList: React.FC = () => {
             >
               <THeadCell className="flex-1 min-w-0 normal-case">
                 <div className="flex items-center gap-[32px]">
-                  <span className="flex-shrink-0 min-w-[140px]">
+                  <span className="flex-shrink-0 min-w-[180px]">
                     {t('page.lending.table.token')}
                   </span>
-                  <span className="flex-shrink-0 min-w-[80px]">
+                  <span className="flex-shrink-0 min-w-[120px]">
                     {t('page.lending.table.type')}
                   </span>
-                  <span className="flex-shrink-0 min-w-[80px]">
+                  <span className="flex-shrink-0 min-w-[120px]">
                     {t('page.lending.table.apy')}
                   </span>
                   <span className="flex-shrink-0 min-w-[100px]">
@@ -350,12 +358,12 @@ export const LendingList: React.FC = () => {
                   </span>
                 </div>
               </THeadCell>
-              <THeadCell className="w-[130px] flex-shrink-0 normal-case flex justify-start">
+              <THeadCell className="w-[88px] flex-shrink-0 normal-case flex justify-start">
                 <div className="flex items-center justify-center">
                   {t('page.lending.table.collateral')}
                 </div>
               </THeadCell>
-              <THeadCell className="w-[360px] flex-shrink-0">
+              <THeadCell className="w-[300px] flex-shrink-0">
                 <div></div>
               </THeadCell>
             </THeader>
@@ -388,7 +396,7 @@ export const LendingList: React.FC = () => {
         width={1040}
         bodyStyle={{
           ...modalCommonProps.bodyStyle,
-          minHeight: 770,
+          minHeight: getMaxModalHeight(),
         }}
         visible={listModalType === 'supplyList'}
         onCancel={closeModal}
@@ -403,7 +411,7 @@ export const LendingList: React.FC = () => {
         width={1040}
         bodyStyle={{
           ...modalCommonProps.bodyStyle,
-          minHeight: 770,
+          minHeight: getMaxModalHeight(),
         }}
         visible={listModalType === 'borrowList'}
         onCancel={closeModal}

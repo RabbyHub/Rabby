@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBorderedButton';
 import { usePerpsProPosition } from '@/ui/views/DesktopPerps/hooks/usePerpsProPosition';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
+import { formatPerpsCoin } from '../../../utils';
 
 export const OpenOrders: React.FC = () => {
   const { openOrders: orders, marketDataMap } = useRabbySelector(
@@ -113,7 +114,7 @@ export const OpenOrders: React.FC = () => {
                   onClick={() => dispatch.perps.setSelectedCoin(record.coin)}
                   className="cursor-pointer hover:font-bold hover:text-rb-brand-default"
                 >
-                  {record.coin}{' '}
+                  {formatPerpsCoin(record.coin)}{' '}
                 </span>
                 <span>{record.side === 'B' ? 'Long' : 'Short'}</span>
               </div>
@@ -177,7 +178,7 @@ export const OpenOrders: React.FC = () => {
                     )}
               </div>
               <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
-                {record.origSz} {record.coin}
+                {record.origSz} {formatPerpsCoin(record.coin)}
               </div>
             </div>
           );
@@ -200,7 +201,7 @@ export const OpenOrders: React.FC = () => {
                   {splitNumberByStep(
                     new BigNumber(record.origSz).minus(record.sz).toString()
                   )}{' '}
-                  / {record.origSz} {record.coin}
+                  / {record.origSz} {formatPerpsCoin(record.coin)}
                 </>
               )}
             </div>

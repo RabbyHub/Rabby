@@ -112,7 +112,9 @@ const AddressItem = ({ data }) => {
   );
 };
 
-const AddAddressOptions = () => {
+const AddAddressOptions: React.FC<{
+  onNavigate?(type: string, state?: Record<string, any>): void;
+}> = ({ onNavigate }) => {
   const history = useHistory();
   const { t } = useTranslation();
   const location = useLocation();
@@ -183,12 +185,7 @@ const AddAddressOptions = () => {
         // openInternalPageInTab('import/hardware?connectType=ONEKEY');
       } else if (item.connectType === 'GnosisConnect') {
         if (isDesktop) {
-          history.push(
-            `${history.location.pathname}?${qs.stringify({
-              action: 'add-address',
-              import: 'gnosis',
-            })}`
-          );
+          onNavigate?.('gnosis');
         } else {
           history.push({
             pathname: '/import/gnosis',
@@ -212,12 +209,7 @@ const AddAddressOptions = () => {
         item.connectType === BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect
       ) {
         if (isDesktop) {
-          history.push(
-            `${history.location.pathname}?${qs.stringify({
-              action: 'add-address',
-              import: 'cobo-argus',
-            })}`
-          );
+          onNavigate?.('cobo-argus');
         } else {
           history.push({
             pathname: '/import/cobo-argus',
@@ -228,12 +220,7 @@ const AddAddressOptions = () => {
         item.connectType === BRAND_WALLET_CONNECT_TYPE.CoinbaseConnect
       ) {
         if (isDesktop) {
-          history.push(
-            `${history.location.pathname}?${qs.stringify({
-              action: 'add-address',
-              import: 'coinbase',
-            })}`
-          );
+          onNavigate?.('coinbase');
         } else {
           history.push({
             pathname: '/import/coinbase',
@@ -244,16 +231,7 @@ const AddAddressOptions = () => {
         openInternalPageInTab('import/hardware/imkey-connect');
       } else {
         if (isDesktop) {
-          history.push({
-            pathname: `${history.location.pathname}`,
-            search: `?${qs.stringify({
-              action: 'add-address',
-              import: 'wallet-connect',
-            })}`,
-            state: {
-              brand: item,
-            },
-          });
+          onNavigate?.('wallet-connect', { brand: item });
         } else {
           history.push({
             pathname: '/import/wallet-connect',
@@ -347,12 +325,7 @@ const AddAddressOptions = () => {
               onClick: () => {
                 handleRouter((history) => {
                   if (isDesktop) {
-                    history.push(
-                      `${history.location.pathname}?${qs.stringify({
-                        action: 'add-address',
-                        import: 'add-from-current-seed-phrase',
-                      })}`
-                    );
+                    onNavigate?.('add-from-current-seed-phrase');
                   } else {
                     history.push('/import/add-from-current-seed-phrase');
                   }
@@ -397,12 +370,7 @@ const AddAddressOptions = () => {
         onClick: () =>
           handleRouter((history) => {
             if (isDesktop) {
-              return history.push(
-                `${history.location.pathname}?${qs.stringify({
-                  action: 'add-address',
-                  import: 'key',
-                })}`
-              );
+              onNavigate?.('key');
             } else {
               return history.push('/import/key');
             }
@@ -415,12 +383,7 @@ const AddAddressOptions = () => {
         onClick: () =>
           handleRouter((history) => {
             if (isDesktop) {
-              return history.push(
-                `${history.location.pathname}?${qs.stringify({
-                  action: 'add-address',
-                  import: 'metamask',
-                })}`
-              );
+              return onNavigate?.('metamask');
             } else {
               return history.push('/import/metamask');
             }
@@ -440,12 +403,7 @@ const AddAddressOptions = () => {
         onClick: () =>
           handleRouter((history) => {
             if (isDesktop) {
-              return history.push(
-                `${history.location.pathname}?${qs.stringify({
-                  action: 'add-address',
-                  import: 'watch-address',
-                })}`
-              );
+              onNavigate?.('watch-address');
             } else {
               history.push('/import/watch-address');
             }

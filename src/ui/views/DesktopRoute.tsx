@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PrivateRouteGuard } from 'ui/component';
 
@@ -10,11 +10,16 @@ import {
   GlobalSignerPortal,
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
-import { DesktopPerps } from './DesktopPerps';
 import { DesktopLending } from './DesktopLending';
 import clsx from 'clsx';
 import { DesktopPerpsEntry } from './DesktopPerps/entry';
 import { DesktopLendingEntry } from './DesktopLending/entry';
+import { AddAddressModal } from './DesktopProfile/components/AddAddressModal';
+import { useRabbyDispatch } from '../store';
+import { useEventBusListener } from '../hooks/useEventBusListener';
+import { EVENTS } from '@/constant';
+import { useMemoizedFn } from 'ahooks';
+import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
 
 declare global {
   interface Window {
@@ -46,6 +51,26 @@ const Main = () => {
   if (isLendingRoute) {
     hasMountedLendingRef.current = true;
   }
+
+  const dispatch = useRabbyDispatch();
+
+  const fetchAllAccounts = useMemoizedFn(() =>
+    dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
+    })
+  );
+
+  useEventBusListener(EVENTS.PERSIST_KEYRING, fetchAllAccounts);
+  useEventBusListener(EVENTS.RELOAD_ACCOUNT_LIST, async () => {
+    await dispatch.preference.getPreference('addressSortStore');
+    fetchAllAccounts();
+  });
+
+  useEffect(() => {
+    return onBackgroundStoreChanged('contactBook', (payload) => {
+      fetchAllAccounts();
+    });
+  }, [fetchAllAccounts]);
 
   return (
     <>
@@ -93,12 +118,24 @@ const Main = () => {
         </PrivateRouteGuard>
       ) : null}
 
+      {hasMountedLendingRef.current ? (
+        <PrivateRouteGuard>
+          <div
+            style={{ display: isLendingRoute ? 'block' : 'none' }}
+            className={clsx('h-full', isLendingRoute ? 'block' : 'hidden')}
+          >
+            <DesktopLending isActive={isLendingRoute} />
+          </div>
+        </PrivateRouteGuard>
+      ) : null}
+
       {location.pathname !== '/unlock' ? (
         <>
           <CommonPopup />
           <PortalHost />
           <GlobalSignerPortal isDesktop />
           <GlobalTypedDataSignerPortal isDesktop />
+          <AddAddressModal />
         </>
       ) : null}
     </>
