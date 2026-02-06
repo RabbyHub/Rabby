@@ -503,7 +503,7 @@ function startEnableUser() {
   });
 
   browser.action.getUserSettings().then((res) => {
-    ga4.fireEvent(`User_Enable_${res ? 'Pin' : 'unPin'}`, {
+    ga4.fireEvent(`User_Enable_${res.isOnToolbar ? 'Pin' : 'unPin'}`, {
       event_category: 'User Enable',
     });
   });
