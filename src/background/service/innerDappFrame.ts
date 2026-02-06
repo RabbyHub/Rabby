@@ -1,6 +1,9 @@
-import { sessionService } from '.';
-import { createPersistStore } from '../utils';
+import { isSameAccount } from '@/utils/account';
+import { preferenceService, sessionService } from '.';
+import { createPersistStore, isSameAddress } from '../utils';
 import type { Account } from './preference';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 export type InnerDappType = 'perps' | 'prediction' | 'lending';
 
@@ -55,6 +58,36 @@ class InnerDappFrameService {
   setInnerDappId = (type: InnerDappType, id: string) => {
     this.store[type] = id;
   };
+
+  removeAccountFromAllFrames(address: string, type: string, brand?: string) {
+    if (address && type) {
+      let changed = false;
+      Object.entries(this.store.innerDappAccounts).forEach(([key, account]) => {
+        if (
+          isSameAccount(account, { address, type, brandName: brand || type })
+        ) {
+          delete this.store.innerDappAccounts[key];
+          changed = true;
+          const newAccount = preferenceService.getCurrentAccount();
+          if (newAccount) {
+            this.store.innerDappAccounts[key] = newAccount;
+            sessionService.broadcastEvent(
+              'accountsChanged',
+              [newAccount.address],
+              key,
+              undefined,
+              true
+            );
+          }
+        }
+      });
+      if (changed) {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.INNER_DAPP_ACCOUNT.CHANGED,
+        });
+      }
+    }
+  }
 }
 
 export const innerDappFrameService = new InnerDappFrameService();

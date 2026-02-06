@@ -10,7 +10,6 @@ import clsx from 'clsx';
 import styled from 'styled-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { DesktopNav } from '@/ui/component/DesktopNav';
-import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 import { ReactComponent as IconGlobalSiteIconCC } from '@/ui/assets/global-cc.svg';
 import { KEYRING_TYPE } from '@/constant';
@@ -30,8 +29,6 @@ import { InnerDappType } from '@/background/service';
 import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 import { useIframeBridge } from '@/ui/hooks/useIframeBridge';
 
-const HANDSHAKE_MESSAGE_TYPE = 'rabby-dapp-iframe-handshake';
-const SYNC_MESSAGE_TYPE = 'rabby-dapp-iframe-sync-url';
 const IFRAME_LOAD_TIMEOUT = 20 * 1000;
 const RULE_OBSERVER_TIMEOUT = 20 * 1000;
 
@@ -135,10 +132,6 @@ export const DesktopDappIframe = React.forwardRef<
   >(null);
   const [isIframeLoading, setIsIframeLoading] = React.useState(true);
 
-  const [_currentSceneAccount] = useSceneAccount({
-    scene: 'prediction',
-  });
-
   const defaultOrigin = dappListProp[0]?.url;
 
   const dappList = dappListProp;
@@ -173,13 +166,6 @@ export const DesktopDappIframe = React.forwardRef<
   const iframeOrigin = useMemo(() => getOriginFromUrl(iframeSrc), [iframeSrc]);
   const iframeHost = useMemo(() => getHostFromUrl(iframeSrc), [iframeSrc]);
 
-  const innerDappAccount = useRabbySelector(
-    React.useCallback(
-      (s) => s.innerDappFrame.innerDappAccounts?.[iframeOrigin],
-      [iframeOrigin]
-    )
-  );
-
   const dispatch = useRabbyDispatch();
 
   const switchCurrentSceneAccount = React.useCallback(
@@ -188,9 +174,30 @@ export const DesktopDappIframe = React.forwardRef<
     [dispatch?.innerDappFrame?.setInnerDappAccount, iframeOrigin]
   );
 
-  const currentSceneAccount = React.useMemo(() => {
-    return innerDappAccount || _currentSceneAccount;
-  }, [innerDappAccount, iframeOrigin, _currentSceneAccount]);
+  const currentSceneAccount = useRabbySelector(
+    React.useCallback(
+      (s) => {
+        const dappAccount = s.innerDappFrame.innerDappAccounts?.[iframeOrigin];
+        if (!dappAccount) {
+          const fallbackAccount = s.accountToDisplay.accountsList.find(
+            (account) => {
+              return account.type !== KEYRING_TYPE.WatchAddressKeyring;
+            }
+          );
+          if (fallbackAccount) {
+            switchCurrentSceneAccount(fallbackAccount);
+            return fallbackAccount;
+          }
+          const currentAccount = s.account.currentAccount!;
+
+          switchCurrentSceneAccount(currentAccount);
+          return currentAccount;
+        }
+        return dappAccount;
+      },
+      [iframeOrigin]
+    )
+  );
 
   const dappRules = useMemo(() => {
     if (!currentDapp) {
@@ -275,7 +282,7 @@ export const DesktopDappIframe = React.forwardRef<
     window.location.reload();
   }, []);
 
-  const { value: permission } = useAsync(() => {
+  const { value: permission, loading: permissionLoading } = useAsync(() => {
     return currentSceneAccount?.address
       ? wallet.openapi.getDappPermission({
           dapp: currentDapp.id,
@@ -360,18 +367,23 @@ export const DesktopDappIframe = React.forwardRef<
                   'border border-solid border-rb-neutral-line relative',
                   'rounded-[20px] overflow-hidden'
                 )}
+                style={{
+                  height: 'calc(100vh - 116px)',
+                }}
               >
-                <Iframe
-                  allow="clipboard-write"
-                  ref={iframeRef}
-                  src={defaultUrl}
-                  onError={() => {
-                    if (!connectedRef.current) {
-                      setIsIframeLoading(false);
-                      setIframeError('network');
-                    }
-                  }}
-                />
+                {(permissionLoading || permission?.has_permission) && (
+                  <Iframe
+                    allow="clipboard-write"
+                    ref={iframeRef}
+                    src={defaultUrl}
+                    onError={() => {
+                      if (!connectedRef.current) {
+                        setIsIframeLoading(false);
+                        setIframeError('network');
+                      }
+                    }}
+                  />
+                )}
                 {isIframeLoading && !iframeError && !hasPermission && (
                   <DappIframeLoading
                     loadingLabel={t('page.dappIfame.opening', {
@@ -380,7 +392,7 @@ export const DesktopDappIframe = React.forwardRef<
                     icon={currentDapp.icon}
                   />
                 )}
-                {iframeError && !hasPermission && (
+                {iframeError && hasPermission && (
                   <DappIframeError
                     imageSrc={currentDapp?.icon}
                     title={t('page.dappIfame.networkErrorTitle')}

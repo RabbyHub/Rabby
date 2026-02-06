@@ -3443,6 +3443,8 @@ export class WalletController extends BaseController {
     ) {
       await this.resetCurrentAccount();
     }
+    innerDappFrameService.removeAccountFromAllFrames(address, type, brand);
+
     const sites = permissionService.getSites();
     sites.forEach((item) => {
       if (

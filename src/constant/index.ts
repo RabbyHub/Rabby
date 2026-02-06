@@ -571,6 +571,9 @@ export const EVENTS = {
   },
 
   RELOAD_APPROVAL: 'RELOAD_APPROVAL',
+  INNER_DAPP_ACCOUNT: {
+    CHANGED: 'INNER_DAPP_ACCOUNT_CHANGED',
+  },
 };
 
 export const EVENTS_IN_BG = {
