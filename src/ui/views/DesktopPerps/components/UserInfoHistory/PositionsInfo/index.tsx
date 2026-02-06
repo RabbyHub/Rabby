@@ -4,7 +4,7 @@ import { formatUsdValue, sleep, splitNumberByStep } from '@/ui/utils';
 import { Button, Dropdown, Menu, message, Modal, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { CommonTable } from '../CommonTable';
 import BigNumber from 'bignumber.js';
@@ -44,6 +44,7 @@ import {
 } from '../../../utils';
 import { formatPerpsCoin } from '../../../utils';
 import perpsToast from '../../PerpsToast';
+import { ga4 } from '@/utils/ga4';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -148,6 +149,21 @@ export const PositionsInfo: React.FC = () => {
 
     return resArr;
   }, [clearinghouseState, openOrders, marketDataMap]);
+
+  const existPosition = useMemo(() => {
+    return (
+      clearinghouseState?.assetPositions?.length &&
+      clearinghouseState.assetPositions.length > 0
+    );
+  }, [clearinghouseState?.assetPositions?.length]);
+
+  useEffect(() => {
+    if (existPosition) {
+      ga4.fireEvent('Perps_ExistPosotion_Web', {
+        event_category: 'Rabby Perps',
+      });
+    }
+  }, [existPosition]);
 
   const isSmallScreen = isScreenSmall();
 
