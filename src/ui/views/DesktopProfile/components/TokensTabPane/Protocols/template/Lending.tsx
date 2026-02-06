@@ -18,6 +18,7 @@ import cx from 'clsx';
 import { ActionRow, hasActions } from '../components/ActionRow';
 import { useHistory } from 'react-router-dom';
 import { CustomMarket } from '@/ui/views/DesktopLending/config/market';
+import { useRabbyDispatch } from '@/ui/store';
 
 const LENDING_PROTOCOL_MARKET: Record<string, CustomMarket> = {
   aave3: CustomMarket.proto_mainnet_v3,
@@ -59,10 +60,16 @@ export default memo(
       [protocolId]
     );
 
+    const dispatch = useRabbyDispatch();
+
     const handleGoLending = useCallback(
       (evt: React.MouseEvent) => {
         evt.stopPropagation();
         if (!lendingMarketKey) return;
+        dispatch.innerDappFrame.setInnerDappId({
+          type: 'lending',
+          dappId: 'aave',
+        });
         history.push(
           `/desktop/lending?marketKey=${encodeURIComponent(lendingMarketKey)}`
         );

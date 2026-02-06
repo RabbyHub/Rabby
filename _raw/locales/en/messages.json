@@ -2300,6 +2300,7 @@
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
           "prediction": "Prediction",
+          "lending": "Lending",
           "dragTip": "Long-press feature to reorder"
         },
         "comingSoon": "Coming soon",
@@ -4165,6 +4166,8 @@
     "dappIfame": {
       "serviceUnavailable": "Service Unavailable",
       "predictionNotSupported": "The Prediction feature is not supported in your current region.",
+      "serviceNotSupported": "The service is not supported in your current region.",
+      "opening":"Opening {{name}}...",
       "openPolymarket": "Opening Polymarket...",
       "networkErrorTitle": "This site can't be reached",
       "networkErrorDescription": "{{site}} unexpectedly closed the connection. Please check your network.",
