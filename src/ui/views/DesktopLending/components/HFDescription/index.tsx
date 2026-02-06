@@ -15,6 +15,7 @@ const modalStyle = {
   className: 'modal-support-darkmode',
   closeIcon: ModalCloseIcon,
   centered: true,
+  destroyOnClose: true,
   maskStyle: {
     zIndex: 1000,
     backdropFilter: 'blur(8px)',
