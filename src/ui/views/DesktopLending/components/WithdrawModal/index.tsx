@@ -36,6 +36,7 @@ import stats from '@/stats';
 import { LendingReportType } from '../../types/tx';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { isZeroAmount } from '../../utils/number';
+import { StyledCheckbox } from '../BorrowModal';
 
 type WithdrawModalProps = {
   visible: boolean;
@@ -204,14 +205,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         useOptimizedPath: optimizedPath(selectedMarketData.chainId),
       });
 
-      const txItems = Array.isArray(withdrawResult)
-        ? withdrawResult
-        : [withdrawResult];
-      const txs = await Promise.all(
-        txItems.map((item: { tx: () => Promise<Record<string, unknown>> }) =>
-          item.tx()
-        )
-      );
+      const txs = await Promise.all(withdrawResult.map((i) => i.tx()));
       const formatTxs = txs.map((item) => {
         delete item.gasLimit;
         return {
@@ -219,7 +213,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
           chainId: chainInfo.id,
         };
       });
-      setWithdrawTxs(formatTxs as Tx[]);
+      setWithdrawTxs((formatTxs as unknown) as Tx[]);
     } catch (error) {
       console.error('Build transactions error:', error);
       message.error('Something error');
@@ -488,6 +482,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
                 className="w-16 h-16 text-r-neutral-foot"
               />
               <span className="text-[13px] leading-[16px] text-r-neutral-foot">
+                {t('page.lending.withdrawDetail.amountTitle')}
                 {formatTokenAmount(withdrawAmount || '0')}
               </span>
               <button
@@ -505,7 +500,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
               </button>
             </div>
           </div>
-          <div className="flex-1 flex flex-col items-end min-w-0">
+          <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
               value={amount ?? ''}
               onValueChange={handleChangeAmount}
@@ -553,30 +548,29 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         </div>
       ) : null}
 
-      {isRisky && (
-        <div className="mt-16 flex flex-col gap-12">
-          <div className="flex items-center gap-8 py-8 px-10 rounded-[8px] bg-rb-red-light-1">
-            <RcIconWarningCC
-              viewBox="0 0 16 16"
-              className="w-15 h-15 text-rb-red-default flex-shrink-0"
-            />
-            <span className="text-[14px] leading-[18px] font-medium text-rb-red-default flex-1">
-              {t('page.lending.risk.withdrawWarning')}
-            </span>
-          </div>
-          <div className="flex items-center justify-center gap-8">
-            <Checkbox
-              checked={isChecked}
-              onChange={(e) => setIsChecked(e.target.checked)}
-              className="text-[13px] text-r-neutral-foot"
-            >
-              {t('page.lending.risk.checkbox')}
-            </Checkbox>
-          </div>
-        </div>
-      )}
-
       <div className="mt-auto w-full">
+        {isRisky && (
+          <div className="mt-16 flex flex-col gap-12">
+            <div className="flex items-center gap-8 py-8 px-10 rounded-[8px] bg-rb-red-light-1">
+              <RcIconWarningCC
+                viewBox="0 0 16 16"
+                className="w-15 h-15 text-rb-red-default flex-shrink-0"
+              />
+              <span className="text-[14px] leading-[18px] font-medium text-rb-red-default flex-1">
+                {t('page.lending.risk.withdrawWarning')}
+              </span>
+            </div>
+            <div className="flex items-center justify-center gap-8">
+              <StyledCheckbox
+                checked={isChecked}
+                onChange={(e) => setIsChecked(e.target.checked)}
+                className="text-[13px] text-r-neutral-foot"
+              >
+                {t('page.lending.risk.checkbox')}
+              </StyledCheckbox>
+            </div>
+          </div>
+        )}
         {canShowDirectSubmit && currentAccount?.type ? (
           <DirectSignToConfirmBtn
             className="mt-20"

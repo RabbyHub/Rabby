@@ -7,6 +7,8 @@ import { useMode } from '../../hooks/useMode';
 import { formatPercent } from '../../utils/format';
 import SymbolIcon from '../SymbolIcon';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
+import { ReactComponent as RcIconCheckCC } from '@/ui/assets/lending/yes.svg';
+import { ReactComponent as RcIconCloseCC } from '@/ui/assets/lending/close.svg';
 import { EmodeCategory } from '../../types';
 
 const modalStyle = {
@@ -65,16 +67,32 @@ export const PairTable: React.FC<{
             </div>
             <div className="flex-1 flex justify-center">
               {item.collateral ? (
-                <span className="text-[16px] text-r-green-default">✓</span>
+                <RcIconCheckCC
+                  width={16}
+                  height={16}
+                  className="text-r-green-default"
+                />
               ) : (
-                <span className="text-[16px] text-r-red-default">✗</span>
+                <RcIconCloseCC
+                  width={16}
+                  height={16}
+                  className="text-r-red-default"
+                />
               )}
             </div>
             <div className="flex-1 flex justify-center">
               {item.borrowable ? (
-                <span className="text-[16px] text-r-green-default">✓</span>
+                <RcIconCheckCC
+                  width={16}
+                  height={16}
+                  className="text-r-green-default"
+                />
               ) : (
-                <span className="text-[16px] text-r-red-default">✗</span>
+                <RcIconCloseCC
+                  width={16}
+                  height={16}
+                  className="text-r-red-default"
+                />
               )}
             </div>
           </div>

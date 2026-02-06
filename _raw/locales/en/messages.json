@@ -1480,6 +1480,7 @@
       },
       "repayDetail": {
         "actions": "Repay",
+        "amountTitle": "Balance: ",
         "approveAndRepay": "Approve and Repay",
         "repayWith": "Repay with",
         "tabs": {
@@ -1490,6 +1491,7 @@
       "supplyDetail": {
         "actions": "Supply",
         "supplied": "Supplied",
+        "amountTitle": "Balance: ",
         "approveAndSupply": "Approve and Supply",
         "availableToBorrow": "Available to borrow",
         "supplyAPY": "Supply APY",
@@ -1501,7 +1503,8 @@
       },
       "withdrawDetail": {
         "actions": "Withdraw",
-        "remainingSupply": "Remaining supply"
+        "remainingSupply": "Remaining supply",
+        "amountTitle": "Available: "
       },
       "toggleCollateralDetail": {
         "actions": "Toggle {{asset}} Collateral",
@@ -1529,6 +1532,7 @@
       "borrowDetail": {
         "actions": "Borrow",
         "swapDebt": "Swap",
+        "amountTitle": "Available: ",
         "borrowed": "Borrowed",
         "approveAndBorrow": "Approve and Borrow",
         "almostReachedWarning": "Protocol borrow cap is at 100% for this asset. Further borrowing unavailable.",
@@ -1711,6 +1715,7 @@
       "summary": {
         "netWorth": "Net Worth",
         "totalBorrowed": "Total Borrowed",
+        "eMode": "E-Mode",
         "totalSupplied": "Total Supplied",
         "healthFactor": "Health Factor",
         "healthFactorTip": "Health factor indicates the safety of your position",

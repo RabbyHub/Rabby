@@ -736,12 +736,10 @@ export const RepayModal: React.FC<RepayModalProps> = ({
               )}
             </div>
             <div className="flex items-center gap-4">
-              <RcIconWalletCC
-                viewBox="0 0 16 16"
-                className="w-16 h-16 text-r-neutral-foot"
-              />
               <span className="text-[13px] leading-[16px] text-r-neutral-foot">
-                {formatTokenAmount(repayAmount.amount || '0')}
+                {t('page.lending.repayDetail.amountTitle')}
+                {formatTokenAmount(repayAmount.amount || '0')}(
+                {formatUsdValue(Number(repayAmount.usdValue))})
               </span>
               <button
                 type="button"
@@ -758,7 +756,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
               </button>
             </div>
           </div>
-          <div className="flex-1 flex flex-col items-end min-w-0">
+          <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
               value={amount ?? ''}
               onValueChange={onAmountChange}
