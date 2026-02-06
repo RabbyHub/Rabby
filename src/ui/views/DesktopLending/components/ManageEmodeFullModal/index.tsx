@@ -374,7 +374,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
 
   return (
     <div
-      className="bg-r-neutral-bg-2 flex flex-col px-[20px] py-[16px] overscroll-y-auto"
+      className="bg-r-neutral-bg-2 flex flex-col px-[20px] py-[16px] overflow-y-scroll"
       style={{ height: isRisky && wantDisableEmode ? 'auto' : height }}
     >
       <div className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
