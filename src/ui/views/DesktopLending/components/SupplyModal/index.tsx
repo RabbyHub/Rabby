@@ -595,6 +595,10 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
               </span>
             </div>
             <div className="flex items-center gap-4">
+              <RcIconWalletCC
+                viewBox="0 0 16 16"
+                className="w-16 h-16 text-r-neutral-foot"
+              />
               <span className="text-[13px] leading-[16px] text-r-neutral-foot">
                 {t('page.lending.supplyDetail.amountTitle')}
                 {formatTokenAmount(supplyAmount.amount || '0')}(
