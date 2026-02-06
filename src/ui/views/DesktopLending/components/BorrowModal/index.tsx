@@ -490,7 +490,15 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
               />
               <span className="text-[13px] leading-[16px] text-r-neutral-foot">
                 {t('page.lending.borrowDetail.amountTitle')}
-                {formatTokenAmount(availableToBorrow.amount || '0')}
+                {formatTokenAmount(availableToBorrow.amount || '0')}(
+                {formatUsdValue(
+                  Number(availableToBorrow.amount) *
+                    Number(
+                      reserve.reserve.formattedPriceInMarketReferenceCurrency ||
+                        0
+                    )
+                )}
+                )
               </span>
               <button
                 type="button"
