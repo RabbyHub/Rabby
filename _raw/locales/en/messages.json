@@ -1937,7 +1937,8 @@
           "settings": "Settings",
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
-          "prediction": "Prediction"
+          "prediction": "Prediction",
+          "dragTip": "Long-press feature to reorder"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
