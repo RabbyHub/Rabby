@@ -48,7 +48,7 @@ export const BorrowItem = ({
       key={`${data.reserve.underlyingAsset}-${data.reserve.symbol}`}
       className={clsx(
         'mt-8 flex items-center justify-between px-16 h-[56px] rounded-[12px]',
-        'bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-4'
+        'bg-rb-neutral-bg-3'
       )}
     >
       <button
@@ -89,7 +89,7 @@ export const BorrowItem = ({
         userSummary?.availableBorrowsUSD === '0') ? (
         <Tooltip
           overlayClassName="rectangle"
-          title={t('page.lending.disableBorrowTip.desc')}
+          title={t('page.lending.disableBorrowTip.noSupply')}
         >
           <button
             type="button"

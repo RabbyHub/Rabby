@@ -87,7 +87,7 @@ export const BorrowItem: React.FC<{
           {disableBorrowButton ? (
             <Tooltip
               overlayClassName="rectangle"
-              title={t('page.lending.disableBorrowTip.desc')}
+              title={t('page.lending.disableBorrowTip.noSupply')}
             >
               <button
                 onClick={() => onBorrow?.(data)}
@@ -107,6 +107,7 @@ export const BorrowItem: React.FC<{
               className={clsx(
                 'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
                 'bg-rb-neutral-bg-4 text-r-neutral-title-1',
+                'hover:bg-rb-brand-light-1',
                 'flex items-center justify-center'
               )}
             >
@@ -118,6 +119,7 @@ export const BorrowItem: React.FC<{
             className={clsx(
               'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
               'bg-rb-neutral-bg-4 text-r-neutral-title-1',
+              'hover:bg-rb-brand-light-1',
               'flex items-center justify-center'
             )}
           >
