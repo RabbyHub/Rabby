@@ -99,5 +99,5 @@ export const getApyColor = (apy: number) => {
   if (apy < 0) {
     return 'var(--rb-red-default)';
   }
-  return 'var(--rb-neutral-foot)';
+  return 'var(--rb-neutral-title-1)';
 };

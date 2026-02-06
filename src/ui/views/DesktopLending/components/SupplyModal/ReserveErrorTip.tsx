@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import clsx from 'clsx';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/lending/warning-2.svg';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { DisplayPoolReserveInfo } from '../../types';
@@ -49,20 +49,18 @@ export const ReserveErrorTip: React.FC<{
 
   return (
     <div
-      className={`flex items-center gap-2 py-3 px-3 rounded-lg bg-rb-red-light-1 text-rb-red-default text-[14px] ${
+      className={`flex items-center gap-2 py-2 px-6 rounded-lg bg-rb-red-light-1 text-rb-red-default text-[13px] ${
         className || ''
       }`}
     >
-      <span
-        className={clsx(
-          'flex-shrink-0 w-[18px] h-[18px] rounded-full',
-          'flex items-center justify-center',
-          'bg-rb-red-default text-[12px]'
-        )}
-      >
-        !
+      <span>
+        <RcIconWarningCC
+          width={12}
+          height={12}
+          className="text-rb-red-default flex-shrink-0 inline -mt-2 mr-2"
+        />
+        {errorMessage}
       </span>
-      <span>{errorMessage}</span>
     </div>
   );
 };

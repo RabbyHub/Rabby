@@ -162,7 +162,7 @@ export const ManageEmodeFullModalOverview: React.FC<{
             </div>
           )}
           {isUnAvailable && (
-            <p className="text-[16px] leading-[24px] text-r-neutral-foot mt-[4px]">
+            <p className="text-[13px] leading-[16px] text-r-neutral-foot mt-[4px]">
               {t('page.lending.manageEmode.categorySelector.desc')}
             </p>
           )}
@@ -284,8 +284,12 @@ export const ManageEmodeFullModalOverview: React.FC<{
                         className={clsx(
                           'w-full h-[48px] rounded-[8px] px-[16px] flex items-center justify-between',
                           'bg-rb-neutral-card-1 text-[14px] font-medium text-r-neutral-title-1',
-                          'opacity-50 cursor-not-allowed'
+                          'opacity-50'
                         )}
+                        onClick={() => {
+                          onSelectCategory?.(value);
+                          setCategoryPopupVisible(false);
+                        }}
                       >
                         <span className="truncate max-w-[240px] text-left">
                           {label}

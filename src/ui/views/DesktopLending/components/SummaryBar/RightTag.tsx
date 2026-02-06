@@ -10,6 +10,7 @@ import { DisableEmodeModal } from '../DisableEmodeModal';
 import { ManageEmodeFullModal } from '../ManageEmodeFullModal';
 import { ReactComponent as RcIconLightingCC } from '@/ui/assets/lending/lighting-cc.svg';
 import { ReactComponent as RcIconSettingCC } from '@/ui/assets/lending/setting.svg';
+import { InfoTitle } from '.';
 
 const EthCorrelatedTagWrapper = styled.div`
   background: white;
@@ -50,55 +51,58 @@ export const RightMarketTabInfo: React.FC = () => {
   // 已开启 eMode：展示当前 eMode 名称，点击打开禁用 eMode 弹窗
   if (emodeEnabled) {
     return (
-      <>
-        <EthCorrelatedTagWrapper>
-          <EthCorrelatedTag
-            role="button"
-            onClick={() => setDisableOverviewVisible(true)}
-            className="cursor-pointer"
-          >
-            <span className="text-[12px] leading-[14px] font-medium text-[#9AE8FF]">
-              <RcIconLightingCC
-                width={16}
-                height={16}
-                className="text-[#9AE8FF]"
-              />
-            </span>
-            <span className="text-[12px] leading-[14px] font-medium">
-              <div className="text-[#9AE8FF] max-w-[100px] overflow-ellipsis overflow-hidden">
-                {currentEmode?.label || ''}
-              </div>
-            </span>
-            <Tooltip
-              overlayClassName="rectangle"
-              title={t('page.lending.summary.ethCorrelatedTip')}
+      <div className="flex items-center gap-[6px]">
+        <InfoTitle>{t('page.lending.summary.eMode')}: </InfoTitle>
+        <div>
+          <EthCorrelatedTagWrapper>
+            <EthCorrelatedTag
+              role="button"
+              onClick={() => setDisableOverviewVisible(true)}
+              className="cursor-pointer"
             >
-              <span onClick={(e) => e.stopPropagation()}>
-                <RcIconInfo
-                  width={12}
-                  height={12}
-                  className="cursor-pointer text-[#CB8EFF]"
+              <span className="text-[12px] leading-[14px] font-medium text-[#9AE8FF]">
+                <RcIconLightingCC
+                  width={16}
+                  height={16}
+                  className="text-[#9AE8FF]"
                 />
               </span>
-            </Tooltip>
-          </EthCorrelatedTag>
-        </EthCorrelatedTagWrapper>
-        <DisableEmodeModal
-          visible={disableOverviewVisible}
-          onCancel={() => setDisableOverviewVisible(false)}
-          onDisableEmode={() => {
-            setEnableIntroVisible(false);
-            setDisableOverviewVisible(false);
-            setFullModalVisible(true);
-          }}
-        />
-        <ManageEmodeFullModal
-          visible={fullModalVisible}
-          onCancel={() => setFullModalVisible(false)}
-          onSuccess={handleEmodeSuccess}
-          height={415}
-        />
-      </>
+              <span className="text-[12px] leading-[14px] font-medium">
+                <div className="text-[#9AE8FF] max-w-[100px] overflow-ellipsis overflow-hidden">
+                  {currentEmode?.label || ''}
+                </div>
+              </span>
+              <Tooltip
+                overlayClassName="rectangle"
+                title={t('page.lending.summary.ethCorrelatedTip')}
+              >
+                <span onClick={(e) => e.stopPropagation()}>
+                  <RcIconInfo
+                    width={12}
+                    height={12}
+                    className="cursor-pointer text-[#CB8EFF]"
+                  />
+                </span>
+              </Tooltip>
+            </EthCorrelatedTag>
+          </EthCorrelatedTagWrapper>
+          <DisableEmodeModal
+            visible={disableOverviewVisible}
+            onCancel={() => setDisableOverviewVisible(false)}
+            onDisableEmode={() => {
+              setEnableIntroVisible(false);
+              setDisableOverviewVisible(false);
+              setFullModalVisible(true);
+            }}
+          />
+          <ManageEmodeFullModal
+            visible={fullModalVisible}
+            onCancel={() => setFullModalVisible(false)}
+            onSuccess={handleEmodeSuccess}
+            height={415}
+          />
+        </div>
+      </div>
     );
   }
 
@@ -113,7 +117,10 @@ export const RightMarketTabInfo: React.FC = () => {
 
   // 未开启 eMode：点击打开启用引导弹窗
   return (
-    <>
+    <div className="flex items-center gap-[6px]">
+      <div className="flex items-center">
+        <InfoTitle>{t('page.lending.summary.eMode')}: </InfoTitle>
+      </div>
       <div
         onClick={() => setEnableIntroVisible(true)}
         className="flex items-center gap-[0px] bg-rb-neutral-bg-5 rounded-[6px] border-0 py-6 px-[5px] cursor-pointer"
@@ -146,7 +153,7 @@ export const RightMarketTabInfo: React.FC = () => {
         onCancel={() => setFullModalVisible(false)}
         onSuccess={handleEmodeSuccess}
       />
-    </>
+    </div>
   );
 };
 

@@ -489,6 +489,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
                 className="w-16 h-16 text-r-neutral-foot"
               />
               <span className="text-[13px] leading-[16px] text-r-neutral-foot">
+                {t('page.lending.borrowDetail.amountTitle')}
                 {formatTokenAmount(availableToBorrow.amount || '0')}
               </span>
               <button
@@ -506,7 +507,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
               </button>
             </div>
           </div>
-          <div className="flex-1 flex flex-col items-end min-w-0">
+          <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
               value={amount ?? ''}
               onValueChange={onAmountChange}
