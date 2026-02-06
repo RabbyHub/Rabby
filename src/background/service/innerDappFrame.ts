@@ -1,6 +1,6 @@
 import { isSameAccount } from '@/utils/account';
 import { preferenceService, sessionService } from '.';
-import { createPersistStore, isSameAddress } from '../utils';
+import { createPersistStore } from '../utils';
 import type { Account } from './preference';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
@@ -82,7 +82,7 @@ class InnerDappFrameService {
       });
       if (changed) {
         eventBus.emit(EVENTS.broadcastToUI, {
-          method: EVENTS.INNER_DAPP_ACCOUNT.CHANGED,
+          method: EVENTS.INNER_DAPP_CHANGE.DAPP_CHANGED,
         });
       }
     }

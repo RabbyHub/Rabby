@@ -7,6 +7,9 @@ import type {
 import { Account } from '@/background/service/preference';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { nanoid } from 'nanoid';
+
+const uniqueId = nanoid();
 
 export const innerDappFrame = createModel<RootModel>()({
   name: 'innerDappFrame',
@@ -32,9 +35,22 @@ export const innerDappFrame = createModel<RootModel>()({
 
   effects: (dispatch) => ({
     init() {
-      eventBus.addEventListener(EVENTS.INNER_DAPP_ACCOUNT.CHANGED, () => {
-        this.syncState();
-      });
+      eventBus.addEventListener(
+        EVENTS.INNER_DAPP_CHANGE.ACCOUNT_CHANGED,
+        () => {
+          this.syncState();
+        }
+      );
+
+      eventBus.addEventListener(
+        EVENTS.INNER_DAPP_CHANGE.DAPP_CHANGED,
+        ({ id }: { id: string }) => {
+          if (id !== uniqueId) {
+            this.syncState();
+          }
+        }
+      );
+
       return this.syncState();
     },
     async syncState(_: void, store) {
@@ -55,6 +71,11 @@ export const innerDappFrame = createModel<RootModel>()({
       store
     ) {
       this.setField({ [payload.type]: payload.dappId });
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.INNER_DAPP_CHANGE.DAPP_CHANGED,
+        params: { id: uniqueId },
+      });
+
       await store.app.wallet.setInnerDappId(payload.type, payload.dappId);
     },
   }),
