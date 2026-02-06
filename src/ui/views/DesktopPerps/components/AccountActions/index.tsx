@@ -49,7 +49,10 @@ export const AccountActions: React.FC = () => {
           title={t('page.perpsPro.accountActions.availableBalanceTips')}
         >
           <div className="flex items-center gap-[4px]">
-            <IconPerpsWallet />
+            <IconPerpsWallet
+              viewBox="0 0 20 20"
+              className="w-[16px] h-[16px]"
+            />
             <div className="flex items-start flex-col">
               {!clearinghouseState ? (
                 <Skeleton.Button
@@ -58,7 +61,7 @@ export const AccountActions: React.FC = () => {
                   style={{ width: 80 }}
                 />
               ) : (
-                <span className="text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+                <span className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
                   {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
                 </span>
               )}

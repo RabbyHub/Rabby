@@ -27,12 +27,18 @@ import { UI_TYPE } from '@/constant/ui';
 const ImportSuccess = ({
   isPopup = false,
   isInModal,
+  onBack,
+  onNavigate,
+  state: _state,
 }: {
   isPopup?: boolean;
   isInModal?: boolean;
+  onBack?(): void;
+  onNavigate?(type: string, state?: Record<string, any>): void;
+  state?: Record<string, any>;
 }) => {
   const history = useHistory();
-  const { state } = useLocation<{
+  const location = useLocation<{
     accounts: Account[];
     hasDivider: boolean;
     title: string;
@@ -45,8 +51,10 @@ const ImportSuccess = ({
     supportChainList?: Chain[];
   }>();
 
+  const state = _state || location.state || {};
+
   const dispatch = useRabbyDispatch();
-  const addressItems = useRef(new Array(state.accounts.length));
+  const addressItems = useRef(new Array(state.accounts?.length));
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)') && isPopup;
   const {
@@ -77,13 +85,7 @@ const ImportSuccess = ({
     }
 
     if (UI_TYPE.isDesktop) {
-      const searchParams = new URLSearchParams(history.location.search);
-      searchParams.delete('action');
-      searchParams.delete('import');
-      history.replace({
-        pathname: history.location.pathname,
-        search: searchParams.toString(),
-      });
+      onNavigate?.('done');
     } else {
       history.push('/dashboard');
     }

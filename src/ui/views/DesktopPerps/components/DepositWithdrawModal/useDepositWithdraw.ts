@@ -497,7 +497,7 @@ export const useDepositWithdraw = (
       setIsPreparingSign(true);
       closeSign();
       try {
-        await dispatch.account.changeAccountAsync(currentPerpsAccount);
+        // await dispatch.account.changeAccountAsync(currentPerpsAccount);
 
         const hashes = await openDirect({
           txs: miniSignTx,
@@ -540,17 +540,22 @@ export const useDepositWithdraw = (
     try {
       const promise = Promise.all(
         miniSignTx.map((tx) => {
-          return wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [tx],
-            $ctx: {
-              ga: {
-                category: 'Perps',
-                source: 'Perps',
-                trigger: 'Perps',
+          return wallet.sendRequest(
+            {
+              method: 'eth_sendTransaction',
+              params: [tx],
+              $ctx: {
+                ga: {
+                  category: 'Perps',
+                  source: 'Perps',
+                  trigger: 'Perps',
+                },
               },
             },
-          });
+            {
+              account: currentPerpsAccount!,
+            }
+          );
         })
       );
 
@@ -570,7 +575,7 @@ export const useDepositWithdraw = (
         throw new Error('no signature, try later');
       }
       let result: string[] = [];
-      await dispatch.account.changeAccountAsync(account);
+      // await dispatch.account.changeAccountAsync(account);
       if (canUseDirectSubmitTx) {
         typedDataSignatureStore.close();
         result = await typedDataSignatureStore.start(
@@ -593,10 +598,15 @@ export const useDepositWithdraw = (
         typedDataSignatureStore.close();
       } else {
         for (const actionObj of actions) {
-          const signature = await wallet.sendRequest<string>({
-            method: 'eth_signTypedDataV4',
-            params: [account.address, JSON.stringify(actionObj)],
-          });
+          const signature = await wallet.sendRequest<string>(
+            {
+              method: 'eth_signTypedDataV4',
+              params: [account.address, JSON.stringify(actionObj)],
+            },
+            {
+              account,
+            }
+          );
           result.push(signature);
         }
       }
