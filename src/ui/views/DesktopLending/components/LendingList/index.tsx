@@ -35,6 +35,7 @@ import { BorrowListModal } from '../BorrowListModal';
 import { LendingEmptyState } from '../LendingEmptyState';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useSelectedMarket } from '../../hooks/market';
+import { getMaxModalHeight } from './window';
 
 export type LendingModalType =
   | 'supply'
@@ -388,7 +389,7 @@ export const LendingList: React.FC = () => {
         width={1040}
         bodyStyle={{
           ...modalCommonProps.bodyStyle,
-          minHeight: 770,
+          minHeight: getMaxModalHeight(),
         }}
         visible={listModalType === 'supplyList'}
         onCancel={closeModal}
@@ -403,7 +404,7 @@ export const LendingList: React.FC = () => {
         width={1040}
         bodyStyle={{
           ...modalCommonProps.bodyStyle,
-          minHeight: 770,
+          minHeight: getMaxModalHeight(),
         }}
         visible={listModalType === 'borrowList'}
         onCancel={closeModal}
