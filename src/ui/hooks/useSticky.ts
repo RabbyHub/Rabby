@@ -26,8 +26,15 @@ export function useSticky<T extends HTMLElement>(
       stickyActive = refPageOffset <= stickyOffset;
     }
 
-    if (stickyActive && !sticky) setSticky(true);
-    else if (!stickyActive && sticky) setSticky(false);
+    setSticky((prev) => {
+      if (stickyActive && !prev) {
+        return true;
+      }
+      if (!stickyActive && prev) {
+        return false;
+      }
+      return prev;
+    });
   });
 
   useEffect(() => {
