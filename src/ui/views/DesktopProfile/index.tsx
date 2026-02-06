@@ -90,8 +90,11 @@ export const DesktopProfile: React.FC<{
       return;
     }
     const profileHeight = 136;
+
     if ($scrollElement.scrollTop > profileHeight) {
-      $scrollElement.scrollTo(0, profileHeight);
+      requestAnimationFrame(() => {
+        $scrollElement.scrollTo(0, profileHeight);
+      });
     }
   };
   const { action, sendPageType } = useMemo(() => {
