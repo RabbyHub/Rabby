@@ -1,25 +1,23 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
 import clsx from 'clsx';
 import styled from 'styled-components';
-import { useRabbyDispatch } from '@/ui/store';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import { LendingList } from './components/LendingList';
 import { SummaryBar } from './components/SummaryBar';
 import { LendingProvider } from './hooks/useLendingService';
 import { LendingDataProvider } from './hooks/LendingDataContext';
-import {
-  useFetchLendingData,
-  useLendingSummaryCard,
-  useSelectedMarket,
-} from './hooks';
+import { useFetchLendingData, useLendingSummaryCard } from './hooks';
+import { useListenTxReload } from '../DesktopProfile/hooks/useListenTxReload';
 import './index.less';
 import { useHistory, useLocation } from 'react-router-dom';
 import { SignatureRecordModal } from '../DesktopProfile/components/SignatureRecordModal';
 import { useLendingService } from './hooks/useLendingService';
 import { CustomMarket } from './config/market';
 import { DesktopDappSelector } from '@/ui/component/DesktopDappSelector';
+import { useSelectedMarket } from './hooks/market';
+import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 
 const Wrap = styled.div`
   width: 100%;
@@ -32,30 +30,38 @@ const Wrap = styled.div`
 `;
 
 const DesktopLendingContent: React.FC = () => {
-  const dispatch = useRabbyDispatch();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount, switchCurrentSceneAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const { fetchData, setFetchLoading } = useFetchLendingData();
   const { iUserSummary, apyInfo } = useLendingSummaryCard();
   const { marketKey } = useSelectedMarket();
 
   useEffect(() => {
     setFetchLoading(true);
+    console.log(
+      'CUSTOM_LOGGER:=>: fetchData',
+      marketKey,
+      currentAccount?.address
+    );
     fetchData();
-    // TODO: 有循环，待排查
   }, [marketKey, currentAccount?.address]);
+
+  useListenTxReload(fetchData);
 
   return (
     <Wrap>
       <div className="flex items-center justify-between">
         <DesktopNav showRightItems={false} />
-        <div className="flex items-center gap-12">
+        <div className="flex items-center gap-[16px]">
           <DesktopDappSelector type="lending" />
           <DesktopAccountSelector
             value={currentAccount}
             onChange={(account) => {
-              dispatch.account.changeAccountAsync(account);
+              switchCurrentSceneAccount(account);
             }}
           />
+          <SwitchThemeBtn />
         </div>
       </div>
       <div

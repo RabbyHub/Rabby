@@ -4,11 +4,8 @@ import React, {
   useState,
   useCallback,
   useMemo,
-  useRef,
-  useEffect,
 } from 'react';
 import { debounce } from 'lodash';
-import { CustomMarket } from '../config/market';
 import { UpdaterOrPartials, resolveValFromUpdater } from '../types/store';
 import {
   ReservesDataHumanized,
@@ -22,8 +19,6 @@ import { computeWrapperPoolReserveAndFinalDisplayPoolReserves } from '.';
 
 const EMPTY_WALLET_BALANCES: UserWalletBalancesResponse = { 0: [], 1: [] };
 
-type RemoteDataKey = `${CustomMarket}::${string}`;
-
 type RemoteDataState = {
   reserves: ReservesDataHumanized | undefined;
   userReserves:
@@ -34,10 +29,6 @@ type RemoteDataState = {
     | undefined;
   walletBalances: UserWalletBalancesResponse;
   eModes: EmodeDataHumanized[] | undefined;
-};
-
-export const getDataKey = (addr: string, marketKey: CustomMarket) => {
-  return `${marketKey}::${addr}` as RemoteDataKey;
 };
 
 function getInitRemoteData(): RemoteDataState {
@@ -81,31 +72,17 @@ function getInitComputedInfo(): IndexedComputedInfo {
 }
 
 type LendingDataContextValue = {
-  remoteDataState: Record<RemoteDataKey, RemoteDataState>;
-  computedInfoState: Record<RemoteDataKey, IndexedComputedInfo>;
+  remoteDataState: RemoteDataState;
+  computedInfoState: IndexedComputedInfo;
   lendingLoadState: {
-    addrMarketLoading: Record<string, boolean>;
+    loading: boolean;
     refreshHistoryId: number;
   };
-  setRemoteData: (
-    addr: string,
-    marketKey: CustomMarket,
-    valOrFunc: UpdaterOrPartials<RemoteDataState>
-  ) => void;
-  setComputedInfo: (
-    lendingDataKey: RemoteDataKey,
-    computedInfo: IndexedComputedInfo
-  ) => void;
-  setLoading: (
-    loading: boolean,
-    indexes?: {
-      address?: string;
-      marketKey?: CustomMarket;
-    }
-  ) => void;
-  setRefreshHistoryId: (valOrFunc: UpdaterOrPartials<number>) => void;
-  getRemoteData: (lendingDataKey: RemoteDataKey) => RemoteDataState;
-  getComputedInfo: (lendingDataKey: RemoteDataKey) => IndexedComputedInfo;
+  setRemoteData: (valOrFunc: UpdaterOrPartials<RemoteDataState>) => void;
+  setComputedInfo: (computedInfo: IndexedComputedInfo) => void;
+  setLoading: (loading: boolean) => void;
+  getRemoteData: () => RemoteDataState;
+  getComputedInfo: () => IndexedComputedInfo;
 };
 
 const LendingDataContext = createContext<LendingDataContextValue | null>(null);
@@ -113,123 +90,59 @@ const LendingDataContext = createContext<LendingDataContextValue | null>(null);
 export const LendingDataProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [remoteDataState, setRemoteDataState] = useState<
-    Record<RemoteDataKey, RemoteDataState>
-  >({} as Record<RemoteDataKey, RemoteDataState>);
+  const [remoteDataState, setRemoteDataState] = useState<RemoteDataState>(
+    getInitRemoteData()
+  );
 
-  const [computedInfoState, setComputedInfoState] = useState<
-    Record<RemoteDataKey, IndexedComputedInfo>
-  >({} as Record<RemoteDataKey, IndexedComputedInfo>);
+  const [
+    computedInfoState,
+    setComputedInfoState,
+  ] = useState<IndexedComputedInfo>(getInitComputedInfo());
 
   const [lendingLoadState, setLendingLoadState] = useState<{
-    addrMarketLoading: Record<string, boolean>;
+    loading: boolean;
     refreshHistoryId: number;
   }>({
-    addrMarketLoading: {},
+    loading: false,
     refreshHistoryId: 0,
   });
 
   const setRemoteData = useCallback(
-    (
-      addr: string,
-      marketKey: CustomMarket,
-      valOrFunc: UpdaterOrPartials<RemoteDataState>
-    ) => {
-      const lendingDataKey = getDataKey(addr, marketKey);
+    (valOrFunc: UpdaterOrPartials<RemoteDataState>) => {
       setRemoteDataState((prev) => {
-        const prevData = prev[lendingDataKey] || getInitRemoteData();
-        const { newVal } = resolveValFromUpdater(prevData, valOrFunc, {
-          strict: false,
-        });
         return {
           ...prev,
-          [lendingDataKey]: newVal,
+          ...valOrFunc,
         };
       });
     },
     []
   );
 
-  const setComputedInfo = useCallback(
-    (lendingDataKey: RemoteDataKey, computedInfo: IndexedComputedInfo) => {
-      setComputedInfoState((prev) => ({
-        ...prev,
-        [lendingDataKey]: computedInfo,
-      }));
-    },
-    []
-  );
+  const setComputedInfo = useCallback((computedInfo: IndexedComputedInfo) => {
+    setComputedInfoState(computedInfo);
+  }, []);
 
-  const setLoading = useCallback(
-    (
-      loading: boolean,
-      indexes?: {
-        address?: string;
-        marketKey?: CustomMarket;
-      }
-    ) => {
-      if (!indexes?.address || !indexes?.marketKey) {
-        console.warn('setLoading missing params', indexes);
-        return;
-      }
+  const setLoading = useCallback((loading: boolean) => {
+    setLendingLoadState((prev) => ({
+      ...prev,
+      loading,
+    }));
+  }, []);
 
-      const lendingDataKey = getDataKey(indexes.address, indexes.marketKey);
-      setLendingLoadState((prev) => ({
-        ...prev,
-        addrMarketLoading: {
-          ...prev.addrMarketLoading,
-          [lendingDataKey]: loading,
-        },
-      }));
-    },
-    []
-  );
+  const getRemoteData = useCallback((): RemoteDataState => {
+    return remoteDataState;
+  }, [remoteDataState]);
 
-  const setRefreshHistoryId = useCallback(
-    (valOrFunc: UpdaterOrPartials<number>) => {
-      setLendingLoadState((prev) => {
-        const { newVal } = resolveValFromUpdater(
-          prev.refreshHistoryId,
-          valOrFunc,
-          {
-            strict: false,
-          }
-        );
-        return {
-          ...prev,
-          refreshHistoryId: newVal,
-        };
-      });
-    },
-    []
-  );
-
-  const getRemoteData = useCallback(
-    (lendingDataKey: RemoteDataKey): RemoteDataState => {
-      return remoteDataState[lendingDataKey] || getInitRemoteData();
-    },
-    [remoteDataState]
-  );
-
-  const getComputedInfo = useCallback(
-    (lendingDataKey: RemoteDataKey): IndexedComputedInfo => {
-      return computedInfoState[lendingDataKey] || getInitComputedInfo();
-    },
-    [computedInfoState]
-  );
+  const getComputedInfo = useCallback((): IndexedComputedInfo => {
+    return computedInfoState;
+  }, [computedInfoState]);
 
   const debouncedSetRemoteData = useMemo(
     () =>
-      debounce(
-        (
-          addr: string,
-          marketKey: CustomMarket,
-          valOrFunc: UpdaterOrPartials<RemoteDataState>
-        ) => {
-          setRemoteData(addr, marketKey, valOrFunc);
-        },
-        200
-      ),
+      debounce((valOrFunc: UpdaterOrPartials<RemoteDataState>) => {
+        setRemoteData(valOrFunc);
+      }, 200),
     [setRemoteData]
   );
 
@@ -241,7 +154,6 @@ export const LendingDataProvider: React.FC<{ children: React.ReactNode }> = ({
       setRemoteData: debouncedSetRemoteData,
       setComputedInfo,
       setLoading,
-      setRefreshHistoryId,
       getRemoteData,
       getComputedInfo,
     }),
@@ -252,7 +164,6 @@ export const LendingDataProvider: React.FC<{ children: React.ReactNode }> = ({
       debouncedSetRemoteData,
       setComputedInfo,
       setLoading,
-      setRefreshHistoryId,
       getRemoteData,
       getComputedInfo,
     ]

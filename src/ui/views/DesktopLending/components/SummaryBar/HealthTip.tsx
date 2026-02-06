@@ -78,9 +78,8 @@ export const HealthTip = ({
         className="text-[13px] leading-[16px] font-medium whitespace-nowrap"
         style={{ color: textColor }}
       >
-        {t('page.lending.summary.lq')}
+        {t('page.lending.summary.lq')}{' '}
         <span className="underline cursor-pointer" onClick={onMoreClick}>
-          {' '}
           {t('page.lending.summary.more')}
         </span>
       </span>

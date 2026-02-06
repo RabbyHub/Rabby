@@ -71,7 +71,7 @@ export const RepayOverView: React.FC<
         </div>
 
         <div className="flex items-center justify-between p-16">
-          <span className="text-[13px] leading-[15px] text-r-neutral-foot">
+          <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
             {t('page.lending.popup.remainingDebt')} (USD)
           </span>
           <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
@@ -94,7 +94,7 @@ export const RepayOverView: React.FC<
                       limitless={healthFactor === '-1'}
                       healthFactor={healthFactor}
                     />{' '}
-                    <span className="mx-1">→</span>
+                    <span className="mx-4">→</span>
                     <HealthFactorText
                       limitless={afterHF === '-1'}
                       healthFactor={afterHF}

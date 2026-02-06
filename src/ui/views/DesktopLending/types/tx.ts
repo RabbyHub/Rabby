@@ -13,3 +13,11 @@ export type TxErrorType = {
   error: ReactElement | undefined;
   txAction: TxAction;
 };
+
+export const LendingReportType = {
+  Supply: 'Supply',
+  Withdraw: 'Withdraw',
+  Borrow: 'Borrow',
+  Repay: 'Repay',
+  RepayWithAToken: 'RepayWithAToken',
+};

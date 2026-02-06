@@ -1469,6 +1469,7 @@
           "token": "Token",
           "token_balance": "Token/Balance",
           "my_balance": "My Balance",
+          "my_assets": "My Assets",
           "token_tvl": "Token/TVL",
           "myBorrows": "My borrows",
           "totalBorrowed": "Total Borrowed",
@@ -1563,7 +1564,8 @@
         "useAsCollateral": "Use as collateral",
         "collateral": "Collateral",
         "reachCap": "This asset has reached its supply cap. Nothing is available to be supplied from this market.",
-        "almostCap": "This asset has almost reached its borrow cap. There is only {{available}} available to be borrowed from this market."
+        "almostCap": "This asset has almost reached its borrow cap. There is only {{available}} available to be borrowed from this market.",
+        "noBalance":"No balance"
       },
       "risk": {
         "warning": "Borrowing this amount will lower your Health Factor to a risky level for liquidation.",
@@ -1699,7 +1701,8 @@
         "more": "More"
       },
       "disableBorrowTip": {
-        "desc": "No supply: To borrow you need to supply assets as collateral."
+        "desc": "No supply: To borrow you need to supply assets as collateral.",
+        "noSupply": "Supply assets first to enable borrowing."
       },
       "type": {
         "supplied": "Supplied",

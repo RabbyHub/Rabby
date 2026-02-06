@@ -5,7 +5,6 @@ import { isSameAddress } from '@/ui/utils';
 import {
   useLendingRemoteData,
   useLendingSummary,
-  useSelectedMarket,
   useLendingIsLoading,
 } from '../../hooks';
 import { DisplayPoolReserveInfo } from '../../types';
@@ -16,6 +15,7 @@ import { isUnFoldToken } from '../../config/unfold';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconArrowCC } from '@/ui/assets/lending/arrow-cc.svg';
 import { BorrowItem } from './BorrowItem';
+import { useSelectedMarket } from '../../hooks/market';
 
 type BorrowListModalProps = {
   onSelect: (reserve: DisplayPoolReserveInfo) => void;
@@ -94,8 +94,6 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
       return av - bv;
     });
   }, [
-    API_ETH_MOCK_ADDRESS,
-    assetCanBeBorrowedByUser,
     displayPoolReserves,
     iUserSummary,
     reserves?.reservesData,
@@ -103,7 +101,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
     sortDirection,
   ]);
 
-  const listReserves = sortReserves ?? [];
+  const listReserves = useMemo(() => sortReserves ?? [], [sortReserves]);
 
   const unFoldList = useMemo(
     () =>
@@ -235,9 +233,17 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
 
   return (
     <div
-      className={clsx('w-full h-full min-h-0 flex flex-col', 'p-[24px] pb-8')}
+      className={clsx(
+        'w-full h-full min-h-0 flex flex-col max-h-[770px]',
+        'p-[24px] pb-8'
+      )}
     >
-      <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1 mb-12">
+      <h2
+        className={clsx(
+          'text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1 mb-12',
+          'flex-shrink-0 h-[24px]'
+        )}
+      >
         {t('page.lending.borrowDetail.actions')}
       </h2>
       {loading ? (
@@ -245,7 +251,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
           Loading...
         </div>
       ) : (
-        <div className="flex-1 overflow-auto min-h-0">
+        <div className="flex-1 overflow-auto min-h-0 overflow-y-auto">
           {availableCard}
           {listReserves.length > 0 && (
             <>
@@ -263,16 +269,16 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                   onClick={() => handleSortClick('debt')}
                 >
                   <span>{t('page.lending.list.headers.totalBorrowed')}</span>
-                  {sortField === 'debt' && (
-                    <RcIconArrowCC
-                      width={12}
-                      height={12}
-                      className={clsx(
-                        'ml-[3px] flex-shrink-0 inline-block',
-                        sortDirection === 'desc' ? 'rotate-90' : '-rotate-90'
-                      )}
-                    />
-                  )}
+                  <RcIconArrowCC
+                    width={12}
+                    height={12}
+                    className={clsx(
+                      'ml-[3px] flex-shrink-0 inline-block',
+                      sortDirection === 'asc' && sortField === 'debt'
+                        ? '-rotate-90'
+                        : 'rotate-90'
+                    )}
+                  />
                 </div>
                 <div
                   className={clsx(
@@ -284,16 +290,16 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                   onClick={() => handleSortClick('apy')}
                 >
                   <span>{t('page.lending.apy')}</span>
-                  {sortField === 'apy' && (
-                    <RcIconArrowCC
-                      width={12}
-                      height={12}
-                      className={clsx(
-                        'ml-[3px] flex-shrink-0 inline-block',
-                        sortDirection === 'desc' ? 'rotate-90' : '-rotate-90'
-                      )}
-                    />
-                  )}
+                  <RcIconArrowCC
+                    width={12}
+                    height={12}
+                    className={clsx(
+                      'ml-[3px] flex-shrink-0 inline-block',
+                      sortDirection === 'asc' && sortField === 'apy'
+                        ? '-rotate-90'
+                        : 'rotate-90'
+                    )}
+                  />
                 </div>
                 <span className="w-[80px] flex-shrink-0" />
               </div>
@@ -303,20 +309,28 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                     <div
                       key="toggle-fold"
                       className={clsx(
-                        'w-full pt-20 pb-20 py-8 px-12 cursor-pointer text-left',
-                        'text-[14px] text-r-neutral-foot flex items-center justify-start gap-2'
+                        'w-full pt-20 pb-12 text-left',
+                        'flex items-center '
                       )}
-                      onClick={() => setFoldHideList((prev) => !prev)}
                     >
-                      <span>{t('page.lending.borrowList.more')}</span>
-                      <RcIconArrowCC
-                        width={12}
-                        height={12}
+                      <div
                         className={clsx(
-                          'text-r-neutral-foot flex-shrink-0 inline-block transition-transform',
-                          !foldHideList && '-rotate-90'
+                          'pl-[26.5px] pr-[16.5px] py-8 rounded-full bg-r-neutral-card-1',
+                          'flex items-center justify-center gap-2',
+                          'cursor-pointer text-[12px] text-r-neutral-foot'
                         )}
-                      />
+                        onClick={() => setFoldHideList((prev) => !prev)}
+                      >
+                        <span>{t('page.lending.borrowList.more')}</span>
+                        <RcIconArrowCC
+                          width={12}
+                          height={12}
+                          className={clsx(
+                            'text-r-neutral-foot flex-shrink-0 inline-block transition-transform',
+                            !foldHideList ? '-rotate-90' : 'rotate-90'
+                          )}
+                        />
+                      </div>
                     </div>
                   );
                 }

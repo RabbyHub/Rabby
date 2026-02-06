@@ -8,7 +8,6 @@ import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 import { ManageEmodeModal } from '../ManageEmodeModal';
 import { DisableEmodeModal } from '../DisableEmodeModal';
 import { ManageEmodeFullModal } from '../ManageEmodeFullModal';
-import { useFetchLendingData } from '../../hooks';
 import { ReactComponent as RcIconLightingCC } from '@/ui/assets/lending/lighting-cc.svg';
 import { ReactComponent as RcIconSettingCC } from '@/ui/assets/lending/setting.svg';
 
@@ -34,11 +33,9 @@ export const RightMarketTabInfo: React.FC = () => {
   const [disableOverviewVisible, setDisableOverviewVisible] = useState(false);
   const [fullModalVisible, setFullModalVisible] = useState(false);
   const { isInIsolationMode, currentEmode, emodeEnabled, eModes } = useMode();
-  const { fetchData } = useFetchLendingData();
 
   const handleEmodeSuccess = () => {
     setFullModalVisible(false);
-    fetchData();
   };
 
   // 隔离模式：只展示一个全局 Isolated 标签

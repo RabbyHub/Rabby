@@ -13,7 +13,6 @@ import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 import Popup from '@/ui/component/Popup';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { ReactComponent as RcIconArrowCC } from '@/ui/assets/lending/arrow-cc.svg';
-import { getContainerByScreen } from '@/ui/utils';
 import { PairTable } from '../DisableEmodeModal';
 
 export const ManageEmodeFullModalOverview: React.FC<{
@@ -41,24 +40,25 @@ export const ManageEmodeFullModalOverview: React.FC<{
   const categoryOptions = useMemo(() => {
     if (!eModes || !iUserSummary) return [];
     return Object.values(eModes)
-      .filter((e) => e.id !== 0 && e.assets?.length > 0)
+      .filter((e) => e.id !== 0 && e.label !== 'USYC GHO')
       .map((e) => {
         const available = isEModeCategoryAvailable(iUserSummary, e);
         return {
           value: e.id,
-          label: available
-            ? e.label
-            : `${e.label} ${t('page.lending.manageEmode.unavailable')}`,
+          label: e.label,
           available,
         };
+      })
+      .sort((a, b) => {
+        if (a.available !== b.available) {
+          return a.available ? -1 : 1;
+        }
+
+        return a.value - b.value;
       });
-  }, [eModes, iUserSummary, t]);
+  }, [eModes, iUserSummary]);
 
   // Shown only if the user has a collateral asset which is changing in LTV
-  console.log('CUSTOM_LOGGER:=>: showLTVChange', {
-    aa: iUserSummary?.currentLoanToValue,
-    bb: newSummary.currentLoanToValue,
-  });
   const showLTVChange = useMemo(() => {
     return (
       iUserSummary?.currentLoanToValue !== '0' &&
@@ -108,8 +108,7 @@ export const ManageEmodeFullModalOverview: React.FC<{
     [eModes, selectedCategoryId]
   );
 
-  const { getContainer: getContainerFromContext } = usePopupContainer();
-  const getContainer = getContainerFromContext || getContainerByScreen;
+  const { getContainer } = usePopupContainer();
 
   return (
     <div>
@@ -202,7 +201,7 @@ export const ManageEmodeFullModalOverview: React.FC<{
                     limitless={healthFactor === '-1'}
                     healthFactor={healthFactor}
                   />{' '}
-                  <span className="mx-1">→</span>
+                  <span className="mx-4">→</span>
                   <HealthFactorText
                     limitless={afterHealthFactor === '-1'}
                     healthFactor={afterHealthFactor}
@@ -273,19 +272,39 @@ export const ManageEmodeFullModalOverview: React.FC<{
                   : '--';
                 const isSelected = selectedCategoryId === value;
 
+                if (!available) {
+                  return (
+                    <Tooltip
+                      key={value}
+                      overlayClassName="rectangle"
+                      className="w-full flex"
+                      title={t('page.lending.manageEmode.unavailableTips')}
+                    >
+                      <div
+                        className={clsx(
+                          'w-full h-[48px] rounded-[8px] px-[16px] flex items-center justify-between',
+                          'bg-rb-neutral-card-1 text-[14px] font-medium text-r-neutral-title-1',
+                          'opacity-50 cursor-not-allowed'
+                        )}
+                      >
+                        <span className="truncate max-w-[240px] text-left">
+                          {label}
+                        </span>
+                        <span>{ltvText}</span>
+                      </div>
+                    </Tooltip>
+                  );
+                }
                 return (
                   <button
                     key={value}
                     type="button"
-                    disabled={!available}
                     className={clsx(
                       'w-full h-[48px] rounded-[8px] px-[16px] flex items-center justify-between',
                       'bg-rb-neutral-card-1 text-[14px] font-medium text-r-neutral-title-1',
-                      !available && 'opacity-50 cursor-not-allowed',
                       isSelected && 'ring-1 ring-rb-brand-default'
                     )}
                     onClick={() => {
-                      if (!available) return;
                       onSelectCategory?.(value);
                       setCategoryPopupVisible(false);
                     }}

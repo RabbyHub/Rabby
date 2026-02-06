@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, message, Checkbox } from 'antd';
+import { Button, message, Checkbox } from 'antd';
 import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
 import {
   calculateHealthFactorFromBalancesBigUnits,
@@ -19,12 +19,9 @@ import { BorrowOverView } from './BorrowOverView';
 import { BorrowErrorTip } from './BorrowErrorTip';
 import { BorrowToCapTip } from './BorrowToCapTip';
 import SymbolIcon from '../SymbolIcon';
-import {
-  useLendingSummary,
-  useSelectedMarket,
-  usePoolDataProviderContract,
-} from '../../hooks';
-import { INTERNAL_REQUEST_SESSION } from '@/constant';
+import { useLendingSummary } from '../../hooks';
+import { useSelectedMarket } from '../../hooks/market';
+import { usePoolDataProviderContract } from '../../hooks/pool';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -36,14 +33,18 @@ import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/lending/warning-2.svg';
 import styled from 'styled-components';
-import { StyledInput } from '../StyledInput';
+import { LendingStyledInput } from '../StyledInput';
+import stats from '@/stats';
+import { LendingReportType } from '../../types/tx';
+import { isSameAddress } from '@/ui/utils';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { isZeroAmount } from '../../utils/number';
 
 type BorrowModalProps = {
   visible: boolean;
   onCancel: () => void;
   reserve: DisplayPoolReserveInfo;
   userSummary: UserSummary | null;
-  onSuccess?: () => void;
 };
 
 export const StyledCheckbox = styled(Checkbox)`
@@ -57,19 +58,25 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   onCancel,
   reserve,
   userSummary,
-  onSuccess,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const {
     formattedPoolReservesAndIncentives,
     iUserSummary: contextUserSummary,
   } = useLendingSummary();
-  const { selectedMarketData, chainInfo, chainEnum } = useSelectedMarket();
+  const { selectedMarketData, chainInfo } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
 
-  const summary = userSummary ?? contextUserSummary;
+  const { getContainer } = usePopupContainer();
+
+  const summary = useMemo(() => userSummary ?? contextUserSummary, [
+    userSummary,
+    contextUserSummary,
+  ]);
 
   const [amount, setAmount] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,6 +108,10 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     const miniAmount = myAmount.gte(formattedPoolAmount)
       ? formattedPoolAmount
       : myAmount;
+    const formattedMiniAmount = miniAmount.decimalPlaces(
+      reserve.reserve.decimals,
+      BigNumber.ROUND_DOWN
+    );
     const usdValue = miniAmount
       .multipliedBy(
         new BigNumber(
@@ -110,18 +121,21 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       .toString();
     return {
       isLteZero: miniAmount.lte(0),
-      amount: miniAmount.toString(),
+      amount: formattedMiniAmount.toString(10),
       usdValue,
     };
   }, [
     summary?.availableBorrowsUSD,
+    reserve.reserve.formattedPriceInMarketReferenceCurrency,
     reserve.reserve.borrowCap,
     reserve.reserve.totalDebt,
-    reserve.reserve.formattedPriceInMarketReferenceCurrency,
+    reserve.reserve.decimals,
   ]);
 
   const afterHF = useMemo(() => {
-    if (!amount || amount === '0' || !summary || !targetPool) return undefined;
+    if (!amount || isZeroAmount(amount) || !summary || !targetPool) {
+      return undefined;
+    }
     const borrowAmountInUsd = new BigNumber(amount)
       .multipliedBy(targetPool.formattedPriceInMarketReferenceCurrency)
       .toString();
@@ -176,7 +190,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   const buildTransactions = useCallback(async () => {
     if (
       !amount ||
-      amount === '0' ||
+      isZeroAmount(amount) ||
       !currentAccount ||
       !selectedMarketData ||
       !pools ||
@@ -221,7 +235,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       setBorrowTx(formattedBorrowResult);
     } catch (error) {
       console.error('Build transactions error:', error);
-      message.error(t('page.lending.submitted') || 'Something error');
+      message.error('Something error');
       setBorrowTx(null);
     } finally {
       setIsLoading(false);
@@ -235,8 +249,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     reserve.underlyingAsset,
     reserve.reserve.decimals,
     targetPool,
-    wallet,
-    t,
   ]);
 
   useEffect(() => {
@@ -293,7 +305,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         !currentAccount ||
         !borrowTx ||
         !amount ||
-        amount === '0' ||
+        isZeroAmount(amount) ||
         !chainInfo
       ) {
         return;
@@ -303,12 +315,36 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         return;
       }
 
+      const report = (lastHash: string) => {
+        const targetPool = formattedPoolReservesAndIncentives.find((item) =>
+          isSameAddress(item.underlyingAsset, reserve.underlyingAsset)
+        );
+        const bgCurrency = new BigNumber(
+          targetPool?.formattedPriceInMarketReferenceCurrency || '0'
+        );
+        const usdValue = targetPool
+          ? new BigNumber(amount || '0').multipliedBy(bgCurrency).toString()
+          : '0';
+
+        stats.report('aaveInternalTx', {
+          tx_type: LendingReportType.Borrow,
+          chain: chainInfo?.serverId || '',
+          tx_id: lastHash || '',
+          user_addr: currentAccount.address || '',
+          address_type: currentAccount.type || '',
+          usd_value: usdValue,
+          create_at: Date.now(),
+          app_version: process.env.release || '0',
+        });
+      };
+
       try {
         if (canShowDirectSubmit && !forceFullSign) {
           setMiniSignLoading(true);
           try {
             const hashes = await openDirect({
               txs: [borrowTx],
+              getContainer,
               ga: {
                 category: 'Lending',
                 source: 'Lending',
@@ -317,6 +353,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
             });
             const hash = hashes[hashes.length - 1];
             if (hash) {
+              report(hash);
               message.success(
                 `${t('page.lending.borrowDetail.actions')} ${t(
                   'page.lending.submitted'
@@ -324,7 +361,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
               );
               setAmount(undefined);
               onCancel();
-              onSuccess?.();
             }
           } catch (error) {
             if (
@@ -342,17 +378,23 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         }
 
         setIsLoading(true);
-        await wallet.sendRequest({
-          method: 'eth_sendTransaction',
-          params: [borrowTx],
-          $ctx: {
-            ga: {
-              category: 'Lending',
-              source: 'Lending',
-              trigger: 'Borrow',
+        const lastHash = await wallet.sendRequest(
+          {
+            method: 'eth_sendTransaction',
+            params: [borrowTx],
+            $ctx: {
+              ga: {
+                category: 'Lending',
+                source: 'Lending',
+                trigger: 'Borrow',
+              },
             },
           },
-        });
+          {
+            account: currentAccount,
+          }
+        );
+        report(lastHash as string);
         message.success(
           `${t('page.lending.borrowDetail.actions')} ${t(
             'page.lending.submitted'
@@ -360,7 +402,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         );
         setAmount(undefined);
         onCancel();
-        onSuccess?.();
       } catch (error) {
         console.error('Borrow error:', error);
       } finally {
@@ -372,18 +413,19 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       borrowTx,
       amount,
       chainInfo,
+      t,
+      formattedPoolReservesAndIncentives,
+      reserve.underlyingAsset,
+      canShowDirectSubmit,
       wallet,
       onCancel,
-      onSuccess,
-      t,
-      canShowDirectSubmit,
       openDirect,
+      getContainer,
     ]
   );
 
   const onAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const v = e.target.value;
+    (v: string) => {
       if (v === '' || INPUT_NUMBER_RE.test(v)) {
         const filtered = v === '' ? undefined : filterNumber(v);
         if (filtered) {
@@ -402,15 +444,20 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     [availableToBorrow.amount]
   );
 
-  const emptyAmount =
-    !availableToBorrow.amount || availableToBorrow.amount === '0';
-  const canSubmit =
-    amount &&
-    amount !== '0' &&
-    borrowTx &&
-    currentAccount &&
-    !isLoading &&
-    (!isRisky || isChecked);
+  const emptyAmount = useMemo(
+    () => !availableToBorrow.amount || isZeroAmount(availableToBorrow.amount),
+    [availableToBorrow.amount]
+  );
+  const canSubmit = useMemo(() => {
+    return (
+      amount &&
+      !isZeroAmount(amount) &&
+      borrowTx &&
+      currentAccount &&
+      !isLoading &&
+      (!isRisky || isChecked)
+    );
+  }, [amount, borrowTx, currentAccount, isChecked, isLoading, isRisky]);
 
   if (!reserve?.reserve?.symbol) return null;
 
@@ -460,13 +507,13 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
             </div>
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0">
-            <StyledInput
+            <LendingStyledInput
               value={amount ?? ''}
-              onChange={onAmountChange}
+              onValueChange={onAmountChange}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"
             />
-            {amount && amount !== '0' && (
+            {amount && !isZeroAmount(amount) && (
               <span className="text-[13px] leading-[15px] text-r-neutral-foot mt-1">
                 {formatUsdValue(
                   Number(amount) *
@@ -492,7 +539,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       {canShowDirectSubmit &&
       chainInfo?.serverId &&
       !!amount &&
-      amount !== '0' ? (
+      !isZeroAmount(amount) ? (
         <div className="mt-16 px-16">
           <DirectSignGasInfo
             supportDirectSign

@@ -11,9 +11,11 @@ import { Tooltip } from 'antd';
 export const SupplyItem = ({
   data,
   onSelect,
+  className,
 }: {
   data: DisplayPoolReserveInfo;
   onSelect: (data: DisplayPoolReserveInfo) => void;
+  className?: string;
 }) => {
   const { t } = useTranslation();
   const disableSupplyButton = useMemo(() => {
@@ -38,7 +40,8 @@ export const SupplyItem = ({
       key={`${data.reserve.underlyingAsset}-${data.reserve.symbol}`}
       className={clsx(
         'mt-8 flex items-center justify-between px-16 h-[56px] rounded-[12px]',
-        'bg-rb-neutral-bg-1'
+        'bg-rb-neutral-bg-1',
+        className
       )}
     >
       <div className="flex-1 flex items-center justify-start min-w-0 text-left">
@@ -78,10 +81,14 @@ export const SupplyItem = ({
           {formatUsdValue(Number(data.walletBalanceUSD || '0'))}
         </span>
       </div>
-      {upToCap ? (
+      {disableSupplyButton ? (
         <Tooltip
           overlayClassName="rectangle"
-          title={t('page.lending.supplyOverview.reachCap')}
+          title={
+            upToCap
+              ? t('page.lending.supplyOverview.reachCap')
+              : t('page.lending.supplyOverview.noBalance')
+          }
         >
           <button
             type="button"
@@ -102,8 +109,7 @@ export const SupplyItem = ({
           className={clsx(
             'min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] flex-shrink-0',
             'bg-rb-neutral-bg-2 text-[13px] font-medium text-r-neutral-title-1',
-            !disableSupplyButton &&
-              'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
+            !disableSupplyButton && 'hover:bg-rb-brand-light-1',
             disableSupplyButton && 'opacity-50 bg-rb-neutral-bg-4'
           )}
           onClick={() => {
