@@ -34,7 +34,7 @@ export const MarketSelector: React.FC<{
         uri: getMarketLogo(item?.market)?.uri || chain?.logo || '',
       };
     });
-  }, [marketList]);
+  }, []);
 
   const currentOption =
     options.find((opt) => opt.value === value) || options[0];

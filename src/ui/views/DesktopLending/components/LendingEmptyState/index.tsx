@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { useLendingSummary, useSelectedMarket } from '../../hooks';
+import { useLendingSummary } from '../../hooks';
 import { isSameAddress } from '@/ui/utils';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import { CustomMarket } from '../../config/market';
@@ -9,8 +9,12 @@ import { SupplyItem } from '../SupplyListModal/SupplyItem';
 import { DisplayPoolReserveInfo } from '../../types';
 import { ReactComponent as RcIconAAVE } from '@/ui/assets/lending/aave.svg';
 import emptyBg from '@/ui/assets/lending/empty-bg.png';
+import emptyDarkBg from '@/ui/assets/lending/empty-dark.png';
+import { useSelectedMarket } from '../../hooks/market';
+import clsx from 'clsx';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
-const EmptyStateContainer = styled.div`
+const EmptyStateContainer = styled.div<{ isDark: boolean }>`
   position: relative;
   height: 200px;
   display: flex;
@@ -18,7 +22,8 @@ const EmptyStateContainer = styled.div`
   align-items: center;
   justify-content: center;
   background-color: var(--rb-neutral-bg-2, #f7f7fa);
-  background-image: url(${emptyBg});
+  background-image: ${({ isDark }) =>
+    isDark ? `url(${emptyDarkBg})` : `url(${emptyBg})`};
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -98,7 +103,7 @@ export const LendingEmptyState: React.FC<{
   const { t } = useTranslation();
   const { displayPoolReserves } = useLendingSummary();
   const { marketKey } = useSelectedMarket();
-
+  const { isDarkTheme } = useThemeMode();
   const filterReserves = useMemo(() => {
     return displayPoolReserves
       ?.filter((item) => {
@@ -124,7 +129,7 @@ export const LendingEmptyState: React.FC<{
 
   return (
     <div>
-      <EmptyStateContainer>
+      <EmptyStateContainer isDark={isDarkTheme}>
         <PoweredByText>
           {t('page.lending.summary.empty.description')}
         </PoweredByText>
@@ -134,21 +139,40 @@ export const LendingEmptyState: React.FC<{
       </EmptyStateContainer>
       {filterReserves.length > 0 && (
         <div className="px-20">
-          <div className="mt-16 mb-2 flex items-center justify-between px-8">
-            <span className="text-[14px] leading-[18px] text-r-neutral-foot flex-1">
+          <div className="mt-16 mb-2 flex items-center justify-start px-16">
+            <span className="text-[13px] leading-[15px] text-r-neutral-foot w-[150px]">
               {t('page.lending.list.headers.token')}
             </span>
-            <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[80px] text-right">
+            <span
+              className={clsx(
+                'text-[13px] leading-[15px] w-[150px] text-right',
+                'text-r-neutral-foot'
+              )}
+            >
               {t('page.lending.tvl')}
             </span>
-            <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[80px] text-right">
+            <span
+              className={clsx(
+                'text-[13px] leading-[15px] w-[150px] text-right',
+                'text-r-neutral-foot'
+              )}
+            >
               {t('page.lending.apy')}
+            </span>
+            <span
+              className={clsx(
+                'text-[13px] leading-[15px] w-[150px] text-right',
+                'text-r-neutral-foot'
+              )}
+            >
+              {t('page.lending.list.headers.my_assets')}
             </span>
             <span className="w-[80px] flex-shrink-0" />
           </div>
           {filterReserves.map((item) => (
             <SupplyItem
               key={item.reserve.underlyingAsset}
+              className="bg-rb-neutral-bg-3 rounded-[12px]"
               data={item}
               onSelect={onSelect}
             />

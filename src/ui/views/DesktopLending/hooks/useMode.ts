@@ -1,6 +1,6 @@
 // emode 和 isolate 属于模式管理,并且互斥，同处这个hook管理
 
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   // iUserSummaryAtom,
   useLendingISummary,

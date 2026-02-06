@@ -3,18 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { Button, message } from 'antd';
 import { isSameAddress } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import { calculateHFAfterToggleCollateral } from '../../utils/hfUtils';
 import { collateralSwitchTx, optimizedPath } from '../../utils/poolService';
 import { HF_RISK_CHECKBOX_THRESHOLD } from '../../utils/constant';
 import { ToggleCollateralOverView } from './ToggleCollateralOverView';
-import {
-  useLendingSummary,
-  useSelectedMarket,
-  usePoolDataProviderContract,
-} from '../../hooks';
+import { useLendingSummary } from '../../hooks';
+import { useSelectedMarket } from '../../hooks/market';
+import { usePoolDataProviderContract } from '../../hooks/pool';
+
 import { useCollateralWaring } from '../../hooks/useCollateralWaring';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
@@ -25,6 +24,7 @@ import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { Checkbox } from 'antd';
 import { ReserveDataHumanized } from '@aave/contract-helpers';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 
 type ToggleCollateralModalProps = {
   visible: boolean;
@@ -41,7 +41,9 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const {
     formattedPoolReservesAndIncentives,
     wrapperPoolReserve,
@@ -50,7 +52,12 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
   const { selectedMarketData, chainInfo, chainEnum } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
 
-  const summary = userSummary ?? contextUserSummary;
+  const { getContainer } = usePopupContainer();
+
+  const summary = useMemo(() => userSummary ?? contextUserSummary, [
+    userSummary,
+    contextUserSummary,
+  ]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [miniSignLoading, setMiniSignLoading] = useState(false);
@@ -289,6 +296,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
           try {
             const hashes = await openDirect({
               txs,
+              getContainer,
               ga: {
                 category: 'Lending',
                 source: 'Lending',
@@ -321,19 +329,24 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
         setIsLoading(true);
         onCancel();
         for (let i = 0; i < txs.length; i++) {
-          await wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [txs[i]],
-            $ctx: {
-              ga: {
-                category: 'Lending',
-                source: 'Lending',
-                trigger: reserve?.usageAsCollateralEnabledOnUser
-                  ? 'ToggleCollateralOff'
-                  : 'ToggleCollateralOn',
+          await wallet.sendRequest(
+            {
+              method: 'eth_sendTransaction',
+              params: [txs[i]],
+              $ctx: {
+                ga: {
+                  category: 'Lending',
+                  source: 'Lending',
+                  trigger: reserve?.usageAsCollateralEnabledOnUser
+                    ? 'ToggleCollateralOff'
+                    : 'ToggleCollateralOn',
+                },
               },
             },
-          });
+            {
+              account: currentAccount,
+            }
+          );
         }
         message.success(`${btnTitle} ${t('page.lending.submitted')}`);
       } catch (error) {
@@ -352,16 +365,28 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
       btnTitle,
       t,
       reserve?.usageAsCollateralEnabledOnUser,
+      getContainer,
     ]
   );
 
-  const canSubmit =
-    txs.length > 0 &&
-    currentAccount &&
-    !isLoading &&
-    !isRiskToLiquidation &&
-    !isError &&
-    (!showRisk || isChecked);
+  const canSubmit = useMemo(() => {
+    return (
+      txs.length > 0 &&
+      currentAccount &&
+      !isLoading &&
+      !isRiskToLiquidation &&
+      !isError &&
+      (!showRisk || isChecked)
+    );
+  }, [
+    currentAccount,
+    isChecked,
+    isError,
+    isLoading,
+    isRiskToLiquidation,
+    showRisk,
+    txs.length,
+  ]);
 
   if (!reserve?.reserve?.symbol) return null;
 

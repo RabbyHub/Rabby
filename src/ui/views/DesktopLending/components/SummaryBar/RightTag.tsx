@@ -8,7 +8,6 @@ import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 import { ManageEmodeModal } from '../ManageEmodeModal';
 import { DisableEmodeModal } from '../DisableEmodeModal';
 import { ManageEmodeFullModal } from '../ManageEmodeFullModal';
-import { useFetchLendingData } from '../../hooks';
 import { ReactComponent as RcIconLightingCC } from '@/ui/assets/lending/lighting-cc.svg';
 import { ReactComponent as RcIconSettingCC } from '@/ui/assets/lending/setting.svg';
 

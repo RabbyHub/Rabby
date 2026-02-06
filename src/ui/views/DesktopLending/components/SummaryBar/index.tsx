@@ -120,7 +120,7 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
   return (
     <div className="border-t border-solid border-rb-neutral-line">
       <LendingHfTooltipStyle />
-      <SummaryBarContainer className="h-[40px] flex items-center px-[40px]">
+      <SummaryBarContainer className="h-[40px] flex items-center px-[20px]">
         {loading ? (
           <SummaryBarSkeleton />
         ) : (
@@ -180,50 +180,51 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
                   </InfoValue>
                 </div>
 
-                <div className="flex items-center gap-[6px]">
-                  <div className="flex items-center gap-[2px]">
-                    <InfoTitle>
-                      {t('page.lending.summary.healthFactor')}
-                    </InfoTitle>
-                    <Tooltip
-                      overlay={
-                        <HealthTip
-                          onMoreClick={() => setHfDescVisible(true)}
-                          healthFactor={healthFactor}
-                        />
-                      }
-                      overlayClassName="rectangle lending-hf-tooltip max-w-fit"
-                      overlayStyle={
-                        {
-                          '--lending-hf-tooltip-bg':
-                            healthStatus.tooltipBgColor,
-                        } as React.CSSProperties
-                      }
-                    >
+                <Tooltip
+                  overlay={
+                    <HealthTip
+                      onMoreClick={() => setHfDescVisible(true)}
+                      healthFactor={healthFactor}
+                    />
+                  }
+                  overlayClassName="rectangle lending-hf-tooltip max-w-fit"
+                  overlayStyle={
+                    {
+                      '--lending-hf-tooltip-bg': healthStatus.tooltipBgColor,
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="flex items-center gap-[6px]">
+                    <div className="flex items-center gap-[2px]">
+                      <InfoTitle>
+                        {t('page.lending.summary.healthFactor')}
+                      </InfoTitle>
+
                       <RcIconInfo
                         width={12}
                         height={12}
                         className="cursor-pointer text-rb-neutral-foot ml-[2px]"
                       />
-                    </Tooltip>
+                    </div>
+                    <InfoValue style={{ color: healthStatus.color }}>
+                      {getHealthFactorText(healthFactor)}
+                    </InfoValue>
+                    <HealthyBadge
+                      style={{
+                        backgroundColor: healthStatus.backgroundColor,
+                        color: healthStatus.textColor,
+                      }}
+                    >
+                      {healthStatus.label}
+                    </HealthyBadge>
                   </div>
-                  <InfoValue style={{ color: healthStatus.color }}>
-                    {getHealthFactorText(healthFactor)}
-                  </InfoValue>
-                  <HealthyBadge
-                    style={{
-                      backgroundColor: healthStatus.backgroundColor,
-                      color: healthStatus.textColor,
-                    }}
-                  >
-                    {healthStatus.label}
-                  </HealthyBadge>
-                  <HFDescription
-                    visible={hfDescVisible}
-                    hf={healthFactor}
-                    onClose={() => setHfDescVisible(false)}
-                  />
-                </div>
+                </Tooltip>
+
+                <HFDescription
+                  visible={hfDescVisible}
+                  hf={healthFactor}
+                  onClose={() => setHfDescVisible(false)}
+                />
 
                 <div className="flex items-center gap-[8px]">
                   <InfoTitle>{t('page.lending.summary.netApy')}:</InfoTitle>

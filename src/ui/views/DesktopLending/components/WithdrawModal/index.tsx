@@ -4,7 +4,7 @@ import { Button, message, Checkbox } from 'antd';
 import BigNumber from 'bignumber.js';
 import { isSameAddress } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
 import wrapperToken from '../../config/wrapperToken';
@@ -17,11 +17,10 @@ import {
 } from '../../utils/constant';
 import { WithdrawOverView } from './WithdrawOverView';
 import SymbolIcon from '../SymbolIcon';
-import {
-  useLendingSummary,
-  useSelectedMarket,
-  usePoolDataProviderContract,
-} from '../../hooks';
+import { useLendingSummary } from '../../hooks';
+import { useSelectedMarket } from '../../hooks/market';
+import { usePoolDataProviderContract } from '../../hooks/pool';
+
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -32,9 +31,11 @@ import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
-import { StyledInput } from '../StyledInput';
+import { LendingStyledInput } from '../StyledInput';
 import stats from '@/stats';
 import { LendingReportType } from '../../types/tx';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { isZeroAmount } from '../../utils/number';
 
 type WithdrawModalProps = {
   visible: boolean;
@@ -51,7 +52,9 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const {
     formattedPoolReservesAndIncentives,
     wrapperPoolReserve,
@@ -60,7 +63,12 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   const { selectedMarketData, chainInfo, chainEnum } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
 
-  const summary = userSummary ?? contextUserSummary;
+  const { getContainer } = usePopupContainer();
+
+  const summary = useMemo(() => userSummary ?? contextUserSummary, [
+    userSummary,
+    contextUserSummary,
+  ]);
 
   const [_amount, setAmount] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
@@ -110,7 +118,9 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   }, [_amount, withdrawAmount]);
 
   const afterHF = useMemo(() => {
-    if (!amount || amount === '0' || !summary || !targetPool) return undefined;
+    if (!amount || isZeroAmount(amount) || !summary || !targetPool) {
+      return undefined;
+    }
     return calculateHFAfterWithdraw({
       user: summary,
       userReserve: reserve,
@@ -120,7 +130,9 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   }, [amount, targetPool, summary, reserve]);
 
   const afterSupply = useMemo(() => {
-    if (!amount || amount === '0') return undefined;
+    if (!amount || isZeroAmount(amount)) {
+      return undefined;
+    }
     const balance = new BigNumber(reserve.underlyingBalance || '0').minus(
       new BigNumber(amount)
     );
@@ -166,7 +178,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   const buildTransactions = useCallback(async () => {
     if (
       !amount ||
-      amount === '0' ||
+      isZeroAmount(amount) ||
       !currentAccount ||
       !selectedMarketData ||
       !pools ||
@@ -210,7 +222,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
       setWithdrawTxs(formatTxs as Tx[]);
     } catch (error) {
       console.error('Build transactions error:', error);
-      message.error(t('page.lending.submitted') || 'Something error');
+      message.error('Something error');
       setWithdrawTxs([]);
     } finally {
       setIsLoading(false);
@@ -223,7 +235,6 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
     chainInfo,
     targetPool,
     _amount,
-    t,
   ]);
 
   useEffect(() => {
@@ -274,7 +285,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         !currentAccount ||
         !withdrawTxs.length ||
         !amount ||
-        amount === '0' ||
+        isZeroAmount(amount) ||
         !chainInfo
       ) {
         return;
@@ -313,6 +324,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
           try {
             const hashes = await openDirect({
               txs: withdrawTxs,
+              getContainer,
               ga: {
                 category: 'Lending',
                 source: 'Lending',
@@ -349,17 +361,22 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
         let lastHash: string = '';
         for (let i = 0; i < withdrawTxs.length; i++) {
           const tx = withdrawTxs[i];
-          lastHash = await wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [tx],
-            $ctx: {
-              ga: {
-                category: 'Lending',
-                source: 'Lending',
-                trigger: 'Withdraw',
+          lastHash = await wallet.sendRequest(
+            {
+              method: 'eth_sendTransaction',
+              params: [tx],
+              $ctx: {
+                ga: {
+                  category: 'Lending',
+                  source: 'Lending',
+                  trigger: 'Withdraw',
+                },
               },
             },
-          });
+            {
+              account: currentAccount,
+            }
+          );
         }
         report(lastHash);
         message.success(
@@ -388,39 +405,61 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
       onCancel,
       openDirect,
       wallet,
+      getContainer,
     ]
   );
 
-  const onAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const v = e.target.value;
-      if (v === '' || INPUT_NUMBER_RE.test(v)) {
-        const filtered = v === '' ? undefined : filterNumber(v);
-        if (filtered) {
-          const maxAmount = new BigNumber(withdrawAmount || '0');
-          const inputAmount = new BigNumber(filtered);
-          if (inputAmount.gt(maxAmount)) {
-            setAmount(withdrawAmount || '0');
-          } else {
-            setAmount(filtered);
-          }
+  const handleChangeAmount = useCallback(
+    (v: string) => {
+      const maxSelected = v === '-1';
+      if (maxSelected) {
+        // 提取所有资产
+        if (new BigNumber(withdrawAmount).eq(reserve.underlyingBalance)) {
+          setAmount('-1');
         } else {
-          setAmount(undefined);
+          setAmount(withdrawAmount.toString());
+        }
+      } else {
+        if (v === '' || INPUT_NUMBER_RE.test(v)) {
+          const filtered = v === '' ? undefined : filterNumber(v);
+          if (filtered) {
+            const maxAmount = new BigNumber(withdrawAmount || '0');
+            const inputAmount = new BigNumber(filtered);
+            if (inputAmount.gt(maxAmount)) {
+              setAmount(withdrawAmount || '0');
+            } else {
+              setAmount(filtered);
+            }
+          } else {
+            setAmount(undefined);
+          }
         }
       }
     },
-    [withdrawAmount]
+    [reserve.underlyingBalance, withdrawAmount]
   );
 
-  const emptyAmount = !withdrawAmount || withdrawAmount === '0';
-  const canSubmit =
-    amount &&
-    amount !== '0' &&
-    withdrawTxs.length > 0 &&
-    currentAccount &&
-    !isLoading &&
-    (!isRisky || isChecked);
-
+  const emptyAmount = useMemo(
+    () => !withdrawAmount || isZeroAmount(withdrawAmount),
+    [withdrawAmount]
+  );
+  const canSubmit = useMemo(() => {
+    return (
+      amount &&
+      !isZeroAmount(amount) &&
+      withdrawTxs.length > 0 &&
+      currentAccount &&
+      !isLoading &&
+      (!isRisky || isChecked)
+    );
+  }, [
+    amount,
+    currentAccount,
+    isChecked,
+    isLoading,
+    isRisky,
+    withdrawTxs.length,
+  ]);
   if (!reserve?.reserve?.symbol) return null;
 
   return (
@@ -459,7 +498,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
                   text-rb-brand-default font-medium text-[11px] leading-[11px] 
                   hover:bg-rb-brand-light-2 disabled:opacity-50 disabled:cursor-not-allowed
                   `}
-                onClick={() => setAmount(withdrawAmount || '0')}
+                onClick={() => handleChangeAmount('-1')}
                 disabled={emptyAmount}
               >
                 MAX
@@ -467,13 +506,13 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
             </div>
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0">
-            <StyledInput
+            <LendingStyledInput
               value={amount ?? ''}
-              onChange={onAmountChange}
+              onValueChange={handleChangeAmount}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"
             />
-            {amount && amount !== '0' && (
+            {amount && !isZeroAmount(amount) && (
               <span className="text-[13px] leading-[15px] text-r-neutral-foot mt-1">
                 {formatUsdValue(
                   Number(amount) *
@@ -501,7 +540,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
       {canShowDirectSubmit &&
       chainInfo?.serverId &&
       !!amount &&
-      amount !== '0' ? (
+      !isZeroAmount(amount) ? (
         <div className="mt-16 px-16">
           <DirectSignGasInfo
             supportDirectSign

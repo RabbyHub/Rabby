@@ -1,17 +1,10 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import clsx from 'clsx';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Button } from 'antd';
 import { formatUserSummary } from '@aave/math-utils';
 import dayjs from 'dayjs';
 import { useWallet } from '@/ui/utils/WalletContext';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { message } from 'antd';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
@@ -24,13 +17,9 @@ import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 
 import { useMode } from '../../hooks/useMode';
 import { buildManageEmodeTx } from '../../utils/poolService';
-import {
-  useLendingSummary,
-  useLendingRemoteData,
-  usePoolDataProviderContract,
-  useRefreshHistoryId,
-  useSelectedMarket,
-} from '../../hooks';
+import { useLendingSummary, useLendingRemoteData } from '../../hooks';
+import { useSelectedMarket } from '../../hooks/market';
+import { usePoolDataProviderContract } from '../../hooks/pool';
 import {
   HF_BLOCK_THRESHOLD,
   HF_RISK_CHECKBOX_THRESHOLD,
@@ -38,7 +27,10 @@ import {
 import { isEModeCategoryAvailable } from '../../utils/emode';
 import { StyledCheckbox } from '../BorrowModal';
 import { ManageEmodeFullModalOverview } from './Overview';
-import { PopupContainer } from '@/ui/hooks/usePopupContainer';
+import {
+  PopupContainer,
+  usePopupContainer,
+} from '@/ui/hooks/usePopupContainer';
 
 const modalStyle = {
   width: 400,
@@ -64,7 +56,7 @@ type ManageEmodeFullModalProps = {
   height?: number;
 };
 
-export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
+const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
   visible,
   onCancel,
   onSuccess,
@@ -72,10 +64,11 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const { emodeEnabled, emodeCategoryId, eModes } = useMode();
   const { chainInfo } = useSelectedMarket();
-  const { refresh } = useRefreshHistoryId();
   const { userReserves, reserves } = useLendingRemoteData();
   const {
     iUserSummary,
@@ -91,6 +84,7 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
   );
 
   const wantDisableEmode = useMemo(() => emodeEnabled, [emodeEnabled]);
+  const { getContainer } = usePopupContainer();
 
   const isTargetCategoryAvailable = useMemo(() => {
     const targetCategory = eModes?.[selectedCategoryId];
@@ -267,6 +261,7 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
           try {
             await openDirect({
               txs,
+              getContainer,
               ga: {
                 category: 'Lending',
                 source: 'Lending',
@@ -283,7 +278,6 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
               } ${t('page.lending.submitted')}`
             );
             onCancel();
-            refresh();
             onSuccess?.();
           } catch (error) {
             if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
@@ -304,19 +298,24 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
         setIsLoading(true);
         onCancel();
         for (let i = 0; i < txs.length; i++) {
-          await wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [txs[i]],
-            $ctx: {
-              ga: {
-                category: 'Lending',
-                source: 'Lending',
-                trigger: wantDisableEmode
-                  ? 'ManageEmodeDisable'
-                  : 'ManageEmodeEnable',
+          await wallet.sendRequest(
+            {
+              method: 'eth_sendTransaction',
+              params: [txs[i]],
+              $ctx: {
+                ga: {
+                  category: 'Lending',
+                  source: 'Lending',
+                  trigger: wantDisableEmode
+                    ? 'ManageEmodeDisable'
+                    : 'ManageEmodeEnable',
+                },
               },
             },
-          });
+            {
+              account: currentAccount,
+            }
+          );
         }
         message.success(
           `${
@@ -325,7 +324,6 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
               : t('page.lending.manageEmode.actions.enable')
           } ${t('page.lending.submitted')}`
         );
-        refresh();
         onSuccess?.();
       } catch (error) {
         console.error('Manage emode error:', error);
@@ -337,26 +335,147 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
       currentAccount,
       txs,
       canShowDirectSubmit,
-      openDirect,
-      wallet,
       onCancel,
-      onSuccess,
       wantDisableEmode,
       t,
-      refresh,
+      onSuccess,
+      openDirect,
+      getContainer,
+      wallet,
     ]
   );
 
-  const canSubmit =
-    txs.length > 0 &&
-    currentAccount &&
-    !isLoading &&
-    !isBlock &&
-    isTargetCategoryAvailable &&
-    (!isRisky || isChecked);
-
+  const canSubmit = useMemo(() => {
+    return (
+      txs.length > 0 &&
+      currentAccount &&
+      !isLoading &&
+      !isBlock &&
+      isTargetCategoryAvailable &&
+      (!isRisky || isChecked)
+    );
+  }, [
+    txs.length,
+    currentAccount,
+    isLoading,
+    isBlock,
+    isTargetCategoryAvailable,
+    isRisky,
+    isChecked,
+  ]);
   if (!visible) return null;
 
+  return (
+    <div
+      className="bg-r-neutral-bg-2 flex flex-col px-[20px] py-[16px] overscroll-y-auto"
+      style={{ height: isRisky && wantDisableEmode ? 'auto' : height }}
+    >
+      <div className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
+        {wantDisableEmode
+          ? t('page.lending.manageEmode.actions.disable')
+          : t('page.lending.manageEmode.title')}
+      </div>
+      {!wantDisableEmode && (
+        <div className="text-[14px] leading-[17px] text-r-neutral-foot mt-[8px]">
+          {t('page.lending.manageEmode.description')}
+        </div>
+      )}
+
+      <ManageEmodeFullModalOverview
+        selectedCategoryId={
+          wantDisableEmode ? emodeCategoryId : selectedCategoryId
+        }
+        newSummary={newSummary}
+        disabled={wantDisableEmode}
+        onSelectCategory={setSelectedCategoryId}
+        isUnAvailable={!isTargetCategoryAvailable && !!selectedCategoryId}
+      />
+
+      {canShowDirectSubmit &&
+        hasChangeCategory &&
+        !isBlock &&
+        isTargetCategoryAvailable &&
+        chainInfo?.serverId &&
+        txs.length > 0 && (
+          <div className="mt-[12px]">
+            <DirectSignGasInfo
+              supportDirectSign
+              loading={isLoading}
+              openShowMore={() => {}}
+              chainServeId={chainInfo.serverId}
+              noQuote={false}
+              type="send"
+            />
+          </div>
+        )}
+
+      <div className="mt-auto flex flex-col justify-end">
+        {isRisky && (
+          <div className="mt-[16px] flex flex-col gap-[12px]">
+            <div className="flex items-center gap-8 py-8 px-10 rounded-[8px] bg-rb-neutral-card-1">
+              <RcIconWarningCC
+                viewBox="0 0 16 16"
+                className="w-12 h-12 text-rb-red-default flex-shrink-0 -mt-2"
+              />
+              <span className="text-[14px] leading-[18px] font-medium text-rb-red-default flex-1">
+                {desc}
+              </span>
+            </div>
+            {!isBlock && (
+              <div className="flex items-center justify-center gap-[8px]">
+                <StyledCheckbox
+                  checked={isChecked}
+                  onChange={(e) => setIsChecked(e.target.checked)}
+                  className="text-[13px] text-r-neutral-foot"
+                >
+                  {t('page.lending.risk.checkbox')}
+                </StyledCheckbox>
+              </div>
+            )}
+          </div>
+        )}
+
+        {canShowDirectSubmit && currentAccount?.type ? (
+          <DirectSignToConfirmBtn
+            className="mt-[20px]"
+            title={
+              wantDisableEmode
+                ? t('page.lending.manageEmode.actions.disable')
+                : t('page.lending.manageEmode.actions.enable')
+            }
+            disabled={!canSubmit}
+            loading={miniSignLoading}
+            onConfirm={() => handleSubmit()}
+            accountType={currentAccount.type}
+          />
+        ) : (
+          <Button
+            type={wantDisableEmode ? 'default' : 'primary'}
+            block
+            size="large"
+            className={`mt-[20px] h-[48px] rounded-[8px] font-medium text-[16px] ${
+              wantDisableEmode
+                ? '!border-rb-neutral-line !bg-rb-neutral-line !text-r-neutral-title-1'
+                : ''
+            }`}
+            loading={isLoading}
+            disabled={!canSubmit}
+            onClick={() => handleSubmit()}
+          >
+            {wantDisableEmode
+              ? t('page.lending.manageEmode.actions.disable')
+              : t('page.lending.manageEmode.actions.enable')}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = (
+  props
+) => {
+  const { visible, onCancel, height = 600 } = props;
   return (
     <Modal
       {...modalStyle}
@@ -365,111 +484,7 @@ export const ManageEmodeFullModal: React.FC<ManageEmodeFullModalProps> = ({
       onCancel={onCancel}
     >
       <PopupContainer>
-        <div
-          className={clsx(
-            'bg-r-neutral-bg-2 flex flex-col px-[20px] py-[16px]'
-          )}
-          style={{ height }}
-        >
-          <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
-            {wantDisableEmode
-              ? t('page.lending.manageEmode.actions.disable')
-              : t('page.lending.manageEmode.title')}
-          </h2>
-          {!wantDisableEmode && (
-            <div className="text-[14px] leading-[17px] text-r-neutral-foot mt-[8px]">
-              {t('page.lending.manageEmode.description')}
-            </div>
-          )}
-
-          <ManageEmodeFullModalOverview
-            selectedCategoryId={
-              wantDisableEmode ? emodeCategoryId : selectedCategoryId
-            }
-            newSummary={newSummary}
-            disabled={wantDisableEmode}
-            onSelectCategory={setSelectedCategoryId}
-            isUnAvailable={!isTargetCategoryAvailable && !!selectedCategoryId}
-          />
-
-          {canShowDirectSubmit &&
-            hasChangeCategory &&
-            !isBlock &&
-            isTargetCategoryAvailable &&
-            chainInfo?.serverId &&
-            txs.length > 0 && (
-              <div className="mt-[12px]">
-                <DirectSignGasInfo
-                  supportDirectSign
-                  loading={isLoading}
-                  openShowMore={() => {}}
-                  chainServeId={chainInfo.serverId}
-                  noQuote={false}
-                  type="send"
-                />
-              </div>
-            )}
-
-          <div className="mt-auto flex flex-col justify-end">
-            {isRisky && (
-              <div className="mt-[16px] flex flex-col gap-[12px]">
-                <div className="flex items-center gap-8 py-8 px-10 rounded-[8px] bg-rb-neutral-card-1">
-                  <RcIconWarningCC
-                    viewBox="0 0 16 16"
-                    className="w-12 h-12 text-rb-red-default flex-shrink-0 -mt-2"
-                  />
-                  <span className="text-[14px] leading-[18px] font-medium text-rb-red-default flex-1">
-                    {desc}
-                  </span>
-                </div>
-                {!isBlock && (
-                  <div className="flex items-center justify-center gap-[8px]">
-                    <StyledCheckbox
-                      checked={isChecked}
-                      onChange={(e) => setIsChecked(e.target.checked)}
-                      className="text-[13px] text-r-neutral-foot"
-                    >
-                      {t('page.lending.risk.checkbox')}
-                    </StyledCheckbox>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {canShowDirectSubmit && currentAccount?.type ? (
-              <DirectSignToConfirmBtn
-                className="mt-[20px]"
-                title={
-                  wantDisableEmode
-                    ? t('page.lending.manageEmode.actions.disable')
-                    : t('page.lending.manageEmode.actions.enable')
-                }
-                disabled={!canSubmit}
-                loading={miniSignLoading}
-                onConfirm={() => handleSubmit()}
-                accountType={currentAccount.type}
-              />
-            ) : (
-              <Button
-                type={wantDisableEmode ? 'default' : 'primary'}
-                block
-                size="large"
-                className={`mt-[20px] h-[48px] rounded-[8px] font-medium text-[16px] ${
-                  wantDisableEmode
-                    ? '!border-rb-neutral-line !bg-rb-neutral-line !text-r-neutral-title-1'
-                    : ''
-                }`}
-                loading={isLoading}
-                disabled={!canSubmit}
-                onClick={() => handleSubmit()}
-              >
-                {wantDisableEmode
-                  ? t('page.lending.manageEmode.actions.disable')
-                  : t('page.lending.manageEmode.actions.enable')}
-              </Button>
-            )}
-          </div>
-        </div>
+        <ManageEmodeFullContent {...props} />
       </PopupContainer>
     </Modal>
   );

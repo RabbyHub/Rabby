@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, message, Select } from 'antd';
+import { Button, message, Select } from 'antd';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
 import { isSameAddress } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
 import {
   calculateHFAfterRepay,
@@ -15,11 +15,9 @@ import {
 import { buildRepayTx, optimizedPath } from '../../utils/poolService';
 import { REPAY_AMOUNT_MULTIPLIER } from '../../utils/constant';
 import { RepayOverView } from './RepayOverView';
-import {
-  useLendingSummary,
-  useSelectedMarket,
-  usePoolDataProviderContract,
-} from '../../hooks';
+import { useLendingSummary } from '../../hooks';
+import { useSelectedMarket } from '../../hooks/market';
+import { usePoolDataProviderContract } from '../../hooks/pool';
 import { ETH_USDT_CONTRACT } from '@/constant';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
@@ -33,9 +31,11 @@ import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { displayGhoForMintableMarket } from '../../utils/supply';
 import { ReactComponent as RcImgArrowDownCC } from '@/ui/assets/swap/arrow-down-cc.svg';
 import { getTokenIcon } from '../../utils/tokenIcon';
-import { StyledInput } from '../StyledInput';
+import { LendingStyledInput } from '../StyledInput';
 import stats from '@/stats';
 import { LendingReportType } from '../../types/tx';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { isZeroAmount } from '../../utils/number';
 
 const StyledSelect = styled(Select)`
   display: flex;
@@ -111,7 +111,9 @@ export const RepayModal: React.FC<RepayModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
+  const [currentAccount] = useSceneAccount({
+    scene: 'lending',
+  });
   const {
     formattedPoolReservesAndIncentives,
     iUserSummary: contextUserSummary,
@@ -119,7 +121,12 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   const { selectedMarketData, chainInfo, isMainnet } = useSelectedMarket();
   const { pools } = usePoolDataProviderContract();
 
-  const summary = userSummary ?? contextUserSummary;
+  const { getContainer } = usePopupContainer();
+
+  const summary = useMemo(() => userSummary ?? contextUserSummary, [
+    userSummary,
+    contextUserSummary,
+  ]);
 
   const [isAtTokenRepay, setIsAtTokenRepay] = useState(false);
 
@@ -214,7 +221,9 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   }, [_amount, repayAmount.amount]);
 
   const afterHF = useMemo(() => {
-    if (!amount || amount === '0' || !summary) return undefined;
+    if (!amount || isZeroAmount(amount) || !summary) {
+      return undefined;
+    }
     if (isAtTokenRepay) {
       return calculateHFAfterRepayWithAToken({
         user: summary,
@@ -286,7 +295,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   const checkApproveStatus = useCallback(async () => {
     if (
       !amount ||
-      amount === '0' ||
+      isZeroAmount(amount) ||
       !currentAccount ||
       !selectedMarketData ||
       isAtTokenRepay
@@ -328,7 +337,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   const buildTransactions = useCallback(async () => {
     if (
       !amount ||
-      amount === '0' ||
+      isZeroAmount(amount) ||
       !currentAccount ||
       !selectedMarketData ||
       !pools ||
@@ -437,7 +446,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
       } as unknown) as Tx);
     } catch (error) {
       console.error('Build transactions error:', error);
-      message.error(t('page.lending.submitted') || 'Something error');
+      message.error('Something error');
       setRepayTx(null);
       setApproveTxs(null);
     } finally {
@@ -455,7 +464,6 @@ export const RepayModal: React.FC<RepayModalProps> = ({
     reserve.variableBorrows,
     isMainnet,
     wallet,
-    t,
     isAtTokenRepay,
     formattedPoolReservesAndIncentives,
   ]);
@@ -513,7 +521,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
         !currentAccount ||
         !repayTx ||
         !amount ||
-        amount === '0' ||
+        isZeroAmount(amount) ||
         !chainInfo
       ) {
         return;
@@ -554,6 +562,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
           try {
             const hashes = await openDirect({
               txs: allTxs,
+              getContainer,
               ga: {
                 category: 'Lending',
                 source: 'Lending',
@@ -590,17 +599,22 @@ export const RepayModal: React.FC<RepayModalProps> = ({
         let lastHash: string = '';
         for (let i = 0; i < allTxs.length; i++) {
           const tx = allTxs[i];
-          lastHash = await wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [tx],
-            $ctx: {
-              ga: {
-                category: 'Lending',
-                source: 'Lending',
-                trigger: 'Repay',
+          lastHash = await wallet.sendRequest(
+            {
+              method: 'eth_sendTransaction',
+              params: [tx],
+              $ctx: {
+                ga: {
+                  category: 'Lending',
+                  source: 'Lending',
+                  trigger: 'Repay',
+                },
               },
             },
-          });
+            {
+              account: currentAccount,
+            }
+          );
         }
         report(lastHash);
         message.success(
@@ -629,34 +643,50 @@ export const RepayModal: React.FC<RepayModalProps> = ({
       canShowDirectSubmit,
       onCancel,
       openDirect,
+      getContainer,
       wallet,
     ]
   );
 
   const onAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const v = e.target.value;
-      if (v === '' || INPUT_NUMBER_RE.test(v)) {
-        const filtered = v === '' ? undefined : filterNumber(v);
-        if (filtered) {
-          const maxAmount = new BigNumber(repayAmount.amount || '0');
-          const inputAmount = new BigNumber(filtered);
-          if (inputAmount.gt(maxAmount)) {
-            setAmount(repayAmount.amount || '0');
-          } else {
-            setAmount(filtered);
-          }
+    (v: string) => {
+      const maxSelected = v === '-1';
+      if (maxSelected) {
+        // 还清所有债务
+        if (repayAmount.isDebtUp) {
+          setAmount('-1');
         } else {
-          setAmount(undefined);
+          setAmount(repayAmount.amount?.toString() || '0');
+        }
+      } else {
+        if (v === '' || INPUT_NUMBER_RE.test(v)) {
+          const filtered = v === '' ? undefined : filterNumber(v);
+          if (filtered) {
+            const maxAmount = new BigNumber(repayAmount.amount || '0');
+            const inputAmount = new BigNumber(filtered);
+            if (inputAmount.gt(maxAmount)) {
+              setAmount(repayAmount.amount || '0');
+            } else {
+              setAmount(filtered);
+            }
+          } else {
+            setAmount(undefined);
+          }
         }
       }
     },
-    [repayAmount.amount]
+    [repayAmount.amount, repayAmount.isDebtUp]
   );
 
-  const emptyAmount = !repayAmount.amount || repayAmount.amount === '0';
-  const canSubmit =
-    amount && amount !== '0' && repayTx && currentAccount && !isLoading;
+  const emptyAmount = useMemo(
+    () => !repayAmount.amount || isZeroAmount(repayAmount.amount),
+    [repayAmount.amount]
+  );
+  const canSubmit = useMemo(() => {
+    return (
+      amount && !isZeroAmount(amount) && repayTx && currentAccount && !isLoading
+    );
+  }, [amount, currentAccount, isLoading, repayTx]);
 
   if (!reserve?.reserve?.symbol) return null;
 
@@ -721,7 +751,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
                   text-rb-brand-default font-medium text-[11px] leading-[11px] 
                   hover:bg-rb-brand-light-2 disabled:opacity-50 disabled:cursor-not-allowed
                   `}
-                onClick={() => setAmount(repayAmount.amount || '0')}
+                onClick={() => onAmountChange('-1')}
                 disabled={emptyAmount}
               >
                 MAX
@@ -729,13 +759,13 @@ export const RepayModal: React.FC<RepayModalProps> = ({
             </div>
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0">
-            <StyledInput
+            <LendingStyledInput
               value={amount ?? ''}
-              onChange={onAmountChange}
+              onValueChange={onAmountChange}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"
             />
-            {amount && amount !== '0' && (
+            {amount && !isZeroAmount(amount) && (
               <span className="text-[13px] leading-[15px] text-r-neutral-foot mt-1">
                 {formatUsdValue(
                   Number(amount) *
@@ -764,7 +794,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
       {canShowDirectSubmit &&
       chainInfo?.serverId &&
       !!amount &&
-      amount !== '0' ? (
+      !isZeroAmount(amount) ? (
         <div className="mt-16 px-16">
           <DirectSignGasInfo
             supportDirectSign

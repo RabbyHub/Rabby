@@ -10,8 +10,8 @@ export const estDaily = (netWorth: string, netApy: number) => {
   }
   const dailyEarnings = new BigNumber(netWorth);
   const bigApy = new BigNumber(netApy);
-  return `${netApy > 0 ? '+' : ''}${formatUsdValue(
-    dailyEarnings.multipliedBy(bigApy).dividedBy(365).toNumber()
+  return `${netApy > 0 ? '+' : '-'}${formatUsdValue(
+    Math.abs(dailyEarnings.multipliedBy(bigApy).dividedBy(365).toNumber())
   )}`;
 };
 export const formatListNetWorth = (num?: number) => {
@@ -42,3 +42,17 @@ export const formatApy = (apy: number) => {
   }
   return formatPercent(apy);
 };
+
+export const EXTRACT_AMOUNT_REGEX = /^[0-9]+(\.|,)\d*/;
+export function formatSpeicalAmount(input: number | string) {
+  const inputStr = String(input);
+
+  const matched = inputStr.match(EXTRACT_AMOUNT_REGEX);
+
+  const firstSep = matched?.[1];
+  if (firstSep && firstSep !== '.') {
+    return inputStr.replace(new RegExp(firstSep), '.');
+  }
+
+  return input.toString();
+}

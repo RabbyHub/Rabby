@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { Modal, Skeleton } from 'antd';
+import { Modal, Skeleton, Tooltip } from 'antd';
 import { LendingRow } from '../LendingRow';
 import { MarketSelector } from '../MarketSelector';
-import { DesktopPending } from '@/ui/views/DesktopProfile/components/DesktopPending';
+import { DesktopScenePending } from '@/ui/views/DesktopProfile/components/DesktopPending';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
   TBody,
@@ -15,8 +15,6 @@ import {
 import {
   useLendingRemoteData,
   useLendingSummary,
-  useSelectedMarket,
-  useFetchLendingData,
   useLendingIsLoading,
 } from '../../hooks';
 import { API_ETH_MOCK_ADDRESS } from '../../utils/constant';
@@ -35,6 +33,8 @@ import { ToggleCollateralModal } from '../ToggleCollateralModal';
 import { SupplyListModal } from '../SupplyListModal';
 import { BorrowListModal } from '../BorrowListModal';
 import { LendingEmptyState } from '../LendingEmptyState';
+import { PopupContainer } from '@/ui/hooks/usePopupContainer';
+import { useSelectedMarket } from '../../hooks/market';
 
 export type LendingModalType =
   | 'supply'
@@ -249,6 +249,13 @@ export const LendingList: React.FC = () => {
     return myAssetList;
   }, [myAssetList]);
 
+  const disableBorrowButton = useMemo(() => {
+    return (
+      !iUserSummary?.availableBorrowsUSD ||
+      iUserSummary?.availableBorrowsUSD === '0'
+    );
+  }, [iUserSummary?.availableBorrowsUSD]);
+
   const handleMarketChange = useCallback(
     (value: typeof marketKey) => {
       setMarketKey(value);
@@ -271,7 +278,10 @@ export const LendingList: React.FC = () => {
       <div className="flex items-center justify-between px-[16px] py-[12px]">
         <MarketSelector value={marketKey} onChange={handleMarketChange} />
         <div className="flex items-center gap-[8px]">
-          <DesktopPending className="min-w-[160px] h-[44px] rounded-[12px] text-[15px]" />
+          <DesktopScenePending
+            scene="lending"
+            className="min-w-[160px] h-[44px] rounded-[12px] text-[15px]"
+          />
           <button
             type="button"
             className={clsx(
@@ -282,16 +292,35 @@ export const LendingList: React.FC = () => {
           >
             {t('page.lending.actions.supply')}
           </button>
-          <button
-            type="button"
-            className={clsx(
-              'px-[16px] h-[44px] w-[160px] rounded-[12px] text-[14px] font-medium',
-              'bg-rb-brand-default text-white'
-            )}
-            onClick={() => setListModalType('borrowList')}
-          >
-            {t('page.lending.actions.borrow')}
-          </button>
+          {disableBorrowButton ? (
+            <Tooltip
+              overlayClassName="rectangle"
+              title={t('page.lending.disableBorrowTip.desc')}
+            >
+              <button
+                type="button"
+                className={clsx(
+                  'px-[16px] h-[44px] w-[160px] rounded-[12px] text-[14px] font-medium',
+                  'bg-rb-brand-default text-white opacity-50 cursor-not-allowed',
+                  'flex items-center justify-center'
+                )}
+                disabled
+              >
+                <span>{t('page.lending.actions.borrow')}</span>
+              </button>
+            </Tooltip>
+          ) : (
+            <button
+              type="button"
+              className={clsx(
+                'px-[16px] h-[44px] w-[160px] rounded-[12px] text-[14px] font-medium',
+                'bg-rb-brand-default text-white'
+              )}
+              onClick={() => setListModalType('borrowList')}
+            >
+              {t('page.lending.actions.borrow')}
+            </button>
+          )}
         </div>
       </div>
       <div className="flex-1 overflow-auto">
@@ -392,12 +421,14 @@ export const LendingList: React.FC = () => {
         onCancel={closeModal}
       >
         {selectedItem && (
-          <SupplyModal
-            visible={activeModal === 'supply'}
-            onCancel={closeModal}
-            reserve={selectedItem}
-            userSummary={iUserSummary}
-          />
+          <PopupContainer>
+            <SupplyModal
+              visible={activeModal === 'supply'}
+              onCancel={closeModal}
+              reserve={selectedItem}
+              userSummary={iUserSummary}
+            />
+          </PopupContainer>
         )}
       </Modal>
       <Modal
@@ -410,12 +441,14 @@ export const LendingList: React.FC = () => {
         onCancel={closeModal}
       >
         {selectedItem && (
-          <BorrowModal
-            visible={activeModal === 'borrow'}
-            onCancel={closeModal}
-            reserve={selectedItem}
-            userSummary={iUserSummary}
-          />
+          <PopupContainer>
+            <BorrowModal
+              visible={activeModal === 'borrow'}
+              onCancel={closeModal}
+              reserve={selectedItem}
+              userSummary={iUserSummary}
+            />
+          </PopupContainer>
         )}
       </Modal>
       <Modal
@@ -428,12 +461,14 @@ export const LendingList: React.FC = () => {
         onCancel={closeModal}
       >
         {selectedItem && (
-          <RepayModal
-            visible={activeModal === 'repay'}
-            onCancel={closeModal}
-            reserve={selectedItem}
-            userSummary={iUserSummary}
-          />
+          <PopupContainer>
+            <RepayModal
+              visible={activeModal === 'repay'}
+              onCancel={closeModal}
+              reserve={selectedItem}
+              userSummary={iUserSummary}
+            />
+          </PopupContainer>
         )}
       </Modal>
       <Modal
@@ -446,12 +481,14 @@ export const LendingList: React.FC = () => {
         onCancel={closeModal}
       >
         {selectedItem && (
-          <WithdrawModal
-            visible={activeModal === 'withdraw'}
-            onCancel={closeModal}
-            reserve={selectedItem}
-            userSummary={iUserSummary}
-          />
+          <PopupContainer>
+            <WithdrawModal
+              visible={activeModal === 'withdraw'}
+              onCancel={closeModal}
+              reserve={selectedItem}
+              userSummary={iUserSummary}
+            />
+          </PopupContainer>
         )}
       </Modal>
       <Modal
@@ -460,12 +497,14 @@ export const LendingList: React.FC = () => {
         onCancel={closeModal}
       >
         {selectedItem && (
-          <ToggleCollateralModal
-            visible={activeModal === 'toggleCollateral'}
-            onCancel={closeModal}
-            reserve={selectedItem}
-            userSummary={iUserSummary}
-          />
+          <PopupContainer>
+            <ToggleCollateralModal
+              visible={activeModal === 'toggleCollateral'}
+              onCancel={closeModal}
+              reserve={selectedItem}
+              userSummary={iUserSummary}
+            />
+          </PopupContainer>
         )}
       </Modal>
     </div>
