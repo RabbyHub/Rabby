@@ -69,7 +69,7 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
     <>
       <Popover
         placement="bottomRight"
-        trigger={['click']}
+        trigger={['hover']}
         overlayClassName={'desktop-account-selector-popover'}
         content={
           <AccountList
@@ -97,7 +97,7 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
             <CurrentAccount account={value} />
           ) : (
             <div className="flex-1 text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
-              Select Address
+              {t('component.DesktopAccountSelector.selectAddress')}
             </div>
           )}
           <RcArrowDownSVG
