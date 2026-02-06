@@ -125,7 +125,9 @@
           "settings": "設置",
           "perpsPositions_other": "{{count}} 位置",
           "perpsPositions_one": "{{count}} 头寸",
-          "prediction": "預測"
+          "prediction": "預測",
+          "dragTip": "長按功能以重新排序",
+          "lending": "借贷"
         },
         "comingSoon": "即將推出",
         "soon": "很快",
@@ -3067,7 +3069,9 @@
           "hideProtocolsWithSmallDeposits": "隱藏小額存款的協議。",
           "tokensWithZeroBalance": "隱藏 $0 tokens",
           "hideDefiWithSmallDepositsDesc": "小额存款的 DeFi 不会被显示。",
-          "hideDefiWithSmallDeposits": "隱藏小額存款的 Defis。"
+          "hideDefiWithSmallDeposits": "隱藏小額存款的 Defis。",
+          "hideDeFiWithSmallDeposits": "隱藏小額存款的 DeFi。",
+          "hideDeFiWithSmallDepositsDesc": "小额存款的 DeFi 不会显示。"
         },
         "table": {
           "chain": "鏈",
@@ -3186,7 +3190,9 @@
       "reload": "重新加载",
       "networkErrorTitle": "此網站無法訪問",
       "networkErrorDescription": "{{site}} 意外地关闭了连接。請檢查你的網絡。",
-      "networkErrorDescriptionFallback": "網站意外關閉了連接。請檢查您的網絡。"
+      "networkErrorDescriptionFallback": "網站意外關閉了連接。請檢查您的網絡。",
+      "opening": "正在打开 {{name}}...",
+      "serviceNotSupported": "該服務在您當前的地區不受支持。"
     },
     "perps": {
       "closeAllPopup": {
@@ -3304,7 +3310,8 @@
         "estReceiveLabel": "預估可得",
         "hyperliquidFeeLabel": "Hyperliquid 手續費",
         "fetchQuoteFailed": "無法取得入金報價。請切換代幣。",
-        "goSwapTips": "僅支援 Arbitrum 上的 USDC 作為直接入金。請在入金前將您當前的代幣兌換為 USDC。"
+        "goSwapTips": "僅支援 Arbitrum 上的 USDC 作為直接入金。請在入金前將您當前的代幣兌換為 USDC。",
+        "hyperliquidFeeLabelTooltip": "新用戶需支付一筆一次性啟動費用給 Hyperliquid。"
       },
       "home": {
         "margin": "保證金",
@@ -3665,7 +3672,9 @@
         "reduceOnlyTooLarge": "減倉過大",
         "aloTooLargeSell": "Alo 掛單價格必須高於最佳買價",
         "minimumSuborderSize": "時間加權平均價格（TWAP）分單的最小下單量為 $10",
-        "sizeSkewTooltip": "結束價格與起始價格之比。例如，若大小偏斜為 2.0，則結束價格的限價單下單量為起始價格限價單下單量的兩倍。大小偏斜為 1.0 時，兩筆訂單大小相等。"
+        "sizeSkewTooltip": "結束價格與起始價格之比。例如，若大小偏斜為 2.0，則結束價格的限價單下單量為起始價格限價單下單量的兩倍。大小偏斜為 1.0 時，兩筆訂單大小相等。",
+        "deposit": "存入",
+        "addFundsToGetStarted": "添加资金以开始使用"
       },
       "marginMode": {
         "title": "保證金模式",
@@ -3714,14 +3723,16 @@
         "crossMarginRatioTips": "維持保證金 / 投資組合價值。若保證金比率達到 100%，你的跨倉頭寸將被強制平倉。",
         "withdraw": "提款",
         "balanceTip": "淨轉賬總額 + 已實現利潤總額 + 淨資金費用總額",
-        "crossAccountLeverageTips": "跨帳戶槓桿 = 跨帳戶總倉位價值 / 跨帳戶價值"
+        "crossAccountLeverageTips": "跨帳戶槓桿 = 跨帳戶總倉位價值 / 跨帳戶價值",
+        "available": "可用："
       },
       "accountActions": {
         "available": "可用",
         "pending": "待處理",
         "deposit": "充值",
         "positionCount": "{{count}} 個持倉",
-        "onePosition": "1 個倉位"
+        "onePosition": "1 個倉位",
+        "availableBalanceTips": "可用資金"
       },
       "orderBook": {
         "markPrice": "標記價格",
@@ -3735,6 +3746,13 @@
         "title": "訂單簿",
         "amount": "數量",
         "trades": "成交"
+      },
+      "editMargin": {
+        "shortLiquidationTips": "上升 {{percent}} 将触发清算",
+        "title": "管理保證金",
+        "currentPosition": "當前持倉",
+        "configureMargin": "配置保证金",
+        "longLiquidationTips": "下跌 {{percent}} 将触发清算"
       }
     },
     "perpsDetail": {
@@ -3829,6 +3847,331 @@
         "stopLossWhenPriceBelow": "止損單：當價格跌破"
       },
       "needDepositFirst": "你需要先存入資金。"
+    },
+    "lending": {
+      "availableCard": {
+        "needSupply": "要借款，您需要提供资产作为抵押。",
+        "emode": "某些資產在 E-Mode 下不可借用。退出 E-Mode 以訪問所有資產。",
+        "canBorrow": "您可以根据提供的抵押品进行借款，最高可达借款上限。",
+        "emodeNoAssets": "我們找不到與您搜索相關的任何資產。請嘗試使用不同的類別。",
+        "singleAssetUnavailableForEmode": "無法借出。退出 E-Mode 以獲取訪問權限。"
+      },
+      "list": {
+        "headers": {
+          "token": "代币",
+          "my_assets": "我的資產",
+          "mySupplies": "我的供應",
+          "token_tvl": "代币/TVL",
+          "my_balance": "我的餘額",
+          "totalBorrowed": "總借款額",
+          "token_balance": "代幣/餘額",
+          "myBorrows": "我的借款"
+        },
+        "item": {
+          "wrapperToken": "{{name}} 的包裹代币"
+        }
+      },
+      "repayDetail": {
+        "tabs": {
+          "wallet": "钱包余额",
+          "collateral": "抵押品"
+        },
+        "repayWith": "以此还款",
+        "amountTitle": "餘額：",
+        "actions": "償還",
+        "approveAndRepay": "批准和偿还"
+      },
+      "supplyDetail": {
+        "supplied": "提供",
+        "actions": "供应",
+        "amountTitle": "可用：",
+        "supplyAPY": "供應年利率",
+        "collateralization": "抵押品化",
+        "supplyBalance": "供應餘額",
+        "approveAndSupply": "批准并提供",
+        "unavailable": "不可用",
+        "enabled": "啟用",
+        "availableToBorrow": "可借用的金额",
+        "isolatedTips": "您当前的借贷资产不受支持。"
+      },
+      "withdrawDetail": {
+        "amountTitle": "餘額：",
+        "actions": "提取",
+        "remainingSupply": "剩餘供應量"
+      },
+      "toggleCollateralDetail": {
+        "actions": "切换 {{asset}} 抵押品",
+        "enable": "啟用 {{asset}} 作為抵押品",
+        "disable": "停用 {{asset}} 作为抵押品",
+        "error": "AAVE 服務出現了一些錯誤。請稍後再試。"
+      },
+      "toggleCollateralModal": {
+        "toggleRiskTexts": {
+          "canNotUseThisCurrencyAsCollateral": "您不能将此货币用作担保。",
+          "doNotHaveSuppliesInThisCurrency": "您在此货币中没有供应。",
+          "canNotSwitchUsageAsCollateralMode": "您不能将此货币的使用模式切换为抵押模式，因为这将导致抵押品追加。",
+          "zeroLTVWithdrawBlocked": "LTV 值为零的资产 ({{assets}}) 必须被提取或禁用作为抵押以执行此操作。"
+        },
+        "closeTitle": "審查禁用",
+        "openTitle": "審核啟用",
+        "exitIsolationModeTitle": "退出隔离模式",
+        "riskToLiquidationText": "您不能将此货币的使用模式切换为抵押模式，因为这将导致抵押品追缴。",
+        "enableIsolationModeTitle": "啟用隔離模式",
+        "exitIsolationModeDesc": "您将退出隔离模式，其他代币现在可以作为抵押品使用。",
+        "openDesc": "將此資產作為抵押品可以提高您的借貸能力和健康指數。然而，如果您的健康指數降至 1 以下，則可能會被清算。",
+        "closeDesc": "禁用此资产作为抵押品会影响您的借贷能力和健康因子。",
+        "enableIsolationModeDesc": "您正在进入隔离模式。在隔离模式下，您不能提供其他资产作为抵押。全球债务上限限制了隔离资产的借贷能力。要退出隔离模式，请在借入其他资产之前禁用 CRV 作为抵押。"
+      },
+      "borrowDetail": {
+        "swapDebt": "交換",
+        "actions": "借入",
+        "amountTitle": "可用：",
+        "almostReachedWarning": "此资产的协议借贷上限为 100%。进一步借贷不可用。",
+        "almostReachedError": "可借款的最大金额受到限制，因为协议借款上限几乎达到了。",
+        "borrowed": "借入",
+        "approveAndBorrow": "批准和借款"
+      },
+      "popup": {
+        "amount": "數量",
+        "title": "交易概覽",
+        "available": "可用",
+        "liquidationAt": "清算在 < 1.0",
+        "remainingDebt": "剩餘債務"
+      },
+      "borrowOverview": {
+        "borrowCap": "借款上限",
+        "totalBorrowed": "總借款額",
+        "availableToBorrow": "可借用",
+        "liquidityPenalty": "清算罚金",
+        "reachCapTip": "此资产已达到借款上限。",
+        "myBorrow": "我的借款",
+        "title": "借款詳情"
+      },
+      "supplyOverview": {
+        "collateral": "抵押品",
+        "totalSupplied": "總供應量",
+        "availableToSupply": "可供提供",
+        "walletBalance": "钱包余额",
+        "title": "供應詳情",
+        "mySupply": "我的供应",
+        "useAsCollateral": "用作抵押",
+        "almostCap": "這資產的借貸上限幾乎已達到。從這個市場中，只有 {{available}} 可以借取。",
+        "noBalance": "沒有餘額",
+        "reachCap": "此资产已达到其供应上限。此市场暂无可供应的资产。"
+      },
+      "risk": {
+        "warning": "借入此金额将降低您的健康因子至风险水平，可能会被清算。",
+        "toggleCollateralWarning": "禁用此资产作为抵押将会使您的健康因子降至一个风险水平，可能会面临清算。",
+        "withdrawWarning": "提取该金额将使您的健康因子降低至风险清算的水平。",
+        "checkbox": "我理解这个警告，并想要继续。",
+        "emodeBlockWarning": "禁用 E-mode 将会使您的健康因子降至一个风险水平，可能面临被清算的风险。",
+        "blockEmodeWarning": "你不能禁用 E-Mode，因为这可能导致强制平仓。要退出 E-Mode，请供应或偿还借入的位置。"
+      },
+      "lqDescription": {
+        "risky": "高风险",
+        "liquidationTitle": "清算：",
+        "over3desc": "您的持仓是安全的",
+        "over3title": "健康因子 > 3.0：",
+        "desc": "清算价值",
+        "below1desc": "您的头寸面临被平仓的风险。",
+        "below1title": "健康因子 ≤ 1.0:",
+        "warningText": "您的健康因子过低。为避免被清算：\n1. 还清部分或全部贷款\n2. 添加更多抵押品",
+        "introText": "你的健康因子顯示你的借貸位置有多安全。如果它下降到過低，你的抵押品可能會被清算。",
+        "liquidation": "如果您的健康指标低于 1.0，您的部分抵押品可能会被自动出售以偿还债务。将会适用清算罚金，从而导致您的抵押品部分亏损。"
+      },
+      "modalDesc": {
+        "availableToBorrow": "可借用金额",
+        "isolatedSupplyDesc": "抵押品使用受到限制，因为处于隔离模式。",
+        "isolatedTitle": "資產不能用作抵押品",
+        "maxLTV": "最大 LTV 比率代表特定抵押品的最大借贷能力。例如，如果一个抵押品的 LTV 为 75%，用户可以每 1 ETH 抵押品借出最高 0.75 的 ETH 作为本金货币。",
+        "availableToBorrowDesc": "你可以根据你提供的抵押品进行借款，直到达到借款上限为止。",
+        "lqDesc": "當清算發生時，清算人會代表借款人償還最高 50% 的未償還借款金額。作為回報，他們可以以折扣價購買抵押品，並將差額（清算罰金）作為獎勵。",
+        "globalIsolatedDesc": "在隔离模式下，您不能将其他资产作为抵押品。全球债务上限限制了隔离资产的借款能力。要退出隔离模式，需在借入其他资产之前禁用 UNI 作为抵押品。",
+        "isolatedDesc": "此资产只能在孤立模式下用作抵押品，在该模式下，您无法提供其他资产作为借款抵押品。在孤立模式下用作抵押的资产只能借到特定的债务上限。",
+        "maxAmount": "這是您根據所提供的所有抵押品可以借入的最大金額。您的總借貸能力是通過將每種抵押資產的市場價值乘以其最大貸款價值（Max LTV），然後將結果相加來計算的。"
+      },
+      "repayWithAToken": {
+        "header": {
+          "balance": "餘額",
+          "assets": "代幣"
+        },
+        "title": "選擇還款代幣"
+      },
+      "manageEmode": {
+        "actions": {
+          "disable": "禁用 E-模式",
+          "enable": "啟用 E-模式"
+        },
+        "guide": {
+          "title": "效率模式 (E-Mode)",
+          "buttonTitle": "管理 E-Mode",
+          "description": "E-Mode 提高您对所选资产类别的 LTV。"
+        },
+        "categorySelector": {
+          "header": {
+            "asset": "資產"
+          },
+          "placeholder": "選擇",
+          "label": "资产类别",
+          "desc": "此类别以外的所有借贷头寸必须关闭才能启用此类别。"
+        },
+        "debtSwapSelector": {
+          "header": {
+            "assets": "代幣/餘額",
+            "borrow": "我的借款"
+          },
+          "title": "選擇借款代幣"
+        },
+        "collateralSwapSelector": {
+          "header": {
+            "assets": "代币",
+            "collateral": "我的抵押品"
+          },
+          "title": "選擇擔保代幣"
+        },
+        "overview": {
+          "row": {
+            "borrowable": "可借贷",
+            "collateral": "抵押品",
+            "asset": "資產"
+          },
+          "title": "資產類別"
+        },
+        "disableTitle": "禁用",
+        "unavailable": "• 不可用",
+        "enabled": "• 已启用",
+        "title": "管理 E-模式",
+        "unavailableTips": "您当前的借贷资产不受支持。",
+        "description": "啟用 E-Mode 使您能夠最大化您的借貸能力。然而，借貸僅限於所選類別中的資產。"
+      },
+      "debtSwap": {
+        "actions": {
+          "swapTo": "換成",
+          "borrowed": "借入",
+          "amount": "數量",
+          "select": "选择",
+          "title": "債務交換"
+        },
+        "overview": {
+          "title": "交易概覽",
+          "borrowAPY": "借貸年利率",
+          "borrowValueAfter": "交换后的借款余额"
+        },
+        "button": {
+          "swap": "交換"
+        },
+        "title": "交換借貸位置",
+        "borrowBalance": "借款余额",
+        "entryTips": "一鍵交換你的借入資產，減少步驟和費用。",
+        "lpRiskWarning": "低健康因子，交易后您的头寸将承担更高的清算风险。",
+        "lpDangerWarning": "您在此交易后的健康系数将会极低，可能导致强制平仓。请选择其他资产或减少交易金额以确保安全。",
+        "priceImpactTips": "高价格影响（{{lostValue}}）。由于流动性低或订单规模小，此路径可能会返回更多。"
+      },
+      "repayWithCollateral": {
+        "action": {
+          "title": "用 {{collateral}} 还款"
+        },
+        "overview": {
+          "title": "交易概覽",
+          "collateralValueAfter": "还款后的抵押余额",
+          "borrowValueAfter": "還款後的借貸餘額"
+        },
+        "button": {
+          "repay": "還款"
+        },
+        "repayWith": "用作偿还的抵押品",
+        "toRepay": "預期還款金額",
+        "collateralNotEnough": "您的抵押余额低于所选金额。"
+      },
+      "hfTips": {
+        "more": "更多",
+        "desc": "如果它跌破 1.0，您的抵押品可能會被清算。"
+      },
+      "disableBorrowTip": {
+        "desc": "沒有供應：要借入，您需要提供資產作為抵押。",
+        "noSupply": "首先提供资产以启用借贷。"
+      },
+      "type": {
+        "borrowed": "借入",
+        "supplied": "提供"
+      },
+      "actions": {
+        "borrow": "借入",
+        "swap": "交換",
+        "supply": "供應",
+        "withdraw": "提取",
+        "repay": "还款"
+      },
+      "summary": {
+        "empty": {
+          "title": "使用你的资产赚取利息",
+          "description": "由 AAVE 提供支持。安全且零费用。",
+          "endDesc": "您尚未有任何存款。查看以下推荐资产以开始赚取利息。"
+        },
+        "totalSupplied": "總供應量",
+        "netWorth": "净资产",
+        "healthFactor": "健康因子",
+        "totalBorrowed": "總借貸金額",
+        "eMode": "E-模式",
+        "healthFactorTip": "健康因子顯示您持倉的安全性",
+        "more": "更多",
+        "risky": "高风险",
+        "netApy": "净年化收益率",
+        "estDailyEarnings": "預計每日收益",
+        "lq": "如果跌破 1，可能会触发清算。",
+        "ethCorrelatedTip": "ETH 相关資產",
+        "healthy": "健康"
+      },
+      "market": {
+        "core": "核心市场"
+      },
+      "accountActions": {
+        "both": "兩者",
+        "supply": "供應",
+        "borrow": "借入"
+      },
+      "table": {
+        "actions": "行動",
+        "collateral": "抵押品",
+        "type": "類型",
+        "token": "代幣",
+        "myAssets": "我的資產"
+      },
+      "supplyList": {
+        "more": "更多代币供应",
+        "collapse": "崩溃"
+      },
+      "borrowList": {
+        "collapse": "崩溃",
+        "more": "更多代幣可借用"
+      },
+      "estDailyEarning": "預計每日收益",
+      "netApy": "净年化收益率",
+      "borrowBalance": "借款余额",
+      "supplied": "提供",
+      "borrowed": "借用",
+      "totalBorrowed": "總借貸",
+      "netWorth": "净资产",
+      "estNetApy": "預估淨年利率",
+      "title": "借貸",
+      "totalBorrow": "總借款",
+      "supplyApy": "供應 APY",
+      "gotIt": "收到",
+      "totalSupply": "總供應量",
+      "isolate": "隔离",
+      "isolateTip": "這是一個孤立市場",
+      "noData": "無數據",
+      "borrowApy": "借貸年利率",
+      "supplyBalance": "供應餘額",
+      "submitted": "提交完成",
+      "totalSupplied": "總供應量",
+      "disabled": "禁用",
+      "hf": "健康因子",
+      "enterAmount": "輸入金額",
+      "selectChain": "選擇區塊鏈",
+      "hfTitle": "健康因素",
+      "searchMarket": "搜尋市場",
+      "selectMarket": "選擇市場"
     }
   },
   "component": {
@@ -4050,6 +4393,9 @@
       "title": "這是一個流動性提供者(LP)代幣",
       "description": "LP 代幣是由你已存入資產的 DeFi 協議發行的。它們作為那些資產的證明，但其價值不包括在你的總餘額中。",
       "descriptionFor": "這是一個 {{ protocolName }} 的流動性提供者 (LP) 代幣"
+    },
+    "DesktopAccountSelector": {
+      "selectAddress": "選擇地址"
     }
   },
   "background": {

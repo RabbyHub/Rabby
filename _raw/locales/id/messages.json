@@ -1222,7 +1222,9 @@
           "settings": "Pengaturan",
           "perpsPositions_other": "{{count}} Posisi",
           "perpsPositions_one": "{{count}} Posisi",
-          "prediction": "Prediksi"
+          "prediction": "Prediksi",
+          "lending": "Peminjaman",
+          "dragTip": "Fitur tekan lama untuk mengurutkan ulang"
         },
         "queue": {
           "title": "Antrian",
@@ -3026,7 +3028,9 @@
           "showAll": "Tampilkan semua",
           "tokensWithZeroBalanceDesc": "Token dengan saldo $0 disembunyikan.",
           "hideDefiWithSmallDeposits": "Sembunyikan Defi dengan setoran kecil.",
-          "hideDefiWithSmallDepositsDesc": "Defis dengan setoran kecil tidak ditampilkan."
+          "hideDefiWithSmallDepositsDesc": "Defis dengan setoran kecil tidak ditampilkan.",
+          "hideDeFiWithSmallDeposits": "Sembunyikan DeFi dengan setoran kecil.",
+          "hideDeFiWithSmallDepositsDesc": "DeFi dengan setoran kecil tidak ditampilkan."
         },
         "table": {
           "token": "Token",
@@ -3145,7 +3149,9 @@
       "reload": "Muat Ulang",
       "networkErrorDescriptionFallback": "Situs secara tiba-tiba menutup koneksi. Silakan periksa jaringan Anda.",
       "networkErrorTitle": "Situs ini tidak dapat diakses",
-      "networkErrorDescription": "{{site}} secara tiba-tiba menutup koneksi. Silakan periksa jaringan Anda."
+      "networkErrorDescription": "{{site}} secara tiba-tiba menutup koneksi. Silakan periksa jaringan Anda.",
+      "opening": "Membuka {{name}}...",
+      "serviceNotSupported": "Layanan tidak didukung di wilayah Anda saat ini."
     },
     "perps": {
       "closeAllPopup": {
@@ -3263,7 +3269,8 @@
         "fetchQuoteFailed": "Gagal mengambil kutipan deposit. Silakan ganti token.",
         "estReceiveTooltipNoTime": "Setoran lintas rantai diproses melalui LiFi, mungkin terjadi slippage.",
         "estReceiveTooltip": "Setoran lintas rantai diproses melalui LiFi, mungkin terjadi selisih harga. Perkiraan kedatangan dalam {{number}} detik.",
-        "goBridgeTips": "Hanya USDC di Arbitrum yang didukung untuk deposit langsung. Silakan jembatani token Anda saat ini ke USDC di Arbitrum sebelum melakukan deposit."
+        "goBridgeTips": "Hanya USDC di Arbitrum yang didukung untuk deposit langsung. Silakan jembatani token Anda saat ini ke USDC di Arbitrum sebelum melakukan deposit.",
+        "hyperliquidFeeLabelTooltip": "Pengguna baru dikenakan biaya aktivasi satu kali oleh Hyperliquid."
       },
       "home": {
         "size": "Ukuran Posisi",
@@ -3624,7 +3631,9 @@
         "stopLossExpectedPnL": "Stop loss diharapkan PnL",
         "startAndEndPriceMustBeDifferent": "Harga awal dan harga akhir harus berbeda",
         "aloTooLargeSell": "Harga order Alo harus lebih tinggi dari harga tawaran terbaik.",
-        "tpMustBeLowerThanCurrentPrice": "Harga ambil untung harus lebih rendah daripada harga saat ini"
+        "tpMustBeLowerThanCurrentPrice": "Harga ambil untung harus lebih rendah daripada harga saat ini",
+        "deposit": "Setor",
+        "addFundsToGetStarted": "Tambahkan dana untuk memulai"
       },
       "marginMode": {
         "cross": "Lepas",
@@ -3673,14 +3682,16 @@
         "crossMarginRatioTips": "Margin Pemeliharaan / Nilai Portfolio. Posisi cross Anda akan dilikuidasi jika Rasio Margin mencapai 100%.",
         "crossAccountLeverage": "Leveraged Akun Silang",
         "maintenanceMarginTips": "Nilai portofolio minimum yang diperlukan untuk mempertahankan posisi silang Anda tetap terbuka",
-        "crossAccountLeverageTips": "Leverage Akun Silang = Total Nilai Posisi Silang / Nilai Akun Silang."
+        "crossAccountLeverageTips": "Leverage Akun Silang = Total Nilai Posisi Silang / Nilai Akun Silang.",
+        "available": "Tersedia:"
       },
       "accountActions": {
         "pending": "Menunggu",
         "positionCount": "{{count}} posisi",
         "available": "Tersedia",
         "deposit": "Setor",
-        "onePosition": "1 posisi"
+        "onePosition": "1 posisi",
+        "availableBalanceTips": "Dana Tersedia"
       },
       "orderBook": {
         "amount": "Jumlah",
@@ -3694,6 +3705,13 @@
         "time": "Waktu",
         "total": "Total",
         "viewAsks": "Permintaan"
+      },
+      "editMargin": {
+        "currentPosition": "Posisi Saat Ini",
+        "title": "Kelola Margin",
+        "configureMargin": "Atur Margin",
+        "longLiquidationTips": "Penurunan {{percent}} akan memicu likuidasi",
+        "shortLiquidationTips": "Naik {{percent}} akan memicu likuidasi"
       }
     },
     "perpsDetail": {
@@ -3788,6 +3806,331 @@
         "takeProfitTipsLong": "Harga ambil untung harus lebih tinggi dari harga saat ini"
       },
       "needDepositFirst": "Anda perlu melakukan setoran dana terlebih dahulu."
+    },
+    "lending": {
+      "availableCard": {
+        "canBorrow": "Anda dapat meminjam berdasarkan jaminan yang Anda berikan, hingga batas maksimal pinjaman.",
+        "emodeNoAssets": "Kami tidak dapat menemukan aset yang terkait dengan pencarian Anda. Cobalah lagi dengan kategori yang berbeda.",
+        "needSupply": "Untuk meminjam, Anda perlu menyediakan aset sebagai jaminan.",
+        "singleAssetUnavailableForEmode": "Tidak tersedia untuk dipinjam. Keluar dari E-Mode untuk mengakses.",
+        "emode": "Beberapa aset tidak tersedia untuk dipinjam dalam E-Mode. Keluar dari E-Mode untuk mengakses semua aset."
+      },
+      "list": {
+        "headers": {
+          "totalBorrowed": "Total Borrowed",
+          "my_assets": "Aset Saya",
+          "myBorrows": "Pinjaman saya",
+          "token_balance": "Token/Saldo",
+          "my_balance": "Saldo Saya",
+          "token": "Token",
+          "mySupplies": "Persediaan saya",
+          "token_tvl": "Token/TVL"
+        },
+        "item": {
+          "wrapperToken": "Wrapped token untuk {{name}}"
+        }
+      },
+      "repayDetail": {
+        "tabs": {
+          "wallet": "Saldo dompet",
+          "collateral": "Jaminan"
+        },
+        "amountTitle": "Saldo:",
+        "repayWith": "Bayar dengan",
+        "actions": "Lunasi",
+        "approveAndRepay": "Setujui dan Bayar Kembali"
+      },
+      "supplyDetail": {
+        "unavailable": "Tidak Tersedia",
+        "supplyBalance": "Saldo Pasokan",
+        "collateralization": "Kollateralisasi",
+        "supplyAPY": "Pasokan APY",
+        "enabled": "Diaktifkan",
+        "amountTitle": "Tersedia:",
+        "availableToBorrow": "Tersedia untuk dipinjam",
+        "actions": "Pasokan",
+        "isolatedTips": "Aset pinjaman/peminjaman Anda yang ada tidak didukung.",
+        "supplied": "Diberikan",
+        "approveAndSupply": "Setujui dan Pasok"
+      },
+      "withdrawDetail": {
+        "actions": "Tarik",
+        "remainingSupply": "Sisa pasokan",
+        "amountTitle": "Saldo:"
+      },
+      "toggleCollateralDetail": {
+        "disable": "Nonaktifkan {{asset}} sebagai Jaminan",
+        "actions": "Alihkan Jaminan {{asset}}",
+        "enable": "Aktifkan {{asset}} sebagai Jaminan",
+        "error": "Ada beberapa kesalahan dengan layanan AAVE. Silakan coba lagi nanti."
+      },
+      "toggleCollateralModal": {
+        "toggleRiskTexts": {
+          "doNotHaveSuppliesInThisCurrency": "Anda tidak memiliki pasokan dalam mata uang ini",
+          "canNotUseThisCurrencyAsCollateral": "Anda tidak dapat menggunakan mata uang ini sebagai jaminan.",
+          "canNotSwitchUsageAsCollateralMode": "Anda tidak dapat beralih penggunaan sebagai mode jaminan untuk mata uang ini, karena itu akan menyebabkan panggilan jaminan.",
+          "zeroLTVWithdrawBlocked": "Aset dengan LTV nol ({{assets}}) harus ditarik atau dinonaktifkan sebagai jaminan untuk melakukan tindakan ini."
+        },
+        "enableIsolationModeTitle": "Aktifkan Mode Isolasi",
+        "openTitle": "Tinjau Pengaktifan",
+        "closeTitle": "Tinjau Menonaktifkan",
+        "riskToLiquidationText": "Anda tidak dapat mengubah penggunaan mode jaminan untuk mata uang ini, karena akan menyebabkan panggilan jaminan.",
+        "exitIsolationModeTitle": "Keluar dari Mode Isolasi",
+        "closeDesc": "Menonaktifkan aset ini sebagai jaminan mempengaruhi kekuatan pinjaman dan Faktor Kesehatan Anda.",
+        "exitIsolationModeDesc": "Anda akan keluar dari mode Isolasi dan token lainnya sekarang dapat digunakan sebagai jaminan.",
+        "openDesc": "Mengaktifkan aset ini sebagai jaminan meningkatkan daya pinjam Anda dan Faktor Kesehatan. Namun, aset dapat dilikuidasi jika faktor kesehatan Anda turun di bawah 1.",
+        "enableIsolationModeDesc": "Anda sedang memasuki mode Isolasi. Dalam mode Isolasi, Anda tidak dapat menyediakan aset lain sebagai jaminan. Sebuah batas utang global membatasi kekuatan pinjaman aset yang terisolasi. Untuk keluar dari mode isolasi, nonaktifkan CRV sebagai jaminan sebelum meminjam aset lain."
+      },
+      "borrowDetail": {
+        "actions": "Meminjam",
+        "swapDebt": "Tukar",
+        "approveAndBorrow": "Setujui dan Pinjam",
+        "amountTitle": "Tersedia:",
+        "borrowed": "Dipinjam",
+        "almostReachedWarning": "Batas pinjaman protokol adalah 100% untuk aset ini. Peminjaman lebih lanjut tidak tersedia.",
+        "almostReachedError": "Jumlah maksimum yang tersedia untuk dipinjam dibatasi karena batas pinjaman protokol hampir tercapai."
+      },
+      "popup": {
+        "amount": "Jumlah",
+        "remainingDebt": "Sisa utang",
+        "available": "tersedia",
+        "title": "Ikhtisar Transaksi",
+        "liquidationAt": "Likuidasi di < 1.0"
+      },
+      "borrowOverview": {
+        "myBorrow": "Peminjamanku",
+        "liquidityPenalty": "Sanksi Likuidasi",
+        "totalBorrowed": "Total Dipinjam",
+        "availableToBorrow": "Tersedia untuk dipinjam",
+        "borrowCap": "Batas Pinjam",
+        "reachCapTip": "Aset ini telah mencapai batas pinjaman.",
+        "title": "Detail Peminjaman"
+      },
+      "supplyOverview": {
+        "walletBalance": "Saldo Dompet",
+        "availableToSupply": "Tersedia untuk Menyediakan",
+        "mySupply": "Pasokan Saya",
+        "title": "Rincian Pasokan",
+        "totalSupplied": "Total Supplied",
+        "noBalance": "Tidak ada saldo",
+        "collateral": "Jaminan",
+        "reachCap": "Aset ini telah mencapai batas pasokannya. Tidak ada yang tersedia untuk dipasok dari pasar ini.",
+        "almostCap": "Aset ini hampir mencapai batas pinjamannya. Hanya ada {{available}} yang tersedia untuk dipinjam dari pasar ini.",
+        "useAsCollateral": "Gunakan sebagai jaminan"
+      },
+      "risk": {
+        "withdrawWarning": "Menarik jumlah ini akan menurunkan Faktor Kesehatan Anda ke tingkat berisiko untuk likuidasi.",
+        "warning": "Meminjam jumlah ini akan menurunkan Health Factor Anda ke tingkat berisiko untuk likuidasi.",
+        "toggleCollateralWarning": "Menonaktifkan aset ini sebagai jaminan akan menurunkan Faktor Kesehatan Anda ke level berisiko untuk likuidasi.",
+        "checkbox": "Saya mengerti peringatannya dan ingin melanjutkan.",
+        "blockEmodeWarning": "Anda tidak dapat menonaktifkan E-Mode karena itu dapat menyebabkan likuidasi. Untuk keluar dari E-Mode, suplai atau lunasi posisi yang dipinjam.",
+        "emodeBlockWarning": "Menonaktifkan E-mode akan menurunkan Faktor Kesehatan Anda ke tingkat berisiko untuk likuidasi."
+      },
+      "lqDescription": {
+        "liquidationTitle": "Likuidasi:",
+        "desc": "Nilai likuidasi",
+        "risky": "Berisiko",
+        "over3title": "Health factor > 3.0:",
+        "over3desc": "Posisi Anda aman",
+        "below1title": "Health Factor ≤ 1.0:",
+        "below1desc": "Posisi Anda berisiko dilikuidasi.",
+        "warningText": "Faktor Kesehatan Anda terlalu rendah. Untuk menghindari likuidasi:\n1. Lunasi sebagian atau seluruh pinjaman Anda\n2. Tambahkan lebih banyak jaminan",
+        "introText": "Faktor Kesehatan Anda menunjukkan seberapa aman posisi pinjaman Anda. Jika turun terlalu rendah, jaminan Anda dapat dilikuidasi.",
+        "liquidation": "Jika Faktor Kesehatan Anda jatuh di bawah 1.0, sebagian dari jaminan Anda mungkin akan dijual secara otomatis untuk membayar utang. Pajak likuidasi akan berlaku, yang mengakibatkan kehilangan sebagian dari jaminan Anda."
+      },
+      "modalDesc": {
+        "availableToBorrow": "Tersedia untuk dipinjam",
+        "isolatedSupplyDesc": "Penggunaan collateral terbatas karena mode isolasi.",
+        "isolatedDesc": "Aset ini hanya dapat digunakan sebagai jaminan dalam mode isolasi, di mana Anda tidak dapat menyediakan jaminan aset lain untuk meminjam. Aset yang digunakan sebagai jaminan dalam mode isolasi hanya dapat dipinjam hingga batas utang tertentu.",
+        "maxLTV": "Rasio LTV Maksimum mewakili kekuatan pinjaman maksimum dari jaminan tertentu. Sebagai contoh, jika sebuah jaminan memiliki LTV sebesar 75%, pengguna dapat meminjam hingga 0,75 nilai ETH dalam mata uang utama untuk setiap 1 ETH nilai jaminan.",
+        "globalIsolatedDesc": "Dalam mode Isolasi, Anda tidak dapat menyediakan aset lain sebagai jaminan. Batas utang global membatasi kekuatan pinjam dari aset terisolasi. Untuk keluar dari mode isolasi, nonaktifkan UNI sebagai jaminan sebelum meminjam aset lain.",
+        "availableToBorrowDesc": "Anda dapat meminjam berdasarkan jaminan yang Anda berikan dan sampai batas pinjaman tercapai.",
+        "lqDesc": "Saat likuidasi terjadi, likuidator membayar hingga 50% dari jumlah pinjaman yang belum dibayar atas nama peminjam. Sebagai imbalannya, mereka dapat membeli jaminan dengan potongan harga dan menyimpan selisihnya (penalty likuidasi) sebagai bonus.",
+        "maxAmount": "Ini adalah jumlah maksimum yang dapat Anda pinjam berdasarkan semua jaminan yang Anda berikan. Daya pinjam total Anda dihitung dengan mengalikan nilai pasar dari setiap aset jaminan dengan Max LTV-nya, kemudian menjumlahkan hasilnya.",
+        "isolatedTitle": "Aset tidak dapat digunakan sebagai jaminan"
+      },
+      "repayWithAToken": {
+        "header": {
+          "assets": "Token",
+          "balance": "Saldo"
+        },
+        "title": "Pilih Token Pembayaran kembali"
+      },
+      "manageEmode": {
+        "actions": {
+          "disable": "Nonaktifkan E-Mode",
+          "enable": "Aktifkan E-Mode"
+        },
+        "guide": {
+          "buttonTitle": "Kelola E-Mode",
+          "title": "Mode Efisiensi (E-Mode)",
+          "description": "E-Mode meningkatkan LTV Anda untuk kategori aset yang dipilih."
+        },
+        "categorySelector": {
+          "header": {
+            "asset": "Aset"
+          },
+          "placeholder": "Pilih",
+          "label": "Kategori aset",
+          "desc": "Semua posisi pinjaman di luar kategori ini harus ditutup untuk mengaktifkan kategori ini."
+        },
+        "debtSwapSelector": {
+          "header": {
+            "assets": "Token/Balansi",
+            "borrow": "Peminjaman saya"
+          },
+          "title": "Pilih Token Pinjaman"
+        },
+        "collateralSwapSelector": {
+          "header": {
+            "assets": "Token",
+            "collateral": "Kolik saya"
+          },
+          "title": "Pilih Token Jaminan"
+        },
+        "overview": {
+          "row": {
+            "collateral": "Jaminan",
+            "asset": "Aset",
+            "borrowable": "Dapat Dipinjam"
+          },
+          "title": "Kategori aset"
+        },
+        "disableTitle": "Nonaktifkan",
+        "unavailable": "• Tidak Tersedia",
+        "enabled": "• Diaktifkan",
+        "unavailableTips": "Aset pinjaman/peminjaman Anda yang ada tidak didukung.",
+        "title": "Kelola E-Mode",
+        "description": "Mengaktifkan E-Mode memungkinkan Anda untuk memaksimalkan daya pinjam Anda. Namun, peminjaman dibatasi pada aset dalam kategori yang dipilih."
+      },
+      "debtSwap": {
+        "actions": {
+          "select": "Pilih",
+          "borrowed": "Dipinjam",
+          "title": "Pertukaran Utang",
+          "swapTo": "Tukar ke",
+          "amount": "Jumlah"
+        },
+        "overview": {
+          "title": "Ikhtisar Transaksi",
+          "borrowAPY": "Pinjaman apy",
+          "borrowValueAfter": "Saldo pinjaman setelah pertukaran"
+        },
+        "button": {
+          "swap": "Tukar"
+        },
+        "borrowBalance": "Saldo pinjaman",
+        "title": "Tukar Meminjam Posisi",
+        "entryTips": "Satu klik untuk menukar aset yang Anda pinjam, mengurangi langkah dan biaya.",
+        "priceImpactTips": "Dampak harga tinggi ({{lostValue}}). Rute ini mungkin memberikan lebih banyak karena likuiditas rendah atau ukuran pesanan kecil.",
+        "lpDangerWarning": "Faktor kesehatan Anda setelah pertukaran ini akan sangat rendah dan dapat mengakibatkan likuidasi. Silakan pilih aset lain atau kurangi jumlah pertukaran untuk tetap aman.",
+        "lpRiskWarning": "Faktor kesehatan rendah setelah pertukaran. Posisi Anda akan menghadapi risiko likuidasi yang lebih tinggi."
+      },
+      "repayWithCollateral": {
+        "action": {
+          "title": "Bayar dengan {{collateral}}"
+        },
+        "overview": {
+          "borrowValueAfter": "Saldo pinjaman setelah melunasi",
+          "title": "Ikhtisar Transaksi",
+          "collateralValueAfter": "Saldo jaminan setelah membayar kembali"
+        },
+        "button": {
+          "repay": "Bayar kembali"
+        },
+        "toRepay": "Jumlah yang diharapkan untuk dibayar kembali",
+        "repayWith": "Collateral untuk membayar kembali dengan",
+        "collateralNotEnough": "Saldo jaminan Anda lebih rendah dari jumlah yang dipilih."
+      },
+      "hfTips": {
+        "more": "Lebih banyak",
+        "desc": "Jika turun di bawah 1.0, jaminan Anda mungkin akan dilikuidasi."
+      },
+      "disableBorrowTip": {
+        "noSupply": "Pertama, suplai aset untuk memungkinkan peminjaman.",
+        "desc": "Tidak ada pasokan: Untuk meminjam, Anda perlu menyediakan aset sebagai jaminan."
+      },
+      "type": {
+        "borrowed": "Dipinjam",
+        "supplied": "Diberikan"
+      },
+      "actions": {
+        "supply": "Pasokan",
+        "borrow": "Meminjam",
+        "swap": "Tukar",
+        "repay": "Bayar kembali",
+        "withdraw": "Tarik uang"
+      },
+      "summary": {
+        "empty": {
+          "description": "Ditenagai oleh AAVE. Aman dan bebas biaya.",
+          "title": "Dapatkan Bunga dengan aset Anda",
+          "endDesc": "Anda belum memiliki setoran. Lihat aset yang direkomendasikan di bawah ini untuk mulai menghasilkan bunga."
+        },
+        "totalBorrowed": "Total Borrowed",
+        "eMode": "E-Mode",
+        "totalSupplied": "Total Supplied",
+        "healthFactorTip": "Faktor kesehatan menunjukkan keamanan posisi Anda",
+        "healthFactor": "Faktor Kesehatan",
+        "netWorth": "Kekayaan Bersih",
+        "healthy": "Sehat",
+        "more": "Lebih banyak",
+        "risky": "Risiko",
+        "estDailyEarnings": "Est Pendapatan Harian",
+        "lq": "Jika di bawah 1, likuidasi mungkin akan dipicu.",
+        "netApy": "Net APY",
+        "ethCorrelatedTip": "Aset yang berkorelasi dengan ETH"
+      },
+      "market": {
+        "core": "Pasar Inti"
+      },
+      "accountActions": {
+        "supply": "Pasokan",
+        "both": "Keduanya",
+        "borrow": "Meminjam"
+      },
+      "table": {
+        "myAssets": "Aset saya",
+        "token": "Token",
+        "actions": "Tindakan",
+        "type": "Tipe",
+        "collateral": "Kollateral"
+      },
+      "supplyList": {
+        "collapse": "Runtuh",
+        "more": "Lebih banyak token untuk disuplai"
+      },
+      "borrowList": {
+        "collapse": "Runtuh",
+        "more": "Lebih banyak token untuk dipinjam"
+      },
+      "supplyApy": "Supply APY",
+      "gotIt": "Diterima",
+      "title": "Peminjaman",
+      "supplied": "Disuplai",
+      "totalBorrowed": "Total borrowed",
+      "netApy": "Net APY",
+      "supplyBalance": "Saldo Pasokan",
+      "isolate": "terpisah",
+      "totalSupply": "Total Supply",
+      "borrowApy": "Borrow APY",
+      "borrowBalance": "Saldo Peminjaman",
+      "noData": "Tidak ada data",
+      "netWorth": "Kekayaan bersih",
+      "estNetApy": "Est. net APY",
+      "totalBorrow": "Total Borrow",
+      "submitted": "dikirimkan",
+      "borrowed": "Dipinjam",
+      "totalSupplied": "Total supplied",
+      "estDailyEarning": "Est.Pendapatan Harian",
+      "isolateTip": "Ini adalah pasar terpisah",
+      "searchMarket": "Cari Pasar",
+      "disabled": "DINONAKTIF",
+      "enterAmount": "Masukkan Jumlah",
+      "selectChain": "Pilih Rantai",
+      "hfTitle": "Faktor Kesehatan",
+      "hf": "Faktor kesehatan",
+      "selectMarket": "Pilih Pasar"
     }
   },
   "component": {
@@ -4009,6 +4352,9 @@
       "title": "Ini adalah token penyedia likuiditas (LP)",
       "description": "Token LP diterbitkan oleh protokol DeFi tempat Anda menyimpan aset Anda. Mereka berfungsi sebagai bukti aset tersebut, tetapi nilainya tidak termasuk dalam total saldo Anda.",
       "descriptionFor": "Ini adalah Token Penyedia Likuiditas (LP) untuk {{ protocolName }}"
+    },
+    "DesktopAccountSelector": {
+      "selectAddress": "Pilih Alamat"
     }
   },
   "global": {

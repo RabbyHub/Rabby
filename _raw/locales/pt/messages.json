@@ -1222,7 +1222,9 @@
           "settings": "Configurações",
           "perpsPositions_one": "{{count}} Posição",
           "perpsPositions_other": "{{count}} Posições",
-          "prediction": "Previsão"
+          "prediction": "Previsão",
+          "lending": "Empréstimo",
+          "dragTip": "Recurso de pressionar longo para reorganizar"
         },
         "queue": {
           "title": "Fila",
@@ -3026,7 +3028,9 @@
           "hideProtocolsWithSmallDeposits": "Oculte protocolos com pequenos depósitos.",
           "tokensWithZeroBalanceDesc": "Tokens com saldos de $0 estão ocultos.",
           "hideDefiWithSmallDeposits": "Oculte Defis com pequenos depósitos.",
-          "hideDefiWithSmallDepositsDesc": "Defis com depósitos pequenos não são exibidos."
+          "hideDefiWithSmallDepositsDesc": "Defis com depósitos pequenos não são exibidos.",
+          "hideDeFiWithSmallDepositsDesc": "DeFis com pequenos depósitos não são exibidos.",
+          "hideDeFiWithSmallDeposits": "Oculte DeFis com pequenos depósitos."
         },
         "table": {
           "amount": "Quantidade",
@@ -3145,7 +3149,9 @@
       "reload": "Recarregar",
       "networkErrorTitle": "Este site não pode ser alcançado",
       "networkErrorDescriptionFallback": "O site fechou a conexão de forma inesperada. Por favor, verifique sua rede.",
-      "networkErrorDescription": "{{site}} fechou a conexão inesperadamente. Por favor, verifique sua rede."
+      "networkErrorDescription": "{{site}} fechou a conexão inesperadamente. Por favor, verifique sua rede.",
+      "serviceNotSupported": "O serviço não é suportado na sua região atual.",
+      "opening": "Abrindo {{name}}..."
     },
     "perps": {
       "closeAllPopup": {
@@ -3263,7 +3269,8 @@
         "estReceiveTooltip": "O depósito entre blockchains é processado via LiFi, pode ocorrer algum deslizamento. Chegada estimada em {{number}}s.",
         "estReceiveTooltipNoTime": "Depósito entre cadeias é processado via LiFi e pode ocorrer deslizamento de preço.",
         "estReceive": "Recebimento estimado: {{balance}}",
-        "goBridgeTips": "Apenas o USDC na Arbitrum é suportado para depósito direto. Por favor, faça a ponte do seu token atual para o USDC na Arbitrum antes de depositar."
+        "goBridgeTips": "Apenas o USDC na Arbitrum é suportado para depósito direto. Por favor, faça a ponte do seu token atual para o USDC na Arbitrum antes de depositar.",
+        "hyperliquidFeeLabelTooltip": "Novos usuários são cobrados uma taxa de ativação única pela Hyperliquid."
       },
       "home": {
         "entryPrice": "Preço de entrada",
@@ -3624,7 +3631,9 @@
         "triggerPrice": "Preço de gatilho",
         "tpMustBeLowerThanCurrentPrice": "O preço alvo de lucro deve ser menor que o preço atual.",
         "sizeSkewTooltip": "Proporção entre o preço final e o preço inicial. Por exemplo, se o skew de tamanho for 2,0, então uma ordem limite para o preço final será colocada com o dobro do tamanho da ordem correspondente ao preço inicial. Um skew de tamanho de 1,0 cria ordens de tamanho igual.",
-        "liquidationPriceTooltip": "O risco da posição é baixo, então não há preço de liquidação por enquanto. Observe que aumentar a posição ou reduzir a margem aumentará o risco."
+        "liquidationPriceTooltip": "O risco da posição é baixo, então não há preço de liquidação por enquanto. Observe que aumentar a posição ou reduzir a margem aumentará o risco.",
+        "deposit": "Depósito",
+        "addFundsToGetStarted": "Adicione fundos para começar"
       },
       "marginMode": {
         "confirm": "Confirmar",
@@ -3673,14 +3682,16 @@
         "accountEquityTip": "Saldo + P/L não realizado (valor aproximado da conta se todas as posições fossem fechadas)",
         "crossAccountLeverageTips": "Alavancagem de Conta Cruzada = Valor Total da Posição Cruzada / Valor da Conta Cruzada",
         "unrealizedPnl": "P&L não realizado",
-        "crossMarginRatioTips": "Margem de Manutenção / Valor da Carteira. Suas posições de margem cruzada serão liquidadas se o Índice de Margem atingir 100%."
+        "crossMarginRatioTips": "Margem de Manutenção / Valor da Carteira. Suas posições de margem cruzada serão liquidadas se o Índice de Margem atingir 100%.",
+        "available": "Disponível:"
       },
       "accountActions": {
         "pending": "Pendente",
         "available": "Disponível",
         "positionCount": "{{count}} posições",
         "deposit": "Depósito",
-        "onePosition": "1 posição"
+        "onePosition": "1 posição",
+        "availableBalanceTips": "Fundos Disponíveis"
       },
       "orderBook": {
         "price": "Preço",
@@ -3694,6 +3705,13 @@
         "amount": "Quantidade",
         "viewAsks": "Ofertas",
         "trades": "Negociações"
+      },
+      "editMargin": {
+        "configureMargin": "Configurar Margem",
+        "title": "Gerenciar Margem",
+        "currentPosition": "Posição Atual",
+        "longLiquidationTips": "A queda de {{percent}} acionará a liquidação",
+        "shortLiquidationTips": "Subindo {{percent}} irá ativar a liquidação"
       }
     },
     "perpsDetail": {
@@ -3788,6 +3806,331 @@
         "stopLossExpectedPNL": "P/L Esperado de Stop Loss"
       },
       "needDepositFirst": "Você precisa depositar fundos primeiro."
+    },
+    "lending": {
+      "availableCard": {
+        "needSupply": "Para emprestar, você precisa fornecer ativos como garantia.",
+        "emodeNoAssets": "Não conseguimos encontrar nenhum ativo relacionado à sua busca. Tente novamente com uma categoria diferente.",
+        "singleAssetUnavailableForEmode": "Indisponível para emprestar. Saia do E-Mode para acessar.",
+        "canBorrow": "Você pode pegar emprestado com base na sua garantia fornecida, até o limite de empréstimo.",
+        "emode": "Alguns ativos não estão disponíveis para empréstimo no E-Mode. Saia do E-Mode para acessar todos os ativos."
+      },
+      "list": {
+        "headers": {
+          "my_balance": "Meu Saldo",
+          "token_balance": "Token/Saldo",
+          "token": "Token",
+          "my_assets": "Meus Ativos",
+          "mySupplies": "Meus suprimentos",
+          "myBorrows": "Meus empréstimos",
+          "token_tvl": "Token/TVL",
+          "totalBorrowed": "Total Emprestado"
+        },
+        "item": {
+          "wrapperToken": "Token embrulhado para {{name}}"
+        }
+      },
+      "repayDetail": {
+        "tabs": {
+          "collateral": "Colateral",
+          "wallet": "Saldo da carteira"
+        },
+        "actions": "Reembolsar",
+        "amountTitle": "Saldo: ",
+        "repayWith": "Pagar com",
+        "approveAndRepay": "Aprovar e Pagar de Volta"
+      },
+      "supplyDetail": {
+        "actions": "Fornecimento",
+        "amountTitle": "Disponível:",
+        "supplied": "Fornecido",
+        "enabled": "Ativado",
+        "availableToBorrow": "Disponível para emprestar",
+        "supplyAPY": "Taxa APY de Fornecimento",
+        "approveAndSupply": "Aprovar e Fornecer",
+        "supplyBalance": "Saldo de Fornecimento",
+        "collateralization": "Colateralização",
+        "isolatedTips": "Seus ativos de empréstimo/financiamento existentes não são suportados.",
+        "unavailable": "Indisponível"
+      },
+      "withdrawDetail": {
+        "actions": "Retirar",
+        "amountTitle": "Saldo:",
+        "remainingSupply": "Suprimento restante"
+      },
+      "toggleCollateralDetail": {
+        "actions": "Alternar {{asset}} Colateral",
+        "disable": "Desativar {{asset}} como Colateral",
+        "enable": "Habilitar {{asset}} como Colateral",
+        "error": "Ocorreu um erro com o serviço AAVE. Por favor, tente novamente mais tarde."
+      },
+      "toggleCollateralModal": {
+        "toggleRiskTexts": {
+          "doNotHaveSuppliesInThisCurrency": "Você não possui suprimentos nesta moeda",
+          "canNotSwitchUsageAsCollateralMode": "Você não pode mudar o uso como modo de colateral para esta moeda, porque isso causará uma chamada de colateral.",
+          "zeroLTVWithdrawBlocked": "Ativos com LTV zero ({{assets}}) devem ser retirados ou desativados como garantia para realizar esta ação.",
+          "canNotUseThisCurrencyAsCollateral": "Você não pode usar esta moeda como colateral."
+        },
+        "openTitle": "Revisão Habilitando",
+        "closeTitle": "Revisar Desativação",
+        "exitIsolationModeDesc": "Você sairá do modo de Isolamento e outros tokens podem agora ser usados como garantia.",
+        "enableIsolationModeTitle": "Ativar Modo de Isolamento",
+        "exitIsolationModeTitle": "Sair do Modo de Isolamento",
+        "riskToLiquidationText": "Você não pode mudar o uso para o modo de colateral para esta moeda, pois isso causará uma chamada de colateral.",
+        "closeDesc": "Desabilitar este ativo como colateral afeta seu poder de empréstimo e seu Fator de Saúde.",
+        "openDesc": "Ativar este ativo como colateral aumenta seu poder de empréstimo e Fator de Saúde. No entanto, ele pode ser liquidado se seu fator de saúde cair abaixo de 1.",
+        "enableIsolationModeDesc": "Você está entrando no modo de Isolamento. No modo de Isolamento, você não pode fornecer outros ativos como garantia. Um teto global de dívida limita o poder de empréstimo do ativo isolado. Para sair do modo de isolamento, desative o CRV como garantia antes de emprestar outro ativo."
+      },
+      "borrowDetail": {
+        "swapDebt": "Troca",
+        "actions": "Emprestar",
+        "approveAndBorrow": "Aprovar e Emprestar",
+        "amountTitle": "Disponível:",
+        "borrowed": "Emprestado",
+        "almostReachedError": "O valor máximo disponível para empréstimo é limitado porque o limite de empréstimo do protocolo está quase atingido.",
+        "almostReachedWarning": "O limite de empréstimo do protocolo está em 100% para este ativo. Mais empréstimos indisponíveis."
+      },
+      "popup": {
+        "title": "Visão Geral da Transação",
+        "liquidationAt": "Liquidação a < 1.0",
+        "amount": "Quantidade",
+        "remainingDebt": "Dívida restante",
+        "available": "disponível"
+      },
+      "borrowOverview": {
+        "myBorrow": "Meu Empréstimo",
+        "totalBorrowed": "Total Emprestado",
+        "title": "Detalhes do Empréstimo",
+        "liquidityPenalty": "Penalização de Liquidação",
+        "borrowCap": "Limite de Empréstimo",
+        "availableToBorrow": "Disponível para emprestar",
+        "reachCapTip": "Este ativo atingiu o limite de empréstimo."
+      },
+      "supplyOverview": {
+        "mySupply": "Meu Fornecimento",
+        "walletBalance": "Saldo da Carteira",
+        "title": "Detalhes da Oferta",
+        "availableToSupply": "Disponível para Fornecer",
+        "collateral": "Colateral",
+        "useAsCollateral": "Utilizar como colateral",
+        "almostCap": "Este ativo quase atingiu seu limite de empréstimo. Existem apenas {{available}} disponíveis para serem emprestados deste mercado.",
+        "noBalance": "Sem saldo",
+        "reachCap": "Este ativo atingiu seu limite de fornecimento. Nada está disponível para ser fornecido a partir deste mercado.",
+        "totalSupplied": "Total Fornecido"
+      },
+      "risk": {
+        "withdrawWarning": "Retirar esse valor reduzirá seu Fator de Saúde para um nível arriscado para liquidação.",
+        "warning": "Pegar este valor irá baixar seu Fator de Saúde para um nível arriscado para liquidação.",
+        "toggleCollateralWarning": "Desativar este ativo como colateral reduzirá seu Fator de Saúde para um nível arriscado para liquidação.",
+        "checkbox": "Entendo o alerta e quero continuar.",
+        "emodeBlockWarning": "Desabilitar o E-mode fará com que seu Fator de Saúde caia para um nível arriscado para liquidação.",
+        "blockEmodeWarning": "Você não pode desativar o E-Mode porque isso pode causar liquidação. Para sair do E-Mode, forneça ou reembolse posições emprestadas."
+      },
+      "lqDescription": {
+        "desc": "Valor de liquidação",
+        "risky": "Arriscado",
+        "over3title": "Fator de saúde > 3.0:",
+        "liquidationTitle": "Liquidação:",
+        "over3desc": "Suas posições estão seguras",
+        "below1desc": "A sua posição está em risco de liquidação.",
+        "introText": "Seu Fator de Saúde mostra quão segura está sua posição de empréstimo. Se cair muito, seu colateral pode ser liquidado.",
+        "below1title": "Fator de Saúde ≤ 1.0:",
+        "warningText": "Seu Fator de Saúde está muito baixo. Para evitar liquidação:\n1. Reembolse parte ou toda a sua dívida\n2. Adicione mais colateral",
+        "liquidation": "Se o seu Fator de Saúde cair abaixo de 1.0, parte da sua garantia pode ser automaticamente vendida para quitar a dívida. Uma penalidade de liquidação será aplicada, resultando em uma perda parcial da sua garantia."
+      },
+      "modalDesc": {
+        "availableToBorrow": "Disponível para emprestar",
+        "isolatedSupplyDesc": "O uso de colateral é limitado devido ao modo de isolamento.",
+        "isolatedTitle": "O ativo não pode ser utilizado como colateral.",
+        "availableToBorrowDesc": "Você pode pegar emprestado com base na sua garantia fornecida e até que o limite de empréstimo seja alcançado.",
+        "maxLTV": "O índice máximo de LTV representa o máximo poder de empréstimo de uma garantia específica. Por exemplo, se uma garantia tiver um LTV de 75%, o usuário pode emprestar até 0,75 em valor de ETH na moeda principal para cada 1 ETH em valor de garantia.",
+        "lqDesc": "Quando ocorre uma liquidação, os liquidadores reembolsam até 50% do valor emprestado em aberto em nome do tomador. Em troca, eles podem comprar a garantia com desconto e manter a diferença (multa de liquidação) como um bônus.",
+        "globalIsolatedDesc": "No modo de Isolamento, você não pode fornecer outros ativos como garantia. Um teto de dívida global limita o poder de empréstimo do ativo isolado. Para sair do modo de isolamento, desative o UNI como garantia antes de emprestar outro ativo.",
+        "isolatedDesc": "Este ativo pode ser utilizado apenas como garantia em modo de isolamento, onde você não pode fornecer outras garantias de ativos para empréstimos. Ativos usados como garantia em modo de isolamento só podem ser emprestados até um teto específico de dívida.",
+        "maxAmount": "Este é o valor máximo que você pode emprestar com base em todo o seu colateral fornecido. Seu poder total de empréstimo é calculado multiplicando o valor de mercado de cada ativo colateral pelo seu Max LTV, e depois somando os resultados."
+      },
+      "repayWithAToken": {
+        "header": {
+          "assets": "Token",
+          "balance": "Saldo"
+        },
+        "title": "Selecione o Token de Reembolso"
+      },
+      "manageEmode": {
+        "actions": {
+          "disable": "Desativar E-Mode",
+          "enable": "Ativar E-Mode"
+        },
+        "guide": {
+          "buttonTitle": "Gerenciar E-Mode",
+          "description": "E-Mode aumenta seu LTV para uma categoria de ativos selecionada.",
+          "title": "Modo de Eficiência (E-Mode)"
+        },
+        "categorySelector": {
+          "header": {
+            "asset": "Ativos"
+          },
+          "placeholder": "Selecionar",
+          "label": "Categoria de ativo",
+          "desc": "Todas as posições de empréstimo fora desta categoria devem ser fechadas para permitir esta categoria."
+        },
+        "debtSwapSelector": {
+          "header": {
+            "borrow": "Meus empréstimos",
+            "assets": "Token/Saldo"
+          },
+          "title": "Selecione o Token de Empréstimo"
+        },
+        "collateralSwapSelector": {
+          "header": {
+            "collateral": "Meu colateral",
+            "assets": "Token"
+          },
+          "title": "Selecionar Token de Colateral"
+        },
+        "overview": {
+          "row": {
+            "asset": "Ativo",
+            "borrowable": "Empréstimo disponível",
+            "collateral": "Garantia"
+          },
+          "title": "Categoria de ativo"
+        },
+        "title": "Gerenciar E-Mode",
+        "enabled": "• Ativado",
+        "unavailable": "• Indisponível",
+        "disableTitle": "Desativar",
+        "unavailableTips": "Seus ativos atuais de empréstimo/borrowing não são suportados.",
+        "description": "Habilitar o E-Mode permite que você maximize seu poder de empréstimo. No entanto, o empréstimo é restrito a ativos dentro da categoria selecionada."
+      },
+      "debtSwap": {
+        "actions": {
+          "swapTo": "Trocar por",
+          "borrowed": "Emprestado",
+          "select": "Selecionar",
+          "amount": "Quantidade",
+          "title": "Troca de Dívida"
+        },
+        "overview": {
+          "title": "Visão Geral da Transação",
+          "borrowAPY": "Empréstimo apy",
+          "borrowValueAfter": "Saldo emprestado após a troca"
+        },
+        "button": {
+          "swap": "Trocar"
+        },
+        "title": "Trocar Posição de Empréstimo",
+        "entryTips": "Um clique para trocar seu ativo emprestado, reduzindo etapas e taxas.",
+        "borrowBalance": "Saldo emprestado",
+        "lpRiskWarning": "Fator de saúde baixo após a troca. Sua posição terá um maior risco de liquidação.",
+        "priceImpactTips": "Alto impacto de preço ({{lostValue}}). Esta rota pode retornar mais devido à baixa liquidez ou ao pequeno tamanho do pedido.",
+        "lpDangerWarning": "Seu fator de saúde após esta troca estará criticamente baixo e pode resultar em liquidação. Por favor, escolha um ativo diferente ou reduza o valor da troca para se manter seguro."
+      },
+      "repayWithCollateral": {
+        "action": {
+          "title": "Reembolsar com {{collateral}}"
+        },
+        "overview": {
+          "borrowValueAfter": "Saldo de empréstimo após o reembolso",
+          "title": "Visão Geral da Transação",
+          "collateralValueAfter": "Saldo de colateral após reembolso"
+        },
+        "button": {
+          "repay": "Reembolsar"
+        },
+        "repayWith": "Colateral para reembolso com",
+        "collateralNotEnough": "Seu saldo de colateral é inferior ao valor selecionado.",
+        "toRepay": "Quantia esperada a ser reembolsada"
+      },
+      "hfTips": {
+        "more": "Mais",
+        "desc": "Se cair abaixo de 1.0, sua garantia pode ser liquidada."
+      },
+      "disableBorrowTip": {
+        "desc": "Sem oferta: Para emprestar, você precisa fornecer ativos como colateral.",
+        "noSupply": "Forneça ativos primeiro para habilitar o empréstimo."
+      },
+      "type": {
+        "supplied": "Fornecido",
+        "borrowed": "Emprestado"
+      },
+      "actions": {
+        "withdraw": "Retirar",
+        "borrow": "Pegar emprestado",
+        "supply": "Suprimento",
+        "repay": "Reembolsar",
+        "swap": "Trocar"
+      },
+      "summary": {
+        "empty": {
+          "title": "Ganhe juros com seus ativos",
+          "description": "Impulsionado por AAVE. Seguro e sem taxas.",
+          "endDesc": "Você ainda não tem depósitos. Confira abaixo os ativos recomendados para começar a ganhar juros."
+        },
+        "eMode": "E-Mode",
+        "netWorth": "Valor Líquido",
+        "totalBorrowed": "Total Emprestado",
+        "healthFactorTip": "O fator de saúde indica a segurança da sua posição",
+        "healthFactor": "Fator de Saúde",
+        "totalSupplied": "Total Fornecido",
+        "more": "Mais",
+        "healthy": "Saudável",
+        "risky": "Arriscado",
+        "estDailyEarnings": "Est Ganhos Diários",
+        "netApy": "APY Líquido",
+        "ethCorrelatedTip": "Ativos correlacionados com ETH",
+        "lq": "Se cair abaixo de 1, a liquidação pode ser acionada."
+      },
+      "market": {
+        "core": "Mercado Principal"
+      },
+      "accountActions": {
+        "both": "Ambos",
+        "supply": "Fornecimento",
+        "borrow": "Emprestar"
+      },
+      "table": {
+        "type": "Tipo",
+        "myAssets": "Meus ativos",
+        "actions": "Ações",
+        "collateral": "Colateral",
+        "token": "Token"
+      },
+      "supplyList": {
+        "collapse": "Colapso",
+        "more": "Mais tokens para fornecer"
+      },
+      "borrowList": {
+        "more": "Mais tokens para emprestar",
+        "collapse": "Colapso"
+      },
+      "submitted": "enviado",
+      "netWorth": "Valor líquido",
+      "supplied": "Fornecido",
+      "totalBorrowed": "Total emprestado",
+      "borrowApy": "Empréstimo APY",
+      "supplyBalance": "Saldo de Suprimento",
+      "estDailyEarning": "Est.Ganho Diário",
+      "gotIt": "Entendi",
+      "totalSupply": "Oferta Total",
+      "supplyApy": "APY de Fornecimento",
+      "totalSupplied": "Total fornecido",
+      "borrowed": "Emprestado",
+      "netApy": "APY líquido",
+      "title": "Empréstimo",
+      "totalBorrow": "Total Borrow",
+      "noData": "Sem dados",
+      "borrowBalance": "Saldo Emprestado",
+      "isolateTip": "Este é um mercado isolado",
+      "isolate": "isolado",
+      "estNetApy": "Est. net APY",
+      "enterAmount": "Digite o Montante",
+      "hfTitle": "Fator de Saúde",
+      "selectChain": "Selecionar Cadeia",
+      "selectMarket": "Selecionar Mercado",
+      "searchMarket": "Pesquisar Mercado",
+      "disabled": "DESABILITADO",
+      "hf": "Fator de saúde"
     }
   },
   "component": {
@@ -4009,6 +4352,9 @@
       "title": "Este é um token de provedor de liquidez (LP)",
       "description": "Os tokens LP são emitidos pelos protocolos DeFi onde você depositou seus ativos. Eles servem como prova desses ativos, mas seu valor não está incluído no seu saldo total.",
       "descriptionFor": "Este é um Token de Provedor de Liquidez (LP) para {{ protocolName }}"
+    },
+    "DesktopAccountSelector": {
+      "selectAddress": "Selecionar Endereço"
     }
   },
   "global": {

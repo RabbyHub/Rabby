@@ -1131,7 +1131,9 @@
           "settings": "Ayarlar",
           "perpsPositions_one": "{{count}} Pozisyon",
           "perpsPositions_other": "{{count}} Pozisyonlar",
-          "prediction": "Tahmin"
+          "prediction": "Tahmin",
+          "lending": "Kredi Verme",
+          "dragTip": "Uzun basma özelliği ile sıralama"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -3032,7 +3034,9 @@
           "hideProtocolsWithSmallDeposits": "Küçük bakiye ile protokolleri gizle.",
           "tokensWithZeroBalanceDesc": "$0 bakiyesi olan tokenlar gizlenmiştir.",
           "hideDefiWithSmallDeposits": "Küçük yatırımlarla Defi'leri gizle.",
-          "hideDefiWithSmallDepositsDesc": "Küçük yatırımlarla yapılan Defi'ler görüntülenmez."
+          "hideDefiWithSmallDepositsDesc": "Küçük yatırımlarla yapılan Defi'ler görüntülenmez.",
+          "hideDeFiWithSmallDepositsDesc": "Küçük yatırımlarla DeFi'ler görüntülenmez.",
+          "hideDeFiWithSmallDeposits": "Küçük yatırımlarla DeFi'leri gizle."
         },
         "table": {
           "token": "Jeton",
@@ -3151,7 +3155,9 @@
       "reload": "Yenileştir",
       "networkErrorTitle": "Bu siteye ulaşılamıyor.",
       "networkErrorDescription": "{{site}} beklenmedik bir şekilde bağlantıyı kapattı. Lütfen ağınızı kontrol edin.",
-      "networkErrorDescriptionFallback": "Site beklenmedik bir şekilde bağlantıyı kapattı. Lütfen ağınızı kontrol edin."
+      "networkErrorDescriptionFallback": "Site beklenmedik bir şekilde bağlantıyı kapattı. Lütfen ağınızı kontrol edin.",
+      "serviceNotSupported": "Hizmet, mevcut bölgenizde desteklenmiyor.",
+      "opening": "Açılıyor {{name}}..."
     },
     "perps": {
       "closeAllPopup": {
@@ -3269,7 +3275,8 @@
         "feeTipTooltip": "Hyperliquid tarafından tahsil edilen para çekme ücreti: $1",
         "estReceiveLabel": "Tahmini Alınacak",
         "goBridgeTips": "Arbitrum üzerinde doğrudan yatırma için yalnızca USDC desteklenir. Yatırmadan önce mevcut tokeninizi Arbitrum'daki USDC'ye köprüleyin.",
-        "estReceiveTooltip": "Çapraz zincir mevduatı LiFi üzerinden işlenir, bazı kaymalar meydana gelebilir. {{number}} saniye içinde varış tahmini."
+        "estReceiveTooltip": "Çapraz zincir mevduatı LiFi üzerinden işlenir, bazı kaymalar meydana gelebilir. {{number}} saniye içinde varış tahmini.",
+        "hyperliquidFeeLabelTooltip": "Yeni kullanıcılar Hyperliquid tarafından tek seferlik bir etkinleştirme ücreti öder."
       },
       "home": {
         "entryPrice": "Giriş Fiyatı",
@@ -3630,7 +3637,9 @@
         "liquidationPrice": "Likidasyon Fiyatı",
         "runtimeTips": "(5 dk - 24 saat)",
         "buyLong": "Satın Al / Uzun Pozisyon",
-        "enableTrading": "Süresiz Vadeli İşlemleri Etkinleştir"
+        "enableTrading": "Süresiz Vadeli İşlemleri Etkinleştir",
+        "addFundsToGetStarted": "Fon ekleyin ve başlayın",
+        "deposit": "Teminat Deposito"
       },
       "marginMode": {
         "title": "Marjin Modu",
@@ -3679,14 +3688,16 @@
         "crossAccountLeverageTips": "Çapraz Hesap Kaldıraç Oranı = Toplam Çapraz Pozisyon Değeri / Çapraz Hesap Değeri",
         "accountEquity": "Hesap Özsermayesi",
         "crossMarginRatioTips": "Bakım Marjı / Portföy Değeri. Çapraz pozisyonlarınız, Marj Oranı yüzde 100'e ulaştığında tasfiye edilecektir.",
-        "accountEquityTip": "Bakiye + Gerçekleşmemiş Kâr/Zarar (tüm pozisyonlar kapatıldığında yaklaşık hesap değeri)"
+        "accountEquityTip": "Bakiye + Gerçekleşmemiş Kâr/Zarar (tüm pozisyonlar kapatıldığında yaklaşık hesap değeri)",
+        "available": "Mevcut:"
       },
       "accountActions": {
         "pending": "Beklemede",
         "available": "Kullanılabilir",
         "deposit": "Yatır",
         "positionCount": "{{count}} pozisyonlar",
-        "onePosition": "1 pozisyon"
+        "onePosition": "1 pozisyon",
+        "availableBalanceTips": "Mevcut Fonlar"
       },
       "orderBook": {
         "total": "Toplam",
@@ -3700,6 +3711,13 @@
         "viewBoth": "İkisi de",
         "viewAsks": "Satış Teklifleri",
         "viewBids": "Alım Emirleri"
+      },
+      "editMargin": {
+        "title": "Marjini Yönetimi",
+        "shortLiquidationTips": "Yükselme {{percent}} likidasyonu tetikleyecektir.",
+        "configureMargin": "Marjin Ayarla",
+        "longLiquidationTips": "{{percent}} düşmek tasfiye işlemini tetikleyecektir.",
+        "currentPosition": "Mevcut Pozisyon"
       }
     },
     "perpsDetail": {
@@ -3794,6 +3812,331 @@
         "takeProfitExpectedPNL": "Kâr Al Beklenen PnL"
       },
       "needDepositFirst": "Öncelikle fonları yatırmanız gerekir."
+    },
+    "lending": {
+      "availableCard": {
+        "canBorrow": "Temin ettiğiniz teminat bazında, borç limiti kadar borç alabilirsiniz.",
+        "emodeNoAssets": "Aramanıza uygun hiçbir varlık bulamadık. Farklı bir kategori ile tekrar deneyin.",
+        "singleAssetUnavailableForEmode": "Kullanılamaz. E-Mode'dan çıkın.",
+        "needSupply": "Borç almak için, teminat olarak varlık sağlamanız gerekir.",
+        "emode": "E-Mod’da bazı varlıklar borç alınamaz. Tüm varlıklara erişmek için E-Mod’dan çıkın."
+      },
+      "list": {
+        "headers": {
+          "totalBorrowed": "Toplam Borçlanan",
+          "token_tvl": "Token/TVL",
+          "mySupplies": "Benim kaynaklarım",
+          "token_balance": "Token/Bakiye",
+          "my_balance": "Bakiyem",
+          "my_assets": "Varlıklarım",
+          "myBorrows": "Borçlarım",
+          "token": "Token"
+        },
+        "item": {
+          "wrapperToken": "{{name}} için Wrapped token"
+        }
+      },
+      "repayDetail": {
+        "tabs": {
+          "wallet": "Cüzdan bakiyesi",
+          "collateral": "Teminat"
+        },
+        "actions": "Geri Ödeme",
+        "repayWith": "İade etmek için",
+        "amountTitle": "Bakiye: ",
+        "approveAndRepay": "Onayla ve Geri Öde"
+      },
+      "supplyDetail": {
+        "supplied": "Verilen",
+        "actions": "Arz ",
+        "amountTitle": "Mevcut:",
+        "availableToBorrow": "Borrow edilebilir",
+        "collateralization": "Teminatlandırma",
+        "enabled": "Etkinleştirildi",
+        "supplyBalance": "Sağlama Bakiyesi",
+        "unavailable": "Kullanılamıyor",
+        "approveAndSupply": "Onayla ve Tedarik Et",
+        "supplyAPY": "Talep APY",
+        "isolatedTips": "Mevcut borç verme/borç alma varlıklarınız desteklenmiyor."
+      },
+      "withdrawDetail": {
+        "amountTitle": "Bakiyeniz:",
+        "remainingSupply": "Kalan arz",
+        "actions": "Çekmek"
+      },
+      "toggleCollateralDetail": {
+        "error": "AAVE hizmetinde bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+        "actions": "{{asset}} Teminatını Değiştir",
+        "disable": "{{asset}}'i Teminat Olarak Devre Dışı Bırak",
+        "enable": "{{asset}}'i Teminat Olarak Etkinleştir"
+      },
+      "toggleCollateralModal": {
+        "toggleRiskTexts": {
+          "canNotUseThisCurrencyAsCollateral": "Bu para birimini teminat olarak kullanamazsınız.",
+          "doNotHaveSuppliesInThisCurrency": "Bu para biriminde yeterli arzınız yok.",
+          "canNotSwitchUsageAsCollateralMode": "Bu para birimini teminat modu olarak değiştiremezsiniz, çünkü bu teminat araması yapar.",
+          "zeroLTVWithdrawBlocked": "Sıfır LTV'ye sahip varlıklar ({{assets}}) bu işlemi gerçekleştirmek için teminat olarak çekilmeli veya devre dışı bırakılmalıdır."
+        },
+        "exitIsolationModeTitle": "Yalnızlık Modundan Çıkış",
+        "closeTitle": "Gözden Geçirme Devre Dışı Bırakma",
+        "exitIsolationModeDesc": "İzole modundan çıkacaksınız ve diğer token'lar şimdi teminat olarak kullanılabilir.",
+        "enableIsolationModeTitle": "İzolasyon Modunu Etkinleştir",
+        "openTitle": "Gözden Geçirme Etkinleştirme",
+        "riskToLiquidationText": "Bu para birimi için teminat modu olarak kullanımı değiştiremezsiniz, çünkü bu teminat çağrısına neden olur.",
+        "closeDesc": "Bu varlığı teminat olarak devre dışı bırakmak, borçlanma gücünüzü ve Sağlık Faktörünü etkiler.",
+        "openDesc": "Bu varlıkları teminat olarak kullanmak, borçlanma gücünüzü ve Sağlık Faktörünüzü artırır. Ancak, sağlık faktörünüz 1'in altına düşerse tasfiye edilebilir.",
+        "enableIsolationModeDesc": "İzole moda giriyorsunuz. İzole modda, diğer varlıkları teminat olarak sağlayamazsınız. Küresel bir borç tavanı, izole olan varlığın borçlanma gücünü sınırlar. İzole moddan çıkmak için başka bir varlık borçlanmadan önce CRV'yi teminat olarak devre dışı bırakın."
+      },
+      "borrowDetail": {
+        "actions": "Ödünç Al",
+        "swapDebt": "Değiştir",
+        "approveAndBorrow": "Onayla ve Borç Al",
+        "borrowed": "Ödünç Alınan",
+        "amountTitle": "Mevcut:",
+        "almostReachedWarning": "Protokol borç limiti bu varlık için %100'dür. Ek borç alma mümkün değildir.",
+        "almostReachedError": "Borç alabileceğiniz maksimum miktar, protokol borç limiti neredeyse ulaşıldığı için sınırlıdır."
+      },
+      "popup": {
+        "amount": "Miktar",
+        "title": "İşlem Genel Görünümü",
+        "remainingDebt": "Kalan borç",
+        "available": "mevcut",
+        "liquidationAt": "1.0'da likidasyon"
+      },
+      "borrowOverview": {
+        "myBorrow": "Benim Borç Alım",
+        "title": "Borrow Detayları",
+        "totalBorrowed": "Toplam Borçlanan",
+        "borrowCap": "Kredi Limiti",
+        "availableToBorrow": "Ödünç Alınabilir",
+        "liquidityPenalty": "Tasfiye Cezası",
+        "reachCapTip": "Bu varlık borç limitiye ulaştı."
+      },
+      "supplyOverview": {
+        "totalSupplied": "Toplam Sağlanan",
+        "title": "Arz Sağlayıcı Bilgileri",
+        "collateral": "Teminat",
+        "noBalance": "Bakiyeniz yok",
+        "mySupply": "Benim Arzım",
+        "useAsCollateral": "Teminat olarak kullanın",
+        "walletBalance": "Cüzdan Bakiyesi",
+        "reachCap": "Bu varlık arz sınırına ulaştı. Bu piyasadan sağlanacak hiçbir şey yok.",
+        "availableToSupply": "Temin Sunulan",
+        "almostCap": "Bu varlık neredeyse borç sınırına ulaştı. Bu piyasadan borç alabileceğiniz yalnızca {{available}} mevcut."
+      },
+      "risk": {
+        "withdrawWarning": "Bu miktarı çekmek, Sağlık Faktörünüzü likidasyon için riskli bir seviyeye düşürecektir.",
+        "toggleCollateralWarning": "Bu varlığı teminat olarak devre dışı bırakmak Sağlık Faktörünüzü likidasyon riski taşıyan bir seviyeye düşürecektir.",
+        "warning": "Bu miktarı borç almak, Sağlık Faktörünüzü likidasyon için riskli bir seviyeye düşürecektir.",
+        "emodeBlockWarning": "E-modunun devre dışı bırakılması, Health Factor'ınızı tasfiye için riskli bir seviyeye düşürecektir.",
+        "checkbox": "Uyarıyı anlıyorum ve devam etmek istiyorum.",
+        "blockEmodeWarning": "E-Mode'u devre dışı bırakamazsınız çünkü bu tasfiyeye neden olabilir. E-Mode'dan çıkmak için alım veya borçlu pozisyonları geri ödemeniz gerekir."
+      },
+      "lqDescription": {
+        "risky": "Risky",
+        "desc": "Tasfiye değeri",
+        "below1desc": "Pozisyonunuz likidasyon riski altındadır.",
+        "over3desc": "Pozisyonlarınız güvende.",
+        "over3title": "Sağlık faktörü > 3.0:",
+        "below1title": "Sağlık Faktörü ≤ 1.0:",
+        "introText": "Sağlık Faktörünüz, borçlanma pozisyonunuzun ne kadar güvenli olduğunu gösterir. Eğer çok düşük bir seviyeye inerse, teminatınız tasfiye edilebilir.",
+        "warningText": "Sağlık Faktörünüz çok düşük. Tasfiye önlemek için:\n1. Kredinizin bir kısmını veya tamamını geri ödeyin\n2. Daha fazla teminat ekleyin",
+        "liquidationTitle": "Tasfiye:",
+        "liquidation": "Eğer Sağlık Faktörünüz 1.0'ın altına düşerse, teminatınızın bir kısmı borcu ödemek için otomatik olarak satılabilir. Bir likidasyon cezası uygulanacak ve bu da teminatınızın bir kısmının kaybına neden olacaktır."
+      },
+      "modalDesc": {
+        "availableToBorrow": "Mevcut borç alacak",
+        "isolatedTitle": "Varlık teminat olarak kullanılamaz.",
+        "isolatedSupplyDesc": "Teminat kullanımı izolasyon modu nedeniyle sınırlıdır.",
+        "availableToBorrowDesc": "Temin sağladığınız teminat temelinde borç alabilir ve borç limiti ulaşılana kadar borç alabilirsiniz.",
+        "isolatedDesc": "Bu varlık yalnızca izolasyon modunda teminat olarak kullanılabilir; burada borç almak için başka varlık teminatı sağlayamazsınız. İzolasyon modunda teminat olarak kullanılan varlıklar yalnızca belirli bir borç tavanına kadar borç alınabilir.",
+        "maxLTV": "Maksimum LTV oranı, belirli bir teminatın maksimum borçlanma gücünü temsil eder. Örneğin, bir teminatın LTV'si %75 ise, kullanıcı her 1 ETH değerindeki teminat için ana para para biriminde 0,75 değerinde ETH borç alabilir.",
+        "globalIsolatedDesc": "İzole modda, diğer varlıkları teminat olarak sağlayamazsınız. Küresel borç limiti, izole varlığın borçlanma gücünü sınırlar. İzole moddan çıkmak için, başka bir varlık borçlanmadan önce UNI'yi teminat olarak devre dışı bırakın.",
+        "maxAmount": "Bu, sağlanan tüm teminatlarınıza dayalı olarak borç alabileceğiniz maksimum tutardır. Toplam borç alma gücünüz, her teminat varlığının piyasa değeri ile Max LTV'sini çarparak ve ardından sonuçları toplayarak hesaplanır.",
+        "lqDesc": "Bir tasfiye gerçekleştiğinde, tasfiye ediciler borçlu adına borçlu miktarın %50'sine kadar olan kısmı geri öderler. Bunun karşılığında, teminatı indirimli bir fiyattan satın alabilirler ve farkı (tasfiye cezası) bonus olarak alabilirler."
+      },
+      "repayWithAToken": {
+        "header": {
+          "balance": "Bakiyeniz",
+          "assets": "Jeton"
+        },
+        "title": "Geri Ödeme Tokeni Seçin"
+      },
+      "manageEmode": {
+        "actions": {
+          "enable": "E-Modu'nu Etkinleştir",
+          "disable": "E-Mode'u Devre Dışı Bırak"
+        },
+        "guide": {
+          "buttonTitle": "E-Modu Yönetimi",
+          "description": "E-Mode, seçilen varlık kategorisi için LTV'nizi artırır.",
+          "title": "Verimlilik modu (E-Modu)"
+        },
+        "categorySelector": {
+          "header": {
+            "asset": "Varlıklar"
+          },
+          "placeholder": "Seçin",
+          "label": "Varlık kategorisi",
+          "desc": "Bu kategoriyi etkinleştirmek için bu kategorinin dışındaki tüm borç pozisyonları kapatılmalıdır."
+        },
+        "debtSwapSelector": {
+          "header": {
+            "borrow": "Borçlarım",
+            "assets": "Token/Bakiye"
+          },
+          "title": "Borç Alma Token'ını Seçin"
+        },
+        "collateralSwapSelector": {
+          "header": {
+            "assets": "Token",
+            "collateral": "Teminatım"
+          },
+          "title": "Teminat Token Seçin"
+        },
+        "overview": {
+          "row": {
+            "collateral": "Teminat",
+            "borrowable": "Borç Alınabilir",
+            "asset": "Varlık"
+          },
+          "title": "Varlık kategorisi"
+        },
+        "title": "E-Mode'u Yönet",
+        "disableTitle": "Devre dışı bırak",
+        "enabled": "• Etkinleştirildi",
+        "unavailableTips": "Mevcut borç verme/borç alma varlıklarınız desteklenmiyor.",
+        "unavailable": "• Kullanılamaz",
+        "description": "E-Modu'nu etkinleştirmek, borçlanma gücünüzü maksimize etmenizi sağlar. Ancak, borçlanma, seçilen kategori içindeki varlıklarla sınırlıdır."
+      },
+      "debtSwap": {
+        "actions": {
+          "borrowed": "Kullanılan",
+          "swapTo": "Değiştir",
+          "amount": "Miktar",
+          "select": "Seçin",
+          "title": "Borç Değişimi"
+        },
+        "overview": {
+          "title": "İşlem Genel Görünümü",
+          "borrowAPY": "Borç apy",
+          "borrowValueAfter": "Takastan sonra borç bakiyesi"
+        },
+        "button": {
+          "swap": "Değişim"
+        },
+        "title": "Swap Borç Pozisyonu",
+        "borrowBalance": "Borç bakiyesi",
+        "entryTips": "Bir tıklamayla ödünç aldığınız varlığı değiştirin, adımları ve ücretleri azaltın.",
+        "lpRiskWarning": "Takastan sonra düşük sağlık faktörü. Pozisyonunuz likidasyon riski taşımaktadır.",
+        "priceImpactTips": "Yüksek fiyat etkisi ({{lostValue}}). Bu rota, düşük likidite veya küçük sipariş boyutu nedeniyle daha fazla getirebilir.",
+        "lpDangerWarning": "Bu takas sonrası sağlık faktörünüz kritik derecede düşük olacak ve likidasyona yol açabilir. Lütfen farklı bir varlık seçin veya güvenli kalmak için takas miktarını azaltın."
+      },
+      "repayWithCollateral": {
+        "action": {
+          "title": "{{teminat}} ile geri ödeme yap"
+        },
+        "overview": {
+          "collateralValueAfter": "Geri ödeme sonrasında teminat bakiyesi",
+          "title": "İşlem Genel Bakışı",
+          "borrowValueAfter": "Geri ödenmiş borç bakiyesi"
+        },
+        "button": {
+          "repay": "Geri Ödeme"
+        },
+        "toRepay": "Beklenen geri ödeme miktarı",
+        "repayWith": "Geri ödenecek teminat",
+        "collateralNotEnough": "Teminat bakiyeniz seçilen tutardan daha düşük."
+      },
+      "hfTips": {
+        "more": "Daha fazlası",
+        "desc": "Eğer 1.0'ın altına düşerse, teminatınız tasfiye edilebilir."
+      },
+      "disableBorrowTip": {
+        "desc": "Temin yok: Borç almak için teminat olarak varlık sağlamanız gerekir.",
+        "noSupply": "Önce borçlanmayı sağlamak için varlıkları temin edin."
+      },
+      "type": {
+        "borrowed": "Ödünç Alınan",
+        "supplied": "Sağlanan"
+      },
+      "actions": {
+        "borrow": "Ödünç Al",
+        "swap": "Değiştir",
+        "supply": "Arz ",
+        "repay": "Geri Öde",
+        "withdraw": "Çekilmek"
+      },
+      "summary": {
+        "empty": {
+          "title": "Varlıklarınızla Faiz Kazanın",
+          "description": "AAVE tarafından desteklenmektedir. Güvenli ve sıfır ücrete sahip.",
+          "endDesc": "Henüz herhangi bir depozitonuz yok. Faiz kazanmaya başlamak için aşağıdaki önerilen varlıklara göz atın."
+        },
+        "eMode": "E-Modu",
+        "totalBorrowed": "Toplam Borçlanan",
+        "netWorth": "Net Worth",
+        "healthFactor": "Sağlık Faktörü",
+        "healthFactorTip": "Sağlık faktörü, pozisyonunuzun güvenliğini gösterir.",
+        "totalSupplied": "Toplam Sağlanan",
+        "netApy": "Net APY",
+        "healthy": "Sağlıklı",
+        "risky": "Risky",
+        "estDailyEarnings": "Günlük Tahmini Kazanç",
+        "ethCorrelatedTip": "ETH ile korelasyonlu varlıklar",
+        "lq": "Eğer 1'in altına düşerse, tasfiye tetiklenebilir.",
+        "more": "Daha fazla"
+      },
+      "market": {
+        "core": "Temel Pazar"
+      },
+      "accountActions": {
+        "borrow": "Ödünç Al",
+        "supply": "Tedari",
+        "both": "İkisi de"
+      },
+      "table": {
+        "collateral": "Teminat",
+        "actions": "Eylemler",
+        "token": "Token",
+        "myAssets": "Varlıklarım",
+        "type": "Türü"
+      },
+      "supplyList": {
+        "collapse": "Çöküş",
+        "more": "Daha fazla token temin etmek için"
+      },
+      "borrowList": {
+        "more": "Daha fazla borç alabileceğiniz tokenlar",
+        "collapse": "Çökmek"
+      },
+      "borrowApy": "Borç Alma APY",
+      "totalBorrow": "Toplam Borç",
+      "gotIt": "Anladım",
+      "totalBorrowed": "Toplam borç alınan",
+      "supplyBalance": "Solde Sağlama",
+      "supplyApy": "Sağlama APY",
+      "netApy": "Net APY",
+      "isolateTip": "Bu, izole bir piyasadır.",
+      "estDailyEarning": "Tahmini Günlük Kazanç",
+      "submitted": "gönderildi",
+      "supplied": "Temin edildi",
+      "borrowed": "Ödünç Alındı",
+      "netWorth": "Ağırlık Değeri",
+      "estNetApy": "Tahmini net APY",
+      "isolate": "izole edilmiş",
+      "title": "Borç Verme",
+      "totalSupply": "Toplam Arz",
+      "totalSupplied": "Toplam sağlanan",
+      "borrowBalance": "Borç Bakiyesi",
+      "noData": "Veri yok",
+      "disabled": "DEVRE Dışı",
+      "hfTitle": "Sağlık Faktörü",
+      "enterAmount": "Miktar Girin",
+      "selectMarket": "Piyasa Seçin",
+      "hf": "Sağlık faktörü",
+      "searchMarket": "Pazar Ara",
+      "selectChain": "Zincir Seçin"
     }
   },
   "component": {
@@ -4015,6 +4358,9 @@
       "title": "Bu bir likidite sağlayıcı (LP) tokenıdır.",
       "description": "LP token’lar, varlıklarınızı yatırdığınız DeFi protokolleri tarafından verilmektedir. Bunlar, bu varlıkların kanıtı olarak hizmet eder, ancak değeri toplam bakiyenize dahil değildir.",
       "descriptionFor": "Bu, {{ protocolName }} için bir Likidite Sağlayıcı (LP) Token'dır."
+    },
+    "DesktopAccountSelector": {
+      "selectAddress": "Adres Seçin"
     }
   },
   "global": {

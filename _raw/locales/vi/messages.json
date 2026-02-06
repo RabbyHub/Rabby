@@ -1222,7 +1222,9 @@
           "settings": "Cài đặt",
           "perpsPositions_other": "{{count}} Vị trí",
           "perpsPositions_one": "{{count}} Vị trí",
-          "prediction": "Dự đoán"
+          "prediction": "Dự đoán",
+          "lending": "Cho vay",
+          "dragTip": "Tính năng nhấn giữ để sắp xếp lại"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -3026,7 +3028,9 @@
           "hideProtocolsWithSmallDeposits": "Ẩn các giao thức có khoản nạp nhỏ.",
           "tokensWithZeroBalanceDesc": "Các token có số dư $0 sẽ bị ẩn.",
           "hideDefiWithSmallDepositsDesc": "Defis với số tiền gửi nhỏ không được hiển thị.",
-          "hideDefiWithSmallDeposits": "Ẩn Defis với các khoản tiền gửi nhỏ."
+          "hideDefiWithSmallDeposits": "Ẩn Defis với các khoản tiền gửi nhỏ.",
+          "hideDeFiWithSmallDeposits": "Ẩn DeFis với các khoản tiền gửi nhỏ.",
+          "hideDeFiWithSmallDepositsDesc": "DeFis với số tiền gửi nhỏ không được hiển thị."
         },
         "table": {
           "chain": "Chuỗi",
@@ -3145,7 +3149,9 @@
       "reload": "Tải lại",
       "networkErrorTitle": "Trang web này không thể truy cập.",
       "networkErrorDescriptionFallback": "Trang web đã đóng kết nối một cách bất ngờ. Vui lòng kiểm tra mạng của bạn.",
-      "networkErrorDescription": "{{site}} đã đóng kết nối một cách bất ngờ. Vui lòng kiểm tra mạng của bạn."
+      "networkErrorDescription": "{{site}} đã đóng kết nối một cách bất ngờ. Vui lòng kiểm tra mạng của bạn.",
+      "serviceNotSupported": "Dịch vụ không được hỗ trợ ở khu vực hiện tại của bạn.",
+      "opening": "Mở {{name}}..."
     },
     "perps": {
       "closeAllPopup": {
@@ -3263,7 +3269,8 @@
         "feeTip": "Phí $1",
         "goSwapTips": "Chỉ có USDC trên Arbitrum được hỗ trợ cho nạp ký quỹ trực tiếp. Vui lòng đổi token hiện tại của bạn sang USDC trước khi nạp ký quỹ.",
         "goBridgeTips": "Chỉ USDC trên Arbitrum được hỗ trợ cho việc nạp trực tiếp. Vui lòng bắc cầu token đang có của bạn sang USDC trên Arbitrum trước khi nạp tiền.",
-        "payWith": "Thanh toán bằng"
+        "payWith": "Thanh toán bằng",
+        "hyperliquidFeeLabelTooltip": "Người dùng mới sẽ bị tính phí kích hoạt một lần bởi Hyperliquid."
       },
       "home": {
         "margin": "Ký quỹ",
@@ -3624,7 +3631,9 @@
         "sellShort": "Bán khống",
         "aloTooLargeBuy": "Giá đặt lệnh phải thấp hơn giá chào bán tốt nhất.",
         "aloTooLargeSell": "Tất cả giá lệnh phải cao hơn giá mua tốt nhất.",
-        "currentPosition": "Vị trí hiện tại"
+        "currentPosition": "Vị trí hiện tại",
+        "deposit": "Nạp tiền",
+        "addFundsToGetStarted": "Thêm tiền để bắt đầu"
       },
       "marginMode": {
         "confirm": "Xác nhận",
@@ -3673,14 +3682,16 @@
         "crossAccountLeverage": "Đòn bẩy ký quỹ chéo giữa các tài khoản",
         "crossMarginRatioTips": "Ký quỹ duy trì / Giá trị danh mục đầu tư. Các vị thế ký quỹ chéo của bạn sẽ bị thanh lý nếu Tỷ lệ ký quỹ đạt 100%.",
         "unrealizedPnl": "Lợi nhuận và lỗ chưa thực hiện",
-        "crossAccountLeverageTips": "Đòn bẩy ký quỹ chéo = Tổng giá trị vị thế ký quỹ chéo / Giá trị tài khoản ký quỹ chéo."
+        "crossAccountLeverageTips": "Đòn bẩy ký quỹ chéo = Tổng giá trị vị thế ký quỹ chéo / Giá trị tài khoản ký quỹ chéo.",
+        "available": "Có sẵn:"
       },
       "accountActions": {
         "available": "Có sẵn",
         "pending": "Đang chờ xử lý",
         "positionCount": "{{count}} vị thế",
         "deposit": "Nạp ký quỹ",
-        "onePosition": "1 vị trí"
+        "onePosition": "1 vị trí",
+        "availableBalanceTips": "Số dư khả dụng"
       },
       "orderBook": {
         "viewBoth": "Cả hai",
@@ -3694,6 +3705,13 @@
         "markPrice": "Giá tham chiếu",
         "trades": "Giao dịch",
         "viewAsks": "Giá bán"
+      },
+      "editMargin": {
+        "longLiquidationTips": "Giảm {{percent}} sẽ kích hoạt việc thanh lý",
+        "currentPosition": "Vị trí hiện tại",
+        "configureMargin": "Cấu hình Biên độ",
+        "shortLiquidationTips": "Đi lên {{percent}} sẽ kích hoạt thanh lý",
+        "title": "Quản lý Margin"
       }
     },
     "perpsDetail": {
@@ -3788,6 +3806,330 @@
         "stopLossExpectedPNL": "Dừng lỗ PNL dự kiến"
       },
       "needDepositFirst": "Bạn cần nạp tiền ký quỹ trước."
+    },
+    "lending": {
+      "availableCard": {
+        "needSupply": "Để vay, bạn cần cung cấp tài sản làm tài sản thế chấp.",
+        "singleAssetUnavailableForEmode": "Không khả dụng để vay. Thoát khỏi E-Mode để truy cập.",
+        "canBorrow": "Bạn có thể vay dựa trên tài sản thế chấp mà bạn cung cấp, lên đến giới hạn vay.",
+        "emodeNoAssets": "Chúng tôi không tìm thấy bất kỳ tài sản nào liên quan đến tìm kiếm của bạn. Hãy thử lại với một danh mục khác.",
+        "emode": "Một số tài sản không có sẵn để vay trong E-Mode. Thoát E-Mode để truy cập tất cả tài sản."
+      },
+      "list": {
+        "headers": {
+          "myBorrows": "Các khoản vay của tôi",
+          "my_balance": "Số dư của tôi",
+          "token_balance": "Token/Số dư",
+          "mySupplies": "Nhà cung cấp của tôi",
+          "token": "Mã thông báo",
+          "totalBorrowed": "Tổng số đã vay",
+          "token_tvl": "Token/TVL",
+          "my_assets": "Tài sản của tôi"
+        },
+        "item": {
+          "wrapperToken": "Token được bọc cho {{name}}"
+        }
+      },
+      "repayDetail": {
+        "tabs": {
+          "collateral": "Tài sản thế chấp",
+          "wallet": "Số dư ví"
+        },
+        "actions": "Trả nợ",
+        "amountTitle": "Số dư:",
+        "approveAndRepay": "Chấp thuận và Trả nợ",
+        "repayWith": "Trả nợ bằng"
+      },
+      "supplyDetail": {
+        "amountTitle": "Có sẵn:",
+        "actions": "Cung cấp",
+        "supplied": "Cung cấp",
+        "enabled": "Đã bật",
+        "unavailable": "Không khả dụng",
+        "availableToBorrow": "Có sẵn để vay",
+        "supplyBalance": "Cung Cấp Cân Bằng",
+        "collateralization": "Đảm bảo tài sản",
+        "supplyAPY": "Cung cấp APY",
+        "approveAndSupply": "Phê duyệt và Cung cấp",
+        "isolatedTips": "Tài sản cho vay/mượn hiện có của bạn không được hỗ trợ."
+      },
+      "withdrawDetail": {
+        "remainingSupply": "Nguồn cung còn lại",
+        "amountTitle": "Số dư: ",
+        "actions": "Rút tiền"
+      },
+      "toggleCollateralDetail": {
+        "actions": "Chuyển đổi tài sản {{asset}} làm tài sản thế chấp",
+        "enable": "Kích hoạt {{asset}} làm Tài sản thế chấp",
+        "error": "Đã xảy ra lỗi với dịch vụ AAVE. Vui lòng thử lại sau.",
+        "disable": "Vô hiệu hóa {{asset}} làm Tài sản Thế chấp"
+      },
+      "toggleCollateralModal": {
+        "toggleRiskTexts": {
+          "canNotUseThisCurrencyAsCollateral": "Bạn không thể sử dụng loại tiền tệ này làm tài sản thế chấp.",
+          "doNotHaveSuppliesInThisCurrency": "Bạn không có nguồn cung trong loại tiền tệ này.",
+          "canNotSwitchUsageAsCollateralMode": "Bạn không thể chuyển đổi việc sử dụng chế độ ký quỹ cho loại tiền tệ này, vì điều đó sẽ gây ra cuộc gọi ký quỹ.",
+          "zeroLTVWithdrawBlocked": "Tài sản có LTV bằng 0 ({{assets}}) phải được rút hoặc vô hiệu hóa làm tài sản thế chấp để thực hiện hành động này."
+        },
+        "closeTitle": "Xem lại việc tắt",
+        "openTitle": "Xem lại Bật chức năng",
+        "exitIsolationModeTitle": "Thoát chế độ cách ly",
+        "enableIsolationModeTitle": "Kích hoạt Chế độ Isolate",
+        "exitIsolationModeDesc": "Bạn sẽ thoát khỏi chế độ cách ly và các token khác bây giờ có thể được sử dụng làm tài sản thế chấp.",
+        "closeDesc": "Việt ngữ: Việc vô hiệu hóa tài sản này làm tài sản thế chấp sẽ ảnh hưởng đến khả năng vay và Hệ số Sức khỏe của bạn.",
+        "riskToLiquidationText": "Bạn không thể chuyển đổi chế độ sử dụng sang chế độ tài sản thế chấp cho đồng tiền này, vì điều đó sẽ gây ra cuộc gọi tài sản thế chấp.",
+        "openDesc": "Bật tài sản này làm tài sản thế chấp sẽ tăng cường khả năng vay và Hệ số Sức khỏe của bạn. Tuy nhiên, nó có thể bị thanh lý nếu hệ số sức khỏe của bạn giảm xuống dưới 1.",
+        "enableIsolationModeDesc": "Bạn đang vào chế độ Tách biệt. Trong chế độ Tách biệt, bạn không thể cung cấp tài sản khác làm thế chấp. Một giới hạn nợ toàn cầu hạn chế khả năng vay của tài sản tách biệt. Để thoát khỏi chế độ tách biệt, hãy vô hiệu hóa CRV làm thế chấp trước khi vay tài sản khác."
+      },
+      "borrowDetail": {
+        "swapDebt": "Hoán đổi",
+        "actions": "Vay mượn",
+        "borrowed": "Đã vay",
+        "amountTitle": "Có sẵn:",
+        "approveAndBorrow": "Phê duyệt và Vay",
+        "almostReachedError": "Số tiền tối đa có sẵn để vay bị giới hạn vì giới hạn vay của giao thức gần đạt.",
+        "almostReachedWarning": "Giới hạn vay của giao thức cho tài sản này là 100%. Không thể vay thêm."
+      },
+      "popup": {
+        "title": "Tổng quan giao dịch",
+        "amount": "Số lượng",
+        "available": "có sẵn",
+        "remainingDebt": "Nợ còn lại",
+        "liquidationAt": "Thanh lý ở < 1.0"
+      },
+      "borrowOverview": {
+        "availableToBorrow": "Có sẵn để vay",
+        "myBorrow": "Vay Mượn Của Tôi",
+        "reachCapTip": "Tài sản này đã đạt giới hạn vay.",
+        "totalBorrowed": "Tổng số Mượn",
+        "borrowCap": "Giới Hạn Vay",
+        "title": "Chi tiết vay",
+        "liquidityPenalty": "Phạt Thanh lý"
+      },
+      "supplyOverview": {
+        "title": "Chi tiết cung cấp",
+        "mySupply": "Cung cấp của tôi",
+        "totalSupplied": "Tổng cung cấp",
+        "walletBalance": "Số dư ví",
+        "collateral": "Tài sản đảm bảo",
+        "useAsCollateral": "Sử dụng làm tài sản thế chấp",
+        "noBalance": "Không có số dư",
+        "almostCap": "Tài sản này gần như đã đạt giới hạn vay của nó. Chỉ còn {{available}} có sẵn để vay từ thị trường này.",
+        "availableToSupply": "Có sẵn để cung cấp"
+      },
+      "risk": {
+        "warning": "Vay mượn số tiền này sẽ làm giảm Hệ số Sức khỏe của bạn xuống mức rủi ro cho việc thanh lý.",
+        "withdrawWarning": "Rút số tiền này sẽ làm giảm Hệ số Sức khỏe của bạn đến mức rủi ro để thanh lý.",
+        "toggleCollateralWarning": "Việt ngữ: Vô hiệu hóa tài sản này làm tài sản thế chấp sẽ hạ thấp Hệ số Sức khỏe của bạn xuống mức rủi ro cho việc thanh lý.",
+        "checkbox": "Tôi hiểu thông báo và muốn tiếp tục.",
+        "emodeBlockWarning": "Tắt E-mode sẽ làm giảm Hệ số Sức khỏe của bạn xuống mức rủi ro cho việc thanh lý.",
+        "blockEmodeWarning": "Bạn không thể tắt E-Mode vì điều đó có thể gây ra việc thanh lý. Để thoát khỏi E-Mode, hãy cung cấp hoặc trả lại các vị thế đã vay."
+      },
+      "lqDescription": {
+        "liquidationTitle": "Thanh lý:",
+        "desc": "Giá thanh lý",
+        "risky": "Rủi ro",
+        "over3desc": "Vị trí của bạn là an toàn",
+        "below1title": "Chỉ số Sức Khỏe ≤ 1.0:",
+        "below1desc": "Vị thế của bạn đang có nguy cơ bị thanh lý.",
+        "over3title": "Hệ số sức khỏe > 3.0:",
+        "introText": "Hệ số Sức khỏe của bạn cho thấy vị trí vay mượn của bạn an toàn như thế nào. Nếu nó giảm quá thấp, tài sản thế chấp của bạn có thể bị thanh lý.",
+        "warningText": "Hệ số Sức khỏe của bạn quá thấp. Để tránh bị thanh lý:\n1. Trả lại một phần hoặc toàn bộ khoản vay của bạn\n2. Thêm nhiều tài sản thế chấp hơn",
+        "liquidation": "Nếu chỉ số Tình trạng Sức khỏe của bạn giảm xuống dưới 1,0, một phần tài sản thế chấp của bạn có thể bị bán tự động để trả nợ. Một khoản phí thanh lý sẽ được áp dụng, dẫn đến việc mất một phần tài sản thế chấp của bạn."
+      },
+      "modalDesc": {
+        "availableToBorrow": "Có sẵn để vay",
+        "isolatedSupplyDesc": "Vi: Việc sử dụng tài sản thế chấp bị hạn chế do chế độ tách biệt.",
+        "isolatedTitle": "Tài sản không thể được sử dụng làm tài sản thế chấp",
+        "availableToBorrowDesc": "Bạn có thể vay dựa trên tài sản thế chấp mà bạn cung cấp và cho đến khi đạt giới hạn vay.",
+        "lqDesc": "Khi xảy ra thanh lý, người thanh lý sẽ hoàn trả tới 50% số tiền đã vay còn lại thay mặt cho người vay. Đổi lại, họ có thể mua tài sản thế chấp với giá giảm và giữ phần chênh lệch (phí thanh lý) làm phần thưởng.",
+        "maxAmount": "Đây là số tiền tối đa bạn có thể vay dựa trên tất cả tài sản thế chấp mà bạn cung cấp. Khả năng vay tổng cộng của bạn được tính bằng cách nhân giá thị trường của từng tài sản thế chấp với Max LTV của nó, sau đó cộng tất cả các kết quả lại.",
+        "isolatedDesc": "Tài sản này chỉ có thể được sử dụng làm tài sản thế chấp trong chế độ cách ly, nơi bạn không thể cung cấp tài sản thế chấp khác để vay. Tài sản được sử dụng làm tài sản thế chấp trong chế độ cách ly chỉ có thể được vay lên đến một giới hạn nợ cụ thể.",
+        "maxLTV": "Tỷ lệ LTV tối đa đại diện cho sức mạnh vay tối đa của một tài sản đảm bảo cụ thể. Ví dụ, nếu một tài sản đảm bảo có LTV là 75%, người dùng có thể vay tối đa 0,75 giá trị ETH bằng tiền tệ chính cho mỗi 1 ETH giá trị tài sản đảm bảo.",
+        "globalIsolatedDesc": "Trong chế độ Isolate, bạn không thể cung cấp các tài sản khác làm tài sản thế chấp. Một trần nợ toàn cầu giới hạn khả năng vay mượn của tài sản bị cô lập. Để thoát khỏi chế độ Isolate, hãy tắt UNI làm tài sản thế chấp trước khi vay tài sản khác."
+      },
+      "repayWithAToken": {
+        "header": {
+          "balance": "Số dư",
+          "assets": "Hợp đồng"
+        },
+        "title": "Chọn Token Trả Nợ"
+      },
+      "manageEmode": {
+        "actions": {
+          "disable": "Vô hiệu hóa E-Mode",
+          "enable": "Bật E-Mode"
+        },
+        "guide": {
+          "buttonTitle": "Quản lý E-Mode",
+          "title": "Chế độ hiệu quả (E-Mode)",
+          "description": "E-Mode tăng LTV của bạn cho một danh mục tài sản đã chọn."
+        },
+        "categorySelector": {
+          "header": {
+            "asset": "Tài sản"
+          },
+          "label": "Danh mục tài sản",
+          "placeholder": "Chọn",
+          "desc": "Tất cả các vị thế vay ngoài hạng mục này phải được đóng lại để kích hoạt hạng mục này."
+        },
+        "debtSwapSelector": {
+          "header": {
+            "assets": "Token/Số dư",
+            "borrow": "Các khoản vay của tôi"
+          },
+          "title": "Chọn Token Mượn"
+        },
+        "collateralSwapSelector": {
+          "header": {
+            "assets": "Token",
+            "collateral": "Tài sản thế chấp của tôi"
+          },
+          "title": "Chọn Token Đảm bảo"
+        },
+        "overview": {
+          "row": {
+            "borrowable": "Có thể vay",
+            "asset": "Tài sản",
+            "collateral": "Tài sản thế chấp"
+          },
+          "title": "Danh mục tài sản"
+        },
+        "title": "Quản lý E-Mode",
+        "disableTitle": "Vô hiệu hóa",
+        "unavailable": "• Không khả dụng",
+        "enabled": "• Đã bật",
+        "unavailableTips": "Tài sản cho vay/mượn hiện tại của bạn không được hỗ trợ.",
+        "description": "Kích hoạt E-Mode cho phép bạn tối đa hóa sức mạnh vay mượn của mình. Tuy nhiên, việc vay mượn bị hạn chế đối với các tài sản trong danh mục đã chọn."
+      },
+      "debtSwap": {
+        "actions": {
+          "swapTo": "Hoán đổi thành",
+          "title": "Hoán đổi nợ",
+          "amount": "Số lượng",
+          "borrowed": "Đã vay",
+          "select": "Chọn"
+        },
+        "overview": {
+          "title": "Tổng quan giao dịch",
+          "borrowAPY": "Vay mượn apy",
+          "borrowValueAfter": "Số dư vay sau khi hoán đổi"
+        },
+        "button": {
+          "swap": "Hoán đổi"
+        },
+        "borrowBalance": "Số dư vay",
+        "title": "Hoán đổi Vị trí Vay",
+        "entryTips": "Nhấn một lần để hoán đổi tài sản bạn đã vay, giảm bớt bước thực hiện và phí giao dịch.",
+        "lpRiskWarning": "Hệ số sức khỏe thấp sau khi hoán đổi. Vị thế của bạn sẽ mang rủi ro thanh lý cao hơn.",
+        "priceImpactTips": "Tác động giá cao ({{lostValue}}). Đường dẫn này có thể trả lại nhiều hơn do thanh khoản thấp hoặc kích thước lệnh nhỏ.",
+        "lpDangerWarning": "Hệ số sức khỏe của bạn sau giao dịch này sẽ ở mức rất thấp và có thể dẫn đến thanh lý. Vui lòng chọn một tài sản khác hoặc giảm số lượng giao dịch để giữ an toàn."
+      },
+      "repayWithCollateral": {
+        "action": {
+          "title": "Trả nợ bằng {{collateral}}"
+        },
+        "overview": {
+          "title": "Tổng Quan Giao Dịch",
+          "borrowValueAfter": "Số dư vay sau khi trả lại",
+          "collateralValueAfter": "Số dư tài sản thế chấp sau khi trả nợ"
+        },
+        "button": {
+          "repay": "Hoàn trả"
+        },
+        "toRepay": "Số tiền dự kiến ​​phải trả",
+        "repayWith": "Tài sản thế chấp để trả nợ",
+        "collateralNotEnough": "Số dư tài sản thế chấp của bạn thấp hơn số tiền đã chọn."
+      },
+      "hfTips": {
+        "more": "Nhiều hơn",
+        "desc": "Nếu nó giảm xuống dưới 1.0, tài sản thế chấp của bạn có thể bị thanh lý."
+      },
+      "disableBorrowTip": {
+        "noSupply": "Cung cấp tài sản trước để cho phép vay.",
+        "desc": "Không có nguồn cung: Để vay, bạn cần cung cấp tài sản làm tài sản thế chấp."
+      },
+      "type": {
+        "supplied": "Cung cấp",
+        "borrowed": "Vay mượn"
+      },
+      "actions": {
+        "borrow": "Vay mượn",
+        "swap": "Hoán đổi",
+        "supply": "Cung cấp",
+        "withdraw": "Rút tiền",
+        "repay": "Trả nợ"
+      },
+      "summary": {
+        "empty": {
+          "title": "Kiếm lãi từ tài sản của bạn",
+          "description": "Được cung cấp bởi AAVE. An toàn và không có phí.",
+          "endDesc": "Bạn chưa có khoản tiền gửi nào. Hãy xem các tài sản được khuyến nghị dưới đây để bắt đầu kiếm lãi."
+        },
+        "totalBorrowed": "Tổng số đã vay",
+        "eMode": "E-Mode",
+        "healthFactor": "Yếu tố sức khỏe",
+        "netWorth": "Giá trị ròng",
+        "totalSupplied": "Tổng Cung cấp",
+        "healthFactorTip": "Yếu tố sức khỏe cho thấy độ an toàn của vị thế của bạn.",
+        "more": "Thêm",
+        "healthy": "Lành mạnh",
+        "estDailyEarnings": "Thu nhập hàng ngày ước tính",
+        "netApy": "Lợi suất ròng APY",
+        "ethCorrelatedTip": "Tài sản liên quan đến ETH",
+        "lq": "Nếu giảm xuống dưới 1, việc thanh lý có thể được kích hoạt.",
+        "risky": "Rủi ro"
+      },
+      "market": {
+        "core": "Thị Trường Cốt Lõi"
+      },
+      "accountActions": {
+        "supply": "Cung cấp",
+        "both": "Cả hai",
+        "borrow": "Vay mượn"
+      },
+      "table": {
+        "type": "Loại",
+        "actions": "Hành động",
+        "token": "Token",
+        "collateral": "Tài sản thế chấp",
+        "myAssets": "Tài sản của tôi"
+      },
+      "supplyList": {
+        "collapse": "Sụp đổ",
+        "more": "Nhiều token để cung cấp"
+      },
+      "borrowList": {
+        "more": "Nhiều token hơn để vay",
+        "collapse": "Sập đổ"
+      },
+      "title": "Cho vay",
+      "submitted": "đã gửi",
+      "noData": "Không có dữ liệu",
+      "borrowBalance": "Số dư vay",
+      "borrowed": "Vay mượn",
+      "supplyApy": "Cung cấp APY",
+      "netWorth": "Giá trị ròng",
+      "totalBorrowed": "Tổng số đã vay",
+      "totalSupplied": "Tổng cung cấp",
+      "totalSupply": "Tổng cung",
+      "isolate": "tách biệt",
+      "totalBorrow": "Tổng số vay",
+      "gotIt": "Đã hiểu",
+      "estNetApy": "Ước tính APY ròng",
+      "netApy": "Lợi suất ròng hàng năm (Net APY)",
+      "supplied": "Cung cấp",
+      "isolateTip": "Đây là một thị trường riêng lẻ",
+      "supplyBalance": "Cân bằng Cung cấp",
+      "estDailyEarning": "Thu nhập hàng ngày ước tính",
+      "borrowApy": "Lãi suất vay",
+      "disabled": "VÔ HIỆU HÓA",
+      "hf": "Hệ số sức khỏe",
+      "hfTitle": "Hệ số sức khỏe",
+      "selectMarket": "Chọn Thị Trường",
+      "searchMarket": "Tìm kiếm Thị trường",
+      "enterAmount": "Nhập số tiền",
+      "selectChain": "Chọn Chuỗi"
     }
   },
   "component": {
@@ -4009,6 +4351,9 @@
       "title": "Đây là một token nhà cung cấp thanh khoản (LP)",
       "description": "LP tokens được cấp bởi các giao thức DeFi nơi bạn đã gửi tài sản của mình. Chúng phục vụ như bằng chứng cho những tài sản đó, nhưng giá trị của chúng không được tính vào tổng số dư của bạn.",
       "descriptionFor": "Đây là một Token Cung cấp tính thanh khoản (LP) cho {{ protocolName }}"
+    },
+    "DesktopAccountSelector": {
+      "selectAddress": "Chọn Địa Chỉ"
     }
   },
   "global": {
