@@ -194,12 +194,12 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
           {listReserves.length > 0 && (
             <>
               <div className="mt-16 mb-2 flex items-center justify-start px-16">
-                <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[150px]">
+                <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[160px]">
                   {t('page.lending.list.headers.token')}
                 </span>
                 <span
                   className={clsx(
-                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center justify-end gap-1',
+                    'text-[14px] leading-[18px] w-[130px] cursor-pointer flex items-center gap-1',
                     sortField === 'tvl'
                       ? 'text-r-neutral-title-1 font-medium'
                       : 'text-r-neutral-foot'
@@ -221,7 +221,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                 </span>
                 <span
                   className={clsx(
-                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center justify-end gap-1',
+                    'text-[14px] leading-[18px] w-[126px] cursor-pointer flex items-center gap-1',
                     sortField === 'apy'
                       ? 'text-r-neutral-title-1 font-medium'
                       : 'text-r-neutral-foot'
@@ -243,7 +243,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                 </span>
                 <span
                   className={clsx(
-                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center justify-end gap-1',
+                    'text-[14px] leading-[18px] w-[150px] cursor-pointer flex items-center gap-1',
                     sortField === 'balance'
                       ? 'text-r-neutral-title-1 font-medium'
                       : 'text-r-neutral-foot'
