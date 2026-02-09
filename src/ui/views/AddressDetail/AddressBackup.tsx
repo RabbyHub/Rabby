@@ -79,6 +79,7 @@ export const AddressBackup = ({ address, type }: Props) => {
             pathname: `/settings/address-backup/${path}`,
             state: {
               data: data,
+              goBack: true,
             },
           });
         }

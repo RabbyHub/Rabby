@@ -110,15 +110,17 @@ export const ImportPrivateKey = () => {
       </div>
 
       <footer className="mt-auto">
-        <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
-          {t('page.newUserImport.importPrivateKey.noWallet')}{' '}
-          <Link
-            to="/new-user/create-seed-phrase"
-            className="text-r-blue-default"
-          >
-            {t('page.newUserImport.importPrivateKey.createWallet')}
-          </Link>
-        </div>
+        {!value ? (
+          <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
+            {t('page.newUserImport.importPrivateKey.noWallet')}{' '}
+            <Link
+              to="/new-user/create-seed-phrase"
+              className="text-r-blue-default"
+            >
+              {t('page.newUserImport.importPrivateKey.createWallet')}
+            </Link>
+          </div>
+        ) : null}
         <Button
           onClick={handleSubmit}
           block

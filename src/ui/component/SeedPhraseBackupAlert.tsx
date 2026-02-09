@@ -35,7 +35,12 @@ export const SeedPhraseBackupAlert: React.FC<{
   const wallet = useWallet();
   const currentAccount = useCurrentAccount();
 
-  const { hasBackup } = useCheckSeedPhraseBackup(currentAccount?.address || '');
+  const { hasBackup } = useCheckSeedPhraseBackup(
+    currentAccount?.address || '',
+    {
+      refreshOnWindowFocus: true,
+    }
+  );
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
   const handleBackup = useMemoizedFn(async () => {
     let data = '';
@@ -69,6 +74,7 @@ export const SeedPhraseBackupAlert: React.FC<{
             pathname: `/settings/address-backup/mneonics`,
             state: {
               data: data,
+              goBack: true,
             },
           });
         },
