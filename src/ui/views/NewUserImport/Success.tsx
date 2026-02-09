@@ -84,13 +84,10 @@ const AccountItem = ({ account }: { account: Account }) => {
       className={clsx(
         'flex flex-col justify-center',
         'border border-solid border-rabby-neutral-line',
-        'rounded-[8px] px-[16px] py-[12px]'
+        'rounded-[8px] px-[16px] pb-[12px] pt-[6px]'
       )}
     >
-      <div
-        ref={updateRef}
-        className="flex items-center text-[20px] font-medium"
-      >
+      <div ref={updateRef} className="flex items-center  font-medium">
         {edit ? (
           <Input
             ref={ref}
@@ -98,7 +95,7 @@ const AccountItem = ({ account }: { account: Account }) => {
             autoCorrect="false"
             className={clsx(
               'relative left-[-8px]',
-              'w-[180px] h-[20px]',
+              'w-full h-[30px]',
               'border-none bg-r-neutral-card2 text-r-neutral-title-1',
               'p-8 rounded',
               'text-[15px] leading-[18px] font-medium'
@@ -109,7 +106,7 @@ const AccountItem = ({ account }: { account: Account }) => {
             }}
           />
         ) : (
-          <div className="flex items-center justify-center h-[20px]">
+          <div className="flex items-center justify-center h-[30px]">
             <div className="max-w-[300px] text-[15px] leading-[18px] truncate text-r-neutral-title1">
               {name}
             </div>
@@ -146,7 +143,7 @@ const AccountItem = ({ account }: { account: Account }) => {
           />
         )}
       </div>
-      <div className="text-[13px] leading-[16px] mt-[4px] text-r-neutral-foot">
+      <div className="text-[13px] leading-[16px] text-r-neutral-foot">
         {ellipsisAddress(account.address, true)}
       </div>
     </div>
@@ -223,7 +220,7 @@ export const ImportOrCreatedSuccess = () => {
   // }, [!!allAccounts?.length]);
 
   const getStarted = React.useCallback(() => {
-    window.close();
+    // window.close();
     browser.action.openPopup();
     // if (isNewUserImport) {
     //   history.push({

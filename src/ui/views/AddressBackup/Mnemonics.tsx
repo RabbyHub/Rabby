@@ -147,7 +147,10 @@ const AddressBackupMnemonics: React.FC<{
         {!!state?.goBack && (
           <img
             src={IconBack}
-            className={clsx('absolute icon icon-back filter invert')}
+            className={clsx(
+              'absolute icon icon-back filter invert cursor-pointer',
+              'top-[50%] left-[16px] translate-y-[-50%]'
+            )}
             onClick={() => history.goBack()}
           />
         )}

@@ -128,7 +128,6 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
   const { t } = useTranslation();
   const [agreeTerm, setAgreeTerm] = useState(true);
   const [isShowPassword, setIsShowPassword] = useState(false);
-  const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
 
   const [form] = Form.useForm<{
     password: string;
@@ -136,6 +135,9 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
   }>();
 
   const handleSubmit = useMemoizedFn(async () => {
+    if (!agreeTerm) {
+      return;
+    }
     await form.validateFields();
     onSubmit?.(form.getFieldsValue().password);
   });
@@ -195,6 +197,9 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                 type={isShowPassword ? 'text' : 'password'}
                 autoFocus
                 spellCheck={false}
+                onBlur={(e) => {
+                  console.log('onBlur');
+                }}
                 suffix={
                   <div className="flex items-center gap-[4px]">
                     <div className="icon-check text-r-green-default p-[6px]">
@@ -202,12 +207,21 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                     </div>
                     <div
                       className="text-r-neutral-body p-[6px] cursor-pointer rounded-[4px] hover:bg-r-neutral-card-2"
+                      onMouseDown={(e) => {
+                        // Prevent focused state lost
+                        e.preventDefault();
+                      }}
+                      onMouseUp={(e) => {
+                        // Prevent caret position change
+                        e.preventDefault();
+                      }}
                       onClick={(e) => {
                         e.stopPropagation();
+                        e.preventDefault();
                         setIsShowPassword((prev) => !prev);
                       }}
                     >
-                      {isShowPassword ? <RcIconEyeCloseCC /> : <RcIconEyeCC />}
+                      {isShowPassword ? <RcIconEyeCC /> : <RcIconEyeCloseCC />}
                     </div>
                   </div>
                 }
@@ -246,8 +260,13 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                 placeholder={t(
                   'page.newUserImport.PasswordCard.form.confirmPassword.placeholder'
                 )}
-                type={isShowConfirmPassword ? 'text' : 'password'}
+                type={isShowPassword ? 'text' : 'password'}
                 spellCheck={false}
+                onKeyDown={(evt) => {
+                  if (evt.key === 'Enter') {
+                    handleSubmit();
+                  }
+                }}
                 suffix={
                   <div className="flex items-center gap-[4px]">
                     <div className="icon-check text-r-green-default p-[6px]">
@@ -255,16 +274,20 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                     </div>
                     <div
                       className="text-r-neutral-body p-[6px] cursor-pointer rounded-[4px] hover:bg-r-neutral-card-2"
+                      onMouseDown={(e) => {
+                        // Prevent focused state lost
+                        e.preventDefault();
+                      }}
+                      onMouseUp={(e) => {
+                        // Prevent caret position change
+                        e.preventDefault();
+                      }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setIsShowConfirmPassword((prev) => !prev);
+                        setIsShowPassword((prev) => !prev);
                       }}
                     >
-                      {isShowConfirmPassword ? (
-                        <RcIconEyeCloseCC />
-                      ) : (
-                        <RcIconEyeCC />
-                      )}
+                      {isShowPassword ? <RcIconEyeCC /> : <RcIconEyeCloseCC />}
                     </div>
                   </div>
                 }

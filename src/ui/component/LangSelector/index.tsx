@@ -62,7 +62,8 @@ export const LangSelector: React.FC = () => {
         className={clsx(
           'inline-flex items-center gap-[8px] justify-between min-w-[140px]',
           'px-[16px] py-[13px] rounded-[8px] bg-r-neutral-card-1 cursor-pointer',
-          'text-r-neutral-title1 text-[15px] leading-[18px] font-medium'
+          'text-r-neutral-title1 text-[15px] leading-[18px] font-medium',
+          'hover:bg-r-blue-light-1'
         )}
       >
         <div>{currentLang?.name}</div>

@@ -39,7 +39,7 @@ export const ImportSeedOrKey = () => {
           history.replace('/new-user/import-list');
         }
       }}
-      className="flex flex-col"
+      className="flex flex-col min-h-[520px]"
       title="Seed phrase or private key"
     >
       <div className="mt-[16px]">

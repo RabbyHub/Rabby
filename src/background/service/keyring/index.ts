@@ -115,12 +115,6 @@ export class KeyringService extends EventEmitter {
   constructor() {
     super();
     this.keyringTypes = Object.values(KEYRING_SDK_TYPES);
-    console.log(
-      'Registered keyring types: ',
-      KEYRING_SDK_TYPES,
-      this.keyringTypes
-      // this.keyringTypes.map((krt) => krt.type)
-    );
     this.memStore = new ObservableStore({
       isUnlocked: false,
       keyringTypes: this.keyringTypes.map((krt) => krt.type),

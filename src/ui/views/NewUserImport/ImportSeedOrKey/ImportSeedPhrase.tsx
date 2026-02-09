@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { useNewUserGuideStore } from '../hooks/useNewUserGuideStore';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
+import { useRequest } from 'ahooks';
 
 const FormItemWrapper = styled.div`
   .mnemonics-with-error,
@@ -39,6 +40,10 @@ export const ImportSeedPhrase = () => {
   const [slip39ErrorIndex, setSlip39ErrorIndex] = React.useState<number>(-1);
   const [isSlip39, setIsSlip39] = React.useState(false);
   const [slip39GroupNumber, setSlip39GroupNumber] = React.useState(1);
+  const [formValues, setFormValues] = React.useState<IFormStates>({
+    mnemonics: '',
+    passphrase: '',
+  });
 
   let keyringId: number | null;
 
@@ -139,6 +144,17 @@ export const ImportSeedPhrase = () => {
     [isSlip39]
   );
 
+  const { data: isValid } = useRequest(
+    async () => {
+      await checkSubmitSlip39Mnemonics(formValues.mnemonics);
+      return await validateMnemonic(formValues.mnemonics);
+    },
+    {
+      debounceWait: 300,
+      refreshDeps: [formValues.mnemonics],
+    }
+  );
+
   const run = React.useCallback(
     async ({
       mnemonics,
@@ -180,7 +196,8 @@ export const ImportSeedPhrase = () => {
         form={form}
         className={clsx('flex flex-col flex-1')}
         onFinish={run}
-        onValuesChange={async (states) => {
+        onValuesChange={async (states, values) => {
+          setFormValues(values as IFormStates);
           setErrMsgs([]);
           setSlip39ErrorIndex(-1);
         }}
@@ -221,20 +238,22 @@ export const ImportSeedPhrase = () => {
         </FormItemWrapper>
 
         <footer className="mt-auto">
-          <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
+          {!formValues.mnemonics?.trim() ? (
             <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
-              {t('page.newUserImport.importSeedPhrase.noWallet')}{' '}
-              <Link
-                to="/new-user/create-seed-phrase"
-                className="text-r-blue-default"
-              >
-                {t('page.newUserImport.importSeedPhrase.createWallet')}
-              </Link>
+              <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
+                {t('page.newUserImport.importSeedPhrase.noWallet')}{' '}
+                <Link
+                  to="/new-user/create-seed-phrase"
+                  className="text-r-blue-default"
+                >
+                  {t('page.newUserImport.importSeedPhrase.createWallet')}
+                </Link>
+              </div>
             </div>
-          </div>
+          ) : null}
           <Button
             htmlType="submit"
-            disabled={disabledButton}
+            disabled={disabledButton || !isValid}
             block
             type="primary"
             className={clsx(
