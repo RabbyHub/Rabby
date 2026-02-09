@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { ReactComponent as RcIconGas } from '@/ui/assets/sign/tx/gas-cc.svg';
 import { ReactComponent as RcIconGasAccountCC } from '@/ui/assets/sign/tx/gas-account-blur-cc.svg';
 
@@ -17,8 +17,9 @@ import {
   GAS_ACCOUNT_INSUFFICIENT_TIP,
   useLoginDepositConfirm,
 } from '@/ui/views/GasAccount/hooks/checkTxs';
-import { GasAccountDepositTipPopup } from '@/ui/views/GasAccount/components/GasAccountTxPopups';
 import { useHistory } from 'react-router-dom';
+import { useWallet } from '@/ui/utils';
+import { UI_TYPE } from '@/constant/ui';
 
 export type GasLessConfig = {
   button_text: string;
@@ -52,12 +53,26 @@ export function GasLessNotEnough({
   const modalConfirm = useLoginDepositConfirm({
     onGotoGasAccount: onRedirectToDeposit,
   });
-  const [tipPopupVisible, setTipPopupVisible] = useState(false);
   const history = useHistory();
-  const gotoGasAccount = React.useCallback(() => {
+  const wallet = useWallet();
+  const gotoGasAccount = React.useCallback(async () => {
     onRedirectToDeposit?.();
-    history.push('/gas-account');
-  }, [onRedirectToDeposit]);
+
+    const openGasAccountPopup = async () => {
+      const opened = await wallet.openGasAccountPopup<boolean>();
+      if (!opened) {
+        history.push('/gas-account');
+      }
+    };
+    if (UI_TYPE.isPop) {
+      history.push('/gas-account');
+    } else {
+      openGasAccountPopup();
+      if (UI_TYPE.isNotification) {
+        window.close();
+      }
+    }
+  }, [history, onRedirectToDeposit, wallet]);
 
   return (
     <div
@@ -88,23 +103,12 @@ export function GasLessNotEnough({
           type="primary"
           className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
           onClick={() => {
-            if (directSubmit) {
-              gotoGasAccount();
-            } else if (miniFooter) {
-              modalConfirm('deposit');
-            } else {
-              setTipPopupVisible(true);
-            }
+            gotoGasAccount();
           }}
         >
           {t('page.signFooterBar.gasAccount.deposit')}
         </Button>
       ) : null}
-
-      <GasAccountDepositTipPopup
-        visible={tipPopupVisible}
-        onClose={() => setTipPopupVisible(false)}
-      />
 
       {canGotoUseGasAccount ? (
         <div
@@ -435,7 +439,6 @@ export function GasAccountTips({
   onRedirectToDeposit?: () => void;
 }) {
   const { t } = useTranslation();
-  const [tipPopupVisible, setTipPopupVisible] = useState(false);
 
   const { tip, btnText, loginGasAccount, depositGasAccount } = useMemo(() => {
     if (!noCustomRPC) {
@@ -514,18 +517,29 @@ export function GasAccountTips({
     t,
   ]);
 
-  useEffect(() => {
-    return () => setTipPopupVisible(false);
-  }, []);
-
   const modalConfirm = useLoginDepositConfirm({
     onGotoGasAccount: onRedirectToDeposit,
   });
 
   const history = useHistory();
-  const gotoGasAccount = React.useCallback(() => {
-    history.push('/gas-account');
-  }, []);
+  const wallet = useWallet();
+  const gotoGasAccount = React.useCallback(async () => {
+    onRedirectToDeposit?.();
+    const openGasAccountPopup = async () => {
+      const opened = await wallet.openGasAccountPopup<boolean>();
+      if (!opened) {
+        history.push('/gas-account');
+      }
+    };
+    if (UI_TYPE.isPop) {
+      history.push('/gas-account');
+    } else {
+      openGasAccountPopup();
+      if (UI_TYPE.isNotification) {
+        window.close();
+      }
+    }
+  }, [history, onRedirectToDeposit, wallet]);
 
   if (
     !isWalletConnect &&
@@ -567,22 +581,12 @@ export function GasAccountTips({
           type="primary"
           className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
           onClick={() => {
-            if (depositGasAccount && directSubmit) {
-              gotoGasAccount();
-            } else if (depositGasAccount && miniFooter) {
-              modalConfirm('deposit');
-            } else {
-              setTipPopupVisible(true);
-            }
+            gotoGasAccount();
           }}
         >
           {btnText}
         </Button>
       ) : null}
-      <GasAccountDepositTipPopup
-        visible={tipPopupVisible}
-        onClose={() => setTipPopupVisible(false)}
-      />
     </div>
   );
 }
