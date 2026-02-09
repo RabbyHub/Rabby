@@ -18,6 +18,8 @@ import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import qs from 'qs';
 import { isString } from 'lodash';
 import { useRabbyDispatch } from '@/ui/store';
+import { useUnmount } from 'ahooks';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 const InputFormStyled = styled(Form.Item)`
   .ant-form-item-explain {
@@ -113,6 +115,14 @@ const Unlock = () => {
       document.documentElement.classList.remove('dark');
     }
   }, []);
+
+  const { isDarkTheme } = useThemeMode();
+
+  useUnmount(() => {
+    if (isDarkTheme && !document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.add('dark');
+    }
+  });
 
   return (
     <FullscreenContainer isUnlock>
