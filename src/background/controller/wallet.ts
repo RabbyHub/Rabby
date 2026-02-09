@@ -1651,6 +1651,35 @@ export class WalletController extends BaseController {
   };
   openIndexPage = openIndexPage;
 
+  openGasAccountPopup = async (options?: { clearApprovals?: boolean }) => {
+    const { clearApprovals = true } = options || {};
+    if (clearApprovals) {
+      this.rejectAllApprovals();
+    }
+
+    await this.setPageStateCache({
+      path: '/gas-account',
+      params: {},
+      states: {},
+    });
+
+    if (
+      isManifestV3 &&
+      Browser?.action?.openPopup &&
+      typeof Browser?.action?.openPopup === 'function'
+    ) {
+      try {
+        await Browser?.action?.openPopup();
+        return true;
+      } catch (error) {
+        console.error('[openGasAccountPopup] openPopup failed', error);
+      }
+    }
+
+    await openIndexPage('/gas-account');
+    return false;
+  };
+
   openInDesktop = async (_url: string) => {
     const desktopTabId = preferenceService.getPreference('desktopTabId');
     const currentDesktopTab = desktopTabId
