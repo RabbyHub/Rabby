@@ -7,7 +7,11 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import clsx from 'clsx';
 import { useMedia } from 'react-use';
 
-const ImportJson: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
+const ImportJson: React.FC<{
+  isInModal?: boolean;
+  onBack?(): void;
+  onNavigate?(type: string, state?: Record<string, any>): void;
+}> = ({ isInModal, onNavigate, onBack }) => {
   const history = useHistory();
   const [form] = Form.useForm();
   const wallet = useWallet();
@@ -17,6 +21,15 @@ const ImportJson: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
 
   const [run, loading] = useWalletRequest(wallet.importJson, {
     onSuccess(accounts) {
+      if (onNavigate) {
+        onNavigate('success', {
+          accounts,
+          title: t('page.newAddress.importedSuccessfully'),
+          editing: true,
+          importedAccount: true,
+        });
+        return;
+      }
       history.replace({
         pathname: '/popup/import/success',
         state: {
@@ -55,6 +68,10 @@ const ImportJson: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
     >
       <Navbar
         onBack={() => {
+          if (onBack) {
+            onBack();
+            return;
+          }
           if (history.length > 1) {
             history.goBack();
           } else {

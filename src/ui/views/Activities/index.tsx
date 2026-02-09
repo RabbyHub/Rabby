@@ -28,7 +28,7 @@ const Activities: React.FC<{
     >
       {isInModal ? (
         <div className="mx-[-20px]  sticky top-0 z-10 bg-r-neutral-bg-2">
-          <div className="text-[20px] leading-[24px] font-medium text-center py-[16px]">
+          <div className="text-[20px] leading-[24px] text-r-neutral-title1 font-medium text-center py-[16px]">
             {t('page.activities.title')}
             <div
               onClick={onClose}

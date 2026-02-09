@@ -318,16 +318,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
       </div>
 
       {/* Place Order Button */}
-      {needEnableTrading ? (
-        <Button
-          onClick={handleActionApproveStatus}
-          className={
-            'w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent bg-rb-green-default text-rb-neutral-InvertHighlight'
-          }
-        >
-          {t('page.perpsPro.tradingPanel.enableTrading')}
-        </Button>
-      ) : (
+      {
         <TradingButton
           loading={handleOpenOrderLoading}
           onClick={handleOpenOrderRequest}
@@ -337,7 +328,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
           orderSide={orderSide}
           titleText={t('page.perpsPro.tradingPanel.placeOrder')}
         />
-      )}
+      }
 
       {/* Order Summary */}
       <OrderSummary data={orderSummary} />

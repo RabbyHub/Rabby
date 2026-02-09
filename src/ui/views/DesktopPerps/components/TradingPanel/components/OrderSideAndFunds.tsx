@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
+import { formatPerpsCoin } from '../../../utils';
 
 interface OrderSideAndFundsProps {
   orderSide: OrderSide;
@@ -57,7 +58,7 @@ export const OrderSideAndFunds: React.FC<OrderSideAndFundsProps> = ({
             {splitNumberByStep(
               new BigNumber(availableBalance).toFixed(2, BigNumber.ROUND_DOWN)
             )}{' '}
-            USDC
+            {'USDC'}
           </span>
         </div>
         <div className="flex items-center justify-between">
@@ -74,8 +75,8 @@ export const OrderSideAndFunds: React.FC<OrderSideAndFundsProps> = ({
             )}
           >
             {currentPosition
-              ? `${currentPosition.size} ${selectedCoin}`
-              : `0 ${selectedCoin}`}
+              ? `${currentPosition.size} ${formatPerpsCoin(selectedCoin)}`
+              : `0 ${formatPerpsCoin(selectedCoin)}`}
           </span>
         </div>
       </div>

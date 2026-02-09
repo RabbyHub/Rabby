@@ -1131,7 +1131,9 @@
           "settings": "Einstellungen",
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positionen",
-          "prediction": "Vorhersage"
+          "prediction": "Vorhersage",
+          "dragTip": "Lange-Taste-Funktion zum Neuordnen",
+          "lending": "Kreditvergabe"
         },
         "comingSoon": "Demnächst",
         "soon": "Bald",
@@ -3029,7 +3031,9 @@
           "hideProtocolsWithSmallDeposits": "Protokolle mit kleinen Einlagen ausblenden.",
           "hideProtocolsWithSmallDepositsDesc": "Protokolle mit kleinen Einzahlungen werden nicht angezeigt.",
           "hideDefiWithSmallDeposits": "Verstecke Defis mit kleinen Einlagen.",
-          "hideDefiWithSmallDepositsDesc": "Kleinere Einzahlungen in Defis werden nicht angezeigt."
+          "hideDefiWithSmallDepositsDesc": "Kleinere Einzahlungen in Defis werden nicht angezeigt.",
+          "hideDeFiWithSmallDeposits": "Verstecke DeFis mit kleinen Einlagen.",
+          "hideDeFiWithSmallDepositsDesc": "DeFis mit kleinen Einlagen werden nicht angezeigt."
         },
         "table": {
           "token": "Token",
@@ -3148,7 +3152,9 @@
       "reload": "Wiederladen",
       "networkErrorTitle": "Diese Seite kann nicht erreicht werden",
       "networkErrorDescription": "{{site}} hat die Verbindung unerwartet geschlossen. Bitte überprüfen Sie Ihr Netzwerk.",
-      "networkErrorDescriptionFallback": "Die Seite hat die Verbindung unerwartet geschlossen. Bitte überprüfen Sie Ihr Netzwerk."
+      "networkErrorDescriptionFallback": "Die Seite hat die Verbindung unerwartet geschlossen. Bitte überprüfen Sie Ihr Netzwerk.",
+      "opening": "Öffne {{name}}...",
+      "serviceNotSupported": "Der Dienst wird in Ihrer aktuellen Region nicht unterstützt."
     },
     "perps": {
       "closeAllPopup": {
@@ -3266,7 +3272,8 @@
         "hyperliquidFeeLabel": "Hyperliquid-Gebühr",
         "feeTip": "1 $ Gebühr",
         "goSwapTips": "Nur USDC auf Arbitrum wird für direkte Einzahlungen unterstützt. Bitte tauschen Sie Ihr aktuelles Token vor der Einzahlung in USDC um.",
-        "estReceiveTooltip": "Cross-Chain-Einzahlung wird über LiFi verarbeitet; es kann zu einer Slippage kommen. Voraussichtliche Ankunft in {{number}}s."
+        "estReceiveTooltip": "Cross-Chain-Einzahlung wird über LiFi verarbeitet; es kann zu einer Slippage kommen. Voraussichtliche Ankunft in {{number}}s.",
+        "hyperliquidFeeLabelTooltip": "Neue Benutzer zahlen eine einmalige Aktivierungsgebühr an Hyperliquid."
       },
       "home": {
         "entryPrice": "Einstiegskurs",
@@ -3627,7 +3634,8 @@
         "tpSlTips": "Platziere einfache Market-TP/SL-Aufträge. Für fortgeschrittene Funktionen wie Limitpreise oder partielles TP/SL lege TP/SL in einer offenen Position fest.",
         "stopLossExpectedPnL": "Stop-Loss erwartetes PnL",
         "slBuyMustBeHigherThanMidPrice": "Der Stop-Kaufsorder-Preis muss höher als der Mid-Preis sein.",
-        "randomizeTooltip": "Randomisiert das Timing und die Größe von Teilaufträgen, um die Vorhersagbarkeit zu verringern."
+        "randomizeTooltip": "Randomisiert das Timing und die Größe von Teilaufträgen, um die Vorhersagbarkeit zu verringern.",
+        "deposit": "Einzahlen"
       },
       "marginMode": {
         "confirm": "Bestätigen",
@@ -3676,7 +3684,8 @@
         "withdraw": "Auszahlen",
         "unrealizedPnl": "Unrealisiertes P&L",
         "accountEquityTip": "Kontostand + unrealisierte P&L (ungefähre Kontobewertung, falls alle Positionen geschlossen würden)",
-        "balanceTip": "Summe der Nettoüberweisungen + Summe der realisierten Gewinne + Summe der Nettofinanzierungsgebühren"
+        "balanceTip": "Summe der Nettoüberweisungen + Summe der realisierten Gewinne + Summe der Nettofinanzierungsgebühren",
+        "available": "Verfügbar:"
       },
       "accountActions": {
         "available": "Verfügbar",
@@ -3697,6 +3706,12 @@
         "viewAsks": "Briefkurse",
         "trades": "Transaktionen",
         "total": "Gesamt"
+      },
+      "editMargin": {
+        "currentPosition": "Aktuelle Position",
+        "configureMargin": "Margin konfigurieren",
+        "shortLiquidationTips": "Ein Anstieg um {{percent}} wird die Liquidation auslösen.",
+        "longLiquidationTips": "Das Abfallen um {{percent}} wird die Liquidation auslösen."
       }
     },
     "perpsDetail": {
@@ -3791,6 +3806,330 @@
         "takeProfitWhenPriceBelow": "Gewinnmitnahme-Auftrag, wenn der Preis darunter liegt"
       },
       "needDepositFirst": "Sie müssen zuerst Geld einzahlen."
+    },
+    "lending": {
+      "availableCard": {
+        "needSupply": "Um zu leihen, müssen Sie Vermögenswerte als Sicherheiten bereitstellen.",
+        "singleAssetUnavailableForEmode": "Nicht verfügbar zum Ausleihen. Verlassen Sie E-Mode, um darauf zuzugreifen.",
+        "canBorrow": "Sie können basierend auf Ihrer bereitgestellten Sicherheiten bis zur Kreditobergrenze ausleihen.",
+        "emode": "Einige Vermögenswerte sind im E-Mode nicht verfügbar, um sie zu leihen. Verlassen Sie den E-Mode, um auf alle Vermögenswerte zugreifen zu können.",
+        "emodeNoAssets": "Wir konnten keine Vermögenswerte finden, die mit Ihrer Suche verbunden sind. Versuchen Sie es erneut mit einer anderen Kategorie."
+      },
+      "list": {
+        "headers": {
+          "token": "Token",
+          "my_balance": "Mein Saldo",
+          "my_assets": "Meine Vermögen",
+          "mySupplies": "Mein Vorrat",
+          "token_tvl": "Token/TVL",
+          "totalBorrowed": "Gesamte geliehene Mittel",
+          "myBorrows": "Meine Entnahmen",
+          "token_balance": "Token/Bilanz"
+        },
+        "item": {
+          "wrapperToken": "Wrapped-Token für {{name}}"
+        }
+      },
+      "repayDetail": {
+        "tabs": {
+          "wallet": "Wallet-Balance"
+        },
+        "approveAndRepay": "Genehmigen und Zurückzahlen",
+        "repayWith": "Mit zurückzahlen mit",
+        "actions": "Rückzahlung",
+        "amountTitle": "Balance:"
+      },
+      "supplyDetail": {
+        "supplied": "Versorgt",
+        "actions": "Angebot",
+        "amountTitle": "Verfügbar:",
+        "collateralization": "Kollateralisation",
+        "enabled": "Aktiviert",
+        "unavailable": "Nicht verfügbar",
+        "approveAndSupply": "Genehmigen und Bereitstellen",
+        "supplyBalance": "Versorgungsbilanz",
+        "availableToBorrow": "Verfügbar zum Ausleihen",
+        "isolatedTips": "Ihre bestehenden Kredit- / Darlehensmittel werden nicht unterstützt.",
+        "supplyAPY": "Versorgungs-APY"
+      },
+      "withdrawDetail": {
+        "amountTitle": "Guthaben:",
+        "actions": "Abheben",
+        "remainingSupply": "Verbleibender Vorrat"
+      },
+      "toggleCollateralDetail": {
+        "actions": "Toggle {{asset}} Sicherheiten",
+        "enable": "Aktiviere {{asset}} als Sicherheiten",
+        "disable": "Deaktiviere {{asset}} als Sicherheiten",
+        "error": "Es gibt einen Fehler mit dem AAVE-Service. Bitte versuchen Sie es später erneut."
+      },
+      "toggleCollateralModal": {
+        "toggleRiskTexts": {
+          "doNotHaveSuppliesInThisCurrency": "Sie haben keine Bestände in dieser Währung.",
+          "canNotUseThisCurrencyAsCollateral": "Sie können diese Währung nicht als Sicherheit verwenden.",
+          "canNotSwitchUsageAsCollateralMode": "Sie können den Verwendungsmodus für diese Währung nicht auf das Sicherheitenmodus wechseln, da es zu einem Sicherheitenaufruf führen wird.",
+          "zeroLTVWithdrawBlocked": "Vermögenswerte mit einem LTV von null ({{assets}}) müssen abgehoben oder als Sicherheiten deaktiviert werden, um diese Aktion auszuführen."
+        },
+        "enableIsolationModeTitle": "Isolation-Modus aktivieren",
+        "openTitle": "Überprüfung aktivieren",
+        "exitIsolationModeDesc": "Sie verlassen den Isolationsmodus, und andere Token können jetzt als Sicherheiten verwendet werden.",
+        "closeTitle": "Überprüfung der Deaktivierung",
+        "riskToLiquidationText": "Sie können den Verwendungsmodus für diese Währung nicht auf Sicherheitenmodus umschalten, da dies zu einem Margin Call führen würde.",
+        "closeDesc": "Das Deaktivieren dieses Vermögenswerts als Sicherheiten wirkt sich auf Ihre Kreditaufnahmefähigkeit und den Gesundheitsfaktor aus.",
+        "exitIsolationModeTitle": "Isolationsmodus verlassen",
+        "openDesc": "Das Aktivieren dieses Vermögenswerts als Sicherheiten erhöht Ihre Kreditaufnahme und den Gesundheitsfaktor. Es kann jedoch liquidiert werden, wenn Ihr Gesundheitsfaktor unter 1 fällt.",
+        "enableIsolationModeDesc": "Sie betreten den Isolationsmodus. Im Isolationsmodus können Sie keine anderen Vermögenswerte als Sicherheiten bereitstellen. Eine globale Schuldenobergrenze begrenzt die Kreditwürdigkeit des isolierten Vermögenswerts. Um den Isolationsmodus zu verlassen, deaktivieren Sie CRV als Sicherheiten, bevor Sie einen anderen Vermögenswert leihen."
+      },
+      "borrowDetail": {
+        "actions": "Ausleihen",
+        "swapDebt": "Tausch",
+        "approveAndBorrow": "Genehmigen und Ausleihen",
+        "borrowed": "Entlehnt",
+        "amountTitle": "Verfügbar:",
+        "almostReachedWarning": "Das Protokoll-Darlehenslimit für dieses Asset liegt bei 100%. Weitere Kredite sind nicht verfügbar.",
+        "almostReachedError": "Der maximal verfügbare Betrag zum Ausleihen ist begrenzt, da die Kreditobergrenze des Protokolls nahezu erreicht ist."
+      },
+      "popup": {
+        "title": "Transaktionsübersicht",
+        "remainingDebt": "Verbleibende Schulden",
+        "available": "verfügbar",
+        "amount": "Betrag",
+        "liquidationAt": "Liquidation bei < 1.0"
+      },
+      "borrowOverview": {
+        "liquidityPenalty": "Liquidationsstrafe",
+        "reachCapTip": "Diese Vermögenswerte haben das Kreditlimit erreicht.",
+        "totalBorrowed": "Gesamter Kreditbetrag",
+        "title": "Ausleihdetails",
+        "borrowCap": "Entleihgrenze",
+        "myBorrow": "Mein Kredit",
+        "availableToBorrow": "Verfügbar zum Ausleihen"
+      },
+      "supplyOverview": {
+        "title": "Versorgungsdetails",
+        "walletBalance": "Wallet-Bestand",
+        "totalSupplied": "Insgesamt bereitgestellt",
+        "useAsCollateral": "Als Sicherheit verwenden",
+        "collateral": "Sicherheit",
+        "mySupply": "Mein Angebot",
+        "reachCap": "Dieses Asset hat seine Angebotsobergrenze erreicht. Nichts ist aus diesem Markt verfügbar.",
+        "availableToSupply": "Verfügbar zum Anbieten",
+        "noBalance": "Kein Guthaben",
+        "almostCap": "Dieses Asset hat fast die Kreditobergrenze erreicht. Es sind nur noch {{available}} aus diesem Markt verfügbar, die ausgeliehen werden können."
+      },
+      "risk": {
+        "warning": "Das Ausleihen dieses Betrags wird Ihren Gesundheitsfaktor auf ein riskantes Niveau für eine Liquidation senken.",
+        "withdrawWarning": "Der Abzug dieses Betrags wird Ihren Gesundheitsfaktor auf ein riskantes Niveau für eine Liquidation senken.",
+        "toggleCollateralWarning": "Das Deaktivieren dieses Vermögenswerts als Sicherheiten wird Ihren Health Factor auf ein riskantes Niveau für die Liquidation senken.",
+        "checkbox": "Ich verstehe die Warnung und möchte fortfahren.",
+        "emodeBlockWarning": "Das Deaktivieren des E-Modus wird Ihren Gesundheitsfaktor auf ein riskantes Niveau für die Liquidation senken.",
+        "blockEmodeWarning": "Sie können den E-Modus nicht deaktivieren, da dies zur Liquidation führen könnte. Um den E-Modus zu verlassen, stellen Sie bereit oder tilgen Sie geliehene Positionen."
+      },
+      "lqDescription": {
+        "risky": "Riskant",
+        "desc": "Liquidationswert",
+        "liquidationTitle": "Liquidation:",
+        "below1title": "Gesundheitsfaktor ≤ 1,0:",
+        "below1desc": "Ihre Position ist gefährdet, liquidiert zu werden.",
+        "over3desc": "Ihre Positionen sind sicher",
+        "over3title": "Gesundheitsfaktor > 3.0:",
+        "introText": "Ihr Gesundheitsfaktor zeigt, wie sicher Ihre Darlehensposition ist. Wenn er zu niedrig sinkt, könnte Ihre Sicherheit liquidiert werden.",
+        "liquidation": "Wenn dein Gesundheitsfaktor unter 1,0 fällt, kann ein Teil deiner Sicherheiten automatisch verkauft werden, um die Schulden zu begleichen. Eine Liquidationsstrafe wird angewendet, was zu einem teilweisen Verlust deiner Sicherheiten führt.",
+        "warningText": "Ihr Gesundheitsfaktor ist zu niedrig. Um eine Liquidation zu vermeiden:\n1. Zahlen Sie einen Teil oder die gesamte Darlehenssumme zurück\n2. Fügen Sie mehr Sicherheiten hinzu"
+      },
+      "modalDesc": {
+        "availableToBorrow": "Verfügbar zum Ausleihen",
+        "isolatedSupplyDesc": "Die Verwendung von Sicherheiten ist aufgrund des Isolationmodus eingeschränkt.",
+        "isolatedTitle": "Asset kann nicht als Sicherheit verwendet werden.",
+        "lqDesc": "Bei einer Liquidation zahlen Liquidatoren bis zu 50 % des ausstehenden geliehenen Betrags im Namen des Kreditnehmers zurück. Im Gegenzug können sie die Sicherheiten zu einem Rabatt kaufen und die Differenz (Liquidationsstrafe) als Bonus behalten.",
+        "availableToBorrowDesc": "Sie können basierend auf Ihrem bereitgestellten Sicherheiten leihen, bis die Kreditobergrenze erreicht ist.",
+        "maxAmount": "Dies ist der maximale Betrag, den Sie basierend auf allen bereitgestellten Sicherheiten leihen können. Ihre gesamte Kreditaufnahme wird berechnet, indem der Marktwert jedes Sicherheitenvermögens mit seinem maximalen LTV multipliziert und dann die Ergebnisse summiert werden.",
+        "maxLTV": "Der maximale LTV-Verhältnis stellt die maximale Kreditaufnahmefähigkeit eines bestimmten Collaterals dar. Wenn ein Collateral beispielsweise ein LTV von 75 % hat, kann der Benutzer bis zu 0,75 wert in ETH in der Hauptwährung für jedes 1 ETH wert des Collaterals leihen.",
+        "isolatedDesc": "Dieser Vermögenswert kann nur im Isolationsmodus als Sicherheiten verwendet werden, in dem Sie keine anderen Vermögenswerte als Sicherheiten für das Ausleihen bereitstellen können. Vermögenswerte, die im Isolationsmodus als Sicherheiten verwendet werden, können nur bis zu einer bestimmten Schuldenobergrenze ausgeliehen werden.",
+        "globalIsolatedDesc": "Im Isolationsmodus können Sie keine anderen Vermögenswerte als Sicherheiten bereitstellen. Eine globale Schuldenobergrenze begrenzt die Kreditaufnahme des isolierten Vermögenswerts. Um den Isolationsmodus zu verlassen, deaktivieren Sie UNI als Sicherheit, bevor Sie einen anderen Vermögenswert aufnehmen."
+      },
+      "repayWithAToken": {
+        "header": {
+          "assets": "Token",
+          "balance": "Saldo"
+        },
+        "title": "Wählen Sie Rückzahlungs-Token"
+      },
+      "manageEmode": {
+        "actions": {
+          "enable": "E-Mode aktivieren",
+          "disable": "E-Mode deaktivieren"
+        },
+        "guide": {
+          "buttonTitle": "E-Mode verwalten",
+          "title": "Effizienzmodus (E-Modus)",
+          "description": "E-Mode erhöht Ihren LTV für eine ausgewählte Kategorie von Vermögenswerten."
+        },
+        "categorySelector": {
+          "header": {
+            "asset": "Vermögenswerte"
+          },
+          "label": "Asset-Kategorie",
+          "placeholder": "Wählen",
+          "desc": "Alle Leihpositionen außerhalb dieser Kategorie müssen geschlossen werden, um diese Kategorie zu aktivieren."
+        },
+        "debtSwapSelector": {
+          "header": {
+            "assets": "Token/Bilanz",
+            "borrow": "Meine Kredite"
+          },
+          "title": "Wählen Sie das Entlehnungstoken aus"
+        },
+        "collateralSwapSelector": {
+          "header": {
+            "collateral": "Mein Sicherheiten",
+            "assets": "Token"
+          },
+          "title": "Wählen Sie das Sicherheiten-Token"
+        },
+        "overview": {
+          "row": {
+            "borrowable": "Entleihbar",
+            "asset": "Vermögenswert",
+            "collateral": "Sicherheiten"
+          },
+          "title": "Vermögenskategorie"
+        },
+        "enabled": "• Aktiviert",
+        "title": "E-Mode verwalten",
+        "disableTitle": "Deaktivieren",
+        "unavailableTips": "Ihre bestehenden Kredit-/Leihvermögen werden nicht unterstützt.",
+        "unavailable": "• Nicht verfügbar",
+        "description": "Die Aktivierung des E-Modus ermöglicht es Ihnen, Ihre Kreditwürdigkeit zu maximieren. Das Ausleihen ist jedoch auf Vermögenswerte innerhalb der ausgewählten Kategorie beschränkt."
+      },
+      "debtSwap": {
+        "actions": {
+          "borrowed": "Geliehen",
+          "title": "Schuldenwechsel",
+          "swapTo": "Swap zu",
+          "select": "Auswählen",
+          "amount": "Betrag"
+        },
+        "overview": {
+          "title": "Transaktionsübersicht",
+          "borrowAPY": "Ausleihen apy",
+          "borrowValueAfter": "Ausleihsaldo nach dem Tausch"
+        },
+        "button": {
+          "swap": "Tausch"
+        },
+        "title": "Tausch Leih-Position",
+        "borrowBalance": "Entleihen Saldo",
+        "entryTips": "Ein Klick, um Ihr geliehenes Asset zu tauschen, Reduzierung von Schritten und Gebühren.",
+        "priceImpactTips": "Hoher Preisimpact ({{lostValue}}). Dieser Weg könnte aufgrund von niedriger Liquidität oder kleiner Bestellgröße mehr zurückgeben.",
+        "lpRiskWarning": "Niedriger Gesundheitsfaktor nach dem Tausch. Ihre Position trägt ein höheres Risiko einer Liquidation.",
+        "lpDangerWarning": "Ihr Gesundheitsfaktor nach diesem Tausch wird kritisch niedrig sein und kann zu einer Liquidation führen. Bitte wählen Sie einen anderen Vermögenswert oder reduzieren Sie den Tauschbetrag, um sicher zu bleiben."
+      },
+      "repayWithCollateral": {
+        "action": {
+          "title": "Mit {{collateral}} zurückzahlen"
+        },
+        "overview": {
+          "borrowValueAfter": "Entleihsaldo nach Rückzahlung",
+          "title": "Transaktionsübersicht",
+          "collateralValueAfter": "Kollateralbilanz nach Rückzahlung"
+        },
+        "button": {
+          "repay": "Zurückzahlen"
+        },
+        "toRepay": "Erwarteter Rückzahlungsbetrag",
+        "repayWith": "Kollateral zur Rückzahlung",
+        "collateralNotEnough": "Ihr Sicherheitenbestand ist niedriger als der ausgewählte Betrag."
+      },
+      "hfTips": {
+        "more": "Mehr",
+        "desc": "Wenn es unter 1,0 fällt, kann Ihre Sicherheit liquidiert werden."
+      },
+      "disableBorrowTip": {
+        "noSupply": "Zuerst Vermögenswerte bereitstellen, um das Ausleihen zu ermöglichen.",
+        "desc": "Keine Bereitstellung: Um zu leihen, müssen Sie Vermögenswerte als Sicherheit bereitstellen."
+      },
+      "type": {
+        "supplied": "Bereitgestellt",
+        "borrowed": "Geliehen"
+      },
+      "actions": {
+        "borrow": "Ausleihen",
+        "repay": "Rückzahlung",
+        "supply": "Angebot",
+        "withdraw": "Abheben",
+        "swap": "Tauschen"
+      },
+      "summary": {
+        "empty": {
+          "description": "Angetrieben von AAVE. Sicher und ohne Gebühren.",
+          "title": "Verdienen Sie Zinsen mit Ihren Vermögenswerten",
+          "endDesc": "Sie haben noch keine Einzahlungen vorgenommen. Sehen Sie sich die unten empfohlenen Vermögenswerte an, um Zinsen zu verdienen."
+        },
+        "netWorth": "Net Worth",
+        "totalSupplied": "Total Supplied",
+        "healthFactorTip": "Der Gesundheitsfaktor zeigt die Sicherheit Ihrer Position an.",
+        "eMode": "E-Modus",
+        "totalBorrowed": "Insgesamt Geliehen",
+        "healthFactor": "Gesundheitsfaktor",
+        "netApy": "Net APY",
+        "more": "Mehr",
+        "risky": "Riskant",
+        "healthy": "Gesund",
+        "ethCorrelatedTip": "ETH korrelierte Vermögenswerte",
+        "lq": "Wenn es unter 1 fällt, könnte die Liquidation ausgelöst werden.",
+        "estDailyEarnings": "Geschätzte tägliche Einnahmen"
+      },
+      "market": {
+        "core": "Kernmarkt"
+      },
+      "accountActions": {
+        "both": "Beide",
+        "borrow": "Ausleihen",
+        "supply": "Angebot"
+      },
+      "table": {
+        "token": "Token",
+        "myAssets": "Mein Vermögen",
+        "actions": "Aktionen",
+        "collateral": "Sicherheit",
+        "type": "Typ"
+      },
+      "supplyList": {
+        "collapse": "Zusammenbruch",
+        "more": "Mehr Token zur Verfügung stellen"
+      },
+      "borrowList": {
+        "collapse": "Zusammenbruch",
+        "more": "Mehr Tokens zum Ausleihen"
+      },
+      "submitted": "eingereicht",
+      "title": "Kreditvergabe",
+      "totalBorrow": "Gesamte Ausleihe",
+      "netWorth": "Vermögen",
+      "borrowApy": "Entleih-APY",
+      "borrowBalance": "Ausgeliehener Saldo",
+      "noData": "Keine Daten",
+      "borrowed": "Ausgeliehen",
+      "estDailyEarning": "Geschätztes tägliches Einkommen",
+      "netApy": "Net APY",
+      "totalSupplied": "Gesamt bereitgestellt",
+      "isolateTip": "Dies ist ein isolierter Markt.",
+      "gotIt": "Verstanden",
+      "isolate": "isoliert",
+      "supplyApy": "Liefer-APY",
+      "totalSupply": "Gesamtangebot",
+      "supplyBalance": "Versorgungsbilanz",
+      "totalBorrowed": "Insgesamt geliehen",
+      "estNetApy": "Geschätzte Netto-APY",
+      "hf": "Gesundheitsfaktor",
+      "hfTitle": "Gesundheitsfaktor",
+      "disabled": "DEAKTIVIERT",
+      "selectChain": "Kette auswählen",
+      "selectMarket": "Markt auswählen",
+      "supplied": "Bereitgestellt",
+      "searchMarket": "Markt durchsuchen",
+      "enterAmount": "Betrag eingeben"
     }
   },
   "component": {
@@ -4012,6 +4351,9 @@
       "title": "Dies ist ein Liquiditätsanbieter (LP) Token.",
       "description": "LP-Token werden von den DeFi-Protokollen ausgegeben, bei denen Sie Ihre Vermögenswerte hinterlegt haben. Sie dienen als Nachweis für diese Vermögenswerte, aber ihr Wert ist nicht in Ihrem Gesamtkontostand enthalten.",
       "descriptionFor": "Dies ist ein Liquiditätsanbieter (LP) Token für {{ protocolName }}."
+    },
+    "DesktopAccountSelector": {
+      "selectAddress": "Adresse auswählen"
     }
   },
   "global": {

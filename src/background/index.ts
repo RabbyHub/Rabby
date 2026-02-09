@@ -49,12 +49,14 @@ import {
   OfflineChainsService,
   perpsService,
   transactionsService,
+  innerDappFrameService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
 import { testnetOpenapiService } from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
+import lendingService from './service/lending';
 import { isSameAddress } from './utils';
 import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
@@ -126,6 +128,8 @@ async function restoreAppState() {
   await syncChainService.init();
   await perpsService.init();
   await transactionsService.init();
+  await lendingService.init();
+  await innerDappFrameService.init();
 
   await walletController.tryUnlock();
 
@@ -451,7 +455,7 @@ browser.runtime.onConnect.addListener((port) => {
       isFromDesktopDapp:
         port.sender.id === browser.runtime.id &&
         port.sender?.tab?.url?.startsWith(
-          `${browser.runtime.getURL('')}desktop.html#/desktop/dapp-iframe`
+          `${browser.runtime.getURL('')}desktop.html#/desktop/`
         ),
     };
     if (!session?.origin) {
@@ -499,7 +503,7 @@ function startEnableUser() {
   });
 
   browser.action.getUserSettings().then((res) => {
-    ga4.fireEvent(`User_Enable_${res ? 'Pin' : 'unPin'}`, {
+    ga4.fireEvent(`User_Enable_${res.isOnToolbar ? 'Pin' : 'unPin'}`, {
       event_category: 'User Enable',
     });
   });

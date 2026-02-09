@@ -25,8 +25,17 @@ export const Panel: React.FC<{
   key?: string;
   children?: ReactNode;
   moreContent?: ReactNode;
+  rightContent?: ReactNode;
 }> = (props) => {
-  const { tag, subTag, proposalTag, className, moreContent, ...rest } = props;
+  const {
+    tag,
+    subTag,
+    proposalTag,
+    className,
+    moreContent,
+    rightContent,
+    ...rest
+  } = props;
   return (
     <Container className={className} {...rest}>
       <PanelHead>
@@ -34,6 +43,7 @@ export const Panel: React.FC<{
         {proposalTag}
         {subTag}
         {moreContent}
+        {rightContent}
       </PanelHead>
       <Card>{props.children}</Card>
     </Container>

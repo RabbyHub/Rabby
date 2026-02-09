@@ -38,7 +38,7 @@ export const UserInfoHistory: React.FC = () => {
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
 
   const tabs: Tab[] = useMemo(() => {
-    const assetPositionNum = clearinghouseState?.assetPositions.length || 0;
+    const assetPositionNum = clearinghouseState?.assetPositions?.length || 0;
     const openOrdersNum = openOrders.length;
     const twapNum = twapStates.length;
 
@@ -77,7 +77,12 @@ export const UserInfoHistory: React.FC = () => {
         content: OrderHistory,
       },
     ];
-  }, [clearinghouseState, openOrders, twapStates, activeTab]);
+  }, [
+    clearinghouseState?.assetPositions?.length,
+    openOrders.length,
+    twapStates.length,
+    activeTab,
+  ]);
 
   const ActiveComponent = useMemo(
     () => tabs.find((tab) => tab.key === activeTab)?.content,

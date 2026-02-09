@@ -91,13 +91,18 @@ export function useThemeModeOnMain() {
 
   useLayoutEffect(() => {
     const isDark = isFinalDarkMode(themeMode, isDarkOnSystem);
-
+    const root = document.documentElement;
+    root.classList.add('no-transitions');
     if (isDark) {
       // see https://v2.tailwindcss.com/docs/dark-mode
-      document.documentElement.classList.add(darkModeClassName);
+      root.classList.add(darkModeClassName);
     } else {
-      document.documentElement.classList.remove(darkModeClassName);
+      root.classList.remove(darkModeClassName);
     }
+
+    requestAnimationFrame(() => {
+      root.classList.remove('no-transitions');
+    });
   }, [themeMode, isDarkOnSystem]);
 }
 

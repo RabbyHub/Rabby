@@ -34,6 +34,8 @@ import {
   OfflineChainsService,
   perpsService,
   miscService,
+  lendingService,
+  innerDappFrameService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -1998,6 +2000,11 @@ export class WalletController extends BaseController {
   getRabbyPointsSignature = RabbyPointsService.getSignature;
   clearRabbyPointsSignature = RabbyPointsService.clearSignature;
 
+  getLastSelectedLendingChain = lendingService.getLastSelectedChain;
+  setLastSelectedLendingChain = lendingService.setLastSelectedChain;
+  getSkipHealthFactorWarning = lendingService.getSkipHealthFactorWarning;
+  setSkipHealthFactorWarning = lendingService.setSkipHealthFactorWarning;
+
   addHDKeyRingLastAddAddrTime = HDKeyRingLastAddAddrTimeService.addUnixRecord;
   getHDKeyRingLastAddAddrTimeStore = HDKeyRingLastAddAddrTimeService.getStore;
 
@@ -3471,6 +3478,8 @@ export class WalletController extends BaseController {
     ) {
       await this.resetCurrentAccount();
     }
+    innerDappFrameService.removeAccountFromAllFrames(address, type, brand);
+
     const sites = permissionService.getSites();
     sites.forEach((item) => {
       if (
@@ -5454,6 +5463,7 @@ export class WalletController extends BaseController {
   removeCustomTestnetToken = customTestnetService.removeToken;
   addCustomTestnetToken = customTestnetService.addToken;
   getCustomTestnetTokenList = customTestnetService.getTokenList;
+  hasCustomTestnetTokens = customTestnetService.hasCustomTokens;
   isAddedCustomTestnetToken = customTestnetService.hasToken;
   getCustomTestnetTx = customTestnetService.getTx;
   getCustomTestnetTxReceipt = customTestnetService.getTransactionReceipt;
@@ -5777,6 +5787,12 @@ export class WalletController extends BaseController {
     return perpsService.createAgentWallet(masterWallet);
   };
   setPerpsCurrentAccount = perpsService.setCurrentAccount;
+  switchDesktopPerpsAccount = (account: Account) => {
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.DESKTOP.SWITCH_PERPS_ACCOUNT,
+      params: account,
+    });
+  };
   getPerpsCurrentAccount = perpsService.getCurrentAccount;
   getPerpsLastUsedAccount = perpsService.getLastUsedAccount;
   getAgentWalletPreference = async (masterWallet: string) => {
@@ -6117,6 +6133,13 @@ export class WalletController extends BaseController {
 
     return http.get(url).then((res) => res.data);
   };
+  getInnerDappFrames = innerDappFrameService.getInnerDappFrames;
+  getInnerDappAccountByOrigin =
+    innerDappFrameService.getInnerDappAccountByOrigin;
+  setInnerDappAccount = innerDappFrameService.setInnerDappAccount;
+  setInnerDappId = innerDappFrameService.setInnerDappId;
+
+  updateDashboardPanelOrder = preferenceService.updateDashboardPanelOrder;
 }
 
 const wallet = new WalletController();
