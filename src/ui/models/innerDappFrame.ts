@@ -8,6 +8,8 @@ import { Account } from '@/background/service/preference';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { nanoid } from 'nanoid';
+import { DEFAULT_INNER_DAPP_ID } from '@/constant/dappIframe';
+import type { INNER_DAPP_ID } from '@/constant/dappIframe';
 
 const uniqueId = nanoid();
 
@@ -16,9 +18,9 @@ export const innerDappFrame = createModel<RootModel>()({
 
   state: {
     innerDappAccounts: {},
-    perps: 'hyperliquid',
-    prediction: 'polymarket',
-    lending: 'aave',
+    perps: DEFAULT_INNER_DAPP_ID.perps,
+    prediction: DEFAULT_INNER_DAPP_ID.prediction,
+    lending: DEFAULT_INNER_DAPP_ID.lending,
   } as InnerDappFrameServiceStore,
 
   reducers: {
@@ -65,9 +67,14 @@ export const innerDappFrame = createModel<RootModel>()({
         },
       });
       await store.app.wallet.setInnerDappAccount(origin, account);
+
+      console.log('setInnerDappAccount', {
+        origin,
+        account,
+      });
     },
     async setInnerDappId(
-      payload: { type: InnerDappType; dappId: string },
+      payload: { type: InnerDappType; dappId: INNER_DAPP_ID },
       store
     ) {
       this.setField({ [payload.type]: payload.dappId });

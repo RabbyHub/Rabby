@@ -4,21 +4,23 @@ import { createPersistStore } from '../utils';
 import type { Account } from './preference';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { DEFAULT_INNER_DAPP_ID } from '@/constant/dappIframe';
+import type { INNER_DAPP_ID } from '@/constant/dappIframe';
 
 export type InnerDappType = 'perps' | 'prediction' | 'lending';
 
 export interface InnerDappFrameServiceStore {
   innerDappAccounts: Record<string, Account>;
-  perps: string;
-  prediction: string;
-  lending: string;
+  perps: INNER_DAPP_ID;
+  prediction: INNER_DAPP_ID;
+  lending: INNER_DAPP_ID;
 }
 class InnerDappFrameService {
   store: InnerDappFrameServiceStore = {
     innerDappAccounts: {},
-    perps: 'hyperliquid',
-    prediction: 'polymarket',
-    lending: 'aave',
+    perps: DEFAULT_INNER_DAPP_ID.perps,
+    prediction: DEFAULT_INNER_DAPP_ID.prediction,
+    lending: DEFAULT_INNER_DAPP_ID.lending,
   };
 
   init = async () => {
@@ -26,9 +28,9 @@ class InnerDappFrameService {
       name: 'innerDappFrameService',
       template: {
         innerDappAccounts: {},
-        perps: 'hyperliquid',
-        prediction: 'polymarket',
-        lending: 'aave',
+        perps: DEFAULT_INNER_DAPP_ID.perps,
+        prediction: DEFAULT_INNER_DAPP_ID.prediction,
+        lending: DEFAULT_INNER_DAPP_ID.lending,
       },
     });
     this.store = storageCache || this.store;
@@ -54,7 +56,7 @@ class InnerDappFrameService {
     this.store.innerDappAccounts[origin] = account;
   };
 
-  setInnerDappId = (type: InnerDappType, id: string) => {
+  setInnerDappId = (type: InnerDappType, id: INNER_DAPP_ID) => {
     this.store[type] = id;
   };
 
@@ -62,6 +64,9 @@ class InnerDappFrameService {
     if (address && type) {
       let changed = false;
       Object.entries(this.store.innerDappAccounts).forEach(([key, account]) => {
+        if (!account) {
+          return;
+        }
         if (
           isSameAccount(account, { address, type, brandName: brand || type })
         ) {
