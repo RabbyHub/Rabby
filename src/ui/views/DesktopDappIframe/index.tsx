@@ -25,6 +25,7 @@ import { DesktopDappSelector } from '@/ui/component/DesktopDappSelector';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Account } from '@/background/service/preference';
 import { DappSelectItem, INNER_DAPP_LIST } from '@/constant/dappIframe';
+import type { INNER_DAPP_ID } from '@/constant/dappIframe';
 import { InnerDappType } from '@/background/service';
 import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 import { useIframeBridge } from '@/ui/hooks/useIframeBridge';
@@ -78,7 +79,10 @@ export type DesktopDappIframeRef = {
   ) => Promise<any>;
 };
 
-const getDappByDappId = (list: DappSelectItem[], dappId?: string | null) => {
+const getDappByDappId = (
+  list: DappSelectItem[],
+  dappId?: INNER_DAPP_ID | null
+) => {
   if (!dappId) {
     return null;
   }
@@ -195,7 +199,7 @@ export const DesktopDappIframe = React.forwardRef<
         }
         return dappAccount;
       },
-      [iframeOrigin]
+      [iframeOrigin, switchCurrentSceneAccount]
     )
   );
 
