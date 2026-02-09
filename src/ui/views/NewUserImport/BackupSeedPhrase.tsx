@@ -67,6 +67,13 @@ export const BackupSeedPhrase = () => {
       <Card
         title={t('page.newAddress.seedPhrase.backup')}
         className="flex flex-col"
+        onBack={() => {
+          if (history.length > 1) {
+            history.goBack();
+          } else {
+            window.close();
+          }
+        }}
       >
         <div className="text-[13px] leading-[16px] text-r-neutral-foot text-center mt-[14px] mb-[16px]">
           {t('page.newAddress.seedPhrase.backupTips')}
