@@ -168,7 +168,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           user_addr: currentPerpsAccount?.address || '',
           trade_type: 'market',
           leverage: leverage.toString(),
-          trade_side: getStatsReportSide(!isBuy, reduceOnly),
+          trade_side: getStatsReportSide(isBuy, reduceOnly),
           margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
           coin: selectedCoin,
           size: totalSz,

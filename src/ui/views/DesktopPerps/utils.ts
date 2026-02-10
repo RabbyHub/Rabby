@@ -397,7 +397,7 @@ export const formatAllDexsClearinghouseState = (
 
 export const formatSpotState = (spotState: SpotClearinghouseState) => {
   return {
-    accountValue: spotState.balances[0].total || '0',
+    accountValue: spotState.balances?.[0]?.total || '0',
     availableToTrade:
       spotState.tokenToAvailableAfterMaintenance?.[0]?.[1] || '0',
   };
