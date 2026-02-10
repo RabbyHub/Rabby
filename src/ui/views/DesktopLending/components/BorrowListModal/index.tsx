@@ -257,12 +257,12 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
           {listReserves.length > 0 && (
             <>
               <div className="mt-16 mb-2 flex items-center justify-start px-16">
-                <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[150px]">
+                <span className="text-[14px] leading-[18px] text-r-neutral-foot w-[160px]">
                   {t('page.lending.list.headers.token')}
                 </span>
                 <div
                   className={clsx(
-                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center justify-end gap-3',
+                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center gap-3',
                     sortField === 'debt'
                       ? 'text-r-neutral-title-1 font-medium'
                       : 'text-r-neutral-foot'
@@ -283,7 +283,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                 </div>
                 <div
                   className={clsx(
-                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center justify-end gap-3',
+                    'text-[14px] leading-[18px] w-[150px] text-right cursor-pointer flex items-center gap-3',
                     sortField === 'apy'
                       ? 'text-r-neutral-title-1 font-medium'
                       : 'text-r-neutral-foot'

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { DisplayPoolReserveInfo } from '../../types';
 import { RESERVE_USAGE_WARNING_THRESHOLD } from '../../utils/constant';
-import { formatUsdValue } from '@/ui/utils/number';
+import { formatUsdValueKMB } from '@/ui/views/Dashboard/components/TokenDetailPopup/utils';
 
 export const ReserveErrorTip: React.FC<{
   reserve?: DisplayPoolReserveInfo;
@@ -39,7 +39,7 @@ export const ReserveErrorTip: React.FC<{
     ) {
       const available = supplyCapUSD.minus(totalLiquidityUSD).toString();
       return t('page.lending.supplyOverview.almostCap', {
-        available: formatUsdValue(Number(available)),
+        available: formatUsdValueKMB(Number(available)),
       });
     }
     return undefined;
