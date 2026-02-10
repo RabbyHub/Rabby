@@ -71,9 +71,13 @@ export const TradeHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div
-              className="text-[12px] leading-[14px]  text-r-neutral-title-1 cursor-pointer hover:font-bold hover:text-rb-brand-default"
+              className={`text-[12px] leading-[14px]  text-r-neutral-title-1 ${
+                record.side === 'B'
+                  ? 'text-rb-green-default'
+                  : 'text-rb-red-default'
+              } cursor-pointer hover:font-bold hover:text-rb-brand-default`}
               onClick={() => {
-                dispatch.perps.setSelectedCoin(record.coin);
+                dispatch.perps.updateSelectedCoin(record.coin);
               }}
             >
               {formatPerpsCoin(record.coin)}
@@ -104,7 +108,13 @@ export const TradeHistory: React.FC = () => {
         sorter: (a, b) => a.dir.localeCompare(b.dir),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div
+              className={`text-[12px] leading-[14px]  text-r-neutral-title-1 ${
+                record.side === 'B'
+                  ? 'text-rb-green-default'
+                  : 'text-rb-red-default'
+              }`}
+            >
               {record.liquidation ? 'Liquidation: ' : ''}
               {record.dir}
             </div>

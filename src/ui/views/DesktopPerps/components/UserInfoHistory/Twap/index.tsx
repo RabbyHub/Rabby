@@ -195,9 +195,13 @@ export const Twap: React.FC = () => {
         sorter: (a, b) => a.fill.coin.localeCompare(b.fill.coin),
         render: (_, record) => (
           <div
-            className="text-[12px] leading-[14px] text-r-neutral-title-1 cursor-pointer hover:font-bold hover:text-rb-brand-default"
+            className={`text-[12px] leading-[14px] text-r-neutral-title-1 ${
+              record.fill.side === 'B'
+                ? 'text-rb-green-default'
+                : 'text-rb-red-default'
+            } cursor-pointer hover:font-bold hover:text-rb-brand-default`}
             onClick={() => {
-              dispatch.perps.setSelectedCoin(record.fill.coin);
+              dispatch.perps.updateSelectedCoin(record.fill.coin);
             }}
           >
             {formatPerpsCoin(record.fill.coin)}
@@ -406,7 +410,7 @@ export const Twap: React.FC = () => {
                       className="cursor-pointer hover:font-bold hover:text-rb-brand-default"
                       onClick={(e) => {
                         e.stopPropagation();
-                        dispatch.perps.setSelectedCoin(record.coin);
+                        dispatch.perps.updateSelectedCoin(record.coin);
                       }}
                     >
                       {formatPerpsCoin(record.coin)}{' '}

@@ -32,6 +32,7 @@ import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { Account } from '@/background/service/preference';
 import { sortTokenList } from '../../utils';
+import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -80,7 +81,7 @@ export const useDepositWithdraw = (
   const abortControllerRef = useRef<AbortController | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const availableBalance = clearinghouseState?.withdrawable || '0';
+  const { availableBalance } = usePerpsAccount();
 
   // Fetch token info
   const { value: _tokenInfo } = useAsync(async () => {

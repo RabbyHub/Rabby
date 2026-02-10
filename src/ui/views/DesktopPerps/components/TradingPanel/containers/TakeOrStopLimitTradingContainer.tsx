@@ -28,6 +28,8 @@ import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 import { TradingButton } from '../components/TradingButton';
 import { BigNumber } from 'bignumber.js';
+import stats from '@/stats';
+import { getStatsReportSide } from '../../../utils';
 
 interface TakeOrStopLimitTradingContainerProps {
   takeOrStop: 'tp' | 'sl';
@@ -40,6 +42,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
 
   // Get data from perpsState
   const {
+    currentPerpsAccount,
     leverageType,
     crossMargin,
     maxLeverage,
@@ -241,14 +244,31 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     loading: handleOpenOrderLoading,
   } = useRequest(
     async () => {
+      const isBuy = orderSide === OrderSide.BUY;
       await handleOpenTPSlLimitOrder({
         coin: selectedCoin,
-        isBuy: orderSide === OrderSide.BUY,
+        isBuy,
         size: tradeSize,
         triggerPx: triggerPrice,
         limitPx: limitPrice,
         reduceOnly,
         tpsl: takeOrStop,
+      });
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type:
+          takeOrStop === 'tp' ? 'take profit limit' : 'stop loss limit',
+        leverage: leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, reduceOnly),
+        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+        coin: selectedCoin,
+        size: tradeSize,
+        price: limitPrice,
+        trade_usd_value: new BigNumber(limitPrice).times(tradeSize).toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
       });
     },
     {

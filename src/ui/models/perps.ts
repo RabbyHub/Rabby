@@ -20,6 +20,8 @@ import {
   UserTwapHistory,
   UserTwapSliceFill,
   WsAllClearinghouseStates,
+  SpotClearinghouseState,
+  UserAbstractionResp,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
 import { RootModel } from '.';
@@ -39,6 +41,7 @@ import {
   handleUpdateHistoricalOrders,
   handleUpdateTwapSliceFills,
   showDepositAndWithdrawToast,
+  formatSpotState,
 } from '../views/DesktopPerps/utils';
 import {
   OrderType,
@@ -138,6 +141,11 @@ export interface PerpsState {
   clearinghouseState: ClearinghouseState | null;
   openOrders: OpenOrder[];
   clearinghouseStateMap: Record<string, ClearinghouseState | null>;
+  spotState: {
+    accountValue: string;
+    availableToTrade: string;
+  };
+  userAbstraction: UserAbstractionResp;
   historicalOrders: UserHistoricalOrders[];
   userFunding: WsUserFunding['fundings'];
   nonFundingLedgerUpdates: UserNonFundingLedgerUpdates[];
@@ -191,6 +199,11 @@ export const perps = createModel<RootModel>()({
     clearinghouseStateMap: {},
     openOrders: [],
     historicalOrders: [],
+    userAbstraction: 'default',
+    spotState: {
+      accountValue: '0',
+      availableToTrade: '0',
+    },
     userFunding: [],
     nonFundingLedgerUpdates: [],
     twapStates: [],
@@ -356,6 +369,7 @@ export const perps = createModel<RootModel>()({
         },
       };
     },
+
     setClearinghouseStateMapBySingle(
       state,
       payload: {
@@ -757,6 +771,11 @@ export const perps = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
+    async updateSelectedCoin(payload: string, rootState) {
+      dispatch.perps.setSelectedCoin(payload);
+      await rootState.app.wallet.setPerpsSelectedCoin(payload);
+    },
+
     async updateQuoteUnit(payload: 'base' | 'usd', rootState) {
       dispatch.perps.patchState({ quoteUnit: payload });
       await rootState.app.wallet.setPerpsQuoteUnit(payload);
@@ -802,6 +821,12 @@ export const perps = createModel<RootModel>()({
       dispatch.perps.setHasPermission(has_permission);
     },
 
+    async fetchUserAbstraction(address: string) {
+      const sdk = getPerpsSDK();
+      const userAbstraction = await sdk.info.getUserAbstraction(address);
+      dispatch.perps.patchState({ userAbstraction: userAbstraction });
+    },
+
     async loginPerpsAccount(
       payload: {
         account: Account;
@@ -829,7 +854,7 @@ export const perps = createModel<RootModel>()({
       });
 
       // dispatch.perps.startPolling(undefined);
-
+      dispatch.perps.fetchUserAbstraction(account.address);
       dispatch.perps.fetchPerpPermission(account.address);
       setTimeout(() => {
         // avoid 429 error
@@ -1007,28 +1032,6 @@ export const perps = createModel<RootModel>()({
       const sdk = getPerpsSDK();
       const subscriptions: (() => void)[] = [];
       dispatch.perps.unsubscribeAll(undefined);
-      // const { unsubscribe: unsubscribeWebData2 } = sdk.ws.subscribeToWebData2(
-      //   (data) => {
-      //     const {
-      //       clearinghouseState,
-      //       assetCtxs,
-      //       openOrders,
-      //       serverTime,
-      //       user,
-      //     } = data;
-      //     if (!isSameAddress(user, address)) {
-      //       return;
-      //     }
-
-      //     dispatch.perps.setPositionAndOpenOrders(
-      //       clearinghouseState,
-      //       openOrders
-      //     );
-
-      //     dispatch.perps.updateMarketData(assetCtxs);
-      //   }
-      // );
-      // subscriptions.push(unsubscribeWebData2);
       const {
         unsubscribe: unsubscribeAllDexsAssetCtxs,
       } = sdk.ws.subscribeToAllDexsAssetCtxs((data) => {
@@ -1059,6 +1062,18 @@ export const perps = createModel<RootModel>()({
           });
         });
         subscriptions.push(unsubscribeClearinghouseState);
+
+        const {
+          unsubscribe: unsubscribeSpotState,
+        } = sdk.ws.subscribeToSpotState((data) => {
+          const { spotState, user } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+
+          dispatch.perps.patchState({ spotState: formatSpotState(spotState) });
+        });
+        subscriptions.push(unsubscribeSpotState);
 
         const {
           unsubscribe: unsubscribeOpenOrders,
@@ -1184,28 +1199,6 @@ export const perps = createModel<RootModel>()({
             return;
           }
 
-          if (!isSnapshot) {
-            fills.forEach((item) => {
-              stats.report('perpsTradeHistory', {
-                created_at: item.time,
-                user_addr: address || '',
-                trade_type: item.dir,
-                coin: item.coin,
-                size: item.sz,
-                price: item.px,
-                trade_usd_value: new BigNumber(item.px)
-                  .times(item.sz)
-                  .toFixed(2),
-                builder_fee: item.builderFee || '',
-                closed_pnl: item.closedPnl,
-                service_provider: 'hyperliquid',
-                app_version: process.env.release || '0',
-                address_type: addressType || '',
-                hash: item.hash,
-              });
-            });
-          }
-
           dispatch.perps.patchStatsListBySnapshot({
             listName: 'userFills',
             list: fills,
@@ -1274,6 +1267,16 @@ export const perps = createModel<RootModel>()({
         console.error('Failed to load favorited coins:', error);
         // Fallback to default
         dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
+      }
+    },
+
+    async initSelectedCoin(_, rootState) {
+      try {
+        const selectedCoin = await rootState.app.wallet.getPerpsSelectedCoin();
+        dispatch.perps.setSelectedCoin(selectedCoin ?? 'BTC');
+      } catch (error) {
+        console.error('Failed to load selected coin:', error);
+        dispatch.perps.setSelectedCoin('BTC');
       }
     },
 

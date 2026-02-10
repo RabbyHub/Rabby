@@ -15,6 +15,9 @@ import { PerpsPositionCard } from '../components/PerpsPositionCard';
 import { PositionFormatData } from '../components/UserInfoHistory/PositionsInfo';
 import { usePerpsProPosition } from '../hooks/usePerpsProPosition';
 import perpsToast from '../components/PerpsToast';
+import stats from '@/stats';
+import { useRabbySelector } from '@/ui/store';
+import { getStatsReportSide } from '../utils';
 
 export interface Props {
   visible: boolean;
@@ -52,6 +55,9 @@ export const EditTpSlModal: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
+  const currentPerpsAccount = useRabbySelector(
+    (store) => store.perps.currentPerpsAccount
+  );
   // todo tp sl from props
   const [tpPrice, setTpPrice] = React.useState<string>('');
   const [slPrice, setSlPrice] = React.useState<string>('');
@@ -300,6 +306,7 @@ export const EditTpSlModal: React.FC<Props> = ({
   const { loading, runAsync: runSubmit } = useRequest(
     async () => {
       const direction = position.direction;
+      const isBuy = direction === 'Short';
       if (position.tpItem && position.slItem) {
         // both have tp and sl
         await handleModifyTpSlOrders({
@@ -320,12 +327,50 @@ export const EditTpSlModal: React.FC<Props> = ({
         });
       } else if (!position.tpItem && !position.slItem) {
         // both not have tp and sl
+        const tpTriggerPx = new BigNumber(tpPrice).isNaN() ? '' : tpPrice;
+        const slTriggerPx = new BigNumber(slPrice).isNaN() ? '' : slPrice;
         await handleSetAutoClose({
           coin: position.coin,
-          tpTriggerPx: new BigNumber(tpPrice).isNaN() ? '' : tpPrice,
-          slTriggerPx: new BigNumber(slPrice).isNaN() ? '' : slPrice,
+          tpTriggerPx,
+          slTriggerPx,
           direction,
         });
+        tpTriggerPx &&
+          stats.report('perpsTradeHistory', {
+            created_at: new Date().getTime(),
+            user_addr: currentPerpsAccount?.address || '',
+            trade_type: 'position take profit',
+            leverage: position.leverage.toString(),
+            trade_side: getStatsReportSide(isBuy, true),
+            margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
+            coin: position.coin,
+            size: position.size,
+            price: tpTriggerPx,
+            trade_usd_value: new BigNumber(tpTriggerPx)
+              .times(position.size)
+              .toFixed(2),
+            service_provider: 'hyperliquid',
+            app_version: process.env.release || '0',
+            address_type: currentPerpsAccount?.type || '',
+          });
+        slTriggerPx &&
+          stats.report('perpsTradeHistory', {
+            created_at: new Date().getTime(),
+            user_addr: currentPerpsAccount?.address || '',
+            trade_type: 'position stop loss',
+            leverage: position.leverage.toString(),
+            trade_side: getStatsReportSide(isBuy, true),
+            margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
+            coin: position.coin,
+            size: position.size,
+            price: slTriggerPx,
+            trade_usd_value: new BigNumber(slTriggerPx)
+              .times(position.size)
+              .toFixed(2),
+            service_provider: 'hyperliquid',
+            app_version: process.env.release || '0',
+            address_type: currentPerpsAccount?.type || '',
+          });
       } else {
         // only have tp
         if (position.tpItem) {
@@ -345,6 +390,24 @@ export const EditTpSlModal: React.FC<Props> = ({
               slTriggerPx: slPrice,
               direction,
             });
+            slPrice &&
+              stats.report('perpsTradeHistory', {
+                created_at: new Date().getTime(),
+                user_addr: currentPerpsAccount?.address || '',
+                trade_type: 'position stop loss',
+                leverage: position.leverage.toString(),
+                trade_side: getStatsReportSide(isBuy, true),
+                margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
+                coin: position.coin,
+                size: position.size,
+                price: slPrice,
+                trade_usd_value: new BigNumber(slPrice)
+                  .times(position.size)
+                  .toFixed(2),
+                service_provider: 'hyperliquid',
+                app_version: process.env.release || '0',
+                address_type: currentPerpsAccount?.type || '',
+              });
           }
         } else if (position.slItem) {
           // only have sl
@@ -364,6 +427,24 @@ export const EditTpSlModal: React.FC<Props> = ({
               slTriggerPx: '',
               direction,
             });
+            tpPrice &&
+              stats.report('perpsTradeHistory', {
+                created_at: new Date().getTime(),
+                user_addr: currentPerpsAccount?.address || '',
+                trade_type: 'position take profit',
+                leverage: position.leverage.toString(),
+                trade_side: getStatsReportSide(isBuy, true),
+                margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
+                coin: position.coin,
+                size: position.size,
+                price: tpPrice,
+                trade_usd_value: new BigNumber(tpPrice)
+                  .times(position.size)
+                  .toFixed(2),
+                service_provider: 'hyperliquid',
+                app_version: process.env.release || '0',
+                address_type: currentPerpsAccount?.type || '',
+              });
           }
         }
       }

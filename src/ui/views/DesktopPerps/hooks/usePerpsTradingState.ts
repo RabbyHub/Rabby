@@ -275,6 +275,7 @@ export const usePerpsTradingState = () => {
   ]);
 
   return {
+    currentPerpsAccount,
     leverageType,
     crossMargin,
     selectedCoin,

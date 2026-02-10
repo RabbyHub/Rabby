@@ -5829,6 +5829,8 @@ export class WalletController extends BaseController {
   };
   getPerpsFavoritedCoins = perpsService.getPerpsFavoritedCoins;
   setPerpsFavoritedCoins = perpsService.setPerpsFavoritedCoins;
+  setPerpsSelectedCoin = perpsService.setSelectedCoin;
+  getPerpsSelectedCoin = perpsService.getSelectedCoin;
   getMarketSlippage = perpsService.getMarketSlippage;
   setMarketSlippage = perpsService.setMarketSlippage;
   getSoundEnabled = perpsService.getSoundEnabled;
