@@ -32,7 +32,7 @@ const config = {
         authToken: process.env.SENTRY_AUTH_TOKEN,
       }),
     ,
-    false && new SecSDK({
+    new SecSDK({
       dev: false,
       disableProtoAssets: ['pageProvider.js'],
       skipScuttleAssets: ['pageProvider.js'],
