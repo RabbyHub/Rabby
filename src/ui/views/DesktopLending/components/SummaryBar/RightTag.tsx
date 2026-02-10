@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tooltip } from 'antd';
 import { useMode } from '../../hooks/useMode';
 import { IsolateTag } from '../IsolateTag';
 import styled from 'styled-components';
-import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 import { ManageEmodeModal } from '../ManageEmodeModal';
 import { DisableEmodeModal } from '../DisableEmodeModal';
 import { ManageEmodeFullModal } from '../ManageEmodeFullModal';
@@ -22,10 +20,10 @@ const EthCorrelatedTagWrapper = styled.div`
 const EthCorrelatedTag = styled.div`
   background-color: var(--rb-neutral-bg-1);
   border-radius: 5px;
-  padding: 4px 8px;
+  padding: 4px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0px;
 `;
 
 export const RightMarketTabInfo: React.FC = () => {
@@ -72,18 +70,11 @@ export const RightMarketTabInfo: React.FC = () => {
                   {currentEmode?.label || ''}
                 </div>
               </span>
-              <Tooltip
-                overlayClassName="rectangle"
-                title={t('page.lending.summary.ethCorrelatedTip')}
-              >
-                <span onClick={(e) => e.stopPropagation()}>
-                  <RcIconInfo
-                    width={12}
-                    height={12}
-                    className="cursor-pointer text-[#CB8EFF]"
-                  />
-                </span>
-              </Tooltip>
+              <RcIconSettingCC
+                width={16}
+                height={16}
+                className="text-[#CB8EFF]"
+              />
             </EthCorrelatedTag>
           </EthCorrelatedTagWrapper>
           <DisableEmodeModal
@@ -123,7 +114,7 @@ export const RightMarketTabInfo: React.FC = () => {
       </div>
       <div
         onClick={() => setEnableIntroVisible(true)}
-        className="flex items-center gap-[0px] bg-rb-neutral-bg-5 rounded-[6px] border-0 py-6 px-[5px] cursor-pointer"
+        className="flex items-center gap-[0px] bg-rb-neutral-bg-5 rounded-[6px] border-0 py-4 px-[6px] cursor-pointer"
       >
         <RcIconLightingCC
           width={16}
