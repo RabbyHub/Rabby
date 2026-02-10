@@ -74,7 +74,7 @@ export const SupplyItem = ({
         />
       )}
       <div className="flex-1 flex items-center justify-start min-w-0 text-left">
-        <div className="flex items-center gap-8 min-w-0 w-[150px]">
+        <div className="flex items-center gap-8 min-w-0 w-[160px]">
           <SymbolIcon tokenSymbol={data.reserve.symbol} size={24} />
           <span
             className={clsx(
@@ -87,16 +87,16 @@ export const SupplyItem = ({
         </div>
         <span
           className={clsx(
-            'text-[13px] leading-[18px] font-medium text-r-neutral-title-1 w-[150px]',
-            'flex-shrink-0 text-right'
+            'text-[13px] leading-[18px] font-medium text-r-neutral-title-1 w-[130px]',
+            'flex-shrink-0 text-left'
           )}
         >
           {formatListNetWorth(Number(data.reserve.totalLiquidityUSD || '0'))}
         </span>
         <span
           className={clsx(
-            'text-[13px] leading-[20px] font-medium text-rb-green-default w-[150px]',
-            'flex-shrink-0 text-right'
+            'text-[13px] leading-[20px] font-medium text-rb-green-default w-[126px]',
+            'flex-shrink-0 text-left'
           )}
         >
           {formatApy(Number(data.reserve.supplyAPY || '0'))}
@@ -104,7 +104,7 @@ export const SupplyItem = ({
         <span
           className={clsx(
             'text-[13px] leading-[20px] font-medium text-r-neutral-title-1 w-[150px]',
-            'flex-shrink-0 text-right'
+            'flex-shrink-0 text-left'
           )}
         >
           {formatUsdValue(Number(data.walletBalanceUSD || '0'))}

@@ -1055,7 +1055,7 @@
           ],
           "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
           "fundingTips": "Net funding payments since the position was opened. If negative, it means funding gains.",
-          "fundingTipsV2": "Net funding since the position was opened. If positive, it means funding gains; If negative, it means funding payment.",
+          "fundingTipsV2": "Net funding since the position was opened. a red (negative) funding value indicates funding paid, while a green (positive) value indicates funding received.",
           "closedPnlTooltip": "Closed PNL includes fees and rebates",
           "direction": "Direction",
           "time": "Time",
