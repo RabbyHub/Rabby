@@ -39,12 +39,14 @@ import { EVENTS } from '@/constant';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import {
   formatAllDexsClearinghouseState,
+  getStatsReportSide,
   handleDisplayFundingPayments,
   isScreenSmall,
 } from '../../../utils';
 import { formatPerpsCoin } from '../../../utils';
 import perpsToast from '../../PerpsToast';
 import { ga4 } from '@/utils/ga4';
+import stats from '@/stats';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -74,6 +76,7 @@ export const PositionsInfo: React.FC = () => {
 
     marketDataMap,
     accountSummary,
+    currentPerpsAccount,
     wsActiveAssetCtx,
   } = useRabbySelector((store) => store.perps);
   const dispatch = useRabbyDispatch();
@@ -188,6 +191,28 @@ export const PositionsInfo: React.FC = () => {
     }
 
     await handleCloseAllPositions(clearinghouseState);
+    clearinghouseState.assetPositions.forEach((item) => {
+      const isBuy = Number(item.position.szi || 0) > 0;
+      const price = new BigNumber(item.position.positionValue || 0).div(
+        new BigNumber(item.position.szi || 0).abs()
+      );
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type: 'close all market',
+        leverage: item.position.leverage.value.toString(),
+        trade_side: getStatsReportSide(isBuy, true),
+        margin_mode:
+          item.position.leverage.type === 'cross' ? 'cross' : 'isolated',
+        coin: item.position.coin,
+        size: Math.abs(Number(item.position.szi || 0)),
+        price: price.toFixed(2),
+        trade_usd_value: item.position.positionValue,
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
+      });
+    });
   });
 
   const handleClickLeverage = useMemoizedFn(

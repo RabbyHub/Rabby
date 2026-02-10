@@ -405,3 +405,10 @@ export const formatSpotState = (spotState: SpotClearinghouseState) => {
   //   availableToTrade: availableToTrade?.[1] || '0',
   // };
 };
+
+export const getStatsReportSide = (isBuy: boolean, isReduceOnly: boolean) => {
+  if (isReduceOnly) {
+    return isBuy ? 'close short' : 'close long';
+  }
+  return isBuy ? 'open long' : 'open short';
+};

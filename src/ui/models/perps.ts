@@ -1194,28 +1194,6 @@ export const perps = createModel<RootModel>()({
             return;
           }
 
-          if (!isSnapshot) {
-            fills.forEach((item) => {
-              stats.report('perpsTradeHistory', {
-                created_at: item.time,
-                user_addr: address || '',
-                trade_type: item.dir,
-                coin: item.coin,
-                size: item.sz,
-                price: item.px,
-                trade_usd_value: new BigNumber(item.px)
-                  .times(item.sz)
-                  .toFixed(2),
-                builder_fee: item.builderFee || '',
-                closed_pnl: item.closedPnl,
-                service_provider: 'hyperliquid',
-                app_version: process.env.release || '0',
-                address_type: addressType || '',
-                hash: item.hash,
-              });
-            });
-          }
-
           dispatch.perps.patchStatsListBySnapshot({
             listName: 'userFills',
             list: fills,

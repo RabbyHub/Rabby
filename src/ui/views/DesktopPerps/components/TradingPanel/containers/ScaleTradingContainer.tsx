@@ -27,12 +27,15 @@ import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 import { TradingButton } from '../components/TradingButton';
 import { BigNumber } from 'bignumber.js';
+import stats from '@/stats';
+import { getStatsReportSide } from '../../../utils';
 
 export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
 
   // Get data from perpsState
   const {
+    currentPerpsAccount,
     selectedCoin,
     orderSide,
     switchOrderSide,
@@ -44,6 +47,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     szDecimals,
     pxDecimals,
     leverage,
+    leverageType,
     availableBalance,
     reduceOnly,
     setReduceOnly,
@@ -258,11 +262,29 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         });
         return;
       }
+      const isBuy = orderSide === OrderSide.BUY;
       await handleOpenScaleOrder({
         coin: selectedCoin,
-        isBuy: orderSide === OrderSide.BUY,
+        isBuy,
         totalSize: tradeSize,
         orders: scaleOrders,
+      });
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type: 'scale',
+        leverage: leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, reduceOnly),
+        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+        coin: selectedCoin,
+        size: tradeSize,
+        price: scaleAveragePrice,
+        trade_usd_value: new BigNumber(scaleAveragePrice)
+          .times(tradeSize)
+          .toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
       });
     },
     {
