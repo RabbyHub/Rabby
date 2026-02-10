@@ -53,7 +53,13 @@ const ProjectOverviewItem = ({
     ScrollToDomById(protocol.id);
   };
   return (
-    <ProjectOverviewItemWrapper onClick={handleGotoProject}>
+    <ProjectOverviewItemWrapper
+      onClick={handleGotoProject}
+      className={clsx(
+        'border-[1px] border-solid border-transparent',
+        'hover:bg-r-blue-light1 hover:border-rabby-blue-default'
+      )}
+    >
       {isTokenWallet ? (
         <RcWalletIconCC className="w-[20px] h-[20px]" />
       ) : (
