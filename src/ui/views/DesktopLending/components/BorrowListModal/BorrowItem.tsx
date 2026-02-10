@@ -55,13 +55,10 @@ export const BorrowItem = ({
       key={`${data.reserve.underlyingAsset}-${data.reserve.symbol}`}
       className={clsx(
         'mt-8 flex items-center justify-between px-16 h-[56px] rounded-[12px]',
-        'bg-rb-neutral-bg-3'
+        'bg-rb-neutral-bg-1 dark:bg-rb-neutral-bg-3'
       )}
     >
-      <button
-        type="button"
-        className="flex-1 flex items-center justify-start min-w-0 text-left"
-      >
+      <div className="flex-1 flex items-center justify-start min-w-0 text-left">
         <div className="flex items-center gap-8 min-w-0 w-[160px]">
           <SymbolIcon tokenSymbol={data.reserve.symbol} size={24} />
           <span
@@ -89,7 +86,7 @@ export const BorrowItem = ({
         >
           {formatApy(Number(data.reserve.variableBorrowAPY || '0'))}
         </span>
-      </button>
+      </div>
       {disableBorrowButton ? (
         <Tooltip overlayClassName="rectangle" title={tips}>
           <button

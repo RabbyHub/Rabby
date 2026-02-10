@@ -15,7 +15,13 @@ import { useLendingSummary } from '../../hooks';
 import { useSelectedMarket } from '../../hooks/market';
 import wrapperToken from '../../config/wrapperToken';
 
-const CollateralSwitch = styled(Switch)`
+const CollateralSwitch = styled(Switch)<{ shadowBg?: boolean }>`
+  &.ant-switch {
+    background-color: ${({ shadowBg }) =>
+      shadowBg
+        ? 'var(--rb-neutral-bg-2) !important'
+        : 'var(--rb-neutral-line) !important'};
+  }
   &.ant-switch-checked {
     background-color: var(--rb-green-default, #2abb7f) !important;
   }
@@ -134,15 +140,17 @@ export const SupplyItem: React.FC<{
             <CollateralSwitch
               checked={data.usageAsCollateralEnabledOnUser}
               onChange={handleCollateralChange}
+              shadowBg={isWrapperToken}
               checkedChildren=""
               unCheckedChildren=""
             />
           ) : (
             <Tooltip
-              overlayClassName="rectangle"
+              overlayClassName="rectangle max-w-[400px]"
               title={t('page.lending.supplyDetail.isolatedTips')}
             >
               <CollateralSwitch
+                shadowBg={isWrapperToken}
                 checked={data.usageAsCollateralEnabledOnUser}
                 disabled
                 checkedChildren=""
