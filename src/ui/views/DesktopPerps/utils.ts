@@ -3,6 +3,8 @@ import {
   UserHistoricalOrders,
   UserTwapSliceFill,
   ClearinghouseState,
+  SpotClearinghouseState,
+  USDC_TOKEN_ID,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { perpsToast } from './components/PerpsToast';
 import i18n from '@/i18n';
@@ -385,4 +387,21 @@ export const formatAllDexsClearinghouseState = (
     time: hyperDexState?.time || 0,
     withdrawable: withdrawable.toString(),
   };
+};
+
+export const formatSpotState = (spotState: SpotClearinghouseState) => {
+  return {
+    accountValue: spotState.balances[0].total || '0',
+    availableToTrade:
+      spotState.tokenToAvailableAfterMaintenance?.[0]?.[1] || '0',
+  };
+  // const token = spotState.balances.find((i) => i.token === USDC_TOKEN_ID);
+  // const availableToTrade = spotState.tokenToAvailableAfterMaintenance?.find(
+  //   (i) => i?.[0] === USDC_TOKEN_ID
+  // );
+
+  // return {
+  //   accountValue: token?.total || '0',
+  //   availableToTrade: availableToTrade?.[1] || '0',
+  // };
 };

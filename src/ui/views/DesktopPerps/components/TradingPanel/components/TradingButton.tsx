@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
+import { UserAbstractionResp } from '@rabby-wallet/hyperliquid-sdk';
+import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 
 interface TradingButtonProps {
   loading: boolean;
@@ -34,10 +36,9 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
     (store) => store.perps.wsActiveAssetData
   );
 
+  const { accountValue } = usePerpsAccount();
+
   const needDepositFirst = useMemo(() => {
-    const accountValue = Number(
-      clearinghouseState?.marginSummary?.accountValue || 0
-    );
     const orderSideAvailableBalance = Number(
       wsActiveAssetData?.availableToTrade[
         orderSide === OrderSide.BUY ? 0 : 1
@@ -48,7 +49,12 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
       accountValue === 0 &&
       orderSideAvailableBalance === 0
     );
-  }, [clearinghouseState, wsActiveAssetData?.availableToTrade, orderSide]);
+  }, [
+    clearinghouseState,
+    wsActiveAssetData?.availableToTrade,
+    orderSide,
+    accountValue,
+  ]);
 
   const hasPermission = useRabbySelector((state) => state.perps.hasPermission);
   const { t } = useTranslation();

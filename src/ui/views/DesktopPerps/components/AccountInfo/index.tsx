@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { DashedUnderlineText } from '../DashedUnderlineText';
 import { isNaN } from 'lodash';
+import { UserAbstractionResp } from '@rabby-wallet/hyperliquid-sdk';
+import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 
 export const AccountInfo: React.FC = () => {
   const { t } = useTranslation();
@@ -16,6 +18,7 @@ export const AccountInfo: React.FC = () => {
   const clearinghouseState = useRabbySelector(
     (store) => store.perps.clearinghouseState
   );
+
   const positionAllPnl = useMemo(() => {
     return (
       clearinghouseState?.assetPositions?.reduce((acc, asset) => {
@@ -48,12 +51,10 @@ export const AccountInfo: React.FC = () => {
     });
   };
 
-  const accountValue = useMemo(() => {
-    return Number(clearinghouseState?.marginSummary?.accountValue || 0);
-  }, [clearinghouseState]);
+  const { accountValue } = usePerpsAccount();
 
   const customBalance = useMemo(() => {
-    return Number(accountValue) - Number(positionAllPnl || 0);
+    return accountValue - Number(positionAllPnl || 0);
   }, [accountValue, positionAllPnl]);
 
   const crossAccountLeverage = useMemo(() => {
