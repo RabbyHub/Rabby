@@ -10,7 +10,7 @@ import { useAsync } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { ReactComponent as RcIconTips } from '@/ui/assets/new-user-import/tips.svg';
 import { PasswordCard } from './PasswordCard';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useRabbyDispatch } from '@/ui/store';
 import { KEYRING_CLASS } from '@/constant';
 
@@ -65,6 +65,16 @@ export const CreateSeedPhrase = () => {
       history.goBack();
     } else {
       window.close();
+    }
+  });
+
+  useMount(async () => {
+    const isBooted = await wallet.isBooted();
+    if (isBooted) {
+      message.error('already set password, please click rabby popup');
+      setTimeout(() => {
+        window.close();
+      }, 1000);
     }
   });
 
