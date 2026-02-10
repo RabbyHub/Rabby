@@ -201,7 +201,7 @@ export const Twap: React.FC = () => {
                 : 'text-rb-red-default'
             } cursor-pointer hover:font-bold hover:text-rb-brand-default`}
             onClick={() => {
-              dispatch.perps.setSelectedCoin(record.fill.coin);
+              dispatch.perps.updateSelectedCoin(record.fill.coin);
             }}
           >
             {formatPerpsCoin(record.fill.coin)}
@@ -410,7 +410,7 @@ export const Twap: React.FC = () => {
                       className="cursor-pointer hover:font-bold hover:text-rb-brand-default"
                       onClick={(e) => {
                         e.stopPropagation();
-                        dispatch.perps.setSelectedCoin(record.coin);
+                        dispatch.perps.updateSelectedCoin(record.coin);
                       }}
                     >
                       {formatPerpsCoin(record.coin)}{' '}

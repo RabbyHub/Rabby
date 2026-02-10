@@ -77,7 +77,7 @@ export const TradeHistory: React.FC = () => {
                   : 'text-rb-red-default'
               } cursor-pointer hover:font-bold hover:text-rb-brand-default`}
               onClick={() => {
-                dispatch.perps.setSelectedCoin(record.coin);
+                dispatch.perps.updateSelectedCoin(record.coin);
               }}
             >
               {formatPerpsCoin(record.coin)}

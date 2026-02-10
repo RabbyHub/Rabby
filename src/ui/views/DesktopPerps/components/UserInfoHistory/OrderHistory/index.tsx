@@ -91,7 +91,7 @@ export const OrderHistory: React.FC = () => {
                   : 'text-rb-red-default'
               }`}
               onClick={() => {
-                dispatch.perps.setSelectedCoin(record.order.coin);
+                dispatch.perps.updateSelectedCoin(record.order.coin);
               }}
             >
               {formatPerpsCoin(record.order.coin)}

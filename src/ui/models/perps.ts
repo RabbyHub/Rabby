@@ -771,6 +771,11 @@ export const perps = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
+    async updateSelectedCoin(payload: string, rootState) {
+      dispatch.perps.setSelectedCoin(payload);
+      await rootState.app.wallet.setPerpsSelectedCoin(payload);
+    },
+
     async updateQuoteUnit(payload: 'base' | 'usd', rootState) {
       dispatch.perps.patchState({ quoteUnit: payload });
       await rootState.app.wallet.setPerpsQuoteUnit(payload);
@@ -1262,6 +1267,16 @@ export const perps = createModel<RootModel>()({
         console.error('Failed to load favorited coins:', error);
         // Fallback to default
         dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
+      }
+    },
+
+    async initSelectedCoin(_, rootState) {
+      try {
+        const selectedCoin = await rootState.app.wallet.getPerpsSelectedCoin();
+        dispatch.perps.setSelectedCoin(selectedCoin ?? 'BTC');
+      } catch (error) {
+        console.error('Failed to load selected coin:', error);
+        dispatch.perps.setSelectedCoin('BTC');
       }
     },
 

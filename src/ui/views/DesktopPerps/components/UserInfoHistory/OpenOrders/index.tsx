@@ -111,7 +111,7 @@ export const OpenOrders: React.FC = () => {
             >
               <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 mb-[2px]">
                 <span
-                  onClick={() => dispatch.perps.setSelectedCoin(record.coin)}
+                  onClick={() => dispatch.perps.updateSelectedCoin(record.coin)}
                   className="cursor-pointer hover:font-bold hover:text-rb-brand-default"
                 >
                   {formatPerpsCoin(record.coin)}{' '}

@@ -77,7 +77,7 @@ export const HomePerpsPositionList: React.FC = () => {
               if (isDesktop) {
                 dispatch.perps.resetProAccountInfo();
                 dispatch.perps.setCurrentPerpsAccount(currentAccount);
-                dispatch.perps.setSelectedCoin(assetPosition.position.coin);
+                dispatch.perps.updateSelectedCoin(assetPosition.position.coin);
                 wallet.setPerpsCurrentAccount(currentAccount);
                 history.push('/desktop/perps');
                 ga4.fireEvent('Perps_CardToPerps_Web', {
