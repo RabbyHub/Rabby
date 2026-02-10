@@ -30,8 +30,12 @@ class SyncChainService {
     this.store.updatedAt = this.store.updatedAt || 0;
   };
 
-  syncMainnetChainList = async () => {
-    if (dayjs().isBefore(dayjs(this.store.updatedAt).add(55, 'minute'))) {
+  syncMainnetChainList = async (options?: { force?: boolean }) => {
+    const { force = false } = options || {};
+    if (
+      dayjs().isBefore(dayjs(this.store.updatedAt).add(55, 'minute')) &&
+      !force
+    ) {
       return;
     }
     try {
