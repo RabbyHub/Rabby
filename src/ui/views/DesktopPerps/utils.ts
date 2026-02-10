@@ -186,7 +186,8 @@ export const handleDisplayFundingPayments = (fundingPayments: string) => {
   if (bn.isZero()) {
     return '$0.00';
   }
-  const sign = bn.isNegative() ? '-' : '';
+  // negative means funding payment, positive means funding gains
+  const sign = bn.isNegative() ? '+' : '-';
   if (bn.abs().lt(0.01)) {
     return sign + '$0.01';
   }
@@ -213,8 +214,9 @@ const STATUS_ENUM = {
   MIN_TRADE_NTL_REJECTED: 'minTradeNtlRejected',
   IOC_CANCEL_REJECTED: 'iocCancelRejected',
   BAD_ALO_PX_REJECTED: 'badAloPxRejected',
+  SIBLING_FILLED_CANCELED: 'siblingFilledCanceled',
 };
-
+// https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#request-body-6
 export const formatPerpsOrderStatus = (record: UserHistoricalOrders) => {
   const { status } = record;
   let statusStr = '';
@@ -244,6 +246,10 @@ export const formatPerpsOrderStatus = (record: UserHistoricalOrders) => {
     case STATUS_ENUM.PERP_MARGIN_REJECTED:
       statusStr = i18n.t('page.perpsPro.userInfo.status.rejected');
       tipsStr = i18n.t('page.perpsPro.userInfo.status.perpMarginRejected');
+      break;
+    case STATUS_ENUM.SIBLING_FILLED_CANCELED:
+      statusStr = i18n.t('page.perpsPro.userInfo.status.canceled');
+      tipsStr = i18n.t('page.perpsPro.userInfo.status.siblingFilledCanceled');
       break;
     case STATUS_ENUM.REDUCE_ONLY_CANCELED:
       statusStr = i18n.t('page.perpsPro.userInfo.status.canceled');

@@ -489,7 +489,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: (
           <DashedUnderlineText
-            tooltipText={t('page.perpsPro.userInfo.tab.fundingTips')}
+            tooltipText={t('page.perpsPro.userInfo.tab.fundingTipsV2')}
           >
             {t('page.perpsPro.userInfo.tab.funding')}
           </DashedUnderlineText>
@@ -500,8 +500,14 @@ export const PositionsInfo: React.FC = () => {
         sorter: (a, b) =>
           Number(a.sinceOpenFunding) - Number(b.sinceOpenFunding),
         render: (_, record) => {
+          const isGain = Number(record.sinceOpenFunding) < 0;
           return (
-            <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
+            <div
+              className={clsx(
+                'text-[12px] leading-[14px]  text-rb-neutral-foot',
+                isGain ? 'text-rb-green-default' : 'text-rb-red-default'
+              )}
+            >
               {handleDisplayFundingPayments(record.sinceOpenFunding)}
             </div>
           );

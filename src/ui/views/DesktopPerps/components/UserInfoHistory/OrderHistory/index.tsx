@@ -85,7 +85,11 @@ export const OrderHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div
-              className="text-[12px] leading-[14px]  text-r-neutral-title-1 cursor-pointer hover:font-bold hover:text-rb-brand-default"
+              className={`text-[12px] leading-[14px]  text-r-neutral-title-1 cursor-pointer hover:font-bold hover:text-rb-brand-default ${
+                record.order.side === 'B'
+                  ? 'text-rb-green-default'
+                  : 'text-rb-red-default'
+              }`}
               onClick={() => {
                 dispatch.perps.setSelectedCoin(record.order.coin);
               }}
@@ -104,7 +108,13 @@ export const OrderHistory: React.FC = () => {
         render: (_, record) => {
           const isReduceOnly = record.order.reduceOnly;
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div
+              className={`text-[12px] leading-[14px] ${
+                record.order.side === 'B'
+                  ? 'text-rb-green-default'
+                  : 'text-rb-red-default'
+              }`}
+            >
               {record.order.side === 'B'
                 ? isReduceOnly
                   ? 'Close Short'
