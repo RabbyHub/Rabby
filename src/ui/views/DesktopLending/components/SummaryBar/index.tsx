@@ -119,7 +119,7 @@ export const SummaryBar: React.FC<SummaryItemProps> = ({
   return (
     <div className="border-t border-solid border-rb-neutral-line">
       <LendingHfTooltipStyle />
-      <div className="h-[40px] flex items-center px-[20px]">
+      <div className="h-[36px] flex items-center px-[20px]">
         {loading ? (
           <SummaryBarSkeleton />
         ) : (
