@@ -8,6 +8,7 @@ import {
 import { Item } from '@/ui/component';
 import { Card } from '@/ui/component/NewUserImport';
 import { Tooltip } from 'antd';
+import clsx from 'clsx';
 import qs from 'qs';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -102,7 +103,7 @@ export const ImportHardwareList = () => {
 
   return (
     <Card
-      className="relative h-[520px] overflow-auto no-scrollbar"
+      className="relative h-[520px] pb-0 flex flex-col justify-start"
       onBack={() => {
         if (history.length) {
           history.goBack();
@@ -112,7 +113,12 @@ export const ImportHardwareList = () => {
       }}
       title={t('page.newUserImport.importHardwareList.title')}
     >
-      <div className="mt-[16px] flex flex-col items-center justify-center gap-[12px]">
+      <div
+        className={clsx(
+          'mt-[16px] flex flex-col gap-[12px]',
+          'flex-1 overflow-auto no-scrollbar pb-[20px]'
+        )}
+      >
         {tipList.map((item, index) => {
           return (
             <Tooltip

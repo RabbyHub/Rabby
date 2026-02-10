@@ -24,18 +24,16 @@ export const Guide = () => {
   const { isDarkTheme } = useThemeMode();
 
   return (
-    <div
-      className="h-full flex items-center justify-center"
-      style={{
-        backgroundImage: `url(${BackgroundSVG})`,
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
-      <div className="fixed top-[40px] right-[40px]">
+    <div className="h-full relative flex items-center justify-center">
+      <img
+        src={BackgroundSVG}
+        className="absolute inset-0 w-full h-full object-cover"
+        alt=""
+      />
+      <div className="fixed top-[40px] right-[40px] z-10">
         <LangSelector />
       </div>
-      <div className="">
+      <div className="relative z-10">
         <div className="flex flex-col items-center">
           <img src={rabbyLogo} className="w-[100px] h-[100px]" />
           <div className="my-12 text-24 font-medium text-r-neutral-title1">

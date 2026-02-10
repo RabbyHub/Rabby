@@ -7,7 +7,7 @@ import { wordlist } from '@scure/bip39/wordlists/english';
 import { styid } from 'ui/utils/styled';
 
 import IconCaretDown from './icon-caret-down.svg';
-import { ReactComponent as RcIconClearAll } from './icon-clear-all.svg';
+import { ReactComponent as RcIconClearAllCC } from './icon-clear-all-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
 
 import clsx from 'clsx';
@@ -639,21 +639,18 @@ function MnemonicsInputs({
           <div
             className={clsx(
               'right flex items-center cursor-pointer',
-              newUserImport && 'min-w-max hover:bg-r-blue-disable rounded-[1px]'
+              'p-[3px] rounded-[4px] hover:bg-r-neutral-card-2'
             )}
             onClick={() => {
               clearAll();
             }}
           >
-            <RcIconClearAll
-              viewBox="0 0 18 18"
-              className="w-[18px] h-[18px] text-rabby-blue-default block"
-            />
-            {!newUserImport && (
+            <RcIconClearAllCC className="w-[14px] h-[14px] text-r-neutral-body block" />
+            {/* {!newUserImport && (
               <span className="ml-[6px] leading-[18px]">
                 {t('page.newAddress.seedPhrase.clearAll')}
               </span>
-            )}
+            )} */}
           </div>
         )}
       </HeadToolbar>
