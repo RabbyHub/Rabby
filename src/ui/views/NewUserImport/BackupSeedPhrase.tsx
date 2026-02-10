@@ -51,10 +51,10 @@ export const BackupSeedPhrase = () => {
       return;
     }
     await wallet.backupSeedPhraseConfirmed(address);
-    setStore({
-      passphrase: '',
-      seedPhrase: '',
-    });
+    // setStore({
+    //   passphrase: '',
+    //   seedPhrase: '',
+    // });
     if (history.length > 1) {
       history.goBack();
     } else {

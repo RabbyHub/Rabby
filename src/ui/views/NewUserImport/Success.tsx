@@ -208,7 +208,7 @@ export const ImportOrCreatedSuccess = () => {
     return [];
   }, [documentVisibility, keyringId]);
 
-  const { hasBackup } = useCheckSeedPhraseBackup(accounts?.[0]?.address || '');
+  // const { hasBackup } = useCheckSeedPhraseBackup(accounts?.[0]?.address || '');
 
   // const { value: allAccounts } = useAsync(
   //   wallet.getAllVisibleAccountsArray,
@@ -369,7 +369,7 @@ export const ImportOrCreatedSuccess = () => {
         </Button>
 
         {hd ? (
-          isCreated && isSeedPhrase && store.seedPhrase && !hasBackup ? (
+          isCreated && isSeedPhrase && store.seedPhrase ? (
             <div
               onClick={handleBackup}
               className="flex items-center justify-center gap-2 text-[13px] leading-[16px] min-h-[20px] text-r-neutral-foot mt-[16px] cursor-pointer"
