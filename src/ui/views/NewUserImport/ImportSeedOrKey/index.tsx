@@ -40,7 +40,7 @@ export const ImportSeedOrKey = () => {
         }
       }}
       className="flex flex-col min-h-[520px]"
-      title="Seed phrase or private key"
+      title={t('page.newUserImport.importSeedOrKey.title')}
     >
       <div className="mt-[16px]">
         <PillsSwitch

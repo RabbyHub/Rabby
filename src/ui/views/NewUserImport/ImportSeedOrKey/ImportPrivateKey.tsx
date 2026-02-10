@@ -91,6 +91,16 @@ export const ImportPrivateKey = () => {
               autoFocus
               spellCheck={false}
               placeholder="Input private key"
+              onBlur={(e) => {
+                if (!e.target.value) {
+                  form.setFields([
+                    {
+                      name: 'privateKey',
+                      errors: [],
+                    },
+                  ]);
+                }
+              }}
               onChange={(e) => {
                 setValue(e.target.value);
               }}
