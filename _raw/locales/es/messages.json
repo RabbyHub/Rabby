@@ -2039,7 +2039,8 @@
         "sub-title": "Esta acción es permanente. Por favor, revise lo siguiente para proteger sus activos:",
         "check2": "Confirmo que he respaldado mi clave privada o frase semilla y estoy listo para eliminarla.",
         "check1": "Entiendo que eliminar esta dirección también elimina su clave privada. Rabby no puede recuperarlas por mí."
-      }
+      },
+      "notBackup": "No hacer copia de seguridad"
     },
     "preferMetamaskDapps": {
       "title": "Dapps preferidos de MetaMask",
@@ -2118,7 +2119,8 @@
       "copySeedPhrase": "Copiar frase de recuperación",
       "showQrCode": "Mostrar código QR",
       "qrCodePopupTips": "Nunca compartas el código QR de la seed phrase con nadie más. Por favor, revísalo en un entorno seguro y guárdalo cuidadosamente.",
-      "qrCodePopupTitle": "Código QR"
+      "qrCodePopupTitle": "Código QR",
+      "doneButton": "He guardado la frase semilla."
     },
     "backupPrivateKey": {
       "title": "Respaldar Clave Privada",
@@ -2675,7 +2677,9 @@
       },
       "importPrivateKey": {
         "title": "Importar Private Key",
-        "pasteCleared": "Pegado y portapapeles borrado"
+        "pasteCleared": "Pegado y portapapeles borrado",
+        "createWallet": "Crea una billetera",
+        "noWallet": "¿No tienes aún la frase semilla o la clave privada?"
       },
       "PasswordCard": {
         "form": {
@@ -2701,7 +2705,10 @@
         "import": "Importado correctamente",
         "create": "Creado con éxito",
         "addMoreAddr": "Agregar más direcciones desde esta Seed Phrase",
-        "addMoreFrom": "Agregar más direcciones de {{name}}"
+        "addMoreFrom": "Agregar más direcciones de {{name}}",
+        "openWallet": "Abrir Wallet",
+        "desc": "¡Rabby Wallet está listo para usar!",
+        "backupSeedPhraseNow": "Realiza una copia de seguridad de la frase semilla ahora"
       },
       "readyToUse": {
         "pin": "Fijar Rabby Wallet",
@@ -2714,7 +2721,9 @@
         "title": "¡Tu billetera Rabby está lista!"
       },
       "importSeedPhrase": {
-        "title": "Importar Seed Phrase"
+        "title": "Importar Seed Phrase",
+        "createWallet": "Crear una wallet",
+        "noWallet": "¿No tienes frase semilla ni clave privada aún?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2772,6 +2781,18 @@
         "title": "Agregar dirección Safe",
         "loading": "Buscando la cadena desplegada de esta dirección",
         "placeholder": "Introduzca la dirección segura"
+      },
+      "importHardwareList": {
+        "title": "Seleccionar Hardware Wallet"
+      },
+      "importSeedOrKey": {
+        "privateKey": "Clave Privada",
+        "title": "Frase semilla o clave privada",
+        "seedPhrase": "Frase Semilla"
+      },
+      "importWalletType": {
+        "seedOrKey": "Frase semilla o clave privada",
+        "hardwareWallet": "Cartera de Hardware"
       }
     },
     "metamaskModeDapps": {
@@ -3478,7 +3499,8 @@
           "fee": "Tarifa",
           "slice": "Segmento",
           "tpSl": "Objetivo de ganancia / Límite de pérdidas",
-          "twap": "TWAP"
+          "twap": "TWAP",
+          "fundingTipsV2": "Financiamiento neto desde que se abrió la posición. Un valor de financiamiento rojo (negativo) indica financiamiento pagado, mientras que un valor verde (positivo) indica financiamiento recibido."
         },
         "emptyMessage": {
           "orderHistory": "Sin historial de órdenes",
@@ -3552,7 +3574,8 @@
           "badAloPxRejected": "Rechazado debido a mal ALO PX",
           "iocCancelRejected": "Rechazado debido a cancelación de IOC",
           "minTradeNtlRejected": "Rechazado debido a min trade NTL",
-          "reduceOnlyCanceled": "Cancelado debido a reducción solamente"
+          "reduceOnlyCanceled": "Cancelado debido a reducción solamente",
+          "siblingFilledCanceled": "Cancelado debido a que el pedido de hermano fue ejecutado."
         }
       },
       "statusBar": {
@@ -4358,6 +4381,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "Seleccionar dirección"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Cartera no respaldada. Comenzar respaldo."
     }
   },
   "global": {

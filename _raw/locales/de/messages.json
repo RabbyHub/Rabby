@@ -2039,7 +2039,8 @@
         "sub-title": "Diese Aktion ist dauerhaft. Bitte überprüfen Sie Folgendes, um Ihre Vermögenswerte zu schützen:",
         "check1": "Ich verstehe, dass das Löschen dieser Adresse auch ihren privaten Schlüssel entfernt. Rabby kann sie mir nicht wiederherstellen.",
         "check2": "Ich bestätige, dass ich meinen Private Key oder Seed Phrase gesichert habe und bereit bin, ihn zu löschen."
-      }
+      },
+      "notBackup": "Nicht sichern"
     },
     "preferMetamaskDapps": {
       "title": "Bevorzugte Dapps von MetaMask",
@@ -2118,7 +2119,8 @@
       "copySeedPhrase": "Seed Phrase kopieren",
       "qrCodePopupTitle": "QR Code",
       "qrCodePopupTips": "Teilen Sie niemals den QR-Code der Seed-Phrase mit anderen. Bitte sehen Sie es in einer sicheren Umgebung an und bewahren Sie es sorgfältig auf.",
-      "showQrCode": "QR-Code anzeigen"
+      "showQrCode": "QR-Code anzeigen",
+      "doneButton": "Ich habe die Seed-Phrase gespeichert."
     },
     "backupPrivateKey": {
       "title": "Backup Private Key",
@@ -2675,7 +2677,9 @@
       },
       "importPrivateKey": {
         "title": "Privaten Schlüssel importieren",
-        "pasteCleared": "Eingefügt und Zwischenablage geleert"
+        "pasteCleared": "Eingefügt und Zwischenablage geleert",
+        "createWallet": "Wallet erstellen",
+        "noWallet": "Hast du noch keinen Seed-Satz oder privaten Schlüssel?"
       },
       "PasswordCard": {
         "form": {
@@ -2701,7 +2705,10 @@
         "create": "Erfolgreich erstellt",
         "import": "Erfolgreich importiert",
         "addMoreAddr": "Fügen Sie weitere Adressen von dieser Seed Phrase hinzu",
-        "addMoreFrom": "Fügen Sie weitere Adressen von {{name}} hinzu"
+        "addMoreFrom": "Fügen Sie weitere Adressen von {{name}} hinzu",
+        "desc": "Rabby Wallet ist bereit zur Nutzung!",
+        "backupSeedPhraseNow": "Backup Seed phrase Jetzt",
+        "openWallet": "Öffne Wallet"
       },
       "readyToUse": {
         "pin": "Rabby Wallet anheften",
@@ -2714,7 +2721,9 @@
         "desc": "Finde Rabby Wallet und pinne es."
       },
       "importSeedPhrase": {
-        "title": "Seed Phrase importieren"
+        "title": "Seed Phrase importieren",
+        "createWallet": "Erstellen Sie eine Wallet",
+        "noWallet": "Hast du noch keinen Seed-Phrase oder privaten Schlüssel?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2772,6 +2781,18 @@
         "title": "Sichere Adresse hinzufügen",
         "placeholder": "Eingabe der sicheren Adresse",
         "loading": "Suche in der bereitgestellten Kette dieser Adresse"
+      },
+      "importHardwareList": {
+        "title": "Wählen Sie Hardware Wallet aus"
+      },
+      "importSeedOrKey": {
+        "privateKey": "Privater Schlüssel",
+        "title": "Seed-Phrase oder privater Schlüssel",
+        "seedPhrase": "Seed-Phrase"
+      },
+      "importWalletType": {
+        "seedOrKey": "Seed-Phrase oder privater Schlüssel",
+        "hardwareWallet": "Hardware Wallet"
       }
     },
     "metamaskModeDapps": {
@@ -3478,7 +3499,8 @@
           "trigger": "Auslöser",
           "fundingTips": "Netto-Fundingzahlungen seit der Eröffnung der Position. Falls negativ, bedeuten sie Funding-Gewinne.",
           "slice": "Slice",
-          "unrealizedPnl": "Unrealisiertes PnL"
+          "unrealizedPnl": "Unrealisiertes PnL",
+          "fundingTipsV2": "Nettofinanzierung seit der Eröffnung der Position. Ein roter (negativer) Finanzierungswert zeigt gezahlte Finanzierung an, während ein grüner (positiver) Wert erhaltene Finanzierung anzeigt."
         },
         "emptyMessage": {
           "fillHistory": "Keine Ausführungshistorie",
@@ -3552,7 +3574,8 @@
           "badAloPxRejected": "Abgelehnt aufgrund eines schlechten ALO PX",
           "perpMarginRejected": "Abgelehntes Perp Margin Abgelehnt",
           "minTradeNtlRejected": "Abgelehnt aufgrund des minimalen Handels NTL",
-          "reduceOnlyCanceled": "Wegen Reduzierung nur storniert"
+          "reduceOnlyCanceled": "Wegen Reduzierung nur storniert",
+          "siblingFilledCanceled": "Abgebrochen aufgrund der Erfüllung der Geschwisterreihenfolge"
         }
       },
       "statusBar": {
@@ -3635,7 +3658,8 @@
         "stopLossExpectedPnL": "Stop-Loss erwartetes PnL",
         "slBuyMustBeHigherThanMidPrice": "Der Stop-Kaufsorder-Preis muss höher als der Mid-Preis sein.",
         "randomizeTooltip": "Randomisiert das Timing und die Größe von Teilaufträgen, um die Vorhersagbarkeit zu verringern.",
-        "deposit": "Einzahlen"
+        "deposit": "Einzahlen",
+        "addFundsToGetStarted": "Geld hinzufügen, um zu starten"
       },
       "marginMode": {
         "confirm": "Bestätigen",
@@ -3692,7 +3716,8 @@
         "pending": "Ausstehend",
         "deposit": "Einzahlen",
         "positionCount": "{{count}} Positionen",
-        "onePosition": "1 Position"
+        "onePosition": "1 Position",
+        "availableBalanceTips": "Verfügbare Mittel"
       },
       "orderBook": {
         "price": "Preis",
@@ -3711,7 +3736,8 @@
         "currentPosition": "Aktuelle Position",
         "configureMargin": "Margin konfigurieren",
         "shortLiquidationTips": "Ein Anstieg um {{percent}} wird die Liquidation auslösen.",
-        "longLiquidationTips": "Das Abfallen um {{percent}} wird die Liquidation auslösen."
+        "longLiquidationTips": "Das Abfallen um {{percent}} wird die Liquidation auslösen.",
+        "title": "Margin verwalten"
       }
     },
     "perpsDetail": {
@@ -3832,7 +3858,8 @@
       },
       "repayDetail": {
         "tabs": {
-          "wallet": "Wallet-Balance"
+          "wallet": "Wallet-Balance",
+          "collateral": "Sicherheit"
         },
         "approveAndRepay": "Genehmigen und Zurückzahlen",
         "repayWith": "Mit zurückzahlen mit",
@@ -4354,6 +4381,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "Adresse auswählen"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Wallet nicht gesichert. Backup starten."
     }
   },
   "global": {

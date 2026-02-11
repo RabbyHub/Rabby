@@ -2128,7 +2128,8 @@
         "sub-title": "Esta ação é permanente. Por favor, revise o seguinte para proteger seus ativos:",
         "check1": "Eu entendo que excluir este endereço também Remove sua Chave Privada. Rabby não pode recuperá-los para mim.",
         "check2": "Eu confirmo que fiz backup da minha chave privada ou frase semente e estou pronto para excluí-la."
-      }
+      },
+      "notBackup": "Não realizar backup"
     },
     "preferMetamaskDapps": {
       "howToAddDesc": "Clique com o botão direito no site e encontre esta opção",
@@ -2207,7 +2208,8 @@
       "qrCodePopupTitle": "Código QR",
       "copySeedPhrase": "Copiar frase seeds",
       "qrCodePopupTips": "Nunca compartilhe o código QR da frase-semente com mais ninguém. Por favor, visualize-o em um ambiente seguro e mantenha-o com cuidado.",
-      "alert": "Esta Seed Phrase é a credencial para seus ativos. NÃO a perca ou a revele a outros, caso contrário, você pode perder seus ativos para sempre. Por favor, visualize-a em um ambiente seguro e mantenha-a com cuidado."
+      "alert": "Esta Seed Phrase é a credencial para seus ativos. NÃO a perca ou a revele a outros, caso contrário, você pode perder seus ativos para sempre. Por favor, visualize-a em um ambiente seguro e mantenha-a com cuidado.",
+      "doneButton": "Eu salvei a frase semente"
     },
     "backupPrivateKey": {
       "clickToShowQr": "Clique para mostrar o código QR da chave privada",
@@ -2672,7 +2674,9 @@
       },
       "importPrivateKey": {
         "title": "Importar Chave Privada",
-        "pasteCleared": "Colado e área de transferência limpa"
+        "pasteCleared": "Colado e área de transferência limpa",
+        "createWallet": "Criar uma carteira",
+        "noWallet": "Ainda não tem a frase-semente ou a chave privada?"
       },
       "PasswordCard": {
         "form": {
@@ -2698,7 +2702,10 @@
         "start": "Começar",
         "addMoreFrom": "Adicionar mais endereços de {{name}}",
         "create": "Criado com sucesso",
-        "addMoreAddr": "Adicione mais endereços a partir desta Seed Phrase"
+        "addMoreAddr": "Adicione mais endereços a partir desta Seed Phrase",
+        "openWallet": "Abrir Wallet",
+        "backupSeedPhraseNow": "Faça backup da frase-semente agora",
+        "desc": "A Carte Rabby está pronta para uso!"
       },
       "readyToUse": {
         "pin": "Fixar Rabby Wallet",
@@ -2711,7 +2718,9 @@
         "extensionTip": "Clique <1/> e depois <3/>"
       },
       "importSeedPhrase": {
-        "title": "Importar Frase Semente"
+        "title": "Importar Frase Semente",
+        "createWallet": "Criar uma carteira",
+        "noWallet": "Ainda não tem frase secreta ou chave privada?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2769,6 +2778,18 @@
         "title": "Adicionar Endereço Seguro",
         "loading": "Procurando a cadeia implantada deste endereço",
         "placeholder": "Insira o endereço seguro"
+      },
+      "importHardwareList": {
+        "title": "Selecionar Carteira de Hardware"
+      },
+      "importSeedOrKey": {
+        "privateKey": "Chave Privada",
+        "title": "Frase semente ou chave privada",
+        "seedPhrase": "Frase Semente"
+      },
+      "importWalletType": {
+        "hardwareWallet": "Carteira de Hardware",
+        "seedOrKey": "Frase semente ou chave privada"
       }
     },
     "metamaskModeDapps": {
@@ -3475,7 +3496,8 @@
           "closedPnl": "Pnl Fechado",
           "fundingTips": "Pagamentos líquidos de financiamento desde a abertura da posição. Se forem negativos, significam ganhos com financiamento.",
           "trade": "Negociar",
-          "unrealizedPnlTooltip": "O preço de marcação é usado para estimar o PnL não realizado. Apenas os preços de negociação são usados para o PnL realizado."
+          "unrealizedPnlTooltip": "O preço de marcação é usado para estimar o PnL não realizado. Apenas os preços de negociação são usados para o PnL realizado.",
+          "fundingTipsV2": "Financiamento líquido desde que a posição foi aberta. Um valor de financiamento vermelho (negativo) indica financiamento pago, enquanto um valor verde (positivo) indica financiamento recebido."
         },
         "emptyMessage": {
           "tradeHistory": "Sem histórico de negociações",
@@ -3549,7 +3571,8 @@
           "partiallyFilled": "Parcialmente Preenchido",
           "badAloPxRejected": "Rejeitado devido ao mau ALO PX",
           "iocCancelRejected": "Rejeitado devido ao cancelamento IOC",
-          "perpMarginRejected": "Margem de Perp Rejeitada"
+          "perpMarginRejected": "Margem de Perp Rejeitada",
+          "siblingFilledCanceled": "Cancelado devido à ordem de irmãos ter sido preenchida"
         }
       },
       "statusBar": {
@@ -4355,6 +4378,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "Selecionar Endereço"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Wallet Não Foi Salvo. Iniciar Backup."
     }
   },
   "global": {

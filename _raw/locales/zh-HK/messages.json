@@ -2077,7 +2077,8 @@
         "sub-title": "此操作是永久性的。请检查以下内容以保护您的资产：",
         "check1": "我明白删除这个地址也会移除它的 Private Key。Rabby 不能为我恢复它们。",
         "check2": "我確認我已經備份了我的 Private Key 或 Seed Phrase，並且我已準備好刪除它。"
-      }
+      },
+      "notBackup": "未備份"
     },
     "preferMetamaskDapps": {
       "title": "優先使用MetaMask連接的Dapp",
@@ -2162,7 +2163,8 @@
       "title": "備份助記詞",
       "showQrCode": "顯示 QR 碼",
       "qrCodePopupTitle": "QR 碼",
-      "qrCodePopupTips": "請勿將種子詞組的 QR 碼分享給其他人。請在安全的環境中查看並小心保管。"
+      "qrCodePopupTips": "請勿將種子詞組的 QR 碼分享給其他人。請在安全的環境中查看並小心保管。",
+      "doneButton": "我已保存助记词"
     },
     "ethSign": {
       "alert": " 'eth_sign' 類型簽名會導致資產損失。為了你的安全， Rabby 不支持此類簽名"
@@ -2713,7 +2715,9 @@
       },
       "importPrivateKey": {
         "title": "匯入 Private Key",
-        "pasteCleared": "已貼上並清除此剪貼簿内容"
+        "pasteCleared": "已貼上並清除此剪貼簿内容",
+        "createWallet": "創建錢包",
+        "noWallet": "尚未拥有种子短语或私钥？"
       },
       "PasswordCard": {
         "form": {
@@ -2739,7 +2743,10 @@
         "create": "創建成功",
         "addMoreFrom": "從 {{name}} 添加更多地址",
         "start": "開始使用",
-        "addMoreAddr": "從這个 Seed Phrase 新增更多地址"
+        "addMoreAddr": "從這个 Seed Phrase 新增更多地址",
+        "openWallet": "開啟錢包",
+        "backupSeedPhraseNow": "立即备份种子短语",
+        "desc": "Rabby Wallet 随时可用！"
       },
       "readyToUse": {
         "pin": "將 Rabby 錢包釘選",
@@ -2752,7 +2759,9 @@
         "title": "您的 Rabby Wallet 已準備好！"
       },
       "importSeedPhrase": {
-        "title": "導入種子片語"
+        "title": "導入種子片語",
+        "createWallet": "創建一個錢包",
+        "noWallet": "還沒有助記詞或私鑰？"
       },
       "importOneKey": {
         "qrcode": {
@@ -2810,6 +2819,18 @@
         "placeholder": "輸入安全地址",
         "title": "添加 Safe 地址",
         "loading": "正在搜尋此地址的已部署鏈"
+      },
+      "importHardwareList": {
+        "title": "選擇硬件錢包"
+      },
+      "importSeedOrKey": {
+        "privateKey": "私钥",
+        "seedPhrase": "种子短语",
+        "title": "种子短语或私钥"
+      },
+      "importWalletType": {
+        "hardwareWallet": "硬件钱包",
+        "seedOrKey": "助记词或私钥"
       }
     },
     "metamaskModeDapps": {
@@ -3516,7 +3537,8 @@
           "tradeValue": "成交金额",
           "value": "價值",
           "size": "倉位大小",
-          "orderHistory": "委託單歷史"
+          "orderHistory": "委託單歷史",
+          "fundingTipsV2": "自持仓开启以来的净资金。红色（负值）资金表示支付的资金，而绿色（正值）资金表示收到的资金。"
         },
         "emptyMessage": {
           "fundingHistory": "尚無資金費率歷史",
@@ -3590,7 +3612,8 @@
           "minTradeNtlRejected": "由於最低交易 NTL 被拒絕",
           "perpMarginRejected": "拒绝的永续合约保证金",
           "reduceOnlyCanceled": "由於僅可減少而被取消",
-          "badAloPxRejected": "因不良 ALO PX 被拒绝"
+          "badAloPxRejected": "因不良 ALO PX 被拒绝",
+          "siblingFilledCanceled": "因兄弟订单已成交而取消"
         }
       },
       "statusBar": {
@@ -4396,6 +4419,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "選擇地址"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "錢包未備份。開始備份。"
     }
   },
   "background": {

@@ -268,6 +268,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "Sélectionner l'adresse"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Portefeuille non sauvegardé. Démarrer la sauvegarde."
     }
   },
   "constant": {
@@ -481,7 +484,8 @@
         "sub-title": "Cette action est permanente. Veuillez examiner ce qui suit pour protéger vos actifs :",
         "check2": "Je confirme que j'ai sauvegardé ma clé privée ou ma phrase secrète et que je suis prêt à la supprimer.",
         "check1": "Je comprends que la suppression de cette adresse supprime également sa clé privée. Rabby ne peut pas les récupérer pour moi."
-      }
+      },
+      "notBackup": "Pas de sauvegarde"
     },
     "approvals": {
       "RevokeApprovalModal": {
@@ -620,7 +624,8 @@
       "title": "Sauvegarder la seed phrase",
       "showQrCode": "Afficher le code QR",
       "qrCodePopupTitle": "Code QR",
-      "qrCodePopupTips": "Ne partagez jamais le code QR de la seed phrase avec qui que ce soit. Veuillez le consulter dans un environnement sécurisé et le conserver avec soin."
+      "qrCodePopupTips": "Ne partagez jamais le code QR de la seed phrase avec qui que ce soit. Veuillez le consulter dans un environnement sécurisé et le conserver avec soin.",
+      "doneButton": "J'ai enregistré la phrase de récupération"
     },
     "chainList": {
       "mainnet": "Mainnets",
@@ -2995,7 +3000,9 @@
       },
       "importPrivateKey": {
         "title": "Importer une clé privée",
-        "pasteCleared": "Collé et presse-papiers effacé"
+        "pasteCleared": "Collé et presse-papiers effacé",
+        "createWallet": "Créer un portefeuille",
+        "noWallet": "Vous n'avez pas encore de phrase de récupération ou de clé privée ?"
       },
       "PasswordCard": {
         "form": {
@@ -3021,7 +3028,10 @@
         "addMoreFrom": "Ajoutez plus d'adresses de {{name}}",
         "create": "Créé avec succès",
         "import": "Importé avec succès",
-        "addMoreAddr": "Ajoutez plus d'adresses à partir de cette Seed Phrase"
+        "addMoreAddr": "Ajoutez plus d'adresses à partir de cette Seed Phrase",
+        "openWallet": "Ouvrir le portefeuille",
+        "desc": "Rabby Wallet est prêt à l'emploi !",
+        "backupSeedPhraseNow": "Sauvegardez la phrase de récupération maintenant"
       },
       "readyToUse": {
         "pin": "Épingler Rabby Wallet",
@@ -3034,7 +3044,9 @@
         "title": "Votre portefeuille Rabby est prêt !"
       },
       "importSeedPhrase": {
-        "title": "Importer Seed Phrase"
+        "title": "Importer Seed Phrase",
+        "noWallet": "Vous n'avez pas encore de phrase de secours ou de clé privée ?",
+        "createWallet": "Créer un portefeuille"
       },
       "importOneKey": {
         "qrcode": {
@@ -3092,6 +3104,18 @@
         "title": "Ajouter l'adresse Safe",
         "placeholder": "Saisir l'adresse sécurisée",
         "loading": "Recherche de la chaîne déployée de cette adresse"
+      },
+      "importHardwareList": {
+        "title": "Sélectionner un portefeuille matériel"
+      },
+      "importSeedOrKey": {
+        "privateKey": "Clé privée",
+        "seedPhrase": "Phrase de récupération",
+        "title": "Phrase de récupération ou clé privée"
+      },
+      "importWalletType": {
+        "hardwareWallet": "Portefeuille matériel",
+        "seedOrKey": "Phrase de récupération ou clé privée"
       }
     },
     "metamaskModeDapps": {
@@ -3798,7 +3822,8 @@
           "slice": "Tranche",
           "coin": "Pièce",
           "closedPnlTooltip": "PNL réalisée inclut les frais et les remises.",
-          "tpSl": "Objectif de profit / Limite de perte"
+          "tpSl": "Objectif de profit / Limite de perte",
+          "fundingTipsV2": "Financement net depuis l'ouverture de la position. Une valeur de financement rouge (négative) indique un financement payé, tandis qu'une valeur verte (positive) indique un financement reçu."
         },
         "emptyMessage": {
           "orderHistory": "Aucun historique des ordres",
@@ -3872,7 +3897,8 @@
           "badAloPxRejected": "Rejeté en raison d'un mauvais ALO PX",
           "minTradeNtlRejected": "Rejeté en raison du min trade NTL",
           "reduceOnlyCanceled": "Annulé en raison de la réduction uniquement",
-          "iocCancelRejected": "Rejeté en raison de l'annulation IOC"
+          "iocCancelRejected": "Rejeté en raison de l'annulation IOC",
+          "siblingFilledCanceled": "Annulé en raison du remplissage de l'ordre des éléments frères"
         }
       },
       "statusBar": {
@@ -4210,7 +4236,8 @@
         "amountTitle": "Disponible :",
         "approveAndBorrow": "Approuver et Emprunter",
         "almostReachedWarning": "Le plafond d'emprunt du protocole est de 100 % pour cet actif. Emprunt supplémentaire non disponible.",
-        "almostReachedError": "Le montant maximum disponible à emprunter est limité car le plafond d'emprunt du protocole est presque atteint."
+        "almostReachedError": "Le montant maximum disponible à emprunter est limité car le plafond d'emprunt du protocole est presque atteint.",
+        "swapDebt": "Échanger"
       },
       "popup": {
         "available": "disponible",

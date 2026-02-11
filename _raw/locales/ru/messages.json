@@ -2040,7 +2040,8 @@
         "check2": "Я подтверждаю, что я создал резервную копию своего Private Key или Seed Phrase и готов удалить его.",
         "sub-title": "Это действие является постоянным. Пожалуйста, просмотрите следующее, чтобы защитить ваши активы:",
         "check1": "Я понимаю, что удаление этого адреса также удаляет его приватный ключ. Rabby не сможет восстановить их для меня."
-      }
+      },
+      "notBackup": "Не резервная копия"
     },
     "preferMetamaskDapps": {
       "title": "Предпочтительные Dapps MetaMask",
@@ -2120,7 +2121,8 @@
       "copySeedPhrase": "Скопировать секретную фразу",
       "showQrCode": "Показать QR Code",
       "qrCodePopupTitle": "QR Code",
-      "qrCodePopupTips": "Никому не показывайте QR code. Открывайте только в безопасном месте."
+      "qrCodePopupTips": "Никому не показывайте QR code. Открывайте только в безопасном месте.",
+      "doneButton": "Я сохранил семя-фразу"
     },
     "backupPrivateKey": {
       "title": "Резервное копирование приватного ключа",
@@ -2677,7 +2679,9 @@
       },
       "importPrivateKey": {
         "title": "Импортировать Private Key",
-        "pasteCleared": "Вставлено и буфер обмена очищен"
+        "pasteCleared": "Вставлено и буфер обмена очищен",
+        "createWallet": "Создать кошелек",
+        "noWallet": "У вас еще нет seed-фразы или приватного ключа?"
       },
       "PasswordCard": {
         "form": {
@@ -2703,7 +2707,10 @@
         "start": "Начать",
         "import": "Импортировано успешно",
         "addMoreFrom": "Добавить больше адресов из {{name}}",
-        "create": "Создано успешно"
+        "create": "Создано успешно",
+        "openWallet": "Открыть кошелек",
+        "backupSeedPhraseNow": "Резервное копирование Seed фразы сейчас",
+        "desc": "Rabby Wallet готов к использованию!"
       },
       "readyToUse": {
         "pin": "Закрепить Rabby Wallet",
@@ -2716,7 +2723,9 @@
         "extensionTip": "Нажмите <1/> и затем <3/>"
       },
       "importSeedPhrase": {
-        "title": "Импортировать Seed Phrase"
+        "title": "Импортировать Seed Phrase",
+        "createWallet": "Создать кошелек",
+        "noWallet": "Не имеете сид-фразы или приватного ключа?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2774,6 +2783,18 @@
         "placeholder": "Введите безопасный адрес",
         "loading": "Поиск в развернутой цепочке этого адреса",
         "title": "Добавить Safe адрес"
+      },
+      "importHardwareList": {
+        "title": "Выберите аппаратный кошелек"
+      },
+      "importSeedOrKey": {
+        "privateKey": "Приватный ключ",
+        "seedPhrase": "Сид-фраза",
+        "title": "Сид-фраза или закрытый ключ"
+      },
+      "importWalletType": {
+        "hardwareWallet": "Аппаратный кошелек",
+        "seedOrKey": "Сид-фраза или приватный ключ"
       }
     },
     "metamaskModeDapps": {
@@ -3480,7 +3501,8 @@
           "terminate": "Расторгнуть контракт",
           "closedPnlTooltip": "Реализованный PnL включает комиссии и возвраты.",
           "twap": "TWAP",
-          "closedPnl": "Реализованный PnL"
+          "closedPnl": "Реализованный PnL",
+          "fundingTipsV2": "Чистое финансирование с момента открытия позиции. Красное (отрицательное) значение финансирования указывает на выплаченное финансирование, в то время как зеленое (положительное) значение указывает на полученное финансирование."
         },
         "emptyMessage": {
           "positions": "Нет позиций",
@@ -3554,7 +3576,8 @@
           "badAloPxRejected": "Отклонено из-за плохого ALO PX",
           "minTradeNtlRejected": "Отклонено из-за минимальной сделки NTL",
           "reduceOnlyCanceled": "Отменено из-за только сокращения",
-          "perpMarginRejected": "Отклонено маржинальное обеспечение перпетуаций"
+          "perpMarginRejected": "Отклонено маржинальное обеспечение перпетуаций",
+          "siblingFilledCanceled": "Отменено из-за выполнения порядка по очереди."
         }
       },
       "statusBar": {
@@ -4360,6 +4383,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "Выберите адрес"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Кошелек не настроен. Начать резервное копирование."
     }
   },
   "global": {

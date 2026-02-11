@@ -2039,7 +2039,8 @@
         "check2": "私はプライベートキーまたはシードフレーズをバックアップしたことを確認し、それを削除する準備ができました。",
         "title": "アドレスと秘密鍵を削除しますか？",
         "check1": "このアドレスを削除すると、そのプライベートキーも削除されることを理解しています。Rabbyはそれらを回復することはできません。"
-      }
+      },
+      "notBackup": "バックアップなし"
     },
     "preferMetamaskDapps": {
       "title": "MetaMask優先Dapps",
@@ -2118,7 +2119,8 @@
       "copySeedPhrase": "シードフレーズをコピー",
       "qrCodePopupTitle": "QR Code",
       "showQrCode": "QRコードを表示",
-      "qrCodePopupTips": "シードフレーズのQRコードを他人と共有しないでください。安全な環境で表示し、慎重に保管してください。"
+      "qrCodePopupTips": "シードフレーズのQRコードを他人と共有しないでください。安全な環境で表示し、慎重に保管してください。",
+      "doneButton": "シードフレーズを保存しました"
     },
     "backupPrivateKey": {
       "title": "プライベートキーのバックアップ",
@@ -2675,7 +2677,9 @@
       },
       "importPrivateKey": {
         "title": "秘密鍵のインポート",
-        "pasteCleared": "貼り付けてクリップボードをクリアしました"
+        "pasteCleared": "貼り付けてクリップボードをクリアしました",
+        "createWallet": "ウォレットを作成する",
+        "noWallet": "まだシードフレーズやプライベートキーを持っていませんか？"
       },
       "PasswordCard": {
         "form": {
@@ -2701,7 +2705,10 @@
         "create": "作成に成功しました",
         "addMoreAddr": "このシードフレーズからさらにアドレスを追加します。",
         "addMoreFrom": "{{name}} からさらにアドレスを追加",
-        "import": "インポートしました"
+        "import": "インポートしました",
+        "openWallet": "ウォレットを開く",
+        "desc": "Rabbyウォレットは使用準備完了です！",
+        "backupSeedPhraseNow": "今すぐバックアップシードフレーズを保存してください"
       },
       "readyToUse": {
         "pin": "Rabby Wallet をピン留め",
@@ -2714,7 +2721,9 @@
         "desc": "Rabby Walletを見つけてピン留めしてください。"
       },
       "importSeedPhrase": {
-        "title": "シードフレーズをインポート"
+        "title": "シードフレーズをインポート",
+        "createWallet": "ウォレットを作成する",
+        "noWallet": "まだシードフレーズやプライベートキーをお持ちではありませんか？"
       },
       "importOneKey": {
         "qrcode": {
@@ -2772,6 +2781,18 @@
         "title": "Safeアドレスを追加",
         "loading": "このアドレスのデプロイされたチェーンを検索しています",
         "placeholder": "セーフアドレスを入力"
+      },
+      "importHardwareList": {
+        "title": "ハードウェアウォレットを選択してください"
+      },
+      "importSeedOrKey": {
+        "privateKey": "プライベートキー",
+        "title": "シードフレーズまたはプライベートキー",
+        "seedPhrase": "シードフレーズ"
+      },
+      "importWalletType": {
+        "hardwareWallet": "ハードウェアウォレット",
+        "seedOrKey": "シードフレーズまたはプライベートキー"
       }
     },
     "metamaskModeDapps": {
@@ -3478,7 +3499,8 @@
           "terminate": "契約を終了",
           "tradeHistory": "約定履歴",
           "runningTimeTotal": "経過時間 / 合計",
-          "unrealizedPnlTooltip": "マーク価格は未実現PNLを推定するために使用されます。実現PNLには取引価格のみが使用されます。"
+          "unrealizedPnlTooltip": "マーク価格は未実現PNLを推定するために使用されます。実現PNLには取引価格のみが使用されます。",
+          "fundingTipsV2": "ポジションが開かれてからのネット資金。赤（負）の資金値は支払われた資金を示し、緑（正）の値は受け取った資金を示します。"
         },
         "emptyMessage": {
           "positions": "ポジションなし",
@@ -3552,7 +3574,8 @@
           "badAloPxRejected": "不正な ALO PX のため拒否されました",
           "minTradeNtlRejected": "最小取引NTLのため拒否されました",
           "perpMarginRejected": "拒否されたパーペッツマージン",
-          "iocCancelRejected": "IOCキャンセルのため拒否されました"
+          "iocCancelRejected": "IOCキャンセルのため拒否されました",
+          "siblingFilledCanceled": "兄弟注文が埋まったためキャンセルされました"
         }
       },
       "statusBar": {
@@ -4358,6 +4381,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "アドレスを選択してください"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "バックアップされていないウォレット。バックアップを開始します。"
     }
   },
   "global": {

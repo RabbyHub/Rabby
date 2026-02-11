@@ -2128,7 +2128,8 @@
         "check1": "이 주소를 삭제하면 해당 개인 키도 제거된다는 것을 이해합니다. Rabby는 이를 복구할 수 없습니다.",
         "check2": "저는 Private Key 또는 Seed Phrase를 백업했음을 확인하며, 이를 삭제할 준비가 되었습니다.",
         "sub-title": "이 작업은 영구적입니다. 귀하의 자산을 보호하기 위해 다음을 검토하십시오:"
-      }
+      },
+      "notBackup": "백업하지 않음"
     },
     "preferMetamaskDapps": {
       "title": "MetaMask 선호 Dapps",
@@ -2207,7 +2208,8 @@
       "copySeedPhrase": "시드 문구 복사",
       "qrCodePopupTips": "타인과 시드 문구 QR 코드를 공유하지 마세요. 안전한 환경에서 확인하고 주의 깊게 보관하세요.",
       "title": "백업 시드 문구",
-      "alert": "이 시드 문구는 당신 자산의 자격 증명입니다. 절대 잃어버리거나 다른 사람에게 공개하지 마세요. 그렇지 않으면 자산을 영원히 잃을 수 있습니다. 안전한 환경에서 확인하고 주의 깊게 보관하세요."
+      "alert": "이 시드 문구는 당신 자산의 자격 증명입니다. 절대 잃어버리거나 다른 사람에게 공개하지 마세요. 그렇지 않으면 자산을 영원히 잃을 수 있습니다. 안전한 환경에서 확인하고 주의 깊게 보관하세요.",
+      "doneButton": "나는 시드 문구를 저장했습니다."
     },
     "backupPrivateKey": {
       "clickToShow": "비공개 키를 표시하려면 클릭하세요",
@@ -2672,7 +2674,9 @@
       },
       "importPrivateKey": {
         "title": "개인 키 가져오기",
-        "pasteCleared": "붙여넣기 및 클립보드 지우기"
+        "pasteCleared": "붙여넣기 및 클립보드 지우기",
+        "createWallet": "지갑 만들기",
+        "noWallet": "아직 시드 문구나 개인 키가 없으신가요?"
       },
       "PasswordCard": {
         "form": {
@@ -2698,7 +2702,10 @@
         "start": "시작하기",
         "addMoreFrom": "{{name}}에서 더 많은 주소 추가",
         "addMoreAddr": "이 시드 구문에서 더 많은 주소를 추가하세요.",
-        "import": "성공적으로 가져왔습니다"
+        "import": "성공적으로 가져왔습니다",
+        "openWallet": "지갑 열기",
+        "backupSeedPhraseNow": "지금 백업 시드 문구",
+        "desc": "Rabby Wallet을 사용할 준비가 되었습니다!"
       },
       "readyToUse": {
         "pin": "Rabby Wallet 핀 고정",
@@ -2711,7 +2718,9 @@
         "extensionTip": "클릭 <1/> 그리고 나서 <3/>"
       },
       "importSeedPhrase": {
-        "title": "시드 문구 가져오기"
+        "title": "시드 문구 가져오기",
+        "createWallet": "지갑 생성",
+        "noWallet": "아직 시드 문구나 개인 키가 없으신가요?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2769,6 +2778,18 @@
         "title": "안전한 주소 추가",
         "placeholder": "안전한 주소 입력",
         "loading": "이 주소의 배포된 체인을 검색 중입니다."
+      },
+      "importHardwareList": {
+        "title": "하드웨어 지갑 선택"
+      },
+      "importSeedOrKey": {
+        "privateKey": "개인 키",
+        "seedPhrase": "시드 문구",
+        "title": "시드 문구 또는 개인 키"
+      },
+      "importWalletType": {
+        "hardwareWallet": "하드웨어 월렛",
+        "seedOrKey": "시드 문구 또는 개인 키"
       }
     },
     "metamaskModeDapps": {
@@ -3475,7 +3496,8 @@
           "filled": "체결",
           "funding": "펀딩 비율",
           "value": "금액",
-          "runningTimeTotal": "경과 시간 / 총 시간"
+          "runningTimeTotal": "경과 시간 / 총 시간",
+          "fundingTipsV2": "위치가 열렸던 이후의 순 자금. 빨간색 (부정적인) 자금 가치는 지불된 자금을 나타내고, 녹색 (긍정적인) 가치는 수령된 자금을 나타냅니다."
         },
         "emptyMessage": {
           "openOrders": "미체결 주문이 없습니다",
@@ -3549,7 +3571,8 @@
           "partiallyFilled": "부분 체결",
           "triggered": "트리거됨",
           "reduceOnlyCanceled": "단순 축소로 인해 취소됨",
-          "minTradeNtlRejected": "최소 거래 NTL로 인해 거부되었습니다."
+          "minTradeNtlRejected": "최소 거래 NTL로 인해 거부되었습니다.",
+          "siblingFilledCanceled": "형제 주문이 체결되어 취소됨"
         }
       },
       "statusBar": {
@@ -4355,6 +4378,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "주소 선택"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "지갑이 백업되지 않았습니다. 백업 시작."
     }
   },
   "global": {
