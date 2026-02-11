@@ -1129,6 +1129,22 @@ const SettingsInner = ({
           ),
         },
         {
+          leftIcon: RcIconServerCC,
+          content: <span>Sync chain list</span>,
+          onClick: () => {
+            wallet.syncMainnetChainList({
+              force: true,
+            });
+            message.success('success');
+          },
+          rightIcon: (
+            <ThemeIcon
+              src={RcIconArrowRight}
+              className="icon icon-arrow-right"
+            />
+          ),
+        },
+        {
           leftIcon: RcIconClearCC,
           content: <span>{t('page.dashboard.settings.clearWatchMode')}</span>,
           onClick: handleClickClearWatchMode,
