@@ -100,10 +100,10 @@ export const DesktopDappSelectorInner: React.FC<DesktopDappSelectorProps> = ({
                     <span className="text-[16px] leading-normal font-bold text-rb-neutral-title-1 truncate">
                       {item.name}
                     </span>
-                    {item.TVL ? (
+                    {item.extraInfo ? (
                       <div className="flex items-center gap-[6px]">
                         <span className="text-[12px] leading-normal text-rb-neutral-foot">
-                          TVL: {item.TVL}
+                          {item.extraInfo}
                         </span>
                       </div>
                     ) : null}
