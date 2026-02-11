@@ -100,6 +100,11 @@ const AccountItem = ({ account }: { account: Account }) => {
               'p-8 rounded',
               'text-[15px] leading-[18px] font-medium'
             )}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                update();
+              }
+            }}
             value={localName}
             onChange={(e) => {
               setLocalName(e.target.value);
@@ -230,6 +235,27 @@ export const ImportOrCreatedSuccess = () => {
     //   window.close();
     // }
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 如果焦点在输入框或可编辑元素上，不触发 getStarted
+      const target = e.target as HTMLElement;
+      const isInputElement =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable;
+
+      if (e.key === 'Enter' && !isInputElement) {
+        getStarted();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [getStarted]);
 
   const addMoreAddr = () => {
     const oBrand = brand !== 'null' ? brand : undefined;
