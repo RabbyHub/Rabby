@@ -64,7 +64,7 @@
     "@opensea/seaport-js": "4.0.5",
     "@paraswap/sdk": "6.10.0",
     "@rabby-wallet/eth-coinbase-keyring": "0.0.0-beta.8",
-    "@rabby-wallet/eth-hd-keyring": "4.3.3-4",
+    "@rabby-wallet/eth-hd-keyring": "4.3.3",
     "@rabby-wallet/eth-lattice-keyring": "1.2.4",
     "@rabby-wallet/eth-simple-keyring": "5.1.0",
     "@rabby-wallet/eth-trezor-keyring": "2.6.4",

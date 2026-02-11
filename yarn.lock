@@ -4903,10 +4903,10 @@
     patch-package "^8.0.0"
     uuid "^9.0.1"
 
-"@rabby-wallet/eth-hd-keyring@4.3.3-4":
-  version "4.3.3-4"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-4.3.3-4.tgz#b56f9fb9a11d52b0f4f2a707c25f5dcfc5d3c275"
-  integrity sha512-JdOjU8qj3FJypskkZAFwv5XjRCJ9J0N/faTuKfr9lBeiCOmpMqKhfAnsIB4BGMlvNSsI6AOzO7v2yFK3elqNPQ==
+"@rabby-wallet/eth-hd-keyring@4.3.3":
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-4.3.3.tgz#5f882f1ef45a323c01410058d0bf166e1ee5c558"
+  integrity sha512-ShPdj+bnrqejTngu5sOMjuBNrSlRz1zdHBeKpVU1ndR9b+pdaT4GIPFyPNRYzGDrjIF4rfhqAdU0/SjWc/dPqA==
   dependencies:
     "@ethereumjs/util" "^9.0.0"
     "@metamask/eth-sig-util" "^4.0.0"
