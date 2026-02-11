@@ -42,14 +42,6 @@ const HyperliquidHeader = () => {
       {positionPnl && positionPnl >= 0 ? '+' : '-'}$
       {splitNumberByStep(Math.abs(positionPnl || 0).toFixed(2))}
     </div>
-  ) : +(perpsPositionInfo?.marginSummary?.accountValue || '') ? (
-    <div
-      className={clsx(
-        'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
-      )}
-    >
-      {formatUsdValue(perpsPositionInfo?.marginSummary.accountValue || 0)}
-    </div>
   ) : null;
 };
 

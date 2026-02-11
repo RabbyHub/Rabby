@@ -64,7 +64,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
     }
     if (coin && coin !== selectedCoin) {
       isUpdatingFromUrl.current = true;
-      dispatch.perps.setSelectedCoin(coin);
+      dispatch.perps.updateSelectedCoin(coin);
       // Reset flag after state update
       setTimeout(() => {
         isUpdatingFromUrl.current = false;

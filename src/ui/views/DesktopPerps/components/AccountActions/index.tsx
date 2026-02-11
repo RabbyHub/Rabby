@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
@@ -13,6 +13,7 @@ import { DepositPending } from '../DepositWithdrawModal/DepositPending';
 import { PopupType } from '../../index';
 import BigNumber from 'bignumber.js';
 import { Skeleton, Tooltip } from 'antd';
+import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 
 export const AccountActions: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -22,7 +23,9 @@ export const AccountActions: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
   const { t } = useTranslation();
-  const availableBalance = Number(clearinghouseState?.withdrawable || 0);
+
+  const { availableBalance } = usePerpsAccount();
+
   // Get pending history count
   const localLoadingHistory = useRabbySelector(
     (state) => state.perps.localLoadingHistory
