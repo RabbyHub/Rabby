@@ -621,7 +621,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
-              value={amount ?? ''}
+              //value={amount ?? ''}
               onValueChange={onAmountChange}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"
