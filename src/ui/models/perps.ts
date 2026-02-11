@@ -677,6 +677,7 @@ export const perps = createModel<RootModel>()({
         ...state,
         currentPerpsAccount: null,
         isInitialized: false,
+        userAbstraction: UserAbstractionResp.default,
         isLogin: false,
         clearinghouseState: null,
         openOrders: [],
@@ -822,9 +823,16 @@ export const perps = createModel<RootModel>()({
     },
 
     async fetchUserAbstraction(address: string) {
-      const sdk = getPerpsSDK();
-      const userAbstraction = await sdk.info.getUserAbstraction(address);
-      dispatch.perps.patchState({ userAbstraction: userAbstraction });
+      try {
+        const sdk = getPerpsSDK();
+        const userAbstraction = await sdk.info.getUserAbstraction(address);
+        dispatch.perps.patchState({ userAbstraction: userAbstraction });
+      } catch (error) {
+        console.error('Failed to fetch user abstraction:', error);
+        dispatch.perps.patchState({
+          userAbstraction: UserAbstractionResp.default,
+        });
+      }
     },
 
     async loginPerpsAccount(
