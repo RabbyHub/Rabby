@@ -20,8 +20,22 @@ import {
   RcIconLighterCC,
 } from '@/ui/assets/desktop/nav';
 
+export const INNER_DAPP_IDS = {
+  POLYMARKET: 'polymarket',
+  OPINION: 'opinion',
+  PROBABLE: 'probable',
+  AAVE: 'aave',
+  SPARK: 'spark',
+  VENUS: 'venus',
+  HYPERLIQUID: 'hyperliquid',
+  ASTER: 'aster',
+  LIGHTER: 'lighter',
+} as const;
+
+export type INNER_DAPP_ID = typeof INNER_DAPP_IDS[keyof typeof INNER_DAPP_IDS];
+
 export type DappSelectItem = {
-  id: string;
+  id: INNER_DAPP_ID;
   name: string;
   icon: string;
   url: string;
@@ -33,7 +47,7 @@ export type DappSelectItem = {
 
 const PREDICTION: DappSelectItem[] = [
   {
-    id: 'polymarket',
+    id: INNER_DAPP_IDS.POLYMARKET,
     name: 'Polymarket',
     icon: PngPolymarket,
     url: 'https://polymarket.com/',
@@ -41,7 +55,7 @@ const PREDICTION: DappSelectItem[] = [
     NavIcon: RcIconPredictionCC,
   },
   {
-    id: 'probable',
+    id: INNER_DAPP_IDS.PROBABLE,
     name: 'Probable',
     icon: PngProbable,
     url: 'https://probable.markets',
@@ -53,7 +67,7 @@ const PREDICTION: DappSelectItem[] = [
 
 const LENDING: DappSelectItem[] = [
   {
-    id: 'aave',
+    id: INNER_DAPP_IDS.AAVE,
     name: 'Aave',
     icon: PngAave,
     url: 'https://app.aave.com',
@@ -61,7 +75,7 @@ const LENDING: DappSelectItem[] = [
     NavIcon: RcIconLeadingCC,
   },
   {
-    id: 'spark',
+    id: INNER_DAPP_IDS.SPARK,
     name: 'Spark',
     icon: PngSpark,
     url: 'https://app.spark.fi/my-portfolio',
@@ -69,7 +83,7 @@ const LENDING: DappSelectItem[] = [
     NavIcon: RcIconSparkCC,
   },
   {
-    id: 'venus',
+    id: INNER_DAPP_IDS.VENUS,
     name: 'Venus',
     icon: PngVenus,
     url: 'https://venus.io',
@@ -80,7 +94,7 @@ const LENDING: DappSelectItem[] = [
 
 const PERPS: DappSelectItem[] = [
   {
-    id: 'hyperliquid',
+    id: INNER_DAPP_IDS.HYPERLIQUID,
     name: 'Hyperliquid',
     icon: PngHyperliquid,
     url: 'https://app.hyperliquid.xyz/',
@@ -96,7 +110,7 @@ const PERPS: DappSelectItem[] = [
   //   NavIcon: RcIconAsterCC,
   // },
   {
-    id: 'lighter',
+    id: INNER_DAPP_IDS.LIGHTER,
     name: 'Lighter',
     icon: PngLighter,
     url: 'https://app.lighter.xyz/trade/LIT_USDC',
@@ -109,6 +123,12 @@ export const INNER_DAPP_LIST = {
   PREDICTION,
   LENDING,
   PERPS,
+} as const;
+
+export const DEFAULT_INNER_DAPP_ID = {
+  prediction: INNER_DAPP_IDS.POLYMARKET,
+  lending: INNER_DAPP_IDS.AAVE,
+  perps: INNER_DAPP_IDS.HYPERLIQUID,
 } as const;
 
 export const ALL_SUPPORTED_INNER_DAPP_ORIGINS = [
