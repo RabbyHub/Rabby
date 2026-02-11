@@ -11,6 +11,7 @@ import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { DashedUnderlineText } from '../../DashedUnderlineText';
 
 export const FundingHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -121,7 +122,13 @@ export const FundingHistory: React.FC = () => {
         },
       },
       {
-        title: t('page.perpsPro.userInfo.tab.funding'),
+        title: (
+          <DashedUnderlineText
+            tooltipText={t('page.perpsPro.userInfo.tab.fundingTipsV2')}
+          >
+            {t('page.perpsPro.userInfo.tab.funding')}
+          </DashedUnderlineText>
+        ),
         dataIndex: 'usdc',
         key: 'usdc',
         // width: 100,
