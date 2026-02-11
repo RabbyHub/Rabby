@@ -3291,7 +3291,8 @@
       "copySeedPhrase": "Copy seed phrase",
       "showQrCode": "Show QR Code",
       "qrCodePopupTitle": "QR Code",
-      "qrCodePopupTips": "Never share the seed phrase QR code to anyone else. Please view it in a secure environment and keep it carefully."
+      "qrCodePopupTips": "Never share the seed phrase QR code to anyone else. Please view it in a secure environment and keep it carefully.",
+      "doneButton": "I've Saved the Seed Phrase"
     },
     "backupPrivateKey": {
       "title": "Backup Private Key",
@@ -3865,7 +3866,13 @@
         "title": "Select Hardware Wallet"
       },
       "importSeedOrKey": {
-        "title": "Seed phrase or private key"
+        "title": "Seed phrase or private key",
+        "seedPhrase": "Seed Phrase",
+        "privateKey": "Private Key"
+      },
+      "importWalletType": {
+        "seedOrKey": "Seed phrase or private key",
+        "hardwareWallet": "Hardware Wallet"
       }
     },
     "metamaskModeDapps": {

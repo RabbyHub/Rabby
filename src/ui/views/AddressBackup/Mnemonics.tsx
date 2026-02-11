@@ -229,8 +229,7 @@ const AddressBackupMnemonics: React.FC<{
             }
           }}
         >
-          {/* {t('global.Done')} */}
-          I've Saved the Seed Phrase
+          {t('page.backupSeedPhrase.doneButton')}
         </Button>
       </div>
     </div>

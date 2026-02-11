@@ -114,6 +114,13 @@ export const ImportPrivateKey = () => {
                   duration: 2,
                 });
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  requestAnimationFrame(() => {
+                    handleSubmit();
+                  });
+                }
+              }}
             />
           </Form.Item>
         </Form>

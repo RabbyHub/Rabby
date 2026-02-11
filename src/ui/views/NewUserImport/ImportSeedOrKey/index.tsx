@@ -17,11 +17,11 @@ export const ImportSeedOrKey = () => {
       [
         {
           key: 'seedPhrase',
-          label: 'Seed Phrase',
+          label: t('page.newUserImport.importSeedOrKey.seedPhrase'),
         },
         {
           key: 'privateKey',
-          label: 'Private Key',
+          label: t('page.newUserImport.importSeedOrKey.privateKey'),
         },
       ] as const,
     [t]
