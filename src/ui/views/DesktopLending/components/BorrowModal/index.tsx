@@ -203,6 +203,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     }
     try {
       setIsLoading(true);
+      setBorrowTx(null);
       if (!targetPool.variableDebtTokenAddress) {
         return;
       }
@@ -517,7 +518,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
-              //value={amount ?? ''}
               onValueChange={onAmountChange}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"

@@ -253,6 +253,9 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     }
     try {
       setIsLoading(true);
+      setSupplyTx(null);
+      setApproveTxs(null);
+
       const txs: Tx[] = [];
       let allowance = '0';
       if (
@@ -621,7 +624,6 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
-              //value={amount ?? ''}
               onValueChange={onAmountChange}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"

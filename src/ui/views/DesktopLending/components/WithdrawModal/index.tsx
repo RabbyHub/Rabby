@@ -192,6 +192,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
     }
     try {
       setIsLoading(true);
+      setWithdrawTxs([]);
       if (!targetPool.aTokenAddress) {
         return;
       }
@@ -506,7 +507,6 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
-              //value={amount ?? ''}
               onValueChange={handleChangeAmount}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"

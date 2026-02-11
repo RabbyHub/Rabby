@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { Input, InputProps } from 'antd';
 import { formatSpeicalAmount } from '../utils/format';
-import { debounce, noop } from 'lodash';
+import debounce from 'lodash/debounce';
 
+const DEBOUNCE_MS = 300;
 const StyledInputComponent = styled(Input)`
   border-right-width: 0 !important;
   border-color: transparent !important;
@@ -17,10 +18,21 @@ interface StyledInputProps extends InputProps {
   onValueChange?: (v: string) => void;
 }
 export const LendingStyledInput = (props: StyledInputProps) => {
-  const debouncedOnValueChange = React.useMemo(
-    () => debounce(props.onValueChange || noop, 300),
-    [props.onValueChange]
+  const onValueChangeRef = useRef(props.onValueChange);
+  onValueChangeRef.current = props.onValueChange;
+
+  const debouncedOnValueChange = useMemo(
+    () =>
+      debounce((v: string) => {
+        onValueChangeRef.current?.(v);
+      }, DEBOUNCE_MS),
+    []
   );
+
+  React.useEffect(() => {
+    return () => debouncedOnValueChange.cancel();
+  }, [debouncedOnValueChange]);
+
   return (
     <StyledInputComponent
       {...props}
