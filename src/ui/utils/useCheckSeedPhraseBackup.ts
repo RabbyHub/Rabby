@@ -16,6 +16,9 @@ export const useCheckSeedPhraseBackup = (
       refreshDeps: [address],
       ...options,
       ready: !!address,
+      onError() {
+        // do nothing
+      },
     }
   );
 
