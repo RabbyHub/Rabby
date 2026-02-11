@@ -107,12 +107,12 @@ export const LendingEmptyState: React.FC<{
       {filterReserves.length > 0 && (
         <div className="px-20">
           <div className="mt-16 mb-2 flex items-center justify-start px-16">
-            <span className="text-[13px] leading-[15px] text-r-neutral-foot w-[150px]">
+            <span className="text-[13px] leading-[15px] text-r-neutral-foot w-[160px]">
               {t('page.lending.list.headers.token')}
             </span>
             <span
               className={clsx(
-                'text-[13px] leading-[15px] w-[150px] text-right',
+                'text-[13px] leading-[15px] w-[130px]',
                 'text-r-neutral-foot'
               )}
             >
@@ -120,7 +120,7 @@ export const LendingEmptyState: React.FC<{
             </span>
             <span
               className={clsx(
-                'text-[13px] leading-[15px] w-[150px] text-right',
+                'text-[13px] leading-[15px] w-[126px]',
                 'text-r-neutral-foot'
               )}
             >
@@ -128,7 +128,7 @@ export const LendingEmptyState: React.FC<{
             </span>
             <span
               className={clsx(
-                'text-[13px] leading-[15px] w-[150px] text-right',
+                'text-[13px] leading-[15px] w-[150px]',
                 'text-r-neutral-foot'
               )}
             >
