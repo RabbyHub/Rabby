@@ -194,7 +194,7 @@ export const PositionsInfo: React.FC = () => {
     clearinghouseState.assetPositions.forEach((item) => {
       const isBuy = Number(item.position.szi || 0) > 0;
       const price = new BigNumber(item.position.positionValue || 0).div(
-        new BigNumber(item.position.szi || 0).abs()
+        new BigNumber(item.position.szi || 1).abs()
       );
       stats.report('perpsTradeHistory', {
         created_at: new Date().getTime(),

@@ -30,12 +30,10 @@ export const usePerpsAccount = () => {
   ]);
 
   const availableBalance = useMemo(() => {
-    return (
-      Number(
-        isUnifiedAccount
-          ? spotAvailableToTrade
-          : clearinghouseState?.withdrawable
-      ) || 0
+    return Number(
+      isUnifiedAccount
+        ? spotAvailableToTrade
+        : clearinghouseState?.withdrawable || 0
     );
   }, [
     isUnifiedAccount,
