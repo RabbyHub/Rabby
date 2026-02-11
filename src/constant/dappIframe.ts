@@ -40,7 +40,7 @@ export type DappSelectItem = {
   icon: string;
   url: string;
   onPress?: (item: DappSelectItem) => void;
-  TVL: string;
+  extraInfo: string;
   value?: string;
   NavIcon: typeof RcIconLeadingCC;
 };
@@ -51,7 +51,7 @@ const PREDICTION: DappSelectItem[] = [
     name: 'Polymarket',
     icon: PngPolymarket,
     url: 'https://polymarket.com/',
-    TVL: '$370M',
+    extraInfo: 'Vol: $3.614b',
     NavIcon: RcIconPredictionCC,
   },
   {
@@ -60,7 +60,7 @@ const PREDICTION: DappSelectItem[] = [
     icon: PngProbable,
     url: 'https://probable.markets',
 
-    TVL: '$21M',
+    extraInfo: 'Vol: $1.823b',
     NavIcon: RcIconProbableCC,
   },
 ];
@@ -71,7 +71,7 @@ const LENDING: DappSelectItem[] = [
     name: 'Aave',
     icon: PngAave,
     url: 'https://app.aave.com',
-    TVL: '$33.803b',
+    extraInfo: 'TVL: $27.925b',
     NavIcon: RcIconLeadingCC,
   },
   {
@@ -79,7 +79,7 @@ const LENDING: DappSelectItem[] = [
     name: 'Spark',
     icon: PngSpark,
     url: 'https://app.spark.fi/my-portfolio',
-    TVL: '$5.977b',
+    extraInfo: 'TVL: $5.246b',
     NavIcon: RcIconSparkCC,
   },
   {
@@ -87,7 +87,7 @@ const LENDING: DappSelectItem[] = [
     name: 'Venus',
     icon: PngVenus,
     url: 'https://venus.io',
-    TVL: '$1.635b',
+    extraInfo: 'TVL: $1.226b',
     NavIcon: RcIconVenusCC,
   },
 ];
@@ -98,7 +98,7 @@ const PERPS: DappSelectItem[] = [
     name: 'Hyperliquid',
     icon: PngHyperliquid,
     url: 'https://app.hyperliquid.xyz/',
-    TVL: '$156.396b',
+    extraInfo: 'Vol: $262.013b',
     NavIcon: RcIconPerpsCC,
   },
   // {
@@ -106,7 +106,7 @@ const PERPS: DappSelectItem[] = [
   //   name: 'Aster',
   //   icon: PngAster,
   //   url: 'https://www.asterdex.com/trade/pro/futures/BTCUSDT',
-  //   TVL: '$124.388b',
+  //   extraInfo: 'Vol: $147.423b',
   //   NavIcon: RcIconAsterCC,
   // },
   {
@@ -114,7 +114,7 @@ const PERPS: DappSelectItem[] = [
     name: 'Lighter',
     icon: PngLighter,
     url: 'https://app.lighter.xyz/trade/LIT_USDC',
-    TVL: '$116.548b',
+    extraInfo: 'Vol: $114.536b',
     NavIcon: RcIconLighterCC,
   },
 ];
