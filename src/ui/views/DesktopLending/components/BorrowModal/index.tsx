@@ -39,6 +39,7 @@ import { LendingReportType } from '../../types/tx';
 import { isSameAddress } from '@/ui/utils';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { isZeroAmount } from '../../utils/number';
+import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
 
 type BorrowModalProps = {
   visible: boolean;
@@ -78,7 +79,8 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     contextUserSummary,
   ]);
 
-  const [amount, setAmount] = useState<string | undefined>(undefined);
+  const [_amount, setAmount] = useState<string | undefined>(undefined);
+  const amount = useDebouncedValue(_amount, 300);
   const [isLoading, setIsLoading] = useState(false);
   const [miniSignLoading, setMiniSignLoading] = useState(false);
   const [borrowTx, setBorrowTx] = useState<Tx | null>(null);
@@ -518,6 +520,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
+              value={_amount ?? ''}
               onValueChange={onAmountChange}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"

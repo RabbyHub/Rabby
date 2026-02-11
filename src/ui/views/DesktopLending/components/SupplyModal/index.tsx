@@ -37,6 +37,7 @@ import stats from '@/stats';
 import { LendingReportType } from '../../types/tx';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { isZeroAmount } from '../../utils/number';
+import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
 
 type SupplyModalProps = {
   visible: boolean;
@@ -75,7 +76,8 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     contextUserSummary,
   ]);
 
-  const [amount, setAmount] = useState<string | undefined>(undefined);
+  const [_amount, setAmount] = useState<string | undefined>(undefined);
+  const amount = useDebouncedValue(_amount, 300);
   const [needApprove, setNeedApprove] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [miniSignLoading, setMiniSignLoading] = useState(false);
@@ -624,6 +626,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
+              value={_amount ?? ''}
               onValueChange={onAmountChange}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"

@@ -37,6 +37,7 @@ import { LendingReportType } from '../../types/tx';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { isZeroAmount } from '../../utils/number';
 import { StyledCheckbox } from '../BorrowModal';
+import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
 
 type WithdrawModalProps = {
   visible: boolean;
@@ -114,9 +115,10 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
     return max.toString();
   }, [summary, targetPool, reserve]);
 
-  const amount = useMemo(() => {
+  const inner_amount = useMemo(() => {
     return _amount === '-1' ? withdrawAmount.toString() : _amount;
   }, [_amount, withdrawAmount]);
+  const amount = useDebouncedValue(inner_amount, 300);
 
   const afterHF = useMemo(() => {
     if (!amount || isZeroAmount(amount) || !summary || !targetPool) {
@@ -176,6 +178,10 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
     autoResetGasStoreOnChainChange: true,
   });
 
+  const isMax = useMemo(() => {
+    return _amount === '-1';
+  }, [_amount]);
+
   const buildTransactions = useCallback(async () => {
     if (
       !amount ||
@@ -199,7 +205,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
       const withdrawResult = await buildWithdrawTx({
         pool: pools.pool,
-        amount: _amount === '-1' ? '-1' : amount,
+        amount: isMax ? '-1' : amount,
         address: currentAccount.address,
         reserve: targetPool.underlyingAsset,
         aTokenAddress: targetPool.aTokenAddress,
@@ -229,7 +235,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
     pools,
     chainInfo,
     targetPool,
-    _amount,
+    isMax,
   ]);
 
   useEffect(() => {
@@ -507,6 +513,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
+              value={inner_amount ?? ''}
               onValueChange={handleChangeAmount}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"

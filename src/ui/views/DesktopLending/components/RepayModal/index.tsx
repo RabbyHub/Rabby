@@ -36,6 +36,7 @@ import stats from '@/stats';
 import { LendingReportType } from '../../types/tx';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { isZeroAmount } from '../../utils/number';
+import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
 
 const StyledSelect = styled(Select)`
   display: flex;
@@ -230,9 +231,10 @@ export const RepayModal: React.FC<RepayModalProps> = ({
     reserve.reserve.formattedPriceInMarketReferenceCurrency,
   ]);
 
-  const amount = useMemo(() => {
+  const inner_amount = useMemo(() => {
     return _amount === '-1' ? repayAmount.amount : _amount;
   }, [_amount, repayAmount.amount]);
+  const amount = useDebouncedValue(inner_amount, 300);
 
   const afterHF = useMemo(() => {
     if (!amount || isZeroAmount(amount) || !summary) {
@@ -347,6 +349,9 @@ export const RepayModal: React.FC<RepayModalProps> = ({
     wallet,
     isAtTokenRepay,
   ]);
+  const isMax = useMemo(() => {
+    return _amount === '-1';
+  }, [_amount]);
 
   const buildTransactions = useCallback(async () => {
     if (
@@ -446,10 +451,9 @@ export const RepayModal: React.FC<RepayModalProps> = ({
 
       const repayResult = await buildRepayTx({
         poolBundle: pools.poolBundle,
-        amount:
-          _amount === '-1'
-            ? '-1'
-            : parseUnits(amount, reserve.reserve.decimals).toString(),
+        amount: isMax
+          ? '-1'
+          : parseUnits(amount, reserve.reserve.decimals).toString(),
         address: currentAccount.address,
         reserve: reserve.underlyingAsset,
         useOptimizedPath: optimizedPath(selectedMarketData.chainId),
@@ -471,7 +475,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
     }
   }, [
     amount,
-    _amount,
+    isMax,
     currentAccount,
     selectedMarketData,
     pools,
@@ -778,6 +782,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
           </div>
           <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
             <LendingStyledInput
+              value={amount ?? ''}
               onValueChange={onAmountChange}
               placeholder="0"
               className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"
