@@ -3285,12 +3285,7 @@ export class WalletController extends BaseController {
       KEYRING_CLASS.MNEMONIC
     );
 
-    console.log(keyring);
     return keyring.hasBackup == null ? true : keyring.hasBackup;
-    // const serialized = await keyring.serialize();
-    // const seedWords = serialized.mnemonic;
-
-    // return seedWords;
   };
 
   backupSeedPhraseConfirmed = async (address: string) => {

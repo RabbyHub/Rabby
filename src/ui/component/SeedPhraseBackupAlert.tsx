@@ -12,6 +12,7 @@ import { ReactComponent as RcIconArrowRightCC } from '@/ui/assets/dashboard/arro
 import styled from 'styled-components';
 import { UI_TYPE } from '@/constant/ui';
 import { obj2query } from '../utils/url';
+import browser from 'webextension-polyfill';
 
 const AlertContainer = styled.div`
   display: flex;
@@ -49,16 +50,27 @@ export const SeedPhraseBackupAlert: React.FC<{
       return;
     }
     if (UI_TYPE.isDesktop) {
-      history.push({
-        pathname: `${history.location.pathname}`,
-        search: `?${obj2query({
+      await wallet.setPageStateCache({
+        path: '/dashboard',
+        params: {
           action: 'address-backup',
           backupType: 'mneonics',
-        })}`,
-        state: {
-          data: data,
+        },
+        states: {
+          action: 'address-backup',
         },
       });
+      browser.action.openPopup();
+      // history.push({
+      //   pathname: `${history.location.pathname}`,
+      //   search: `?${obj2query({
+      //     action: 'address-backup',
+      //     backupType: 'mneonics',
+      //   })}`,
+      //   state: {
+      //     data: data,
+      //   },
+      // });
     } else {
       await AuthenticationModal({
         confirmText: t('global.confirm'),
