@@ -1,7 +1,8 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Input, InputProps } from 'antd';
 import { formatSpeicalAmount } from '../utils/format';
+
 const StyledInputComponent = styled(Input)`
   border-right-width: 0 !important;
   border-color: transparent !important;
