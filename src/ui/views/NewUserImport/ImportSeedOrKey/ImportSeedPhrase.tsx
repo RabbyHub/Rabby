@@ -45,8 +45,6 @@ export const ImportSeedPhrase = () => {
     passphrase: '',
   });
 
-  let keyringId: number | null;
-
   const onPassphrase = React.useCallback((val: boolean) => {
     setNeedPassphrase(val);
   }, []);
@@ -240,15 +238,13 @@ export const ImportSeedPhrase = () => {
         <footer className="mt-auto">
           {!formValues.mnemonics?.trim() ? (
             <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
-              <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
-                {t('page.newUserImport.importSeedPhrase.noWallet')}{' '}
-                <Link
-                  to="/new-user/create-seed-phrase"
-                  className="text-r-blue-default"
-                >
-                  {t('page.newUserImport.importSeedPhrase.createWallet')}
-                </Link>
-              </div>
+              {t('page.newUserImport.importSeedPhrase.noWallet')}{' '}
+              <Link
+                to="/new-user/create-seed-phrase"
+                className="text-r-blue-default"
+              >
+                {t('page.newUserImport.importSeedPhrase.createWallet')}
+              </Link>
             </div>
           ) : null}
           <Button

@@ -3,7 +3,7 @@ import { openInTab } from '@/ui/utils';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Form, Input } from 'antd';
 import clsx from 'clsx';
-import { divide, sum } from 'lodash';
+import { sum } from 'lodash';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -197,9 +197,6 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                 type={isShowPassword ? 'text' : 'password'}
                 autoFocus
                 spellCheck={false}
-                onBlur={(e) => {
-                  console.log('onBlur');
-                }}
                 suffix={
                   <div className="flex items-center gap-[4px]">
                     <div className="icon-check text-r-green-default p-[6px]">

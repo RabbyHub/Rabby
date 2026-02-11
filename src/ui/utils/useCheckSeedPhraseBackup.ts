@@ -12,7 +12,7 @@ export const useCheckSeedPhraseBackup = (
   const { data = true, runAsync } = useRequest(
     () => wallet.checkSeedPhraseBackup(address),
     {
-      cacheKey: `'check-seed-phrase-backup-${address}`,
+      cacheKey: `check-seed-phrase-backup-${address}`,
       refreshDeps: [address],
       ...options,
       ready: !!address,

@@ -19,7 +19,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { GasPriceBar } from './components/GasPriceBar';
 import { CHAINS_ENUM } from '@/constant';
 import Settings from './components/Settings';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 const Dashboard = () => {
@@ -82,13 +82,14 @@ const Dashboard = () => {
 
   const location = useLocation();
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
-  useEffect(() => {
+  useMount(() => {
     const check = async () => {
       const cache = await wallet.getPageStateCache();
       if (
         cache?.path === location.pathname &&
         cache?.states?.action === 'address-backup'
       ) {
+        wallet.clearPageStateCache();
         const address = currentAccount?.address;
         if (!address) {
           return;
@@ -110,7 +111,7 @@ const Dashboard = () => {
           },
           onFinished() {
             history.push({
-              pathname: `/settings/address-backup/mneonics`,
+              pathname: '/settings/address-backup/mneonics',
               state: {
                 data: data,
                 goBack: true,
@@ -125,10 +126,7 @@ const Dashboard = () => {
       }
     };
     check();
-    return () => {
-      wallet.clearPageStateCache();
-    };
-  }, [location]);
+  });
 
   return (
     <>

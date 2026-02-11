@@ -83,7 +83,7 @@ export const SeedPhraseBackupAlert: React.FC<{
         },
         onFinished() {
           history.push({
-            pathname: `/settings/address-backup/mneonics`,
+            pathname: '/settings/address-backup/mneonics',
             state: {
               data: data,
               goBack: true,

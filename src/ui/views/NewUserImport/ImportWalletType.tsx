@@ -1,25 +1,18 @@
-import React, { useState } from 'react';
-import clsx from 'clsx';
-import { useHistory, useLocation } from 'react-router-dom';
-import { Card } from '@/ui/component/NewUserImport';
-import { ReactComponent as RcIconArrowDownCC } from '@/ui/assets/new-user-import/arrow-down-cc.svg';
 import {
-  BRAND_ALIAN_TYPE_TEXT,
   KEYRING_CLASS,
-  KEYRING_ICONS,
-  KEYRING_TYPE,
   WALLET_BRAND_CONTENT,
   WALLET_BRAND_TYPES,
 } from '@/constant';
-import { Item } from '@/ui/component';
-import { useTranslation } from 'react-i18next';
-import { Tooltip } from 'antd';
-import qs from 'qs';
+import IconBitget from '@/ui/assets/new-user-import/wallet/bitget.svg';
+import IconCoinbase from '@/ui/assets/new-user-import/wallet/coinbase.svg';
 import IconMetamask from '@/ui/assets/new-user-import/wallet/metamask.svg';
 import IconOKX from '@/ui/assets/new-user-import/wallet/okx.svg';
 import IconPhantom from '@/ui/assets/new-user-import/wallet/phantom.svg';
-import IconBitget from '@/ui/assets/new-user-import/wallet/bitget.svg';
-import IconCoinbase from '@/ui/assets/new-user-import/wallet/coinbase.svg';
+import { Item } from '@/ui/component';
+import { Card } from '@/ui/component/NewUserImport';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 
 const otherWallets = [
   {
@@ -47,8 +40,6 @@ const otherWallets = [
 export const ImportWalletType = () => {
   const { t } = useTranslation();
   const history = useHistory();
-
-  const [showMore, setShowMore] = useState(false);
 
   const hardwareWallets = React.useMemo(
     () => [
@@ -121,7 +112,7 @@ export const ImportWalletType = () => {
           className="pl-[18px] rounded-[8px] text-[20px] leading-[24px] py-[21px] font-medium text-r-neutral-title1"
         >
           <div className="space-y-[12px]">
-            <div>Seed phrase or private key</div>
+            <div>{t('page.newUserImport.importWalletType.seedOrKey')}</div>
             <div className="flex items-center gap-[12px]">
               {otherWallets.map((item) => {
                 return (
@@ -149,7 +140,7 @@ export const ImportWalletType = () => {
           className="pl-[18px] rounded-[8px] text-[20px] leading-[24px] py-[21px] font-medium text-r-neutral-title1"
         >
           <div className="space-y-[12px]">
-            <div>Hardware Wallet</div>
+            <div>{t('page.newUserImport.importWalletType.hardwareWallet')}</div>
             <div className="flex items-center gap-[12px]">
               {hardwareWallets.map((item) => {
                 return (
