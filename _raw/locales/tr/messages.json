@@ -2042,7 +2042,8 @@
         "check2": "Özel Anahtarımı veya Seed Phrase'imi yedeklediğimi onaylıyorum ve silmeye hazırım.",
         "sub-title": "Bu eylem kalıcıdır. Varlıklarınızı korumak için lütfen aşağıdakileri gözden geçirin:",
         "check1": "Bu adresi silmenin aynı zamanda Özel Anahtarını da sileceğini anlıyorum. Rabby bunları benim için geri getiremez."
-      }
+      },
+      "notBackup": "Yedekleme Yok"
     },
     "preferMetamaskDapps": {
       "title": "MetaMask Tercihli Dapp'ler",
@@ -2121,7 +2122,8 @@
       "copySeedPhrase": "Seed phrase'i kopyala",
       "qrCodePopupTips": "Asla seed phrase QR kodunu başkalarıyla paylaşmayın. Lütfen güvenli bir ortamda görüntüleyin ve dikkatlice saklayın.",
       "qrCodePopupTitle": "QR Code",
-      "showQrCode": "QR Kodunu Göster"
+      "showQrCode": "QR Kodunu Göster",
+      "doneButton": "Seed ifadesini kaydettim."
     },
     "backupPrivateKey": {
       "title": "Özel Anahtarı Yedekle",
@@ -2678,7 +2680,9 @@
       },
       "importPrivateKey": {
         "pasteCleared": "Yapıştırıldı ve pano temizlendi",
-        "title": "Özel Anahtarı İçe Aktar"
+        "title": "Özel Anahtarı İçe Aktar",
+        "createWallet": "Cüzdan oluşturun",
+        "noWallet": "Henüz bir seed phrase veya özel anahtarınız yok mu?"
       },
       "PasswordCard": {
         "form": {
@@ -2704,7 +2708,10 @@
         "addMoreAddr": "Bu Seed Phrase'ten daha fazla adres ekleyin",
         "addMoreFrom": "{{name}}'den daha fazla adres ekleyin",
         "start": "Başlayın",
-        "create": "Başarıyla Oluşturuldu"
+        "create": "Başarıyla Oluşturuldu",
+        "openWallet": "Cüzdanı Aç",
+        "desc": "Rabby Wallet Kullanıma Hazır!",
+        "backupSeedPhraseNow": "Şu anda Yedek Seed ifadesi oluşturun"
       },
       "readyToUse": {
         "pin": "Rabby Wallet'i Sabitle",
@@ -2717,7 +2724,9 @@
         "title": "Cüzdanınız hazır!"
       },
       "importSeedPhrase": {
-        "title": "Seed Phrase İçe Aktar"
+        "title": "Seed Phrase İçe Aktar",
+        "createWallet": "Cüzdan oluşturun",
+        "noWallet": "Henüz seed phrase veya özel anahtarınız yok mu?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2775,6 +2784,18 @@
         "title": "Güvenli Adres Ekle",
         "loading": "Bu adresin dağıtılmış zinciri aranıyor",
         "placeholder": "Güvenli adres girin"
+      },
+      "importHardwareList": {
+        "title": "Donanım Cüzdanını Seçin"
+      },
+      "importSeedOrKey": {
+        "privateKey": "Özel Anahtar",
+        "seedPhrase": "Tohum Cümlesi",
+        "title": "Seed ifadesi veya özel anahtar"
+      },
+      "importWalletType": {
+        "hardwareWallet": "Donanım Cüzdanı",
+        "seedOrKey": "Seed ifadesi veya özel anahtar"
       }
     },
     "metamaskModeDapps": {
@@ -3481,7 +3502,8 @@
           "rate": "Fonlama Oranı",
           "closedPnlTooltip": "Kapatılan PNL ücretler ve iadeler içerir.",
           "closedPnl": "Gerçekleşen PnL",
-          "fee": "Fonlama ücreti"
+          "fee": "Fonlama ücreti",
+          "fundingTipsV2": "Pozisyon açıldıktan sonra net finansman. Kırmızı (negatif) bir finansman değeri, ödenen finansmanı; yeşil (pozitif) bir değer ise alınan finansmanı gösterir."
         },
         "emptyMessage": {
           "openOrders": "Açık emir yok.",
@@ -3555,7 +3577,8 @@
           "reduceOnlyCanceled": "Sadece azaltma nedeniyle iptal edildi",
           "badAloPxRejected": "Kötü ALO PX nedeniyle reddedildi",
           "perpMarginRejected": "Reddedilen Perp Marjı Reddedildi",
-          "minTradeNtlRejected": "Min tic NTL nedeniyle reddedildi"
+          "minTradeNtlRejected": "Min tic NTL nedeniyle reddedildi",
+          "siblingFilledCanceled": "İptal edildi çünkü kardeş sıralama dolduruldu."
         }
       },
       "statusBar": {
@@ -4361,6 +4384,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "Adres Seçin"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Cüzdan Yedeklenmedi. Yedeklemeye Başla."
     }
   },
   "global": {

@@ -2077,7 +2077,8 @@
         "check2": "我确认我已备份我的 Private Key 或 Seed Phrase，并且我准备删除它。",
         "sub-title": "此操作是永久性的。请查看以下内容以保护您的资产：",
         "check1": "我明白，删除这个地址也会删除它的私钥。Rabby 不能为我恢复它们。"
-      }
+      },
+      "notBackup": "未备份"
     },
     "preferMetamaskDapps": {
       "title": "优先使用MetaMask连接的Dapp",
@@ -2162,7 +2163,8 @@
       "title": "备份助记词",
       "showQrCode": "显示二维码",
       "qrCodePopupTitle": "二维码",
-      "qrCodePopupTips": "永远不要与任何其他人分享种子短语的二维码。请在安全的环境中查看并小心保管。"
+      "qrCodePopupTips": "永远不要与任何其他人分享种子短语的二维码。请在安全的环境中查看并小心保管。",
+      "doneButton": "我已保存助记词"
     },
     "ethSign": {
       "alert": " 'eth_sign' 类型签名会导致资产损失。为了你的安全， Rabby 不支持此类签名"
@@ -2752,7 +2754,9 @@
       },
       "importPrivateKey": {
         "title": "导入私钥",
-        "pasteCleared": "已粘贴并清除剪贴板"
+        "pasteCleared": "已粘贴并清除剪贴板",
+        "createWallet": "创建钱包",
+        "noWallet": "还没有种子短语或私钥吗？"
       },
       "PasswordCard": {
         "form": {
@@ -2778,7 +2782,10 @@
         "start": "开始使用",
         "addMoreAddr": "从这个 Seed Phrase 添加更多地址",
         "create": "创建成功",
-        "addMoreFrom": "从 {{name}} 添加更多地址"
+        "addMoreFrom": "从 {{name}} 添加更多地址",
+        "openWallet": "打开钱包",
+        "desc": "Rabby 钱包已经可以使用了！",
+        "backupSeedPhraseNow": "立即备份种子短语"
       },
       "readyToUse": {
         "pin": "固定 Rabby 钱包",
@@ -2791,7 +2798,9 @@
         "title": "您的 Rabby Wallet 已准备就绪！"
       },
       "importSeedPhrase": {
-        "title": "导入助记词"
+        "title": "导入助记词",
+        "createWallet": "创建钱包",
+        "noWallet": "还没有助记词或私钥？"
       },
       "importOneKey": {
         "connect": "连接 OneKey",
@@ -2849,6 +2858,18 @@
         "title": "添加 Safe 地址",
         "placeholder": "输入安全地址",
         "loading": "正在搜索该地址的已部署链"
+      },
+      "importHardwareList": {
+        "title": "选择硬件钱包"
+      },
+      "importSeedOrKey": {
+        "seedPhrase": "种子短语",
+        "title": "助记词或私钥",
+        "privateKey": "私钥"
+      },
+      "importWalletType": {
+        "hardwareWallet": "硬件钱包",
+        "seedOrKey": "种子短语或私钥"
       }
     },
     "metamaskModeDapps": {
@@ -3516,7 +3537,8 @@
           "tradeValue": "名义价值",
           "coin": "币种",
           "closedPnl": "已实现盈亏",
-          "unrealizedPnl": "未实现盈亏"
+          "unrealizedPnl": "未实现盈亏",
+          "fundingTipsV2": "自开仓以来的净资金。红色（负值）资金表示支付的资金，而绿色（正值）资金表示收到的资金。"
         },
         "emptyMessage": {
           "positions": "暂无持仓",
@@ -3590,7 +3612,8 @@
           "badAloPxRejected": "因不良 ALO PX 被拒绝",
           "minTradeNtlRejected": "由于最低交易 NTL 被拒绝",
           "perpMarginRejected": "拒绝的永续合约保证金",
-          "rejected": "已拒绝"
+          "rejected": "已拒绝",
+          "siblingFilledCanceled": "由于兄弟订单已被成交而取消"
         }
       },
       "statusBar": {
@@ -4396,6 +4419,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "选择地址"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "钱包未备份。开始备份。"
     }
   },
   "background": {

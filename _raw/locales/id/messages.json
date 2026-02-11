@@ -2128,7 +2128,8 @@
         "sub-title": "Tindakan ini bersifat permanen. Harap tinjau hal-hal berikut untuk melindungi aset Anda:",
         "title": "Hapus Alamat dan Kunci Pribadi?",
         "check1": "Saya mengerti bahwa menghapus alamat ini juga menghapus Kunci Pribadinya. Rabby tidak dapat memulihkannya untuk saya."
-      }
+      },
+      "notBackup": "Tidak Cadangan"
     },
     "preferMetamaskDapps": {
       "empty": "Tidak ada dapps",
@@ -2207,7 +2208,8 @@
       "qrCodePopupTips": "Jangan pernah membagikan kode QR frasa benih kepada orang lain. Silakan lihat di lingkungan yang aman dan jaga dengan baik.",
       "showQrCode": "Tampilkan Kode QR",
       "title": "Cadangan Frasa Benih",
-      "alert": "Seed Phrase ini adalah kredensial untuk aset Anda. JANGAN hilangkan atau ungkapkan kepada orang lain, jika tidak, Anda mungkin kehilangan aset Anda selamanya. Harap lihat di lingkungan yang aman dan simpan dengan hati-hati."
+      "alert": "Seed Phrase ini adalah kredensial untuk aset Anda. JANGAN hilangkan atau ungkapkan kepada orang lain, jika tidak, Anda mungkin kehilangan aset Anda selamanya. Harap lihat di lingkungan yang aman dan simpan dengan hati-hati.",
+      "doneButton": "Saya telah menyimpan Frasa Benih"
     },
     "backupPrivateKey": {
       "title": "Cadangkan Kunci Pribadi",
@@ -2672,7 +2674,9 @@
       },
       "importPrivateKey": {
         "title": "Impor Kunci Pribadi",
-        "pasteCleared": "Ditempelkan dan clipboard dibersihkan"
+        "pasteCleared": "Ditempelkan dan clipboard dibersihkan",
+        "createWallet": "Buat dompet",
+        "noWallet": "Belum memiliki seed phrase atau private key?"
       },
       "PasswordCard": {
         "form": {
@@ -2698,7 +2702,10 @@
         "create": "Berhasil Dibuat",
         "addMoreFrom": "Tambah lebih banyak alamat dari {{name}}",
         "addMoreAddr": "Tambahkan lebih banyak alamat dari Seed Phrase ini",
-        "import": "Diimpor Berhasil"
+        "import": "Diimpor Berhasil",
+        "backupSeedPhraseNow": "Cadangkan Frasa Seed Sekarang",
+        "openWallet": "Buka Dompet",
+        "desc": "Dompet Rabby Siap Digunakan!"
       },
       "readyToUse": {
         "pin": "Pin Dompet Rabby",
@@ -2711,7 +2718,9 @@
         "extensionTip": "Klik <1/> dan kemudian <3/>"
       },
       "importSeedPhrase": {
-        "title": "Impor Kata Sandi Seed"
+        "title": "Impor Kata Sandi Seed",
+        "createWallet": "Buat dompet",
+        "noWallet": "Belum punya seed phrase atau private key?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2769,6 +2778,18 @@
         "placeholder": "Masukkan alamat aman",
         "title": "Tambahkan Alamat Aman",
         "loading": "Mencari rantai yang dideploy dari alamat ini"
+      },
+      "importHardwareList": {
+        "title": "Pilih Dompet Hardware"
+      },
+      "importSeedOrKey": {
+        "seedPhrase": "Frase Penabur",
+        "title": "Seed phrase atau kunci privat",
+        "privateKey": "Kunci Pribadi"
+      },
+      "importWalletType": {
+        "seedOrKey": "Frasa awal atau kunci pribadi",
+        "hardwareWallet": "Dompet Perangkat Keras"
       }
     },
     "metamaskModeDapps": {
@@ -3475,7 +3496,8 @@
           "rate": "Tarif pendanaan",
           "closedPnlTooltip": "PNL terealisasi mencakup biaya dan cashback",
           "closedPnl": "Pnl terealisasi",
-          "direction": "Arah"
+          "direction": "Arah",
+          "fundingTipsV2": "Pendanaan bersih sejak posisi dibuka. nilai pendanaan merah (negatif) menunjukkan pendanaan yang dibayar, sementara nilai hijau (positif) menunjukkan pendanaan yang diterima."
         },
         "emptyMessage": {
           "fundingHistory": "Tidak ada riwayat pendanaan",
@@ -3549,7 +3571,8 @@
           "badAloPxRejected": "Ditolak karena ALO PX buruk",
           "iocCancelRejected": "Ditolak karena pembatalan IOC",
           "reduceOnlyCanceled": "Dibatalkan karena hanya pengurangan",
-          "minTradeNtlRejected": "Ditolak karena min perdagangan NTL"
+          "minTradeNtlRejected": "Ditolak karena min perdagangan NTL",
+          "siblingFilledCanceled": "Dibatalkan karena urutan saudara telah terisi"
         }
       },
       "statusBar": {
@@ -4355,6 +4378,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "Pilih Alamat"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Wallet Tidak Cadangan. Mulai Cadangan."
     }
   },
   "global": {

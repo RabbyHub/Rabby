@@ -2039,7 +2039,8 @@
         "title": "Excluir Endereço e Chave Privada?",
         "check2": "Eu confirmo que fiz o backup da minha chave privada ou frase-semente e estou pronto para excluí-la.",
         "check1": "Eu entendo que excluir este endereço também remove sua Chave Privada. O Rabby não pode recuperá-las para mim."
-      }
+      },
+      "notBackup": "Não Fazer Backup"
     },
     "preferMetamaskDapps": {
       "title": "Dapps Preferidos do MetaMask",
@@ -2118,7 +2119,8 @@
       "copySeedPhrase": "Copiar Frase-semente",
       "qrCodePopupTitle": "QR Code",
       "showQrCode": "Mostrar QR Code",
-      "qrCodePopupTips": "Nunca compartilhe o código QR da seed phrase com ninguém. Por favor, visualize-o em um ambiente seguro e guarde-o cuidadosamente."
+      "qrCodePopupTips": "Nunca compartilhe o código QR da seed phrase com ninguém. Por favor, visualize-o em um ambiente seguro e guarde-o cuidadosamente.",
+      "doneButton": "Eu salvei a frase-semente."
     },
     "backupPrivateKey": {
       "title": "Backup da Chave Privada",
@@ -2675,7 +2677,9 @@
       },
       "importPrivateKey": {
         "pasteCleared": "Colado e área de transferência limpa",
-        "title": "Importar Private Key"
+        "title": "Importar Private Key",
+        "createWallet": "Criar uma carteira",
+        "noWallet": "Ainda não tem a frase-semente ou a chave privada?"
       },
       "PasswordCard": {
         "form": {
@@ -2701,7 +2705,10 @@
         "addMoreFrom": "Adicionar mais endereços de {{name}}",
         "addMoreAddr": "Adicione mais endereços através desta Seed Phrase",
         "import": "Importado com sucesso",
-        "create": "Criado com sucesso"
+        "create": "Criado com sucesso",
+        "backupSeedPhraseNow": "Faça backup da frase semente agora",
+        "openWallet": "Abrir Wallet",
+        "desc": "Rabby Wallet está pronto para uso!"
       },
       "readyToUse": {
         "pin": "Fixar Rabby Wallet",
@@ -2714,7 +2721,9 @@
         "extensionTip": "Clique <1/> e depois <3/>"
       },
       "importSeedPhrase": {
-        "title": "Importar Seed Phrase"
+        "title": "Importar Seed Phrase",
+        "createWallet": "Criar uma carteira",
+        "noWallet": "Ainda não tem a frase semente ou a chave privada?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2772,6 +2781,18 @@
         "title": "Adicionar Endereço Safe",
         "loading": "Pesquisando a cadeia implantada deste endereço",
         "placeholder": "Insira o endereço seguro"
+      },
+      "importHardwareList": {
+        "title": "Selecione a Wallet de Hardware"
+      },
+      "importSeedOrKey": {
+        "privateKey": "Chave Privada",
+        "seedPhrase": "Frase Semente",
+        "title": "Frase-semente ou chave privada"
+      },
+      "importWalletType": {
+        "hardwareWallet": "Carteira de Hardware",
+        "seedOrKey": "Seed phrase ou chave privada"
       }
     },
     "metamaskModeDapps": {
@@ -3480,7 +3501,8 @@
           "closedPnl": "P/L Realizado",
           "positions": "Posições",
           "size": "Tamanho da posição",
-          "tpSl": "Lucro-alvo / Stop Loss"
+          "tpSl": "Lucro-alvo / Stop Loss",
+          "fundingTipsV2": "Financiamento líquido desde que a posição foi aberta. Um valor de financiamento vermelho (negativo) indica financiamento pago, enquanto um valor verde (positivo) indica financiamento recebido."
         },
         "emptyMessage": {
           "orderHistory": "Sem histórico de ordens",
@@ -3554,7 +3576,8 @@
           "iocCancelRejected": "Rejeitado devido ao cancelamento IOC",
           "badAloPxRejected": "Rejeitado devido a ALO PX ruim",
           "minTradeNtlRejected": "Rejeitado devido ao min trade NTL",
-          "open": "Abrir"
+          "open": "Abrir",
+          "siblingFilledCanceled": "Cancelado devido ao preenchimento da ordem de irmãos"
         }
       },
       "statusBar": {
@@ -4361,6 +4384,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "Selecionar Endereço"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Carteira não está respaldada. Iniciar backup."
     }
   },
   "global": {

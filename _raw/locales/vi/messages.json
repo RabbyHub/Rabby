@@ -2128,7 +2128,8 @@
         "sub-title": "Hành động này là vĩnh viễn. Vui lòng xem xét những điều sau để bảo vệ tài sản của bạn:",
         "check2": "Tôi xác nhận rằng tôi đã sao lưu Khóa Riêng hoặc Câu Gốc của mình và tôi sẵn sàng xóa nó.",
         "title": "Xóa địa chỉ và khóa riêng tư?"
-      }
+      },
+      "notBackup": "Không sao lưu"
     },
     "preferMetamaskDapps": {
       "howToAdd": "Cách thêm",
@@ -2207,7 +2208,8 @@
       "title": "Sao lưu cụm từ hạt giống",
       "qrCodePopupTips": "Không bao giờ chia sẻ mã QR cụm từ hạt giống cho người khác. Vui lòng xem nó trong một môi trường an toàn và giữ gìn cẩn thận.",
       "copySeedPhrase": "Sao chép cụm từ hạt giống",
-      "alert": "Câu Seed Phrase này là thông tin xác thực cho tài sản của bạn. ĐỪNG làm mất hoặc tiết lộ cho người khác, nếu không bạn có thể mất tài sản của mình mãi mãi. Vui lòng xem nó trong một môi trường an toàn và giữ gìn cẩn thận."
+      "alert": "Câu Seed Phrase này là thông tin xác thực cho tài sản của bạn. ĐỪNG làm mất hoặc tiết lộ cho người khác, nếu không bạn có thể mất tài sản của mình mãi mãi. Vui lòng xem nó trong một môi trường an toàn và giữ gìn cẩn thận.",
+      "doneButton": "Tôi đã lưu cụm từ khôi phục"
     },
     "backupPrivateKey": {
       "title": "Sao lưu Private Key",
@@ -2672,7 +2674,9 @@
       },
       "importPrivateKey": {
         "title": "Nhập Khóa Riêng",
-        "pasteCleared": "Dán và đã xóa clipboard"
+        "pasteCleared": "Dán và đã xóa clipboard",
+        "noWallet": "Chưa có cụm từ hạt giống hoặc khóa riêng tư?",
+        "createWallet": "Tạo ví"
       },
       "PasswordCard": {
         "form": {
@@ -2698,7 +2702,10 @@
         "start": "Bắt đầu",
         "import": "Nhập khẩu thành công",
         "addMoreFrom": "Thêm nhiều địa chỉ từ {{name}}",
-        "addMoreAddr": "Thêm nhiều địa chỉ từ cụm từ hạt giống này"
+        "addMoreAddr": "Thêm nhiều địa chỉ từ cụm từ hạt giống này",
+        "openWallet": "Mở Ví",
+        "desc": "Rabby Wallet đã sẵn sàng để sử dụng!",
+        "backupSeedPhraseNow": "Sao lưu cụm từ khôi phục ngay bây giờ"
       },
       "readyToUse": {
         "pin": "Ghim Rabby Wallet",
@@ -2711,7 +2718,9 @@
         "desc": "Tìm Rabby Wallet và ghim nó"
       },
       "importSeedPhrase": {
-        "title": "Nhập cụm từ khôi phục"
+        "title": "Nhập cụm từ khôi phục",
+        "createWallet": "Tạo một ví",
+        "noWallet": "Bạn chưa có cụm từ hạt giống hoặc khóa riêng?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2769,6 +2778,18 @@
         "title": "Thêm Địa Chỉ An Toàn",
         "placeholder": "Nhập địa chỉ an toàn",
         "loading": "Đang tìm kiếm chuỗi đã triển khai của địa chỉ này"
+      },
+      "importHardwareList": {
+        "title": "Chọn Ví Cứng"
+      },
+      "importSeedOrKey": {
+        "privateKey": "Khóa Riêng",
+        "seedPhrase": "Câu Châm Cứu",
+        "title": "Cụm từ hạt giống hoặc khóa riêng"
+      },
+      "importWalletType": {
+        "seedOrKey": "Cụm từ gốc hoặc khóa riêng",
+        "hardwareWallet": "Ví dụ: Ví phần cứng"
       }
     },
     "metamaskModeDapps": {
@@ -3475,7 +3496,8 @@
           "unrealizedPnl": "Lợi nhuận/lỗ chưa thực hiện",
           "payment": "Thanh toán",
           "markEntry": "Giá tham chiếu / Giá vào vị thế",
-          "closedPnl": "PnL đã thực hiện"
+          "closedPnl": "PnL đã thực hiện",
+          "fundingTipsV2": "Net funding kể từ khi vị trí được mở. Một giá trị funding đỏ (âm) cho thấy đã trả tiền funding, trong khi giá trị funding xanh (dương) cho thấy đã nhận được tiền funding."
         },
         "emptyMessage": {
           "tradeHistory": "Không có lịch sử giao dịch",
@@ -3549,7 +3571,8 @@
           "reduceOnlyCanceled": "Hủy bỏ do chỉ giảm bớt",
           "badAloPxRejected": "Bị từ chối do ALO PX xấu",
           "minTradeNtlRejected": "Bị từ chối do min trade NTL",
-          "perpMarginRejected": "Đã từ chối ký quỹ Perp"
+          "perpMarginRejected": "Đã từ chối ký quỹ Perp",
+          "siblingFilledCanceled": "Bị hủy do thứ tự của sibling đã được lấp đầy"
         }
       },
       "statusBar": {
@@ -3915,7 +3938,8 @@
         "useAsCollateral": "Sử dụng làm tài sản thế chấp",
         "noBalance": "Không có số dư",
         "almostCap": "Tài sản này gần như đã đạt giới hạn vay của nó. Chỉ còn {{available}} có sẵn để vay từ thị trường này.",
-        "availableToSupply": "Có sẵn để cung cấp"
+        "availableToSupply": "Có sẵn để cung cấp",
+        "reachCap": "Tài sản này đã đạt đến giới hạn nguồn cung của nó. Không có gì có sẵn để cung cấp từ thị trường này."
       },
       "risk": {
         "warning": "Vay mượn số tiền này sẽ làm giảm Hệ số Sức khỏe của bạn xuống mức rủi ro cho việc thanh lý.",
@@ -4354,6 +4378,9 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "Chọn Địa Chỉ"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Ví dụ: Ví không được sao lưu. Bắt đầu sao lưu."
     }
   },
   "global": {
