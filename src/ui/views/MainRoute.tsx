@@ -63,9 +63,7 @@ import { GasAccount } from './GasAccount';
 import { GnosisQueue } from './GnosisQueue';
 import Perps from './Perps/screen/home';
 import { Guide } from './NewUserImport/Guide';
-import { ImportWalletList } from './NewUserImport/ImportList';
 import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
-import { NewUserImportPrivateKey } from './NewUserImport/ImportPrivateKey';
 import { NewUserSetPassword } from './NewUserImport/SetPassword';
 import { NewUserImportGnosisAddress } from './NewUserImport/ImportGnosisAddress';
 import { NewUserImportLedger } from './NewUserImport/ImportLedger';
@@ -75,7 +73,6 @@ import { NewUserImportOneKey } from './NewUserImport/ImportOnekey';
 import { BackupSeedPhrase } from './NewUserImport/BackupSeedPhrase';
 import { ImportOrCreatedSuccess } from './NewUserImport/Success';
 import { ReadyToUse } from './NewUserImport/ReadyToUse';
-import { ImportSeedPhrase } from './NewUserImport/ImportSeedPhrase';
 import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
 import { DARK_MODE_TYPE, KEYRING_CLASS } from '@/constant';
 import {
@@ -95,6 +92,9 @@ import {
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
 import SelectToAddress from './SelectToAddress';
+import { ImportWalletType } from './NewUserImport/ImportWalletType';
+import { ImportHardwareList } from './NewUserImport/importHardwareList';
+import { ImportSeedOrKey } from './NewUserImport/ImportSeedOrKey';
 
 declare global {
   interface Window {
@@ -189,20 +189,20 @@ const Main = () => {
           <Guide />
         </Route>
 
-        <Route exact path="/new-user/import-list">
-          <ImportWalletList />
+        <Route exact path="/new-user/import-wallet-type">
+          <ImportWalletType />
         </Route>
 
-        <Route exact path="/new-user/import/private-key">
-          <NewUserImportPrivateKey />
+        <Route exact path="/new-user/import-hardware-list">
+          <ImportHardwareList />
         </Route>
 
         <Route exact path="/new-user/import/gnosis-address">
           <NewUserImportGnosisAddress />
         </Route>
 
-        <Route exact path="/new-user/import/seed-phrase">
-          <ImportSeedPhrase />
+        <Route exact path="/new-user/import/seed-or-key">
+          <ImportSeedOrKey />
         </Route>
 
         <Route

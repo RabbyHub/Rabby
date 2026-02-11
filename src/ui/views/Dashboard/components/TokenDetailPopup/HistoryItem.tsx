@@ -91,7 +91,7 @@ export const HistoryItem = ({
           cateDict={cateDict}
         ></TxInterAddressExplain>
         {needUseTokenDetailModal ? (
-          <div className="flex justify-end flex-1">
+          <div className="flex justify-end flex-1 min-w-[130px]">
             <DesktopTokenChange
               data={data}
               tokenDict={tokenDict}

@@ -74,6 +74,7 @@ import { RabbyPointsPopup } from '../RabbyPointsPopup';
 import { RecentConnectionsPopup } from '../RecentConnections';
 import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
 import { RcIconLeadingCC } from '@/ui/assets/desktop/nav';
+import { PerpsSubContent } from '../SubContent/perps';
 
 const FOOTER_HEIGHT = 66;
 
@@ -324,7 +325,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   usePerpsDefaultAccount({
     isPro: false,
   });
-  const { perpsPositionInfo, isFetching, positionPnl } = usePerpsHomePnl();
   // useCheckBridgePendingItem();
 
   const wallet = useWallet();
@@ -568,36 +568,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       icon: IconPerps,
       eventKey: 'Perps',
       iconClassName: 'icon-perps',
-      subContent: isFetching ? (
-        <div className="absolute bottom-[6px] text-[11px] font-medium">
-          <Skeleton.Button
-            active={true}
-            className="h-[10px] block rounded-[2px]"
-            style={{ width: 42 }}
-          />
-        </div>
-      ) : perpsPositionInfo?.assetPositions?.length ? (
-        // <div
-        //   className={clsx(
-        //     'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-blue-default'
-        //   )}
-        // >
-        //   {t('page.dashboard.home.panel.perpsPositions', {
-        //     count: perpsPositionInfo?.assetPositions?.length,
-        //   })}
-        // </div>
-        <div
-          className={clsx(
-            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium',
-            positionPnl && positionPnl > 0
-              ? 'text-r-green-default'
-              : 'text-r-red-default'
-          )}
-        >
-          {positionPnl && positionPnl >= 0 ? '+' : '-'}$
-          {splitNumberByStep(Math.abs(positionPnl || 0).toFixed(2))}
-        </div>
-      ) : null,
+      subContent: <PerpsSubContent />,
       content: t('page.dashboard.home.panel.perps'),
       onClick: async () => {
         await wallet.openInDesktop('/desktop/perps');

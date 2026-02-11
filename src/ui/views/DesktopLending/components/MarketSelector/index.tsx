@@ -82,7 +82,7 @@ export const MarketSelector: React.FC<{
           />
           <div
             className={clsx(
-              'absolute top-[36px] left-0 z-20 w-[360px]',
+              'absolute top-[52px] left-0 z-20 w-[360px]',
               'bg-rb-neutral-bg-1 border border-solid border-rb-neutral-line',
               'rounded-[12px] shadow-lg'
             )}

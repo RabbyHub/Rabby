@@ -256,7 +256,10 @@ export class KeyringService extends EventEmitter {
    * @param {string} seed - The BIP44-compliant seed phrase.
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  createKeyringWithMnemonics(seed: string): Promise<any> {
+  createKeyringWithMnemonics(
+    seed: string,
+    options?: { hasBackup?: boolean }
+  ): Promise<any> {
     if (!bip39.validateMnemonic(seed, wordlist)) {
       return Promise.reject(
         new Error(i18n.t('background.error.invalidMnemonic'))
@@ -270,6 +273,7 @@ export class KeyringService extends EventEmitter {
           return this.addNewKeyring('HD Key Tree', {
             mnemonic: seed,
             activeIndexes: [],
+            ...options,
           });
         })
         .then((firstKeyring) => {

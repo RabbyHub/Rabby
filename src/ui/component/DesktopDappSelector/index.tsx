@@ -4,14 +4,15 @@ import styled from 'styled-components';
 import { Dropdown, Menu } from 'antd';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import { DappSelectItem, INNER_DAPP_LIST } from '@/constant/dappIframe';
+import type { INNER_DAPP_ID } from '@/constant/dappIframe';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import type { InnerDappType } from '@/background/service';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 type DesktopDappSelectorProps = {
   items: DappSelectItem[];
-  activeId: string;
-  onSelect: (id: string) => void;
+  activeId: INNER_DAPP_ID;
+  onSelect: (id: INNER_DAPP_ID) => void;
   className?: string;
   type: InnerDappType;
 };
@@ -72,7 +73,7 @@ export const DesktopDappSelectorInner: React.FC<DesktopDappSelectorProps> = ({
 
   const dispatch = useRabbyDispatch();
 
-  const handleSelect = (id: string) => {
+  const handleSelect = (id: INNER_DAPP_ID) => {
     onSelect(id);
     dispatch.innerDappFrame.setInnerDappId({ type, dappId: id });
   };
@@ -100,10 +101,10 @@ export const DesktopDappSelectorInner: React.FC<DesktopDappSelectorProps> = ({
                     <span className="text-[16px] leading-normal font-bold text-rb-neutral-title-1 truncate">
                       {item.name}
                     </span>
-                    {item.TVL ? (
+                    {item.extraInfo ? (
                       <div className="flex items-center gap-[6px]">
                         <span className="text-[12px] leading-normal text-rb-neutral-foot">
-                          TVL: {item.TVL}
+                          {item.extraInfo}
                         </span>
                       </div>
                     ) : null}
@@ -160,12 +161,10 @@ export const DesktopDappSelector = (
     () => INNER_DAPP_LIST[props.type?.toUpperCase()] || [],
     [props.type]
   );
-  const dispatch = useRabbyDispatch();
   const history = useHistory();
-  const location = useLocation();
 
   const onSelect = React.useCallback(
-    (id: string) => {
+    (id: INNER_DAPP_ID) => {
       const nextDapp = dappList.find((item) => item.id === id);
       if (!nextDapp) {
         return;
@@ -173,7 +172,7 @@ export const DesktopDappSelector = (
       history.replace(`/desktop/${props.type}`);
       props?.onSelect?.(id);
     },
-    [props.type, props.onSelect, dispatch]
+    [dappList, history, props.onSelect, props.type]
   );
   return (
     <DesktopDappSelectorInner

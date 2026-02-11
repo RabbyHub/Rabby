@@ -48,32 +48,33 @@ export const WithdrawOverView: React.FC<
         {t('page.lending.popup.title')}
       </div>
       <div className="rounded-[8px] bg-rb-neutral-card-1">
-        <div className="flex items-center justify-between p-16">
-          <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
-            {t('page.lending.withdrawDetail.remainingSupply')}
-          </span>
-          <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1 text-right">
-            {amount && amount !== '0' && afterSupply
-              ? `${formatTokenAmount(reserve?.underlyingBalance || '0')} ${
-                  reserve.reserve.symbol
-                } → ${formatTokenAmount(afterSupply.balance)} ${
-                  reserve.reserve.symbol
-                }`
-              : `${formatTokenAmount(reserve?.underlyingBalance || '0')} ${
-                  reserve.reserve.symbol
-                }`}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between p-16">
-          <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
-            {t('page.lending.supplyDetail.supplyBalance')}
-          </span>
-          <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
-            {amount && amount !== '0' && afterSupplyBalanceUSDText
-              ? `${availableText} → ${afterSupplyBalanceUSDText}`
-              : availableText}
-          </span>
+        <div className="flex flex-col gap-2 p-16">
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
+              {t('page.lending.withdrawDetail.remainingSupply')}
+            </span>
+            <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1 text-right">
+              {amount && amount !== '0' && afterSupply
+                ? `${formatTokenAmount(reserve?.underlyingBalance || '0')} ${
+                    reserve.reserve.symbol
+                  } → ${formatTokenAmount(afterSupply.balance)} ${
+                    reserve.reserve.symbol
+                  }`
+                : `${formatTokenAmount(reserve?.underlyingBalance || '0')} ${
+                    reserve.reserve.symbol
+                  }`}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
+              {/*{t('page.lending.supplyDetail.supplyBalance')}*/}
+            </span>
+            <span className="text-[12px] leading-[15px] font-normal text-r-neutral-foot">
+              {amount && amount !== '0' && afterSupplyBalanceUSDText
+                ? `${availableText} → ${afterSupplyBalanceUSDText}`
+                : availableText}
+            </span>
+          </div>
         </div>
 
         {showHF && (

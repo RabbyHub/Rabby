@@ -1651,6 +1651,35 @@ export class WalletController extends BaseController {
   };
   openIndexPage = openIndexPage;
 
+  openGasAccountPopup = async (options?: { clearApprovals?: boolean }) => {
+    const { clearApprovals = true } = options || {};
+    if (clearApprovals) {
+      this.rejectAllApprovals();
+    }
+
+    await this.setPageStateCache({
+      path: '/gas-account',
+      params: {},
+      states: {},
+    });
+
+    if (
+      isManifestV3 &&
+      Browser?.action?.openPopup &&
+      typeof Browser?.action?.openPopup === 'function'
+    ) {
+      try {
+        await Browser?.action?.openPopup();
+        return true;
+      } catch (error) {
+        console.error('[openGasAccountPopup] openPopup failed', error);
+      }
+    }
+
+    await openIndexPage('/gas-account');
+    return false;
+  };
+
   openInDesktop = async (_url: string) => {
     const desktopTabId = preferenceService.getPreference('desktopTabId');
     const currentDesktopTab = desktopTabId
@@ -3250,6 +3279,28 @@ export class WalletController extends BaseController {
     return seedWords;
   };
 
+  checkSeedPhraseBackup = async (address: string) => {
+    const keyring = await keyringService.getKeyringForAccount(
+      address,
+      KEYRING_CLASS.MNEMONIC
+    );
+
+    return keyring.hasBackup == null ? true : keyring.hasBackup;
+  };
+
+  backupSeedPhraseConfirmed = async (address: string) => {
+    const keyring = await keyringService.getKeyringForAccount(
+      address,
+      KEYRING_CLASS.MNEMONIC
+    );
+    if (!keyring) {
+      throw new Error('Keyring not found');
+    }
+
+    keyring.hasBackup = true;
+    await keyringService.persistAllKeyrings();
+  };
+
   clearAddressPendingTransactions = (address: string, chainId?: number) => {
     transactionHistoryService.clearPendingTransactions(address, chainId);
     transactionWatcher.clearPendingTx(address, chainId);
@@ -3347,8 +3398,16 @@ export class WalletController extends BaseController {
   getPreMnemonics = () => keyringService.getPreMnemonics();
   generatePreMnemonic = () => keyringService.generatePreMnemonic();
   removePreMnemonics = () => keyringService.removePreMnemonics();
-  createKeyringWithMnemonics = async (mnemonic: string) => {
-    const keyring = await keyringService.createKeyringWithMnemonics(mnemonic);
+  createKeyringWithMnemonics = async (
+    mnemonic: string,
+    options?: {
+      hasBackup?: boolean;
+    }
+  ) => {
+    const keyring = await keyringService.createKeyringWithMnemonics(
+      mnemonic,
+      options
+    );
     keyringService.removePreMnemonics();
     // return this._setCurrentAccountFromKeyring(keyring);
   };

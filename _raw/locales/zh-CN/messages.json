@@ -4249,7 +4249,7 @@
       "errMsg": "助记词无效，请检查！"
     },
     "Uploader": {
-      "placeholder": "选择 JSON 问姐"
+      "placeholder": "选择 JSON 文件"
     },
     "WalletConnectBridgeModal": {
       "title": "Bridge server URL",
