@@ -52,12 +52,15 @@ const deriveAesKey = async (prfResult: ArrayBuffer) => {
   );
 };
 
-const getPrfResult = async (credentialId: Uint8Array, prfSalt: Uint8Array) => {
+const getPrfResult = async (
+  credentialId: BufferSource,
+  prfSalt: Uint8Array
+) => {
   if (!navigator.credentials?.get || !window.PublicKeyCredential) {
     throw new Error('Biometric unlock not supported');
   }
 
-  const assertion = (await navigator.credentials.get({
+  const assertion = await navigator.credentials.get({
     publicKey: {
       challenge: randomBytes(32),
       allowCredentials: [
@@ -76,14 +79,18 @@ const getPrfResult = async (credentialId: Uint8Array, prfSalt: Uint8Array) => {
         },
       } as any,
     },
-  })) as PublicKeyCredential | null;
+  });
 
   if (!assertion) {
     throw new Error('Biometric unlock canceled');
   }
 
+  if (!(assertion instanceof PublicKeyCredential)) {
+    throw new Error('Biometric unlock not supported');
+  }
+
   const extResults = assertion.getClientExtensionResults?.() || {};
-  const prfResults = (extResults as any)?.prf?.results?.first;
+  const prfResults = extResults?.prf?.results?.first;
 
   if (!prfResults) {
     throw new Error('Biometric unlock not supported');
@@ -174,7 +181,7 @@ export const createBiometricUnlockPayload = async (
             first: prfSalt,
           },
         },
-      } as any,
+      },
     },
   })) as PublicKeyCredential | null;
 
