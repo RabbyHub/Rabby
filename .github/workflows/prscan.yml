@@ -25,4 +25,4 @@ jobs:
       - name: Run prscan
         env:
           INPUT_PRSCAN_BOT_TOKEN: ${{ secrets.PRSCAN_BOT_TOKEN }}
-        run: npx prscan ${{ github.event.pull_request.html_url }} --reply
+        run: npx prscan github ${{ github.event.pull_request.html_url }} --reply
