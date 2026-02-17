@@ -18,9 +18,11 @@ import qs from 'qs';
 
 type Type = 'select-chain' | 'add-address' | 'select-address';
 
-export const ImportCoboArgus: React.FC<{ isInModal?: boolean }> = ({
-  isInModal,
-}) => {
+export const ImportCoboArgus: React.FC<{
+  isInModal?: boolean;
+  onBack?(): void;
+  onNavigate?(type: string, state?: Record<string, any>): void;
+}> = ({ isInModal, onBack, onNavigate }) => {
   const { state } = useLocation<{
     address: string;
     chainId: number | string;
@@ -72,21 +74,14 @@ export const ImportCoboArgus: React.FC<{ isInModal?: boolean }> = ({
         safeModuleAddress: inputAddress,
       });
       if (UI_TYPE.isDesktop) {
-        history.replace({
-          pathname: history.location.pathname,
-          search: `?${qs.stringify({
-            action: 'add-address',
-            import: 'success',
-          })}`,
-          state: {
-            accounts,
-            title: t('page.newAddress.importedSuccessfully'),
-            editing: true,
-            importedAccount: true,
-            importedLength: (
-              await wallet.getTypedAccounts(KEYRING_TYPE.CoboArgusKeyring)
-            )?.[0]?.accounts?.length,
-          },
+        onNavigate?.('success', {
+          accounts,
+          title: t('page.newAddress.importedSuccessfully'),
+          editing: true,
+          importedAccount: true,
+          importedLength: (
+            await wallet.getTypedAccounts(KEYRING_TYPE.CoboArgusKeyring)
+          )?.[0]?.accounts?.length,
         });
       } else {
         history.replace({
@@ -142,7 +137,7 @@ export const ImportCoboArgus: React.FC<{ isInModal?: boolean }> = ({
       )}
     >
       {contextHolder}
-      <Header hasBack={!isByImportAddressEvent}>
+      <Header hasBack={!isByImportAddressEvent} onBack={onBack}>
         {step === 'select-chain' &&
           t('page.newAddress.coboSafe.whichChainIsYourCoboAddressOn')}
         {(step === 'add-address' || step === 'select-address') &&

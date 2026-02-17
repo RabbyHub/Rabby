@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Tips } from '../components/Tips';
@@ -15,8 +15,28 @@ import {
 } from '../components';
 import { ArraySort } from '../utils';
 import cx from 'clsx';
-import styled from 'styled-components';
 import { ActionRow, hasActions } from '../components/ActionRow';
+import { useHistory } from 'react-router-dom';
+import { CustomMarket } from '@/ui/views/DesktopLending/config/market';
+import { useRabbyDispatch } from '@/ui/store';
+
+const LENDING_PROTOCOL_MARKET: Record<string, CustomMarket> = {
+  aave3: CustomMarket.proto_mainnet_v3,
+  op_aave3: CustomMarket.proto_optimism_v3,
+  avax_aave3: CustomMarket.proto_avalanche_v3,
+  matic_aave3: CustomMarket.proto_polygon_v3,
+  arb_aave3: CustomMarket.proto_arbitrum_v3,
+  base_aave3: CustomMarket.proto_base_v3,
+  bsc_aave3: CustomMarket.proto_bnb_v3,
+  scrl_aave3: CustomMarket.proto_scroll_v3,
+  plasma_aave3: CustomMarket.proto_plasma_v3,
+  ink_aave3: CustomMarket.proto_ink_v3,
+  era_aave3: CustomMarket.proto_zksync_v3,
+  linea_aave3: CustomMarket.proto_linea_v3,
+  sonic_aave3: CustomMarket.proto_sonic_v3,
+  celo_aave3: CustomMarket.proto_celo_v3,
+  xdai_aave3: CustomMarket.proto_gnosis_v3,
+};
 
 export default memo(
   (props: {
@@ -25,11 +45,37 @@ export default memo(
     name: string;
     siteUrl?: string;
     protocolLogo?: string;
+    protocolName?: string;
+    protocolId?: string;
   }) => {
     const { t } = useTranslation();
 
-    const { tag, protocolLogo } = props;
+    const { tag, protocolLogo, protocolName, protocolId } = props;
     const data = props.data;
+
+    const history = useHistory();
+
+    const lendingMarketKey = useMemo(
+      () => (protocolId ? LENDING_PROTOCOL_MARKET[protocolId] : undefined),
+      [protocolId]
+    );
+
+    const dispatch = useRabbyDispatch();
+
+    const handleGoLending = useCallback(
+      (evt: React.MouseEvent) => {
+        evt.stopPropagation();
+        if (!lendingMarketKey) return;
+        dispatch.innerDappFrame.setInnerDappId({
+          type: 'lending',
+          dappId: 'aave',
+        });
+        history.push(
+          `/desktop/lending?marketKey=${encodeURIComponent(lendingMarketKey)}`
+        );
+      },
+      [history, lendingMarketKey]
+    );
 
     return (
       <>
@@ -75,6 +121,21 @@ export default memo(
                   ) : null}
                 </More>
               }
+              rightContent={
+                lendingMarketKey ? (
+                  <span
+                    className={`
+                      ml-auto mr-20 
+                      text-[12px] font-medium text-rb-brand-default bg-rb-brand-light-1 
+                      rounded-[6px] min-w-[80px] h-[24px] 
+                      flex items-center justify-center cursor-pointer
+                    `}
+                    onClick={handleGoLending}
+                  >
+                    Manage
+                  </span>
+                ) : null
+              }
             >
               <div>
                 {p?.detail?.supply_token_list?.length &&
@@ -112,6 +173,7 @@ export default memo(
                           actionKeys={['default', 'withdraw', 'default']}
                           portfolio={p}
                           protocolLogo={protocolLogo || ''}
+                          protocolName={protocolName}
                         />
                       )}
                     </Table.Body>
@@ -178,6 +240,7 @@ export default memo(
                             actionKeys={['default', 'claim', 'default']}
                             portfolio={p}
                             protocolLogo={protocolLogo || ''}
+                            protocolName={protocolName}
                           />
                         )}
                       </Table.Body>

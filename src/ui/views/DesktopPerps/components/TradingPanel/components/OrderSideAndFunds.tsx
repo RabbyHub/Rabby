@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { OrderSide, Position } from '../../../types';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
+import { formatPerpsCoin } from '../../../utils';
+import { useHistory, useLocation } from 'react-router-dom';
+import { ReactComponent as RcIconAddDeposit } from '@/ui/assets/perps/IconAddDeposit.svg';
 
 interface OrderSideAndFundsProps {
   orderSide: OrderSide;
@@ -21,7 +24,20 @@ export const OrderSideAndFunds: React.FC<OrderSideAndFundsProps> = ({
   selectedCoin,
 }) => {
   const { t } = useTranslation();
+  const needShowDeposit = useMemo(() => {
+    return Number(availableBalance) === 0;
+  }, [availableBalance]);
 
+  const location = useLocation();
+  const history = useHistory();
+  const handleDepositClick = () => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('action', 'deposit');
+    history.push({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    });
+  };
   return (
     <>
       <div className="flex items-center gap-[8px]">
@@ -53,11 +69,24 @@ export const OrderSideAndFunds: React.FC<OrderSideAndFundsProps> = ({
           <span className="text-r-neutral-foot text-[12px]">
             {t('page.perpsPro.tradingPanel.availableFunds')}
           </span>
-          <span className="text-r-neutral-title-1 text-[12px] font-medium">
+          <span
+            className={clsx(
+              'text-r-neutral-title-1 text-[12px] font-medium flex items-center gap-[4px]',
+              {
+                'cursor-pointer': needShowDeposit,
+              }
+            )}
+            onClick={() => {
+              if (needShowDeposit) {
+                handleDepositClick();
+              }
+            }}
+          >
             {splitNumberByStep(
               new BigNumber(availableBalance).toFixed(2, BigNumber.ROUND_DOWN)
             )}{' '}
-            USDC
+            {'USDC'}
+            {needShowDeposit && <RcIconAddDeposit />}
           </span>
         </div>
         <div className="flex items-center justify-between">
@@ -74,8 +103,8 @@ export const OrderSideAndFunds: React.FC<OrderSideAndFundsProps> = ({
             )}
           >
             {currentPosition
-              ? `${currentPosition.size} ${selectedCoin}`
-              : `0 ${selectedCoin}`}
+              ? `${currentPosition.size} ${formatPerpsCoin(selectedCoin)}`
+              : `0 ${formatPerpsCoin(selectedCoin)}`}
           </span>
         </div>
       </div>

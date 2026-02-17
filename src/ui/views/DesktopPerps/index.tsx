@@ -1,10 +1,4 @@
-import React, {
-  useMemo,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-} from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { ChartArea } from './components/ChartArea';
 import { OrderBookTrades } from './components/OrderBookTrades';
@@ -13,10 +7,7 @@ import { UserInfoHistory } from './components/UserInfoHistory';
 import { AccountInfo } from './components/AccountInfo';
 import { StatusBar } from './components/StatusBar';
 import './index.less';
-import { DesktopPerpsSelectAccountList } from '@/ui/component/DesktopSelectAccountList/PerpsAccountList';
-import clsx from 'clsx';
 import { usePerpsProInit } from './hooks/usePerpsProInit';
-import { AddAddressModal } from '../DesktopProfile/components/AddAddressModal';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
   DepositWithdrawModal,
@@ -25,8 +16,11 @@ import {
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
-import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
 import { TopPermissionTips } from './components/TopPermissionTips';
+import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
+import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
+import usePerpsProState from './hooks/usePerpsProState';
+import { DesktopDappSelector } from '@/ui/component/DesktopDappSelector';
 
 const Wrap = styled.div`
   width: 100%;
@@ -39,7 +33,9 @@ const Wrap = styled.div`
 
 export type PopupType = DepositWithdrawModalType | 'add-address' | null;
 
-export const DesktopPerps: React.FC = () => {
+export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
+  isActive = true,
+}) => {
   usePerpsProInit();
 
   const history = useHistory();
@@ -47,11 +43,11 @@ export const DesktopPerps: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const selectedCoin = useRabbySelector((state) => state.perps.selectedCoin);
   const isUpdatingFromUrl = useRef(false);
-  const [popupType, setPopupType] = useState<PopupType>(null);
 
-  const handleSetPopupType = useCallback((type: PopupType) => {
-    setPopupType(type);
-  }, []);
+  const currentPerpsAccount = useRabbySelector(
+    (s) => s.perps.currentPerpsAccount
+  );
+  const { login: switchPerpsAccount } = usePerpsProState();
 
   const { action, coin } = useMemo(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -63,23 +59,26 @@ export const DesktopPerps: React.FC = () => {
 
   // Initialize coin from URL on mount or when URL coin changes
   useEffect(() => {
-    if (coin && coin.toUpperCase() !== selectedCoin.toUpperCase()) {
+    if (!isActive) {
+      return;
+    }
+    if (coin && coin !== selectedCoin) {
       isUpdatingFromUrl.current = true;
-      dispatch.perps.setSelectedCoin(coin.toUpperCase());
+      dispatch.perps.updateSelectedCoin(coin);
       // Reset flag after state update
       setTimeout(() => {
         isUpdatingFromUrl.current = false;
       }, 0);
     }
-  }, [coin, dispatch]); // Run when URL coin param changes
+  }, [coin, dispatch, isActive]); // Run when URL coin param changes
 
   // Update URL when selectedCoin changes (but not from URL change)
   useEffect(() => {
-    if (
-      !isUpdatingFromUrl.current &&
-      selectedCoin &&
-      coin?.toUpperCase() !== selectedCoin.toUpperCase()
-    ) {
+    if (!isActive) {
+      return;
+    }
+
+    if (!isUpdatingFromUrl.current && selectedCoin && coin !== selectedCoin) {
       const searchParams = new URLSearchParams(location.search);
       searchParams.set('coin', selectedCoin);
       history.replace({
@@ -87,17 +86,26 @@ export const DesktopPerps: React.FC = () => {
         search: searchParams.toString(),
       });
     }
-  }, [selectedCoin, coin, history, location]);
+  }, [selectedCoin, coin, history, location, isActive]);
 
   return (
     <>
       <Wrap>
-        <div className="flex flex-1 pl-16 pr-8 pb-16">
+        <div className="flex flex-1 px-[20px] pb-16">
           <div className="flex flex-col flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <DesktopNav showRightItems={false} />
 
-              <AccountActions handleSetPopupType={handleSetPopupType} />
+              <div className="flex items-center gap-[16px]">
+                <DesktopDappSelector type={'perps'} />
+                <DesktopAccountSelector
+                  scene="perps"
+                  value={currentPerpsAccount}
+                  onChange={switchPerpsAccount}
+                />
+                <AccountActions />
+                <SwitchThemeBtn />
+              </div>
             </div>
             <TopPermissionTips />
             <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
@@ -115,43 +123,38 @@ export const DesktopPerps: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex flex-1 min-h-[300px] max-h-[max(300px,calc(100vh-860px))]">
+              <div className="flex flex-1 min-h-[280px] max-h-[max(280px,calc(100vh-820px))]">
                 <div className="flex-[4] min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
                   <UserInfoHistory />
                 </div>
                 <div className="flex-1 flex-shrink-0 overflow-auto">
-                  <AccountInfo handleSetPopupType={handleSetPopupType} />
+                  <AccountInfo />
                 </div>
               </div>
             </div>
           </div>
-          <aside
-            className={clsx(
-              'min-w-[64px] flex-shrink-0 z-20 h-full overflow-auto pl-[16px] sticky'
-            )}
-            style={{ top: DESKTOP_NAV_HEIGHT }}
-          >
-            <DesktopPerpsSelectAccountList
-              handleSetPopupType={handleSetPopupType}
-            />
-          </aside>
         </div>
 
         <StatusBar />
       </Wrap>
-      <AddAddressModal
+      {/* <AddAddressModal
         visible={action === 'add-address'}
         onCancel={() => {
           setPopupType(null);
         }}
         destroyOnClose
-      />
+      /> */}
 
       <DepositWithdrawModal
-        visible={popupType === 'deposit' || popupType === 'withdraw'}
-        type={popupType === 'deposit' ? 'deposit' : 'withdraw'}
+        visible={action === 'deposit' || action === 'withdraw'}
+        type={action === 'deposit' ? 'deposit' : 'withdraw'}
         onCancel={() => {
-          setPopupType(null);
+          const searchParams = new URLSearchParams(location.search);
+          searchParams.delete('action');
+          history.push({
+            pathname: location.pathname,
+            search: searchParams.toString(),
+          });
         }}
       />
     </>

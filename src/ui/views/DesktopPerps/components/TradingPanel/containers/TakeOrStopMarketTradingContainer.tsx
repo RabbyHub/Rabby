@@ -24,6 +24,9 @@ import { EVENTS } from '@/constant';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 import { TradingButton } from '../components/TradingButton';
+import stats from '@/stats';
+import { getStatsReportSide } from '../../../utils';
+import { BigNumber } from 'bignumber.js';
 
 interface TakeOrStopMarketTradingContainerProps {
   takeOrStop: 'tp' | 'sl';
@@ -36,6 +39,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
 
   // Get data from perpsState
   const {
+    currentPerpsAccount,
     selectedCoin,
     orderSide,
     switchOrderSide,
@@ -47,6 +51,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     szDecimals,
     pxDecimals,
     leverage,
+    leverageType,
     availableBalance,
     reduceOnly,
     setReduceOnly,
@@ -80,11 +85,11 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     const tradeSize = Number(positionSize.amount) || 0;
     const notionalNum = tradeSize * Number(markPrice || 0);
 
-    if (notionalNum === 0) {
+    if (notionalNum === 0 || !Number(triggerPrice)) {
       return {
         isValid: false,
         error:
-          reduceOnly && percentage > 0
+          reduceOnly && percentage > 0 && Number(triggerPrice)
             ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
             : '',
       };
@@ -181,13 +186,32 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     loading: handleOpenOrderLoading,
   } = useRequest(
     async () => {
+      const isBuy = orderSide === OrderSide.BUY;
       await handleOpenTPSlMarketOrder({
         coin: selectedCoin,
-        isBuy: orderSide === OrderSide.BUY,
+        isBuy,
         size: tradeSize,
         triggerPx: triggerPrice,
         reduceOnly,
         tpsl: takeOrStop,
+      });
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type:
+          takeOrStop === 'tp' ? 'take profit market' : 'stop loss market',
+        leverage: leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, reduceOnly),
+        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+        coin: selectedCoin,
+        size: tradeSize,
+        price: triggerPrice,
+        trade_usd_value: new BigNumber(triggerPrice)
+          .times(tradeSize)
+          .toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
       });
     },
     {
@@ -318,16 +342,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
       </div>
 
       {/* Place Order Button */}
-      {needEnableTrading ? (
-        <Button
-          onClick={handleActionApproveStatus}
-          className={
-            'w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent bg-rb-green-default text-rb-neutral-InvertHighlight'
-          }
-        >
-          {t('page.perpsPro.tradingPanel.enableTrading')}
-        </Button>
-      ) : (
+      {
         <TradingButton
           loading={handleOpenOrderLoading}
           onClick={handleOpenOrderRequest}
@@ -337,19 +352,10 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
           orderSide={orderSide}
           titleText={t('page.perpsPro.tradingPanel.placeOrder')}
         />
-      )}
+      }
 
       {/* Order Summary */}
-      <OrderSummary
-        data={orderSummary}
-        showTPSLExpected={tpslConfig.enabled}
-        tpExpectedPnL={
-          tpslConfig.enabled ? orderSummary?.tpExpectedPnL : undefined
-        }
-        slExpectedPnL={
-          tpslConfig.enabled ? orderSummary?.slExpectedPnL : undefined
-        }
-      />
+      <OrderSummary data={orderSummary} />
     </div>
   );
 };

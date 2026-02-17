@@ -1,36 +1,76 @@
-import { useRabbySelector } from '@/ui/store';
-import React, { useEffect, useMemo } from 'react';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { OrderSide, Position, PositionSize, TPSLConfig } from '../types';
 import { calLiquidationPrice } from '../../Perps/utils';
 import { useMemoizedFn } from 'ahooks';
 import BigNumber from 'bignumber.js';
-const DEFAULT_TPSL_CONFIG: TPSLConfig = {
-  enabled: false,
-  takeProfit: { price: '', percentage: '', error: '' },
-  stopLoss: { price: '', percentage: '', error: '' },
-};
+import { DEFAULT_TPSL_CONFIG } from '@/ui/models/perps';
 
 export const usePerpsTradingState = () => {
-  const [orderSide, setOrderSide] = React.useState<OrderSide>(OrderSide.BUY);
-  const [positionSize, setPositionSize] = React.useState<PositionSize>({
-    amount: '',
-    notionalValue: '',
-  });
+  const dispatch = useRabbyDispatch();
 
-  const [percentage, setPercentage] = React.useState(0);
-  const [tpslConfig, setTpslConfig] = React.useState<TPSLConfig>(
-    DEFAULT_TPSL_CONFIG
-  );
-
-  const [reduceOnly, setReduceOnly] = React.useState(false);
-
+  // Read trading state from Redux (preserved across orderType switches)
   const {
     clearinghouseState,
     wsActiveAssetCtx,
     selectedCoin = 'ETH',
+    currentPerpsAccount,
     marketDataMap,
     wsActiveAssetData,
+    tradingOrderSide: orderSide,
+    tradingPositionSize: positionSize,
+    tradingPercentage: percentage,
+    tradingTpslConfig: tpslConfig,
+    tradingReduceOnly: reduceOnly,
   } = useRabbySelector((state) => state.perps);
+
+  // Setters using Redux dispatch
+  const setOrderSide = useCallback(
+    (side: OrderSide) => {
+      dispatch.perps.patchState({ tradingOrderSide: side });
+    },
+    [dispatch]
+  );
+
+  const setPositionSize = useCallback(
+    (size: PositionSize | ((prev: PositionSize) => PositionSize)) => {
+      if (typeof size === 'function') {
+        dispatch.perps.patchState({ tradingPositionSize: size(positionSize) });
+      } else {
+        dispatch.perps.patchState({ tradingPositionSize: size });
+      }
+    },
+    [dispatch, positionSize]
+  );
+
+  const setPercentage = useCallback(
+    (pct: number) => {
+      dispatch.perps.patchState({ tradingPercentage: pct });
+    },
+    [dispatch]
+  );
+
+  const setTpslConfig = useCallback(
+    (config: TPSLConfig | ((prev: TPSLConfig) => TPSLConfig)) => {
+      if (typeof config === 'function') {
+        dispatch.perps.patchState({ tradingTpslConfig: config(tpslConfig) });
+      } else {
+        dispatch.perps.patchState({ tradingTpslConfig: config });
+      }
+    },
+    [dispatch, tpslConfig]
+  );
+
+  const setReduceOnly = useCallback(
+    (value: boolean | ((prev: boolean) => boolean)) => {
+      if (typeof value === 'function') {
+        dispatch.perps.patchState({ tradingReduceOnly: value(reduceOnly) });
+      } else {
+        dispatch.perps.patchState({ tradingReduceOnly: value });
+      }
+    },
+    [dispatch, reduceOnly]
+  );
   // Get current market data for selected coin
   const currentMarketData = React.useMemo(() => {
     return marketDataMap?.[selectedCoin] || null;
@@ -63,10 +103,7 @@ export const usePerpsTradingState = () => {
   }, [clearinghouseState, selectedCoin]);
 
   const markPrice = React.useMemo(() => {
-    if (
-      wsActiveAssetCtx &&
-      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
-    ) {
+    if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
       return Number(wsActiveAssetCtx.ctx.markPx || 0);
     }
 
@@ -74,10 +111,7 @@ export const usePerpsTradingState = () => {
   }, [wsActiveAssetCtx, currentMarketData]);
 
   const midPrice = React.useMemo(() => {
-    if (
-      wsActiveAssetCtx &&
-      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
-    ) {
+    if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
       return Number(wsActiveAssetCtx.ctx.midPx || 0);
     }
     return Number(currentMarketData?.midPx || 0);
@@ -189,34 +223,59 @@ export const usePerpsTradingState = () => {
   }, [marginRequired, availableBalance, reduceOnly]);
 
   const handleTPSLEnabledChange = useMemoizedFn((enabled: boolean) => {
-    if (!enabled) {
-      setTpslConfig(DEFAULT_TPSL_CONFIG);
-    } else {
-      setTpslConfig({ ...tpslConfig, enabled: true });
-    }
+    dispatch.perps.patchState({
+      tradingTpslConfig: { ...tpslConfig, enabled },
+    });
   });
 
-  const resetForm = () => {
-    setPositionSize({ amount: '', notionalValue: '' });
-    setPercentage(0);
-    setReduceOnly(false);
-    setTpslConfig(DEFAULT_TPSL_CONFIG);
-  };
+  const resetForm = useCallback(() => {
+    dispatch.perps.resetTradingState();
+  }, [dispatch]);
+
+  const switchOrderSide = useCallback(
+    (side: OrderSide) => {
+      dispatch.perps.patchState({
+        tradingOrderSide: side,
+        tradingPositionSize: { amount: '', notionalValue: '' },
+        tradingPercentage: 0,
+        tradingReduceOnly: false,
+        tradingTpslConfig: DEFAULT_TPSL_CONFIG,
+      });
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
-    resetForm();
-  }, [selectedCoin]);
-
-  const switchOrderSide = (side: OrderSide) => {
-    setOrderSide(side);
-    resetForm();
-  };
+    setTpslConfig((prev) => ({
+      ...prev,
+      takeProfit: {
+        percentage: '',
+        error: '',
+        inputMode: 'percentage',
+        price: '',
+      },
+      stopLoss: {
+        percentage: '',
+        error: '',
+        inputMode: 'percentage',
+        price: '',
+      },
+    }));
+  }, [leverage]);
 
   const tpslConfigHasError = useMemo(() => {
-    return Boolean(tpslConfig.takeProfit.error || tpslConfig.stopLoss.error);
-  }, [tpslConfig.takeProfit.error, tpslConfig.stopLoss.error]);
+    return (
+      tpslConfig.enabled &&
+      Boolean(tpslConfig.takeProfit.error || tpslConfig.stopLoss.error)
+    );
+  }, [
+    tpslConfig.enabled,
+    tpslConfig.takeProfit.error,
+    tpslConfig.stopLoss.error,
+  ]);
 
   return {
+    currentPerpsAccount,
     leverageType,
     crossMargin,
     selectedCoin,

@@ -1,0 +1,38 @@
+<svg width="1440" height="944" viewBox="0 0 1440 944" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_144981_8366)">
+<g clip-path="url(#clip1_144981_8366)">
+<rect width="1440" height="961" transform="matrix(1 0 0 -1 0 946)" fill="#EDF0FF"/>
+<g opacity="0.2" filter="url(#filter0_f_144981_8366)">
+<path d="M1824.61 2957.67C1357.18 3326.87 1122.12 3010.63 870.185 2691.66C618.252 2372.7 444.855 2171.81 912.292 1802.6C1379.73 1433.4 1539.9 1268.63 1791.83 1587.59C2043.76 1906.56 2292.05 2588.46 1824.61 2957.67Z" fill="#4569C7"/>
+</g>
+<g opacity="0.1" filter="url(#filter1_f_144981_8366)">
+<path d="M422.642 -411.442C959.688 -232.966 1467.25 -660.648 1288.78 -123.601C1110.3 413.445 530.255 704.125 -6.79122 525.649C-543.838 347.173 -834.517 -232.872 -656.041 -769.919C-477.566 -1306.97 -114.405 -589.918 422.642 -411.442Z" fill="#2174A3"/>
+</g>
+<foreignObject x="-144" y="-195" width="1728" height="2196"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(72px);clip-path:url(#bgblur_2_144981_8366_clip_path);height:100%;width:100%"></div></foreignObject><path data-figma-bg-blur-radius="144" d="M0 -51H1440L1440 1857H0V-51Z" fill="#ECF3FF" fill-opacity="0.7"/>
+<rect y="-4" width="1440" height="950" fill="url(#paint0_linear_144981_8366)"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_f_144981_8366" x="-100.721" y="698.063" width="2908.42" height="3145.84" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="360" result="effect1_foregroundBlur_144981_8366"/>
+</filter>
+<filter id="filter1_f_144981_8366" x="-1428.61" y="-1686.03" width="3473.81" height="2984.25" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="360" result="effect1_foregroundBlur_144981_8366"/>
+</filter>
+<clipPath id="bgblur_2_144981_8366_clip_path" transform="translate(144 195)"><path d="M0 -51H1440L1440 1857H0V-51Z"/>
+</clipPath><linearGradient id="paint0_linear_144981_8366" x1="718.08" y1="-275.542" x2="720.755" y2="335.613" gradientUnits="userSpaceOnUse">
+<stop stop-color="#4C65FF"/>
+<stop offset="1" stop-color="white" stop-opacity="0"/>
+</linearGradient>
+<clipPath id="clip0_144981_8366">
+<rect width="1440" height="944" fill="white"/>
+</clipPath>
+<clipPath id="clip1_144981_8366">
+<rect width="1440" height="961" fill="white" transform="matrix(1 0 0 -1 0 946)"/>
+</clipPath>
+</defs>
+</svg>

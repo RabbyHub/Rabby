@@ -36,6 +36,7 @@ import type { Account } from '@/background/service/preference';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { OfflineChainNotify } from '../OfflineChainNotify';
 import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
+import { useQueryProjects } from 'ui/utils/portfolio';
 
 export const BalanceView = ({
   currentAccount,
@@ -112,8 +113,9 @@ export const BalanceView = ({
     const balanceValue = latestBalance || currentHomeBalanceCache?.balance;
     const evmBalanceValue =
       latestEvmBalance || currentHomeBalanceCache?.evmBalance;
-    const appChainIds =
-      latestAppChainIds || currentHomeBalanceCache?.appChainIds;
+    const appChainIds = latestAppChainIds?.length
+      ? latestAppChainIds
+      : currentHomeBalanceCache?.appChainIds || [];
     return {
       appChainIds,
       balance: balanceValue,
@@ -159,6 +161,16 @@ export const BalanceView = ({
     refreshCurve,
     isExpired: getCacheExpired,
   });
+  const { refreshPositions } = useQueryProjects(
+    currentAccount?.address,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false
+  );
 
   // const refreshTimerlegacy = useRef<NodeJS.Timeout>();
   // only execute once on component mounted or address changed
@@ -266,6 +278,11 @@ export const BalanceView = ({
     setIsDebounceHover(false);
   };
 
+  const handleClickRefresh = () => {
+    refreshPositions();
+    onRefresh({ isManual: true });
+  };
+
   useDebounce(
     () => {
       if (isHover) {
@@ -347,7 +364,7 @@ export const BalanceView = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              onRefresh({ isManual: true });
+              handleClickRefresh();
             }}
           >
             <div

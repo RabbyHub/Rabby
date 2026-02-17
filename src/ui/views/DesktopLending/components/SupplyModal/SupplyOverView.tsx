@@ -1,0 +1,154 @@
+import React, { useMemo } from 'react';
+import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
+import { Tooltip } from 'antd';
+import { PopupDetailProps } from '../../types';
+import { isHFEmpty } from '../../utils';
+import { getSupplyCapData } from '../../utils/supply';
+import {
+  getAssetCollateralType,
+  getCollateralState,
+} from '../../utils/collateral';
+import { formatApy } from '../../utils/format';
+import { formatUsdValue } from '@/ui/utils/number';
+import { IsolateTag } from '../IsolateTag';
+import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
+import { HealthFactorText } from '../HealthFactorText';
+
+const formatNetworth = (num: number) => {
+  if (num >= 1e9) return `${(num / 1e9).toFixed(2)}B`;
+  if (num >= 1e6) return `${(num / 1e6).toFixed(2)}M`;
+  if (num >= 1e3) return `${(num / 1e3).toFixed(2)}K`;
+  return formatUsdValue(num);
+};
+
+export const SupplyOverView: React.FC<
+  PopupDetailProps & {
+    afterHF?: string;
+    afterAvailable?: string;
+  }
+> = ({ reserve, userSummary, afterHF, afterAvailable }) => {
+  const { t } = useTranslation();
+  const { availableBorrowsUSD = '0', healthFactor = '0' } = userSummary;
+
+  const availableText = useMemo(
+    () => formatNetworth(Number(availableBorrowsUSD || '0')),
+    [availableBorrowsUSD]
+  );
+
+  const apyText = useMemo(
+    () => formatApy(Number(reserve?.reserve?.supplyAPY || '0')),
+    [reserve?.reserve?.supplyAPY]
+  );
+
+  const [canBeEnabledAsCollateral, collateralState] = useMemo(() => {
+    const { supplyCapReached } = getSupplyCapData(reserve);
+    const collateralType = getAssetCollateralType(
+      reserve,
+      userSummary.totalCollateralUSD,
+      userSummary.isInIsolationMode,
+      supplyCapReached
+    );
+    return getCollateralState({ collateralType });
+  }, [reserve, userSummary]);
+
+  const showHF = useMemo(() => !isHFEmpty(Number(healthFactor || '0')), [
+    healthFactor,
+  ]);
+
+  const afterAvailableText = useMemo(
+    () =>
+      afterAvailable ? formatNetworth(Number(afterAvailable || '0')) : null,
+    [afterAvailable]
+  );
+
+  return (
+    <div className="w-full mt-16">
+      <div className="text-[13px] leading-[13px] font-normal text-r-neutral-foot mb-8">
+        {t('page.lending.popup.title')}
+      </div>
+      <div className="rounded-[8px] bg-rb-neutral-card-1">
+        <div className="flex items-center justify-between p-16">
+          <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
+            {t('page.lending.supplyDetail.availableToBorrow')}
+          </span>
+          <div className="flex items-center flex-1 justify-end min-w-0">
+            <span
+              className={clsx(
+                'text-[13px] leading-[15px] font-medium text-r-neutral-title-1',
+                'text-right truncate'
+              )}
+            >
+              {afterAvailableText
+                ? `${availableText} → ${afterAvailableText}`
+                : availableText}
+            </span>
+            <Tooltip
+              overlayClassName="rectangle"
+              title={t('page.lending.modalDesc.maxAmount')}
+            >
+              <RcIconInfo
+                width={12}
+                height={12}
+                className="cursor-pointer text-rb-neutral-foot ml-[4px]"
+              />
+            </Tooltip>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between p-16">
+          <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
+            {t('page.lending.supplyDetail.supplyAPY')}
+          </span>
+          <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
+            {apyText}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between p-16">
+          <div className="flex items-center gap-1">
+            <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
+              {t('page.lending.supplyDetail.collateralization')}
+            </span>
+            {reserve?.reserve?.isIsolated && <IsolateTag />}
+          </div>
+          <span
+            className={`text-[13px] leading-[15px] font-medium ${
+              canBeEnabledAsCollateral
+                ? 'text-rb-green-default'
+                : 'text-rb-red-default'
+            }`}
+          >
+            • {collateralState}
+          </span>
+        </div>
+
+        {showHF && (
+          <>
+            <div className="flex items-center justify-between p-16 pb-2">
+              <span className="text-[13px] leading-[15px] text-r-neutral-title-1">
+                {t('page.lending.hfTitle')}
+              </span>
+              <span className="text-[13px] leading-[15px] font-medium text-r-neutral-foot flex items-center">
+                {afterHF ? (
+                  <>
+                    <HealthFactorText healthFactor={healthFactor} />{' '}
+                    <span className="mx-4">→</span>
+                    <HealthFactorText healthFactor={afterHF} />
+                  </>
+                ) : (
+                  <HealthFactorText healthFactor={healthFactor} />
+                )}
+              </span>
+            </div>
+            <div className="flex justify-end p-16 pt-0">
+              <span className="text-[12px] leading-[15px] text-r-neutral-foot">
+                {t('page.lending.popup.liquidationAt')}
+              </span>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};

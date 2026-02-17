@@ -11,6 +11,8 @@ import { createGlobalStyle } from 'styled-components';
 import { BalanceView } from './BalanceView';
 import { useWallet } from '@/ui/utils';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
+import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
+import clsx from 'clsx';
 
 const GlobalStyle = createGlobalStyle`
   .global-qr-code-popover {
@@ -65,12 +67,12 @@ export const ProfileHeader: React.FC<{
   return (
     <>
       <GlobalStyle />
-      <div className="px-[20px] py-[24px] relative">
-        <div className="mb-[16px] flex items-center gap-[8px]">
-          <div className="text-r-neutral-title1 text-[18px] font-semibold">
+      <div className="px-[20px] pt-[24px] pb-[8px] relative">
+        <div className="mb-[20px] flex items-center gap-[8px]">
+          <div className="text-r-neutral-title1 text-[18px] leading-[21px] font-semibold">
             {alias}
           </div>
-          <div className="text-rb-neutral-body text-[18px] ">
+          <div className="text-rb-neutral-body text-[18px] leading-[21px]">
             {ellipsisAddress(currentAccount?.address || '', true)}
           </div>
           <div className="flex items-center gap-[8px]">
@@ -96,6 +98,7 @@ export const ProfileHeader: React.FC<{
                 <RcIconQrCodeCC />
               </div>
             </Popover>
+            <SeedPhraseBackupAlert className={clsx('rounded-[8px]')} />
           </div>
         </div>
 

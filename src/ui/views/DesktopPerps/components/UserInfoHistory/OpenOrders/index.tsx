@@ -1,6 +1,6 @@
 import { MarketData } from '@/ui/models/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { splitNumberByStep } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { CancelOrderParams, OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import { useMemoizedFn } from 'ahooks';
@@ -15,6 +15,8 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useTranslation } from 'react-i18next';
 import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBorderedButton';
 import { usePerpsProPosition } from '@/ui/views/DesktopPerps/hooks/usePerpsProPosition';
+import { DashedUnderlineText } from '../../DashedUnderlineText';
+import { formatPerpsCoin } from '../../../utils';
 
 export const OpenOrders: React.FC = () => {
   const { openOrders: orders, marketDataMap } = useRabbySelector(
@@ -109,10 +111,10 @@ export const OpenOrders: React.FC = () => {
             >
               <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 mb-[2px]">
                 <span
-                  onClick={() => dispatch.perps.setSelectedCoin(record.coin)}
+                  onClick={() => dispatch.perps.updateSelectedCoin(record.coin)}
                   className="cursor-pointer hover:font-bold hover:text-rb-brand-default"
                 >
-                  {record.coin}{' '}
+                  {formatPerpsCoin(record.coin)}{' '}
                 </span>
                 <span>{record.side === 'B' ? 'Long' : 'Short'}</span>
               </div>
@@ -122,7 +124,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.time'),
-        // width: 160,
+        width: 160,
         key: 'timestamp',
         dataIndex: 'timestamp',
         sorter: (a, b) => a.timestamp - b.timestamp,
@@ -169,14 +171,14 @@ export const OpenOrders: React.FC = () => {
               <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
                 {record.orderType.includes('Market')
                   ? 'Market'
-                  : splitNumberByStep(
+                  : formatUsdValue(
                       new BigNumber(record.origSz)
                         .times(record.limitPx)
-                        .toFixed(2)
+                        .toNumber()
                     )}
               </div>
               <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
-                {record.origSz} {record.coin}
+                {record.origSz} {formatPerpsCoin(record.coin)}
               </div>
             </div>
           );
@@ -199,7 +201,7 @@ export const OpenOrders: React.FC = () => {
                   {splitNumberByStep(
                     new BigNumber(record.origSz).minus(record.sz).toString()
                   )}{' '}
-                  / {record.origSz} {record.coin}
+                  / {record.origSz} {formatPerpsCoin(record.coin)}
                 </>
               )}
             </div>
@@ -208,7 +210,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.price'),
-        // width: 120,
+        width: 80,
         key: 'limitPx',
         dataIndex: 'limitPx',
         render: (_, record) => {
@@ -222,8 +224,14 @@ export const OpenOrders: React.FC = () => {
         },
       },
       {
-        title: t('page.perpsPro.userInfo.openOrders.reduceOnly'),
-        // width: 100,
+        title: (
+          <DashedUnderlineText
+            tooltipText={t('page.perpsPro.userInfo.openOrders.reduceOnly')}
+          >
+            {t('page.perpsPro.userInfo.openOrders.ro')}
+          </DashedUnderlineText>
+        ),
+        width: 60,
         sorter: (a, b) => Number(a.reduceOnly) - Number(b.reduceOnly),
         key: 'reduceOnly',
         dataIndex: 'reduceOnly',
@@ -237,7 +245,7 @@ export const OpenOrders: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.openOrders.triggerConditions'),
-        width: 140,
+        // width: 140,
         key: 'triggerCondition',
         dataIndex: 'triggerCondition',
         render: (_, record) => {

@@ -28,6 +28,8 @@ import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 import { TradingButton } from '../components/TradingButton';
 import { BigNumber } from 'bignumber.js';
+import stats from '@/stats';
+import { getStatsReportSide } from '../../../utils';
 
 interface TakeOrStopLimitTradingContainerProps {
   takeOrStop: 'tp' | 'sl';
@@ -40,6 +42,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
 
   // Get data from perpsState
   const {
+    currentPerpsAccount,
     leverageType,
     crossMargin,
     maxLeverage,
@@ -79,6 +82,18 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
   const [limitPrice, setLimitPrice] = React.useState(
     formatTpOrSlPrice(midPrice, szDecimals)
   );
+
+  const limitMaxTradeSize = React.useMemo(() => {
+    const price = new BigNumber(limitPrice);
+    const balance = new BigNumber(availableBalance);
+    if (price.gt(0) && balance.gt(0)) {
+      return balance
+        .multipliedBy(leverage)
+        .div(price)
+        .toFixed(szDecimals, BigNumber.ROUND_DOWN);
+    }
+    return maxTradeSize;
+  }, [limitPrice, availableBalance, leverage, maxTradeSize, szDecimals]);
 
   // Calculate liquidation price
   const estimatedLiquidationPrice = React.useMemo(() => {
@@ -124,11 +139,11 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     const tradeSize = Number(positionSize.amount) || 0;
     const notionalNum = tradeSize * Number(limitPrice || 0);
 
-    if (notionalNum === 0) {
+    if (notionalNum === 0 || !Number(triggerPrice)) {
       return {
         isValid: false,
         error:
-          reduceOnly && percentage > 0
+          reduceOnly && percentage > 0 && Number(triggerPrice)
             ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
             : '',
       };
@@ -140,7 +155,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       return { isValid: false, error };
     }
 
-    if (maxTradeSize && tradeSize > Number(maxTradeSize)) {
+    if (limitMaxTradeSize && tradeSize > Number(limitMaxTradeSize)) {
       error = reduceOnly
         ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
         : t('page.perpsPro.tradingPanel.insufficientBalance');
@@ -150,6 +165,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'sl' &&
       orderSide === OrderSide.BUY &&
+      Number(triggerPrice) &&
       Number(triggerPrice) < Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice');
@@ -159,6 +175,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'sl' &&
       orderSide === OrderSide.SELL &&
+      Number(triggerPrice) &&
       Number(triggerPrice) > Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice');
@@ -168,6 +185,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'tp' &&
       orderSide === OrderSide.BUY &&
+      Number(triggerPrice) &&
       Number(triggerPrice) > Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice');
@@ -177,6 +195,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     if (
       takeOrStop === 'tp' &&
       orderSide === OrderSide.SELL &&
+      Number(triggerPrice) &&
       Number(triggerPrice) < Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice');
@@ -200,7 +219,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
   }, [
     tradeSize,
     limitPrice,
-    maxTradeSize,
+    limitMaxTradeSize,
     reduceOnly,
     percentage,
     midPrice,
@@ -225,14 +244,31 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     loading: handleOpenOrderLoading,
   } = useRequest(
     async () => {
+      const isBuy = orderSide === OrderSide.BUY;
       await handleOpenTPSlLimitOrder({
         coin: selectedCoin,
-        isBuy: orderSide === OrderSide.BUY,
+        isBuy,
         size: tradeSize,
         triggerPx: triggerPrice,
         limitPx: limitPrice,
         reduceOnly,
         tpsl: takeOrStop,
+      });
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type:
+          takeOrStop === 'tp' ? 'take profit limit' : 'stop loss limit',
+        leverage: leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, reduceOnly),
+        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+        coin: selectedCoin,
+        size: tradeSize,
+        price: limitPrice,
+        trade_usd_value: new BigNumber(limitPrice).times(tradeSize).toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
       });
     },
     {
@@ -374,7 +410,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
         price={limitPrice}
-        maxTradeSize={maxTradeSize}
+        maxTradeSize={limitMaxTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
         percentage={percentage}
@@ -399,16 +435,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       </div>
 
       {/* Place Order Button */}
-      {needEnableTrading ? (
-        <Button
-          onClick={handleActionApproveStatus}
-          className={
-            'w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent bg-rb-green-default text-rb-neutral-InvertHighlight'
-          }
-        >
-          {t('page.perpsPro.tradingPanel.enableTrading')}
-        </Button>
-      ) : (
+      {
         <TradingButton
           loading={handleOpenOrderLoading}
           onClick={handleOpenOrderRequest}
@@ -418,19 +445,10 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
           orderSide={orderSide}
           titleText={t('page.perpsPro.tradingPanel.placeOrder')}
         />
-      )}
+      }
 
       {/* Order Summary */}
-      <OrderSummary
-        data={orderSummary}
-        showTPSLExpected={tpslConfig.enabled}
-        tpExpectedPnL={
-          tpslConfig.enabled ? orderSummary?.tpExpectedPnL : undefined
-        }
-        slExpectedPnL={
-          tpslConfig.enabled ? orderSummary?.slExpectedPnL : undefined
-        }
-      />
+      <OrderSummary data={orderSummary} />
     </div>
   );
 };

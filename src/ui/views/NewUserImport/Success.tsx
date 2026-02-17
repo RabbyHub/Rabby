@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Card } from '@/ui/component/NewUserImport';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -13,15 +19,25 @@ import { ReactComponent as RcIconExternalCC } from '@/ui/assets/new-user-import/
 import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { Account } from '@/background/service/preference';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useAsync, useClickAway } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
-import { useDocumentVisibility, useRequest } from 'ahooks';
+import { useDocumentVisibility, useMemoizedFn, useRequest } from 'ahooks';
 import { GnosisChainList } from './GnosisChainList';
 import { findChain } from '@/utils/chain';
 import { Chain } from '@/types/chain';
 import styled from 'styled-components';
+import stats from '@/stats';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { ga4 } from '@/utils/ga4';
+import browser from 'webextension-polyfill';
+import { useCheckSeedPhraseBackup } from '@/ui/utils/useCheckSeedPhraseBackup';
+import { ReactComponent as RcIconTriangle } from '@/ui/assets/new-user-import/triangle.svg';
+import UserGuide1 from '@/ui/assets/new-user-import/guide-1.png';
+import UserGuide2 from '@/ui/assets/new-user-import/guide-2.png';
+import { ReactComponent as UserGuide1Icon } from '@/ui/assets/new-user-import/guide1.svg';
+import { ReactComponent as UserGuide2Icon } from '@/ui/assets/new-user-import/guide2.svg';
 
 const AccountItem = ({ account }: { account: Account }) => {
   const [edit, setEdit] = useState(false);
@@ -68,13 +84,10 @@ const AccountItem = ({ account }: { account: Account }) => {
       className={clsx(
         'flex flex-col justify-center',
         'border border-solid border-rabby-neutral-line',
-        'rounded-[8px] p-16 pt-8'
+        'rounded-[8px] px-[16px] pb-[12px] pt-[6px]'
       )}
     >
-      <div
-        ref={updateRef}
-        className="flex items-center text-[20px] font-medium"
-      >
+      <div ref={updateRef} className="flex items-center  font-medium">
         {edit ? (
           <Input
             ref={ref}
@@ -82,28 +95,33 @@ const AccountItem = ({ account }: { account: Account }) => {
             autoCorrect="false"
             className={clsx(
               'relative left-[-8px]',
-              'w-[260px] h-[38px]',
+              'w-full h-[30px]',
               'border-none bg-r-neutral-card2 text-r-neutral-title-1',
               'p-8 rounded',
-              'text-[20px] font-medium'
+              'text-[15px] leading-[18px] font-medium'
             )}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                update();
+              }
+            }}
             value={localName}
             onChange={(e) => {
               setLocalName(e.target.value);
             }}
           />
         ) : (
-          <div className="flex items-center justify-center h-[38px] ">
-            <span className="max-w-[300px] truncate text-r-neutral-title1">
+          <div className="flex items-center justify-center h-[30px]">
+            <div className="max-w-[300px] text-[15px] leading-[18px] truncate text-r-neutral-title1">
               {name}
-            </span>
+            </div>
           </div>
         )}
 
         {edit ? (
           <>
             <RcIconConfirm
-              className="w-20 h20 -ml-8px cursor-pointer"
+              className="w-[16px] h-[16px] cursor-pointer"
               viewBox="0 0 20 20"
               onClick={() => {
                 update();
@@ -118,8 +136,7 @@ const AccountItem = ({ account }: { account: Account }) => {
           </>
         ) : (
           <RcIconPen
-            className="w-[18px] h-[19px] cursor-pointer ml-6"
-            viewBox="0 0 18 19"
+            className="cursor-pointer ml-6"
             onClick={() => {
               setEdit(true);
               setLocalName(name || '');
@@ -131,8 +148,8 @@ const AccountItem = ({ account }: { account: Account }) => {
           />
         )}
       </div>
-      <div className="text-[15px] text-r-neutral-foot">
-        {ellipsisAddress(account.address)}
+      <div className="text-[13px] leading-[16px] text-r-neutral-foot">
+        {ellipsisAddress(account.address, true)}
       </div>
     </div>
   );
@@ -169,6 +186,11 @@ export const ImportOrCreatedSuccess = () => {
   const isSeedPhrase = React.useMemo(() => hd === KEYRING_CLASS.MNEMONIC, [hd]);
 
   const documentVisibility = useDocumentVisibility();
+  const hasReportedRef = useRef(false);
+  const { isExistedKeyring, finalMnemonics, stashKeyringId } = useRabbySelector(
+    (s) => s.importMnemonics
+  );
+  const hasMnemonicImportContext = Boolean(finalMnemonics || stashKeyringId);
 
   const { value: accounts } = useAsync(async () => {
     if (documentVisibility === 'visible') {
@@ -191,24 +213,49 @@ export const ImportOrCreatedSuccess = () => {
     return [];
   }, [documentVisibility, keyringId]);
 
-  const { value: allAccounts } = useAsync(
-    wallet.getAllVisibleAccountsArray,
-    []
-  );
+  // const { hasBackup } = useCheckSeedPhraseBackup(accounts?.[0]?.address || '');
 
-  const isNewUserImport = React.useMemo(() => {
-    return allAccounts?.length === 1;
-  }, [!!allAccounts?.length]);
+  // const { value: allAccounts } = useAsync(
+  //   wallet.getAllVisibleAccountsArray,
+  //   []
+  // );
+
+  // const isNewUserImport = React.useMemo(() => {
+  //   return allAccounts?.length === 1;
+  // }, [!!allAccounts?.length]);
 
   const getStarted = React.useCallback(() => {
-    if (isNewUserImport) {
-      history.push({
-        pathname: '/new-user/ready',
-      });
-    } else {
-      window.close();
-    }
-  }, [isNewUserImport]);
+    // window.close();
+    browser.action.openPopup();
+    // if (isNewUserImport) {
+    //   history.push({
+    //     pathname: '/new-user/ready',
+    //   });
+    // } else {
+    //   window.close();
+    // }
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 如果焦点在输入框或可编辑元素上，不触发 getStarted
+      const target = e.target as HTMLElement;
+      const isInputElement =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable;
+
+      if (e.key === 'Enter' && !isInputElement) {
+        getStarted();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [getStarted]);
 
   const addMoreAddr = () => {
     const oBrand = brand !== 'null' ? brand : undefined;
@@ -221,6 +268,12 @@ export const ImportOrCreatedSuccess = () => {
       '_blank'
     );
   };
+
+  const handleBackup = useMemoizedFn(() => {
+    history.push(
+      `/new-user/backup-seed-phrase?address=${accounts?.[0]?.address}`
+    );
+  });
 
   const closeConnect = React.useCallback(() => {
     if (store.clearKeyringId) {
@@ -236,6 +289,46 @@ export const ImportOrCreatedSuccess = () => {
       closeConnect();
     };
   }, []);
+
+  useEffect(() => {
+    const account = accounts?.[0];
+    if (!account || hasReportedRef.current) {
+      return;
+    }
+    hasReportedRef.current = true;
+
+    const mnemonicSource =
+      account.type === KEYRING_CLASS.MNEMONIC
+        ? isCreated
+          ? 'New'
+          : hasMnemonicImportContext && isExistedKeyring
+          ? 'Add'
+          : hasMnemonicImportContext && !isExistedKeyring
+          ? 'Import'
+          : undefined
+        : undefined;
+
+    if (Object.values(KEYRING_CLASS.HARDWARE).includes(account.type as any)) {
+      stats.report('importHardware', {
+        type: account.type,
+      });
+    }
+
+    matomoRequestEvent({
+      category: 'User',
+      action: 'importAddress',
+      label: mnemonicSource
+        ? `${account.type}_${mnemonicSource}`
+        : account.type,
+    });
+
+    ga4.fireEvent(
+      `Import_${account.type}${mnemonicSource ? `_${mnemonicSource}` : ''}`,
+      {
+        event_category: 'Import Address',
+      }
+    );
+  }, [accounts, hasMnemonicImportContext, isCreated, isExistedKeyring]);
 
   const { data: chainList } = useRequest(
     async () => {
@@ -260,61 +353,114 @@ export const ImportOrCreatedSuccess = () => {
   );
 
   return (
-    <Card className="flex flex-col">
-      <RcIconChecked
-        className="w-[52px] h-[52px] mt-[60px] mb-20 mx-auto"
-        viewBox="0 0 16 16"
-      />
+    <>
+      <Card className="flex flex-col pt-[40px]">
+        <RcIconChecked
+          className="w-[40px] h-[40px] mb-[16px] mx-auto"
+          viewBox="0 0 16 16"
+        />
 
-      <div className="text-24 font-medium text-r-neutral-title1 text-center">
-        {t(
-          isCreated
-            ? 'page.newUserImport.successful.create'
-            : 'page.newUserImport.successful.import'
-        )}
-      </div>
+        <div className="text-[24px] leading-[29px] font-medium text-r-neutral-title1 text-center">
+          {t(
+            isCreated
+              ? 'page.newUserImport.successful.create'
+              : 'page.newUserImport.successful.import'
+          )}
+        </div>
 
-      <ScrollBarDiv className="flex flex-col gap-16 pt-24 overflow-y-scroll max-h-[324px] mb-20">
-        {accounts?.map((account) => {
-          if (!account?.address) {
-            return null;
-          }
-          return <AccountItem key={account.address} account={account} />;
-        })}
-        <GnosisChainList chainList={chainList} className="mt-[-4px]" />
-      </ScrollBarDiv>
+        <div className="text-center text-[15px] leading-[18px] text-r-neutral-foot mt-[8px]">
+          {t('page.newUserImport.successful.desc')}
+        </div>
 
-      <Button
-        onClick={getStarted}
-        block
-        type="primary"
+        <ScrollBarDiv className="flex flex-col gap-16 pt-24 overflow-y-scroll max-h-[324px] mb-20">
+          {accounts?.map((account) => {
+            if (!account?.address) {
+              return null;
+            }
+            return <AccountItem key={account.address} account={account} />;
+          })}
+          <GnosisChainList chainList={chainList} className="mt-[-4px]" />
+        </ScrollBarDiv>
+
+        <Button
+          onClick={getStarted}
+          block
+          type="primary"
+          className={clsx(
+            'mt-auto h-[52px] shadow-none rounded-[8px]',
+            'text-[15px] leading-[18px] font-medium'
+          )}
+        >
+          {t('page.newUserImport.successful.openWallet')}
+        </Button>
+
+        {hd ? (
+          isCreated && isSeedPhrase && store.seedPhrase ? (
+            <div
+              onClick={handleBackup}
+              className="flex items-center justify-center gap-2 text-[13px] leading-[16px] min-h-[20px] text-r-neutral-foot mt-[16px] cursor-pointer"
+            >
+              <span>
+                {t('page.newUserImport.successful.backupSeedPhraseNow')}
+              </span>
+            </div>
+          ) : (
+            <div
+              onClick={addMoreAddr}
+              className="flex items-center justify-center gap-2 text-[13px] leading-[16px] text-r-neutral-foot mt-[16px] cursor-pointer"
+            >
+              {isSeedPhrase ? (
+                <span>{t('page.newUserImport.successful.addMoreAddr')}</span>
+              ) : (
+                <span>
+                  {t('page.newUserImport.successful.addMoreFrom', {
+                    name: brand || BRAND_ALIAN_TYPE_TEXT[hd] || hd,
+                  })}
+                </span>
+              )}
+              <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
+            </div>
+          )
+        ) : null}
+      </Card>
+      <div
         className={clsx(
-          'mt-auto h-[56px] shadow-none rounded-[8px]',
-          'text-[17px] font-medium'
+          'fixed top-[40px] right-[90px]',
+          'w-[242px] h-[300px]',
+          'py-12 px-12',
+          'bg-r-neutral-card-1 rounded-[12px]'
         )}
       >
-        {isNewUserImport
-          ? t('page.newUserImport.successful.start')
-          : t('global.Done')}
-      </Button>
-
-      {!!hd && (
-        <div
-          onClick={addMoreAddr}
-          className="flex items-center justify-center gap-2 text-[14px] text-r-neutral-foot mt-[23px] cursor-pointer"
-        >
-          {isSeedPhrase ? (
-            <span>{t('page.newUserImport.successful.addMoreAddr')}</span>
-          ) : (
-            <span>
-              {t('page.newUserImport.successful.addMoreFrom', {
-                name: brand || BRAND_ALIAN_TYPE_TEXT[hd] || hd,
-              })}
-            </span>
-          )}
-          <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
+        <RcIconTriangle className="absolute top-[-39px] right-[22px]" />
+        <div className="flex flex-col gap-[11px]">
+          <div className="flex flex-col">
+            <div className="flex items-center">
+              <UserGuide1Icon className="w-[20px] h-[20px] mr-[5px]" />
+              <span className="text-[12px] font-semibold text-r-neutral-title1">
+                {t('page.newUserImport.readyToUse.guides.step1')}
+              </span>
+            </div>
+            <img
+              src={UserGuide1}
+              alt="user-guide-1"
+              className="w-[186px] h-[96px] mt-[10px] ml-[25px]"
+            />
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center">
+              <UserGuide2Icon className="w-[20px] h-[20px] mr-[5px]" />
+              <span className="text-[12px] font-semibold text-r-neutral-title1">
+                {t('page.newUserImport.readyToUse.guides.step2')}
+              </span>
+            </div>
+            <img
+              src={UserGuide2}
+              alt="user-guide-2"
+              className="w-[183px] h-[114px] mt-[10px] ml-[25px]"
+            />
+          </div>
         </div>
-      )}
-    </Card>
+      </div>
+    </>
   );
 };

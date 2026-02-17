@@ -23,6 +23,7 @@ export * from './webapi';
 export * from './time';
 
 export * from './number';
+export * from './os';
 
 const UI_TYPE = {
   Tab: 'index',

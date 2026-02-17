@@ -19,6 +19,9 @@ import {
   WsTwapStates,
   UserTwapHistory,
   UserTwapSliceFill,
+  WsAllClearinghouseStates,
+  SpotClearinghouseState,
+  UserAbstractionResp,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
 import { RootModel } from '.';
@@ -34,10 +37,21 @@ import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { isSameAddress } from '../utils';
 import {
+  formatAllDexsClearinghouseState,
   handleUpdateHistoricalOrders,
   handleUpdateTwapSliceFills,
   showDepositAndWithdrawToast,
+  formatSpotState,
 } from '../views/DesktopPerps/utils';
+import {
+  OrderType,
+  OrderSide,
+  PositionSize,
+  TPSLConfig,
+} from '../views/DesktopPerps/types';
+import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
+import stats from '@/stats';
+import BigNumber from 'bignumber.js';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -65,13 +79,14 @@ export interface MarketData {
   oraclePx: string;
   premium: string;
   prevDayPx: string;
+  dexId: string;
 }
 
 export type MarketDataMap = Record<string, MarketData>;
 
 const buildMarketDataMap = (list: MarketData[]): MarketDataMap => {
   return list.reduce((acc, item) => {
-    acc[item.name.toUpperCase()] = item;
+    acc[item.name] = item;
     return acc;
   }, {} as MarketDataMap);
 };
@@ -83,6 +98,20 @@ export interface AccountHistoryItem {
   status: 'pending' | 'success' | 'failed';
   usdValue: string;
 }
+
+export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
+  enabled: false,
+  takeProfit: { price: '', percentage: '', error: '', inputMode: 'percentage' },
+  stopLoss: { price: '', percentage: '', error: '', inputMode: 'percentage' },
+};
+
+const INIT_TRADING_STATE = {
+  // tradingOrderSide: OrderSide.BUY,
+  tradingPositionSize: { amount: '', notionalValue: '' },
+  tradingPercentage: 0,
+  tradingReduceOnly: false,
+  tradingTpslConfig: DEFAULT_TPSL_CONFIG,
+};
 
 export interface PerpsState {
   positionAndOpenOrders: PositionAndOpenOrder[];
@@ -103,10 +132,6 @@ export interface PerpsState {
   wsSubscriptions: (() => void)[];
   pollingTimer: NodeJS.Timeout | null;
   fillsOrderTpOrSl: Record<string, 'tp' | 'sl'>;
-  homePositionPnl: {
-    pnl: number;
-    show: boolean;
-  };
   // Desktop Pro fields
   selectedCoin: string;
   favoritedCoins: string[];
@@ -116,6 +141,11 @@ export interface PerpsState {
   clearinghouseState: ClearinghouseState | null;
   openOrders: OpenOrder[];
   clearinghouseStateMap: Record<string, ClearinghouseState | null>;
+  spotState: {
+    accountValue: string;
+    availableToTrade: string;
+  };
+  userAbstraction: UserAbstractionResp;
   historicalOrders: UserHistoricalOrders[];
   userFunding: WsUserFunding['fundings'];
   nonFundingLedgerUpdates: UserNonFundingLedgerUpdates[];
@@ -127,7 +157,16 @@ export interface PerpsState {
   marketEstSize: string;
   marketEstPrice: string;
   quoteUnit: 'base' | 'usd';
+  // Trading panel state (preserved across orderType switches)
+  // tradingOrderType: OrderType;
+  tradingOrderSide: OrderSide;
+  tradingPositionSize: PositionSize;
+  tradingTpslConfig: TPSLConfig;
+  tradingPercentage: number;
+  tradingReduceOnly: boolean;
 }
+
+let topAssetsCache: PerpTopToken[] = [];
 
 export const perps = createModel<RootModel>()({
   state: {
@@ -149,10 +188,6 @@ export const perps = createModel<RootModel>()({
     approveSignatures: [],
     wsSubscriptions: [],
     pollingTimer: null,
-    homePositionPnl: {
-      pnl: 0,
-      show: false,
-    },
     fillsOrderTpOrSl: {},
     // Desktop Pro fields
     selectedCoin: 'BTC',
@@ -164,6 +199,11 @@ export const perps = createModel<RootModel>()({
     clearinghouseStateMap: {},
     openOrders: [],
     historicalOrders: [],
+    userAbstraction: 'default',
+    spotState: {
+      accountValue: '0',
+      availableToTrade: '0',
+    },
     userFunding: [],
     nonFundingLedgerUpdates: [],
     twapStates: [],
@@ -174,6 +214,10 @@ export const perps = createModel<RootModel>()({
     marketEstSize: '',
     marketEstPrice: '',
     quoteUnit: 'base',
+    // Trading panel state (preserved across orderType switches)
+    // tradingOrderType: OrderType.MARKET,
+    tradingOrderSide: OrderSide.BUY,
+    ...INIT_TRADING_STATE,
   } as PerpsState,
 
   reducers: {
@@ -229,6 +273,7 @@ export const perps = createModel<RootModel>()({
           if (
             item.delta.type === 'deposit' ||
             item.delta.type === 'withdraw' ||
+            item.delta.type === 'send' ||
             item.delta.type === 'internalTransfer' ||
             item.delta.type === 'accountClassTransfer'
           ) {
@@ -246,6 +291,20 @@ export const perps = createModel<RootModel>()({
               type: 'receive' as const,
               status: 'success' as const,
               usdValue: realUsdValue.toString(),
+            };
+          }
+
+          const { destination, usdcValue } = item.delta as any;
+          if (
+            item.delta.type === 'send' &&
+            destination === state.currentPerpsAccount?.address
+          ) {
+            return {
+              time: item.time,
+              hash: item.hash,
+              type: 'receive' as const,
+              status: 'success' as const,
+              usdValue: usdcValue.toString(),
             };
           }
 
@@ -311,6 +370,31 @@ export const perps = createModel<RootModel>()({
       };
     },
 
+    setClearinghouseStateMapBySingle(
+      state,
+      payload: {
+        address: string;
+        clearinghouseState: [string, ClearinghouseState][];
+      }
+    ) {
+      if (
+        !payload.address ||
+        !payload.clearinghouseState ||
+        !payload.clearinghouseState[0]
+      ) {
+        return state;
+      }
+      return {
+        ...state,
+        clearinghouseStateMap: {
+          ...state.clearinghouseStateMap,
+          [payload.address.toLowerCase()]: formatAllDexsClearinghouseState(
+            payload.clearinghouseState
+          ),
+        },
+      };
+    },
+
     patchClearinghouseState(state, payload: ClearinghouseState) {
       const currentStateTime = state.clearinghouseState?.time || 0;
       if (payload.time <= currentStateTime) {
@@ -326,13 +410,6 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         fillsOrderTpOrSl: payload,
-      };
-    },
-
-    setHomePositionPnl(state, payload: { pnl: number; show: boolean }) {
-      return {
-        ...state,
-        homePositionPnl: payload,
       };
     },
 
@@ -410,12 +487,6 @@ export const perps = createModel<RootModel>()({
           withdrawable: payload.withdrawable,
         },
         positionAndOpenOrders,
-        homePositionPnl: {
-          pnl: payload.assetPositions.reduce((acc, asset) => {
-            return acc + Number(asset.position.unrealizedPnl);
-          }, 0),
-          show: payload.assetPositions.length > 0,
-        },
       };
     },
 
@@ -469,18 +540,26 @@ export const perps = createModel<RootModel>()({
       };
     },
 
-    updateMarketData(state, payload: AssetCtx[]) {
+    updateMarketData(state, payload: [string, AssetCtx[]][]) {
       if (payload.length === 0 || state.marketData.length === 0) {
         return {
           ...state,
         };
       }
 
-      const list = payload || [];
+      const marketByDexName: Record<string, AssetCtx[]> = {};
+      payload.forEach((item) => {
+        const [dexId, assetCtx] = item;
+        const dexName = dexId ? dexId : 'hyperliquid';
+        marketByDexName[dexName] = assetCtx;
+      });
       const newMarketData = state.marketData.map((item) => {
+        // other dex , example xyz is error
+        const dexName = item.dexId ? item.dexId : 'hyperliquid';
+        const assetCtx = marketByDexName[dexName];
         return {
           ...item,
-          ...list[item.index],
+          ...assetCtx[item.index],
         };
       });
       return {
@@ -512,12 +591,6 @@ export const perps = createModel<RootModel>()({
           withdrawable: clearinghouseState.withdrawable,
         },
         positionAndOpenOrders,
-        homePositionPnl: {
-          pnl: positionAndOpenOrders.reduce((acc, order) => {
-            return acc + Number(order.position.unrealizedPnl);
-          }, 0),
-          show: positionAndOpenOrders.length > 0,
-        },
       };
     },
 
@@ -593,19 +666,47 @@ export const perps = createModel<RootModel>()({
         approveSignatures: [],
         fillsOrderTpOrSl: {},
         hasPermission: true,
-        homePositionPnl: {
-          pnl: 0,
-          show: false,
-        },
         accountNeedApproveAgent: false,
         accountNeedApproveBuilderFee: false,
       };
     },
 
     // Desktop Pro reducers
-    setSelectedCoin(state, payload: string) {
+    resetProAccountInfo(state) {
       return {
         ...state,
+        currentPerpsAccount: null,
+        isInitialized: false,
+        userAbstraction: UserAbstractionResp.default,
+        isLogin: false,
+        clearinghouseState: null,
+        openOrders: [],
+        historicalOrders: [],
+        userFunding: [],
+        nonFundingLedgerUpdates: [],
+        twapStates: [],
+        twapHistory: [],
+        twapSliceFills: [],
+        localLoadingHistory: [],
+      };
+    },
+
+    resetTradingState(state) {
+      return {
+        ...state,
+        ...INIT_TRADING_STATE,
+      };
+    },
+
+    setSelectedCoin(state, payload: string) {
+      // if (payload.includes(':')) {
+      //   message.error('HIP-3 coin is not supported');
+      //   return state;
+      // }
+
+      return {
+        ...state,
+        ...INIT_TRADING_STATE,
         selectedCoin: payload,
       };
     },
@@ -671,6 +772,11 @@ export const perps = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
+    async updateSelectedCoin(payload: string, rootState) {
+      dispatch.perps.setSelectedCoin(payload);
+      await rootState.app.wallet.setPerpsSelectedCoin(payload);
+    },
+
     async updateQuoteUnit(payload: 'base' | 'usd', rootState) {
       dispatch.perps.patchState({ quoteUnit: payload });
       await rootState.app.wallet.setPerpsQuoteUnit(payload);
@@ -716,6 +822,19 @@ export const perps = createModel<RootModel>()({
       dispatch.perps.setHasPermission(has_permission);
     },
 
+    async fetchUserAbstraction(address: string) {
+      try {
+        const sdk = getPerpsSDK();
+        const userAbstraction = await sdk.info.getUserAbstraction(address);
+        dispatch.perps.patchState({ userAbstraction: userAbstraction });
+      } catch (error) {
+        console.error('Failed to fetch user abstraction:', error);
+        dispatch.perps.patchState({
+          userAbstraction: UserAbstractionResp.default,
+        });
+      }
+    },
+
     async loginPerpsAccount(
       payload: {
         account: Account;
@@ -736,10 +855,14 @@ export const perps = createModel<RootModel>()({
       }
 
       // 订阅实时数据更新
-      dispatch.perps.subscribeToUserData({ address: account.address, isPro });
+      dispatch.perps.subscribeToUserData({
+        address: account.address,
+        type: account.type,
+        isPro,
+      });
 
       // dispatch.perps.startPolling(undefined);
-
+      dispatch.perps.fetchUserAbstraction(account.address);
       dispatch.perps.fetchPerpPermission(account.address);
       setTimeout(() => {
         // avoid 429 error
@@ -866,8 +989,16 @@ export const perps = createModel<RootModel>()({
 
       const fetchTopTokenList = async () => {
         try {
-          const topAssets = await rootState.app.wallet.openapi.getPerpTopTokenList();
+          if (topAssetsCache.length > 0) {
+            return topAssetsCache;
+          }
+          const topAssets = await rootState.app.wallet.openapi.getPerpTopTokenList(
+            {
+              dex_id: 'all',
+            }
+          );
           if (topAssets.length > 0) {
+            topAssetsCache = topAssets;
             return topAssets;
           } else {
             return DEFAULT_TOP_ASSET;
@@ -878,11 +1009,14 @@ export const perps = createModel<RootModel>()({
         }
       };
 
-      const [topAssets, marketData] = await Promise.all([
+      const [topAssets, marketData, xyzMarketData] = await Promise.all([
         fetchTopTokenList(),
-        sdk.info.metaAndAssetCtxs(true),
+        sdk.info.metaAndAssetCtxs(),
+        sdk.info.metaAndAssetCtxs('xyz'),
       ]);
-      dispatch.perps.setMarketData(formatMarkData(marketData, topAssets));
+      dispatch.perps.setMarketData(
+        formatMarkData(marketData, topAssets, xyzMarketData)
+      );
     },
 
     async fetchPerpFee() {
@@ -899,50 +1033,55 @@ export const perps = createModel<RootModel>()({
     },
 
     subscribeToUserData(
-      payload: { address: string; isPro: boolean },
+      payload: { address: string; type: Account['type']; isPro: boolean },
       rootState
     ) {
-      const { address, isPro } = payload;
+      const { address, type: addressType, isPro } = payload;
       const sdk = getPerpsSDK();
       const subscriptions: (() => void)[] = [];
       dispatch.perps.unsubscribeAll(undefined);
-      const { unsubscribe: unsubscribeWebData2 } = sdk.ws.subscribeToWebData2(
-        (data) => {
-          const {
-            clearinghouseState,
-            assetCtxs,
-            openOrders,
-            serverTime,
-            user,
-          } = data;
-          if (!isSameAddress(user, address)) {
-            return;
-          }
-
-          dispatch.perps.setPositionAndOpenOrders(
-            clearinghouseState,
-            openOrders
-          );
-
-          dispatch.perps.updateMarketData(assetCtxs);
-        }
-      );
-      subscriptions.push(unsubscribeWebData2);
+      const {
+        unsubscribe: unsubscribeAllDexsAssetCtxs,
+      } = sdk.ws.subscribeToAllDexsAssetCtxs((data) => {
+        const { ctxs } = data;
+        dispatch.perps.updateMarketData(ctxs);
+      });
+      subscriptions.push(unsubscribeAllDexsAssetCtxs);
 
       if (isPro) {
         const {
           unsubscribe: unsubscribeClearinghouseState,
-        } = sdk.ws.subscribeToClearinghouseState(address, (data) => {
-          const { clearinghouseState, user } = data;
+        } = sdk.ws.subscribeToAllDexsClearinghouseState(address, (data) => {
+          const { clearinghouseStates } = data;
+          const user = (data as any).user;
           if (!isSameAddress(user, address)) {
             return;
           }
+          const clearinghouseState = formatAllDexsClearinghouseState(
+            clearinghouseStates
+          );
+          if (!clearinghouseState) {
+            return;
+          }
           dispatch.perps.patchClearinghouseState(clearinghouseState);
-          dispatch.perps.setClearinghouseStateMap({
-            [address.toLowerCase()]: clearinghouseState,
+          dispatch.perps.setClearinghouseStateMapBySingle({
+            address,
+            clearinghouseState: clearinghouseStates,
           });
         });
         subscriptions.push(unsubscribeClearinghouseState);
+
+        const {
+          unsubscribe: unsubscribeSpotState,
+        } = sdk.ws.subscribeToSpotState((data) => {
+          const { spotState, user } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+
+          dispatch.perps.patchState({ spotState: formatSpotState(spotState) });
+        });
+        subscriptions.push(unsubscribeSpotState);
 
         const {
           unsubscribe: unsubscribeOpenOrders,
@@ -1136,6 +1275,16 @@ export const perps = createModel<RootModel>()({
         console.error('Failed to load favorited coins:', error);
         // Fallback to default
         dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
+      }
+    },
+
+    async initSelectedCoin(_, rootState) {
+      try {
+        const selectedCoin = await rootState.app.wallet.getPerpsSelectedCoin();
+        dispatch.perps.setSelectedCoin(selectedCoin ?? 'BTC');
+      } catch (error) {
+        console.error('Failed to load selected coin:', error);
+        dispatch.perps.setSelectedCoin('BTC');
       }
     },
 

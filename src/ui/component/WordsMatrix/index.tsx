@@ -8,15 +8,14 @@ import IconCloseSvg from 'ui/assets/close-icon.svg';
 
 import MnemonicsInputs from './MnemonicsInputs';
 
-const ITEM_H = 40;
+const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
 
 const NumberFlag = styled.div`
-  color: var(--r-neutral-body);
+  color: var(--r-neutral-foot);
   font-weight: 400;
-  font-size: 10px;
-  line-height: 12px;
-  height: 12px;
+  font-size: 12px;
+  height: 14px;
 `;
 
 const CloseIcon = styled.img.attrs({
@@ -43,10 +42,12 @@ const MatrixWrapper = styled.div.withConfig<{
     return !['rowCount'].includes(prop) && defaultValidatorFn(prop);
   },
 })`
+  display: flex;
+  flex-wrap: wrap;
   overflow: hidden;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+
+  border-radius: 6px;
+  background: var(--r-neutral-card1, #fff);
 
   .matrix-word-item {
     box-sizing: border-box;
@@ -54,15 +55,30 @@ const MatrixWrapper = styled.div.withConfig<{
     text-align: center;
     display: block;
 
-    font-size: 16px;
-    line-height: 18px;
+    font-size: 15px;
     font-weight: 500;
     color: var(--r-neutral-title-1);
     position: relative;
-    background-color: rgba(217, 217, 217, 0.2);
 
-    border: 1.5px solid var(--r-neutral-line);
-    border-radius: 12px;
+    border-right: 1px solid var(--r-neutral-line);
+    border-bottom: 1px solid var(--r-neutral-line);
+    border-right: 0.5px solid var(--r-neutral-line);
+    border-bottom: 0.5px solid var(--r-neutral-line);
+
+    ${(props) => {
+      const rowCount = props.rowCount || ROW_COUNT;
+      return css`
+        width: ${(1 / rowCount) * 100}%;
+
+        &:nth-child(${rowCount}n) {
+          border-right: 0;
+        }
+
+        &:nth-last-child(-n + ${rowCount}) {
+          border-bottom: 0;
+        }
+      `;
+    }}
   }
 
   ${styid(FocusingBox)}, ${styid(ErrorBox)} {
@@ -76,12 +92,12 @@ const MatrixWrapper = styled.div.withConfig<{
   .text {
     height: 100%;
     display: inline-block;
-    line-height: ${ITEM_H - 3}px;
+    line-height: ${ITEM_H}px;
   }
 
   ${styid(NumberFlag)} {
     position: absolute;
-    top: 6px;
+    top: 8px;
     left: 8px;
   }
 
@@ -129,7 +145,7 @@ function WordsMatrix({
 
   return (
     <MatrixWrapper
-      className={clsx('rounded-[6px] bg-white text-center', className)}
+      className={clsx('rounded-[6px] text-center', className)}
       rowCount={rowCount}
     >
       {checkedWords.map((word, idx) => {

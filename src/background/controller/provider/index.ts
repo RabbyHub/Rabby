@@ -7,12 +7,15 @@ import {
   keyringService,
   preferenceService,
   permissionService,
+  innerDappFrameService,
 } from 'background/service';
 
 import rpcFlow from './rpcFlow';
 import internalMethod from './internalMethod';
 import { Account } from '@/background/service/preference';
 import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
+import { DAPP_SCENE_MAP } from '@/constant/scene-account';
+import { ALL_SUPPORTED_INNER_DAPP_ORIGINS } from '@/constant/dappIframe';
 
 const IGNORE_CHECK = ['wallet_importAddress'];
 
@@ -27,7 +30,19 @@ export default async <T = void>(req: ProviderRequest): Promise<T> => {
 
   const origin = req.session?.origin || req.origin;
   let account: Account | undefined = undefined;
-  if (preferenceService.getPreference('isEnabledDappAccount')) {
+  if (
+    req.isFromDesktopDapp &&
+    ALL_SUPPORTED_INNER_DAPP_ORIGINS.includes(origin || '')
+  ) {
+    account =
+      req.account ||
+      innerDappFrameService.getInnerDappAccountByOrigin(origin || '') ||
+      preferenceService.getPreference('sceneAccountMap')[
+        DAPP_SCENE_MAP[origin || '']
+      ] ||
+      preferenceService.getCurrentAccount() ||
+      undefined;
+  } else if (preferenceService.getPreference('isEnabledDappAccount')) {
     if (origin) {
       if (origin === INTERNAL_REQUEST_ORIGIN) {
         account =

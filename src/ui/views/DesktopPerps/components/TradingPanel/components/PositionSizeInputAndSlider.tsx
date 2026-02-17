@@ -13,6 +13,7 @@ import {
   formatNotional,
 } from '../utils';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
+import { formatPerpsCoin } from '../../../utils';
 const PRESET_POINTS = [0, 25, 50, 75, 100];
 
 // Create marks for the slider
@@ -137,13 +138,19 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
 
   useEffect(() => {
     if (priceChangeUsdValue && positionSize.amount) {
-      handleAmountChange(positionSize.amount);
+      positionSize.isInputNotionalValue
+        ? handleNotionalChange(positionSize.notionalValue)
+        : handleAmountChange(positionSize.amount);
     }
-  }, [price, priceChangeUsdValue]);
+  }, [price, priceChangeUsdValue, positionSize.isInputNotionalValue]);
 
   const handleNotionalChange = useMemoizedFn((notional: string) => {
     if (!price) {
-      setPositionSize({ amount: '', notionalValue: notional });
+      setPositionSize({
+        amount: '',
+        notionalValue: notional,
+        isInputNotionalValue: true,
+      });
       setPercentage(0);
       return;
     }
@@ -154,6 +161,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     setPositionSize({
       amount,
       notionalValue: notional,
+      isInputNotionalValue: true,
     });
 
     if (maxTradeSize && Number(maxTradeSize) > 0) {
@@ -182,7 +190,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
 
     if (notionalValue === 0 || !price) {
       setPositionSize({ amount: '', notionalValue: '' });
-      setPercentage(0);
+      // setPercentage(0);
       return;
     }
 
@@ -236,7 +244,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
           onChange={handleAmountChangeFormatted}
           suffix={
             <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-              {baseAsset}
+              {formatPerpsCoin(baseAsset)}
             </span>
           }
         />

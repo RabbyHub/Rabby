@@ -200,7 +200,6 @@ export const NewUserImportOneKey = () => {
       onBack={() => {
         history.goBack();
       }}
-      step={2}
       className="flex flex-col"
     >
       <div className="flex-1 mt-[18px]">

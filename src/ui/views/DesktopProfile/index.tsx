@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { DESKTOP_NAV_HEIGHT, DesktopNav } from '@/ui/component/DesktopNav';
 import { ProfileHeader } from './components/ProfileHeader';
 import { BackTop, Tabs } from 'antd';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { SendTokenModal } from './components/SendTokenModal';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
 import { SwapTokenModal } from './components/SwapTokenModal';
@@ -26,7 +26,7 @@ import { ApprovalsTabPane } from './components/ApprovalsTabPane';
 import { AddressDetailModal } from './components/AddressDetailModal';
 import { AddressBackupModal } from './components/AddressBackupModal';
 import { AddAddressModal } from './components/AddAddressModal';
-import { RcIconBackTop } from '@/ui/assets/desktop/profile';
+import { RcIconBackTopCC } from '@/ui/assets/desktop/profile';
 import { ReachedEnd } from './components/ReachedEnd';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import TopShortcut, {
@@ -67,16 +67,36 @@ const StickyBorderTop = () => (
   </div>
 );
 
-export const DesktopProfile = () => {
+export const DesktopProfile: React.FC<{
+  isActive?: boolean;
+  style?: React.CSSProperties;
+}> = ({ isActive = true, style }) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
 
   const history = useHistory();
-  const activeTab = useParams<{ activeTab: string }>().activeTab || 'tokens';
-  const handleTabChange = (key: string) => {
-    history.replace(`/desktop/profile/${key}`);
-  };
   const location = useLocation();
+  const dispatch = useRabbyDispatch();
+  const activeTab = useMemo(() => {
+    const match = location.pathname.match(/^\/desktop\/profile(?:\/([^/?]+))?/);
+    return match?.[1] || 'tokens';
+  }, [location.pathname]);
+
+  const handleTabChange = (key: string) => {
+    dispatch.desktopProfile.setField({ activeTab: key });
+    history.replace(`/desktop/profile/${key}`);
+    const $scrollElement = scrollContainerRef.current;
+    if (!$scrollElement) {
+      return;
+    }
+    const profileHeight = 136;
+
+    if ($scrollElement.scrollTop > profileHeight) {
+      requestAnimationFrame(() => {
+        $scrollElement.scrollTo(0, profileHeight);
+      });
+    }
+  };
   const { action, sendPageType } = useMemo(() => {
     const searchParams = new URLSearchParams(location.search);
     return {
@@ -85,7 +105,6 @@ export const DesktopProfile = () => {
     };
   }, [location.search]);
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
-  const dispatch = useRabbyDispatch();
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
@@ -112,12 +131,6 @@ export const DesktopProfile = () => {
     }
   }, [isUpdating]);
 
-  const handleUpdate = useMemoizedFn(async () => {
-    setRefreshKey((prev) => prev + 1);
-    refreshPositions();
-    await refreshBalance();
-    await refreshCurve();
-  });
   const [cacheProjectOverviewList, setCacheProjectOverviewList] = useState<
     AbstractProject[]
   >([]);
@@ -148,17 +161,23 @@ export const DesktopProfile = () => {
     appIds,
     isNoResults,
     refreshPositions,
+    refreshTokens,
   } = useTokenAndDIFIData({
     selectChainId: chainInfo?.serverId,
     allTokenMode: !!searchValue,
   });
 
+  const handleUpdate = useMemoizedFn(async () => {
+    setRefreshKey((prev) => prev + 1);
+    refreshPositions();
+    refreshBalance();
+    refreshCurve();
+  });
+
   useListenTxReload(async () => {
-    if (['tokens', 'transactions'].includes(activeTab)) {
-      setRefreshKey((prev) => prev + 1);
-    }
-    await refreshBalance();
-    await refreshCurve();
+    refreshBalance();
+    refreshCurve();
+    refreshTokens();
   });
 
   useEffect(
@@ -184,10 +203,11 @@ export const DesktopProfile = () => {
   return (
     <>
       <DesktopPageWrap
-        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px]"
+        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] no-scrollbar"
         ref={scrollContainerRef}
+        style={style}
       >
-        <div className="main-content is-open flex-1">
+        <div className="main-content flex-1 pb-[20px]">
           <div className="layout-container">
             <DesktopNav />
             <div
@@ -320,7 +340,18 @@ export const DesktopProfile = () => {
                       right: 'initial',
                     }}
                   >
-                    <ThemeIcon src={RcIconBackTop} />
+                    <div
+                      className={clsx(
+                        'flex items-center justify-center w-[32px] h-[32px] rounded-full',
+                        'bg-rb-neutral-bg-1 dark:bg-rb-neutral-bg-4',
+                        'text-rb-neutral-foot'
+                      )}
+                      style={{
+                        boxShadow: '0 2px 8px 0 rgba(0, 0, 0, 0.12)',
+                      }}
+                    >
+                      <RcIconBackTopCC />
+                    </div>
                   </BackTop>
                 </div>
               </main>
@@ -328,16 +359,20 @@ export const DesktopProfile = () => {
           </div>
         </div>
         <aside
-          className={clsx('min-w-[64px] flex-shrink-0 sticky z-20 top-0')}
+          className={clsx(
+            'flex-shrink-0 sticky z-20 top-0 h-full flex flex-col'
+          )}
           // style={{ top: DESKTOP_NAV_HEIGHT }}
         >
           <div
-            className="flex items-center justify-end"
+            className="flex items-center justify-end flex-shrink-0"
             style={{ height: `${DESKTOP_NAV_HEIGHT}px` }}
           >
             <SwitchThemeBtn />
           </div>
-          <DesktopSelectAccountList />
+          <div className="flex-1">
+            <DesktopSelectAccountList />
+          </div>
         </aside>
       </DesktopPageWrap>
       <SendTokenModal
@@ -398,13 +433,6 @@ export const DesktopProfile = () => {
       />
       <AddressBackupModal
         visible={action === 'address-backup'}
-        onCancel={() => {
-          history.replace(history.location.pathname);
-        }}
-        destroyOnClose
-      />
-      <AddAddressModal
-        visible={action === 'add-address'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}

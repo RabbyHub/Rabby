@@ -94,7 +94,13 @@ export interface PreferenceStore {
   locale: string;
   watchAddressPreference: Record<string, number>;
   isDefaultWallet: boolean;
-  lastTimeSendToken202510: Record<string, TokenItem>;
+  /**
+   * @deprecated
+   */
+  lastTimeSendToken: Record<string, TokenItem>;
+  lastTimeUsedToken: {
+    [P in 'send']?: TokenItem;
+  };
   highligtedAddresses: IHighlightedAddress[];
   walletSavedList: any[];
   alianNames?: Record<string, string>;
@@ -133,9 +139,19 @@ export interface PreferenceStore {
   reserveGasOnSendToken?: boolean;
   isHideEcologyNoticeDict?: Record<string | number, boolean>;
 
+  isEnabledPwdForNonWhitelistedTx?: boolean;
   isEnabledDappAccount?: boolean;
 
   rateGuideLastExposure?: RateGuideLastExposure;
+
+  desktopTabId?: number;
+
+  dashboardPanelOrder?: string[];
+
+  /** @deprecated */
+  desktopTokensAllMode?: boolean;
+
+  sceneAccountMap?: Record<string, Account | null>;
 }
 
 export interface AddressSortStore {
@@ -180,7 +196,8 @@ class PreferenceService {
         locale: defaultLang,
         watchAddressPreference: {},
         isDefaultWallet: false,
-        lastTimeSendToken202510: {},
+        lastTimeSendToken: {},
+        lastTimeUsedToken: {},
         highligtedAddresses: [],
         walletSavedList: [],
         alianNames: {},
@@ -208,9 +225,14 @@ class PreferenceService {
         reserveGasOnSendToken: true,
         isHideEcologyNoticeDict: {},
         safeSelfHostConfirm: {},
+        isEnabledPwdForNonWhitelistedTx: false,
         isEnabledDappAccount: false,
         ga4EventTime: 0,
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
+        desktopTabId: undefined,
+        desktopTokensAllMode: false,
+        dashboardPanelOrder: [],
+        sceneAccountMap: {},
       },
     });
 
@@ -227,8 +249,11 @@ class PreferenceService {
     ) {
       this.store.isDefaultWallet = false;
     }
-    if (!this.store.lastTimeSendToken202510) {
-      this.store.lastTimeSendToken202510 = {};
+    if (!this.store.lastTimeSendToken) {
+      this.store.lastTimeSendToken = {};
+    }
+    if (!this.store.lastTimeUsedToken) {
+      this.store.lastTimeUsedToken = {};
     }
     if (!this.store.initAlianNames) {
       this.store.initAlianNames = false;
@@ -236,7 +261,7 @@ class PreferenceService {
     if (!this.store.gasCache) {
       this.store.gasCache = {};
     }
-    if (!this.store.pinnedChain) {
+    if (!this.store.pinnedChain || !Array.isArray(this.store.pinnedChain)) {
       this.store.pinnedChain = [];
     }
     if (!this.store.addedToken) {
@@ -321,6 +346,9 @@ class PreferenceService {
     if (this.store.ga4EventTime) {
       this.store.ga4EventTime = 0;
     }
+    if (!this.store.sceneAccountMap) {
+      this.store.sceneAccountMap = {};
+    }
   };
 
   hasConfirmSafeSelfHost = (networkId: string) => {
@@ -391,23 +419,18 @@ class PreferenceService {
     };
   };
 
-  getLastTimeSendToken = (address: string) => {
-    const key = address.toLowerCase();
-    return this.store.lastTimeSendToken202510[key];
+  getLastTimeSendToken = () => {
+    // const key = address.toLowerCase();
+    return this.store.lastTimeUsedToken['send'];
   };
 
-  setLastTimeSendToken = (address: string, token: TokenItem) => {
-    const key = address.toLowerCase();
-    try {
-      if ('lastTimeSendToken' in this.store) {
-        delete (this.store as any).lastTimeSendToken;
-      }
-      console.debug('Migration lastTimeSendToken to lastTimeSendToken202510');
-    } catch (e) {}
-
-    this.store.lastTimeSendToken202510 = {
-      ...this.store.lastTimeSendToken202510,
-      [key]: token,
+  setLastTimeSendToken = (token: TokenItem) => {
+    if (Object.values(this.store.lastTimeSendToken).length) {
+      this.store.lastTimeSendToken = {};
+    }
+    this.store.lastTimeUsedToken = {
+      ...this.store.lastTimeUsedToken,
+      ['send']: token,
     };
   };
 
@@ -524,9 +547,13 @@ class PreferenceService {
     this.store.currentAccount = account;
     if (account) {
       if (!this.store.isEnabledDappAccount) {
-        sessionService.broadcastEvent('accountsChanged', [
-          account.address.toLowerCase(),
-        ]);
+        sessionService.broadcastEvent(
+          'accountsChanged',
+          [account.address.toLowerCase()],
+          undefined,
+          undefined,
+          false
+        );
       }
       syncStateToUI(BROADCAST_TO_UI_EVENTS.accountsChanged, account);
     }
@@ -745,7 +772,8 @@ class PreferenceService {
     this.store.addedToken[key] = tokenList;
   };
   getCustomizedToken = () => {
-    return this.store.customizedToken || [];
+    // return this.store.customizedToken || [];
+    return [] as Token[];
   };
   hasCustomizedToken = (token: Token) => {
     return !!this.store.customizedToken?.find(
@@ -770,7 +798,8 @@ class PreferenceService {
     );
   };
   getBlockedToken = () => {
-    return this.store.blockedToken || [];
+    // return this.store.blockedToken || [];
+    return [] as Token[];
   };
   addBlockedToken = (token: Token) => {
     if (
@@ -854,6 +883,9 @@ class PreferenceService {
   setIsShowTestnet = (value: boolean) => {
     this.store.isShowTestnet = value;
   };
+  setDesktopTokensAllMode = (value: boolean) => {
+    this.store.desktopTokensAllMode = value;
+  };
   saveCurrentCoboSafeAddress = async () => {
     this.currentCoboSafeAddress = await this.getCurrentAccount();
   };
@@ -923,6 +955,10 @@ class PreferenceService {
         ...exposure[LAST_EXPOSURE_VERSIONED_KEY],
       },
     };
+  };
+
+  updateDashboardPanelOrder = (order: string[]) => {
+    this.store.dashboardPanelOrder = order;
   };
 }
 

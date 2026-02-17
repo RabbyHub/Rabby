@@ -39,7 +39,12 @@ import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import { ReactComponent as RcIconServerCC } from 'ui/assets/server-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { Checkbox, Field, PageHeader, Popup } from 'ui/component';
-import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
+import {
+  detectClientOS,
+  openInTab,
+  openInternalPageInTab,
+  useWallet,
+} from 'ui/utils';
 import './style.less';
 
 import IconCheck from 'ui/assets/check-2.svg';
@@ -602,6 +607,9 @@ const SettingsInner = ({
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
+  const lockShortcutLabel = useMemo(() => {
+    return detectClientOS() === 'darwin' ? '⌘ + L' : 'Ctrl + L';
+  }, []);
 
   const autoLockTime = useRabbySelector(
     (state) => state.preference.autoLockTime || 0
@@ -757,6 +765,19 @@ const SettingsInner = ({
         {
           leftIcon: RcIconLockWallet,
           content: t('page.dashboard.settings.features.lockWallet'),
+          rightIcon: (
+            <div className="setting-shortcut">
+              {lockShortcutLabel.split(' + ').map((label) => (
+                <span key={label} className="setting-shortcut-key">
+                  {label}
+                </span>
+              ))}
+              <ThemeIcon
+                src={RcIconArrowRight}
+                className="icon icon-arrow-right"
+              />
+            </div>
+          ),
           onClick: () => {
             lockWallet();
             matomoRequestEvent({
@@ -1100,6 +1121,22 @@ const SettingsInner = ({
             <span>{t('page.dashboard.settings.testnetBackendServiceUrl')}</span>
           ),
           onClick: () => setShowTestnetOpenApiModal(true),
+          rightIcon: (
+            <ThemeIcon
+              src={RcIconArrowRight}
+              className="icon icon-arrow-right"
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconServerCC,
+          content: <span>Sync chain list</span>,
+          onClick: () => {
+            wallet.syncMainnetChainList({
+              force: true,
+            });
+            message.success('success');
+          },
           rightIcon: (
             <ThemeIcon
               src={RcIconArrowRight}

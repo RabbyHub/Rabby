@@ -31,6 +31,8 @@ import { DepositWithdrawModalType } from './index';
 import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { Account } from '@/background/service/preference';
+import { sortTokenList } from '../../utils';
+import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -79,7 +81,7 @@ export const useDepositWithdraw = (
   const abortControllerRef = useRef<AbortController | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const availableBalance = clearinghouseState?.withdrawable || '0';
+  const { availableBalance } = usePerpsAccount();
 
   // Fetch token info
   const { value: _tokenInfo } = useAsync(async () => {
@@ -98,32 +100,36 @@ export const useDepositWithdraw = (
     selectedToken?.id,
   ]);
 
+  const isMissingRole = false;
   // Check if user is missing role
-  const { value: isMissingRole } = useAsync(async () => {
-    if (Number(clearinghouseState?.marginSummary?.accountValue)) return false;
-    if (!currentPerpsAccount?.address || !visible) return false;
-    const sdk = getPerpsSDK();
-    const { role } = await sdk.info.getUserRole(currentPerpsAccount.address);
-    return role === 'missing';
-  }, [currentPerpsAccount?.address, visible]);
+  // const { value: isMissingRole } = useAsync(async () => {
+  //   if (Number(clearinghouseState?.marginSummary?.accountValue)) return false;
+  //   if (!currentPerpsAccount?.address || !visible) return false;
+  //   const sdk = getPerpsSDK();
+  //   const { role } = await sdk.info.getUserRole(currentPerpsAccount.address);
+  //   return role === 'missing';
+  // }, [currentPerpsAccount?.address, visible]);
 
   const tokenInfo = useMemo(() => {
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
   }, [_tokenInfo, selectedToken]);
 
+  const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
+
   // Fetch token list
   const fetchTokenList = useCallback(async () => {
     setTokenListLoading(true);
     if (!currentPerpsAccount?.address || !visible || type === 'withdraw')
-      return [];
+      return;
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
+    const sortedTokenList = sortTokenList(res, supportedChains);
     setTokenListLoading(false);
-    setTokenList(res);
-    const usdcToken = res.find(
-      (t) =>
-        t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
-    );
-    usdcToken && setSelectedToken(usdcToken);
+    setTokenList(sortedTokenList);
+    if (!sortedTokenList[0]?.amount && sortedTokenList.length > 1) {
+      setSelectedToken(sortedTokenList[1]);
+    } else {
+      setSelectedToken(sortedTokenList[0]);
+    }
 
     const tokenRes = await batchQueryTokens(
       currentPerpsAccount.address,
@@ -132,9 +138,14 @@ export const useDepositWithdraw = (
       false,
       false
     );
-    setTokenList(tokenRes);
-    return res;
-  }, [currentPerpsAccount?.address, visible, wallet, type]);
+    setTokenList(sortTokenList(tokenRes, supportedChains));
+    if (!sortedTokenList[0]?.amount && sortedTokenList.length > 1) {
+      setSelectedToken(sortedTokenList[1]);
+    } else {
+      setSelectedToken(sortedTokenList[0]);
+    }
+    return;
+  }, [currentPerpsAccount?.address, visible, wallet, type, supportedChains]);
 
   useEffect(() => {
     if (visible) {
@@ -487,7 +498,7 @@ export const useDepositWithdraw = (
       setIsPreparingSign(true);
       closeSign();
       try {
-        await dispatch.account.changeAccountAsync(currentPerpsAccount);
+        // await dispatch.account.changeAccountAsync(currentPerpsAccount);
 
         const hashes = await openDirect({
           txs: miniSignTx,
@@ -530,17 +541,22 @@ export const useDepositWithdraw = (
     try {
       const promise = Promise.all(
         miniSignTx.map((tx) => {
-          return wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [tx],
-            $ctx: {
-              ga: {
-                category: 'Perps',
-                source: 'Perps',
-                trigger: 'Perps',
+          return wallet.sendRequest(
+            {
+              method: 'eth_sendTransaction',
+              params: [tx],
+              $ctx: {
+                ga: {
+                  category: 'Perps',
+                  source: 'Perps',
+                  trigger: 'Perps',
+                },
               },
             },
-          });
+            {
+              account: currentPerpsAccount!,
+            }
+          );
         })
       );
 
@@ -560,7 +576,7 @@ export const useDepositWithdraw = (
         throw new Error('no signature, try later');
       }
       let result: string[] = [];
-      await dispatch.account.changeAccountAsync(account);
+      // await dispatch.account.changeAccountAsync(account);
       if (canUseDirectSubmitTx) {
         typedDataSignatureStore.close();
         result = await typedDataSignatureStore.start(
@@ -583,10 +599,15 @@ export const useDepositWithdraw = (
         typedDataSignatureStore.close();
       } else {
         for (const actionObj of actions) {
-          const signature = await wallet.sendRequest<string>({
-            method: 'eth_signTypedDataV4',
-            params: [account.address, JSON.stringify(actionObj)],
-          });
+          const signature = await wallet.sendRequest<string>(
+            {
+              method: 'eth_signTypedDataV4',
+              params: [account.address, JSON.stringify(actionObj)],
+            },
+            {
+              account,
+            }
+          );
           result.push(signature);
         }
       }

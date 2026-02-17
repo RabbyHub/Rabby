@@ -1,5 +1,5 @@
 import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { Button, Modal, Tooltip } from 'antd';
@@ -24,6 +24,8 @@ import {
 } from '../../Perps/utils';
 import { PositionSizeInputAndSlider } from '../components/TradingPanel/components/PositionSizeInputAndSlider';
 import { PositionSize } from '../types';
+import stats from '@/stats';
+import { getStatsReportSide } from '../utils';
 
 export interface Props {
   visible: boolean;
@@ -44,6 +46,9 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
 
+  const currentPerpsAccount = useRabbySelector(
+    (store) => store.perps.currentPerpsAccount
+  );
   const marketPrice = marketData.markPx;
   const szDecimals = marketData.szDecimals;
   const [positionSize, setPositionSize] = React.useState<PositionSize>({
@@ -137,18 +142,35 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   const { loading, runAsync: runSubmit } = useRequest(
     async () => {
       const isBuy = position.direction === 'Short';
+      const size = new BigNumber(positionSize.amount).toFixed(
+        marketData.szDecimals
+      );
       if (type === 'limit') {
+        const price = new BigNumber(limitPrice).toFixed(marketData.pxDecimals);
         await handleOpenLimitOrder({
           coin: position.coin,
           isBuy,
-          size: new BigNumber(positionSize.amount).toFixed(
-            marketData.szDecimals
-          ),
-          limitPx: new BigNumber(limitPrice).toFixed(marketData.pxDecimals),
+          size,
+          limitPx: price,
           reduceOnly: true,
         });
+        stats.report('perpsTradeHistory', {
+          created_at: new Date().getTime(),
+          user_addr: currentPerpsAccount?.address || '',
+          trade_type: 'close limit',
+          leverage: position.leverage.toString(),
+          trade_side: getStatsReportSide(isBuy, true),
+          margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
+          coin: position.coin,
+          size,
+          price,
+          trade_usd_value: new BigNumber(price).times(size).toFixed(2),
+          service_provider: 'hyperliquid',
+          app_version: process.env.release || '0',
+          address_type: currentPerpsAccount?.type || '',
+        });
       } else if (type === 'market') {
-        await handleCloseWithMarketOrder({
+        const res = await handleCloseWithMarketOrder({
           coin: position.coin,
           isBuy,
           size: new BigNumber(positionSize.amount).toFixed(
@@ -157,8 +179,26 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
           midPx: marketPrice,
           reduceOnly: true,
         });
+        if (res) {
+          const { totalSz, avgPx } = res;
+          stats.report('perpsTradeHistory', {
+            created_at: new Date().getTime(),
+            user_addr: currentPerpsAccount?.address || '',
+            trade_type: 'close market',
+            leverage: position.leverage.toString(),
+            trade_side: getStatsReportSide(isBuy, true),
+            margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
+            coin: position.coin,
+            size: totalSz,
+            price: avgPx,
+            trade_usd_value: new BigNumber(avgPx).times(totalSz).toFixed(2),
+            service_provider: 'hyperliquid',
+            app_version: process.env.release || '0',
+            address_type: currentPerpsAccount?.type || '',
+          });
+        }
       } else if (type === 'reverse') {
-        await handleCloseWithMarketOrder({
+        const res = await handleCloseWithMarketOrder({
           coin: position.coin,
           isBuy,
           size: new BigNumber(position.size || 0)
@@ -167,6 +207,24 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
           midPx: marketPrice,
           reduceOnly: false,
         });
+        if (res) {
+          const { totalSz, avgPx } = res;
+          stats.report('perpsTradeHistory', {
+            created_at: new Date().getTime(),
+            user_addr: currentPerpsAccount?.address || '',
+            trade_type: 'reverse market',
+            leverage: position.leverage.toString(),
+            trade_side: getStatsReportSide(isBuy, false),
+            margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
+            coin: position.coin,
+            size: totalSz,
+            price: avgPx,
+            trade_usd_value: new BigNumber(avgPx).times(totalSz).toFixed(2),
+            service_provider: 'hyperliquid',
+            app_version: process.env.release || '0',
+            address_type: currentPerpsAccount?.type || '',
+          });
+        }
       }
     },
     {
@@ -362,13 +420,17 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                   </div>
                   {validation.isValid ? (
                     <div
-                      className={clsx('font-medium text-[12px] leading-[14px]')}
+                      className={clsx(
+                        'font-medium text-r-neutral-title-1 text-[12px] leading-[14px]'
+                      )}
                     >
                       {formatUsdValue(receiveAmount.toNumber())}
                     </div>
                   ) : (
                     <div
-                      className={clsx('font-medium text-[12px] leading-[14px]')}
+                      className={clsx(
+                        'font-medium text-r-neutral-title-1  text-[12px] leading-[14px]'
+                      )}
                     >
                       -
                     </div>
@@ -393,7 +455,9 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                   </div>
                 ) : (
                   <div
-                    className={clsx('font-medium text-[12px] leading-[14px]')}
+                    className={clsx(
+                      'font-medium text-r-neutral-title-1 text-[12px] leading-[14px]'
+                    )}
                   >
                     -
                   </div>

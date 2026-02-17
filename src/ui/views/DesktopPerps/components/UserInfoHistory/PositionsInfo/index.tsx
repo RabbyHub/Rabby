@@ -4,7 +4,7 @@ import { formatUsdValue, sleep, splitNumberByStep } from '@/ui/utils';
 import { Button, Dropdown, Menu, message, Modal, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { CommonTable } from '../CommonTable';
 import BigNumber from 'bignumber.js';
@@ -37,7 +37,16 @@ import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
-import { isScreenSmall } from '../../../utils';
+import {
+  formatAllDexsClearinghouseState,
+  getStatsReportSide,
+  handleDisplayFundingPayments,
+  isScreenSmall,
+} from '../../../utils';
+import { formatPerpsCoin } from '../../../utils';
+import perpsToast from '../../PerpsToast';
+import { ga4 } from '@/utils/ga4';
+import stats from '@/stats';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -62,14 +71,12 @@ export interface PositionFormatData {
 
 export const PositionsInfo: React.FC = () => {
   const {
-    // pro no use this
-    positionAndOpenOrders,
-
     clearinghouseState,
     openOrders,
 
     marketDataMap,
     accountSummary,
+    currentPerpsAccount,
     wsActiveAssetCtx,
   } = useRabbySelector((store) => store.perps);
   const dispatch = useRabbyDispatch();
@@ -89,7 +96,7 @@ export const PositionsInfo: React.FC = () => {
 
     clearinghouseState?.assetPositions.forEach((item) => {
       const isLong = Number(item.position.szi || 0) > 0;
-      const marketData = marketDataMap[item.position.coin.toUpperCase()] || {};
+      const marketData = marketDataMap[item.position.coin] || {};
 
       const tpItem = openOrders.find(
         (order) =>
@@ -128,8 +135,8 @@ export const PositionsInfo: React.FC = () => {
         leverage: item.position.leverage.value,
         maxLeverage: marketData.maxLeverage || 25,
         positionValue: item.position.positionValue,
-        markPx: marketData.markPx || '0',
-        entryPx: item.position.entryPx || '0',
+        markPx: Number(marketData.markPx || 0).toFixed(pxDecimals),
+        entryPx: Number(item.position.entryPx || 0).toFixed(pxDecimals),
         liquidationPx:
           Number(item.position.liquidationPx || 0).toFixed(pxDecimals) || '0',
         marginUsed: item.position.marginUsed || '0',
@@ -145,6 +152,21 @@ export const PositionsInfo: React.FC = () => {
 
     return resArr;
   }, [clearinghouseState, openOrders, marketDataMap]);
+
+  const existPosition = useMemo(() => {
+    return (
+      clearinghouseState?.assetPositions?.length &&
+      clearinghouseState.assetPositions.length > 0
+    );
+  }, [clearinghouseState?.assetPositions?.length]);
+
+  useEffect(() => {
+    if (existPosition) {
+      ga4.fireEvent('Perps_ExistPosition_Web', {
+        event_category: 'Rabby Perps',
+      });
+    }
+  }, [existPosition]);
 
   const isSmallScreen = isScreenSmall();
 
@@ -169,9 +191,28 @@ export const PositionsInfo: React.FC = () => {
     }
 
     await handleCloseAllPositions(clearinghouseState);
-    setTimeout(() => {
-      dispatch.perps.fetchClearinghouseState();
-    }, 100);
+    clearinghouseState.assetPositions.forEach((item) => {
+      const isBuy = Number(item.position.szi || 0) > 0;
+      const price = new BigNumber(item.position.positionValue || 0).div(
+        new BigNumber(item.position.szi || 1).abs()
+      );
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type: 'close all market',
+        leverage: item.position.leverage.value.toString(),
+        trade_side: getStatsReportSide(isBuy, true),
+        margin_mode:
+          item.position.leverage.type === 'cross' ? 'cross' : 'isolated',
+        coin: item.position.coin,
+        size: Math.abs(Number(item.position.szi || 0)),
+        price: price.toFixed(2),
+        trade_usd_value: item.position.positionValue,
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
+      });
+    });
   });
 
   const handleClickLeverage = useMemoizedFn(
@@ -186,20 +227,20 @@ export const PositionsInfo: React.FC = () => {
       currentPosition?.type === 'cross'
         ? MarginMode.CROSS
         : MarginMode.ISOLATED;
-    await handleUpdateMarginModeLeverage(
+    const res = await handleUpdateMarginModeLeverage(
       selectedCoin,
       newLeverage,
       marginMode,
       'leverage'
     );
-    message.success({
-      // duration: 1.5,
-      content: 'Leverage changed to: ' + newLeverage,
-    });
+    res &&
+      perpsToast.success({
+        title: t('page.perps.toast.success'),
+        description: t('page.perps.toast.leverageChanged', {
+          leverage: newLeverage,
+        }),
+      });
     setShowLeverageModal(false);
-    setTimeout(() => {
-      dispatch.perps.fetchClearinghouseState();
-    }, 100);
   });
 
   const handleClickCloseAll = useMemoizedFn(async () => {
@@ -280,7 +321,7 @@ export const PositionsInfo: React.FC = () => {
                     dispatch.perps.setSelectedCoin(record.coin);
                   }}
                 >
-                  {record.coin}
+                  {formatPerpsCoin(record.coin)}
                 </div>
                 <div
                   className={clsx(
@@ -320,7 +361,7 @@ export const PositionsInfo: React.FC = () => {
                 {formatUsdValue(record.positionValue || 0)}
               </div>
               <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
-                {Number(record.size)} {record.coin}
+                {Number(record.size)} {formatPerpsCoin(record.coin)}
               </div>
             </div>
           );
@@ -448,7 +489,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: (
           <DashedUnderlineText
-            tooltipText={t('page.perpsPro.userInfo.tab.fundingTips')}
+            tooltipText={t('page.perpsPro.userInfo.tab.fundingTipsV2')}
           >
             {t('page.perpsPro.userInfo.tab.funding')}
           </DashedUnderlineText>
@@ -459,14 +500,15 @@ export const PositionsInfo: React.FC = () => {
         sorter: (a, b) =>
           Number(a.sinceOpenFunding) - Number(b.sinceOpenFunding),
         render: (_, record) => {
+          const isGain = Number(record.sinceOpenFunding) < 0;
           return (
-            <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
-              {Number(record.sinceOpenFunding || 0) === 0
-                ? ''
-                : Number(record.sinceOpenFunding || 0) < 0
-                ? ''
-                : '-'}
-              {formatUsdValue(Math.abs(Number(record.sinceOpenFunding || 0)))}
+            <div
+              className={clsx(
+                'text-[12px] leading-[14px]  text-rb-neutral-foot',
+                isGain ? 'text-rb-green-default' : 'text-rb-red-default'
+              )}
+            >
+              {handleDisplayFundingPayments(record.sinceOpenFunding)}
             </div>
           );
         },
@@ -589,6 +631,21 @@ export const PositionsInfo: React.FC = () => {
         dataIndex: 'oid',
         // width: 160,
         render: (_, record) => {
+          const CLOSE_POSITION_OPTIONS = [
+            {
+              label: t('page.perpsPro.userInfo.positionInfo.reverse'),
+              value: 'reverse',
+            },
+            {
+              label: t('page.perpsPro.userInfo.positionInfo.closeLimit'),
+              value: 'limit',
+            },
+            {
+              label: t('page.perpsPro.userInfo.positionInfo.closeMarket'),
+              value: 'market',
+            },
+          ];
+
           return (
             <div className="flex justify-center">
               <Dropdown
@@ -596,6 +653,7 @@ export const PositionsInfo: React.FC = () => {
                 forceRender={true}
                 overlay={
                   <Menu
+                    className="bg-r-neutral-bg1"
                     onClick={(info) => {
                       setSelectedCoin(record.coin);
                       setClosePositionType(
@@ -604,15 +662,14 @@ export const PositionsInfo: React.FC = () => {
                       setClosePositionVisible(true);
                     }}
                   >
-                    <Menu.Item key="reverse">
-                      {t('page.perpsPro.userInfo.positionInfo.reverse')}
-                    </Menu.Item>
-                    <Menu.Item key="limit">
-                      {t('page.perpsPro.userInfo.positionInfo.closeLimit')}
-                    </Menu.Item>
-                    <Menu.Item key="market">
-                      {t('page.perpsPro.userInfo.positionInfo.closeMarket')}
-                    </Menu.Item>
+                    {CLOSE_POSITION_OPTIONS.map((option) => (
+                      <Menu.Item
+                        className="text-r-neutral-title1 hover:bg-r-blue-light1"
+                        key={option.value}
+                      >
+                        {option.label}
+                      </Menu.Item>
+                    ))}
                   </Menu>
                 }
               >
@@ -656,9 +713,7 @@ export const PositionsInfo: React.FC = () => {
           <EditMarginModal
             visible={editMarginVisible}
             coin={currentPosition?.coin || ''}
-            currentAssetCtx={
-              marketDataMap[currentPosition.coin.toUpperCase()] || {}
-            }
+            currentAssetCtx={marketDataMap[currentPosition.coin] || {}}
             direction={currentPosition.direction}
             entryPrice={Number(currentPosition.entryPx || 0)}
             leverage={currentPosition.leverage}
@@ -675,7 +730,7 @@ export const PositionsInfo: React.FC = () => {
           />
           <EditTpSlModal
             position={currentPosition}
-            marketData={marketDataMap[currentPosition.coin.toUpperCase()] || {}}
+            marketData={marketDataMap[currentPosition.coin] || {}}
             visible={editTpSlVisible}
             onCancel={() => setEditTpSlVisible(false)}
             onConfirm={() => setEditTpSlVisible(false)}
@@ -683,7 +738,7 @@ export const PositionsInfo: React.FC = () => {
           <ClosePositionModal
             type={closePositionType}
             position={currentPosition}
-            marketData={marketDataMap[currentPosition.coin.toUpperCase()] || {}}
+            marketData={marketDataMap[currentPosition.coin] || {}}
             visible={closePositionVisible}
             onCancel={() => setClosePositionVisible(false)}
             onConfirm={() => {

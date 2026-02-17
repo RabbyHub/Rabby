@@ -487,5 +487,14 @@
       },
       "disallow": []
     }
+  },
+  "node_modules/bitbox-api/bitbox_api_bg.js": {
+    "global": {
+      "allow": {
+        "localStorage": "r",
+        "crypto": "r"
+      },
+      "disallow": []
+    }
   }
 }

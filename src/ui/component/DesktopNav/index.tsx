@@ -24,6 +24,8 @@ import { KEYRING_TYPE } from '@/constant';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 import { debounce } from 'lodash';
+import { useRabbySelector } from '@/ui/store';
+import { INNER_DAPP_LIST } from '@/constant/dappIframe';
 
 type DesktopNavAction = 'swap' | 'send' | 'bridge' | 'gnosis-queue';
 
@@ -47,13 +49,42 @@ export const DesktopNav: React.FC<{
   const { t } = useTranslation();
   const history = useHistory();
   const currentAccount = useCurrentAccount();
+  const activeProfileTab = useRabbySelector(
+    (state) => state.desktopProfile.activeTab || 'tokens'
+  );
 
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
 
   const currentPathname = history.location.pathname;
+  const lendingId = useRabbySelector((state) => state.innerDappFrame.lending);
+  const perpsId = useRabbySelector((state) => state.innerDappFrame.perps);
+  const predictionId = useRabbySelector(
+    (state) => state.innerDappFrame.prediction
+  );
 
-  const navs = useMemo(
-    () => [
+  const IconLending = useMemo(() => {
+    const dapp = INNER_DAPP_LIST.LENDING.find((item) => item.id === lendingId);
+    return dapp?.NavIcon || RcIconLeadingCC;
+  }, [lendingId]);
+  const IconPerps = useMemo(() => {
+    const dapp = INNER_DAPP_LIST.PERPS.find((item) => item.id === perpsId);
+    return dapp?.NavIcon || RcIconPerpsCC;
+  }, [perpsId]);
+  const IconPrediction = useMemo(() => {
+    const dapp = INNER_DAPP_LIST.PREDICTION.find(
+      (item) => item.id === predictionId
+    );
+    return dapp?.NavIcon || RcIconPredictionCC;
+  }, [predictionId]);
+
+  const navs: {
+    key: string;
+    icon: React.FC<React.SVGProps<SVGSVGElement>>;
+    title: string;
+    isSoon?: boolean;
+    eventKey?: string;
+  }[] = useMemo(() => {
+    return [
       {
         key: '/desktop/profile',
         icon: RcIconHomeCC,
@@ -62,26 +93,24 @@ export const DesktopNav: React.FC<{
       },
       {
         key: '/desktop/perps',
-        icon: RcIconPerpsCC,
+        icon: IconPerps,
         title: t('component.DesktopNav.perps'),
         eventKey: 'Perps',
       },
       {
-        key: '/desktop/dapp-iframe',
-        icon: RcIconPredictionCC,
+        key: '/desktop/prediction',
+        icon: IconPrediction,
         title: t('component.DesktopNav.prediction'),
         eventKey: 'Prediction',
       },
       {
         key: '/desktop/lending',
-        icon: RcIconLeadingCC,
+        icon: IconLending,
         title: t('component.DesktopNav.lending'),
-        isSoon: true,
         eventKey: 'Lending',
       },
-    ],
-    [t]
-  );
+    ];
+  }, [t, IconLending, IconPerps, IconPrediction]);
 
   const activeNav = useMemo(
     () => navs.find((item) => currentPathname.startsWith(item.key)),
@@ -134,7 +163,12 @@ export const DesktopNav: React.FC<{
   }, [activeNav?.eventKey]);
 
   return (
-    <div className="sticky top-0 z-10 pt-[20px] pb-[16px] bg-rb-neutral-bg-1">
+    <div
+      className="sticky top-0 z-10 pt-[20px] pb-[16px] bg-rb-neutral-bg-1"
+      style={{
+        minHeight: DESKTOP_NAV_HEIGHT,
+      }}
+    >
       <div className="flex items-center justify-between">
         <div className="flex">
           <div
@@ -176,7 +210,11 @@ export const DesktopNav: React.FC<{
                       if (item.isSoon) {
                         return;
                       }
-                      history.push(item.key);
+                      if (item.key === '/desktop/profile') {
+                        history.push(`/desktop/profile/${activeProfileTab}`);
+                      } else {
+                        history.push(item.key);
+                      }
                     }}
                   >
                     <Icon
@@ -211,7 +249,7 @@ export const DesktopNav: React.FC<{
               {title}
             </div>
           ))}
-          {isGnosis ? (
+          {isGnosis && showRightItems ? (
             <div
               className={clsx(
                 'min-w-[88px] p-[12px] rounded-[14px]',
