@@ -25,8 +25,17 @@ export const getChain = (chainId?: string) => {
 };
 
 export const getOriginFromUrl = (url: string) => {
-  const urlObj = new URL(url);
-  return urlObj.origin;
+  try {
+    const urlObj = new URL(url);
+    return urlObj.origin;
+  } catch (e) {
+    try {
+      const urlObj = new URL(`https://${url}`);
+      return urlObj.origin;
+    } catch (e) {
+      return '';
+    }
+  }
 };
 
 /**
