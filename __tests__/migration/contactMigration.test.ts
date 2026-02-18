@@ -11,7 +11,7 @@ const data: { preference: PreferenceStore; contactBook } = {
     externalLinkAck: true,
     hiddenAddresses: [],
     isDefaultWallet: true,
-    lastTimeSendToken: {
+    lastTimeSendToken202510: {
       '0x3c6923d09ec77648ca923ffb4e50251120756faa': {
         amount: 0.07683291,
         chain: 'eth',
@@ -82,7 +82,7 @@ test('should migrate data', () => {
       externalLinkAck: true,
       hiddenAddresses: [],
       isDefaultWallet: true,
-      lastTimeSendToken: {
+      lastTimeSendToken202510: {
         '0x3c6923d09ec77648ca923ffb4e50251120756faa': {
           amount: 0.07683291,
           chain: 'eth',
@@ -160,7 +160,7 @@ test('should migrate when no alians', () => {
       externalLinkAck: true,
       hiddenAddresses: [],
       isDefaultWallet: true,
-      lastTimeSendToken: {
+      lastTimeSendToken202510: {
         '0x3c6923d09ec77648ca923ffb4e50251120756faa': {
           amount: 0.07683291,
           chain: 'eth',
@@ -226,7 +226,7 @@ test('should migrate when no alians', () => {
       externalLinkAck: true,
       hiddenAddresses: [],
       isDefaultWallet: true,
-      lastTimeSendToken: {
+      lastTimeSendToken202510: {
         '0x3c6923d09ec77648ca923ffb4e50251120756faa': {
           amount: 0.07683291,
           chain: 'eth',
@@ -298,7 +298,7 @@ test('should migrate when no contacts', () => {
       externalLinkAck: true,
       hiddenAddresses: [],
       isDefaultWallet: true,
-      lastTimeSendToken: {
+      lastTimeSendToken202510: {
         '0x3c6923d09ec77648ca923ffb4e50251120756faa': {
           amount: 0.07683291,
           chain: 'eth',
@@ -358,7 +358,7 @@ test('should migrate when no contacts', () => {
       externalLinkAck: true,
       hiddenAddresses: [],
       isDefaultWallet: true,
-      lastTimeSendToken: {
+      lastTimeSendToken202510: {
         '0x3c6923d09ec77648ca923ffb4e50251120756faa': {
           amount: 0.07683291,
           chain: 'eth',

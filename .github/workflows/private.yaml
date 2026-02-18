@@ -43,10 +43,10 @@ jobs:
           repository: "DeBankDeFi/rabby-mainfest"
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          repository: "DeBankDeFi/rabby-mainfest"
-          token: ${{ steps.generate-token.outputs.token }}
-          fetch-depth: 0
+       with:
+          repository: DeBankDeFi/rabby-mainfest
+          github_api_url: https://api.github.com
+          app_id: ${{ secrets.APP_ID }} # or hardcoded/test value for development
           ref: main
       - name: Update Build Version
         run: |
