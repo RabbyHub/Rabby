@@ -454,6 +454,21 @@
   "node_modules/@metamask/post-message-stream/dist/window/WindowPostMessageStream.js": {
     "enable": false
   },
+  "node_modules/elliptic/lib/elliptic/curve/base.js": {
+    "enable": false
+  },
+  "node_modules/elliptic/lib/elliptic/curve/short.js": {
+    "enable": false
+  },
+  "node_modules/elliptic/lib/elliptic/ec/index.js": {
+    "enable": false
+  },
+  "node_modules/buffer/index.js": {
+    "enable": false
+  },
+  "node_modules/bn.js/lib/bn.js": {
+    "enable": false
+  },
   "node_modules/ahooks/es/useEventListener/index.js": {
     "global": {
       "allow": {
