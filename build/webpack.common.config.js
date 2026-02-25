@@ -53,6 +53,7 @@ const config = {
       asyncChunks: false,
     },
     'content-script': paths.rootResolve('src/content-script/index.ts'),
+    'sentinel-content-script': paths.rootResolve('src/sentinel/content-script/index.ts'),
     pageProvider: paths.rootResolve('src/content-script/page-provider.ts'),
     ui: paths.rootResolve('src/ui/index.tsx'),
     offscreen: paths.rootResolve('src/offscreen/scripts/offscreen.ts'),
@@ -360,7 +361,7 @@ const config = {
     splitChunks: {
       ...(IS_FIREFOX && {
         chunks: (chunk) =>
-          chunk.name !== 'content-script' && chunk.name !== 'pageProvider',
+          chunk.name !== 'content-script' && chunk.name !== 'pageProvider' && chunk.name !== 'sentinel-content-script',
         minSize: 10000,
         maxSize: 4000000,
         minChunks: 1,

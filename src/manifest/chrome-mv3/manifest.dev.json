@@ -44,6 +44,11 @@
         "https://connect.onekey.so/popup.html"
       ],
       "js": ["vendor/trezor/trezor-content-script.js"]
+    },
+    {
+      "matches": ["*://x.com/*", "*://twitter.com/*"],
+      "js": ["sentinel-content-script.js"],
+      "run_at": "document_idle"
     }
   ],
   "content_security_policy": {

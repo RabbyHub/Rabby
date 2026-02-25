@@ -64,6 +64,7 @@ import { metamaskModeService } from './service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
 import { ALARMS_SYNC_DEFAULT_RPC, ALARMS_USER_ENABLE } from './utils/alarms';
 import { subscribeTxCompleted } from './subscriptions/rateGuidance';
+import { initSentinelBackground } from '@/sentinel';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -134,6 +135,11 @@ async function restoreAppState() {
   await walletController.tryUnlock();
 
   rpcCache.start();
+
+  // Initialize the Sentinel Trust Layer for social media security on X/Twitter.
+  // This starts the background polling, message handling, and TrustService.
+  // Sentinel is fully self-contained in src/sentinel/ and does not modify core logic.
+  initSentinelBackground();
 
   appStoreLoaded = true;
 

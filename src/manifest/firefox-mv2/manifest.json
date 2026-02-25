@@ -53,6 +53,16 @@
       "js": [
         "vendor/trezor/trezor-content-script.js"
       ]
+    },
+    {
+      "matches": [
+        "*://x.com/*",
+        "*://twitter.com/*"
+      ],
+      "js": [
+        "sentinel-content-script.js"
+      ],
+      "run_at": "document_idle"
     }
   ],
   "content_security_policy": "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; object-src 'self'",
