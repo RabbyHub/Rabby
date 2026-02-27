@@ -22,8 +22,9 @@ export interface ContextModalOptions {
   /** The tweet URL being reported */
   tweetUrl: string;
 
-  /** Called when the user submits their report with context text */
-  onSubmit: (context: string) => void;
+  /** Called when the user submits their report with context text.
+   *  Returns a result object so the modal can show success/error feedback. */
+  onSubmit: (context: string) => Promise<{ success: boolean; error?: string }>;
 
   /** Called when the user cancels */
   onCancel: () => void;
@@ -74,6 +75,11 @@ export function showContextModal(options: ContextModalOptions): HTMLElement {
     : 'Why do you believe this is safe? (e.g., "Official link verified", "Known team account")';
   textarea.maxLength = 500;
 
+  // --- Feedback message area (hidden initially) ---
+  const feedback = document.createElement('div');
+  feedback.className = `${p}-modal__feedback`;
+  feedback.style.display = 'none';
+
   // --- Action buttons row ---
   const actions = document.createElement('div');
   actions.className = `${p}-modal__actions`;
@@ -88,6 +94,8 @@ export function showContextModal(options: ContextModalOptions): HTMLElement {
   }`;
   submitBtn.textContent = isScam ? 'Submit Report' : 'Confirm Safe';
 
+  const originalBtnText = submitBtn.textContent;
+
   actions.appendChild(cancelBtn);
   actions.appendChild(submitBtn);
 
@@ -95,13 +103,18 @@ export function showContextModal(options: ContextModalOptions): HTMLElement {
   modal.appendChild(title);
   modal.appendChild(subtitle);
   modal.appendChild(textarea);
+  modal.appendChild(feedback);
   modal.appendChild(actions);
   overlay.appendChild(modal);
+
+  // --- Track submission state to prevent double-submits ---
+  let isSubmitting = false;
 
   // --- Event handlers ---
 
   // Cancel: close modal
   const closeModal = () => {
+    if (isSubmitting) return; // Don't close while submitting
     overlay.remove();
     options.onCancel();
   };
@@ -114,9 +127,12 @@ export function showContextModal(options: ContextModalOptions): HTMLElement {
   // Clicking overlay background closes modal
   overlay.addEventListener('click', closeModal);
 
-  // Submit: validate context is not empty, then callback
-  submitBtn.addEventListener('click', (e) => {
+  // Submit: validate, show loading, await result, show feedback
+  submitBtn.addEventListener('click', async (e) => {
     e.stopPropagation();
+
+    if (isSubmitting) return; // Prevent double-click
+
     const context = textarea.value.trim();
     if (!context) {
       textarea.style.borderColor = '#E34935';
@@ -124,8 +140,52 @@ export function showContextModal(options: ContextModalOptions): HTMLElement {
       textarea.focus();
       return;
     }
-    overlay.remove();
-    options.onSubmit(context);
+
+    // --- Enter loading state ---
+    isSubmitting = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.style.opacity = '0.7';
+    submitBtn.style.cursor = 'not-allowed';
+    cancelBtn.disabled = true;
+    cancelBtn.style.opacity = '0.5';
+    textarea.readOnly = true;
+    textarea.style.opacity = '0.7';
+    feedback.style.display = 'none';
+
+    // --- Await the submission result ---
+    const result = await options.onSubmit(context);
+
+    if (result.success) {
+      // --- Success feedback ---
+      feedback.textContent = isScam
+        ? 'Report submitted successfully.'
+        : 'Confirmation submitted successfully.';
+      feedback.style.display = 'block';
+      feedback.style.color = '#2ABB7F';
+      submitBtn.textContent = 'Done';
+      submitBtn.style.opacity = '1';
+      cancelBtn.style.display = 'none';
+
+      // Auto-close after 1.5s
+      setTimeout(() => overlay.remove(), 1500);
+    } else {
+      // --- Error feedback ---
+      feedback.textContent = result.error || 'Something went wrong. Please try again.';
+      feedback.style.display = 'block';
+      feedback.style.color = '#E34935';
+
+      // Reset submit button so user can retry
+      isSubmitting = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+      submitBtn.style.opacity = '1';
+      submitBtn.style.cursor = 'pointer';
+      cancelBtn.disabled = false;
+      cancelBtn.style.opacity = '1';
+      textarea.readOnly = false;
+      textarea.style.opacity = '1';
+    }
   });
 
   // Escape key closes modal

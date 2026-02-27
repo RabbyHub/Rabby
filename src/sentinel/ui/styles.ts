@@ -314,6 +314,13 @@ export function getSentinelStyles(): string {
   }
 }
 
+.${p}-modal__feedback {
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
 .${p}-modal__actions {
   display: flex;
   justify-content: flex-end;

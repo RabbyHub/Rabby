@@ -407,8 +407,8 @@ function openContextModal(
   const overlay = showContextModal({
     claimType,
     tweetUrl,
-    onSubmit: (context: string) => {
-      submitReportToBackground(tweetUrl, authorHandle, claimType, context);
+    onSubmit: async (context: string) => {
+      return submitReportToBackground(tweetUrl, authorHandle, claimType, context);
     },
     onCancel: () => {
       // Modal self-removes on cancel
@@ -445,7 +445,7 @@ async function submitReportToBackground(
   authorHandle: string,
   claimType: 'negative' | 'positive',
   context: string
-): Promise<void> {
+): Promise<{ success: boolean; error?: string }> {
   try {
     const response = await browser.runtime.sendMessage({
       type: SENTINEL_MESSAGES.SUBMIT_REPORT,
@@ -457,11 +457,18 @@ async function submitReportToBackground(
       },
     });
 
+    if (response?.error) {
+      return { success: false, error: response.error };
+    }
+
     if (response?.trustData) {
       handleTrustDataUpdate(response.trustData);
     }
+
+    return { success: true };
   } catch (error) {
     console.warn('[Sentinel] Failed to send report to background:', error);
+    return { success: false, error: 'Failed to submit report. Please try again.' };
   }
 }
 
