@@ -240,15 +240,41 @@ async function handleGetEthosScore(
 }
 
 /**
- * Handle a TOGGLE_SENTINEL message — enable or disable Sentinel.
+ * Handle a TOGGLE_SENTINEL message — enable or disable Sentinel (TL Protection).
+ * Persists the preference and broadcasts to all x.com content scripts.
  */
 function handleToggle(payload: { enabled: boolean }): void {
   config.enabled = payload.enabled;
+
+  // Persist the TL Protection preference
+  browser.storage.local.set({ sentinel_tl_protection: payload.enabled }).catch(() => {});
 
   if (!config.enabled) {
     destroySentinelBackground();
   } else if (!trustService) {
     initSentinelBackground(config, connectedWallet ?? undefined);
+  }
+
+  // Broadcast toggle to all x.com tabs so content scripts activate/deactivate
+  broadcastToggle(payload.enabled);
+}
+
+/**
+ * Broadcast the TL Protection toggle state to all x.com content scripts.
+ */
+async function broadcastToggle(enabled: boolean): Promise<void> {
+  try {
+    const tabs = await browser.tabs.query({ url: ['*://x.com/*', '*://twitter.com/*'] });
+    for (const tab of tabs) {
+      if (tab.id) {
+        browser.tabs.sendMessage(tab.id, {
+          type: SENTINEL_MESSAGES.TOGGLE_SENTINEL,
+          payload: { enabled },
+        }).catch(() => {});
+      }
+    }
+  } catch {
+    // tabs.query may fail if extension context is invalidated
   }
 }
 

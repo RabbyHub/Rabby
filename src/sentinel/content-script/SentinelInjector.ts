@@ -60,6 +60,9 @@ let mutationDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 /** Set of tweet URLs currently visible (for background poller pruning) */
 const visibleTweetUrls = new Set<string>();
 
+/** Whether Sentinel TL Protection is enabled (user toggle) */
+let sentinelEnabled = false;
+
 // ---------------------------------------------------------------------------
 // Initialization
 // ---------------------------------------------------------------------------
@@ -79,6 +82,38 @@ export function initSentinelInjector(): void {
 
   console.info('[Sentinel] Initializing content script on', window.location.hostname);
 
+  // Check if TL Protection is enabled before injecting anything
+  checkTLProtectionEnabled().then((enabled) => {
+    sentinelEnabled = enabled;
+
+    if (!sentinelEnabled) {
+      console.info('[Sentinel] TL Protection is OFF — Sentinel inactive');
+      // Still listen for toggle messages so we can activate later
+      listenForBackgroundMessages();
+      return;
+    }
+
+    bootSentinel();
+  });
+}
+
+/**
+ * Check whether TL Protection is enabled in storage.
+ * Defaults to false (opt-in) so users aren't surprised by UI on every tweet.
+ */
+async function checkTLProtectionEnabled(): Promise<boolean> {
+  try {
+    const result = await browser.storage.local.get('sentinel_tl_protection');
+    return result.sentinel_tl_protection === true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Boot the Sentinel UI — called when TL Protection is confirmed enabled.
+ */
+function bootSentinel(): void {
   // Create the global Shadow DOM host for modals and sidebar
   createGlobalShadowHost();
 
@@ -232,15 +267,21 @@ function injectSentinelIntoTweet(tweetEl: Element): void {
   // Track this tweet as visible
   visibleTweetUrls.add(tweetUrl);
 
-  // --- Inject Action Buttons into the action bar ---
-  const actionBar = tweetEl.querySelector(SELECTOR_TWEET_ACTIONS);
-  if (actionBar) {
-    const buttons = createActionButtons({
-      onScamClick: () => openContextModal(tweetUrl, authorHandle, 'negative'),
-      onLegitClick: () => openContextModal(tweetUrl, authorHandle, 'positive'),
-    });
-    // Append to the end of the action bar
-    actionBar.appendChild(buttons);
+  // --- Inject Action Buttons only on tweets that contain external links ---
+  // Most scam tweets are phishing links — plain text tweets rarely need flagging.
+  // This reduces visual noise significantly.
+  const hasExternalLink = tweetContainsLink(tweetEl);
+
+  if (hasExternalLink) {
+    const actionBar = tweetEl.querySelector(SELECTOR_TWEET_ACTIONS);
+    if (actionBar) {
+      const buttons = createActionButtons({
+        onScamClick: () => openContextModal(tweetUrl, authorHandle, 'negative'),
+        onLegitClick: () => openContextModal(tweetUrl, authorHandle, 'positive'),
+      });
+      // Append to the end of the action bar
+      actionBar.appendChild(buttons);
+    }
   }
 
   // --- Inject Badge if trust data exists ---
@@ -315,6 +356,37 @@ function extractAuthorHandle(tweetEl: Element): string {
     }
   }
   return 'unknown';
+}
+
+// ---------------------------------------------------------------------------
+// Link Detection — only show action buttons on tweets with external links
+// ---------------------------------------------------------------------------
+
+/**
+ * Check whether a tweet contains an external link (t.co shortened URL).
+ *
+ * X wraps all external URLs in t.co redirects. We look for <a> tags pointing
+ * to t.co, which covers links, card previews, and embedded URLs. This excludes
+ * internal links like @mentions, hashtags, and the tweet permalink itself.
+ */
+function tweetContainsLink(tweetEl: Element): boolean {
+  const tweetTextEl = tweetEl.querySelector(SELECTOR_TWEET_TEXT);
+  if (!tweetTextEl) return false;
+
+  const links = tweetTextEl.querySelectorAll('a[href]');
+  for (const link of Array.from(links)) {
+    const href = link.getAttribute('href') || '';
+    // t.co links are external URLs; skip @mentions and hashtags
+    if (href.includes('t.co/') || href.startsWith('http')) {
+      return true;
+    }
+  }
+
+  // Also check for card links (embedded URL previews outside tweetText)
+  const cardLink = tweetEl.querySelector('[data-testid="card.wrapper"] a[href]');
+  if (cardLink) return true;
+
+  return false;
 }
 
 // ---------------------------------------------------------------------------
@@ -394,6 +466,31 @@ async function submitReportToBackground(
 }
 
 /**
+ * Remove all Sentinel-injected UI elements from the page.
+ * Called when the user toggles TL Protection off.
+ */
+function removeSentinelUI(): void {
+  // Remove the global shadow host (modals, sidebar)
+  if (globalShadowHost) {
+    globalShadowHost.remove();
+    globalShadowHost = null;
+    globalShadowRoot = null;
+  }
+
+  // Remove all injected action buttons and badges from tweets
+  const prefix = SENTINEL_CSS_PREFIX;
+  document.querySelectorAll(`.${prefix}-actions`).forEach((el) => el.remove());
+
+  // Clear active badges
+  for (const badge of activeBadges.values()) {
+    badge.remove();
+  }
+  activeBadges.clear();
+  trustDataCache.clear();
+  visibleTweetUrls.clear();
+}
+
+/**
  * Listen for trust data updates pushed from the background script.
  */
 function listenForBackgroundMessages(): void {
@@ -405,6 +502,22 @@ function listenForBackgroundMessages(): void {
           handleTrustDataUpdate(update);
         }
       }
+
+      // Handle TL Protection toggle — activate/deactivate Sentinel live
+      if (message.type === SENTINEL_MESSAGES.TOGGLE_SENTINEL) {
+        const nowEnabled = message.payload?.enabled === true;
+        if (nowEnabled && !sentinelEnabled) {
+          sentinelEnabled = true;
+          bootSentinel();
+          console.info('[Sentinel] TL Protection turned ON');
+        } else if (!nowEnabled && sentinelEnabled) {
+          sentinelEnabled = false;
+          // Remove all injected Sentinel UI from the page
+          removeSentinelUI();
+          console.info('[Sentinel] TL Protection turned OFF');
+        }
+      }
+
       return undefined;
     });
   } catch (error) {
@@ -475,3 +588,4 @@ function startViewportSync(): void {
     }
   }, 15_000); // Every 15 seconds — half the polling interval
 }
+
