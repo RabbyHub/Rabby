@@ -14,9 +14,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconActivities } from 'ui/assets/dashboard/activities.svg';
-import { ReactComponent as RcIconPoints } from 'ui/assets/dashboard/rabby-points.svg';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
-import { ReactComponent as RCIconRabbyMobile } from 'ui/assets/dashboard/rabby-mobile.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
 import { ReactComponent as RcIconCustomRPC } from 'ui/assets/dashboard/custom-rpc.svg';
@@ -29,6 +27,7 @@ import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/d
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
 import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
 import { ReactComponent as RcIconRabbyMobileCC } from 'ui/assets/settings/IconMobileSync-cc.svg';
+import { ReactComponent as RCIconBiometric } from 'ui/assets/dashboard/settings/biometric.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
@@ -76,6 +75,12 @@ import { useMemoizedFn } from 'ahooks';
 import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
+import {
+  createBiometricUnlockPayload,
+  isBiometricUserCanceledError,
+  isBiometricUnlockSupported,
+} from '@/ui/utils/biometric';
+import BiometricUnlockModal from './components/BiometricUnlockModal';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -607,6 +612,9 @@ const SettingsInner = ({
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
+  const [isShowBiometricModal, setIsShowBiometricModal] = useState(false);
+  const [biometricSupported, setBiometricSupported] = useState(false);
+  const [biometricBusy, setBiometricBusy] = useState(false);
   const lockShortcutLabel = useMemo(() => {
     return detectClientOS() === 'darwin' ? '⌘ + L' : 'Ctrl + L';
   }, []);
@@ -621,6 +629,9 @@ const SettingsInner = ({
 
   const isEnabledDappAccount = useRabbySelector(
     (state) => state.preference.isEnabledDappAccount
+  );
+  const biometricUnlockEnabled = useRabbySelector(
+    (state) => state.preference.biometricUnlockEnabled
   );
   const locale = useRabbySelector((state) => state.preference.locale);
 
@@ -684,6 +695,71 @@ const SettingsInner = ({
     } else {
       setIsShowDappAccountModal(true);
     }
+  });
+
+  const handleToggleBiometricUnlock = useMemoizedFn(
+    async (checked: boolean) => {
+      if (checked) {
+        if (!biometricSupported) {
+          message.error(
+            t('page.dashboard.settings.biometricUnlockUnsupported')
+          );
+          return;
+        }
+        setIsShowBiometricModal(true);
+        return;
+      }
+
+      setBiometricBusy(true);
+      try {
+        await dispatch.preference.setBiometricUnlock({ enabled: false });
+        message.success(t('page.dashboard.settings.biometricUnlockDisabled'));
+      } catch (error) {
+        message.error(
+          (error as Error)?.message ||
+            t('page.dashboard.settings.biometricUnlockDisableFailed')
+        );
+      } finally {
+        setBiometricBusy(false);
+      }
+    }
+  );
+
+  const handleConfirmEnableBiometric = useMemoizedFn(
+    async (password: string) => {
+      try {
+        setBiometricBusy(true);
+        await wallet.verifyPassword(password);
+        const payload = await createBiometricUnlockPayload(password);
+        await dispatch.preference.setBiometricUnlock({
+          enabled: true,
+          credentialId: payload.credentialId,
+          encryptedPassword: payload.encryptedPassword,
+          iv: payload.iv,
+          prfSalt: payload.prfSalt,
+        });
+        message.success(t('page.dashboard.settings.biometricUnlockEnabled'));
+        setIsShowBiometricModal(false);
+      } catch (error: any) {
+        const errorMessage =
+          error?.message ||
+          t('page.dashboard.settings.biometricUnlockEnableFailed');
+        setIsShowBiometricModal(false);
+
+        if (isBiometricUserCanceledError(error)) {
+          return;
+        }
+
+        message.error(errorMessage);
+      } finally {
+        setBiometricBusy(false);
+      }
+    }
+  );
+
+  const handleCancelBiometricModal = useMemoizedFn(() => {
+    if (biometricBusy) return;
+    setIsShowBiometricModal(false);
   });
 
   const handleClickClearWatchMode = () => {
@@ -753,6 +829,18 @@ const SettingsInner = ({
       });
     }
   };
+
+  useEffect(() => {
+    let mounted = true;
+    isBiometricUnlockSupported().then((supported) => {
+      if (mounted) {
+        setBiometricSupported(supported);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const {
     mockExposureRateGuide,
@@ -914,6 +1002,21 @@ const SettingsInner = ({
             <Switch
               checked={isEnabledDappAccount}
               onChange={handleEnableDappAccount}
+            />
+          ),
+        },
+        {
+          leftIcon: RCIconBiometric,
+          content: t('page.dashboard.settings.settings.biometricUnlock'),
+          rightIcon: (
+            <Switch
+              checked={!!biometricUnlockEnabled}
+              disabled={
+                biometricBusy ||
+                (!biometricSupported && !biometricUnlockEnabled)
+              }
+              loading={biometricBusy}
+              onChange={handleToggleBiometricUnlock}
             />
           ),
         },
@@ -1564,6 +1667,12 @@ const SettingsInner = ({
           setConnectedDappsVisible(false);
         }}
       />
+      <BiometricUnlockModal
+        visible={isShowBiometricModal}
+        loading={biometricBusy}
+        onCancel={handleCancelBiometricModal}
+        onConfirm={handleConfirmEnableBiometric}
+      />
       <FeedbackPopup
         visible={feedbackVisible}
         onClose={() => setFeedbackVisible(false)}
@@ -1586,6 +1695,7 @@ const Settings = (props: SettingsProps) => {
         visible={visible}
         onClose={onClose}
         height={488}
+        push={false}
         bodyStyle={{ height: '100%', padding: '20px 20px 0 20px' }}
         destroyOnClose
         className="settings-popup-wrapper"

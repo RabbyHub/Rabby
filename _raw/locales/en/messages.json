@@ -2479,7 +2479,10 @@
           "customTestnet": "Add Custom Network",
           "metamaskMode": "Connect Rabby by Disguising as MetaMask",
           "enableDappAccount": "Switch Dapp Address Independently",
-          "switchPasswordForNonWhitelistedTx": "Password for non-whitelisted transfers"
+          "switchPasswordForNonWhitelistedTx": "Password for non-whitelisted transfers",
+          "biometricUnlock": "Unlock with Biometrics",
+          "biometricUnlockHint": "Use biometrics to unlock on this device.",
+          "biometricUnlockUnsupported": "This device does not support biometric unlock."
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -2514,7 +2517,14 @@
           "descDisable": "Once disabled, password verification will no longer be required for non-whitelisted addresses.",
           "inputPlaceholder": "Enter the Password to Confirm",
           "wrongPassword": "Wrong password"
-        }
+        },
+        "biometricUnlockEnabled": "Biometric unlock enabled.",
+        "biometricUnlockEnableFailed": "Failed to enable biometric unlock",
+        "biometricUnlockDisabled": "Biometric unlock disabled",
+        "biometricUnlockDisableFailed": "Failed to disable biometric unlock",
+        "biometricUnlockUnsupported": "This device does not support biometric unlock",
+        "biometricUnlockSetupTitle": "Verify Password",
+        "biometricUnlockPasswordPlaceholder": "Enter the Password to Confirm"
       },
       "tokenDetail": {
         "noIssuer": "No issuer information available",
@@ -3063,7 +3073,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "Unlock"
+        "unlock": "Unlock",
+        "unlockWithPassword": "Unlock with password",
+        "biometric": "Unlock with biometrics"
       },
       "password": {
         "required": "Enter the Password to Unlock",
