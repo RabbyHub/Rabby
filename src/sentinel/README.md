@@ -140,6 +140,59 @@ setConnectedWallet(newWalletAddress);
 - **Triples**: `POST /triples` (create claim), `GET /triples?subject_value=...` (query)
 - **Optional API key** for write operations
 
+## Quick Start — Testing Locally
+
+### Prerequisites
+
+- **Node.js** >= 16
+- **Yarn** 1.x
+- **Chrome** or **Brave** (Chromium-based browser)
+
+### 1. Clone & Build
+
+```bash
+git clone https://github.com/ronniethedevv/Rabby.git
+cd Rabby
+git checkout feat/sentinel-trust-layer
+yarn install
+export NODE_OPTIONS="--max-old-space-size=8192"
+yarn build:dev
+```
+
+> The build may take 5–10 minutes depending on your machine.
+
+### 2. Load in Chrome
+
+1. Navigate to `chrome://extensions`
+2. Enable **Developer mode** (toggle in the top-right corner)
+3. Click **Load unpacked**
+4. Select the `dist/` folder inside the cloned repo
+
+### 3. Test on X (Twitter)
+
+1. Go to [https://x.com](https://x.com) and scroll through your timeline
+2. You should see:
+   - **Red / Green report buttons** in the action bar of each tweet (next to Like, Retweet, Share)
+   - **Conviction badges** above tweets that have existing reports:
+     - **Green (Safe)** — high Ethos score, positive attestations
+     - **Red (Verified Scam)** — low Ethos score, strong negative attestations
+     - **Orange (Likely Scam)** — moderate negative signal
+     - **Blue (Contested Content)** — significant reports on both sides
+     - **Gray outline (Unverified)** — insufficient data
+3. Click any badge to open the **Sentinel Sidebar** showing the Whistleblower and Council breakdown
+4. Click the Red or Green button to submit a report (connects to your wallet)
+
+### 4. Run the Tests
+
+```bash
+yarn test
+```
+
+- **29 unit tests** — conviction math, weight calculation, triple merging, aggregation
+- **9 API integration tests** — live calls to Ethos Network v2 and Intuition Systems GraphQL
+
+All 38 tests should pass.
+
 ## Design Principles
 
 1. **Modular** — All Sentinel logic lives in `src/sentinel/`. Zero changes to Rabby core.
