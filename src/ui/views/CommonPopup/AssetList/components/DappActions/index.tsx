@@ -220,6 +220,7 @@ const DappActions = ({
         stats.report('defiDirectTx', {
           ...base,
           tx_id: lastHash || '',
+          sign_method: 'full',
           tx_status: 'success',
           ...getSimulationFields(),
         });
@@ -260,6 +261,7 @@ const DappActions = ({
           stats.report('defiDirectTx', {
             ...base,
             tx_id: typeof hash === 'string' ? hash : '',
+            sign_method: 'simple',
             tx_status: 'success',
             ...getSimulationFields(),
           });

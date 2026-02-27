@@ -220,6 +220,7 @@ const DappActionsForPopup = ({
         }
         stats.report('defiDirectTx', {
           ...base,
+          sign_method: 'full',
           tx_id: lastHash || '',
           ...getSimulationFields(),
         });
@@ -259,6 +260,7 @@ const DappActionsForPopup = ({
           const hash = last(hashes);
           stats.report('defiDirectTx', {
             ...base,
+            sign_method: 'simple',
             tx_id: typeof hash === 'string' ? hash : '',
             ...getSimulationFields(),
           });

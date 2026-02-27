@@ -45,6 +45,7 @@ interface PreferenceState {
   biometricUnlockIv?: string;
   biometricUnlockPrfSalt?: string;
   rateGuideLastExposure?: RateGuideLastExposure;
+  dashboardPanelOrder?: string[];
 
   /** @deprecated */
   desktopTokensAllMode?: boolean;
@@ -83,6 +84,7 @@ export const preference = createModel<RootModel>()({
     biometricUnlockPrfSalt: '',
     rateGuideLastExposure: getDefaultRateGuideLastExposure(),
     desktopTokensAllMode: false,
+    dashboardPanelOrder: [],
   } as PreferenceState,
 
   reducers: {

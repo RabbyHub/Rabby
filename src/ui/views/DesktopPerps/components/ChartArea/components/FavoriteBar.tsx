@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { ReactComponent as RcIconStar } from '@/ui/assets/perps/icon-star-filled.svg';
 import { splitNumberByStep } from '@/ui/utils';
 import { HorizontalScrollContainer } from './HorizontalScrollContainer';
+import { formatPerpsCoin } from '../../../utils';
 interface FavoriteBarProps {
   onSelectCoin: (coin: string) => void;
 }
@@ -20,7 +21,7 @@ export const FavoriteBar: React.FC<FavoriteBarProps> = ({ onSelectCoin }) => {
     return displayCoins
       .filter((coin) => Boolean(marketDataMap[coin]))
       .sort((a, b) => {
-        return a.localeCompare(b);
+        return formatPerpsCoin(a).localeCompare(formatPerpsCoin(b));
       });
   }, [displayCoins, marketDataMap]);
 
@@ -47,7 +48,7 @@ export const FavoriteBar: React.FC<FavoriteBarProps> = ({ onSelectCoin }) => {
                 onClick={() => onSelectCoin(coin)}
               >
                 <span className="text-[12px] font-medium text-r-neutral-title-1 group-hover:text-rb-brand-default transition-colors">
-                  {coin}
+                  {formatPerpsCoin(coin)}
                 </span>
                 <span className="text-[12px] font-medium text-r-neutral-title-1 group-hover:text-rb-brand-default transition-colors">
                   ${splitNumberByStep(Number(marketData.markPx))}

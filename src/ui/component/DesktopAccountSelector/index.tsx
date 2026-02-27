@@ -2,27 +2,30 @@ import { Account } from '@/background/service/preference';
 import { KEYRING_TYPE } from '@/constant';
 import { ReactComponent as RcArrowDownSVG } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import { RcIconCopyCC } from '@/ui/assets/desktop/common';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { RcIconAddWalletCC } from '@/ui/assets/desktop/profile';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep, useAlias } from '@/ui/utils';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { isSameAccount } from '@/utils/account';
+import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { Popover } from 'antd';
 import clsx from 'clsx';
 import { flatten, sortBy } from 'lodash';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMount } from 'react-use';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
-import { createGlobalStyle } from 'styled-components';
 import { AddressViewer } from 'ui/component';
 import { CopyChecked } from '../CopyChecked';
-import { useMemoizedFn, useRequest } from 'ahooks';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
-import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import { useMount } from 'react-use';
 import './styles.less';
+import { getCustomClearinghouseState } from '@/ui/views/DesktopPerps/utils';
+import BigNumber from 'bignumber.js';
+import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
+import { EVENTS } from '@/constant';
 
 interface DesktopAccountSelectorProps {
   value?: Account | null;
@@ -53,17 +56,29 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
     });
   });
 
+  useEventBusListener(
+    EVENTS.DESKTOP.SWITCH_PERPS_ACCOUNT,
+    (account: Account) => {
+      if (value && !isSameAccount(value, account)) {
+        onChange?.(account);
+      }
+    }
+  );
+
   return (
     <>
       <Popover
         placement="bottomRight"
-        trigger={['click']}
+        trigger={['hover']}
         overlayClassName={'desktop-account-selector-popover'}
         content={
           <AccountList
             scene={scene}
             selectedAccount={value}
             onSelectAccount={handleChange}
+            onClose={() => {
+              setIsOpen(false);
+            }}
           />
         }
         visible={isOpen}
@@ -72,7 +87,7 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
       >
         <div
           className={clsx(
-            'py-[11px] pl-[15px] pr-[11px] rounded-[16px]',
+            'h-[40px] pl-[16px] px-[12px] rounded-[16px]',
             'flex items-center gap-[6px] cursor-pointer',
             'border border-rb-neutral-line',
             'hover:bg-rb-brand-light-1 hover:border-rb-brand-default'
@@ -81,8 +96,8 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
           {value ? (
             <CurrentAccount account={value} />
           ) : (
-            <div className="flex-1 text-[15px] leading-[18px] font-medium text-rb-neutral-title-1">
-              Select Address
+            <div className="flex-1 text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
+              {t('component.DesktopAccountSelector.selectAddress')}
             </div>
           )}
           <RcArrowDownSVG
@@ -107,8 +122,8 @@ const CurrentAccount = ({ account }: { account: Account }) => {
 
   return (
     <>
-      <img src={addressTypeIcon} className="w-[20px] h-[20px]" alt="" />
-      <div className="flex-1 text-[15px] leading-[18px] font-medium text-rb-neutral-title-1">
+      <img src={addressTypeIcon} className="w-[16px] h-[16px]" alt="" />
+      <div className="flex-1 text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
         {alias}
       </div>
     </>
@@ -164,7 +179,7 @@ const useAccountList = (options?: { scene?: Scene }) => {
         const newMap: Record<string, ClearinghouseState | null> = {};
         const promises = accountsToFetch.map(async (item) => {
           try {
-            const res = await sdk.info.getClearingHouseState(item.address);
+            const res = await getCustomClearinghouseState(item.address);
             newMap[item.address.toLowerCase()] = res;
           } catch (error) {
             console.error(
@@ -236,20 +251,24 @@ const AccountList: React.FC<{
   scene?: Scene;
   onSelectAccount?(account: Account): void;
   selectedAccount?: Account | null;
-}> = ({ onSelectAccount, selectedAccount, scene }) => {
+  onClose?(): void;
+}> = ({ onSelectAccount, selectedAccount, scene, onClose }) => {
   const { accounts, clearinghouseStateMap } = useAccountList({
     scene,
   });
 
   const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const { t } = useTranslation();
 
   const height = useMemo(() => {
-    return Math.min(accounts.length, 8) * 74 - 12;
+    return Math.min(accounts.length + 1, 8) * 74 - 12;
   }, [accounts.length]);
 
   const hasScrollbar = useMemo(() => {
-    return accounts.length > 8;
+    return accounts.length + 1 > 8;
   }, [accounts.length]);
+
+  const dispatch = useRabbyDispatch();
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -280,7 +299,6 @@ const AccountList: React.FC<{
         totalCount={accounts.length}
         defaultItemHeight={72 + 12}
         itemContent={(index, item) => {
-          const isLast = index + 1 === accounts?.length;
           const isSelected = selectedAccount
             ? isSameAccount(item, selectedAccount)
             : false;
@@ -296,7 +314,7 @@ const AccountList: React.FC<{
                 }}
                 isSelected={isSelected}
                 item={item}
-                isLast={isLast}
+                // isLast={isLast}
                 scene={scene}
                 clearinghouseState={
                   clearinghouseStateMap[item.address.toLowerCase()]
@@ -306,6 +324,32 @@ const AccountList: React.FC<{
               </AccountItem>
             </div>
           );
+        }}
+        components={{
+          Footer: () => (
+            <div
+              onClick={() => {
+                dispatch.desktopProfile.setField({
+                  addAddress: {
+                    visible: true,
+                    importType: '',
+                    state: {},
+                  },
+                });
+                onClose?.();
+              }}
+              className={clsx(
+                'cursor-pointer rounded-[12px] h-[62px] p-[16px] flex items-center gap-[8px] text-rb-neutral-body',
+                'desktop-account-item',
+                'bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-2'
+              )}
+            >
+              <RcIconAddWalletCC className="flex-shrink-0" />
+              <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
+                {t('component.DesktopSelectAccountList.addAddresses')}
+              </div>
+            </div>
+          ),
         }}
       />
     </div>
@@ -324,6 +368,10 @@ const AccountItem: React.FC<{
   const addressTypeIcon = useBrandIcon({
     ...item,
   });
+
+  const positionCount = useMemo(() => {
+    return clearinghouseState?.assetPositions?.length || 0;
+  }, [clearinghouseState]);
 
   return (
     <div className={clsx(!isLast ? 'pb-[12px]' : '', 'group min-h-[1px]')}>
@@ -357,7 +405,7 @@ const AccountItem: React.FC<{
             </div>
             {scene === 'perps' ? (
               <>
-                {clearinghouseState?.assetPositions?.length ||
+                {positionCount ||
                 Number(clearinghouseState?.withdrawable) > 0 ? (
                   <div
                     className={clsx(
@@ -368,7 +416,8 @@ const AccountItem: React.FC<{
                     )}
                   >
                     {formatUsdValue(
-                      Number(clearinghouseState?.withdrawable || 0)
+                      Number(clearinghouseState?.withdrawable || 0),
+                      BigNumber.ROUND_DOWN
                     )}
                   </div>
                 ) : null}
@@ -398,16 +447,18 @@ const AccountItem: React.FC<{
             />
             {scene === 'perps' ? (
               <>
-                {clearinghouseState?.assetPositions?.length ? (
+                {positionCount > 0 ? (
                   <div
                     className={clsx(
                       'ml-[10px] truncate flex-1 block text-right',
                       'text-[12px] leading-[14px] text-rb-neutral-foot'
                     )}
                   >
-                    {t('page.perpsPro.accountActions.positionCount', {
-                      count: Number(clearinghouseState?.assetPositions?.length),
-                    })}
+                    {positionCount === 1
+                      ? t('page.perpsPro.accountActions.onePosition')
+                      : t('page.perpsPro.accountActions.positionCount', {
+                          count: positionCount,
+                        })}
                   </div>
                 ) : null}
               </>

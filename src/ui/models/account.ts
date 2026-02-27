@@ -533,57 +533,21 @@ export const account = createModel<RootModel>()({
       testnetMatteredChainBalances: AccountState['testnetMatteredChainBalances'];
     }> {
       const wallet = store!.app.wallet;
-      const isShowTestnet = store.preference.isShowTestnet;
 
-      const { currentAccountAddress = '', leastLoadingTime } = options || {};
+      const { currentAccountAddress = '' } = options || {};
       const currentAccountAddr =
         currentAccountAddress || store.account.currentAccount?.address;
 
-      const pendingPromise = store.account[symLoaderMatteredBalance];
       let result: MatteredChainBalancesResult = {
         mainnet: null,
         testnet: null,
       };
       try {
-        const promise =
-          pendingPromise ||
-          Promise.all([
-            leastLoadingTime ? sleep(500) : null,
-            requestOpenApiMultipleNets<
-              TotalBalanceResponse | null,
-              MatteredChainBalancesResult
-            >(
-              (ctx) => {
-                if (ctx.isTestnetTask) {
-                  return null;
-                }
-
-                return wallet.getAddressCacheBalance(
-                  currentAccountAddr,
-                  ctx.isTestnetTask
-                );
-              },
-              {
-                wallet,
-                needTestnetResult: isShowTestnet,
-                processResults: ({ mainnet, testnet }) => {
-                  return {
-                    mainnet: mainnet,
-                    testnet: testnet,
-                  };
-                },
-                fallbackValues: {
-                  mainnet: null,
-                  testnet: null,
-                },
-              }
-            ),
-          ]).then(([_, r]) => r);
-
-        dispatch.account.setField({
-          [symLoaderMatteredBalance]: promise,
-        });
-        result = await promise;
+        const res = await wallet.getAddressCacheBalance(currentAccountAddr);
+        result = {
+          mainnet: res,
+          testnet: null,
+        };
       } catch (error) {
         console.error(error);
       } finally {

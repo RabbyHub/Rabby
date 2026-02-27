@@ -46,6 +46,7 @@ export interface PerpsServiceStore {
   marketSlippage: number; // 0-1, default 0.08 (8%)
   quoteUnit: 'base' | 'usd';
   firstOpenPerpsNeedDark: boolean;
+  selectedCoin: string;
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -78,6 +79,7 @@ class PerpsService {
         soundEnabled: true,
         quoteUnit: 'base',
         firstOpenPerpsNeedDark: true,
+        selectedCoin: 'BTC',
       },
     });
 
@@ -483,6 +485,20 @@ class PerpsService {
     }
   };
 
+  getSelectedCoin = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.selectedCoin ?? 'BTC';
+  };
+
+  setSelectedCoin = async (coin: string) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.selectedCoin = coin;
+  };
+
   // only test use
   resetStore = async () => {
     if (!this.store) {
@@ -500,6 +516,7 @@ class PerpsService {
       soundEnabled: true,
       quoteUnit: 'base',
       firstOpenPerpsNeedDark: true,
+      selectedCoin: 'BTC',
     };
     this.memoryState.agentWallets = {};
   };

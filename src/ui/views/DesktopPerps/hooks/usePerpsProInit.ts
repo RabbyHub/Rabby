@@ -28,6 +28,7 @@ export const usePerpsProInit = () => {
     dispatch.perps.initFavoritedCoins(undefined);
     dispatch.perps.initMarketSlippage(undefined);
     dispatch.perps.initSoundEnabled(undefined);
+    dispatch.perps.initSelectedCoin(undefined);
   }, []);
 
   const checkIsNeedSetDarkTheme = async () => {

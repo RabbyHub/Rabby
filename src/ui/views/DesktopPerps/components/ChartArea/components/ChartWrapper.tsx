@@ -249,7 +249,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     (state) => state.perps
   );
   const currentMarketData = useMemo(() => {
-    return marketDataMap[coin.toUpperCase()] || {};
+    return marketDataMap[coin] || {};
   }, [marketDataMap, coin]);
   const pxDecimals = useMemo(() => {
     return currentMarketData.pxDecimals || 2;

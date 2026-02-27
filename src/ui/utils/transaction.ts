@@ -76,10 +76,6 @@ export function getCustomTxParamsData(
 
     if (!signature || !tokenValue) {
       throw new Error('Invalid data');
-    } else if (tokenValue.length !== 64) {
-      throw new Error(
-        'Invalid token value; should be exactly 64 hex digits long (u256)'
-      );
     }
 
     let customPermissionValue = calcTokenValue(
@@ -91,10 +87,7 @@ export function getCustomTxParamsData(
       throw new Error('Custom value is larger than u256');
     }
 
-    customPermissionValue = customPermissionValue.padStart(
-      tokenValue.length,
-      '0'
-    );
+    customPermissionValue = customPermissionValue.padStart(64, '0');
     const customTxParamsData = `${signature}${spender}${customPermissionValue}`;
     return customTxParamsData;
   }

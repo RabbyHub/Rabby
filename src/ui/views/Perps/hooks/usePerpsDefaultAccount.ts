@@ -40,6 +40,7 @@ export const usePerpsDefaultAccount = ({
             sdk.initAccount(recentlyAccount.address);
             dispatch.perps.subscribeToUserData({
               address: recentlyAccount.address,
+              type: recentlyAccount.type,
               isPro,
             });
           }
@@ -92,6 +93,7 @@ export const usePerpsDefaultAccount = ({
                 sdk.initAccount(best.account.address);
                 dispatch.perps.subscribeToUserData({
                   address: best.account.address,
+                  type: best.account.type,
                   isPro,
                 });
               }
@@ -102,6 +104,7 @@ export const usePerpsDefaultAccount = ({
                 sdk.initAccount(fallbackAccount.address);
                 dispatch.perps.subscribeToUserData({
                   address: fallbackAccount.address,
+                  type: fallbackAccount.type,
                   isPro,
                 });
               }

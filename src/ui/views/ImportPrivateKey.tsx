@@ -15,6 +15,7 @@ import { useRepeatImportConfirm } from '../utils/useRepeatImportConfirm';
 import { safeJSONParse } from '@/utils';
 import { UI_TYPE } from '@/constant/ui';
 import qs from 'qs';
+import { useRabbyDispatch } from '../store';
 
 const TipTextList = styled.div`
   margin-top: 32px;
@@ -38,7 +39,11 @@ const TipTextList = styled.div`
   }
 `;
 
-const ImportPrivateKey: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
+const ImportPrivateKey: React.FC<{
+  isInModal?: boolean;
+  onBack?(): void;
+  onNavigate?(type: string, state?: Record<string, any>): void;
+}> = ({ isInModal, onBack, onNavigate }) => {
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm();
@@ -47,6 +52,7 @@ const ImportPrivateKey: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
     0
   );
   const isWide = useMedia('(min-width: 401px)');
+  const dispatch = useRabbyDispatch();
 
   const { show, contextHolder } = useRepeatImportConfirm();
   const [run, loading] = useWalletRequest(wallet.importPrivateKey, {
@@ -56,19 +62,12 @@ const ImportPrivateKey: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
       });
       clearClipboard();
       if (UI_TYPE.isDesktop) {
-        const searchParams = new URLSearchParams(history.location.search);
-        searchParams.set('action', 'add-address');
-        searchParams.set('import', 'success');
-        history.replace({
-          pathname: history.location.pathname,
-          search: searchParams.toString(),
-          state: {
-            accounts: successShowAccounts,
-            title: t('page.newAddress.importedSuccessfully'),
-            editing: true,
-            importedAccount: true,
-            importedLength: importedAccountsLength,
-          },
+        onNavigate?.('success', {
+          accounts: successShowAccounts,
+          title: t('page.newAddress.importedSuccessfully'),
+          editing: true,
+          importedAccount: true,
+          importedLength: importedAccountsLength,
         });
       } else {
         history.replace({
@@ -147,6 +146,10 @@ const ImportPrivateKey: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
           },
         }}
         onBackClick={() => {
+          if (onBack) {
+            onBack();
+            return;
+          }
           if (history.length > 1) {
             history.goBack();
           } else {
@@ -157,7 +160,11 @@ const ImportPrivateKey: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
       >
         <Navbar
           onBack={() => {
-            if (history.length > 1) {
+            if (isInModal) {
+              dispatch.desktopProfile.setField({
+                addAddress: { visible: false, importType: '' },
+              });
+            } else if (history.length > 1) {
               history.goBack();
             } else {
               history.replace('/');
@@ -232,12 +239,7 @@ const ImportPrivateKey: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
                       className="underline text-r-blue-default cursor-pointer"
                       onClick={() => {
                         if (UI_TYPE.isDesktop) {
-                          history.push(
-                            `${history.location.pathname}?${qs.stringify({
-                              action: 'add-address',
-                              import: 'json',
-                            })}`
-                          );
+                          onNavigate?.('json');
                         } else {
                           history.push('/import/json');
                         }

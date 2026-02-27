@@ -5,24 +5,23 @@ import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { DashedUnderlineText } from '../DashedUnderlineText';
-import { Tooltip } from 'antd';
-import { PopupType } from '../../index';
 import { isNaN } from 'lodash';
+import { UserAbstractionResp } from '@rabby-wallet/hyperliquid-sdk';
+import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 
-export const AccountInfo: React.FC<{
-  handleSetPopupType: (type: PopupType) => void;
-}> = ({ handleSetPopupType }) => {
+export const AccountInfo: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
+  const location = useLocation();
   const clearinghouseState = useRabbySelector(
     (store) => store.perps.clearinghouseState
   );
 
   const positionAllPnl = useMemo(() => {
     return (
-      clearinghouseState?.assetPositions.reduce((acc, asset) => {
+      clearinghouseState?.assetPositions?.reduce((acc, asset) => {
         return acc + Number(asset.position.unrealizedPnl || 0);
       }, 0) || 0
     );
@@ -36,18 +35,27 @@ export const AccountInfo: React.FC<{
   }, [clearinghouseState]);
 
   const handleDepositClick = () => {
-    handleSetPopupType('deposit');
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('action', 'deposit');
+    history.push({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    });
   };
   const handleWithdrawClick = () => {
-    handleSetPopupType('withdraw');
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('action', 'withdraw');
+    history.push({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    });
   };
 
+  const { accountValue } = usePerpsAccount();
+
   const customBalance = useMemo(() => {
-    return (
-      Number(clearinghouseState?.marginSummary?.accountValue || 0) -
-      Number(positionAllPnl || 0)
-    );
-  }, [clearinghouseState, positionAllPnl]);
+    return accountValue - Number(positionAllPnl || 0);
+  }, [accountValue, positionAllPnl]);
 
   const crossAccountLeverage = useMemo(() => {
     return (
@@ -91,10 +99,7 @@ export const AccountInfo: React.FC<{
               {t('page.perpsPro.accountInfo.accountEquity')}
             </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
-              {formatUsdValue(
-                Number(clearinghouseState?.marginSummary?.accountValue || 0),
-                BigNumber.ROUND_DOWN
-              )}
+              {formatUsdValue(Number(accountValue), BigNumber.ROUND_DOWN)}
             </div>
           </div>
           <div className="flex items-center justify-between">
@@ -106,7 +111,7 @@ export const AccountInfo: React.FC<{
               {t('page.perpsPro.accountInfo.balance')}
             </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
-              {formatUsdValue(customBalance)}
+              {formatUsdValue(customBalance, BigNumber.ROUND_DOWN)}
             </div>
           </div>
           <div className="flex items-center justify-between">
@@ -122,7 +127,7 @@ export const AccountInfo: React.FC<{
               )}
             >
               {positionAllPnl >= 0 ? '+' : '-'}
-              {formatUsdValue(Math.abs(positionAllPnl))}
+              {formatUsdValue(Math.abs(positionAllPnl), BigNumber.ROUND_DOWN)}
             </div>
           </div>
           <div className="flex items-center justify-between">
@@ -147,7 +152,8 @@ export const AccountInfo: React.FC<{
             </DashedUnderlineText>
             <div className="text-r-neutral-title-1 font-medium">
               {formatUsdValue(
-                Number(clearinghouseState?.crossMaintenanceMarginUsed || 0)
+                Number(clearinghouseState?.crossMaintenanceMarginUsed || 0),
+                BigNumber.ROUND_DOWN
               )}
             </div>
           </div>

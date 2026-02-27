@@ -28,9 +28,12 @@ import qs from 'qs';
 
 const WalletConnectName = WALLET_BRAND_CONTENT['WALLETCONNECT']?.name;
 
-const WalletConnectTemplate: React.FC<{ isInModal?: boolean }> = ({
-  isInModal,
-}) => {
+const WalletConnectTemplate: React.FC<{
+  isInModal?: boolean;
+  onBack?(): void;
+  onNavigate?(type: string, state?: Record<string, any>): void;
+  state?: Record<string, any>;
+}> = ({ isInModal, onBack, onNavigate, state }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation<{ brand: any }>();
@@ -39,7 +42,9 @@ const WalletConnectTemplate: React.FC<{ isInModal?: boolean }> = ({
   const [walletconnectUri, setWalletconnectUri] = useState('');
   const [showURL, setShowURL] = useState(false);
   const [bridgeURL, setBridgeURL] = useState('');
-  const [brand, setBrand] = useState(location.state?.brand || {});
+  const [brand, setBrand] = useState(
+    state?.brand || location.state?.brand || {}
+  );
   const [ready, setReady] = useState(false);
   const { status: sessionStatus, currAccount } = useSessionStatus();
   const [runParams, setRunParams] = useState<
@@ -60,20 +65,13 @@ const WalletConnectTemplate: React.FC<{ isInModal?: boolean }> = ({
   const [run, loading] = useWalletRequest(wallet.importWalletConnect, {
     onSuccess(accounts) {
       if (UI_TYPE.isDesktop) {
-        history.replace({
-          pathname: history.location.pathname,
-          search: `?${qs.stringify({
-            action: 'add-address',
-            import: 'success',
-          })}`,
-          state: {
-            accounts,
-            brand: brand.brand,
-            image: brand.image,
-            editing: true,
-            title: t('page.newAddress.walletConnect.connectedSuccessfully'),
-            importedAccount: true,
-          },
+        onNavigate?.('success', {
+          accounts,
+          brand: brand.brand,
+          image: brand.image,
+          editing: true,
+          title: t('page.newAddress.walletConnect.connectedSuccessfully'),
+          importedAccount: true,
         });
       } else {
         history.replace({
@@ -164,6 +162,10 @@ const WalletConnectTemplate: React.FC<{ isInModal?: boolean }> = ({
   }, [sessionStatus, runParams]);
 
   const handleClickBack = () => {
+    if (onBack) {
+      onBack();
+      return;
+    }
     if (history.length > 1) {
       history.goBack();
       sessionStorage.setItem(

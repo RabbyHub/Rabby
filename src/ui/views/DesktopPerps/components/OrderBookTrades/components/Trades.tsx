@@ -7,6 +7,7 @@ import { splitNumberByStep } from '@/ui/utils';
 import dayjs from 'dayjs';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { formatPerpsCoin } from '../../../utils';
 interface Trade {
   time: number;
   price: string;
@@ -36,7 +37,8 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
           {t('page.perpsPro.orderBook.price')} (USD)
         </span>
         <span className="min-w-[90px] text-right">
-          {t('page.perpsPro.orderBook.amount')} ({selectedCoin})
+          {t('page.perpsPro.orderBook.amount')} ({formatPerpsCoin(selectedCoin)}
+          )
         </span>
         <span className="min-w-[60px] text-right">
           {t('page.perpsPro.orderBook.time')}

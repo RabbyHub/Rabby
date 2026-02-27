@@ -5,11 +5,13 @@ import { ColumnType } from 'antd/lib/table';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { CommonTable } from '../CommonTable';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
+import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { DashedUnderlineText } from '../../DashedUnderlineText';
 
 export const FundingHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -21,6 +23,26 @@ export const FundingHistory: React.FC = () => {
   const list = useMemo(() => {
     return sortBy(userFunding, (item) => -item.time);
   }, [userFunding]);
+
+  const fetchFundingHistory = useCallback(() => {
+    const sdk = getPerpsSDK();
+    sdk.info.getUserFunding().then((res) => {
+      dispatch.perps.patchState({
+        userFunding: res.map((item) => ({
+          coin: item.delta.coin,
+          fundingRate: item.delta.fundingRate,
+          nSamples: (item.delta as any).nSamples,
+          szi: item.delta.szi,
+          time: item.time,
+          usdc: item.delta.usdc,
+        })),
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    fetchFundingHistory();
+  }, []);
 
   const columns = useMemo<ColumnType<WsUserFunding['fundings'][number]>[]>(
     () => [
@@ -48,9 +70,13 @@ export const FundingHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div
-              className="text-[12px] leading-[14px]  text-r-neutral-title-1 cursor-pointer hover:font-bold hover:text-rb-brand-default"
+              className={`text-[12px] leading-[14px]  text-r-neutral-title-1 ${
+                Number(record.szi) >= 0
+                  ? 'text-rb-green-default'
+                  : 'text-rb-red-default'
+              } cursor-pointer hover:font-bold hover:text-rb-brand-default`}
               onClick={() => {
-                dispatch.perps.setSelectedCoin(record.coin);
+                dispatch.perps.updateSelectedCoin(record.coin);
               }}
             >
               {formatPerpsCoin(record.coin)}
@@ -83,14 +109,26 @@ export const FundingHistory: React.FC = () => {
           (Number(a.szi) >= 0 ? 1 : -1) - (Number(b.szi) >= 0 ? 1 : -1),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div
+              className={`text-[12px] leading-[14px] ${
+                Number(record.szi) >= 0
+                  ? 'text-rb-green-default'
+                  : 'text-rb-red-default'
+              } `}
+            >
               {Number(record.szi) >= 0 ? 'Long' : 'Short'}
             </div>
           );
         },
       },
       {
-        title: t('page.perpsPro.userInfo.tab.payment'),
+        title: (
+          <DashedUnderlineText
+            tooltipText={t('page.perpsPro.userInfo.tab.fundingTipsV2')}
+          >
+            {t('page.perpsPro.userInfo.tab.funding')}
+          </DashedUnderlineText>
+        ),
         dataIndex: 'usdc',
         key: 'usdc',
         // width: 100,
@@ -105,7 +143,7 @@ export const FundingHistory: React.FC = () => {
                   : 'text-rb-red-default'
               )}
             >
-              {Number(record.usdc) >= 0 ? '' : '-'}$
+              {Number(record.usdc) >= 0 ? '+' : '-'}$
               {splitNumberByStep(new BigNumber(record.usdc).abs().toFixed(4))}
             </div>
           );

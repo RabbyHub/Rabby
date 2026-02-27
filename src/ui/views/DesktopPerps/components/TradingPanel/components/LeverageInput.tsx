@@ -108,14 +108,14 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
         min={min}
         max={max}
       />
-      {
+      {errorMessage && (
         <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px] mt-[14px]">
           <RcIconInfoCC className="text-r-orange-default" />
           <div className="text-center text-[12px] leading-[14px] text-r-orange-default">
-            {errorMessage || t('page.perpsPro.leverage.higherLeverageRisk')}
+            {errorMessage}
           </div>
         </div>
-      }
+      )}
     </div>
   );
 };

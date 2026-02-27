@@ -2,10 +2,10 @@ import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
 
-import { Modal } from 'ui/component';
+import { AuthenticationModal, Modal } from 'ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { useWallet } from 'ui/utils';
 import './style.less';
@@ -19,7 +19,8 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { GasPriceBar } from './components/GasPriceBar';
 import { CHAINS_ENUM } from '@/constant';
 import Settings from './components/Settings';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -77,6 +78,54 @@ const Dashboard = () => {
   const [settingVisible, setSettingVisible] = useState(false);
   const toggleShowMoreSettings = useMemoizedFn(() => {
     setSettingVisible(!settingVisible);
+  });
+
+  const location = useLocation();
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
+  useMount(() => {
+    const check = async () => {
+      const cache = await wallet.getPageStateCache();
+      if (
+        cache?.path === location.pathname &&
+        cache?.states?.action === 'address-backup'
+      ) {
+        wallet.clearPageStateCache();
+        const address = currentAccount?.address;
+        if (!address) {
+          return;
+        }
+        const hasBackup = await wallet.checkSeedPhraseBackup(address);
+        if (hasBackup) {
+          return;
+        }
+        let data = '';
+
+        await AuthenticationModal({
+          confirmText: t('global.confirm'),
+          cancelText: t('global.Cancel'),
+          title: t('page.addressDetail.backup-seed-phrase'),
+          validationHandler: async (password: string) => {
+            await invokeEnterPassphrase(address);
+
+            data = await wallet.getMnemonics(password, address);
+          },
+          onFinished() {
+            history.push({
+              pathname: '/settings/address-backup/mneonics',
+              state: {
+                data: data,
+                goBack: true,
+              },
+            });
+          },
+          onCancel() {
+            // do nothing
+          },
+          wallet,
+        });
+      }
+    };
+    check();
   });
 
   return (

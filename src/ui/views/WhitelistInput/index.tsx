@@ -107,7 +107,7 @@ const WhitelistInput = () => {
       history.goBack();
     } else {
       history.replace('/');
-      history.push('/send-poly');
+      history.push('/send-token');
     }
     wallet.clearPageStateCache();
   }, [history, wallet]);

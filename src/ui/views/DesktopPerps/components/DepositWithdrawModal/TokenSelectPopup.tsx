@@ -36,48 +36,15 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   tokenListLoading,
 }) => {
   const { t } = useTranslation();
-  const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
   const { getContainer } = usePopupContainer();
   const wallet = useWallet();
+  const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
   const [clickLoading, setClickLoading] = useState(false);
   const [loadingItem, setLoadingItem] = useState<string | null>(null);
 
   const sortedTokenList = useMemo(() => {
-    const items = [...(tokenList || [])];
-
-    // Sort by amount * price (descending)
-    items.sort((a, b) => {
-      const aValue = b.amount * b.price;
-      const bValue = a.amount * a.price;
-
-      // Check if tokens are in supported chains
-      const aChain = findChainByServerID(a.chain)?.enum || CHAINS_ENUM.ETH;
-      const bChain = findChainByServerID(b.chain)?.enum || CHAINS_ENUM.ETH;
-      const aIsSupported = supportedChains.includes(aChain);
-      const bIsSupported = supportedChains.includes(bChain);
-
-      // Supported chains first, then by value
-      if (aIsSupported && !bIsSupported) return -1;
-      if (!aIsSupported && bIsSupported) return 1;
-
-      // Both supported or both not supported, sort by value
-      return aValue - bValue;
-    });
-
-    // Move ARB USDC to the front if it exists
-    const idx = items.findIndex(
-      (token) =>
-        token.id === ARB_USDC_TOKEN_ID &&
-        token.chain === ARB_USDC_TOKEN_SERVER_CHAIN
-    );
-    if (idx > 0) {
-      const [hit] = items.splice(idx, 1);
-      items.unshift(hit);
-    } else if (idx === -1) {
-      items.unshift(ARB_USDC_TOKEN_ITEM);
-    }
-    return items;
-  }, [tokenList, supportedChains]);
+    return tokenList;
+  }, [tokenList]);
 
   const handleClickToken = useMemoizedFn(async (token: TokenItem) => {
     if (clickLoading) return;
@@ -169,7 +136,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
         </div>
       );
     },
-    [handleClickToken, clickLoading, t, loadingItem]
+    [handleClickToken, clickLoading, t, loadingItem, supportedChains]
   );
 
   return (

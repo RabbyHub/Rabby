@@ -11,6 +11,8 @@ import { createGlobalStyle } from 'styled-components';
 import { BalanceView } from './BalanceView';
 import { useWallet } from '@/ui/utils';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
+import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
+import clsx from 'clsx';
 
 const GlobalStyle = createGlobalStyle`
   .global-qr-code-popover {
@@ -96,6 +98,7 @@ export const ProfileHeader: React.FC<{
                 <RcIconQrCodeCC />
               </div>
             </Popover>
+            <SeedPhraseBackupAlert className={clsx('rounded-[8px]')} />
           </div>
         </div>
 

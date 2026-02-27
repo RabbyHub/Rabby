@@ -11,7 +11,7 @@ export const ChartArea: React.FC = () => {
   );
 
   const handleSelectCoin = (coin: string) => {
-    dispatch.perps.setSelectedCoin(coin);
+    dispatch.perps.updateSelectedCoin(coin);
   };
 
   return (

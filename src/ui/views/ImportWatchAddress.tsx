@@ -24,9 +24,11 @@ import { safeJSONParse } from '@/utils';
 import { UI_TYPE } from '@/constant/ui';
 import qs from 'qs';
 
-const ImportWatchAddress: React.FC<{ isInModal?: boolean }> = ({
-  isInModal,
-}) => {
+const ImportWatchAddress: React.FC<{
+  isInModal?: boolean;
+  onBack?(): void;
+  onNavigate?(type: string, state?: Record<string, any>): void;
+}> = ({ isInModal, onBack, onNavigate }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
@@ -54,19 +56,12 @@ const ImportWatchAddress: React.FC<{ isInModal?: boolean }> = ({
         return { ...item, index: index + 1 };
       });
       if (UI_TYPE.isDesktop) {
-        history.replace({
-          pathname: history.location.pathname,
-          search: `?${qs.stringify({
-            action: 'add-address',
-            import: 'success',
-          })}`,
-          state: {
-            accounts: successShowAccounts,
-            title: t('page.newAddress.importedSuccessfully'),
-            editing: true,
-            importedAccount: true,
-            importedLength: importedAccounts && importedAccounts?.length,
-          },
+        onNavigate?.('success', {
+          accounts: successShowAccounts,
+          title: t('page.newAddress.importedSuccessfully'),
+          editing: true,
+          importedAccount: true,
+          importedLength: importedAccounts && importedAccounts?.length,
         });
       } else {
         history.replace({
@@ -206,6 +201,10 @@ const ImportWatchAddress: React.FC<{ isInModal?: boolean }> = ({
     run(address);
   };
   const handleClickBack = () => {
+    if (onBack) {
+      onBack();
+      return;
+    }
     if (history.length > 1) {
       history.goBack();
     } else {

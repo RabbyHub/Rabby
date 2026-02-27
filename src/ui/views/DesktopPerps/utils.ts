@@ -2,12 +2,24 @@ import { AccountHistoryItem, PositionAndOpenOrder } from '@/ui/models/perps';
 import {
   UserHistoricalOrders,
   UserTwapSliceFill,
+  ClearinghouseState,
+  SpotClearinghouseState,
+  USDC_TOKEN_ID,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { perpsToast } from './components/PerpsToast';
 import i18n from '@/i18n';
 import { splitNumberByStep } from '@/ui/utils';
 import { playSound } from '@/ui/utils/sound';
 import BigNumber from 'bignumber.js';
+import { getPerpsSDK } from '../Perps/sdkManager';
+import { TokenItem } from '@/background/service/openapi';
+import { CHAINS_ENUM } from '@/types/chain';
+import { findChainByServerID } from '@/utils/chain';
+import {
+  ARB_USDC_TOKEN_ID,
+  ARB_USDC_TOKEN_ITEM,
+  ARB_USDC_TOKEN_SERVER_CHAIN,
+} from '../Perps/constants';
 
 export const getPositionDirection = (
   position: PositionAndOpenOrder['position']
@@ -174,7 +186,8 @@ export const handleDisplayFundingPayments = (fundingPayments: string) => {
   if (bn.isZero()) {
     return '$0.00';
   }
-  const sign = bn.isNegative() ? '-' : '';
+  // negative means funding payment, positive means funding gains
+  const sign = bn.isNegative() ? '+' : '-';
   if (bn.abs().lt(0.01)) {
     return sign + '$0.01';
   }
@@ -185,9 +198,9 @@ export const handleDisplayFundingPayments = (fundingPayments: string) => {
 export const formatPerpsCoin = (coin: string) => {
   if (coin.includes(':')) {
     // is hip-3 coin
-    return coin.split(':')[1].toUpperCase();
+    return coin.split(':')[1];
   } else {
-    return coin.toUpperCase();
+    return coin;
   }
 };
 
@@ -201,8 +214,9 @@ const STATUS_ENUM = {
   MIN_TRADE_NTL_REJECTED: 'minTradeNtlRejected',
   IOC_CANCEL_REJECTED: 'iocCancelRejected',
   BAD_ALO_PX_REJECTED: 'badAloPxRejected',
+  SIBLING_FILLED_CANCELED: 'siblingFilledCanceled',
 };
-
+// https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#request-body-6
 export const formatPerpsOrderStatus = (record: UserHistoricalOrders) => {
   const { status } = record;
   let statusStr = '';
@@ -233,6 +247,10 @@ export const formatPerpsOrderStatus = (record: UserHistoricalOrders) => {
       statusStr = i18n.t('page.perpsPro.userInfo.status.rejected');
       tipsStr = i18n.t('page.perpsPro.userInfo.status.perpMarginRejected');
       break;
+    case STATUS_ENUM.SIBLING_FILLED_CANCELED:
+      statusStr = i18n.t('page.perpsPro.userInfo.status.canceled');
+      tipsStr = i18n.t('page.perpsPro.userInfo.status.siblingFilledCanceled');
+      break;
     case STATUS_ENUM.REDUCE_ONLY_CANCELED:
       statusStr = i18n.t('page.perpsPro.userInfo.status.canceled');
       tipsStr = i18n.t('page.perpsPro.userInfo.status.reduceOnlyCanceled');
@@ -258,4 +276,145 @@ export const formatPerpsOrderStatus = (record: UserHistoricalOrders) => {
     statusStr,
     tipsStr,
   };
+};
+
+export const getCustomClearinghouseState = async (address: string) => {
+  const sdk = getPerpsSDK();
+  const getDefault = async () => {
+    const res = await sdk.info.getClearingHouseState(address);
+    return res;
+  };
+  const getXYX = async () => {
+    const res = await sdk.info.getClearingHouseState(address, 'xyz');
+    return res;
+  };
+  const [defaultRes, xyzRes] = await Promise.all([getDefault(), getXYX()]);
+
+  return {
+    assetPositions: [...defaultRes.assetPositions, ...xyzRes.assetPositions],
+    crossMaintenanceMarginUsed: new BigNumber(
+      defaultRes.crossMaintenanceMarginUsed
+    )
+      .plus(xyzRes.crossMaintenanceMarginUsed)
+      .toString(),
+    crossMarginSummary: defaultRes.crossMarginSummary,
+    marginSummary: {
+      accountValue: new BigNumber(defaultRes.marginSummary.accountValue)
+        .plus(xyzRes.marginSummary.accountValue)
+        .toString(),
+      totalMarginUsed: new BigNumber(defaultRes.marginSummary.totalMarginUsed)
+        .plus(xyzRes.marginSummary.totalMarginUsed)
+        .toString(),
+      totalNtlPos: new BigNumber(defaultRes.marginSummary.totalNtlPos)
+        .plus(xyzRes.marginSummary.totalNtlPos)
+        .toString(),
+      totalRawUsd: new BigNumber(defaultRes.marginSummary.totalRawUsd)
+        .plus(xyzRes.marginSummary.totalRawUsd)
+        .toString(),
+    },
+    time: defaultRes.time,
+    withdrawable: defaultRes.withdrawable,
+  } as ClearinghouseState;
+};
+
+export const sortTokenList = (
+  tokenList: TokenItem[],
+  supportedChains: CHAINS_ENUM[]
+) => {
+  const items = [...(tokenList || [])];
+
+  // Sort by amount * price (descending)
+  items.sort((a, b) => {
+    const aValue = b.amount * b.price;
+    const bValue = a.amount * a.price;
+
+    // Check if tokens are in supported chains
+    const aChain = findChainByServerID(a.chain)?.enum || CHAINS_ENUM.ETH;
+    const bChain = findChainByServerID(b.chain)?.enum || CHAINS_ENUM.ETH;
+    const aIsSupported = supportedChains.includes(aChain);
+    const bIsSupported = supportedChains.includes(bChain);
+
+    // Supported chains first, then by value
+    if (aIsSupported && !bIsSupported) return -1;
+    if (!aIsSupported && bIsSupported) return 1;
+
+    // Both supported or both not supported, sort by value
+    return aValue - bValue;
+  });
+
+  // Move ARB USDC to the front if it exists
+  const idx = items.findIndex(
+    (token) =>
+      token.id === ARB_USDC_TOKEN_ID &&
+      token.chain === ARB_USDC_TOKEN_SERVER_CHAIN
+  );
+  if (idx > 0) {
+    const [hit] = items.splice(idx, 1);
+    items.unshift(hit);
+  } else if (idx === -1) {
+    items.unshift(ARB_USDC_TOKEN_ITEM);
+  }
+  return items;
+};
+
+const calcAccountValueByAllDexs = (
+  allClearinghouseState: [string, ClearinghouseState][]
+) => {
+  return allClearinghouseState.reduce((acc, item) => {
+    return acc + Number(item[1]?.marginSummary?.accountValue || 0);
+  }, 0);
+};
+
+export const formatAllDexsClearinghouseState = (
+  allClearinghouseState: [string, ClearinghouseState][]
+): ClearinghouseState | null => {
+  if (!allClearinghouseState || !allClearinghouseState[0]) {
+    return null;
+  }
+  const hyperDexState = allClearinghouseState[0][1];
+
+  const assetPositions = allClearinghouseState
+    .map((item) => item[1]?.assetPositions || [])
+    .flat();
+
+  const withdrawable = allClearinghouseState.reduce((acc, item) => {
+    return acc + Number(item[1]?.withdrawable || 0);
+  }, 0);
+
+  return {
+    assetPositions: assetPositions,
+    crossMaintenanceMarginUsed:
+      hyperDexState?.crossMaintenanceMarginUsed || '0',
+    crossMarginSummary: hyperDexState?.crossMarginSummary || {},
+    marginSummary: {
+      ...hyperDexState.marginSummary,
+      accountValue: calcAccountValueByAllDexs(allClearinghouseState).toString(),
+    },
+    time: hyperDexState?.time || 0,
+    withdrawable: withdrawable.toString(),
+  };
+};
+
+export const formatSpotState = (spotState: SpotClearinghouseState) => {
+  return {
+    accountValue: spotState.balances?.[0]?.total || '0',
+    availableToTrade:
+      spotState.tokenToAvailableAfterMaintenance?.[0]?.[1] || '0',
+  };
+  // const token = spotState.balances.find((i) => i.token === USDC_TOKEN_ID);
+  // const availableToTrade = spotState.tokenToAvailableAfterMaintenance?.find(
+  //   (i) => i?.[0] === USDC_TOKEN_ID
+  // );
+
+  // return {
+  //   accountValue: token?.total || '0',
+  //   availableToTrade: availableToTrade?.[1] || '0',
+  // };
+};
+
+export const getStatsReportSide = (isBuy: boolean, isReduceOnly: boolean) => {
+  if (isReduceOnly) {
+    return isBuy ? 'close short' : 'close long';
+  }
+  return isBuy ? 'open long' : 'open short';
 };

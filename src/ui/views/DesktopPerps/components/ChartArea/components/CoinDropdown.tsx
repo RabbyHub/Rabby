@@ -23,6 +23,7 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FixedSizeList } from 'react-window';
+import { formatPerpsCoin } from '../../../utils';
 
 const SearchInput = styled(Input)`
   background-color: var(--r-neutral-card1, #fff) !important;
@@ -142,7 +143,7 @@ const MarketRowComponent = memo(
             />
             <div>
               <span className="text-[13px] font-medium text-r-neutral-title-1">
-                {marketItem.name}
+                {formatPerpsCoin(marketItem.name)}
               </span>
               <span className="text-[13px] text-r-neutral-foot ml-4">
                 {marketItem.maxLeverage}x
@@ -240,7 +241,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
     (state) => state.perps
   );
 
-  const marketItem = marketDataMap[coin.toUpperCase()];
+  const marketItem = marketDataMap[coin];
 
   // Reset scroll position and search text when dropdown opens
   useEffect(() => {
@@ -495,7 +496,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
           size={24}
         />
         <div className="text-[20px] leading-[24px] font-bold text-r-neutral-title-1">
-          {coin}
+          {formatPerpsCoin(coin)}
         </div>
         <RcIconArrowDown className="text-r-neutral-secondary" />
       </div>

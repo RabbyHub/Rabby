@@ -29,12 +29,15 @@ import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInput } from '../../DesktopPerpsInput';
 import { TradingButton } from '../components/TradingButton';
 import { BigNumber } from 'bignumber.js';
+import stats from '@/stats';
+import { getStatsReportSide } from '../../../utils';
 
 export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
 
   // Get data from perpsState
   const {
+    currentPerpsAccount,
     leverageType,
     crossMargin,
     maxLeverage,
@@ -125,10 +128,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   );
 
   const { currentBestAskPrice, currentBestBidPrice } = React.useMemo(() => {
-    if (
-      wsActiveAssetCtx &&
-      wsActiveAssetCtx.coin.toUpperCase() === selectedCoin.toUpperCase()
-    ) {
+    if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
       const impactPxs = wsActiveAssetCtx?.ctx.impactPxs;
       return {
         currentBestAskPrice: Number(impactPxs[1] || 0),
@@ -230,9 +230,10 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     loading: handleOpenOrderLoading,
   } = useRequest(
     async () => {
+      const isBuy = orderSide === OrderSide.BUY;
       await handleOpenLimitOrder({
         coin: selectedCoin,
-        isBuy: orderSide === OrderSide.BUY,
+        isBuy,
         size: tradeSize,
         limitPx: limitPrice,
         tpTriggerPx: tpslConfig.enabled
@@ -242,6 +243,59 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         reduceOnly,
         orderType: limitOrderType,
       });
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type: 'limit',
+        leverage: leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, reduceOnly),
+        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+        coin: selectedCoin,
+        size: tradeSize,
+        price: limitPrice,
+        trade_usd_value: new BigNumber(limitPrice).times(tradeSize).toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
+      });
+      if (tpslConfig.enabled) {
+        tpslConfig.takeProfit.price &&
+          stats.report('perpsTradeHistory', {
+            created_at: new Date().getTime(),
+            user_addr: currentPerpsAccount?.address || '',
+            trade_type: 'take profit in limit',
+            leverage: leverage.toString(),
+            trade_side: getStatsReportSide(!isBuy, reduceOnly),
+            margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+            coin: selectedCoin,
+            size: tradeSize,
+            price: tpslConfig.takeProfit.price,
+            trade_usd_value: new BigNumber(tpslConfig.takeProfit.price)
+              .times(tradeSize)
+              .toFixed(2),
+            service_provider: 'hyperliquid',
+            app_version: process.env.release || '0',
+            address_type: currentPerpsAccount?.type || '',
+          });
+        tpslConfig.stopLoss.price &&
+          stats.report('perpsTradeHistory', {
+            created_at: new Date().getTime(),
+            user_addr: currentPerpsAccount?.address || '',
+            trade_type: 'stop market in limit',
+            leverage: leverage.toString(),
+            trade_side: getStatsReportSide(!isBuy, reduceOnly),
+            margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+            coin: selectedCoin,
+            size: tradeSize,
+            price: tpslConfig.stopLoss.price,
+            trade_usd_value: new BigNumber(tpslConfig.stopLoss.price)
+              .times(tradeSize)
+              .toFixed(2),
+            service_provider: 'hyperliquid',
+            app_version: process.env.release || '0',
+            address_type: currentPerpsAccount?.type || '',
+          });
+      }
     },
     {
       manual: true,
@@ -467,16 +521,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       )}
 
       {/* Place Order Button */}
-      {needEnableTrading ? (
-        <Button
-          onClick={handleActionApproveStatus}
-          className={
-            'w-full h-[40px] rounded-[8px] font-medium text-[13px] mt-20 border-transparent bg-rb-green-default text-rb-neutral-InvertHighlight'
-          }
-        >
-          {t('page.perpsPro.tradingPanel.enableTrading')}
-        </Button>
-      ) : (
+      {
         <TradingButton
           loading={handleOpenOrderLoading}
           onClick={handleOpenOrderRequest}
@@ -486,7 +531,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
           orderSide={orderSide}
           titleText={t('page.perpsPro.tradingPanel.placeOrder')}
         />
-      )}
+      }
       {/* Order Summary */}
       <OrderSummary
         data={orderSummary}

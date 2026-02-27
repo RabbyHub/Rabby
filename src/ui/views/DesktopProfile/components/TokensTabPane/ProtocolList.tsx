@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -11,12 +11,14 @@ import { openInTab, useWallet } from '@/ui/utils';
 import { ReactComponent as RcOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
+import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown-cc.svg';
 import * as PortfolioTemplate from './Protocols/template';
 import { RcIconExternal1CC } from '@/ui/assets/desktop/common';
 import { PERPS_INVITE_URL } from '@/ui/views/Perps/constants';
 import { useRequest } from 'ahooks';
 import { checkPerpsReference } from '@/ui/views/Perps/utils';
+import { useSticky } from '@/ui/hooks/useSticky';
+import { useLocation } from 'react-router-dom';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -109,6 +111,7 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
             data={v.map((i) => i._originPortfolio).filter(Boolean)}
             siteUrl={data.site_url}
             protocolName={data.name}
+            protocolId={data.id}
             name={tag}
           />
         );
@@ -285,6 +288,21 @@ const ProjectOverview = ({
   hasExpandSwitch,
 }: Props) => {
   const { t } = useTranslation();
+
+  const { stickyRef, isSticky, observe } = useSticky<HTMLDivElement>(
+    document.querySelector<HTMLDivElement>('.js-scroll-element')
+  );
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (isExpanded && location.pathname.includes('desktop/profile/difi')) {
+      requestAnimationFrame(() => {
+        observe();
+      });
+    }
+  }, [location.pathname, list, isExpanded, observe]);
+
   if (!list) return null;
 
   return (
@@ -299,30 +317,77 @@ const ProjectOverview = ({
       ))}
       {hasExpandSwitch && (
         <div
-          onClick={toggleExpand}
-          className="flex items-center justify-center gap-4 py-[16px]"
+          className="mb-[20px]"
+          ref={stickyRef}
+          style={{
+            position: isExpanded ? 'sticky' : 'static',
+            bottom: 32,
+          }}
         >
-          <div className="text-r-neutral-foot text-13 cursor-pointer">
-            {isExpanded
-              ? t(
-                  'page.desktopProfile.portfolio.hidden.hideDefiWithSmallDeposits'
-                )
-              : t(
-                  'page.desktopProfile.portfolio.hidden.hideDefiWithSmallDepositsDesc'
+          {isExpanded && isSticky ? (
+            <div className="h-[40px] flex items-center justify-center pointer-events-none">
+              <div
+                className={clsx(
+                  'flex items-center gap-[4px] rounded-full pointer-events-auto',
+                  'bg-rb-neutral-bg-1 dark:bg-rb-neutral-bg-4',
+                  'px-[16px] py-[8px] cursor-pointer'
                 )}
-          </div>
-          <div className="flex items-center justify-center gap-[2px] cursor-pointer">
-            {isExpanded ? null : (
-              <div className="text-r-neutral-foot text-13 underline">
-                {t('page.desktopProfile.portfolio.hidden.showAll')}
+                style={{
+                  boxShadow: '0 2px 8px 0 rgba(0, 0, 0, 0.12)',
+                }}
+                onClick={() => {
+                  toggleExpand?.();
+                  requestAnimationFrame(() => {
+                    observe();
+                  });
+                }}
+              >
+                <div className="text-rb-neutral-foot text-[13px] leading-[16px]">
+                  {t(
+                    'page.desktopProfile.portfolio.hidden.hideDeFiWithSmallDeposits'
+                  )}
+                </div>
+                <RcIconDropdown
+                  className={clsx(
+                    'ml-0 text-rb-neutral-foot mb-[-2px]',
+                    'transform rotate-180'
+                  )}
+                />
               </div>
-            )}
-            <RcIconDropdown
-              className={clsx('ml-0', {
-                'transform rotate-180': isExpanded,
-              })}
-            />
-          </div>
+            </div>
+          ) : (
+            <div
+              className="flex items-center justify-center gap-4 py-[12px]"
+              onClick={() => {
+                toggleExpand?.();
+                requestAnimationFrame(() => {
+                  observe();
+                });
+              }}
+            >
+              <div className="text-rb-neutral-secondary text-[13px] leading-[16px] cursor-pointer">
+                {isExpanded
+                  ? t(
+                      'page.desktopProfile.portfolio.hidden.hideDeFiWithSmallDeposits'
+                    )
+                  : t(
+                      'page.desktopProfile.portfolio.hidden.hideDeFiWithSmallDepositsDesc'
+                    )}
+              </div>
+              <div className="flex items-center justify-center gap-[2px] cursor-pointer">
+                {isExpanded ? null : (
+                  <div className="text-rb-neutral-secondary text-[13px] leading-[16px] underline">
+                    {t('page.desktopProfile.portfolio.hidden.showAll')}
+                  </div>
+                )}
+                <RcIconDropdown
+                  className={clsx('ml-0 text-rb-neutral-secondary ', {
+                    'transform rotate-180': isExpanded,
+                  })}
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </ProtocolListWrapper>

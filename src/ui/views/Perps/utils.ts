@@ -8,9 +8,17 @@ import { KEYRING_CLASS } from '@/constant';
 import { getPerpsSDK } from './sdkManager';
 import { maxBy } from 'lodash';
 
+const getPxDecimals = (markPx: string) => {
+  const parts = markPx.split('.');
+  if (!parts[1]) return 2;
+  const decimalPart = parts[1];
+  return decimalPart.length;
+};
+
 export const formatMarkData = (
   marketData: [Meta, AssetCtx[]],
-  topAssets: PerpTopToken[]
+  topAssets: PerpTopToken[],
+  xyzMarketData: [Meta, AssetCtx[]]
 ): MarketData[] => {
   try {
     if (!Array.isArray(marketData) || marketData.length < 2) {
@@ -37,9 +45,24 @@ export const formatMarkData = (
       }
     }
 
+    const xyzMarginTableMap: Record<number, MarginTable> = {};
+    if (
+      xyzMarketData?.[0]?.marginTables &&
+      Array.isArray(xyzMarketData[0].marginTables)
+    ) {
+      for (const entry of xyzMarketData[0].marginTables) {
+        const [id, table] = entry || [];
+        if (id != null) xyzMarginTableMap[id] = table;
+      }
+    }
+
     const result: MarketData[] = topAssets
       .map((topAsset) => {
         const index = topAsset.id;
+        const dexId = topAsset.dex_id;
+        const meta = dexId === 'xyz' ? xyzMarketData[0] : marketData[0];
+        const metrics = dexId === 'xyz' ? xyzMarketData[1] : marketData[1];
+        const tableMap = dexId === 'xyz' ? xyzMarginTableMap : marginTableMap;
         const hlDataAsset = meta.universe[index];
 
         if (!hlDataAsset) return null;
@@ -47,7 +70,7 @@ export const formatMarkData = (
         if (hlDataAsset.isDelisted) return null;
 
         const m = metrics[index] || {};
-        const table = marginTableMap[hlDataAsset?.marginTableId];
+        const table = tableMap[hlDataAsset?.marginTableId];
         const tiers = table?.marginTiers || [];
         const firstTier =
           Array.isArray(tiers) && tiers.length > 0 ? tiers[0] : undefined;
@@ -56,6 +79,7 @@ export const formatMarkData = (
 
         const item: MarketData = {
           index,
+          dexId: topAsset.dex_id,
           name: String(topAsset.name ?? ''),
           // 取保证金表第一档的最大杠杆；若无表则回退 asset.maxLeverage
           maxLeverage: Number(
@@ -66,12 +90,7 @@ export const formatMarkData = (
           maxUsdValueSize: String(nextTier?.lowerBound ?? PERPS_MAX_NTL_VALUE),
           szDecimals: Number(hlDataAsset.szDecimals ?? 0),
           // 根据 markPx 推断价格精度
-          pxDecimals: (() => {
-            const markPx = m?.markPx;
-            if (!markPx) return 2;
-            const parts = markPx.split('.');
-            return parts.length > 1 ? parts[1].length : 2;
-          })(),
+          pxDecimals: getPxDecimals(m?.markPx ?? ''),
           dayBaseVlm: String(m?.dayBaseVlm ?? '0'),
           dayNtlVlm: String(m?.dayNtlVlm ?? '0'),
           funding: String(m?.funding ?? '0'),

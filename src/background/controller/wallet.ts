@@ -34,6 +34,8 @@ import {
   OfflineChainsService,
   perpsService,
   miscService,
+  lendingService,
+  innerDappFrameService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -1649,6 +1651,35 @@ export class WalletController extends BaseController {
   };
   openIndexPage = openIndexPage;
 
+  openGasAccountPopup = async (options?: { clearApprovals?: boolean }) => {
+    const { clearApprovals = true } = options || {};
+    if (clearApprovals) {
+      this.rejectAllApprovals();
+    }
+
+    await this.setPageStateCache({
+      path: '/gas-account',
+      params: {},
+      states: {},
+    });
+
+    if (
+      isManifestV3 &&
+      Browser?.action?.openPopup &&
+      typeof Browser?.action?.openPopup === 'function'
+    ) {
+      try {
+        await Browser?.action?.openPopup();
+        return true;
+      } catch (error) {
+        console.error('[openGasAccountPopup] openPopup failed', error);
+      }
+    }
+
+    await openIndexPage('/gas-account');
+    return false;
+  };
+
   openInDesktop = async (_url: string) => {
     const desktopTabId = preferenceService.getPreference('desktopTabId');
     const currentDesktopTab = desktopTabId
@@ -2024,6 +2055,11 @@ export class WalletController extends BaseController {
   setRabbyPointsSignature = RabbyPointsService.setSignature;
   getRabbyPointsSignature = RabbyPointsService.getSignature;
   clearRabbyPointsSignature = RabbyPointsService.clearSignature;
+
+  getLastSelectedLendingChain = lendingService.getLastSelectedChain;
+  setLastSelectedLendingChain = lendingService.setLastSelectedChain;
+  getSkipHealthFactorWarning = lendingService.getSkipHealthFactorWarning;
+  setSkipHealthFactorWarning = lendingService.setSkipHealthFactorWarning;
 
   addHDKeyRingLastAddAddrTime = HDKeyRingLastAddAddrTimeService.addUnixRecord;
   getHDKeyRingLastAddAddrTimeStore = HDKeyRingLastAddAddrTimeService.getStore;
@@ -3270,6 +3306,28 @@ export class WalletController extends BaseController {
     return seedWords;
   };
 
+  checkSeedPhraseBackup = async (address: string) => {
+    const keyring = await keyringService.getKeyringForAccount(
+      address,
+      KEYRING_CLASS.MNEMONIC
+    );
+
+    return keyring.hasBackup == null ? true : keyring.hasBackup;
+  };
+
+  backupSeedPhraseConfirmed = async (address: string) => {
+    const keyring = await keyringService.getKeyringForAccount(
+      address,
+      KEYRING_CLASS.MNEMONIC
+    );
+    if (!keyring) {
+      throw new Error('Keyring not found');
+    }
+
+    keyring.hasBackup = true;
+    await keyringService.persistAllKeyrings();
+  };
+
   clearAddressPendingTransactions = (address: string, chainId?: number) => {
     transactionHistoryService.clearPendingTransactions(address, chainId);
     transactionWatcher.clearPendingTx(address, chainId);
@@ -3367,8 +3425,16 @@ export class WalletController extends BaseController {
   getPreMnemonics = () => keyringService.getPreMnemonics();
   generatePreMnemonic = () => keyringService.generatePreMnemonic();
   removePreMnemonics = () => keyringService.removePreMnemonics();
-  createKeyringWithMnemonics = async (mnemonic: string) => {
-    const keyring = await keyringService.createKeyringWithMnemonics(mnemonic);
+  createKeyringWithMnemonics = async (
+    mnemonic: string,
+    options?: {
+      hasBackup?: boolean;
+    }
+  ) => {
+    const keyring = await keyringService.createKeyringWithMnemonics(
+      mnemonic,
+      options
+    );
     keyringService.removePreMnemonics();
     // return this._setCurrentAccountFromKeyring(keyring);
   };
@@ -3463,6 +3529,8 @@ export class WalletController extends BaseController {
     ) {
       await this.resetCurrentAccount();
     }
+    innerDappFrameService.removeAccountFromAllFrames(address, type, brand);
+
     const sites = permissionService.getSites();
     sites.forEach((item) => {
       if (
@@ -5446,6 +5514,7 @@ export class WalletController extends BaseController {
   removeCustomTestnetToken = customTestnetService.removeToken;
   addCustomTestnetToken = customTestnetService.addToken;
   getCustomTestnetTokenList = customTestnetService.getTokenList;
+  hasCustomTestnetTokens = customTestnetService.hasCustomTokens;
   isAddedCustomTestnetToken = customTestnetService.hasToken;
   getCustomTestnetTx = customTestnetService.getTx;
   getCustomTestnetTxReceipt = customTestnetService.getTransactionReceipt;
@@ -5769,6 +5838,12 @@ export class WalletController extends BaseController {
     return perpsService.createAgentWallet(masterWallet);
   };
   setPerpsCurrentAccount = perpsService.setCurrentAccount;
+  switchDesktopPerpsAccount = (account: Account) => {
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.DESKTOP.SWITCH_PERPS_ACCOUNT,
+      params: account,
+    });
+  };
   getPerpsCurrentAccount = perpsService.getCurrentAccount;
   getPerpsLastUsedAccount = perpsService.getLastUsedAccount;
   getAgentWalletPreference = async (masterWallet: string) => {
@@ -5776,6 +5851,8 @@ export class WalletController extends BaseController {
   };
   getPerpsFavoritedCoins = perpsService.getPerpsFavoritedCoins;
   setPerpsFavoritedCoins = perpsService.setPerpsFavoritedCoins;
+  setPerpsSelectedCoin = perpsService.setSelectedCoin;
+  getPerpsSelectedCoin = perpsService.getSelectedCoin;
   getMarketSlippage = perpsService.getMarketSlippage;
   setMarketSlippage = perpsService.setMarketSlippage;
   getSoundEnabled = perpsService.getSoundEnabled;
@@ -6109,6 +6186,13 @@ export class WalletController extends BaseController {
 
     return http.get(url).then((res) => res.data);
   };
+  getInnerDappFrames = innerDappFrameService.getInnerDappFrames;
+  getInnerDappAccountByOrigin =
+    innerDappFrameService.getInnerDappAccountByOrigin;
+  setInnerDappAccount = innerDappFrameService.setInnerDappAccount;
+  setInnerDappId = innerDappFrameService.setInnerDappId;
+
+  updateDashboardPanelOrder = preferenceService.updateDashboardPanelOrder;
 }
 
 const wallet = new WalletController();

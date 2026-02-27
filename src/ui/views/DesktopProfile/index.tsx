@@ -26,7 +26,7 @@ import { ApprovalsTabPane } from './components/ApprovalsTabPane';
 import { AddressDetailModal } from './components/AddressDetailModal';
 import { AddressBackupModal } from './components/AddressBackupModal';
 import { AddAddressModal } from './components/AddAddressModal';
-import { RcIconBackTop } from '@/ui/assets/desktop/profile';
+import { RcIconBackTopCC } from '@/ui/assets/desktop/profile';
 import { ReachedEnd } from './components/ReachedEnd';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import TopShortcut, {
@@ -85,6 +85,17 @@ export const DesktopProfile: React.FC<{
   const handleTabChange = (key: string) => {
     dispatch.desktopProfile.setField({ activeTab: key });
     history.replace(`/desktop/profile/${key}`);
+    const $scrollElement = scrollContainerRef.current;
+    if (!$scrollElement) {
+      return;
+    }
+    const profileHeight = 136;
+
+    if ($scrollElement.scrollTop > profileHeight) {
+      requestAnimationFrame(() => {
+        $scrollElement.scrollTo(0, profileHeight);
+      });
+    }
   };
   const { action, sendPageType } = useMemo(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -120,12 +131,6 @@ export const DesktopProfile: React.FC<{
     }
   }, [isUpdating]);
 
-  const handleUpdate = useMemoizedFn(async () => {
-    setRefreshKey((prev) => prev + 1);
-    refreshPositions();
-    await refreshBalance();
-    await refreshCurve();
-  });
   const [cacheProjectOverviewList, setCacheProjectOverviewList] = useState<
     AbstractProject[]
   >([]);
@@ -156,17 +161,23 @@ export const DesktopProfile: React.FC<{
     appIds,
     isNoResults,
     refreshPositions,
+    refreshTokens,
   } = useTokenAndDIFIData({
     selectChainId: chainInfo?.serverId,
     allTokenMode: !!searchValue,
   });
 
+  const handleUpdate = useMemoizedFn(async () => {
+    setRefreshKey((prev) => prev + 1);
+    refreshPositions();
+    refreshBalance();
+    refreshCurve();
+  });
+
   useListenTxReload(async () => {
-    if (['tokens', 'transactions'].includes(activeTab)) {
-      setRefreshKey((prev) => prev + 1);
-    }
-    await refreshBalance();
-    await refreshCurve();
+    refreshBalance();
+    refreshCurve();
+    refreshTokens();
   });
 
   useEffect(
@@ -192,7 +203,7 @@ export const DesktopProfile: React.FC<{
   return (
     <>
       <DesktopPageWrap
-        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px]"
+        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] no-scrollbar"
         ref={scrollContainerRef}
         style={style}
       >
@@ -329,7 +340,18 @@ export const DesktopProfile: React.FC<{
                       right: 'initial',
                     }}
                   >
-                    <ThemeIcon src={RcIconBackTop} />
+                    <div
+                      className={clsx(
+                        'flex items-center justify-center w-[32px] h-[32px] rounded-full',
+                        'bg-rb-neutral-bg-1 dark:bg-rb-neutral-bg-4',
+                        'text-rb-neutral-foot'
+                      )}
+                      style={{
+                        boxShadow: '0 2px 8px 0 rgba(0, 0, 0, 0.12)',
+                      }}
+                    >
+                      <RcIconBackTopCC />
+                    </div>
                   </BackTop>
                 </div>
               </main>
@@ -411,13 +433,6 @@ export const DesktopProfile: React.FC<{
       />
       <AddressBackupModal
         visible={action === 'address-backup'}
-        onCancel={() => {
-          history.replace(history.location.pathname);
-        }}
-        destroyOnClose
-      />
-      <AddAddressModal
-        visible={action === 'add-address'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Card } from '@/ui/component/NewUserImport';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Button, Form, Input } from 'antd';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import clsx from 'clsx';
@@ -8,9 +8,10 @@ import { useRabbyDispatch } from '@/ui/store';
 import { getUiType, useWallet } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
+import { useNewUserGuideStore } from '../hooks/useNewUserGuideStore';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
+import { useRequest } from 'ahooks';
 
 const FormItemWrapper = styled.div`
   .mnemonics-with-error,
@@ -39,8 +40,10 @@ export const ImportSeedPhrase = () => {
   const [slip39ErrorIndex, setSlip39ErrorIndex] = React.useState<number>(-1);
   const [isSlip39, setIsSlip39] = React.useState(false);
   const [slip39GroupNumber, setSlip39GroupNumber] = React.useState(1);
-
-  let keyringId: number | null;
+  const [formValues, setFormValues] = React.useState<IFormStates>({
+    mnemonics: '',
+    passphrase: '',
+  });
 
   const onPassphrase = React.useCallback((val: boolean) => {
     setNeedPassphrase(val);
@@ -139,6 +142,17 @@ export const ImportSeedPhrase = () => {
     [isSlip39]
   );
 
+  const { data: isValid } = useRequest(
+    async () => {
+      await checkSubmitSlip39Mnemonics(formValues.mnemonics);
+      return await validateMnemonic(formValues.mnemonics);
+    },
+    {
+      debounceWait: 300,
+      refreshDeps: [formValues.mnemonics],
+    }
+  );
+
   const run = React.useCallback(
     async ({
       mnemonics,
@@ -175,30 +189,18 @@ export const ImportSeedPhrase = () => {
   );
 
   return (
-    <Card
-      onBack={() => {
-        if (history.length) {
-          history.goBack();
-        } else {
-          history.replace('/new-user/import-list');
-        }
-      }}
-      step={1}
-      className="flex flex-col"
-    >
-      <div className="mt-18 mb-16 text-center text-20 font-medium text-r-neutral-title1">
-        {t('page.newUserImport.importSeedPhrase.title')}
-      </div>
+    <div className="flex flex-col flex-1 pt-[12px]">
       <Form
         form={form}
         className={clsx('flex flex-col flex-1')}
         onFinish={run}
-        onValuesChange={async (states) => {
+        onValuesChange={async (states, values) => {
+          setFormValues(values as IFormStates);
           setErrMsgs([]);
           setSlip39ErrorIndex(-1);
         }}
       >
-        <FormItemWrapper className="relative mb-16">
+        <FormItemWrapper className="relative">
           <Form.Item
             name="mnemonics"
             className={clsx(
@@ -233,19 +235,32 @@ export const ImportSeedPhrase = () => {
           )}
         </FormItemWrapper>
 
-        <Button
-          htmlType="submit"
-          disabled={disabledButton}
-          block
-          type="primary"
-          className={clsx(
-            'mt-auto h-[56px] shadow-none rounded-[8px]',
-            'text-[17px] font-medium'
-          )}
-        >
-          {t('global.confirm')}
-        </Button>
+        <footer className="mt-auto">
+          {!formValues.mnemonics?.trim() ? (
+            <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[16px] text-center">
+              {t('page.newUserImport.importSeedPhrase.noWallet')}{' '}
+              <Link
+                to="/new-user/create-seed-phrase"
+                className="text-r-blue-default"
+              >
+                {t('page.newUserImport.importSeedPhrase.createWallet')}
+              </Link>
+            </div>
+          ) : null}
+          <Button
+            htmlType="submit"
+            disabled={disabledButton || !isValid}
+            block
+            type="primary"
+            className={clsx(
+              'h-[52px] shadow-none rounded-[8px]',
+              'text-[15px] leading-[18px] font-medium'
+            )}
+          >
+            {t('global.next')}
+          </Button>
+        </footer>
       </Form>
-    </Card>
+    </div>
   );
 };

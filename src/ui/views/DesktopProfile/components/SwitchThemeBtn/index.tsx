@@ -19,24 +19,28 @@ export const SwitchThemeBtn = () => {
   }, [dispatch, themeMode]);
 
   return (
-    <div className="flex items-center justify-center gap-[4px] bg-rb-neutral-bg-3 rounded-[12px] h-[40px] border border-rb-neutral-bg-2">
+    <div className="flex items-center justify-center bg-r-neutral-line rounded-[12px] p-[1px]">
       <button
         onClick={handleThemeToggle}
         className={clsx(
-          'w-[48px] h-[36px] rounded-[10px] flex items-center justify-center',
-          !isDarkTheme ? 'bg-rb-neutral-foot' : ''
+          'w-[28px] h-[24px] rounded-[11px] flex items-center justify-center',
+          !isDarkTheme
+            ? 'bg-r-neutral-bg-1 text-r-neutral-body'
+            : 'text-r-neutral-foot'
         )}
       >
-        <RcIconSun className="w-[20px] h-[20px]" />
+        <RcIconSun className="w-[16px] h-[16px]" />
       </button>
       <button
         onClick={handleThemeToggle}
         className={clsx(
-          'w-[48px] h-[36px] rounded-[10px] flex items-center justify-center',
-          isDarkTheme ? 'bg-rb-neutral-foot' : ''
+          'w-[28px] h-[24px] rounded-[11px] flex items-center justify-center',
+          isDarkTheme
+            ? 'bg-r-neutral-bg-1 text-r-neutral-body'
+            : 'text-r-neutral-foot'
         )}
       >
-        <RcIconMoon className="w-[20px] h-[20px]" />
+        <RcIconMoon className="w-[16px] h-[16px]" />
       </button>
     </div>
   );

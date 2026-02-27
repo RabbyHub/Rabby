@@ -88,7 +88,7 @@ export const TokenDetailModal: React.FC<TokenDetailModalProps> = ({
     <Modal
       visible={visible}
       onCancel={onClose}
-      width={400}
+      width={403}
       title={null}
       bodyStyle={{ background: 'transparent', maxHeight: '600px', padding: 0 }}
       maskClosable={true}
@@ -102,6 +102,7 @@ export const TokenDetailModal: React.FC<TokenDetailModalProps> = ({
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
+      destroyOnClose
     >
       {visible && token && (
         <PopupContainer className="h-[600px] bg-r-neutral-bg-2">

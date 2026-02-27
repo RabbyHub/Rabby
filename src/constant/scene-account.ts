@@ -1,8 +1,11 @@
-export type AccountScene = 'prediction';
+export type AccountScene = 'prediction' | 'lending';
 
 export const SCENE_ACCOUNT_CONFIG: Record<AccountScene, { dapps: string[] }> = {
   prediction: {
     dapps: ['https://polymarket.com'],
+  },
+  lending: {
+    dapps: ['https://app.aave.com'],
   },
 };
 
