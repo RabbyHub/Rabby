@@ -14,9 +14,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconActivities } from 'ui/assets/dashboard/activities.svg';
-import { ReactComponent as RcIconPoints } from 'ui/assets/dashboard/rabby-points.svg';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
-import { ReactComponent as RCIconRabbyMobile } from 'ui/assets/dashboard/rabby-mobile.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
 import { ReactComponent as RcIconCustomRPC } from 'ui/assets/dashboard/custom-rpc.svg';
@@ -29,6 +27,7 @@ import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/d
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
 import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
 import { ReactComponent as RcIconRabbyMobileCC } from 'ui/assets/settings/IconMobileSync-cc.svg';
+import { ReactComponent as RCIconBiometric } from 'ui/assets/dashboard/settings/biometric.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
@@ -78,8 +77,10 @@ import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/ho
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
 import {
   createBiometricUnlockPayload,
+  isBiometricUserCanceledError,
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
+import BiometricUnlockModal from './components/BiometricUnlockModal';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -614,7 +615,6 @@ const SettingsInner = ({
   const [isShowBiometricModal, setIsShowBiometricModal] = useState(false);
   const [biometricSupported, setBiometricSupported] = useState(false);
   const [biometricBusy, setBiometricBusy] = useState(false);
-  const [biometricForm] = Form.useForm<{ password: string }>();
   const lockShortcutLabel = useMemo(() => {
     return detectClientOS() === 'darwin' ? '⌘ + L' : 'Ctrl + L';
   }, []);
@@ -702,14 +702,10 @@ const SettingsInner = ({
       if (checked) {
         if (!biometricSupported) {
           message.error(
-            t(
-              'page.dashboard.settings.biometricUnlockUnsupported',
-              'This device does not support biometric unlock.'
-            )
+            t('page.dashboard.settings.biometricUnlockUnsupported')
           );
           return;
         }
-        biometricForm.resetFields();
         setIsShowBiometricModal(true);
         return;
       }
@@ -717,19 +713,11 @@ const SettingsInner = ({
       setBiometricBusy(true);
       try {
         await dispatch.preference.setBiometricUnlock({ enabled: false });
-        message.success(
-          t(
-            'page.dashboard.settings.biometricUnlockDisabled',
-            'Biometric unlock disabled.'
-          )
-        );
+        message.success(t('page.dashboard.settings.biometricUnlockDisabled'));
       } catch (error) {
         message.error(
           (error as Error)?.message ||
-            t(
-              'page.dashboard.settings.biometricUnlockDisableFailed',
-              'Failed to disable biometric unlock.'
-            )
+            t('page.dashboard.settings.biometricUnlockDisableFailed')
         );
       } finally {
         setBiometricBusy(false);
@@ -737,55 +725,41 @@ const SettingsInner = ({
     }
   );
 
-  const handleConfirmEnableBiometric = useMemoizedFn(async () => {
-    try {
-      const { password } = await biometricForm.validateFields();
-      setBiometricBusy(true);
-      await wallet.verifyPassword(password);
-      const payload = await createBiometricUnlockPayload(password);
-      await dispatch.preference.setBiometricUnlock({
-        enabled: true,
-        credentialId: payload.credentialId,
-        encryptedPassword: payload.encryptedPassword,
-        iv: payload.iv,
-        prfSalt: payload.prfSalt,
-      });
-      message.success(
-        t(
-          'page.dashboard.settings.biometricUnlockEnabled',
-          'Biometric unlock enabled.'
-        )
-      );
-      setIsShowBiometricModal(false);
-      biometricForm.resetFields();
-    } catch (error: any) {
-      if (error?.errorFields) {
-        return;
+  const handleConfirmEnableBiometric = useMemoizedFn(
+    async (password: string) => {
+      try {
+        setBiometricBusy(true);
+        await wallet.verifyPassword(password);
+        const payload = await createBiometricUnlockPayload(password);
+        await dispatch.preference.setBiometricUnlock({
+          enabled: true,
+          credentialId: payload.credentialId,
+          encryptedPassword: payload.encryptedPassword,
+          iv: payload.iv,
+          prfSalt: payload.prfSalt,
+        });
+        message.success(t('page.dashboard.settings.biometricUnlockEnabled'));
+        setIsShowBiometricModal(false);
+      } catch (error: any) {
+        const errorMessage =
+          error?.message ||
+          t('page.dashboard.settings.biometricUnlockEnableFailed');
+        setIsShowBiometricModal(false);
+
+        if (isBiometricUserCanceledError(error)) {
+          return;
+        }
+
+        message.error(errorMessage);
+      } finally {
+        setBiometricBusy(false);
       }
-      const errorMessage =
-        error?.message ||
-        t(
-          'page.dashboard.settings.biometricUnlockEnableFailed',
-          'Failed to enable biometric unlock.'
-        );
-      if (!String(errorMessage).toLowerCase().includes('biometric')) {
-        biometricForm.setFields([
-          {
-            name: 'password',
-            errors: [errorMessage],
-          },
-        ]);
-      }
-      message.error(errorMessage);
-    } finally {
-      setBiometricBusy(false);
     }
-  });
+  );
 
   const handleCancelBiometricModal = useMemoizedFn(() => {
     if (biometricBusy) return;
     setIsShowBiometricModal(false);
-    biometricForm.resetFields();
   });
 
   const handleClickClearWatchMode = () => {
@@ -1032,20 +1006,8 @@ const SettingsInner = ({
           ),
         },
         {
-          leftIcon: RcIconLockWallet,
-          content: t(
-            'page.dashboard.settings.settings.biometricUnlock',
-            'Biometric Unlock'
-          ),
-          description: biometricSupported
-            ? t(
-                'page.dashboard.settings.settings.biometricUnlockHint',
-                'Use biometrics to unlock on this device.'
-              )
-            : t(
-                'page.dashboard.settings.settings.biometricUnlockUnsupported',
-                'This device does not support biometric unlock.'
-              ),
+          leftIcon: RCIconBiometric,
+          content: t('page.dashboard.settings.settings.biometricUnlock'),
           rightIcon: (
             <Switch
               checked={!!biometricUnlockEnabled}
@@ -1705,60 +1667,12 @@ const SettingsInner = ({
           setConnectedDappsVisible(false);
         }}
       />
-      <Modal
+      <BiometricUnlockModal
         visible={isShowBiometricModal}
-        centered
-        width={360}
+        loading={biometricBusy}
         onCancel={handleCancelBiometricModal}
-        footer={null}
-        destroyOnClose
-        className="modal-support-darkmode"
-      >
-        <div className="text-[18px] font-medium text-center mb-16">
-          {t(
-            'page.dashboard.settings.biometricUnlockSetupTitle',
-            'Enable Biometric Unlock'
-          )}
-        </div>
-        <Form
-          form={biometricForm}
-          layout="vertical"
-          onFinish={handleConfirmEnableBiometric}
-        >
-          <Form.Item
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: t(
-                  'page.dashboard.settings.biometricUnlockPasswordRequired',
-                  'Please enter your password.'
-                ),
-              },
-            ]}
-          >
-            <Input.Password
-              autoFocus
-              spellCheck={false}
-              placeholder={t(
-                'page.dashboard.settings.biometricUnlockPasswordPlaceholder',
-                'Password'
-              )}
-            />
-          </Form.Item>
-          <div className="flex justify-center mt-24">
-            <Button
-              type="primary"
-              size="large"
-              htmlType="submit"
-              loading={biometricBusy}
-              className="w-[200px]"
-            >
-              {t('page.dashboard.settings.save', 'Save')}
-            </Button>
-          </div>
-        </Form>
-      </Modal>
+        onConfirm={handleConfirmEnableBiometric}
+      />
       <FeedbackPopup
         visible={feedbackVisible}
         onClose={() => setFeedbackVisible(false)}
@@ -1781,6 +1695,7 @@ const Settings = (props: SettingsProps) => {
         visible={visible}
         onClose={onClose}
         height={488}
+        push={false}
         bodyStyle={{ height: '100%', padding: '20px 20px 0 20px' }}
         destroyOnClose
         className="settings-popup-wrapper"

@@ -1,6 +1,22 @@
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
+type PrfClientExtensionInput = AuthenticationExtensionsClientInputs & {
+  prf?: {
+    eval?: {
+      first?: BufferSource;
+    };
+  };
+};
+
+type PrfClientExtensionOutput = AuthenticationExtensionsClientOutputs & {
+  prf?: {
+    results?: {
+      first?: ArrayBuffer | ArrayBufferView;
+    };
+  };
+};
+
 const toBase64 = (buffer: ArrayBuffer) => {
   const bytes = new Uint8Array(buffer);
   let binary = '';
@@ -17,6 +33,25 @@ const fromBase64 = (value: string) => {
     bytes[i] = binary.charCodeAt(i);
   }
   return bytes;
+};
+
+const BIOMETRIC_CANCEL_KEYWORDS = [
+  'cancel',
+  'canceled',
+  'cancelled',
+  'notallowederror',
+  'not allowed',
+  'aborterror',
+  'aborted',
+];
+
+export const isBiometricUserCanceledError = (error: unknown) => {
+  const errorName = String((error as any)?.name || '').toLowerCase();
+  const errorMessage = String((error as any)?.message || '').toLowerCase();
+
+  return BIOMETRIC_CANCEL_KEYWORDS.some(
+    (keyword) => errorName.includes(keyword) || errorMessage.includes(keyword)
+  );
 };
 
 const randomBytes = (length: number) => {
@@ -77,7 +112,7 @@ const getPrfResult = async (
             first: prfSalt,
           },
         },
-      } as any,
+      } as PrfClientExtensionInput,
     },
   });
 
@@ -89,7 +124,8 @@ const getPrfResult = async (
     throw new Error('Biometric unlock not supported');
   }
 
-  const extResults = assertion.getClientExtensionResults?.() || {};
+  const extResults =
+    (assertion.getClientExtensionResults?.() as PrfClientExtensionOutput) || {};
   const prfResults = extResults?.prf?.results?.first;
 
   if (!prfResults) {
@@ -152,12 +188,12 @@ export const createBiometricUnlockPayload = async (
     publicKey: {
       challenge,
       rp: {
-        name: 'Rabby',
+        name: 'Rabby Wallet',
       },
       user: {
         id: userId,
-        name: 'Rabby',
-        displayName: 'Rabby',
+        name: 'Rabby Wallet',
+        displayName: 'Rabby Wallet',
       },
       pubKeyCredParams: [
         {
@@ -181,7 +217,7 @@ export const createBiometricUnlockPayload = async (
             first: prfSalt,
           },
         },
-      },
+      } as PrfClientExtensionInput,
     },
   })) as PublicKeyCredential | null;
 
