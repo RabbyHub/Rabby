@@ -89,7 +89,7 @@ const ExternalTokenRow = memo(
                 <ExchangeLogos cexIds={cexIds} />
               </div>
               <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
-                {formatTokenAmount(data.amount || 0)} {data.symbol}
+                {formatTokenAmount(data.amount || 0)}
               </span>
             </div>
           </div>
@@ -104,15 +104,15 @@ const ExternalTokenRow = memo(
             </span>
             <span className="flex items-center gap-4">
               <span className="text-r-neutral-foot text-13 font-normal">
-                @{decimalPrecision ? '$' : ''}
+                {decimalPrecision ? '$' : ''}
                 {(decimalPrecision ? formatPrice : formatUsdValue)(
                   data.price || 0
                 )}
               </span>
               <span
-                className={clsx('text-sm text-13 font-medium', percentColor)}
+                className={clsx('text-sm text-13 font-normal', percentColor)}
               >
-                {formatPercentage(data.price_24h_change || 0)}
+                ({formatPercentage(data.price_24h_change || 0)})
               </span>
             </span>
           </div>
