@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import clsx from 'clsx';
-import { Button, Input, InputRef } from 'antd';
+import { Button, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
@@ -57,7 +57,7 @@ export const BiometricUnlockModal = ({
   const { t } = useTranslation();
   const [passwordText, setPasswordText] = React.useState('');
 
-  const inputRef = React.useRef<InputRef>(null);
+  const inputRef = React.useRef<Input>(null);
 
   const disableSubmit = !passwordText || loading;
 
