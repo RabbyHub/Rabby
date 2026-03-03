@@ -1,5 +1,5 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import Views from './views';
@@ -151,24 +151,8 @@ eventBus.addEventListener('syncChainList', (params) => {
   updateChainStore(params);
 });
 
-const compensateUnlockedOnceFlag = async () => {
-  try {
-    if (store.getState().app.hasUnlockedOnce) return;
-    const isUnlocked = await wallet.isUnlocked();
-    if (isUnlocked) {
-      store.dispatch.app.setField({
-        hasUnlockedOnce: true,
-      });
-    }
-  } catch (e) {
-    console.log('[compensateUnlockedOnceFlag] failed', e);
-  }
-};
-
-const main = async () => {
-  const rootContainer = document.getElementById('root');
-  const root = rootContainer ? createRoot(rootContainer) : null;
-
+const main = () => {
+  console.log('name', getUITypeName());
   portMessageChannel.connect(getUITypeName());
   await compensateUnlockedOnceFlag();
 
@@ -186,10 +170,11 @@ const main = async () => {
   wallet.getLocale().then((locale) => {
     addResourceBundle(locale).then(() => {
       changeLanguage(locale);
-      root?.render(
+      ReactDOM.render(
         <Provider store={store}>
           <Views wallet={wallet} />
-        </Provider>
+        </Provider>,
+        document.getElementById('root')
       );
     });
   });

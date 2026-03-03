@@ -1,4 +1,4 @@
-import { Button, DrawerProps, Form, Input, InputRef } from 'antd';
+import { Button, DrawerProps, Form, Input } from 'antd';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import React, {
@@ -145,7 +145,7 @@ const AuthenticationPopup = ({
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<Input>(null);
   const {
     questionChecks,
     isAllChecked,

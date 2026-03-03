@@ -37,7 +37,7 @@ export function AddressInfoFrom({
     forceLight: false,
   });
 
-  const [aliasName] = useAlias(account?.address || '');
+  const aliasName = useAlias(account?.address || '');
   const [isShowModal, setIsShowModal] = useState(false);
   const dispatch = useRabbyDispatch();
 

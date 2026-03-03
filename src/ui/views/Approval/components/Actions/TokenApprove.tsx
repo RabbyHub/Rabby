@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Form, Input, InputRef } from 'antd';
+import { Button, Form, Input } from 'antd';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
@@ -63,7 +63,7 @@ const ApproveAmountModal = ({
   onChange,
   onCancel,
 }: ApproveAmountModalProps) => {
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<Input>(null);
   const { t } = useTranslation();
   const [customAmount, setCustomAmount] = useState(
     new BigNumber(amount).toFixed()

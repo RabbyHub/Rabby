@@ -5,7 +5,6 @@ import IconBack from 'ui/assets/icon-back.svg';
 import IconCoboArgus from 'ui/assets/walletlogo/CoboArgus.svg';
 
 export const Header: React.FC<{
-  children?: React.ReactNode;
   hasBack?: boolean;
   onBack?(): void;
 }> = ({ children, hasBack = true, onBack }) => {

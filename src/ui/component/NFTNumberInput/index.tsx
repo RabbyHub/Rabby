@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
-import { Input, Tooltip, InputRef as AntdInputRef } from 'antd';
+import { Input, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { NFTItem } from '@/background/service/openapi';
 import './style.less';
@@ -43,7 +43,7 @@ const NumberInput = forwardRef<InputRef, Props>(
       onChange && onChange(value + 1);
     };
 
-    const inputEl = useRef<AntdInputRef>(null);
+    const inputEl = useRef<Input | null>(null);
 
     useImperativeHandle(ref, () => ({
       focus: () => {

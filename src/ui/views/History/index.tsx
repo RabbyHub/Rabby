@@ -47,14 +47,10 @@ const History = () => {
         renderTabBar={renderTabBar}
         activeKey={selectedTab}
       >
-        <Tabs.TabPane
-          key="mainnet"
-          destroyInactiveTabPane={false}
-          className="h-full"
-        >
+        <Tabs.TabPane key="mainnet" destroyInactiveTabPane={false}>
           <HistoryList />
         </Tabs.TabPane>
-        <Tabs.TabPane key="testnet" className="h-full">
+        <Tabs.TabPane key="testnet">
           <TestnetTransactionHistory />
         </Tabs.TabPane>
       </Tabs>

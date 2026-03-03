@@ -200,7 +200,6 @@ const LendingAccountItem: React.FC<{
   item: IDisplayedAccountWithBalance;
   onClick?(): void;
   isSelected?: boolean;
-  children?: React.ReactNode;
 }> = ({ item, onClick, isSelected }) => {
   const { t } = useTranslation();
   const addressTypeIcon = useBrandIcon({

@@ -149,7 +149,7 @@ class TypedDataSignatureManager {
     request: TypedDataSignatureRequest;
     startIndex?: number;
     existingResults?: string[];
-    getContainer?: ModalProps['getContainer'] | DrawerProps['getContainer'];
+    getContainer?: ModalProps['getContainer'];
   }) {
     const { wallet, txs, config } = request;
     const result: string[] = [...existingResults];

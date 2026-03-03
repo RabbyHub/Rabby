@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 import styled from 'styled-components';
-import { Button, DrawerProps, Form, Input, InputRef, message } from 'antd';
+import { Button, DrawerProps, Form, Input, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -77,7 +77,7 @@ function ModalConfirmAddToContacts({
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<Input>(null);
 
   useEffect(() => {
     if (visible) {

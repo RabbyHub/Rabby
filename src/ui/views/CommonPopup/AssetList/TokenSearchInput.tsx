@@ -1,6 +1,6 @@
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 import { useCommonPopupView } from '@/ui/utils';
-import { Input, InputRef } from 'antd';
+import { Input } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +30,7 @@ const InputStyled = styled(Input)`
   }
 `;
 
-export const TokenSearchInput = React.forwardRef<InputRef, Props>(
+export const TokenSearchInput = React.forwardRef<Input, Props>(
   ({ onSearch, onBlur, onFocus, className, placeholder }, ref) => {
     const [input, setInput] = React.useState<string>('');
     const { visible } = useCommonPopupView();

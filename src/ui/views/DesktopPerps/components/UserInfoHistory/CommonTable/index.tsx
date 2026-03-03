@@ -286,17 +286,9 @@ function VirtualRow<T extends object>({
           ];
         }
 
-        const renderedValue = column.render
+        const cellContent = column.render
           ? column.render(value, record, index)
-          : value;
-
-        const cellContent: React.ReactNode =
-          renderedValue &&
-          typeof renderedValue === 'object' &&
-          !React.isValidElement(renderedValue) &&
-          'children' in renderedValue
-            ? (renderedValue.children as React.ReactNode)
-            : (renderedValue as React.ReactNode);
+          : (value as React.ReactNode);
 
         const cellKey = column.key ?? String(dataIndex) ?? colIndex;
         const cellWidth = columnWidths[colIndex] || 0;
@@ -401,10 +393,6 @@ export const CommonTable = <T extends object>({
       }
 
       const originalTitle = col.title;
-      const renderedTitle: React.ReactNode =
-        typeof originalTitle === 'function'
-          ? originalTitle({} as Parameters<typeof originalTitle>[0])
-          : originalTitle;
       const fieldKey = (col.key || col.dataIndex) as string | undefined;
 
       const enhanced: SortedColumnType<T> = {
@@ -413,7 +401,7 @@ export const CommonTable = <T extends object>({
         sortDirections: ['ascend', 'descend'] as SortDirections,
         title: (
           <>
-            {renderedTitle}
+            {originalTitle}
             <span
               className="w-[16px] text-center"
               style={{

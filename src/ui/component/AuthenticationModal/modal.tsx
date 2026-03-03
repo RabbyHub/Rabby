@@ -1,4 +1,4 @@
-import { Button, Form, Input, InputRef, Modal } from 'antd';
+import { Button, Form, Input, Modal } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
@@ -33,7 +33,7 @@ const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
   const [visible, setVisible] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm();
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<Input>(null);
 
   useEffect(() => {
     inputRef.current?.focus?.();

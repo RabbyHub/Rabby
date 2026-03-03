@@ -363,7 +363,6 @@ const AccountItem: React.FC<{
   isSelected?: boolean;
   isLast?: boolean;
   clearinghouseState?: ClearinghouseState | null;
-  children?: React.ReactNode;
 }> = ({ item, onClick, isSelected, isLast, clearinghouseState, scene }) => {
   const { t } = useTranslation();
   const addressTypeIcon = useBrandIcon({

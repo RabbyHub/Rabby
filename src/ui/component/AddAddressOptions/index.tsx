@@ -93,8 +93,7 @@ const AddressItem = ({ data }) => {
       key={data.brand}
       left={
         <Tooltip
-          // todo fix this
-          title={t(data.tipI18nKey) as string}
+          title={t(data.tipI18nKey)}
           placement="topLeft"
           visible={data.tipI18nKey && visible}
           arrowPointAtCenter

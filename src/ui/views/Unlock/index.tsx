@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Input, Form, Button, InputRef } from 'antd';
+import { Input, Form, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
@@ -47,7 +47,7 @@ const Unlock = () => {
   const wallet = useWallet();
   const [, resolveApproval] = useApproval();
   const [form] = Form.useForm();
-  const inputEl = useRef<InputRef>(null);
+  const inputEl = useRef<Input>(null);
   const autoBiometricTriggeredRef = useRef(false);
   const UiType = getUiType();
   const { t } = useTranslation();
@@ -70,6 +70,9 @@ const Unlock = () => {
   );
   const biometricUnlockIv = useRabbySelector(
     (state) => state.preference.biometricUnlockIv
+  );
+  const biometricUnlockPrfSalt = useRabbySelector(
+    (state) => state.preference.biometricUnlockPrfSalt
   );
   const hasUnlockedOnce = useRabbySelector(
     (state) => state.app.hasUnlockedOnce
@@ -150,7 +153,8 @@ const Unlock = () => {
     biometricUnlockEnabled &&
     !!biometricUnlockCredentialId &&
     !!biometricUnlockEncryptedPassword &&
-    !!biometricUnlockIv;
+    !!biometricUnlockIv &&
+    !!biometricUnlockPrfSalt;
 
   useEffect(() => {
     setShowPasswordUnlock(!biometricAvailable);
@@ -173,6 +177,7 @@ const Unlock = () => {
         credentialId: biometricUnlockCredentialId!,
         encryptedPassword: biometricUnlockEncryptedPassword!,
         iv: biometricUnlockIv!,
+        prfSalt: biometricUnlockPrfSalt!,
       });
       await run(password);
     } catch (error: any) {
