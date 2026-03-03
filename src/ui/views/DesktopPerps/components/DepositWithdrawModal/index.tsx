@@ -144,13 +144,13 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
 
   const quoteError = useMemo(() => {
     return type === 'deposit' &&
-      selectedToken?.id !== ARB_USDC_TOKEN_ID &&
+      !isDirectDeposit &&
       isValidAmount &&
       !quoteLoading &&
       !bridgeQuote?.tx
       ? t('page.perps.depositAmountPopup.fetchQuoteFailed')
       : '';
-  }, [bridgeQuote, quoteLoading, type, selectedToken, t, isValidAmount]);
+  }, [bridgeQuote, quoteLoading, type, isDirectDeposit, t, isValidAmount]);
 
   return (
     <>
@@ -424,7 +424,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                 disabled={
                   !isValidAmount ||
                   Boolean(quoteError) ||
-                  (type === 'deposit' && !isDirectDeposit && quoteLoading)
+                  (type === 'deposit' && quoteLoading)
                 }
                 size="large"
                 type="primary"
