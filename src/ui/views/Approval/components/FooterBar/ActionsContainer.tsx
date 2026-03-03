@@ -24,10 +24,9 @@ export interface Props {
   directSubmit?: boolean;
 }
 
-export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({
-  children,
-  onCancel,
-}) => {
+export const ActionsContainer: React.FC<
+  Pick<Props, 'onCancel' | 'children'>
+> = ({ children, onCancel }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [

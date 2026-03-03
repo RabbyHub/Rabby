@@ -2,7 +2,7 @@
 /* eslint-enable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect } from 'react';
 
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, InputRef } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 
@@ -79,7 +79,7 @@ export const PwdForNonWhitelistedTxModal = ({
     onCancel();
   }, [onCancel]);
 
-  const inputRef = React.useRef<Input>(null);
+  const inputRef = React.useRef<InputRef>(null);
   useEffect(() => {
     setTimeout(() => {
       if (propVisible && isEnabledPwdForNonWhitelistedTx) {
@@ -236,7 +236,7 @@ export const VerifyPwdForNonWhitelisted = ({
     onCancel();
   }, [onCancel]);
 
-  const inputRef = React.useRef<Input>(null);
+  const inputRef = React.useRef<InputRef>(null);
   useEffect(() => {
     setTimeout(() => {
       if (propVisible && isEnabledPwdForNonWhitelistedTx) {

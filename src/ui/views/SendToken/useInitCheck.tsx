@@ -83,7 +83,7 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
         Modal.confirm({
           width: 340,
           closable: true,
-          closeIcon: Fragment,
+          closeIcon: <></>,
           centered: true,
           className: 'token-selector-disable-item-tips',
           title: <RiskWarningTitle />,

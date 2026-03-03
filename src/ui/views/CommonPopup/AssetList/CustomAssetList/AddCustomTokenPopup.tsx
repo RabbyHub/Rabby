@@ -7,7 +7,7 @@ import { formatAmount, useWallet } from '@/ui/utils';
 import { findChain, getChainList } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
-import { Button, Form, Input, Spin, message } from 'antd';
+import { Button, Form, Input, InputRef, Spin, message } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, {
   useCallback,
@@ -240,7 +240,7 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
     }
   }, [visible, resetSearchResult]);
 
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<InputRef>(null);
   useLayoutEffect(() => {
     if (visible) {
       const timer = setTimeout(() => inputRef.current?.focus(), 250);
