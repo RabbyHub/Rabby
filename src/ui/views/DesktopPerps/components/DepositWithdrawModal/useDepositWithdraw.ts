@@ -351,7 +351,6 @@ export const useDepositWithdraw = (
         to: HYPE_CORE_DEPOSIT_WALLET,
         value: '0x0',
         data: depositData,
-        gasPrice: gasPrice || undefined,
       } as Tx);
 
       return targetTxs;
