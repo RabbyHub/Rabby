@@ -43,7 +43,6 @@ interface PreferenceState {
   biometricUnlockCredentialId?: string;
   biometricUnlockEncryptedPassword?: string;
   biometricUnlockIv?: string;
-  biometricUnlockPrfSalt?: string;
   rateGuideLastExposure?: RateGuideLastExposure;
   dashboardPanelOrder?: string[];
 
@@ -81,7 +80,6 @@ export const preference = createModel<RootModel>()({
     biometricUnlockCredentialId: '',
     biometricUnlockEncryptedPassword: '',
     biometricUnlockIv: '',
-    biometricUnlockPrfSalt: '',
     rateGuideLastExposure: getDefaultRateGuideLastExposure(),
     desktopTokensAllMode: false,
     dashboardPanelOrder: [],
@@ -334,7 +332,6 @@ export const preference = createModel<RootModel>()({
         credentialId?: string;
         encryptedPassword?: string;
         iv?: string;
-        prfSalt?: string;
       },
       store
     ) {
@@ -344,7 +341,6 @@ export const preference = createModel<RootModel>()({
         biometricUnlockCredentialId: payload.credentialId || '',
         biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
         biometricUnlockIv: payload.iv || '',
-        biometricUnlockPrfSalt: payload.prfSalt || '',
       });
       ga4.fireEvent(`BiometricUnlock_${payload.enabled ? 'On' : 'Off'}`, {
         event_category: 'Settings Snapshot',

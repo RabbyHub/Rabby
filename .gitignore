@@ -14,3 +14,4 @@ tmp/styled-components-id-mappings.*
 flake.nix
 flake.lock
 .envrc
+src/manifest/chrome-mv3/manifest.local.json

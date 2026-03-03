@@ -1,22 +1,6 @@
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-type PrfClientExtensionInput = AuthenticationExtensionsClientInputs & {
-  prf?: {
-    eval?: {
-      first?: BufferSource;
-    };
-  };
-};
-
-type PrfClientExtensionOutput = AuthenticationExtensionsClientOutputs & {
-  prf?: {
-    results?: {
-      first?: ArrayBuffer | ArrayBufferView;
-    };
-  };
-};
-
 const toBase64 = (buffer: ArrayBuffer) => {
   const bytes = new Uint8Array(buffer);
   let binary = '';
@@ -60,8 +44,22 @@ const randomBytes = (length: number) => {
   return bytes;
 };
 
-const deriveAesKey = async (prfResult: ArrayBuffer) => {
-  const raw = new Uint8Array(prfResult);
+const equalBytes = (left: Uint8Array, right: Uint8Array) => {
+  if (left.byteLength !== right.byteLength) {
+    return false;
+  }
+
+  for (let i = 0; i < left.byteLength; i += 1) {
+    if (left[i] !== right[i]) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+const deriveAesKey = async (secret: Uint8Array) => {
+  const raw = new Uint8Array(secret);
   if ([16, 24, 32].includes(raw.byteLength)) {
     return crypto.subtle.importKey('raw', raw, { name: 'AES-GCM' }, false, [
       'encrypt',
@@ -87,32 +85,29 @@ const deriveAesKey = async (prfResult: ArrayBuffer) => {
   );
 };
 
-const getPrfResult = async (
-  credentialId: BufferSource,
-  prfSalt: Uint8Array
+const toBase64Url = (value: string) =>
+  value.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+
+const getBiometricAssertionResult = async (
+  expectedCredentialId?: Uint8Array
 ) => {
   if (!navigator.credentials?.get || !window.PublicKeyCredential) {
-    throw new Error('Biometric unlock not supported');
+    throw new Error('Biometric unlock not supported1');
   }
 
   const assertion = await navigator.credentials.get({
     publicKey: {
       challenge: randomBytes(32),
-      allowCredentials: [
-        {
-          id: credentialId,
-          type: 'public-key',
-        },
-      ],
+      allowCredentials: expectedCredentialId
+        ? [
+            {
+              id: expectedCredentialId as BufferSource,
+              type: 'public-key',
+            },
+          ]
+        : undefined,
       userVerification: 'required',
       timeout: 60000,
-      extensions: {
-        prf: {
-          eval: {
-            first: prfSalt,
-          },
-        },
-      } as PrfClientExtensionInput,
     },
   });
 
@@ -121,33 +116,59 @@ const getPrfResult = async (
   }
 
   if (!(assertion instanceof PublicKeyCredential)) {
-    throw new Error('Biometric unlock not supported');
+    throw new Error('Biometric unlock not supported2');
   }
 
-  const extResults =
-    (assertion.getClientExtensionResults?.() as PrfClientExtensionOutput) || {};
-  const prfResults = extResults?.prf?.results?.first;
-
-  if (!prfResults) {
-    throw new Error('Biometric unlock not supported');
+  if (!(assertion.response instanceof AuthenticatorAssertionResponse)) {
+    throw new Error('Biometric unlock not supported3');
   }
 
-  if (prfResults instanceof ArrayBuffer) {
-    return prfResults;
+  const { userHandle } = assertion.response;
+
+  if (!userHandle) {
+    throw new Error('Biometric unlock not supported4');
   }
 
-  if (prfResults.buffer) {
-    return prfResults.buffer as ArrayBuffer;
+  return {
+    credentialId: new Uint8Array(assertion.rawId),
+    userId: new Uint8Array(userHandle),
+  };
+};
+
+const getBiometricRpId = () => window.location.hostname;
+
+export const cleanupBiometricCredential = async (credentialId: string) => {
+  if (!credentialId || !window.PublicKeyCredential) {
+    return false;
   }
 
-  throw new Error('Biometric unlock not supported');
+  const publicKeyCredentialCtor = PublicKeyCredential as typeof PublicKeyCredential & {
+    signalUnknownCredential?: (options: {
+      rpId: string;
+      credentialId: string;
+    }) => Promise<void>;
+  };
+
+  if (typeof publicKeyCredentialCtor.signalUnknownCredential !== 'function') {
+    return false;
+  }
+
+  try {
+    await publicKeyCredentialCtor.signalUnknownCredential({
+      rpId: getBiometricRpId(),
+      credentialId: toBase64Url(credentialId),
+    });
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
 };
 
 export type BiometricUnlockPayload = {
   credentialId: string;
   encryptedPassword: string;
   iv: string;
-  prfSalt: string;
 };
 
 export const isBiometricUnlockSupported = async () => {
@@ -177,13 +198,11 @@ export const createBiometricUnlockPayload = async (
   }
 
   if (!navigator.credentials?.create || !window.PublicKeyCredential) {
-    throw new Error('Biometric unlock not supported');
+    throw new Error('Biometric unlock not supported5');
   }
 
-  const prfSalt = randomBytes(32);
-  const userId = randomBytes(32);
+  const userId = randomBytes(64);
   const challenge = randomBytes(32);
-
   const credential = (await navigator.credentials.create({
     publicKey: {
       challenge,
@@ -209,15 +228,10 @@ export const createBiometricUnlockPayload = async (
       attestation: 'none',
       authenticatorSelection: {
         authenticatorAttachment: 'platform',
+        requireResidentKey: true,
+        residentKey: 'required',
         userVerification: 'required',
       },
-      extensions: {
-        prf: {
-          eval: {
-            first: prfSalt,
-          },
-        },
-      } as PrfClientExtensionInput,
     },
   })) as PublicKeyCredential | null;
 
@@ -226,8 +240,7 @@ export const createBiometricUnlockPayload = async (
   }
 
   const credentialId = new Uint8Array(credential.rawId);
-  const prfResult = await getPrfResult(credentialId, prfSalt);
-  const key = await deriveAesKey(prfResult);
+  const key = await deriveAesKey(userId);
   const iv = randomBytes(12);
   const encrypted = await crypto.subtle.encrypt(
     { name: 'AES-GCM', iv },
@@ -237,7 +250,6 @@ export const createBiometricUnlockPayload = async (
 
   return {
     credentialId: toBase64(credentialId.buffer),
-    prfSalt: toBase64(prfSalt.buffer),
     iv: toBase64(iv.buffer),
     encryptedPassword: toBase64(encrypted),
   };
@@ -246,16 +258,23 @@ export const createBiometricUnlockPayload = async (
 export const decryptBiometricUnlockPassword = async (
   payload: BiometricUnlockPayload
 ) => {
-  const credentialId = fromBase64(payload.credentialId);
-  const prfSalt = fromBase64(payload.prfSalt);
-  const prfResult = await getPrfResult(credentialId, prfSalt);
-  const key = await deriveAesKey(prfResult);
+  const expectedCredentialId = fromBase64(payload.credentialId);
+  const { credentialId, userId } = await getBiometricAssertionResult(
+    expectedCredentialId
+  );
+  if (!equalBytes(credentialId, expectedCredentialId)) {
+    throw new Error('Biometric unlock credential mismatch');
+  }
+
+  const key = await deriveAesKey(userId);
   const iv = fromBase64(payload.iv);
   const encrypted = fromBase64(payload.encryptedPassword);
+
   const decrypted = await crypto.subtle.decrypt(
     { name: 'AES-GCM', iv },
     key,
     encrypted
   );
+
   return decoder.decode(decrypted);
 };
