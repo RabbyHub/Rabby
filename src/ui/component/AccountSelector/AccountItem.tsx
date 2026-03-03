@@ -1,4 +1,4 @@
-import { Button, DrawerProps, Form, Input, InputRef, Tooltip } from 'antd';
+import { Button, DrawerProps, Form, Input, Tooltip } from 'antd';
 import clsx from 'clsx';
 import {
   BRAND_ALIAN_TYPE_TEXT,
@@ -118,7 +118,7 @@ export const AccountItem = memo(
     const titleRef = useRef<HTMLDivElement>(null);
     const [form] = useForm();
 
-    const inputRef = useRef<InputRef>(null);
+    const inputRef = useRef<Input>(null);
     const { t } = useTranslation();
 
     const cexInfo = useMemo(() => {

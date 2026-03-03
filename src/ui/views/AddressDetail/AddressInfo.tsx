@@ -1,4 +1,4 @@
-import { Button, Form, Input, InputRef, Popover } from 'antd';
+import { Button, Form, Input, Popover } from 'antd';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Popup } from 'ui/component';
@@ -46,7 +46,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
   const [alias, setAlias] = useAlias(address);
   const [balance] = useBalance(address);
   const [form] = useForm();
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<Input>(null);
   const accountInfo = useAccountInfo(type, address, brandName);
   const { t } = useTranslation();
 

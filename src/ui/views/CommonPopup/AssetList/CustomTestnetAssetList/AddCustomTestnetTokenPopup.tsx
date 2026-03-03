@@ -6,7 +6,7 @@ import { formatAmount, useWallet } from '@/ui/utils';
 import { findChain, getChainList, getTestnetChainList } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
-import { Button, Form, Input, InputRef, Spin, message } from 'antd';
+import { Button, Form, Input, Spin, message } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -187,7 +187,7 @@ export const AddCustomTestnetTokenContent = ({
     }
   }, [visible]);
 
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<Input>(null);
   useLayoutEffect(() => {
     if (visible) {
       const timer = setTimeout(() => inputRef.current?.focus(), 250);

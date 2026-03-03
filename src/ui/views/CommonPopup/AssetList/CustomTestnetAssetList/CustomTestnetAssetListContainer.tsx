@@ -1,7 +1,7 @@
 import { useRabbySelector } from '@/ui/store';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRequest } from 'ahooks';
-import { InputRef } from 'antd';
+import { Input } from 'antd';
 import React, { useMemo } from 'react';
 import {
   TokenListSkeleton,
@@ -47,7 +47,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
   const [isFetched, setIsFetched] = React.useState<boolean>(false);
   const { isDarkTheme } = useThemeMode();
 
-  const inputRef = React.useRef<InputRef>(null);
+  const inputRef = React.useRef<Input>(null);
   const handleFocusInput = React.useCallback(() => {
     inputRef.current?.focus();
   }, []);
@@ -57,6 +57,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
   React.useEffect(() => {
     if (!visible) {
       setSearch('');
+      inputRef.current?.setValue('');
       inputRef.current?.focus();
       inputRef.current?.blur();
     }

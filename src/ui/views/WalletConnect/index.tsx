@@ -95,8 +95,7 @@ const WalletConnectTemplate: React.FC<{
           type: KEYRING_CLASS.WALLETCONNECT,
         });
       } else {
-        // message.error(t(err?.message as any));
-        message.error(err?.message as any);
+        message.error(t(err?.message as any));
         handleImportByWalletconnect();
       }
     },

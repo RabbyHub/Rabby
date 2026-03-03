@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Input, InputProps, InputRef } from 'antd';
+import { Input, InputProps } from 'antd';
 import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 
 /**
@@ -18,7 +18,7 @@ const DebouncedInput = React.forwardRef(
     },
     ref
   ) => {
-    const inputRef = React.useRef<InputRef>(null);
+    const inputRef = React.useRef<Input>(null);
     React.useImperativeHandle(ref, () => ({
       focus: () => {
         inputRef.current?.focus();

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Drawer, Input, Button, Form, DrawerProps, InputRef } from 'antd';
+import { Drawer, Input, Button, Form, DrawerProps } from 'antd';
 import { useWallet } from 'ui/utils';
 import { UIContactBookItem } from 'background/service/contactBook';
 import { Divide } from '@/ui/views/Approval/components/Divide';
@@ -26,7 +26,7 @@ const EditModal = ({
   const { t } = useTranslation();
   const wallet = useWallet();
   const [name, setName] = useState<string | undefined>('');
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<Input>(null);
 
   const handleConfirm = () => {
     if (!name) return;

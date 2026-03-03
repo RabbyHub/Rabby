@@ -12,7 +12,7 @@ import { debounce, flatten } from 'lodash';
 import styled from 'styled-components';
 import clsx from 'clsx';
 
-import type { Input as AntdInput, InputRef } from 'antd';
+import type { Input as AntdInput } from 'antd';
 
 import { isSameAddress, useAlias, useCexId, useWallet } from 'ui/utils';
 
@@ -90,7 +90,7 @@ export const EnterAddress = ({
     whitelist: s.whitelist.whitelist,
   }));
 
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<AntdInput>(null);
 
   const [inputAddress, setInputAddress] = useState('');
   const [ensResult, setEnsResult] = useState<null | {

@@ -1,5 +1,5 @@
 import { TokenApproval } from '@/background/service/openapi';
-import { Input, InputRef } from 'antd';
+import { Input } from 'antd';
 import { debounce } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ interface PopupSearchProps {
 const PopupSearch = ({ data, visible, onClose }: PopupSearchProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState<string>('');
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<Input>(null);
 
   const filterList = useMemo(() => {
     if (!query) {

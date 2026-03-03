@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { Input, Button, InputRef } from 'antd';
+import { Input, Button } from 'antd';
 import styled from 'styled-components';
 import { useDebounce } from 'react-use';
 import { useWallet } from 'ui/utils';
@@ -84,7 +84,7 @@ const EditRPCModal = ({
   }, [rpcUrl, rpcErrorMsg, isValidating]);
   const { t } = useTranslation();
 
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<Input>(null);
 
   const handleRPCChanged = (url: string) => {
     setRpcUrl(url);
