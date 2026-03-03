@@ -71,9 +71,6 @@ const Unlock = () => {
   const biometricUnlockIv = useRabbySelector(
     (state) => state.preference.biometricUnlockIv
   );
-  const biometricUnlockPrfSalt = useRabbySelector(
-    (state) => state.preference.biometricUnlockPrfSalt
-  );
   const hasUnlockedOnce = useRabbySelector(
     (state) => state.app.hasUnlockedOnce
   );
@@ -153,8 +150,7 @@ const Unlock = () => {
     biometricUnlockEnabled &&
     !!biometricUnlockCredentialId &&
     !!biometricUnlockEncryptedPassword &&
-    !!biometricUnlockIv &&
-    !!biometricUnlockPrfSalt;
+    !!biometricUnlockIv;
 
   useEffect(() => {
     setShowPasswordUnlock(!biometricAvailable);
@@ -177,7 +173,6 @@ const Unlock = () => {
         credentialId: biometricUnlockCredentialId!,
         encryptedPassword: biometricUnlockEncryptedPassword!,
         iv: biometricUnlockIv!,
-        prfSalt: biometricUnlockPrfSalt!,
       });
       await run(password);
     } catch (error: any) {

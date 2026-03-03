@@ -145,7 +145,6 @@ export interface PreferenceStore {
   biometricUnlockCredentialId?: string;
   biometricUnlockEncryptedPassword?: string;
   biometricUnlockIv?: string;
-  biometricUnlockPrfSalt?: string;
 
   rateGuideLastExposure?: RateGuideLastExposure;
 
@@ -236,7 +235,6 @@ class PreferenceService {
         biometricUnlockCredentialId: '',
         biometricUnlockEncryptedPassword: '',
         biometricUnlockIv: '',
-        biometricUnlockPrfSalt: '',
         ga4EventTime: 0,
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
         desktopTabId: undefined,
@@ -351,10 +349,13 @@ class PreferenceService {
     if (!this.store.biometricUnlockIv) {
       this.store.biometricUnlockIv = '';
     }
-    if (!this.store.biometricUnlockPrfSalt) {
-      this.store.biometricUnlockPrfSalt = '';
+    if ((this.store as any).biometricUnlockPrfSalt) {
+      this.store.biometricUnlockEnabled = false;
+      this.store.biometricUnlockCredentialId = '';
+      this.store.biometricUnlockEncryptedPassword = '';
+      this.store.biometricUnlockIv = '';
+      (this.store as any).biometricUnlockPrfSalt = '';
     }
-
     if (
       !this.store.currentVersion ||
       semver(version, this.store.currentVersion) > 0

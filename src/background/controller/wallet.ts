@@ -1945,7 +1945,6 @@ export class WalletController extends BaseController {
     credentialId?: string;
     encryptedPassword?: string;
     iv?: string;
-    prfSalt?: string;
   }) => {
     if (!payload.enabled) {
       preferenceService.setPreferencePartials({
@@ -1953,7 +1952,6 @@ export class WalletController extends BaseController {
         biometricUnlockCredentialId: '',
         biometricUnlockEncryptedPassword: '',
         biometricUnlockIv: '',
-        biometricUnlockPrfSalt: '',
       });
       return;
     }
@@ -1963,7 +1961,6 @@ export class WalletController extends BaseController {
       biometricUnlockCredentialId: payload.credentialId || '',
       biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
       biometricUnlockIv: payload.iv || '',
-      biometricUnlockPrfSalt: payload.prfSalt || '',
     });
   };
 
