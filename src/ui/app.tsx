@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import Views from './views';
@@ -151,6 +151,9 @@ eventBus.addEventListener('syncChainList', (params) => {
   updateChainStore(params);
 });
 
+const rootContainer = document.getElementById('root');
+const root = rootContainer ? createRoot(rootContainer) : null;
+
 const main = () => {
   console.log('name', getUITypeName());
   portMessageChannel.connect(getUITypeName());
@@ -169,11 +172,10 @@ const main = () => {
   wallet.getLocale().then((locale) => {
     addResourceBundle(locale).then(() => {
       changeLanguage(locale);
-      ReactDOM.render(
+      root?.render(
         <Provider store={store}>
           <Views wallet={wallet} />
-        </Provider>,
-        document.getElementById('root')
+        </Provider>
       );
     });
   });

@@ -3,7 +3,7 @@ import {
   NFTApprovalContract,
   NFTApprovalResponse,
 } from '@/background/service/openapi';
-import { Input } from 'antd';
+import { Input, InputRef } from 'antd';
 import { debounce } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +27,7 @@ const PopupSearch = ({
 }: PopupSearchProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState<string>('');
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<InputRef>(null);
 
   const filterData = useMemo(() => {
     if (!query) {

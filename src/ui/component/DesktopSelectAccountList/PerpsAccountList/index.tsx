@@ -291,6 +291,7 @@ const PerpsAccountItem: React.FC<{
   onClick?(): void;
   isSelected?: boolean;
   clearinghouseState: ClearinghouseState | null;
+  children?: React.ReactNode;
 }> = ({ item, onClick, isSelected, clearinghouseState }) => {
   const history = useHistory();
   const { t } = useTranslation();

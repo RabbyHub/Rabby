@@ -485,7 +485,7 @@ function MnemonicsInputs({
                             color: 'var(--r-blue-default, #7084ff)',
                           }}
                         >
-                          {{ count }}
+                          {{ count } as any}
                         </b>
                         -word phrase
                       </Trans>
@@ -521,7 +521,7 @@ function MnemonicsInputs({
                                 color: 'var(--r-blue-default, #7084ff)',
                               }}
                             >
-                              {{ count }}
+                              {{ count } as any}
                             </b>
                             -word phrase and Passphrase
                           </Trans>
@@ -606,7 +606,7 @@ function MnemonicsInputs({
                       color: 'var(--r-blue-default, #7084ff)',
                     }}
                   >
-                    {{ mnemonicsCount }}
+                    {{ mnemonicsCount } as any}
                   </b>
                   -word phrase and Passphrase
                 </Trans>

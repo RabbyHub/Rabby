@@ -9,27 +9,18 @@ import { ReactComponent as RcIconDisconnect } from 'ui/assets/icon-disconnect.sv
 import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
 import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
 
-interface ConnectionItemProps {
+interface ConnectionItemProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onClick'> {
   className?: string;
   item: ConnectedSite;
-  onClick?(): void;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
   onRemove?(origin: string): void;
   onPin?(item: ConnectedSite): void;
 }
 
 export const Item = memo(
-  forwardRef(
-    (
-      {
-        item,
-        onClick,
-        onRemove,
-        onPin,
-        className,
-        ...rest
-      }: ConnectionItemProps & Record<string, any>,
-      ref: React.ForwardedRef<any>
-    ) => {
+  forwardRef<HTMLDivElement, ConnectionItemProps>(
+    ({ item, onClick, onRemove, onPin, className, ...rest }, ref) => {
       const chainItem = findChainByEnum(item.chain);
       return (
         <div

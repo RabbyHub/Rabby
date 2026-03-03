@@ -9,7 +9,7 @@ import { Card } from '@/ui/component/NewUserImport';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
-import { Button, Input } from 'antd';
+import { Button, Input, InputRef } from 'antd';
 import clsx from 'clsx';
 import { ReactComponent as RcIconChecked } from '@/ui/assets/new-user-import/check.svg';
 import { ReactComponent as RcIconPen } from '@/ui/assets/new-user-import/pen.svg';
@@ -46,7 +46,7 @@ const AccountItem = ({ account }: { account: Account }) => {
 
   const [localName, setLocalName] = useState(name || '');
 
-  const ref = useRef<Input>(null);
+  const ref = useRef<InputRef>(null);
 
   const [defaultName, setDefaultName] = useState(name || '');
 

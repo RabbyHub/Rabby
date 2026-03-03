@@ -9,7 +9,7 @@ import React, {
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useDetectLoss, useTokenPair } from '../hooks/token';
-import { Alert, Button, Input, Modal } from 'antd';
+import { Alert, Button, Input, InputRef, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import {
   getUiType,
@@ -178,7 +178,7 @@ export const Main = () => {
     [chain, originPreferMEVGuarded]
   );
 
-  const inputRef = useRef<Input>();
+  const inputRef = useRef<InputRef>();
 
   useLayoutEffect(() => {
     if (payToken?.id) {
