@@ -37,6 +37,7 @@ import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { Account } from '@/background/service/preference';
 import { sortTokenList } from '../../utils';
 import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
+import { useTwoStepSwap } from '@/ui/views/Swap/hooks/twoStepSwap';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -582,7 +583,8 @@ export const useDepositWithdraw = (
   const handleSignDepositDone = useMemoizedFn(async (hash: string) => {
     if (!hash) return;
 
-    const depositType = bridgeQuote?.tx ? 'receive' : 'deposit';
+    const depositType =
+      bridgeQuote?.tx || isHypeDeposit ? 'receive' : 'deposit';
 
     dispatch.perps.setLocalLoadingHistory([
       {
@@ -600,6 +602,19 @@ export const useDepositWithdraw = (
     account: currentPerpsAccount!,
   });
 
+  const {
+    shouldTwoStep,
+    currentTxs: twoStepCurrentTxs,
+    next: twoStepNext,
+    isApprove: twoStepIsApprove,
+    approvePending: twoStepApprovePending,
+  } = useTwoStepSwap({
+    chain: chainInfo?.enum || ('' as CHAINS_ENUM),
+    txs: miniSignTx || undefined,
+    enable: !!canUseDirectSubmitTx && isHypeDeposit,
+    type: 'approveBridge',
+  });
+
   // Handle deposit
   const handleDepositClick = useMemoizedFn(async () => {
     if (!miniSignTx || !currentPerpsAccount) {
@@ -607,14 +622,14 @@ export const useDepositWithdraw = (
       return;
     }
 
+    const txsToSign = shouldTwoStep ? twoStepCurrentTxs : miniSignTx;
+
     if (canUseDirectSubmitTx) {
       setIsPreparingSign(true);
       closeSign();
       try {
-        // await dispatch.account.changeAccountAsync(currentPerpsAccount);
-
         const hashes = await openDirect({
-          txs: miniSignTx,
+          txs: txsToSign,
           checkGasFeeTooHigh: true,
           getContainer: '.desktop-perps-deposit-withdraw-content',
           ga: {
@@ -627,11 +642,17 @@ export const useDepositWithdraw = (
           },
         });
         if (hashes && hashes.length > 0) {
-          handleSignDepositDone(hashes[hashes.length - 1]);
-          resetFormValue();
-          onCancel();
+          const lastHash = hashes[hashes.length - 1];
+          if (shouldTwoStep && twoStepIsApprove) {
+            twoStepNext(lastHash);
+          } else {
+            handleSignDepositDone(lastHash);
+            resetFormValue();
+            onCancel();
+          }
         }
       } catch (error) {
+        console.error('handleDepositClick error', error);
         if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
           return;
         }
@@ -911,6 +932,11 @@ export const useDepositWithdraw = (
     isDirectDeposit,
     estReceiveUsdValue,
     tokenInfo,
+
+    // Two-step deposit (HYPE)
+    shouldTwoStep,
+    twoStepIsApprove,
+    twoStepApprovePending,
 
     // Actions
     handlePercentageClick,

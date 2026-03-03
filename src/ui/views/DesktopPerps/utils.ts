@@ -328,8 +328,8 @@ export const sortTokenList = (
 
   // Sort by amount * price (descending)
   items.sort((a, b) => {
-    const aValue = b.amount * b.price;
-    const bValue = a.amount * a.price;
+    const aValue = a.amount * a.price;
+    const bValue = b.amount * b.price;
 
     // Check if tokens are in supported chains
     const aChain = findChainByServerID(a.chain)?.enum || CHAINS_ENUM.ETH;
@@ -342,7 +342,7 @@ export const sortTokenList = (
     if (!aIsSupported && bIsSupported) return 1;
 
     // Both supported or both not supported, sort by value
-    return aValue - bValue;
+    return bValue - aValue;
   });
 
   // Move HYPE USDC to the front if it exists

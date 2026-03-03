@@ -76,6 +76,11 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
     // isMissingRole,
     estReceiveUsdValue,
 
+    // Two-step deposit (HYPE)
+    shouldTwoStep,
+    twoStepIsApprove,
+    twoStepApprovePending,
+
     // Actions
     handlePercentageClick,
     handleTokenSelect,
@@ -416,7 +421,9 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
             <div className="border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
               <Button
                 loading={
-                  type === 'deposit' ? isPreparingSign : isWithdrawLoading
+                  type === 'deposit'
+                    ? isPreparingSign || twoStepApprovePending
+                    : isWithdrawLoading
                 }
                 onClick={
                   type === 'deposit' ? handleDepositClick : handleWithdrawClick
@@ -424,14 +431,17 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                 disabled={
                   !isValidAmount ||
                   Boolean(quoteError) ||
-                  (type === 'deposit' && quoteLoading)
+                  (type === 'deposit' && quoteLoading) ||
+                  twoStepApprovePending
                 }
                 size="large"
                 type="primary"
                 className="w-full h-[44px] rounded-[8px] text-[14px] font-medium"
               >
                 {type === 'deposit'
-                  ? t('page.perps.deposit')
+                  ? shouldTwoStep && twoStepIsApprove
+                    ? t('page.swap.approve')
+                    : t('page.perps.deposit')
                   : t('page.perps.withdraw')}
               </Button>
             </div>
