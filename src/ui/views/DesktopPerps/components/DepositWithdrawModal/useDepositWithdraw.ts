@@ -13,6 +13,10 @@ import {
   ARB_USDC_TOKEN_ITEM,
   ARB_USDC_TOKEN_SERVER_CHAIN,
   PERPS_SEND_ARB_USDC_ADDRESS,
+  HYPE_USDC_TOKEN_ID,
+  HYPE_USDC_TOKEN_SERVER_CHAIN,
+  HYPE_CORE_DEPOSIT_WALLET,
+  HYPE_CORE_DEPOSIT_PERPS_DEX,
 } from '@/ui/views/Perps/constants';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { tokenAmountBn } from '@/ui/utils/token';
@@ -116,6 +120,23 @@ export const useDepositWithdraw = (
 
   const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
 
+  const pickDefaultToken = useCallback((list: TokenItem[]) => {
+    if (!list.length) return;
+
+    const first = list[0];
+    const second = list[1];
+
+    if (first?.amount) {
+      setSelectedToken(first);
+      return;
+    }
+    if (second?.amount) {
+      setSelectedToken(second);
+      return;
+    }
+    setSelectedToken(list[2] ?? first);
+  }, []);
+
   // Fetch token list
   const fetchTokenList = useCallback(async () => {
     setTokenListLoading(true);
@@ -125,11 +146,7 @@ export const useDepositWithdraw = (
     const sortedTokenList = sortTokenList(res, supportedChains);
     setTokenListLoading(false);
     setTokenList(sortedTokenList);
-    if (!sortedTokenList[0]?.amount && sortedTokenList.length > 1) {
-      setSelectedToken(sortedTokenList[1]);
-    } else {
-      setSelectedToken(sortedTokenList[0]);
-    }
+    pickDefaultToken(sortedTokenList);
 
     const tokenRes = await batchQueryTokens(
       currentPerpsAccount.address,
@@ -138,14 +155,18 @@ export const useDepositWithdraw = (
       false,
       false
     );
-    setTokenList(sortTokenList(tokenRes, supportedChains));
-    if (!sortedTokenList[0]?.amount && sortedTokenList.length > 1) {
-      setSelectedToken(sortedTokenList[1]);
-    } else {
-      setSelectedToken(sortedTokenList[0]);
-    }
+    const fullSortedList = sortTokenList(tokenRes, supportedChains);
+    setTokenList(fullSortedList);
+    pickDefaultToken(fullSortedList);
     return;
-  }, [currentPerpsAccount?.address, visible, wallet, type, supportedChains]);
+  }, [
+    currentPerpsAccount?.address,
+    visible,
+    wallet,
+    type,
+    supportedChains,
+    pickDefaultToken,
+  ]);
 
   useEffect(() => {
     if (visible) {
@@ -189,12 +210,20 @@ export const useDepositWithdraw = (
     };
   }, []);
 
-  const isDirectDeposit = useMemo(() => {
+  const isHypeDeposit = useMemo(() => {
     return (
-      selectedToken?.id === ARB_USDC_TOKEN_ID &&
-      selectedToken?.chain === ARB_USDC_TOKEN_SERVER_CHAIN
+      selectedToken?.id === HYPE_USDC_TOKEN_ID &&
+      selectedToken?.chain === HYPE_USDC_TOKEN_SERVER_CHAIN
     );
   }, [selectedToken]);
+
+  const isDirectDeposit = useMemo(() => {
+    return (
+      (selectedToken?.id === ARB_USDC_TOKEN_ID &&
+        selectedToken?.chain === ARB_USDC_TOKEN_SERVER_CHAIN) ||
+      isHypeDeposit
+    );
+  }, [selectedToken, isHypeDeposit]);
 
   const depositMaxUsdValue = useMemo(() => {
     return isDirectDeposit
@@ -257,6 +286,77 @@ export const useDepositWithdraw = (
     setCacheUsdValue(0);
   });
 
+  // Build HYPE deposit transactions (approve + deposit)
+  const buildHypeDepositTxs = useMemoizedFn(
+    async (amount: number, token: TokenItem) => {
+      if (!currentPerpsAccount) return [];
+
+      const chain = findChain({
+        serverId: HYPE_USDC_TOKEN_SERVER_CHAIN,
+      })!;
+      const rawAmount = new BigNumber(amount)
+        .multipliedBy(10 ** token.decimals)
+        .toFixed(0, 1)
+        .toString();
+
+      const targetTxs: Tx[] = [];
+
+      const allowance = await wallet.getERC20Allowance(
+        HYPE_USDC_TOKEN_SERVER_CHAIN,
+        HYPE_USDC_TOKEN_ID,
+        HYPE_CORE_DEPOSIT_WALLET
+      );
+
+      const tokenApproved = new BigNumber(allowance).gte(
+        new BigNumber(rawAmount)
+      );
+
+      if (!tokenApproved) {
+        const resp = await wallet.approveToken(
+          HYPE_USDC_TOKEN_SERVER_CHAIN,
+          HYPE_USDC_TOKEN_ID,
+          HYPE_CORE_DEPOSIT_WALLET,
+          rawAmount,
+          {
+            ga: {
+              category: 'Perps',
+              source: 'Perps',
+              trigger: 'Perps',
+            },
+          },
+          undefined,
+          undefined,
+          true,
+          currentPerpsAccount
+        );
+        targetTxs.push(resp.params[0]);
+      }
+
+      const depositData = abiCoder.encodeFunctionCall(
+        {
+          name: 'deposit',
+          type: 'function',
+          inputs: [
+            { type: 'uint256', name: 'amount' },
+            { type: 'uint32', name: 'destinationDex' },
+          ] as any[],
+        },
+        [rawAmount, String(HYPE_CORE_DEPOSIT_PERPS_DEX)] as any[]
+      );
+
+      targetTxs.push({
+        chainId: chain.id,
+        from: currentPerpsAccount.address,
+        to: HYPE_CORE_DEPOSIT_WALLET,
+        value: '0x0',
+        data: depositData,
+        gasPrice: gasPrice || undefined,
+      } as Tx);
+
+      return targetTxs;
+    }
+  );
+
   // Update mini sign tx for deposit
   const updateMiniSignTx = useMemoizedFn(async () => {
     if (!visible || type === 'withdraw' || !selectedToken) return;
@@ -265,7 +365,19 @@ export const useDepositWithdraw = (
 
     const token = tokenInfo || ARB_USDC_TOKEN_ITEM;
 
-    if (token.id !== ARB_USDC_TOKEN_ID) {
+    if (isHypeDeposit) {
+      setQuoteLoading(true);
+      try {
+        const hypeTxs = await buildHypeDepositTxs(value, token);
+        setMiniSignTx(hypeTxs);
+        setBridgeQuote(null);
+        setCacheUsdValue(value);
+        setQuoteLoading(false);
+      } catch (error) {
+        console.error('buildHypeDepositTxs error', error);
+        resetBridgeQuote();
+      }
+    } else if (token.id !== ARB_USDC_TOKEN_ID) {
       setQuoteLoading(true);
       const txs: Tx[] = [];
       try {
@@ -444,6 +556,7 @@ export const useDepositWithdraw = (
     tokenInfo,
     isMissingRole,
     selectedToken,
+    isHypeDeposit,
   ]);
 
   const postPerpBridgeQuote = useMemoizedFn(async (hash: string) => {
