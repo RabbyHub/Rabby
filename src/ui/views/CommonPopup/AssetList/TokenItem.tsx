@@ -14,6 +14,7 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCommonPopupView } from '@/ui/utils';
 import { RcIconSwapCC, RcIconSendCC } from 'ui/assets/dashboard/panel';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -34,25 +35,27 @@ const StyledTRow = styled(TRow)`
   &:hover {
     box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
   }
+  &:active:not(:has(.token-action-btn:active)) {
+    background-color: var(--r-blue-light1, #edf0ff) !important;
+  }
 `;
 
-const ActionBtnWrapper = styled.div`
+const ActionBtnWrapper = styled.div<{ isDark?: boolean }>`
   position: relative;
 
   &::after {
     content: '';
     position: absolute;
     z-index: -1;
-    top: 0;
-    bottom: 0;
+    top: -8px;
+    bottom: -8px;
     left: -10px;
     right: -42px;
-    height: 24px;
-    /*background: linear-gradient(
-      to right,
-      transparent 0%,
-      var(--rabby-gradient-fade, rgba(255, 255, 255, 1)) 100%
-    );*/
+    height: 40px;
+    background: ${({ isDark }) =>
+      isDark
+        ? 'linear-gradient(90deg, rgba(12, 15, 31, 1) 0%, rgba(12, 15, 31, 0.9) 100%)'
+        : 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 1) 100%)'};
     pointer-events: none;
   }
 `;
@@ -80,6 +83,7 @@ const ActionBtn = styled.div`
   gap: 4px;
 
   & > span {
+    max-width: 80%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -99,6 +103,7 @@ const ActionBtn = styled.div`
 const TokenItemAsset: React.FC<Props> = ({ item }) => {
   const { t } = useTranslation();
   const history = useHistory();
+  const { isDarkTheme } = useThemeMode();
   const chain = findChain({
     serverId: item.chain,
   });
@@ -168,12 +173,21 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
             {item._amountStr}
           </span>
         </div>
-        <ActionBtnWrapper className="hidden group-hover:flex flex-row gap-8 items-center flex-nowrap">
-          <ActionBtn onClick={gotoSwap} className="active:bg-rb-brand-light-1">
+        <ActionBtnWrapper
+          isDark={isDarkTheme}
+          className="hidden group-hover:flex flex-row gap-8 items-center flex-nowrap"
+        >
+          <ActionBtn
+            onClick={gotoSwap}
+            className="token-action-btn active:bg-rb-brand-light-1"
+          >
             <RcIconSwapCC width={12} height={12} />
             <span>{t('page.dashboard.tokenDetail.swap')}</span>
           </ActionBtn>
-          <ActionBtn onClick={gotoSend} className="active:bg-rb-brand-light-1">
+          <ActionBtn
+            onClick={gotoSend}
+            className="token-action-btn active:bg-rb-brand-light-1"
+          >
             <RcIconSendCC width={12} height={12} />
             <span>{t('page.dashboard.tokenDetail.send')}</span>
           </ActionBtn>
@@ -258,7 +272,7 @@ export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
         'group cursor-pointer',
         'h-[60px] mt-8 pl-12 pr-16 justify-between',
         'rounded-[8px] border border-transparent bg-r-neutral-card1',
-        'hover:border-blue-light active:bg-blue-light active:bg-opacity-10'
+        'hover:border-blue-light active:bg-opacity-10'
       )}
     >
       <TokenItemAsset item={item} />
