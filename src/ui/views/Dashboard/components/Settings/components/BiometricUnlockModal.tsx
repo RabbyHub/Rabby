@@ -30,12 +30,12 @@ const BiometricUnlockPopup = styled(Popup)`
   .biometric-pwd-input {
     border-radius: 8px;
     background: var(--r-neutral-card1, #fff) !important;
-    border: 1px solid transparent;
+    border: 1px solid var(--r-neutral-line) !important;
   }
 
   .biometric-pwd-input:focus,
   .biometric-pwd-input.ant-input-focused {
-    border: 1px solid var(--r-blue-default, #4c65ff);
+    border: 1px solid var(--r-blue-default, #4c65ff) !important;
   }
 
   .fixed-footer {

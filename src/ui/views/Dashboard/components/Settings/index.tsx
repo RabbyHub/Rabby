@@ -987,6 +987,21 @@ const SettingsInner = ({
       label: t('page.dashboard.settings.settings.label'),
       items: [
         {
+          leftIcon: RCIconBiometric,
+          content: t('page.dashboard.settings.settings.biometricUnlock'),
+          rightIcon: (
+            <Switch
+              checked={!!biometricUnlockEnabled}
+              disabled={
+                biometricBusy ||
+                (!biometricSupported && !biometricUnlockEnabled)
+              }
+              loading={biometricBusy}
+              onChange={handleToggleBiometricUnlock}
+            />
+          ),
+        },
+        {
           leftIcon: RcIconSwitchPwdForNonWhitelistedTx,
           // Password for non-whitelisted transfers
           content: t(
@@ -1009,22 +1024,6 @@ const SettingsInner = ({
             />
           ),
         },
-        {
-          leftIcon: RCIconBiometric,
-          content: t('page.dashboard.settings.settings.biometricUnlock'),
-          rightIcon: (
-            <Switch
-              checked={!!biometricUnlockEnabled}
-              disabled={
-                biometricBusy ||
-                (!biometricSupported && !biometricUnlockEnabled)
-              }
-              loading={biometricBusy}
-              onChange={handleToggleBiometricUnlock}
-            />
-          ),
-        },
-
         {
           leftIcon: RcIconCustomTestnet,
           content: t('page.dashboard.settings.settings.customTestnet'),
