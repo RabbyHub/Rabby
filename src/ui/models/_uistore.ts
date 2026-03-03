@@ -75,12 +75,6 @@ export default (store: typeof import('@/ui/store').default) => {
         });
         break;
       }
-      case 'biometricUnlockPrfSalt': {
-        dispatch.preference.setField({
-          biometricUnlockPrfSalt: payload.partials.biometricUnlockPrfSalt,
-        });
-        break;
-      }
     }
   });
 

@@ -76,6 +76,7 @@ import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTrigge
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
 import {
+  cleanupBiometricCredential,
   createBiometricUnlockPayload,
   isBiometricUserCanceledError,
   isBiometricUnlockSupported,
@@ -633,6 +634,9 @@ const SettingsInner = ({
   const biometricUnlockEnabled = useRabbySelector(
     (state) => state.preference.biometricUnlockEnabled
   );
+  const biometricUnlockCredentialId = useRabbySelector(
+    (state) => state.preference.biometricUnlockCredentialId
+  );
   const locale = useRabbySelector((state) => state.preference.locale);
 
   const AUTO_LOCK_OPTIONS = useAutoLockOptions();
@@ -712,6 +716,7 @@ const SettingsInner = ({
 
       setBiometricBusy(true);
       try {
+        await cleanupBiometricCredential(biometricUnlockCredentialId || '');
         await dispatch.preference.setBiometricUnlock({ enabled: false });
         message.success(t('page.dashboard.settings.biometricUnlockDisabled'));
       } catch (error) {
@@ -736,7 +741,6 @@ const SettingsInner = ({
           credentialId: payload.credentialId,
           encryptedPassword: payload.encryptedPassword,
           iv: payload.iv,
-          prfSalt: payload.prfSalt,
         });
         message.success(t('page.dashboard.settings.biometricUnlockEnabled'));
         setIsShowBiometricModal(false);
