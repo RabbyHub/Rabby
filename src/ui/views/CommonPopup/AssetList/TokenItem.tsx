@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TCell, TRow } from './components/Table';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import clsx from 'clsx';
@@ -16,10 +16,18 @@ import { useCommonPopupView } from '@/ui/utils';
 import { RcIconSwapCC, RcIconSendCC } from 'ui/assets/dashboard/panel';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 
+const HOVER_DELAY_MS = 500;
+
 export interface Props {
   item: AbstractPortfolioToken;
   style?: React.CSSProperties;
   onClick?: () => void;
+}
+
+export interface TokenItemAssetProps extends Props {
+  showButtons: boolean;
+  onLpTagMouseEnter: () => void;
+  onLpTagMouseLeave: () => void;
 }
 
 const LpContainer = styled.div`
@@ -42,6 +50,7 @@ const StyledTRow = styled(TRow)`
 
 const ActionBtnWrapper = styled.div<{ isDark?: boolean }>`
   position: relative;
+  width: min-content;
 
   &::after {
     content: '';
@@ -62,19 +71,16 @@ const ActionBtnWrapper = styled.div<{ isDark?: boolean }>`
 
 const ActionBtn = styled.div`
   height: 24px;
-  min-width: 64px;
+  padding-left: 8px;
+  padding-right: 8px;
 
   font-size: 12px;
   font-weight: 500;
   border-radius: 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 
   cursor: pointer;
   color: var(--r-neutral-title-1, #13141a);
   background: var(--r-neutral-bg-2, #f5f6fa);
-
   flex-shrink: 0;
   flex: 0 0 auto;
   display: flex;
@@ -83,11 +89,7 @@ const ActionBtn = styled.div`
   gap: 4px;
 
   & > span {
-    max-width: 80%;
-    overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
-    min-width: 0;
   }
 
   & > svg,
@@ -100,7 +102,12 @@ const ActionBtn = styled.div`
   }
 `;
 
-const TokenItemAsset: React.FC<Props> = ({ item }) => {
+const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
+  item,
+  showButtons,
+  onLpTagMouseEnter,
+  onLpTagMouseLeave,
+}) => {
   const { t } = useTranslation();
   const history = useHistory();
   const { isDarkTheme } = useThemeMode();
@@ -154,19 +161,35 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           />
         </TooltipWithMagnetArrow>
       </div>
-      <div className="flex flex-1 flex-col gap-2 overflow-hidden group-hover:overflow-visible min-w-0">
-        <div className="group-hover:hidden flex flex-col gap-2 overflow-hidden">
+      <div
+        className={clsx(
+          'flex flex-1 flex-col gap-2 min-w-0',
+          showButtons ? 'overflow-visible' : 'overflow-hidden'
+        )}
+      >
+        <div
+          className={clsx(
+            'flex flex-col gap-2 overflow-hidden',
+            showButtons && 'hidden'
+          )}
+        >
           <LpContainer>
             <span className="text-r-neutral-title-1 font-medium text-15 leading-[15px] whitespace-nowrap overflow-ellipsis overflow-hidden inner-symbol">
               {item.symbol}
             </span>
             {isLpToken(item) && (
-              <LpTokenTag
-                size={13.5}
-                inModal
-                iconClassName="text-r-neutral-foot"
-                protocolName={item.protocol_id || ''}
-              />
+              <span
+                onMouseEnter={onLpTagMouseEnter}
+                onMouseLeave={onLpTagMouseLeave}
+                className="inline-flex"
+              >
+                <LpTokenTag
+                  size={13.5}
+                  inModal
+                  iconClassName="text-r-neutral-foot"
+                  protocolName={item.protocol_id || ''}
+                />
+              </span>
             )}
           </LpContainer>
           <span className="text-r-neutral-foot text-13 leading-[14px] truncate whitespace-nowrap overflow-ellipsis overflow-hidden">
@@ -175,7 +198,10 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
         </div>
         <ActionBtnWrapper
           isDark={isDarkTheme}
-          className="hidden group-hover:flex flex-row gap-8 items-center flex-nowrap"
+          className={clsx(
+            'flex flex-row gap-8 items-center flex-nowrap',
+            !showButtons && 'hidden'
+          )}
         >
           <ActionBtn
             onClick={gotoSwap}
@@ -256,10 +282,55 @@ const TokenItemMarketInfo: React.FC<Props> = ({ item }) => {
 };
 
 export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
+  const [showButtons, setShowButtons] = useState(false);
+  const isHoveringLpTagRef = useRef(false);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleRowMouseEnter = useCallback(() => {
+    if (isHoveringLpTagRef.current) return;
+    hoverTimerRef.current = setTimeout(() => {
+      setShowButtons(true);
+    }, HOVER_DELAY_MS);
+  }, []);
+
+  const handleRowMouseLeave = useCallback(() => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = undefined;
+    }
+    setShowButtons(false);
+  }, []);
+
+  const handleLpTagMouseEnter = useCallback(() => {
+    isHoveringLpTagRef.current = true;
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = undefined;
+    }
+    setShowButtons(false);
+  }, []);
+
+  const handleLpTagMouseLeave = useCallback(() => {
+    isHoveringLpTagRef.current = false;
+    hoverTimerRef.current = setTimeout(() => {
+      setShowButtons(true);
+    }, HOVER_DELAY_MS);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+      }
+    };
+  }, []);
+
   return (
     <StyledTRow
       onClick={onClick}
       style={style}
+      onMouseEnter={handleRowMouseEnter}
+      onMouseLeave={handleRowMouseLeave}
       className={clsx(
         'group cursor-pointer',
         'h-[60px] mt-8 pl-12 pr-16 justify-between',
@@ -267,7 +338,12 @@ export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
         'hover:border-blue-light active:bg-opacity-10'
       )}
     >
-      <TokenItemAsset item={item} />
+      <TokenItemAsset
+        item={item}
+        showButtons={showButtons}
+        onLpTagMouseEnter={handleLpTagMouseEnter}
+        onLpTagMouseLeave={handleLpTagMouseLeave}
+      />
       <TokenItemMarketInfo item={item} />
     </StyledTRow>
   );
