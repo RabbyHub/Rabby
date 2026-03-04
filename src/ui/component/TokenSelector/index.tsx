@@ -858,7 +858,7 @@ function CommonTokenItem(props: {
                   )}
                 </div>
                 <div className="flex flex-row gap-4 items-center">
-                  <div className="text-r-neutral-foot text-13 font-normal leading-[15px]">
+                  <div className="text-r-neutral-foot text-13 font-normal leading-[14px]">
                     ${formatPrice(value?.price || 0)}
                   </div>
                   {isNil(value?.price_24h_change) ? (
