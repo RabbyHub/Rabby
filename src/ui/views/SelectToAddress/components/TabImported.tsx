@@ -122,7 +122,6 @@ export default function TabImported({
                   showWhitelistIcon={item._inWhitelist}
                   allowEditAlias
                   hideBalance={false}
-                  longEllipsis
                   address={item.address}
                   alias={ellipsisAddress(item.address)}
                   type={item.type}

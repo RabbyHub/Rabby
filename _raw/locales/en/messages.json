@@ -3646,8 +3646,8 @@
       },
       "speedUpTitle": "Speed Up",
       "cancelTitle": "On-chain Cancel",
-      "cancleDesc": "Gas price increased by {{percent}} to cancel transaction",
-      "speedUpDesc": "Gas price increased by {{percent}} to speed up"
+      "cancleDesc": "Gas increased by {{percent}} to cancel transaction",
+      "speedUpDesc": "Gas increased by {{percent}} to speed up"
     },
     "gasAccount": {
       "title": "GasAccount",

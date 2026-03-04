@@ -2556,8 +2556,8 @@
       "signWithLedger": "Ledger ile imzala",
       "cancelTitle": "Zincir Üzerinde İptal",
       "signWithOneKey": "OneKey ile İmza At",
-      "speedUpDesc": "Gas fiyatı hızlandırmak için {{percent}} arttı.",
-      "cancleDesc": "Gas fiyatı, işlemi iptal etmek için {{percent}} oranında arttı.",
+      "speedUpDesc": "",
+      "cancleDesc": "",
       "speedUpTitle": "Hızlandırmak"
     },
     "gasAccount": {
