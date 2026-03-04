@@ -5,10 +5,9 @@ export const rules: Record<string, StepConfig[]> = {
     {
       wait: {
         path: [
-          { css: 'nav' },
-          { within: true },
-          { text: 'Log In', selector: 'button' },
-          { enabled: true },
+          {
+            css: '#__next nav button.text-text-brand.bg-button-ghost-bg > span',
+          },
         ],
       },
       action: { type: 'click' },
@@ -16,23 +15,7 @@ export const rules: Record<string, StepConfig[]> = {
     {
       wait: {
         path: [
-          {
-            attr: {
-              selector: 'div.fixed',
-              name: 'role',
-              value: 'dialog',
-              mode: 'equals',
-            },
-          },
-          { within: true },
-          {
-            attr: {
-              selector: 'img',
-              name: 'alt',
-              value: 'Rabby',
-              mode: 'startsWith',
-            },
-          },
+          { css: 'svg > path[fill="url(#paint0_linear_60607_36577)"]' },
           { closest: 'button' },
           { enabled: true },
         ],
