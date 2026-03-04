@@ -4,7 +4,7 @@ import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import clsx from 'clsx';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { Image } from 'antd';
-import { isNil } from 'lodash';
+import { isNumber } from 'lodash';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
@@ -206,11 +206,7 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
       )}
     >
       <div>${item._priceStr}</div>
-      {isNil(item.price_24h_change) ? (
-        <span className="text-r-neutral-foot text-13 font-normal leading-[14px]">
-          (0%)
-        </span>
-      ) : (
+      {isNumber(item.price_24h_change) && (
         <div
           className={clsx('font-normal text-12', {
             'text-green': item.price_24h_change > 0,
@@ -243,11 +239,7 @@ const TokenItemMarketInfo: React.FC<Props> = ({ item }) => {
         <div className="text-r-neutral-foot text-13 leading-[14px]">
           ${item._priceStr}
         </div>
-        {isNil(item.price_24h_change) ? (
-          <span className="text-r-neutral-foot text-13 font-normal leading-[14px]">
-            (0%)
-          </span>
-        ) : (
+        {isNumber(item.price_24h_change) && (
           <div
             className={clsx('font-normal text-13 leading-[14px]', {
               'text-green': item.price_24h_change > 0,
