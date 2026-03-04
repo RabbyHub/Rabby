@@ -82,6 +82,15 @@ const HistoryAccountItemRow: React.FC<HistoryAccountItemProps> = ({ data }) => {
           {isRealDeposit ? '+' : '-'}
           {`${formatUsdValue(usdValue)}`}
         </div>
+        {/* <div
+          className="text-13 text-r-neutral-foot cursor-pointer items-center flex gap-4"
+          onClick={() => {
+            openInTab(`https://app.hyperliquid.xyz/explorer/tx/${hash}`);
+          }}
+        >
+          {ellipsisAddress(hash)}
+          <RcIconOpenExternal />
+        </div> */}
       </div>
     </div>
   );
