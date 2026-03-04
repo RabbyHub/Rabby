@@ -1905,6 +1905,7 @@ export class WalletController extends BaseController {
     });
   };
   isUnlocked = () => keyringService.isUnlocked();
+  hasPublicAccountSnapshot = () => keyringService.hasPublicAccountSnapshot();
 
   lockWallet = async () => {
     await keyringService.setLocked();
@@ -4459,12 +4460,8 @@ export class WalletController extends BaseController {
   };
 
   getTypedAccounts = async (type) => {
-    return Promise.all(
-      keyringService.keyrings
-        .map((keyring) => new DisplayKeyring(keyring))
-        .filter((keyring) => !type || keyring.type === type)
-        .map((keyring) => keyringService.displayForKeyring(keyring))
-    );
+    const typedAccounts = await keyringService.getAllTypedAccounts();
+    return typedAccounts.filter((keyring) => !type || keyring.type === type);
   };
 
   getAllVisibleAccounts: () => Promise<DisplayedKeryring[]> = async () => {

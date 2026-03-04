@@ -154,6 +154,16 @@ class TypedDataSignatureManager {
     const { wallet, txs, config } = request;
     const result: string[] = [...existingResults];
 
+    try {
+      await SignatureSteps.ensureWalletUnlocked({
+        wallet: wallet,
+        getContainer: getContainer || config.getContainer,
+      });
+    } catch (error) {
+      this.reject(MINI_SIGN_ERROR.USER_CANCELLED);
+      return;
+    }
+
     if (config.account.type === KEYRING_TYPE.HdKeyring) {
       try {
         await SignatureSteps.invokeEnterPassphraseModal({

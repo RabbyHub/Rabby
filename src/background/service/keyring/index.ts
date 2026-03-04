@@ -88,6 +88,20 @@ interface MemStoreState {
   preMnemonics: string;
 }
 
+type PublicAccountSnapshotItem = {
+  address: string;
+  type: string;
+  brandName: string;
+};
+
+type PublicAccountSnapshotV1 = {
+  version: 1;
+  updatedAt: number;
+  accounts: PublicAccountSnapshotItem[];
+};
+
+const PUBLIC_ACCOUNT_SNAPSHOT_VERSION = 1;
+
 export interface DisplayedKeryring {
   type: string;
   accounts: {
@@ -130,8 +144,166 @@ export class KeyringService extends EventEmitter {
     this.keyrings = [];
   }
 
+  private normalizePublicAccountSnapshot(
+    raw: any
+  ): PublicAccountSnapshotV1 | undefined {
+    if (!raw || !Array.isArray(raw.accounts)) {
+      return undefined;
+    }
+    const accounts = raw.accounts
+      .map((item) => {
+        if (
+          !item ||
+          typeof item.address !== 'string' ||
+          typeof item.type !== 'string'
+        ) {
+          return null;
+        }
+        const brandName =
+          typeof item.brandName === 'string' && item.brandName
+            ? item.brandName
+            : item.type;
+        return {
+          address: normalizeAddress(item.address),
+          type: item.type,
+          brandName,
+        } as PublicAccountSnapshotItem;
+      })
+      .filter(Boolean) as PublicAccountSnapshotItem[];
+
+    return {
+      version: PUBLIC_ACCOUNT_SNAPSHOT_VERSION,
+      updatedAt:
+        typeof raw.updatedAt === 'number' && raw.updatedAt > 0
+          ? raw.updatedAt
+          : Date.now(),
+      accounts,
+    };
+  }
+
+  private getPublicAccountSnapshotFromStore() {
+    if (!this.store) {
+      return undefined;
+    }
+    return this.normalizePublicAccountSnapshot(
+      this.store.getState().publicAccountSnapshot
+    );
+  }
+
+  private isPublicAccountSnapshotValid(snapshot?: PublicAccountSnapshotV1) {
+    return (
+      !!snapshot &&
+      Array.isArray(snapshot.accounts) &&
+      snapshot.accounts.length > 0 &&
+      snapshot.accounts.every((item) => !!item.address && !!item.type)
+    );
+  }
+
+  hasPublicAccountSnapshot() {
+    const snapshot = this.getPublicAccountSnapshotFromStore();
+    return this.isPublicAccountSnapshotValid(snapshot);
+  }
+
+  private async buildPublicAccountSnapshotFromRuntime(): Promise<PublicAccountSnapshotV1> {
+    const typedAccounts = await Promise.all(
+      this.keyrings.map((keyring) => this.displayForKeyring(keyring))
+    );
+    const accounts = typedAccounts
+      .filter((group) => group.accounts.length > 0)
+      .map((group) => {
+        return group.accounts.map((account) => {
+          const address = normalizeAddress(account.address);
+          const type = String(group.type);
+          return {
+            address,
+            type,
+            brandName: account.brandName || type,
+          } as PublicAccountSnapshotItem;
+        });
+      })
+      .flat();
+
+    return {
+      version: PUBLIC_ACCOUNT_SNAPSHOT_VERSION,
+      updatedAt: Date.now(),
+      accounts,
+    };
+  }
+
+  private async writePublicAccountSnapshotToStore() {
+    if (!this.store) {
+      return undefined;
+    }
+    const snapshot = await this.buildPublicAccountSnapshotFromRuntime();
+    this.store.updateState({ publicAccountSnapshot: snapshot });
+    return snapshot;
+  }
+
+  private getAccountsFromSnapshot() {
+    const snapshot = this.getPublicAccountSnapshotFromStore();
+    if (!this.isPublicAccountSnapshotValid(snapshot)) {
+      return [];
+    }
+    const validSnapshot = snapshot as PublicAccountSnapshotV1;
+    const accounts = validSnapshot.accounts;
+
+    return accounts.map((item) => ({
+      address: normalizeAddress(item.address),
+      type: item.type,
+      brandName: item.brandName || item.type,
+    }));
+  }
+
+  private getTypedAccountsFromSnapshot() {
+    const snapshot = this.getPublicAccountSnapshotFromStore();
+    if (!this.isPublicAccountSnapshotValid(snapshot)) {
+      return [];
+    }
+    const validSnapshot = snapshot as PublicAccountSnapshotV1;
+    const accounts = validSnapshot.accounts;
+
+    const grouped = accounts.reduce(
+      (acc, item) => {
+        const groupId = item.type;
+        if (!acc[groupId]) {
+          acc[groupId] = {
+            type: item.type,
+            accounts: [] as { address: string; brandName: string }[],
+          };
+        }
+
+        acc[groupId].accounts.push({
+          address: item.address,
+          brandName: item.brandName,
+        });
+
+        return acc;
+      },
+      {} as Record<
+        string,
+        {
+          type: string;
+          accounts: { address: string; brandName: string }[];
+        }
+      >
+    );
+
+    return Object.values(grouped).map((group) => ({
+      type: group.type,
+      accounts: group.accounts,
+      keyring: new DisplayKeyring({
+        type: group.type,
+      }),
+    })) as DisplayedKeryring[];
+  }
+
   loadStore(initState) {
-    this.store = new ObservableStore(initState);
+    this.store = new ObservableStore({
+      ...(initState || {}),
+      publicAccountSnapshot: this.normalizePublicAccountSnapshot(
+        initState?.publicAccountSnapshot
+      ),
+    });
   }
 
   async boot(password: string) {
@@ -446,8 +618,10 @@ export class KeyringService extends EventEmitter {
   async submitPassword(password: string): Promise<MemStoreState> {
     await this.verifyPassword(password);
     this.password = password;
+    let hasUnlockedKeyrings = false;
     try {
       this.keyrings = await this.unlockKeyrings(password);
+      hasUnlockedKeyrings = true;
     } catch {
       //
     } finally {
@@ -457,6 +631,9 @@ export class KeyringService extends EventEmitter {
     // force store unencrypted keyring data if not exist
     if (!this.store.getState().unencryptedKeyringData) {
       await this.persistAllKeyrings();
+    }
+    if (hasUnlockedKeyrings) {
+      await this.writePublicAccountSnapshotToStore();
     }
 
     return this.fullUpdate();
@@ -468,6 +645,7 @@ export class KeyringService extends EventEmitter {
     }
     try {
       this.keyrings = await this.unlockKeyrings();
+      await this.writePublicAccountSnapshotToStore();
       this.setUnlocked();
       this.fullUpdate();
     } catch (e) {
@@ -985,10 +1163,13 @@ export class KeyringService extends EventEmitter {
       persisted: true,
     });
 
+    const publicAccountSnapshot = await this.buildPublicAccountSnapshotFromRuntime();
+
     this.store.updateState({
       vault: encryptedString,
       unencryptedKeyringData,
       hasEncryptedKeyringData,
+      publicAccountSnapshot,
     });
 
     eventBus.emit(EVENTS.broadcastToUI, {
@@ -1226,6 +1407,12 @@ export class KeyringService extends EventEmitter {
    * @returns {Promise<Array<string>>} The array of accounts.
    */
   async getAccounts(): Promise<string[]> {
+    if (!this.isUnlocked()) {
+      return this.getAccountsFromSnapshot().map((item) =>
+        normalizeAddress(item.address)
+      );
+    }
+
     const keyrings = this.keyrings || [];
     const addrs = await Promise.all(
       keyrings.map((kr) => kr.getAccounts())
@@ -1325,12 +1512,22 @@ export class KeyringService extends EventEmitter {
   }
 
   getAllTypedAccounts(): Promise<DisplayedKeryring[]> {
+    if (!this.isUnlocked()) {
+      return Promise.resolve(this.getTypedAccountsFromSnapshot());
+    }
+
     return Promise.all(
       this.keyrings.map((keyring) => this.displayForKeyring(keyring))
     );
   }
 
   async getAllTypedVisibleAccounts(): Promise<DisplayedKeryring[]> {
+    if (!this.isUnlocked()) {
+      return this.getTypedAccountsFromSnapshot().filter(
+        (keyring) => keyring.accounts.length > 0
+      );
+    }
+
     const keyrings = await Promise.all(
       this.keyrings.map((keyring) => this.displayForKeyring(keyring, false))
     );
@@ -1338,6 +1535,10 @@ export class KeyringService extends EventEmitter {
   }
 
   async getAllVisibleAccountsArray() {
+    if (!this.isUnlocked()) {
+      return this.getAccountsFromSnapshot();
+    }
+
     const typedAccounts = await this.getAllTypedVisibleAccounts();
     const result: { address: string; type: string; brandName: string }[] = [];
     typedAccounts.forEach((accountGroup) => {
@@ -1354,6 +1555,10 @@ export class KeyringService extends EventEmitter {
   }
 
   async getAllAdresses() {
+    if (!this.isUnlocked()) {
+      return this.getAccountsFromSnapshot();
+    }
+
     const keyrings = await this.getAllTypedAccounts();
     const result: { address: string; type: string; brandName: string }[] = [];
     keyrings.forEach((accountGroup) => {
@@ -1398,7 +1603,12 @@ export class KeyringService extends EventEmitter {
     const keyrings = await Promise.all(
       this.keyrings.map((keyring) => this.displayForKeyring(keyring))
     );
-    return this.memStore.updateState({ keyrings });
+    this.memStore.updateState({ keyrings });
+
+    // Keep snapshot in sync with runtime keyring changes while unlocked.
+    if (this.isUnlocked() && this.store) {
+      await this.writePublicAccountSnapshotToStore();
+    }
   }
 
   /**

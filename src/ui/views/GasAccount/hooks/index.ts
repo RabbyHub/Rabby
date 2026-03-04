@@ -302,6 +302,9 @@ export const useGasAccountMethods = () => {
           account.address
         );
 
+        await SignatureSteps.ensureWalletUnlocked({
+          wallet: wallet,
+        });
         const miniSign = supportedHardwareDirectSign(account.type);
         let signature = '';
         if (miniSign) {

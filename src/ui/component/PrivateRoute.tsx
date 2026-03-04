@@ -7,21 +7,31 @@ export const PrivateRouteGuard = ({ children }) => {
   const location = useLocation();
   const [isBooted, setIsBooted] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [hasPublicAccountSnapshot, setHasPublicAccountSnapshot] = useState(
+    false
+  );
   const [isReady, setIsReady] = useState(false);
-  const to = !isBooted ? '/welcome' : !isUnlocked ? '/unlock' : null;
+  const allowWhileLocked = !isUnlocked && hasPublicAccountSnapshot;
+  const to = !isBooted
+    ? '/welcome'
+    : !isUnlocked && !allowWhileLocked
+    ? '/unlock'
+    : null;
 
   useEffect(() => {
     let cancelled = false;
     const init = async () => {
-      const [booted, unlocked] = await Promise.all([
+      const [booted, unlocked, hasSnapshot] = await Promise.all([
         wallet.isBooted(),
         wallet.isUnlocked(),
+        wallet.hasPublicAccountSnapshot().catch(() => false),
       ]);
       if (cancelled) {
         return;
       }
       setIsBooted(booted);
       setIsUnlocked(unlocked);
+      setHasPublicAccountSnapshot(hasSnapshot);
       setIsReady(true);
     };
     init();

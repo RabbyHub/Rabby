@@ -312,6 +312,30 @@ function aggregateCheckErrors(params: {
 let retryTxs = [] as Tx[];
 
 export class SignatureSteps {
+  static async ensureWalletUnlocked(params: {
+    wallet: WalletControllerType;
+    getContainer?: ModalProps['getContainer'];
+  }) {
+    const { wallet, getContainer } = params;
+
+    if (await wallet.isUnlocked()) {
+      return;
+    }
+
+    await AuthenticationModalPromise({
+      wallet,
+      confirmText: t('global.confirm'),
+      cancelText: t('global.Cancel'),
+      placeholder: t('page.unlock.password.placeholder'),
+      title: t('page.unlock.title'),
+      getContainer: getContainer || undefined,
+      forceRender: true,
+      validationHandler: async (password: string) => {
+        await wallet.unlock(password);
+      },
+    });
+  }
+
   static async invokeEnterPassphraseModal(params: {
     wallet: WalletControllerType;
     value?: string;
