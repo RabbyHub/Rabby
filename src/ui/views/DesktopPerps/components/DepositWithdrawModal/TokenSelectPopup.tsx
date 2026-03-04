@@ -127,8 +127,17 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
               {getTokenSymbol(item)}
             </span>
             {isDirectDepositToken(item) && (
-              <div className="text-12 font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px] px-6 py-2">
-                {t('page.perps.directDeposit')}
+              <div className="flex items-center gap-4 text-[11px] font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px] px-6 py-2">
+                <svg
+                  width="8"
+                  height="10"
+                  viewBox="0 0 10 12"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M5.833 0 0 6.667h4.167L4.167 12 10 5.333H5.833z" />
+                </svg>
+                {t('page.perps.directDepositFast')}
               </div>
             )}
           </div>
