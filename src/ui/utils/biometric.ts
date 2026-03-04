@@ -227,10 +227,8 @@ export const createBiometricUnlockPayload = async (
       timeout: 60000,
       attestation: 'none',
       authenticatorSelection: {
-        authenticatorAttachment: 'platform',
         requireResidentKey: true,
-        residentKey: 'required',
-        userVerification: 'required',
+        userVerification: 'preferred',
       },
     },
   })) as PublicKeyCredential | null;
