@@ -2549,10 +2549,10 @@
       },
       "signWithLedger": "Assine com Ledger",
       "speedUpTitle": "Acelerar",
-      "speedUpDesc": "O preço do gás aumentou {{percent}} para acelerar.",
+      "speedUpDesc": "",
       "signWithOneKey": "Assine com OneKey",
       "cancelTitle": "On-chain Cancel",
-      "cancleDesc": "O preço do gás aumentou {{percent}} para cancelar a transação."
+      "cancleDesc": ""
     },
     "gasAccount": {
       "history": {
