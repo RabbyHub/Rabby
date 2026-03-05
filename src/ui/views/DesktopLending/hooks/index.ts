@@ -789,3 +789,36 @@ export function useLendingHF() {
 }
 
 export { useFetchLendingData, useLendingSummary };
+
+export async function fetchLendingHealthFactorForDashboard(
+  wallet: ReturnType<typeof useWallet>,
+  address: string,
+  marketKey: CustomMarket,
+  account?: {
+    address: string;
+    type: string;
+    brandName: string;
+  }
+): Promise<string> {
+  const getMarketKey = () => marketKey;
+  const data = await fetchContractData(
+    wallet,
+    address,
+    marketKey,
+    getMarketKey,
+    account
+  );
+  if (!data.reserves || !data.userReserves) {
+    return '';
+  }
+  const { formattedReserves } = computeFormattedReservesAndIncentives({
+    reserves: data.reserves,
+    eModes: data.eModes,
+  });
+  const iUserSummary = computeIUserSummary({
+    userReserves: data.userReserves,
+    reserves: data.reserves,
+    formattedReserves,
+  });
+  return iUserSummary?.healthFactor ?? '';
+}
