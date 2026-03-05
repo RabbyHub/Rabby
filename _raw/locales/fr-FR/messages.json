@@ -2877,8 +2877,8 @@
       "speedUpTitle": "Accélérer",
       "signWithOneKey": "Signez avec OneKey",
       "cancelTitle": "Annuler sur la chaîne",
-      "speedUpDesc": "Le prix du gaz a augmenté de {{percent}} pour accélérer.",
-      "cancleDesc": "Le prix du gaz a augmenté de {{percent}} pour annuler la transaction."
+      "speedUpDesc": "",
+      "cancleDesc": ""
     },
     "gasAccount": {
       "history": {

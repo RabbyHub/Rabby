@@ -2631,8 +2631,8 @@
       "cancelTitle": "链上取消",
       "speedUpTitle": "加速",
       "signWithOneKey": "使用 OneKey 签名",
-      "cancleDesc": "Gas 价格增加了 {{percent}} 以取消交易",
-      "speedUpDesc": "Gas价格提高了{{percent}}以加快速度"
+      "cancleDesc": "",
+      "speedUpDesc": ""
     },
     "gasAccount": {
       "history": {

@@ -2553,8 +2553,8 @@
       "signWithLedger": "Mit Ledger signieren",
       "speedUpTitle": "Beschleunigen",
       "cancelTitle": "On-chain Stornieren",
-      "speedUpDesc": "Der Gaspreis erhöhte sich um {{percent}}, um zu beschleunigen.",
-      "cancleDesc": "Der Gaspreis ist um {{percent}} gestiegen, um die Transaktion abzubrechen.",
+      "speedUpDesc": "",
+      "cancleDesc": "",
       "signWithOneKey": "Mit OneKey signieren"
     },
     "gasAccount": {

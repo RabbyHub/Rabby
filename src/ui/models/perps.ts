@@ -320,7 +320,7 @@ export const perps = createModel<RootModel>()({
             hash: item.hash,
             type: type as 'deposit' | 'withdraw' | 'receive',
             status: 'success' as const,
-            usdValue: item.delta.usdc || '0',
+            usdValue: item.delta.usdc || (item.delta as any).usdcValue || '0',
           };
         });
 

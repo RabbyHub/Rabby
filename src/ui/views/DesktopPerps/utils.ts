@@ -19,6 +19,9 @@ import {
   ARB_USDC_TOKEN_ID,
   ARB_USDC_TOKEN_ITEM,
   ARB_USDC_TOKEN_SERVER_CHAIN,
+  HYPE_USDC_TOKEN_ID,
+  HYPE_USDC_TOKEN_ITEM,
+  HYPE_USDC_TOKEN_SERVER_CHAIN,
 } from '../Perps/constants';
 
 export const getPositionDirection = (
@@ -325,8 +328,8 @@ export const sortTokenList = (
 
   // Sort by amount * price (descending)
   items.sort((a, b) => {
-    const aValue = b.amount * b.price;
-    const bValue = a.amount * a.price;
+    const aValue = a.amount * a.price;
+    const bValue = b.amount * b.price;
 
     // Check if tokens are in supported chains
     const aChain = findChainByServerID(a.chain)?.enum || CHAINS_ENUM.ETH;
@@ -339,8 +342,21 @@ export const sortTokenList = (
     if (!aIsSupported && bIsSupported) return 1;
 
     // Both supported or both not supported, sort by value
-    return aValue - bValue;
+    return bValue - aValue;
   });
+
+  // Move HYPE USDC to the front if it exists
+  const hypeIdx = items.findIndex(
+    (token) =>
+      token.id === HYPE_USDC_TOKEN_ID &&
+      token.chain === HYPE_USDC_TOKEN_SERVER_CHAIN
+  );
+  if (hypeIdx > 0) {
+    const [hit] = items.splice(hypeIdx, 1);
+    items.unshift(hit);
+  } else if (hypeIdx === -1) {
+    items.unshift(HYPE_USDC_TOKEN_ITEM);
+  }
 
   // Move ARB USDC to the front if it exists
   const idx = items.findIndex(

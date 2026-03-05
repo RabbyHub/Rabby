@@ -221,7 +221,6 @@ export function AddressInfoTo({
                       <AddressViewer
                         address={toAccount?.address?.toLowerCase()}
                         showArrow={false}
-                        longEllipsis
                         className={clsx(
                           'text-[12px] text-r-neutral-foot font-normal leading-[16px]'
                         )}

@@ -2552,8 +2552,8 @@
       },
       "signWithLedger": "Firmar con Ledger",
       "speedUpTitle": "Acelerar",
-      "speedUpDesc": "El precio del gas aumentó en {{percent}} para acelerar.",
-      "cancleDesc": "El precio del gas aumentó en {{percent}} para cancelar la transacción.",
+      "speedUpDesc": "",
+      "cancleDesc": "",
       "cancelTitle": "Cancelación en cadena",
       "signWithOneKey": "Firma con OneKey"
     },

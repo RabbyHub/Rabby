@@ -2553,9 +2553,9 @@
       "signWithLedger": "Ledgerで署名",
       "cancelTitle": "オンチェーンキャンセル",
       "speedUpTitle": "スピードアップ",
-      "cancleDesc": "取引をキャンセルするためにガス価格が{{percent}}増加しました",
+      "cancleDesc": "",
       "signWithOneKey": "OneKeyで署名",
-      "speedUpDesc": "ガス価格が{{percent}}上昇して速度を上げました"
+      "speedUpDesc": ""
     },
     "gasAccount": {
       "history": {
