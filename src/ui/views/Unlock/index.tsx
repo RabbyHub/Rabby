@@ -20,6 +20,8 @@ import { isString } from 'lodash';
 import { useRabbyDispatch } from '@/ui/store';
 import { useUnmount } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
+import { EVENTS } from '@/constant';
 
 const InputFormStyled = styled(Form.Item)`
   .ant-form-item-explain {
@@ -57,46 +59,52 @@ const Unlock = () => {
     inputEl.current.focus();
   }, []);
 
-  const [run] = useWalletRequest(wallet.unlock, {
-    async onSuccess() {
-      if (UiType.isNotification) {
-        if (query.from === '/connect-approval') {
-          history.replace('/approval?ignoreOtherWallet=1');
-        } else {
-          resolveApproval();
-        }
-      } else if (UiType.isTab || UiType.isDesktop) {
-        const account = query.address
-          ? await wallet
-              .getAccountByAddress(query.address as string)
-              .catch(() => null)
-          : null;
-        const currentAccount = await wallet.getCurrentAccount();
-        if (
-          account &&
-          !isSameAddress(account?.address || '', currentAccount?.address || '')
-        ) {
-          dispatch.account.changeAccountAsync(account);
-        } else {
-          dispatch.account.getCurrentAccountAsync();
-        }
-
-        history.replace(
-          query.from && isString(query.from)
-            ? query.from
-            : UiType.isDesktop
-            ? '/desktop/profile'
-            : '/'
-        );
+  const handleUnlockSuccess = async () => {
+    if (UiType.isNotification) {
+      if (query.from === '/connect-approval') {
+        history.replace('/approval?ignoreOtherWallet=1');
       } else {
-        history.replace('/');
+        resolveApproval();
       }
-    },
+    } else if (UiType.isTab || UiType.isDesktop) {
+      const account = query.address
+        ? await wallet
+            .getAccountByAddress(query.address as string)
+            .catch(() => null)
+        : null;
+      const currentAccount = await wallet.getCurrentAccount();
+      if (
+        account &&
+        !isSameAddress(account?.address || '', currentAccount?.address || '')
+      ) {
+        dispatch.account.changeAccountAsync(account);
+      } else {
+        dispatch.account.getCurrentAccountAsync();
+      }
+
+      history.replace(
+        query.from && isString(query.from)
+          ? query.from
+          : UiType.isDesktop
+          ? '/desktop/profile'
+          : '/'
+      );
+    } else {
+      history.replace('/');
+    }
+  };
+
+  const [run] = useWalletRequest(wallet.unlock, {
+    onSuccess: handleUnlockSuccess,
     onError(err) {
       console.log('error', err);
       setInputError(err?.message || t('page.unlock.password.error'));
       form.validateFields(['password']);
     },
+  });
+
+  useEventBusListener(EVENTS.UNLOCK_WALLET, () => {
+    handleUnlockSuccess();
   });
 
   const handleSubmit = async ({ password }: { password: string }) => {
