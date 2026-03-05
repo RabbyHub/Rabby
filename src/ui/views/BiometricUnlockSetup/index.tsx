@@ -3,6 +3,7 @@ import { Button, Input, message } from 'antd';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import browser from 'webextension-polyfill';
+import clsx from 'clsx';
 
 import { ReactComponent as BackgroundSVG } from '@/ui/assets/unlock/background.svg';
 import { ReactComponent as BiometricsSVG } from '@/ui/assets/unlock/biometrics.svg';
@@ -15,7 +16,11 @@ import {
 } from '@/ui/utils/biometric';
 
 const Container = styled.div`
+  position: relative;
   box-sizing: border-box;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
 `;
 
 const Body = styled.div`
@@ -57,14 +62,34 @@ const InputWrap = styled.div`
   .biometric-pwd-input.ant-input-focused {
     border: 1px solid var(--r-blue-default, #4c65ff) !important;
   }
+
+  .biometric-pwd-input.error {
+    border: 1px solid var(--r-red-default, #f04b36) !important;
+  }
+
+  .biometric-pwd-input.error:focus,
+  .biometric-pwd-input.error.ant-input-focused {
+    border: 1px solid var(--r-red-default, #f04b36) !important;
+  }
+`;
+
+const ErrorText = styled.div`
+  margin-top: 8px;
+  color: var(--r-red-default, #f04b36);
+  font-size: 14px;
+  line-height: 18px;
+  min-height: 18px;
 `;
 
 const Footer = styled.footer`
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  flex-shrink: 0;
   padding: 18px 20px;
   border-top: 0.5px solid var(--r-neutral-line, #e0e5ec);
   display: flex;
   gap: 16px;
-  margin-top: 48px;
 `;
 
 export const BiometricUnlockSetup = () => {
@@ -73,6 +98,7 @@ export const BiometricUnlockSetup = () => {
   const dispatch = useRabbyDispatch();
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [inputError, setInputError] = useState('');
   const inputRef = useRef<Input>(null);
   const disableSubmit = !password || loading;
 
@@ -114,6 +140,16 @@ export const BiometricUnlockSetup = () => {
     setLoading(true);
     try {
       await wallet.verifyPassword(password);
+      setInputError('');
+    } catch (error: any) {
+      setInputError(
+        error?.message || t('page.unlock.password.error', 'Incorrect password')
+      );
+      setLoading(false);
+      return;
+    }
+
+    try {
       const payload = await createBiometricUnlockPayload(password);
       await dispatch.preference.setBiometricUnlock({
         enabled: true,
@@ -153,13 +189,21 @@ export const BiometricUnlockSetup = () => {
             type="password"
             spellCheck={false}
             value={password}
-            className="biometric-pwd-input"
+            className={clsx('biometric-pwd-input', inputError && 'error')}
             placeholder={t(
               'page.dashboard.settings.biometricUnlockPasswordPlaceholder'
             )}
-            onChange={(e) => setPassword(e.target.value || '')}
+            onChange={(e) => {
+              setPassword(e.target.value || '');
+              if (inputError) {
+                setInputError('');
+              }
+            }}
             onPressEnter={handleConfirm}
           />
+          <ErrorText style={{ visibility: inputError ? 'visible' : 'hidden' }}>
+            {inputError || ' '}
+          </ErrorText>
         </InputWrap>
       </Body>
 

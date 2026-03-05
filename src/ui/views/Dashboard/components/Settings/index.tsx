@@ -114,6 +114,8 @@ const useAutoLockOptions = () => {
 interface SettingsProps {
   visible?: boolean;
   onClose?: DrawerProps['onClose'];
+  autoScrollToBiometric?: boolean;
+  onAutoScrollDone?: () => void;
 }
 
 const { confirm } = Modal;
@@ -585,6 +587,7 @@ type SettingItem = {
   leftIcon: ThemeIconType;
   leftIconClassName?: string;
   leftIconStyle?: React.CSSProperties;
+  className?: string;
   content: React.ReactNode;
   description?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -957,6 +960,7 @@ const SettingsInner = ({
       items: [
         {
           leftIcon: RCIconBiometric,
+          className: 'js-setting-biometric',
           content: t('page.dashboard.settings.settings.biometricUnlock'),
           rightIcon: (
             <Switch
@@ -1553,7 +1557,10 @@ const SettingsInner = ({
                       )
                     }
                     onClick={data.onClick}
-                    className={clsx(data.description ? 'has-desc' : null)}
+                    className={clsx(
+                      data.className,
+                      data.description ? 'has-desc' : null
+                    )}
                   >
                     {data.content}
                     {data.description && (
@@ -1648,12 +1655,30 @@ const SettingsInner = ({
 };
 
 const Settings = (props: SettingsProps) => {
-  const { visible, onClose } = props;
+  const { visible, onClose, autoScrollToBiometric, onAutoScrollDone } = props;
 
   const [
     isShowNonWhitelistedTxPwdModal,
     setIsShowNonWhitelistedTxPwdModal,
   ] = useState(false);
+
+  useEffect(() => {
+    if (!visible || !autoScrollToBiometric) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      const target = document.querySelector(
+        '.settings-popup-wrapper .js-setting-biometric'
+      ) as HTMLElement | null;
+      target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      onAutoScrollDone?.();
+    }, 120);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [visible, autoScrollToBiometric, onAutoScrollDone]);
 
   return (
     <>
