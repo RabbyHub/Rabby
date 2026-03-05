@@ -40,6 +40,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import { Checkbox, Field, PageHeader, Popup } from 'ui/component';
 import {
   detectClientOS,
+  getUiType,
   openInTab,
   openInternalPageInTab,
   useWallet,
@@ -77,11 +78,8 @@ import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/ho
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
 import {
   cleanupBiometricCredential,
-  createBiometricUnlockPayload,
-  isBiometricUserCanceledError,
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
-import BiometricUnlockModal from './components/BiometricUnlockModal';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -613,7 +611,6 @@ const SettingsInner = ({
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
-  const [isShowBiometricModal, setIsShowBiometricModal] = useState(false);
   const [biometricSupported, setBiometricSupported] = useState(false);
   const [biometricBusy, setBiometricBusy] = useState(false);
   const lockShortcutLabel = useMemo(() => {
@@ -710,7 +707,15 @@ const SettingsInner = ({
           );
           return;
         }
-        setIsShowBiometricModal(true);
+        setBiometricBusy(true);
+        try {
+          await wallet.openBiometricUnlockSetupWindow();
+        } finally {
+          setBiometricBusy(false);
+        }
+        if (getUiType().isPop) {
+          window.close();
+        }
         return;
       }
 
@@ -729,42 +734,6 @@ const SettingsInner = ({
       }
     }
   );
-
-  const handleConfirmEnableBiometric = useMemoizedFn(
-    async (password: string) => {
-      try {
-        setBiometricBusy(true);
-        await wallet.verifyPassword(password);
-        const payload = await createBiometricUnlockPayload(password);
-        await dispatch.preference.setBiometricUnlock({
-          enabled: true,
-          credentialId: payload.credentialId,
-          encryptedPassword: payload.encryptedPassword,
-          iv: payload.iv,
-        });
-        message.success(t('page.dashboard.settings.biometricUnlockEnabled'));
-        setIsShowBiometricModal(false);
-      } catch (error: any) {
-        const errorMessage =
-          error?.message ||
-          t('page.dashboard.settings.biometricUnlockEnableFailed');
-        setIsShowBiometricModal(false);
-
-        if (isBiometricUserCanceledError(error)) {
-          return;
-        }
-
-        message.error(errorMessage);
-      } finally {
-        setBiometricBusy(false);
-      }
-    }
-  );
-
-  const handleCancelBiometricModal = useMemoizedFn(() => {
-    if (biometricBusy) return;
-    setIsShowBiometricModal(false);
-  });
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -1669,12 +1638,6 @@ const SettingsInner = ({
         onClose={() => {
           setConnectedDappsVisible(false);
         }}
-      />
-      <BiometricUnlockModal
-        visible={isShowBiometricModal}
-        loading={biometricBusy}
-        onCancel={handleCancelBiometricModal}
-        onConfirm={handleConfirmEnableBiometric}
       />
       <FeedbackPopup
         visible={feedbackVisible}

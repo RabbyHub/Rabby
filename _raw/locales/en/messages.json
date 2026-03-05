@@ -2523,8 +2523,9 @@
         "biometricUnlockDisabled": "Biometric unlock disabled",
         "biometricUnlockDisableFailed": "Failed to disable biometric unlock",
         "biometricUnlockUnsupported": "This device does not support biometric unlock",
-        "biometricUnlockSetupTitle": "Verify Password",
-        "biometricUnlockPasswordPlaceholder": "Enter the Password to Confirm"
+        "biometricUnlockSetupTitle": "Enable Biometric Unlock",
+        "biometricUnlockPasswordPlaceholder": "Enter Password",
+        "biometricUnlockSetupDesc": "Confirm your password to activate biometric unlock."
       },
       "tokenDetail": {
         "noIssuer": "No issuer information available",

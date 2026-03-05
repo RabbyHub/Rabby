@@ -95,6 +95,7 @@ import SelectToAddress from './SelectToAddress';
 import { ImportWalletType } from './NewUserImport/ImportWalletType';
 import { ImportHardwareList } from './NewUserImport/importHardwareList';
 import { ImportSeedOrKey } from './NewUserImport/ImportSeedOrKey';
+import { BiometricUnlockSetup } from './BiometricUnlockSetup';
 
 declare global {
   interface Window {
@@ -275,6 +276,9 @@ const Main = () => {
 
         <PrivateRoute exact path="/mnemonics/create">
           <CreateMnemonics />
+        </PrivateRoute>
+        <PrivateRoute exact path="/biometric-unlock-setup">
+          <BiometricUnlockSetup />
         </PrivateRoute>
         <PrivateRoute exact path="/import">
           <ImportMode />

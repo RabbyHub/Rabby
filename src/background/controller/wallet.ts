@@ -1713,6 +1713,50 @@ export class WalletController extends BaseController {
     return tab;
   };
 
+  openBiometricUnlockSetupWindow = async () => {
+    const url = 'index.html#/biometric-unlock-setup';
+    return Browser.windows.create({
+      focused: true,
+      url,
+      type: 'popup',
+      width: 400,
+      height: 460,
+    });
+  };
+
+  openActionPopup = async () => {
+    if (
+      isManifestV3 &&
+      Browser?.action?.openPopup &&
+      typeof Browser?.action?.openPopup === 'function'
+    ) {
+      try {
+        await Browser?.action?.openPopup();
+        return true;
+      } catch (error) {
+        console.error('[openActionPopup] openPopup failed', error);
+      }
+    }
+    return false;
+  };
+
+  finishBiometricUnlockSetup = async (setupWindowId?: number) => {
+    if (typeof setupWindowId === 'number') {
+      try {
+        await Browser.windows.remove(setupWindowId);
+      } catch (error) {
+        console.error(
+          '[finishBiometricUnlockSetup] close setup window failed',
+          error
+        );
+      }
+    }
+
+    setTimeout(() => {
+      this.openActionPopup();
+    }, 300);
+  };
+
   hasPageStateCache = () => pageStateCacheService.has();
   getPageStateCache = () => {
     if (!this.isUnlocked()) return null;
