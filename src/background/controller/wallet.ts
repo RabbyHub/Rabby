@@ -161,7 +161,7 @@ import { appIsProd, isManifestV3 } from '@/utils/env';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
-import Browser from 'webextension-polyfill';
+import Browser, { Windows } from 'webextension-polyfill';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
 import { userGuideService } from '../service/userGuide';
 import { metamaskModeService } from '../service/metamaskModeService';
@@ -1714,13 +1714,24 @@ export class WalletController extends BaseController {
   };
 
   openBiometricUnlockSetupWindow = async () => {
+    const {
+      top: cTop,
+      left: cLeft,
+      width,
+    } = await Browser.windows.getLastFocused({
+      windowTypes: ['normal'],
+    } as Windows.GetInfo);
     const url = 'index.html#/biometric-unlock-setup';
+    const top = cTop;
+    const left = cLeft! + width! - 500;
     return Browser.windows.create({
       focused: true,
       url,
       type: 'popup',
       width: 400,
       height: 460,
+      left,
+      top,
     });
   };
 
