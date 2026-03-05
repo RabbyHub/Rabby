@@ -55,22 +55,22 @@ const ActionBtnWrapper = styled.div<{ isDark?: boolean }>`
   &::after {
     content: '';
     position: absolute;
-    z-index: -1;
+    z-index: 0;
     top: -8px;
     bottom: -8px;
-    left: -10px;
-    right: -42px;
-    height: 40px;
+    left: -8px;
+    right: -8px;
+    height: 44px;
     background: ${({ isDark }) =>
       isDark
-        ? 'linear-gradient(90deg, rgba(12, 15, 31, 1) 0%, rgba(12, 15, 31, 0.9) 100%)'
+        ? 'linear-gradient(90deg, rgba(27, 29, 44, 1) 0%, rgba(27, 29, 44, 0.9) 100%)'
         : 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 1) 100%)'};
     pointer-events: none;
   }
 `;
 
 const ActionBtn = styled.div`
-  height: 24px;
+  height: 28px;
   padding-left: 8px;
   padding-right: 8px;
 
@@ -81,6 +81,7 @@ const ActionBtn = styled.div`
   cursor: pointer;
   color: var(--r-neutral-title-1, #13141a);
   background: var(--r-neutral-bg-2, #f5f6fa);
+  z-index: 11;
   flex-shrink: 0;
   flex: 0 0 auto;
   display: flex;
@@ -174,7 +175,7 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
           )}
         >
           <LpContainer>
-            <span className="text-r-neutral-title-1 font-medium text-15 leading-[15px] whitespace-nowrap overflow-ellipsis overflow-hidden inner-symbol">
+            <span className="text-r-neutral-title-1 font-medium text-15 leading-[18px] whitespace-nowrap overflow-ellipsis overflow-hidden inner-symbol">
               {item.symbol}
             </span>
             {isLpToken(item) && (
@@ -192,7 +193,7 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
               </span>
             )}
           </LpContainer>
-          <span className="text-r-neutral-foot text-13 leading-[14px] truncate whitespace-nowrap overflow-ellipsis overflow-hidden">
+          <span className="text-r-neutral-foot text-13 leading-[16px] truncate whitespace-nowrap overflow-ellipsis overflow-hidden">
             {item._amountStr}
           </span>
         </div>
@@ -234,7 +235,7 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
       <div>${item._priceStr}</div>
       {isNumber(item.price_24h_change) && (
         <div
-          className={clsx('font-normal text-12', {
+          className={clsx('font-normal text-12 text-r-neutral-foot', {
             'text-green': item.price_24h_change > 0,
             'text-red-forbidden': item.price_24h_change < 0,
           })}
@@ -258,19 +259,22 @@ const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
 const TokenItemMarketInfo: React.FC<Props> = ({ item }) => {
   return (
     <TCell className={clsx('flex flex-col gap-2')}>
-      <div className="text-r-neutral-title-1 font-medium text-15 leading-[15px] text-right truncate">
+      <div className="text-r-neutral-title-1 font-medium text-15 leading-[18px] text-right truncate">
         {item._usdValueStr || '<$0.01'}
       </div>
       <div className="flex flex-row gap-4 items-center justify-end">
-        <div className="text-r-neutral-foot text-13 leading-[14px]">
+        <div className="text-r-neutral-foot text-13 leading-[16px]">
           ${item._priceStr}
         </div>
         {isNumber(item.price_24h_change) && (
           <div
-            className={clsx('font-normal text-13 leading-[14px]', {
-              'text-green': item.price_24h_change > 0,
-              'text-red-forbidden': item.price_24h_change < 0,
-            })}
+            className={clsx(
+              'font-normal text-13 leading-[16px] text-r-neutral-foot',
+              {
+                'text-green': item.price_24h_change > 0,
+                'text-red-forbidden': item.price_24h_change < 0,
+              }
+            )}
           >
             ({item.price_24h_change > 0 ? '+' : ''}
             {(item.price_24h_change * 100).toFixed(2)}%)
@@ -333,7 +337,7 @@ export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
       onMouseLeave={handleRowMouseLeave}
       className={clsx(
         'group cursor-pointer',
-        'h-[60px] mt-8 pl-12 pr-16 justify-between',
+        'h-[60px] mt-8 px-12 justify-between',
         'rounded-[8px] border border-transparent bg-r-neutral-card1',
         'hover:border-blue-light active:bg-opacity-10'
       )}
