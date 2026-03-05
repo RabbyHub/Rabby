@@ -13,10 +13,15 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCommonPopupView } from '@/ui/utils';
-import { RcIconSwapCC, RcIconSendCC } from 'ui/assets/dashboard/panel';
+import {
+  RcIconSwapCC,
+  RcIconSendCC,
+  RcIconSwapWhiteCC,
+  RcIconSendWhiteCC,
+} from 'ui/assets/dashboard/panel';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 
-const HOVER_DELAY_MS = 500;
+const HOVER_DELAY_MS = 400;
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -208,14 +213,22 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
             onClick={gotoSwap}
             className="token-action-btn active:bg-rb-brand-light-1"
           >
-            <RcIconSwapCC width={12} height={12} />
+            {isDarkTheme ? (
+              <RcIconSwapWhiteCC width={12} height={12} />
+            ) : (
+              <RcIconSwapCC width={12} height={12} />
+            )}
             <span>{t('page.dashboard.tokenDetail.swap')}</span>
           </ActionBtn>
           <ActionBtn
             onClick={gotoSend}
             className="token-action-btn active:bg-rb-brand-light-1"
           >
-            <RcIconSendCC width={12} height={12} />
+            {isDarkTheme ? (
+              <RcIconSendWhiteCC width={12} height={12} />
+            ) : (
+              <RcIconSendCC width={12} height={12} />
+            )}
             <span>{t('page.dashboard.tokenDetail.send')}</span>
           </ActionBtn>
         </ActionBtnWrapper>
