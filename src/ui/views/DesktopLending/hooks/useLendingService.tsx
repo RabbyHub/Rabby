@@ -13,10 +13,12 @@ import { useWallet } from '@/ui/utils';
 interface LendingServiceStore {
   lastSelectedChain: CustomMarket;
   skipHealthFactorWarning: boolean;
+  init: boolean;
 }
 
 type LendingContextValue = {
   lastSelectedChain: CustomMarket;
+  init: boolean;
   skipHealthFactorWarning: boolean;
   lendingStore: LendingServiceStore;
   setLastSelectedChain: (chainId: CustomMarket) => Promise<void>;
@@ -31,6 +33,7 @@ const LendingContext = createContext<LendingContextValue | null>(null);
 const defaultStore: LendingServiceStore = {
   lastSelectedChain: CustomMarket.proto_mainnet_v3,
   skipHealthFactorWarning: false,
+  init: false,
 };
 
 export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -60,6 +63,7 @@ export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
         setLendingStore({
           lastSelectedChain: chainId,
           skipHealthFactorWarning: skipWarning,
+          init: true,
         });
       } catch (error) {
         console.error('Failed to initialize lending service state:', error);
@@ -133,6 +137,7 @@ export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
       setLendingStore({
         lastSelectedChain: chainId,
         skipHealthFactorWarning: skipWarning,
+        init: true,
       });
     } catch (error) {
       console.error('Failed to sync lending service state:', error);
@@ -143,6 +148,7 @@ export const LendingProvider: React.FC<{ children: React.ReactNode }> = ({
     () => ({
       lastSelectedChain:
         lendingStore.lastSelectedChain || CustomMarket.proto_mainnet_v3,
+      init: lendingStore.init || false,
       skipHealthFactorWarning: lendingStore.skipHealthFactorWarning || false,
       lendingStore,
       setLastSelectedChain,
