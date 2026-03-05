@@ -1606,6 +1606,12 @@ export class WalletController extends BaseController {
     }
 
     uninstalledService.syncStatus();
+
+    setTimeout(() => {
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.UNLOCK_WALLET,
+      });
+    });
   };
   isUnlocked = () => keyringService.isUnlocked();
 
