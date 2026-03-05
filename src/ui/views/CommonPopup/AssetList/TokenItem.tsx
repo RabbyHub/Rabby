@@ -63,12 +63,12 @@ const ActionBtnWrapper = styled.div<{ isDark?: boolean }>`
     z-index: 0;
     top: -8px;
     bottom: -8px;
-    left: -8px;
+    width: 28px;
     right: -8px;
     height: 44px;
     background: ${({ isDark }) =>
       isDark
-        ? 'linear-gradient(90deg, rgba(27, 29, 44, 1) 0%, rgba(27, 29, 44, 0.9) 100%)'
+        ? 'linear-gradient(90deg, rgba(27, 29, 44, 1) 0%, rgba(27, 29, 44, 0) 100%)'
         : 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 1) 100%)'};
     pointer-events: none;
   }
