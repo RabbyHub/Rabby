@@ -1758,6 +1758,14 @@ export class WalletController extends BaseController {
   };
 
   finishBiometricUnlockSetup = async (setupWindowId?: number) => {
+    await this.setPageStateCache({
+      path: '/dashboard',
+      params: {},
+      states: {
+        action: 'open-settings',
+      },
+    });
+
     if (typeof setupWindowId === 'number') {
       try {
         await Browser.windows.remove(setupWindowId);
