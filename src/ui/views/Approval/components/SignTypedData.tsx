@@ -35,7 +35,11 @@ import {
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TypedDataActions';
-import { normalizeTypeData } from './TypedDataActions/utils';
+import {
+  cleanEIP712Payload,
+  isDeepJSON,
+  normalizeTypeData,
+} from './TypedDataActions/utils';
 import {
   Level,
   defaultRules,
@@ -197,31 +201,10 @@ const SignTypedData = ({
       try {
         const v = JSON.parse(data[1]);
 
-        let v2;
-        if (
-          typeof v.primaryType === 'string' &&
-          typeof v.types === 'object' &&
-          typeof v.message === 'object' &&
-          typeof v.domain === 'object'
-        ) {
-          // normalize EIP-712 data
-          v2 = Object.create(null);
-          const { domain, message, types, primaryType } = v;
-          v2.message = filterPrimaryType({
-            primaryType,
-            types,
-            message,
-          });
-
-          v2.domain = filterPrimaryType({
-            primaryType: 'EIP712Domain',
-            types,
-            message: domain,
-          });
-          v2.primaryType = primaryType;
-          v2.types = types;
-        } else {
-          v2 = v;
+        let v2 = v;
+        // if the payload is too deep, we need to clean it
+        if (isDeepJSON(v, 100)) {
+          v2 = cleanEIP712Payload(v);
         }
 
         const displayData = cloneDeep(v2);
