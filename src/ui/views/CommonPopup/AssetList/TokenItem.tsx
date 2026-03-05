@@ -44,15 +44,6 @@ const LpContainer = styled.div`
   }
 `;
 
-const StyledTRow = styled(TRow)`
-  &:hover {
-    box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
-  }
-  &:active:not(:has(.token-action-btn:active)) {
-    background-color: var(--r-blue-light1, #edf0ff) !important;
-  }
-`;
-
 const ActionBtnWrapper = styled.div<{ isDark?: boolean }>`
   position: relative;
   width: min-content;
@@ -71,6 +62,18 @@ const ActionBtnWrapper = styled.div<{ isDark?: boolean }>`
         ? 'linear-gradient(90deg, rgba(27, 29, 44, 1) 0%, rgba(27, 29, 44, 0) 100%)'
         : 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 1) 100%)'};
     pointer-events: none;
+  }
+`;
+
+const StyledTRow = styled(TRow)`
+  &:hover {
+    box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
+  }
+  &:active:not(:has(.token-action-btn:active)) {
+    background-color: var(--r-blue-light1, #edf0ff) !important;
+    ${ActionBtnWrapper}::after {
+      display: none;
+    }
   }
 `;
 
