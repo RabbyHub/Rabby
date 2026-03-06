@@ -135,11 +135,20 @@ const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
   }
 };
 
-const createTimeLocalization = () => {
+const formatLocalDate = (time: Time): string => {
+  const date = timeToDate(time);
+  const year = date.getFullYear();
+  const month = padZero(date.getMonth() + 1);
+  const day = padZero(date.getDate());
+  return `${year}-${month}-${day}`;
+};
+
+const createTimeLocalization = (isWeekly = false) => {
   const formatTick = (time: Time, tickMarkType: TickMarkType): string =>
     formatTickLabel(timeToDate(time), tickMarkType);
 
-  const formatHover = (time: Time): string => formatLocalDateTime(time);
+  const formatHover = (time: Time): string =>
+    isWeekly ? formatLocalDate(time) : formatLocalDateTime(time);
 
   return {
     locale: 'en-US',
@@ -252,7 +261,10 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
   const isMountedRef = useRef(true);
   const currentWeekCandleRef = useRef<CandleBar | null>(null);
   const colors = useMemo(() => getThemeColors(isDarkTheme), [isDarkTheme]);
-  const timeLocalization = useMemo(() => createTimeLocalization(), []);
+  const isWeekly = candleMenuKey === CANDLE_MENU_KEY_V2.ONE_WEEK;
+  const timeLocalization = useMemo(() => createTimeLocalization(isWeekly), [
+    isWeekly,
+  ]);
 
   // Update price lines function
   const updatePriceLines = useCallback(() => {
