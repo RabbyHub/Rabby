@@ -76,8 +76,6 @@ import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
 import { RcIconLeadingCC } from '@/ui/assets/desktop/nav';
 import { PerpsSubContent } from '../SubContent/perps';
 
-const FOOTER_HEIGHT = 66;
-
 const GlobalStyle = createGlobalStyle`
   .rabby-dashboard-panel-container {
     .dashboard-panel-grid {
@@ -87,27 +85,6 @@ const GlobalStyle = createGlobalStyle`
       gap: 1px;
 
       scroll-snap-align: end;
-    }
-
-    .dashboard-panel-footer {
-      display: flex;
-      align-items: end;
-      justify-content: center;
-      margin-top: 1px;
-      background-color: var(--r-neutral-bg-2, #f2f4f7);
-      height: ${FOOTER_HEIGHT}px;
-
-      position: relative;
-
-      &:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: var(--r-neutral-card1, #fff);
-      }
     }
 
     .panel-item {
@@ -306,11 +283,11 @@ const SortablePanelItem: React.FC<{
               {t('page.dashboard.home.soon')}
             </div>
           )}
-          {item.isFullscreen && (
+          {/* {item.isFullscreen && (
             <div className="absolute top-[6px] right-[6px] opacity-50 text-r-neutral-foot hidden group-hover:block">
               <RcIconExternal1CC />
             </div>
-          )}
+          )} */}
         </div>
       )}
     </div>
@@ -725,8 +702,8 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const scrollRatio = useMemo(() => {
     const top = scroll?.top ?? 0;
     const height = ref.current?.getBoundingClientRect()?.height ?? 0;
-    const scrollHeight = ref.current?.scrollHeight ?? 440 + FOOTER_HEIGHT;
-    const ratio = top / (scrollHeight - FOOTER_HEIGHT - height);
+    const scrollHeight = ref.current?.scrollHeight ?? 440;
+    const ratio = top / (scrollHeight - height);
     return ratio > 1 ? 1 : ratio;
   }, [scroll?.top]);
 
@@ -744,8 +721,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         className="overflow-auto rounded-[8px] bg-r-neutral-card-2"
         style={{
           height: 264,
-          overscrollBehavior: 'contain',
-          scrollSnapType: 'both mandatory',
         }}
         ref={ref}
       >
@@ -867,21 +842,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
               </>
             </DragOverlay>
           </DndContext>
-          <footer className="dashboard-panel-footer">
-            <div
-              className={clsx(
-                'text-r-neutral-foot',
-                'flex items-center justify-center py-[10px] gap-[2px]',
-                'relative z-10'
-                // 'sticky bottom-0 pt-[50px]'
-              )}
-            >
-              <RcIconLampCC />
-              <div className="text-[12px] leading-[14px]">
-                {t('page.dashboard.home.panel.dragTip')}
-              </div>
-            </div>
-          </footer>
         </div>
       </div>
       <div className="absolute right-[8px] top-[50%] translate-y-[-50%]">
