@@ -189,7 +189,6 @@ export default function TabWhitelist({
                   showWhitelistIcon
                   allowEditAlias
                   hideBalance
-                  longEllipsis
                   address={item.address}
                   alias={ellipsisAddress(item.address)}
                   type={item.type}

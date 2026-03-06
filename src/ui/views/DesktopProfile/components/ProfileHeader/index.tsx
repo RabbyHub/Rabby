@@ -73,7 +73,7 @@ export const ProfileHeader: React.FC<{
             {alias}
           </div>
           <div className="text-rb-neutral-body text-[18px] leading-[21px]">
-            {ellipsisAddress(currentAccount?.address || '', true)}
+            {ellipsisAddress(currentAccount?.address || '')}
           </div>
           <div className="flex items-center gap-[8px]">
             <div

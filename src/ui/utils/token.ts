@@ -264,7 +264,7 @@ export function checkIfTokenBalanceEnough(
 
 export function tokenAmountBn(token: TokenItem) {
   return new BigNumber(token?.raw_amount_hex_str || 0, 16).div(
-    10 ** (token?.decimals || 1)
+    10 ** token.decimals
   );
 }
 

@@ -2550,8 +2550,8 @@
       "signWithLedger": "Ký với Ledger",
       "cancelTitle": "Hủy trên chuỗi",
       "speedUpTitle": "Tăng tốc",
-      "speedUpDesc": "Giá gas đã tăng {{percent}} để tăng tốc.",
-      "cancleDesc": "Giá gas tăng {{percent}} để hủy giao dịch",
+      "speedUpDesc": "",
+      "cancleDesc": "",
       "signWithOneKey": "Ký với OneKey"
     },
     "gasAccount": {

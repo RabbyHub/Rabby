@@ -2553,9 +2553,9 @@
       "signWithLedger": "Assinar com Ledger",
       "cancelTitle": "Cancelamento On-chain",
       "speedUpTitle": "Acelerar",
-      "speedUpDesc": "O preço do gás aumentou {{percent}} para acelerar.",
+      "speedUpDesc": "",
       "signWithOneKey": "Assinar com OneKey",
-      "cancleDesc": "O preço do Gas aumentou {{percent}} para cancelar a transação."
+      "cancleDesc": ""
     },
     "gasAccount": {
       "history": {

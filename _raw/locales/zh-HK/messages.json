@@ -2591,8 +2591,8 @@
       "signWithLedger": "使用 Ledger 簽署",
       "signWithOneKey": "使用 OneKey 签名",
       "speedUpTitle": "加速",
-      "cancleDesc": "Gas價格上升了{{percent}}以取消交易",
-      "speedUpDesc": "Gas 價上升了 {{percent}} 以加快速度",
+      "cancleDesc": "",
+      "speedUpDesc": "",
       "cancelTitle": "鏈上取消"
     },
     "gasAccount": {
