@@ -1163,7 +1163,7 @@ export const PerpsSingleCoin = () => {
                 stats.report('perpsTradeHistory', {
                   created_at: new Date().getTime(),
                   user_addr: currentPerpsAccount?.address || '',
-                  trade_type: 'popup market',
+                  trade_type: 'popup add position market',
                   leverage: (positionData?.leverage || 1).toString(),
                   trade_side: getStatsReportSide(isBuy, false),
                   margin_mode:
