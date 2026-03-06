@@ -75,6 +75,7 @@ import { RecentConnectionsPopup } from '../RecentConnections';
 import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
 import { RcIconLeadingCC } from '@/ui/assets/desktop/nav';
 import { PerpsSubContent } from '../SubContent/perps';
+import { LendingSubContent } from '../SubContent/lending';
 
 const GlobalStyle = createGlobalStyle`
   .rabby-dashboard-panel-container {
@@ -591,6 +592,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     lending: {
       icon: IconLending,
       eventKey: 'Lending',
+      subContent: <LendingSubContent />,
       content: t('page.dashboard.home.panel.lending'),
       onClick: async () => {
         await wallet.openInDesktop('/desktop/lending');
