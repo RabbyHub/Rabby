@@ -48,7 +48,7 @@ import { LpTokenSwitch } from '@/ui/views/DesktopProfile/components/TokensTabPan
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 import { ChainFilterV2Line } from './ChainFilterV2Line';
-import { isNil } from 'lodash';
+import { isNumber } from 'lodash';
 import { ExternalTokenRow } from './ExternalToken';
 import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
 
@@ -839,7 +839,7 @@ function CommonTokenItem(props: {
                 </div>
               ) : (
                 <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
-                  {formatTokenAmount(value?.amount || 0)} {token.symbol}
+                  {formatTokenAmount(value?.amount || 0)}
                 </span>
               )}
             </div>
@@ -858,22 +858,18 @@ function CommonTokenItem(props: {
                   )}
                 </div>
                 <div className="flex flex-row gap-4 items-center">
-                  <div className="text-r-neutral-foot text-13 font-normal leading-[15px]">
-                    @${formatPrice(value?.price || 0)}
+                  <div className="text-r-neutral-foot text-13 font-normal leading-[14px]">
+                    ${formatPrice(value?.price || 0)}
                   </div>
-                  {isNil(value?.price_24h_change) ? (
-                    <span className="text-r-neutral-foot text-13 font-medium leading-[14px]">
-                      0%
-                    </span>
-                  ) : (
+                  {isNumber(value?.price_24h_change) && (
                     <div
-                      className={clsx('font-medium text-13 leading-[14px]', {
+                      className={clsx('font-normal text-13 leading-[14px]', {
                         'text-green': value?.price_24h_change > 0,
                         'text-red-forbidden': value?.price_24h_change < 0,
                       })}
                     >
-                      {value?.price_24h_change > 0 ? '+' : ''}
-                      {(value?.price_24h_change * 100).toFixed(2)}%
+                      ({value?.price_24h_change > 0 ? '+' : ''}
+                      {(value?.price_24h_change * 100).toFixed(2)}%)
                     </div>
                   )}
                 </div>
