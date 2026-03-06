@@ -144,14 +144,20 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
         // This prevents "insufficient balance" when price rises after setting 100%.
         const notional = positionSize.notionalValue;
         if (notional && price) {
-          const newAmount = calcAssetAmountByNotional(
+          let newAmount = calcAssetAmountByNotional(
             notional,
             price,
             szDecimals
           );
+          let newNotional = notional;
+          // Clamp to maxTradeSize to prevent "insufficient balance"
+          if (maxTradeSize && Number(newAmount) > Number(maxTradeSize)) {
+            newAmount = maxTradeSize;
+            newNotional = calcAssetNotionalByAmount(maxTradeSize, price);
+          }
           setPositionSize({
             amount: newAmount,
-            notionalValue: notional,
+            notionalValue: newNotional,
           });
           if (maxTradeSize && Number(maxTradeSize) > 0) {
             const pct = Math.min(
@@ -172,7 +178,12 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
           : handleAmountChange(positionSize.amount);
       }
     }
-  }, [price, priceChangeUsdValue, positionSize.isInputNotionalValue]);
+  }, [
+    price,
+    priceChangeUsdValue,
+    positionSize.isInputNotionalValue,
+    maxTradeSize,
+  ]);
 
   const handleNotionalChange = useMemoizedFn((notional: string) => {
     if (!price) {
