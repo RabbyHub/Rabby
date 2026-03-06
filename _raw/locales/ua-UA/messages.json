@@ -2566,8 +2566,8 @@
       "speedUpTitle": "Прискорити",
       "signWithOneKey": "Підпишіть за допомогою OneKey",
       "cancelTitle": "На ланцюгу Скасувати",
-      "speedUpDesc": "Ціна газу збільшилася на {{percent}}, щоб прискорити.",
-      "cancleDesc": "Ціна газу зросла на {{percent}}, щоб скасувати транзакцію"
+      "speedUpDesc": "",
+      "cancleDesc": ""
     },
     "gasAccount": {
       "history": {

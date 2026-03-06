@@ -2554,9 +2554,9 @@
       },
       "signWithLedger": "Подписать с помощью Ledger",
       "cancelTitle": "В сети Отмена",
-      "cancleDesc": "Цена газа увеличилась на {{percent}}, чтобы отменить транзакцию",
+      "cancleDesc": "",
       "speedUpTitle": "Ускорить",
-      "speedUpDesc": "Цена газа увеличилась на {{percent}}, чтобы ускорить процесс.",
+      "speedUpDesc": "",
       "signWithOneKey": "Подписать с OneKey"
     },
     "gasAccount": {
