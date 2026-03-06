@@ -415,13 +415,6 @@ export const usePerpsDeposit = ({
     }
   });
 
-  useInterval(
-    () => {
-      dispatch.perps.fetchUserNonFundingLedgerUpdates();
-    },
-    perpsState.localLoadingHistory.length > 0 ? 30 * 1000 : null
-  );
-
   return {
     miniSignTx,
     clearMiniSignTx,
