@@ -352,7 +352,7 @@ export const Perps: React.FC = () => {
           stats.report('perpsTradeHistory', {
             created_at: new Date().getTime(),
             user_addr: currentPerpsAccount?.address || '',
-            trade_type: 'popup close all market',
+            trade_type: 'popup close all position',
             leverage: item.position.leverage.value.toString(),
             trade_side: getStatsReportSide(!isBuy, true),
             margin_mode:
