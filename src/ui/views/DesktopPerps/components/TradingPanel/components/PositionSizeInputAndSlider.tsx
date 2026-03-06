@@ -138,9 +138,39 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
 
   useEffect(() => {
     if (priceChangeUsdValue && positionSize.amount) {
-      positionSize.isInputNotionalValue
-        ? handleNotionalChange(positionSize.notionalValue)
-        : handleAmountChange(positionSize.amount);
+      if (percentage > 0 && !positionSize.isInputNotionalValue) {
+        // When percentage is set via slider, pin to USDC notional value
+        // and recalculate coin amount from notional / new price.
+        // This prevents "insufficient balance" when price rises after setting 100%.
+        const notional = positionSize.notionalValue;
+        if (notional && price) {
+          const newAmount = calcAssetAmountByNotional(
+            notional,
+            price,
+            szDecimals
+          );
+          setPositionSize({
+            amount: newAmount,
+            notionalValue: notional,
+          });
+          if (maxTradeSize && Number(maxTradeSize) > 0) {
+            const pct = Math.min(
+              Math.round(
+                new BigNumber(newAmount)
+                  .div(new BigNumber(maxTradeSize))
+                  .multipliedBy(100)
+                  .toNumber()
+              ),
+              100
+            );
+            setPercentage(pct);
+          }
+        }
+      } else {
+        positionSize.isInputNotionalValue
+          ? handleNotionalChange(positionSize.notionalValue)
+          : handleAmountChange(positionSize.amount);
+      }
     }
   }, [price, priceChangeUsdValue, positionSize.isInputNotionalValue]);
 
