@@ -53,6 +53,8 @@ import * as Sentry from '@sentry/browser';
 import { sortBy } from 'lodash';
 import { RiskLevelPopup } from '../popup/RiskLevelPopup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import stats from '@/stats';
+import { getStatsReportSide } from '../../DesktopPerps/utils';
 import { PerpsHeaderRight } from '../components/PerpsHeaderRight';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
@@ -289,6 +291,7 @@ export const Perps: React.FC = () => {
               price: avgPx,
             }),
           });
+          return filled as { totalSz: string; avgPx: string; oid: number };
         } else {
           const msg = res?.response?.data?.statuses[0]?.error;
           message.error({
@@ -337,12 +340,34 @@ export const Perps: React.FC = () => {
       await handleActionApproveStatus();
       const sdk = getPerpsSDK();
       for (const item of positionAndOpenOrders) {
-        await handleClosePosition({
+        const isBuy = Number(item.position.szi || 0) > 0;
+        const closePrice = marketDataMap[item.position.coin]?.markPx || '0';
+        const res = await handleClosePosition({
           coin: item.position.coin,
           size: Math.abs(Number(item.position.szi || 0)).toString() || '0',
-          direction: Number(item.position.szi || 0) > 0 ? 'Long' : 'Short',
-          price: marketDataMap[item.position.coin]?.markPx || '0',
+          direction: isBuy ? 'Long' : 'Short',
+          price: closePrice,
         });
+        if (res) {
+          stats.report('perpsTradeHistory', {
+            created_at: new Date().getTime(),
+            user_addr: currentPerpsAccount?.address || '',
+            trade_type: 'popup close all market',
+            leverage: item.position.leverage.value.toString(),
+            trade_side: getStatsReportSide(!isBuy, true),
+            margin_mode:
+              item.position.leverage.type === 'cross' ? 'cross' : 'isolated',
+            coin: item.position.coin,
+            size: res.totalSz,
+            price: res.avgPx,
+            trade_usd_value: new BigNumber(res.avgPx)
+              .times(res.totalSz)
+              .toFixed(2),
+            service_provider: 'hyperliquid',
+            app_version: process.env.release || '0',
+            address_type: currentPerpsAccount?.type || '',
+          });
+        }
         await sleep(10);
       }
       dispatch.perps.fetchClearinghouseState();
