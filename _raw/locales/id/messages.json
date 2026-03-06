@@ -1373,7 +1373,10 @@
           "customTestnet": "Tambahkan Jaringan Kustom",
           "metamaskMode": "Sambungkan Rabby dengan Menyamar sebagai MetaMask",
           "enableDappAccount": "Ganti Alamat Dapp Secara Independen\n",
-          "switchPasswordForNonWhitelistedTx": "Kata sandi untuk transfer yang tidak terdaftar"
+          "switchPasswordForNonWhitelistedTx": "Kata sandi untuk transfer yang tidak terdaftar",
+          "biometricUnlock": "Buka dengan Biometrik",
+          "biometricUnlockHint": "Gunakan biometrik untuk membuka kunci di perangkat ini.",
+          "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik."
         },
         "7Days": "7 hari",
         "4Hours": "4 jam",
@@ -1432,7 +1435,15 @@
           "descDisable": "Setelah dinonaktifkan, verifikasi kata sandi tidak akan lagi diperlukan untuk alamat yang tidak ada dalam daftar putih.",
           "titleDisable": "Masukkan Kata Sandi untuk Menonaktifkan",
           "descEnable": "Setelah diaktifkan, mentransfer ke alamat yang tidak terdaftar di ekstensi ini akan memerlukan kata sandi Anda."
-        }
+        },
+        "biometricUnlockEnabled": "Pembukaan biometrik diaktifkan.",
+        "biometricUnlockEnableFailed": "Gagal mengaktifkan pembukaan kunci biometrik",
+        "biometricUnlockSetupTitle": "Aktifkan Pembukaan Kunci Biometrik",
+        "biometricUnlockPasswordPlaceholder": "Masukkan Kata Sandi",
+        "biometricUnlockDisableFailed": "Gagal menonaktifkan kunci biometrik",
+        "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik.",
+        "biometricUnlockSetupDesc": "Konfirmasi kata sandi Anda untuk mengaktifkan pembukaan kunci biometrik.",
+        "biometricUnlockDisabled": "Biometric unlock dinonaktifkan"
       },
       "tokenDetail": {
         "txFailed": "Gagal",
@@ -1980,7 +1991,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "Buka"
+        "unlock": "Buka",
+        "biometric": "Buka dengan biometrik",
+        "unlockWithPassword": "Buka kunci dengan kata sandi"
       },
       "password": {
         "required": "Masukkan Kata Sandi untuk Membuka Kunci",
@@ -2551,8 +2564,8 @@
       "cancelTitle": "On-chain Batalkan",
       "speedUpTitle": "Percepat",
       "signWithOneKey": "Tanda dengan OneKey",
-      "cancleDesc": "",
-      "speedUpDesc": ""
+      "cancleDesc": "Harga gas meningkat {{percent}} untuk pembatalan yang lebih cepat",
+      "speedUpDesc": "Harga gas meningkat {{percent}} untuk percepatan yang lebih cepat"
     },
     "gasAccount": {
       "history": {
@@ -2788,7 +2801,7 @@
         "privateKey": "Kunci Pribadi"
       },
       "importWalletType": {
-        "seedOrKey": "Frasa awal atau kunci pribadi",
+        "seedOrKey": "Seed Phrase atau Kunci Pribadi",
         "hardwareWallet": "Dompet Perangkat Keras"
       }
     },
@@ -3436,7 +3449,8 @@
       "add": "Tambahkan",
       "leverageRangeMaxError": "Leverage maksimum adalah {{max}}x",
       "rabbyFeeTipsZero": "Biaya Rabby: 0%",
-      "close": "Tutup posisi"
+      "close": "Tutup posisi",
+      "directDepositFast": "Cepat, 0 Slippage"
     },
     "perpsPro": {
       "chatArea": {

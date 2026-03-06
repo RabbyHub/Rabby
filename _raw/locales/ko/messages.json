@@ -1373,7 +1373,10 @@
           "label": "설정",
           "customTestnet": "커스텀 네트워크 추가",
           "enableDappAccount": "Dapp 주소를 독립적으로 전환\n",
-          "switchPasswordForNonWhitelistedTx": "비공식 화이트리스트 전송을 위한 비밀번호"
+          "switchPasswordForNonWhitelistedTx": "비공식 화이트리스트 전송을 위한 비밀번호",
+          "biometricUnlock": "바이오메트릭스로 잠금 해제",
+          "biometricUnlockUnsupported": "이 장치는 생체 인식 잠금 해제를 지원하지 않습니다.",
+          "biometricUnlockHint": "이 장치에서 생체 인식을 사용하여 잠금을 해제하세요."
         },
         "save": "저장",
         "inputOpenapiHost": "openapi 호스트를 입력하세요",
@@ -1432,7 +1435,15 @@
           "inputPlaceholder": "비밀번호를 입력하여 확인하십시오.",
           "descEnable": "이 확장 프로그램에서 비공식 화이트리스트 주소로 전송할 경우 암호가 필요합니다.",
           "descDisable": "비활성화되면 화이트리스트에 없는 주소에 대해서는 비밀번호 확인이 더 이상 필요하지 않습니다."
-        }
+        },
+        "biometricUnlockPasswordPlaceholder": "비밀번호 입력",
+        "biometricUnlockSetupTitle": "생체 인식 잠금 해제 활성화",
+        "biometricUnlockEnabled": "생체 인식 잠금 해제가 활성화되었습니다.",
+        "biometricUnlockUnsupported": "이 장치는 생체 인식 잠금 해제를 지원하지 않습니다.",
+        "biometricUnlockDisabled": "생체 인식 잠금 해제 사용 안 함",
+        "biometricUnlockEnableFailed": "생체 인식 잠금 해제를 활성화하는 데 실패했습니다.",
+        "biometricUnlockSetupDesc": "바이오메트릭 잠금을 활성화하려면 비밀번호를 확인하세요.",
+        "biometricUnlockDisableFailed": "생체 인식 잠금 해제를 비활성화하는 데 실패했습니다."
       },
       "tokenDetail": {
         "customized": "맞춤형",
@@ -1980,7 +1991,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "잠금 해제"
+        "unlock": "잠금 해제",
+        "biometric": "생체 인식으로 잠금 해제",
+        "unlockWithPassword": "비밀번호로 잠금 해제"
       },
       "password": {
         "required": "비밀번호를 입력하여 잠금을 해제하세요",
@@ -2550,8 +2563,8 @@
       "signWithLedger": "Ledger로 서명하기",
       "speedUpTitle": "속도 향상",
       "cancelTitle": "온체인 취소",
-      "cancleDesc": "",
-      "speedUpDesc": "",
+      "cancleDesc": "가스 가격이 더 빠른 취소를 위해 {{percent}} 증가했습니다.",
+      "speedUpDesc": "가스 가격이 더 빠른 속도를 위해 {{percent}}만큼 증가했습니다.",
       "signWithOneKey": "OneKey으로 서명하십시오."
     },
     "gasAccount": {
@@ -3436,7 +3449,8 @@
       "fundingPayments": "펀딩 지급",
       "leverageRangeMinError": "최소 레버리지는 {{min}}x입니다.",
       "openPositionTips": "무기한 선물 계약 거래는 상당한 위험을 수반합니다. 이는 높은 레버리지와 시장 변동성으로 인해 투자 원금과 담보가 급격하고 완전히 손실될 수 있는 가능성을 포함하며, 모든 사용자에게 적합하지 않을 수 있습니다. 가격은 펀딩 비율과 유동성에 의해 영향을 받을 수 있으며, 예고 없이 자동 청산될 수 있습니다. 시장 데이터는 Hyperliquid에서 제공합니다.",
-      "seeMore": "더 보기"
+      "seeMore": "더 보기",
+      "directDepositFast": "빠르고, 슬ippage 없음"
     },
     "perpsPro": {
       "chatArea": {

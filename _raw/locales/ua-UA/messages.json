@@ -1308,7 +1308,10 @@
           "themeMode": "Тема режиму",
           "metamaskMode": "Підключіть Rabby, замаскувавшись під MetaMask",
           "enableDappAccount": "Незалежно змінюйте адресу Dapp\n",
-          "switchPasswordForNonWhitelistedTx": "Пароль для нестандартних трансакцій"
+          "switchPasswordForNonWhitelistedTx": "Пароль для нестандартних трансакцій",
+          "biometricUnlock": "Розблокувати за допомогою біометрії",
+          "biometricUnlockUnsupported": "Цей пристрій не підтримує біометричне розблокування.",
+          "biometricUnlockHint": "Використовуйте біометрію для розблокування на цьому пристрої."
         },
         "aboutUs": "Про нас",
         "currentVersion": "Поточна версія",
@@ -1343,7 +1346,15 @@
           "inputPlaceholder": "Введіть пароль для підтвердження",
           "descDisable": "Після вимкнення перевірка пароля більше не буде потрібна для адрес, які не входять до білого списку.",
           "descEnable": "Після активації передача на адресу, що не знаходиться в білому списку, у цьому розширенні вимагатиме ваш пароль."
-        }
+        },
+        "biometricUnlockPasswordPlaceholder": "Введіть пароль",
+        "biometricUnlockDisabled": "Біометричне розблокування вимкнено",
+        "biometricUnlockEnableFailed": "Не вдалося активувати біометричне розблокування",
+        "biometricUnlockDisableFailed": "Не вдалося вимкнути біометричне розблокування.",
+        "biometricUnlockEnabled": "Увімкнено біометричне розблокування.",
+        "biometricUnlockSetupDesc": "Підтвердьте свій пароль, щоб активувати біометричне розблокування.",
+        "biometricUnlockSetupTitle": "Увімкнути біометричне розблокування",
+        "biometricUnlockUnsupported": "Цей пристрій не підтримує біометричну розблокування."
       },
       "tokenDetail": {
         "blockedTip": "Заблокований токен не буде показано у списку токенів",
@@ -1903,7 +1914,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "Unlock"
+        "unlock": "Unlock",
+        "biometric": "Розблокуйте за допомогою біометрії",
+        "unlockWithPassword": "Розблокувати за допомогою пароля"
       },
       "password": {
         "required": "Введіть пароль для розблокування",
@@ -2566,8 +2579,8 @@
       "speedUpTitle": "Прискорити",
       "signWithOneKey": "Підпишіть за допомогою OneKey",
       "cancelTitle": "На ланцюгу Скасувати",
-      "speedUpDesc": "",
-      "cancleDesc": ""
+      "speedUpDesc": "Ціна газу зросла на {{percent}} для швидшого прискорення",
+      "cancleDesc": "Ціна на газ зросла на {{percent}} для швидшого скасування."
     },
     "gasAccount": {
       "history": {
@@ -2804,7 +2817,7 @@
       },
       "importWalletType": {
         "hardwareWallet": "Апаратний гаманець",
-        "seedOrKey": "Сид-фраза або приватний ключ"
+        "seedOrKey": "Сід-фраза або приватний ключ"
       }
     },
     "metamaskModeDapps": {
@@ -3451,7 +3464,8 @@
       "fundingGains": "Прибуток від фінансування",
       "takeProfitWhen": "Встановити ціну тейк-профіту",
       "tradePerps": "Торгівля перп-ф'ючерсами",
-      "title": "Перпс"
+      "title": "Перпс",
+      "directDepositFast": "Швидко, 0 Slippage"
     },
     "perpsPro": {
       "chatArea": {
