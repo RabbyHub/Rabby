@@ -114,7 +114,7 @@ const INIT_TRADING_STATE = {
 };
 
 export interface PerpsState {
-  positionAndOpenOrders: PositionAndOpenOrder[];
+  // positionAndOpenOrders: PositionAndOpenOrder[];
   accountSummary: AccountSummary | null;
   currentPerpsAccount: Account | null;
   accountNeedApproveAgent: boolean; // 账户是否需要重新approve agent
@@ -171,7 +171,7 @@ let topAssetsCache: PerpTopToken[] = [];
 export const perps = createModel<RootModel>()({
   state: {
     // clearinghouseState: null,
-    positionAndOpenOrders: [],
+    // positionAndOpenOrders: [],
     accountSummary: null,
     hasPermission: true,
     perpFee: 0.00045,
@@ -264,9 +264,13 @@ export const perps = createModel<RootModel>()({
 
     setUserNonFundingLedgerUpdates(
       state,
-      payload: { list: UserNonFundingLedgerUpdates[]; isSnapshot?: boolean }
+      payload: {
+        list: UserNonFundingLedgerUpdates[];
+        isSnapshot?: boolean;
+        needShowToast?: boolean;
+      }
     ) {
-      const { list, isSnapshot } = payload;
+      const { list, isSnapshot, needShowToast } = payload;
 
       const newList = list
         .filter((item) => {
@@ -336,7 +340,9 @@ export const perps = createModel<RootModel>()({
           receiveMaxTime,
         } = getMaxTimeFromAccountHistory(newList);
 
-        newList.forEach((item) => showDepositAndWithdrawToast(item));
+        if (needShowToast) {
+          newList.forEach((item) => showDepositAndWithdrawToast(item));
+        }
         const filteredLocalHistory = state.localLoadingHistory.filter(
           (item) => {
             if (item.type === 'deposit') {
@@ -466,30 +472,6 @@ export const perps = createModel<RootModel>()({
       }
     },
 
-    updatePositionsWithClearinghouse(state, payload: ClearinghouseState) {
-      const openOrders = state.positionAndOpenOrders.flatMap(
-        (order) => order.openOrders
-      );
-
-      const positionAndOpenOrders = payload.assetPositions.map((position) => {
-        return {
-          ...position,
-          openOrders: openOrders.filter(
-            (order) => order.coin === position.position.coin
-          ),
-        };
-      });
-
-      return {
-        ...state,
-        accountSummary: {
-          ...payload.marginSummary,
-          withdrawable: payload.withdrawable,
-        },
-        positionAndOpenOrders,
-      };
-    },
-
     updateUserAccountHistory(
       state,
       payload: { newHistoryList: AccountHistoryItem[] }
@@ -590,21 +572,6 @@ export const perps = createModel<RootModel>()({
           ...clearinghouseState.marginSummary,
           withdrawable: clearinghouseState.withdrawable,
         },
-        positionAndOpenOrders,
-      };
-    },
-
-    updateOpenOrders(state, payload: OpenOrder[]) {
-      const positionAndOpenOrders = state.positionAndOpenOrders.map((order) => {
-        return {
-          ...order,
-          openOrders: payload.filter(
-            (item) => item.coin === order.position.coin
-          ),
-        };
-      });
-      return {
-        ...state,
         positionAndOpenOrders,
       };
     },
@@ -796,23 +763,21 @@ export const perps = createModel<RootModel>()({
     },
 
     async fetchPositionAndOpenOrders() {
-      const sdk = getPerpsSDK();
-      try {
-        const [clearinghouseState, openOrders] = await Promise.all([
-          sdk.info.getClearingHouseState(),
-          sdk.info.getFrontendOpenOrders(),
-        ]);
-
-        console.log('clearinghouseState', clearinghouseState);
-        dispatch.perps.setPositionAndOpenOrders(clearinghouseState, openOrders);
-
-        dispatch.perps.setAccountSummary({
-          ...clearinghouseState.marginSummary,
-          withdrawable: clearinghouseState.withdrawable,
-        });
-      } catch (error: any) {
-        console.error('Failed to fetch clearinghouse state:', error);
-      }
+      // const sdk = getPerpsSDK();
+      // try {
+      //   const [clearinghouseState, openOrders] = await Promise.all([
+      //     sdk.info.getClearingHouseState(),
+      //     sdk.info.getFrontendOpenOrders(),
+      //   ]);
+      //   console.log('clearinghouseState', clearinghouseState);
+      //   dispatch.perps.setPositionAndOpenOrders(clearinghouseState, openOrders);
+      //   dispatch.perps.setAccountSummary({
+      //     ...clearinghouseState.marginSummary,
+      //     withdrawable: clearinghouseState.withdrawable,
+      //   });
+      // } catch (error: any) {
+      //   console.error('Failed to fetch clearinghouse state:', error);
+      // }
     },
 
     async fetchPerpPermission(address: string, rootState) {
@@ -874,18 +839,18 @@ export const perps = createModel<RootModel>()({
     async fetchClearinghouseState() {
       const sdk = getPerpsSDK();
 
-      const clearinghouseState = await sdk.info.getClearingHouseState();
+      // const clearinghouseState = await sdk.info.getClearingHouseState();
 
-      dispatch.perps.updatePositionsWithClearinghouse(clearinghouseState);
+      // dispatch.perps.updatePositionsWithClearinghouse(clearinghouseState);
 
-      dispatch.perps.patchClearinghouseState(clearinghouseState);
+      // dispatch.perps.patchClearinghouseState(clearinghouseState);
     },
 
     async fetchPositionOpenOrders() {
       const sdk = getPerpsSDK();
-      const openOrders = await sdk.info.getFrontendOpenOrders();
-      dispatch.perps.updateOpenOrders(openOrders);
-      dispatch.perps.patchState({ openOrders });
+      // const openOrders = await sdk.info.getFrontendOpenOrders();
+      // dispatch.perps.updateOpenOrders(openOrders);
+      // dispatch.perps.patchState({ openOrders });
     },
 
     async fetchUserNonFundingLedgerUpdates() {
@@ -897,6 +862,7 @@ export const perps = createModel<RootModel>()({
           if (
             item.delta.type === 'deposit' ||
             item.delta.type === 'withdraw' ||
+            item.delta.type === 'send' ||
             item.delta.type === 'internalTransfer' ||
             item.delta.type === 'accountClassTransfer'
           ) {
@@ -929,7 +895,7 @@ export const perps = createModel<RootModel>()({
             hash: item.hash,
             type: type as 'deposit' | 'withdraw' | 'receive',
             status: 'success' as const,
-            usdValue: item.delta.usdc || '0',
+            usdValue: item.delta.usdc || (item.delta as any).usdcValue || '0',
           };
         });
 
@@ -1047,54 +1013,53 @@ export const perps = createModel<RootModel>()({
         dispatch.perps.updateMarketData(ctxs);
       });
       subscriptions.push(unsubscribeAllDexsAssetCtxs);
-
-      if (isPro) {
-        const {
-          unsubscribe: unsubscribeClearinghouseState,
-        } = sdk.ws.subscribeToAllDexsClearinghouseState(address, (data) => {
-          const { clearinghouseStates } = data;
-          const user = (data as any).user;
-          if (!isSameAddress(user, address)) {
-            return;
-          }
-          const clearinghouseState = formatAllDexsClearinghouseState(
-            clearinghouseStates
-          );
-          if (!clearinghouseState) {
-            return;
-          }
-          dispatch.perps.patchClearinghouseState(clearinghouseState);
-          dispatch.perps.setClearinghouseStateMapBySingle({
-            address,
-            clearinghouseState: clearinghouseStates,
-          });
+      const {
+        unsubscribe: unsubscribeClearinghouseState,
+      } = sdk.ws.subscribeToAllDexsClearinghouseState(address, (data) => {
+        const { clearinghouseStates } = data;
+        const user = (data as any).user;
+        if (!isSameAddress(user, address)) {
+          return;
+        }
+        const clearinghouseState = formatAllDexsClearinghouseState(
+          clearinghouseStates
+        );
+        if (!clearinghouseState) {
+          return;
+        }
+        dispatch.perps.patchClearinghouseState(clearinghouseState);
+        dispatch.perps.setClearinghouseStateMapBySingle({
+          address,
+          clearinghouseState: clearinghouseStates,
         });
-        subscriptions.push(unsubscribeClearinghouseState);
+      });
+      subscriptions.push(unsubscribeClearinghouseState);
 
-        const {
-          unsubscribe: unsubscribeSpotState,
-        } = sdk.ws.subscribeToSpotState((data) => {
+      const { unsubscribe: unsubscribeSpotState } = sdk.ws.subscribeToSpotState(
+        (data) => {
           const { spotState, user } = data;
           if (!isSameAddress(user, address)) {
             return;
           }
 
           dispatch.perps.patchState({ spotState: formatSpotState(spotState) });
-        });
-        subscriptions.push(unsubscribeSpotState);
+        }
+      );
+      subscriptions.push(unsubscribeSpotState);
 
-        const {
-          unsubscribe: unsubscribeOpenOrders,
-        } = sdk.ws.subscribeToOpenOrders((data) => {
-          const { orders, user } = data;
-          if (!isSameAddress(user, address)) {
-            return;
-          }
+      const {
+        unsubscribe: unsubscribeOpenOrders,
+      } = sdk.ws.subscribeToOpenOrders((data) => {
+        const { orders, user } = data;
+        if (!isSameAddress(user, address)) {
+          return;
+        }
 
-          dispatch.perps.patchState({ openOrders: orders || [] });
-        });
-        subscriptions.push(unsubscribeOpenOrders);
+        dispatch.perps.patchState({ openOrders: orders || [] });
+      });
+      subscriptions.push(unsubscribeOpenOrders);
 
+      if (isPro) {
         const {
           unsubscribe: unsubscribeUserFunding,
         } = sdk.ws.subscribeToUserFunding((data) => {
@@ -1133,21 +1098,6 @@ export const perps = createModel<RootModel>()({
           });
         });
         subscriptions.push(unsubscribeUserHistoricalOrders);
-
-        const {
-          unsubscribe: unsubscribeUserNonFundingLedgerUpdates,
-        } = sdk.ws.subscribeToUserNonFundingLedgerUpdates((data) => {
-          const { nonFundingLedgerUpdates, user, isSnapshot } = data;
-          if (!isSameAddress(user, address)) {
-            return;
-          }
-
-          dispatch.perps.setUserNonFundingLedgerUpdates({
-            list: nonFundingLedgerUpdates,
-            isSnapshot: isSnapshot || false,
-          });
-        });
-        subscriptions.push(unsubscribeUserNonFundingLedgerUpdates);
 
         const {
           unsubscribe: unsubscribeTwapStates,
@@ -1198,6 +1148,22 @@ export const perps = createModel<RootModel>()({
         });
         subscriptions.push(unsubscribeUserTwapSliceFills);
       }
+
+      const {
+        unsubscribe: unsubscribeUserNonFundingLedgerUpdates,
+      } = sdk.ws.subscribeToUserNonFundingLedgerUpdates((data) => {
+        const { nonFundingLedgerUpdates, user, isSnapshot } = data;
+        if (!isSameAddress(user, address)) {
+          return;
+        }
+
+        dispatch.perps.setUserNonFundingLedgerUpdates({
+          list: nonFundingLedgerUpdates,
+          isSnapshot: isSnapshot || false,
+          needShowToast: isPro,
+        });
+      });
+      subscriptions.push(unsubscribeUserNonFundingLedgerUpdates);
 
       const { unsubscribe: unsubscribeFills } = sdk.ws.subscribeToUserFills(
         (data) => {

@@ -45,7 +45,6 @@ export const usePerpsInitial = () => {
     currentPerpsAccount,
     isLogin,
     accountSummary,
-    positionAndOpenOrders,
   } = perpsState;
 
   // return bool if can use approveSignatures
@@ -101,6 +100,21 @@ export const usePerpsInitial = () => {
     wallet.setSendApproveAfterDeposit(address, []);
   });
 
+  const positionAndOpenOrders = useMemo(() => {
+    if (!perpsState.clearinghouseState || !perpsState.openOrders) {
+      return [];
+    }
+
+    return perpsState.clearinghouseState.assetPositions.map((position) => {
+      return {
+        ...position,
+        openOrders: perpsState.openOrders.filter(
+          (item) => item.coin === position.position.coin
+        ),
+      };
+    });
+  }, [perpsState.clearinghouseState, perpsState.openOrders]);
+
   const perpsPositionInfo = useMemo(() => {
     if (
       !isLogin ||
@@ -125,10 +139,10 @@ export const usePerpsInitial = () => {
 
   return {
     accountSummary,
-    positionAndOpenOrders,
     isLogin,
     safeCheckBuilderFee,
     perpsPositionInfo,
+    positionAndOpenOrders,
   };
 };
 
@@ -146,13 +160,10 @@ export const usePerpsState = ({
     isInitialized,
     currentPerpsAccount,
     isLogin,
-    positionAndOpenOrders,
     hasPermission,
     accountNeedApproveAgent,
     accountNeedApproveBuilderFee,
   } = perpsState;
-
-  console.log('-----', isInitialized);
 
   const wallet = useWallet();
 
@@ -557,9 +568,12 @@ export const usePerpsState = ({
 
       await executeSignatures(signActions, currentPerpsAccount);
 
-      // try {
-      await handleDirectApprove(signActions);
-      // } catch (error) {}
+      try {
+        await handleDirectApprove(signActions);
+      } catch (error) {
+        // no throw error to show toast in prod env
+        console.error('Failed to handle direct approve:', error);
+      }
       dispatch.perps.setAccountNeedApproveAgent(false);
       dispatch.perps.setAccountNeedApproveBuilderFee(false);
       isHandlingApproveStatus.current = false;
@@ -840,11 +854,26 @@ export const usePerpsState = ({
     initIsLogin();
   }, [wallet, dispatch, isInitialized]);
 
+  const positionAndOpenOrders = useMemo(() => {
+    if (!perpsState.clearinghouseState || !perpsState.openOrders) {
+      return [];
+    }
+
+    return perpsState.clearinghouseState.assetPositions.map((position) => {
+      return {
+        ...position,
+        openOrders: perpsState.openOrders.filter(
+          (item) => item.coin === position.position.coin
+        ),
+      };
+    });
+  }, [perpsState.clearinghouseState, perpsState.openOrders]);
+
   return {
     // State
     marketData: perpsState.marketData,
     marketDataMap: perpsState.marketDataMap,
-    positionAndOpenOrders: perpsState.positionAndOpenOrders,
+    positionAndOpenOrders: positionAndOpenOrders,
     accountSummary: perpsState.accountSummary,
     currentPerpsAccount: perpsState.currentPerpsAccount,
     isLogin: perpsState.isLogin,

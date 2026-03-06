@@ -19,6 +19,10 @@ import { MarketData } from '@/ui/models/perps';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { MarginInput } from '../components/MarginInput';
 import { LeverageInput } from '../components/LeverageInput';
+import { format } from 'path';
+import { formatPerpsCoin, getStatsReportSide } from '../../DesktopPerps/utils';
+import stats from '@/stats';
+import { useRabbySelector } from '@/ui/store';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -70,6 +74,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   activeAssetCtx,
 }) => {
   const { t } = useTranslation();
+  const perpsAccount = useRabbySelector(
+    (state) => state.perps.currentPerpsAccount
+  );
   const [isReviewMode, setIsReviewMode] = React.useState(false);
 
   const [direction, setDirection] = React.useState<'Long' | 'Short'>(
@@ -245,6 +252,59 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       tpTriggerPx: tpTriggerPx ? tpTriggerPx : undefined,
       slTriggerPx: slTriggerPx ? slTriggerPx : undefined,
     });
+    if (res) {
+      const { totalSz, avgPx } = res;
+      const isBuy = direction === 'Long';
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: perpsAccount?.address || '',
+        trade_type: 'popup market',
+        leverage: leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, false),
+        margin_mode: 'isolated',
+        coin,
+        size: totalSz,
+        price: avgPx,
+        trade_usd_value: new BigNumber(avgPx).times(totalSz).toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: perpsAccount?.type || '',
+      });
+      if (tpTriggerPx) {
+        stats.report('perpsTradeHistory', {
+          created_at: new Date().getTime(),
+          user_addr: perpsAccount?.address || '',
+          trade_type: 'popup take profit in market',
+          leverage: leverage.toString(),
+          trade_side: getStatsReportSide(!isBuy, false),
+          margin_mode: 'isolated',
+          coin,
+          size: totalSz,
+          price: tpTriggerPx,
+          trade_usd_value: new BigNumber(tpTriggerPx).times(totalSz).toFixed(2),
+          service_provider: 'hyperliquid',
+          app_version: process.env.release || '0',
+          address_type: perpsAccount?.type || '',
+        });
+      }
+      if (slTriggerPx) {
+        stats.report('perpsTradeHistory', {
+          created_at: new Date().getTime(),
+          user_addr: perpsAccount?.address || '',
+          trade_type: 'popup stop loss in market',
+          leverage: leverage.toString(),
+          trade_side: getStatsReportSide(!isBuy, false),
+          margin_mode: 'isolated',
+          coin,
+          size: totalSz,
+          price: slTriggerPx,
+          trade_usd_value: new BigNumber(slTriggerPx).times(totalSz).toFixed(2),
+          service_provider: 'hyperliquid',
+          app_version: process.env.release || '0',
+          address_type: perpsAccount?.type || '',
+        });
+      }
+    }
     setLoading(false);
     onConfirm();
     return res;
@@ -336,7 +396,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 Number(tradeSize) * markPrice,
                 BigNumber.ROUND_DOWN
               )}{' '}
-              = {tradeSize} {coin}
+              = {tradeSize} {formatPerpsCoin(coin)}
             </div>
           </div>
           {/* TP/SL Section */}
