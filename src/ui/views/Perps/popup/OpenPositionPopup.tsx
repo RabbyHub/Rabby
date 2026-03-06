@@ -38,6 +38,7 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   activeAssetCtx: WsActiveAssetCtx['ctx'] | null;
   onCancel: () => void;
   onConfirm: () => void;
+  marginMode: 'cross' | 'isolated';
   handleOpenPosition: (params: {
     coin: string;
     size: string;
@@ -72,6 +73,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   handleOpenPosition,
   currentAssetCtx,
   activeAssetCtx,
+  marginMode,
 }) => {
   const { t } = useTranslation();
   const perpsAccount = useRabbySelector(
@@ -258,10 +260,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       stats.report('perpsTradeHistory', {
         created_at: new Date().getTime(),
         user_addr: perpsAccount?.address || '',
-        trade_type: 'popup market',
+        trade_type: 'popup open position',
         leverage: leverage.toString(),
         trade_side: getStatsReportSide(isBuy, false),
-        margin_mode: 'isolated',
+        margin_mode: marginMode,
         coin,
         size: totalSz,
         price: avgPx,
@@ -274,10 +276,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         stats.report('perpsTradeHistory', {
           created_at: new Date().getTime(),
           user_addr: perpsAccount?.address || '',
-          trade_type: 'popup take profit in market',
+          trade_type: 'popup open position tp',
           leverage: leverage.toString(),
-          trade_side: getStatsReportSide(!isBuy, false),
-          margin_mode: 'isolated',
+          trade_side: getStatsReportSide(!isBuy, true),
+          margin_mode: marginMode,
           coin,
           size: totalSz,
           price: tpTriggerPx,
@@ -291,9 +293,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         stats.report('perpsTradeHistory', {
           created_at: new Date().getTime(),
           user_addr: perpsAccount?.address || '',
-          trade_type: 'popup stop loss in market',
+          trade_type: 'popup open position sl',
           leverage: leverage.toString(),
-          trade_side: getStatsReportSide(!isBuy, false),
+          trade_side: getStatsReportSide(!isBuy, true),
           margin_mode: 'isolated',
           coin,
           size: totalSz,

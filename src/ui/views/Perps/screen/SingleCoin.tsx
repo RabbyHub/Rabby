@@ -625,9 +625,9 @@ export const PerpsSingleCoin = () => {
                     stats.report('perpsTradeHistory', {
                       created_at: new Date().getTime(),
                       user_addr: currentPerpsAccount?.address || '',
-                      trade_type: 'popup position take profit',
+                      trade_type: 'popup has position set tp',
                       leverage: (positionData?.leverage || 1).toString(),
-                      trade_side: getStatsReportSide(isBuy, true),
+                      trade_side: getStatsReportSide(!isBuy, true),
                       margin_mode:
                         currentPosition?.position.leverage.type === 'cross'
                           ? 'cross'
@@ -713,9 +713,9 @@ export const PerpsSingleCoin = () => {
                     stats.report('perpsTradeHistory', {
                       created_at: new Date().getTime(),
                       user_addr: currentPerpsAccount?.address || '',
-                      trade_type: 'popup position stop loss',
+                      trade_type: 'popup has position set sl',
                       leverage: (positionData?.leverage || 1).toString(),
-                      trade_side: getStatsReportSide(isBuy, true),
+                      trade_side: getStatsReportSide(!isBuy, true),
                       margin_mode:
                         currentPosition?.position.leverage.type === 'cross'
                           ? 'cross'
@@ -1002,6 +1002,11 @@ export const PerpsSingleCoin = () => {
         szDecimals={currentAssetCtx?.szDecimals || 0}
         leverageRange={[1, currentAssetCtx?.maxLeverage || 5]}
         markPrice={markPrice}
+        marginMode={
+          currentPosition?.position.leverage.type === 'cross'
+            ? 'cross'
+            : 'isolated'
+        }
         availableBalance={Number(availableBalance || 0)}
         onCancel={() => setOpenPositionVisible(false)}
         handleOpenPosition={handleOpenPosition}
@@ -1044,7 +1049,7 @@ export const PerpsSingleCoin = () => {
             stats.report('perpsTradeHistory', {
               created_at: new Date().getTime(),
               user_addr: currentPerpsAccount?.address || '',
-              trade_type: 'popup close market',
+              trade_type: 'popup close position',
               leverage: (positionData?.leverage || 1).toString(),
               trade_side: getStatsReportSide(!isBuy, true),
               margin_mode:
@@ -1163,7 +1168,7 @@ export const PerpsSingleCoin = () => {
                 stats.report('perpsTradeHistory', {
                   created_at: new Date().getTime(),
                   user_addr: currentPerpsAccount?.address || '',
-                  trade_type: 'popup add position market',
+                  trade_type: 'popup add position',
                   leverage: (positionData?.leverage || 1).toString(),
                   trade_side: getStatsReportSide(isBuy, false),
                   margin_mode:
