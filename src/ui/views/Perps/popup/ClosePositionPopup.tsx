@@ -113,7 +113,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
             </div>
             <div className="flex justify-between items-center h-[40px]">
               <div className="flex items-center gap-4">
-                <span className="text-20 font-bold text-r-neutral-back leading-[24px]">
+                <span className="text-20 font-bold text-r-neutral-title-1 leading-[24px]">
                   ${splitNumberByStep(marginUsed.toFixed(2))}
                 </span>
                 <span className="text-15 font-medium text-r-neutral-foot leading-[22px]">

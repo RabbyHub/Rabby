@@ -10,8 +10,13 @@ import {
   queryTokensCache,
 } from '@/ui/utils/portfolio/tokenUtils';
 import { isSameAddress, useWallet } from '@/ui/utils';
-import { ARB_USDC_TOKEN_ID, ARB_USDC_TOKEN_ITEM } from '../constants';
-import { ARB_USDC_TOKEN_SERVER_CHAIN } from '../constants';
+import {
+  ARB_USDC_TOKEN_ID,
+  ARB_USDC_TOKEN_ITEM,
+  ARB_USDC_TOKEN_SERVER_CHAIN,
+  HYPE_USDC_TOKEN_ID,
+  HYPE_USDC_TOKEN_SERVER_CHAIN,
+} from '../constants';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { TokenWithChain } from '@/ui/component';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
@@ -33,6 +38,7 @@ import { useRabbyDispatch } from '@/ui/store';
 import { getPerpsSDK } from '../sdkManager';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { useTwoStepSwap } from '@/ui/views/Swap/hooks/twoStepSwap';
 import TokenSelectPopup from './TokenSelectPopup';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
@@ -159,8 +165,10 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
   const isDirectDeposit = useMemo(() => {
     return (
-      selectedToken?.id === ARB_USDC_TOKEN_ID &&
-      selectedToken?.chain === ARB_USDC_TOKEN_SERVER_CHAIN
+      (selectedToken?.id === ARB_USDC_TOKEN_ID &&
+        selectedToken?.chain === ARB_USDC_TOKEN_SERVER_CHAIN) ||
+      (selectedToken?.id === HYPE_USDC_TOKEN_ID &&
+        selectedToken?.chain === HYPE_USDC_TOKEN_SERVER_CHAIN)
     );
   }, [selectedToken]);
 
@@ -256,6 +264,26 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       ) || null
     );
   }, [selectedToken?.chain]);
+
+  const isHypeDeposit = useMemo(() => {
+    return (
+      selectedToken?.id === HYPE_USDC_TOKEN_ID &&
+      selectedToken?.chain === HYPE_USDC_TOKEN_SERVER_CHAIN
+    );
+  }, [selectedToken]);
+
+  const {
+    shouldTwoStep,
+    currentTxs: twoStepCurrentTxs,
+    next: twoStepNext,
+    isApprove: twoStepIsApprove,
+    approvePending: twoStepApprovePending,
+  } = useTwoStepSwap({
+    chain: chainInfo?.enum || ('' as CHAINS_ENUM),
+    txs: miniTxs || undefined,
+    enable: !!canUseDirectSubmitTx && isHypeDeposit,
+    type: 'approveBridge',
+  });
 
   const tokenIsNativeToken = useMemo(() => {
     if (selectedToken && selectedToken.chain) {
@@ -364,13 +392,13 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
   const quoteError = useMemo(() => {
     return type === 'deposit' &&
-      selectedToken?.id !== ARB_USDC_TOKEN_ID &&
+      !isDirectDeposit &&
       isValidAmount &&
       !quoteLoading &&
       !bridgeQuote?.tx
       ? t('page.perps.depositAmountPopup.fetchQuoteFailed')
       : '';
-  }, [bridgeQuote, quoteLoading, type, selectedToken, t, isValidAmount]);
+  }, [bridgeQuote, quoteLoading, type, isDirectDeposit, t, isValidAmount]);
 
   // 获取错误状态下的文字颜色
   const getMarginTextColor = () => {
@@ -536,7 +564,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           )}
           {type === 'deposit' &&
             isValidAmount &&
-            selectedToken?.id !== ARB_USDC_TOKEN_ID &&
+            !isDirectDeposit &&
             !quoteError &&
             (quoteLoading ? (
               <div className="mb-10 h-[18px] flex flex-row items-center justify-center">
@@ -576,23 +604,27 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               disabled={
                 !isValidAmount ||
                 Boolean(quoteError) ||
-                (!isDirectDeposit && quoteLoading)
+                (!isDirectDeposit && quoteLoading) ||
+                twoStepApprovePending
               }
               size="large"
               type="primary"
-              loading={isPreparingSign}
+              loading={isPreparingSign || twoStepApprovePending}
               className="h-[48px] text-r-neutral-title2 text-15 font-medium"
               style={{
                 height: 48,
               }}
               onClick={async () => {
-                if (canUseDirectSubmitTx && miniTxs.length) {
+                const txsToSign = shouldTwoStep
+                  ? twoStepCurrentTxs || []
+                  : miniTxs;
+                if (canUseDirectSubmitTx && txsToSign.length) {
                   clearMiniSignTypeData?.();
                   setIsPreparingSign(true);
                   closeSign();
                   try {
                     const hashes = await openDirect({
-                      txs: miniTxs,
+                      txs: txsToSign,
                       checkGasFeeTooHigh: true,
                       ga: {
                         category: 'Perps',
@@ -601,10 +633,15 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                       },
                     });
                     if (hashes && hashes.length > 0) {
-                      handleSignDepositDirect(hashes[hashes.length - 1]);
-                      setTimeout(() => {
-                        onClose?.();
-                      }, 500);
+                      const lastHash = hashes[hashes.length - 1];
+                      if (shouldTwoStep && twoStepIsApprove) {
+                        twoStepNext(lastHash);
+                      } else {
+                        handleSignDepositDirect(lastHash);
+                        setTimeout(() => {
+                          onClose?.();
+                        }, 500);
+                      }
                     }
                   } catch (error) {
                     console.log('deposit error', error);
@@ -622,7 +659,9 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                 return true;
               }}
             >
-              {t('page.perps.deposit')}
+              {shouldTwoStep && twoStepIsApprove
+                ? t('page.swap.approve')
+                : t('page.perps.deposit')}
             </Button>
           ) : (
             <Button

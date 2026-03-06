@@ -47,6 +47,7 @@ import { formatPerpsCoin } from '../../../utils';
 import perpsToast from '../../PerpsToast';
 import { ga4 } from '@/utils/ga4';
 import stats from '@/stats';
+import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 
 export interface PositionFormatData {
   direction: 'Long' | 'Short';
@@ -75,12 +76,13 @@ export const PositionsInfo: React.FC = () => {
     openOrders,
 
     marketDataMap,
-    accountSummary,
     currentPerpsAccount,
     wsActiveAssetCtx,
   } = useRabbySelector((store) => store.perps);
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
+
+  const { accountValue, availableBalance } = usePerpsAccount();
 
   const [editMarginVisible, setEditMarginVisible] = useState(false);
   const [editTpSlVisible, setEditTpSlVisible] = useState(false);
@@ -717,7 +719,7 @@ export const PositionsInfo: React.FC = () => {
             direction={currentPosition.direction}
             entryPrice={Number(currentPosition.entryPx || 0)}
             leverage={currentPosition.leverage}
-            availableBalance={Number(accountSummary?.withdrawable || 0)}
+            availableBalance={Number(availableBalance || 0)}
             liquidationPx={Number(currentPosition?.liquidationPx || 0)}
             positionSize={Number(currentPosition.size || 0)}
             marginUsed={Number(currentPosition.marginUsed || 0)}
