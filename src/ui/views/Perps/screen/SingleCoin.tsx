@@ -48,6 +48,8 @@ import { ReactComponent as RcIconArrow } from '@/ui/assets/perps/polygon-cc.svg'
 import { AddPositionPopup } from '../popup/AddPositionPopup';
 import usePerpsState from '../hooks/usePerpsState';
 import { MiniTypedDataApproval } from '../../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { usePerpsAccount } from '../hooks/usePerpsAccount';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -60,13 +62,14 @@ export const PerpsSingleCoin = () => {
   const { isDarkTheme } = useThemeMode();
   const dispatch = useRabbyDispatch();
   const {
-    positionAndOpenOrders,
-    accountSummary,
     marketDataMap,
     perpFee,
     marketData,
+    clearinghouseState,
+    openOrders,
   } = useRabbySelector((state) => state.perps);
   const [coin, setCoin] = useState(_coin);
+  const { accountValue, availableBalance } = usePerpsAccount();
 
   const [amountVisible, setAmountVisible] = useState(false);
   const wallet = useWallet();
@@ -84,6 +87,21 @@ export const PerpsSingleCoin = () => {
   const [addPositionVisible, setAddPositionVisible] = useState(false);
   const [riskPopupVisible, setRiskPopupVisible] = useState(false);
   const activeAssetCtxRef = useRef<(() => void) | null>(null);
+
+  const positionAndOpenOrders = useMemo(() => {
+    if (!clearinghouseState || !openOrders) {
+      return [];
+    }
+
+    return clearinghouseState.assetPositions.map((position) => {
+      return {
+        ...position,
+        openOrders: openOrders.filter(
+          (item) => item.coin === position.position.coin
+        ),
+      };
+    });
+  }, [clearinghouseState, openOrders]);
 
   // 查找当前币种的仓位信息
   const currentPosition = useMemo(() => {
@@ -175,10 +193,9 @@ export const PerpsSingleCoin = () => {
 
   const needDepositFirst = useMemo(() => {
     return (
-      Number(accountSummary?.accountValue || 0) === 0 &&
-      Number(accountSummary?.withdrawable || 0) === 0
+      Number(accountValue || 0) === 0 && Number(availableBalance || 0) === 0
     );
-  }, [accountSummary]);
+  }, [accountValue, availableBalance]);
 
   const accountNeedApprove = useMemo(() => {
     return accountNeedApproveAgent || accountNeedApproveBuilderFee;
@@ -337,9 +354,6 @@ export const PerpsSingleCoin = () => {
     };
   }, [coin]);
 
-  // Available balance for trading
-  const availableBalance = Number(accountSummary?.withdrawable || 0);
-
   const markPrice = useMemo(() => {
     return Number(activeAssetCtx?.markPx || currentAssetCtx?.markPx || 0);
   }, [activeAssetCtx]);
@@ -444,7 +458,7 @@ export const PerpsSingleCoin = () => {
           >
             <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={24} />
             <span className="text-20 font-medium text-r-neutral-title-1">
-              {coin}-USD
+              {formatPerpsCoin(coin)}-USD
             </span>
             <ThemeIcon
               className="icon text-r-neutral-title-1"
@@ -532,7 +546,7 @@ export const PerpsSingleCoin = () => {
                   {splitNumberByStep(
                     Number(positionData?.positionValue || 0).toFixed(2)
                   )}{' '}
-                  = {positionData?.size} {coin}
+                  = {positionData?.size} {formatPerpsCoin(coin)}
                 </span>
               </div>
 
@@ -945,7 +959,7 @@ export const PerpsSingleCoin = () => {
         szDecimals={currentAssetCtx?.szDecimals || 0}
         leverageRange={[1, currentAssetCtx?.maxLeverage || 5]}
         markPrice={markPrice}
-        availableBalance={Number(accountSummary?.withdrawable || 0)}
+        availableBalance={Number(availableBalance || 0)}
         onCancel={() => setOpenPositionVisible(false)}
         handleOpenPosition={handleOpenPosition}
         onConfirm={() => {
@@ -995,8 +1009,8 @@ export const PerpsSingleCoin = () => {
         isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}
         type={'deposit'}
-        accountValue={accountSummary?.accountValue || '0'}
-        availableBalance={accountSummary?.withdrawable || '0'}
+        accountValue={accountValue.toString() || '0'}
+        availableBalance={availableBalance.toString() || '0'}
         updateMiniSignTx={updateMiniSignTx}
         handleDeposit={handleDeposit}
         clearMiniSignTx={clearMiniSignTx}
@@ -1030,7 +1044,7 @@ export const PerpsSingleCoin = () => {
             direction={positionData.direction as 'Long' | 'Short'}
             entryPrice={positionData.entryPrice}
             leverage={positionData.leverage}
-            availableBalance={Number(accountSummary?.withdrawable || 0)}
+            availableBalance={Number(availableBalance || 0)}
             liquidationPx={Number(currentPosition?.position.liquidationPx || 0)}
             positionSize={positionData.size}
             marginUsed={positionData.marginUsed}
@@ -1062,7 +1076,7 @@ export const PerpsSingleCoin = () => {
             activeAssetCtx={activeAssetCtx}
             direction={positionData.direction as 'Long' | 'Short'}
             leverage={positionData.leverage}
-            availableBalance={Number(accountSummary?.withdrawable || 0)}
+            availableBalance={Number(availableBalance || 0)}
             liquidationPx={Number(currentPosition?.position.liquidationPx || 0)}
             positionSize={positionData.size}
             marginUsed={positionData.marginUsed}

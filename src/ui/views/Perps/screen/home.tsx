@@ -59,6 +59,7 @@ import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
 import { BackToTopButton } from '../components/BackToTopButton';
 import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
 import { useScroll } from 'ahooks';
+import { usePerpsAccount } from '../hooks/usePerpsAccount';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -69,7 +70,6 @@ export const Perps: React.FC = () => {
   const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
   const {
     positionAndOpenOrders,
-    accountSummary,
     currentPerpsAccount,
     isLogin,
     marketData,
@@ -212,10 +212,11 @@ export const Perps: React.FC = () => {
     history.push('/dashboard');
   };
 
-  const withdrawDisabled = useMemo(
-    () => !Number(accountSummary?.withdrawable || 0),
-    [accountSummary?.withdrawable]
-  );
+  const { accountValue, availableBalance } = usePerpsAccount();
+
+  const withdrawDisabled = useMemo(() => !Number(availableBalance || 0), [
+    availableBalance,
+  ]);
 
   const marketSectionList = useMemo(() => {
     return sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
@@ -456,7 +457,7 @@ export const Perps: React.FC = () => {
               <div className="flex items-end gap-[4px]">
                 <div className="text-[28px] leading-[33px] font-bold text-r-neutral-title-1">
                   {formatUsdValue(
-                    Number(accountSummary?.accountValue || 0),
+                    Number(accountValue || 0),
                     BigNumber.ROUND_DOWN
                   )}
                 </div>
@@ -477,7 +478,7 @@ export const Perps: React.FC = () => {
               <div className="text-[13px] leading-[16px] text-r-neutral-foot mt-[4px]">
                 {t('page.perps.availableBalance', {
                   balance: formatUsdValue(
-                    Number(accountSummary?.withdrawable || 0),
+                    Number(availableBalance || 0),
                     BigNumber.ROUND_DOWN
                   ),
                 })}
@@ -686,8 +687,8 @@ export const Perps: React.FC = () => {
         handleWithdraw={handleWithdraw}
         clearMiniSignTx={clearMiniSignTx}
         updateMiniSignTx={updateMiniSignTx}
-        accountValue={accountSummary?.accountValue || '0'}
-        availableBalance={accountSummary?.withdrawable || '0'}
+        accountValue={accountValue.toString() || '0'}
+        availableBalance={availableBalance.toString() || '0'}
         onClose={() => {
           setAmountVisible(false);
           clearMiniSignTx();

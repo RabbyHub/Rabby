@@ -571,10 +571,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       subContent: <PerpsSubContent />,
       content: t('page.dashboard.home.panel.perps'),
       onClick: async () => {
-        await wallet.openInDesktop('/desktop/perps');
-        window.close();
+        // await wallet.openInDesktop('/desktop/perps');
+        history.push('/perps');
+        // window.close();
       },
-      isFullscreen: true,
+      // isFullscreen: true,
     } as IPanelItem,
     searchDapp: {
       icon: RcIconSearchCC,

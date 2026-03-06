@@ -14,6 +14,9 @@ import {
   ARB_USDC_TOKEN_ID,
   ARB_USDC_TOKEN_ITEM,
   ARB_USDC_TOKEN_SERVER_CHAIN,
+  HYPE_USDC_TOKEN_ID,
+  HYPE_USDC_TOKEN_ITEM,
+  HYPE_USDC_TOKEN_SERVER_CHAIN,
 } from '../constants';
 import { useMemoizedFn } from 'ahooks';
 import { TokenWithChain } from '@/ui/component';
@@ -46,9 +49,32 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   const wallet = useWallet();
   const [clickLoading, setClickLoading] = React.useState(false);
 
+  const isDirectDepositToken = React.useCallback((token: TokenItem) => {
+    return (
+      (token.id === ARB_USDC_TOKEN_ID &&
+        token.chain === ARB_USDC_TOKEN_SERVER_CHAIN) ||
+      (token.id === HYPE_USDC_TOKEN_ID &&
+        token.chain === HYPE_USDC_TOKEN_SERVER_CHAIN)
+    );
+  }, []);
+
   const sortedList = React.useMemo(() => {
     const items = [...(list || [])];
     items.sort((a, b) => b.amount * b.price - a.amount * a.price);
+
+    // Move HYPE USDC to the front
+    const hypeIdx = items.findIndex(
+      (t) =>
+        t.id === HYPE_USDC_TOKEN_ID && t.chain === HYPE_USDC_TOKEN_SERVER_CHAIN
+    );
+    if (hypeIdx > 0) {
+      const [hit] = items.splice(hypeIdx, 1);
+      items.unshift(hit);
+    } else if (hypeIdx === -1) {
+      items.unshift(HYPE_USDC_TOKEN_ITEM);
+    }
+
+    // Move ARB USDC to the very front
     const idx = items.findIndex(
       (t) =>
         t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
@@ -65,11 +91,8 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   const handleClickToken = useMemoizedFn(async (token: TokenItem) => {
     if (clickLoading) return;
     try {
-      if (
-        token.id === ARB_USDC_TOKEN_ID &&
-        token.chain === ARB_USDC_TOKEN_SERVER_CHAIN
-      ) {
-        // direct deposit
+      if (isDirectDepositToken(token)) {
+        // direct deposit (ARB USDC or HYPE USDC)
         onSelect(token);
         return;
       }
@@ -256,18 +279,30 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
             <span className="text-13 text-r-neutral-title-1 font-medium">
               {getTokenSymbol(item)}
             </span>
-            {item.id === ARB_USDC_TOKEN_ID &&
-              item.chain === ARB_USDC_TOKEN_SERVER_CHAIN && (
-                <div className="text-13 font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px] px-8 py-4">
-                  {t('page.perps.directDeposit')}
-                </div>
-              )}
+            {isDirectDepositToken(item) && (
+              <div className="flex items-center gap-4 text-[11px] font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px] px-6 py-2">
+                <svg
+                  width="8"
+                  height="10"
+                  viewBox="0 0 10 12"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M5.833 0 0 6.667h4.167L4.167 12 10 5.333H5.833z" />
+                </svg>
+                {t('page.perps.directDepositFast')}
+              </div>
+            )}
           </div>
           <div className="text-13 text-r-neutral-title-1 font-medium">
             {clickLoading ? (
               <RcIconLoginLoading className="w-16 h-16 animate-spin" />
             ) : (
-              formatUsdValue(item.amount * item.price || 0)
+              formatUsdValue(
+                isDirectDepositToken(item)
+                  ? item.amount
+                  : item.amount * item.price || 0
+              )
             )}
           </div>
         </div>

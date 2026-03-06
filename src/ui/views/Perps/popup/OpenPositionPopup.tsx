@@ -19,6 +19,8 @@ import { MarketData } from '@/ui/models/perps';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { MarginInput } from '../components/MarginInput';
 import { LeverageInput } from '../components/LeverageInput';
+import { format } from 'path';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -336,7 +338,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 Number(tradeSize) * markPrice,
                 BigNumber.ROUND_DOWN
               )}{' '}
-              = {tradeSize} {coin}
+              = {tradeSize} {formatPerpsCoin(coin)}
             </div>
           </div>
           {/* TP/SL Section */}
