@@ -1305,7 +1305,10 @@
           "themeMode": "Modo de Tema",
           "metamaskMode": "Conectar Rabby disfarçando como MetaMask",
           "enableDappAccount": "Alternar Endereços de DApps Independentemente\n",
-          "switchPasswordForNonWhitelistedTx": "Senha para transferências não autorizadas"
+          "switchPasswordForNonWhitelistedTx": "Senha para transferências não autorizadas",
+          "biometricUnlockHint": "Use biometrics to unlock on this device.",
+          "biometricUnlock": "Desbloquear com Biométricos",
+          "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico."
         },
         "aboutUs": "Sobre nós",
         "currentVersion": "Versão Atual",
@@ -1340,7 +1343,15 @@
           "wrongPassword": "Senha incorreta",
           "titleEnable": "Habilitar verificação de senha?",
           "descDisable": "Uma vez desabilitado, a verificação de senha não será mais necessária para endereços não incluídos na lista de permissões."
-        }
+        },
+        "biometricUnlockPasswordPlaceholder": "Digite a Senha",
+        "biometricUnlockSetupTitle": "Ativar Desbloqueio Biométrico",
+        "biometricUnlockDisableFailed": "Falha ao desativar o desbloqueio biométrico",
+        "biometricUnlockEnableFailed": "Falha ao ativar o desbloqueio biométrico",
+        "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico.",
+        "biometricUnlockSetupDesc": "Confirme sua senha para ativar o desbloqueio biométrico.",
+        "biometricUnlockDisabled": "Desbloqueio biométrico desativado",
+        "biometricUnlockEnabled": "Desbloqueio biométrico ativado."
       },
       "tokenDetail": {
         "blockedTip": "Tokens bloqueados não serão exibidos na lista de tokens",
@@ -1891,7 +1902,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "Desbloquear"
+        "unlock": "Desbloquear",
+        "unlockWithPassword": "Desbloquear com senha",
+        "biometric": "Desbloquear com biometria"
       },
       "password": {
         "required": "Digite a Senha para Desbloquear",
@@ -2553,9 +2566,9 @@
       "signWithLedger": "Assinar com Ledger",
       "cancelTitle": "Cancelamento On-chain",
       "speedUpTitle": "Acelerar",
-      "speedUpDesc": "",
+      "speedUpDesc": "O preço do gás aumentou {{percent}} para uma aceleração mais rápida.",
       "signWithOneKey": "Assinar com OneKey",
-      "cancleDesc": ""
+      "cancleDesc": "O preço do gás aumentou {{percent}} para um cancelamento mais rápido"
     },
     "gasAccount": {
       "history": {
@@ -2792,7 +2805,7 @@
       },
       "importWalletType": {
         "hardwareWallet": "Carteira de Hardware",
-        "seedOrKey": "Seed phrase ou chave privada"
+        "seedOrKey": "Frase Semente ou Chave Privada"
       }
     },
     "metamaskModeDapps": {
@@ -3441,7 +3454,8 @@
       "tradePerps": "Negociar Perps",
       "rabbyFeeTipsV2": "Tarifa Rabby: 0,02%",
       "long": "Compra",
-      "deleteAgentSuccess": "Agente deletado com sucesso"
+      "deleteAgentSuccess": "Agente deletado com sucesso",
+      "directDepositFast": "Rápido, 0 Slippage"
     },
     "perpsPro": {
       "chatArea": {

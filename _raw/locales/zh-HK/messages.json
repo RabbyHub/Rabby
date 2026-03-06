@@ -265,7 +265,10 @@
           "customTestnet": "添加自定义网络",
           "metamaskMode": "以偽裝成 MetaMask 的方式連接 Rabby",
           "enableDappAccount": "獨立切換 Dapp 地址\n",
-          "switchPasswordForNonWhitelistedTx": "非白名单转账的密碼"
+          "switchPasswordForNonWhitelistedTx": "非白名单转账的密碼",
+          "biometricUnlock": "使用生物识别解锁",
+          "biometricUnlockUnsupported": "此設備不支持生物識別解鎖。",
+          "biometricUnlockHint": "使用生物识别技术在此设备上解锁。"
         },
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "更新版本",
@@ -304,7 +307,15 @@
           "titleEnable": "啟用密碼檢查？",
           "descDisable": "一旦禁用，非白名单地址将不再需要密码验证。",
           "descEnable": "啟用後，向此擴展中的非白名單地址轉帳將需要您的密碼。"
-        }
+        },
+        "biometricUnlockPasswordPlaceholder": "輸入密碼",
+        "biometricUnlockEnabled": "啟用生物識別解鎖。",
+        "biometricUnlockDisableFailed": "無法禁用生物識別解鎖",
+        "biometricUnlockSetupDesc": "確認您的密碼以啟用生物識別解鎖。",
+        "biometricUnlockDisabled": "禁用生物识别解锁",
+        "biometricUnlockEnableFailed": "無法啟用生物識別解鎖",
+        "biometricUnlockUnsupported": "此設備不支持生物識別解鎖。",
+        "biometricUnlockSetupTitle": "啟用生物識別解鎖"
       },
       "tokenDetail": {
         "blockedTip": "已隱藏的代幣將不會顯示在代幣列表中",
@@ -2024,7 +2035,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "解鎖"
+        "unlock": "解鎖",
+        "biometric": "使用生物识别解锁",
+        "unlockWithPassword": "用密碼解鎖"
       },
       "password": {
         "error": "密碼錯誤",
@@ -2591,8 +2604,8 @@
       "signWithLedger": "使用 Ledger 簽署",
       "signWithOneKey": "使用 OneKey 签名",
       "speedUpTitle": "加速",
-      "cancleDesc": "",
-      "speedUpDesc": "",
+      "cancleDesc": "Gas 價格增加了 {{percent}} 以加快取消速度",
+      "speedUpDesc": "Gas 價上升 {{percent}} 以獲得更快的速度提升",
       "cancelTitle": "鏈上取消"
     },
     "gasAccount": {
@@ -3477,7 +3490,8 @@
       "TakeProfit": "止盈",
       "logInPerpsAccount": "登入我的永續合約帳戶",
       "deleteAgentModal": "你已達到代理數量的上限。是否刪除現有的代理以建立新代理？",
-      "openPositionTips": "交易永續合約涉及重大風險，包括因高槓桿與市場波動而導致您的投資及抵押品的突然性及全面虧損風險，且未必適合所有用戶。價格可能受資金費率和流動性影響，且您可能在沒有通知的情況下被自動清算。市場數據由 Hyperliquid 提供。"
+      "openPositionTips": "交易永續合約涉及重大風險，包括因高槓桿與市場波動而導致您的投資及抵押品的突然性及全面虧損風險，且未必適合所有用戶。價格可能受資金費率和流動性影響，且您可能在沒有通知的情況下被自動清算。市場數據由 Hyperliquid 提供。",
+      "directDepositFast": "快速，0 滑点"
     },
     "perpsPro": {
       "chatArea": {

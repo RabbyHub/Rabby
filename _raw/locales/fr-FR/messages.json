@@ -1027,7 +1027,10 @@
           "customTestnet": "Ajouter un réseau personnalisé",
           "metamaskMode": "Connectez Rabby en se faisant passer pour MetaMask",
           "enableDappAccount": "Changer indépendamment l'adresse du DApp\n",
-          "switchPasswordForNonWhitelistedTx": "Mot de passe pour les transferts non autorisés"
+          "switchPasswordForNonWhitelistedTx": "Mot de passe pour les transferts non autorisés",
+          "biometricUnlockHint": "Utilisez des biométries pour déverrouiller cet appareil.",
+          "biometricUnlockUnsupported": "Cet appareil ne prend pas en charge le déverrouillage biométrique.",
+          "biometricUnlock": "Déverrouiller avec des biométriques"
         },
         "supportedChains": "Chaînes prises en charge",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -1064,7 +1067,15 @@
           "descEnable": "Une fois activée, le transfert vers une adresse non blanche dans cette extension nécessitera votre mot de passe.",
           "titleDisable": "Entrez le mot de passe pour désactiver",
           "descDisable": "Une fois désactivée, la vérification du mot de passe ne sera plus requise pour les adresses non-blanchies."
-        }
+        },
+        "biometricUnlockPasswordPlaceholder": "Entrer le mot de passe",
+        "biometricUnlockDisabled": "Déverrouillage biométrique désactivé",
+        "biometricUnlockDisableFailed": "Échec de la désactivation du déverrouillage biométrique",
+        "biometricUnlockUnsupported": "Cet appareil ne prend pas en charge le déverrouillage biométrique.",
+        "biometricUnlockSetupDesc": "Confirmez votre mot de passe pour activer le déverrouillage biométrique.",
+        "biometricUnlockEnabled": "Déverrouillage par biométrie activé.",
+        "biometricUnlockSetupTitle": "Activer le déverrouillage biométrique",
+        "biometricUnlockEnableFailed": "Échec de l'activation du déverrouillage biométrique"
       },
       "tokenDetail": {
         "blocked": "Bloqué",
@@ -2467,7 +2478,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "Déverrouiller"
+        "unlock": "Déverrouiller",
+        "unlockWithPassword": "Débloquer avec le mot de passe",
+        "biometric": "Déverrouiller avec des biométries"
       },
       "password": {
         "error": "mot de passe incorrect",
@@ -2877,8 +2890,8 @@
       "speedUpTitle": "Accélérer",
       "signWithOneKey": "Signez avec OneKey",
       "cancelTitle": "Annuler sur la chaîne",
-      "speedUpDesc": "",
-      "cancleDesc": ""
+      "speedUpDesc": "Le prix du gaz a augmenté de {{percent}} pour un accéléré plus rapide.",
+      "cancleDesc": "Le prix du Gas a augmenté de {{percent}} pour une annulation plus rapide."
     },
     "gasAccount": {
       "history": {
@@ -3762,7 +3775,8 @@
       "providerFeeTips": "Frais Hyperliquid : {{fee}}",
       "openPositionTips": "Le trading de contrats perpétuels comporte des risques importants, y compris le risque de perte soudaine et totale de votre investissement et de votre collatéral en raison d’un effet de levier élevé et de la volatilité du marché, et peut ne pas convenir à tous les utilisateurs. Les prix peuvent être influencés par les taux de financement et par la liquidité, et vous pouvez être soumis à des liquidations automatiques sans préavis. Données de marché fournies par Hyperliquid.",
       "history": "Historique",
-      "TakeProfit": "Prise de bénéfices"
+      "TakeProfit": "Prise de bénéfices",
+      "directDepositFast": "Rapide, 0 Slippage"
     },
     "perpsPro": {
       "chatArea": {

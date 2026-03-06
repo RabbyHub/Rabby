@@ -3885,7 +3885,7 @@
         "privateKey": "Private Key"
       },
       "importWalletType": {
-        "seedOrKey": "Seed phrase or private key",
+        "seedOrKey": "Seed Phrase or Private Key",
         "hardwareWallet": "Hardware Wallet"
       }
     },

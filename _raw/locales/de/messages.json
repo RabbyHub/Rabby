@@ -1305,7 +1305,10 @@
           "customTestnet": "Benutzerdefiniertes Netzwerk hinzufügen",
           "metamaskMode": "Verbinden Sie Rabby, indem Sie sich als MetaMask ausgeben",
           "enableDappAccount": "DApps-Adressen unabhängig wechseln\n",
-          "switchPasswordForNonWhitelistedTx": "Passwort für nicht genehmigte Überweisungen"
+          "switchPasswordForNonWhitelistedTx": "Passwort für nicht genehmigte Überweisungen",
+          "biometricUnlock": "Mit biometrischen Daten entsperren",
+          "biometricUnlockHint": "Verwende biometrische Daten, um dieses Gerät zu entsperren.",
+          "biometricUnlockUnsupported": "Dieses Gerät unterstützt keine biometrische Entsperrung."
         },
         "aboutUs": "Über uns",
         "currentVersion": "Aktuelle Version",
@@ -1340,7 +1343,15 @@
           "descDisable": "Sobald deaktiviert, ist die Passwortüberprüfung für nicht auf der Whitelist befindliche Adressen nicht mehr erforderlich.",
           "titleEnable": "Passwortüberprüfung aktivieren?",
           "wrongPassword": "Falsches Passwort"
-        }
+        },
+        "biometricUnlockPasswordPlaceholder": "Passwort eingeben",
+        "biometricUnlockSetupTitle": "Biometrische Entsperrung aktivieren",
+        "biometricUnlockEnableFailed": "Biometrische Entsperrung konnte nicht aktiviert werden.",
+        "biometricUnlockDisableFailed": "Fehler beim Deaktivieren der biometrischen Entsperrung",
+        "biometricUnlockDisabled": "Biometrische Entsperrung deaktiviert",
+        "biometricUnlockEnabled": "Biometrische Entsperrung aktiviert.",
+        "biometricUnlockSetupDesc": "Bestätigen Sie Ihr Passwort, um die biometrische Entsperrung zu aktivieren.",
+        "biometricUnlockUnsupported": "Dieses Gerät unterstützt keine biometrische Entsperrung."
       },
       "tokenDetail": {
         "blockedTip": "Blockierte Token werden nicht in der Tokenliste angezeigt",
@@ -1891,7 +1902,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "Entsperren"
+        "unlock": "Entsperren",
+        "unlockWithPassword": "Mit Passwort entsperren",
+        "biometric": "Mit biometrischen Daten entsperren"
       },
       "password": {
         "required": "Geben Sie das Passwort zum Entsperren ein",
@@ -2553,8 +2566,8 @@
       "signWithLedger": "Mit Ledger signieren",
       "speedUpTitle": "Beschleunigen",
       "cancelTitle": "On-chain Stornieren",
-      "speedUpDesc": "",
-      "cancleDesc": "",
+      "speedUpDesc": "Der Gaspreis ist um {{percent}} gestiegen, um eine schnellere Beschleunigung zu ermöglichen.",
+      "cancleDesc": "Der Gaspreis ist um {{percent}} gestiegen für eine schnellere Stornierung.",
       "signWithOneKey": "Mit OneKey signieren"
     },
     "gasAccount": {
@@ -2791,7 +2804,7 @@
         "seedPhrase": "Seed-Phrase"
       },
       "importWalletType": {
-        "seedOrKey": "Seed-Phrase oder privater Schlüssel",
+        "seedOrKey": "Seed Phrase oder Private Key",
         "hardwareWallet": "Hardware Wallet"
       }
     },
@@ -3439,7 +3452,8 @@
       "permissionTips": "In Ihrer Region wird das Öffnen von Positionen nicht unterstützt.",
       "openPositionTips": "Der Handel mit unbefristeten Kontrakten birgt erhebliche Risiken, einschließlich der Möglichkeit eines plötzlichen und vollständigen Verlusts Ihrer Investition und Ihrer Sicherheiten aufgrund hoher Hebelwirkung und Marktschwankungen, und ist möglicherweise nicht für alle Benutzer geeignet. Die Preise können durch Finanzierungsraten und Liquidität beeinflusst werden, und Sie könnten ohne Vorankündigung automatischen Liquidationen unterliegen. Marktdaten von Hyperliquid bereitgestellt.",
       "liquidation": "Zwangsliquidation",
-      "fundingGains": "Finanzierungsgewinne"
+      "fundingGains": "Finanzierungsgewinne",
+      "directDepositFast": "Schnell, 0 Slippage"
     },
     "perpsPro": {
       "chatArea": {
