@@ -5008,10 +5008,10 @@
     "@noble/hashes" "1.8.0"
     ethereum-cryptography "2.2.1"
 
-"@rabby-wallet/page-provider@0.4.11-1":
-  version "0.4.11-1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.11-1.tgz#739da7bb309ccb40c69bd5dae9eebfd2063db302"
-  integrity sha512-WDz+Wnop9RnvWh6DVWXj0itrypUiyAMiG+4sIJ+qzfhWTskmLjYYN2XtS+3yf6UatXgO0C6AaFx+kDY+ojqK+Q==
+"@rabby-wallet/page-provider@0.4.11":
+  version "0.4.11"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.11.tgz#7c088b26b10ab6421f5799c7c1b6073742a52ef8"
+  integrity sha512-a8MZKlhQicsx0g6AgyCMBQu92YqN90hDGUflGWeXgvEDfCtMH2TYkFi+AB7I92fgk8lKU/Y8icp9HLSGDmu19g==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@metamask/post-message-stream" "8.1.0"
