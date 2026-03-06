@@ -568,9 +568,12 @@ export const usePerpsState = ({
 
       await executeSignatures(signActions, currentPerpsAccount);
 
-      // try {
-      await handleDirectApprove(signActions);
-      // } catch (error) {}
+      try {
+        await handleDirectApprove(signActions);
+      } catch (error) {
+        // no throw error to show toast in prod env
+        console.error('Failed to handle direct approve:', error);
+      }
       dispatch.perps.setAccountNeedApproveAgent(false);
       dispatch.perps.setAccountNeedApproveBuilderFee(false);
       isHandlingApproveStatus.current = false;
