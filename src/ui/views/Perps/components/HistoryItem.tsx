@@ -10,6 +10,7 @@ import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useTranslation } from 'react-i18next';
 import { TokenImg } from './TokenImg';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
 
 interface HistoryItemProps {
   fill: WsFill;
@@ -190,7 +191,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
             {titleString}
           </div>
           <div className="text-13 text-r-neutral-foot font-medium">
-            {coin}-USD
+            {formatPerpsCoin(coin)}-USD
           </div>
         </div>
       </div>

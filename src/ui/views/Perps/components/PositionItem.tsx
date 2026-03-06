@@ -10,6 +10,8 @@ import { PerpsBlueBorderedButton } from './BlueBorderedButton';
 import { DistanceToLiquidationTag } from './DistanceToLiquidationTag';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import { format } from 'path';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
 
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
@@ -115,7 +117,7 @@ export const PositionItem: React.FC<{
               size={20}
             />
             <span className="text-15 ml-4 font-medium text-r-neutral-title-1">
-              {coin}
+              {formatPerpsCoin(coin)}
             </span>
             <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-foot" />
           </div>

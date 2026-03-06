@@ -896,6 +896,7 @@
         "liquidationPrice": "Liq.Price"
       },
       "directDeposit": "Direct Deposit",
+      "directDepositFast": "Fast, 0 Slippage",
       "logInTips": "Log in with your address and deposit funds to start trading perps.",
       "logInPerpsAccount": "Log in to my Perps account",
       "learnAboutPerps": "Learn about Perps",

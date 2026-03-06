@@ -17,6 +17,10 @@ import {
   ARB_USDC_TOKEN_ITEM,
   PERPS_AGENT_NAME,
   PERPS_SEND_ARB_USDC_ADDRESS,
+  HYPE_USDC_TOKEN_ID,
+  HYPE_USDC_TOKEN_SERVER_CHAIN,
+  HYPE_CORE_DEPOSIT_WALLET,
+  HYPE_CORE_DEPOSIT_PERPS_DEX,
 } from '../constants';
 import { findChain } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
@@ -61,6 +65,76 @@ export const usePerpsDeposit = ({
   });
 
   const abortControllerRef = useRef<AbortController | null>(null);
+  const isHypeDepositRef = useRef(false);
+
+  const buildHypeDepositTxs = useMemoizedFn(
+    async (amount: number, token: TokenItem) => {
+      if (!currentPerpsAccount) return [];
+
+      const chain = findChain({
+        serverId: HYPE_USDC_TOKEN_SERVER_CHAIN,
+      })!;
+      const rawAmount = new BigNumber(amount)
+        .multipliedBy(10 ** token.decimals)
+        .toFixed(0, 1)
+        .toString();
+
+      const targetTxs: Tx[] = [];
+
+      const allowance = await wallet.getERC20Allowance(
+        HYPE_USDC_TOKEN_SERVER_CHAIN,
+        HYPE_USDC_TOKEN_ID,
+        HYPE_CORE_DEPOSIT_WALLET
+      );
+
+      const tokenApproved = new BigNumber(allowance).gte(
+        new BigNumber(rawAmount)
+      );
+
+      if (!tokenApproved) {
+        const resp = await wallet.approveToken(
+          HYPE_USDC_TOKEN_SERVER_CHAIN,
+          HYPE_USDC_TOKEN_ID,
+          HYPE_CORE_DEPOSIT_WALLET,
+          rawAmount,
+          {
+            ga: {
+              category: 'Perps',
+              source: 'Perps',
+              trigger: 'Perps',
+            },
+          },
+          undefined,
+          undefined,
+          true,
+          currentPerpsAccount
+        );
+        targetTxs.push(resp.params[0]);
+      }
+
+      const depositData = abiCoder.encodeFunctionCall(
+        {
+          name: 'deposit',
+          type: 'function',
+          inputs: [
+            { type: 'uint256', name: 'amount' },
+            { type: 'uint32', name: 'destinationDex' },
+          ] as any[],
+        },
+        [rawAmount, String(HYPE_CORE_DEPOSIT_PERPS_DEX)] as any[]
+      );
+
+      targetTxs.push({
+        chainId: chain.id,
+        from: currentPerpsAccount.address,
+        to: HYPE_CORE_DEPOSIT_WALLET,
+        value: '0x0',
+        data: depositData,
+      } as Tx);
+
+      return targetTxs;
+    }
+  );
 
   const updateMiniSignTx = useMemoizedFn(
     async (
@@ -69,7 +143,24 @@ export const usePerpsDeposit = ({
       gasPrice: number,
       needMinusOne?: boolean
     ) => {
-      if (token.id !== ARB_USDC_TOKEN_ID) {
+      const isHype =
+        token.id === HYPE_USDC_TOKEN_ID &&
+        token.chain === HYPE_USDC_TOKEN_SERVER_CHAIN;
+      isHypeDepositRef.current = isHype;
+
+      if (isHype) {
+        setQuoteLoading(true);
+        try {
+          const hypeTxs = await buildHypeDepositTxs(usdValue, token);
+          setMiniSignTx(hypeTxs);
+          setBridgeQuote(null);
+          setCacheUsdValue(usdValue);
+          setQuoteLoading(false);
+        } catch (error) {
+          console.error('buildHypeDepositTxs error', error);
+          resetBridgeQuote();
+        }
+      } else if (token.id !== ARB_USDC_TOKEN_ID) {
         setQuoteLoading(true);
         const txs: Tx[] = [];
         try {
@@ -248,7 +339,8 @@ export const usePerpsDeposit = ({
       throw new Error('No hash tx');
     }
 
-    const type = bridgeQuote?.tx ? 'receive' : 'deposit';
+    const type =
+      bridgeQuote?.tx || isHypeDepositRef.current ? 'receive' : 'deposit';
 
     dispatch.perps.setLocalLoadingHistory([
       {
@@ -322,13 +414,6 @@ export const usePerpsDeposit = ({
       clearMiniSignTx();
     }
   });
-
-  useInterval(
-    () => {
-      dispatch.perps.fetchUserNonFundingLedgerUpdates();
-    },
-    perpsState.localLoadingHistory.length > 0 ? 30 * 1000 : null
-  );
 
   return {
     miniSignTx,

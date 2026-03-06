@@ -30,6 +30,36 @@ export const ARB_USDC_TOKEN_ITEM = {
   is_suspicious: false,
   time_at: 0,
 } as TokenItem;
+export const HYPE_USDC_TOKEN_ID = '0xb88339cb7199b77e23db6e890353e22632ba630f';
+
+export const HYPE_USDC_TOKEN_SERVER_CHAIN = 'hyper';
+
+export const HYPE_CORE_DEPOSIT_WALLET =
+  '0x6b9e773128f453f5c2c60935ee2de2cbc5390a24';
+
+export const HYPE_CORE_DEPOSIT_PERPS_DEX = 0;
+
+export const HYPE_USDC_TOKEN_ITEM = {
+  id: HYPE_USDC_TOKEN_ID,
+  chain: HYPE_USDC_TOKEN_SERVER_CHAIN,
+  name: 'USD Coin',
+  optimized_symbol: 'USDC',
+  symbol: 'USDC',
+  logo_url:
+    'https://static.debank.com/image/arb_token/logo_url/0xaf88d065e77c8cc2239327c5edb3a432268e5831/fffcd27b9efff5a86ab942084c05924d.png',
+  amount: 0,
+  price: 1,
+  decimals: 6,
+  display_symbol: 'USDC',
+  is_core: false,
+  is_verified: false,
+  is_wallet: false,
+  is_scam: false,
+  is_infinity: false,
+  is_suspicious: false,
+  time_at: 0,
+} as TokenItem;
+
 export enum CANDLE_MENU_KEY {
   ONE_HOUR = '1H',
   ONE_DAY = '1D',
