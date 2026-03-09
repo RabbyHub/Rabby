@@ -896,6 +896,7 @@
         "liquidationPrice": "Liq.Price"
       },
       "directDeposit": "Direct Deposit",
+      "directDepositFast": "Fast, 0 Slippage",
       "logInTips": "Log in with your address and deposit funds to start trading perps.",
       "logInPerpsAccount": "Log in to my Perps account",
       "learnAboutPerps": "Learn about Perps",
@@ -2479,7 +2480,10 @@
           "customTestnet": "Add Custom Network",
           "metamaskMode": "Connect Rabby by Disguising as MetaMask",
           "enableDappAccount": "Switch Dapp Address Independently",
-          "switchPasswordForNonWhitelistedTx": "Password for non-whitelisted transfers"
+          "switchPasswordForNonWhitelistedTx": "Password for non-whitelisted transfers",
+          "biometricUnlock": "Unlock with Biometrics",
+          "biometricUnlockHint": "Use biometrics to unlock on this device.",
+          "biometricUnlockUnsupported": "This device does not support biometric unlock."
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -2514,7 +2518,15 @@
           "descDisable": "Once disabled, password verification will no longer be required for non-whitelisted addresses.",
           "inputPlaceholder": "Enter the Password to Confirm",
           "wrongPassword": "Wrong password"
-        }
+        },
+        "biometricUnlockEnabled": "Biometric unlock enabled.",
+        "biometricUnlockEnableFailed": "Failed to enable biometric unlock",
+        "biometricUnlockDisabled": "Biometric unlock disabled",
+        "biometricUnlockDisableFailed": "Failed to disable biometric unlock",
+        "biometricUnlockUnsupported": "This device does not support biometric unlock",
+        "biometricUnlockSetupTitle": "Enable Biometric Unlock",
+        "biometricUnlockPasswordPlaceholder": "Enter Password",
+        "biometricUnlockSetupDesc": "Confirm your password to activate biometric unlock."
       },
       "tokenDetail": {
         "noIssuer": "No issuer information available",
@@ -3063,7 +3075,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "Unlock"
+        "unlock": "Unlock",
+        "unlockWithPassword": "Unlock with password",
+        "biometric": "Unlock with biometrics"
       },
       "password": {
         "required": "Enter the Password to Unlock",
@@ -3634,8 +3648,8 @@
       },
       "speedUpTitle": "Speed Up",
       "cancelTitle": "On-chain Cancel",
-      "cancleDesc": "Gas price increased by {{percent}} to cancel transaction",
-      "speedUpDesc": "Gas price increased by {{percent}} to speed up"
+      "cancleDesc": "Gas price increased {{percent}} for a faster cancel",
+      "speedUpDesc": "Gas price increased {{percent}} for a faster speed up"
     },
     "gasAccount": {
       "title": "GasAccount",
@@ -3871,7 +3885,7 @@
         "privateKey": "Private Key"
       },
       "importWalletType": {
-        "seedOrKey": "Seed phrase or private key",
+        "seedOrKey": "Seed Phrase or Private Key",
         "hardwareWallet": "Hardware Wallet"
       }
     },

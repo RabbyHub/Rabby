@@ -265,7 +265,10 @@
           "customTestnet": "添加自定义网络",
           "metamaskMode": "通过伪装成 MetaMask 连接 Rabby",
           "enableDappAccount": "独立切换 Dapp 地址\n",
-          "switchPasswordForNonWhitelistedTx": "非白名单转账的密码"
+          "switchPasswordForNonWhitelistedTx": "非白名单转账的密码",
+          "biometricUnlock": "通过生物识别解锁",
+          "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
+          "biometricUnlockHint": "使用生物识别在此设备上解锁。"
         },
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "更新版本",
@@ -304,7 +307,15 @@
           "titleDisable": "输入密码以禁用",
           "titleEnable": "启用密码检查？",
           "descEnable": "一旦启用，将需要您的密码才能向此扩展中的非白名单地址转账。"
-        }
+        },
+        "biometricUnlockPasswordPlaceholder": "输入密码",
+        "biometricUnlockDisableFailed": "无法禁用生物识别解锁",
+        "biometricUnlockDisabled": "生物识别解锁已禁用",
+        "biometricUnlockEnabled": "已启用生物识别解锁。",
+        "biometricUnlockEnableFailed": "无法启用生物识别解锁",
+        "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
+        "biometricUnlockSetupDesc": "确认您的密码以激活生物识别解锁。",
+        "biometricUnlockSetupTitle": "启用生物识别解锁"
       },
       "tokenDetail": {
         "blockedTip": "已隐藏的代币将不会显示在代币列表中",
@@ -2024,7 +2035,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "解锁"
+        "unlock": "解锁",
+        "unlockWithPassword": "使用密码解锁",
+        "biometric": "使用生物识别解锁"
       },
       "password": {
         "error": "密码错误",
@@ -2631,8 +2644,8 @@
       "cancelTitle": "链上取消",
       "speedUpTitle": "加速",
       "signWithOneKey": "使用 OneKey 签名",
-      "cancleDesc": "Gas 价格增加了 {{percent}} 以取消交易",
-      "speedUpDesc": "Gas价格提高了{{percent}}以加快速度"
+      "cancleDesc": "Gas价格提高了{{percent}}以加快取消速度。",
+      "speedUpDesc": "Gas价格上涨了{{percent}}，以获得更快的速度。"
     },
     "gasAccount": {
       "history": {
@@ -2869,7 +2882,7 @@
       },
       "importWalletType": {
         "hardwareWallet": "硬件钱包",
-        "seedOrKey": "种子短语或私钥"
+        "seedOrKey": "助记词或私钥"
       }
     },
     "metamaskModeDapps": {
@@ -3477,7 +3490,8 @@
       "leverageRangeMinError": "最小杠杆是 {{min}}x",
       "stopLossTipsLongLiquidation": "价格低于爆仓价（{{price}}）",
       "rabbyFeeTipsZero": "Rabby 费率：0%",
-      "reviewOrder": "订单预览"
+      "reviewOrder": "订单预览",
+      "directDepositFast": "快速，零滑点"
     },
     "perpsPro": {
       "chatArea": {

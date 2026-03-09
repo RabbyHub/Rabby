@@ -1373,7 +1373,10 @@
           "enableWhitelistForSendingAssets": "Ativar Lista Branca Para Envio de Ativos",
           "enableTestnets": "Ativar Testnets",
           "enableDappAccount": "Alterar Endereço do Dapp Independentemente\n",
-          "switchPasswordForNonWhitelistedTx": "Senha para transferências não autorizadas"
+          "switchPasswordForNonWhitelistedTx": "Senha para transferências não autorizadas",
+          "biometricUnlockHint": "Use biometrics to unlock on this device.",
+          "biometricUnlock": "Desbloquear com Biometria",
+          "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico."
         },
         "cancel": "Cancelar",
         "7Days": "7 dias",
@@ -1432,7 +1435,15 @@
           "wrongPassword": "Senha incorreta",
           "descEnable": "Uma vez ativado, transferir para um endereço não listado nesta extensão requererá sua senha.",
           "descDisable": "Uma vez desativada, a verificação de senha não será mais necessária para endereços não autorizados."
-        }
+        },
+        "biometricUnlockPasswordPlaceholder": "Digite a Senha",
+        "biometricUnlockEnabled": "Desbloqueio biométrico ativado.",
+        "biometricUnlockSetupTitle": "Ativar Desbloqueio Biométrico",
+        "biometricUnlockDisableFailed": "Falha ao desativar o desbloqueio biométrico",
+        "biometricUnlockSetupDesc": "Confirme sua senha para ativar o desbloqueio biométrico.",
+        "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico.",
+        "biometricUnlockEnableFailed": "Falha ao habilitar o desbloqueio biométrico",
+        "biometricUnlockDisabled": "Desbloqueio biométrico desativado"
       },
       "tokenDetail": {
         "txFailed": "Falha",
@@ -1980,7 +1991,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "Desbloquear"
+        "unlock": "Desbloquear",
+        "unlockWithPassword": "Desbloquear com senha",
+        "biometric": "Desbloquear com biometria"
       },
       "password": {
         "error": "senha incorreta",
@@ -2549,10 +2562,10 @@
       },
       "signWithLedger": "Assine com Ledger",
       "speedUpTitle": "Acelerar",
-      "speedUpDesc": "O preço do gás aumentou {{percent}} para acelerar.",
+      "speedUpDesc": "O preço do gás aumentou {{percent}} para uma velocidade mais rápida.",
       "signWithOneKey": "Assine com OneKey",
       "cancelTitle": "On-chain Cancel",
-      "cancleDesc": "O preço do gás aumentou {{percent}} para cancelar a transação."
+      "cancleDesc": "O preço do Gas aumentou {{percent}} para um cancelamento mais rápido."
     },
     "gasAccount": {
       "history": {
@@ -2789,7 +2802,7 @@
       },
       "importWalletType": {
         "hardwareWallet": "Carteira de Hardware",
-        "seedOrKey": "Frase semente ou chave privada"
+        "seedOrKey": "Frase Semente ou Chave Privada"
       }
     },
     "metamaskModeDapps": {
@@ -3436,7 +3449,8 @@
       "openInterest": "Contratos em aberto",
       "takeProfit": "Realizar lucro",
       "takeProfitWhen": "Definir o preço de Take-Profit",
-      "marginIsolated": "Margem (Isolada)"
+      "marginIsolated": "Margem (Isolada)",
+      "directDepositFast": "Rápido, 0 Slippage"
     },
     "perpsPro": {
       "chatArea": {

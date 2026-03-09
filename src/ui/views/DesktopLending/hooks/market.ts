@@ -39,7 +39,7 @@ export const getMarketInfo = (market?: CustomMarket) => {
 };
 
 export const useSelectedMarket = () => {
-  const { lastSelectedChain, setLastSelectedChain } = useLendingService();
+  const { lastSelectedChain, setLastSelectedChain, init } = useLendingService();
   const { marketData, chainEnum, chainInfo, isMainnet } = useMemo(
     () => getMarketInfo(lastSelectedChain),
     [lastSelectedChain]
@@ -47,6 +47,7 @@ export const useSelectedMarket = () => {
 
   return {
     marketKey: lastSelectedChain,
+    init,
     selectedMarketData: marketData,
     setMarketKey: setLastSelectedChain,
     chainEnum,

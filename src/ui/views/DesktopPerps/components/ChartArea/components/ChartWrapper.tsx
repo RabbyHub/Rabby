@@ -116,11 +116,20 @@ const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
   }
 };
 
-const createTimeLocalization = () => {
+const formatLocalDate = (time: Time): string => {
+  const date = timeToDate(time);
+  const year = date.getFullYear();
+  const month = padZero(date.getMonth() + 1);
+  const day = padZero(date.getDate());
+  return `${year}-${month}-${day}`;
+};
+
+const createTimeLocalization = (isWeekly = false) => {
   const formatTick = (time: Time, tickMarkType: TickMarkType): string =>
     formatTickLabel(timeToDate(time), tickMarkType);
 
-  const formatHover = (time: Time): string => formatLocalDateTime(time);
+  const formatHover = (time: Time): string =>
+    isWeekly ? formatLocalDate(time) : formatLocalDateTime(time);
 
   return {
     locale: 'en-US',
@@ -159,6 +168,87 @@ const parseVolumes = (data: CandleSnapshot): HistogramData<UTCTimestamp>[] => {
       color: Number(row.c) >= Number(row.o) ? '#0ECB8180' : '#F6465D80',
     };
   });
+};
+
+// Get the Monday 00:00 UTC timestamp for the week containing the given timestamp
+const getMondayUtc = (utcSeconds: number): UTCTimestamp => {
+  const date = new Date(utcSeconds * 1000);
+  const day = date.getUTCDay(); // 0=Sun,1=Mon,...,6=Sat
+  const diffDays = day === 0 ? -6 : 1 - day;
+  date.setUTCDate(date.getUTCDate() + diffDays);
+  date.setUTCHours(0, 0, 0, 0);
+  return Math.floor(date.getTime() / 1000) as UTCTimestamp;
+};
+
+// Aggregate daily candles into Monday-start weekly candles with correct OHLC
+const aggregateDailyToWeekly = (
+  dailyCandles: CandlestickData<UTCTimestamp>[]
+): CandlestickData<UTCTimestamp>[] => {
+  if (dailyCandles.length === 0) return [];
+
+  const weeks = new Map<number, CandlestickData<UTCTimestamp>>();
+
+  for (const candle of dailyCandles) {
+    const mondayTs = getMondayUtc(candle.time as number);
+    const existing = weeks.get(mondayTs);
+    if (existing) {
+      existing.high = Math.max(existing.high, candle.high);
+      existing.low = Math.min(existing.low, candle.low);
+      existing.close = candle.close;
+    } else {
+      weeks.set(mondayTs, {
+        time: mondayTs,
+        open: candle.open,
+        high: candle.high,
+        low: candle.low,
+        close: candle.close,
+      });
+    }
+  }
+
+  return Array.from(weeks.values()).sort(
+    (a, b) => (a.time as number) - (b.time as number)
+  );
+};
+
+// Aggregate daily volumes into Monday-start weekly volumes
+const aggregateDailyVolumesToWeekly = (
+  dailyVolumes: HistogramData<UTCTimestamp>[],
+  dailyCandles: CandlestickData<UTCTimestamp>[]
+): HistogramData<UTCTimestamp>[] => {
+  if (dailyVolumes.length === 0) return [];
+
+  const weeks = new Map<
+    number,
+    { value: number; lastClose: number; lastOpen: number }
+  >();
+
+  for (let i = 0; i < dailyVolumes.length; i++) {
+    const vol = dailyVolumes[i];
+    const candle = dailyCandles[i];
+    const mondayTs = getMondayUtc(vol.time as number);
+    const existing = weeks.get(mondayTs);
+    if (existing) {
+      existing.value += vol.value;
+      if (candle) {
+        existing.lastClose = candle.close;
+      }
+    } else {
+      weeks.set(mondayTs, {
+        value: vol.value,
+        lastClose: candle?.close || 0,
+        lastOpen: candle?.open || 0,
+      });
+    }
+  }
+
+  return Array.from(weeks.entries())
+    .sort(([a], [b]) => a - b)
+    .map(([mondayTs, data]) => ({
+      time: mondayTs as UTCTimestamp,
+      value: data.value,
+      color: data.lastClose >= data.lastOpen ? '#0ECB8180' : '#F6465D80',
+    }));
 };
 
 const INTERVAL_OPTIONS: Array<{ label: string; value: IntervalKey }> = [
@@ -265,6 +355,10 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     entry?: IPriceLine;
   }>({});
   const isMountedRef = useRef(true);
+  const currentWeekCandleRef = useRef<CandlestickData<UTCTimestamp> | null>(
+    null
+  );
+  const currentWeekVolumeRef = useRef<HistogramData<UTCTimestamp> | null>(null);
   const { isDarkTheme } = useThemeMode();
   const lineTagInfo = useMemo(() => {
     const tpPrice = openOrders.find(
@@ -319,7 +413,10 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
   const expectedDataKeyRef = useRef<string>(dataKey);
 
   const colors = useMemo(() => getThemeColors(isDarkTheme), [isDarkTheme]);
-  const timeLocalization = useMemo(() => createTimeLocalization(), []);
+  const isWeekly = selectedInterval === '1w';
+  const timeLocalization = useMemo(() => createTimeLocalization(isWeekly), [
+    isWeekly,
+  ]);
 
   // Update price lines function
   const updatePriceLines = useCallback(() => {
@@ -593,11 +690,14 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       const sdk = getPerpsSDK();
       const { start, end } = getTimeRange(targetInterval);
       const currentDataKey = `${targetCoin}-${targetInterval}`;
+      const isWeekly = targetInterval === '1w';
+      // For weekly: fetch daily candles and aggregate client-side to start weeks on Monday
+      const fetchInterval = isWeekly ? '1d' : targetInterval;
 
       try {
         const snapshot = await sdk.info.candleSnapshot(
           targetCoin,
-          targetInterval,
+          fetchInterval,
           start,
           end
         );
@@ -609,8 +709,21 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           return;
         }
 
-        const candles = parseCandles(snapshot);
-        const volumes = parseVolumes(snapshot);
+        const dailyCandles = parseCandles(snapshot);
+        const dailyVolumes = parseVolumes(snapshot);
+
+        const candles = isWeekly
+          ? aggregateDailyToWeekly(dailyCandles)
+          : dailyCandles;
+        const volumes = isWeekly
+          ? aggregateDailyVolumesToWeekly(dailyVolumes, dailyCandles)
+          : dailyVolumes;
+
+        if (isWeekly && candles.length > 0) {
+          currentWeekCandleRef.current = { ...candles[candles.length - 1] };
+          currentWeekVolumeRef.current =
+            volumes.length > 0 ? { ...volumes[volumes.length - 1] } : null;
+        }
 
         setPendingData({
           candles,
@@ -674,9 +787,13 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     const sdk = getPerpsSDK();
     if (!seriesRef.current || !volumeSeriesRef.current) return;
 
+    const isWeekly = selectedInterval === '1w';
+    // Subscribe to daily candles in weekly mode for correct Monday-based aggregation
+    const subscribeInterval = isWeekly ? '1d' : selectedInterval;
+
     const { unsubscribe } = sdk.ws.subscribeToCandles(
       coin,
-      selectedInterval,
+      subscribeInterval,
       (snapshot) => {
         // Check if component is still mounted before updating
         if (
@@ -688,11 +805,72 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
         const candles = parseCandles([snapshot]);
         const volumes = parseVolumes([snapshot]);
-        if (candles.length > 0) {
-          seriesRef.current?.update(candles[0]);
+        if (candles.length === 0) return;
+
+        if (isWeekly) {
+          const daily = candles[0];
+          const dailyVolume = volumes[0];
+          const mondayTs = getMondayUtc(daily.time as number);
+
+          // Aggregate candle
+          const currentCandle = currentWeekCandleRef.current;
+          if (currentCandle && currentCandle.time === mondayTs) {
+            currentCandle.high = Math.max(currentCandle.high, daily.high);
+            currentCandle.low = Math.min(currentCandle.low, daily.low);
+            currentCandle.close = daily.close;
+          } else {
+            currentWeekCandleRef.current = {
+              time: mondayTs,
+              open: daily.open,
+              high: daily.high,
+              low: daily.low,
+              close: daily.close,
+            };
+          }
+          seriesRef.current?.update(currentWeekCandleRef.current!);
+
+          // Aggregate volume
+          if (dailyVolume) {
+            const currentVolume = currentWeekVolumeRef.current;
+            if (currentVolume && currentVolume.time === mondayTs) {
+              currentVolume.value += dailyVolume.value;
+              currentVolume.color =
+                currentWeekCandleRef.current!.close >=
+                currentWeekCandleRef.current!.open
+                  ? '#0ECB8180'
+                  : '#F6465D80';
+            } else {
+              currentWeekVolumeRef.current = {
+                time: mondayTs,
+                value: dailyVolume.value,
+                color:
+                  currentWeekCandleRef.current!.close >=
+                  currentWeekCandleRef.current!.open
+                    ? '#0ECB8180'
+                    : '#F6465D80',
+              };
+            }
+            volumeSeriesRef.current?.update(currentWeekVolumeRef.current!);
+          }
+
           // Update latest candle data
+          const wc = currentWeekCandleRef.current!;
+          const wv = currentWeekVolumeRef.current;
+          setLatestCandle({
+            open: wc.open,
+            high: wc.high,
+            low: wc.low,
+            close: wc.close,
+            volume: wv?.value || 0,
+            visible: false,
+            isPositiveChange: wc.close - wc.open > 0,
+            delta: wc.close - wc.open,
+            deltaPercent: (wc.close - wc.open) / wc.open,
+          });
+        } else {
           const latest = candles[0];
           const latestVolume = volumes[0]?.value || 0;
+          seriesRef.current?.update(latest);
           setLatestCandle({
             open: latest.open,
             high: latest.high,
@@ -704,9 +882,9 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
             delta: latest.close - latest.open,
             deltaPercent: (latest.close - latest.open) / latest.open,
           });
-        }
-        if (volumes.length > 0) {
-          volumeSeriesRef.current?.update(volumes[0]);
+          if (volumes.length > 0) {
+            volumeSeriesRef.current?.update(volumes[0]);
+          }
         }
       }
     );

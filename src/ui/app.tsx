@@ -151,12 +151,26 @@ eventBus.addEventListener('syncChainList', (params) => {
   updateChainStore(params);
 });
 
+const compensateUnlockedOnceFlag = async () => {
+  try {
+    if (store.getState().app.hasUnlockedOnce) return;
+    const isUnlocked = await wallet.isUnlocked();
+    if (isUnlocked) {
+      store.dispatch.app.setField({
+        hasUnlockedOnce: true,
+      });
+    }
+  } catch (e) {
+    console.log('[compensateUnlockedOnceFlag] failed', e);
+  }
+};
+
 const rootContainer = document.getElementById('root');
 const root = rootContainer ? createRoot(rootContainer) : null;
 
-const main = () => {
-  console.log('name', getUITypeName());
+const main = async () => {
   portMessageChannel.connect(getUITypeName());
+  await compensateUnlockedOnceFlag();
 
   store.dispatch.app.initBizStore();
   store.dispatch.chains.init();

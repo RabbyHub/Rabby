@@ -5,6 +5,7 @@ import { TokenImg } from './TokenImg';
 import { splitNumberByStep } from '@/ui/utils';
 import { formatUsdValueKMB } from '../../Dashboard/components/TokenDetailPopup/utils';
 import { useTranslation } from 'react-i18next';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
 export const AssetItem: React.FC<{
@@ -38,7 +39,7 @@ export const AssetItem: React.FC<{
         <div className="text-left">
           <div className="flex items-center gap-4">
             <div className="text-15 font-medium text-r-neutral-title-1 mb-2">
-              {item.name}
+              {formatPerpsCoin(item.name)}
             </div>
             {hasPosition && (
               <div className="text-[12px] text-rb-brand-default bg-rb-brand-light-1 px-4 h-[18px] flex items-center justify-center rounded-[4px]">

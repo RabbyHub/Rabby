@@ -1305,7 +1305,10 @@
           "customTestnet": "カスタムネットワークを追加",
           "metamaskMode": "MetaMaskとして偽装してRabbyを接続",
           "enableDappAccount": "Dapp アドレスを個別に切り替える\n",
-          "switchPasswordForNonWhitelistedTx": "ホワイトリストに登録されていない転送のパスワード"
+          "switchPasswordForNonWhitelistedTx": "ホワイトリストに登録されていない転送のパスワード",
+          "biometricUnlock": "生体認証でロック解除",
+          "biometricUnlockHint": "このデバイスでバイオメトリクスを使用してロックを解除します。",
+          "biometricUnlockUnsupported": "このデバイスは生体認証によるロック解除をサポートしていません。"
         },
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",
@@ -1340,7 +1343,15 @@
           "titleDisable": "パスワードを入力して無効にします",
           "descDisable": "無効にすると、ホワイトリストに登録されていないアドレスに対してパスワード検証は必要なくなります。",
           "descEnable": "有効化されると、この拡張機能でホワイトリストに登録されていないアドレスへの転送にはパスワードが必要です。"
-        }
+        },
+        "biometricUnlockDisabled": "生体認証が無効になっています",
+        "biometricUnlockPasswordPlaceholder": "パスワードを入力してください",
+        "biometricUnlockEnabled": "バイオメトリックアンロックが有効になりました。",
+        "biometricUnlockDisableFailed": "生体認証ロックの無効化に失敗しました",
+        "biometricUnlockUnsupported": "このデバイスは生体認証解除をサポートしていません。",
+        "biometricUnlockSetupDesc": "バイオメトリックロック解除を有効にするには、パスワードを確認してください。",
+        "biometricUnlockSetupTitle": "バイオメトリックロック解除を有効にする",
+        "biometricUnlockEnableFailed": "生体認証のアンロックを有効にできませんでした。"
       },
       "tokenDetail": {
         "blockedTip": "ブロックされたトークンはトークンリストに表示されません",
@@ -1891,7 +1902,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "アンロック"
+        "unlock": "アンロック",
+        "unlockWithPassword": "パスワードでアンロック",
+        "biometric": "バイオメトリクスでアンロック"
       },
       "password": {
         "required": "アンロックするにはパスワードを入力してください",
@@ -2553,9 +2566,9 @@
       "signWithLedger": "Ledgerで署名",
       "cancelTitle": "オンチェーンキャンセル",
       "speedUpTitle": "スピードアップ",
-      "cancleDesc": "取引をキャンセルするためにガス価格が{{percent}}増加しました",
+      "cancleDesc": "ガス価格が{{percent}}上昇し、キャンセルが迅速に行われます。",
       "signWithOneKey": "OneKeyで署名",
-      "speedUpDesc": "ガス価格が{{percent}}上昇して速度を上げました"
+      "speedUpDesc": "ガス価格は、より速い速度のために{{percent}}上昇しました"
     },
     "gasAccount": {
       "history": {
@@ -3439,7 +3452,8 @@
       "logInPerpsAccount": "私の永久契約アカウントにログイン",
       "marginCross": "証拠金（クロスマージン）",
       "rabbyFeeTipsV2": "Rabby 手数料: 0.02%",
-      "openPositionTips": "無期限契約の取引には、投資額および担保の突然かつ全損につながる可能性を含む、重大なリスクが伴います。高いレバレッジと市場のボラティリティのため、すべてのユーザーに適しているとは限りません。価格はファンディングレートと流動性の影響を受けることがあり、通知なしに自動清算されることがあります。市場データはHyperliquidによって提供されます。"
+      "openPositionTips": "無期限契約の取引には、投資額および担保の突然かつ全損につながる可能性を含む、重大なリスクが伴います。高いレバレッジと市場のボラティリティのため、すべてのユーザーに適しているとは限りません。価格はファンディングレートと流動性の影響を受けることがあり、通知なしに自動清算されることがあります。市場データはHyperliquidによって提供されます。",
+      "directDepositFast": "迅速、スリッページなし"
     },
     "perpsPro": {
       "chatArea": {

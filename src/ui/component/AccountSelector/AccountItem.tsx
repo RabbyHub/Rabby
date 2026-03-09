@@ -46,7 +46,6 @@ export interface AddressItemProps {
   tmpCexInfo?: Exchange;
   allowEditAlias?: boolean;
   hideBalance?: boolean;
-  longEllipsis?: boolean;
   getContainer?: DrawerProps['getContainer'];
 }
 
@@ -91,7 +90,6 @@ export const AccountItem = memo(
     allowEditAlias = false,
     hideBalance,
     tmpCexInfo,
-    longEllipsis,
     getContainer,
   }: AddressItemProps) => {
     const formatAddressTooltip = (type: string, brandName: string) => {
@@ -336,7 +334,6 @@ export const AccountItem = memo(
             <AddressViewer
               address={address?.toLowerCase()}
               showArrow={false}
-              longEllipsis={longEllipsis}
               className={clsx('text-[12px] text-r-neutral-foot leading-[16px]')}
             />
 

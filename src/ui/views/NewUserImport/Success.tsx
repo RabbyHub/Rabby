@@ -149,7 +149,7 @@ const AccountItem = ({ account }: { account: Account }) => {
         )}
       </div>
       <div className="text-[13px] leading-[16px] text-r-neutral-foot">
-        {ellipsisAddress(account.address, true)}
+        {ellipsisAddress(account.address)}
       </div>
     </div>
   );
