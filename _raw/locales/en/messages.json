@@ -1679,7 +1679,7 @@
       "debtSwap": {
         "entryTips": "One-click to swap your borrowed asset, reducing steps and fees.",
         "title": "Swap Borrow Position",
-        "borrowBalance": "Borrow balance",
+        "borrowBalance": "Borrowed",
         "actions": {
           "title": "Debt Swap",
           "amount": "Amount",
