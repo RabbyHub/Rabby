@@ -1,0 +1,283 @@
+import React from 'react';
+import clsx from 'clsx';
+import { useWallet } from '@/ui/utils';
+import { copyAddress } from '@/ui/utils/clipboard';
+import { ellipsisAddress } from '@/ui/utils/address';
+import { useTranslation } from 'react-i18next';
+import { useHistory, useLocation } from 'react-router-dom';
+import { message } from 'antd';
+import { useMemoizedFn } from 'ahooks';
+import {
+  CreateAddressSuccessAddress,
+  CreateAddressSuccessState,
+  useCreateAddressActions,
+} from './useCreateAddress';
+import type { AddAddressNavigateHandler } from './shared';
+import {
+  RcCreateAddressSuccessIcon,
+  RcCreateAddressSuccessCopyIcon,
+  RcCreateAddressSuccessArrowIcon,
+} from '@/ui/assets/add-address';
+
+const normalizeSuccessAddresses = (
+  state: CreateAddressSuccessState
+): CreateAddressSuccessAddress[] => {
+  if (state.addresses?.length) {
+    return state.addresses;
+  }
+
+  if (state.address) {
+    return [
+      {
+        address: state.address,
+        alias: state.alias || '',
+      },
+    ];
+  }
+
+  return [];
+};
+
+export const CreateAddressSuccess: React.FC<{
+  isInModal?: boolean;
+  onNavigate?: AddAddressNavigateHandler;
+  state?: Record<string, any>;
+}> = ({ isInModal, onNavigate, state: outerState }) => {
+  const history = useHistory();
+  const location = useLocation<CreateAddressSuccessState>();
+  const wallet = useWallet();
+  const { t } = useTranslation();
+  const { openAddMoreAddressesPage } = useCreateAddressActions({
+    onNavigate,
+  });
+
+  const state = (outerState ||
+    location.state ||
+    {}) as CreateAddressSuccessState;
+  const addresses = React.useMemo(() => normalizeSuccessAddresses(state), [
+    state,
+  ]);
+  const [items, setItems] = React.useState<CreateAddressSuccessAddress[]>(
+    addresses
+  );
+  const [pendingAction, setPendingAction] = React.useState<
+    'done' | 'more' | null
+  >(null);
+  const inputRefs = React.useRef<Record<string, HTMLInputElement | null>>({});
+  const committedAliasRef = React.useRef<Record<string, string>>({});
+
+  React.useEffect(() => {
+    setItems(addresses);
+    committedAliasRef.current = Object.fromEntries(
+      addresses.map((item) => [item.address.toLowerCase(), item.alias || ''])
+    );
+  }, [addresses]);
+
+  React.useLayoutEffect(() => {
+    const firstAddress = addresses[0]?.address?.toLowerCase();
+    if (!firstAddress) {
+      return;
+    }
+
+    const input = inputRefs.current[firstAddress];
+    if (!input) {
+      return;
+    }
+
+    input.focus();
+    const length = input.value.length;
+    input.setSelectionRange(length, length);
+  }, [addresses]);
+
+  const commitAlias = useMemoizedFn(async (address: string) => {
+    const addressKey = address.toLowerCase();
+    const item = items.find(
+      (currentItem) => currentItem.address.toLowerCase() === addressKey
+    );
+    if (!item) {
+      return;
+    }
+
+    const committedAlias = committedAliasRef.current[addressKey] || '';
+    const nextAlias = item.alias.trim() || committedAlias;
+    if (!nextAlias || nextAlias === committedAlias) {
+      setItems((prev) =>
+        prev.map((currentItem) =>
+          currentItem.address.toLowerCase() === addressKey
+            ? {
+                ...currentItem,
+                alias: committedAlias,
+              }
+            : currentItem
+        )
+      );
+      return;
+    }
+
+    await wallet.updateAlianName(addressKey, nextAlias);
+    committedAliasRef.current[addressKey] = nextAlias;
+    setItems((prev) =>
+      prev.map((currentItem) =>
+        currentItem.address.toLowerCase() === addressKey
+          ? {
+              ...currentItem,
+              alias: nextAlias,
+            }
+          : currentItem
+      )
+    );
+  });
+
+  const commitAllAliases = useMemoizedFn(async () => {
+    await Promise.all(items.map((item) => commitAlias(item.address)));
+  });
+
+  const handleDone = useMemoizedFn(async () => {
+    try {
+      setPendingAction('done');
+      await commitAllAliases();
+      if (onNavigate) {
+        onNavigate('done');
+      } else {
+        history.push('/dashboard');
+      }
+    } catch (error) {
+      message.error(
+        error instanceof Error ? error.message : 'Failed to save alias'
+      );
+    } finally {
+      setPendingAction(null);
+    }
+  });
+
+  const handleAddMore = useMemoizedFn(async () => {
+    if (!state.publicKey) {
+      return;
+    }
+
+    try {
+      setPendingAction('more');
+      await commitAllAliases();
+      openAddMoreAddressesPage({
+        publicKey: state.publicKey,
+      });
+    } catch (error) {
+      message.error(
+        error instanceof Error ? error.message : 'Failed to add address'
+      );
+    } finally {
+      setPendingAction(null);
+    }
+  });
+
+  if (!addresses.length) {
+    return null;
+  }
+
+  return (
+    <div
+      className={clsx(
+        'bg-r-neutral-bg-1 flex max-h-[600px] flex-col overflow-hidden px-[20px]',
+        isInModal ? 'h-[600px]' : 'h-full min-h-full'
+      )}
+    >
+      <div className="shrink-0 pt-[60px] flex flex-col items-center">
+        <RcCreateAddressSuccessIcon className="w-[40px] h-[40px]" />
+        <div className="mt-[16px] text-[24px] leading-[29px] font-medium text-r-neutral-title-1 text-center">
+          {t(state.titleKey || 'page.newAddress.newSeedPhraseCreated')}
+        </div>
+      </div>
+
+      <div className="mt-[24px] min-h-0 flex-1 overflow-hidden">
+        <div className="h-full overflow-auto pr-[2px]">
+          <div className="flex flex-col gap-[12px] pb-[12px]">
+            {items.map((item, index) => (
+              <div
+                key={item.address}
+                className="h-[64px] shrink-0 rounded-[8px] border border-rabby-neutral-line px-[7px] py-[5px]"
+              >
+                <div className="h-[30px] rounded-[4px] bg-r-neutral-card-2 px-[8px] flex items-center">
+                  <input
+                    ref={(node) => {
+                      inputRefs.current[item.address.toLowerCase()] = node;
+                    }}
+                    value={item.alias}
+                    onChange={(e) => {
+                      const nextAlias = e.target.value;
+                      setItems((prev) =>
+                        prev.map((currentItem) =>
+                          currentItem.address === item.address
+                            ? {
+                                ...currentItem,
+                                alias: nextAlias,
+                              }
+                            : currentItem
+                        )
+                      );
+                    }}
+                    onBlur={() => {
+                      commitAlias(item.address);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        commitAlias(item.address);
+                        if (index < items.length - 1) {
+                          const nextInput =
+                            inputRefs.current[
+                              items[index + 1].address.toLowerCase()
+                            ];
+                          nextInput?.focus();
+                        }
+                      }
+                    }}
+                    className="w-full bg-transparent border-none outline-none text-[15px] leading-[18px] font-medium text-r-neutral-title-1"
+                  />
+                </div>
+
+                <div className="h-[28px] px-[8px] flex items-center">
+                  <div className="text-[13px] leading-[16px] text-r-neutral-foot">
+                    {ellipsisAddress(item.address)}
+                  </div>
+                  <button
+                    type="button"
+                    className="ml-[4px] w-[14px] h-[14px] shrink-0"
+                    onClick={() => copyAddress(item.address)}
+                  >
+                    <RcCreateAddressSuccessCopyIcon className="w-[14px] h-[14px]" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="shrink-0 pb-[20px] pt-[16px]">
+        <button
+          type="button"
+          disabled={pendingAction !== null}
+          className={clsx(
+            'w-full h-[44px] rounded-[8px] bg-r-blue-default text-[13px] leading-[16px] font-medium text-r-neutral-bg-1',
+            pendingAction !== null && 'opacity-50'
+          )}
+          onClick={handleDone}
+        >
+          {t('global.Done')}
+        </button>
+
+        <button
+          type="button"
+          disabled={pendingAction !== null}
+          className={clsx(
+            'mt-[14px] flex w-full items-center justify-center gap-[1px] text-[13px] leading-[16px] text-r-neutral-foot',
+            pendingAction !== null && 'opacity-50'
+          )}
+          onClick={handleAddMore}
+        >
+          <span>{t('page.newAddress.addMoreAddressesFromThisSeedPhrase')}</span>
+          <RcCreateAddressSuccessArrowIcon className="h-[16px] w-[16px]" />
+        </button>
+      </div>
+    </div>
+  );
+};

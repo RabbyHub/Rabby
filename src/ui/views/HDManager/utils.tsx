@@ -223,6 +223,7 @@ export interface StateProviderProps {
   keyring: string;
   brand?: string;
   isLazyImport?: boolean;
+  onDone?(): void;
 }
 
 export const HDManagerStateContext = React.createContext<

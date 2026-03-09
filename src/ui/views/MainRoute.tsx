@@ -57,6 +57,11 @@ import CreateMnemonics from './CreateMnemonics';
 import ImportHardware from './ImportHardware';
 import { CustomTestnet } from './CustomTestnet';
 import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
+import { AddNewAddress } from './AddAddress/AddNewAddress';
+import { AddMoreAddressesFromSeedPhrase } from './AddAddress/AddMoreAddressesFromSeedPhrase';
+import { CreateAddressSuccess } from './AddAddress/CreateAddressSuccess';
+import { HardwareWallets } from './AddAddress/HardwareWallets';
+import { InstitutionalWallets } from './AddAddress/InstitutionalWallets';
 import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 import { GasAccount } from './GasAccount';
@@ -331,6 +336,26 @@ const Main = () => {
 
         <PrivateRoute exact path="/import/add-from-current-seed-phrase">
           <AddFromCurrentSeedPhrase />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/new-address">
+          <AddNewAddress />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/create-address-success">
+          <CreateAddressSuccess />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/add-more-from-seed-phrase">
+          <AddMoreAddressesFromSeedPhrase />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/hardware-wallets">
+          <HardwareWallets />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/institutional-wallets">
+          <InstitutionalWallets />
         </PrivateRoute>
 
         <PrivateRoute exact path="/history">
