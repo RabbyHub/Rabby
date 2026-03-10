@@ -19,6 +19,7 @@ export const LendingReportType = {
   Withdraw: 'Withdraw',
   Borrow: 'Borrow',
   Repay: 'Repay',
+  DebtSwap: 'DebtSwap',
   RepayWithAToken: 'RepayWithAToken',
   RepayWithCollateral: 'RepayWithCollateral',
 };

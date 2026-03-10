@@ -64,14 +64,14 @@ import {
   useRepayWithCollateralSlippage,
   useSwapReserves,
 } from './hook';
+import { DEFAULT_REPAY_WITH_COLLATERAL_SLIPPAGE } from './utils';
 import {
   calculateSignedAmount,
-  DEFAULT_REPAY_WITH_COLLATERAL_SLIPPAGE,
-  formatTx,
   getPriceImpactData,
   getToAmountAfterSlippage,
   maxInputAmountWithSlippage,
-} from './utils';
+  formatLendingSwapTx as formatTx,
+} from '../../utils/swapAction';
 
 const ArrowLoadingWrapper = styled.div`
   @keyframes loading-spin {

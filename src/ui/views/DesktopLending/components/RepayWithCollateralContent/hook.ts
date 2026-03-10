@@ -14,12 +14,13 @@ import {
   LIQUIDATION_DANGER_THRESHOLD,
   LIQUIDATION_SAFETY_THRESHOLD,
 } from '../../utils/constant';
+import { DEFAULT_REPAY_WITH_COLLATERAL_SLIPPAGE } from './utils';
+
+import { OptimalRate } from '@paraswap/sdk';
 import {
-  DEFAULT_REPAY_WITH_COLLATERAL_SLIPPAGE,
   getParaswapSlippage,
   maxInputAmountWithSlippage,
-} from './utils';
-import { OptimalRate } from '@paraswap/sdk';
+} from '../../utils/swapAction';
 
 export const useFormatValues = ({
   collateralToken,

@@ -1695,6 +1695,7 @@
         "button": {
           "swap": "Swap"
         },
+        "maxLtvWarning": "Insufficient collateral to cover new borrow position. Wallet must have borrowing power remaining to perform debt switch.",
         "priceImpactTips": "High price impact ({{lostValue}}). This route may return more due to low liquidity or small order size.",
         "lpRiskWarning": "Low health factor after swap. Your position will carry a higher risk of liquidation.",
         "lpDangerWarning": "Your health factor after this swap will be critically low and may result in liquidation. Please choose a different asset or reduce the swap amount to stay safe."
