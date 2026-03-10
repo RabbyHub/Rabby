@@ -379,15 +379,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             <span
               className="ml-8 text-12 text-r-blue-default bg-r-blue-light1 px-6 py-2 rounded-[4px] cursor-pointer flex items-center gap-2"
               onClick={() => {
-                if (hasPosition) {
-                  message.warning({
-                    content: t(
-                      'page.perps.cannotChangeMarginModeWithOpenPositions'
-                    ),
-                    duration: 2,
-                  });
-                  return;
-                }
                 setMarginModeModalVisible(true);
               }}
             >

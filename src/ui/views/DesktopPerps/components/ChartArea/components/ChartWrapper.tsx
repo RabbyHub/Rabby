@@ -359,6 +359,10 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     null
   );
   const currentWeekVolumeRef = useRef<HistogramData<UTCTimestamp> | null>(null);
+  // Track last daily volume to avoid re-accumulating on same-day WS updates
+  const lastDailyVolumeRef = useRef<{ time: number; value: number } | null>(
+    null
+  );
   const { isDarkTheme } = useThemeMode();
   const lineTagInfo = useMemo(() => {
     const tpPrice = openOrders.find(
@@ -723,6 +727,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           currentWeekCandleRef.current = { ...candles[candles.length - 1] };
           currentWeekVolumeRef.current =
             volumes.length > 0 ? { ...volumes[volumes.length - 1] } : null;
+          lastDailyVolumeRef.current = null;
         }
 
         setPendingData({
@@ -831,25 +836,33 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
           // Aggregate volume
           if (dailyVolume) {
+            const dailyTime = daily.time as number;
             const currentVolume = currentWeekVolumeRef.current;
+            const lastDaily = lastDailyVolumeRef.current;
+            const volumeColor =
+              currentWeekCandleRef.current!.close >=
+              currentWeekCandleRef.current!.open
+                ? '#0ECB8180'
+                : '#F6465D80';
+
             if (currentVolume && currentVolume.time === mondayTs) {
-              currentVolume.value += dailyVolume.value;
-              currentVolume.color =
-                currentWeekCandleRef.current!.close >=
-                currentWeekCandleRef.current!.open
-                  ? '#0ECB8180'
-                  : '#F6465D80';
+              // Same week: subtract previous value for this day, add new value
+              const prevDayValue =
+                lastDaily && lastDaily.time === dailyTime ? lastDaily.value : 0;
+              currentVolume.value =
+                currentVolume.value - prevDayValue + dailyVolume.value;
+              currentVolume.color = volumeColor;
             } else {
               currentWeekVolumeRef.current = {
                 time: mondayTs,
                 value: dailyVolume.value,
-                color:
-                  currentWeekCandleRef.current!.close >=
-                  currentWeekCandleRef.current!.open
-                    ? '#0ECB8180'
-                    : '#F6465D80',
+                color: volumeColor,
               };
             }
+            lastDailyVolumeRef.current = {
+              time: dailyTime,
+              value: dailyVolume.value,
+            };
             volumeSeriesRef.current?.update(currentWeekVolumeRef.current!);
           }
 
