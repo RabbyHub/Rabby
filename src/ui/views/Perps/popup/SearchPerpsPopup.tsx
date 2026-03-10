@@ -38,6 +38,8 @@ interface SearchPerpsPopupProps {
   marketData: MarketData[];
   positionAndOpenOrders: PositionAndOpenOrder[];
   onSelect: (coin: string) => void;
+  favoritedCoins?: string[];
+  onToggleFavorite?: (coin: string) => void;
 }
 
 export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
@@ -47,13 +49,23 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
   marketData,
   positionAndOpenOrders,
   onSelect,
+  favoritedCoins,
+  onToggleFavorite,
 }) => {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   const list = useMemo(() => {
-    return sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
-  }, [marketData]);
+    const sorted = sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
+    if (!favoritedCoins?.length) return sorted;
+    const favorites = sorted.filter((item) =>
+      favoritedCoins.includes(item.name.toUpperCase())
+    );
+    const others = sorted.filter(
+      (item) => !favoritedCoins.includes(item.name.toUpperCase())
+    );
+    return [...favorites, ...others];
+  }, [marketData, favoritedCoins]);
 
   const filteredList = useMemo(() => {
     if (!search) {
@@ -133,6 +145,10 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
                     key={item.name}
                     item={item}
                     hasPosition={hasPosition}
+                    isFavorited={favoritedCoins?.includes(
+                      item.name.toUpperCase()
+                    )}
+                    onToggleFavorite={onToggleFavorite}
                     onClick={() => {
                       onSelect(item.name);
                     }}

@@ -11,7 +11,6 @@ import {
   formatPercent,
   formatPerpsPct,
 } from '../utils';
-import { DistanceToLiquidationTag } from '../components/DistanceToLiquidationTag';
 import { TokenImg } from '../components/TokenImg';
 import Popup from '@/ui/component/Popup';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
@@ -23,6 +22,7 @@ import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../constants';
 import { MarginEditInput } from '../components/MarginEditInput';
 import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';
 import { useRequest } from 'ahooks';
+import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 
 export interface EditMarginPopupProps {
   visible: boolean;
@@ -240,10 +240,11 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
                 >
                   {direction} {leverage}x
                 </div>
-                <DistanceToLiquidationTag
-                  liquidationPrice={liquidationPx}
-                  markPrice={markPrice}
-                  onPress={handlePressRiskTag}
+                <DistanceRiskTag
+                  isLong={direction === 'Long'}
+                  percent={formatPerpsPct(
+                    calculateDistanceToLiquidation(liquidationPx, markPrice)
+                  )}
                 />
               </div>
             </div>

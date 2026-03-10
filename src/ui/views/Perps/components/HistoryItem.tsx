@@ -192,6 +192,9 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
           </div>
           <div className="text-13 text-r-neutral-foot font-medium">
             {formatPerpsCoin(coin)}-USD
+            {fill.px ? (
+              <span className="ml-4">@${splitNumberByStep(fill.px)}</span>
+            ) : null}
           </div>
         </div>
       </div>

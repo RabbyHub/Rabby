@@ -11,11 +11,15 @@ import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { AssetPriceInfo } from '../components/AssetPriceInfo';
-import { DistanceToLiquidationTag } from '../components/DistanceToLiquidationTag';
 import { MarginInput } from '../components/MarginInput';
 import { TokenImg } from '../components/TokenImg';
 import { PERPS_MAX_NTL_VALUE, PERPS_MINI_USD_VALUE } from '../constants';
-import { calLiquidationPrice } from '../utils';
+import {
+  calculateDistanceToLiquidation,
+  calLiquidationPrice,
+  formatPerpsPct,
+} from '../utils';
+import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 
 export interface AddPositionPopupProps {
   visible?: boolean;
@@ -235,10 +239,11 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
                 >
                   {direction} {leverage}x
                 </div>
-                <DistanceToLiquidationTag
-                  liquidationPrice={liquidationPx}
-                  markPrice={markPrice}
-                  onPress={handlePressRiskTag}
+                <DistanceRiskTag
+                  isLong={direction === 'Long'}
+                  percent={formatPerpsPct(
+                    calculateDistanceToLiquidation(liquidationPx, markPrice)
+                  )}
                 />
               </div>
             </div>

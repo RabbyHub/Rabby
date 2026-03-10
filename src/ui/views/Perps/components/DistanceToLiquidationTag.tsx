@@ -15,6 +15,9 @@ interface DistanceToLiquidationTagProps {
   variant?: 'default' | 'compact';
 }
 
+/**
+ * @deprecated
+ */
 export const DistanceToLiquidationTag: React.FC<DistanceToLiquidationTagProps> = ({
   liquidationPrice,
   markPrice,
@@ -45,7 +48,7 @@ export const DistanceToLiquidationTag: React.FC<DistanceToLiquidationTagProps> =
       <span className={clsx('text-[11px] font-medium')}>
         {formatPct(distanceLiquidation)}
       </span>
-      <IconArrowCC className={clsx('w-8 h-6')} />
+      <IconArrowCC className={clsx('w-8 h-6 ml-2')} />
     </div>
   );
 };

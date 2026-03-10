@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
+import { ReactComponent as RcIconModeSwitch } from 'ui/assets/perps/IconModeSwitch.svg';
 import { ReactComponent as RcIconPerpsLeveragePlus } from 'ui/assets/perps/ImgLeveragePlus.svg';
 import { ReactComponent as RcIconPerpsLeverageMinus } from 'ui/assets/perps/ImgLeverageMinus.svg';
 import { useMemoizedFn } from 'ahooks';
@@ -23,6 +24,7 @@ import { format } from 'path';
 import { formatPerpsCoin, getStatsReportSide } from '../../DesktopPerps/utils';
 import stats from '@/stats';
 import { useRabbySelector } from '@/ui/store';
+import { MarginModePopup } from './MarginModePopup';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -39,6 +41,8 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   onCancel: () => void;
   onConfirm: () => void;
   marginMode: 'cross' | 'isolated';
+  onMarginModeChange?: (mode: 'cross' | 'isolated') => void;
+  hasPosition?: boolean;
   handleOpenPosition: (params: {
     coin: string;
     size: string;
@@ -47,6 +51,7 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
     midPx: string;
     tpTriggerPx?: string;
     slTriggerPx?: string;
+    marginMode: 'cross' | 'isolated';
   }) => Promise<
     | {
         oid: number;
@@ -74,6 +79,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   currentAssetCtx,
   activeAssetCtx,
   marginMode,
+  onMarginModeChange,
+  hasPosition,
 }) => {
   const { t } = useTranslation();
   const perpsAccount = useRabbySelector(
@@ -92,6 +99,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const [tpTriggerPx, setTpTriggerPx] = React.useState<string>('');
   const [slTriggerPx, setSlTriggerPx] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [marginModeModalVisible, setMarginModeModalVisible] = React.useState(
+    false
+  );
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -253,6 +263,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       midPx: markPrice.toString(),
       tpTriggerPx: tpTriggerPx ? tpTriggerPx : undefined,
       slTriggerPx: slTriggerPx ? slTriggerPx : undefined,
+      marginMode,
     });
     if (res) {
       const { totalSz, avgPx } = res;
@@ -363,6 +374,28 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           sliderDisabled={availableBalance < 0.1}
           errorMessage={
             marginValidation.error ? marginValidation.errorMessage : null
+          }
+          titleExtra={
+            <span
+              className="ml-8 text-12 text-r-blue-default bg-r-blue-light1 px-6 py-2 rounded-[4px] cursor-pointer flex items-center gap-2"
+              onClick={() => {
+                if (hasPosition) {
+                  message.warning({
+                    content: t(
+                      'page.perps.cannotChangeMarginModeWithOpenPositions'
+                    ),
+                    duration: 2,
+                  });
+                  return;
+                }
+                setMarginModeModalVisible(true);
+              }}
+            >
+              {marginMode === 'cross'
+                ? t('page.perps.cross')
+                : t('page.perps.isolated')}
+              <RcIconModeSwitch />
+            </span>
           }
         />
 
@@ -512,7 +545,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body">
-                {t('page.perps.marginIsolated')}
+                {marginMode === 'isolated'
+                  ? t('page.perps.marginIsolated')
+                  : t('page.perps.marginCross')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
                 {formatUsdValue(Number(margin))}
@@ -674,6 +709,16 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           {isReviewMode ? renderReviewMode() : renderEditMode()}
         </div>
       </Popup>
+
+      <MarginModePopup
+        visible={marginModeModalVisible}
+        currentMode={marginMode}
+        onCancel={() => setMarginModeModalVisible(false)}
+        onConfirm={(mode) => {
+          onMarginModeChange?.(mode);
+          setMarginModeModalVisible(false);
+        }}
+      />
     </>
   );
 };
