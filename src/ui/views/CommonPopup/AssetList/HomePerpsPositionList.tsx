@@ -13,7 +13,6 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import DistanceToLiquidationTag from '../../Perps/components/DistanceToLiquidationTag';
 import { TokenImg } from '../../Perps/components/TokenImg';
 import { usePerpsClearHouseState } from '../../Perps/hooks/usePerpsClearingHouseState';
 import RiskLevelPopup from '../../Perps/popup/RiskLevelPopup';

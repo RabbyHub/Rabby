@@ -917,6 +917,19 @@
       "cross": "Cross",
       "marginIsolated": "Margin (Isolated)",
       "marginCross": "Margin (Cross)",
+      "marginMode": "Margin Mode",
+      "cannotChangeMarginModeWithOpenPositions": "Cannot change Margin Mode with open positions",
+      "crossMargin": "Cross Margin",
+      "crossMarginDesc": "All positions share the same margin. This reduces the chance of a single position being liquidated, but all cross-margin funds can be lost in extreme market moves.",
+      "isolatedMargin": "Isolated Margin",
+      "isolatedMarginDesc": "Each position uses its own margin. Losses are limited to that position, but it can be liquidated more easily.",
+      "unrealizedPnl": "Unrealized PNL",
+      "positionValue": "Position Value",
+      "currentPrice": "Current Price",
+      "settings": "Settings",
+      "details": "Details",
+      "liquidationDistanceDown": "Going down <bold>{{percent}}</bold> will trigger liquidation",
+      "liquidationDistanceUp": "Going up <bold>{{percent}}</bold> will trigger liquidation",
       "autoClose": "Auto Close",
       "direction": "Direction",
       "liquidationPrice": "Liquidation Price",
@@ -976,9 +989,12 @@
       "liquidation": "Liquidation",
       "accountSelector": {
         "activatedAddress": "Activated",
+        "selectAddress": "Select an Address",
         "hyperliquidBalance": "Perps Balance",
         "notActivatedAddress": "Not Activated",
-        "noPosition": "No Position"
+        "noPosition": "No Position",
+        "position": "Position",
+        "positions": "Positions"
       },
       "riskLevel": {
         "title": "Risk Level",

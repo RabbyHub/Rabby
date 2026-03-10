@@ -90,41 +90,25 @@ export const SelectAddressList = ({
 
       const resDict = keyBy(res, (item) => item.address.toLowerCase());
 
-      const dict = {
-        active: [],
-        inactive: [],
-      } as Record<
-        string,
-        { info?: ClearinghouseState; account: IDisplayedAccountWithBalance }[]
-      >;
-      accountsList.forEach((account, index) => {
+      const listWithInfo = accountsList.map((account) => {
         const item = resDict[account.address.toLowerCase()];
-        if (
-          item?.info &&
-          (item.info.assetPositions.length ||
-            +item.info.marginSummary > 0 ||
-            +item.info.withdrawable > 0)
-        ) {
-          dict.active.push({
-            info: {
-              ...item.info,
-            },
-            account: account,
-          });
-        } else {
-          dict.inactive.push({ account: account });
-        }
+        return {
+          info: item?.info || undefined,
+          account,
+        };
       });
-      dict.active = sortBy(
-        dict.active,
-        (item) => -(item.info?.marginSummary.accountValue || 0)
+
+      const sorted = sortBy(
+        listWithInfo,
+        (item) => -(item.info?.assetPositions?.length || 0),
+        (item) => -Number(item.info?.withdrawable || 0)
       );
 
       return {
-        groupCounts: [dict.active.length, dict.inactive.length],
-        groups: ['active', 'inactive'],
-        list: [...dict.active, ...dict.inactive],
-        dict,
+        groupCounts: [sorted.length],
+        groups: ['all'],
+        list: sorted,
+        dict: { active: sorted, inactive: [] },
       };
 
       // return dict;
@@ -171,28 +155,18 @@ export const SelectAddressList = ({
 
   const renderGroupContent = useCallback(
     (index: number) => {
-      if (data.groups[index] === 'active' && data.dict?.active.length) {
-        return (
-          <div className="text-[12px] leading-[14px] text-r-neutral-body font-normal pb-[8px] flex items-center justify-between">
-            <div>{t('page.perps.accountSelector.activatedAddress')}</div>
-            <div>{t('page.perps.accountSelector.hyperliquidBalance')}</div>
-          </div>
-        );
-      }
-      if (
-        data.groups[index] === 'inactive' &&
-        data.dict?.active.length &&
-        data.dict?.inactive.length
-      ) {
-        return (
-          <div className="text-[12px] leading-[14px] text-r-neutral-body font-normal pb-[8px]">
-            {t('page.perps.accountSelector.notActivatedAddress')}
-          </div>
-        );
+      if (data.list.length) {
+        // return (
+        //   <div className="text-[12px] leading-[14px] text-r-neutral-body font-normal pb-[8px] flex items-center justify-between">
+        //     <div>{t('page.perps.accountSelector.selectAddress')}</div>
+        //     <div>{t('page.perps.accountSelector.hyperliquidBalance')}</div>
+        //   </div>
+        // );
+        return null;
       }
       return <div className="h-[1px]" />;
     },
-    [data, t]
+    [data]
   );
 
   const renderItemContent = useCallback(
@@ -321,6 +295,10 @@ function AccountItem(props: {
       : null;
   }, [info?.assetPositions]);
 
+  const positionCount = useMemo(() => {
+    return info?.assetPositions?.length || 0;
+  }, [info?.assetPositions]);
+
   const RightArea = useMemo(() => {
     if (loading) {
       return (
@@ -329,35 +307,28 @@ function AccountItem(props: {
         </div>
       );
     }
-    if (info) {
-      return (
-        <div className="flex flex-col gap-[4px] items-end ml-auto">
-          <div className="text-[13px] leading-[16px] text-r-neutral-body font-medium">
-            {formatUsdValue(info?.marginSummary.accountValue || 0)}
-          </div>
-          {positionAllPnl !== null ? (
-            <div
-              className={clsx(
-                'text-[12px] leading-[14px] font-medium',
-                positionAllPnl >= 0
-                  ? 'text-r-green-default'
-                  : 'text-r-red-default'
-              )}
-            >
-              {positionAllPnl >= 0 ? '+' : '-'}$
-              {splitNumberByStep(Math.abs(positionAllPnl).toFixed(2))}
-            </div>
-          ) : (
-            <div className="text-[12px] leading-[14px] font-normal text-r-neutral-foot">
-              {t('page.perps.accountSelector.noPosition')}
-            </div>
-          )}
+    return (
+      <div className="flex flex-col gap-[4px] items-end ml-auto">
+        <div className="text-[13px] leading-[16px] text-r-neutral-body font-medium">
+          {info
+            ? formatUsdValue(Number(info?.withdrawable || 0))
+            : formatUsdValue(account.balance || 0)}
         </div>
-      );
-    }
-
-    return <div />;
-  }, [loading, info]);
+        {positionCount > 0 ? (
+          <div className="text-[12px] leading-[14px] font-medium text-r-neutral-foot">
+            {positionCount}{' '}
+            {positionCount > 1
+              ? t('page.perps.accountSelector.positions')
+              : t('page.perps.accountSelector.position')}
+          </div>
+        ) : (
+          <div className="text-[12px] leading-[14px] font-normal text-r-neutral-foot">
+            {t('page.perps.accountSelector.noPosition')}
+          </div>
+        )}
+      </div>
+    );
+  }, [loading, info, positionCount, account.balance, t]);
 
   return (
     <Item

@@ -220,9 +220,31 @@ export const Perps: React.FC = () => {
     availableBalance,
   ]);
 
+  const [favoritedCoins, setFavoritedCoins] = useState<string[]>([]);
+
+  useEffect(() => {
+    wallet.getPerpsFavoritedCoins().then(setFavoritedCoins);
+  }, [wallet]);
+
+  const toggleFavorite = useMemoizedFn(async (coin: string) => {
+    const upperCoin = coin.toUpperCase();
+    const newFavorites = favoritedCoins.includes(upperCoin)
+      ? favoritedCoins.filter((c) => c !== upperCoin)
+      : [...favoritedCoins, upperCoin];
+    setFavoritedCoins(newFavorites);
+    await wallet.setPerpsFavoritedCoins(newFavorites);
+  });
+
   const marketSectionList = useMemo(() => {
-    return sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
-  }, [marketData]);
+    const sorted = sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
+    const favorites = sorted.filter((item) =>
+      favoritedCoins.includes(item.name.toUpperCase())
+    );
+    const others = sorted.filter(
+      (item) => !favoritedCoins.includes(item.name.toUpperCase())
+    );
+    return [...favorites, ...others];
+  }, [marketData, favoritedCoins]);
 
   // Calculate real-time popup data based on selected coin
   const riskPopupData = useMemo(() => {
@@ -633,6 +655,8 @@ export const Perps: React.FC = () => {
                     );
                   }}
                   hasPosition={positionCoinSet.has(item.name)}
+                  isFavorited={favoritedCoins.includes(item.name.toUpperCase())}
+                  onToggleFavorite={toggleFavorite}
                 />
               ))}
             </div>
@@ -773,6 +797,8 @@ export const Perps: React.FC = () => {
           history.push(`/perps/single-coin/${coin}?openPosition=true`);
         }}
         openFromSource={openFromSource}
+        favoritedCoins={favoritedCoins}
+        onToggleFavorite={toggleFavorite}
       />
       <PerpsModal
         visible={deleteAgentModalVisible}

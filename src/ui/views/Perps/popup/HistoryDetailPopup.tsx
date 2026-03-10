@@ -12,6 +12,7 @@ import BigNumber from 'bignumber.js';
 import { TokenImg } from '../components/TokenImg';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
 
 interface HistoryDetailPopupProps extends Omit<PopupProps, 'onCancel'> {
   fill: (WsFill & { logoUrl: string }) | null;
@@ -96,7 +97,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
               <div className="flex items-center space-x-8">
                 <TokenImg logoUrl={logoUrl} size={20} />
                 <span className="text-13 text-r-neutral-title-1 font-medium">
-                  {coin} - USD
+                  {formatPerpsCoin(coin || '')}-USD
                 </span>
               </div>
             </div>
@@ -154,7 +155,8 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                 </TooltipWithMagnetArrow>
               </div>
               <span className="text-13 text-r-neutral-title-1 font-medium">
-                ${splitNumberByStep(tradeValue.toFixed(2))} = {sz} {coin}
+                ${splitNumberByStep(tradeValue.toFixed(2))} = {sz}{' '}
+                {formatPerpsCoin(coin || '')}
               </span>
             </div>
 
