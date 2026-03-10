@@ -231,8 +231,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   }, [visible]);
 
   React.useEffect(() => {
-    setDirection(_direction);
-  }, [_direction]);
+    if (visible) {
+      setDirection(_direction);
+    }
+  }, [visible, _direction]);
 
   const handleReview = () => {
     setIsReviewMode(true);
