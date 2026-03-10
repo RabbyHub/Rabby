@@ -168,6 +168,14 @@ const Main = () => {
         ga4.fireEvent(`Whitelist_${isEnabledWhiteList ? 'On' : 'Off'}`, {
           event_category: 'Settings Snapshot',
         });
+
+        const isBiometricsEnabled = preference.biometricUnlockEnabled;
+        ga4.fireEvent(
+          `Unlock_Act_${isBiometricsEnabled ? 'Biometrics' : 'Password'}`,
+          {
+            event_category: 'Unlock_Wallet',
+          }
+        );
         wallet.updateGa4EventTime(Date.now());
       }
     })();

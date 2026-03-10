@@ -345,6 +345,11 @@ export const preference = createModel<RootModel>()({
       ga4.fireEvent(`BiometricUnlock_${payload.enabled ? 'On' : 'Off'}`, {
         event_category: 'Settings Snapshot',
       });
+      if (payload.enabled) {
+        ga4.fireEvent('Unlock_Act_Biometrics', {
+          event_category: 'Unlock_Wallet',
+        });
+      }
     },
 
     // async setOpenapiHost(value: string, store) {
