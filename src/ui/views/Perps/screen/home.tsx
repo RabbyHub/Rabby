@@ -393,9 +393,6 @@ export const Perps: React.FC = () => {
       maskClosable: true,
       centered: true,
       title: null,
-      bodyStyle: {
-        padding: 0,
-      },
       className: clsx(
         'perps-bridge-swap-modal perps-close-all-position-modal',
         isDarkTheme

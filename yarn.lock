@@ -1626,53 +1626,53 @@
     "@chainsafe/as-sha256" "^0.4.1"
     "@chainsafe/persistent-merkle-tree" "^0.6.1"
 
-"@code-inspector/core@1.3.6":
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/@code-inspector/core/-/core-1.3.6.tgz#bc73e7237136dbabf7b6e09533566d1d75b2a1db"
-  integrity sha512-bSxf/PWDPY6rv9EFf0mJvTnLnz3927PPrpX6BmQcRKQab+Ez95yRqrVZY8IcBUpaqA/k3etA5rZ1qkN0V4ERtw==
+"@code-inspector/core@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@code-inspector/core/-/core-1.4.3.tgz#e3a1fb225d6ae66c28fce02063bce36f0d138c57"
+  integrity sha512-byxpCCzzFPWoo2emh2QAIhC6KC0s4Kl2soE2ZJJRSGNS5M8jSuo9bg6/DkmB1iXDNSFnJ5SFT+YifThrAnEDyw==
   dependencies:
     "@vue/compiler-dom" "^3.5.13"
     chalk "^4.1.1"
     dotenv "^16.1.4"
-    launch-ide "1.4.0"
+    launch-ide "1.4.3"
     portfinder "^1.0.28"
 
-"@code-inspector/esbuild@1.3.6":
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/@code-inspector/esbuild/-/esbuild-1.3.6.tgz#309c0e67b112fe7e56893a39f916ce94d881e146"
-  integrity sha512-s35dseBXI2yqfX6ZK29Ix941jaE/4KPlZZeMk6B5vDahj75FDUfVxQ7ORy4cX2hyz8CmlOycsY/au5mIvFpAFg==
+"@code-inspector/esbuild@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@code-inspector/esbuild/-/esbuild-1.4.3.tgz#e88e02bf7c9bd2f870e5b72e0086e89e9efc3fe5"
+  integrity sha512-QFPlslEMuHN0jJxLKAYOK+e1r6HmJg1Sz+gFTkE0/zkb7PWacOrQoNiICRlhLAVpI++nEtxb7OJulb19VmOW7w==
   dependencies:
-    "@code-inspector/core" "1.3.6"
+    "@code-inspector/core" "1.4.3"
 
-"@code-inspector/mako@1.3.6":
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/@code-inspector/mako/-/mako-1.3.6.tgz#618abdfff121e0a2c67ef824a71c9b1a37ae6629"
-  integrity sha512-FJvuTElOi3TUCWTIaYTFYk2iTUD6MlO51SC8SYfwmelhuvnOvTMa2TkylInX16OGb4f7sGNLRj2r+7NNx/gqpw==
+"@code-inspector/mako@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@code-inspector/mako/-/mako-1.4.3.tgz#6f6bebf1273ba468da60afa84f60daf50c7b2bc3"
+  integrity sha512-eMEX6uSaZabzbWfK86PUjUszfDuvrJHhRiplpCIcufM4TBdnx+cxYD2+6A8ZJ6yZzwGEC+cSI39h/HrTw1DEYA==
   dependencies:
-    "@code-inspector/core" "1.3.6"
+    "@code-inspector/core" "1.4.3"
 
-"@code-inspector/turbopack@1.3.6":
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/@code-inspector/turbopack/-/turbopack-1.3.6.tgz#362eb7ce2994647424627f9e1aacd09f1cb50996"
-  integrity sha512-pfXgvZCn4/brpTvqy8E0HTe6V/ksVKEPQo697Nt5k22kBnlEM61UT3rI2Art+fDDEMPQTxVOFpdbwCKSLwMnmQ==
+"@code-inspector/turbopack@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@code-inspector/turbopack/-/turbopack-1.4.3.tgz#86b36b394deecf95d9a69d16b396ff1127950f08"
+  integrity sha512-kd2SNhCIAs3HmeIfzAz6DqHzwTrSo3E89MEDqv+B0FV1KVhejx0RpgUvwDZQ70X3MD1wpjDf61zxB5i3TY3MNg==
   dependencies:
-    "@code-inspector/core" "1.3.6"
-    "@code-inspector/webpack" "1.3.6"
+    "@code-inspector/core" "1.4.3"
+    "@code-inspector/webpack" "1.4.3"
 
-"@code-inspector/vite@1.3.6":
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/@code-inspector/vite/-/vite-1.3.6.tgz#238b580cf4b62071fee91f29d04c2b0a7f0ee79c"
-  integrity sha512-vXYvzGc0S1NR4p3BeD1Xx2170OnyecZD0GtebLlTiHw/cetzlrBHVpbkIwIEzzzpTYYshwwDt8ZbuvdjmqhHgw==
+"@code-inspector/vite@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@code-inspector/vite/-/vite-1.4.3.tgz#432c998571a9046d602cbebd281631d7c9200c6c"
+  integrity sha512-ww3PUYQ1Cwuww5G38jacQcQf2CuctTYCerSHCBb9PT1lj45SbtuJlo2rWgPuopY4lYHh/qcKvsLrsx6sXOj0Tw==
   dependencies:
-    "@code-inspector/core" "1.3.6"
+    "@code-inspector/core" "1.4.3"
     chalk "4.1.1"
 
-"@code-inspector/webpack@1.3.6":
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/@code-inspector/webpack/-/webpack-1.3.6.tgz#d0e370f719b9f16680ece396e54d21fc00f98cf8"
-  integrity sha512-bi/+vsym9d6NXQQ++Phk74VLMiVoGKjgPHr445j/D43URG8AN8yYa+gRDBEDcZx4B128dihrVMxEO8+OgWGjTw==
+"@code-inspector/webpack@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@code-inspector/webpack/-/webpack-1.4.3.tgz#2132ac49bbe708206546b6b129ffca9962b0eb2d"
+  integrity sha512-5CtuFoK6IHfjKFrnUIhr3Z3FAQYgT/eR5eC0hVan+BwwTERLVjI3/5iKL+XKYt4diPrQ5v6PjRld5GkFeKpemQ==
   dependencies:
-    "@code-inspector/core" "1.3.6"
+    "@code-inspector/core" "1.4.3"
 
 "@coinbase/wallet-sdk@3.8.0-beta.3", "@coinbase/wallet-sdk@beta":
   version "3.8.0-beta.3"
@@ -10133,17 +10133,17 @@ coa@^2.0.2:
     chalk "^2.4.1"
     q "^1.1.2"
 
-code-inspector-plugin@1.3.6:
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/code-inspector-plugin/-/code-inspector-plugin-1.3.6.tgz#1f7c87b9ab6c6471b43e991c8f5b6ebf98793d83"
-  integrity sha512-ddTg8embDqLZxKEdSNOm+/0YnVVgWKr10+Bu2qFqQDObj/3twGh0Z23TIz+5/URxfRhTPbp2sUSpWlw78piJbQ==
+code-inspector-plugin@1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/code-inspector-plugin/-/code-inspector-plugin-1.4.3.tgz#c5f1239f3cdd2539c3d72268173669c35e8e1f52"
+  integrity sha512-93XPC0sNxWpiSPYYl4fsfN4WlgIXyOvXuv9p1IMbGLr1o59j1/AGeqLTX1KSQoGlrqoJqfEsA1lrDUQXSsgh/w==
   dependencies:
-    "@code-inspector/core" "1.3.6"
-    "@code-inspector/esbuild" "1.3.6"
-    "@code-inspector/mako" "1.3.6"
-    "@code-inspector/turbopack" "1.3.6"
-    "@code-inspector/vite" "1.3.6"
-    "@code-inspector/webpack" "1.3.6"
+    "@code-inspector/core" "1.4.3"
+    "@code-inspector/esbuild" "1.4.3"
+    "@code-inspector/mako" "1.4.3"
+    "@code-inspector/turbopack" "1.4.3"
+    "@code-inspector/vite" "1.4.3"
+    "@code-inspector/webpack" "1.4.3"
     chalk "4.1.1"
 
 code-point-at@^1.0.0:
@@ -15610,10 +15610,10 @@ last-run@^1.1.0:
     default-resolution "^2.0.0"
     es6-weak-map "^2.0.1"
 
-launch-ide@1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/launch-ide/-/launch-ide-1.4.0.tgz#842c324f343c1b358e6a05ba42291d88d2c20642"
-  integrity sha512-c2mcqZy7mNhzXiWoBFV0lDsEOfpSFGqqxKubPffhqcnv3GV0xpeGcHWLxYFm+jz1/5VAKp796QkyVV4++07eiw==
+launch-ide@1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/launch-ide/-/launch-ide-1.4.3.tgz#817d3a820f6821e2f2b79947bca6d23035a298e1"
+  integrity sha512-v2xMAarJOFy51kuesYEIIx5r4WHvsV+VLMU49K24bdiRZGUpo1ZulO1DRrLozM5BMbXUfRfrUTM2PbBfYCeA4Q==
   dependencies:
     chalk "^4.1.1"
     dotenv "^16.1.4"
