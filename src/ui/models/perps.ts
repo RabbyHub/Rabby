@@ -853,6 +853,14 @@ export const perps = createModel<RootModel>()({
       // dispatch.perps.patchState({ openOrders });
     },
 
+    async fetchUserFillHistory() {
+      const sdk = getPerpsSDK();
+      const res = await sdk.info.getUserFills();
+      dispatch.perps.patchState({
+        userFills: ((res as unknown) as WsFill[]).slice(0, 2000),
+      });
+    },
+
     async fetchUserNonFundingLedgerUpdates() {
       const sdk = getPerpsSDK();
       const res = await sdk.info.getUserNonFundingLedgerUpdates();
@@ -1171,6 +1179,11 @@ export const perps = createModel<RootModel>()({
           const { fills, isSnapshot, user } = data;
           if (!isSameAddress(user, address)) {
             return;
+          }
+
+          if (isSnapshot && isPro) {
+            // when return snapshot, fetch all user fill history from api
+            dispatch.perps.fetchUserFillHistory();
           }
 
           dispatch.perps.patchStatsListBySnapshot({
