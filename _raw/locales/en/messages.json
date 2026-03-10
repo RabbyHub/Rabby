@@ -3086,7 +3086,8 @@
       },
       "title": "Rabby Wallet",
       "description": "Your go-to wallet for Ethereum and EVM",
-      "btnForgotPassword": "Forgot Password?"
+      "btnForgotPassword": "Forgot Password?",
+      "biometricFailed": "Biometric unlock failed"
     },
     "addToken": {
       "noTokenFound": "No token found",
