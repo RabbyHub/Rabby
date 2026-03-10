@@ -160,6 +160,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       setSelectedToken(null);
       setIsWithdrawLoading(false);
       setGasPrice(0);
+      setTokenVisible(false);
     }
   }, [visible]);
 
