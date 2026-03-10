@@ -80,6 +80,7 @@ export interface MarketData {
   premium: string;
   prevDayPx: string;
   dexId: string;
+  onlyIsolated?: boolean;
 }
 
 export type MarketDataMap = Record<string, MarketData>;
