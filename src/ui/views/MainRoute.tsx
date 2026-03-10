@@ -169,6 +169,15 @@ const Main = () => {
           event_category: 'Settings Snapshot',
         });
 
+        ga4.fireEvent(
+          `PwdForNonWhitelistedTx_${
+            preference.isEnabledPwdForNonWhitelistedTx ? 'On' : 'Off'
+          }`,
+          {
+            event_category: 'Settings Snapshot',
+          }
+        );
+
         const isBiometricsEnabled = preference.biometricUnlockEnabled;
         ga4.fireEvent(
           `Unlock_Biometrics_${isBiometricsEnabled ? 'On' : 'Off'}`,
