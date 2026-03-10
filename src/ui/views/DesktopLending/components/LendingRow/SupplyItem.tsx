@@ -35,8 +35,8 @@ export const SupplyItem: React.FC<{
 }> = ({ data, onSupply, onWithdraw, onToggleCollateral }) => {
   const { t } = useTranslation();
 
-  const { chainEnum } = useSelectedMarket();
-  const { iUserSummary: userSummary, getTargetReserve } = useLendingSummary();
+  const { chainEnum, selectedMarketData } = useSelectedMarket();
+  const { iUserSummary: userSummary } = useLendingSummary();
 
   const canBeEnabledAsCollateral = useMemo(() => {
     if (!data) {
@@ -160,7 +160,14 @@ export const SupplyItem: React.FC<{
           )}
         </div>
       </TCell>
-      <TCell className="w-[300px] flex-shrink-0">
+      <TCell
+        className={clsx(
+          'flex-shrink-0',
+          selectedMarketData?.enabledFeatures?.debtSwitch
+            ? 'w-[430px]'
+            : 'w-[300px]'
+        )}
+      >
         <div className="flex items-center justify-end gap-[10px]">
           <button
             onClick={() => onSupply?.(data)}
