@@ -1,8 +1,8 @@
-import { UI_TYPE } from '@/constant/ui';
-import { BlueHeader } from '@/ui/component';
 import clsx from 'clsx';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeader } from '@/ui/component';
 import { useAddAddressWalletOptions, WalletBrandGrid } from './shared';
 
 export const InstitutionalWallets: React.FC<{
@@ -10,27 +10,28 @@ export const InstitutionalWallets: React.FC<{
   onBack?(): void;
   onNavigate?(type: string, state?: Record<string, any>): void;
 }> = ({ isInModal, onBack, onNavigate }) => {
+  const history = useHistory();
   const { t } = useTranslation();
   const { institutionalWallets } = useAddAddressWalletOptions({ onNavigate });
+  const handleBack = React.useCallback(() => {
+    if (onBack) {
+      onBack();
+      return;
+    }
+    history.goBack();
+  }, [history, onBack]);
 
   return (
     <div
       className={clsx(
-        'add-address',
-        isInModal ? 'min-h-0 h-[600px] overflow-auto' : ''
+        'bg-r-neutral-bg-2 flex flex-col px-20',
+        isInModal ? 'h-[600px] overflow-hidden' : 'min-h-full'
       )}
     >
-      <BlueHeader
-        className="mx-[-20px] h-[48px]"
-        fillClassName="mb-[20px] h-[48px]"
-        fixed
-        onBack={onBack}
-      >
+      <PageHeader fixed className="pt-[20px]" forceShowBack onBack={handleBack}>
         {t('page.newAddress.connectInstitutionalWallets')}
-      </BlueHeader>
-      <div
-        className={clsx('rabby-container', UI_TYPE.isDesktop ? 'w-full' : '')}
-      >
+      </PageHeader>
+      <div className="min-h-0 flex-1 overflow-auto pb-[20px]">
         <WalletBrandGrid wallets={institutionalWallets} className="mx-0" />
       </div>
     </div>

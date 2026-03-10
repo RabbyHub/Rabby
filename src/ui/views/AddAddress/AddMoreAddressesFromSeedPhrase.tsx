@@ -1,11 +1,12 @@
 import React from 'react';
 import clsx from 'clsx';
 import { message } from 'antd';
-import { useMemoizedFn, useSize } from 'ahooks';
+import { useMemoizedFn } from 'ahooks';
 import { useHistory, useLocation } from 'react-router-dom';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { KEYRING_CLASS } from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useRabbyDispatch } from '@/ui/store';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
@@ -21,10 +22,11 @@ import { Account } from '../HDManager/AccountList';
 import {
   useCreateAddressActions,
   AddMoreAddressesState,
+  CREATE_ADDRESS_SUCCESS_PATH,
 } from './useCreateAddress';
+import { PageHeader, Popup } from '@/ui/component';
 import { AddAddressNavigateHandler } from './shared';
 import {
-  RcAddMoreAddressesBackIcon,
   RcAddMoreAddressesSettingIcon,
   RcAddMoreAddressesSettingCenterIcon,
   RcAddMoreAddressesCheckedIcon,
@@ -218,12 +220,14 @@ const SettingsSheet = ({
   maxAccountCount,
   onClose,
   onConfirm,
+  getContainer,
 }: {
   visible: boolean;
   setting: SettingData;
   maxAccountCount: number;
   onClose: () => void;
   onConfirm: (setting: SettingData) => void;
+  getContainer?: HTMLElement | (() => HTMLElement) | false;
 }) => {
   const { t } = useTranslation();
   const [draft, setDraft] = React.useState(setting);
@@ -237,21 +241,24 @@ const SettingsSheet = ({
   }
 
   return (
-    <div className="absolute inset-0 z-20">
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/50"
-        onClick={onClose}
-      />
-
-      <div className="absolute bottom-0 left-1/2 h-[540px] w-[400px] -translate-x-1/2 overflow-hidden rounded-t-[16px] bg-r-neutral-bg-2 shadow-[0px_-12px_20px_0px_rgba(19,20,26,0.05)]">
-        <div className="relative h-[52px]">
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[20px] leading-[24px] font-medium text-r-neutral-title-1">
+    <Popup
+      visible={visible}
+      onCancel={onClose}
+      getContainer={getContainer}
+      height={540}
+      bodyStyle={{ padding: 0 }}
+      isSupportDarkMode
+      isNew
+      closable={false}
+    >
+      <div className="relative h-full">
+        <div className="relative h-[52px] overflow-hidden">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[20px] leading-[24px] font-medium text-r-neutral-title-1 whitespace-nowrap">
             {t('page.newAddress.hd.customAddressHdPath')}
           </div>
         </div>
 
-        <div className="px-[20px] pt-0 pb-[96px]">
+        <div className="px-[20px] pb-[96px]">
           <div className="flex flex-col gap-[8px]">
             {HD_PATH_OPTIONS.map((option) => (
               <button
@@ -324,18 +331,20 @@ const SettingsSheet = ({
           </button>
         </div>
       </div>
-    </div>
+    </Popup>
   );
 };
 
 export const AddMoreAddressesFromSeedPhrase: React.FC<{
+  isInModal?: boolean;
   onNavigate?: AddAddressNavigateHandler;
   state?: Record<string, any>;
-}> = ({ onNavigate, state: outerState }) => {
+}> = ({ isInModal, onNavigate, state: outerState }) => {
   const history = useHistory();
   const location = useLocation<AddMoreAddressesState>();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+  const { getContainer } = usePopupContainer();
   const { t } = useTranslation();
   const invokeEnterPassphrase = useEnterPassphraseModal('publickey');
   const { openSuccessPage } = useCreateAddressActions({
@@ -353,6 +362,9 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
           location.state?.publicKey ||
           query.get('publicKey') ||
           '',
+        successState:
+          (outerState as AddMoreAddressesState | undefined)?.successState ||
+          location.state?.successState,
       } as AddMoreAddressesState),
     [location.state, outerState, query]
   );
@@ -372,10 +384,19 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
   const [selectedAddresses, setSelectedAddresses] = React.useState<string[]>(
     []
   );
-  const listContainerRef = React.useRef<HTMLDivElement>(null);
-  const listContainerSize = useSize(listContainerRef);
 
   const handleBack = useMemoizedFn(() => {
+    if (state.successState) {
+      if (onNavigate) {
+        onNavigate('create-address-success', state.successState);
+        return;
+      }
+      history.push({
+        pathname: CREATE_ADDRESS_SUCCESS_PATH,
+        state: state.successState,
+      });
+      return;
+    }
     if (history.length > 1) {
       history.goBack();
       return;
@@ -389,7 +410,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
 
   const loadAccounts = useMemoizedFn(async (params?: SettingData) => {
     const activeSetting = params || setting;
-    if (!keyringId) {
+    if (keyringId == null) {
       return;
     }
 
@@ -511,7 +532,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
   ]);
 
   React.useEffect(() => {
-    if (!keyringId) {
+    if (keyringId == null) {
       return;
     }
     loadAccounts(setting);
@@ -538,7 +559,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
   });
 
   const handleConfirm = useMemoizedFn(async () => {
-    if (!selectedAddresses.length || !keyringId) {
+    if (!selectedAddresses.length || keyringId == null) {
       return;
     }
 
@@ -609,64 +630,74 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
       }))
     : [];
 
-  const listHeight = Math.max(0, Math.floor(listContainerSize?.height || 0));
-  const listWidth = Math.max(0, Math.floor(listContainerSize?.width || 0));
+  const popupHeight =
+    typeof window !== 'undefined'
+      ? isInModal
+        ? 600
+        : Math.max(window.innerHeight, 520)
+      : isInModal
+      ? 600
+      : 640;
+  const listHeight = Math.max(popupHeight - 64 - 72 - 20, 240);
 
   return (
-    <div className="relative flex h-full max-h-[600px] flex-col overflow-hidden bg-r-neutral-bg-2">
-      <div className="h-[52px] shrink-0 relative flex items-center justify-center">
-        <button
-          type="button"
-          className="absolute left-[20px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] flex items-center justify-center"
-          onClick={handleBack}
-        >
-          <RcAddMoreAddressesBackIcon className="w-[20px] h-[20px]" />
-        </button>
-        <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1">
-          {t('page.newAddress.importMoreWallets')}
-        </div>
-        <button
-          type="button"
-          className="absolute right-[20px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] flex items-center justify-center"
-          onClick={() => setVisibleAdvanced(true)}
-        >
-          <SettingGlyph />
-        </button>
-      </div>
+    <div
+      className={clsx(
+        'bg-r-neutral-bg-2 relative flex flex-col px-20',
+        'overflow-hidden'
+      )}
+      style={{ height: isInModal ? 600 : '100vh' }}
+    >
+      <PageHeader
+        fixed
+        className="pt-[20px]"
+        forceShowBack
+        onBack={handleBack}
+        rightSlot={
+          <button
+            type="button"
+            className="absolute bottom-0 right-0 flex h-[20px] w-[20px] items-center justify-center"
+            onClick={() => setVisibleAdvanced(true)}
+          >
+            <SettingGlyph />
+          </button>
+        }
+      >
+        {t('page.newAddress.importMoreWallets')}
+      </PageHeader>
 
-      <div className="min-h-0 flex-1 px-[20px] pb-[8px]">
-        <div ref={listContainerRef} className="h-full w-full">
-          {listHeight > 0 && listWidth > 0 ? (
-            <FixedSizeList
-              height={listHeight}
-              width={listWidth}
-              itemCount={displayRows.length}
-              itemSize={LIST_ITEM_HEIGHT}
-              itemData={{
-                rows: displayRows,
-                selectedAddresses,
-                onToggle: handleToggle,
-              }}
-              overscanCount={4}
-            >
-              {AddressListRow}
-            </FixedSizeList>
-          ) : null}
+      <div className="min-h-0 flex flex-1 flex-col">
+        <div className="min-h-0 flex-1 pb-[12px]">
+          <FixedSizeList
+            height={listHeight}
+            width="100%"
+            itemCount={displayRows.length}
+            itemSize={LIST_ITEM_HEIGHT}
+            itemData={{
+              rows: displayRows,
+              selectedAddresses,
+              onToggle: handleToggle,
+            }}
+            overscanCount={4}
+          >
+            {AddressListRow}
+          </FixedSizeList>
         </div>
-      </div>
 
-      <div className="shrink-0 border-t border-rabby-neutral-line bg-r-neutral-bg-2 px-[20px] py-[18px]">
-        <button
-          type="button"
-          disabled={!selectedAddresses.length || loading || submitting}
-          className={clsx(
-            'w-full h-[44px] rounded-[6px] bg-r-blue-default text-[16px] leading-[19px] font-medium text-r-neutral-bg-1',
-            (!selectedAddresses.length || loading || submitting) && 'opacity-50'
-          )}
-          onClick={handleConfirm}
-        >
-          {t('global.confirm')}
-        </button>
+        <div className="bg-r-neutral-bg-2 pb-[20px] pt-[8px]">
+          <button
+            type="button"
+            disabled={!selectedAddresses.length || loading || submitting}
+            className={clsx(
+              'w-full h-[44px] rounded-[6px] bg-r-blue-default text-[16px] leading-[19px] font-medium text-r-neutral-bg-1',
+              (!selectedAddresses.length || loading || submitting) &&
+                'opacity-50'
+            )}
+            onClick={handleConfirm}
+          >
+            {t('global.confirm')}
+          </button>
+        </div>
       </div>
 
       <SettingsSheet
@@ -675,6 +706,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
         maxAccountCount={maxAccountCount}
         onClose={() => setVisibleAdvanced(false)}
         onConfirm={handleConfirmAdvanced}
+        getContainer={getContainer}
       />
     </div>
   );

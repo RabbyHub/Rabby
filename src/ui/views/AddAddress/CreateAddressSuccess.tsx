@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
+import browser from 'webextension-polyfill';
 import {
   CreateAddressSuccessAddress,
   CreateAddressSuccessState,
@@ -150,6 +151,39 @@ export const CreateAddressSuccess: React.FC<{
     }
   });
 
+  const handleOpenWallet = useMemoizedFn(async () => {
+    try {
+      setPendingAction('done');
+      await commitAllAliases();
+      await wallet.setPageStateCache({
+        path: '/dashboard',
+        params: {},
+        states: {},
+      });
+
+      if (browser.action.openPopup) {
+        try {
+          await browser.action.openPopup();
+          return;
+        } catch (error) {
+          console.error('[CreateAddressSuccess] openPopup failed', error);
+        }
+      }
+
+      if (onNavigate) {
+        onNavigate('done');
+      } else {
+        history.push('/dashboard');
+      }
+    } catch (error) {
+      message.error(
+        error instanceof Error ? error.message : 'Failed to open wallet'
+      );
+    } finally {
+      setPendingAction(null);
+    }
+  });
+
   const handleAddMore = useMemoizedFn(async () => {
     if (!state.publicKey) {
       return;
@@ -160,6 +194,11 @@ export const CreateAddressSuccess: React.FC<{
       await commitAllAliases();
       openAddMoreAddressesPage({
         publicKey: state.publicKey,
+        successState: {
+          addresses: items,
+          publicKey: state.publicKey,
+          titleKey: state.titleKey,
+        },
       });
     } catch (error) {
       message.error(
@@ -186,6 +225,11 @@ export const CreateAddressSuccess: React.FC<{
         <div className="mt-[16px] text-[24px] leading-[29px] font-medium text-r-neutral-title-1 text-center">
           {t(state.titleKey || 'page.newAddress.newSeedPhraseCreated')}
         </div>
+        {state.descriptionKey ? (
+          <div className="mt-[8px] text-[15px] leading-[18px] text-r-neutral-foot text-center">
+            {t(state.descriptionKey)}
+          </div>
+        ) : null}
       </div>
 
       <div className="mt-[24px] min-h-0 flex-1 overflow-hidden">
@@ -260,23 +304,33 @@ export const CreateAddressSuccess: React.FC<{
             'w-full h-[44px] rounded-[8px] bg-r-blue-default text-[13px] leading-[16px] font-medium text-r-neutral-bg-1',
             pendingAction !== null && 'opacity-50'
           )}
-          onClick={handleDone}
+          onClick={
+            state.primaryAction === 'open-wallet'
+              ? handleOpenWallet
+              : handleDone
+          }
         >
-          {t('global.Done')}
+          {state.primaryAction === 'open-wallet'
+            ? t('page.newUserImport.successful.openWallet')
+            : t('global.Done')}
         </button>
 
-        <button
-          type="button"
-          disabled={pendingAction !== null}
-          className={clsx(
-            'mt-[14px] flex w-full items-center justify-center gap-[1px] text-[13px] leading-[16px] text-r-neutral-foot',
-            pendingAction !== null && 'opacity-50'
-          )}
-          onClick={handleAddMore}
-        >
-          <span>{t('page.newAddress.addMoreAddressesFromThisSeedPhrase')}</span>
-          <RcCreateAddressSuccessArrowIcon className="h-[16px] w-[16px]" />
-        </button>
+        {state.publicKey && state.primaryAction !== 'open-wallet' ? (
+          <button
+            type="button"
+            disabled={pendingAction !== null}
+            className={clsx(
+              'mt-[14px] flex w-full items-center justify-center gap-[1px] text-[13px] leading-[16px] text-r-neutral-foot',
+              pendingAction !== null && 'opacity-50'
+            )}
+            onClick={handleAddMore}
+          >
+            <span>
+              {t('page.newAddress.addMoreAddressesFromThisSeedPhrase')}
+            </span>
+            <RcCreateAddressSuccessArrowIcon className="h-[16px] w-[16px]" />
+          </button>
+        ) : null}
       </div>
     </div>
   );

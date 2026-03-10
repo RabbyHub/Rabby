@@ -8,6 +8,9 @@ import type { AddAddressNavigateHandler } from './shared';
 export const CREATE_ADDRESS_SUCCESS_PATH =
   '/add-address/create-address-success';
 export const CREATE_ADDRESS_SUCCESS_TYPE = 'create-address-success';
+export const IMPORT_ADDRESS_SUCCESS_PATH =
+  '/add-address/import-address-success';
+export const IMPORT_ADDRESS_SUCCESS_TYPE = 'import-address-success';
 export const ADD_MORE_ADDRESSES_PATH = '/add-address/add-more-from-seed-phrase';
 export const ADD_MORE_ADDRESSES_TYPE = 'add-more-from-seed-phrase';
 
@@ -20,12 +23,15 @@ export interface CreateAddressSuccessState {
   addresses: CreateAddressSuccessAddress[];
   publicKey: string;
   titleKey: string;
+  descriptionKey?: string;
+  primaryAction?: 'done' | 'open-wallet';
   address?: string;
   alias?: string;
 }
 
 export interface AddMoreAddressesState {
   publicKey: string;
+  successState?: CreateAddressSuccessState;
 }
 
 export const useCreateAddressActions = ({
@@ -48,6 +54,21 @@ export const useCreateAddressActions = ({
       const method = options?.replace ? history.replace : history.push;
       method({
         pathname: CREATE_ADDRESS_SUCCESS_PATH,
+        state,
+      });
+    }
+  );
+
+  const openImportSuccessPage = useMemoizedFn(
+    (state: CreateAddressSuccessState, options?: { replace?: boolean }) => {
+      if (onNavigate) {
+        onNavigate(IMPORT_ADDRESS_SUCCESS_TYPE, state);
+        return;
+      }
+
+      const method = options?.replace ? history.replace : history.push;
+      method({
+        pathname: IMPORT_ADDRESS_SUCCESS_PATH,
         state,
       });
     }
@@ -129,6 +150,7 @@ export const useCreateAddressActions = ({
     createNewSeedPhrase,
     deriveNextAddressFromSeedPhrase,
     openAddMoreAddressesPage,
+    openImportSuccessPage,
     openSuccessPage,
   };
 };

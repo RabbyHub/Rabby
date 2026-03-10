@@ -60,7 +60,10 @@ import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
 import { AddNewAddress } from './AddAddress/AddNewAddress';
 import { AddMoreAddressesFromSeedPhrase } from './AddAddress/AddMoreAddressesFromSeedPhrase';
 import { CreateAddressSuccess } from './AddAddress/CreateAddressSuccess';
+import ImportAddressSuccess from './AddAddress/ImportAddressSuccess';
 import { HardwareWallets } from './AddAddress/HardwareWallets';
+import BulkImportPrivateKey from './AddAddress/BulkImportPrivateKey';
+import ImportKeyOrSeed from './AddAddress/ImportKeyOrSeed';
 import { InstitutionalWallets } from './AddAddress/InstitutionalWallets';
 import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
@@ -342,8 +345,20 @@ const Main = () => {
           <AddNewAddress />
         </PrivateRoute>
 
+        <PrivateRoute exact path="/add-address/import">
+          <ImportKeyOrSeed />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/bulk-import-private-key">
+          <BulkImportPrivateKey />
+        </PrivateRoute>
+
         <PrivateRoute exact path="/add-address/create-address-success">
           <CreateAddressSuccess />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/import-address-success">
+          <ImportAddressSuccess />
         </PrivateRoute>
 
         <PrivateRoute exact path="/add-address/add-more-from-seed-phrase">

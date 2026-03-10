@@ -117,7 +117,11 @@ const AddAddressOptions: React.FC<{
           <RcAddAddressOptionSeedPhraseIcon className="add-address-options__asset-icon" />
         ),
         onClick: () => {
-          history.push('/import/mnemonics');
+          if (UI_TYPE.isDesktop) {
+            onNavigate?.('import-key-or-seed', { tab: 'seedPhrase' });
+          } else {
+            history.push('/add-address/import?tab=seedPhrase');
+          }
         },
       },
       {
@@ -128,9 +132,9 @@ const AddAddressOptions: React.FC<{
         ),
         onClick: () => {
           if (UI_TYPE.isDesktop) {
-            onNavigate?.('key');
+            onNavigate?.('import-key-or-seed', { tab: 'privateKey' });
           } else {
-            history.push('/import/key');
+            history.push('/add-address/import?tab=privateKey');
           }
         },
       },

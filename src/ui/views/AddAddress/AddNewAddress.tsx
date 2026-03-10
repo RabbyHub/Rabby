@@ -12,8 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import { useCreateAddressActions } from './useCreateAddress';
+import { PageHeader } from '@/ui/component';
 import {
-  RcAddNewAddressBackIcon,
   RcAddNewAddressChevronIcon,
   RcAddNewAddressCreateSeedIcon,
   RcAddNewAddressSeedBaseIcon,
@@ -78,25 +78,6 @@ const Chevron = ({
         className
       )}
     />
-  );
-};
-
-const Header = ({ title, onBack }: { title: string; onBack: () => void }) => {
-  return (
-    <div className="sticky top-0 z-10 bg-r-neutral-bg-2 px-[20px] pb-[11px]">
-      <div className="relative h-[48px] flex items-center justify-center">
-        <button
-          type="button"
-          onClick={onBack}
-          className="absolute left-0 w-[20px] h-[20px] flex items-center justify-center"
-        >
-          <RcAddNewAddressBackIcon className="w-[20px] h-[20px]" />
-        </button>
-        <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1">
-          {title}
-        </div>
-      </div>
-    </div>
   );
 };
 
@@ -309,13 +290,15 @@ export const AddNewAddress: React.FC<{
   return (
     <div
       className={clsx(
-        'bg-r-neutral-bg-2 flex flex-col',
-        isInModal ? 'h-[600px] overflow-auto' : 'min-h-full'
+        'bg-r-neutral-bg-2 flex flex-col px-20',
+        isInModal ? 'h-[600px] overflow-hidden' : 'min-h-full'
       )}
     >
-      <Header title={t('page.newAddress.addNewAddress')} onBack={handleBack} />
+      <PageHeader fixed className="pt-[20px]" forceShowBack onBack={handleBack}>
+        {t('page.newAddress.addNewAddress')}
+      </PageHeader>
 
-      <div className="px-[20px] pb-[20px] flex flex-col gap-[12px]">
+      <div className="min-h-0 flex-1 overflow-auto pb-[20px] flex flex-col gap-[12px]">
         <button
           type="button"
           disabled={pendingAction !== null}
