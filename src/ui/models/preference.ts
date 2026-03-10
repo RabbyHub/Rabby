@@ -342,12 +342,9 @@ export const preference = createModel<RootModel>()({
         biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
         biometricUnlockIv: payload.iv || '',
       });
-      ga4.fireEvent(`BiometricUnlock_${payload.enabled ? 'On' : 'Off'}`, {
-        event_category: 'Settings Snapshot',
-      });
       if (payload.enabled) {
-        ga4.fireEvent('Unlock_Act_Biometrics', {
-          event_category: 'Unlock_Wallet',
+        ga4.fireEvent('Unlock_Enable_Biometrics', {
+          event_category: 'Settings Snapshot',
         });
       }
     },

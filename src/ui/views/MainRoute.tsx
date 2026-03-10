@@ -170,12 +170,11 @@ const Main = () => {
         });
 
         const isBiometricsEnabled = preference.biometricUnlockEnabled;
-        ga4.fireEvent(
-          `Unlock_Act_${isBiometricsEnabled ? 'Biometrics' : 'Password'}`,
-          {
-            event_category: 'Unlock_Wallet',
-          }
-        );
+        if (isBiometricsEnabled) {
+          ga4.fireEvent('Unlock_Enable_Biometrics', {
+            event_category: 'Settings Snapshot',
+          });
+        }
         wallet.updateGa4EventTime(Date.now());
       }
     })();
