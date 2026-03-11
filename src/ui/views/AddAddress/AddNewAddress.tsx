@@ -5,6 +5,10 @@ import { formatUsdValue } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { UseSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
 import {
+  getSeedPhraseGroupTotalBalance,
+  sortSeedPhraseGroups,
+} from '@/ui/views/AddFromCurrentSeedPhrase/sort';
+import {
   DisplayedAccount,
   TypeKeyringGroup,
 } from '@/ui/views/ManageAddress/hooks';
@@ -199,15 +203,12 @@ export const AddNewAddress: React.FC<{
 
   const groups = React.useMemo<SeedPhraseGroupView[]>(
     () =>
-      seedPhraseList
-        .map((group) => {
+      sortSeedPhraseGroups(
+        seedPhraseList.map((group) => {
           const sortedAccounts = [...group.list].sort(
             (a, b) => Number(b.balance || 0) - Number(a.balance || 0)
           );
-          const totalBalance = sortedAccounts.reduce(
-            (sum, account) => sum + Number(account.balance || 0),
-            0
-          );
+          const totalBalance = getSeedPhraseGroupTotalBalance(group);
 
           return {
             ...group,
@@ -218,15 +219,7 @@ export const AddNewAddress: React.FC<{
             sortedAccounts,
           };
         })
-        .sort((a, b) => {
-          if (b.totalBalance !== a.totalBalance) {
-            return b.totalBalance - a.totalBalance;
-          }
-          if (b.sortedAccounts.length !== a.sortedAccounts.length) {
-            return b.sortedAccounts.length - a.sortedAccounts.length;
-          }
-          return (a.index || 0) - (b.index || 0);
-        }),
+      ),
     [seedPhraseList]
   );
 
