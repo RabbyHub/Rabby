@@ -149,6 +149,8 @@ const Main = () => {
         ) {
           return;
         }
+        await wallet.trackGasAccountActiveStatusOncePerDay();
+
         ga4.fireEvent(
           `ThemeMode_${
             preference.themeMode === DARK_MODE_TYPE.dark ? 'Dark' : 'Light'

@@ -78,6 +78,7 @@ import {
   removeLeadingZeroes,
 } from '@/background/utils/7702';
 import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
+import { handleGasAccountLoginSuccess } from '@/background/utils/gasAccountLogin';
 
 const reportSignText = (params: {
   method: string;
@@ -921,12 +922,11 @@ class ProviderController extends BaseController {
               adoptBE7702Params();
               const res = await openapiService.submitTxV2(params);
               if (res.access_token) {
-                gasAccountService.setGasAccountSig(
+                void handleGasAccountLoginSuccess(
                   res.access_token,
                   currentAccount
-                );
-                eventBus.emit(EVENTS.broadcastToUI, {
-                  method: EVENTS.GAS_ACCOUNT.LOG_IN,
+                ).catch((error) => {
+                  console.error('[handleGasAccountLoginSuccess] failed', error);
                 });
               }
               hash = res.tx_id;

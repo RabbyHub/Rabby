@@ -84,6 +84,10 @@ import {
   isSameAddress,
   setPopupIcon,
 } from 'background/utils';
+import {
+  handleGasAccountLoginSuccess as syncGasAccountLoginSuccess,
+  trackGasAccountActiveStatus as trackCurrentGasAccountActiveStatus,
+} from '../utils/gasAccountLogin';
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
@@ -2145,6 +2149,37 @@ export class WalletController extends BaseController {
   getGasAccountData = gasAccountService.getGasAccountData;
   getGasAccountSig = gasAccountService.getGasAccountSig;
   setGasAccountSig = gasAccountService.setGasAccountSig;
+  setGasAccountBalanceState = (accountId?: string, hasBalance?: boolean) => {
+    gasAccountService.setCurrentBalanceState(accountId, hasBalance);
+  };
+
+  trackGasAccountActiveStatus = async () => {
+    const { sig, accountId } = this.getGasAccountSig();
+    return trackCurrentGasAccountActiveStatus(sig, accountId);
+  };
+
+  trackGasAccountActiveStatusOncePerDay = async () => {
+    if (gasAccountService.hasTrackedGa4ActiveToday()) {
+      return false;
+    }
+
+    const tracked = await this.trackGasAccountActiveStatus();
+    if (tracked) {
+      gasAccountService.markGa4ActiveTracked();
+    }
+
+    return tracked;
+  };
+
+  handleGasAccountLoginSuccess = async (
+    signature: string,
+    account: Account,
+    options?: {
+      redirectToGasAccount?: boolean;
+    }
+  ) => {
+    await syncGasAccountLoginSuccess(signature, account, options);
+  };
 
   getCloseTipsChains = OfflineChainsService.getCloseTipsChains;
   setCloseTipsChains = OfflineChainsService.setCloseTipsChains;
@@ -5397,11 +5432,6 @@ export class WalletController extends BaseController {
     return signature;
   };
 
-  /**
-   * 执行Gas Account登录的核心流程
-   * @param account 账户信息
-   * @returns 登录结果，包含签名和是否成功
-   */
   private async executeGasAccountLogin(
     account: Account
   ): Promise<{
@@ -5456,19 +5486,12 @@ export class WalletController extends BaseController {
     return { signature, success: result?.success || false, result };
   }
 
-  private async saveGasAccountLoginState(signature: string, account: Account) {
-    await gasAccountService.setGasAccountSig(signature, account);
-    await pageStateCacheService.clear();
-    await pageStateCacheService.set({
-      path: '/gas-account',
-      states: {},
-    });
-  }
-
   signGasAccount = async (account: Account, isClaimGift: boolean = false) => {
     const { signature, success } = await this.executeGasAccountLogin(account);
     if (success && signature) {
-      await this.saveGasAccountLoginState(signature, account);
+      await this.handleGasAccountLoginSuccess(signature, account, {
+        redirectToGasAccount: true,
+      });
     }
     if (isClaimGift) {
       await this.claimGasAccountGift(account.address);
