@@ -16,7 +16,7 @@ const config = {
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
       'process.env.DEBUG': true,
     }),
-    false && new SecSDK({
+    new SecSDK({
       dev: false,
       disableProtoAssets: ['pageProvider.js'],
       skipScuttleAssets: ['pageProvider.js'],
