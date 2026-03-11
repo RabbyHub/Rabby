@@ -102,6 +102,11 @@ export interface DisplayedKeryring {
   publicKey?: string;
 }
 
+type BatchImportPrivateKeysResult = {
+  keyrings: any[];
+  duplicateAddresses: string[];
+};
+
 export class KeyringService extends EventEmitter {
   //
   // PUBLIC METHODS
@@ -201,6 +206,82 @@ export class KeyringService extends EventEmitter {
       .then(this.setUnlocked.bind(this))
       .then(this.fullUpdate.bind(this))
       .then(() => keyring);
+  }
+
+  async importPrivateKeys(
+    privateKeys: string[]
+  ): Promise<BatchImportPrivateKeysResult> {
+    if (!privateKeys.length) {
+      return {
+        keyrings: [],
+        duplicateAddresses: [],
+      };
+    }
+
+    const Keyring = this.getKeyringClassForType(KEYRING_TYPE.SimpleKeyring);
+    const existingKeyrings = this.getKeyringsByType(KEYRING_TYPE.SimpleKeyring);
+    const existingAccounts = await Promise.all(
+      existingKeyrings.map((keyring) => keyring.getAccounts())
+    );
+    const seenAddresses = new Set(
+      existingAccounts
+        .flat()
+        .map((address) => normalizeAddress(address).toLowerCase())
+    );
+    const duplicateAddresses: string[] = [];
+    const nextKeyrings: any[] = [];
+    const existingSimpleKeyringCount = existingKeyrings.length;
+
+    for (const privateKey of privateKeys) {
+      const keyring = new Keyring([privateKey]);
+      const [address] = await keyring.getAccounts();
+      const normalizedAddress = normalizeAddress(address).toLowerCase();
+
+      if (seenAddresses.has(normalizedAddress)) {
+        duplicateAddresses.push(normalizedAddress);
+        continue;
+      }
+
+      seenAddresses.add(normalizedAddress);
+      nextKeyrings.push(keyring);
+    }
+
+    if (!nextKeyrings.length) {
+      return {
+        keyrings: [],
+        duplicateAddresses,
+      };
+    }
+
+    nextKeyrings.forEach((keyring) => {
+      this.keyrings.push(keyring);
+    });
+
+    await Promise.all(
+      nextKeyrings.map(async (keyring, index) => {
+        const [address] = await keyring.getAccounts();
+        if (!contactBook.getContactByAddress(address)) {
+          contactBook.addAlias({
+            address,
+            name: generateAliasName({
+              keyringType: KEYRING_TYPE.SimpleKeyring,
+              keyringCount: existingSimpleKeyringCount + index,
+            }),
+          });
+        }
+      })
+    );
+
+    uninstalledMetricService.setWalletByKeyringType(KEYRING_TYPE.SimpleKeyring);
+    await this.persistAllKeyrings();
+    await this._updateMemStoreKeyrings();
+    this.setUnlocked();
+    this.fullUpdate();
+
+    return {
+      keyrings: nextKeyrings,
+      duplicateAddresses,
+    };
   }
 
   generateMnemonic(): string {

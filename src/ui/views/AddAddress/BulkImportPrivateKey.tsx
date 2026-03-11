@@ -8,7 +8,6 @@ import { KEYRING_CLASS } from 'consts';
 import { clearClipboard } from '@/ui/utils/clipboard';
 import { useWallet } from '@/ui/utils';
 import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
-import { safeJSONParse } from '@/utils';
 import IconSuccess from 'ui/assets/success.svg';
 import PillsSwitch from '@/ui/component/PillsSwitch';
 import { ReactComponent as RcRabbyLogo } from '@/ui/assets/logo-rabby-large.svg';
@@ -371,7 +370,9 @@ const BulkImportPrivateKey: React.FC = () => {
           alias: item.alianName || '',
         })),
         publicKey: '',
-        title: t('page.newAddress.importedSuccessfully'),
+        title: t('page.newAddress.addressAddedCount', {
+          count: accounts.length,
+        }),
         description: t('page.newAddress.openExtensionToGetStarted'),
       });
     }
@@ -718,35 +719,13 @@ const BulkImportPrivateKey: React.FC = () => {
       address: string;
       alianName?: string;
     }[] = [];
-    const duplicateAddresses: string[] = [];
-    let firstError = '';
 
     try {
       setSubmitting(true);
-      for (const row of validRows) {
-        try {
-          const accounts = await wallet.importPrivateKey(row.value.trim());
-          importedAccounts.push(...accounts);
-        } catch (error) {
-          const messageText = (error as Error)?.message || '';
-          if (messageText.includes('DuplicateAccountError')) {
-            const duplicateAddress = safeJSONParse(messageText)?.address;
-            if (
-              duplicateAddress &&
-              !duplicateAddresses.some(
-                (item) => item.toLowerCase() === duplicateAddress.toLowerCase()
-              )
-            ) {
-              duplicateAddresses.push(duplicateAddress);
-            }
-            continue;
-          }
-          firstError =
-            firstError ||
-            messageText ||
-            t('page.newAddress.privateKey.notAValidPrivateKey');
-        }
-      }
+      const { accounts, duplicateAddresses } = await wallet.importPrivateKeys(
+        validRows.map((row) => row.value.trim())
+      );
+      importedAccounts.push(...accounts);
 
       clearClipboard();
 
@@ -764,8 +743,11 @@ const BulkImportPrivateKey: React.FC = () => {
         return;
       }
 
+      setPrivateKeyError(t('page.newAddress.privateKey.notAValidPrivateKey'));
+    } catch (error) {
+      const messageText = (error as Error)?.message || '';
       setPrivateKeyError(
-        firstError || t('page.newAddress.privateKey.notAValidPrivateKey')
+        messageText || t('page.newAddress.privateKey.notAValidPrivateKey')
       );
     } finally {
       setSubmitting(false);

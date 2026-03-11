@@ -45,7 +45,8 @@
         "^node_modules/toggle-selection",
         "^node_modules/use-sync-external-store",
         "^node_modules/@walletconnect/window-getters",
-        "^node_modules/@ant-design"
+        "^node_modules/@ant-design",
+        "^node_modules/react-resizable-panels"
     ],
     "addEventListener": [
         "^node_modules/@metamask/post-message-stream",

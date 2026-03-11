@@ -182,20 +182,22 @@ const ImportSuccess = ({
             </div>
           </div>
 
-          <SuccessAddressCards
-            items={safeItems}
-            setItems={setSafeItems}
-            inputRefs={safeInputRefs}
-            onCommitAlias={commitSafeAlias}
-            listClassName="mt-[34px]"
-            cardClassName="import-success-safe__card"
-            aliasWrapClassName="import-success-safe__alias"
-            aliasInputClassName="import-success-safe__alias-input"
-            addressRowClassName="import-success-safe__address-row"
-            addressTextClassName="import-success-safe__address"
-            copyButtonClassName="import-success-safe__copy"
-            copyIconClassName="import-success-safe__copy-icon"
-          />
+          <div className="mt-[34px] overflow-hidden">
+            <SuccessAddressCards
+              items={safeItems}
+              setItems={setSafeItems}
+              inputRefs={safeInputRefs}
+              onCommitAlias={commitSafeAlias}
+              listClassName="h-full"
+              cardClassName="import-success-safe__card"
+              aliasWrapClassName="import-success-safe__alias"
+              aliasInputClassName="import-success-safe__alias-input"
+              addressRowClassName="import-success-safe__address-row"
+              addressTextClassName="import-success-safe__address"
+              copyButtonClassName="import-success-safe__copy"
+              copyIconClassName="import-success-safe__copy-icon"
+            />
+          </div>
 
           <div className="import-success-safe__desc">
             {t('page.importSuccess.gnosisChainDesc', {
