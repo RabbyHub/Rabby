@@ -4468,7 +4468,7 @@
     "alias": {
       "HdKeyring": "Секретная фраза",
       "simpleKeyring": "Приватный ключ",
-      "watchAddressKeyring": "Контакт"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4487,7 +4487,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Создано с помощью секретной фразы",
       "SimpleKeyring": "Импортировано с помощью приватного ключа",
-      "WatchAddressKeyring": "Контакт"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "Импортировано с помощью секретной фразы",
     "SIGN_PERMISSION_OPTIONS": {

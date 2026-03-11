@@ -127,21 +127,6 @@ const PageHeader = ({
   );
 };
 
-const WatchAddressLogo = (props: SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    {...props}
-  >
-    <rect width={24} height={24} fill="currentColor" rx={12} />
-    <path
-      fill="#6e7585"
-      d="M11.998 10.511a2.974 2.974 0 1 0 0-5.949 2.974 2.974 0 0 0 0 5.95ZM17.15 18.643c.93-.293 1.42-1.32 1.025-2.212A6.751 6.751 0 0 0 12 12.406a6.751 6.751 0 0 0-6.175 4.025c-.395.892.094 1.919 1.024 2.212 1.325.417 3.079.794 5.151.794 2.072 0 3.826-.377 5.15-.794Z"
-    />
-  </svg>
-);
-
 const AccountSwitchInner = ({
   currentAccount,
   disableSwitch,
@@ -187,11 +172,7 @@ const AccountSwitchInner = ({
             setIsShowModal(true);
           }}
         >
-          {isWatchAddress ? (
-            <WatchAddressLogo className="w-[16px] h-[16px] mr-[4px] text-white group-hover:text-opacity-30" />
-          ) : (
-            <img className="w-[16px] h-[16px] mr-[4px]" src={addressTypeIcon} />
-          )}
+          <img className="w-[16px] h-[16px] mr-[4px]" src={addressTypeIcon} />
           <div className="text-r-neutral-body text-[13px] leading-[16px] font-medium">
             {alias}
           </div>

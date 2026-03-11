@@ -37,6 +37,8 @@ export const CreateAddressSuccess: React.FC<{
   const state = (outerState ||
     location.state ||
     {}) as CreateAddressSuccessState;
+  const title = state.title || t('page.newAddress.newSeedPhraseCreated');
+  const description = state.description || '';
   const addresses = React.useMemo(() => normalizeSuccessAddresses(state), [
     state,
   ]);
@@ -115,7 +117,8 @@ export const CreateAddressSuccess: React.FC<{
         successState: {
           addresses: items,
           publicKey: state.publicKey,
-          titleKey: state.titleKey,
+          title: state.title,
+          description: state.description,
         },
       });
     } catch (error) {
@@ -141,11 +144,11 @@ export const CreateAddressSuccess: React.FC<{
       <div className="shrink-0 pt-[60px] flex flex-col items-center">
         <RcCreateAddressSuccessIcon className="w-[40px] h-[40px]" />
         <div className="mt-[16px] text-[24px] leading-[29px] font-medium text-r-neutral-title-1 text-center">
-          {t(state.titleKey || 'page.newAddress.newSeedPhraseCreated')}
+          {title}
         </div>
-        {state.descriptionKey ? (
+        {description ? (
           <div className="mt-[8px] text-[15px] leading-[18px] text-r-neutral-foot text-center">
-            {t(state.descriptionKey)}
+            {description}
           </div>
         ) : null}
       </div>

@@ -31,6 +31,13 @@ export const ImportAddressSuccess: React.FC<{
   const addresses = React.useMemo(() => normalizeSuccessAddresses(state), [
     state,
   ]);
+  const title =
+    state.title ||
+    t('page.newAddress.addressAddedCount', {
+      count: addresses.length,
+    });
+  const description =
+    state.description || t('page.newAddress.openExtensionToGetStarted');
   const [pendingAction, setPendingAction] = React.useState(false);
   const {
     items,
@@ -97,15 +104,10 @@ export const ImportAddressSuccess: React.FC<{
         <div className="flex flex-col items-center">
           <RcCreateAddressSuccessIcon className="h-[40px] w-[40px]" />
           <div className="mt-[16px] text-center text-[24px] font-medium leading-[29px] text-r-neutral-title-1">
-            {t('page.newAddress.addressAddedCount', {
-              count: addresses.length,
-            })}
+            {title}
           </div>
           <div className="mt-[8px] text-center text-[15px] leading-[18px] text-r-neutral-foot">
-            {t(
-              state.descriptionKey ||
-                'page.newAddress.openExtensionToGetStarted'
-            )}
+            {description}
           </div>
         </div>
 

@@ -16,7 +16,7 @@ import { ReactComponent as RcUploader } from '@/ui/assets/uploader.svg';
 import { ReactComponent as RcClear } from '@/ui/assets/new-user-import/clear-cc.svg';
 import { ReactComponent as RcEye } from '@/ui/assets/new-user-import/eye-cc.svg';
 import { ReactComponent as RcEyeClose } from '@/ui/assets/new-user-import/eye-close-cc.svg';
-import { ReactComponent as RcClose } from '@/ui/assets/component/close-cc.svg';
+import { ReactComponent as RcClose } from '@/ui/assets/new-user-import/close-cc.svg';
 import { useCreateAddressActions } from './useCreateAddress';
 
 type BulkImportTab = 'privateKey' | 'keyStore';
@@ -132,9 +132,9 @@ const VisibleRowTextarea = styled.textarea`
   font-size: 13px;
   line-height: 16px;
   min-height: 16px;
-  font-weight: 510;
-  font-family: 'SF Pro Text', 'SF Pro', -apple-system, BlinkMacSystemFont,
-    sans-serif;
+  font-weight: 500;
+  /* font-family: 'SF Pro Text', 'SF Pro', -apple-system, BlinkMacSystemFont,
+    sans-serif; */
   white-space: pre-wrap;
   word-break: break-all;
   overflow-wrap: anywhere;
@@ -371,8 +371,8 @@ const BulkImportPrivateKey: React.FC = () => {
           alias: item.alianName || '',
         })),
         publicKey: '',
-        titleKey: 'page.newAddress.importedSuccessfully',
-        descriptionKey: 'page.newAddress.openExtensionToGetStarted',
+        title: t('page.newAddress.importedSuccessfully'),
+        description: t('page.newAddress.openExtensionToGetStarted'),
       });
     }
   );
@@ -446,6 +446,7 @@ const BulkImportPrivateKey: React.FC = () => {
 
       event.preventDefault();
       clearPrivateKeyError();
+      clearClipboard();
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
         content: t('page.newAddress.seedPhrase.pastedAndClear'),
@@ -564,6 +565,7 @@ const BulkImportPrivateKey: React.FC = () => {
 
       event.preventDefault();
       clearPrivateKeyError();
+      clearClipboard();
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
         content: t('page.newAddress.seedPhrase.pastedAndClear'),
@@ -871,7 +873,7 @@ const BulkImportPrivateKey: React.FC = () => {
                   >
                     {isPrivateKeyListMode ? (
                       <div className="h-full overflow-y-auto px-[15px] py-[15px]">
-                        <div className="space-y-[16px]">
+                        <div className="">
                           {rows.map((row, index) => {
                             const isInvalid = invalidRowIds.includes(row.id);
                             const isWrappedVisibleRow =
@@ -885,7 +887,7 @@ const BulkImportPrivateKey: React.FC = () => {
                               <div
                                 key={row.id}
                                 className={clsx(
-                                  'group flex w-full rounded-[4px] px-[8px] transition-[background-color,height,padding] duration-150',
+                                  'group flex items-center w-full rounded-[4px] px-[8px] transition-[background-color,height,padding] duration-150',
                                   rowLayoutClass,
                                   'hover:bg-r-neutral-card-2'
                                 )}
@@ -905,7 +907,7 @@ const BulkImportPrivateKey: React.FC = () => {
                                 </span>
                                 <div
                                   className={clsx(
-                                    'w-[260px] shrink-0',
+                                    'w-[260px] shrink-0 flex items-center',
                                     isWrappedVisibleRow
                                       ? 'self-start'
                                       : 'self-center'
@@ -969,7 +971,7 @@ const BulkImportPrivateKey: React.FC = () => {
                                   )}
                                 </div>
                                 <div className="flex-1" />
-                                <div className="flex w-[54px] shrink-0 self-center items-center justify-end gap-[10px] pr-[4px] text-r-neutral-foot opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                                <div className="flex self-center items-center justify-end gap-[10px] pr-[4px] text-r-neutral-foot opacity-0 transition-opacity duration-150 group-hover:opacity-100">
                                   <button
                                     type="button"
                                     className="pointer-events-none flex h-[16px] w-[16px] items-center justify-center group-hover:pointer-events-auto"
@@ -978,7 +980,10 @@ const BulkImportPrivateKey: React.FC = () => {
                                     }
                                     onClick={() => handleRemoveRow(row.id)}
                                   >
-                                    <RcClose className="h-[16px] w-[16px]" />
+                                    <RcClose
+                                      className="h-[16px] w-[16px] text-r-neutral-foot"
+                                      viewBox="0 0 16 16"
+                                    />
                                   </button>
                                   <button
                                     type="button"
@@ -989,9 +994,15 @@ const BulkImportPrivateKey: React.FC = () => {
                                     onClick={() => handleToggleVisible(row.id)}
                                   >
                                     {row.visible ? (
-                                      <RcEye className="h-[16px] w-[16px]" />
+                                      <RcEye
+                                        className="h-[16px] w-[16px]"
+                                        viewBox="0 0 20 20"
+                                      />
                                     ) : (
-                                      <RcEyeClose className="h-[16px] w-[16px]" />
+                                      <RcEyeClose
+                                        className="h-[16px] w-[16px]"
+                                        viewBox="0 0 20 20"
+                                      />
                                     )}
                                   </button>
                                 </div>
@@ -1013,6 +1024,7 @@ const BulkImportPrivateKey: React.FC = () => {
                           }
                           onBlur={handleTextareaBlur}
                           onPaste={handleTextareaPaste}
+                          autoFocus
                         />
                       </div>
                     )}

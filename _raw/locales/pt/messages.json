@@ -4463,7 +4463,7 @@
     "alias": {
       "simpleKeyring": "Chave Privada",
       "HdKeyring": "Frase Semente",
-      "watchAddressKeyring": "Contato"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4480,7 +4480,7 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "Contato",
+      "WatchAddressKeyring": "",
       "HdKeyring": "Criado por Seed Phrase",
       "SimpleKeyring": "Importado por Chave Privada"
     },

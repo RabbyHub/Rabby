@@ -4466,7 +4466,7 @@
     "alias": {
       "HdKeyring": "シードフレーズによって作成",
       "simpleKeyring": "プライベートキーによってインポート",
-      "watchAddressKeyring": "コンタクト"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4485,7 +4485,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "シードフレーズで作成",
       "SimpleKeyring": "プライベートキーでインポート",
-      "WatchAddressKeyring": "コンタクト"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "シードフレーズでインポート",
     "SIGN_PERMISSION_OPTIONS": {

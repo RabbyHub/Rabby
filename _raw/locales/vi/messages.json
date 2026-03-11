@@ -4460,7 +4460,7 @@
       "txFailedMoreContent": "{{chain}} #{{nonce}} thất bại. Nhấp vào để xem thêm."
     },
     "alias": {
-      "watchAddressKeyring": "Liên hệ",
+      "watchAddressKeyring": "",
       "simpleKeyring": "Khóa riêng",
       "HdKeyring": "Câu cụt đầu tiên"
     },
@@ -4479,7 +4479,7 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "Liên hệ",
+      "WatchAddressKeyring": "",
       "SimpleKeyring": "Nhập bằng Private Key",
       "HdKeyring": "Được tạo bởi Seed Phrase"
     },

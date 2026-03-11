@@ -153,33 +153,30 @@ const AddressRow = ({
       type="button"
       className={clsx(
         'relative h-[52px] w-full rounded-[8px] bg-r-neutral-card-1 text-left',
-        item.imported && 'opacity-50'
+        'flex items-center px-[16px] py-[10px]'
       )}
       onClick={onToggle}
       disabled={item.imported}
     >
-      <span className="absolute left-[12px] top-1/2 -translate-y-1/2 text-[12px] leading-[14px] text-r-neutral-foot">
+      <span className="absolute top-6 left-6 text-[10px] leading-normal text-r-neutral-foot">
         {item.index}.
       </span>
 
-      <div className="absolute left-[35px] top-1/2 flex max-w-[212px] -translate-y-1/2 items-center gap-[6px]">
-        <span className="text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+      <div className="flex max-w-[212px] items-center gap-[6px]">
+        <span className="text-[15px] leading-normal font-medium text-r-neutral-title-1">
           {ellipsisAddress(item.address)}
         </span>
-        <span className="text-[13px] leading-[16px] text-r-neutral-foot">
+        <span className="text-[13px] leading-normal text-r-neutral-foot">
           {formatUsdValue(item.balance || 0)}
         </span>
       </div>
 
-      {item.imported && (
-        <div className="absolute left-[253px] top-[17px] rounded-[2px] bg-r-blue-light-1 px-[4px] py-[2px]">
-          <span className="text-[11px] leading-[13px] font-medium text-r-blue-default">
+      <div className="ml-auto flex items-center gap-[14px]">
+        {item.imported && (
+          <div className="rounded-[2px] bg-r-blue-light-1 px-[4px] py-[2px] text-[11px] font-medium text-r-blue-default">
             {t('component.MultiSelectAddressList.imported')}
-          </span>
-        </div>
-      )}
-
-      <div className="absolute right-[16px] top-1/2 -translate-y-1/2">
+          </div>
+        )}
         <SelectionIcon
           checked={item.imported || checked}
           disabled={item.imported}
@@ -595,7 +592,9 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
       openSuccessPage({
         addresses,
         publicKey: state.publicKey,
-        titleKey: 'page.newAddress.newAddressAdded',
+        title: t('page.newAddress.addressAddedCount', {
+          count: addresses.length,
+        }),
       });
     } catch (error) {
       message.error(
@@ -639,7 +638,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
       : isInModal
       ? 600
       : 640;
-  const listHeight = Math.max(popupHeight - 64 - 72 - 20, 240);
+  const listHeight = Math.max(popupHeight - 64 - 72, 240);
 
   return (
     <div
@@ -668,7 +667,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
       </PageHeader>
 
       <div className="min-h-0 flex flex-1 flex-col">
-        <div className="min-h-0 flex-1 pb-[12px]">
+        <div className="min-h-0 flex-1">
           <FixedSizeList
             height={listHeight}
             width="100%"

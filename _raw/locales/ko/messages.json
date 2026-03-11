@@ -4462,7 +4462,7 @@
     },
     "alias": {
       "simpleKeyring": "개인 키",
-      "watchAddressKeyring": "연락처",
+      "watchAddressKeyring": "",
       "HdKeyring": "시드 구문"
     },
     "keyring": {
@@ -4480,7 +4480,7 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "연락처",
+      "WatchAddressKeyring": "",
       "HdKeyring": "Seed Phrase로 생성됨",
       "SimpleKeyring": "개인 키로 가져오기"
     },

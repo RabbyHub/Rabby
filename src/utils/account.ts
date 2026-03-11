@@ -15,6 +15,7 @@ import { isAddress } from 'viem';
 import { isSameAddress } from '@/background/utils';
 import { isObject, isPlainObject } from 'lodash';
 import WatchLogo from 'ui/assets/waitcup.svg';
+import IconWhiteListWhite from 'ui/assets/walletlogo/whitelist-white.svg';
 
 export function generateAliasName({
   keyringType,

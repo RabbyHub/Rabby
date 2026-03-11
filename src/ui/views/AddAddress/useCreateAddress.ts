@@ -2,6 +2,7 @@ import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { useRabbyDispatch } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
 import { useMemoizedFn } from 'ahooks';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import type { AddAddressNavigateHandler } from './shared';
 
@@ -22,9 +23,8 @@ export interface CreateAddressSuccessAddress {
 export interface CreateAddressSuccessState {
   addresses: CreateAddressSuccessAddress[];
   publicKey: string;
-  titleKey: string;
-  titleValues?: Record<string, any>;
-  descriptionKey?: string;
+  title: string;
+  description?: string;
   primaryAction?: 'done' | 'open-wallet';
   address?: string;
   alias?: string;
@@ -43,6 +43,7 @@ export const useCreateAddressActions = ({
   const history = useHistory();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
   const invokeEnterPassphrase = useEnterPassphraseModal('publickey');
 
   const hydrateSuccessState = useMemoizedFn(
@@ -147,7 +148,7 @@ export const useCreateAddressActions = ({
             },
           ],
           publicKey: result.publicKey,
-          titleKey: 'page.newAddress.newSeedPhraseCreated',
+          title: t('page.newAddress.newSeedPhraseCreated'),
         },
         { replace: options?.replaceSuccess }
       );
@@ -171,7 +172,7 @@ export const useCreateAddressActions = ({
             },
           ],
           publicKey: result.publicKey,
-          titleKey: 'page.newAddress.newAddressCreated',
+          title: t('page.newAddress.newAddressCreated'),
         },
         { replace: options?.replaceSuccess }
       );

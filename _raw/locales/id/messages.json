@@ -4461,7 +4461,7 @@
       "txCompleteMoreContent": "{{chain}} #{{nonce}} selesai. Klik untuk melihat lebih banyak."
     },
     "alias": {
-      "watchAddressKeyring": "Kontak",
+      "watchAddressKeyring": "",
       "simpleKeyring": "Kunci Pribadi",
       "HdKeyring": "Frasa Benih"
     },
@@ -4480,7 +4480,7 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "Kontak",
+      "WatchAddressKeyring": "",
       "HdKeyring": "Dibuat oleh Seed Phrase",
       "SimpleKeyring": "Diimpor oleh Kunci Pribadi"
     },

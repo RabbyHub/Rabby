@@ -4468,7 +4468,7 @@
     "alias": {
       "HdKeyring": "助记词",
       "simpleKeyring": "私钥",
-      "watchAddressKeyring": "联系人"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4487,7 +4487,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "通过助记词创建",
       "SimpleKeyring": "通过私钥导入",
-      "WatchAddressKeyring": "联系人"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "通过助记词导入",
     "SIGN_PERMISSION_OPTIONS": {
