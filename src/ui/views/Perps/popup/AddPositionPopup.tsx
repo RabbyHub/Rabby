@@ -11,11 +11,15 @@ import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { AssetPriceInfo } from '../components/AssetPriceInfo';
-import { DistanceToLiquidationTag } from '../components/DistanceToLiquidationTag';
 import { MarginInput } from '../components/MarginInput';
 import { TokenImg } from '../components/TokenImg';
 import { PERPS_MAX_NTL_VALUE, PERPS_MINI_USD_VALUE } from '../constants';
-import { calLiquidationPrice } from '../utils';
+import {
+  calculateDistanceToLiquidation,
+  calLiquidationPrice,
+  formatPerpsPct,
+} from '../utils';
+import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 
 export interface AddPositionPopupProps {
   visible?: boolean;
@@ -33,6 +37,7 @@ export interface AddPositionPopupProps {
   pnlPercent: number;
   markPrice: number;
   leverageRange: [number, number]; // [min, max]
+  leverageType: 'cross' | 'isolated';
   onCancel: () => void;
   onConfirm: (tradeSize: string) => Promise<void>;
 }
@@ -44,6 +49,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
   currentAssetCtx,
   availableBalance,
   leverage,
+  leverageType,
   direction,
   positionSize,
   marginUsed,
@@ -223,6 +229,11 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
                 <span className="text-[16px] font-medium text-r-neutral-title-1">
                   {coin}
                 </span>
+                <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot">
+                  {leverageType === 'cross'
+                    ? t('page.perps.cross')
+                    : t('page.perps.isolated')}
+                </span>
               </div>
               <div className="flex items-center gap-4">
                 <div
@@ -235,10 +246,11 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
                 >
                   {direction} {leverage}x
                 </div>
-                <DistanceToLiquidationTag
-                  liquidationPrice={liquidationPx}
-                  markPrice={markPrice}
-                  onPress={handlePressRiskTag}
+                <DistanceRiskTag
+                  isLong={direction === 'Long'}
+                  percent={formatPerpsPct(
+                    calculateDistanceToLiquidation(liquidationPx, markPrice)
+                  )}
                 />
               </div>
             </div>

@@ -103,6 +103,7 @@ export const formatMarkData = (
           logoUrl:
             topAsset.full_logo_url ||
             `https://app.hyperliquid.xyz/coins/${topAsset.name}.svg`,
+          onlyIsolated: hlDataAsset.onlyIsolated,
         };
         return item;
       })

@@ -82,14 +82,33 @@ const timeToDate = (time: Time): Date => {
   return new Date(year, (month || 1) - 1, day || 1);
 };
 
-const formatLocalDateTime = (time: Time): string => {
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+export const formatLocalDateTime = (time: Time, noTime = false): string => {
   const date = timeToDate(time);
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1);
+  const dow = DAYS[date.getDay()];
   const day = padZero(date.getDate());
+  const mon = MONTHS[date.getMonth()];
+  const year = String(date.getFullYear()).slice(-2);
   const hours = padZero(date.getHours());
   const minutes = padZero(date.getMinutes());
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
+  return noTime
+    ? `${dow} ${day} ${mon} '${year}`
+    : `${dow} ${day} ${mon} '${year} ${hours}:${minutes}`;
 };
 
 const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
@@ -116,20 +135,11 @@ const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
   }
 };
 
-const formatLocalDate = (time: Time): string => {
-  const date = timeToDate(time);
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1);
-  const day = padZero(date.getDate());
-  return `${year}-${month}-${day}`;
-};
-
-const createTimeLocalization = (isWeekly = false) => {
+const createTimeLocalization = (noTime = false) => {
   const formatTick = (time: Time, tickMarkType: TickMarkType): string =>
     formatTickLabel(timeToDate(time), tickMarkType);
 
-  const formatHover = (time: Time): string =>
-    isWeekly ? formatLocalDate(time) : formatLocalDateTime(time);
+  const formatHover = (time: Time): string => formatLocalDateTime(time, noTime);
 
   return {
     locale: 'en-US',
@@ -359,6 +369,10 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     null
   );
   const currentWeekVolumeRef = useRef<HistogramData<UTCTimestamp> | null>(null);
+  // Track last daily volume to avoid re-accumulating on same-day WS updates
+  const lastDailyVolumeRef = useRef<{ time: number; value: number } | null>(
+    null
+  );
   const { isDarkTheme } = useThemeMode();
   const lineTagInfo = useMemo(() => {
     const tpPrice = openOrders.find(
@@ -723,6 +737,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           currentWeekCandleRef.current = { ...candles[candles.length - 1] };
           currentWeekVolumeRef.current =
             volumes.length > 0 ? { ...volumes[volumes.length - 1] } : null;
+          lastDailyVolumeRef.current = null;
         }
 
         setPendingData({
@@ -831,25 +846,33 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
           // Aggregate volume
           if (dailyVolume) {
+            const dailyTime = daily.time as number;
             const currentVolume = currentWeekVolumeRef.current;
+            const lastDaily = lastDailyVolumeRef.current;
+            const volumeColor =
+              currentWeekCandleRef.current!.close >=
+              currentWeekCandleRef.current!.open
+                ? '#0ECB8180'
+                : '#F6465D80';
+
             if (currentVolume && currentVolume.time === mondayTs) {
-              currentVolume.value += dailyVolume.value;
-              currentVolume.color =
-                currentWeekCandleRef.current!.close >=
-                currentWeekCandleRef.current!.open
-                  ? '#0ECB8180'
-                  : '#F6465D80';
+              // Same week: subtract previous value for this day, add new value
+              const prevDayValue =
+                lastDaily && lastDaily.time === dailyTime ? lastDaily.value : 0;
+              currentVolume.value =
+                currentVolume.value - prevDayValue + dailyVolume.value;
+              currentVolume.color = volumeColor;
             } else {
               currentWeekVolumeRef.current = {
                 time: mondayTs,
                 value: dailyVolume.value,
-                color:
-                  currentWeekCandleRef.current!.close >=
-                  currentWeekCandleRef.current!.open
-                    ? '#0ECB8180'
-                    : '#F6465D80',
+                color: volumeColor,
               };
             }
+            lastDailyVolumeRef.current = {
+              time: dailyTime,
+              value: dailyVolume.value,
+            };
             volumeSeriesRef.current?.update(currentWeekVolumeRef.current!);
           }
 
