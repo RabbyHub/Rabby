@@ -1243,10 +1243,6 @@
     },
     "newAddress": {
       "addContacts": {
-        "addressEns": "Adresse / ENS",
-        "cameraTitle": "Veuillez scanner le QR code avec votre appareil photo",
-        "content": "Ajouter des contacts",
-        "description": "Vous pouvez également l'utiliser comme adresse observée uniquement",
         "notAValidAddress": "N'est pas une adresse valide",
         "required": "Veuillez saisir l'adresse",
         "scanViaMobileWallet": "Scanner via un wallet mobile",

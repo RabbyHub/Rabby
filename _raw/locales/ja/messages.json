@@ -1565,8 +1565,6 @@
       "importPrivateKey": "プライベートキーをインポート",
       "importMyMetamaskAccount": "私のMetaMaskアカウントをインポート",
       "addContacts": {
-        "content": "連絡先を追加",
-        "description": "ウォッチオンリーアドレスとしても使用できます",
         "required": "アドレスを入力してください",
         "notAValidAddress": "有効なアドレスではありません",
         "scanViaMobileWallet": "モバイルウォレットを使用してスキャン",

@@ -3876,6 +3876,24 @@ export class WalletController extends BaseController {
     return result;
   };
 
+  deriveNextAccountFromMnemonicByPublicKey = async (publicKey: string) => {
+    const keyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
+    if (!keyring) {
+      throw new Error(t('background.error.notFoundKeyringByAddress'));
+    }
+
+    const accounts = await keyringService.addNewAccount(keyring);
+    const nextAddress = accounts[accounts.length - 1];
+    this._setCurrentAccountFromKeyring(keyring, -1);
+    HDKeyRingLastAddAddrTimeService.addUnixRecord(publicKey);
+
+    return {
+      address: nextAddress,
+      alias: this.getAlianName(nextAddress) || '',
+      publicKey,
+    };
+  };
+
   getAccountsCount = async () => {
     const accounts = await keyringService.getAccounts();
     return accounts.filter((x) => x).length;

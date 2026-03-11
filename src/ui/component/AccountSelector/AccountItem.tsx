@@ -47,6 +47,7 @@ export interface AddressItemProps {
   allowEditAlias?: boolean;
   hideBalance?: boolean;
   getContainer?: DrawerProps['getContainer'];
+  showWatchWhitelistIcon?: boolean;
 }
 
 const HoverShowEditPenWrapper = styled.div<{ hideBalance?: boolean }>`
@@ -86,6 +87,7 @@ export const AccountItem = memo(
     extra,
     rightIcon,
     showWhitelistIcon,
+    showWatchWhitelistIcon,
     disabled = false,
     allowEditAlias = false,
     hideBalance,
@@ -145,6 +147,7 @@ export const AccountItem = memo(
       brandName,
       type,
       forceLight: false,
+      showWatchWhitelistIcon,
     });
     const cexLogo = useMemo(() => {
       if (type === KEYRING_CLASS.WATCH) {

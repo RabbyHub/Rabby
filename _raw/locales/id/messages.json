@@ -1650,7 +1650,6 @@
     },
     "newAddress": {
       "addContacts": {
-        "content": "Tambahkan Kontak",
         "walletConnectVPN": "WalletConnect akan tidak stabil jika Anda menggunakan VPN.",
         "scanViaPcCamera": "Pindai melalui kamera PC",
         "cameraTitle": "Silakan pindai kode QR dengan kamera Anda",
@@ -1659,7 +1658,6 @@
         "scanQRCode": "Pindai kode QR dengan dompet yang kompatibel dengan WalletConnect",
         "notAValidAddress": "Alamat tidak valid",
         "walletConnect": "Wallet connect",
-        "description": "Anda juga dapat menggunakannya sebagai alamat yang hanya dapat dilihat",
         "required": "Silakan masukkan alamat"
       },
       "unableToImport": {

@@ -1565,8 +1565,6 @@
       "importPrivateKey": "Private Key importieren",
       "importMyMetamaskAccount": "MetaMask-Account importieren",
       "addContacts": {
-        "content": "Kontakte hinzufügen",
-        "description": "Sie können auch eine Beobachtungs-Adresse verwenden",
         "required": "Bitte geben Sie eine Adresse ein",
         "notAValidAddress": "Keine gültige Adresse",
         "scanViaMobileWallet": "Über mobile Wallet scannen",

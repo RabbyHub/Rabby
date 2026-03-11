@@ -224,6 +224,7 @@ export interface StateProviderProps {
   brand?: string;
   isLazyImport?: boolean;
   children?: React.ReactNode;
+  onDone?(): void;
 }
 
 export const HDManagerStateContext = React.createContext<

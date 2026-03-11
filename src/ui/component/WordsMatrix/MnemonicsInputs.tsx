@@ -105,6 +105,72 @@ const MatrixWrapper = styled.div.withConfig<{
     }
   }
 
+  &.compact-import {
+    background-color: transparent;
+    gap: 9px;
+    border: 0;
+    border-radius: 0;
+
+    .matrix-word-item {
+      width: calc((100% - 18px) / 3);
+      border-right: 0;
+      border-bottom: 0;
+
+      .mnemonics-input {
+        padding: 0 12px 0 24px;
+        border-radius: 8px;
+        border: 0.5px solid var(--r-neutral-line, #e0e5ec);
+        background: var(--r-neutral-card-1, #fff);
+        text-align: left;
+        line-height: 51px;
+        font-size: 15px;
+        font-weight: 400;
+        color: var(--r-neutral-title-1, #192945);
+
+        &:hover {
+          border-color: var(--r-neutral-line, #e0e5ec);
+        }
+
+        &:focus,
+        &.ant-input-focused {
+          border-color: var(--r-blue-default, #4c65ff);
+          background: var(--r-neutral-card-1, #fff);
+          box-shadow: none;
+        }
+      }
+
+      ${styid(NumberFlag)} {
+        top: 7px;
+        left: 7px;
+        height: 16px;
+        color: var(--r-neutral-foot, #6a7587);
+        font-size: 13px;
+        line-height: 16px;
+        font-weight: 500;
+      }
+    }
+
+    .matrix-word-item.compact-focused {
+      ${styid(NumberFlag)} {
+        color: var(--r-blue-default, #4c65ff);
+      }
+    }
+
+    .matrix-word-item.invalid {
+      .mnemonics-input {
+        border-color: var(--r-red-default, #e34935);
+      }
+
+      ${styid(NumberFlag)} {
+        color: var(--r-red-default, #e34935);
+      }
+    }
+
+    .matrix-word-item.is-mnemonics-input ${styid(NumberFlag)} {
+      z-index: 2;
+    }
+  }
+
   .matrix-word-item {
     box-sizing: border-box;
     height: ${ITEM_H}px;
@@ -242,6 +308,12 @@ const HeadToolbar = styled.div`
   line-height: 14px;
 
   color: var(--r-neutral-body);
+
+  &.compact-head-toolbar {
+    min-height: 14px;
+    font-size: 12px;
+    line-height: 14px;
+  }
 `;
 
 const DFLT_FOCUSING = { index: -1, visible: false };
@@ -265,6 +337,7 @@ const SLIP39_MNEMONICS_COUNTS: { passphrase: boolean }[] = [
 
 function MnemonicsInputs({
   newUserImport,
+  compact,
   className,
   rowCount = ROW_COUNT,
   value = '',
@@ -280,6 +353,7 @@ function MnemonicsInputs({
   ...props
 }: React.PropsWithChildren<{
   newUserImport?: boolean;
+  compact?: boolean;
   className?: string;
   rowCount?: number;
   value?: string;
@@ -451,7 +525,12 @@ function MnemonicsInputs({
 
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
-      <HeadToolbar className="mb-[12px] text-r-neutral-body min-h-[18px]">
+      <HeadToolbar
+        className={clsx(
+          'mb-[12px] text-r-neutral-body min-h-[18px]',
+          compact && 'compact-head-toolbar'
+        )}
+      >
         <Dropdown
           trigger={['click']}
           visible={dropdownVisible}
@@ -625,9 +704,12 @@ function MnemonicsInputs({
               )}
             </span>
 
-            {newUserImport ? (
+            {newUserImport || compact ? (
               <RcIconArrowCC
-                className="ml-[2px] text-r-neutral-body w-16 h-16"
+                className={clsx(
+                  'ml-[2px] text-r-neutral-body',
+                  compact ? 'w-[14px] h-[14px]' : 'w-16 h-16'
+                )}
                 viewBox="0 0 16 16"
               />
             ) : (
@@ -656,10 +738,13 @@ function MnemonicsInputs({
       </HeadToolbar>
       <MatrixWrapper
         className={clsx(
-          'rounded-[6px] text-center',
-          !newUserImport && 'border border-rabby-neutral-line border-solid',
+          compact ? 'rounded-none text-center' : 'rounded-[6px] text-center',
+          !newUserImport &&
+            !compact &&
+            'border border-rabby-neutral-line border-solid',
           isSlip39 && 'hidden',
           newUserImport && 'new-user-import',
+          compact && 'compact-import',
           className
         )}
         rowCount={rowCount}
@@ -714,9 +799,13 @@ function MnemonicsInputs({
             >
               <div
                 key={`word-item-${idx}`}
-                className={clsx('matrix-word-item is-mnemonics-input', {
-                  invalid: invalidWords.includes(idx),
-                })}
+                className={clsx(
+                  'matrix-word-item is-mnemonics-input',
+                  compact && isCurrentFocusing && 'compact-focused',
+                  {
+                    invalid: invalidWords.includes(idx),
+                  }
+                )}
                 onClick={() => {
                   setFocusing({ index: idx, visible: isCurrentVisible });
                   setMnemonics(word);
@@ -742,11 +831,17 @@ function MnemonicsInputs({
                     key={`word-input-${ver}-${word}-${idx}`}
                     className={clsx(
                       'mnemonics-input  pr-10',
-                      newUserImport ? 'pl-[10px]' : 'pl-[46px]',
+                      newUserImport
+                        ? 'pl-[10px]'
+                        : compact
+                        ? 'pl-[24px] pr-[12px]'
+                        : 'pl-[46px]',
                       isCurrentFocusing && 'ant-input-focused',
                       {
                         'opacity-50':
-                          focusing.index !== -1 && focusing.index !== idx,
+                          !compact &&
+                          focusing.index !== -1 &&
+                          focusing.index !== idx,
                       }
                     )}
                     type={isCurrentVisible ? 'text' : 'password'}
@@ -780,7 +875,9 @@ function MnemonicsInputs({
                 <NumberFlag
                   className={clsx({
                     'opacity-50':
-                      focusing.index !== -1 && focusing.index !== idx,
+                      !compact &&
+                      focusing.index !== -1 &&
+                      focusing.index !== idx,
                   })}
                 >
                   {number}.

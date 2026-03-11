@@ -70,6 +70,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
   keyring,
   keyringId,
   brand,
+  onDone,
 }) => {
   const { search } = useLocation();
   const [isNewUserImport, noRedirect, isLazyImport] = React.useMemo(() => {
@@ -158,6 +159,10 @@ export const HDManager: React.FC<StateProviderProps> = ({
   }, []);
 
   const handleCloseWin = useMemoizedFn(async () => {
+    if (onDone) {
+      onDone();
+      return;
+    }
     if (isNewUserImport && !noRedirect) {
       let finalBrand = brand;
       const hardwareKeyring = Object.values(HARDWARE_KEYRING_TYPES).find(
