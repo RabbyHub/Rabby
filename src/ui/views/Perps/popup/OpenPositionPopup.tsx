@@ -231,8 +231,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   }, [visible]);
 
   React.useEffect(() => {
-    setDirection(_direction);
-  }, [_direction]);
+    if (visible) {
+      setDirection(_direction);
+    }
+  }, [visible, _direction]);
 
   const handleReview = () => {
     setIsReviewMode(true);
@@ -379,15 +381,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             <span
               className="ml-8 text-12 text-r-blue-default bg-r-blue-light1 px-6 py-2 rounded-[4px] cursor-pointer flex items-center gap-2"
               onClick={() => {
-                if (hasPosition) {
-                  message.warning({
-                    content: t(
-                      'page.perps.cannotChangeMarginModeWithOpenPositions'
-                    ),
-                    duration: 2,
-                  });
-                  return;
-                }
                 setMarginModeModalVisible(true);
               }}
             >
@@ -454,6 +447,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               direction={direction}
               size={Number(tradeSize)}
               margin={Number(margin)}
+              leverage={leverage}
               liqPrice={Number(estimatedLiquidationPrice)}
               pxDecimals={pxDecimals}
               szDecimals={szDecimals}
@@ -486,6 +480,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               direction={direction}
               size={Number(tradeSize)}
               margin={Number(margin)}
+              leverage={leverage}
               liqPrice={Number(estimatedLiquidationPrice)}
               pxDecimals={pxDecimals}
               szDecimals={szDecimals}

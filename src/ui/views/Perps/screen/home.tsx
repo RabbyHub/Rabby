@@ -185,11 +185,7 @@ export const Perps: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (isLogin) {
-      // dispatch.perps.fetchClearinghouseState();
-      dispatch.perps.fetchPositionAndOpenOrders();
-      // dispatch.perps.fetchUserHistoricalOrders();
-    }
+    dispatch.perps.initFavoritedCoins(undefined);
   }, []);
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
@@ -220,29 +216,18 @@ export const Perps: React.FC = () => {
     availableBalance,
   ]);
 
-  const [favoritedCoins, setFavoritedCoins] = useState<string[]>([]);
+  const favoritedCoins = useRabbySelector((s) => s.perps.favoritedCoins);
 
-  useEffect(() => {
-    wallet.getPerpsFavoritedCoins().then(setFavoritedCoins);
-  }, [wallet]);
-
-  const toggleFavorite = useMemoizedFn(async (coin: string) => {
-    const upperCoin = coin.toUpperCase();
-    const newFavorites = favoritedCoins.includes(upperCoin)
-      ? favoritedCoins.filter((c) => c !== upperCoin)
-      : [...favoritedCoins, upperCoin];
-    setFavoritedCoins(newFavorites);
-    await wallet.setPerpsFavoritedCoins(newFavorites);
+  const toggleFavorite = useMemoizedFn((coin: string) => {
+    dispatch.perps.toggleFavoriteCoin(coin);
   });
 
   const marketSectionList = useMemo(() => {
     const sorted = sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
     const favorites = sorted.filter((item) =>
-      favoritedCoins.includes(item.name.toUpperCase())
+      favoritedCoins.includes(item.name)
     );
-    const others = sorted.filter(
-      (item) => !favoritedCoins.includes(item.name.toUpperCase())
-    );
+    const others = sorted.filter((item) => !favoritedCoins.includes(item.name));
     return [...favorites, ...others];
   }, [marketData, favoritedCoins]);
 
@@ -652,7 +637,7 @@ export const Perps: React.FC = () => {
                     );
                   }}
                   hasPosition={positionCoinSet.has(item.name)}
-                  isFavorited={favoritedCoins.includes(item.name.toUpperCase())}
+                  isFavorited={favoritedCoins.includes(item.name)}
                   onToggleFavorite={toggleFavorite}
                 />
               ))}

@@ -1067,6 +1067,7 @@
           "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
           "fundingTips": "Net funding payments since the position was opened. If negative, it means funding gains.",
           "fundingTipsV2": "Net funding since the position was opened. a red (negative) funding value indicates funding paid, while a green (positive) value indicates funding received.",
+          "fundingTipsBold": "This shows your total funding settled since the position was opened. <bold>Green (positive)</bold> values mean you’ve earned from other traders, while <bold>Red (negative)</bold> values are funding costs you've paid to them.",
           "closedPnlTooltip": "Closed PNL includes fees and rebates",
           "direction": "Direction",
           "time": "Time",
@@ -1272,7 +1273,9 @@
         "crossDescription": "All cross positions share the same cross margin as collateral. In the event of liquidation, your margin balance and any remaining open positions under cross in this mode may be forfeited.",
         "isolated": "Isolated",
         "isolatedDescription": "Manage your risk on individual positions by allocating the amount of margin allocated to each. If the margin ratio of an isolated position reaches 100%, the position will be liquidated. Margin can be added or removed to individual positions in this mode.",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "cannotChange": "Cannot Change Margin Mode",
+        "onlyIsolatedSupported": "This asset only supports Isolated margin mode"
       },
       "leverage": {
         "title": "Adjust Leverage",

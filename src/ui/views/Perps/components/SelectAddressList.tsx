@@ -5,7 +5,7 @@ import { AddressViewer, Item } from '@/ui/component';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import {
   formatUsdValue,
   isSameAddress,
@@ -17,7 +17,7 @@ import { sortAccountsByBalance } from '@/ui/utils/account';
 import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { useRequest } from 'ahooks';
 import clsx from 'clsx';
-import { keyBy, range, sortBy, uniqBy } from 'lodash';
+import { range, sortBy, uniqBy } from 'lodash';
 import React, {
   ComponentType,
   useCallback,
@@ -28,8 +28,8 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso, TopItemListProps } from 'react-virtuoso';
 import { ReactComponent as RcIconLoginLoading } from 'ui/assets/perps/IconLoginLoading.svg';
-import { getPerpsSDK } from '../sdkManager';
 import { Skeleton } from 'antd';
+import { getCustomClearinghouseState } from '@/ui/views/DesktopPerps/utils';
 
 export const SelectAddressList = ({
   currentAccount,
@@ -66,78 +66,75 @@ export const SelectAddressList = ({
     [accounts]
   );
 
-  const { data: _data, runAsync: runFetchPerpsInfo, loading } = useRequest(
+  const dispatch = useRabbyDispatch();
+  const clearinghouseStateMap = useRabbySelector(
+    (s) => s.perps.clearinghouseStateMap
+  );
+
+  const CLEARINGHOUSE_STATE_EXPIRE_TIME = 1000 * 60 * 10;
+
+  const { loading, runAsync: runFetchPerpsInfo } = useRequest(
     async () => {
-      const sdk = getPerpsSDK();
       const list = uniqBy(accountsList, (i) => i.address.toLowerCase());
+      const currentTs = Date.now();
 
-      const res = await Promise.all(
-        list.slice(0, 10).map(async (item) => {
-          try {
-            const info = await sdk.info.getClearingHouseState(item.address);
-            return {
-              address: item.address,
-              info,
-            };
-          } catch (e) {
-            return {
-              address: item.address,
-              info: null,
-            };
-          }
-        })
-      );
-
-      const resDict = keyBy(res, (item) => item.address.toLowerCase());
-
-      const listWithInfo = accountsList.map((account) => {
-        const item = resDict[account.address.toLowerCase()];
-        return {
-          info: item?.info || undefined,
-          account,
-        };
+      const accountsToFetch = list.slice(0, 10).filter((item) => {
+        const state = clearinghouseStateMap[item.address.toLowerCase()];
+        return (
+          !state ||
+          (state?.time &&
+            currentTs - state.time > CLEARINGHOUSE_STATE_EXPIRE_TIME)
+        );
       });
 
-      const sorted = sortBy(
-        listWithInfo,
-        (item) => -(item.info?.assetPositions?.length || 0),
-        (item) => -Number(item.info?.withdrawable || 0)
-      );
+      if (accountsToFetch.length === 0) {
+        return;
+      }
 
-      return {
-        groupCounts: [sorted.length],
-        groups: ['all'],
-        list: sorted,
-        dict: { active: sorted, inactive: [] },
-      };
+      const newMap: Record<string, ClearinghouseState | null> = {};
+      const promises = accountsToFetch.map(async (item) => {
+        try {
+          const res = await getCustomClearinghouseState(item.address);
+          newMap[item.address.toLowerCase()] = res;
+        } catch (error) {
+          console.error(
+            `Failed to fetch clearinghouse state for ${item.address}:`,
+            error
+          );
+        }
+      });
 
-      // return dict;
+      await Promise.all(promises);
+      dispatch.perps.setClearinghouseStateMap(newMap);
     },
     {
       manual: true,
       cacheKey: `PerpsAccountSelectorPopup-fetchPerpsInfo-${accountsList
         .map((i) => i.address)
         .join('-')}`,
-      // cacheTime: 10 * 1000,
       staleTime: 10 * 1000,
     }
   );
 
   const data = useMemo(() => {
-    if (!_data) {
-      const list = accountsList.map((item) => ({
-        account: item,
-        info: undefined,
-      }));
-      return {
-        groupCounts: [0, list.length],
-        groups: ['active', 'inactive'],
-        list,
-        dict: { inactive: list, active: [] },
-      };
-    }
-    return _data;
-  }, [_data, accountsList]);
+    const listWithInfo = accountsList.map((account) => ({
+      account,
+      info: clearinghouseStateMap[account.address.toLowerCase()] || undefined,
+    }));
+
+    const sorted = sortBy(
+      listWithInfo,
+      (item) => -(item.info?.assetPositions?.length || 0),
+      (item) => -Number(item.info?.withdrawable || 0)
+    );
+
+    return {
+      groupCounts: [sorted.length],
+      groups: ['all'],
+      list: sorted,
+      dict: { active: sorted, inactive: [] },
+    };
+  }, [accountsList, clearinghouseStateMap]);
 
   const handleChange = async (account: Account) => {
     if (loadingAddress) {
@@ -211,7 +208,7 @@ export const SelectAddressList = ({
   return (
     <>
       <div className="w-full flex flex-1 flex-col px-20 overflow-auto">
-        {loading && !_data ? (
+        {loading && !data.list.length ? (
           <div className="flex flex-col gap-[8px]">
             {range(0, 5).map((i) => {
               return (

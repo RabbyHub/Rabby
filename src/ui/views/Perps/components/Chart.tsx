@@ -32,6 +32,7 @@ const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
 };
 import { splitNumberByStep } from '@/ui/utils';
+import { formatLocalDateTime } from '../../DesktopPerps/components/ChartArea/components/ChartWrapper';
 
 export type ChartProps = {
   coin: string;
@@ -101,16 +102,6 @@ const timeToDate = (time: Time): Date => {
   return new Date(year, (month || 1) - 1, day || 1);
 };
 
-const formatLocalDateTime = (time: Time): string => {
-  const date = timeToDate(time);
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1);
-  const day = padZero(date.getDate());
-  const hours = padZero(date.getHours());
-  const minutes = padZero(date.getMinutes());
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
-};
-
 const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
   const year = date.getFullYear();
   const month = padZero(date.getMonth() + 1);
@@ -135,20 +126,11 @@ const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
   }
 };
 
-const formatLocalDate = (time: Time): string => {
-  const date = timeToDate(time);
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1);
-  const day = padZero(date.getDate());
-  return `${year}-${month}-${day}`;
-};
-
-const createTimeLocalization = (isWeekly = false) => {
+const createTimeLocalization = (noTime = false) => {
   const formatTick = (time: Time, tickMarkType: TickMarkType): string =>
     formatTickLabel(timeToDate(time), tickMarkType);
 
-  const formatHover = (time: Time): string =>
-    isWeekly ? formatLocalDate(time) : formatLocalDateTime(time);
+  const formatHover = (time: Time): string => formatLocalDateTime(time, noTime);
 
   return {
     locale: 'en-US',

@@ -24,6 +24,7 @@ interface EditTpSlTagProps {
   direction: 'Long' | 'Short';
   size: number;
   margin: number;
+  leverage: number;
   liqPrice: number;
   pxDecimals: number;
   szDecimals: number;
@@ -50,6 +51,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   direction,
   size,
   margin,
+  leverage,
   liqPrice,
   pxDecimals,
   szDecimals,
@@ -98,10 +100,8 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
     }
     const costPrice =
       type === 'openPosition' ? markPrice : entryPrice || markPrice;
-    const pnlUsdValue =
-      direction === 'Long'
-        ? (Number(autoClosePrice) - costPrice) * size
-        : (costPrice - Number(autoClosePrice)) * size;
+    const withSize = direction === 'Long' ? 1 : -1;
+    const pnlUsdValue = (Number(autoClosePrice) - costPrice) * size * withSize;
     return pnlUsdValue;
   }, [autoClosePrice, markPrice, size, type, direction, entryPrice]);
 
@@ -110,8 +110,12 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   }, [calculatedPnl]);
 
   const gainPct = useMemo(() => {
-    return Number(calculatedPnl) / margin;
-  }, [calculatedPnl, margin]);
+    const costPrice =
+      type === 'openPosition' ? markPrice : entryPrice || markPrice;
+    const costValue = (size * costPrice) / leverage;
+    if (!costValue) return 0;
+    return Number(calculatedPnl) / costValue;
+  }, [calculatedPnl, size, entryPrice, markPrice, leverage, type]);
 
   // 验证价格输入
   const priceValidation = React.useMemo(() => {
@@ -195,12 +199,11 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   const handleQuickOptionPress = useMemoizedFn((pct: number) => {
     setActiveOption(pct);
     const pctValue = pct / 100;
-    const costValue = margin;
-    const pnlUsdValue = costValue * pctValue;
-    const priceDifference = Number((pnlUsdValue / size).toFixed(pxDecimals));
-
     const costPrice =
       type === 'openPosition' ? markPrice : entryPrice || markPrice;
+    const costValue = (size * costPrice) / leverage;
+    const pnlUsdValue = costValue * pctValue;
+    const priceDifference = pnlUsdValue / size;
 
     if (actionType === 'tp') {
       const newPrice =

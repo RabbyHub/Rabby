@@ -21,7 +21,7 @@ import { EditMarginModal } from '../../../modal/EditMarginModal';
 import { EditTpSlModal } from '../../../modal/EditTpSLModal';
 import { useMemoizedFn } from 'ahooks';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { usePerpsPosition } from '@/ui/views/Perps/hooks/usePerpsPosition';
 import { noop, set } from 'lodash';
 import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBorderedButton';
@@ -38,7 +38,6 @@ import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import {
-  formatAllDexsClearinghouseState,
   getStatsReportSide,
   handleDisplayFundingPayments,
   isScreenSmall,
@@ -491,7 +490,14 @@ export const PositionsInfo: React.FC = () => {
       {
         title: (
           <DashedUnderlineText
-            tooltipText={t('page.perpsPro.userInfo.tab.fundingTipsV2')}
+            tooltipText={() => (
+              <Trans
+                i18nKey={'page.perpsPro.userInfo.tab.fundingTipsBold'}
+                components={{
+                  bold: <span className="font-bold" />,
+                }}
+              />
+            )}
           >
             {t('page.perpsPro.userInfo.tab.funding')}
           </DashedUnderlineText>

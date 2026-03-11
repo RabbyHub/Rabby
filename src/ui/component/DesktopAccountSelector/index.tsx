@@ -26,6 +26,7 @@ import { getCustomClearinghouseState } from '@/ui/views/DesktopPerps/utils';
 import BigNumber from 'bignumber.js';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
+import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 
 interface DesktopAccountSelectorProps {
   value?: Account | null;
@@ -140,7 +141,6 @@ const useAccountList = (options?: { scene?: Scene }) => {
   const clearinghouseStateMap = useRabbySelector(
     (s) => s.perps.clearinghouseStateMap
   );
-
   const filteredAccounts = useMemo(() => {
     return flatten(sortedAccountsList).filter((item) => {
       if (scene === 'perps') {
@@ -188,7 +188,6 @@ const useAccountList = (options?: { scene?: Scene }) => {
             );
           }
         });
-
         // Wait for all requests to complete, then batch update
         Promise.all(promises)
           .then(() => {

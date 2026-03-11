@@ -38,6 +38,7 @@ export interface EditMarginPopupProps {
   marginUsed: number;
   pnlPercent: number;
   pnl: number;
+  leverageType: 'cross' | 'isolated';
   handlePressRiskTag: () => void;
   onCancel: () => void;
   onConfirm: (action: 'add' | 'reduce', margin: number) => Promise<void>;
@@ -60,6 +61,7 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
   activeAssetCtx,
   currentAssetCtx,
   handlePressRiskTag,
+  leverageType,
 }) => {
   const pxDecimals = currentAssetCtx?.pxDecimals || 2;
   const leverageMax = currentAssetCtx?.maxLeverage || 5;
@@ -227,6 +229,11 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
                 <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={28} />
                 <span className="text-[16px] font-medium text-r-neutral-title-1">
                   {coin}
+                </span>
+                <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot">
+                  {leverageType === 'cross'
+                    ? t('page.perps.cross')
+                    : t('page.perps.isolated')}
                 </span>
               </div>
               <div className="flex items-center gap-4">
