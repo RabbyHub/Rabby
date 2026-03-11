@@ -49,7 +49,7 @@ import { ReactComponent as RcIconNotCollected } from '@/ui/assets/perps/IconUnCo
 import { AddPositionPopup } from '../popup/AddPositionPopup';
 import usePerpsState from '../hooks/usePerpsState';
 import { MiniTypedDataApproval } from '../../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
-import { formatPerpsCoin, getStatsReportSide } from '../../DesktopPerps/utils';
+import { formatPerpsCoin, getStatsReportSide, handleDisplayFundingPayments } from '../../DesktopPerps/utils';
 import stats from '@/stats';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
 import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
@@ -926,7 +926,7 @@ export const PerpsSingleCoin = () => {
 
               <div className="flex justify-between text-13 py-16">
                 <div className="text-r-neutral-body flex items-center gap-4 relative">
-                  {Number(positionData?.fundingPayments || 0) > 0
+                  {Number(positionData?.fundingPayments || 0) < 0
                     ? t('page.perps.fundingGains')
                     : t('page.perps.fundingPayments')}
                   <TooltipWithMagnetArrow
@@ -947,17 +947,14 @@ export const PerpsSingleCoin = () => {
                 <span
                   className={clsx(
                     'font-medium',
-                    Number(positionData?.fundingPayments || 0) > 0
+                    Number(positionData?.fundingPayments || 0) < 0
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
                   )}
                 >
-                  {Number(positionData?.fundingPayments || 0) === 0
-                    ? ''
-                    : Number(positionData?.fundingPayments || 0) > 0
-                    ? '+'
-                    : '-'}
-                  ${Math.abs(Number(positionData?.fundingPayments || 0))}
+                  {handleDisplayFundingPayments(
+                    positionData?.fundingPayments || '0'
+                  )}
                 </span>
               </div>
             </div>

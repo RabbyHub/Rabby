@@ -21,6 +21,8 @@ import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import usePerpsProState from './hooks/usePerpsProState';
 import { DesktopDappSelector } from '@/ui/component/DesktopDappSelector';
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import './resizable-panels.css';
 
 const Wrap = styled.div`
   width: 100%;
@@ -108,26 +110,36 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
               </div>
             </div>
             <TopPermissionTips />
-            <div className="flex flex-col flex-1 min-w-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
-              <div className="flex h-[680px] border-b border-solid border-rb-neutral-line">
-                <div className="flex-[4] flex min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
-                  <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
-                    <ChartArea />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <OrderBookTrades />
-                  </div>
-                </div>
-                <div className=" flex-1 flex-shrink-0 overflow-auto">
-                  <TradingPanel />
-                </div>
+            <div className="flex flex-1 min-w-0 min-h-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
+              {/* [chart + order book] + UserInfoHistory，can be resized vertically */}
+              <div className="flex-[4] flex flex-col min-w-0 min-h-0 border-r border-solid border-rb-neutral-line overflow-hidden">
+                <PanelGroup
+                  direction="vertical"
+                  autoSaveId="perps-layout-vertical"
+                >
+                  <Panel defaultSize={65} minSize={25} maxSize={80}>
+                    <div className="flex h-full">
+                      <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
+                        <ChartArea />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <OrderBookTrades />
+                      </div>
+                    </div>
+                  </Panel>
+                  <PanelResizeHandle className="h-[1px]" />
+                  <Panel minSize={20}>
+                    <UserInfoHistory />
+                  </Panel>
+                </PanelGroup>
               </div>
 
-              <div className="flex flex-1 min-h-[280px] max-h-[max(280px,calc(100vh-820px))]">
-                <div className="flex-[4] min-w-0 border-r border-solid border-rb-neutral-line overflow-hidden">
-                  <UserInfoHistory />
+              {/* TradingPanel + AccountInfo */}
+              <div className="flex-1 flex-shrink-0 flex flex-col min-h-0 overflow-hidden">
+                <div className="flex-1 overflow-auto border-b border-solid border-rb-neutral-line">
+                  <TradingPanel />
                 </div>
-                <div className="flex-1 flex-shrink-0 overflow-auto">
+                <div className="flex-shrink-0 overflow-auto min-h-[280px]">
                   <AccountInfo />
                 </div>
               </div>

@@ -1065,7 +1065,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
         </div>
       </div>
 
-      <div ref={chartContainerRef} className="flex-1" />
+      <div ref={chartContainerRef} className="flex-1 min-h-0" />
     </div>
   );
 };
