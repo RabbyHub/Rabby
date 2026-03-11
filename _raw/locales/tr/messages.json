@@ -1565,8 +1565,6 @@
       "importPrivateKey": "Özel Anahtarı İçe Aktar",
       "importMyMetamaskAccount": "Metamask Hesabımı İçe Aktar",
       "addContacts": {
-        "content": "Kişi Ekle",
-        "description": "Bunu sadece izlemeye alınmış adres olarak da kullanabilirsiniz",
         "required": "Lütfen adresi girin",
         "notAValidAddress": "Geçerli bir adres değil",
         "scanViaMobileWallet": "Mobil cüzdanla tara",

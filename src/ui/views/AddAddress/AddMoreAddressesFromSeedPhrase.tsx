@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import { useHistory, useLocation } from 'react-router-dom';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
@@ -317,9 +317,10 @@ const SettingsSheet = ({
         </div>
 
         <div className="absolute bottom-0 left-0 h-[80px] w-full border-t border-rabby-neutral-line bg-r-neutral-bg-2 px-[20px] py-[18px]">
-          <button
-            type="button"
-            className="h-[44px] w-full rounded-[6px] bg-r-blue-default text-[16px] leading-[19px] font-medium text-r-neutral-bg-1"
+          <Button
+            type="primary"
+            size="large"
+            className="h-[44px] w-full rounded-[6px] text-[16px] leading-[19px] font-medium"
             onClick={() =>
               onConfirm({
                 ...draft,
@@ -328,7 +329,7 @@ const SettingsSheet = ({
             }
           >
             {t('global.confirm')}
-          </button>
+          </Button>
         </div>
       </div>
     </Popup>
@@ -685,18 +686,15 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
         </div>
 
         <div className="bg-r-neutral-bg-2 pb-[20px] pt-[8px]">
-          <button
-            type="button"
+          <Button
+            type="primary"
+            size="large"
             disabled={!selectedAddresses.length || loading || submitting}
-            className={clsx(
-              'w-full h-[44px] rounded-[6px] bg-r-blue-default text-[16px] leading-[19px] font-medium text-r-neutral-bg-1',
-              (!selectedAddresses.length || loading || submitting) &&
-                'opacity-50'
-            )}
+            className="w-full h-[44px] rounded-[6px] text-[16px] leading-[19px] font-medium"
             onClick={handleConfirm}
           >
             {t('global.confirm')}
-          </button>
+          </Button>
         </div>
       </div>
 

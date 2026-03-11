@@ -12,18 +12,13 @@ import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import { useCreateAddressActions } from './useCreateAddress';
-import { PageHeader } from '@/ui/component';
+import { AddressViewer, Copy, PageHeader } from '@/ui/component';
 import {
   RcAddNewAddressChevronIcon,
   RcAddNewAddressCreateSeedIcon,
-  RcAddNewAddressSeedBaseIcon,
-  RcAddNewAddressSeedInnerIcon,
-  RcAddNewAddressSeedLineIcon,
   RcAddNewAddressAddBgIcon,
   RcAddNewAddressAddVerticalIcon,
   RcAddNewAddressAddHorizontalIcon,
-  RcAddNewAddressCopyFrontIcon,
-  RcAddNewAddressCopyBackIcon,
 } from '@/ui/assets/add-address';
 
 const MAX_VISIBLE_ADDRESSES = 3;
@@ -34,31 +29,12 @@ type SeedPhraseGroupView = TypeKeyringGroup & {
   sortedAccounts: DisplayedAccount[];
 };
 
-const SeedPhraseIcon = () => {
-  return (
-    <div className="relative w-[20px] h-[20px] shrink-0 overflow-hidden">
-      <RcAddNewAddressSeedBaseIcon className="absolute left-1/2 top-1/2 w-[16px] h-[16px] -translate-x-1/2 -translate-y-1/2" />
-      <RcAddNewAddressSeedInnerIcon className="absolute left-1/2 top-[9.5px] w-[6.22px] h-[7px] -translate-x-1/2 -translate-y-1/2" />
-      <RcAddNewAddressSeedLineIcon className="absolute left-1/2 top-[11.44px] w-[4.82px] h-[1.26px] -translate-x-1/2 -translate-y-1/2" />
-    </div>
-  );
-};
-
 const AddIcon = () => {
   return (
     <div className="relative w-[16px] h-[16px] shrink-0 rounded-[2.857px]">
       <RcAddNewAddressAddBgIcon className="absolute left-1/2 top-1/2 w-[12.8px] h-[12.8px] -translate-x-1/2 -translate-y-1/2" />
       <RcAddNewAddressAddVerticalIcon className="absolute left-1/2 top-1/2 w-[1px] h-[6.4px] -translate-x-1/2 -translate-y-1/2" />
       <RcAddNewAddressAddHorizontalIcon className="absolute left-1/2 top-1/2 w-[6.4px] h-[1px] -translate-x-1/2 -translate-y-1/2" />
-    </div>
-  );
-};
-
-const CopyIcon = ({ className }: { className?: string }) => {
-  return (
-    <div className={clsx('relative w-[14px] h-[14px] shrink-0', className)}>
-      <RcAddNewAddressCopyFrontIcon className="absolute left-[calc(50%+1.17px)] top-[calc(50%-1.17px)] w-[8.75px] h-[8.75px] -translate-x-1/2 -translate-y-1/2" />
-      <RcAddNewAddressCopyBackIcon className="absolute left-[calc(50%-1.17px)] top-[calc(50%+1.17px)] w-[8.75px] h-[8.75px] -translate-x-1/2 -translate-y-1/2" />
     </div>
   );
 };
@@ -84,14 +60,21 @@ const Chevron = ({
 const AccountRow = ({ account }: { account: DisplayedAccount }) => {
   return (
     <div className="flex items-center py-[8px]">
-      <SeedPhraseIcon />
-      <div className="ml-[8px] min-w-0 flex-1">
+      <div className="min-w-0 flex-1">
         <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1 truncate">
           {account.alianName || ellipsisAddress(account.address)}
         </div>
-        <div className="mt-[2px] flex items-center text-[12px] leading-[14px] text-r-neutral-body">
-          <span>{ellipsisAddress(account.address)}</span>
-          <CopyIcon className="ml-[4px]" />
+        <div className="mt-[2px] flex items-center text-r-neutral-body">
+          <AddressViewer
+            address={account.address}
+            showArrow={false}
+            className="subtitle text-[12px] leading-[14px]"
+          />
+          <Copy
+            variant="address"
+            data={account.address}
+            className="ml-[4px] h-[14px] w-[14px]"
+          />
         </div>
       </div>
       <div className="ml-[12px] text-[12px] leading-[14px] text-r-neutral-body text-right">

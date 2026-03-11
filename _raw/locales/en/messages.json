@@ -2748,8 +2748,8 @@
       "importMyMetamaskAccount": "Import My MetaMask Account",
       "watchAddress": "Watch Address",
       "addContacts": {
-        "content": "Add Contacts",
-        "description": "You can also use it as a watch-only address",
+        "content": "Add Watch-only Address",
+        "description": "Track any public wallet address",
         "required": "Please input address",
         "notAValidAddress": "Not a valid address",
         "scanViaMobileWallet": "Scan via mobile wallet",

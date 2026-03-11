@@ -9,7 +9,6 @@ import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import { EVENTS, KEYRING_CLASS } from 'consts';
-import WatchLogo from 'ui/assets/waitcup.svg';
 import IconWalletconnect from 'ui/assets/walletconnect.svg';
 import IconScan from 'ui/assets/scan.svg';
 import IconArrowDown from 'ui/assets/big-arrow-down.svg';
@@ -21,8 +20,8 @@ import IconBack from 'ui/assets/icon-back.svg';
 import { useRepeatImportConfirm } from 'ui/utils/useRepeatImportConfirm';
 import eventBus from '@/eventBus';
 import { safeJSONParse } from '@/utils';
-import { UI_TYPE } from '@/constant/ui';
-import qs from 'qs';
+import WatchLogo from 'ui/assets/watch-only-hero.svg';
+import { useCreateAddressActions } from './AddAddress/useCreateAddress';
 
 const ImportWatchAddress: React.FC<{
   isInModal?: boolean;
@@ -32,6 +31,7 @@ const ImportWatchAddress: React.FC<{
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
+  const { openSuccessPage } = useCreateAddressActions({ onNavigate });
   const [form] = Form.useForm();
   const [disableKeydown, setDisableKeydown] = useState(false);
   const [walletconnectModalVisible, setWalletconnectModalVisible] = useState(
@@ -44,7 +44,6 @@ const ImportWatchAddress: React.FC<{
     name: string;
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
-  const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const isWide = useMedia('(min-width: 401px)');
   const [isValidAddr, setIsValidAddr] = useState(false);
   const { show, contextHolder } = useRepeatImportConfirm();
@@ -52,29 +51,17 @@ const ImportWatchAddress: React.FC<{
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
       setDisableKeydown(false);
-      const successShowAccounts = accounts.map((item, index) => {
-        return { ...item, index: index + 1 };
-      });
-      if (UI_TYPE.isDesktop) {
-        onNavigate?.('success', {
-          accounts: successShowAccounts,
-          title: t('page.newAddress.importedSuccessfully'),
-          editing: true,
-          importedAccount: true,
-          importedLength: importedAccounts && importedAccounts?.length,
-        });
-      } else {
-        history.replace({
-          pathname: '/popup/import/success',
-          state: {
-            accounts: successShowAccounts,
-            title: t('page.newAddress.importedSuccessfully'),
-            editing: true,
-            importedAccount: true,
-            importedLength: importedAccounts && importedAccounts?.length,
-          },
-        });
-      }
+      openSuccessPage(
+        {
+          addresses: accounts.map((item) => ({
+            address: item.address,
+            alias: '',
+          })),
+          publicKey: '',
+          titleKey: 'page.newAddress.importedSuccessfully',
+        },
+        { replace: true }
+      );
     },
     onError(err) {
       if (err.message?.includes?.('DuplicateAccountError')) {
@@ -211,15 +198,8 @@ const ImportWatchAddress: React.FC<{
       history.replace('/');
     }
   };
-  const allAccounts = async () => {
-    const importedAccounts = await wallet.getTypedAccounts(KEYRING_CLASS.WATCH);
-    if (importedAccounts && importedAccounts[0]?.accounts) {
-      setImportedAccounts(importedAccounts[0]?.accounts);
-    }
-  };
   useEffect(() => {
     handleLoadCache();
-    allAccounts();
     return () => {
       wallet.clearPageStateCache();
     };

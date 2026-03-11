@@ -1650,8 +1650,6 @@
     },
     "newAddress": {
       "addContacts": {
-        "content": "연락처 추가",
-        "description": "당신은 이를 단순 조회 주소로 사용할 수도 있습니다.",
         "notAValidAddress": "유효하지 않은 주소입니다",
         "addressEns": "주소 / ENS",
         "walletConnect": "지갑 연결",

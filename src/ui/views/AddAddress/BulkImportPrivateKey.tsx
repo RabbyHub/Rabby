@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, message, Modal } from 'antd';
+import { Button, Form, Input, message, Modal } from 'antd';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import { useMemoizedFn } from 'ahooks';
@@ -821,7 +821,7 @@ const BulkImportPrivateKey: React.FC = () => {
       {modalContextHolder}
       <Page>
         <div className="mx-auto w-[600px] pt-[84px]">
-          <RcRabbyLogo className="h-[29px] w-[100px]" />
+          <RcRabbyLogo viewBox="0 0 152 44" className="h-[42px] w-[152px]" />
         </div>
         <Card>
           <div className="text-center">
@@ -1091,17 +1091,15 @@ const BulkImportPrivateKey: React.FC = () => {
               </Form>
             )}
 
-            <button
-              type="button"
+            <Button
+              type="primary"
+              size="large"
               disabled={disabledConfirm}
-              className={clsx(
-                'mt-[48px] h-[44px] w-full rounded-[6px] bg-r-blue-default text-[15px] leading-[18px] font-medium text-r-neutral-bg-1',
-                disabledConfirm && 'opacity-50'
-              )}
+              className="mt-[48px] h-[44px] w-full rounded-[6px] text-[15px] leading-[18px] font-medium"
               onClick={handleSubmit}
             >
               {t('global.confirm')}
-            </button>
+            </Button>
           </div>
         </Card>
       </Page>

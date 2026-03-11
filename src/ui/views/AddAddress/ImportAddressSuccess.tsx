@@ -1,43 +1,20 @@
 import React from 'react';
 import clsx from 'clsx';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import browser from 'webextension-polyfill';
-import { useWallet } from '@/ui/utils';
-import { copyAddress } from '@/ui/utils/clipboard';
-import { ellipsisAddress } from '@/ui/utils/address';
 import { getUiType } from '@/ui/utils';
 import { ReactComponent as RcRabbyLogo } from '@/ui/assets/logo-rabby-large.svg';
-import {
-  RcCreateAddressSuccessCopyIcon,
-  RcCreateAddressSuccessIcon,
-} from '@/ui/assets/add-address';
+import { RcCreateAddressSuccessIcon } from '@/ui/assets/add-address';
 import type { AddAddressNavigateHandler } from './shared';
-import type {
-  CreateAddressSuccessAddress,
-  CreateAddressSuccessState,
-} from './useCreateAddress';
-
-const normalizeSuccessAddresses = (
-  state: CreateAddressSuccessState
-): CreateAddressSuccessAddress[] => {
-  if (state.addresses?.length) {
-    return state.addresses;
-  }
-
-  if (state.address) {
-    return [
-      {
-        address: state.address,
-        alias: state.alias || '',
-      },
-    ];
-  }
-
-  return [];
-};
+import type { CreateAddressSuccessState } from './useCreateAddress';
+import {
+  normalizeSuccessAddresses,
+  SuccessAddressCards,
+  useEditableSuccessAddresses,
+} from './SuccessAddressCards';
 
 export const ImportAddressSuccess: React.FC<{
   isInModal?: boolean;
@@ -46,7 +23,6 @@ export const ImportAddressSuccess: React.FC<{
 }> = ({ isInModal, onNavigate, state: outerState }) => {
   const history = useHistory();
   const location = useLocation<CreateAddressSuccessState>();
-  const wallet = useWallet();
   const { t } = useTranslation();
 
   const state = (outerState ||
@@ -55,109 +31,14 @@ export const ImportAddressSuccess: React.FC<{
   const addresses = React.useMemo(() => normalizeSuccessAddresses(state), [
     state,
   ]);
-  const [items, setItems] = React.useState<CreateAddressSuccessAddress[]>(
-    addresses
-  );
   const [pendingAction, setPendingAction] = React.useState(false);
-  const inputRefs = React.useRef<Record<string, HTMLInputElement | null>>({});
-  const committedAliasRef = React.useRef<Record<string, string>>({});
-
-  React.useEffect(() => {
-    setItems(addresses);
-    committedAliasRef.current = Object.fromEntries(
-      addresses.map((item) => [item.address.toLowerCase(), item.alias || ''])
-    );
-  }, [addresses]);
-
-  React.useEffect(() => {
-    let mounted = true;
-
-    Promise.all(
-      addresses.map(async (item) => {
-        if (item.alias) {
-          return item;
-        }
-
-        const alias = await wallet.getAlianName(item.address);
-        return {
-          ...item,
-          alias: alias || '',
-        };
-      })
-    ).then((nextItems) => {
-      if (!mounted) {
-        return;
-      }
-
-      setItems(nextItems);
-      committedAliasRef.current = Object.fromEntries(
-        nextItems.map((item) => [item.address.toLowerCase(), item.alias || ''])
-      );
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, [addresses, wallet]);
-
-  React.useLayoutEffect(() => {
-    const firstAddress = addresses[0]?.address?.toLowerCase();
-    if (!firstAddress) {
-      return;
-    }
-
-    const input = inputRefs.current[firstAddress];
-    if (!input) {
-      return;
-    }
-
-    input.focus();
-    const length = input.value.length;
-    input.setSelectionRange(length, length);
-  }, [addresses]);
-
-  const commitAlias = useMemoizedFn(async (address: string) => {
-    const addressKey = address.toLowerCase();
-    const item = items.find(
-      (currentItem) => currentItem.address.toLowerCase() === addressKey
-    );
-    if (!item) {
-      return;
-    }
-
-    const committedAlias = committedAliasRef.current[addressKey] || '';
-    const nextAlias = item.alias.trim() || committedAlias;
-    if (!nextAlias || nextAlias === committedAlias) {
-      setItems((prev) =>
-        prev.map((currentItem) =>
-          currentItem.address.toLowerCase() === addressKey
-            ? {
-                ...currentItem,
-                alias: committedAlias,
-              }
-            : currentItem
-        )
-      );
-      return;
-    }
-
-    await wallet.updateAlianName(addressKey, nextAlias);
-    committedAliasRef.current[addressKey] = nextAlias;
-    setItems((prev) =>
-      prev.map((currentItem) =>
-        currentItem.address.toLowerCase() === addressKey
-          ? {
-              ...currentItem,
-              alias: nextAlias,
-            }
-          : currentItem
-      )
-    );
-  });
-
-  const commitAllAliases = useMemoizedFn(async () => {
-    await Promise.all(items.map((item) => commitAlias(item.address)));
-  });
+  const {
+    items,
+    setItems,
+    inputRefs,
+    commitAlias,
+    commitAllAliases,
+  } = useEditableSuccessAddresses(addresses);
 
   const handleOpenWallet = useMemoizedFn(async () => {
     try {
@@ -210,7 +91,7 @@ export const ImportAddressSuccess: React.FC<{
       )}
     >
       <div className="mx-auto w-[600px] pt-[114px]">
-        <RcRabbyLogo className="h-[44px] w-[152px]" />
+        <RcRabbyLogo viewBox="0 0 152 44" className="h-[42px] w-[152px]" />
       </div>
       <div className="mx-auto mt-[8px] h-[586px] w-[600px] rounded-[8px] bg-r-neutral-card-1 px-[120px] pb-[32px] pt-[32px]">
         <div className="flex flex-col items-center">
@@ -228,76 +109,31 @@ export const ImportAddressSuccess: React.FC<{
           </div>
         </div>
 
-        <div className="mt-[24px] flex flex-col gap-[12px]">
-          {items.map((item, index) => (
-            <div
-              key={item.address}
-              className="h-[64px] rounded-[8px] border border-rabby-neutral-line px-[7px] py-[5px]"
-            >
-              <div className="flex h-[30px] items-center rounded-[4px] bg-r-neutral-card-2 px-[8px]">
-                <input
-                  ref={(node) => {
-                    inputRefs.current[item.address.toLowerCase()] = node;
-                  }}
-                  value={item.alias}
-                  onChange={(e) => {
-                    const nextAlias = e.target.value;
-                    setItems((prev) =>
-                      prev.map((currentItem) =>
-                        currentItem.address === item.address
-                          ? {
-                              ...currentItem,
-                              alias: nextAlias,
-                            }
-                          : currentItem
-                      )
-                    );
-                  }}
-                  onBlur={() => {
-                    commitAlias(item.address);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      commitAlias(item.address);
-                      if (index < items.length - 1) {
-                        inputRefs.current[
-                          items[index + 1].address.toLowerCase()
-                        ]?.focus();
-                      }
-                    }
-                  }}
-                  className="w-full border-none bg-transparent text-[15px] font-medium leading-[18px] text-r-neutral-title-1 outline-none"
-                />
-              </div>
-
-              <div className="flex h-[28px] items-center px-[8px]">
-                <div className="text-[13px] leading-[16px] text-r-neutral-foot">
-                  {ellipsisAddress(item.address)}
-                </div>
-                <button
-                  type="button"
-                  className="ml-[4px] h-[14px] w-[14px] shrink-0"
-                  onClick={() => copyAddress(item.address)}
-                >
-                  <RcCreateAddressSuccessCopyIcon className="h-[14px] w-[14px]" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+        <SuccessAddressCards
+          items={items}
+          setItems={setItems}
+          inputRefs={inputRefs}
+          onCommitAlias={commitAlias}
+          listClassName="mt-[24px] flex flex-col gap-[12px]"
+          cardClassName="h-[64px] rounded-[8px] border border-rabby-neutral-line px-[7px] py-[5px]"
+          aliasWrapClassName="flex h-[30px] items-center rounded-[4px] bg-r-neutral-card-2 px-[8px]"
+          aliasInputClassName="w-full border-none bg-transparent text-[15px] font-medium leading-[18px] text-r-neutral-title-1 outline-none"
+          addressRowClassName="flex h-[28px] items-center px-[8px]"
+          addressTextClassName="text-[13px] leading-[16px] text-r-neutral-foot"
+          copyButtonClassName="ml-[4px] h-[14px] w-[14px] shrink-0"
+          copyIconClassName="h-[14px] w-[14px]"
+        />
 
         <div className="mt-[94px]">
-          <button
-            type="button"
+          <Button
+            type="primary"
+            size="large"
             disabled={pendingAction}
-            className={clsx(
-              'h-[44px] w-full rounded-[8px] bg-r-blue-default text-[15px] font-medium leading-[18px] text-r-neutral-bg-1',
-              pendingAction && 'opacity-50'
-            )}
+            className="h-[44px] w-full rounded-[8px] text-[15px] font-medium leading-[18px]"
             onClick={handleOpenWallet}
           >
             {t('page.newUserImport.successful.openWallet')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

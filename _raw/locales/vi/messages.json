@@ -1651,10 +1651,8 @@
       "addContacts": {
         "required": "Vui lòng nhập địa chỉ",
         "scanViaPcCamera": "Quét qua camera máy tính",
-        "content": "Thêm Danh Bạ",
         "scanViaMobileWallet": "Quét qua ví di động",
         "notAValidAddress": "Địa chỉ không hợp lệ",
-        "description": "Bạn cũng có thể sử dụng nó như một địa chỉ chỉ xem.",
         "walletConnectVPN": "WalletConnect sẽ không ổn định nếu bạn sử dụng VPN.",
         "walletConnect": "Kết nối ví",
         "addressEns": "Địa chỉ / ENS",

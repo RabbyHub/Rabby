@@ -4,23 +4,16 @@ export { ReactComponent as RcAddAddressOptionPrivateKeyIcon } from './option-pri
 export { ReactComponent as RcAddAddressOptionHardwareIcon } from './option-hardware-wallet.svg';
 export { ReactComponent as RcAddAddressOptionWatchIcon } from './option-watch-address.svg';
 
-export { ReactComponent as RcAddNewAddressBackIcon } from './new-address-back.svg';
 export { ReactComponent as RcAddNewAddressChevronIcon } from './new-address-chevron.svg';
 export { ReactComponent as RcAddNewAddressCreateSeedIcon } from './new-address-create-seed.svg';
-export { ReactComponent as RcAddNewAddressSeedBaseIcon } from './new-address-seed-base.svg';
-export { ReactComponent as RcAddNewAddressSeedInnerIcon } from './new-address-seed-inner.svg';
-export { ReactComponent as RcAddNewAddressSeedLineIcon } from './new-address-seed-line.svg';
 export { ReactComponent as RcAddNewAddressAddBgIcon } from './new-address-add-bg.svg';
 export { ReactComponent as RcAddNewAddressAddVerticalIcon } from './new-address-add-vertical.svg';
 export { ReactComponent as RcAddNewAddressAddHorizontalIcon } from './new-address-add-horizontal.svg';
-export { ReactComponent as RcAddNewAddressCopyFrontIcon } from './new-address-copy-front.svg';
-export { ReactComponent as RcAddNewAddressCopyBackIcon } from './new-address-copy-back.svg';
 
 export { ReactComponent as RcCreateAddressSuccessIcon } from './success-check.svg';
 export { ReactComponent as RcCreateAddressSuccessCopyIcon } from './success-copy.svg';
 export { ReactComponent as RcCreateAddressSuccessArrowIcon } from './success-right-arrow.svg';
 
-export { ReactComponent as RcAddMoreAddressesBackIcon } from './add-more-back.svg';
 export { ReactComponent as RcAddMoreAddressesSettingIcon } from './add-more-setting.svg';
 export { ReactComponent as RcAddMoreAddressesSettingCenterIcon } from './add-more-setting-center.svg';
 export { ReactComponent as RcAddMoreAddressesCheckedIcon } from './add-more-radio-checked.svg';

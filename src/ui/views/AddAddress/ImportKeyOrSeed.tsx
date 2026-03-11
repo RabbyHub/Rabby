@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, message } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import { useMemoizedFn } from 'ahooks';
@@ -485,17 +485,15 @@ const ImportKeyOrSeed: React.FC<{
           </Form>
 
           <div className="shrink-0 border-t border-rabby-neutral-line pb-[18px] pt-[18px]">
-            <button
-              type="button"
+            <Button
+              type="primary"
+              size="large"
               disabled={disabledButton}
-              className={clsx(
-                'h-[44px] w-full rounded-[6px] bg-r-blue-default text-[15px] leading-[18px] font-medium text-r-neutral-bg-1',
-                disabledButton && 'opacity-50'
-              )}
+              className="h-[44px] w-full rounded-[6px] text-[15px] leading-[18px] font-medium"
               onClick={handleSubmit}
             >
               {t('global.confirm')}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
