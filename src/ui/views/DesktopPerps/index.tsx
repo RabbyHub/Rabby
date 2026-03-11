@@ -97,7 +97,6 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
               <DesktopNav showRightItems={false} />
 
               <div className="flex items-center gap-[16px]">
-                <DesktopDappSelector type={'perps'} />
                 <DesktopAccountSelector
                   scene="perps"
                   value={currentPerpsAccount}
