@@ -164,6 +164,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
 
   const itemData = marketData[coin];
   const logoUrl = itemData?.logoUrl;
+  const pxDecimals = itemData?.pxDecimals;
   const isClose = (dir === 'Close Long' || dir === 'Close Short') && _closedPnl;
   const direction =
     dir === 'Close Long' || dir === 'Open Long' ? 'Long' : 'Short';
@@ -193,7 +194,10 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
           <div className="text-13 text-r-neutral-foot font-medium">
             {formatPerpsCoin(coin)}-USD
             {fill.px ? (
-              <span className="ml-4">@${splitNumberByStep(fill.px)}</span>
+              <span className="ml-4">
+                @$
+                {splitNumberByStep(new BigNumber(fill.px).toFixed(pxDecimals))}
+              </span>
             ) : null}
           </div>
         </div>

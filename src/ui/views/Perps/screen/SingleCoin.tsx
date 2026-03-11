@@ -71,6 +71,7 @@ export const PerpsSingleCoin = () => {
     marketData,
     clearinghouseState,
     openOrders,
+    favoritedCoins,
   } = useRabbySelector((state) => state.perps);
   const [coin, setCoin] = useState(_coin);
   const { accountValue, availableBalance } = usePerpsAccount();
@@ -93,37 +94,19 @@ export const PerpsSingleCoin = () => {
   const [marginMode, setMarginMode] = useState<'cross' | 'isolated'>(
     'isolated'
   );
-  const [isFavorited, setIsFavorited] = useState(false);
-  const [favoritedCoins, setFavoritedCoins] = useState<string[]>([]);
   const activeAssetCtxRef = useRef<(() => void) | null>(null);
 
-  useEffect(() => {
-    wallet.getPerpsFavoritedCoins().then((coins: string[]) => {
-      setFavoritedCoins(coins);
-      setIsFavorited(coins.includes(coin.toUpperCase()));
-    });
-  }, [wallet, coin]);
+  const isFavorited = useMemo(() => favoritedCoins.includes(coin), [
+    favoritedCoins,
+    coin,
+  ]);
 
-  const handleToggleFavorite = useMemoizedFn(async () => {
-    const upperCoin = coin.toUpperCase();
-    const newCoins = favoritedCoins.includes(upperCoin)
-      ? favoritedCoins.filter((c: string) => c !== upperCoin)
-      : [...favoritedCoins, upperCoin];
-    await wallet.setPerpsFavoritedCoins(newCoins);
-    setFavoritedCoins(newCoins);
-    setIsFavorited(!isFavorited);
+  const handleToggleFavorite = useMemoizedFn(() => {
+    dispatch.perps.toggleFavoriteCoin(coin);
   });
 
-  const toggleFavoriteForSearch = useMemoizedFn(async (coinName: string) => {
-    const upperCoin = coinName.toUpperCase();
-    const newCoins = favoritedCoins.includes(upperCoin)
-      ? favoritedCoins.filter((c: string) => c !== upperCoin)
-      : [...favoritedCoins, upperCoin];
-    await wallet.setPerpsFavoritedCoins(newCoins);
-    setFavoritedCoins(newCoins);
-    if (upperCoin === coin.toUpperCase()) {
-      setIsFavorited(newCoins.includes(upperCoin));
-    }
+  const toggleFavoriteForSearch = useMemoizedFn((coinName: string) => {
+    dispatch.perps.toggleFavoriteCoin(coinName);
   });
 
   const positionAndOpenOrders = useMemo(() => {
@@ -628,7 +611,9 @@ export const PerpsSingleCoin = () => {
                 </div>
                 <div className="text-13 text-r-neutral-body mt-4">
                   {t('page.perps.positionValue')}{' '}
-                  {formatUsdValue(Number(positionData?.positionValue || 0))}
+                  <span className="text-r-neutral-title-1 font-bold">
+                    {formatUsdValue(Number(positionData?.positionValue || 0))}
+                  </span>
                 </div>
               </div>
             </div>
@@ -675,7 +660,7 @@ export const PerpsSingleCoin = () => {
               {t('page.perps.settings')}
             </div>
             <div className="bg-r-neutral-card1 rounded-[12px] px-16">
-              <div className="flex justify-between text-13 py-16 group">
+              <div className="flex justify-between text-13 py-12 group">
                 <span className="text-r-neutral-body">
                   {positionData?.type === 'isolated'
                     ? t('page.perps.marginIsolated')
@@ -709,175 +694,180 @@ export const PerpsSingleCoin = () => {
                 )}
               </div>
 
-              <div className="flex justify-between text-13 py-16">
-                <div className="text-r-neutral-body">
-                  <div className="text-13 text-r-neutral-body">
-                    {positionData?.direction === 'Long'
-                      ? t(
-                          'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceAbove'
-                        )
-                      : t(
-                          'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceBelow'
-                        )}
+              <div className="py-12 gap-[15px] flex flex-col">
+                <div className="flex justify-between text-13">
+                  <div className="text-r-neutral-body">
+                    <div className="text-13 text-r-neutral-body">
+                      {positionData?.direction === 'Long'
+                        ? t(
+                            'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceAbove'
+                          )
+                        : t(
+                            'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceBelow'
+                          )}
+                    </div>
                   </div>
+                  <EditTpSlTag
+                    handleActionApproveStatus={handleActionApproveStatus}
+                    coin={coin}
+                    markPrice={markPrice}
+                    initTpOrSlPrice={currentTpOrSl.tpPrice || ''}
+                    direction={positionData?.direction as 'Long' | 'Short'}
+                    size={Number(positionData?.size || 0)}
+                    margin={Number(positionData?.marginUsed || 0)}
+                    leverage={positionData?.leverage || 1}
+                    liqPrice={Number(positionData?.liquidationPrice || 0)}
+                    pxDecimals={currentAssetCtx?.pxDecimals || 2}
+                    szDecimals={currentAssetCtx?.szDecimals || 0}
+                    actionType="tp"
+                    entryPrice={Number(positionData?.entryPrice || 0)}
+                    type="hasPosition"
+                    handleCancelAutoClose={async () => {
+                      await handleCancelAutoClose('tp');
+                    }}
+                    handleSetAutoClose={async (price: string) => {
+                      await handleSetAutoClose({
+                        coin,
+                        tpTriggerPx: price,
+                        slTriggerPx: '',
+                        direction: positionData?.direction as 'Long' | 'Short',
+                      });
+                      const isBuy = positionData?.direction === 'Long';
+                      stats.report('perpsTradeHistory', {
+                        created_at: new Date().getTime(),
+                        user_addr: currentPerpsAccount?.address || '',
+                        trade_type: 'popup has position set tp',
+                        leverage: (positionData?.leverage || 1).toString(),
+                        trade_side: getStatsReportSide(!isBuy, true),
+                        margin_mode: marginMode,
+                        coin,
+                        size: (positionData?.size || 0).toString(),
+                        price,
+                        trade_usd_value: new BigNumber(price)
+                          .times(positionData?.size || 0)
+                          .toFixed(2),
+                        service_provider: 'hyperliquid',
+                        app_version: process.env.release || '0',
+                        address_type: currentPerpsAccount?.type || '',
+                      });
+                    }}
+                  />
                 </div>
-                <EditTpSlTag
-                  handleActionApproveStatus={handleActionApproveStatus}
-                  coin={coin}
-                  markPrice={markPrice}
-                  initTpOrSlPrice={currentTpOrSl.tpPrice || ''}
-                  direction={positionData?.direction as 'Long' | 'Short'}
-                  size={Number(positionData?.size || 0)}
-                  margin={Number(positionData?.marginUsed || 0)}
-                  liqPrice={Number(positionData?.liquidationPrice || 0)}
-                  pxDecimals={currentAssetCtx?.pxDecimals || 2}
-                  szDecimals={currentAssetCtx?.szDecimals || 0}
-                  actionType="tp"
-                  entryPrice={Number(positionData?.entryPrice || 0)}
-                  type="hasPosition"
-                  handleCancelAutoClose={async () => {
-                    await handleCancelAutoClose('tp');
-                  }}
-                  handleSetAutoClose={async (price: string) => {
-                    await handleSetAutoClose({
-                      coin,
-                      tpTriggerPx: price,
-                      slTriggerPx: '',
-                      direction: positionData?.direction as 'Long' | 'Short',
-                    });
-                    const isBuy = positionData?.direction === 'Long';
-                    stats.report('perpsTradeHistory', {
-                      created_at: new Date().getTime(),
-                      user_addr: currentPerpsAccount?.address || '',
-                      trade_type: 'popup has position set tp',
-                      leverage: (positionData?.leverage || 1).toString(),
-                      trade_side: getStatsReportSide(!isBuy, true),
-                      margin_mode: marginMode,
-                      coin,
-                      size: (positionData?.size || 0).toString(),
-                      price,
-                      trade_usd_value: new BigNumber(price)
-                        .times(positionData?.size || 0)
-                        .toFixed(2),
-                      service_provider: 'hyperliquid',
-                      app_version: process.env.release || '0',
-                      address_type: currentPerpsAccount?.type || '',
-                    });
-                  }}
-                />
+
+                {tpPrice && takeProfitExpectedPnl !== null && (
+                  <div className="relative bg-r-neutral-card-2 rounded-[6px] mt-[-6px]">
+                    <div className="absolute right-[28px] top-[-6px]">
+                      <RcIconArrow className="text-r-neutral-card-2" />
+                    </div>
+                    <div className="flex items-center justify-between p-[12px]">
+                      <div className="text-[12px] leading-[14px] text-r-neutral-body">
+                        {t(
+                          'page.perpsDetail.PerpsAutoCloseModal.takeProfitExpectedPNL'
+                        )}
+                        :
+                      </div>
+                      <div
+                        className={clsx(
+                          'text-[12px] leading-[14px] font-bold',
+                          takeProfitExpectedPnl >= 0
+                            ? 'text-r-green-default'
+                            : 'text-r-red-default'
+                        )}
+                      >
+                        {takeProfitExpectedPnl >= 0 ? '+' : '-'}
+                        {formatUsdValue(Math.abs(takeProfitExpectedPnl))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {tpPrice && takeProfitExpectedPnl !== null && (
-                <div className="relative bg-r-neutral-card-2 rounded-[6px] mt-[-6px]">
-                  <div className="absolute right-[28px] top-[-6px]">
-                    <RcIconArrow className="text-r-neutral-card-2" />
-                  </div>
-                  <div className="flex items-center justify-between p-[12px]">
-                    <div className="text-[12px] leading-[14px] text-r-neutral-body">
-                      {t(
-                        'page.perpsDetail.PerpsAutoCloseModal.takeProfitExpectedPNL'
-                      )}
-                      :
-                    </div>
-                    <div
-                      className={clsx(
-                        'text-[12px] leading-[14px] font-bold',
-                        takeProfitExpectedPnl >= 0
-                          ? 'text-r-green-default'
-                          : 'text-r-red-default'
-                      )}
-                    >
-                      {takeProfitExpectedPnl >= 0 ? '+' : '-'}
-                      {formatUsdValue(Math.abs(takeProfitExpectedPnl))}
+              <div className="py-12 gap-[15px] flex flex-col">
+                <div className="flex justify-between text-13">
+                  <div className="text-r-neutral-body">
+                    <div className="text-13 text-r-neutral-body">
+                      {positionData?.direction === 'Long'
+                        ? t(
+                            'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceBelow'
+                          )
+                        : t(
+                            'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceAbove'
+                          )}
                     </div>
                   </div>
+                  <EditTpSlTag
+                    handleActionApproveStatus={handleActionApproveStatus}
+                    coin={coin}
+                    markPrice={markPrice}
+                    entryPrice={Number(positionData?.entryPrice || 0)}
+                    initTpOrSlPrice={currentTpOrSl.slPrice || ''}
+                    direction={positionData?.direction as 'Long' | 'Short'}
+                    size={Number(positionData?.size || 0)}
+                    margin={Number(positionData?.marginUsed || 0)}
+                    leverage={positionData?.leverage || 1}
+                    liqPrice={Number(positionData?.liquidationPrice || 0)}
+                    pxDecimals={currentAssetCtx?.pxDecimals || 2}
+                    szDecimals={currentAssetCtx?.szDecimals || 0}
+                    actionType="sl"
+                    type="hasPosition"
+                    handleCancelAutoClose={async () => {
+                      await handleCancelAutoClose('sl');
+                    }}
+                    handleSetAutoClose={async (price: string) => {
+                      await handleSetAutoClose({
+                        coin,
+                        tpTriggerPx: '',
+                        slTriggerPx: price,
+                        direction: positionData?.direction as 'Long' | 'Short',
+                      });
+                      const isBuy = positionData?.direction === 'Long';
+                      stats.report('perpsTradeHistory', {
+                        created_at: new Date().getTime(),
+                        user_addr: currentPerpsAccount?.address || '',
+                        trade_type: 'popup has position set sl',
+                        leverage: (positionData?.leverage || 1).toString(),
+                        trade_side: getStatsReportSide(!isBuy, true),
+                        margin_mode: marginMode,
+                        coin,
+                        size: (positionData?.size || 0).toString(),
+                        price,
+                        trade_usd_value: new BigNumber(price)
+                          .times(positionData?.size || 0)
+                          .toFixed(2),
+                        service_provider: 'hyperliquid',
+                        app_version: process.env.release || '0',
+                        address_type: currentPerpsAccount?.type || '',
+                      });
+                    }}
+                  />
                 </div>
-              )}
-
-              <div className="flex justify-between text-13 py-16">
-                <div className="text-r-neutral-body">
-                  <div className="text-13 text-r-neutral-body">
-                    {positionData?.direction === 'Long'
-                      ? t(
-                          'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceBelow'
-                        )
-                      : t(
-                          'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceAbove'
+                {slPrice && stopLossExpectedPnl !== null && (
+                  <div className="relative bg-r-neutral-card-2 rounded-[6px] mt-[-6px]">
+                    <div className="absolute right-[28px] top-[-6px]">
+                      <RcIconArrow className="text-r-neutral-card-2" />
+                    </div>
+                    <div className="flex items-center justify-between p-[12px]">
+                      <div className="text-[12px] leading-[14px] text-r-neutral-body">
+                        {t(
+                          'page.perpsDetail.PerpsAutoCloseModal.stopLossExpectedPNL'
                         )}
+                        :
+                      </div>
+                      <div
+                        className={clsx(
+                          'text-[12px] leading-[14px] font-bold',
+                          stopLossExpectedPnl >= 0
+                            ? 'text-r-green-default'
+                            : 'text-r-red-default'
+                        )}
+                      >
+                        {stopLossExpectedPnl >= 0 ? '+' : '-'}
+                        {formatUsdValue(Math.abs(stopLossExpectedPnl))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <EditTpSlTag
-                  handleActionApproveStatus={handleActionApproveStatus}
-                  coin={coin}
-                  markPrice={markPrice}
-                  entryPrice={Number(positionData?.entryPrice || 0)}
-                  initTpOrSlPrice={currentTpOrSl.slPrice || ''}
-                  direction={positionData?.direction as 'Long' | 'Short'}
-                  size={Number(positionData?.size || 0)}
-                  margin={Number(positionData?.marginUsed || 0)}
-                  liqPrice={Number(positionData?.liquidationPrice || 0)}
-                  pxDecimals={currentAssetCtx?.pxDecimals || 2}
-                  szDecimals={currentAssetCtx?.szDecimals || 0}
-                  actionType="sl"
-                  type="hasPosition"
-                  handleCancelAutoClose={async () => {
-                    await handleCancelAutoClose('sl');
-                  }}
-                  handleSetAutoClose={async (price: string) => {
-                    await handleSetAutoClose({
-                      coin,
-                      tpTriggerPx: '',
-                      slTriggerPx: price,
-                      direction: positionData?.direction as 'Long' | 'Short',
-                    });
-                    const isBuy = positionData?.direction === 'Long';
-                    stats.report('perpsTradeHistory', {
-                      created_at: new Date().getTime(),
-                      user_addr: currentPerpsAccount?.address || '',
-                      trade_type: 'popup has position set sl',
-                      leverage: (positionData?.leverage || 1).toString(),
-                      trade_side: getStatsReportSide(!isBuy, true),
-                      margin_mode: marginMode,
-                      coin,
-                      size: (positionData?.size || 0).toString(),
-                      price,
-                      trade_usd_value: new BigNumber(price)
-                        .times(positionData?.size || 0)
-                        .toFixed(2),
-                      service_provider: 'hyperliquid',
-                      app_version: process.env.release || '0',
-                      address_type: currentPerpsAccount?.type || '',
-                    });
-                  }}
-                />
+                )}
               </div>
-
-              {slPrice && stopLossExpectedPnl !== null && (
-                <div className="relative bg-r-neutral-card-2 rounded-[6px] mt-[-6px]">
-                  <div className="absolute right-[28px] top-[-6px]">
-                    <RcIconArrow className="text-r-neutral-card-2" />
-                  </div>
-                  <div className="flex items-center justify-between p-[12px]">
-                    <div className="text-[12px] leading-[14px] text-r-neutral-body">
-                      {t(
-                        'page.perpsDetail.PerpsAutoCloseModal.stopLossExpectedPNL'
-                      )}
-                      :
-                    </div>
-                    <div
-                      className={clsx(
-                        'text-[12px] leading-[14px] font-bold',
-                        stopLossExpectedPnl >= 0
-                          ? 'text-r-green-default'
-                          : 'text-r-red-default'
-                      )}
-                    >
-                      {stopLossExpectedPnl >= 0 ? '+' : '-'}
-                      {formatUsdValue(Math.abs(stopLossExpectedPnl))}
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Details */}
@@ -1257,6 +1247,11 @@ export const PerpsSingleCoin = () => {
           <EditMarginPopup
             visible={editMarginVisible}
             coin={coin}
+            leverageType={
+              currentPosition?.position.leverage.type === 'cross'
+                ? 'cross'
+                : 'isolated'
+            }
             currentAssetCtx={currentAssetCtx}
             activeAssetCtx={activeAssetCtx}
             direction={positionData.direction as 'Long' | 'Short'}
@@ -1290,6 +1285,11 @@ export const PerpsSingleCoin = () => {
           <AddPositionPopup
             visible={addPositionVisible}
             coin={coin}
+            leverageType={
+              currentPosition?.position.leverage.type === 'cross'
+                ? 'cross'
+                : 'isolated'
+            }
             currentAssetCtx={currentAssetCtx}
             activeAssetCtx={activeAssetCtx}
             direction={positionData.direction as 'Long' | 'Short'}
