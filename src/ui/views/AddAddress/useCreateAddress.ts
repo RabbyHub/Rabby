@@ -23,6 +23,7 @@ export interface CreateAddressSuccessState {
   addresses: CreateAddressSuccessAddress[];
   publicKey: string;
   titleKey: string;
+  titleValues?: Record<string, any>;
   descriptionKey?: string;
   primaryAction?: 'done' | 'open-wallet';
   address?: string;
@@ -44,32 +45,63 @@ export const useCreateAddressActions = ({
   const dispatch = useRabbyDispatch();
   const invokeEnterPassphrase = useEnterPassphraseModal('publickey');
 
+  const hydrateSuccessState = useMemoizedFn(
+    async (state: CreateAddressSuccessState) => {
+      const nextAddresses = await Promise.all(
+        (state.addresses || []).map(async (item) => {
+          if (!item.address || item.alias?.trim()) {
+            return item;
+          }
+
+          const alias = await wallet.getAlianName(item.address);
+          return {
+            ...item,
+            alias: alias || '',
+          };
+        })
+      );
+
+      return {
+        ...state,
+        addresses: nextAddresses,
+      };
+    }
+  );
+
   const openSuccessPage = useMemoizedFn(
-    (state: CreateAddressSuccessState, options?: { replace?: boolean }) => {
+    async (
+      state: CreateAddressSuccessState,
+      options?: { replace?: boolean }
+    ) => {
+      const nextState = await hydrateSuccessState(state);
       if (onNavigate) {
-        onNavigate(CREATE_ADDRESS_SUCCESS_TYPE, state);
+        onNavigate(CREATE_ADDRESS_SUCCESS_TYPE, nextState);
         return;
       }
 
       const method = options?.replace ? history.replace : history.push;
       method({
         pathname: CREATE_ADDRESS_SUCCESS_PATH,
-        state,
+        state: nextState,
       });
     }
   );
 
   const openImportSuccessPage = useMemoizedFn(
-    (state: CreateAddressSuccessState, options?: { replace?: boolean }) => {
+    async (
+      state: CreateAddressSuccessState,
+      options?: { replace?: boolean }
+    ) => {
+      const nextState = await hydrateSuccessState(state);
       if (onNavigate) {
-        onNavigate(IMPORT_ADDRESS_SUCCESS_TYPE, state);
+        onNavigate(IMPORT_ADDRESS_SUCCESS_TYPE, nextState);
         return;
       }
 
       const method = options?.replace ? history.replace : history.push;
       method({
         pathname: IMPORT_ADDRESS_SUCCESS_PATH,
-        state,
+        state: nextState,
       });
     }
   );
@@ -106,7 +138,7 @@ export const useCreateAddressActions = ({
       );
       dispatch.account.getCurrentAccountAsync();
 
-      openSuccessPage(
+      await openSuccessPage(
         {
           addresses: [
             {
@@ -130,7 +162,7 @@ export const useCreateAddressActions = ({
       );
       dispatch.account.getCurrentAccountAsync();
 
-      openSuccessPage(
+      await openSuccessPage(
         {
           addresses: [
             {
@@ -139,7 +171,7 @@ export const useCreateAddressActions = ({
             },
           ],
           publicKey: result.publicKey,
-          titleKey: 'page.newAddress.newAddressAdded',
+          titleKey: 'page.newAddress.newAddressCreated',
         },
         { replace: options?.replaceSuccess }
       );

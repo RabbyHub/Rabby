@@ -535,15 +535,18 @@ export class KeyringService extends EventEmitter {
               ? selectedKeyring.type
               : account?.realBrandName || account.brandName,
         }));
-        allAccounts.forEach((account) => {
-          this.setAddressAlias(
-            account.address,
-            selectedKeyring,
-            account.brandName
-          );
-          this.emit('newAccount', account.address);
+        return Promise.all(
+          allAccounts.map(async (account) => {
+            await this.setAddressAlias(
+              account.address,
+              selectedKeyring,
+              account.brandName
+            );
+            this.emit('newAccount', account.address);
+          })
+        ).then(() => {
+          _accounts = accounts;
         });
-        _accounts = accounts;
       })
       .then(this.persistAllKeyrings.bind(this))
       .then(this._updateMemStoreKeyrings.bind(this))
@@ -573,6 +576,7 @@ export class KeyringService extends EventEmitter {
         const alias = generateAliasName({
           brandName,
           keyringType: keyring.type,
+          keyringCount: keyring.index || 0,
           addressCount,
         });
         contactBook.addAlias({

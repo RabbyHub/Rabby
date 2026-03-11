@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import { useCreateAddressActions } from './useCreateAddress';
-import { AddressViewer, Copy, PageHeader } from '@/ui/component';
+import { AddressViewer, Copy, Item, PageHeader } from '@/ui/component';
 import {
   RcAddNewAddressChevronIcon,
   RcAddNewAddressCreateSeedIcon,
@@ -282,21 +282,23 @@ export const AddNewAddress: React.FC<{
       </PageHeader>
 
       <div className="min-h-0 flex-1 overflow-auto pb-[20px] flex flex-col gap-[12px]">
-        <button
-          type="button"
+        <Item
+          px={16}
+          py={16}
           disabled={pendingAction !== null}
-          className={clsx(
-            'w-full h-[56px] rounded-[6px] bg-r-neutral-card-1 px-[16px] flex items-center',
-            pendingAction !== null && 'opacity-50'
-          )}
+          className="h-[56px]"
+          right={
+            <RcAddNewAddressChevronIcon className="ml-auto w-[20px] h-[20px] shrink-0 rotate-180" />
+          }
           onClick={handleCreateSeedPhrase}
         >
-          <RcAddNewAddressCreateSeedIcon className="w-[24px] h-[24px] shrink-0" />
-          <span className="ml-[12px] text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
-            {t('page.newAddress.createANewSeedPhrase')}
-          </span>
-          <RcAddNewAddressChevronIcon className="ml-auto w-[20px] h-[20px] shrink-0 rotate-180" />
-        </button>
+          <div className="flex items-center min-w-0">
+            <RcAddNewAddressCreateSeedIcon className="w-[24px] h-[24px] shrink-0" />
+            <span className="ml-[12px] text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+              {t('page.newAddress.createANewSeedPhrase')}
+            </span>
+          </div>
+        </Item>
 
         {groups.map((group) => (
           <SeedPhraseCard

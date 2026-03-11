@@ -70,7 +70,7 @@ const ImportKeyOrSeed: React.FC<{
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
-  const { openImportSuccessPage } = useCreateAddressActions({
+  const { openSuccessPage } = useCreateAddressActions({
     onNavigate,
   });
   const [form] = Form.useForm<ImportFormValues>();
@@ -149,11 +149,10 @@ const ImportKeyOrSeed: React.FC<{
       }[],
       extra?: { publicKey?: string }
     ) => {
-      openImportSuccessPage({
+      openSuccessPage({
         addresses,
         publicKey: extra?.publicKey || '',
         titleKey: 'page.newAddress.importedSuccessfully',
-        descriptionKey: 'page.newAddress.openExtensionToGetStarted',
       });
     }
   );

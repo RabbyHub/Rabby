@@ -7,6 +7,7 @@ import { UI_TYPE } from '@/constant/ui';
 import { WALLET_BRAND_CONTENT, IWalletBrandContent } from 'consts';
 import { connectStore } from '@/ui/store';
 import { useAddAddressWalletOptions } from '@/ui/views/AddAddress/shared';
+import { Item } from '@/ui/component';
 import { ReactComponent as RcRightArrow } from 'ui/assets/address/right-arrow.svg';
 import {
   RcAddAddressOptionCreateIcon,
@@ -45,17 +46,18 @@ const AddAddressRow = ({
   className?: string;
 }) => {
   return (
-    <button
-      type="button"
+    <Item
+      py={15}
+      px={16}
       className={clsx('add-address-options__row', className)}
+      rightIconClassName="add-address-options__row-arrow"
       onClick={option.onClick}
     >
       <div className="add-address-options__row-content">
         {option.icon}
         <div className="add-address-options__row-label">{option.label}</div>
       </div>
-      <RcRightArrow className="add-address-options__row-arrow" />
-    </button>
+    </Item>
   );
 };
 
@@ -196,7 +198,10 @@ const AddAddressOptions: React.FC<{
         }}
       >
         <span>{t('page.newAddress.connectInstitutionalWallets')}</span>
-        <RcRightArrow className="add-address-options__institutional-arrow" />
+        <RcRightArrow
+          viewBox="0 0 20 20"
+          className="add-address-options__institutional-arrow"
+        />
       </button>
     </div>
   );

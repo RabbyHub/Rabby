@@ -833,7 +833,7 @@ const BulkImportPrivateKey: React.FC = () => {
             </p>
           </div>
 
-          <div className="mx-auto w-[400px]">
+          <div className="mx-auto flex h-[420px] w-[400px] flex-col">
             <PillsSwitch
               value={selectedTab}
               onTabChange={(key) => {
@@ -858,248 +858,253 @@ const BulkImportPrivateKey: React.FC = () => {
               itemClassnameActive="bg-r-neutral-card-1 text-r-blue-default"
             />
 
-            {selectedTab === 'privateKey' ? (
-              <>
-                <div
-                  className={clsx(
-                    'mt-[20px] h-[280px] rounded-[8px] border bg-r-neutral-card-1',
-                    invalidRowIds.length || privateKeyError
-                      ? 'border-r-red-default'
-                      : 'border-rabby-neutral-line'
-                  )}
-                >
-                  {isPrivateKeyListMode ? (
-                    <div className="h-full overflow-y-auto px-[15px] py-[15px]">
-                      <div className="space-y-[16px]">
-                        {rows.map((row, index) => {
-                          const isInvalid = invalidRowIds.includes(row.id);
-                          const isWrappedVisibleRow =
-                            row.visible &&
-                            (visibleRowHeights[row.id] || 16) > 16;
-                          const rowLayoutClass = isWrappedVisibleRow
-                            ? 'min-h-[48px] items-start py-[8px]'
-                            : 'h-[48px] items-center';
+            <div className="mt-[20px] flex flex-1 flex-col">
+              {selectedTab === 'privateKey' ? (
+                <>
+                  <div
+                    className={clsx(
+                      'h-[280px] rounded-[8px] border bg-r-neutral-card-1',
+                      invalidRowIds.length || privateKeyError
+                        ? 'border-r-red-default'
+                        : 'border-rabby-neutral-line'
+                    )}
+                  >
+                    {isPrivateKeyListMode ? (
+                      <div className="h-full overflow-y-auto px-[15px] py-[15px]">
+                        <div className="space-y-[16px]">
+                          {rows.map((row, index) => {
+                            const isInvalid = invalidRowIds.includes(row.id);
+                            const isWrappedVisibleRow =
+                              row.visible &&
+                              (visibleRowHeights[row.id] || 16) > 16;
+                            const rowLayoutClass = isWrappedVisibleRow
+                              ? 'min-h-[48px] items-start py-[8px]'
+                              : 'h-[48px] items-center';
 
-                          return (
-                            <div
-                              key={row.id}
-                              className={clsx(
-                                'group flex w-full rounded-[4px] px-[8px] transition-[background-color,height,padding] duration-150',
-                                rowLayoutClass,
-                                'hover:bg-r-neutral-card-2'
-                              )}
-                            >
-                              <span
-                                className={clsx(
-                                  'w-[30px] shrink-0 text-[13px] leading-[16px]',
-                                  isWrappedVisibleRow
-                                    ? 'self-start'
-                                    : 'self-center',
-                                  isInvalid
-                                    ? 'text-r-red-default'
-                                    : 'text-r-neutral-foot'
-                                )}
-                              >
-                                {index + 1}.
-                              </span>
+                            return (
                               <div
+                                key={row.id}
                                 className={clsx(
-                                  'w-[260px] shrink-0',
-                                  isWrappedVisibleRow
-                                    ? 'self-start'
-                                    : 'self-center'
+                                  'group flex w-full rounded-[4px] px-[8px] transition-[background-color,height,padding] duration-150',
+                                  rowLayoutClass,
+                                  'hover:bg-r-neutral-card-2'
                                 )}
                               >
-                                {row.visible ? (
-                                  <VisibleRowTextarea
-                                    ref={(node) => {
-                                      rowInputRefs.current[row.id] = node;
-                                    }}
-                                    value={row.value}
-                                    spellCheck={false}
-                                    onKeyDown={(event) =>
-                                      handleRowKeyDown(row.id, event)
-                                    }
-                                    onBlur={() => handleRowBlur(row.id)}
-                                    onPaste={(event) =>
-                                      handleRowPaste(row.id, event)
-                                    }
-                                    onChange={(event) => {
-                                      handleRowChange(
-                                        row.id,
-                                        event.target.value
-                                      );
-                                      syncRowHeight(row.id);
-                                    }}
-                                    style={{
-                                      color: isInvalid
-                                        ? 'var(--r-red-default, #e34935)'
-                                        : 'var(--r-neutral-title-1, #192945)',
-                                    }}
-                                  />
-                                ) : (
-                                  <HiddenRowInput
-                                    ref={(node) => {
-                                      rowInputRefs.current[row.id] = node;
-                                    }}
-                                    value={row.value}
-                                    spellCheck={false}
-                                    onKeyDown={(event) =>
-                                      handleRowKeyDown(row.id, event)
-                                    }
-                                    onBlur={() => handleRowBlur(row.id)}
-                                    onPaste={(event) =>
-                                      handleRowPaste(row.id, event)
-                                    }
-                                    onChange={(event) =>
-                                      handleRowChange(
-                                        row.id,
-                                        event.target.value
-                                      )
-                                    }
-                                    type="text"
-                                    style={{
-                                      WebkitTextSecurity: 'disc',
-                                      color: isInvalid
-                                        ? 'var(--r-red-default, #e34935)'
-                                        : 'var(--r-neutral-title-1, #192945)',
-                                    }}
-                                  />
-                                )}
-                              </div>
-                              <div className="flex-1" />
-                              <div className="flex w-[54px] shrink-0 self-center items-center justify-end gap-[10px] pr-[4px] text-r-neutral-foot opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                                <button
-                                  type="button"
-                                  className="pointer-events-none flex h-[16px] w-[16px] items-center justify-center group-hover:pointer-events-auto"
-                                  onMouseDown={(event) =>
-                                    event.preventDefault()
-                                  }
-                                  onClick={() => handleRemoveRow(row.id)}
+                                <span
+                                  className={clsx(
+                                    'w-[30px] shrink-0 text-[13px] leading-[16px]',
+                                    isWrappedVisibleRow
+                                      ? 'self-start'
+                                      : 'self-center',
+                                    isInvalid
+                                      ? 'text-r-red-default'
+                                      : 'text-r-neutral-foot'
+                                  )}
                                 >
-                                  <RcClose className="h-[16px] w-[16px]" />
-                                </button>
-                                <button
-                                  type="button"
-                                  className="pointer-events-none flex h-[16px] w-[16px] items-center justify-center group-hover:pointer-events-auto"
-                                  onMouseDown={(event) =>
-                                    event.preventDefault()
-                                  }
-                                  onClick={() => handleToggleVisible(row.id)}
+                                  {index + 1}.
+                                </span>
+                                <div
+                                  className={clsx(
+                                    'w-[260px] shrink-0',
+                                    isWrappedVisibleRow
+                                      ? 'self-start'
+                                      : 'self-center'
+                                  )}
                                 >
                                   {row.visible ? (
-                                    <RcEye className="h-[16px] w-[16px]" />
+                                    <VisibleRowTextarea
+                                      ref={(node) => {
+                                        rowInputRefs.current[row.id] = node;
+                                      }}
+                                      value={row.value}
+                                      spellCheck={false}
+                                      onKeyDown={(event) =>
+                                        handleRowKeyDown(row.id, event)
+                                      }
+                                      onBlur={() => handleRowBlur(row.id)}
+                                      onPaste={(event) =>
+                                        handleRowPaste(row.id, event)
+                                      }
+                                      onChange={(event) => {
+                                        handleRowChange(
+                                          row.id,
+                                          event.target.value
+                                        );
+                                        syncRowHeight(row.id);
+                                      }}
+                                      style={{
+                                        color: isInvalid
+                                          ? 'var(--r-red-default, #e34935)'
+                                          : 'var(--r-neutral-title-1, #192945)',
+                                      }}
+                                    />
                                   ) : (
-                                    <RcEyeClose className="h-[16px] w-[16px]" />
+                                    <HiddenRowInput
+                                      ref={(node) => {
+                                        rowInputRefs.current[row.id] = node;
+                                      }}
+                                      value={row.value}
+                                      spellCheck={false}
+                                      onKeyDown={(event) =>
+                                        handleRowKeyDown(row.id, event)
+                                      }
+                                      onBlur={() => handleRowBlur(row.id)}
+                                      onPaste={(event) =>
+                                        handleRowPaste(row.id, event)
+                                      }
+                                      onChange={(event) =>
+                                        handleRowChange(
+                                          row.id,
+                                          event.target.value
+                                        )
+                                      }
+                                      type="text"
+                                      style={{
+                                        WebkitTextSecurity: 'disc',
+                                        color: isInvalid
+                                          ? 'var(--r-red-default, #e34935)'
+                                          : 'var(--r-neutral-title-1, #192945)',
+                                      }}
+                                    />
                                   )}
-                                </button>
+                                </div>
+                                <div className="flex-1" />
+                                <div className="flex w-[54px] shrink-0 self-center items-center justify-end gap-[10px] pr-[4px] text-r-neutral-foot opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                                  <button
+                                    type="button"
+                                    className="pointer-events-none flex h-[16px] w-[16px] items-center justify-center group-hover:pointer-events-auto"
+                                    onMouseDown={(event) =>
+                                      event.preventDefault()
+                                    }
+                                    onClick={() => handleRemoveRow(row.id)}
+                                  >
+                                    <RcClose className="h-[16px] w-[16px]" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="pointer-events-none flex h-[16px] w-[16px] items-center justify-center group-hover:pointer-events-auto"
+                                    onMouseDown={(event) =>
+                                      event.preventDefault()
+                                    }
+                                    onClick={() => handleToggleVisible(row.id)}
+                                  >
+                                    {row.visible ? (
+                                      <RcEye className="h-[16px] w-[16px]" />
+                                    ) : (
+                                      <RcEyeClose className="h-[16px] w-[16px]" />
+                                    )}
+                                  </button>
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="h-full px-[15px] py-[15px]">
+                        <EmptyTextarea
+                          value={privateKeyInputValue}
+                          spellCheck={false}
+                          placeholder={t(
+                            'page.newAddress.bulkImportPrivateKeyPlaceholder'
+                          )}
+                          onChange={(event) =>
+                            handleTextareaChange(event.target.value)
+                          }
+                          onBlur={handleTextareaBlur}
+                          onPaste={handleTextareaPaste}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-[8px] flex min-h-[20px] items-center justify-between">
+                    <div className="text-[12px] leading-[16px] text-r-red-default">
+                      {privateKeyError}
+                    </div>
+                    {filledPrivateKeyCount ? (
+                      <button
+                        type="button"
+                        className="flex h-[16px] w-[16px] items-center justify-center text-r-neutral-foot"
+                        onClick={handleClearAll}
+                      >
+                        <RcClear className="h-[16px] w-[16px]" />
+                      </button>
+                    ) : null}
+                  </div>
+                </>
+              ) : (
+                <Form
+                  form={form}
+                  className="flex flex-1 flex-col"
+                  onValuesChange={(_, values) => {
+                    setPasswordValue(values.password || '');
+                    setKeyStoreError('');
+                    form.setFields([{ name: 'password', errors: [] }]);
+                  }}
+                >
+                  <div className="flex-1">
+                    <div
+                      className="flex h-[180px] cursor-pointer flex-col items-center justify-center rounded-[8px] bg-r-neutral-card-2"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".json,application/json"
+                        className="hidden"
+                        onChange={(event) => {
+                          const file = event.target.files?.[0];
+                          if (!file) {
+                            return;
+                          }
+
+                          setKeyStoreError('');
+                          const reader = new FileReader();
+                          reader.onload = (loadEvent) => {
+                            setKeyStoreContent(
+                              String(loadEvent.target?.result || '')
+                            );
+                            setKeyStoreFileName(file.name);
+                          };
+                          reader.readAsText(file);
+                        }}
+                      />
+                      <RcUploader className="mb-[8px] h-[40px] w-[40px] text-r-neutral-body" />
+                      <div className="text-[13px] leading-[16px] text-r-neutral-body">
+                        {keyStoreFileName ||
+                          t('component.Uploader.placeholder')}
                       </div>
                     </div>
-                  ) : (
-                    <div className="h-full px-[15px] py-[15px]">
-                      <EmptyTextarea
-                        value={privateKeyInputValue}
+                    {keyStoreError ? (
+                      <div className="mt-[8px] text-[12px] leading-[16px] text-r-red-default">
+                        {keyStoreError}
+                      </div>
+                    ) : null}
+
+                    <Form.Item name="password" className="mb-0 mt-[16px]">
+                      <PasswordInput
+                        type="password"
                         spellCheck={false}
                         placeholder={t(
-                          'page.newAddress.bulkImportPrivateKeyPlaceholder'
+                          'page.newAddress.keystore.password.placeholder'
                         )}
-                        onChange={(event) =>
-                          handleTextareaChange(event.target.value)
-                        }
-                        onBlur={handleTextareaBlur}
-                        onPaste={handleTextareaPaste}
                       />
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-[8px] flex min-h-[20px] items-center justify-between">
-                  <div className="text-[12px] leading-[16px] text-r-red-default">
-                    {privateKeyError}
+                    </Form.Item>
                   </div>
-                  {filledPrivateKeyCount ? (
-                    <button
-                      type="button"
-                      className="flex h-[16px] w-[16px] items-center justify-center text-r-neutral-foot"
-                      onClick={handleClearAll}
-                    >
-                      <RcClear className="h-[16px] w-[16px]" />
-                    </button>
-                  ) : null}
-                </div>
-              </>
-            ) : (
-              <Form
-                form={form}
-                className="mt-[16px]"
-                onValuesChange={(_, values) => {
-                  setPasswordValue(values.password || '');
-                  setKeyStoreError('');
-                  form.setFields([{ name: 'password', errors: [] }]);
-                }}
+                </Form>
+              )}
+
+              <Button
+                type="primary"
+                size="large"
+                disabled={disabledConfirm}
+                className="mt-auto h-[44px] w-full rounded-[6px] text-[15px] leading-[18px] font-medium"
+                onClick={handleSubmit}
               >
-                <div
-                  className="flex h-[180px] cursor-pointer flex-col items-center justify-center rounded-[8px] bg-r-neutral-card-2"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".json,application/json"
-                    className="hidden"
-                    onChange={(event) => {
-                      const file = event.target.files?.[0];
-                      if (!file) {
-                        return;
-                      }
-
-                      setKeyStoreError('');
-                      const reader = new FileReader();
-                      reader.onload = (loadEvent) => {
-                        setKeyStoreContent(
-                          String(loadEvent.target?.result || '')
-                        );
-                        setKeyStoreFileName(file.name);
-                      };
-                      reader.readAsText(file);
-                    }}
-                  />
-                  <RcUploader className="mb-[8px] h-[40px] w-[40px] text-r-neutral-body" />
-                  <div className="text-[13px] leading-[16px] text-r-neutral-body">
-                    {keyStoreFileName || t('component.Uploader.placeholder')}
-                  </div>
-                </div>
-                {keyStoreError ? (
-                  <div className="mt-[8px] text-[12px] leading-[16px] text-r-red-default">
-                    {keyStoreError}
-                  </div>
-                ) : null}
-
-                <Form.Item name="password" className="mb-0 mt-[16px]">
-                  <PasswordInput
-                    type="password"
-                    spellCheck={false}
-                    placeholder={t(
-                      'page.newAddress.keystore.password.placeholder'
-                    )}
-                  />
-                </Form.Item>
-              </Form>
-            )}
-
-            <Button
-              type="primary"
-              size="large"
-              disabled={disabledConfirm}
-              className="mt-[48px] h-[44px] w-full rounded-[6px] text-[15px] leading-[18px] font-medium"
-              onClick={handleSubmit}
-            >
-              {t('global.confirm')}
-            </Button>
+                {t('global.confirm')}
+              </Button>
+            </div>
           </div>
         </Card>
       </Page>
