@@ -1566,8 +1566,6 @@
       "importPrivateKey": "Импортировать приватный ключ",
       "importMyMetamaskAccount": "Импортировать мой аккаунт MetaMask",
       "addContacts": {
-        "content": "Добавить контакты",
-        "description": "Вы также можете использовать его как адрес только для просмотра",
         "required": "Пожалуйста, введите адрес",
         "notAValidAddress": "Недействительный адрес",
         "scanViaMobileWallet": "Сканировать через мобильный кошелек",

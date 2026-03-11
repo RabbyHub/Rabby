@@ -1565,8 +1565,6 @@
       "importPrivateKey": "Importar Clave Privada",
       "importMyMetamaskAccount": "Importar Mi Cuenta de MetaMask",
       "addContacts": {
-        "content": "Agregar Contactos",
-        "description": "También puedes usarlo como una dirección de solo observación",
         "required": "Por favor ingrese una dirección",
         "notAValidAddress": "No es una dirección válida",
         "scanViaMobileWallet": "Escanear a través de billetera móvil",

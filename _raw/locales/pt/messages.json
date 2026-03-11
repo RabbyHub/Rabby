@@ -1651,8 +1651,6 @@
     "newAddress": {
       "addContacts": {
         "notAValidAddress": "Não é um endereço válido",
-        "content": "Adicionar Contatos",
-        "description": "Você também pode usá-lo como um endereço apenas para visualização.",
         "required": "Por favor, insira o endereço",
         "walletConnect": "Conexão da carteira",
         "scanViaPcCamera": "Escanear via câmera do PC",

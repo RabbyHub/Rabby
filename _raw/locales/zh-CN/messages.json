@@ -534,8 +534,6 @@
       "importPrivateKey": "导入私钥",
       "importMyMetamaskAccount": "导入我的 MetaMask 帐户",
       "addContacts": {
-        "content": "添加联系人",
-        "description": "你也可以将其用作观察地址",
         "required": "请输入地址",
         "notAValidAddress": "无效地址",
         "scanViaMobileWallet": "通过手机钱包扫描",

@@ -59,6 +59,7 @@ export function AddressInfoTo({
     brandName: toAccount?.brandName || '',
     type: toAccount?.type || '',
     forceLight: false,
+    showWatchWhitelistIcon: toAddressPositiveTips?.inWhitelist,
   });
 
   const [aliasName] = useAlias(toAccount?.address || '');

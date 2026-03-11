@@ -186,6 +186,7 @@ export default function TabWhitelist({
                   getContainer={getContainer}
                   className="group whitelist-item"
                   balance={0}
+                  showWatchWhitelistIcon
                   showWhitelistIcon
                   allowEditAlias
                   hideBalance
