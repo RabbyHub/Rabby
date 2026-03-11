@@ -16,10 +16,10 @@ import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
 import { safeJSONParse } from '@/utils';
 import { useWallet } from '@/ui/utils';
 import { openInternalPageInTab } from '@/ui/utils/webapi';
-import { ReactComponent as RcRightArrow } from 'ui/assets/address/right-arrow.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import { useCreateAddressActions } from './useCreateAddress';
+import { RcBulkImportArrowCC } from '@/ui/assets/add-address';
 
 type ImportTab = 'privateKey' | 'seedPhrase';
 
@@ -152,7 +152,7 @@ const ImportKeyOrSeed: React.FC<{
       openSuccessPage({
         addresses,
         publicKey: extra?.publicKey || '',
-        titleKey: 'page.newAddress.importedSuccessfully',
+        title: t('page.newAddress.importedSuccessfully'),
       });
     }
   );
@@ -441,7 +441,7 @@ const ImportKeyOrSeed: React.FC<{
                       isSlip39={isSlip39}
                       onSlip39Change={setIsSlip39}
                       onPassphrase={setNeedPassphrase}
-                      errMsgs={errMsgs}
+                      // errMsgs={errMsgs}
                       onChange={checkSlip39Mnemonics}
                       setSlip39GroupNumber={setSlip39GroupNumber}
                       errorIndexes={[slip39ErrorIndex]}
@@ -477,7 +477,7 @@ const ImportKeyOrSeed: React.FC<{
                   }}
                 >
                   <span>{t('page.newAddress.bulkImportPrivateKey')}</span>
-                  <RcRightArrow className="ml-[2px] h-[14px] w-[14px]" />
+                  <RcBulkImportArrowCC className="ml-[2px] h-[14px] w-[14px]" />
                 </button>
               ) : null}
             </div>

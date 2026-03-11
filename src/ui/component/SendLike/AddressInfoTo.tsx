@@ -59,7 +59,6 @@ export function AddressInfoTo({
     brandName: toAccount?.brandName || '',
     type: toAccount?.type || '',
     forceLight: false,
-    showWatchWhitelistIcon: toAddressPositiveTips?.inWhitelist,
   });
 
   const [aliasName] = useAlias(toAccount?.address || '');
@@ -166,7 +165,7 @@ export function AddressInfoTo({
                   ) : (
                     <ThemeIcon
                       src={cexInfo?.logo_url || addressTypeIcon}
-                      className={'w-[24px] h-[24px] rounded-full'}
+                      className={'w-[24px] h-[24px]'}
                       style={{ padding: 0 }}
                     />
                   )}

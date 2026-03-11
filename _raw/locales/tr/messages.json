@@ -4469,7 +4469,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Özel Anahtar",
-      "watchAddressKeyring": "Kişi"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4488,7 +4488,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Seed Phrase ile Oluşturuldu",
       "SimpleKeyring": "Özel Anahtarla İçe Aktarıldı",
-      "WatchAddressKeyring": "Kişi"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "Seed Phrase ile İçe Aktarıldı",
     "SIGN_PERMISSION_OPTIONS": {

@@ -4470,7 +4470,7 @@
       "HdKeyring": "Frase-semente",
       "SimpleKeyring": "Chave privada importada",
       "WatchAddressKeyring": "Contato",
-      "watchAddressKeyring": "Contato",
+      "watchAddressKeyring": "",
       "simpleKeyring": "Chave Privada"
     },
     "keyring": {
@@ -4490,7 +4490,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Criado pela Frase-semente",
       "SimpleKeyring": "Importado pela Chave Privada",
-      "WatchAddressKeyring": "Contato"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "Importado pela Frase-semente",
     "SIGN_PERMISSION_OPTIONS": {

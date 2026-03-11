@@ -4466,7 +4466,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Private Key",
-      "watchAddressKeyring": "Kontakt"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4485,7 +4485,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Erstellt durch Seed Phrase",
       "SimpleKeyring": "Importiert durch Private Key",
-      "WatchAddressKeyring": "Kontakt"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "Importiert durch Seed Phrase",
     "SIGN_PERMISSION_OPTIONS": {
