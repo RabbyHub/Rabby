@@ -82,14 +82,33 @@ const timeToDate = (time: Time): Date => {
   return new Date(year, (month || 1) - 1, day || 1);
 };
 
-const formatLocalDateTime = (time: Time): string => {
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+export const formatLocalDateTime = (time: Time, noTime = false): string => {
   const date = timeToDate(time);
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1);
+  const dow = DAYS[date.getDay()];
   const day = padZero(date.getDate());
+  const mon = MONTHS[date.getMonth()];
+  const year = String(date.getFullYear()).slice(-2);
   const hours = padZero(date.getHours());
   const minutes = padZero(date.getMinutes());
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
+  return noTime
+    ? `${dow} ${day} ${mon} '${year}`
+    : `${dow} ${day} ${mon} '${year} ${hours}:${minutes}`;
 };
 
 const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
@@ -116,20 +135,11 @@ const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
   }
 };
 
-const formatLocalDate = (time: Time): string => {
-  const date = timeToDate(time);
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1);
-  const day = padZero(date.getDate());
-  return `${year}-${month}-${day}`;
-};
-
-const createTimeLocalization = (isWeekly = false) => {
+const createTimeLocalization = (noTime = false) => {
   const formatTick = (time: Time, tickMarkType: TickMarkType): string =>
     formatTickLabel(timeToDate(time), tickMarkType);
 
-  const formatHover = (time: Time): string =>
-    isWeekly ? formatLocalDate(time) : formatLocalDateTime(time);
+  const formatHover = (time: Time): string => formatLocalDateTime(time, noTime);
 
   return {
     locale: 'en-US',

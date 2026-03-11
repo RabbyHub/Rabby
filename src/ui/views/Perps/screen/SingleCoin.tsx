@@ -943,15 +943,25 @@ export const PerpsSingleCoin = () => {
                     overlayClassName="rectangle w-[max-content]"
                     placement="top"
                     title={
-                      Number(positionData?.fundingPayments || 0) > 0
-                        ? t('page.perps.singleCoin.fundingGainsTips')
-                        : t('page.perps.singleCoin.fundingPaymentsTips')
+                      <Trans
+                        i18nKey={'page.perpsPro.userInfo.tab.fundingTipsBold'}
+                        components={{
+                          bold: <span className="font-bold" />,
+                        }}
+                      />
                     }
                   >
                     <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
                   </TooltipWithMagnetArrow>
                 </div>
-                <span className="text-r-neutral-title-1 font-medium">
+                <span
+                  className={clsx(
+                    'font-medium',
+                    Number(positionData?.fundingPayments || 0) > 0
+                      ? 'text-r-green-default'
+                      : 'text-r-red-default'
+                  )}
+                >
                   {Number(positionData?.fundingPayments || 0) === 0
                     ? ''
                     : Number(positionData?.fundingPayments || 0) > 0
