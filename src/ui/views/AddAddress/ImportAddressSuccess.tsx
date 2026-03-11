@@ -100,8 +100,8 @@ export const ImportAddressSuccess: React.FC<{
       <div className="mx-auto w-[600px] pt-[114px]">
         <RcRabbyLogo viewBox="0 0 152 44" className="h-[42px] w-[152px]" />
       </div>
-      <div className="mx-auto mt-[8px] h-[586px] w-[600px] rounded-[8px] bg-r-neutral-card-1 px-[120px] pb-[32px] pt-[32px]">
-        <div className="flex flex-col items-center">
+      <div className="mx-auto mt-[8px] flex h-[586px] w-[600px] flex-col rounded-[8px] bg-r-neutral-card-1 px-[120px] pb-[32px] pt-[32px]">
+        <div className="shrink-0 flex flex-col items-center">
           <RcCreateAddressSuccessIcon className="h-[40px] w-[40px]" />
           <div className="mt-[16px] text-center text-[24px] font-medium leading-[29px] text-r-neutral-title-1">
             {title}
@@ -111,22 +111,24 @@ export const ImportAddressSuccess: React.FC<{
           </div>
         </div>
 
-        <SuccessAddressCards
-          items={items}
-          setItems={setItems}
-          inputRefs={inputRefs}
-          onCommitAlias={commitAlias}
-          listClassName="mt-[24px] flex flex-col gap-[12px]"
-          cardClassName="h-[64px] rounded-[8px] border border-rabby-neutral-line px-[7px] py-[5px]"
-          aliasWrapClassName="flex h-[30px] items-center rounded-[4px] bg-r-neutral-card-2 px-[8px]"
-          aliasInputClassName="w-full border-none bg-transparent text-[15px] font-medium leading-[18px] text-r-neutral-title-1 outline-none"
-          addressRowClassName="flex h-[28px] items-center px-[8px]"
-          addressTextClassName="text-[13px] leading-[16px] text-r-neutral-foot"
-          copyButtonClassName="ml-[4px] h-[14px] w-[14px] shrink-0"
-          copyIconClassName="h-[14px] w-[14px]"
-        />
+        <div className="mt-[24px] min-h-0 flex-1 overflow-hidden">
+          <SuccessAddressCards
+            items={items}
+            setItems={setItems}
+            inputRefs={inputRefs}
+            onCommitAlias={commitAlias}
+            listClassName="h-full"
+            cardClassName="h-[64px] rounded-[8px] border border-rabby-neutral-line px-[7px] py-[5px]"
+            aliasWrapClassName="flex h-[30px] items-center rounded-[4px] bg-r-neutral-card-2 px-[8px]"
+            aliasInputClassName="w-full border-none bg-transparent text-[15px] font-medium leading-[18px] text-r-neutral-title-1 outline-none"
+            addressRowClassName="flex h-[28px] items-center px-[8px]"
+            addressTextClassName="text-[13px] leading-[16px] text-r-neutral-foot"
+            copyButtonClassName="ml-[4px] h-[14px] w-[14px] shrink-0"
+            copyIconClassName="h-[14px] w-[14px]"
+          />
+        </div>
 
-        <div className="mt-[94px]">
+        <div className="shrink-0 pt-[16px]">
           <Button
             type="primary"
             size="large"

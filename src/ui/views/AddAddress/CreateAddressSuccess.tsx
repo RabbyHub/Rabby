@@ -160,7 +160,7 @@ export const CreateAddressSuccess: React.FC<{
             setItems={setItems}
             inputRefs={inputRefs}
             onCommitAlias={commitAlias}
-            listClassName="flex flex-col gap-[12px] pb-[12px]"
+            listClassName="h-full"
             cardClassName="h-[64px] shrink-0 rounded-[8px] border border-rabby-neutral-line px-[7px] py-[5px]"
             aliasWrapClassName="h-[30px] rounded-[4px] bg-r-neutral-card-2 px-[8px] flex items-center"
             aliasInputClassName="w-full bg-transparent border-none outline-none text-[15px] leading-[18px] font-medium text-r-neutral-title-1"
