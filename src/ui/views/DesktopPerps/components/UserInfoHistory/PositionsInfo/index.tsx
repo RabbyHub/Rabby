@@ -38,7 +38,6 @@ import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import {
-  formatAllDexsClearinghouseState,
   getStatsReportSide,
   handleDisplayFundingPayments,
   isScreenSmall,
