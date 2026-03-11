@@ -59,11 +59,9 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
     const sorted = sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
     if (!favoritedCoins?.length) return sorted;
     const favorites = sorted.filter((item) =>
-      favoritedCoins.includes(item.name.toUpperCase())
+      favoritedCoins.includes(item.name)
     );
-    const others = sorted.filter(
-      (item) => !favoritedCoins.includes(item.name.toUpperCase())
-    );
+    const others = sorted.filter((item) => !favoritedCoins.includes(item.name));
     return [...favorites, ...others];
   }, [marketData, favoritedCoins]);
 
@@ -74,7 +72,7 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
 
     return (
       list.filter((item) => {
-        return item.name.toUpperCase().includes(search.toUpperCase());
+        return item.name.includes(search);
       }) || []
     );
   }, [list, search]);
@@ -145,9 +143,7 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
                     key={item.name}
                     item={item}
                     hasPosition={hasPosition}
-                    isFavorited={favoritedCoins?.includes(
-                      item.name.toUpperCase()
-                    )}
+                    isFavorited={favoritedCoins?.includes(item.name)}
                     onToggleFavorite={onToggleFavorite}
                     onClick={() => {
                       onSelect(item.name);
