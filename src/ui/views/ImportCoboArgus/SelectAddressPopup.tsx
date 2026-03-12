@@ -1,17 +1,17 @@
 import { Popup } from '@/ui/component';
-import type { PortalProps } from '@rc-component/portal';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 
+type GetContainerFunc = () => HTMLElement;
 export interface Props {
   address: string;
   onConfirm: () => void;
   onCancel: () => void;
   visible: boolean;
-  getContainer?: PortalProps['getContainer'];
+  getContainer?: string | HTMLElement | GetContainerFunc | false;
 }
 
 export const SelectAddressPopup: React.FC<Props> = ({
