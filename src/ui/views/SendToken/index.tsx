@@ -55,6 +55,7 @@ import { Chain } from '@debank/common';
 import {
   checkIfTokenBalanceEnough,
   customTestnetTokenToTokenItem,
+  tokenAmountBn,
 } from '@/ui/utils/token';
 import {
   GasLevelType,
@@ -209,7 +210,10 @@ const SendToken = () => {
   const wallet = useWallet();
 
   // UI States
-  const [reserveGasOpen, setReserveGasOpen] = useState(false);
+  const [
+    /** @deprecated */ reserveGasOpen,
+    /** @deprecated */ setReserveGasOpen,
+  ] = useState(false);
   const [refreshId, setRefreshId] = useState(0);
 
   // Core States
@@ -630,11 +634,37 @@ const SendToken = () => {
     return fetchGasList();
   }, [fetchGasList]);
 
-  useEffect(() => {
-    if (clickedMax) {
-      loadGasList();
+  const loadGasListAndResolve = useCallback(async () => {
+    const result = {
+      isValidArray: true,
+      gasList: [] as GasLevel[],
+      instantGasLevel: null as null | GasLevel,
+      normalGasLevel: null as null | GasLevel,
+    };
+    let reqResult: GasLevel[] = [];
+    try {
+      reqResult = await loadGasList();
+      result.isValidArray = Array.isArray(reqResult);
+    } catch (err) {
+      result.isValidArray = false;
+      console.error(err);
+      // Sentry.captureException(err);
+    } finally {
+      result.gasList = result.isValidArray ? reqResult : [];
+      result.instantGasLevel = findInstanceLevel(result.gasList) || null;
+      result.normalGasLevel =
+        result.gasList.find((item) => item.level === 'normal') || null;
     }
-  }, [clickedMax, loadGasList]);
+
+    return result;
+  }, [loadGasList]);
+
+  useEffect(() => {
+    loadGasListAndResolve().then((result) => {
+      result.isValidArray &&
+        setSelectedGasLevel(result.normalGasLevel || result.instantGasLevel);
+    });
+  }, [loadGasListAndResolve]);
 
   const fetchExtraGasFees = useCallback(
     async (input: { gasPrice?: number }) => {
@@ -662,7 +692,9 @@ const SendToken = () => {
         return doReturn(0, 0);
 
       const {
-        gasPrice = (await loadGasList().then(findInstanceLevel))?.price || 0,
+        gasPrice = (
+          await loadGasListAndResolve().then((result) => result.instantGasLevel)
+        )?.price || 0,
       } = input;
 
       const l1GasFee = await wallet.fetchEstimatedL1Fee(
@@ -687,7 +719,7 @@ const SendToken = () => {
     },
     [
       currentAccount?.address,
-      loadGasList,
+      loadGasListAndResolve,
       chainItem?.id,
       currentToken,
       wallet,
@@ -1117,6 +1149,19 @@ const SendToken = () => {
     }
   });
 
+  const patchFormValues = useCallback(
+    (changedValues: Partial<FormSendToken>) => {
+      const newValues = {
+        // amount,
+        ...changedValues,
+        to: changedValues.to || form.getFieldValue('to') || '',
+      };
+      form.setFieldsValue(newValues);
+      setCacheAmount(newValues.amount || '0');
+    },
+    [form]
+  );
+
   const handleFormValuesChange = useCallback(
     async (
       changedValues: null | Partial<FormSendToken>,
@@ -1179,10 +1224,10 @@ const SendToken = () => {
           const percentValue = getSliderPercent(resultAmount, {
             token: targetToken,
           });
-          setSliderPercentValue(percentValue);
+          // setSliderPercentValue(percentValue);
         }
       } else {
-        setSliderPercentValue(0);
+        // setSliderPercentValue(0);
       }
 
       if (updateHistoryState) {
@@ -1469,7 +1514,9 @@ const SendToken = () => {
 
       const {
         gasLevel = selectedGasLevel ||
-          (await loadGasList().then(findInstanceLevel)),
+          (await loadGasListAndResolve().then(
+            (result) => result.instantGasLevel
+          )),
       } = input || {};
       const needReserveGasOnSendToken = !!gasLevel && gasLevel?.price > 0;
 
@@ -1530,7 +1577,7 @@ const SendToken = () => {
       isEstimatingGas,
       currentToken,
       selectedGasLevel,
-      loadGasList,
+      loadGasListAndResolve,
       couldReserveGas,
       form,
       handleFormValuesChange,
@@ -1544,7 +1591,7 @@ const SendToken = () => {
       fetchExtraGasFees,
     ]
   );
-  const [sliderPercentValue, setSliderPercentValue] = useState(0);
+  // const [sliderPercentValue, setSliderPercentValue] = useState(0);
   // const onSliderValueChangeTo100 = useCallback(
   //   debounce((value: number) => {
   //     if (value !== 100) return;
@@ -1558,29 +1605,55 @@ const SendToken = () => {
       handleReserveGasClose();
       const gasLevel = gl
         ? gl
-        : await loadGasList().then(
-            (res) =>
-              res.find((item) => item.level === 'normal') ||
-              findInstanceLevel(res)
+        : await loadGasListAndResolve().then(
+            (result) => result.normalGasLevel || result.instantGasLevel
           );
 
       if (gasLevel) {
         setSelectedGasLevel(gasLevel);
+        handleMaxInfoChanged({ gasLevel }, { updateSliderValue: false });
+      } else {
+        setReserveGasOpen(false);
       }
-      handleMaxInfoChanged({ gasLevel }, { updateSliderValue: false });
     },
-    [handleReserveGasClose, handleMaxInfoChanged, loadGasList]
+    [handleReserveGasClose, handleMaxInfoChanged, loadGasListAndResolve]
   );
+
+  const handleSlider100 = useCallback(async () => {
+    if (currentToken && couldReserveGas) {
+      if (gasList) {
+        const gasLevel = gasList.find((e) => e.level === 'fast');
+        if (gasLevel) {
+          setSelectedGasLevel(gasLevel);
+          handleMaxInfoChanged({ gasLevel });
+        } else {
+          patchFormValues({ amount: tokenAmountBn(currentToken).toString(10) });
+        }
+      } else {
+        patchFormValues({ amount: tokenAmountBn(currentToken).toString(10) });
+      }
+    } else if (currentToken) {
+      patchFormValues({ amount: tokenAmountBn(currentToken).toString(10) });
+    }
+  }, [
+    currentToken,
+    couldReserveGas,
+    patchFormValues,
+
+    handleMaxInfoChanged,
+    gasList,
+  ]);
 
   const handleClickMaxButton = useCallback(async () => {
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: true }));
 
-    if (couldReserveGas) {
-      setReserveGasOpen(true);
-    } else {
-      handleMaxInfoChanged(undefined, { updateSliderValue: false });
-    }
-  }, [couldReserveGas, handleMaxInfoChanged]);
+    handleSlider100();
+    // if (couldReserveGas) {
+    //   setReserveGasOpen(true);
+    // } else {
+    //   handleMaxInfoChanged(undefined, { updateSliderValue: false });
+    // }
+  }, [handleSlider100]);
 
   const handleClickBack = () => {
     const from = (history.location.state as any)?.from;
