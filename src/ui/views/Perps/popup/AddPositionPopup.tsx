@@ -20,6 +20,7 @@ import {
   formatPerpsPct,
 } from '../utils';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
 
 export interface AddPositionPopupProps {
   visible?: boolean;
@@ -212,7 +213,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
           {direction === 'Long'
             ? t('page.perpsDetail.PerpsAddPositionPopup.addToLong')
             : t('page.perpsDetail.PerpsAddPositionPopup.addToShort')}{' '}
-          {coin}-USD
+          {formatPerpsCoin(coin)}-USD
         </div>
 
         <AssetPriceInfo
@@ -227,7 +228,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
               <div className="flex items-center gap-6">
                 <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={28} />
                 <span className="text-[16px] font-medium text-r-neutral-title-1">
-                  {coin}
+                  {formatPerpsCoin(coin)}
                 </span>
                 <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot">
                   {leverageType === 'cross'
@@ -291,7 +292,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
                   Number(tradeSize) * markPrice,
                   BigNumber.ROUND_DOWN
                 )}{' '}
-                = {tradeSize} {coin}
+                = {tradeSize} {formatPerpsCoin(coin)}
               </div>
             </div>
             <div className="flex items-center justify-between px-[16px] py-[12px] min-[48px]">
@@ -310,7 +311,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
                   Number(totalSize) * markPrice,
                   BigNumber.ROUND_DOWN
                 )}{' '}
-                = {totalSize} {coin}
+                = {totalSize} {formatPerpsCoin(coin)}
               </div>
             </div>
             <div className="flex items-center justify-between px-[16px] py-[12px] min-[48px]">
