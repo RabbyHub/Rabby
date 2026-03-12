@@ -907,6 +907,9 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
 
     prefetch({
       txs: currentTxs,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -928,6 +931,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
     collateralNotEnough,
     currentAccount,
     currentTxs,
+    getContainer,
     isLiquidatable,
     prefetch,
     visible,

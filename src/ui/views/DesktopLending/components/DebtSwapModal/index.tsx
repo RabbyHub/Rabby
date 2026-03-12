@@ -748,6 +748,9 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
 
     prefetch({
       txs: currentTxs,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -768,6 +771,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
     closeSign,
     currentAccount,
     currentTxs,
+    getContainer,
     isLiquidatable,
     prefetch,
     visible,
