@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { TCell, TRow } from './components/Table';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import clsx from 'clsx';
@@ -21,8 +21,6 @@ import {
 } from 'ui/assets/dashboard/panel';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 
-const HOVER_DELAY_MS = 400;
-
 export interface Props {
   item: AbstractPortfolioToken;
   style?: React.CSSProperties;
@@ -31,8 +29,6 @@ export interface Props {
 
 export interface TokenItemAssetProps extends Props {
   showButtons: boolean;
-  onLpTagMouseEnter: () => void;
-  onLpTagMouseLeave: () => void;
 }
 
 const LpContainer = styled.div`
@@ -114,8 +110,6 @@ const ActionBtn = styled.div`
 const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
   item,
   showButtons,
-  onLpTagMouseEnter,
-  onLpTagMouseLeave,
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -187,11 +181,7 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
               {item.symbol}
             </span>
             {isLpToken(item) && (
-              <span
-                onMouseEnter={onLpTagMouseEnter}
-                onMouseLeave={onLpTagMouseLeave}
-                className="inline-flex"
-              >
+              <span className="inline-flex">
                 <LpTokenTag
                   size={13.5}
                   inModal
@@ -303,46 +293,12 @@ const TokenItemMarketInfo: React.FC<Props> = ({ item }) => {
 
 export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
   const [showButtons, setShowButtons] = useState(false);
-  const isHoveringLpTagRef = useRef(false);
-  const hoverTimerRef = useRef<ReturnType<typeof setTimeout>>();
-
   const handleRowMouseEnter = useCallback(() => {
-    if (isHoveringLpTagRef.current) return;
-    hoverTimerRef.current = setTimeout(() => {
-      setShowButtons(true);
-    }, HOVER_DELAY_MS);
+    setShowButtons(true);
   }, []);
 
   const handleRowMouseLeave = useCallback(() => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = undefined;
-    }
     setShowButtons(false);
-  }, []);
-
-  const handleLpTagMouseEnter = useCallback(() => {
-    isHoveringLpTagRef.current = true;
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = undefined;
-    }
-    setShowButtons(false);
-  }, []);
-
-  const handleLpTagMouseLeave = useCallback(() => {
-    isHoveringLpTagRef.current = false;
-    hoverTimerRef.current = setTimeout(() => {
-      setShowButtons(true);
-    }, HOVER_DELAY_MS);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (hoverTimerRef.current) {
-        clearTimeout(hoverTimerRef.current);
-      }
-    };
   }, []);
 
   return (
@@ -358,12 +314,7 @@ export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
         'hover:border-blue-light active:bg-opacity-10'
       )}
     >
-      <TokenItemAsset
-        item={item}
-        showButtons={showButtons}
-        onLpTagMouseEnter={handleLpTagMouseEnter}
-        onLpTagMouseLeave={handleLpTagMouseLeave}
-      />
+      <TokenItemAsset item={item} showButtons={showButtons} />
       <TokenItemMarketInfo item={item} />
     </StyledTRow>
   );
