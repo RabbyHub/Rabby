@@ -514,6 +514,9 @@ export const RepayModal: React.FC<RepayModalProps> = ({
     }
     prefetch({
       txs: txsForMiniApproval,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -531,6 +534,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
     txsForMiniApproval,
     prefetch,
     closeSign,
+    getContainer,
   ]);
 
   useEffect(() => {

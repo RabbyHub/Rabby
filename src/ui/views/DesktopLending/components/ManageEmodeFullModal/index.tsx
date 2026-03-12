@@ -228,6 +228,9 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
     }
     prefetch({
       txs,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -240,6 +243,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
     txs,
     prefetch,
     closeSign,
+    getContainer,
     wantDisableEmode,
   ]);
 

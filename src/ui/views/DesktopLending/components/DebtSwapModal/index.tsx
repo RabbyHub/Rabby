@@ -35,6 +35,7 @@ import { formatTokenAmount } from '@/ui/utils/number';
 import { isSameAddress, noop } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
 import stats from '@/stats';
+import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 
 import { getParaswap } from '../../config/paraswap';
 import { useLendingSummary } from '../../hooks';
@@ -356,26 +357,31 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
         return;
       }
 
-      const normalizedValue = value === '' ? '' : value;
-      if (normalizedValue === '') {
+      if (value === '') {
         setFromAmount('');
         setSlider(0);
         return;
       }
 
-      const amountBn = new BigNumber(normalizedValue || 0);
-      if (amountBn.lte(0)) {
-        setFromAmount(normalizedValue);
+      if (!INPUT_NUMBER_RE.test(value)) {
+        return;
+      }
+
+      const filtered = filterNumber(value);
+      if (!filtered) {
+        setFromAmount('');
         setSlider(0);
         return;
       }
+
+      const amountBn = new BigNumber(filtered);
 
       const safeAmountBn = amountBn.gt(fromBalanceBn)
         ? fromBalanceBn
         : amountBn;
       const cappedAmount = amountBn.gt(fromBalanceBn)
         ? fromBalanceBn.toString(10)
-        : normalizedValue;
+        : filtered;
 
       const nextSlider = fromBalanceBn.gt(0)
         ? safeAmountBn.div(fromBalanceBn).times(100).toNumber()
@@ -600,10 +606,9 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
     );
 
     const maxNewDebtAmount =
-      swapRate.maxInputAmountWithSlippage ||
-      swapRate.inputAmount ||
-      swapRate.optimalRateData.srcAmount ||
-      '0';
+      swapRate.inputAmount || swapRate.optimalRateData.srcAmount || '0';
+    const delegationAmount =
+      swapRate.maxInputAmountWithSlippage || maxNewDebtAmount;
     const isMaxSelected = new BigNumber(debouncedFromAmount || 0).gte(
       fromBalanceBn.toString(10)
     );
@@ -629,7 +634,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
           address: currentAccount.address,
           delegatee: selectedMarketData.addresses.DEBT_SWITCH_ADAPTER,
           debtTokenAddress: toReserve.variableDebtTokenAddress,
-          amount: getApproveAmount(maxNewDebtAmount, slippageBps),
+          amount: getApproveAmount(delegationAmount, slippageBps),
           decimals: toToken.decimals,
         })
       : undefined;
@@ -742,6 +747,9 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
 
     prefetch({
       txs: currentTxs,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -762,6 +770,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
     closeSign,
     currentAccount,
     currentTxs,
+    getContainer,
     isLiquidatable,
     prefetch,
     visible,
@@ -1014,6 +1023,14 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
                     {t('page.lending.debtSwap.borrowBalance')}:{' '}
                     {fromBalanceDisplay}
                   </span>
+                  <button
+                    type="button"
+                    className="rounded-[2px] bg-rb-brand-light-1 px-4 py-[2px] text-[11px] font-medium leading-[11px] text-rb-brand-default hover:bg-rb-brand-light-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    onClick={() => handleSliderChange(100)}
+                    disabled={fromBalanceBn.lte(0)}
+                  >
+                    MAX
+                  </button>
                 </div>
               </div>
 
@@ -1073,14 +1090,6 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
                         toDisplayReserve?.variableBorrows || '0'
                       )}
                     </span>
-                    <button
-                      type="button"
-                      className="rounded-[2px] bg-rb-brand-light-1 px-4 py-[2px] text-[11px] font-medium leading-[11px] text-rb-brand-default hover:bg-rb-brand-light-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      onClick={() => handleSliderChange(100)}
-                      disabled={fromBalanceBn.lte(0)}
-                    >
-                      MAX
-                    </button>
                   </div>
                 ) : null}
               </div>
@@ -1145,6 +1154,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
               setAutoSlippage={setAutoSlippage}
               setIsCustomSlippage={setIsCustomSlippage}
               type="swap"
+              valueClassName="text-[14px] font-[700]"
             />
           </div>
         ) : null}
@@ -1162,7 +1172,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
           </div>
         ) : null}
 
-        {canSwap &&
+        {/*{canSwap &&
         !noQuote &&
         priceImpactData.showWarning &&
         !isQuoteLoading ? (
@@ -1181,7 +1191,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
               })}
             </div>
           </div>
-        ) : null}
+        ) : null}*/}
 
         {!noQuote && toToken && !!Number(debouncedFromAmount) ? (
           <DebtSwapOverview
@@ -1242,7 +1252,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
                 {riskDesc}
               </span>
             </div>
-            <div className="mb-12 flex items-start gap-8">
+            <div className="mb-12 flex items-center justify-center gap-8">
               <StyledCheckbox
                 checked={riskChecked}
                 onChange={(e) => setRiskChecked(e.target.checked)}

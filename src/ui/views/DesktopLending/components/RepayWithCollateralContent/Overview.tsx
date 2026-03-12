@@ -101,8 +101,8 @@ const RepayWithCollateralOverview = ({
             <div
               className={
                 isQuoteLoading
-                  ? 'flex items-start gap-6 opacity-50'
-                  : 'flex items-start gap-6'
+                  ? 'flex items-start justify-end gap-6 opacity-50'
+                  : 'flex items-start justify-end gap-6'
               }
             >
               <SymbolIcon tokenSymbol={toToken.symbol} size={16} />

@@ -272,6 +272,9 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
 
     prefetch({
       txs: txsForMiniApproval,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -288,6 +291,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     txsForMiniApproval,
     prefetch,
     closeSign,
+    getContainer,
   ]);
 
   useEffect(() => {
