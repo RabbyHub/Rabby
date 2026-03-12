@@ -42,7 +42,7 @@ import IconWatchWhite, {
 } from 'ui/assets/walletlogo/IconWatch-white.svg';
 import IconWatchInk, {
   ReactComponent as RcIconWatchInk,
-} from 'ui/assets/walletlogo/IconWatch-black.svg';
+} from 'ui/assets/walletlogo/icon-watch-ink.svg';
 
 import LogoAirGap, {
   ReactComponent as RcLogoAirGap,
