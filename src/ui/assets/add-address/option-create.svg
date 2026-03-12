@@ -1,6 +1,5 @@
-<svg viewBox="0 0 13.9995 13.9995" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="Group 2689">
-<path id="Vector" d="M6.99976 1V12.9995" stroke="var(--stroke-0, #2ABB7F)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_2" d="M1 6.99996H12.9995" stroke="var(--stroke-0, #2ABB7F)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+  <rect width="28" height="28" rx="6" fill="var(-r-green-light,#D8F2E7)"/>
+  <path d="M14 8V19.9995" stroke="var(--r-green-default,#2ABB7F)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M8.00024 14H19.9997" stroke="var(--r-green-default,#2ABB7F)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

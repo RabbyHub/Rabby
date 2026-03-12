@@ -377,6 +377,7 @@ function MnemonicsInputs({
   const [needPassphrase, setNeedPassphrase] = React.useState<boolean>(false);
   const [dropdownVisible, setDropdownVisible] = React.useState(false);
   const [showAllMenuOptions, setShowAllMenuOptions] = React.useState(false);
+  const dropdownTriggerRef = React.useRef<HTMLDivElement | null>(null);
 
   const [invalidWords, setInvalidWords] = React.useState<number[]>([]);
   const { wordPlaceHolders } = React.useMemo(() => {
@@ -532,9 +533,11 @@ function MnemonicsInputs({
         )}
       >
         <Dropdown
+          placement="bottomLeft"
           trigger={['click']}
           visible={dropdownVisible}
           onVisibleChange={handleDropdownVisibleChange}
+          getPopupContainer={() => dropdownTriggerRef.current || document.body}
           overlay={
             <Menu className="mnemonics-input-menu py-8px rounded-[8px] bg-r-neutral-bg-1">
               {(showAllMenuOptions
@@ -667,7 +670,10 @@ function MnemonicsInputs({
             </Menu>
           }
         >
-          <div className="left flex items-center cursor-pointer">
+          <div
+            ref={dropdownTriggerRef}
+            className="left relative flex items-center cursor-pointer"
+          >
             <span>
               {!isSlip39 ? (
                 <Trans

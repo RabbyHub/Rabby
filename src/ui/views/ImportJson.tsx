@@ -24,7 +24,7 @@ const ImportJson: React.FC<{
       if (onNavigate) {
         onNavigate('success', {
           accounts,
-          title: t('page.newAddress.importedSuccessfully'),
+          title: t('page.newAddress.addressImported'),
           editing: true,
           importedAccount: true,
         });
@@ -34,7 +34,7 @@ const ImportJson: React.FC<{
         pathname: '/popup/import/success',
         state: {
           accounts,
-          title: t('page.newAddress.importedSuccessfully'),
+          title: t('page.newAddress.addressImported'),
           editing: true,
           importedAccount: true,
         },

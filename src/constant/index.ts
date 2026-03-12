@@ -40,6 +40,10 @@ import IconMnemonicDesktopWhite, {
 import IconWatchWhite, {
   ReactComponent as RcIconWatchWhite,
 } from 'ui/assets/walletlogo/IconWatch-white.svg';
+import IconWatchInk, {
+  ReactComponent as RcIconWatchInk,
+} from 'ui/assets/walletlogo/IconWatch-black.svg';
+
 import LogoAirGap, {
   ReactComponent as RcLogoAirGap,
 } from 'ui/assets/walletlogo/airgap.svg';
@@ -1039,7 +1043,7 @@ export const WALLET_BRAND_CONTENT: {
 export const KEYRING_ICONS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicInk,
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyInk,
-  [KEYRING_CLASS.WATCH]: IconWatchPurple,
+  [KEYRING_CLASS.WATCH]: IconWatchInk,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
@@ -1079,7 +1083,7 @@ export const KEYRING_ICONS_WHITE: Record<KeyringWithIcon, string> = {
 export const KEYRING_PURPLE_LOGOS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicInk,
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyInk,
-  [KEYRING_CLASS.WATCH]: IconWatchPurple,
+  [KEYRING_CLASS.WATCH]: IconWatchInk,
 };
 
 export const KEYRINGS_LOGOS: Record<KeyringWithIcon, string> = {
@@ -1121,7 +1125,7 @@ export const NEXT_KEYRING_ICONS = {
     dataLight: KEYRING_ICONS_WHITE[KEYRING_CLASS.WATCH],
     dataDark: KEYRING_ICONS[KEYRING_CLASS.WATCH],
     rcLight: RcIconWatchWhite,
-    rcDark: RcIconWatchPurple,
+    rcDark: RcIconWatchInk,
   } as NextKeyringIconType,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: {
     dataLight: KEYRING_ICONS_WHITE[HARDWARE_KEYRING_TYPES.BitBox02.type],
@@ -1466,7 +1470,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_TYPE.WatchAddressKeyring]: 'Watch-only address',
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
-  [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Oneey',
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
   [WALLET_BRAND_TYPES.ONEKEY]: 'Onekey QR',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
   [KEYRING_CLASS.GNOSIS]: 'Safe',

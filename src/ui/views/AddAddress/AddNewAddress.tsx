@@ -20,9 +20,6 @@ import { AddressViewer, Copy, Item, PageHeader } from '@/ui/component';
 import {
   RcAddNewAddressChevronIcon,
   RcAddNewAddressCreateSeedIcon,
-  RcAddNewAddressAddBgIcon,
-  RcAddNewAddressAddVerticalIcon,
-  RcAddNewAddressAddHorizontalIcon,
 } from '@/ui/assets/add-address';
 
 const MAX_VISIBLE_ADDRESSES = 3;
@@ -76,7 +73,7 @@ const Chevron = ({
     <RcAddNewAddressChevronIcon
       className={clsx(
         'w-[20px] h-[20px] shrink-0 transition-transform',
-        expanded ? '-rotate-90' : 'rotate-90',
+        expanded ? 'rotate-90' : '-rotate-90',
         className
       )}
     />
@@ -312,7 +309,7 @@ export const AddNewAddress: React.FC<{
         >
           <div className="flex items-center min-w-0">
             <RcAddNewAddressCreateSeedIcon className="w-[24px] h-[24px] shrink-0" />
-            <span className="ml-[12px] text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+            <span className="ml-[12px] text-[15px] leading-normal font-medium text-r-neutral-title-1">
               {t('page.newAddress.createANewSeedPhrase')}
             </span>
           </div>
