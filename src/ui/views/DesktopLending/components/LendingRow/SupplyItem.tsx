@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue, isSameAddress } from '@/ui/utils';
+import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { IsolateTag } from '../IsolateTag';
 import { TCell, TRow } from '@/ui/views/CommonPopup/AssetList/components/Table';
@@ -12,15 +12,9 @@ import SymbolIcon from '../SymbolIcon';
 import { DisplayPoolReserveInfo } from '../../types';
 import { getSupplyCapData } from '../../utils/supply';
 import { useLendingSummary } from '../../hooks';
-import { useSelectedMarket } from '../../hooks/market';
-import wrapperToken from '../../config/wrapperToken';
-
-const CollateralSwitch = styled(Switch)<{ shadowBg?: boolean }>`
+const CollateralSwitch = styled(Switch)`
   &.ant-switch {
-    background-color: ${({ shadowBg }) =>
-      shadowBg
-        ? 'var(--rb-neutral-bg-2) !important'
-        : 'var(--rb-neutral-line) !important'};
+    background-color: var(--rb-neutral-line) !important;
   }
   &.ant-switch-checked {
     background-color: var(--rb-green-default, #2abb7f) !important;
@@ -34,8 +28,6 @@ export const SupplyItem: React.FC<{
   onToggleCollateral?: (data: DisplayPoolReserveInfo) => void;
 }> = ({ data, onSupply, onWithdraw, onToggleCollateral }) => {
   const { t } = useTranslation();
-
-  const { chainEnum } = useSelectedMarket();
   const { iUserSummary: userSummary, getTargetReserve } = useLendingSummary();
 
   const canBeEnabledAsCollateral = useMemo(() => {
@@ -58,15 +50,6 @@ export const SupplyItem: React.FC<{
     return formatApy(Number(data.reserve.supplyAPY));
   }, [data.reserve.supplyAPY]);
 
-  const isWrapperToken = useMemo(() => {
-    return chainEnum
-      ? isSameAddress(
-          wrapperToken[chainEnum]?.address,
-          data.reserve.underlyingAsset
-        )
-      : false;
-  }, [data.reserve.underlyingAsset, chainEnum]);
-
   const totalSuppliedUSD = useMemo(() => {
     return formatUsdValue(
       Number(data.underlyingBalanceUSD),
@@ -80,21 +63,8 @@ export const SupplyItem: React.FC<{
 
   return (
     <TRow
-      className={clsx(
-        'px-[16px] py-[12px] rounded-[12px]',
-        isWrapperToken ? 'bg-r-neutral-line relative' : 'bg-rb-neutral-bg-3'
-      )}
+      className={clsx('px-[16px] py-[12px] rounded-[12px] bg-rb-neutral-bg-3')}
     >
-      {isWrapperToken && (
-        <div
-          className="absolute left-[20px] top-[-8px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px]"
-          style={{
-            borderBottomColor: 'var(--r-neutral-line)',
-            borderLeftColor: 'transparent',
-            borderRightColor: 'transparent',
-          }}
-        />
-      )}
       <TCell className="flex-1 min-w-0">
         <div className="flex items-center gap-[32px]">
           <div className="flex items-center gap-[8px] flex-shrink-0 min-w-[180px]">
@@ -140,7 +110,6 @@ export const SupplyItem: React.FC<{
             <CollateralSwitch
               checked={data.usageAsCollateralEnabledOnUser}
               onChange={handleCollateralChange}
-              shadowBg={isWrapperToken}
               checkedChildren=""
               unCheckedChildren=""
             />
@@ -150,7 +119,6 @@ export const SupplyItem: React.FC<{
               title={t('page.lending.supplyDetail.isolatedTips')}
             >
               <CollateralSwitch
-                shadowBg={isWrapperToken}
                 checked={data.usageAsCollateralEnabledOnUser}
                 disabled
                 checkedChildren=""
