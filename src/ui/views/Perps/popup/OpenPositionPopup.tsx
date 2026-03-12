@@ -535,7 +535,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {t('page.perps.title')}
               </div>
               <div className="text-13 text-r-neutral-title-1 flex items-center font-medium">
-                {coin} - USD
+                {formatPerpsCoin(coin)} - USD
               </div>
             </div>
             <div className="flex justify-between items-center">
@@ -568,7 +568,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 </TooltipWithMagnetArrow>
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                {formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
+                {formatUsdValue(Number(tradeAmount))} = {tradeSize}{' '}
+                {formatPerpsCoin(coin)}
               </div>
             </div>
             {Boolean(tpTriggerPx) && (
@@ -615,7 +616,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           <div className="space-y-16">
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body">
-                {coin}-USD {t('page.perps.price')}
+                {formatPerpsCoin(coin)}-USD {t('page.perps.price')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
                 ${splitNumberByStep(markPrice)}
