@@ -1,4 +1,5 @@
 import { Popup } from '@/ui/component';
+import type { PortalProps } from '@rc-component/portal';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
@@ -10,6 +11,7 @@ export interface Props {
   onConfirm: () => void;
   onCancel: () => void;
   visible: boolean;
+  getContainer?: PortalProps['getContainer'];
 }
 
 export const SelectAddressPopup: React.FC<Props> = ({
@@ -17,6 +19,7 @@ export const SelectAddressPopup: React.FC<Props> = ({
   onConfirm,
   onCancel,
   visible,
+  getContainer,
 }) => {
   const { t } = useTranslation();
   return (
@@ -26,6 +29,7 @@ export const SelectAddressPopup: React.FC<Props> = ({
       title={t('page.newAddress.coboSafe.findTheAssociatedSafeAddress')}
       height={227}
       isSupportDarkMode
+      getContainer={getContainer}
     >
       <div
         className={clsx(
