@@ -5,7 +5,7 @@ import { AddressInput } from './AddressInput';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import { Header } from './Header';
-import { useApproval, useWallet } from '@/ui/utils';
+import { getUiType, useApproval, useWallet } from '@/ui/utils';
 import { isAddress } from 'viem';
 import { SelectAddressPopup } from './SelectAddressPopup';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -15,6 +15,7 @@ import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
 import { safeJSONParse } from '@/utils';
 import { UI_TYPE } from '@/constant/ui';
 import qs from 'qs';
+import { useCreateAddressActions } from '../AddAddress/useCreateAddress';
 
 type Type = 'select-chain' | 'add-address' | 'select-address';
 
@@ -41,6 +42,10 @@ export const ImportCoboArgus: React.FC<{
   const [hasImportError, setHasImportError] = React.useState<boolean>(false);
   const { show, contextHolder } = useRepeatImportConfirm();
   const isByImportAddressEvent = !!state;
+
+  const { openSuccessPage } = useCreateAddressActions({
+    onNavigate,
+  });
 
   const handleNext = React.useCallback(async () => {
     if (selectedChain && step === 'select-chain') {
@@ -73,30 +78,14 @@ export const ImportCoboArgus: React.FC<{
         networkId: CHAINS[selectedChain!].serverId,
         safeModuleAddress: inputAddress,
       });
-      if (UI_TYPE.isDesktop) {
-        onNavigate?.('success', {
-          accounts,
-          title: t('page.newAddress.importedSuccessfully'),
-          editing: true,
-          importedAccount: true,
-          importedLength: (
-            await wallet.getTypedAccounts(KEYRING_TYPE.CoboArgusKeyring)
-          )?.[0]?.accounts?.length,
-        });
-      } else {
-        history.replace({
-          pathname: '/popup/import/success',
-          state: {
-            accounts,
-            title: t('page.newAddress.importedSuccessfully'),
-            editing: true,
-            importedAccount: true,
-            importedLength: (
-              await wallet.getTypedAccounts(KEYRING_TYPE.CoboArgusKeyring)
-            )?.[0]?.accounts?.length,
-          },
-        });
-      }
+      openSuccessPage({
+        addresses: accounts.map((item) => ({
+          address: item.address,
+          alias: '',
+        })),
+        publicKey: '',
+        title: t('page.newAddress.addressAdded'),
+      });
     } catch (e) {
       if (e.message?.includes?.('DuplicateAccountError')) {
         const address = safeJSONParse(e.message)?.address;
@@ -132,7 +121,7 @@ export const ImportCoboArgus: React.FC<{
   return (
     <section
       className={clsx(
-        'bg-r-neutral-bg-2 relative',
+        'bg-r-neutral-bg-2 relative container-section',
         isInModal ? 'h-[600px] overflow-auto' : ''
       )}
     >
@@ -165,6 +154,7 @@ export const ImportCoboArgus: React.FC<{
             onCancel={() => setStep('add-address')}
             onConfirm={handleDone}
             visible={step === 'select-address'}
+            getContainer={'.container-section'}
           />
         )}
       </div>

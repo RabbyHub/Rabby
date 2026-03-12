@@ -17,6 +17,7 @@ import { ReactComponent as RcEye } from '@/ui/assets/new-user-import/eye-cc.svg'
 import { ReactComponent as RcEyeClose } from '@/ui/assets/new-user-import/eye-close-cc.svg';
 import { ReactComponent as RcClose } from '@/ui/assets/new-user-import/close-cc.svg';
 import { useCreateAddressActions } from './useCreateAddress';
+import { privateKeyToAddress } from 'viem/accounts';
 
 type BulkImportTab = 'privateKey' | 'keyStore';
 
@@ -160,6 +161,21 @@ const createPrivateKeyRow = (value = ''): PrivateKeyRow => ({
 const normalizePrivateKey = (value: string) =>
   value.replace(/^0x/i, '').toLowerCase();
 
+const getPrivateKeyAddress = (value: string) => {
+  const normalized = normalizePrivateKey(value.trim());
+  if (!normalized) {
+    return null;
+  }
+
+  try {
+    return privateKeyToAddress(
+      `0x${normalized}` as `0x${string}`
+    ).toLowerCase();
+  } catch {
+    return null;
+  }
+};
+
 const splitPrivateKeys = (value: string) =>
   value
     .split(PRIVATE_KEY_SEPARATOR_RE)
@@ -214,6 +230,26 @@ const extractFilledValues = (rows: PrivateKeyRow[]) =>
     rows.map((item) => item.value),
     rows
   ).map((item) => item.value.trim());
+
+const getDuplicateRowIds = (
+  rows: PrivateKeyRow[],
+  duplicateAddresses: string[]
+) => {
+  if (!duplicateAddresses.length) {
+    return [];
+  }
+
+  const duplicateAddressSet = new Set(
+    duplicateAddresses.map((address) => address.toLowerCase())
+  );
+
+  return rows
+    .filter((row) => {
+      const address = getPrivateKeyAddress(row.value);
+      return !!address && duplicateAddressSet.has(address);
+    })
+    .map((row) => row.id);
+};
 
 const BulkImportPrivateKey: React.FC = () => {
   const wallet = useWallet();
@@ -759,9 +795,16 @@ const BulkImportPrivateKey: React.FC = () => {
       const { accounts, duplicateAddresses } = await wallet.importPrivateKeys(
         validRows.map((row) => row.value.trim())
       );
+      const duplicateRowIds = getDuplicateRowIds(validRows, duplicateAddresses);
       importedAccounts.push(...accounts);
 
       clearClipboard();
+
+      if (duplicateRowIds.length) {
+        setInvalidRowIds(duplicateRowIds);
+      } else {
+        setInvalidRowIds([]);
+      }
 
       if (importedAccounts.length) {
         await showDuplicatePrompt(duplicateAddresses);
@@ -770,10 +813,24 @@ const BulkImportPrivateKey: React.FC = () => {
       }
 
       if (duplicateAddresses[0] && validRows.length === 1) {
+        setPrivateKeyError(
+          t('page.newAddress.duplicateAddressesSkippedDesc', {
+            count: duplicateAddresses.length,
+          })
+        );
         await show({
           address: duplicateAddresses[0],
           type: KEYRING_CLASS.PRIVATE_KEY,
         });
+        return;
+      }
+
+      if (duplicateRowIds.length) {
+        setPrivateKeyError(
+          t('page.newAddress.duplicateAddressesSkippedDesc', {
+            count: duplicateRowIds.length,
+          })
+        );
         return;
       }
 
