@@ -1686,8 +1686,19 @@ export class WalletController extends BaseController {
     return false;
   };
 
-  openInDesktop = async (_url: string) => {
-    const desktopTabId = preferenceService.getPreference('desktopTabId');
+  openInDesktop = async (
+    _url: string,
+    options?: {
+      desktopTabId?: Browser.Tabs.Tab['id'];
+      triggerFocusEventOnDesktop?: boolean;
+    }
+  ) => {
+    const {
+      desktopTabId: inputDesktopTabId,
+      triggerFocusEventOnDesktop = true,
+    } = options || {};
+    const desktopTabId: Browser.Tabs.Tab['id'] =
+      inputDesktopTabId || preferenceService.getPreference('desktopTabId');
     const currentDesktopTab = desktopTabId
       ? await Browser.tabs.get(desktopTabId).catch(() => null)
       : null;
@@ -1698,9 +1709,10 @@ export class WalletController extends BaseController {
         active: true,
         url: url,
       });
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.DESKTOP.FOCUSED,
-      });
+      triggerFocusEventOnDesktop &&
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.DESKTOP.FOCUSED,
+        });
       const currentWindow = await Browser.windows.getLastFocused();
       if (tab.windowId && tab.windowId !== currentWindow.id) {
         Browser.windows.update(tab.windowId, {
