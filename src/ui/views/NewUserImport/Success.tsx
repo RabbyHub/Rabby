@@ -12,19 +12,23 @@ import { query2obj } from '@/ui/utils/url';
 import { Button, Input, InputRef } from 'antd';
 import clsx from 'clsx';
 import { ReactComponent as RcIconChecked } from '@/ui/assets/new-user-import/check.svg';
-import { ReactComponent as RcIconPen } from '@/ui/assets/new-user-import/pen.svg';
-import { ReactComponent as RcIconConfirm } from '@/ui/assets/new-user-import/confirm-check.svg';
 import { ReactComponent as RcIconExternalCC } from '@/ui/assets/new-user-import/external-cc.svg';
 
 import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { Account } from '@/background/service/preference';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
 import { useAsync, useClickAway } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useDocumentVisibility, useMemoizedFn, useRequest } from 'ahooks';
 import { GnosisChainList } from './GnosisChainList';
+import {
+  AccountItemAddress,
+  AccountItemInput,
+  AccountItemInputWrapper,
+  AccountItemWrapper,
+} from './AccountItem';
 import { findChain } from '@/utils/chain';
 import { Chain } from '@/types/chain';
 import styled from 'styled-components';
@@ -32,128 +36,11 @@ import stats from '@/stats';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 import browser from 'webextension-polyfill';
-import { useCheckSeedPhraseBackup } from '@/ui/utils/useCheckSeedPhraseBackup';
 import { ReactComponent as RcIconTriangle } from '@/ui/assets/new-user-import/triangle.svg';
 import UserGuide1 from '@/ui/assets/new-user-import/guide-1.png';
 import UserGuide2 from '@/ui/assets/new-user-import/guide-2.png';
 import { ReactComponent as UserGuide1Icon } from '@/ui/assets/new-user-import/guide1.svg';
 import { ReactComponent as UserGuide2Icon } from '@/ui/assets/new-user-import/guide2.svg';
-
-const AccountItem = ({ account }: { account: Account }) => {
-  const [edit, setEdit] = useState(false);
-
-  const [name, updateAlias] = useAlias(account!.address);
-
-  const [localName, setLocalName] = useState(name || '');
-
-  const ref = useRef<InputRef>(null);
-
-  const [defaultName, setDefaultName] = useState(name || '');
-
-  const wallet = useWallet();
-
-  const updateRef = useRef(null);
-
-  const update = React.useCallback(() => {
-    updateAlias(localName.trim() ? localName : defaultName);
-    setEdit(false);
-  }, [updateAlias, localName, defaultName]);
-
-  useClickAway(updateRef, () => {
-    if (edit) {
-      update();
-    }
-  });
-
-  useLayoutEffect(() => {
-    if (edit) {
-      ref.current?.focus();
-    }
-  }, [edit]);
-
-  useEffect(() => {
-    wallet.uninstalledSyncStatus();
-  }, []);
-
-  if (!account) {
-    return null;
-  }
-
-  return (
-    <div
-      className={clsx(
-        'flex flex-col justify-center',
-        'border border-solid border-rabby-neutral-line',
-        'rounded-[8px] px-[16px] pb-[12px] pt-[6px]'
-      )}
-    >
-      <div ref={updateRef} className="flex items-center  font-medium">
-        {edit ? (
-          <Input
-            ref={ref}
-            autoComplete="false"
-            autoCorrect="false"
-            className={clsx(
-              'relative left-[-8px]',
-              'w-full h-[30px]',
-              'border-none bg-r-neutral-card2 text-r-neutral-title-1',
-              'p-8 rounded',
-              'text-[15px] leading-[18px] font-medium'
-            )}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                update();
-              }
-            }}
-            value={localName}
-            onChange={(e) => {
-              setLocalName(e.target.value);
-            }}
-          />
-        ) : (
-          <div className="flex items-center justify-center h-[30px]">
-            <div className="max-w-[300px] text-[15px] leading-[18px] truncate text-r-neutral-title1">
-              {name}
-            </div>
-          </div>
-        )}
-
-        {edit ? (
-          <>
-            <RcIconConfirm
-              className="w-[16px] h-[16px] cursor-pointer"
-              viewBox="0 0 20 20"
-              onClick={() => {
-                update();
-              }}
-            />
-            <div
-              className="flex-1 self-stretch"
-              onClick={() => {
-                update();
-              }}
-            />
-          </>
-        ) : (
-          <RcIconPen
-            className="cursor-pointer ml-6"
-            onClick={() => {
-              setEdit(true);
-              setLocalName(name || '');
-              if (!defaultName) {
-                setDefaultName(name || '');
-              }
-              ref.current?.focus();
-            }}
-          />
-        )}
-      </div>
-      <div className="text-[13px] leading-[16px] text-r-neutral-foot">
-        {ellipsisAddress(account.address)}
-      </div>
-    </div>
-  );
-};
 
 const ScrollBarDiv = styled.div`
   overflow-y: scroll;
@@ -167,12 +54,78 @@ const ScrollBarDiv = styled.div`
   }
 `;
 
-export const ImportOrCreatedSuccess = () => {
-  const history = useHistory();
-  const dispatch = useRabbyDispatch();
+const AccountItem = ({
+  account,
+  autoFocus,
+}: {
+  account: Account;
+  autoFocus?: boolean;
+}) => {
+  const [name, updateAlias] = useAlias(account.address);
+  const [localName, setLocalName] = useState(name || '');
+  const [defaultName] = useState(name || '');
+  const ref = useRef<InputRef>(null);
+  const updateRef = useRef(null);
+  const init = useRef(false);
   const wallet = useWallet();
 
-  const { store, setStore } = useNewUserGuideStore();
+  const update = React.useCallback(() => {
+    updateAlias(localName.trim() ? localName : defaultName);
+  }, [defaultName, localName, updateAlias]);
+
+  useClickAway(updateRef, () => {
+    if (init.current) {
+      update();
+    }
+  });
+
+  useEffect(() => {
+    if (name && !localName && !init.current) {
+      init.current = true;
+      setLocalName(name);
+    }
+  }, [localName, name]);
+
+  useLayoutEffect(() => {
+    if (autoFocus) {
+      ref.current?.focus();
+    }
+  }, [autoFocus]);
+
+  useEffect(() => {
+    wallet.uninstalledSyncStatus();
+  }, [wallet]);
+
+  return (
+    <AccountItemWrapper>
+      <AccountItemInputWrapper ref={updateRef}>
+        <AccountItemInput
+          ref={ref}
+          autoComplete="false"
+          autoCorrect="false"
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              update();
+            }
+          }}
+          value={localName}
+          onChange={(event) => {
+            setLocalName(event.target.value);
+          }}
+        />
+      </AccountItemInputWrapper>
+      <AccountItemAddress>
+        {ellipsisAddress(account.address)}
+      </AccountItemAddress>
+    </AccountItemWrapper>
+  );
+};
+
+export const ImportOrCreatedSuccess = () => {
+  const history = useHistory();
+  const wallet = useWallet();
+
+  const { store } = useNewUserGuideStore();
 
   const { t } = useTranslation();
   const { search } = useLocation();
@@ -212,8 +165,6 @@ export const ImportOrCreatedSuccess = () => {
     }
     return [];
   }, [documentVisibility, keyringId]);
-
-  // const { hasBackup } = useCheckSeedPhraseBackup(accounts?.[0]?.address || '');
 
   // const { value: allAccounts } = useAsync(
   //   wallet.getAllVisibleAccountsArray,
@@ -352,6 +303,8 @@ export const ImportOrCreatedSuccess = () => {
     }
   );
 
+  const addMore = !!accounts && accounts?.filter((e) => e.address).length > 1;
+
   return (
     <>
       <Card className="flex flex-col pt-[40px]">
@@ -361,23 +314,31 @@ export const ImportOrCreatedSuccess = () => {
         />
 
         <div className="text-[24px] leading-[29px] font-medium text-r-neutral-title1 text-center">
-          {t(
-            isCreated
-              ? 'page.newUserImport.successful.create'
-              : 'page.newUserImport.successful.import'
-          )}
+          {isCreated && !addMore
+            ? t('page.newAddress.newSeedPhraseCreated')
+            : addMore
+            ? t('page.newAddress.addressAddedCount', {
+                count: accounts.filter((e) => e.address).length,
+              })
+            : t('page.newAddress.addressImported')}
         </div>
 
         <div className="text-center text-[15px] leading-[18px] text-r-neutral-foot mt-[8px]">
           {t('page.newUserImport.successful.desc')}
         </div>
 
-        <ScrollBarDiv className="flex flex-col gap-16 pt-24 overflow-y-scroll max-h-[324px] mb-20">
-          {accounts?.map((account) => {
+        <ScrollBarDiv className="flex flex-col gap-20 pt-24 overflow-y-scroll max-h-[324px] mb-20">
+          {accounts?.map((account, index) => {
             if (!account?.address) {
               return null;
             }
-            return <AccountItem key={account.address} account={account} />;
+            return (
+              <AccountItem
+                key={account.address}
+                account={account}
+                autoFocus={index === 0}
+              />
+            );
           })}
           <GnosisChainList chainList={chainList} className="mt-[-4px]" />
         </ScrollBarDiv>

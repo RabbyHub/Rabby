@@ -162,11 +162,11 @@ const AddressRow = ({
         {item.index}.
       </span>
 
-      <div className="flex max-w-[212px] items-center gap-[6px]">
+      <div className="flex items-center max-w-[212px] gap-[6px]">
         <span className="text-[15px] leading-normal font-medium text-r-neutral-title-1">
           {ellipsisAddress(item.address)}
         </span>
-        <span className="text-[13px] leading-normal text-r-neutral-foot">
+        <span className="text-[13px] leading-normal text-r-neutral-foot relative top-1">
           {formatUsdValue(item.balance || 0)}
         </span>
       </div>

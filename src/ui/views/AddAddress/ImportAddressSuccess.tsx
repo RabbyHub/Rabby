@@ -13,7 +13,7 @@ import type { CreateAddressSuccessState } from './useCreateAddress';
 import {
   normalizeSuccessAddresses,
   SuccessAddressCards,
-  useEditableSuccessAddresses,
+  SuccessAddressCardsRef,
 } from './SuccessAddressCards';
 
 export const ImportAddressSuccess: React.FC<{
@@ -38,19 +38,13 @@ export const ImportAddressSuccess: React.FC<{
     });
   const description =
     state.description || t('page.newAddress.openExtensionToGetStarted');
+  const successAddressCardsRef = React.useRef<SuccessAddressCardsRef>(null);
   const [pendingAction, setPendingAction] = React.useState(false);
-  const {
-    items,
-    setItems,
-    inputRefs,
-    commitAlias,
-    commitAllAliases,
-  } = useEditableSuccessAddresses(addresses);
 
   const handleOpenWallet = useMemoizedFn(async () => {
     try {
       setPendingAction(true);
-      await commitAllAliases();
+      await successAddressCardsRef.current?.commitAllAliases();
       // await wallet.setPageStateCache({
       //   path: '/dashboard',
       //   params: {},
@@ -63,7 +57,6 @@ export const ImportAddressSuccess: React.FC<{
           if (onNavigate) {
             onNavigate('done');
           } else if (uiType.isTab) {
-            window.close();
             await browser.action.openPopup();
           }
           return;
@@ -113,18 +106,8 @@ export const ImportAddressSuccess: React.FC<{
 
         <div className="mt-[24px] min-h-0 flex-1 overflow-hidden">
           <SuccessAddressCards
-            items={items}
-            setItems={setItems}
-            inputRefs={inputRefs}
-            onCommitAlias={commitAlias}
-            listClassName="h-full"
-            cardClassName="h-[64px] rounded-[8px] border border-rabby-neutral-line px-[7px] py-[5px]"
-            aliasWrapClassName="flex h-[30px] items-center rounded-[4px] bg-r-neutral-card-2 px-[8px]"
-            aliasInputClassName="w-full border-none bg-transparent text-[15px] font-medium leading-[18px] text-r-neutral-title-1 outline-none"
-            addressRowClassName="flex h-[28px] items-center px-[8px]"
-            addressTextClassName="text-[13px] leading-[16px] text-r-neutral-foot"
-            copyButtonClassName="ml-[4px] h-[14px] w-[14px] shrink-0"
-            copyIconClassName="h-[14px] w-[14px]"
+            ref={successAddressCardsRef}
+            addresses={addresses}
           />
         </div>
 

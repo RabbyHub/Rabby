@@ -26,8 +26,8 @@ import { ga4 } from '@/utils/ga4';
 import { UI_TYPE } from '@/constant/ui';
 import { RcCreateAddressSuccessIcon } from '@/ui/assets/add-address';
 import {
-  useEditableSuccessAddresses,
   SuccessAddressCards,
+  SuccessAddressCardsRef,
 } from '../AddAddress/SuccessAddressCards';
 
 const ImportSuccess = ({
@@ -93,18 +93,12 @@ const ImportSuccess = ({
         : [],
     [safeAccount]
   );
-  const {
-    items: safeItems,
-    setItems: setSafeItems,
-    inputRefs: safeInputRefs,
-    commitAlias: commitSafeAlias,
-    commitAllAliases: commitAllSafeAliases,
-  } = useEditableSuccessAddresses(safeAddresses);
+  const safeSuccessAddressCardsRef = React.useRef<SuccessAddressCardsRef>(null);
 
   const handleNextClick = async (e: React.MouseEvent<HTMLElement>) => {
     e?.stopPropagation();
     if (isSafeSuccess) {
-      await commitAllSafeAliases();
+      await safeSuccessAddressCardsRef.current?.commitAllAliases();
     } else if (!stopEditing) {
       addressItems.current.forEach((item) => item.alianNameConfirm());
     }
@@ -182,20 +176,10 @@ const ImportSuccess = ({
             </div>
           </div>
 
-          <div className="mt-[34px] overflow-hidden">
+          <div className="mt-[34px] min-h-0 h-[85px] overflow-hidden">
             <SuccessAddressCards
-              items={safeItems}
-              setItems={setSafeItems}
-              inputRefs={safeInputRefs}
-              onCommitAlias={commitSafeAlias}
-              listClassName="h-full"
-              cardClassName="import-success-safe__card"
-              aliasWrapClassName="import-success-safe__alias"
-              aliasInputClassName="import-success-safe__alias-input"
-              addressRowClassName="import-success-safe__address-row"
-              addressTextClassName="import-success-safe__address"
-              copyButtonClassName="import-success-safe__copy"
-              copyIconClassName="import-success-safe__copy-icon"
+              ref={safeSuccessAddressCardsRef}
+              addresses={safeAddresses}
             />
           </div>
 

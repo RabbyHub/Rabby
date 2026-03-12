@@ -1,8 +1,6 @@
-<svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="&#229;&#136;&#155;&#229;&#187;&#186;&#229;&#156;&#176;&#229;&#157;&#128;">
-<rect width="28" height="28" rx="6" fill="var(--fill-0, #EDF0FF)"/>
-<path id="Vector" d="M19.8333 7H8.16667C7.52233 7 7 7.52233 7 8.16667V19.8333C7 20.4777 7.52233 21 8.16667 21H19.8333C20.4777 21 21 20.4777 21 19.8333V8.16667C21 7.52233 20.4777 7 19.8333 7Z" stroke="var(--stroke-0, #4C65FF)" stroke-width="1.75" stroke-linejoin="round"/>
-<path id="Vector_2" d="M11.0001 17.125L14.0001 10.125L17.0001 17.125" stroke="var(--stroke-0, #4C65FF)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_3" d="M16 15.6523H12" stroke="var(--stroke-0, #4C65FF)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+  <rect width="28" height="28" rx="6" fill="var(--r-blue-light1,#EDF0FF)"/>
+  <path d="M19.8333 7H8.16667C7.52233 7 7 7.52233 7 8.16667V19.8333C7 20.4777 7.52233 21 8.16667 21H19.8333C20.4777 21 21 20.4777 21 19.8333V8.16667C21 7.52233 20.4777 7 19.8333 7Z" stroke="var(--r-blue-default,#4C65FF)" stroke-width="1.75" stroke-linejoin="round"/>
+  <path d="M11.0001 17.125L14.0001 10.125L17.0001 17.125" stroke="var(--r-blue-default,#4C65FF)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M16 15.6523H12" stroke="var(--r-blue-default,#4C65FF)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

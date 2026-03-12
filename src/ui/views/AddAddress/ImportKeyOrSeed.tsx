@@ -20,6 +20,8 @@ import IconSuccess from 'ui/assets/success.svg';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import { useCreateAddressActions } from './useCreateAddress';
 import { RcBulkImportArrowCC } from '@/ui/assets/add-address';
+import { privateKeyToAddress } from 'viem/accounts';
+import { ellipsisAddress } from '@/ui/utils/address';
 
 type ImportTab = 'privateKey' | 'seedPhrase';
 
@@ -98,6 +100,7 @@ const ImportKeyOrSeed: React.FC<{
   const [slip39GroupNumber, setSlip39GroupNumber] = React.useState(1);
   const [secretShares, setSecretShares] = React.useState<string[]>([]);
   const [errMsgs, setErrMsgs] = React.useState<string[]>();
+  const [pkOnPrivateKey, setPkOnPrivateKey] = React.useState('');
 
   React.useEffect(() => {
     setSelectedTab(currentTab);
@@ -152,7 +155,7 @@ const ImportKeyOrSeed: React.FC<{
       openSuccessPage({
         addresses,
         publicKey: extra?.publicKey || '',
-        title: t('page.newAddress.importedSuccessfully'),
+        title: t('page.newAddress.addressImported'),
       });
     }
   );
@@ -252,8 +255,8 @@ const ImportKeyOrSeed: React.FC<{
   });
 
   const handleImportSeedPhrase = useMemoizedFn(async () => {
-    const seedPhrase = form.getFieldValue('seedPhrase')?.trim();
-    const passphrase = form.getFieldValue('passphrase') || '';
+    const seedPhrase = form.getFieldValue('seedPhrase');
+    const passphrase = form.getFieldValue('passphrase');
     if (!seedPhrase) {
       form.setFields([
         {
@@ -331,19 +334,33 @@ const ImportKeyOrSeed: React.FC<{
     await handleImportSeedPhrase();
   });
 
-  const tabOptions = React.useMemo(
-    () => [
-      {
-        key: 'privateKey',
-        label: t('page.newAddress.privateKeyTab'),
-      },
-      {
-        key: 'seedPhrase',
-        label: t('page.newAddress.seedPhraseTab'),
-      },
-    ],
-    [t]
-  );
+  const tabOptions = React.useMemo(() => {
+    const originTab =
+      outerState?.tab ||
+      location.state?.tab ||
+      (query.get('tab') as ImportTab | null);
+    return originTab === 'privateKey'
+      ? [
+          {
+            key: 'privateKey',
+            label: t('page.newAddress.privateKeyTab'),
+          },
+          {
+            key: 'seedPhrase',
+            label: t('page.newAddress.seedPhraseTab'),
+          },
+        ]
+      : [
+          {
+            key: 'seedPhrase',
+            label: t('page.newAddress.seedPhraseTab'),
+          },
+          {
+            key: 'privateKey',
+            label: t('page.newAddress.privateKeyTab'),
+          },
+        ];
+  }, [t, location.state?.tab, outerState?.tab, query]);
 
   const isPrivateKeyTab = selectedTab === 'privateKey';
   const currentValue = isPrivateKeyTab
@@ -387,12 +404,26 @@ const ImportKeyOrSeed: React.FC<{
 
           <Form
             form={form}
+            onFinish={handleSubmit}
             initialValues={defaultFormValues}
             className="min-h-0 flex flex-1 flex-col overflow-hidden"
             onValuesChange={(_, values) => {
               setFormValues(values as ImportFormValues);
               setErrMsgs(undefined);
               setSlip39ErrorIndex(-1);
+              const nextPrivateKey =
+                selectedTab === 'privateKey' ? values.privateKey?.trim() : '';
+              if (!nextPrivateKey) {
+                setPkOnPrivateKey('');
+              } else {
+                try {
+                  setPkOnPrivateKey(
+                    privateKeyToAddress(nextPrivateKey as `0x${string}`)
+                  );
+                } catch (error) {
+                  setPkOnPrivateKey('');
+                }
+              }
               form.setFields([
                 {
                   name:
@@ -404,28 +435,38 @@ const ImportKeyOrSeed: React.FC<{
           >
             <div className="min-h-0 flex-1 overflow-y-auto">
               {isPrivateKeyTab ? (
-                <Form.Item name="privateKey" className="mb-0">
-                  <Input.TextArea
-                    autoFocus
-                    spellCheck={false}
-                    autoSize={false}
-                    className="h-[128px] resize-none rounded-[8px] border-r-blue-default bg-r-neutral-card-1 px-[15px] py-[18px] text-[15px] leading-[20px] text-r-neutral-title-1 placeholder:text-r-neutral-foot"
-                    placeholder={getTabPlaceholder(selectedTab, t)}
-                    onPaste={() => {
-                      clearClipboard();
-                      message.success({
-                        icon: (
-                          <img
-                            src={IconSuccess}
-                            className="icon icon-success"
-                          />
-                        ),
-                        content: t('page.newAddress.seedPhrase.pastedAndClear'),
-                        duration: 2,
-                      });
-                    }}
-                  />
-                </Form.Item>
+                <>
+                  <Form.Item name="privateKey" className="mb-0">
+                    <Input.TextArea
+                      autoFocus
+                      spellCheck={false}
+                      autoSize={false}
+                      className="h-[128px] resize-none rounded-[8px] border-r-blue-default bg-r-neutral-card-1 px-[15px] py-[18px] text-[15px] leading-[20px] text-r-neutral-title-1 placeholder:text-r-neutral-foot"
+                      placeholder={getTabPlaceholder(selectedTab, t)}
+                      onPaste={() => {
+                        clearClipboard();
+                        message.success({
+                          icon: (
+                            <img
+                              src={IconSuccess}
+                              className="icon icon-success"
+                            />
+                          ),
+                          content: t(
+                            'page.newAddress.seedPhrase.pastedAndClear'
+                          ),
+                          duration: 2,
+                        });
+                      }}
+                    />
+                  </Form.Item>
+                  {pkOnPrivateKey ? (
+                    <div className="mt-12 flex justify-between items-center text-[13px] font-medium text-r-neutral-title-1">
+                      <div>Address</div>
+                      <div>{ellipsisAddress(pkOnPrivateKey)}</div>
+                    </div>
+                  ) : null}
+                </>
               ) : (
                 <FormItemWrapper className="relative">
                   <Form.Item
@@ -441,7 +482,7 @@ const ImportKeyOrSeed: React.FC<{
                       isSlip39={isSlip39}
                       onSlip39Change={setIsSlip39}
                       onPassphrase={setNeedPassphrase}
-                      // errMsgs={errMsgs}
+                      errMsgs={errMsgs}
                       onChange={checkSlip39Mnemonics}
                       setSlip39GroupNumber={setSlip39GroupNumber}
                       errorIndexes={[slip39ErrorIndex]}
@@ -463,7 +504,7 @@ const ImportKeyOrSeed: React.FC<{
                 </FormItemWrapper>
               )}
 
-              {isPrivateKeyTab ? (
+              {isPrivateKeyTab && !pkOnPrivateKey ? (
                 <button
                   type="button"
                   className="mx-auto mt-[20px] flex items-center text-[12px] leading-[14px] text-r-neutral-foot"
@@ -481,19 +522,20 @@ const ImportKeyOrSeed: React.FC<{
                 </button>
               ) : null}
             </div>
-          </Form>
 
-          <div className="shrink-0 border-t border-rabby-neutral-line pb-[18px] pt-[18px]">
-            <Button
-              type="primary"
-              size="large"
-              disabled={disabledButton}
-              className="h-[44px] w-full rounded-[6px] text-[15px] leading-[18px] font-medium"
-              onClick={handleSubmit}
-            >
-              {t('global.confirm')}
-            </Button>
-          </div>
+            <div className="shrink-0 border-t border-rabby-neutral-line pb-[18px] pt-[18px]">
+              <Button
+                htmlType="submit"
+                type="primary"
+                size="large"
+                disabled={disabledButton}
+                className="h-[44px] w-full rounded-[6px] text-[15px] leading-[18px] font-medium"
+                // onClick={handleSubmit}
+              >
+                {t('global.confirm')}
+              </Button>
+            </div>
+          </Form>
         </div>
       </div>
     </>

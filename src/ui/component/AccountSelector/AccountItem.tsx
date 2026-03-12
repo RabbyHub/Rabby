@@ -306,7 +306,8 @@ export const AccountItem = memo(
               <>
                 <div
                   className={clsx(
-                    'text-r-neutral-title1 font-medium leading-[20px] text-[16px]'
+                    'text-r-neutral-title1 font-medium leading-[20px] text-[16px]',
+                    'truncate'
                   )}
                   title={alias}
                 >
@@ -319,6 +320,7 @@ export const AccountItem = memo(
                       handleEditMemo();
                     }}
                     className={`
+                      pl-6
                       edit-pen
                       text-r-neutral-body transition-opacity duration-100 cursor-pointer
                       hover:text-r-blue-default

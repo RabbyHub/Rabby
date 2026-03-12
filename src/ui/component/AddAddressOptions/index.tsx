@@ -99,11 +99,7 @@ const AddAddressOptions: React.FC<{
       {
         key: 'add-new-address',
         label: t('page.newAddress.addNewAddress'),
-        icon: (
-          <RowIcon backgroundClassName="bg-[#D8F2E7]">
-            <RcAddAddressOptionCreateIcon className="w-[16px] h-[16px]" />
-          </RowIcon>
-        ),
+        icon: <RcAddAddressOptionCreateIcon className="w-[28px] h-[28px]" />,
         onClick: () => {
           if (UI_TYPE.isDesktop) {
             onNavigate?.('add-new-address');
@@ -116,7 +112,7 @@ const AddAddressOptions: React.FC<{
         key: 'import-seed-phrase',
         label: t('page.newAddress.importSeedPhrase'),
         icon: (
-          <RcAddAddressOptionSeedPhraseIcon className="add-address-options__asset-icon" />
+          <RcAddAddressOptionSeedPhraseIcon className="w-[28px] h-[28px]" />
         ),
         onClick: () => {
           if (UI_TYPE.isDesktop) {
@@ -130,7 +126,7 @@ const AddAddressOptions: React.FC<{
         key: 'import-private-key',
         label: t('page.newAddress.importPrivateKey'),
         icon: (
-          <RcAddAddressOptionPrivateKeyIcon className="add-address-options__asset-icon" />
+          <RcAddAddressOptionPrivateKeyIcon className="w-[28px] h-[28px]" />
         ),
         onClick: () => {
           if (UI_TYPE.isDesktop) {
@@ -143,9 +139,7 @@ const AddAddressOptions: React.FC<{
       {
         key: 'connect-hardware-wallet',
         label: t('page.newAddress.connectHardwareWallets'),
-        icon: (
-          <RcAddAddressOptionHardwareIcon className="add-address-options__asset-icon" />
-        ),
+        icon: <RcAddAddressOptionHardwareIcon className="w-[28px] h-[28px]" />,
         onClick: () => {
           if (UI_TYPE.isDesktop) {
             onNavigate?.('hardware-wallets');
@@ -157,9 +151,7 @@ const AddAddressOptions: React.FC<{
       {
         key: 'watch-address',
         label: t('page.newAddress.watchAddress'),
-        icon: (
-          <RcAddAddressOptionWatchIcon className="add-address-options__asset-icon" />
-        ),
+        icon: <RcAddAddressOptionWatchIcon className="w-[28px] h-[28px]" />,
         onClick: () => {
           if (UI_TYPE.isDesktop) {
             onNavigate?.('watch-address');

@@ -173,7 +173,12 @@ const AccountSwitchInner = ({
           }}
         >
           <img className="w-[16px] h-[16px] mr-[4px]" src={addressTypeIcon} />
-          <div className="text-r-neutral-body text-[13px] leading-[16px] font-medium">
+          <div
+            className={clsx(
+              'text-r-neutral-body text-[13px] leading-[16px] font-medium',
+              'max-w-[220px] truncate'
+            )}
+          >
             {alias}
           </div>
           {disableSwitch ? null : (

@@ -30,7 +30,7 @@ const ImportGnosisAddress: React.FC<{
 
   const [form] = useForm();
   const { show, contextHolder } = useRepeatImportConfirm();
-  const successTitle = t('page.newAddress.addressAddedCount', { count: 1 });
+  const successTitle = t('page.newAddress.addressAdded');
   const { data: chainList, runAsync, error, loading } = useRequest(
     async (address: string) => {
       const res = await wallet.fetchGnosisChainList(address);
