@@ -606,10 +606,9 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
     );
 
     const maxNewDebtAmount =
-      swapRate.maxInputAmountWithSlippage ||
-      swapRate.inputAmount ||
-      swapRate.optimalRateData.srcAmount ||
-      '0';
+      swapRate.inputAmount || swapRate.optimalRateData.srcAmount || '0';
+    const delegationAmount =
+      swapRate.maxInputAmountWithSlippage || maxNewDebtAmount;
     const isMaxSelected = new BigNumber(debouncedFromAmount || 0).gte(
       fromBalanceBn.toString(10)
     );
@@ -635,7 +634,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
           address: currentAccount.address,
           delegatee: selectedMarketData.addresses.DEBT_SWITCH_ADAPTER,
           debtTokenAddress: toReserve.variableDebtTokenAddress,
-          amount: getApproveAmount(maxNewDebtAmount, slippageBps),
+          amount: getApproveAmount(delegationAmount, slippageBps),
           decimals: toToken.decimals,
         })
       : undefined;
