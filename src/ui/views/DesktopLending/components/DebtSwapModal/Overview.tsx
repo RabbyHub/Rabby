@@ -125,7 +125,7 @@ const DebtSwapOverview = ({
             {t('page.lending.debtSwap.overview.borrowValueAfter')}
           </span>
           <div className="flex flex-col gap-10">
-            <div className="flex items-start gap-6">
+            <div className="flex items-start justify-end gap-6">
               <SymbolIcon tokenSymbol={fromToken.symbol} size={16} />
               <div className="flex flex-col items-end gap-2">
                 <span className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
@@ -146,8 +146,8 @@ const DebtSwapOverview = ({
               <div
                 className={
                   isQuoteLoading
-                    ? 'flex items-start gap-6 opacity-50'
-                    : 'flex items-start gap-6'
+                    ? 'flex items-start justify-end gap-6 opacity-50'
+                    : 'flex items-start justify-end gap-6'
                 }
               >
                 <SymbolIcon tokenSymbol={toToken.symbol} size={16} />

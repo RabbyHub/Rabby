@@ -35,6 +35,7 @@ import { formatTokenAmount } from '@/ui/utils/number';
 import { isSameAddress, noop } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
 import stats from '@/stats';
+import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 
 import { getParaswap } from '../../config/paraswap';
 import { useLendingSummary } from '../../hooks';
@@ -212,26 +213,6 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
   const availableCollateralTokens = useMemo(
     () => collateralTokenEntries.map((item) => item.token),
     [collateralTokenEntries]
-  );
-
-  const hasZeroLtvCollateral = useMemo(
-    () =>
-      collateralTokenEntries.some(
-        (item) =>
-          item.displayReserve?.usageAsCollateralEnabledOnUser &&
-          item.displayReserve?.reserve.baseLTVasCollateral === '0'
-      ),
-    [collateralTokenEntries]
-  );
-
-  const collateralPopupOptions = useMemo(
-    () =>
-      hasZeroLtvCollateral
-        ? collateralTokenEntries.filter(
-            (item) => item.displayReserve?.reserve.baseLTVasCollateral === '0'
-          )
-        : collateralTokenEntries,
-    [collateralTokenEntries, hasZeroLtvCollateral]
   );
 
   const defaultCollateralToken = useMemo(() => {
@@ -442,21 +423,26 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
         return;
       }
 
-      const normalizedValue = value === '' ? '' : value;
-      if (normalizedValue === '') {
+      if (value === '') {
         setRepayAmount('');
         return;
       }
 
-      const amountBn = new BigNumber(normalizedValue || 0);
-      if (amountBn.lte(0)) {
-        setRepayAmount(normalizedValue);
+      if (!INPUT_NUMBER_RE.test(value)) {
         return;
       }
 
+      const filtered = filterNumber(value);
+      if (!filtered) {
+        setRepayAmount('');
+        return;
+      }
+
+      const amountBn = new BigNumber(filtered);
+
       const cappedAmount = amountBn.gt(debtBalance.toString(10))
         ? debtBalance.toString(10)
-        : normalizedValue;
+        : filtered;
       setRepayAmount(cappedAmount);
     },
     [debtBalance, repayToken]
@@ -1184,6 +1170,14 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
                     {t('page.lending.debtSwap.borrowBalance')}:{' '}
                     {debtBalanceToDisplay}
                   </span>
+                  <button
+                    type="button"
+                    className="rounded-[2px] bg-rb-brand-light-1 px-4 py-[2px] text-[11px] font-medium leading-[11px] text-rb-brand-default hover:bg-rb-brand-light-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    onClick={() => setRepayAmount(debtBalance.toString(10))}
+                    disabled={debtBalance.lte(0)}
+                  >
+                    MAX
+                  </button>
                 </div>
               </div>
 
@@ -1258,14 +1252,6 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
                         selectedCollateralToken.balance || '0'
                       )}
                     </span>
-                    <button
-                      type="button"
-                      className="rounded-[2px] bg-rb-brand-light-1 px-4 py-[2px] text-[11px] font-medium leading-[11px] text-rb-brand-default hover:bg-rb-brand-light-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      onClick={() => setRepayAmount(debtBalance.toString(10))}
-                      disabled={debtBalance.lte(0)}
-                    >
-                      MAX
-                    </button>
                   </div>
                 ) : null}
               </div>
@@ -1331,11 +1317,12 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
               setAutoSlippage={setAutoSlippage}
               setIsCustomSlippage={setIsCustomSlippage}
               type="swap"
+              valueClassName="text-[14px] font-[700]"
             />
           </div>
         ) : null}
 
-        {canRepay &&
+        {/*{canRepay &&
         !noQuote &&
         priceImpactData.showWarning &&
         !isQuoteLoading ? (
@@ -1354,7 +1341,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
               })}
             </div>
           </div>
-        ) : null}
+        ) : null}*/}
 
         {canShowDirectSubmit && canRepay && chainInfo?.serverId ? (
           <div className="mt-12 px-16">
@@ -1398,7 +1385,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
       >
         <CollateralTokenPopup
           visible={collateralPopupVisible}
-          options={collateralPopupOptions}
+          options={collateralTokenEntries}
           selectedAddress={selectedCollateralToken?.addressToSwap}
           onClose={() => setCollateralPopupVisible(false)}
           onSelect={(token) => {
@@ -1427,7 +1414,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
                 {riskDesc}
               </span>
             </div>
-            <div className="mb-12 flex items-start gap-8">
+            <div className="mb-12 flex items-center justify-center gap-8">
               <StyledCheckbox
                 checked={riskChecked}
                 onChange={(e) => setRiskChecked(e.target.checked)}
