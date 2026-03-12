@@ -49,7 +49,11 @@ import { ReactComponent as RcIconNotCollected } from '@/ui/assets/perps/IconUnCo
 import { AddPositionPopup } from '../popup/AddPositionPopup';
 import usePerpsState from '../hooks/usePerpsState';
 import { MiniTypedDataApproval } from '../../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
-import { formatPerpsCoin, getStatsReportSide, handleDisplayFundingPayments } from '../../DesktopPerps/utils';
+import {
+  formatPerpsCoin,
+  getStatsReportSide,
+  handleDisplayFundingPayments,
+} from '../../DesktopPerps/utils';
 import stats from '@/stats';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
 import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
