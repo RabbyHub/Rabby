@@ -1089,7 +1089,6 @@
       "confirm-delete": "Підтвердити видалення",
       "private-key": "Приватний ключ",
       "seed-phrase": "Ключова фраза",
-      "watch-address": "Адреса спостереження",
       "backup-seed-phrase": "Резервна ключова фраза",
       "delete-all-addresses-but-keep-the-seed-phrase": "Видалити всі адреси, але зберегти ключову фразу",
       "delete-all-addresses-and-the-seed-phrase": "Видалити всі адреси та ключову фразу",
@@ -1569,8 +1568,6 @@
       "importPrivateKey": "Імпортувати приватний ключ",
       "importMyMetamaskAccount": "Імпортувати мій обліковий запис MetaMask",
       "addContacts": {
-        "content": "Додати контакти",
-        "description": "Ви також можете використовувати його як адресу тільки для перегляду",
         "required": "Будь ласка, введіть адресу",
         "notAValidAddress": "Не дійсна адреса",
         "scanViaMobileWallet": "Відсканувати через мобільний гаманець",
@@ -4488,7 +4485,7 @@
     "alias": {
       "HdKeyring": "Початкова фраза",
       "simpleKeyring": "Приватний ключ",
-      "watchAddressKeyring": "Контакт"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4507,7 +4504,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Створено за ключовою фразою",
       "SimpleKeyring": "Імпортовано за допомогою приватного ключа",
-      "WatchAddressKeyring": "Contact"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "Імпортовано за ключовою фразою",
     "SIGN_PERMISSION_OPTIONS": {

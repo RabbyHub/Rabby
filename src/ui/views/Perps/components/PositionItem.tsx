@@ -7,11 +7,12 @@ import { TokenImg } from './TokenImg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { PerpsBlueBorderedButton } from './BlueBorderedButton';
-import { DistanceToLiquidationTag } from './DistanceToLiquidationTag';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { format } from 'path';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
+import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
 
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
@@ -119,29 +120,32 @@ export const PositionItem: React.FC<{
             <span className="text-15 ml-4 font-medium text-r-neutral-title-1">
               {formatPerpsCoin(coin)}
             </span>
-            <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-foot" />
+            <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot">
+              {leverageType === 'cross'
+                ? t('page.perps.cross')
+                : t('page.perps.isolated')}
+            </span>
+            {/* <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-foot" /> */}
           </div>
           <div className="flex items-center gap-6">
             <span
               className={clsx(
                 'text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px]',
                 isLong
-                  ? 'text-rb-green-default bg-rb-green-light-1'
-                  : 'text-rb-red-default bg-rb-red-light-1'
+                  ? 'text-r-green-default bg-r-green-light'
+                  : 'text-r-red-default bg-r-red-light'
               )}
             >
               {side} {leverageText}
             </span>
-            {leverageType === 'cross' && (
-              <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-rb-blue-light-1 text-rb-blue-default">
-                {t('page.perps.cross')}
-              </span>
+            {!hasStopLoss && (
+              <DistanceRiskTag
+                isLong={isLong}
+                percent={formatPerpsPct(
+                  calculateDistanceToLiquidation(liquidationPx, markPrice)
+                )}
+              />
             )}
-            <DistanceToLiquidationTag
-              liquidationPrice={liquidationPx}
-              markPrice={markPrice}
-              onPress={() => onShowRiskPopup?.(coin)}
-            />
           </div>
         </div>
         <div className="flex flex-col items-end gap-4">

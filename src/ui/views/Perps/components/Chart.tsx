@@ -31,7 +31,9 @@ import { useTranslation } from 'react-i18next';
 const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
 };
-import { splitNumberByStep } from '@/ui/utils';
+import { splitNumberByStep, useWallet } from '@/ui/utils';
+import { ReactComponent as RcIconFullscreen } from '@/ui/assets/perps/Iconfullscreen.svg';
+import { formatLocalDateTime } from '../../DesktopPerps/components/ChartArea/components/ChartWrapper';
 
 export type ChartProps = {
   coin: string;
@@ -89,6 +91,21 @@ const toUtc = (t: number): UTCTimestamp => Math.floor(t) as UTCTimestamp;
 
 const padZero = (value: number) => String(value).padStart(2, '0');
 
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
 const timeToDate = (time: Time): Date => {
   if (typeof time === 'number') {
     return new Date(time * 1000);
@@ -101,19 +118,9 @@ const timeToDate = (time: Time): Date => {
   return new Date(year, (month || 1) - 1, day || 1);
 };
 
-const formatLocalDateTime = (time: Time): string => {
-  const date = timeToDate(time);
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1);
-  const day = padZero(date.getDate());
-  const hours = padZero(date.getHours());
-  const minutes = padZero(date.getMinutes());
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
-};
-
 const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1);
+  const year = String(date.getFullYear()).slice(-2);
+  const mon = MONTHS[date.getMonth()];
   const day = padZero(date.getDate());
   const hours = padZero(date.getHours());
   const minutes = padZero(date.getMinutes());
@@ -121,34 +128,25 @@ const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
 
   switch (tickMarkType) {
     case TickMarkType.Year:
-      return String(year);
+      return String(date.getFullYear());
     case TickMarkType.Month:
-      return `${year}-${month}`;
+      return `${mon} '${year}`;
     case TickMarkType.DayOfMonth:
-      return `${month}-${day}`;
+      return `${day} ${mon}`;
     case TickMarkType.TimeWithSeconds:
       return `${hours}:${minutes}:${seconds}`;
     case TickMarkType.Time:
       return `${hours}:${minutes}`;
     default:
-      return `${year}-${month}-${day}`;
+      return `${day} ${mon} '${year}`;
   }
 };
 
-const formatLocalDate = (time: Time): string => {
-  const date = timeToDate(time);
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1);
-  const day = padZero(date.getDate());
-  return `${year}-${month}-${day}`;
-};
-
-const createTimeLocalization = (isWeekly = false) => {
+const createTimeLocalization = (noTime = false) => {
   const formatTick = (time: Time, tickMarkType: TickMarkType): string =>
     formatTickLabel(timeToDate(time), tickMarkType);
 
-  const formatHover = (time: Time): string =>
-    isWeekly ? formatLocalDate(time) : formatLocalDateTime(time);
+  const formatHover = (time: Time): string => formatLocalDateTime(time, noTime);
 
   return {
     locale: 'en-US',
@@ -638,6 +636,7 @@ export const PerpsChart = ({
   };
 }) => {
   const { t } = useTranslation();
+  const wallet = useWallet();
   const [
     selectedInterval,
     setSelectedInterval,
@@ -700,7 +699,15 @@ export const PerpsChart = ({
   }, [currentAssetCtx]);
 
   return (
-    <div className={clsx('bg-r-neutral-card1 rounded-[12px] p-16 mb-20')}>
+    <div
+      className={clsx('bg-r-neutral-card1 rounded-[12px] p-16 mb-20 relative')}
+    >
+      <div
+        className="absolute top-12 right-12 cursor-pointer text-r-neutral-body p-4 rounded-[4px] hover:bg-r-neutral-bg3"
+        onClick={() => wallet.openInDesktop('/desktop/perps')}
+      >
+        <RcIconFullscreen className="text-r-neutral-body" />
+      </div>
       <div className="text-center mb-8">
         {chartHoverData.visible ? (
           <div>

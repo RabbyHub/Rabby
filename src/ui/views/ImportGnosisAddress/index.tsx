@@ -30,6 +30,7 @@ const ImportGnosisAddress: React.FC<{
 
   const [form] = useForm();
   const { show, contextHolder } = useRepeatImportConfirm();
+  const successTitle = t('page.newAddress.addressAdded');
   const { data: chainList, runAsync, error, loading } = useRequest(
     async (address: string) => {
       const res = await wallet.fetchGnosisChainList(address);
@@ -64,7 +65,7 @@ const ImportGnosisAddress: React.FC<{
       if (UI_TYPE.isDesktop) {
         onNavigate?.('success', {
           accounts,
-          title: t('Added successfully'),
+          title: successTitle,
           editing: true,
           importedAccount: true,
           importedLength: (
@@ -77,7 +78,7 @@ const ImportGnosisAddress: React.FC<{
           pathname: '/popup/import/success',
           state: {
             accounts,
-            title: t('Added successfully'),
+            title: successTitle,
             editing: true,
             importedAccount: true,
             importedLength: (

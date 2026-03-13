@@ -109,6 +109,7 @@ interface BridgeSlippageProps {
   type: 'swap' | 'bridge';
   isWrapToken?: boolean;
   autoSuggestSlippage?: string;
+  valueClassName?: string;
 }
 export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
   const { t } = useTranslation();
@@ -125,6 +126,7 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
     type,
     isWrapToken,
     autoSuggestSlippage,
+    valueClassName,
   } = props;
 
   const [slippageOpen, setSlippageOpen] = useState(false);
@@ -265,6 +267,7 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
         <span className="font-medium text-r-neutral-title-1 inline-flex items-center">
           <span
             className={clsx(
+              valueClassName,
               tips ? 'text-r-red-default' : 'text-r-blue-default'
             )}
           >

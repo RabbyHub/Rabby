@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { CommonTable } from '../CommonTable';
 import { sortBy } from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
@@ -124,7 +124,14 @@ export const FundingHistory: React.FC = () => {
       {
         title: (
           <DashedUnderlineText
-            tooltipText={t('page.perpsPro.userInfo.tab.fundingTipsV2')}
+            tooltipText={() => (
+              <Trans
+                i18nKey={'page.perpsPro.userInfo.tab.fundingTipsBold'}
+                components={{
+                  bold: <span className="font-bold" />,
+                }}
+              />
+            )}
           >
             {t('page.perpsPro.userInfo.tab.funding')}
           </DashedUnderlineText>

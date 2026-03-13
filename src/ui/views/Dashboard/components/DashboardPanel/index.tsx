@@ -47,8 +47,6 @@ import {
   RcIconSettingCC,
   RcIconSwapCC,
   RcIconTransactionsCC,
-  RcIconAsterPerpsCC,
-  RcIconLighterPerpsCC,
   RcIconAaveLendingCC,
   RcIconSparkLendingCC,
   RcIconVenusLendingCC,
@@ -380,7 +378,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   }, [giftUsdValue, hasClaimedGift]);
 
   const lendingId = useRabbySelector((state) => state.innerDappFrame.lending);
-  const perpsId = useRabbySelector((state) => state.innerDappFrame.perps);
   const predictionId = useRabbySelector(
     (state) => state.innerDappFrame.prediction
   );
@@ -395,15 +392,8 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     return RcIconAaveLendingCC;
   }, [lendingId]);
 
-  const IconPerps = useMemo(() => {
-    if (perpsId === 'aster') {
-      return RcIconAsterPerpsCC;
-    }
-    if (perpsId === 'lighter') {
-      return RcIconLighterPerpsCC;
-    }
-    return RcIconPerpsCC;
-  }, [perpsId]);
+  const IconPerps = RcIconPerpsCC;
+
   const IconPrediction = useMemo(() => {
     if (predictionId === 'opinion') {
       return RcIconOpinionPredictionCC;

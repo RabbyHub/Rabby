@@ -38,6 +38,8 @@ interface SearchPerpsPopupProps {
   marketData: MarketData[];
   positionAndOpenOrders: PositionAndOpenOrder[];
   onSelect: (coin: string) => void;
+  favoritedCoins?: string[];
+  onToggleFavorite?: (coin: string) => void;
 }
 
 export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
@@ -47,13 +49,21 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
   marketData,
   positionAndOpenOrders,
   onSelect,
+  favoritedCoins,
+  onToggleFavorite,
 }) => {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   const list = useMemo(() => {
-    return sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
-  }, [marketData]);
+    const sorted = sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
+    if (!favoritedCoins?.length) return sorted;
+    const favorites = sorted.filter((item) =>
+      favoritedCoins.includes(item.name)
+    );
+    const others = sorted.filter((item) => !favoritedCoins.includes(item.name));
+    return [...favorites, ...others];
+  }, [marketData, favoritedCoins]);
 
   const filteredList = useMemo(() => {
     if (!search) {
@@ -62,7 +72,7 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
 
     return (
       list.filter((item) => {
-        return item.name.toUpperCase().includes(search.toUpperCase());
+        return item.name.toLowerCase().includes(search.toLowerCase());
       }) || []
     );
   }, [list, search]);
@@ -121,6 +131,7 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
         <div className="flex-1 overflow-y-auto px-20">
           {filteredList.length === 0 ? (
             <Empty
+              className="text-r-neutral-title-1"
               description={t('page.perps.searchPerpsPopup.empty')}
               image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
@@ -133,6 +144,8 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
                     key={item.name}
                     item={item}
                     hasPosition={hasPosition}
+                    isFavorited={favoritedCoins?.includes(item.name)}
+                    onToggleFavorite={onToggleFavorite}
                     onClick={() => {
                       onSelect(item.name);
                     }}
