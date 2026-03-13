@@ -98,7 +98,7 @@ const Container = styled.div`
     }
   }
 
-  .custom-select {
+  .custom-select.custom-select {
     &.ant-select-disabled {
       .ant-select-selector {
         background: transparent;
