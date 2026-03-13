@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
 import Popup from '@/ui/component/Popup';
-import { formatUsdValueKMB } from '@/ui/views/Dashboard/components/TokenDetailPopup/utils';
 
 import { SwappableToken } from '../../types/swap';
 import { formatApy, formatListNetWorth } from '../../utils/format';
 import SymbolIcon from '../SymbolIcon';
+import { formatUsdValue } from '@/ui/utils';
 
 interface DebtTokenPopupProps {
   visible: boolean;
@@ -88,7 +88,7 @@ const DebtTokenPopup = ({
                       <div className="mt-[2px] flex items-center gap-[4px] text-[12px] leading-[14px] text-r-neutral-foot">
                         <RcIconWalletCC className="h-16 w-16 text-r-neutral-foot" />
                         <span>
-                          {formatUsdValueKMB(token.walletBalanceUSD || '0')}
+                          {formatUsdValue(token.walletBalanceUSD || '0')}
                         </span>
                       </div>
                     </div>

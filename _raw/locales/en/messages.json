@@ -1631,7 +1631,8 @@
         "header": {
           "assets": "Token",
           "balance": "Balance"
-        }
+        },
+        "zeroLtvCollateralTips": "You have following LTV = 0 collaterals and thus can only repay with these collaterals first according to collateral repay rules. "
       },
       "manageEmode": {
         "__skip_translation": ["emode"],

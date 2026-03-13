@@ -35,6 +35,7 @@ import { formatTokenAmount } from '@/ui/utils/number';
 import { isSameAddress, noop } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
 import stats from '@/stats';
+import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 
 import { getParaswap } from '../../config/paraswap';
 import { useLendingSummary } from '../../hooks';
@@ -54,6 +55,7 @@ import {
 import { getCollateralTokens, getFromToken } from '../../utils/swap';
 import { LendingStyledInput } from '../StyledInput';
 import { StyledCheckbox } from '../BorrowModal';
+import LendingPriceImpactNotice from '../LendingPriceImpactNotice';
 import SymbolIcon from '../SymbolIcon';
 import CollateralTokenPopup from './CollateralTokenPopup';
 import RepayWithCollateralOverview from './Overview';
@@ -212,26 +214,6 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
   const availableCollateralTokens = useMemo(
     () => collateralTokenEntries.map((item) => item.token),
     [collateralTokenEntries]
-  );
-
-  const hasZeroLtvCollateral = useMemo(
-    () =>
-      collateralTokenEntries.some(
-        (item) =>
-          item.displayReserve?.usageAsCollateralEnabledOnUser &&
-          item.displayReserve?.reserve.baseLTVasCollateral === '0'
-      ),
-    [collateralTokenEntries]
-  );
-
-  const collateralPopupOptions = useMemo(
-    () =>
-      hasZeroLtvCollateral
-        ? collateralTokenEntries.filter(
-            (item) => item.displayReserve?.reserve.baseLTVasCollateral === '0'
-          )
-        : collateralTokenEntries,
-    [collateralTokenEntries, hasZeroLtvCollateral]
   );
 
   const defaultCollateralToken = useMemo(() => {
@@ -442,21 +424,26 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
         return;
       }
 
-      const normalizedValue = value === '' ? '' : value;
-      if (normalizedValue === '') {
+      if (value === '') {
         setRepayAmount('');
         return;
       }
 
-      const amountBn = new BigNumber(normalizedValue || 0);
-      if (amountBn.lte(0)) {
-        setRepayAmount(normalizedValue);
+      if (!INPUT_NUMBER_RE.test(value)) {
         return;
       }
 
+      const filtered = filterNumber(value);
+      if (!filtered) {
+        setRepayAmount('');
+        return;
+      }
+
+      const amountBn = new BigNumber(filtered);
+
       const cappedAmount = amountBn.gt(debtBalance.toString(10))
         ? debtBalance.toString(10)
-        : normalizedValue;
+        : filtered;
       setRepayAmount(cappedAmount);
     },
     [debtBalance, repayToken]
@@ -921,6 +908,9 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
 
     prefetch({
       txs: currentTxs,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -942,6 +932,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
     collateralNotEnough,
     currentAccount,
     currentTxs,
+    getContainer,
     isLiquidatable,
     prefetch,
     visible,
@@ -1089,15 +1080,17 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
       return t('page.lending.debtSwap.lpRiskWarning');
     }
     if (priceImpactData.showConfirmation) {
-      return t('page.lending.debtSwap.priceImpactTips', {
-        lostValue: `${(priceImpactData.lostValue * 100).toFixed(1)}%`,
-      });
+      return '';
     }
 
     return t(
       'page.swap.transaction-might-be-frontrun-because-of-high-slippage-tolerance'
     );
   }, [isHFLow, priceImpactData.lostValue, priceImpactData.showConfirmation, t]);
+
+  const hasInputValidValue = useMemo(() => {
+    return new BigNumber(debouncedRepayAmount || '0').gt(0);
+  }, [debouncedRepayAmount]);
 
   const canRepay = useMemo(() => {
     return (
@@ -1184,6 +1177,14 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
                     {t('page.lending.debtSwap.borrowBalance')}:{' '}
                     {debtBalanceToDisplay}
                   </span>
+                  <button
+                    type="button"
+                    className="rounded-[2px] bg-rb-brand-light-1 px-4 py-[2px] text-[11px] font-medium leading-[11px] text-rb-brand-default hover:bg-rb-brand-light-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    onClick={() => setRepayAmount(debtBalance.toString(10))}
+                    disabled={debtBalance.lte(0)}
+                  >
+                    MAX
+                  </button>
                 </div>
               </div>
 
@@ -1258,14 +1259,6 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
                         selectedCollateralToken.balance || '0'
                       )}
                     </span>
-                    <button
-                      type="button"
-                      className="rounded-[2px] bg-rb-brand-light-1 px-4 py-[2px] text-[11px] font-medium leading-[11px] text-rb-brand-default hover:bg-rb-brand-light-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      onClick={() => setRepayAmount(debtBalance.toString(10))}
-                      disabled={debtBalance.lte(0)}
-                    >
-                      MAX
-                    </button>
                   </div>
                 ) : null}
               </div>
@@ -1312,14 +1305,38 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
           </ArrowLoadingWrapper>
         </div>
 
+        {canRepay &&
+        !noQuote &&
+        priceImpactData.showWarning &&
+        !isQuoteLoading ? (
+          <LendingPriceImpactNotice
+            loading={isQuoteLoading}
+            payToken={selectedCollateralToken}
+            payAmount={collateralAmountAfterSlippage}
+            receiveToken={repayToken}
+            receiveAmount={debouncedRepayAmount}
+          />
+        ) : null}
+
         {noQuote && !isQuoteLoading && repayAmount ? (
-          <div className="mt-12 rounded-[8px] border border-rb-red-default bg-rb-red-light-1 px-12 py-10">
+          <div className="mt-12 px-12">
             <span className="text-[13px] leading-[16px] text-rb-red-default">
               {t('page.swap.no-quote-found')}
             </span>
           </div>
         ) : null}
-
+        {canShowDirectSubmit && canRepay && chainInfo?.serverId ? (
+          <div className="mt-12 px-16">
+            <DirectSignGasInfo
+              supportDirectSign
+              loading={false}
+              openShowMore={noop}
+              chainServeId={chainInfo.serverId}
+              noQuote={false}
+              type="send"
+            />
+          </div>
+        ) : null}
         {canRepay && !noQuote ? (
           <div className="mt-16 px-16">
             <BridgeSlippage
@@ -1331,40 +1348,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
               setAutoSlippage={setAutoSlippage}
               setIsCustomSlippage={setIsCustomSlippage}
               type="swap"
-            />
-          </div>
-        ) : null}
-
-        {canRepay &&
-        !noQuote &&
-        priceImpactData.showWarning &&
-        !isQuoteLoading ? (
-          <div className="mt-12 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10">
-            <div className="flex items-center justify-between gap-8">
-              <span className="text-[13px] leading-[16px] text-r-neutral-title-1">
-                {t('page.bridge.price-impact')}
-              </span>
-              <span className="text-[13px] leading-[16px] font-medium text-rb-orange-default">
-                {(priceImpactData.lostValue * 100).toFixed(1)}%
-              </span>
-            </div>
-            <div className="mt-8 text-[12px] leading-[16px] text-r-neutral-foot">
-              {t('page.lending.debtSwap.priceImpactTips', {
-                lostValue: `${(priceImpactData.lostValue * 100).toFixed(1)}%`,
-              })}
-            </div>
-          </div>
-        ) : null}
-
-        {canShowDirectSubmit && canRepay && chainInfo?.serverId ? (
-          <div className="mt-12 px-16">
-            <DirectSignGasInfo
-              supportDirectSign
-              loading={false}
-              openShowMore={noop}
-              chainServeId={chainInfo.serverId}
-              noQuote={false}
-              type="send"
+              valueClassName="text-[14px] font-[700]"
             />
           </div>
         ) : null}
@@ -1398,7 +1382,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
       >
         <CollateralTokenPopup
           visible={collateralPopupVisible}
-          options={collateralPopupOptions}
+          options={collateralTokenEntries}
           selectedAddress={selectedCollateralToken?.addressToSwap}
           onClose={() => setCollateralPopupVisible(false)}
           onSelect={(token) => {
@@ -1408,7 +1392,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
           getContainer={getContainer}
         />
 
-        {collateralNotEnough || isLiquidatable ? (
+        {collateralNotEnough || (isLiquidatable && hasInputValidValue) ? (
           <div className="mb-12 rounded-[8px] border border-rb-red-default bg-rb-red-light-1 px-12 py-10 flex items-start gap-8">
             <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-red-default mt-[1px]" />
             <span className="text-[13px] leading-[16px] text-rb-red-default">
@@ -1419,15 +1403,20 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
           </div>
         ) : null}
 
-        {isRisky && !collateralNotEnough && !isLiquidatable ? (
+        {isRisky &&
+        !collateralNotEnough &&
+        !isLiquidatable &&
+        hasInputValidValue ? (
           <>
-            <div className="mb-8 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10 flex items-start gap-8">
-              <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-orange-default mt-[1px]" />
-              <span className="text-[13px] leading-[16px] text-rb-orange-default">
-                {riskDesc}
-              </span>
-            </div>
-            <div className="mb-12 flex items-start gap-8">
+            {!!riskDesc && (
+              <div className="mb-8 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10 flex items-start gap-8">
+                <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-orange-default mt-[1px]" />
+                <span className="text-[13px] leading-[16px] text-rb-orange-default">
+                  {riskDesc}
+                </span>
+              </div>
+            )}
+            <div className="mb-12 flex items-center justify-center gap-8">
               <StyledCheckbox
                 checked={riskChecked}
                 onChange={(e) => setRiskChecked(e.target.checked)}

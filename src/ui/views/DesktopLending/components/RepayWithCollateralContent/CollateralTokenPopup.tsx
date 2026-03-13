@@ -1,8 +1,9 @@
 import type { DrawerProps } from 'antd';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Popup from '@/ui/component/Popup';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/lending/warning-cc.svg';
 
 import { DisplayPoolReserveInfo } from '../../types';
 import { SwappableToken } from '../../types/swap';
@@ -33,6 +34,31 @@ const CollateralTokenPopup = ({
 }: CollateralTokenPopupProps) => {
   const { t } = useTranslation();
 
+  const hasLtvZeroCollateral = useMemo(
+    () =>
+      options
+        .filter(
+          (item) =>
+            !!item.token.balance &&
+            item.token.balance !== '0' &&
+            item.displayReserve?.usageAsCollateralEnabledOnUser
+        )
+        .some(
+          (item) => item.displayReserve?.reserve.baseLTVasCollateral === '0'
+        ),
+    [options]
+  );
+
+  const displayOptions = useMemo(
+    () =>
+      hasLtvZeroCollateral
+        ? options.filter(
+            (item) => item.displayReserve?.reserve.baseLTVasCollateral === '0'
+          )
+        : options,
+    [hasLtvZeroCollateral, options]
+  );
+
   return (
     <Popup
       visible={visible}
@@ -53,6 +79,15 @@ const CollateralTokenPopup = ({
         </div>
 
         <div className="px-[18px] pt-[6px] pb-[4px]">
+          {hasLtvZeroCollateral ? (
+            <div className="mb-[8px] flex items-start gap-[4px] rounded-[8px] bg-rb-orange-light-1 px-[12px] py-[8px]">
+              <RcIconWarningCC className="mt-[1px] h-[14px] w-[14px] flex-shrink-0 text-rb-orange-default" />
+              <span className="text-[12px] leading-[16px] text-rb-orange-default">
+                {t('page.lending.repayWithAToken.zeroLtvCollateralTips')}
+              </span>
+            </div>
+          ) : null}
+
           <div className="flex items-center text-[12px] leading-[14px] text-r-neutral-foot">
             <span className="w-[142px] pl-[16px]">
               {t(
@@ -72,7 +107,7 @@ const CollateralTokenPopup = ({
 
         <div className="flex-1 overflow-y-auto px-[18px] pt-[4px] pb-[24px]">
           <div className="space-y-[8px]">
-            {options.map(({ token }) => {
+            {displayOptions.map(({ token }) => {
               const isSelected =
                 !!selectedAddress && token.addressToSwap === selectedAddress;
 

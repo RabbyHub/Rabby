@@ -35,6 +35,7 @@ import { formatTokenAmount } from '@/ui/utils/number';
 import { isSameAddress, noop } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';
 import stats from '@/stats';
+import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 
 import { getParaswap } from '../../config/paraswap';
 import { useLendingSummary } from '../../hooks';
@@ -51,6 +52,7 @@ import {
 import { getDebtTokensToDisplay, getFromToken } from '../../utils/swap';
 import { LendingStyledInput } from '../StyledInput';
 import { StyledCheckbox } from '../BorrowModal';
+import LendingPriceImpactNotice from '../LendingPriceImpactNotice';
 import SymbolIcon from '../SymbolIcon';
 import DebtSwapOverview from './Overview';
 import DebtTokenPopup from './DebtTokenPopup';
@@ -356,26 +358,31 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
         return;
       }
 
-      const normalizedValue = value === '' ? '' : value;
-      if (normalizedValue === '') {
+      if (value === '') {
         setFromAmount('');
         setSlider(0);
         return;
       }
 
-      const amountBn = new BigNumber(normalizedValue || 0);
-      if (amountBn.lte(0)) {
-        setFromAmount(normalizedValue);
+      if (!INPUT_NUMBER_RE.test(value)) {
+        return;
+      }
+
+      const filtered = filterNumber(value);
+      if (!filtered) {
+        setFromAmount('');
         setSlider(0);
         return;
       }
+
+      const amountBn = new BigNumber(filtered);
 
       const safeAmountBn = amountBn.gt(fromBalanceBn)
         ? fromBalanceBn
         : amountBn;
       const cappedAmount = amountBn.gt(fromBalanceBn)
         ? fromBalanceBn.toString(10)
-        : normalizedValue;
+        : filtered;
 
       const nextSlider = fromBalanceBn.gt(0)
         ? safeAmountBn.div(fromBalanceBn).times(100).toNumber()
@@ -600,10 +607,9 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
     );
 
     const maxNewDebtAmount =
-      swapRate.maxInputAmountWithSlippage ||
-      swapRate.inputAmount ||
-      swapRate.optimalRateData.srcAmount ||
-      '0';
+      swapRate.inputAmount || swapRate.optimalRateData.srcAmount || '0';
+    const delegationAmount =
+      swapRate.maxInputAmountWithSlippage || maxNewDebtAmount;
     const isMaxSelected = new BigNumber(debouncedFromAmount || 0).gte(
       fromBalanceBn.toString(10)
     );
@@ -629,7 +635,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
           address: currentAccount.address,
           delegatee: selectedMarketData.addresses.DEBT_SWITCH_ADAPTER,
           debtTokenAddress: toReserve.variableDebtTokenAddress,
-          amount: getApproveAmount(maxNewDebtAmount, slippageBps),
+          amount: getApproveAmount(delegationAmount, slippageBps),
           decimals: toToken.decimals,
         })
       : undefined;
@@ -742,6 +748,9 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
 
     prefetch({
       txs: currentTxs,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -762,6 +771,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
     closeSign,
     currentAccount,
     currentTxs,
+    getContainer,
     isLiquidatable,
     prefetch,
     visible,
@@ -908,9 +918,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
       return t('page.lending.debtSwap.lpRiskWarning');
     }
     if (priceImpactData.showConfirmation) {
-      return t('page.lending.debtSwap.priceImpactTips', {
-        lostValue: `${(priceImpactData.lostValue * 100).toFixed(1)}%`,
-      });
+      return '';
     }
 
     return t(
@@ -1014,6 +1022,14 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
                     {t('page.lending.debtSwap.borrowBalance')}:{' '}
                     {fromBalanceDisplay}
                   </span>
+                  <button
+                    type="button"
+                    className="rounded-[2px] bg-rb-brand-light-1 px-4 py-[2px] text-[11px] font-medium leading-[11px] text-rb-brand-default hover:bg-rb-brand-light-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    onClick={() => handleSliderChange(100)}
+                    disabled={fromBalanceBn.lte(0)}
+                  >
+                    MAX
+                  </button>
                 </div>
               </div>
 
@@ -1036,7 +1052,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
             </div>
           </div>
 
-          <div className="px-16 pt-16 pb-18">
+          <div className="px-16 pt-16 pb-18 min-h-[133px]">
             <div className="mb-16 text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
               {t('page.lending.debtSwap.actions.swapTo')}
             </div>
@@ -1073,14 +1089,6 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
                         toDisplayReserve?.variableBorrows || '0'
                       )}
                     </span>
-                    <button
-                      type="button"
-                      className="rounded-[2px] bg-rb-brand-light-1 px-4 py-[2px] text-[11px] font-medium leading-[11px] text-rb-brand-default hover:bg-rb-brand-light-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      onClick={() => handleSliderChange(100)}
-                      disabled={fromBalanceBn.lte(0)}
-                    >
-                      MAX
-                    </button>
                   </div>
                 ) : null}
               </div>
@@ -1127,26 +1135,24 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
         </div>
 
         {noQuote && !isQuoteLoading && fromAmount ? (
-          <div className="mt-12 rounded-[8px] border border-rb-red-default bg-rb-red-light-1 px-12 py-10">
+          <div className="mt-12 px-12">
             <span className="text-[13px] leading-[16px] text-rb-red-default">
               {t('page.swap.no-quote-found')}
             </span>
           </div>
         ) : null}
 
-        {canSwap && !noQuote ? (
-          <div className="mt-16 px-16">
-            <BridgeSlippage
-              value={slippage}
-              displaySlippage={displaySlippage}
-              onChange={setSlippage}
-              autoSlippage={autoSlippage}
-              isCustomSlippage={isCustomSlippage}
-              setAutoSlippage={setAutoSlippage}
-              setIsCustomSlippage={setIsCustomSlippage}
-              type="swap"
-            />
-          </div>
+        {canSwap &&
+        !noQuote &&
+        priceImpactData.showWarning &&
+        !isQuoteLoading ? (
+          <LendingPriceImpactNotice
+            loading={isQuoteLoading}
+            payToken={toToken}
+            payAmount={toAmountAfterSlippage}
+            receiveToken={fromToken}
+            receiveAmount={debouncedFromAmount}
+          />
         ) : null}
 
         {canShowDirectSubmit && canSwap && chainInfo?.serverId ? (
@@ -1161,25 +1167,19 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
             />
           </div>
         ) : null}
-
-        {canSwap &&
-        !noQuote &&
-        priceImpactData.showWarning &&
-        !isQuoteLoading ? (
-          <div className="mt-12 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10">
-            <div className="flex items-center justify-between gap-8">
-              <span className="text-[13px] leading-[16px] text-r-neutral-title-1">
-                {t('page.bridge.price-impact')}
-              </span>
-              <span className="text-[13px] leading-[16px] font-medium text-rb-orange-default">
-                {(priceImpactData.lostValue * 100).toFixed(1)}%
-              </span>
-            </div>
-            <div className="mt-8 text-[12px] leading-[16px] text-r-neutral-foot">
-              {t('page.lending.debtSwap.priceImpactTips', {
-                lostValue: `${(priceImpactData.lostValue * 100).toFixed(1)}%`,
-              })}
-            </div>
+        {canSwap && !noQuote ? (
+          <div className="mt-16 px-16">
+            <BridgeSlippage
+              value={slippage}
+              displaySlippage={displaySlippage}
+              onChange={setSlippage}
+              autoSlippage={autoSlippage}
+              isCustomSlippage={isCustomSlippage}
+              setAutoSlippage={setAutoSlippage}
+              setIsCustomSlippage={setIsCustomSlippage}
+              type="swap"
+              valueClassName="text-[14px] font-[700]"
+            />
           </div>
         ) : null}
 
@@ -1236,13 +1236,15 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
 
         {isRisky && !isLiquidatable && !isExceedMaxLtvAfterSwap ? (
           <>
-            <div className="mb-8 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10 flex items-start gap-8">
-              <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-orange-default mt-[1px]" />
-              <span className="text-[13px] leading-[16px] text-rb-orange-default">
-                {riskDesc}
-              </span>
-            </div>
-            <div className="mb-12 flex items-start gap-8">
+            {!!riskDesc && (
+              <div className="mb-8 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10 flex items-start gap-8">
+                <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-orange-default mt-[1px]" />
+                <span className="text-[13px] leading-[16px] text-rb-orange-default">
+                  {riskDesc}
+                </span>
+              </div>
+            )}
+            <div className="mb-12 flex items-center justify-center gap-8">
               <StyledCheckbox
                 checked={riskChecked}
                 onChange={(e) => setRiskChecked(e.target.checked)}
