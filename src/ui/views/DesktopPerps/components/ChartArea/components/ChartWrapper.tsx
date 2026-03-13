@@ -112,8 +112,8 @@ export const formatLocalDateTime = (time: Time, noTime = false): string => {
 };
 
 const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1);
+  const year = String(date.getFullYear()).slice(-2);
+  const mon = MONTHS[date.getMonth()];
   const day = padZero(date.getDate());
   const hours = padZero(date.getHours());
   const minutes = padZero(date.getMinutes());
@@ -121,17 +121,17 @@ const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
 
   switch (tickMarkType) {
     case TickMarkType.Year:
-      return String(year);
+      return String(date.getFullYear());
     case TickMarkType.Month:
-      return `${year}-${month}`;
+      return `${mon} '${year}`;
     case TickMarkType.DayOfMonth:
-      return `${month}-${day}`;
+      return `${day} ${mon}`;
     case TickMarkType.TimeWithSeconds:
       return `${hours}:${minutes}:${seconds}`;
     case TickMarkType.Time:
       return `${hours}:${minutes}`;
     default:
-      return `${year}-${month}-${day}`;
+      return `${day} ${mon} '${year}`;
   }
 };
 
