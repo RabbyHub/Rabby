@@ -71,6 +71,8 @@ const PasswordInput = styled(Input)`
     border-color: var(--r-blue-default, #4c65ff);
     box-shadow: none;
   }
+  &.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input,
+  &.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input:hover,
   &.ant-input:hover,
   &.ant-input:focus,
   &.ant-input-focused {
@@ -1136,7 +1138,7 @@ const BulkImportPrivateKey: React.FC = () => {
                         }}
                       />
                       <RcUploader className="mb-[8px] h-[40px] w-[40px] text-r-neutral-body" />
-                      <div className="text-[13px] leading-[16px] text-r-neutral-body max-w-[360px]">
+                      <div className="text-[13px] leading-[16px] text-r-neutral-body max-w-[300px] truncate">
                         {keyStoreFileName ||
                           t('component.Uploader.placeholder')}
                       </div>
