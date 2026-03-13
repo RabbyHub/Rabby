@@ -126,7 +126,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                       </div>
                     </div>
                   </Panel>
-                  <PanelResizeHandle className="h-[1px]" />
+                  <PanelResizeHandle className="h-[4px]" />
                   <Panel minSize={20}>
                     <UserInfoHistory />
                   </Panel>
