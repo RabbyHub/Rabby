@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { Button, message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import { useHistory, useLocation } from 'react-router-dom';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { Virtuoso } from 'react-virtuoso';
 import { KEYRING_CLASS } from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
@@ -43,12 +43,6 @@ const LIST_ITEM_HEIGHT = 60;
 interface AddressRowData extends Account {
   imported: boolean;
   placeholder?: boolean;
-}
-
-interface AddressListData {
-  rows: AddressRowData[];
-  selectedAddresses: string[];
-  onToggle: (item: AddressRowData) => void;
 }
 
 const HD_PATH_OPTIONS: {
@@ -183,31 +177,6 @@ const AddressRow = ({
         />
       </div>
     </button>
-  );
-};
-
-const AddressListRow = ({
-  index,
-  style,
-  data,
-}: ListChildComponentProps<AddressListData>) => {
-  const item = data.rows[index];
-
-  return (
-    <div style={style} className="w-full">
-      <div className="pb-[8px]">
-        <AddressRow
-          item={item}
-          checked={
-            !!item.address &&
-            data.selectedAddresses.some(
-              (address) => address.toLowerCase() === item.address.toLowerCase()
-            )
-          }
-          onToggle={() => data.onToggle(item)}
-        />
-      </div>
-    </div>
   );
 };
 
@@ -630,15 +599,28 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
       }))
     : [];
 
-  const popupHeight =
-    typeof window !== 'undefined'
-      ? isInModal
-        ? 600
-        : Math.max(window.innerHeight, 520)
-      : isInModal
-      ? 600
-      : 640;
-  const listHeight = Math.max(popupHeight - 64 - 72, 240);
+  const selectedAddressSet = React.useMemo(
+    () => new Set(selectedAddresses.map((address) => address.toLowerCase())),
+    [selectedAddresses]
+  );
+
+  const renderAddressRow = React.useCallback(
+    (_index: number, item: AddressRowData) => {
+      return (
+        <div className="pb-[8px]">
+          <AddressRow
+            item={item}
+            checked={
+              !!item.address &&
+              selectedAddressSet.has(item.address.toLowerCase())
+            }
+            onToggle={() => handleToggle(item)}
+          />
+        </div>
+      );
+    },
+    [handleToggle, selectedAddressSet]
+  );
 
   return (
     <div
@@ -668,20 +650,14 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
 
       <div className="min-h-0 flex flex-1 flex-col">
         <div className="min-h-0 flex-1">
-          <FixedSizeList
-            height={listHeight}
-            width="100%"
-            itemCount={displayRows.length}
-            itemSize={LIST_ITEM_HEIGHT}
-            itemData={{
-              rows: displayRows,
-              selectedAddresses,
-              onToggle: handleToggle,
-            }}
-            overscanCount={4}
-          >
-            {AddressListRow}
-          </FixedSizeList>
+          <Virtuoso
+            data={displayRows}
+            className="min-h-0 h-full"
+            style={{ height: '100%' }}
+            fixedItemHeight={LIST_ITEM_HEIGHT}
+            overscan={240}
+            itemContent={renderAddressRow}
+          />
         </div>
 
         <div className="bg-r-neutral-bg-2 pb-[20px] pt-[8px]">
