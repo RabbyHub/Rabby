@@ -446,7 +446,8 @@
         "side": "側邊",
         "price": "價格",
         "searchTokenPlaceholder": "搜索 Token",
-        "openInTab": "在 Rabby 标签中打开"
+        "openInTab": "在 Rabby 标签中打开",
+        "openProMode": "開啟專業模式"
       },
       "hd": {
         "howToConnectLedger": "如何連接 Ledger",
@@ -542,7 +543,9 @@
         "walletConnect": "WalleConnect",
         "walletConnectVPN": "如果你使用 VPN，WalletConnect 將會不穩定",
         "cameraTitle": "請用相機掃描二維碼",
-        "addressEns": "輸入地址/ENS"
+        "addressEns": "輸入地址/ENS",
+        "description": "追蹤任何公開錢包地址",
+        "content": "添加仅观察地址"
       },
       "unableToImport": {
         "title": "無法導入",
@@ -866,7 +869,34 @@
       "firefoxLedgerDisableTips": "Ledger 不兼容 Firefox",
       "trezor": {
         "title": "連接 Trezor"
-      }
+      },
+      "addNewAddress": "創建新地址",
+      "createANewSeedPhrase": "創建新的助記詞",
+      "moreWallets": "更多錢包",
+      "newSeedPhraseCreated": "已創建新種子短語",
+      "addMoreAddresses": "添加更多地址",
+      "importMoreWallets": "添加更多地址",
+      "seedPhraseTab": "种子短语",
+      "watchAddress": "監察地址",
+      "bulkImportPrivateKey": "批量导入私钥",
+      "imported": "已导入前",
+      "addressAdded": "地址已添加",
+      "addressAddedCount_one": "{{count}} 地址已添加",
+      "newAddressAdded": "新增地址",
+      "bulkImportPrivateKeyInputTab": "輸入私钥",
+      "addressImported": "地址已导入",
+      "privateKeyTab": "私钥",
+      "openExtensionToGetStarted": "打開 Rabby 擴展以開始使用",
+      "newAddressCreated": "新地址已创建",
+      "addressAddedCount_other": "{{count}} 個地址已添加",
+      "bulkImportPrivateKeySupport": "支持最多 1000 个 EVM 兼容的私钥",
+      "duplicateAddressesSkippedTitle": "某些地址已被导入",
+      "bulkImportPrivateKeyExceeded": "支持最多 {{count}} 個私鑰同時使用",
+      "addMoreAddressesFromThisSeedPhrase": "從這個種子短語添加更多地址",
+      "duplicateAddressesSkippedDesc_one": "{{count}} 個地址被跳過，因為它已經存在。",
+      "bulkImportPrivateKeyInvalid": "某些私钥無效。請刪除或重新輸入它們。",
+      "bulkImportPrivateKeyPlaceholder": "每個私鑰應該以新行或特殊字符分隔。",
+      "duplicateAddressesSkippedDesc_other": "{{count}} 個地址已被跳過，因為它們已經存在。"
     },
     "activities": {
       "signedText": {
@@ -1221,7 +1251,8 @@
       "CurrentDappAddress": {
         "desc": "切換 Dapp 地址\n"
       },
-      "noSeedPhraseAddress": "此种子短语尚未添加任何地址。您可以添加一个地址或删除该种子短语。"
+      "noSeedPhraseAddress": "此种子短语尚未添加任何地址。您可以添加一个地址或删除该种子短语。",
+      "watch-address": "只读模式"
     },
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
@@ -2043,7 +2074,8 @@
       },
       "btnForgotPassword": "忘記密碼?",
       "title": "Rabby Wallet",
-      "description": "您首选的以太坊和 EVM 钱包"
+      "description": "您首选的以太坊和 EVM 钱包",
+      "biometricFailed": "生物识别解锁失敗"
     },
     "addressDetail": {
       "add-to-whitelist": "添加到白名單",
@@ -3362,7 +3394,10 @@
         "activatedAddress": "已啟用",
         "hyperliquidBalance": "永續合約餘額",
         "notActivatedAddress": "尚未啟用",
-        "noPosition": "未持倉"
+        "noPosition": "未持倉",
+        "positions": "持仓",
+        "position": "持仓",
+        "selectAddress": "選擇一個地址"
       },
       "riskLevel": {
         "danger": {
@@ -3488,7 +3523,21 @@
       "logInPerpsAccount": "登入我的永續合約帳戶",
       "deleteAgentModal": "你已達到代理數量的上限。是否刪除現有的代理以建立新代理？",
       "openPositionTips": "交易永續合約涉及重大風險，包括因高槓桿與市場波動而導致您的投資及抵押品的突然性及全面虧損風險，且未必適合所有用戶。價格可能受資金費率和流動性影響，且您可能在沒有通知的情況下被自動清算。市場數據由 Hyperliquid 提供。",
-      "directDepositFast": "快速，0 滑点"
+      "directDepositFast": "快速，0 滑点",
+      "details": "詳情",
+      "marginMode": "保證金模式",
+      "currentPrice": "當前價格",
+      "settings": "设置",
+      "openProModeInTab": "在标签中开启专业模式",
+      "positionValue": "持仓价值",
+      "isolatedMargin": "隔离保证金",
+      "cannotChangeMarginModeWithOpenPositions": "在持仓状态下无法更改保证金模式",
+      "liquidationDistanceUp": "上升 <bold>{{percent}}</bold> 将触发平仓",
+      "liquidationDistanceDown": "下跌 <bold>{{percent}}</bold> 将触发清算",
+      "isolatedMarginDesc": "每个仓位使用其自己的保证金。亏损仅限于该仓位，但更容易被强制平仓。",
+      "unrealizedPnl": "未实现盈亏",
+      "crossMargin": "跨保证金",
+      "crossMarginDesc": "所有头寸共享相同的保证金。这可以减少单一头寸被强平的机会，但在极端市场波动中，所有交叉保证金资金可能会丢失。"
     },
     "perpsPro": {
       "chatArea": {
@@ -3549,7 +3598,8 @@
           "value": "價值",
           "size": "倉位大小",
           "orderHistory": "委託單歷史",
-          "fundingTipsV2": "自持仓开启以来的净资金。红色（负值）资金表示支付的资金，而绿色（正值）资金表示收到的资金。"
+          "fundingTipsV2": "自持仓开启以来的净资金。红色（负值）资金表示支付的资金，而绿色（正值）资金表示收到的资金。",
+          "fundingTipsBold": "這顯示自開倉以來你的總資金結算。<bold>綠色（正數）</bold>值表示你從其他交易者那裡獲得了收益，而<bold>紅色（負數）</bold>值則是你支付給他們的資金成本。"
         },
         "emptyMessage": {
           "fundingHistory": "尚無資金費率歷史",
@@ -3716,7 +3766,9 @@
         "confirm": "確認",
         "isolated": "隔離保證金",
         "crossDescription": "所有跨倉頭寸共用同一個跨保證金作為抵押。在清算發生時，您在此模式下的跨保證金餘額以及任何剩餘未平倉的跨倉頭寸可能被沒收。",
-        "isolatedDescription": "透過分配給每個倉位的保證金量，管理個別頭寸的風險。若孤立倉位的保證金率達到 100%，該頭寸將被清算。在此模式下，可以向個別倉位增添或提取保證金。"
+        "isolatedDescription": "透過分配給每個倉位的保證金量，管理個別頭寸的風險。若孤立倉位的保證金率達到 100%，該頭寸將被清算。在此模式下，可以向個別倉位增添或提取保證金。",
+        "onlyIsolatedSupported": "此资产仅支持隔离保证金模式",
+        "cannotChange": "無法更改保證金模式"
       },
       "leverage": {
         "higherLeverageRisk": "更高的槓桿會增加強制平倉的風險。",
@@ -4029,7 +4081,8 @@
           "balance": "餘額",
           "assets": "代幣"
         },
-        "title": "選擇還款代幣"
+        "title": "選擇還款代幣",
+        "zeroLtvCollateralTips": "您目前的 LTV = 0 担保品，因此根据担保品还款规则，您只能先使用这些担保品进行还款。"
       },
       "manageEmode": {
         "actions": {
@@ -4099,7 +4152,8 @@
         "entryTips": "一鍵交換你的借入資產，減少步驟和費用。",
         "lpRiskWarning": "低健康因子，交易后您的头寸将承担更高的清算风险。",
         "lpDangerWarning": "您在此交易后的健康系数将会极低，可能导致强制平仓。请选择其他资产或减少交易金额以确保安全。",
-        "priceImpactTips": "高价格影响（{{lostValue}}）。由于流动性低或订单规模小，此路径可能会返回更多。"
+        "priceImpactTips": "高价格影响（{{lostValue}}）。由于流动性低或订单规模小，此路径可能会返回更多。",
+        "maxLtvWarning": "抵押品不足以覆盖新的借贷头寸。钱包必须仍有借贷能力才能执行债务切换。"
       },
       "repayWithCollateral": {
         "action": {
@@ -4467,7 +4521,7 @@
     "alias": {
       "HdKeyring": "助記詞",
       "simpleKeyring": "私鑰",
-      "watchAddressKeyring": ""
+      "watchAddressKeyring": "只观赏"
     },
     "keyring": {
       "onekey": {
@@ -4486,7 +4540,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "通過助記詞創建",
       "SimpleKeyring": "通過私鑰導入",
-      "WatchAddressKeyring": ""
+      "WatchAddressKeyring": "只读模式"
     },
     "IMPORTED_HD_KEYRING": "通過助記詞導入",
     "SIGN_PERMISSION_OPTIONS": {

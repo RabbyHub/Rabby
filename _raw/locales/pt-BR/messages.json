@@ -347,7 +347,7 @@
       "maxPriorityFeeDisabledAlert": "Por favor, defina o Gas Price primeiro",
       "label": "Rótulo",
       "primaryType": "Tipo principal",
-      "safeServiceNotAvailable": "O serviço Safe não está disponível no momento, por favor, tente mais tarde.",
+      "safeServiceNotAvailable": "O serviço de segurança não está disponível no momento, por favor, tente novamente mais tarde.",
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
@@ -1101,7 +1101,8 @@
       "CurrentDappAddress": {
         "desc": "Alterar o endereço do DApp\n"
       },
-      "noSeedPhraseAddress": "Nenhum endereço foi adicionado para esta frase-semente. Você pode adicionar um endereço ou excluir a frase-semente."
+      "noSeedPhraseAddress": "Nenhum endereço foi adicionado para esta frase-semente. Você pode adicionar um endereço ou excluir a frase-semente.",
+      "watch-address": "Apenas visualização"
     },
     "dashboard": {
       "home": {
@@ -1481,7 +1482,8 @@
         "price": "PREÇO",
         "side": "LADO",
         "searchTokenPlaceholder": "Pesquisar Token",
-        "openInTab": "Abra na aba Rabby"
+        "openInTab": "Abra na aba Rabby",
+        "openProMode": "Ativar o Modo Pro"
       },
       "hd": {
         "howToConnectLedger": "Como Conectar o Ledger",
@@ -1572,7 +1574,9 @@
         "walletConnect": "WalletConnect",
         "walletConnectVPN": "O WalletConnect será instável se você usar uma VPN.",
         "cameraTitle": "Por favor, escaneie o código QR com sua câmera",
-        "addressEns": "Endereço / ENS"
+        "addressEns": "Endereço / ENS",
+        "content": "Adicionar Endereço Somente para Observação",
+        "description": "Acompanhe qualquer endereço de carteira pública"
       },
       "unableToImport": {
         "title": "Não é possível importar",
@@ -1895,7 +1899,34 @@
       "addFromCurrentSeedPhrase": "Adicionar da Seed Phrase Atual",
       "trezor": {
         "title": "Conectar Trezor"
-      }
+      },
+      "importMoreWallets": "Adicionar Mais Endereços",
+      "createANewSeedPhrase": "Crie uma nova frase semente",
+      "moreWallets": "Mais Carteiras",
+      "addMoreAddresses": "Adicionar Mais Endereços",
+      "addNewAddress": "Criar Novo Endereço",
+      "addressAddedCount_one": "{{count}} Endereço Adicionado",
+      "watchAddress": "Assistir Endereço",
+      "privateKeyTab": "Chave Privada",
+      "bulkImportPrivateKey": "Importação em massa da chave privada",
+      "newAddressAdded": "Novo Endereço Adicionado",
+      "newAddressCreated": "Novo Endereço Criado",
+      "bulkImportPrivateKeyInputTab": "Digite a Chave Privada",
+      "openExtensionToGetStarted": "Abra a extensão Rabby para começar",
+      "duplicateAddressesSkippedTitle": "Alguns endereços já estão importados",
+      "duplicateAddressesSkippedDesc_other": "{{count}} endereços foram ignorados porque já existem.",
+      "newSeedPhraseCreated": "Nova Frase Sementes Criada",
+      "imported": "Importado Antes",
+      "seedPhraseTab": "Frase Semente",
+      "bulkImportPrivateKeyExceeded": "Suporta até {{count}} chaves privadas ao mesmo tempo",
+      "addressImported": "Endereço Importado",
+      "bulkImportPrivateKeySupport": "Suporta até 1000 chaves privadas compatíveis com EVM",
+      "addressAddedCount_other": "{{count}} Endereços Adicionados",
+      "bulkImportPrivateKeyInvalid": "Algumas chaves privadas são inválidas. Por favor, remova ou insira novamente.",
+      "addMoreAddressesFromThisSeedPhrase": "Adicionar mais endereços a partir desta frase-semente",
+      "duplicateAddressesSkippedDesc_one": "{{count}} endereço foi pulado porque já existe.",
+      "bulkImportPrivateKeyPlaceholder": "Cada chave privada deve ser separada por uma nova linha ou um caractere especial.",
+      "addressAdded": "Endereço Adicionado"
     },
     "unlock": {
       "btn": {
@@ -1910,7 +1941,8 @@
       },
       "btnForgotPassword": "Esqueceu a senha?",
       "title": "Rabby Wallet",
-      "description": "Sua carteira de referência para Ethereum e EVM"
+      "description": "Sua carteira de referência para Ethereum e EVM",
+      "biometricFailed": "Desbloqueio biométrico falhou"
     },
     "addToken": {
       "noTokenFound": "Nenhum token encontrado",
@@ -3326,7 +3358,10 @@
         "activatedAddress": "Ativado",
         "notActivatedAddress": "Não ativado",
         "noPosition": "Sem Posição",
-        "hyperliquidBalance": "Saldo de contratos perp"
+        "hyperliquidBalance": "Saldo de contratos perp",
+        "selectAddress": "Selecione um Endereço",
+        "position": "Posição",
+        "positions": "Posições"
       },
       "riskLevel": {
         "danger": {
@@ -3452,7 +3487,21 @@
       "rabbyFeeTipsV2": "Tarifa Rabby: 0,02%",
       "long": "Compra",
       "deleteAgentSuccess": "Agente deletado com sucesso",
-      "directDepositFast": "Rápido, 0 Slippage"
+      "directDepositFast": "Rápido, 0 Slippage",
+      "crossMargin": "Margem Cruzada",
+      "marginMode": "Modo de Margem",
+      "settings": "Configurações",
+      "unrealizedPnl": "PNL não realizado",
+      "positionValue": "Valor da Posição",
+      "isolatedMargin": "Margem Isolada",
+      "openProModeInTab": "Abra o Modo Pro em Abas",
+      "cannotChangeMarginModeWithOpenPositions": "Não é possível alterar o Modo de Margem com posições abertas.",
+      "crossMarginDesc": "Todas as posições compartilham a mesma margem. Isso reduz a chance de uma única posição ser liquidada, mas todos os fundos de margem cruzada podem ser perdidos em movimentos extremos do mercado.",
+      "isolatedMarginDesc": "Cada posição utiliza sua própria margem. As perdas são limitadas àquela posição, mas pode ser liquidada mais facilmente.",
+      "currentPrice": "Preço Atual",
+      "liquidationDistanceDown": "A queda de <bold>{{percent}}</bold> irá acionar a liquidação.",
+      "details": "Detalhes",
+      "liquidationDistanceUp": "Subindo <bold>{{percent}}</bold> irá acionar a liquidação"
     },
     "perpsPro": {
       "chatArea": {
@@ -3513,7 +3562,8 @@
           "positions": "Posições",
           "size": "Tamanho da posição",
           "tpSl": "Lucro-alvo / Stop Loss",
-          "fundingTipsV2": "Financiamento líquido desde que a posição foi aberta. Um valor de financiamento vermelho (negativo) indica financiamento pago, enquanto um valor verde (positivo) indica financiamento recebido."
+          "fundingTipsV2": "Financiamento líquido desde que a posição foi aberta. Um valor de financiamento vermelho (negativo) indica financiamento pago, enquanto um valor verde (positivo) indica financiamento recebido.",
+          "fundingTipsBold": "Isto mostra o total de funding liquidado desde que a posição foi aberta. Valores <bold>Verde (positivo)</bold> significam que você ganhou de outros traders, enquanto valores <bold>Vermelho (negativo)</bold> são os custos de funding que você pagou a eles."
         },
         "emptyMessage": {
           "orderHistory": "Sem histórico de ordens",
@@ -3680,7 +3730,9 @@
         "isolated": "Isolado",
         "cross": "Margem Cruzada",
         "isolatedDescription": "Gerencie o seu risco em posições individuais alocando a quantidade de margem destinada a cada uma. Se a relação de margem de uma posição isolada atingir 100%, a posição será liquidada. A margem pode ser adicionada ou removida às posições individuais neste modo.",
-        "crossDescription": "Todas as posições cruzadas compartilham a mesma margem cruzada como garantia. Em caso de liquidação, seu saldo de margem e quaisquer posições em aberto remanescentes sob a margem cruzada neste modo podem ser perdidos."
+        "crossDescription": "Todas as posições cruzadas compartilham a mesma margem cruzada como garantia. Em caso de liquidação, seu saldo de margem e quaisquer posições em aberto remanescentes sob a margem cruzada neste modo podem ser perdidos.",
+        "onlyIsolatedSupported": "Este ativo suporta apenas o modo de margem isolada.",
+        "cannotChange": "Não é possível mudar o modo de margem"
       },
       "leverage": {
         "higherLeverageRisk": "Maior alavancagem aumenta o risco de liquidação.",
@@ -3993,7 +4045,8 @@
           "balance": "Saldo",
           "assets": "Token"
         },
-        "title": "Selecionar Token de Reembolso"
+        "title": "Selecionar Token de Reembolso",
+        "zeroLtvCollateralTips": "Você tem o seguinte LTV = 0 colaterais e, portanto, só pode pagar com esses colaterais primeiro, de acordo com as regras de pagamento de colaterais."
       },
       "manageEmode": {
         "actions": {
@@ -4063,7 +4116,8 @@
         "entryTips": "Uma clique para trocar seu ativo emprestado, reduzindo etapas e taxas.",
         "lpRiskWarning": "Fator de saúde baixo após a troca. Sua posição terá um risco maior de liquidação.",
         "priceImpactTips": "Alta impacto de preço ({{lostValue}}). Esta rota pode retornar mais devido à baixa liquidez ou ao tamanho pequeno do pedido.",
-        "lpDangerWarning": "Seu fator de saúde após esta troca ficará criticamente baixo e pode resultar em liquidação. Por favor, escolha um ativo diferente ou reduza o montante da troca para se manter seguro."
+        "lpDangerWarning": "Seu fator de saúde após esta troca ficará criticamente baixo e pode resultar em liquidação. Por favor, escolha um ativo diferente ou reduza o montante da troca para se manter seguro.",
+        "maxLtvWarning": "Colateral insuficiente para cobrir a nova posição de empréstimo. A carteira deve ter poder de empréstimo restante para realizar a troca de dívida."
       },
       "repayWithCollateral": {
         "action": {
@@ -4469,7 +4523,7 @@
       "HdKeyring": "Frase-semente",
       "SimpleKeyring": "Chave privada importada",
       "WatchAddressKeyring": "Contato",
-      "watchAddressKeyring": "",
+      "watchAddressKeyring": "Apenas para visualização",
       "simpleKeyring": "Chave Privada"
     },
     "keyring": {
@@ -4489,7 +4543,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Criado pela Frase-semente",
       "SimpleKeyring": "Importado pela Chave Privada",
-      "WatchAddressKeyring": ""
+      "WatchAddressKeyring": "Apenas visualização"
     },
     "IMPORTED_HD_KEYRING": "Importado pela Frase-semente",
     "SIGN_PERMISSION_OPTIONS": {

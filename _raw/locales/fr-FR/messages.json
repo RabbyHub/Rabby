@@ -3,7 +3,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Clé privée",
-      "watchAddressKeyring": ""
+      "watchAddressKeyring": "Affichage uniquement"
     },
     "keyring": {
       "onekey": {
@@ -278,7 +278,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Créé par seed phrase",
       "SimpleKeyring": "Importé par clé privée",
-      "WatchAddressKeyring": ""
+      "WatchAddressKeyring": "Regarder seulement"
     },
     "SIGN_PERMISSION_OPTIONS": {
       "MAINNET_AND_TESTNET": "Mainnet & Testnet",
@@ -791,7 +791,8 @@
         "price": "PRIX",
         "side": "CÔTÉ",
         "searchTokenPlaceholder": "Rechercher Token",
-        "openInTab": "Ouvrir dans l'onglet Rabby"
+        "openInTab": "Ouvrir dans l'onglet Rabby",
+        "openProMode": "Ouvrir le mode pro"
       },
       "contacts": {
         "noData": "Pas de données",
@@ -1238,7 +1239,8 @@
       "CurrentDappAddress": {
         "desc": "Changer l'adresse Dapp"
       },
-      "noSeedPhraseAddress": "Aucune adresse n'a été ajoutée pour cette phrase de récupération. Vous pouvez ajouter une adresse ou supprimer la phrase de récupération."
+      "noSeedPhraseAddress": "Aucune adresse n'a été ajoutée pour cette phrase de récupération. Vous pouvez ajouter une adresse ou supprimer la phrase de récupération.",
+      "watch-address": "Regarder uniquement"
     },
     "newAddress": {
       "addContacts": {
@@ -1248,7 +1250,11 @@
         "scanQRCode": "Scanner les QR codes avec des wallets compatibles WalletConnect",
         "scanViaPcCamera": "Scanner via une caméra sur PC",
         "walletConnect": "WalletConnect",
-        "walletConnectVPN": "WalletConnect sera instable si vous utilisez un VPN."
+        "walletConnectVPN": "WalletConnect sera instable si vous utilisez un VPN.",
+        "cameraTitle": "Veuillez scanner le code QR avec votre caméra.",
+        "addressEns": "Adresse / ENS",
+        "content": "Ajouter une adresse en lecture seule",
+        "description": "Suivez n'importe quelle adresse de portefeuille public"
       },
       "coboSafe": {
         "addCoboArgusAddress": "Ajouter une adresse Cobo Argus",
@@ -1575,7 +1581,34 @@
       "addFromCurrentSeedPhrase": "Ajouter à partir de la phrase secrète actuelle",
       "trezor": {
         "title": "Connect Trezor"
-      }
+      },
+      "importMoreWallets": "Ajouter Plus d'Adresses",
+      "addNewAddress": "Créer une nouvelle adresse",
+      "moreWallets": "Plus de Portefeuilles",
+      "addMoreAddresses": "Ajouter Plus d'Adresses",
+      "createANewSeedPhrase": "Créer une nouvelle phrase mnémotechnique",
+      "seedPhraseTab": "Phrase de récupération",
+      "newAddressAdded": "Nouvelle adresse ajoutée",
+      "privateKeyTab": "Clé Privée",
+      "newSeedPhraseCreated": "Nouvelle phrase de récupération créée",
+      "addressAdded": "Adresse ajoutée",
+      "watchAddress": "Regarder l'adresse",
+      "addressImported": "Adresse importée",
+      "bulkImportPrivateKeyInputTab": "Entrez la clé privée",
+      "imported": "Importé avant",
+      "newAddressCreated": "Nouvelle adresse créée",
+      "addressAddedCount_one": "{{count}} Adresse ajoutée",
+      "addMoreAddressesFromThisSeedPhrase": "Ajoutez plus d'adresses à partir de cette phrase de départ",
+      "duplicateAddressesSkippedTitle": "Certaines adresses sont déjà importées",
+      "addressAddedCount_other": "{{count}} Adresses Ajoutées",
+      "bulkImportPrivateKeySupport": "Prend en charge jusqu'à 1000 clés privées compatibles EVM",
+      "bulkImportPrivateKeyExceeded": "Prend en charge jusqu'à {{count}} clés privées à la fois",
+      "duplicateAddressesSkippedDesc_other": "{{count}} adresses ont été ignorées car elles existent déjà.",
+      "bulkImportPrivateKeyInvalid": "Certaines clés privées sont invalides. Veuillez les supprimer ou les saisir à nouveau.",
+      "duplicateAddressesSkippedDesc_one": "{{count}} adresse a été ignorée car elle existe déjà.",
+      "bulkImportPrivateKeyPlaceholder": "Chaque clé privée doit être séparée par une nouvelle ligne ou un caractère spécial.",
+      "bulkImportPrivateKey": "Importation par lot de la clé privée",
+      "openExtensionToGetStarted": "Ouvrez l'extension Rabby pour commencer"
     },
     "nft": {
       "all": "Tous",
@@ -2246,7 +2279,7 @@
       "no": "Non",
       "hasInteraction": "Interagi auparavant",
       "primaryType": "Type primaire",
-      "safeServiceNotAvailable": "Le service Safe n'est pas disponible pour le moment, veuillez réessayer plus tard.",
+      "safeServiceNotAvailable": "Le service Safe n'est pas disponible maintenant, veuillez réessayer plus tard.",
       "safeTx": {
         "selfHostConfirm": {
           "title": "Passer au service Safe de Rabby",
@@ -2484,7 +2517,8 @@
       },
       "title": "Rabby Wallet",
       "btnForgotPassword": "Mot de passe oublié ?",
-      "description": "Votre portefeuille incontournable pour Ethereum et EVM"
+      "description": "Votre portefeuille incontournable pour Ethereum et EVM",
+      "biometricFailed": "Le déverrouillage biométrique a échoué"
     },
     "welcome": {
       "step1": {
@@ -3645,7 +3679,10 @@
         "activatedAddress": "Activé",
         "noPosition": "Aucune position",
         "notActivatedAddress": "Non activé",
-        "hyperliquidBalance": "Solde des contrats perpétuels"
+        "hyperliquidBalance": "Solde des contrats perpétuels",
+        "position": "Position",
+        "selectAddress": "Sélectionnez une adresse",
+        "positions": "Positions"
       },
       "riskLevel": {
         "danger": {
@@ -3771,7 +3808,21 @@
       "openPositionTips": "Le trading de contrats perpétuels comporte des risques importants, y compris le risque de perte soudaine et totale de votre investissement et de votre collatéral en raison d’un effet de levier élevé et de la volatilité du marché, et peut ne pas convenir à tous les utilisateurs. Les prix peuvent être influencés par les taux de financement et par la liquidité, et vous pouvez être soumis à des liquidations automatiques sans préavis. Données de marché fournies par Hyperliquid.",
       "history": "Historique",
       "TakeProfit": "Prise de bénéfices",
-      "directDepositFast": "Rapide, 0 Slippage"
+      "directDepositFast": "Rapide, 0 Slippage",
+      "marginMode": "Mode de marge",
+      "settings": "Paramètres",
+      "currentPrice": "Prix actuel",
+      "unrealizedPnl": "PNL non réalisé",
+      "crossMargin": "Marge croisée",
+      "liquidationDistanceUp": "Augmenter de <bold>{{percent}}</bold> déclenchera la liquidation",
+      "isolatedMargin": "Marge Isolée",
+      "details": "Détails",
+      "positionValue": "Valeur de la position",
+      "cannotChangeMarginModeWithOpenPositions": "Impossible de changer le mode de marge avec des positions ouvertes.",
+      "isolatedMarginDesc": "Chaque position utilise sa propre marge. Les pertes sont limitées à cette position, mais elle peut être liquidée plus facilement.",
+      "liquidationDistanceDown": "Descendre de <bold>{{percent}}</bold> déclenchera la liquidation",
+      "openProModeInTab": "Ouvrir le mode Pro dans l'onglet",
+      "crossMarginDesc": "Tous les positions partagent la même marge. Cela réduit les chances qu'une seule position soit liquidée, mais tous les fonds de marge croisés peuvent être perdus lors de mouvements de marché extrêmes."
     },
     "perpsPro": {
       "chatArea": {
@@ -3832,7 +3883,8 @@
           "coin": "Pièce",
           "closedPnlTooltip": "PNL réalisée inclut les frais et les remises.",
           "tpSl": "Objectif de profit / Limite de perte",
-          "fundingTipsV2": "Financement net depuis l'ouverture de la position. Une valeur de financement rouge (négative) indique un financement payé, tandis qu'une valeur verte (positive) indique un financement reçu."
+          "fundingTipsV2": "Financement net depuis l'ouverture de la position. Une valeur de financement rouge (négative) indique un financement payé, tandis qu'une valeur verte (positive) indique un financement reçu.",
+          "fundingTipsBold": "Cela montre votre total de financement réglé depuis l'ouverture de la position. Les valeurs <bold>vertes (positives)</bold> signifient que vous avez gagné de la part d'autres traders, tandis que les valeurs <bold>rouges (négatives)</bold> sont des coûts de financement que vous leur avez payés."
         },
         "emptyMessage": {
           "orderHistory": "Aucun historique des ordres",
@@ -3999,7 +4051,9 @@
         "cross": "Marge croisée",
         "isolated": "Isolée",
         "crossDescription": "Toutes les positions en marge croisée partagent la même marge croisée comme garantie. En cas de liquidation, votre solde de marge et toutes les positions ouvertes restantes en mode croisé peuvent être saisies.",
-        "isolatedDescription": "Gérez votre risque sur des positions individuelles en allouant à chacune d'elles la marge qui lui est attribuée. Si le ratio de marge d'une position isolée atteint 100 %, la position sera liquidée. La marge peut être ajoutée ou retirée sur des positions individuelles dans ce mode."
+        "isolatedDescription": "Gérez votre risque sur des positions individuelles en allouant à chacune d'elles la marge qui lui est attribuée. Si le ratio de marge d'une position isolée atteint 100 %, la position sera liquidée. La marge peut être ajoutée ou retirée sur des positions individuelles dans ce mode.",
+        "cannotChange": "Impossible de changer le mode de marge",
+        "onlyIsolatedSupported": "Cet actif ne prend en charge que le mode de marge isolée."
       },
       "leverage": {
         "confirm": "Confirmer",
@@ -4312,7 +4366,8 @@
           "balance": "Solde",
           "assets": "Jeton"
         },
-        "title": "Sélectionner le jeton de remboursement"
+        "title": "Sélectionner le jeton de remboursement",
+        "zeroLtvCollateralTips": "Vous avez les collatéraux suivants LTV = 0 et vous ne pouvez donc rembourser qu'avec ces collatéraux en premier selon les règles de remboursement des collatéraux."
       },
       "manageEmode": {
         "actions": {
@@ -4382,7 +4437,8 @@
         "entryTips": "Un clic pour échanger votre actif emprunté, réduisant ainsi les étapes et les frais.",
         "lpRiskWarning": "Facteur de santé faible après l'échange. Votre position présente un risque plus élevé de liquidation.",
         "priceImpactTips": "Impact élevé sur le prix ({{lostValue}}). Cet itinéraire peut rapporter plus en raison de la faible liquidité ou de la petite taille de commande.",
-        "lpDangerWarning": "Votre facteur de santé après cet échange sera extrêmement bas et pourrait entraîner une liquidation. Veuillez choisir un actif différent ou réduire le montant de l'échange pour rester en sécurité."
+        "lpDangerWarning": "Votre facteur de santé après cet échange sera extrêmement bas et pourrait entraîner une liquidation. Veuillez choisir un actif différent ou réduire le montant de l'échange pour rester en sécurité.",
+        "maxLtvWarning": "Fonds de garantie insuffisants pour couvrir la nouvelle position d'emprunt. Le portefeuille doit avoir une capacité d'emprunt restante pour effectuer le changement de dette."
       },
       "repayWithCollateral": {
         "action": {

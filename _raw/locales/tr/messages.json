@@ -347,7 +347,7 @@
       "maxPriorityFeeDisabledAlert": "Lütfen önce Gas Price ayarlayın",
       "yes": "Evet",
       "primaryType": "Birincil tür",
-      "safeServiceNotAvailable": "Güvenli hizmet şu anda mevcut değil, lütfen daha sonra tekrar deneyin.",
+      "safeServiceNotAvailable": "Güvenli hizmet şu anda mevcut değil, lütfen daha sonra deneyin.",
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
@@ -1101,7 +1101,8 @@
       "CurrentDappAddress": {
         "desc": "DApp Adresini Değiştir\n"
       },
-      "noSeedPhraseAddress": "Bu tohum ifadesi için adres eklenmemiştir. Bir adres ekleyebilir veya tohum ifadesini silebilirsiniz."
+      "noSeedPhraseAddress": "Bu tohum ifadesi için adres eklenmemiştir. Bir adres ekleyebilir veya tohum ifadesini silebilirsiniz.",
+      "watch-address": "Sadece izleme"
     },
     "dashboard": {
       "home": {
@@ -1481,7 +1482,8 @@
         "side": "YAN TARAF",
         "price": "FİYAT",
         "searchTokenPlaceholder": "Token Ara",
-        "openInTab": "Rabby Sekmesinde Açın"
+        "openInTab": "Rabby Sekmesinde Açın",
+        "openProMode": "Pro Modu Açın"
       },
       "hd": {
         "howToConnectLedger": "Ledger Nasıl Bağlanır",
@@ -1572,7 +1574,9 @@
         "walletConnect": "Wallet connect",
         "walletConnectVPN": "VPN kullanırsanız WalletConnect stabil olmayabilir.",
         "cameraTitle": "Lütfen kameranızla QR kodu tarayın",
-        "addressEns": "Adres / ENS"
+        "addressEns": "Adres / ENS",
+        "content": "Gözetim için Adres Ekle",
+        "description": "Herhangi bir kamu cüzdan adresini takip et"
       },
       "unableToImport": {
         "title": "İçe aktarılamıyor",
@@ -1898,7 +1902,34 @@
       "addFromCurrentSeedPhrase": "Mevcut Seed Phrase'ten Ekle",
       "trezor": {
         "title": "Trezor'u Bağla"
-      }
+      },
+      "moreWallets": "Daha Fazla Cüzdan",
+      "createANewSeedPhrase": "Yeni Bir Seed Phrase Oluştur",
+      "addNewAddress": "Yeni Adres Oluştur",
+      "importMoreWallets": "Daha Fazla Adres Ekle",
+      "addMoreAddresses": "Daha Fazla Adres Ekle",
+      "bulkImportPrivateKeyInputTab": "Özel Anahtarı Girin",
+      "watchAddress": "Adres Takip Et",
+      "openExtensionToGetStarted": "Rabby uzantısını açarak başlayın",
+      "addressAdded": "Adres Eklendi",
+      "addressImported": "Adres İçe Aktarıldı",
+      "privateKeyTab": "Özel Anahtar",
+      "newSeedPhraseCreated": "Yeni Seed Phrase Oluşturuldu",
+      "addressAddedCount_one": "{{count}} Adres Eklendi",
+      "seedPhraseTab": "Tohum Cümlesi",
+      "newAddressAdded": "Yeni Adres Eklendi",
+      "duplicateAddressesSkippedTitle": "Bazı adresler zaten içe aktarılmıştır.",
+      "duplicateAddressesSkippedDesc_other": "{{count}} adres geçildi çünkü zaten mevcut.",
+      "bulkImportPrivateKeyInvalid": "Bazı özel anahtarlar geçersiz. Lütfen bunları kaldırın veya tekrar girin.",
+      "bulkImportPrivateKeyExceeded": "Bir seferde {{count}} özel anahtara kadar destekler.",
+      "addressAddedCount_other": "{{count}} Adresler Eklendi",
+      "bulkImportPrivateKey": "Toplu özel anahtar içe aktarım",
+      "addMoreAddressesFromThisSeedPhrase": "Bu anahtar kelimeden daha fazla adres ekle",
+      "bulkImportPrivateKeySupport": "1000'e kadar EVM-uyumlu özel anahtarı destekler",
+      "newAddressCreated": "Yeni Adres Oluşturuldu",
+      "bulkImportPrivateKeyPlaceholder": "Her bir özel anahtar, yeni bir satır veya özel bir karakter ile ayrılmalıdır.",
+      "imported": "Daha Önce İçe Aktarıldı",
+      "duplicateAddressesSkippedDesc_one": "{{count}} adres geçildi çünkü zaten mevcut."
     },
     "unlock": {
       "btn": {
@@ -1913,7 +1944,8 @@
       },
       "btnForgotPassword": "Şifrenizi mi unuttunuz?",
       "title": "Rabby Cüzdan",
-      "description": "Ethereum ve EVM için tercih ettiğiniz cüzdan"
+      "description": "Ethereum ve EVM için tercih ettiğiniz cüzdan",
+      "biometricFailed": "Biyometrik kilit açma başarısız oldu"
     },
     "addToken": {
       "noTokenFound": "Token bulunamadı",
@@ -3327,7 +3359,10 @@
         "noPosition": "Pozisyon Yok",
         "activatedAddress": "Etkinleştirildi",
         "hyperliquidBalance": "Sürekli Vadeli İşlem Bakiyesi",
-        "notActivatedAddress": "Aktif değil"
+        "notActivatedAddress": "Aktif değil",
+        "positions": "Pozisyonlar",
+        "selectAddress": "Bir Adres Seçin",
+        "position": "Pozisyon"
       },
       "riskLevel": {
         "danger": {
@@ -3453,7 +3488,21 @@
       "openPositionTips": "Süresiz vadeli sözleşmelerin ticareti önemli riskler içerir; bu riskler arasında yüksek kaldıraç ve piyasa oynaklığı nedeniyle yatırımınızın ve teminatınızın ani ve tamamen kaybolma potansiyeli de bulunmaktadır ve tüm kullanıcılar için uygun olmayabilir. Fiyatlar, fonlama oranları ve likidite tarafından etkilenebilir ve bildirim olmadan otomatik likidasyonlara tabi olabilirsiniz. Piyasa verileri Hyperliquid tarafından sağlanmaktadır.",
       "liquidationPriceTips": "Likidasyon fiyatı, marjınız bakım marjı seviyesinin altına düştüğünde borsa tarafından pozisyonunuzun otomatik olarak kapatıldığı ve daha fazla zararın önüne geçilmesi için kullanılan fiyattır.",
       "balanceAvailable": "Bakiyeniz: {{balance}}",
-      "directDepositFast": "Hızlı, 0 Kayma"
+      "directDepositFast": "Hızlı, 0 Kayma",
+      "settings": "Ayarlar",
+      "crossMargin": "Cross Margin",
+      "unrealizedPnl": "Gerçekleşmemiş PNL",
+      "openProModeInTab": "Sekme'de Pro Modunu Aç",
+      "currentPrice": "Mevcut Fiyat",
+      "details": "Ayrıntılar",
+      "liquidationDistanceUp": "Yükselme <bold>{{percent}}</bold> likidasyonu tetikleyecektir.",
+      "isolatedMargin": "Ayrılmış Marj",
+      "cannotChangeMarginModeWithOpenPositions": "Açık pozisyonlarla Marj Modu değiştirilemez.",
+      "liquidationDistanceDown": "Aşağı düşme <bold>{{percent}}</bold> tasfiye tetikler",
+      "marginMode": "Marjinal Modu",
+      "positionValue": "Pozisyon Değeri",
+      "isolatedMarginDesc": "Her bir pozisyon kendi teminatını kullanır. Kayıplar o pozisyonla sınırlıdır, ancak likiditeye daha kolay maruz kalabilir.",
+      "crossMarginDesc": "Tüm pozisyonlar aynı marjı paylaşır. Bu, tek bir pozisyonun tasfiye edilme şansını azaltır, ancak tüm çapraz marj fonları aşırı piyasa hareketlerinde kaybedilebilir."
     },
     "perpsPro": {
       "chatArea": {
@@ -3514,7 +3563,8 @@
           "closedPnlTooltip": "Kapatılan PNL ücretler ve iadeler içerir.",
           "closedPnl": "Gerçekleşen PnL",
           "fee": "Fonlama ücreti",
-          "fundingTipsV2": "Pozisyon açıldıktan sonra net finansman. Kırmızı (negatif) bir finansman değeri, ödenen finansmanı; yeşil (pozitif) bir değer ise alınan finansmanı gösterir."
+          "fundingTipsV2": "Pozisyon açıldıktan sonra net finansman. Kırmızı (negatif) bir finansman değeri, ödenen finansmanı; yeşil (pozitif) bir değer ise alınan finansmanı gösterir.",
+          "fundingTipsBold": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <bold>Yeşil (pozitif)</bold> değerler, diğer ticaretçilerden kazandığınızı, <bold>Kırmızı (negatif)</bold> değerler ise onlara ödediğiniz finansman maliyetleridir."
         },
         "emptyMessage": {
           "openOrders": "Açık emir yok.",
@@ -3681,7 +3731,9 @@
         "cross": "Çapraz",
         "isolatedDescription": "Her pozisyona ayrılan marjin miktarını belirleyerek bireysel riskinizi yönetin. İzole pozisyonun marj oranı %100'e ulaştığında pozisyon tasfiye edilir. Bu modda bireysel pozisyonlara marjin eklenebilir veya kaldırılabilir.",
         "isolated": "İzole Marjin",
-        "crossDescription": "Tüm çapraz pozisyonlar aynı çapraz teminatı paylaşır. Likidasyon durumunda, bu modda çapraz marjin bakiyeniz ve hâlâ açık olan çapraz pozisyonlar kaybedilebilir."
+        "crossDescription": "Tüm çapraz pozisyonlar aynı çapraz teminatı paylaşır. Likidasyon durumunda, bu modda çapraz marjin bakiyeniz ve hâlâ açık olan çapraz pozisyonlar kaybedilebilir.",
+        "onlyIsolatedSupported": "Bu varlık sadece İzole marj modunu destekler.",
+        "cannotChange": "Marjin Modunu Değiştiremiyorsunuz"
       },
       "leverage": {
         "confirm": "Onayla",
@@ -3994,7 +4046,8 @@
           "balance": "Bakiyeniz",
           "assets": "Jeton"
         },
-        "title": "Geri Ödeme Tokeni Seçin"
+        "title": "Geri Ödeme Tokeni Seçin",
+        "zeroLtvCollateralTips": "Aşağıdaki LTV = 0 teminatlarınız var ve bu nedenle, teminat geri ödeme kurallarına göre önce bu teminatlarla geri ödeme yapabilirsiniz."
       },
       "manageEmode": {
         "actions": {
@@ -4064,7 +4117,8 @@
         "entryTips": "Bir tıklamayla ödünç aldığınız varlığı değiştirin, adımları ve ücretleri azaltın.",
         "lpRiskWarning": "Takastan sonra düşük sağlık faktörü. Pozisyonunuz likidasyon riski taşımaktadır.",
         "priceImpactTips": "Yüksek fiyat etkisi ({{lostValue}}). Bu rota, düşük likidite veya küçük sipariş boyutu nedeniyle daha fazla getirebilir.",
-        "lpDangerWarning": "Bu takas sonrası sağlık faktörünüz kritik derecede düşük olacak ve likidasyona yol açabilir. Lütfen farklı bir varlık seçin veya güvenli kalmak için takas miktarını azaltın."
+        "lpDangerWarning": "Bu takas sonrası sağlık faktörünüz kritik derecede düşük olacak ve likidasyona yol açabilir. Lütfen farklı bir varlık seçin veya güvenli kalmak için takas miktarını azaltın.",
+        "maxLtvWarning": "Yeni borç pozisyonunu karşılamak için yetersiz teminat. Cüzdanın borç geçişi yapmak için geri kalan borç verme gücüne sahip olması gerekir."
       },
       "repayWithCollateral": {
         "action": {
@@ -4468,7 +4522,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Özel Anahtar",
-      "watchAddressKeyring": ""
+      "watchAddressKeyring": "Sadece İzle"
     },
     "keyring": {
       "onekey": {
@@ -4487,7 +4541,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Seed Phrase ile Oluşturuldu",
       "SimpleKeyring": "Özel Anahtarla İçe Aktarıldı",
-      "WatchAddressKeyring": ""
+      "WatchAddressKeyring": "Sadece İzle"
     },
     "IMPORTED_HD_KEYRING": "Seed Phrase ile İçe Aktarıldı",
     "SIGN_PERMISSION_OPTIONS": {
