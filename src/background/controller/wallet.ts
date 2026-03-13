@@ -5294,6 +5294,9 @@ export class WalletController extends BaseController {
       this.addKeyringToStash(keyring);
     }
 
+    await keyring.v2SDK.waitInitClient();
+
+    keyring.removeAllListeners('scanAccount');
     keyring.on('scanAccount', (payload) => {
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.WALLETCONNECT.SCAN_ACCOUNT,
