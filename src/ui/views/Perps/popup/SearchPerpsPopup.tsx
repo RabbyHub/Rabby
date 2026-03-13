@@ -72,7 +72,7 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
 
     return (
       list.filter((item) => {
-        return item.name.includes(search);
+        return item.name.toLowerCase().includes(search.toLowerCase());
       }) || []
     );
   }, [list, search]);
@@ -131,6 +131,7 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
         <div className="flex-1 overflow-y-auto px-20">
           {filteredList.length === 0 ? (
             <Empty
+              className="text-r-neutral-title-1"
               description={t('page.perps.searchPerpsPopup.empty')}
               image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
