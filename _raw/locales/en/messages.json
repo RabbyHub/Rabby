@@ -2262,7 +2262,7 @@
       "confirm-delete": "Confirm Delete",
       "private-key": "Private Key",
       "seed-phrase": "Seed Phrase",
-      "watch-address": "Watch Address",
+      "watch-address": "Watch-only",
       "backup-seed-phrase": "Backup Seed Phrase",
       "delete-all-addresses-but-keep-the-seed-phrase": "Delete all addresses, but keep the seed phrase",
       "delete-all-addresses-and-the-seed-phrase": "Delete all addresses and the seed phrase",
@@ -2755,13 +2755,14 @@
       "duplicateAddressesSkippedDesc_one": "{{count}} address was skipped because it already exists.",
       "duplicateAddressesSkippedDesc_other": "{{count}} addresses were skipped because they already exist.",
       "openExtensionToGetStarted": "Open the Rabby extension to get started",
-      "newAddressCreated":"New Address Created",
+      "newAddressCreated": "New Address Created",
       "addressImported": "Address Imported",
-      "addressAdded":"Address Added",
+      "addressAdded": "Address Added",
       "addressAddedCount_one": "{{count}} Address Added",
       "addressAddedCount_other": "{{count}} Addresses Added",
       "importMyMetamaskAccount": "Import My MetaMask Account",
       "watchAddress": "Watch Address",
+      "imported":"Imported Before",
       "addContacts": {
         "content": "Add Watch-only Address",
         "description": "Track any public wallet address",
@@ -4543,7 +4544,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Private Key",
-      "watchAddressKeyring": "Watch-only address"
+      "watchAddressKeyring": "Watch-only"
     },
     "keyring": {
       "onekey": {
@@ -4562,7 +4563,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Created by Seed Phrase",
       "SimpleKeyring": "Imported by Private Key",
-      "WatchAddressKeyring": "Watch-only address"
+      "WatchAddressKeyring": "Watch-only"
     },
     "IMPORTED_HD_KEYRING": "Imported by Seed Phrase",
     "SIGN_PERMISSION_OPTIONS": {

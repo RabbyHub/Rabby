@@ -15,6 +15,7 @@ import './style.less';
 import { useKeystoneUSBErrorCatcher } from '@/ui/utils/keystone';
 import { getImKeyFirstImKeyDevice } from '@/ui/utils/imKey';
 import { getOneKeyFirstOneKeyDevice } from '@/ui/utils/onekey';
+import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
 
 const RequestPermission = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -91,6 +92,9 @@ const RequestPermission = () => {
               isWebHID: true,
               ledgerLive: false,
             },
+            search: withHardwareImportSelectAddressSource(
+              `?hd=${HARDWARE_KEYRING_TYPES.Ledger.type}`
+            ),
           });
         }
       } catch (e) {
@@ -118,6 +122,9 @@ const RequestPermission = () => {
           state: {
             keyring: HARDWARE_KEYRING_TYPES.ImKey.type,
           },
+          search: withHardwareImportSelectAddressSource(
+            `?hd=${HARDWARE_KEYRING_TYPES.ImKey.type}`
+          ),
         });
       } catch (e) {
         console.error(e);
@@ -164,7 +171,7 @@ const RequestPermission = () => {
             keyringId: stashKeyringId,
             brand: WALLET_BRAND_TYPES.KEYSTONE,
           },
-          search,
+          search: withHardwareImportSelectAddressSource(search),
         });
       } catch (error) {
         keystoneErrorCatcher(error);
@@ -191,7 +198,9 @@ const RequestPermission = () => {
           state: {
             keyring: HARDWARE_KEYRING_TYPES.Onekey.type,
           },
-          search: '?connectType=ONEKEY',
+          search: withHardwareImportSelectAddressSource(
+            `?hd=${HARDWARE_KEYRING_TYPES.Onekey.type}`
+          ),
         });
       } catch (e) {
         console.error(e);

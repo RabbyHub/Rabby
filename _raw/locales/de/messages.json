@@ -1086,7 +1086,6 @@
       "confirm-delete": "Löschen bestätigen",
       "private-key": "Private Key",
       "seed-phrase": "Seed Phrase",
-      "watch-address": "Adresse beobachten",
       "backup-seed-phrase": "Seed Phrase sichern",
       "delete-all-addresses-but-keep-the-seed-phrase": "Alle Adressen löschen, aber die Seed Phrase behalten",
       "delete-all-addresses-and-the-seed-phrase": "Alle Adressen und die Seed Phrase löschen",

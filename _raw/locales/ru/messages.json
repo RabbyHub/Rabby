@@ -1086,7 +1086,6 @@
       "confirm-delete": "Подтвердить удаление",
       "private-key": "Приватный ключ",
       "seed-phrase": "Фраза восстановления",
-      "watch-address": "Адрес для просмотра",
       "backup-seed-phrase": "Резервная копия фразы восстановления",
       "delete-all-addresses-but-keep-the-seed-phrase": "Удалить все адреса, но сохранить фразу восстановления",
       "delete-all-addresses-and-the-seed-phrase": "Удалить все адреса и фразу восстановления",

@@ -13,6 +13,7 @@ import {
   AccountItemWrapper,
 } from '../NewUserImport/AccountItem';
 import { Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 type SuccessAddressCommitResult = CreateAddressSuccessAddress | null;
 
@@ -154,6 +155,7 @@ export const normalizeSuccessAddresses = (state: {
   addresses?: CreateAddressSuccessAddress[];
   address?: string;
   alias?: string;
+  importedBefore?: boolean;
 }): CreateAddressSuccessAddress[] => {
   if (state.addresses?.length) {
     return state.addresses;
@@ -164,6 +166,7 @@ export const normalizeSuccessAddresses = (state: {
       {
         address: state.address,
         alias: state.alias || '',
+        importedBefore: state.importedBefore,
       },
     ];
   }
@@ -188,6 +191,7 @@ const SuccessAddressCard = ({
   onCommitAlias: SuccessAddressCommitAlias;
   onEnterNext?: () => void;
 }) => {
+  const { t } = useTranslation();
   const addressKey = item.address.toLowerCase();
   const handleAliasChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -226,7 +230,16 @@ const SuccessAddressCard = ({
           onKeyDown={handleKeyDown}
         />
       </AccountItemInputWrapper>
-      <AccountItemAddress>{ellipsisAddress(item.address)}</AccountItemAddress>
+      <div className="mt-[8px] flex items-center justify-between gap-[8px]">
+        <AccountItemAddress className="mt-0">
+          {ellipsisAddress(item.address)}
+        </AccountItemAddress>
+        {item.importedBefore ? (
+          <div className="shrink-0 rounded-[4px] border-[0.5px] border-solid border-rabby-neutral-line py-2 px-6 text-[11px] leading-normal text-r-neutral-foot">
+            {t('page.newAddress.imported')}
+          </div>
+        ) : null}
+      </div>
     </AccountItemWrapper>
   );
 };

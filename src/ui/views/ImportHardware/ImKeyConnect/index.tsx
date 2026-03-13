@@ -6,6 +6,7 @@ import { hasConnectedImKeyDevice } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import './style.less';
 import { query2obj } from '@/ui/utils/url';
+import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
 
 export const ImKeyConnect = () => {
   const history = useHistory();
@@ -32,7 +33,9 @@ export const ImKeyConnect = () => {
         state: {
           keyring: HARDWARE_KEYRING_TYPES.ImKey.type,
         },
-        search: `?hd=${HARDWARE_KEYRING_TYPES.ImKey.type}`,
+        search: withHardwareImportSelectAddressSource(
+          `?hd=${HARDWARE_KEYRING_TYPES.ImKey.type}`
+        ),
       });
     } else {
       history.push({

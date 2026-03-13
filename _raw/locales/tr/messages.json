@@ -1086,7 +1086,6 @@
       "confirm-delete": "Silmeyi Onayla",
       "private-key": "Özel Anahtar",
       "seed-phrase": "Seed Phrase",
-      "watch-address": "Adresi İzle",
       "backup-seed-phrase": "Seed Phrase'i Yedekle",
       "delete-all-addresses-but-keep-the-seed-phrase": "Tüm adresleri sil, ancak Seed Phrase'i sakla",
       "delete-all-addresses-and-the-seed-phrase": "Tüm adresleri ve Seed Phrase'i sil",

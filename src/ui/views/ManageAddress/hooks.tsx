@@ -47,6 +47,9 @@ export const getWalletTypeName = (s: string) => {
   if (WALLET_BRAND_CONTENT[s]) {
     return WALLET_BRAND_CONTENT[s].name;
   }
+  if (s === KEYRING_CLASS.WATCH) {
+    return i18n.t('page.manageAddress.watch-address');
+  }
 
   return s;
 };

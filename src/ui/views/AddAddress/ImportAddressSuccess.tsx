@@ -9,12 +9,15 @@ import { getUiType } from '@/ui/utils';
 import { ReactComponent as RcRabbyLogo } from '@/ui/assets/logo-rabby-large.svg';
 import { RcCreateAddressSuccessIcon } from '@/ui/assets/add-address';
 import type { AddAddressNavigateHandler } from './shared';
+import { IMPORT_ADDRESS_SUCCESS_RETURN_TO_QUERY_KEY as RETURN_TO_QUERY_KEY } from './useCreateAddress';
 import type { CreateAddressSuccessState } from './useCreateAddress';
 import {
   normalizeSuccessAddresses,
   SuccessAddressCards,
   SuccessAddressCardsRef,
 } from './SuccessAddressCards';
+import { BRAND_ALIAN_TYPE_TEXT } from '@/constant';
+import { ReactComponent as RcIconExternalCC } from '@/ui/assets/new-user-import/external-cc.svg';
 
 export const ImportAddressSuccess: React.FC<{
   isInModal?: boolean;
@@ -24,6 +27,10 @@ export const ImportAddressSuccess: React.FC<{
   const history = useHistory();
   const location = useLocation<CreateAddressSuccessState>();
   const { t } = useTranslation();
+  const returnToSelectAddressSearchFromQuery = React.useMemo(() => {
+    const query = new URLSearchParams(location.search);
+    return query.get(RETURN_TO_QUERY_KEY) || '';
+  }, [location.search]);
 
   const state = (outerState ||
     location.state ||
@@ -38,6 +45,21 @@ export const ImportAddressSuccess: React.FC<{
     });
   const description =
     state.description || t('page.newAddress.openExtensionToGetStarted');
+  const returnToSelectAddressSearch =
+    returnToSelectAddressSearchFromQuery || state.returnToSelectAddressSearch;
+
+  const addMoreSourceName = React.useMemo(() => {
+    const query = new URLSearchParams(returnToSelectAddressSearch);
+    const brand = query.get('brand') || '';
+    const hd = query.get('hd') || '';
+
+    return (
+      BRAND_ALIAN_TYPE_TEXT?.[brand] ||
+      BRAND_ALIAN_TYPE_TEXT?.[hd] ||
+      brand ||
+      hd
+    );
+  }, [returnToSelectAddressSearch]);
   const successAddressCardsRef = React.useRef<SuccessAddressCardsRef>(null);
   const [pendingAction, setPendingAction] = React.useState(false);
 
@@ -73,6 +95,27 @@ export const ImportAddressSuccess: React.FC<{
     } catch (error) {
       message.error(
         error instanceof Error ? error.message : 'Failed to open wallet'
+      );
+    } finally {
+      setPendingAction(false);
+    }
+  });
+
+  const handleImportMore = useMemoizedFn(async () => {
+    if (!returnToSelectAddressSearch) {
+      return;
+    }
+
+    try {
+      setPendingAction(true);
+      await successAddressCardsRef.current?.commitAllAliases();
+      history.replace({
+        pathname: '/import/select-address',
+        search: returnToSelectAddressSearch,
+      });
+    } catch (error) {
+      message.error(
+        error instanceof Error ? error.message : 'Failed to continue import'
       );
     } finally {
       setPendingAction(false);
@@ -121,6 +164,20 @@ export const ImportAddressSuccess: React.FC<{
           >
             {t('page.newUserImport.successful.openWallet')}
           </Button>
+
+          {returnToSelectAddressSearch ? (
+            <div
+              className="w-full flex items-center justify-center gap-2 text-[13px] leading-[16px] text-r-neutral-foot mt-[16px] cursor-pointer"
+              onClick={handleImportMore}
+            >
+              <span>
+                {t('page.newUserImport.successful.addMoreFrom', {
+                  name: addMoreSourceName,
+                })}
+              </span>
+              <RcIconExternalCC className="h-[16px] w-[16px]" />
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

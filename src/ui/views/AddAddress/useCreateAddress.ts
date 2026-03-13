@@ -12,12 +12,15 @@ export const CREATE_ADDRESS_SUCCESS_TYPE = 'create-address-success';
 export const IMPORT_ADDRESS_SUCCESS_PATH =
   '/add-address/import-address-success';
 export const IMPORT_ADDRESS_SUCCESS_TYPE = 'import-address-success';
+export const IMPORT_ADDRESS_SUCCESS_RETURN_TO_QUERY_KEY =
+  'returnToSelectAddressSearch';
 export const ADD_MORE_ADDRESSES_PATH = '/add-address/add-more-from-seed-phrase';
 export const ADD_MORE_ADDRESSES_TYPE = 'add-more-from-seed-phrase';
 
 export interface CreateAddressSuccessAddress {
   address: string;
   alias: string;
+  importedBefore?: boolean;
 }
 
 export interface CreateAddressSuccessState {
@@ -28,6 +31,7 @@ export interface CreateAddressSuccessState {
   primaryAction?: 'done' | 'open-wallet';
   address?: string;
   alias?: string;
+  returnToSelectAddressSearch?: string;
 }
 
 export interface AddMoreAddressesState {
