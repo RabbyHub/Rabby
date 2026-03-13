@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { Button, message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import { useHistory, useLocation } from 'react-router-dom';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { Virtuoso } from 'react-virtuoso';
 import { KEYRING_CLASS } from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
@@ -43,12 +43,6 @@ const LIST_ITEM_HEIGHT = 60;
 interface AddressRowData extends Account {
   imported: boolean;
   placeholder?: boolean;
-}
-
-interface AddressListData {
-  rows: AddressRowData[];
-  selectedAddresses: string[];
-  onToggle: (item: AddressRowData) => void;
 }
 
 const HD_PATH_OPTIONS: {
@@ -153,64 +147,36 @@ const AddressRow = ({
       type="button"
       className={clsx(
         'relative h-[52px] w-full rounded-[8px] bg-r-neutral-card-1 text-left',
-        item.imported && 'opacity-50'
+        'flex items-center px-[16px] py-[10px]'
       )}
       onClick={onToggle}
       disabled={item.imported}
     >
-      <span className="absolute left-[12px] top-1/2 -translate-y-1/2 text-[12px] leading-[14px] text-r-neutral-foot">
+      <span className="absolute top-6 left-6 text-[10px] leading-normal text-r-neutral-foot">
         {item.index}.
       </span>
 
-      <div className="absolute left-[35px] top-1/2 flex max-w-[212px] -translate-y-1/2 items-center gap-[6px]">
-        <span className="text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+      <div className="flex items-center max-w-[212px] gap-[6px]">
+        <span className="text-[15px] leading-normal font-medium text-r-neutral-title-1">
           {ellipsisAddress(item.address)}
         </span>
-        <span className="text-[13px] leading-[16px] text-r-neutral-foot">
+        <span className="text-[13px] leading-normal text-r-neutral-foot relative top-1">
           {formatUsdValue(item.balance || 0)}
         </span>
       </div>
 
-      {item.imported && (
-        <div className="absolute left-[253px] top-[17px] rounded-[2px] bg-r-blue-light-1 px-[4px] py-[2px]">
-          <span className="text-[11px] leading-[13px] font-medium text-r-blue-default">
+      <div className="ml-auto flex items-center gap-[14px]">
+        {item.imported && (
+          <div className="rounded-[2px] bg-r-blue-light-1 px-[4px] py-[2px] text-[11px] font-medium text-r-blue-default">
             {t('component.MultiSelectAddressList.imported')}
-          </span>
-        </div>
-      )}
-
-      <div className="absolute right-[16px] top-1/2 -translate-y-1/2">
+          </div>
+        )}
         <SelectionIcon
           checked={item.imported || checked}
           disabled={item.imported}
         />
       </div>
     </button>
-  );
-};
-
-const AddressListRow = ({
-  index,
-  style,
-  data,
-}: ListChildComponentProps<AddressListData>) => {
-  const item = data.rows[index];
-
-  return (
-    <div style={style} className="w-full">
-      <div className="pb-[8px]">
-        <AddressRow
-          item={item}
-          checked={
-            !!item.address &&
-            data.selectedAddresses.some(
-              (address) => address.toLowerCase() === item.address.toLowerCase()
-            )
-          }
-          onToggle={() => data.onToggle(item)}
-        />
-      </div>
-    </div>
   );
 };
 
@@ -595,7 +561,9 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
       openSuccessPage({
         addresses,
         publicKey: state.publicKey,
-        titleKey: 'page.newAddress.newAddressAdded',
+        title: t('page.newAddress.addressAddedCount', {
+          count: addresses.length,
+        }),
       });
     } catch (error) {
       message.error(
@@ -631,15 +599,28 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
       }))
     : [];
 
-  const popupHeight =
-    typeof window !== 'undefined'
-      ? isInModal
-        ? 600
-        : Math.max(window.innerHeight, 520)
-      : isInModal
-      ? 600
-      : 640;
-  const listHeight = Math.max(popupHeight - 64 - 72 - 20, 240);
+  const selectedAddressSet = React.useMemo(
+    () => new Set(selectedAddresses.map((address) => address.toLowerCase())),
+    [selectedAddresses]
+  );
+
+  const renderAddressRow = React.useCallback(
+    (_index: number, item: AddressRowData) => {
+      return (
+        <div className="pb-[8px]">
+          <AddressRow
+            item={item}
+            checked={
+              !!item.address &&
+              selectedAddressSet.has(item.address.toLowerCase())
+            }
+            onToggle={() => handleToggle(item)}
+          />
+        </div>
+      );
+    },
+    [handleToggle, selectedAddressSet]
+  );
 
   return (
     <div
@@ -668,21 +649,15 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
       </PageHeader>
 
       <div className="min-h-0 flex flex-1 flex-col">
-        <div className="min-h-0 flex-1 pb-[12px]">
-          <FixedSizeList
-            height={listHeight}
-            width="100%"
-            itemCount={displayRows.length}
-            itemSize={LIST_ITEM_HEIGHT}
-            itemData={{
-              rows: displayRows,
-              selectedAddresses,
-              onToggle: handleToggle,
-            }}
-            overscanCount={4}
-          >
-            {AddressListRow}
-          </FixedSizeList>
+        <div className="min-h-0 flex-1">
+          <Virtuoso
+            data={displayRows}
+            className="min-h-0 h-full"
+            style={{ height: '100%' }}
+            fixedItemHeight={LIST_ITEM_HEIGHT}
+            overscan={240}
+            itemContent={renderAddressRow}
+          />
         </div>
 
         <div className="bg-r-neutral-bg-2 pb-[20px] pt-[8px]">

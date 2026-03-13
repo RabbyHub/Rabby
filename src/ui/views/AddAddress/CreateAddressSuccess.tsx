@@ -18,7 +18,7 @@ import {
 import {
   normalizeSuccessAddresses,
   SuccessAddressCards,
-  useEditableSuccessAddresses,
+  SuccessAddressCardsRef,
 } from './SuccessAddressCards';
 
 export const CreateAddressSuccess: React.FC<{
@@ -37,24 +37,20 @@ export const CreateAddressSuccess: React.FC<{
   const state = (outerState ||
     location.state ||
     {}) as CreateAddressSuccessState;
+  const title = state.title || t('page.newAddress.newSeedPhraseCreated');
+  const description = state.description || '';
   const addresses = React.useMemo(() => normalizeSuccessAddresses(state), [
     state,
   ]);
+  const successAddressCardsRef = React.useRef<SuccessAddressCardsRef>(null);
   const [pendingAction, setPendingAction] = React.useState<
     'done' | 'more' | null
   >(null);
-  const {
-    items,
-    setItems,
-    inputRefs,
-    commitAlias,
-    commitAllAliases,
-  } = useEditableSuccessAddresses(addresses);
 
   const handleDone = useMemoizedFn(async () => {
     try {
       setPendingAction('done');
-      await commitAllAliases();
+      await successAddressCardsRef.current?.commitAllAliases();
       if (onNavigate) {
         onNavigate('done');
       } else {
@@ -72,7 +68,7 @@ export const CreateAddressSuccess: React.FC<{
   const handleOpenWallet = useMemoizedFn(async () => {
     try {
       setPendingAction('done');
-      await commitAllAliases();
+      await successAddressCardsRef.current?.commitAllAliases();
       await wallet.setPageStateCache({
         path: '/dashboard',
         params: {},
@@ -109,13 +105,15 @@ export const CreateAddressSuccess: React.FC<{
 
     try {
       setPendingAction('more');
-      await commitAllAliases();
+      const nextItems =
+        (await successAddressCardsRef.current?.commitAllAliases()) || addresses;
       openAddMoreAddressesPage({
         publicKey: state.publicKey,
         successState: {
-          addresses: items,
+          addresses: nextItems,
           publicKey: state.publicKey,
-          titleKey: state.titleKey,
+          title: state.title,
+          description: state.description,
         },
       });
     } catch (error) {
@@ -141,11 +139,11 @@ export const CreateAddressSuccess: React.FC<{
       <div className="shrink-0 pt-[60px] flex flex-col items-center">
         <RcCreateAddressSuccessIcon className="w-[40px] h-[40px]" />
         <div className="mt-[16px] text-[24px] leading-[29px] font-medium text-r-neutral-title-1 text-center">
-          {t(state.titleKey || 'page.newAddress.newSeedPhraseCreated')}
+          {title}
         </div>
-        {state.descriptionKey ? (
+        {description ? (
           <div className="mt-[8px] text-[15px] leading-[18px] text-r-neutral-foot text-center">
-            {t(state.descriptionKey)}
+            {description}
           </div>
         ) : null}
       </div>
@@ -153,18 +151,8 @@ export const CreateAddressSuccess: React.FC<{
       <div className="mt-[24px] min-h-0 flex-1 overflow-hidden">
         <div className="h-full overflow-auto pr-[2px]">
           <SuccessAddressCards
-            items={items}
-            setItems={setItems}
-            inputRefs={inputRefs}
-            onCommitAlias={commitAlias}
-            listClassName="flex flex-col gap-[12px] pb-[12px]"
-            cardClassName="h-[64px] shrink-0 rounded-[8px] border border-rabby-neutral-line px-[7px] py-[5px]"
-            aliasWrapClassName="h-[30px] rounded-[4px] bg-r-neutral-card-2 px-[8px] flex items-center"
-            aliasInputClassName="w-full bg-transparent border-none outline-none text-[15px] leading-[18px] font-medium text-r-neutral-title-1"
-            addressRowClassName="h-[28px] px-[8px] flex items-center"
-            addressTextClassName="text-[13px] leading-[16px] text-r-neutral-foot"
-            copyButtonClassName="ml-[4px] w-[14px] h-[14px] shrink-0"
-            copyIconClassName="w-[14px] h-[14px]"
+            ref={successAddressCardsRef}
+            addresses={addresses}
           />
         </div>
       </div>

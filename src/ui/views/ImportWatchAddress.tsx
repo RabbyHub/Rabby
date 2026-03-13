@@ -58,7 +58,7 @@ const ImportWatchAddress: React.FC<{
             alias: '',
           })),
           publicKey: '',
-          titleKey: 'page.newAddress.importedSuccessfully',
+          title: t('page.newAddress.addressAdded'),
         },
         { replace: true }
       );

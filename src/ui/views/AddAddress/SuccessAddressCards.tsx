@@ -1,39 +1,34 @@
 import React from 'react';
+import clsx from 'clsx';
 import { useWallet } from '@/ui/utils';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { RcCreateAddressSuccessCopyIcon } from '@/ui/assets/add-address';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { CreateAddressSuccessAddress } from './useCreateAddress';
+import {
+  AccountItemAddress,
+  AccountItemInput,
+  AccountItemInputWrapper,
+  AccountItemWrapper,
+} from '../NewUserImport/AccountItem';
+import { Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-export const normalizeSuccessAddresses = (state: {
-  addresses?: CreateAddressSuccessAddress[];
-  address?: string;
-  alias?: string;
-}): CreateAddressSuccessAddress[] => {
-  if (state.addresses?.length) {
-    return state.addresses;
-  }
+type SuccessAddressCommitResult = CreateAddressSuccessAddress | null;
 
-  if (state.address) {
-    return [
-      {
-        address: state.address,
-        alias: state.alias || '',
-      },
-    ];
-  }
+type SuccessAddressCommitAlias = (
+  address: string
+) => SuccessAddressCommitResult | Promise<SuccessAddressCommitResult>;
 
-  return [];
-};
-
-export const useEditableSuccessAddresses = (
+const useEditableSuccessAddresses = (
   addresses: CreateAddressSuccessAddress[]
 ) => {
   const wallet = useWallet();
   const [items, setItems] = React.useState<CreateAddressSuccessAddress[]>(
     addresses
   );
-  const inputRefs = React.useRef<Record<string, HTMLInputElement | null>>({});
+  const inputRefs = React.useRef<Record<string, Input | null>>({});
   const committedAliasRef = React.useRef<Record<string, string>>({});
 
   React.useEffect(() => {
@@ -85,9 +80,7 @@ export const useEditableSuccessAddresses = (
       return;
     }
 
-    input.focus();
-    const length = input.value.length;
-    input.setSelectionRange(length, length);
+    input.focus({ cursor: 'end' });
   }, [addresses]);
 
   const commitAlias = React.useCallback(
@@ -97,7 +90,7 @@ export const useEditableSuccessAddresses = (
         (currentItem) => currentItem.address.toLowerCase() === addressKey
       );
       if (!item) {
-        return;
+        return null;
       }
 
       const committedAlias = committedAliasRef.current[addressKey] || '';
@@ -113,27 +106,40 @@ export const useEditableSuccessAddresses = (
               : currentItem
           )
         );
-        return;
+
+        return {
+          ...item,
+          alias: committedAlias,
+        };
       }
 
       await wallet.updateAlianName(addressKey, nextAlias);
       committedAliasRef.current[addressKey] = nextAlias;
+
+      const nextItem = {
+        ...item,
+        alias: nextAlias,
+      };
+
       setItems((prev) =>
         prev.map((currentItem) =>
           currentItem.address.toLowerCase() === addressKey
-            ? {
-                ...currentItem,
-                alias: nextAlias,
-              }
+            ? nextItem
             : currentItem
         )
       );
+
+      return nextItem;
     },
     [items, wallet]
   );
 
   const commitAllAliases = React.useCallback(async () => {
-    await Promise.all(items.map((item) => commitAlias(item.address)));
+    const nextItems = await Promise.all(
+      items.map(async (item) => (await commitAlias(item.address)) || item)
+    );
+
+    return nextItems;
   }, [commitAlias, items]);
 
   return {
@@ -145,88 +151,187 @@ export const useEditableSuccessAddresses = (
   };
 };
 
-export const SuccessAddressCards = ({
-  items,
-  setItems,
-  inputRefs,
-  onCommitAlias,
-  listClassName,
-  cardClassName,
-  aliasWrapClassName,
-  aliasInputClassName,
-  addressRowClassName,
-  addressTextClassName,
-  copyButtonClassName,
-  copyIconClassName,
-}: {
-  items: CreateAddressSuccessAddress[];
-  setItems: React.Dispatch<React.SetStateAction<CreateAddressSuccessAddress[]>>;
-  inputRefs: React.MutableRefObject<Record<string, HTMLInputElement | null>>;
-  onCommitAlias: (address: string) => void | Promise<void>;
-  listClassName?: string;
-  cardClassName?: string;
-  aliasWrapClassName?: string;
-  aliasInputClassName?: string;
-  addressRowClassName?: string;
-  addressTextClassName?: string;
-  copyButtonClassName?: string;
-  copyIconClassName?: string;
-}) => {
-  return (
-    <div className={listClassName}>
-      {items.map((item, index) => (
-        <div key={item.address} className={cardClassName}>
-          <div className={aliasWrapClassName}>
-            <input
-              ref={(node) => {
-                inputRefs.current[item.address.toLowerCase()] = node;
-              }}
-              value={item.alias}
-              onChange={(e) => {
-                const nextAlias = e.target.value;
-                setItems((prev) =>
-                  prev.map((currentItem) =>
-                    currentItem.address === item.address
-                      ? {
-                          ...currentItem,
-                          alias: nextAlias,
-                        }
-                      : currentItem
-                  )
-                );
-              }}
-              onBlur={() => {
-                onCommitAlias(item.address);
-              }}
-              onKeyDown={(e) => {
-                if (e.key !== 'Enter') {
-                  return;
-                }
-                onCommitAlias(item.address);
-                if (index < items.length - 1) {
-                  inputRefs.current[
-                    items[index + 1].address.toLowerCase()
-                  ]?.focus();
-                }
-              }}
-              className={aliasInputClassName}
-            />
-          </div>
+export const normalizeSuccessAddresses = (state: {
+  addresses?: CreateAddressSuccessAddress[];
+  address?: string;
+  alias?: string;
+  importedBefore?: boolean;
+}): CreateAddressSuccessAddress[] => {
+  if (state.addresses?.length) {
+    return state.addresses;
+  }
 
-          <div className={addressRowClassName}>
-            <div className={addressTextClassName}>
-              {ellipsisAddress(item.address)}
-            </div>
-            <button
-              type="button"
-              className={copyButtonClassName}
-              onClick={() => copyAddress(item.address)}
-            >
-              <RcCreateAddressSuccessCopyIcon className={copyIconClassName} />
-            </button>
+  if (state.address) {
+    return [
+      {
+        address: state.address,
+        alias: state.alias || '',
+        importedBefore: state.importedBefore,
+      },
+    ];
+  }
+
+  return [];
+};
+
+const SuccessAddressCard = ({
+  item,
+  index,
+  isLast,
+  inputRefs,
+  onAliasChange,
+  onCommitAlias,
+  onEnterNext,
+}: {
+  item: CreateAddressSuccessAddress;
+  index: number;
+  isLast: boolean;
+  inputRefs: React.MutableRefObject<Record<string, Input | null>>;
+  onAliasChange: (address: string, alias: string) => void;
+  onCommitAlias: SuccessAddressCommitAlias;
+  onEnterNext?: () => void;
+}) => {
+  const { t } = useTranslation();
+  const addressKey = item.address.toLowerCase();
+  const handleAliasChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onAliasChange(item.address, e.target.value);
+    },
+    [item.address, onAliasChange]
+  );
+
+  const handleCommitAlias = React.useCallback(() => {
+    void onCommitAlias(item.address);
+  }, [item.address, onCommitAlias]);
+
+  const handleKeyDown = React.useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key !== 'Enter') {
+        return;
+      }
+
+      void onCommitAlias(item.address);
+      onEnterNext?.();
+    },
+    [item.address, onCommitAlias, onEnterNext]
+  );
+
+  return (
+    <AccountItemWrapper className={clsx(!isLast && 'pb-[12px]')}>
+      <AccountItemInputWrapper>
+        <AccountItemInput
+          autoFocus={index === 0}
+          ref={(node) => {
+            inputRefs.current[addressKey] = node;
+          }}
+          value={item.alias}
+          onChange={handleAliasChange}
+          onBlur={handleCommitAlias}
+          onKeyDown={handleKeyDown}
+        />
+      </AccountItemInputWrapper>
+      <div className="mt-[8px] flex items-center justify-between gap-[8px]">
+        <AccountItemAddress className="mt-0">
+          {ellipsisAddress(item.address)}
+        </AccountItemAddress>
+        {item.importedBefore ? (
+          <div className="shrink-0 rounded-[4px] border-[0.5px] border-solid border-rabby-neutral-line py-2 px-6 text-[11px] leading-normal text-r-neutral-foot">
+            {t('page.newAddress.imported')}
           </div>
-        </div>
-      ))}
-    </div>
+        ) : null}
+      </div>
+    </AccountItemWrapper>
   );
 };
+
+export type SuccessAddressCardsRef = {
+  commitAllAliases: () => Promise<CreateAddressSuccessAddress[]>;
+};
+
+export const SuccessAddressCards = React.forwardRef<
+  SuccessAddressCardsRef,
+  {
+    addresses: CreateAddressSuccessAddress[];
+  }
+>(function SuccessAddressCards({ addresses }, ref) {
+  const {
+    items,
+    setItems,
+    inputRefs,
+    commitAlias,
+    commitAllAliases,
+  } = useEditableSuccessAddresses(addresses);
+  const virtuosoRef = React.useRef<VirtuosoHandle>(null);
+  const [pendingFocusAddress, setPendingFocusAddress] = React.useState('');
+  const handleAliasChange = React.useCallback(
+    (address: string, alias: string) => {
+      setItems((prev) =>
+        prev.map((item) =>
+          item.address === address
+            ? {
+                ...item,
+                alias,
+              }
+            : item
+        )
+      );
+    },
+    [setItems]
+  );
+
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      commitAllAliases,
+    }),
+    [commitAllAliases]
+  );
+
+  React.useLayoutEffect(() => {
+    if (!pendingFocusAddress) {
+      return;
+    }
+
+    const input = inputRefs.current[pendingFocusAddress];
+    if (!input) {
+      return;
+    }
+
+    input.focus({ cursor: 'end' });
+    setPendingFocusAddress('');
+  }, [inputRefs, items, pendingFocusAddress]);
+
+  return (
+    <Virtuoso
+      ref={virtuosoRef}
+      data={items}
+      className="min-h-0 h-full"
+      style={{ height: '100%' }}
+      itemContent={(index, item) => {
+        const nextAddress = items[index + 1]?.address.toLowerCase();
+
+        return (
+          <SuccessAddressCard
+            item={item}
+            index={index}
+            isLast={index === items.length - 1}
+            inputRefs={inputRefs}
+            onAliasChange={handleAliasChange}
+            onCommitAlias={commitAlias}
+            onEnterNext={
+              nextAddress
+                ? () => {
+                    virtuosoRef.current?.scrollToIndex({
+                      index: index + 1,
+                      align: 'center',
+                    });
+                    setPendingFocusAddress(nextAddress);
+                  }
+                : undefined
+            }
+          />
+        );
+      }}
+    />
+  );
+});

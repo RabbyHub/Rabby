@@ -1,7 +1,4 @@
-<svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="&#229;&#136;&#155;&#229;&#187;&#186;&#229;&#156;&#176;&#229;&#157;&#128;">
-<rect width="28" height="28" rx="6" fill="var(--fill-0, #FFF5E2)"/>
-<path id="Vector" d="M9 11.3976C9 11.178 9.18879 11 9.42171 11H18.5783C18.8112 11 19 11.178 19 11.3976V17.2857C19 19.8893 16.7614 22 14 22C11.2386 22 9 19.8893 9 17.2857V11.3976Z" stroke="var(--stroke-0, #FFB020)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_2" d="M16 7H12V11H16V7Z" stroke="var(--stroke-0, #FFB020)" stroke-width="2" stroke-linejoin="round"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <path d="M6 8.70755C6 8.44407 6.22655 8.23047 6.50605 8.23047H17.494C17.7734 8.23047 18 8.44407 18 8.70755V15.7733C18 18.8977 15.3137 21.4305 12 21.4305C8.6863 21.4305 6 18.8977 6 15.7733V8.70755Z" stroke="var(--r-neutral-body,#3E495E)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M14.4 3.42773H9.59998V8.22773H14.4V3.42773Z" stroke="var(--r-neutral-body,#3E495E)" stroke-width="1.5" stroke-linejoin="round"/>
 </svg>

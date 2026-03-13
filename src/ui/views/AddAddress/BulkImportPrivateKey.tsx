@@ -1,14 +1,11 @@
 import React from 'react';
-import { Button, Form, Input, message, Modal } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { KEYRING_CLASS } from 'consts';
 import { clearClipboard } from '@/ui/utils/clipboard';
 import { useWallet } from '@/ui/utils';
-import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
-import { safeJSONParse } from '@/utils';
 import IconSuccess from 'ui/assets/success.svg';
 import PillsSwitch from '@/ui/component/PillsSwitch';
 import { ReactComponent as RcRabbyLogo } from '@/ui/assets/logo-rabby-large.svg';
@@ -16,8 +13,9 @@ import { ReactComponent as RcUploader } from '@/ui/assets/uploader.svg';
 import { ReactComponent as RcClear } from '@/ui/assets/new-user-import/clear-cc.svg';
 import { ReactComponent as RcEye } from '@/ui/assets/new-user-import/eye-cc.svg';
 import { ReactComponent as RcEyeClose } from '@/ui/assets/new-user-import/eye-close-cc.svg';
-import { ReactComponent as RcClose } from '@/ui/assets/component/close-cc.svg';
+import { ReactComponent as RcClose } from '@/ui/assets/new-user-import/close-cc.svg';
 import { useCreateAddressActions } from './useCreateAddress';
+import { privateKeyToAddress } from 'viem/accounts';
 
 type BulkImportTab = 'privateKey' | 'keyStore';
 
@@ -72,6 +70,13 @@ const PasswordInput = styled(Input)`
   &.ant-input-focused {
     border-color: var(--r-blue-default, #4c65ff);
     box-shadow: none;
+  }
+  &.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input,
+  &.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input:hover,
+  &.ant-input:hover,
+  &.ant-input:focus,
+  &.ant-input-focused {
+    background: var(--r-neutral-card-1, #fff);
   }
 `;
 
@@ -132,9 +137,9 @@ const VisibleRowTextarea = styled.textarea`
   font-size: 13px;
   line-height: 16px;
   min-height: 16px;
-  font-weight: 510;
-  font-family: 'SF Pro Text', 'SF Pro', -apple-system, BlinkMacSystemFont,
-    sans-serif;
+  font-weight: 500;
+  /* font-family: 'SF Pro Text', 'SF Pro', -apple-system, BlinkMacSystemFont,
+    sans-serif; */
   white-space: pre-wrap;
   word-break: break-all;
   overflow-wrap: anywhere;
@@ -156,6 +161,21 @@ const createPrivateKeyRow = (value = ''): PrivateKeyRow => ({
 const normalizePrivateKey = (value: string) =>
   value.replace(/^0x/i, '').toLowerCase();
 
+const getPrivateKeyAddress = (value: string) => {
+  const normalized = normalizePrivateKey(value.trim());
+  if (!normalized) {
+    return null;
+  }
+
+  try {
+    return privateKeyToAddress(
+      `0x${normalized}` as `0x${string}`
+    ).toLowerCase();
+  } catch {
+    return null;
+  }
+};
+
 const splitPrivateKeys = (value: string) =>
   value
     .split(PRIVATE_KEY_SEPARATOR_RE)
@@ -167,8 +187,10 @@ const buildRowsFromValues = (
   prevRows: PrivateKeyRow[] = [],
   options?: {
     appendEmpty?: boolean;
+    dedupe?: boolean;
   }
 ) => {
+  const shouldDedupe = options?.dedupe !== false;
   const seen = new Set<string>();
   const rows: PrivateKeyRow[] = [];
   let nextRowIndex = 0;
@@ -180,7 +202,7 @@ const buildRowsFromValues = (
     }
 
     const normalized = normalizePrivateKey(trimmed);
-    if (seen.has(normalized)) {
+    if (shouldDedupe && seen.has(normalized)) {
       return;
     }
     seen.add(normalized);
@@ -212,8 +234,6 @@ const extractFilledValues = (rows: PrivateKeyRow[]) =>
 const BulkImportPrivateKey: React.FC = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const { show, contextHolder } = useRepeatImportConfirm();
-  const [modal, modalContextHolder] = Modal.useModal();
   const { openImportSuccessPage } = useCreateAddressActions();
   const [form] = Form.useForm<BulkImportFormValues>();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -308,6 +328,52 @@ const BulkImportPrivateKey: React.FC = () => {
     }
   });
 
+  const buildEditableRows = useMemoizedFn(
+    (
+      values: string[],
+      options?: {
+        appendEmpty?: boolean;
+      }
+    ) =>
+      buildRowsFromValues(values, rows, {
+        appendEmpty: options?.appendEmpty,
+        dedupe: false,
+      })
+  );
+
+  const replaceRowWithValues = useMemoizedFn(
+    (
+      rowId: string,
+      values: string[],
+      options?: {
+        appendEmpty?: boolean;
+        focusOffset?: number;
+      }
+    ) => {
+      const index = rows.findIndex((item) => item.id === rowId);
+      if (index < 0) {
+        return null;
+      }
+
+      const currentValues = rows.map((item) => item.value);
+      currentValues.splice(index, 1, ...values);
+
+      const nextRows = buildEditableRows(
+        applyPrivateKeyLimitError(currentValues),
+        {
+          appendEmpty: options?.appendEmpty,
+        }
+      );
+
+      setRows(nextRows);
+      setPendingFocusRowId(
+        nextRows[index + (options?.focusOffset ?? 0)]?.id || ''
+      );
+
+      return nextRows;
+    }
+  );
+
   const openPrivateKeyListMode = useMemoizedFn(
     (
       values: string[],
@@ -316,13 +382,9 @@ const BulkImportPrivateKey: React.FC = () => {
         focusLastRow?: boolean;
       }
     ) => {
-      const nextRows = buildRowsFromValues(
-        applyPrivateKeyLimitError(values),
-        rows,
-        {
-          appendEmpty: options?.appendEmpty,
-        }
-      );
+      const nextRows = buildEditableRows(applyPrivateKeyLimitError(values), {
+        appendEmpty: options?.appendEmpty,
+      });
       if (options?.focusLastRow) {
         setPendingFocusRowId(nextRows[nextRows.length - 1]?.id || '');
       }
@@ -363,47 +425,20 @@ const BulkImportPrivateKey: React.FC = () => {
       accounts: {
         address: string;
         alianName?: string;
+        importedBefore?: boolean;
       }[]
     ) => {
       openImportSuccessPage({
         addresses: accounts.map((item) => ({
           address: item.address,
           alias: item.alianName || '',
+          importedBefore: item.importedBefore,
         })),
         publicKey: '',
-        titleKey: 'page.newAddress.importedSuccessfully',
-        descriptionKey: 'page.newAddress.openExtensionToGetStarted',
-      });
-    }
-  );
-
-  const showDuplicatePrompt = useMemoizedFn(
-    async (duplicateAddresses: string[]) => {
-      if (!duplicateAddresses.length) {
-        return;
-      }
-
-      await new Promise<void>((resolve) => {
-        const instance = modal.confirm({
-          title: t('page.newAddress.duplicateAddressesSkippedTitle'),
-          content: t('page.newAddress.duplicateAddressesSkippedDesc', {
-            count: duplicateAddresses.length,
-          }),
-          okText: t('global.confirm'),
-          cancelButtonProps: {
-            style: { display: 'none' },
-          },
-          centered: true,
-          width: 360,
-          onOk: () => {
-            resolve();
-            instance.destroy();
-          },
-          onCancel: () => {
-            resolve();
-            instance.destroy();
-          },
-        });
+        title: t('page.newAddress.addressAddedCount', {
+          count: accounts.length,
+        }),
+        description: t('page.newAddress.openExtensionToGetStarted'),
       });
     }
   );
@@ -446,6 +481,7 @@ const BulkImportPrivateKey: React.FC = () => {
 
       event.preventDefault();
       clearPrivateKeyError();
+      clearClipboard();
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
         content: t('page.newAddress.seedPhrase.pastedAndClear'),
@@ -453,6 +489,7 @@ const BulkImportPrivateKey: React.FC = () => {
       });
 
       openPrivateKeyListMode(values.length ? values : [trimmedText], {
+        appendEmpty: true,
         focusLastRow: true,
       });
     }
@@ -466,21 +503,12 @@ const BulkImportPrivateKey: React.FC = () => {
     const shouldAppendEmpty = PRIVATE_KEY_TRAILING_SPLITTER_RE.test(nextValue);
 
     if (hasInputSplitter || tokens.length > 1) {
-      const index = rows.findIndex((item) => item.id === rowId);
-      const currentValues = rows.map((item) => item.value);
-      currentValues.splice(index, 1, ...tokens);
-      const nextRows = buildRowsFromValues(
-        applyPrivateKeyLimitError(currentValues),
-        rows,
-        {
-          appendEmpty: shouldAppendEmpty,
-        }
-      );
-      setRows(nextRows);
-      const focusIndex = shouldAppendEmpty
-        ? index + tokens.length
-        : index + Math.max(tokens.length - 1, 0);
-      setPendingFocusRowId(nextRows[focusIndex]?.id || '');
+      replaceRowWithValues(rowId, tokens, {
+        appendEmpty: shouldAppendEmpty,
+        focusOffset: shouldAppendEmpty
+          ? tokens.length
+          : Math.max(tokens.length - 1, 0),
+      });
       return;
     }
 
@@ -491,30 +519,40 @@ const BulkImportPrivateKey: React.FC = () => {
     );
   });
 
-  const handleSplitCurrentRow = useMemoizedFn((rowId: string) => {
-    const index = rows.findIndex((item) => item.id === rowId);
-    if (index < 0) {
-      return;
-    }
-
-    const currentValue = rows[index]?.value || '';
-    const tokens = splitPrivateKeys(currentValue);
-    if (!tokens.length) {
-      return;
-    }
-
-    const currentValues = rows.map((item) => item.value);
-    currentValues.splice(index, 1, ...tokens);
-    const nextRows = buildRowsFromValues(
-      applyPrivateKeyLimitError(currentValues),
-      rows,
-      {
-        appendEmpty: true,
+  const handleSplitCurrentRow = useMemoizedFn(
+    (rowId: string, currentRowValue?: string) => {
+      const index = rows.findIndex((item) => item.id === rowId);
+      if (index < 0) {
+        return;
       }
-    );
-    setRows(nextRows);
-    setPendingFocusRowId(nextRows[index + tokens.length]?.id || '');
-  });
+
+      const currentValue = currentRowValue ?? rows[index]?.value ?? '';
+      const tokens = splitPrivateKeys(currentValue);
+      if (!tokens.length) {
+        return;
+      }
+
+      if (tokens.length === 1) {
+        const nextRows = buildEditableRows(
+          rows.map((item) =>
+            item.id === rowId ? currentValue.trim() : item.value
+          ),
+          {
+            appendEmpty: true,
+          }
+        );
+
+        setRows(nextRows);
+        setPendingFocusRowId(nextRows[index + 1]?.id || '');
+        return;
+      }
+
+      replaceRowWithValues(rowId, tokens, {
+        appendEmpty: true,
+        focusOffset: tokens.length,
+      });
+    }
+  );
 
   const handleRowKeyDown = useMemoizedFn(
     (
@@ -530,26 +568,31 @@ const BulkImportPrivateKey: React.FC = () => {
       }
 
       event.preventDefault();
-      handleSplitCurrentRow(rowId);
+      handleSplitCurrentRow(rowId, event.currentTarget.value);
     }
   );
 
-  const handleRowBlur = useMemoizedFn((rowId: string) => {
-    const nextValues = rows
-      .map((item) => (item.id === rowId ? item.value.trim() : item.value))
-      .filter(Boolean);
+  const handleRowBlur = useMemoizedFn(
+    (rowId: string, currentRowValue?: string) => {
+      const nextValues = rows
+        .map((item) =>
+          item.id === rowId
+            ? (currentRowValue ?? item.value).trim()
+            : item.value
+        )
+        .filter(Boolean);
+      const shouldAppendTrailingEmptyRow =
+        nextValues.length < MAX_PRIVATE_KEYS &&
+        (!pendingFocusRowId ||
+          rows.filter((item) => !item.value.trim()).length <= 1);
 
-    if (!nextValues.length) {
-      closePrivateKeyListMode();
-      return;
+      setRows(
+        buildEditableRows(nextValues.slice(0, MAX_PRIVATE_KEYS), {
+          appendEmpty: shouldAppendTrailingEmptyRow,
+        })
+      );
     }
-
-    setRows(
-      buildRowsFromValues(nextValues.slice(0, MAX_PRIVATE_KEYS), rows, {
-        appendEmpty: !!pendingFocusRowId,
-      })
-    );
-  });
+  );
 
   const handleRowPaste = useMemoizedFn(
     (
@@ -564,27 +607,17 @@ const BulkImportPrivateKey: React.FC = () => {
 
       event.preventDefault();
       clearPrivateKeyError();
+      clearClipboard();
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
         content: t('page.newAddress.seedPhrase.pastedAndClear'),
         duration: 2,
       });
-      const index = rows.findIndex((item) => item.id === rowId);
-      const currentValues = rows.map((item) => item.value);
-      currentValues.splice(index, 1, ...values);
-      const nextRows = buildRowsFromValues(
-        applyPrivateKeyLimitError(currentValues),
-        rows,
-        {
-          appendEmpty: PRIVATE_KEY_TRAILING_SPLITTER_RE.test(text),
-        }
-      );
-      setRows(nextRows);
-      const shouldAppendEmpty = PRIVATE_KEY_TRAILING_SPLITTER_RE.test(text);
-      const focusIndex = shouldAppendEmpty
-        ? index + values.length
-        : index + Math.max(values.length - 1, 0);
-      setPendingFocusRowId(nextRows[focusIndex]?.id || '');
+
+      replaceRowWithValues(rowId, values, {
+        appendEmpty: true,
+        focusOffset: values.length,
+      });
     }
   );
 
@@ -598,11 +631,14 @@ const BulkImportPrivateKey: React.FC = () => {
       delete next[rowId];
       return next;
     });
-    const nextRows = buildRowsFromValues(
+    const nextRows = buildEditableRows(
       rows
         .filter((item) => item.id !== rowId)
         .map((item) => item.value)
-        .slice(0, MAX_PRIVATE_KEYS)
+        .slice(0, MAX_PRIVATE_KEYS),
+      {
+        appendEmpty: true,
+      }
     );
 
     if (!nextRows.length) {
@@ -633,7 +669,8 @@ const BulkImportPrivateKey: React.FC = () => {
     ): Promise<ValidatedPrivateKeyResult> => {
       const nextInvalidRowIds: string[] = [];
       const normalizedRows = buildRowsFromValues(
-        sourceRows.map((item) => item.value).slice(0, MAX_PRIVATE_KEYS)
+        sourceRows.map((item) => item.value).slice(0, MAX_PRIVATE_KEYS),
+        sourceRows
       );
 
       if (!normalizedRows.length) {
@@ -660,14 +697,25 @@ const BulkImportPrivateKey: React.FC = () => {
 
       for (const row of normalizedRows) {
         try {
-          await wallet.validatePrivateKey(row.value.trim());
+          if (!getPrivateKeyAddress(row.value.trim())) {
+            nextInvalidRowIds.push(row.id);
+          }
         } catch {
           nextInvalidRowIds.push(row.id);
         }
       }
 
       if (options?.persistRows !== false) {
-        setRows(normalizedRows);
+        setRows(
+          buildRowsFromValues(
+            normalizedRows.map((item) => item.value),
+            normalizedRows,
+            {
+              appendEmpty: normalizedRows.length < MAX_PRIVATE_KEYS,
+              dedupe: false,
+            }
+          )
+        );
       }
 
       if (nextInvalidRowIds.length) {
@@ -687,7 +735,6 @@ const BulkImportPrivateKey: React.FC = () => {
 
   const handleBulkImportPrivateKeys = useMemoizedFn(async () => {
     let validationSourceRows = rows;
-    let persistRows = true;
 
     if (!isPrivateKeyListMode) {
       const nextValues = splitPrivateKeys(privateKeyInputValue);
@@ -699,15 +746,15 @@ const BulkImportPrivateKey: React.FC = () => {
       if (nextValues.length > 1) {
         validationSourceRows = openPrivateKeyListMode(nextValues);
       } else {
-        validationSourceRows = [createPrivateKeyRow(nextValues[0])];
-        persistRows = false;
+        validationSourceRows = openPrivateKeyListMode(nextValues, {
+          appendEmpty: true,
+        });
       }
     }
 
-    const {
-      validRows,
-      invalidRowIds: nextInvalidRowIds,
-    } = await validateRows(validationSourceRows, { persistRows });
+    const { validRows, invalidRowIds: nextInvalidRowIds } = await validateRows(
+      validationSourceRows
+    );
     if (nextInvalidRowIds.length || !validRows.length) {
       return;
     }
@@ -715,56 +762,83 @@ const BulkImportPrivateKey: React.FC = () => {
     const importedAccounts: {
       address: string;
       alianName?: string;
+      importedBefore?: boolean;
     }[] = [];
-    const duplicateAddresses: string[] = [];
-    let firstError = '';
 
     try {
       setSubmitting(true);
-      for (const row of validRows) {
-        try {
-          const accounts = await wallet.importPrivateKey(row.value.trim());
-          importedAccounts.push(...accounts);
-        } catch (error) {
-          const messageText = (error as Error)?.message || '';
-          if (messageText.includes('DuplicateAccountError')) {
-            const duplicateAddress = safeJSONParse(messageText)?.address;
-            if (
-              duplicateAddress &&
-              !duplicateAddresses.some(
-                (item) => item.toLowerCase() === duplicateAddress.toLowerCase()
-              )
-            ) {
-              duplicateAddresses.push(duplicateAddress);
-            }
-            continue;
-          }
-          firstError =
-            firstError ||
-            messageText ||
-            t('page.newAddress.privateKey.notAValidPrivateKey');
+      const { accounts, duplicateAddresses } = await wallet.importPrivateKeys(
+        validRows.map((row) => row.value.trim())
+      );
+      const duplicateAddressSet = new Set(
+        duplicateAddresses.map((address) => address.toLowerCase())
+      );
+      const accountByAddress = new Map<
+        string,
+        {
+          address: string;
+          alianName?: string;
+          importedBefore?: boolean;
         }
-      }
+      >();
+
+      accounts.forEach((account) => {
+        accountByAddress.set(account.address.toLowerCase(), account);
+      });
+
+      const duplicateAccounts = await Promise.all(
+        duplicateAddresses.map(async (address) => ({
+          address,
+          alianName: (await wallet.getAlianName(address)) || '',
+          importedBefore: true,
+        }))
+      );
+      duplicateAccounts.forEach((account) => {
+        accountByAddress.set(account.address.toLowerCase(), account);
+      });
+
+      const nextImportedAccounts = validRows.reduce<
+        {
+          address: string;
+          alianName?: string;
+          importedBefore?: boolean;
+        }[]
+      >((acc, row) => {
+        const address = getPrivateKeyAddress(row.value);
+        if (!address) {
+          return acc;
+        }
+
+        const account = accountByAddress.get(address);
+        if (!account) {
+          return acc;
+        }
+
+        acc.push(
+          duplicateAddressSet.has(address)
+            ? {
+                ...account,
+                importedBefore: true,
+              }
+            : account
+        );
+
+        return acc;
+      }, []);
+
+      importedAccounts.push(...nextImportedAccounts);
 
       clearClipboard();
+      setInvalidRowIds([]);
 
       if (importedAccounts.length) {
-        await showDuplicatePrompt(duplicateAddresses);
         handleImportSuccess(importedAccounts);
         return;
       }
 
-      if (duplicateAddresses[0] && validRows.length === 1) {
-        await show({
-          address: duplicateAddresses[0],
-          type: KEYRING_CLASS.PRIVATE_KEY,
-        });
-        return;
-      }
-
-      setPrivateKeyError(
-        firstError || t('page.newAddress.privateKey.notAValidPrivateKey')
-      );
+      setPrivateKeyError(t('page.newAddress.privateKey.notAValidPrivateKey'));
+    } catch (error) {
+      setPrivateKeyError(t('page.newAddress.privateKey.notAValidPrivateKey'));
     } finally {
       setSubmitting(false);
     }
@@ -815,10 +889,10 @@ const BulkImportPrivateKey: React.FC = () => {
     await handleImportKeyStore();
   });
 
+  console.log('row', rows, invalidRowIds);
+
   return (
     <>
-      {contextHolder}
-      {modalContextHolder}
       <Page>
         <div className="mx-auto w-[600px] pt-[84px]">
           <RcRabbyLogo viewBox="0 0 152 44" className="h-[42px] w-[152px]" />
@@ -871,7 +945,7 @@ const BulkImportPrivateKey: React.FC = () => {
                   >
                     {isPrivateKeyListMode ? (
                       <div className="h-full overflow-y-auto px-[15px] py-[15px]">
-                        <div className="space-y-[16px]">
+                        <div className="">
                           {rows.map((row, index) => {
                             const isInvalid = invalidRowIds.includes(row.id);
                             const isWrappedVisibleRow =
@@ -885,7 +959,7 @@ const BulkImportPrivateKey: React.FC = () => {
                               <div
                                 key={row.id}
                                 className={clsx(
-                                  'group flex w-full rounded-[4px] px-[8px] transition-[background-color,height,padding] duration-150',
+                                  'group flex items-center w-full rounded-[4px] px-[8px] transition-[background-color,height,padding] duration-150',
                                   rowLayoutClass,
                                   'hover:bg-r-neutral-card-2'
                                 )}
@@ -905,7 +979,7 @@ const BulkImportPrivateKey: React.FC = () => {
                                 </span>
                                 <div
                                   className={clsx(
-                                    'w-[260px] shrink-0',
+                                    'w-[260px] shrink-0 flex items-center',
                                     isWrappedVisibleRow
                                       ? 'self-start'
                                       : 'self-center'
@@ -921,7 +995,12 @@ const BulkImportPrivateKey: React.FC = () => {
                                       onKeyDown={(event) =>
                                         handleRowKeyDown(row.id, event)
                                       }
-                                      onBlur={() => handleRowBlur(row.id)}
+                                      onBlur={(event) =>
+                                        handleRowBlur(
+                                          row.id,
+                                          event.currentTarget.value
+                                        )
+                                      }
                                       onPaste={(event) =>
                                         handleRowPaste(row.id, event)
                                       }
@@ -948,7 +1027,12 @@ const BulkImportPrivateKey: React.FC = () => {
                                       onKeyDown={(event) =>
                                         handleRowKeyDown(row.id, event)
                                       }
-                                      onBlur={() => handleRowBlur(row.id)}
+                                      onBlur={(event) =>
+                                        handleRowBlur(
+                                          row.id,
+                                          event.currentTarget.value
+                                        )
+                                      }
                                       onPaste={(event) =>
                                         handleRowPaste(row.id, event)
                                       }
@@ -969,7 +1053,7 @@ const BulkImportPrivateKey: React.FC = () => {
                                   )}
                                 </div>
                                 <div className="flex-1" />
-                                <div className="flex w-[54px] shrink-0 self-center items-center justify-end gap-[10px] pr-[4px] text-r-neutral-foot opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                                <div className="flex self-center items-center justify-end gap-[10px] pr-[4px] text-r-neutral-foot opacity-0 transition-opacity duration-150 group-hover:opacity-100">
                                   <button
                                     type="button"
                                     className="pointer-events-none flex h-[16px] w-[16px] items-center justify-center group-hover:pointer-events-auto"
@@ -978,7 +1062,10 @@ const BulkImportPrivateKey: React.FC = () => {
                                     }
                                     onClick={() => handleRemoveRow(row.id)}
                                   >
-                                    <RcClose className="h-[16px] w-[16px]" />
+                                    <RcClose
+                                      className="h-[16px] w-[16px] text-r-neutral-foot"
+                                      viewBox="0 0 16 16"
+                                    />
                                   </button>
                                   <button
                                     type="button"
@@ -989,9 +1076,15 @@ const BulkImportPrivateKey: React.FC = () => {
                                     onClick={() => handleToggleVisible(row.id)}
                                   >
                                     {row.visible ? (
-                                      <RcEye className="h-[16px] w-[16px]" />
+                                      <RcEye
+                                        className="h-[16px] w-[16px]"
+                                        viewBox="0 0 20 20"
+                                      />
                                     ) : (
-                                      <RcEyeClose className="h-[16px] w-[16px]" />
+                                      <RcEyeClose
+                                        className="h-[16px] w-[16px]"
+                                        viewBox="0 0 20 20"
+                                      />
                                     )}
                                   </button>
                                 </div>
@@ -1013,6 +1106,7 @@ const BulkImportPrivateKey: React.FC = () => {
                           }
                           onBlur={handleTextareaBlur}
                           onPaste={handleTextareaPaste}
+                          autoFocus
                         />
                       </div>
                     )}
@@ -1071,7 +1165,7 @@ const BulkImportPrivateKey: React.FC = () => {
                         }}
                       />
                       <RcUploader className="mb-[8px] h-[40px] w-[40px] text-r-neutral-body" />
-                      <div className="text-[13px] leading-[16px] text-r-neutral-body">
+                      <div className="text-[13px] leading-[16px] text-r-neutral-body max-w-[300px] truncate">
                         {keyStoreFileName ||
                           t('component.Uploader.placeholder')}
                       </div>
@@ -1082,7 +1176,10 @@ const BulkImportPrivateKey: React.FC = () => {
                       </div>
                     ) : null}
 
-                    <Form.Item name="password" className="mb-0 mt-[16px]">
+                    <Form.Item
+                      name="password"
+                      className="mb-0 mt-[16px] override-ant-form-item-input-has-error"
+                    >
                       <PasswordInput
                         type="password"
                         spellCheck={false}

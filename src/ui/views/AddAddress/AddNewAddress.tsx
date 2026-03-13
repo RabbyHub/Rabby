@@ -5,6 +5,10 @@ import { formatUsdValue } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { UseSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
 import {
+  getSeedPhraseGroupTotalBalance,
+  sortSeedPhraseGroups,
+} from '@/ui/views/AddFromCurrentSeedPhrase/sort';
+import {
   DisplayedAccount,
   TypeKeyringGroup,
 } from '@/ui/views/ManageAddress/hooks';
@@ -16,9 +20,6 @@ import { AddressViewer, Copy, Item, PageHeader } from '@/ui/component';
 import {
   RcAddNewAddressChevronIcon,
   RcAddNewAddressCreateSeedIcon,
-  RcAddNewAddressAddBgIcon,
-  RcAddNewAddressAddVerticalIcon,
-  RcAddNewAddressAddHorizontalIcon,
 } from '@/ui/assets/add-address';
 
 const MAX_VISIBLE_ADDRESSES = 3;
@@ -32,9 +33,31 @@ type SeedPhraseGroupView = TypeKeyringGroup & {
 const AddIcon = () => {
   return (
     <div className="relative w-[16px] h-[16px] shrink-0 rounded-[2.857px]">
-      <RcAddNewAddressAddBgIcon className="absolute left-1/2 top-1/2 w-[12.8px] h-[12.8px] -translate-x-1/2 -translate-y-1/2" />
-      <RcAddNewAddressAddVerticalIcon className="absolute left-1/2 top-1/2 w-[1px] h-[6.4px] -translate-x-1/2 -translate-y-1/2" />
-      <RcAddNewAddressAddHorizontalIcon className="absolute left-1/2 top-1/2 w-[6.4px] h-[1px] -translate-x-1/2 -translate-y-1/2" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+      >
+        <path
+          d="M13.3333 1.59961H2.66664C2.07754 1.59961 1.59998 2.07717 1.59998 2.66628V13.3329C1.59998 13.922 2.07754 14.3996 2.66664 14.3996H13.3333C13.9224 14.3996 14.4 13.922 14.4 13.3329V2.66628C14.4 2.07717 13.9224 1.59961 13.3333 1.59961Z"
+          stroke="#4C65FF"
+          strokeLinecap="round"
+        />
+        <path
+          d="M8 4.80078V11.2008"
+          stroke="#4C65FF"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M4.79999 8H11.2"
+          stroke="#4C65FF"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </div>
   );
 };
@@ -50,7 +73,7 @@ const Chevron = ({
     <RcAddNewAddressChevronIcon
       className={clsx(
         'w-[20px] h-[20px] shrink-0 transition-transform',
-        expanded ? '-rotate-90' : 'rotate-90',
+        expanded ? 'rotate-90' : '-rotate-90',
         className
       )}
     />
@@ -141,20 +164,18 @@ const SeedPhraseCard = ({
             </button>
           )}
 
-          <button
-            type="button"
-            disabled={disabled}
+          <div
+            role="button"
             className={clsx(
-              'mt-[12px] w-full h-[40px] rounded-[4px] bg-r-blue-light-1 text-r-blue-default flex items-center justify-center gap-[6px]',
-              disabled && 'opacity-50'
+              'mt-[12px] w-full h-[40px] rounded-[4px] bg-r-blue-light-1 text-r-blue-default flex items-center justify-center gap-[6px]'
             )}
-            onClick={onAdd}
+            onClick={disabled ? undefined : onAdd}
           >
             <AddIcon />
             <span className="text-[13px] leading-[16px] font-medium">
               {t('page.manageAddress.add-address')}
             </span>
-          </button>
+          </div>
         </div>
       )}
     </div>
@@ -179,15 +200,12 @@ export const AddNewAddress: React.FC<{
 
   const groups = React.useMemo<SeedPhraseGroupView[]>(
     () =>
-      seedPhraseList
-        .map((group) => {
+      sortSeedPhraseGroups(
+        seedPhraseList.map((group) => {
           const sortedAccounts = [...group.list].sort(
             (a, b) => Number(b.balance || 0) - Number(a.balance || 0)
           );
-          const totalBalance = sortedAccounts.reduce(
-            (sum, account) => sum + Number(account.balance || 0),
-            0
-          );
+          const totalBalance = getSeedPhraseGroupTotalBalance(group);
 
           return {
             ...group,
@@ -198,15 +216,7 @@ export const AddNewAddress: React.FC<{
             sortedAccounts,
           };
         })
-        .sort((a, b) => {
-          if (b.totalBalance !== a.totalBalance) {
-            return b.totalBalance - a.totalBalance;
-          }
-          if (b.sortedAccounts.length !== a.sortedAccounts.length) {
-            return b.sortedAccounts.length - a.sortedAccounts.length;
-          }
-          return (a.index || 0) - (b.index || 0);
-        }),
+      ),
     [seedPhraseList]
   );
 
@@ -241,6 +251,9 @@ export const AddNewAddress: React.FC<{
   }, [history, onBack]);
 
   const handleCreateSeedPhrase = useMemoizedFn(async () => {
+    if (pendingAction !== null) {
+      return;
+    }
     try {
       setPendingAction('create-seed-phrase');
       await createNewSeedPhrase();
@@ -285,16 +298,18 @@ export const AddNewAddress: React.FC<{
         <Item
           px={16}
           py={16}
-          disabled={pendingAction !== null}
           className="h-[56px]"
+          hoverBgColor="var(--r-neutral-card-1, #fff)"
+          hoverBorder={false}
           right={
             <RcAddNewAddressChevronIcon className="ml-auto w-[20px] h-[20px] shrink-0 rotate-180" />
           }
+          // disabled={pendingAction !== null}
           onClick={handleCreateSeedPhrase}
         >
           <div className="flex items-center min-w-0">
             <RcAddNewAddressCreateSeedIcon className="w-[24px] h-[24px] shrink-0" />
-            <span className="ml-[12px] text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+            <span className="ml-[12px] text-[15px] leading-normal font-medium text-r-neutral-title-1">
               {t('page.newAddress.createANewSeedPhrase')}
             </span>
           </div>

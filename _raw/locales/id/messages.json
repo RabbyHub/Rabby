@@ -1159,7 +1159,6 @@
       "seed-phrase-delete-title": "Hapus frasa benih?",
       "confirm": "Konfirmasi",
       "delete-seed-phrase": "Hapus seed phrase",
-      "watch-address": "Tonton Alamat",
       "addressTypeTip": "Diimpor oleh {{type}}",
       "deleted": "Dihapus",
       "cancel": "Batal",
@@ -4461,7 +4460,7 @@
       "txCompleteMoreContent": "{{chain}} #{{nonce}} selesai. Klik untuk melihat lebih banyak."
     },
     "alias": {
-      "watchAddressKeyring": "Kontak",
+      "watchAddressKeyring": "",
       "simpleKeyring": "Kunci Pribadi",
       "HdKeyring": "Frasa Benih"
     },
@@ -4480,7 +4479,7 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "Kontak",
+      "WatchAddressKeyring": "",
       "HdKeyring": "Dibuat oleh Seed Phrase",
       "SimpleKeyring": "Diimpor oleh Kunci Pribadi"
     },

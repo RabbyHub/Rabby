@@ -1086,7 +1086,6 @@
       "confirm-delete": "Подтвердить удаление",
       "private-key": "Приватный ключ",
       "seed-phrase": "Фраза восстановления",
-      "watch-address": "Адрес для просмотра",
       "backup-seed-phrase": "Резервная копия фразы восстановления",
       "delete-all-addresses-but-keep-the-seed-phrase": "Удалить все адреса, но сохранить фразу восстановления",
       "delete-all-addresses-and-the-seed-phrase": "Удалить все адреса и фразу восстановления",
@@ -4468,7 +4467,7 @@
     "alias": {
       "HdKeyring": "Секретная фраза",
       "simpleKeyring": "Приватный ключ",
-      "watchAddressKeyring": "Контакт"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4487,7 +4486,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Создано с помощью секретной фразы",
       "SimpleKeyring": "Импортировано с помощью приватного ключа",
-      "WatchAddressKeyring": "Контакт"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "Импортировано с помощью секретной фразы",
     "SIGN_PERMISSION_OPTIONS": {

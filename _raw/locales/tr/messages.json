@@ -1086,7 +1086,6 @@
       "confirm-delete": "Silmeyi Onayla",
       "private-key": "Özel Anahtar",
       "seed-phrase": "Seed Phrase",
-      "watch-address": "Adresi İzle",
       "backup-seed-phrase": "Seed Phrase'i Yedekle",
       "delete-all-addresses-but-keep-the-seed-phrase": "Tüm adresleri sil, ancak Seed Phrase'i sakla",
       "delete-all-addresses-and-the-seed-phrase": "Tüm adresleri ve Seed Phrase'i sil",
@@ -4469,7 +4468,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Özel Anahtar",
-      "watchAddressKeyring": "Kişi"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4488,7 +4487,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Seed Phrase ile Oluşturuldu",
       "SimpleKeyring": "Özel Anahtarla İçe Aktarıldı",
-      "WatchAddressKeyring": "Kişi"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "Seed Phrase ile İçe Aktarıldı",
     "SIGN_PERMISSION_OPTIONS": {

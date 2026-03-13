@@ -48,7 +48,7 @@ export const ImKeyManager: React.FC = () => {
     if (data.type) {
       await changeHDPathTask(data.type);
     }
-    await createTask(() => getCurrentAccounts());
+    await createTask(() => getCurrentAccounts({ resetInitialAccounts: true }));
     setSelectedAccounts([]);
     setSetting(data);
     setLoading(false);

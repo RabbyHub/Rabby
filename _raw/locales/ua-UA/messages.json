@@ -1089,7 +1089,6 @@
       "confirm-delete": "Підтвердити видалення",
       "private-key": "Приватний ключ",
       "seed-phrase": "Ключова фраза",
-      "watch-address": "Адреса спостереження",
       "backup-seed-phrase": "Резервна ключова фраза",
       "delete-all-addresses-but-keep-the-seed-phrase": "Видалити всі адреси, але зберегти ключову фразу",
       "delete-all-addresses-and-the-seed-phrase": "Видалити всі адреси та ключову фразу",
@@ -4486,7 +4485,7 @@
     "alias": {
       "HdKeyring": "Початкова фраза",
       "simpleKeyring": "Приватний ключ",
-      "watchAddressKeyring": "Контакт"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4505,7 +4504,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Створено за ключовою фразою",
       "SimpleKeyring": "Імпортовано за допомогою приватного ключа",
-      "WatchAddressKeyring": "Contact"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "Імпортовано за ключовою фразою",
     "SIGN_PERMISSION_OPTIONS": {

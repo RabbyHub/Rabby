@@ -291,7 +291,7 @@ const MatrixWrapper = styled.div.withConfig<{
 `;
 
 function fillMatrix(words: string[], mnemonicsCount: number) {
-  const matrix = words.slice() as string[];
+  const matrix = words.slice(0, mnemonicsCount) as string[];
   while (matrix.length < mnemonicsCount) {
     matrix.push('');
   }
@@ -345,6 +345,7 @@ function MnemonicsInputs({
   onChange,
   errMsgs = [],
   errorIndexes = [],
+  onModeChange,
   onPassphrase,
   isSlip39,
   onSlip39Change,
@@ -365,6 +366,7 @@ function MnemonicsInputs({
   onChange?: (value: string) => any;
   errMsgs?: string[];
   errorIndexes?: number[];
+  onModeChange?: () => void;
   onPassphrase?: (val: boolean) => any;
   isSlip39: boolean;
   onSlip39Change: React.Dispatch<React.SetStateAction<boolean>>;
@@ -377,6 +379,7 @@ function MnemonicsInputs({
   const [needPassphrase, setNeedPassphrase] = React.useState<boolean>(false);
   const [dropdownVisible, setDropdownVisible] = React.useState(false);
   const [showAllMenuOptions, setShowAllMenuOptions] = React.useState(false);
+  const dropdownTriggerRef = React.useRef<HTMLDivElement | null>(null);
 
   const [invalidWords, setInvalidWords] = React.useState<number[]>([]);
   const { wordPlaceHolders } = React.useMemo(() => {
@@ -406,16 +409,47 @@ function MnemonicsInputs({
   const verRef = React.useRef(0);
   const ver = `ver-${verRef.current}-${mnemonicsCount}`;
   const setInputTexts = React.useCallback(
-    (vals: string[], noSlice = false) => {
+    (
+      vals: string[],
+      options?: {
+        noSlice?: boolean;
+        count?: number;
+      }
+    ) => {
+      const targetCount = options?.count ?? mnemonicsCount;
       const words = fillMatrix(
-        noSlice ? vals : vals.slice(0, mnemonicsCount),
-        mnemonicsCount
+        options?.noSlice ? vals : vals.slice(0, targetCount),
+        targetCount
       );
       _setInputTexts(words);
       onChange?.(words.join(' '));
       verRef.current++;
     },
     [onChange, mnemonicsCount]
+  );
+  const setInputTextsForCount = React.useCallback(
+    (vals: string[], count: IMnemonicsCount) => {
+      setInputTexts(vals, {
+        noSlice: true,
+        count,
+      });
+    },
+    [setInputTexts]
+  );
+  const applyMnemonicsCount = React.useCallback(
+    (
+      nextCount: IMnemonicsCount,
+      options?: { needPassphrase?: boolean; isSlip39?: boolean }
+    ) => {
+      setMnemonicsCount(nextCount);
+      setInputTextsForCount(inputTexts, nextCount);
+      setNeedPassphrase(!!options?.needPassphrase);
+      setInvalidWords([]);
+      onModeChange?.();
+      onSlip39Change(!!options?.isSlip39);
+      handleDropdownVisibleChange(false);
+    },
+    [inputTexts, onModeChange, onSlip39Change, setInputTextsForCount]
   );
 
   const hasInputValue = useMemo(() => {
@@ -457,13 +491,13 @@ function MnemonicsInputs({
         newInputTexts[idx + i] = words[i];
       }
       newInputTexts = newInputTexts.slice(0, nextCount);
-      setInputTexts(newInputTexts, true);
+      setInputTextsForCount(newInputTexts, nextCount);
 
       if (focusing.index === idx) {
         setMnemonics(word);
       }
     },
-    [focusing, inputTexts, mnemonicsCount]
+    [focusing, inputTexts, mnemonicsCount, setInputTextsForCount]
   );
 
   const validateWords = () => {
@@ -532,9 +566,11 @@ function MnemonicsInputs({
         )}
       >
         <Dropdown
+          placement="bottomLeft"
           trigger={['click']}
           visible={dropdownVisible}
           onVisibleChange={handleDropdownVisibleChange}
+          getPopupContainer={() => dropdownTriggerRef.current || document.body}
           overlay={
             <Menu className="mnemonics-input-menu py-8px rounded-[8px] bg-r-neutral-bg-1">
               {(showAllMenuOptions
@@ -546,10 +582,7 @@ function MnemonicsInputs({
                     className="h-[38px] py-0 px-[8px] text-r-neutral-title-1 hover:bg-transparent"
                     key={`countSelector-${count}`}
                     onClick={() => {
-                      setMnemonicsCount(count);
-                      setNeedPassphrase(false);
-                      onSlip39Change(false);
-                      handleDropdownVisibleChange(false);
+                      applyMnemonicsCount(count);
                     }}
                   >
                     <div className="text-wrapper">
@@ -582,10 +615,9 @@ function MnemonicsInputs({
                         key={`countSelector-need-passphrase-${count}`}
                         style={{ color: 'var(--r-neutral-body)' }}
                         onClick={() => {
-                          setMnemonicsCount(count);
-                          setNeedPassphrase(true);
-                          onSlip39Change(false);
-                          handleDropdownVisibleChange(false);
+                          applyMnemonicsCount(count, {
+                            needPassphrase: true,
+                          });
                         }}
                       >
                         <div className="text-wrapper">
@@ -616,9 +648,10 @@ function MnemonicsInputs({
                         key={`countSelector-need-passphrase-${passphrase}`}
                         style={{ color: 'var(--r-neutral-body)' }}
                         onClick={() => {
-                          onSlip39Change(true);
-                          setNeedPassphrase(passphrase);
-                          handleDropdownVisibleChange(false);
+                          applyMnemonicsCount(DEFAULT_MEMONICS_COUNT, {
+                            needPassphrase: passphrase,
+                            isSlip39: true,
+                          });
                         }}
                       >
                         <div className="text-wrapper">
@@ -667,7 +700,10 @@ function MnemonicsInputs({
             </Menu>
           }
         >
-          <div className="left flex items-center cursor-pointer">
+          <div
+            ref={dropdownTriggerRef}
+            className="left relative flex items-center cursor-pointer"
+          >
             <span>
               {!isSlip39 ? (
                 <Trans
@@ -814,7 +850,8 @@ function MnemonicsInputs({
                 onMouseLeave={() => handleMouseLeave(idx)}
               >
                 <TooltipWithMagnetArrow
-                  overlayClassName="rectangle w-[max-content] top-[-20px]"
+                  overlayClassName="rectangle w-[max-content]"
+                  align={{ offset: [0, 20] }}
                   title={word}
                   disableLeft
                   placement="top"

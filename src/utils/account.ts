@@ -15,6 +15,7 @@ import { isAddress } from 'viem';
 import { isSameAddress } from '@/background/utils';
 import { isObject, isPlainObject } from 'lodash';
 import WatchLogo from 'ui/assets/waitcup.svg';
+import IconWhiteListWhite from 'ui/assets/walletlogo/whitelist-white.svg';
 
 export function generateAliasName({
   keyringType,
@@ -70,9 +71,11 @@ export function pickKeyringThemeIcon(
 
   const {
     needLightVersion,
-    purpleFirst = ![KEYRING_CLASS.PRIVATE_KEY, KEYRING_CLASS.MNEMONIC].includes(
-      keyringClass as any
-    ),
+    purpleFirst = ![
+      KEYRING_CLASS.PRIVATE_KEY,
+      KEYRING_CLASS.MNEMONIC,
+      KEYRING_CLASS.WATCH,
+    ].includes(keyringClass as any),
   } = options || {};
 
   if (options.forceWatchTransparent && keyringClass === KEYRING_CLASS.WATCH) {

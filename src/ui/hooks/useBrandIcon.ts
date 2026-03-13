@@ -3,25 +3,21 @@ import { useThemeMode } from './usePreference';
 import React from 'react';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import {
-  KEYRING_CLASS,
   KEYRING_ICONS,
   KEYRINGS_LOGOS,
   WALLET_BRAND_CONTENT,
 } from '@/constant';
-import SvgWhitelist from '@/ui/views/SendToken/icons/avatar.svg';
 
 export const useBrandIcon = ({
   address,
   brandName,
   type,
   forceLight,
-  showWatchWhitelistIcon,
 }: {
   address: string;
   brandName: string;
   type: string;
   forceLight?: boolean;
-  showWatchWhitelistIcon?: boolean;
 }) => {
   const brandIcon = useWalletConnectIcon({
     address,
@@ -49,10 +45,6 @@ export const useBrandIcon = ({
           KEYRING_ICONS[type],
     [type, brandName, brandIcon, isDarkTheme, forceLight]
   );
-
-  if (showWatchWhitelistIcon && type === KEYRING_CLASS.WATCH) {
-    return SvgWhitelist;
-  }
 
   return addressTypeIcon;
 };
