@@ -2251,7 +2251,7 @@
       "no": "Non",
       "hasInteraction": "Interagi auparavant",
       "primaryType": "Type primaire",
-      "safeServiceNotAvailable": "Le service Safe n'est pas disponible pour le moment, veuillez réessayer plus tard.",
+      "safeServiceNotAvailable": "",
       "safeTx": {
         "selfHostConfirm": {
           "title": "Passer au service Safe de Rabby",

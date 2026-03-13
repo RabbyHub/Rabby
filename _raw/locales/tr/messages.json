@@ -347,7 +347,7 @@
       "maxPriorityFeeDisabledAlert": "Lütfen önce Gas Price ayarlayın",
       "yes": "Evet",
       "primaryType": "Birincil tür",
-      "safeServiceNotAvailable": "Güvenli hizmet şu anda mevcut değil, lütfen daha sonra tekrar deneyin.",
+      "safeServiceNotAvailable": "",
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",

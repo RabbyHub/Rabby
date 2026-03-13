@@ -326,7 +326,7 @@
       "importedAddress": "가져온 주소",
       "signTransactionOnChain": "{{chain}} 거래 서명",
       "neverTransacted": "이전에 거래한 적이 없습니다.",
-      "safeServiceNotAvailable": "안전 서비스는 현재 이용할 수 없습니다. 나중에 다시 시도해 주세요.",
+      "safeServiceNotAvailable": "",
       "scamTokenAlert": "이는 Rabby의 감지에 따라 잠재적으로 낮은 품질의 스캠 토큰일 수 있습니다.",
       "trustValue": "신뢰 가치",
       "myMark": "내 마크",

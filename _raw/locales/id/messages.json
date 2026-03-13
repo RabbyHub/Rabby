@@ -308,7 +308,7 @@
       "markAsBlock": "Ditandai sebagai diblokir",
       "interactContract": "Interaksi kontrak",
       "markRemoved": "Mark dihapus",
-      "safeServiceNotAvailable": "Layanan aman tidak tersedia sekarang, silakan coba nanti.",
+      "safeServiceNotAvailable": "",
       "scamTokenAlert": "Ini kemungkinan adalah token berkualitas rendah dan penipuan berdasarkan deteksi Rabby.",
       "importedAddress": "Alamat yang diimpor",
       "fakeTokenAlert": "Ini adalah token scam yang ditandai oleh Rabby",

@@ -347,7 +347,7 @@
       "typedDataMessage": "Firmar Datos Tipados",
       "trustValueTitle": "Confianza en el valor",
       "primaryType": "Tipo principal",
-      "safeServiceNotAvailable": "El servicio Safe no está disponible ahora, por favor intente más tarde.",
+      "safeServiceNotAvailable": "",
       "safeTx": {
         "selfHostConfirm": {
           "content": "La API de Safe no está disponible. Cambia al servicio de Safe desplegado por Rabby para mantener tu Safe funcional. <strong>Todos los firmantes de Safe deben usar Rabby Wallet para autorizar transacciones.<strong>",

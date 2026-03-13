@@ -347,7 +347,7 @@
       "advancedSettings": "Розширені налаштування",
       "decodedTooltip": "Цей підпис розшифровано Rabby Wallet",
       "primaryType": "Первинний тип",
-      "safeServiceNotAvailable": "Вибачте, служба Safe зараз недоступна, спробуйте пізніше.",
+      "safeServiceNotAvailable": "",
       "safeTx": {
         "selfHostConfirm": {
           "content": "API Safe недоступний. Переключіться на службу Safe, розгорнуту Rabby, щоб ваш Safe залишався функціональним. <strong>Усі підписувачі Safe повинні використовувати Rabby Wallet для авторизації транзакцій.<strong>",
