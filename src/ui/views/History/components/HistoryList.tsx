@@ -1,4 +1,4 @@
-import { last } from 'lodash';
+import { last, sortBy } from 'lodash';
 import React, { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -14,6 +14,8 @@ import { Empty, Modal } from 'ui/component';
 import { sleep, useWallet } from 'ui/utils';
 import { HistoryItem, HistoryItemActionContext } from './HistoryItem';
 import { Loading } from './Loading';
+import { db, TxHistoryItemRow } from '@/db';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 const PAGE_COUNT = 10;
 
@@ -61,6 +63,7 @@ export const HistoryList = ({
       const displayList = historyList
         .map((item) => ({
           ...item,
+          owner_addr: account?.address || '',
           projectDict: result.project_dict,
           cateDict: result.cate_dict,
           tokenDict,
@@ -75,19 +78,31 @@ export const HistoryList = ({
     [isFilterScam]
   );
 
-  const [cachedDisplayData, setCachedDisplayData] = React.useState<ReturnType<
-    typeof buildDisplayData
-  > | null>(null);
+  // const [cachedDisplayData, setCachedDisplayData] = React.useState<ReturnType<
+  //   typeof buildDisplayData
+  // > | null>(null);
 
   const fetchData = async (startTime = 0) => {
     const { address } = account!;
     const shouldUseCache = !isFilterScam && startTime === 0;
-    let cachedResult: TxHistoryResult | undefined;
+    let cachedResult: ReturnType<typeof buildDisplayData> | null = null;
     let hasCachedHistory = false;
 
     if (shouldUseCache) {
-      cachedResult = await wallet.getTransactionsCache(address);
-      hasCachedHistory = !!cachedResult?.history_list?.length;
+      const cache = await db.history
+        .where('owner_addr')
+        .equals(address.toLowerCase())
+        .toArray();
+
+      console.log('cache', cache);
+
+      if (cache?.length) {
+        cachedResult = {
+          last: last(cache)?.time_at,
+          list: sortBy(cache, (item) => -item.time_at) as any,
+        };
+      }
+      hasCachedHistory = !!cache?.length;
     }
 
     const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
@@ -96,9 +111,9 @@ export const HistoryList = ({
 
     if (shouldUseCache && hasCachedHistory && cachedResult) {
       if (!apiAvailable) {
-        return buildDisplayData(cachedResult);
+        return cachedResult;
       }
-      const firstCachedTime = cachedResult.history_list?.[0]?.time_at;
+      const firstCachedTime = cachedResult?.list?.[0]?.time_at;
       try {
         const { has_new_tx } = await wallet.openapi.hasNewTxFrom({
           address,
@@ -109,7 +124,7 @@ export const HistoryList = ({
         hasNewTx = true;
       }
       if (!hasNewTx) {
-        return buildDisplayData(cachedResult);
+        return cachedResult;
       }
     }
 
@@ -138,11 +153,24 @@ export const HistoryList = ({
           start_time: startTime,
           page_count: PAGE_COUNT,
         });
+
+    const result = buildDisplayData(res);
     if (startTime === 0 && hasNewTx && !isFilterScam) {
-      await wallet.updateTransactionsCache(address, res as TxHistoryResult);
+      // await wallet.updateTransactionsCache(address, res as TxHistoryResult);
+      console.log('update cache', result);
+      await db.history
+        .where('owner_addr')
+        .equals(address.toLowerCase())
+        .delete();
+      await db.history.bulkPut(
+        result.list.map((item) => ({
+          _id: `${item.owner_addr}-${item.chain}-${item.id}`,
+          ...item,
+        }))
+      );
     }
 
-    return buildDisplayData(res);
+    return result;
   };
 
   const { data, loading, loadingMore, loadMore, mutate } = useInfiniteScroll(
@@ -156,31 +184,36 @@ export const HistoryList = ({
     }
   );
 
-  React.useEffect(() => {
-    let cancelled = false;
-    if (!account || isFilterScam) {
-      setCachedDisplayData(null);
-      return;
-    }
-    (async () => {
-      const cached = await wallet.getTransactionsCache(account.address);
-      if (cancelled) {
-        return;
-      }
-      if (cached?.history_list?.length) {
-        const displayData = buildDisplayData(cached);
-        setCachedDisplayData(displayData);
-        mutate(displayData);
-      } else {
-        setCachedDisplayData(null);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [account?.address, isFilterScam, buildDisplayData, wallet, mutate]);
+  // const x = useLiveQuery(() => {
+  //   return db.history.toArray();
+  // }, []);
 
-  const renderData = data || cachedDisplayData;
+  // React.useEffect(() => {
+  //   let cancelled = false;
+  //   if (!account || isFilterScam) {
+  //     setCachedDisplayData(null);
+  //     return;
+  //   }
+  //   (async () => {
+  //     const cached = await wallet.getTransactionsCache(account.address);
+  //     if (cancelled) {
+  //       return;
+  //     }
+  //     if (cached?.history_list?.length) {
+  //       const displayData = buildDisplayData(cached);
+  //       setCachedDisplayData(displayData);
+  //       mutate(displayData);
+  //     } else {
+  //       setCachedDisplayData(null);
+  //     }
+  //   })();
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [account?.address, isFilterScam, buildDisplayData, wallet, mutate]);
+
+  // const renderData = data || cachedDisplayData;
+  const renderData = data;
   const listData = renderData?.list || [];
   const showInitialLoading = loading && listData.length <= 0;
   const isEmpty = listData.length <= 0 && !showInitialLoading;
