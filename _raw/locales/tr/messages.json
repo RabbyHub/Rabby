@@ -1086,7 +1086,6 @@
       "confirm-delete": "Silmeyi Onayla",
       "private-key": "Özel Anahtar",
       "seed-phrase": "Seed Phrase",
-      "watch-address": "Adresi İzle",
       "backup-seed-phrase": "Seed Phrase'i Yedekle",
       "delete-all-addresses-but-keep-the-seed-phrase": "Tüm adresleri sil, ancak Seed Phrase'i sakla",
       "delete-all-addresses-and-the-seed-phrase": "Tüm adresleri ve Seed Phrase'i sil",
@@ -1565,8 +1564,6 @@
       "importPrivateKey": "Özel Anahtarı İçe Aktar",
       "importMyMetamaskAccount": "Metamask Hesabımı İçe Aktar",
       "addContacts": {
-        "content": "Kişi Ekle",
-        "description": "Bunu sadece izlemeye alınmış adres olarak da kullanabilirsiniz",
         "required": "Lütfen adresi girin",
         "notAValidAddress": "Geçerli bir adres değil",
         "scanViaMobileWallet": "Mobil cüzdanla tara",
@@ -4471,7 +4468,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Özel Anahtar",
-      "watchAddressKeyring": "Kişi"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4490,7 +4487,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Seed Phrase ile Oluşturuldu",
       "SimpleKeyring": "Özel Anahtarla İçe Aktarıldı",
-      "WatchAddressKeyring": "Kişi"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "Seed Phrase ile İçe Aktarıldı",
     "SIGN_PERMISSION_OPTIONS": {

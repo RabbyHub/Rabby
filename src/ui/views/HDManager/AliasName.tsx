@@ -83,7 +83,7 @@ export const AliasName: React.FC<Props> = ({
         </div>
       ) : (
         <div className="label">
-          <span className="text">{value}</span>
+          <span className="text truncate max-w-[128px]">{value}</span>
           <EditPenSVG className="icon" />
         </div>
       )}

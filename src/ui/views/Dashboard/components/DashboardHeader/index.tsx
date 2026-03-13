@@ -153,7 +153,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
             >
               <div className="relative">
                 <img
-                  className={clsx('w-[20px] h-[20px]')}
+                  className={clsx('w-[20px] h-[20px] min-w-[20px]')}
                   src={
                     brandIcon ||
                     WALLET_BRAND_CONTENT[currentAccount.brandName]?.image ||
