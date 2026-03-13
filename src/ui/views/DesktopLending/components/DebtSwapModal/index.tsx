@@ -52,6 +52,7 @@ import {
 import { getDebtTokensToDisplay, getFromToken } from '../../utils/swap';
 import { LendingStyledInput } from '../StyledInput';
 import { StyledCheckbox } from '../BorrowModal';
+import LendingPriceImpactNotice from '../LendingPriceImpactNotice';
 import SymbolIcon from '../SymbolIcon';
 import DebtSwapOverview from './Overview';
 import DebtTokenPopup from './DebtTokenPopup';
@@ -917,9 +918,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
       return t('page.lending.debtSwap.lpRiskWarning');
     }
     if (priceImpactData.showConfirmation) {
-      return t('page.lending.debtSwap.priceImpactTips', {
-        lostValue: `${(priceImpactData.lostValue * 100).toFixed(1)}%`,
-      });
+      return '';
     }
 
     return t(
@@ -1143,6 +1142,31 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
           </div>
         ) : null}
 
+        {canSwap &&
+        !noQuote &&
+        priceImpactData.showWarning &&
+        !isQuoteLoading ? (
+          <LendingPriceImpactNotice
+            loading={isQuoteLoading}
+            payToken={toToken}
+            payAmount={toAmountAfterSlippage}
+            receiveToken={fromToken}
+            receiveAmount={debouncedFromAmount}
+          />
+        ) : null}
+
+        {canShowDirectSubmit && canSwap && chainInfo?.serverId ? (
+          <div className="mt-12 px-16">
+            <DirectSignGasInfo
+              supportDirectSign
+              loading={false}
+              openShowMore={noop}
+              chainServeId={chainInfo.serverId}
+              noQuote={false}
+              type="send"
+            />
+          </div>
+        ) : null}
         {canSwap && !noQuote ? (
           <div className="mt-16 px-16">
             <BridgeSlippage
@@ -1158,40 +1182,6 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
             />
           </div>
         ) : null}
-
-        {canShowDirectSubmit && canSwap && chainInfo?.serverId ? (
-          <div className="mt-12 px-16">
-            <DirectSignGasInfo
-              supportDirectSign
-              loading={false}
-              openShowMore={noop}
-              chainServeId={chainInfo.serverId}
-              noQuote={false}
-              type="send"
-            />
-          </div>
-        ) : null}
-
-        {/*{canSwap &&
-        !noQuote &&
-        priceImpactData.showWarning &&
-        !isQuoteLoading ? (
-          <div className="mt-12 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10">
-            <div className="flex items-center justify-between gap-8">
-              <span className="text-[13px] leading-[16px] text-r-neutral-title-1">
-                {t('page.bridge.price-impact')}
-              </span>
-              <span className="text-[13px] leading-[16px] font-medium text-rb-orange-default">
-                {(priceImpactData.lostValue * 100).toFixed(1)}%
-              </span>
-            </div>
-            <div className="mt-8 text-[12px] leading-[16px] text-r-neutral-foot">
-              {t('page.lending.debtSwap.priceImpactTips', {
-                lostValue: `${(priceImpactData.lostValue * 100).toFixed(1)}%`,
-              })}
-            </div>
-          </div>
-        ) : null}*/}
 
         {!noQuote && toToken && !!Number(debouncedFromAmount) ? (
           <DebtSwapOverview
@@ -1246,12 +1236,14 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
 
         {isRisky && !isLiquidatable && !isExceedMaxLtvAfterSwap ? (
           <>
-            <div className="mb-8 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10 flex items-start gap-8">
-              <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-orange-default mt-[1px]" />
-              <span className="text-[13px] leading-[16px] text-rb-orange-default">
-                {riskDesc}
-              </span>
-            </div>
+            {!!riskDesc && (
+              <div className="mb-8 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10 flex items-start gap-8">
+                <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-orange-default mt-[1px]" />
+                <span className="text-[13px] leading-[16px] text-rb-orange-default">
+                  {riskDesc}
+                </span>
+              </div>
+            )}
             <div className="mb-12 flex items-center justify-center gap-8">
               <StyledCheckbox
                 checked={riskChecked}

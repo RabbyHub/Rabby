@@ -55,6 +55,7 @@ import {
 import { getCollateralTokens, getFromToken } from '../../utils/swap';
 import { LendingStyledInput } from '../StyledInput';
 import { StyledCheckbox } from '../BorrowModal';
+import LendingPriceImpactNotice from '../LendingPriceImpactNotice';
 import SymbolIcon from '../SymbolIcon';
 import CollateralTokenPopup from './CollateralTokenPopup';
 import RepayWithCollateralOverview from './Overview';
@@ -1079,9 +1080,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
       return t('page.lending.debtSwap.lpRiskWarning');
     }
     if (priceImpactData.showConfirmation) {
-      return t('page.lending.debtSwap.priceImpactTips', {
-        lostValue: `${(priceImpactData.lostValue * 100).toFixed(1)}%`,
-      });
+      return '';
     }
 
     return t(
@@ -1306,6 +1305,19 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
           </ArrowLoadingWrapper>
         </div>
 
+        {canRepay &&
+        !noQuote &&
+        priceImpactData.showWarning &&
+        !isQuoteLoading ? (
+          <LendingPriceImpactNotice
+            loading={isQuoteLoading}
+            payToken={selectedCollateralToken}
+            payAmount={collateralAmountAfterSlippage}
+            receiveToken={repayToken}
+            receiveAmount={debouncedRepayAmount}
+          />
+        ) : null}
+
         {noQuote && !isQuoteLoading && repayAmount ? (
           <div className="mt-12 px-12">
             <span className="text-[13px] leading-[16px] text-rb-red-default">
@@ -1313,7 +1325,18 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
             </span>
           </div>
         ) : null}
-
+        {canShowDirectSubmit && canRepay && chainInfo?.serverId ? (
+          <div className="mt-12 px-16">
+            <DirectSignGasInfo
+              supportDirectSign
+              loading={false}
+              openShowMore={noop}
+              chainServeId={chainInfo.serverId}
+              noQuote={false}
+              type="send"
+            />
+          </div>
+        ) : null}
         {canRepay && !noQuote ? (
           <div className="mt-16 px-16">
             <BridgeSlippage
@@ -1326,40 +1349,6 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
               setIsCustomSlippage={setIsCustomSlippage}
               type="swap"
               valueClassName="text-[14px] font-[700]"
-            />
-          </div>
-        ) : null}
-
-        {/*{canRepay &&
-        !noQuote &&
-        priceImpactData.showWarning &&
-        !isQuoteLoading ? (
-          <div className="mt-12 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10">
-            <div className="flex items-center justify-between gap-8">
-              <span className="text-[13px] leading-[16px] text-r-neutral-title-1">
-                {t('page.bridge.price-impact')}
-              </span>
-              <span className="text-[13px] leading-[16px] font-medium text-rb-orange-default">
-                {(priceImpactData.lostValue * 100).toFixed(1)}%
-              </span>
-            </div>
-            <div className="mt-8 text-[12px] leading-[16px] text-r-neutral-foot">
-              {t('page.lending.debtSwap.priceImpactTips', {
-                lostValue: `${(priceImpactData.lostValue * 100).toFixed(1)}%`,
-              })}
-            </div>
-          </div>
-        ) : null}*/}
-
-        {canShowDirectSubmit && canRepay && chainInfo?.serverId ? (
-          <div className="mt-12 px-16">
-            <DirectSignGasInfo
-              supportDirectSign
-              loading={false}
-              openShowMore={noop}
-              chainServeId={chainInfo.serverId}
-              noQuote={false}
-              type="send"
             />
           </div>
         ) : null}
@@ -1419,12 +1408,14 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
         !isLiquidatable &&
         hasInputValidValue ? (
           <>
-            <div className="mb-8 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10 flex items-start gap-8">
-              <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-orange-default mt-[1px]" />
-              <span className="text-[13px] leading-[16px] text-rb-orange-default">
-                {riskDesc}
-              </span>
-            </div>
+            {!!riskDesc && (
+              <div className="mb-8 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10 flex items-start gap-8">
+                <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-orange-default mt-[1px]" />
+                <span className="text-[13px] leading-[16px] text-rb-orange-default">
+                  {riskDesc}
+                </span>
+              </div>
+            )}
             <div className="mb-12 flex items-center justify-center gap-8">
               <StyledCheckbox
                 checked={riskChecked}
