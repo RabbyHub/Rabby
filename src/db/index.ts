@@ -1,11 +1,6 @@
-import { TxHistoryItem } from '@rabby-wallet/rabby-api/dist/types';
 import { Dexie } from 'dexie';
-import { historyEntitySchema, HistoryEntityTable } from './entities/history';
+import { DexieEntityTable, schema } from './schema';
 
-export interface TxHistoryItemRow extends TxHistoryItem {
-  _id: string;
-}
+export const db = new Dexie('rabby-database') as Dexie & DexieEntityTable;
 
-export const db = new Dexie('rabby-database') as Dexie & HistoryEntityTable;
-
-db.version(1).stores({ ...historyEntitySchema });
+db.version(1).stores(schema);

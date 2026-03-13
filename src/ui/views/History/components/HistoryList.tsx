@@ -14,8 +14,8 @@ import { Empty, Modal } from 'ui/component';
 import { sleep, useWallet } from 'ui/utils';
 import { HistoryItem, HistoryItemActionContext } from './HistoryItem';
 import { Loading } from './Loading';
-import { db, TxHistoryItemRow } from '@/db';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { historyDbService } from '@/db/services/historyDbService';
 
 const PAGE_COUNT = 10;
 
@@ -89,17 +89,12 @@ export const HistoryList = ({
     let hasCachedHistory = false;
 
     if (shouldUseCache) {
-      const cache = await db.history
-        .where('owner_addr')
-        .equals(address.toLowerCase())
-        .toArray();
-
-      console.log('cache', cache);
+      const cache = await historyDbService.getTransactionsCache(address);
 
       if (cache?.length) {
         cachedResult = {
           last: last(cache)?.time_at,
-          list: sortBy(cache, (item) => -item.time_at) as any,
+          list: cache,
         };
       }
       hasCachedHistory = !!cache?.length;
@@ -156,18 +151,13 @@ export const HistoryList = ({
 
     const result = buildDisplayData(res);
     if (startTime === 0 && hasNewTx && !isFilterScam) {
-      // await wallet.updateTransactionsCache(address, res as TxHistoryResult);
-      console.log('update cache', result);
-      await db.history
-        .where('owner_addr')
-        .equals(address.toLowerCase())
-        .delete();
-      await db.history.bulkPut(
-        result.list.map((item) => ({
+      await historyDbService.updateTransactionsCache({
+        address: address.toLowerCase(),
+        rows: (result.list || []).map((item) => ({
           _id: `${item.owner_addr}-${item.chain}-${item.id}`,
           ...item,
-        }))
-      );
+        })),
+      });
     }
 
     return result;
@@ -181,6 +171,7 @@ export const HistoryList = ({
           ? true
           : !d?.last || (d?.list.length || 0) < PAGE_COUNT;
       },
+      reloadDeps: [account?.address, isFilterScam],
     }
   );
 

@@ -3,17 +3,21 @@ import { EntityTable } from 'dexie';
 
 export interface TxHistoryItemRow extends TxHistoryItem {
   _id: string;
+  owner_addr: string;
+  projectDict: Record<string, any>;
+  cateDict: Record<string, any>;
+  tokenDict: Record<string, any>;
+  tokenUUIDDict: Record<string, any>;
 }
 
-export type HistoryEntityTable = {
+export type HistoryTable = {
   history: EntityTable<
     TxHistoryItemRow,
     '_id' // primary key "_id" (for the typings only)
   >;
 };
 
-export const historyEntitySchema = {
-  history: `
+export const historySchema = `
   _id,
   owner_addr,
   cate_id,
@@ -27,6 +31,9 @@ export const historyEntitySchema = {
   sends,
   time_at,
   token_approve,
-  tx
-  `,
-};
+  tx,
+  projectDict,
+  cateDict,
+  tokenDict,
+  tokenUUIDDict
+  `;
