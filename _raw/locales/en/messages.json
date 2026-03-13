@@ -1622,7 +1622,8 @@
         "header": {
           "assets": "Token",
           "balance": "Balance"
-        }
+        },
+        "zeroLtvCollateralTips": "You have following LTV = 0 collaterals and thus can only repay with these collaterals first according to collateral repay rules. "
       },
       "manageEmode": {
         "__skip_translation": [
@@ -1679,7 +1680,7 @@
       "debtSwap": {
         "entryTips": "One-click to swap your borrowed asset, reducing steps and fees.",
         "title": "Swap Borrow Position",
-        "borrowBalance": "Borrow balance",
+        "borrowBalance": "Borrowed",
         "actions": {
           "title": "Debt Swap",
           "amount": "Amount",
@@ -1695,6 +1696,7 @@
         "button": {
           "swap": "Swap"
         },
+        "maxLtvWarning": "Insufficient collateral to cover new borrow position. Wallet must have borrowing power remaining to perform debt switch.",
         "priceImpactTips": "High price impact ({{lostValue}}). This route may return more due to low liquidity or small order size.",
         "lpRiskWarning": "Low health factor after swap. Your position will carry a higher risk of liquidation.",
         "lpDangerWarning": "Your health factor after this swap will be critically low and may result in liquidation. Please choose a different asset or reduce the swap amount to stay safe."
