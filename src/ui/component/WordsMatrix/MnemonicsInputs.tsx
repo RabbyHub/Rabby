@@ -409,10 +409,17 @@ function MnemonicsInputs({
   const verRef = React.useRef(0);
   const ver = `ver-${verRef.current}-${mnemonicsCount}`;
   const setInputTexts = React.useCallback(
-    (vals: string[], noSlice = false) => {
+    (
+      vals: string[],
+      options?: {
+        noSlice?: boolean;
+        count?: number;
+      }
+    ) => {
+      const targetCount = options?.count ?? mnemonicsCount;
       const words = fillMatrix(
-        noSlice ? vals : vals.slice(0, mnemonicsCount),
-        mnemonicsCount
+        options?.noSlice ? vals : vals.slice(0, targetCount),
+        targetCount
       );
       _setInputTexts(words);
       onChange?.(words.join(' '));
@@ -420,20 +427,29 @@ function MnemonicsInputs({
     },
     [onChange, mnemonicsCount]
   );
+  const setInputTextsForCount = React.useCallback(
+    (vals: string[], count: IMnemonicsCount) => {
+      setInputTexts(vals, {
+        noSlice: true,
+        count,
+      });
+    },
+    [setInputTexts]
+  );
   const applyMnemonicsCount = React.useCallback(
     (
       nextCount: IMnemonicsCount,
       options?: { needPassphrase?: boolean; isSlip39?: boolean }
     ) => {
       setMnemonicsCount(nextCount);
-      setInputTexts(fillMatrix(inputTexts, nextCount), true);
+      setInputTextsForCount(inputTexts, nextCount);
       setNeedPassphrase(!!options?.needPassphrase);
       setInvalidWords([]);
       onModeChange?.();
       onSlip39Change(!!options?.isSlip39);
       handleDropdownVisibleChange(false);
     },
-    [inputTexts, onModeChange, onSlip39Change, setInputTexts]
+    [inputTexts, onModeChange, onSlip39Change, setInputTextsForCount]
   );
 
   const hasInputValue = useMemo(() => {
@@ -475,13 +491,13 @@ function MnemonicsInputs({
         newInputTexts[idx + i] = words[i];
       }
       newInputTexts = newInputTexts.slice(0, nextCount);
-      setInputTexts(newInputTexts, true);
+      setInputTextsForCount(newInputTexts, nextCount);
 
       if (focusing.index === idx) {
         setMnemonics(word);
       }
     },
-    [focusing, inputTexts, mnemonicsCount]
+    [focusing, inputTexts, mnemonicsCount, setInputTextsForCount]
   );
 
   const validateWords = () => {
