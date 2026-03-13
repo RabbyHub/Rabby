@@ -532,6 +532,21 @@ const BulkImportPrivateKey: React.FC = () => {
         return;
       }
 
+      if (tokens.length === 1) {
+        const nextRows = buildEditableRows(
+          rows.map((item) =>
+            item.id === rowId ? currentValue.trim() : item.value
+          ),
+          {
+            appendEmpty: true,
+          }
+        );
+
+        setRows(nextRows);
+        setPendingFocusRowId(nextRows[index + 1]?.id || '');
+        return;
+      }
+
       replaceRowWithValues(rowId, tokens, {
         appendEmpty: true,
         focusOffset: tokens.length,
@@ -559,9 +574,6 @@ const BulkImportPrivateKey: React.FC = () => {
 
   const handleRowBlur = useMemoizedFn(
     (rowId: string, currentRowValue?: string) => {
-      const shouldPreserveTrailingEmptyRow =
-        !!pendingFocusRowId ||
-        rows.some((item) => item.id !== rowId && !item.value.trim());
       const nextValues = rows
         .map((item) =>
           item.id === rowId
@@ -569,15 +581,14 @@ const BulkImportPrivateKey: React.FC = () => {
             : item.value
         )
         .filter(Boolean);
-
-      if (!nextValues.length) {
-        closePrivateKeyListMode();
-        return;
-      }
+      const shouldAppendTrailingEmptyRow =
+        nextValues.length < MAX_PRIVATE_KEYS &&
+        (!pendingFocusRowId ||
+          rows.filter((item) => !item.value.trim()).length <= 1);
 
       setRows(
         buildEditableRows(nextValues.slice(0, MAX_PRIVATE_KEYS), {
-          appendEmpty: shouldPreserveTrailingEmptyRow,
+          appendEmpty: shouldAppendTrailingEmptyRow,
         })
       );
     }
@@ -624,7 +635,10 @@ const BulkImportPrivateKey: React.FC = () => {
       rows
         .filter((item) => item.id !== rowId)
         .map((item) => item.value)
-        .slice(0, MAX_PRIVATE_KEYS)
+        .slice(0, MAX_PRIVATE_KEYS),
+      {
+        appendEmpty: true,
+      }
     );
 
     if (!nextRows.length) {
@@ -655,7 +669,8 @@ const BulkImportPrivateKey: React.FC = () => {
     ): Promise<ValidatedPrivateKeyResult> => {
       const nextInvalidRowIds: string[] = [];
       const normalizedRows = buildRowsFromValues(
-        sourceRows.map((item) => item.value).slice(0, MAX_PRIVATE_KEYS)
+        sourceRows.map((item) => item.value).slice(0, MAX_PRIVATE_KEYS),
+        sourceRows
       );
 
       if (!normalizedRows.length) {
@@ -682,14 +697,25 @@ const BulkImportPrivateKey: React.FC = () => {
 
       for (const row of normalizedRows) {
         try {
-          await wallet.validatePrivateKey(row.value.trim());
+          if (!getPrivateKeyAddress(row.value.trim())) {
+            nextInvalidRowIds.push(row.id);
+          }
         } catch {
           nextInvalidRowIds.push(row.id);
         }
       }
 
       if (options?.persistRows !== false) {
-        setRows(normalizedRows);
+        setRows(
+          buildRowsFromValues(
+            normalizedRows.map((item) => item.value),
+            normalizedRows,
+            {
+              appendEmpty: normalizedRows.length < MAX_PRIVATE_KEYS,
+              dedupe: false,
+            }
+          )
+        );
       }
 
       if (nextInvalidRowIds.length) {
@@ -709,7 +735,6 @@ const BulkImportPrivateKey: React.FC = () => {
 
   const handleBulkImportPrivateKeys = useMemoizedFn(async () => {
     let validationSourceRows = rows;
-    let persistRows = true;
 
     if (!isPrivateKeyListMode) {
       const nextValues = splitPrivateKeys(privateKeyInputValue);
@@ -721,15 +746,15 @@ const BulkImportPrivateKey: React.FC = () => {
       if (nextValues.length > 1) {
         validationSourceRows = openPrivateKeyListMode(nextValues);
       } else {
-        validationSourceRows = [createPrivateKeyRow(nextValues[0])];
-        persistRows = false;
+        validationSourceRows = openPrivateKeyListMode(nextValues, {
+          appendEmpty: true,
+        });
       }
     }
 
-    const {
-      validRows,
-      invalidRowIds: nextInvalidRowIds,
-    } = await validateRows(validationSourceRows, { persistRows });
+    const { validRows, invalidRowIds: nextInvalidRowIds } = await validateRows(
+      validationSourceRows
+    );
     if (nextInvalidRowIds.length || !validRows.length) {
       return;
     }
@@ -863,6 +888,8 @@ const BulkImportPrivateKey: React.FC = () => {
 
     await handleImportKeyStore();
   });
+
+  console.log('row', rows, invalidRowIds);
 
   return (
     <>

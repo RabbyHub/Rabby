@@ -291,7 +291,7 @@ const MatrixWrapper = styled.div.withConfig<{
 `;
 
 function fillMatrix(words: string[], mnemonicsCount: number) {
-  const matrix = words.slice() as string[];
+  const matrix = words.slice(0, mnemonicsCount) as string[];
   while (matrix.length < mnemonicsCount) {
     matrix.push('');
   }
@@ -345,6 +345,7 @@ function MnemonicsInputs({
   onChange,
   errMsgs = [],
   errorIndexes = [],
+  onModeChange,
   onPassphrase,
   isSlip39,
   onSlip39Change,
@@ -365,6 +366,7 @@ function MnemonicsInputs({
   onChange?: (value: string) => any;
   errMsgs?: string[];
   errorIndexes?: number[];
+  onModeChange?: () => void;
   onPassphrase?: (val: boolean) => any;
   isSlip39: boolean;
   onSlip39Change: React.Dispatch<React.SetStateAction<boolean>>;
@@ -417,6 +419,21 @@ function MnemonicsInputs({
       verRef.current++;
     },
     [onChange, mnemonicsCount]
+  );
+  const applyMnemonicsCount = React.useCallback(
+    (
+      nextCount: IMnemonicsCount,
+      options?: { needPassphrase?: boolean; isSlip39?: boolean }
+    ) => {
+      setMnemonicsCount(nextCount);
+      setInputTexts(fillMatrix(inputTexts, nextCount), true);
+      setNeedPassphrase(!!options?.needPassphrase);
+      setInvalidWords([]);
+      onModeChange?.();
+      onSlip39Change(!!options?.isSlip39);
+      handleDropdownVisibleChange(false);
+    },
+    [inputTexts, onModeChange, onSlip39Change, setInputTexts]
   );
 
   const hasInputValue = useMemo(() => {
@@ -549,10 +566,7 @@ function MnemonicsInputs({
                     className="h-[38px] py-0 px-[8px] text-r-neutral-title-1 hover:bg-transparent"
                     key={`countSelector-${count}`}
                     onClick={() => {
-                      setMnemonicsCount(count);
-                      setNeedPassphrase(false);
-                      onSlip39Change(false);
-                      handleDropdownVisibleChange(false);
+                      applyMnemonicsCount(count);
                     }}
                   >
                     <div className="text-wrapper">
@@ -585,10 +599,9 @@ function MnemonicsInputs({
                         key={`countSelector-need-passphrase-${count}`}
                         style={{ color: 'var(--r-neutral-body)' }}
                         onClick={() => {
-                          setMnemonicsCount(count);
-                          setNeedPassphrase(true);
-                          onSlip39Change(false);
-                          handleDropdownVisibleChange(false);
+                          applyMnemonicsCount(count, {
+                            needPassphrase: true,
+                          });
                         }}
                       >
                         <div className="text-wrapper">
@@ -619,9 +632,10 @@ function MnemonicsInputs({
                         key={`countSelector-need-passphrase-${passphrase}`}
                         style={{ color: 'var(--r-neutral-body)' }}
                         onClick={() => {
-                          onSlip39Change(true);
-                          setNeedPassphrase(passphrase);
-                          handleDropdownVisibleChange(false);
+                          applyMnemonicsCount(DEFAULT_MEMONICS_COUNT, {
+                            needPassphrase: passphrase,
+                            isSlip39: true,
+                          });
                         }}
                       >
                         <div className="text-wrapper">

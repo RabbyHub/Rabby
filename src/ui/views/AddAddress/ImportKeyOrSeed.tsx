@@ -101,6 +101,7 @@ const ImportKeyOrSeed: React.FC<{
   const [secretShares, setSecretShares] = React.useState<string[]>([]);
   const [errMsgs, setErrMsgs] = React.useState<string[]>();
   const [pkOnPrivateKey, setPkOnPrivateKey] = React.useState('');
+  const formContentRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
     setSelectedTab(currentTab);
@@ -118,10 +119,32 @@ const ImportKeyOrSeed: React.FC<{
     }
   }, [form, needPassphrase]);
 
-  const syncTab = useMemoizedFn((tab: ImportTab) => {
-    setSelectedTab(tab);
+  const clearSeedPhraseErrors = React.useCallback(() => {
     setErrMsgs(undefined);
     setSlip39ErrorIndex(-1);
+  }, []);
+
+  React.useEffect(() => {
+    if (selectedTab !== 'seedPhrase' || !errMsgs?.length) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      const container = formContentRef.current;
+      if (!container) {
+        return;
+      }
+
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth',
+      });
+    });
+  }, [errMsgs, selectedTab]);
+
+  const syncTab = useMemoizedFn((tab: ImportTab) => {
+    setSelectedTab(tab);
+    clearSeedPhraseErrors();
     if (isInModal) {
       onNavigate?.('import-key-or-seed', { tab });
       return;
@@ -397,8 +420,7 @@ const ImportKeyOrSeed: React.FC<{
             className="min-h-0 flex flex-1 flex-col overflow-hidden"
             onValuesChange={(_, values) => {
               setFormValues(values as ImportFormValues);
-              setErrMsgs(undefined);
-              setSlip39ErrorIndex(-1);
+              clearSeedPhraseErrors();
               const nextPrivateKey =
                 selectedTab === 'privateKey' ? values.privateKey?.trim() : '';
               if (!nextPrivateKey) {
@@ -425,7 +447,10 @@ const ImportKeyOrSeed: React.FC<{
               ]);
             }}
           >
-            <div className="min-h-0 flex-1 overflow-y-auto">
+            <div
+              ref={formContentRef}
+              className="min-h-0 flex-1 overflow-y-auto"
+            >
               {isPrivateKeyTab ? (
                 <>
                   <Form.Item name="privateKey" className="mb-0">
@@ -473,6 +498,7 @@ const ImportKeyOrSeed: React.FC<{
                       slip39GroupNumber={slip39GroupNumber}
                       isSlip39={isSlip39}
                       onSlip39Change={setIsSlip39}
+                      onModeChange={clearSeedPhraseErrors}
                       onPassphrase={setNeedPassphrase}
                       errMsgs={errMsgs}
                       onChange={checkSlip39Mnemonics}
