@@ -15,6 +15,25 @@ const getPxDecimals = (markPx: string) => {
   return decimalPart.length;
 };
 
+export const normalizeHyperliquidCoinForLogo = (coin: string) => {
+  if (!coin) {
+    return '';
+  }
+  // Keep km:* untouched, but drop k-prefix for meme perps like kPEPE -> PEPE.
+  if (coin.startsWith('k') && !coin.startsWith('km:')) {
+    return coin.slice(1);
+  }
+  return coin;
+};
+
+export const getHyperliquidCoinLogoUrl = (coin: string) => {
+  const iconKey = normalizeHyperliquidCoinForLogo(coin);
+  if (!iconKey) {
+    return '';
+  }
+  return `https://app.hyperliquid.xyz/coins/${iconKey}.svg`;
+};
+
 export const formatMarkData = (
   marketData: [Meta, AssetCtx[]],
   topAssets: PerpTopToken[],
@@ -101,8 +120,7 @@ export const formatMarkData = (
           premium: String(m?.premium ?? '0'),
           prevDayPx: String(m?.prevDayPx ?? ''),
           logoUrl:
-            topAsset.full_logo_url ||
-            `https://app.hyperliquid.xyz/coins/${topAsset.name}.svg`,
+            topAsset.full_logo_url || getHyperliquidCoinLogoUrl(topAsset.name),
         };
         return item;
       })
