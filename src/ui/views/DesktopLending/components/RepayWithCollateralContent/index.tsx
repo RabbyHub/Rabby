@@ -1089,6 +1089,10 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
     );
   }, [isHFLow, priceImpactData.lostValue, priceImpactData.showConfirmation, t]);
 
+  const hasInputValidValue = useMemo(() => {
+    return new BigNumber(debouncedRepayAmount || '0').gt(0);
+  }, [debouncedRepayAmount]);
+
   const canRepay = useMemo(() => {
     return (
       !!repayToken &&
@@ -1303,7 +1307,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
         </div>
 
         {noQuote && !isQuoteLoading && repayAmount ? (
-          <div className="mt-12 rounded-[8px] border border-rb-red-default bg-rb-red-light-1 px-12 py-10">
+          <div className="mt-12 px-12">
             <span className="text-[13px] leading-[16px] text-rb-red-default">
               {t('page.swap.no-quote-found')}
             </span>
@@ -1399,7 +1403,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
           getContainer={getContainer}
         />
 
-        {collateralNotEnough || isLiquidatable ? (
+        {collateralNotEnough || (isLiquidatable && hasInputValidValue) ? (
           <div className="mb-12 rounded-[8px] border border-rb-red-default bg-rb-red-light-1 px-12 py-10 flex items-start gap-8">
             <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-red-default mt-[1px]" />
             <span className="text-[13px] leading-[16px] text-rb-red-default">
@@ -1410,7 +1414,10 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
           </div>
         ) : null}
 
-        {isRisky && !collateralNotEnough && !isLiquidatable ? (
+        {isRisky &&
+        !collateralNotEnough &&
+        !isLiquidatable &&
+        hasInputValidValue ? (
           <>
             <div className="mb-8 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10 flex items-start gap-8">
               <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-orange-default mt-[1px]" />

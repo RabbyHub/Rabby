@@ -1053,7 +1053,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
             </div>
           </div>
 
-          <div className="px-16 pt-16 pb-18">
+          <div className="px-16 pt-16 pb-18 min-h-[133px]">
             <div className="mb-16 text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
               {t('page.lending.debtSwap.actions.swapTo')}
             </div>
@@ -1136,7 +1136,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
         </div>
 
         {noQuote && !isQuoteLoading && fromAmount ? (
-          <div className="mt-12 rounded-[8px] border border-rb-red-default bg-rb-red-light-1 px-12 py-10">
+          <div className="mt-12 px-12">
             <span className="text-[13px] leading-[16px] text-rb-red-default">
               {t('page.swap.no-quote-found')}
             </span>
