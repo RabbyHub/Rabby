@@ -56,6 +56,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import stats from '@/stats';
 import { getStatsReportSide } from '../../DesktopPerps/utils';
 import { PerpsHeaderRight } from '../components/PerpsHeaderRight';
+import { OpenProModeEntry } from '../components/OpenProModeEntry';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
 import { BackToTopButton } from '../components/BackToTopButton';
@@ -574,6 +575,8 @@ export const Perps: React.FC = () => {
           </div>
         )}
 
+        <OpenProModeEntry />
+
         {isInitialized && Boolean(positionAndOpenOrders?.length) && (
           <div className="mt-20 mx-20">
             <div className="flex items-center mb-8 justify-between">
@@ -650,8 +653,7 @@ export const Perps: React.FC = () => {
 
         <BackToTopButton visible={showBackToTop} onClick={handleBackToTop} />
 
-        {/* {isLogin && hasPermission && ( */}
-        {isLogin && (
+        {/* {isLogin && (
           <div
             className={clsx(
               'fixed bottom-0 left-0 right-0',
@@ -682,6 +684,22 @@ export const Perps: React.FC = () => {
                 />
               </div>
             </button>
+          </div>
+        )} */}
+        {isLogin && hasPermission && (
+          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20">
+            <Button
+              block
+              type="primary"
+              onClick={() => {
+                setSearchPopupVisible(true);
+                setOpenFromSource('openPosition');
+              }}
+              size="large"
+              className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
+            >
+              {t('page.perps.searchPerpsPopup.openPosition')}
+            </Button>
           </div>
         )}
       </div>

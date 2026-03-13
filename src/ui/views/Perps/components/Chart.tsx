@@ -31,7 +31,8 @@ import { useTranslation } from 'react-i18next';
 const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
 };
-import { splitNumberByStep } from '@/ui/utils';
+import { splitNumberByStep, useWallet } from '@/ui/utils';
+import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { formatLocalDateTime } from '../../DesktopPerps/components/ChartArea/components/ChartWrapper';
 
 export type ChartProps = {
@@ -635,6 +636,7 @@ export const PerpsChart = ({
   };
 }) => {
   const { t } = useTranslation();
+  const wallet = useWallet();
   const [
     selectedInterval,
     setSelectedInterval,
@@ -697,7 +699,15 @@ export const PerpsChart = ({
   }, [currentAssetCtx]);
 
   return (
-    <div className={clsx('bg-r-neutral-card1 rounded-[12px] p-16 mb-20')}>
+    <div
+      className={clsx('bg-r-neutral-card1 rounded-[12px] p-16 mb-20 relative')}
+    >
+      <div
+        className="absolute top-12 right-12  cursor-pointer text-r-neutral-body"
+        onClick={() => wallet.openInDesktop('/desktop/perps')}
+      >
+        <RcIconFullscreen />
+      </div>
       <div className="text-center mb-8">
         {chartHoverData.visible ? (
           <div>

@@ -766,6 +766,7 @@
       "deposit": "Deposit",
       "withdraw": "Withdraw",
       "positions": "Positions",
+      "openProModeInTab": "Open Pro Mode in Tab",
       "closeAll": "Close All",
       "closeAllPopup": {
         "title": "Confirm Close All Positions",
