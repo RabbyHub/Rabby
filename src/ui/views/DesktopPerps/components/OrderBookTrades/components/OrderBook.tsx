@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from 'react';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -52,6 +58,35 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const [aggregationIndex, setAggregationIndex] = useState<number>(0);
   const [bids, setBids] = useState<OrderBookLevel[]>([]);
   const [asks, setAsks] = useState<OrderBookLevel[]>([]);
+
+  // Dynamic row count based on container height
+  const ORDER_ROW_HEIGHT = 24;
+  const MIDDLE_PRICE_HEIGHT = 40;
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState(0);
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+      const entry = entries[0];
+      if (!entry) return;
+      setContainerHeight(entry.contentRect.height);
+    });
+    observer.observe(contentRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const rowCount = useMemo(() => {
+    if (!containerHeight) return 11;
+    if (viewMode === 'Both') {
+      const availableForRows = containerHeight - MIDDLE_PRICE_HEIGHT;
+      const totalRows = Math.floor(availableForRows / ORDER_ROW_HEIGHT);
+      return Math.max(1, Math.floor(totalRows / 2));
+    }
+    // Asks-only or Bids-only: all space for one side, no middle price row
+    const totalRows = Math.floor(containerHeight / ORDER_ROW_HEIGHT);
+    return Math.max(1, totalRows);
+  }, [containerHeight, viewMode]);
   const currentMarketData = useMemo(() => {
     if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
       return wsActiveAssetCtx.ctx;
@@ -217,21 +252,21 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const { displayAsks, displayBids } = useMemo(() => {
     if (viewMode === 'Both') {
       return {
-        displayAsks: asks.slice(0, 11).reverse(),
-        displayBids: bids.slice(0, 11),
+        displayAsks: asks.slice(0, rowCount).reverse(),
+        displayBids: bids.slice(0, rowCount),
       };
     } else if (viewMode === 'Asks') {
       return {
-        displayAsks: asks.reverse(),
+        displayAsks: asks.slice(0, rowCount).reverse(),
         displayBids: [],
       };
     } else {
       return {
         displayAsks: [],
-        displayBids: bids,
+        displayBids: bids.slice(0, rowCount),
       };
     }
-  }, [viewMode, asks, bids]);
+  }, [viewMode, asks, bids, rowCount]);
 
   useEffect(() => {
     if (!marketEstSize) return;
@@ -398,10 +433,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </span>
       </div>
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div ref={contentRef} className="flex-1 flex flex-col overflow-hidden">
         {(viewMode === 'Both' || viewMode === 'Asks') && (
           <div
-            className={clsx('overflow-y-auto gap-2 flex flex-col', {
+            className={clsx('overflow-hidden gap-2 flex flex-col', {
               'flex-1': viewMode === 'Both',
             })}
           >
@@ -434,7 +469,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         )}
         {(viewMode === 'Both' || viewMode === 'Bids') && (
           <div
-            className={clsx('overflow-y-auto gap-2 flex flex-col', {
+            className={clsx('overflow-hidden gap-2 flex flex-col', {
               'flex-1': viewMode === 'Both',
             })}
           >

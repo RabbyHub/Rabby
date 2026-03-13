@@ -119,6 +119,7 @@ export const formatMarkData = (
           oraclePx: String(m?.oraclePx ?? ''),
           premium: String(m?.premium ?? '0'),
           prevDayPx: String(m?.prevDayPx ?? ''),
+          onlyIsolated: hlDataAsset.onlyIsolated,
           logoUrl:
             topAsset.full_logo_url || getHyperliquidCoinLogoUrl(topAsset.name),
         };
