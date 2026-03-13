@@ -300,7 +300,7 @@
       "safeAdminSigned": "Đã ký",
       "unwrap": "Gỡ mã Token",
       "eip1559Desc1": "Trên các chuỗi hỗ trợ EIP-1559, Phí Ưu Tiên là tiền boa cho các thợ đào để xử lý giao dịch của bạn. Bạn có thể tiết kiệm chi phí gas cuối cùng của mình bằng cách giảm Phí Ưu Tiên, điều này có thể tốn thêm thời gian để giao dịch được xử lý.",
-      "safeServiceNotAvailable": "Dịch vụ an toàn hiện không khả dụng, vui lòng thử lại sau.",
+      "safeServiceNotAvailable": "",
       "nftCollection": "Bộ sưu tập NFT",
       "popularity": "Sự phổ biến",
       "chain": "Chuỗi",

@@ -347,7 +347,7 @@
       "address": "Adresse",
       "maxPriorityFeeDisabledAlert": "Bitte zuerst den Gaspreis festlegen",
       "primaryType": "Primärtyp",
-      "safeServiceNotAvailable": "Der sichere Dienst ist derzeit nicht verfügbar, bitte versuchen Sie es später erneut.",
+      "safeServiceNotAvailable": "",
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",

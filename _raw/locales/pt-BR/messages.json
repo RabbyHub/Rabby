@@ -347,7 +347,7 @@
       "maxPriorityFeeDisabledAlert": "Por favor, defina o Gas Price primeiro",
       "label": "Rótulo",
       "primaryType": "Tipo principal",
-      "safeServiceNotAvailable": "O serviço Safe não está disponível no momento, por favor, tente mais tarde.",
+      "safeServiceNotAvailable": "",
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",

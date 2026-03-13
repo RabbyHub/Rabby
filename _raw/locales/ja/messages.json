@@ -347,7 +347,7 @@
       "addressSource": "アドレスソース",
       "typedDataMessage": "型付きデータに署名",
       "primaryType": "プライマリタイプ",
-      "safeServiceNotAvailable": "現在、Safeサービスは利用できません。後でもう一度お試しください。",
+      "safeServiceNotAvailable": "",
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
