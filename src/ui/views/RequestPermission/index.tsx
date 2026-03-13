@@ -199,7 +199,7 @@ const RequestPermission = () => {
             keyring: HARDWARE_KEYRING_TYPES.Onekey.type,
           },
           search: withHardwareImportSelectAddressSource(
-            `?hd=${HARDWARE_KEYRING_TYPES.Onekey.type}`
+            `?connectType=ONEKEY&&hd=${HARDWARE_KEYRING_TYPES.Onekey.type}&`
           ),
         });
       } catch (e) {
