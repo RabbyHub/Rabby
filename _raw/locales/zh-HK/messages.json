@@ -534,8 +534,6 @@
       "importPrivateKey": "導入私鑰",
       "importMyMetamaskAccount": "導入我的 MetaMask 帳戶",
       "addContacts": {
-        "content": "添加聯系人",
-        "description": "你也可以將其用作觀察地址",
         "required": "請輸入地址",
         "notAValidAddress": "無效地址",
         "scanViaMobileWallet": "通過手機錢包掃描",
@@ -1211,7 +1209,6 @@
       "seed-phrase": "助記詞",
       "seed-phrase-delete-title": "刪除助記詞？",
       "update-balance-data": "刷新所有結餘",
-      "watch-address": "觀察地址",
       "whitelisted-address": "白名單地址",
       "sort-by-balance": "按地址金額排序",
       "sort-by-address-type": "按地址類型排序",
@@ -4470,7 +4467,7 @@
     "alias": {
       "HdKeyring": "助記詞",
       "simpleKeyring": "私鑰",
-      "watchAddressKeyring": "聯系人"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4489,7 +4486,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "通過助記詞創建",
       "SimpleKeyring": "通過私鑰導入",
-      "WatchAddressKeyring": "聯系人"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "通過助記詞導入",
     "SIGN_PERMISSION_OPTIONS": {

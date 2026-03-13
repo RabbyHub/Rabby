@@ -534,8 +534,6 @@
       "importPrivateKey": "导入私钥",
       "importMyMetamaskAccount": "导入我的 MetaMask 帐户",
       "addContacts": {
-        "content": "添加联系人",
-        "description": "你也可以将其用作观察地址",
         "required": "请输入地址",
         "notAValidAddress": "无效地址",
         "scanViaMobileWallet": "通过手机钱包扫描",
@@ -1211,7 +1209,6 @@
       "seed-phrase": "助记词",
       "seed-phrase-delete-title": "删除助记词？",
       "update-balance-data": "刷新所有余额",
-      "watch-address": "观察地址",
       "whitelisted-address": "白名单地址",
       "sort-by-balance": "按地址金额排序",
       "sort-by-address-type": "按地址类型排序",
@@ -4470,7 +4467,7 @@
     "alias": {
       "HdKeyring": "助记词",
       "simpleKeyring": "私钥",
-      "watchAddressKeyring": "联系人"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4489,7 +4486,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "通过助记词创建",
       "SimpleKeyring": "通过私钥导入",
-      "WatchAddressKeyring": "联系人"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "通过助记词导入",
     "SIGN_PERMISSION_OPTIONS": {

@@ -14,6 +14,31 @@ interface Props extends AccountListProps {
 const MAX_STEP_COUNT = 5;
 const MAX_STEP_COUNT_TREZOR = 50;
 
+const getMessageContentFromError = (error: unknown): React.ReactNode => {
+  const toRenderableContent = (value: unknown): React.ReactNode | undefined => {
+    if (React.isValidElement(value)) {
+      return value;
+    }
+
+    if (typeof value === 'string' || typeof value === 'number') {
+      return String(value);
+    }
+
+    if (value && typeof value === 'object' && 'content' in value) {
+      return toRenderableContent(value.content);
+    }
+
+    return undefined;
+  };
+
+  const errorMessage =
+    error && typeof error === 'object' && 'message' in error
+      ? toRenderableContent(error.message)
+      : undefined;
+
+  return toRenderableContent(error) ?? errorMessage ?? 'Unknown error';
+};
+
 export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
   const [accountList, setAccountList] = React.useState<Account[]>([]);
   const wallet = useWallet();
@@ -99,7 +124,7 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
       }
     } catch (e) {
       message.error({
-        content: e.message,
+        content: getMessageContentFromError(e),
         key: 'ledger-error',
       });
       exitRef.current = true;

@@ -27,6 +27,7 @@ import { useMemoizedFn, useUnmount } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
+import { ga4 } from '@/utils/ga4';
 
 const InputFormStyled = styled(Form.Item)`
   .ant-form-item-explain {
@@ -46,11 +47,13 @@ const BiometricsImage = styled.div`
 `;
 
 const Unlock = () => {
+  type UnlockType = 'Biometrics' | 'Password';
   const wallet = useWallet();
   const [, resolveApproval] = useApproval();
   const [form] = Form.useForm();
   const inputEl = useRef<Input>(null);
   const autoBiometricTriggeredRef = useRef(false);
+  const pendingUnlockTypeRef = useRef<UnlockType | null>(null);
   const UiType = getUiType();
   const { t } = useTranslation();
   const history = useHistory();
@@ -96,6 +99,14 @@ const Unlock = () => {
   }, []);
 
   const handleUnlockSuccess = useMemoizedFn(async () => {
+    const unlockType = pendingUnlockTypeRef.current;
+    pendingUnlockTypeRef.current = null;
+    if (unlockType) {
+      ga4.fireEvent(`Unlock_Act_${unlockType}`, {
+        event_category: 'Unlock_Wallet',
+      });
+    }
+
     dispatch.app.setField({
       hasUnlockedOnce: true,
     });
@@ -136,6 +147,7 @@ const Unlock = () => {
   const [run] = useWalletRequest(wallet.unlock, {
     onSuccess: handleUnlockSuccess,
     onError(err) {
+      pendingUnlockTypeRef.current = null;
       console.log('error', err);
       setInputError(err?.message || t('page.unlock.password.error'));
       form.validateFields(['password']);
@@ -145,6 +157,7 @@ const Unlock = () => {
   const handleSubmit = async ({ password }: { password: string }) => {
     if (isUnlockingRef.current) return;
     isUnlockingRef.current = true;
+    pendingUnlockTypeRef.current = 'Password';
     await run(password);
     isUnlockingRef.current = false;
   };
@@ -182,11 +195,11 @@ const Unlock = () => {
         encryptedPassword: biometricUnlockEncryptedPassword!,
         iv: biometricUnlockIv!,
       });
+      pendingUnlockTypeRef.current = 'Biometrics';
       await run(password);
     } catch (error: any) {
-      const errorMessage =
-        error?.message ||
-        t('page.unlock.biometricFailed', 'Biometric unlock failed.');
+      pendingUnlockTypeRef.current = null;
+      const errorMessage = error?.message || t('page.unlock.biometricFailed');
       if (!String(errorMessage).toLowerCase().includes('canceled')) {
         setInputError(errorMessage);
         form.validateFields(['password']);

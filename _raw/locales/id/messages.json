@@ -1159,7 +1159,6 @@
       "seed-phrase-delete-title": "Hapus frasa benih?",
       "confirm": "Konfirmasi",
       "delete-seed-phrase": "Hapus seed phrase",
-      "watch-address": "Tonton Alamat",
       "addressTypeTip": "Diimpor oleh {{type}}",
       "deleted": "Dihapus",
       "cancel": "Batal",
@@ -1650,7 +1649,6 @@
     },
     "newAddress": {
       "addContacts": {
-        "content": "Tambahkan Kontak",
         "walletConnectVPN": "WalletConnect akan tidak stabil jika Anda menggunakan VPN.",
         "scanViaPcCamera": "Pindai melalui kamera PC",
         "cameraTitle": "Silakan pindai kode QR dengan kamera Anda",
@@ -1659,7 +1657,6 @@
         "scanQRCode": "Pindai kode QR dengan dompet yang kompatibel dengan WalletConnect",
         "notAValidAddress": "Alamat tidak valid",
         "walletConnect": "Wallet connect",
-        "description": "Anda juga dapat menggunakannya sebagai alamat yang hanya dapat dilihat",
         "required": "Silakan masukkan alamat"
       },
       "unableToImport": {
@@ -4463,7 +4460,7 @@
       "txCompleteMoreContent": "{{chain}} #{{nonce}} selesai. Klik untuk melihat lebih banyak."
     },
     "alias": {
-      "watchAddressKeyring": "Kontak",
+      "watchAddressKeyring": "",
       "simpleKeyring": "Kunci Pribadi",
       "HdKeyring": "Frasa Benih"
     },
@@ -4482,7 +4479,7 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "Kontak",
+      "WatchAddressKeyring": "",
       "HdKeyring": "Dibuat oleh Seed Phrase",
       "SimpleKeyring": "Diimpor oleh Kunci Pribadi"
     },

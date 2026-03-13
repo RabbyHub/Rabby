@@ -216,6 +216,9 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
     }
     prefetch({
       txs,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -234,6 +237,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
     txs,
     prefetch,
     closeSign,
+    getContainer,
     reserve?.usageAsCollateralEnabledOnUser,
   ]);
 

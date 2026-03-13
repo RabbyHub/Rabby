@@ -380,6 +380,9 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
 
     prefetch({
       txs: txsForMiniApproval,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -397,6 +400,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     txsForMiniApproval,
     prefetch,
     closeSign,
+    getContainer,
   ]);
 
   useEffect(() => {

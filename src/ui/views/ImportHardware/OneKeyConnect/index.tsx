@@ -22,6 +22,7 @@ import { findEthAccountByMultiAccounts } from './utils';
 import { StrayPageWithButton } from 'ui/component';
 import { ImageCarousel } from './ImageCarousel';
 import { OneKeyBanner } from './OnekeyBanner';
+import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 const BRAND_TYPES = WALLET_BRAND_TYPES.ONEKEY;
@@ -152,7 +153,7 @@ const OneKeyConnect = () => {
         keyringId,
         brand: BRAND_TYPES,
       },
-      search,
+      search: withHardwareImportSelectAddressSource(search),
     });
   };
 

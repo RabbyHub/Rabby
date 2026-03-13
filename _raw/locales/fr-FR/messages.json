@@ -3,7 +3,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Clé privée",
-      "watchAddressKeyring": "Contact"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -278,7 +278,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Créé par seed phrase",
       "SimpleKeyring": "Importé par clé privée",
-      "WatchAddressKeyring": "Contact"
+      "WatchAddressKeyring": ""
     },
     "SIGN_PERMISSION_OPTIONS": {
       "MAINNET_AND_TESTNET": "Mainnet & Testnet",
@@ -1226,7 +1226,6 @@
       "seed-phrase": "Seed phrase",
       "seed-phrase-delete-title": "Supprimer la seed phrase ?",
       "update-balance-data": "Mettre à jour les données du solde",
-      "watch-address": "Observer l'adresse",
       "whitelisted-address": "Adresse sur liste blanche",
       "enterPassphraseTitle": "Entrer la pass phrase pour signer",
       "enterThePassphrase": "Entrer la pass phrase",
@@ -1243,10 +1242,6 @@
     },
     "newAddress": {
       "addContacts": {
-        "addressEns": "Adresse / ENS",
-        "cameraTitle": "Veuillez scanner le QR code avec votre appareil photo",
-        "content": "Ajouter des contacts",
-        "description": "Vous pouvez également l'utiliser comme adresse observée uniquement",
         "notAValidAddress": "N'est pas une adresse valide",
         "required": "Veuillez saisir l'adresse",
         "scanViaMobileWallet": "Scanner via un wallet mobile",

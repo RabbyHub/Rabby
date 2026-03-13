@@ -1642,7 +1642,8 @@
         "header": {
           "assets": "Token",
           "balance": "Balance"
-        }
+        },
+        "zeroLtvCollateralTips": "You have following LTV = 0 collaterals and thus can only repay with these collaterals first according to collateral repay rules. "
       },
       "manageEmode": {
         "__skip_translation": [
@@ -1699,7 +1700,7 @@
       "debtSwap": {
         "entryTips": "One-click to swap your borrowed asset, reducing steps and fees.",
         "title": "Swap Borrow Position",
-        "borrowBalance": "Borrow balance",
+        "borrowBalance": "Borrowed",
         "actions": {
           "title": "Debt Swap",
           "amount": "Amount",
@@ -1715,6 +1716,7 @@
         "button": {
           "swap": "Swap"
         },
+        "maxLtvWarning": "Insufficient collateral to cover new borrow position. Wallet must have borrowing power remaining to perform debt switch.",
         "priceImpactTips": "High price impact ({{lostValue}}). This route may return more due to low liquidity or small order size.",
         "lpRiskWarning": "Low health factor after swap. Your position will carry a higher risk of liquidation.",
         "lpDangerWarning": "Your health factor after this swap will be critically low and may result in liquidation. Please choose a different asset or reduce the swap amount to stay safe."
@@ -2282,7 +2284,7 @@
       "confirm-delete": "Confirm Delete",
       "private-key": "Private Key",
       "seed-phrase": "Seed Phrase",
-      "watch-address": "Watch Address",
+      "watch-address": "Watch-only",
       "backup-seed-phrase": "Backup Seed Phrase",
       "delete-all-addresses-but-keep-the-seed-phrase": "Delete all addresses, but keep the seed phrase",
       "delete-all-addresses-and-the-seed-phrase": "Delete all addresses and the seed phrase",
@@ -2754,12 +2756,39 @@
     },
     "newAddress": {
       "title": "Add an Address",
+      "addNewAddress": "Create New Address",
+      "addMoreAddresses": "Add More Addresses",
+      "importMoreWallets": "Add More Addresses",
+      "createANewSeedPhrase": "Create a New Seed Phrase",
+      "moreWallets": "More Wallets",
+      "newSeedPhraseCreated": "New Seed Phrase Created",
+      "newAddressAdded": "New Address Added",
+      "addMoreAddressesFromThisSeedPhrase": "Add more address from this seed phrase",
       "importSeedPhrase": "Import Seed Phrase",
       "importPrivateKey": "Import Private Key",
+      "privateKeyTab": "Private Key",
+      "seedPhraseTab": "Seed Phrase",
+      "bulkImportPrivateKey": "Bulk import private key",
+      "bulkImportPrivateKeySupport": "Supports up to 1000 EVM-compatible private keys",
+      "bulkImportPrivateKeyInputTab": "Enter Private Key",
+      "bulkImportPrivateKeyPlaceholder": "Each private key should be separated by a new line or a special character.",
+      "bulkImportPrivateKeyExceeded": "Supports up to {{count}} private keys at once",
+      "bulkImportPrivateKeyInvalid": "Some private keys are invalid. Please remove or re-enter them.",
+      "duplicateAddressesSkippedTitle": "Some addresses are already imported",
+      "duplicateAddressesSkippedDesc_one": "{{count}} address was skipped because it already exists.",
+      "duplicateAddressesSkippedDesc_other": "{{count}} addresses were skipped because they already exist.",
+      "openExtensionToGetStarted": "Open the Rabby extension to get started",
+      "newAddressCreated": "New Address Created",
+      "addressImported": "Address Imported",
+      "addressAdded": "Address Added",
+      "addressAddedCount_one": "{{count}} Address Added",
+      "addressAddedCount_other": "{{count}} Addresses Added",
       "importMyMetamaskAccount": "Import My MetaMask Account",
+      "watchAddress": "Watch Address",
+      "imported":"Imported Before",
       "addContacts": {
-        "content": "Add Contacts",
-        "description": "You can also use it as a watch-only address",
+        "content": "Add Watch-only Address",
+        "description": "Track any public wallet address",
         "required": "Please input address",
         "notAValidAddress": "Not a valid address",
         "scanViaMobileWallet": "Scan via mobile wallet",
@@ -3107,7 +3136,8 @@
       },
       "title": "Rabby Wallet",
       "description": "Your go-to wallet for Ethereum and EVM",
-      "btnForgotPassword": "Forgot Password?"
+      "btnForgotPassword": "Forgot Password?",
+      "biometricFailed": "Biometric unlock failed"
     },
     "addToken": {
       "noTokenFound": "No token found",
@@ -4538,7 +4568,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Private Key",
-      "watchAddressKeyring": "Contact"
+      "watchAddressKeyring": "Watch-only"
     },
     "keyring": {
       "onekey": {
@@ -4557,7 +4587,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Created by Seed Phrase",
       "SimpleKeyring": "Imported by Private Key",
-      "WatchAddressKeyring": "Contact"
+      "WatchAddressKeyring": "Watch-only"
     },
     "IMPORTED_HD_KEYRING": "Imported by Seed Phrase",
     "SIGN_PERMISSION_OPTIONS": {

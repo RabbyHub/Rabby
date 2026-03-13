@@ -1086,7 +1086,6 @@
       "confirm-delete": "削除を確認",
       "private-key": "プライベートキー",
       "seed-phrase": "シードフレーズ",
-      "watch-address": "ウォッチアドレス",
       "backup-seed-phrase": "シードフレーズのバックアップ",
       "delete-all-addresses-but-keep-the-seed-phrase": "すべてのアドレスを削除してシードフレーズを保持",
       "delete-all-addresses-and-the-seed-phrase": "すべてのアドレスとシードフレーズを削除",
@@ -1565,8 +1564,6 @@
       "importPrivateKey": "プライベートキーをインポート",
       "importMyMetamaskAccount": "私のMetaMaskアカウントをインポート",
       "addContacts": {
-        "content": "連絡先を追加",
-        "description": "ウォッチオンリーアドレスとしても使用できます",
         "required": "アドレスを入力してください",
         "notAValidAddress": "有効なアドレスではありません",
         "scanViaMobileWallet": "モバイルウォレットを使用してスキャン",
@@ -4468,7 +4465,7 @@
     "alias": {
       "HdKeyring": "シードフレーズによって作成",
       "simpleKeyring": "プライベートキーによってインポート",
-      "watchAddressKeyring": "コンタクト"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4487,7 +4484,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "シードフレーズで作成",
       "SimpleKeyring": "プライベートキーでインポート",
-      "WatchAddressKeyring": "コンタクト"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "シードフレーズでインポート",
     "SIGN_PERMISSION_OPTIONS": {

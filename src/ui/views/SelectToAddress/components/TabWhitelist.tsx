@@ -25,6 +25,7 @@ import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import qs from 'qs';
 import { Account } from '@rabby-wallet/eth-walletconnect-keyring/type';
+import Browser from 'webextension-polyfill';
 
 const WhitelistItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
@@ -201,12 +202,19 @@ export default function TabWhitelist({
             ))
           ) : (
             <EmptyWhitelistHolder
-              onAddWhitelist={() => {
+              onAddWhitelist={async () => {
                 if (getUiType().isDesktop) {
                   const query = new URLSearchParams(history.location.search);
                   query.set('sendPageType', 'whitelistInput');
                   query.set('action', 'send');
-                  wallet.openInDesktop(`desktop/profile?${query.toString()}`);
+                  const desktopTabId = await Browser.tabs
+                    .getCurrent()
+                    .then((tab) => tab.id)
+                    .catch(() => undefined);
+                  wallet.openInDesktop(`desktop/profile?${query.toString()}`, {
+                    desktopTabId: desktopTabId,
+                    triggerFocusEventOnDesktop: false,
+                  });
                 } else {
                   history.push('/whitelist-input');
                 }

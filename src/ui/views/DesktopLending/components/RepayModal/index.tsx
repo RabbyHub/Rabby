@@ -37,6 +37,9 @@ import { LendingReportType } from '../../types/tx';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { isZeroAmount } from '../../utils/number';
 import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
+import RepayWithCollateralContent from '../RepayWithCollateralContent';
+import { isSupportRepayWithCollateral } from '../RepayWithCollateralContent/utils';
+import clsx from 'clsx';
 
 const StyledSelect = styled(Select)`
   display: flex;
@@ -118,6 +121,8 @@ type RepayModalProps = {
   userSummary: UserSummary | null;
 };
 
+type RepaySource = 'wallet' | 'collateral';
+
 export const RepayModal: React.FC<RepayModalProps> = ({
   visible,
   onCancel,
@@ -144,6 +149,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   ]);
 
   const [isAtTokenRepay, setIsAtTokenRepay] = useState(false);
+  const [repaySource, setRepaySource] = useState<RepaySource>('wallet');
 
   const availableRepayTokens = useMemo(() => {
     const poolReserve = formattedPoolReservesAndIncentives.find((item) =>
@@ -307,6 +313,13 @@ export const RepayModal: React.FC<RepayModalProps> = ({
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
   });
+
+  const showRepayWithCollateralSwitch = useMemo(
+    () => isSupportRepayWithCollateral(chainInfo?.id || 0, selectedMarketData),
+    [chainInfo?.id, selectedMarketData]
+  );
+
+  const isWalletRepay = repaySource === 'wallet';
 
   const checkApproveStatus = useCallback(async () => {
     if (
@@ -490,7 +503,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   ]);
 
   useEffect(() => {
-    if (!currentAccount || !canShowDirectSubmit) {
+    if (!currentAccount || !canShowDirectSubmit || !isWalletRepay) {
       prefetch({ txs: [] });
       return;
     }
@@ -501,6 +514,9 @@ export const RepayModal: React.FC<RepayModalProps> = ({
     }
     prefetch({
       txs: txsForMiniApproval,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -514,9 +530,11 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   }, [
     currentAccount,
     canShowDirectSubmit,
+    isWalletRepay,
     txsForMiniApproval,
     prefetch,
     closeSign,
+    getContainer,
   ]);
 
   useEffect(() => {
@@ -525,16 +543,38 @@ export const RepayModal: React.FC<RepayModalProps> = ({
       setRepayTx(null);
       setApproveTxs(null);
       setIsAtTokenRepay(false);
+      setRepaySource('wallet');
     }
   }, [visible]);
 
   useEffect(() => {
-    if (visible) checkApproveStatus();
-  }, [visible, checkApproveStatus]);
+    if (!showRepayWithCollateralSwitch) {
+      setRepaySource('wallet');
+    }
+  }, [showRepayWithCollateralSwitch]);
 
   useEffect(() => {
-    if (visible) buildTransactions();
-  }, [visible, buildTransactions]);
+    if (!isWalletRepay) {
+      setNeedApprove(false);
+      return;
+    }
+
+    if (visible) {
+      checkApproveStatus();
+    }
+  }, [visible, checkApproveStatus, isWalletRepay]);
+
+  useEffect(() => {
+    if (!isWalletRepay) {
+      setRepayTx(null);
+      setApproveTxs(null);
+      return;
+    }
+
+    if (visible) {
+      buildTransactions();
+    }
+  }, [visible, buildTransactions, isWalletRepay]);
 
   const handleRepay = useCallback(
     async (forceFullSign?: boolean) => {
@@ -705,158 +745,216 @@ export const RepayModal: React.FC<RepayModalProps> = ({
   );
   const canSubmit = useMemo(() => {
     return (
-      amount && !isZeroAmount(amount) && repayTx && currentAccount && !isLoading
+      isWalletRepay &&
+      amount &&
+      !isZeroAmount(amount) &&
+      repayTx &&
+      currentAccount &&
+      !isLoading
     );
-  }, [amount, currentAccount, isLoading, repayTx]);
+  }, [amount, currentAccount, isLoading, isWalletRepay, repayTx]);
 
   if (!reserve?.reserve?.symbol) return null;
 
   return (
-    <div className="bg-r-neutral-bg-2 rounded-[8px] px-[20px] pt-[16px] pb-[16px] min-h-[600px] flex flex-col">
+    <div className="bg-r-neutral-bg-2 rounded-[8px] px-[20px] pt-[16px] pb-[16px] h-[600px] flex flex-col">
       <RepayDropdownGlobalStyle />
       <h2 className="text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1">
         {t('page.lending.repayDetail.actions')} {reserve.reserve.symbol}
       </h2>
 
-      <div className="mt-16">
-        <div className="flex items-center justify-between mb-8">
-          <span className="text-[13px] leading-[15px] text-r-neutral-foot">
-            {t('page.lending.popup.amount')}
-          </span>
-        </div>
-        <div className="flex items-start gap-4 p-16 rounded-[8px] bg-rb-neutral-card-1">
-          <div className="flex items-start flex-shrink-0 flex-col gap-8">
-            <div className="flex items-center gap-6">
-              {availableRepayTokens.length > 1 &&
-              !!reserve.underlyingBalance ? (
-                <StyledSelect
-                  value={isAtTokenRepay ? 'aToken' : 'underlying'}
-                  onChange={(value) => setIsAtTokenRepay(value === 'aToken')}
-                  dropdownClassName="bg-r-neutral-bg-1 repay-dropdown"
-                  className="bg-r-neutral-bg-1"
-                  suffixIcon={
-                    <RcImgArrowDownCC
-                      viewBox="0 0 16 16"
-                      className="w-16 h-16 text-r-neutral-foot"
-                    />
-                  }
-                  options={availableRepayTokens.map((token) => ({
-                    label: (
-                      <SelectOptionWrapper>
-                        <TokenIcon
-                          src={getTokenIcon(token.symbol)}
-                          alt={token.symbol}
-                        />
-                        <TokenSymbolText>{token.symbol}</TokenSymbolText>
-                      </SelectOptionWrapper>
-                    ),
-                    value: token.aToken ? 'aToken' : 'underlying',
-                  }))}
-                />
-              ) : (
-                <span className="text-[20px] leading-[20px] font-medium text-r-neutral-title-1">
-                  {selectedRepayToken?.symbol || reserve.reserve.symbol}
-                </span>
+      {showRepayWithCollateralSwitch ? (
+        <div className="mt-16">
+          <div className="mb-8 text-[13px] leading-[15px] text-r-neutral-foot">
+            {t('page.lending.repayDetail.repayWith')}
+          </div>
+          <div className="flex items-center rounded-[8px] bg-r-neutral-line p-[2px]">
+            <button
+              type="button"
+              className={clsx(
+                'flex-1 rounded-[6px] px-12 h-[32px] items-center justify-center text-[15px] font-medium',
+                {
+                  'bg-rb-neutral-card-1 text-rb-brand-default':
+                    repaySource === 'wallet',
+                  'text-r-neutral-body': repaySource === 'collateral',
+                }
               )}
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-[13px] leading-[16px] text-r-neutral-foot">
-                {t('page.lending.repayDetail.amountTitle')}
-                {formatTokenAmount(repayAmount.amount || '0')}(
-                {formatUsdValue(Number(repayAmount.usdValue))})
-              </span>
-              <button
-                type="button"
-                className={`
-                  px-4 py-2 rounded-[2px] 
-                  bg-rb-brand-light-1 
-                  text-rb-brand-default font-medium text-[11px] leading-[11px] 
-                  hover:bg-rb-brand-light-2 disabled:opacity-50 disabled:cursor-not-allowed
-                  `}
-                onClick={() => onAmountChange('-1')}
-                disabled={emptyAmount}
-              >
-                MAX
-              </button>
-            </div>
+              onClick={() => setRepaySource('wallet')}
+            >
+              {t('page.lending.repayDetail.tabs.wallet')}
+            </button>
+            <button
+              type="button"
+              className={clsx(
+                'flex-1 rounded-[6px] px-12 h-[32px] items-center justify-center text-[15px] font-medium',
+                {
+                  'bg-rb-neutral-card-1 text-rb-brand-default':
+                    repaySource === 'collateral',
+                  'text-r-neutral-body': repaySource === 'wallet',
+                }
+              )}
+              onClick={() => setRepaySource('collateral')}
+            >
+              {t('page.lending.repayDetail.tabs.collateral')}
+            </button>
           </div>
-          <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
-            <LendingStyledInput
-              value={inner_amount ?? ''}
-              onValueChange={onAmountChange}
-              placeholder="0"
-              className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"
-            />
-            {amount && !isZeroAmount(amount) && (
-              <span className="text-[13px] leading-[15px] text-r-neutral-foot mt-1">
-                {formatUsdValue(
-                  Number(amount) *
-                    Number(
-                      reserve.reserve.formattedPriceInMarketReferenceCurrency ||
-                        0
-                    )
-                )}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {summary && (
-        <RepayOverView
-          reserve={reserve}
-          userSummary={summary}
-          amount={amount}
-          afterRepayAmount={afterRepayAmount}
-          afterRepayUsdValue={afterRepayUsdValue}
-          afterHF={afterHF}
-        />
-      )}
-
-      {canShowDirectSubmit &&
-      chainInfo?.serverId &&
-      !!amount &&
-      !isZeroAmount(amount) ? (
-        <div className="mt-16 px-16">
-          <DirectSignGasInfo
-            supportDirectSign
-            loading={isLoading}
-            openShowMore={() => {}}
-            chainServeId={chainInfo.serverId}
-            noQuote={false}
-            type="send"
-          />
         </div>
       ) : null}
 
-      <div className="mt-auto w-full">
-        {canShowDirectSubmit && currentAccount?.type ? (
-          <DirectSignToConfirmBtn
-            className="mt-20"
-            title={
-              <>
+      {repaySource === 'collateral' ? (
+        <RepayWithCollateralContent
+          embedded
+          visible={visible}
+          onCancel={onCancel}
+          reserve={reserve}
+          userSummary={userSummary}
+        />
+      ) : (
+        <>
+          <div className="mt-16">
+            <div className="flex items-center justify-between mb-8">
+              <span className="text-[13px] leading-[15px] text-r-neutral-foot">
+                {t('page.lending.popup.amount')}
+              </span>
+            </div>
+            <div className="flex items-start gap-4 p-16 rounded-[8px] bg-rb-neutral-card-1">
+              <div className="flex items-start flex-shrink-0 flex-col gap-8">
+                <div className="flex items-center gap-6">
+                  {availableRepayTokens.length > 1 &&
+                  !!reserve.underlyingBalance ? (
+                    <StyledSelect
+                      value={isAtTokenRepay ? 'aToken' : 'underlying'}
+                      onChange={(value) =>
+                        setIsAtTokenRepay(value === 'aToken')
+                      }
+                      dropdownClassName="bg-r-neutral-bg-1 repay-dropdown"
+                      className="bg-r-neutral-bg-1"
+                      suffixIcon={
+                        <RcImgArrowDownCC
+                          viewBox="0 0 16 16"
+                          className="w-16 h-16 text-r-neutral-foot"
+                        />
+                      }
+                      options={availableRepayTokens.map((token) => ({
+                        label: (
+                          <SelectOptionWrapper>
+                            <TokenIcon
+                              src={getTokenIcon(token.symbol)}
+                              alt={token.symbol}
+                            />
+                            <TokenSymbolText>{token.symbol}</TokenSymbolText>
+                          </SelectOptionWrapper>
+                        ),
+                        value: token.aToken ? 'aToken' : 'underlying',
+                      }))}
+                    />
+                  ) : (
+                    <span className="text-[20px] leading-[20px] font-medium text-r-neutral-title-1">
+                      {selectedRepayToken?.symbol || reserve.reserve.symbol}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-[13px] leading-[16px] text-r-neutral-foot">
+                    {t('page.lending.repayDetail.amountTitle')}
+                    {formatTokenAmount(repayAmount.amount || '0')}(
+                    {formatUsdValue(Number(repayAmount.usdValue))})
+                  </span>
+                  <button
+                    type="button"
+                    className={`
+                      px-4 py-2 rounded-[2px] 
+                      bg-rb-brand-light-1 
+                      text-rb-brand-default font-medium text-[11px] leading-[11px] 
+                      hover:bg-rb-brand-light-2 disabled:opacity-50 disabled:cursor-not-allowed
+                      `}
+                    onClick={() => onAmountChange('-1')}
+                    disabled={emptyAmount}
+                  >
+                    MAX
+                  </button>
+                </div>
+              </div>
+              <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
+                <LendingStyledInput
+                  value={inner_amount ?? ''}
+                  onValueChange={onAmountChange}
+                  placeholder="0"
+                  className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"
+                />
+                {amount && !isZeroAmount(amount) && (
+                  <span className="text-[13px] leading-[15px] text-r-neutral-foot mt-1">
+                    {formatUsdValue(
+                      Number(amount) *
+                        Number(
+                          reserve.reserve
+                            .formattedPriceInMarketReferenceCurrency || 0
+                        )
+                    )}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {summary && (
+            <RepayOverView
+              reserve={reserve}
+              userSummary={summary}
+              amount={amount}
+              afterRepayAmount={afterRepayAmount}
+              afterRepayUsdValue={afterRepayUsdValue}
+              afterHF={afterHF}
+            />
+          )}
+
+          {canShowDirectSubmit &&
+          chainInfo?.serverId &&
+          !!amount &&
+          !isZeroAmount(amount) ? (
+            <div className="mt-16 px-16">
+              <DirectSignGasInfo
+                supportDirectSign
+                loading={isLoading}
+                openShowMore={() => {}}
+                chainServeId={chainInfo.serverId}
+                noQuote={false}
+                type="send"
+              />
+            </div>
+          ) : null}
+
+          <div className="mt-auto w-full">
+            {canShowDirectSubmit && currentAccount?.type ? (
+              <DirectSignToConfirmBtn
+                className="mt-20"
+                title={
+                  <>
+                    {t('page.lending.repayDetail.actions')}{' '}
+                    {reserve.reserve.symbol}
+                  </>
+                }
+                disabled={!canSubmit}
+                loading={miniSignLoading}
+                onConfirm={() => handleRepay()}
+                accountType={currentAccount.type}
+              />
+            ) : (
+              <Button
+                type="primary"
+                block
+                size="large"
+                className="mt-20 h-[48px] rounded-[8px] font-medium text-[16px]"
+                loading={isLoading}
+                disabled={!canSubmit}
+                onClick={() => handleRepay()}
+              >
                 {t('page.lending.repayDetail.actions')} {reserve.reserve.symbol}
-              </>
-            }
-            disabled={!canSubmit}
-            loading={miniSignLoading}
-            onConfirm={() => handleRepay()}
-            accountType={currentAccount.type}
-          />
-        ) : (
-          <Button
-            type="primary"
-            block
-            size="large"
-            className="mt-20 h-[48px] rounded-[8px] font-medium text-[16px]"
-            loading={isLoading}
-            disabled={!canSubmit}
-            onClick={() => handleRepay()}
-          >
-            {t('page.lending.repayDetail.actions')} {reserve.reserve.symbol}
-          </Button>
-        )}
-      </div>
+              </Button>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };
