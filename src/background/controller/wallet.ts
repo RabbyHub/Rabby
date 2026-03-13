@@ -3447,6 +3447,41 @@ export class WalletController extends BaseController {
     }
   };
 
+  importPrivateKeys = async (dataList: string[]) => {
+    const privateKeys = dataList.map((item) => stripHexPrefix(item));
+
+    for (const privateKey of privateKeys) {
+      const buffer = Buffer.from(privateKey, 'hex');
+      const error = new Error(t('background.error.invalidPrivateKey'));
+
+      try {
+        if (!isValidPrivate(buffer)) {
+          throw error;
+        }
+      } catch {
+        throw error;
+      }
+    }
+
+    const {
+      keyrings,
+      duplicateAddresses,
+    } = await keyringService.importPrivateKeys(privateKeys);
+    const accounts = await Promise.all(
+      keyrings.map((keyring) => this._getAccountFromKeyring(keyring))
+    );
+    const lastAccount = accounts[accounts.length - 1];
+
+    if (lastAccount) {
+      preferenceService.setCurrentAccount(lastAccount);
+    }
+
+    return {
+      accounts,
+      duplicateAddresses,
+    };
+  };
+
   importPrivateKey = async (data) => {
     const privateKey = stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');
@@ -3874,6 +3909,24 @@ export class WalletController extends BaseController {
     const result = await keyringService.addNewAccount(keyring);
     this._setCurrentAccountFromKeyring(keyring, -1);
     return result;
+  };
+
+  deriveNextAccountFromMnemonicByPublicKey = async (publicKey: string) => {
+    const keyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
+    if (!keyring) {
+      throw new Error(t('background.error.notFoundKeyringByAddress'));
+    }
+
+    const accounts = await keyringService.addNewAccount(keyring);
+    const nextAddress = accounts[accounts.length - 1];
+    this._setCurrentAccountFromKeyring(keyring, -1);
+    HDKeyRingLastAddAddrTimeService.addUnixRecord(publicKey);
+
+    return {
+      address: nextAddress,
+      alias: this.getAlianName(nextAddress) || '',
+      publicKey,
+    };
   };
 
   getAccountsCount = async () => {
@@ -4525,7 +4578,7 @@ export class WalletController extends BaseController {
     }
   };
 
-  private async _setCurrentAccountFromKeyring(keyring, index = 0) {
+  private async _getAccountFromKeyring(keyring, index = 0) {
     const accounts = keyring.getAccountsWithBrand
       ? await keyring.getAccountsWithBrand()
       : await keyring.getAccounts();
@@ -4540,6 +4593,12 @@ export class WalletController extends BaseController {
       type: keyring.type,
       brandName: typeof account === 'string' ? keyring.type : account.brandName,
     };
+
+    return _account;
+  }
+
+  private async _setCurrentAccountFromKeyring(keyring, index = 0) {
+    const _account = await this._getAccountFromKeyring(keyring, index);
     preferenceService.setCurrentAccount(_account);
 
     return [_account];

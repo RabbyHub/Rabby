@@ -7,7 +7,12 @@ export const useGridPlusStatus = () => {
   const wallet = useWallet();
   const [isConnect, setIsConnect] = React.useState(false);
   const getConnectStatus = () => {
-    wallet.gridPlusIsConnect().then((res) => setIsConnect(!!res));
+    wallet
+      .gridPlusIsConnect()
+      .then((res) => setIsConnect(!!res))
+      .catch(() => {
+        // ignore error log
+      });
   };
   const [connectLoading, setConnectLoading] = React.useState(false);
 

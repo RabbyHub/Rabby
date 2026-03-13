@@ -1086,7 +1086,6 @@
       "confirm-delete": "Confirmar Exclusão",
       "private-key": "Chave Privada",
       "seed-phrase": "Frase de Recuperação",
-      "watch-address": "Endereço de Observação",
       "backup-seed-phrase": "Fazer Backup da Frase de Recuperação",
       "delete-all-addresses-but-keep-the-seed-phrase": "Excluir todos os endereços, mas manter a frase de recuperação",
       "delete-all-addresses-and-the-seed-phrase": "Excluir todos os endereços e a frase de recuperação",
@@ -1565,8 +1564,6 @@
       "importPrivateKey": "Importar Chave Privada",
       "importMyMetamaskAccount": "Importar Minha Conta do MetaMask",
       "addContacts": {
-        "content": "Adicionar Contatos",
-        "description": "Você também pode usá-lo como um endereço de observação",
         "required": "Por favor, insira um endereço",
         "notAValidAddress": "Não é um endereço válido",
         "scanViaMobileWallet": "Escanear via carteira móvel",
@@ -4472,7 +4469,7 @@
       "HdKeyring": "Frase-semente",
       "SimpleKeyring": "Chave privada importada",
       "WatchAddressKeyring": "Contato",
-      "watchAddressKeyring": "Contato",
+      "watchAddressKeyring": "",
       "simpleKeyring": "Chave Privada"
     },
     "keyring": {
@@ -4492,7 +4489,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Criado pela Frase-semente",
       "SimpleKeyring": "Importado pela Chave Privada",
-      "WatchAddressKeyring": "Contato"
+      "WatchAddressKeyring": ""
     },
     "IMPORTED_HD_KEYRING": "Importado pela Frase-semente",
     "SIGN_PERMISSION_OPTIONS": {

@@ -1172,7 +1172,6 @@
       "delete-title_other": "Excluir {{count}} endereços {{brand}}",
       "delete-seed-phrase": "Excluir frase-semente",
       "enterThePassphrase": "Digite a Senha",
-      "watch-address": "Assistir Endereço",
       "delete-private-key-modal-title_other": "Excluir {{count}} endereços de chave privada",
       "add-address": "Adicionar endereço",
       "delete-title_one": "Excluir {{count}} endereço(s) {{brand}}",
@@ -1651,8 +1650,6 @@
     "newAddress": {
       "addContacts": {
         "notAValidAddress": "Não é um endereço válido",
-        "content": "Adicionar Contatos",
-        "description": "Você também pode usá-lo como um endereço apenas para visualização.",
         "required": "Por favor, insira o endereço",
         "walletConnect": "Conexão da carteira",
         "scanViaPcCamera": "Escanear via câmera do PC",
@@ -4465,7 +4462,7 @@
     "alias": {
       "simpleKeyring": "Chave Privada",
       "HdKeyring": "Frase Semente",
-      "watchAddressKeyring": "Contato"
+      "watchAddressKeyring": ""
     },
     "keyring": {
       "onekey": {
@@ -4482,7 +4479,7 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "Contato",
+      "WatchAddressKeyring": "",
       "HdKeyring": "Criado por Seed Phrase",
       "SimpleKeyring": "Importado por Chave Privada"
     },

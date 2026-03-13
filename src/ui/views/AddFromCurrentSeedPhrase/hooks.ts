@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { useAsync } from 'react-use';
 import { TypeKeyringGroup, useWalletTypeData } from '../ManageAddress/hooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { sortSeedPhraseGroups } from './sort';
 
 const useGetHdKeys = () => {
   const wallet = useWallet();
@@ -46,11 +47,12 @@ export const UseSeedPhrase = () => {
         }
         return pre;
       }, {} as Record<string, TypeKeyringGroup>);
-
-      return publicKeys
-        .map((e) => pbMappings[e])
-        .filter((e) => !!e)
-        .map((e, index) => ({ ...e, index: index })) as TypeKeyringGroup[];
+      return sortSeedPhraseGroups(
+        publicKeys
+          .map((e) => pbMappings[e])
+          .filter((e) => !!e)
+          .map((e, index) => ({ ...e, index })) as TypeKeyringGroup[]
+      );
     }
     return [];
   }, [accountGroup, value]);

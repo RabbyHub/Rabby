@@ -1169,7 +1169,6 @@
       "passphraseError": "Mật khẩu không hợp lệ",
       "sort-address": "Sắp xếp Địa chỉ",
       "add-address": "Thêm địa chỉ",
-      "watch-address": "Theo dõi Địa chỉ",
       "sort-by-balance": "Sắp xếp theo số dư",
       "sort-by-address-note": "Sắp xếp theo ghi chú địa chỉ",
       "delete-private-key-modal-title_other": "Xóa {{count}} địa chỉ khóa riêng",
@@ -1651,10 +1650,8 @@
       "addContacts": {
         "required": "Vui lòng nhập địa chỉ",
         "scanViaPcCamera": "Quét qua camera máy tính",
-        "content": "Thêm Danh Bạ",
         "scanViaMobileWallet": "Quét qua ví di động",
         "notAValidAddress": "Địa chỉ không hợp lệ",
-        "description": "Bạn cũng có thể sử dụng nó như một địa chỉ chỉ xem.",
         "walletConnectVPN": "WalletConnect sẽ không ổn định nếu bạn sử dụng VPN.",
         "walletConnect": "Kết nối ví",
         "addressEns": "Địa chỉ / ENS",
@@ -4462,7 +4459,7 @@
       "txFailedMoreContent": "{{chain}} #{{nonce}} thất bại. Nhấp vào để xem thêm."
     },
     "alias": {
-      "watchAddressKeyring": "Liên hệ",
+      "watchAddressKeyring": "",
       "simpleKeyring": "Khóa riêng",
       "HdKeyring": "Câu cụt đầu tiên"
     },
@@ -4481,7 +4478,7 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "Liên hệ",
+      "WatchAddressKeyring": "",
       "SimpleKeyring": "Nhập bằng Private Key",
       "HdKeyring": "Được tạo bởi Seed Phrase"
     },
