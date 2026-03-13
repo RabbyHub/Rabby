@@ -1,5 +1,5 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import { useInfiniteScroll, useInViewport } from 'ahooks';
 import { message } from 'antd';
 import { uniqBy } from 'lodash';
@@ -95,6 +95,23 @@ export const useGasAccountInfo = () => {
     }
   }, [error?.message, sig, accountId]);
 
+  useEffect(() => {
+    if (!sig || !accountId) {
+      wallet.setGasAccountBalanceState();
+      return;
+    }
+
+    const responseAccountId = value?.account?.id;
+    if (!responseAccountId || !isSameAddress(responseAccountId, accountId)) {
+      return;
+    }
+
+    wallet.setGasAccountBalanceState(
+      accountId,
+      Number(value.account.balance || 0) > 0
+    );
+  }, [wallet, sig, accountId, value?.account?.id, value?.account?.balance]);
+
   return { loading, value };
 };
 
@@ -152,7 +169,8 @@ export const useGasAccountMethods = () => {
         );
 
         if (result?.success) {
-          dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+          await wallet.handleGasAccountLoginSuccess(signature, account);
+          dispatch.gasAccount.syncState(undefined);
           if (isClaimGift) {
             await wallet.claimGasAccountGift(account.address);
           }
@@ -201,7 +219,8 @@ export const useGasAccountMethods = () => {
       );
 
       if (result?.success) {
-        dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+        await wallet.handleGasAccountLoginSuccess(signature, account);
+        dispatch.gasAccount.syncState(undefined);
         if (isClaimGift) {
           await wallet.claimGasAccountGift(account.address);
         }
