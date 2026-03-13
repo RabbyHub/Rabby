@@ -1086,7 +1086,6 @@
       "confirm-delete": "削除を確認",
       "private-key": "プライベートキー",
       "seed-phrase": "シードフレーズ",
-      "watch-address": "ウォッチアドレス",
       "backup-seed-phrase": "シードフレーズのバックアップ",
       "delete-all-addresses-but-keep-the-seed-phrase": "すべてのアドレスを削除してシードフレーズを保持",
       "delete-all-addresses-and-the-seed-phrase": "すべてのアドレスとシードフレーズを削除",

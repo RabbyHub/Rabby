@@ -1,13 +1,11 @@
 import React from 'react';
-import { Button, Form, Input, message, Modal } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { KEYRING_CLASS } from 'consts';
 import { clearClipboard } from '@/ui/utils/clipboard';
 import { useWallet } from '@/ui/utils';
-import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
 import IconSuccess from 'ui/assets/success.svg';
 import PillsSwitch from '@/ui/component/PillsSwitch';
 import { ReactComponent as RcRabbyLogo } from '@/ui/assets/logo-rabby-large.svg';
@@ -231,31 +229,9 @@ const extractFilledValues = (rows: PrivateKeyRow[]) =>
     rows
   ).map((item) => item.value.trim());
 
-const getDuplicateRowIds = (
-  rows: PrivateKeyRow[],
-  duplicateAddresses: string[]
-) => {
-  if (!duplicateAddresses.length) {
-    return [];
-  }
-
-  const duplicateAddressSet = new Set(
-    duplicateAddresses.map((address) => address.toLowerCase())
-  );
-
-  return rows
-    .filter((row) => {
-      const address = getPrivateKeyAddress(row.value);
-      return !!address && duplicateAddressSet.has(address);
-    })
-    .map((row) => row.id);
-};
-
 const BulkImportPrivateKey: React.FC = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const { show, contextHolder } = useRepeatImportConfirm();
-  const [modal, modalContextHolder] = Modal.useModal();
   const { openImportSuccessPage } = useCreateAddressActions();
   const [form] = Form.useForm<BulkImportFormValues>();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -447,49 +423,20 @@ const BulkImportPrivateKey: React.FC = () => {
       accounts: {
         address: string;
         alianName?: string;
+        importedBefore?: boolean;
       }[]
     ) => {
       openImportSuccessPage({
         addresses: accounts.map((item) => ({
           address: item.address,
           alias: item.alianName || '',
+          importedBefore: item.importedBefore,
         })),
         publicKey: '',
         title: t('page.newAddress.addressAddedCount', {
           count: accounts.length,
         }),
         description: t('page.newAddress.openExtensionToGetStarted'),
-      });
-    }
-  );
-
-  const showDuplicatePrompt = useMemoizedFn(
-    async (duplicateAddresses: string[]) => {
-      if (!duplicateAddresses.length) {
-        return;
-      }
-
-      await new Promise<void>((resolve) => {
-        const instance = modal.confirm({
-          title: t('page.newAddress.duplicateAddressesSkippedTitle'),
-          content: t('page.newAddress.duplicateAddressesSkippedDesc', {
-            count: duplicateAddresses.length,
-          }),
-          okText: t('global.confirm'),
-          cancelButtonProps: {
-            style: { display: 'none' },
-          },
-          centered: true,
-          width: 360,
-          onOk: () => {
-            resolve();
-            instance.destroy();
-          },
-          onCancel: () => {
-            resolve();
-            instance.destroy();
-          },
-        });
       });
     }
   );
@@ -788,6 +735,7 @@ const BulkImportPrivateKey: React.FC = () => {
     const importedAccounts: {
       address: string;
       alianName?: string;
+      importedBefore?: boolean;
     }[] = [];
 
     try {
@@ -795,51 +743,75 @@ const BulkImportPrivateKey: React.FC = () => {
       const { accounts, duplicateAddresses } = await wallet.importPrivateKeys(
         validRows.map((row) => row.value.trim())
       );
-      const duplicateRowIds = getDuplicateRowIds(validRows, duplicateAddresses);
-      importedAccounts.push(...accounts);
+      const duplicateAddressSet = new Set(
+        duplicateAddresses.map((address) => address.toLowerCase())
+      );
+      const accountByAddress = new Map<
+        string,
+        {
+          address: string;
+          alianName?: string;
+          importedBefore?: boolean;
+        }
+      >();
+
+      accounts.forEach((account) => {
+        accountByAddress.set(account.address.toLowerCase(), account);
+      });
+
+      const duplicateAccounts = await Promise.all(
+        duplicateAddresses.map(async (address) => ({
+          address,
+          alianName: (await wallet.getAlianName(address)) || '',
+          importedBefore: true,
+        }))
+      );
+      duplicateAccounts.forEach((account) => {
+        accountByAddress.set(account.address.toLowerCase(), account);
+      });
+
+      const nextImportedAccounts = validRows.reduce<
+        {
+          address: string;
+          alianName?: string;
+          importedBefore?: boolean;
+        }[]
+      >((acc, row) => {
+        const address = getPrivateKeyAddress(row.value);
+        if (!address) {
+          return acc;
+        }
+
+        const account = accountByAddress.get(address);
+        if (!account) {
+          return acc;
+        }
+
+        acc.push(
+          duplicateAddressSet.has(address)
+            ? {
+                ...account,
+                importedBefore: true,
+              }
+            : account
+        );
+
+        return acc;
+      }, []);
+
+      importedAccounts.push(...nextImportedAccounts);
 
       clearClipboard();
-
-      if (duplicateRowIds.length) {
-        setInvalidRowIds(duplicateRowIds);
-      } else {
-        setInvalidRowIds([]);
-      }
+      setInvalidRowIds([]);
 
       if (importedAccounts.length) {
-        await showDuplicatePrompt(duplicateAddresses);
         handleImportSuccess(importedAccounts);
-        return;
-      }
-
-      if (duplicateAddresses[0] && validRows.length === 1) {
-        setPrivateKeyError(
-          t('page.newAddress.duplicateAddressesSkippedDesc', {
-            count: duplicateAddresses.length,
-          })
-        );
-        await show({
-          address: duplicateAddresses[0],
-          type: KEYRING_CLASS.PRIVATE_KEY,
-        });
-        return;
-      }
-
-      if (duplicateRowIds.length) {
-        setPrivateKeyError(
-          t('page.newAddress.duplicateAddressesSkippedDesc', {
-            count: duplicateRowIds.length,
-          })
-        );
         return;
       }
 
       setPrivateKeyError(t('page.newAddress.privateKey.notAValidPrivateKey'));
     } catch (error) {
-      const messageText = (error as Error)?.message || '';
-      setPrivateKeyError(
-        messageText || t('page.newAddress.privateKey.notAValidPrivateKey')
-      );
+      setPrivateKeyError(t('page.newAddress.privateKey.notAValidPrivateKey'));
     } finally {
       setSubmitting(false);
     }
@@ -892,8 +864,6 @@ const BulkImportPrivateKey: React.FC = () => {
 
   return (
     <>
-      {contextHolder}
-      {modalContextHolder}
       <Page>
         <div className="mx-auto w-[600px] pt-[84px]">
           <RcRabbyLogo viewBox="0 0 152 44" className="h-[42px] w-[152px]" />

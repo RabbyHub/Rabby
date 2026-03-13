@@ -1089,7 +1089,6 @@
       "confirm-delete": "Підтвердити видалення",
       "private-key": "Приватний ключ",
       "seed-phrase": "Ключова фраза",
-      "watch-address": "Адреса спостереження",
       "backup-seed-phrase": "Резервна ключова фраза",
       "delete-all-addresses-but-keep-the-seed-phrase": "Видалити всі адреси, але зберегти ключову фразу",
       "delete-all-addresses-and-the-seed-phrase": "Видалити всі адреси та ключову фразу",

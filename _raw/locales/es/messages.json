@@ -1086,7 +1086,6 @@
       "confirm-delete": "Confirmar eliminación",
       "private-key": "Clave Privada",
       "seed-phrase": "Frase de Recuperación",
-      "watch-address": "Dirección de observación",
       "backup-seed-phrase": "Respaldo de la Frase de Recuperación",
       "delete-all-addresses-but-keep-the-seed-phrase": "Eliminar todas las direcciones, pero conservar la Frase de Recuperación",
       "delete-all-addresses-and-the-seed-phrase": "Eliminar todas las direcciones y la Frase de Recuperación",

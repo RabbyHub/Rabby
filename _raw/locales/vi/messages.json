@@ -1169,7 +1169,6 @@
       "passphraseError": "Mật khẩu không hợp lệ",
       "sort-address": "Sắp xếp Địa chỉ",
       "add-address": "Thêm địa chỉ",
-      "watch-address": "Theo dõi Địa chỉ",
       "sort-by-balance": "Sắp xếp theo số dư",
       "sort-by-address-note": "Sắp xếp theo ghi chú địa chỉ",
       "delete-private-key-modal-title_other": "Xóa {{count}} địa chỉ khóa riêng",

@@ -99,7 +99,7 @@ const AddAddressOptions: React.FC<{
       {
         key: 'add-new-address',
         label: t('page.newAddress.addNewAddress'),
-        icon: <RcAddAddressOptionCreateIcon className="w-[28px] h-[28px]" />,
+        icon: <RcAddAddressOptionCreateIcon />,
         onClick: () => {
           if (UI_TYPE.isDesktop) {
             onNavigate?.('add-new-address');
@@ -111,9 +111,7 @@ const AddAddressOptions: React.FC<{
       {
         key: 'import-seed-phrase',
         label: t('page.newAddress.importSeedPhrase'),
-        icon: (
-          <RcAddAddressOptionSeedPhraseIcon className="w-[28px] h-[28px]" />
-        ),
+        icon: <RcAddAddressOptionSeedPhraseIcon />,
         onClick: () => {
           if (UI_TYPE.isDesktop) {
             onNavigate?.('import-key-or-seed', { tab: 'seedPhrase' });
@@ -125,9 +123,7 @@ const AddAddressOptions: React.FC<{
       {
         key: 'import-private-key',
         label: t('page.newAddress.importPrivateKey'),
-        icon: (
-          <RcAddAddressOptionPrivateKeyIcon className="w-[28px] h-[28px]" />
-        ),
+        icon: <RcAddAddressOptionPrivateKeyIcon />,
         onClick: () => {
           if (UI_TYPE.isDesktop) {
             onNavigate?.('import-key-or-seed', { tab: 'privateKey' });
@@ -139,7 +135,7 @@ const AddAddressOptions: React.FC<{
       {
         key: 'connect-hardware-wallet',
         label: t('page.newAddress.connectHardwareWallets'),
-        icon: <RcAddAddressOptionHardwareIcon className="w-[28px] h-[28px]" />,
+        icon: <RcAddAddressOptionHardwareIcon />,
         onClick: () => {
           if (UI_TYPE.isDesktop) {
             onNavigate?.('hardware-wallets');
@@ -151,7 +147,7 @@ const AddAddressOptions: React.FC<{
       {
         key: 'watch-address',
         label: t('page.newAddress.watchAddress'),
-        icon: <RcAddAddressOptionWatchIcon className="w-[28px] h-[28px]" />,
+        icon: <RcAddAddressOptionWatchIcon />,
         onClick: () => {
           if (UI_TYPE.isDesktop) {
             onNavigate?.('watch-address');

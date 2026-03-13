@@ -1172,7 +1172,6 @@
       "delete-title_other": "Excluir {{count}} endereços {{brand}}",
       "delete-seed-phrase": "Excluir frase-semente",
       "enterThePassphrase": "Digite a Senha",
-      "watch-address": "Assistir Endereço",
       "delete-private-key-modal-title_other": "Excluir {{count}} endereços de chave privada",
       "add-address": "Adicionar endereço",
       "delete-title_one": "Excluir {{count}} endereço(s) {{brand}}",

@@ -242,10 +242,7 @@ const ImportKeyOrSeed: React.FC<{
         form.setFields([
           {
             name: 'privateKey',
-            errors: [
-              (err as Error)?.message ||
-                t('page.newAddress.privateKey.notAValidPrivateKey'),
-            ],
+            errors: [t('page.newAddress.privateKey.notAValidPrivateKey')],
           },
         ]);
       }
@@ -310,15 +307,6 @@ const ImportKeyOrSeed: React.FC<{
       setErrMsgs([
         (err as Error)?.message ||
           t('page.newAddress.theSeedPhraseIsInvalidPleaseCheck'),
-      ]);
-      form.setFields([
-        {
-          name: 'seedPhrase',
-          errors: [
-            (err as Error)?.message ||
-              t('page.newAddress.theSeedPhraseIsInvalidPleaseCheck'),
-          ],
-        },
       ]);
     } finally {
       setSubmitting(false);
@@ -418,7 +406,11 @@ const ImportKeyOrSeed: React.FC<{
               } else {
                 try {
                   setPkOnPrivateKey(
-                    privateKeyToAddress(nextPrivateKey as `0x${string}`)
+                    privateKeyToAddress(
+                      (nextPrivateKey?.startsWith('0x')
+                        ? nextPrivateKey
+                        : `0x${nextPrivateKey}`) as `0x${string}`
+                    )
                   );
                 } catch (error) {
                   setPkOnPrivateKey('');
@@ -462,7 +454,7 @@ const ImportKeyOrSeed: React.FC<{
                   </Form.Item>
                   {pkOnPrivateKey ? (
                     <div className="mt-12 flex justify-between items-center text-[13px] font-medium text-r-neutral-title-1">
-                      <div>Address</div>
+                      <div>{t('page.addressDetail.address')}</div>
                       <div>{ellipsisAddress(pkOnPrivateKey)}</div>
                     </div>
                   ) : null}
