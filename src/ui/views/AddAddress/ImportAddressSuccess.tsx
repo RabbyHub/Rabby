@@ -53,12 +53,7 @@ export const ImportAddressSuccess: React.FC<{
     const brand = query.get('brand') || '';
     const hd = query.get('hd') || '';
 
-    return (
-      BRAND_ALIAN_TYPE_TEXT?.[brand] ||
-      BRAND_ALIAN_TYPE_TEXT?.[hd] ||
-      brand ||
-      hd
-    );
+    return brand || BRAND_ALIAN_TYPE_TEXT?.[hd] || hd;
   }, [returnToSelectAddressSearch]);
   const successAddressCardsRef = React.useRef<SuccessAddressCardsRef>(null);
   const [pendingAction, setPendingAction] = React.useState(false);
