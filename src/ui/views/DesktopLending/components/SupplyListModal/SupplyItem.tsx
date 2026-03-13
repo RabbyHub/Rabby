@@ -4,11 +4,9 @@ import { DisplayPoolReserveInfo } from '../../types';
 import { formatApy, formatListNetWorth } from '../../utils/format';
 import SymbolIcon from '../SymbolIcon';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue, isSameAddress } from '@/ui/utils';
+import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { Tooltip } from 'antd';
-import { useSelectedMarket } from '../../hooks/market';
-import wrapperToken from '../../config/wrapperToken';
 
 export const SupplyItem = ({
   data,
@@ -22,7 +20,6 @@ export const SupplyItem = ({
   className?: string;
 }) => {
   const { t } = useTranslation();
-  const { chainEnum } = useSelectedMarket();
   const disableSupplyButton = useMemo(() => {
     if (!data) {
       return false;
@@ -41,38 +38,15 @@ export const SupplyItem = ({
     return bgTotalLiquidity.gte(data?.reserve?.supplyCap || '0');
   }, [data]);
 
-  const isWrapperToken = useMemo(() => {
-    return chainEnum
-      ? isSameAddress(
-          wrapperToken[chainEnum]?.address,
-          data.reserve.underlyingAsset
-        )
-      : false;
-  }, [data.reserve.underlyingAsset, chainEnum]);
-
   return (
     <div
       key={`${data.reserve.underlyingAsset}-${data.reserve.symbol}`}
       className={clsx(
         'mt-8 flex items-center justify-between px-16 h-[56px] rounded-[12px]',
-        noBg
-          ? ''
-          : isWrapperToken
-          ? 'bg-r-neutral-line relative'
-          : 'bg-rb-neutral-bg-1',
+        noBg ? '' : 'bg-rb-neutral-bg-1',
         className
       )}
     >
-      {isWrapperToken && (
-        <div
-          className="absolute left-[20px] top-[-8px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px]"
-          style={{
-            borderBottomColor: 'var(--r-neutral-line)',
-            borderLeftColor: 'transparent',
-            borderRightColor: 'transparent',
-          }}
-        />
-      )}
       <div className="flex-1 flex items-center justify-start min-w-0 text-left">
         <div className="flex items-center gap-8 min-w-0 w-[160px]">
           <SymbolIcon tokenSymbol={data.reserve.symbol} size={24} />
