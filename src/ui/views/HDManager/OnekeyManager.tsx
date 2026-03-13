@@ -31,10 +31,9 @@ export const OneKeyManager: React.FC = () => {
     keyringId,
   } = React.useContext(HDManagerStateContext);
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
-  const [setting, setSetting] = React.useState<SettingData>({
-    ...DEFAULT_SETTING_DATA,
-    type: HDPathType.BIP44,
-  });
+  const [setting, setSetting] = React.useState<SettingData>(
+    DEFAULT_SETTING_DATA
+  );
   const [firstFetchAccounts, setFirstFetchAccounts] = React.useState(false);
   const [preventLoading, setPreventLoading] = React.useState(false);
 
