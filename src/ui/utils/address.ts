@@ -1,7 +1,5 @@
-export const ellipsis = (text: string, isLong?: boolean) => {
-  return text
-    .toString()
-    .replace(isLong ? /^(.{8})(.*)(.{6})$/ : /^(.{6})(.*)(.{4})$/, '$1...$3');
+export const ellipsis = (text: string) => {
+  return text.toString().replace(/^(.{8})(.*)(.{6})$/, '$1...$3');
 };
 
 export const ellipsisAddress = ellipsis;

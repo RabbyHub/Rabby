@@ -13,6 +13,7 @@ import { ExchangeLogos } from './CexLogos';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
+import { isNumber } from 'lodash';
 
 const formatPercentage = (x: number) => {
   if (Math.abs(x) < 0.00001) {
@@ -89,7 +90,7 @@ const ExternalTokenRow = memo(
                 <ExchangeLogos cexIds={cexIds} />
               </div>
               <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
-                {formatTokenAmount(data.amount || 0)} {data.symbol}
+                {formatTokenAmount(data.amount || 0)}
               </span>
             </div>
           </div>
@@ -104,16 +105,18 @@ const ExternalTokenRow = memo(
             </span>
             <span className="flex items-center gap-4">
               <span className="text-r-neutral-foot text-13 font-normal">
-                @{decimalPrecision ? '$' : ''}
+                {decimalPrecision ? '$' : ''}
                 {(decimalPrecision ? formatPrice : formatUsdValue)(
                   data.price || 0
                 )}
               </span>
-              <span
-                className={clsx('text-sm text-13 font-medium', percentColor)}
-              >
-                {formatPercentage(data.price_24h_change || 0)}
-              </span>
+              {isNumber(data.price_24h_change) && (
+                <span
+                  className={clsx('text-sm text-13 font-normal', percentColor)}
+                >
+                  ({formatPercentage(data.price_24h_change || 0)})
+                </span>
+              )}
             </span>
           </div>
         </li>

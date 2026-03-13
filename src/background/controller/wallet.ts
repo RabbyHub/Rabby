@@ -161,7 +161,7 @@ import { appIsProd, isManifestV3 } from '@/utils/env';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
-import Browser from 'webextension-polyfill';
+import Browser, { Windows } from 'webextension-polyfill';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
 import { userGuideService } from '../service/userGuide';
 import { metamaskModeService } from '../service/metamaskModeService';
@@ -1606,6 +1606,12 @@ export class WalletController extends BaseController {
     }
 
     uninstalledService.syncStatus();
+
+    setTimeout(() => {
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.UNLOCK_WALLET,
+      });
+    });
   };
   isUnlocked = () => keyringService.isUnlocked();
 
@@ -1711,6 +1717,69 @@ export class WalletController extends BaseController {
       desktopTabId: tab.id,
     });
     return tab;
+  };
+
+  openBiometricUnlockSetupWindow = async () => {
+    const {
+      top: cTop,
+      left: cLeft,
+      width,
+    } = await Browser.windows.getLastFocused({
+      windowTypes: ['normal'],
+    } as Windows.GetInfo);
+    const url = 'index.html#/biometric-unlock-setup';
+    const top = cTop;
+    const left = cLeft! + width! - 500;
+    return Browser.windows.create({
+      focused: true,
+      url,
+      type: 'popup',
+      width: 400,
+      height: 460,
+      left,
+      top,
+    });
+  };
+
+  openActionPopup = async () => {
+    if (
+      isManifestV3 &&
+      Browser?.action?.openPopup &&
+      typeof Browser?.action?.openPopup === 'function'
+    ) {
+      try {
+        await Browser?.action?.openPopup();
+        return true;
+      } catch (error) {
+        console.error('[openActionPopup] openPopup failed', error);
+      }
+    }
+    return false;
+  };
+
+  finishBiometricUnlockSetup = async (setupWindowId?: number) => {
+    await this.setPageStateCache({
+      path: '/dashboard',
+      params: {},
+      states: {
+        action: 'open-settings',
+      },
+    });
+
+    if (typeof setupWindowId === 'number') {
+      try {
+        await Browser.windows.remove(setupWindowId);
+      } catch (error) {
+        console.error(
+          '[finishBiometricUnlockSetup] close setup window failed',
+          error
+        );
+      }
+    }
+
+    setTimeout(() => {
+      this.openActionPopup();
+    }, 300);
   };
 
   hasPageStateCache = () => pageStateCacheService.has();
@@ -1938,6 +2007,30 @@ export class WalletController extends BaseController {
       undefined,
       false
     );
+  };
+
+  setBiometricUnlock = (payload: {
+    enabled: boolean;
+    credentialId?: string;
+    encryptedPassword?: string;
+    iv?: string;
+  }) => {
+    if (!payload.enabled) {
+      preferenceService.setPreferencePartials({
+        biometricUnlockEnabled: false,
+        biometricUnlockCredentialId: '',
+        biometricUnlockEncryptedPassword: '',
+        biometricUnlockIv: '',
+      });
+      return;
+    }
+
+    preferenceService.setPreferencePartials({
+      biometricUnlockEnabled: true,
+      biometricUnlockCredentialId: payload.credentialId || '',
+      biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
+      biometricUnlockIv: payload.iv || '',
+    });
   };
 
   updateGa4EventTime = (timestamp: number) => {

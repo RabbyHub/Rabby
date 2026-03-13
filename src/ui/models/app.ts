@@ -13,6 +13,7 @@ export const app = createModel<RootModel>()({
      * so its type could be annotated as `WalletControllerType`
      */
     wallet: (null as any) as WalletControllerType,
+    hasUnlockedOnce: false,
   },
   reducers: {
     /**
@@ -29,6 +30,12 @@ export const app = createModel<RootModel>()({
       return {
         ...state,
         wallet: (payload.wallet as unknown) as WalletControllerType,
+      };
+    },
+    setField(state, payload: Partial<typeof state>) {
+      return {
+        ...state,
+        ...payload,
       };
     },
   },

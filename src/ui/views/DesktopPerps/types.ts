@@ -26,10 +26,12 @@ export interface OrderSettings {
   orderType: OrderType;
 }
 
+export type PositionSizeInputSource = 'amount' | 'notional' | 'slider';
+
 export interface PositionSize {
   amount: string;
   notionalValue: string;
-  isInputNotionalValue?: boolean;
+  inputSource?: PositionSizeInputSource;
 }
 
 export type LimitOrderType = 'Gtc' | 'Alo' | 'Ioc';

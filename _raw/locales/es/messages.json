@@ -1305,7 +1305,10 @@
           "themeMode": "Modo de tema",
           "metamaskMode": "Conectar Rabby disfrazándolo como MetaMask",
           "enableDappAccount": "Cambiar la dirección del Dapp de forma independiente\n",
-          "switchPasswordForNonWhitelistedTx": "Contraseña para transferencias no autorizadas"
+          "switchPasswordForNonWhitelistedTx": "Contraseña para transferencias no autorizadas",
+          "biometricUnlock": "Desbloquear con biometría",
+          "biometricUnlockHint": "Usa biometría para desbloquear en este dispositivo.",
+          "biometricUnlockUnsupported": "Este dispositivo no soporta el desbloqueo biométrico."
         },
         "aboutUs": "Acerca de Nosotros",
         "currentVersion": "Versión Actual",
@@ -1340,7 +1343,15 @@
           "titleEnable": "¿Habilitar verificación de contraseña?",
           "descDisable": "Una vez deshabilitada, la verificación de contraseña ya no será necesaria para direcciones que no estén en la lista blanca.",
           "descEnable": "Una vez habilitado, transferir a una dirección no autorizada en esta extensión requerirá su contraseña."
-        }
+        },
+        "biometricUnlockDisabled": "Desbloqueo biométrico desactivado",
+        "biometricUnlockPasswordPlaceholder": "Introducir contraseña",
+        "biometricUnlockEnabled": "Desbloqueo biométrico habilitado.",
+        "biometricUnlockDisableFailed": "No se pudo deshabilitar el desbloqueo biométrico.",
+        "biometricUnlockUnsupported": "Este dispositivo no admite desbloqueo biométrico.",
+        "biometricUnlockSetupTitle": "Habilitar Desbloqueo Biométrico",
+        "biometricUnlockEnableFailed": "No se pudo habilitar el desbloqueo biométrico.",
+        "biometricUnlockSetupDesc": "Confirma tu contraseña para activar el desbloqueo biométrico."
       },
       "tokenDetail": {
         "blockedTip": "Los tokens bloqueados no se mostrarán en la lista de tokens",
@@ -1891,7 +1902,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "Desbloquear"
+        "unlock": "Desbloquear",
+        "biometric": "Desbloquear con biometría",
+        "unlockWithPassword": "Desbloquear con contraseña"
       },
       "password": {
         "required": "Ingrese la contraseña para desbloquear",
@@ -2552,8 +2565,8 @@
       },
       "signWithLedger": "Firmar con Ledger",
       "speedUpTitle": "Acelerar",
-      "speedUpDesc": "El precio del gas aumentó en {{percent}} para acelerar.",
-      "cancleDesc": "El precio del gas aumentó en {{percent}} para cancelar la transacción.",
+      "speedUpDesc": "El precio del Gas aumentó {{percent}} para una velocidad más rápida.",
+      "cancleDesc": "El precio del Gas aumentó {{percent}} para una cancelación más rápida.",
       "cancelTitle": "Cancelación en cadena",
       "signWithOneKey": "Firma con OneKey"
     },
@@ -2791,7 +2804,7 @@
         "seedPhrase": "Frase Semilla"
       },
       "importWalletType": {
-        "seedOrKey": "Frase semilla o clave privada",
+        "seedOrKey": "Frase Semilla o Clave Privada",
         "hardwareWallet": "Cartera de Hardware"
       }
     },
@@ -3439,7 +3452,8 @@
       "fundingGains": "Ganancias de financiación",
       "fee": "Comisión",
       "logInTips": "Inicia sesión con la dirección de tu billetera y deposita fondos para empezar a operar contratos perpetuos.",
-      "openPositionTips": "El comercio de contratos perpetuos implica un riesgo significativo, que incluye la posibilidad de pérdida repentina y total de su inversión y de su colateral debido al alto apalancamiento y a la volatilidad del mercado, y puede que no sea adecuado para todos los usuarios. Los precios pueden verse influenciados por las tasas de financiación y la liquidez, y usted podría estar sujeto a liquidaciones automáticas sin previo aviso. Datos de mercado proporcionados por Hyperliquid."
+      "openPositionTips": "El comercio de contratos perpetuos implica un riesgo significativo, que incluye la posibilidad de pérdida repentina y total de su inversión y de su colateral debido al alto apalancamiento y a la volatilidad del mercado, y puede que no sea adecuado para todos los usuarios. Los precios pueden verse influenciados por las tasas de financiación y la liquidez, y usted podría estar sujeto a liquidaciones automáticas sin previo aviso. Datos de mercado proporcionados por Hyperliquid.",
+      "directDepositFast": "Rápido, 0 Deslizamiento"
     },
     "perpsPro": {
       "chatArea": {

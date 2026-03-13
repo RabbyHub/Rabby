@@ -35,12 +35,13 @@ const DesktopLendingContent: React.FC = () => {
   });
   const { fetchData, setFetchLoading } = useFetchLendingData();
   const { iUserSummary, apyInfo } = useLendingSummaryCard();
-  const { marketKey } = useSelectedMarket();
+  const { marketKey, init } = useSelectedMarket();
 
   useEffect(() => {
+    if (!init) return;
     setFetchLoading(true);
     fetchData();
-  }, [marketKey, currentAccount?.address]);
+  }, [marketKey, currentAccount?.address, init]);
 
   useListenTxReload(fetchData);
 

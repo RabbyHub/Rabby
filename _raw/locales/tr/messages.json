@@ -1305,7 +1305,10 @@
           "toggleThemeMode": "Tema Modu",
           "metamaskMode": "MetaMask gibi Gizlenerek Rabby'yi Bağla",
           "enableDappAccount": "Dapp Adreslerini Bağımsız Olarak Değiştirin\n",
-          "switchPasswordForNonWhitelistedTx": "Beyaz listeye alınmamış transferler için şifre"
+          "switchPasswordForNonWhitelistedTx": "Beyaz listeye alınmamış transferler için şifre",
+          "biometricUnlock": "Biyometriklerle Kilidi Açma",
+          "biometricUnlockUnsupported": "Bu cihaz biyometrik kilit açmayı desteklememektedir.",
+          "biometricUnlockHint": "Bu cihazda açmak için biyometrik verileri kullanın."
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",
@@ -1340,7 +1343,15 @@
           "titleEnable": "Şifre kontrolünü etkinleştir?",
           "descEnable": "Bir kez etkinleştirildiğinde, bu uzantıda beyaz listede olmayan bir adrese transfer yapmak şifrenizi gerektirecektir.",
           "descDisable": "Devre dışı bırakıldıktan sonra, beyaz listede yer almayan adresler için şifre doğrulaması artık gerekli olmayacaktır."
-        }
+        },
+        "biometricUnlockPasswordPlaceholder": "Şifreyi Girin",
+        "biometricUnlockSetupTitle": "Biyometrik Kilidi Etkinleştir",
+        "biometricUnlockEnableFailed": "Biyometrik kilidi etkinleştirme başarısız oldu",
+        "biometricUnlockDisabled": "Biyometrik kilidi devre dışı bırakıldı",
+        "biometricUnlockEnabled": "Biyometrik kilit açma etkinleştirildi.",
+        "biometricUnlockDisableFailed": "Biyometrik kilidi devre dışı bırakmayı başaramadı",
+        "biometricUnlockUnsupported": "Bu cihaz biyometrik kilit açma desteği sunmamaktadır.",
+        "biometricUnlockSetupDesc": "Parolanızı biyometrik kilidi etkinleştirmek için onaylayın."
       },
       "tokenDetail": {
         "blockedTip": "Engellenen token, token listesinde gösterilmeyecek",
@@ -1894,7 +1905,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "Kilidi Aç"
+        "unlock": "Kilidi Aç",
+        "unlockWithPassword": "Şifre ile açın",
+        "biometric": "Biyometrik ile kilidi açın"
       },
       "password": {
         "required": "Kilidi Açmak İçin Şifre Girin",
@@ -2556,8 +2569,8 @@
       "signWithLedger": "Ledger ile imzala",
       "cancelTitle": "Zincir Üzerinde İptal",
       "signWithOneKey": "OneKey ile İmza At",
-      "speedUpDesc": "Gas fiyatı hızlandırmak için {{percent}} arttı.",
-      "cancleDesc": "Gas fiyatı, işlemi iptal etmek için {{percent}} oranında arttı.",
+      "speedUpDesc": "Gaz fiyatı daha hızlı bir hızlanma için {{percent}} arttı.",
+      "cancleDesc": "Gas fiyatı daha hızlı bir iptal için {{percent}} arttı",
       "speedUpTitle": "Hızlandırmak"
     },
     "gasAccount": {
@@ -2795,7 +2808,7 @@
       },
       "importWalletType": {
         "hardwareWallet": "Donanım Cüzdanı",
-        "seedOrKey": "Seed ifadesi veya özel anahtar"
+        "seedOrKey": "Seed Fiil veya Özel Anahtar"
       }
     },
     "metamaskModeDapps": {
@@ -3442,7 +3455,8 @@
       "logInPerpsAccount": "Sürekli Sözleşme hesabıma giriş yap",
       "openPositionTips": "Süresiz vadeli sözleşmelerin ticareti önemli riskler içerir; bu riskler arasında yüksek kaldıraç ve piyasa oynaklığı nedeniyle yatırımınızın ve teminatınızın ani ve tamamen kaybolma potansiyeli de bulunmaktadır ve tüm kullanıcılar için uygun olmayabilir. Fiyatlar, fonlama oranları ve likidite tarafından etkilenebilir ve bildirim olmadan otomatik likidasyonlara tabi olabilirsiniz. Piyasa verileri Hyperliquid tarafından sağlanmaktadır.",
       "liquidationPriceTips": "Likidasyon fiyatı, marjınız bakım marjı seviyesinin altına düştüğünde borsa tarafından pozisyonunuzun otomatik olarak kapatıldığı ve daha fazla zararın önüne geçilmesi için kullanılan fiyattır.",
-      "balanceAvailable": "Bakiyeniz: {{balance}}"
+      "balanceAvailable": "Bakiyeniz: {{balance}}",
+      "directDepositFast": "Hızlı, 0 Kayma"
     },
     "perpsPro": {
       "chatArea": {

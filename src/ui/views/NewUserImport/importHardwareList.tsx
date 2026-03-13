@@ -34,6 +34,7 @@ export const ImportHardwareList = () => {
       {
         type: KEYRING_CLASS.HARDWARE.ONEKEY,
         logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.ONEKEY].icon,
+        title: 'OneKey',
       },
       {
         type: KEYRING_CLASS.HARDWARE.KEYSTONE,
@@ -142,7 +143,7 @@ export const ImportHardwareList = () => {
                 }}
                 className="rounded-[8px] text-[15px] leading-[18px] font-medium text-r-neutral-title1"
               >
-                {item.brand || BRAND_ALIAN_TYPE_TEXT[item.type]}
+                {item.title || item.brand || BRAND_ALIAN_TYPE_TEXT[item.type]}
               </Item>
             </Tooltip>
           );

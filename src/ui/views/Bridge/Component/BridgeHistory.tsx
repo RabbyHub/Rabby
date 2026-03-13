@@ -37,7 +37,7 @@ const BridgeTokenIcon = (props: { token: TokenItem }) => {
 
   return (
     <div className="w-16 h-16 relative">
-      <img className="w-16 h-16" src={token.logo_url} />
+      <img className="w-16 h-16 rounded-full" src={token.logo_url} />
       <img
         className="w-12 h-12 absolute -right-4 -bottom-4"
         src={chain?.logo}

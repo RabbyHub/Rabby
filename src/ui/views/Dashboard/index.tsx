@@ -76,6 +76,7 @@ const Dashboard = () => {
   );
 
   const [settingVisible, setSettingVisible] = useState(false);
+  const [autoScrollToBiometric, setAutoScrollToBiometric] = useState(false);
   const toggleShowMoreSettings = useMemoizedFn(() => {
     setSettingVisible(!settingVisible);
   });
@@ -85,6 +86,16 @@ const Dashboard = () => {
   useMount(() => {
     const check = async () => {
       const cache = await wallet.getPageStateCache();
+      if (
+        cache?.path === location.pathname &&
+        cache?.states?.action === 'open-settings'
+      ) {
+        wallet.clearPageStateCache();
+        setAutoScrollToBiometric(true);
+        setSettingVisible(true);
+        return;
+      }
+
       if (
         cache?.path === location.pathname &&
         cache?.states?.action === 'address-backup'
@@ -162,7 +173,14 @@ const Dashboard = () => {
         />
       )}
 
-      <Settings visible={settingVisible} onClose={toggleShowMoreSettings} />
+      <Settings
+        visible={settingVisible}
+        onClose={toggleShowMoreSettings}
+        autoScrollToBiometric={autoScrollToBiometric}
+        onAutoScrollDone={() => {
+          setAutoScrollToBiometric(false);
+        }}
+      />
     </>
   );
 };

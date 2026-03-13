@@ -135,11 +135,20 @@ const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
   }
 };
 
-const createTimeLocalization = () => {
+const formatLocalDate = (time: Time): string => {
+  const date = timeToDate(time);
+  const year = date.getFullYear();
+  const month = padZero(date.getMonth() + 1);
+  const day = padZero(date.getDate());
+  return `${year}-${month}-${day}`;
+};
+
+const createTimeLocalization = (isWeekly = false) => {
   const formatTick = (time: Time, tickMarkType: TickMarkType): string =>
     formatTickLabel(timeToDate(time), tickMarkType);
 
-  const formatHover = (time: Time): string => formatLocalDateTime(time);
+  const formatHover = (time: Time): string =>
+    isWeekly ? formatLocalDate(time) : formatLocalDateTime(time);
 
   return {
     locale: 'en-US',
@@ -165,6 +174,45 @@ const parseCandles = (data: CandleSnapshot): CandleBar[] => {
   });
 
   return result;
+};
+
+// Get the Monday 00:00 UTC timestamp for the week containing the given timestamp
+const getMondayUtc = (utcSeconds: number): UTCTimestamp => {
+  const date = new Date(utcSeconds * 1000);
+  const day = date.getUTCDay(); // 0=Sun,1=Mon,...,6=Sat
+  const diffDays = day === 0 ? -6 : 1 - day;
+  date.setUTCDate(date.getUTCDate() + diffDays);
+  date.setUTCHours(0, 0, 0, 0);
+  return Math.floor(date.getTime() / 1000) as UTCTimestamp;
+};
+
+// Aggregate daily candles into Monday-start weekly candles with correct OHLC
+const aggregateDailyToWeekly = (dailyCandles: CandleBar[]): CandleBar[] => {
+  if (dailyCandles.length === 0) return [];
+
+  const weeks = new Map<number, CandleBar>();
+
+  for (const candle of dailyCandles) {
+    const mondayTs = getMondayUtc(candle.time as number);
+    const existing = weeks.get(mondayTs);
+    if (existing) {
+      existing.high = Math.max(existing.high, candle.high);
+      existing.low = Math.min(existing.low, candle.low);
+      existing.close = candle.close;
+    } else {
+      weeks.set(mondayTs, {
+        time: mondayTs,
+        open: candle.open,
+        high: candle.high,
+        low: candle.low,
+        close: candle.close,
+      });
+    }
+  }
+
+  return Array.from(weeks.values()).sort(
+    (a, b) => (a.time as number) - (b.time as number)
+  );
 };
 
 const getThemeColors = (isDark: boolean) =>
@@ -211,8 +259,12 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
     entry?: IPriceLine;
   }>({});
   const isMountedRef = useRef(true);
+  const currentWeekCandleRef = useRef<CandleBar | null>(null);
   const colors = useMemo(() => getThemeColors(isDarkTheme), [isDarkTheme]);
-  const timeLocalization = useMemo(() => createTimeLocalization(), []);
+  const isWeekly = candleMenuKey === CANDLE_MENU_KEY_V2.ONE_WEEK;
+  const timeLocalization = useMemo(() => createTimeLocalization(isWeekly), [
+    isWeekly,
+  ]);
 
   // Update price lines function
   const updatePriceLines = useCallback(() => {
@@ -416,9 +468,13 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       const sdk = getPerpsSDK();
       if (!seriesRef.current) return;
 
+      const isWeekly = candleMenuKey === CANDLE_MENU_KEY_V2.ONE_WEEK;
       let start = 0;
       let end = Date.now();
-      const interval = getInterval(candleMenuKey);
+      // For weekly: fetch daily candles and aggregate client-side to start weeks on Monday
+      const interval = isWeekly
+        ? CandlePeriod.ONE_DAY
+        : getInterval(candleMenuKey);
 
       switch (candleMenuKey) {
         case CANDLE_MENU_KEY_V2.FIVE_MINUTES:
@@ -451,11 +507,18 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       );
       if (aborted || !isMountedRef.current) return;
 
-      const candles = parseCandles(snapshot);
+      const dailyCandles = parseCandles(snapshot);
+      const candles = isWeekly
+        ? aggregateDailyToWeekly(dailyCandles)
+        : dailyCandles;
+
       if (candles.length > 0 && seriesRef.current) {
         seriesRef.current.setData(candles);
-        // chartRef.current?.timeScale().fitContent();
-        // Update price lines after data is loaded
+        if (isWeekly) {
+          currentWeekCandleRef.current = {
+            ...candles[candles.length - 1],
+          };
+        }
         updatePriceLines();
       }
     },
@@ -476,17 +539,43 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
     const sdk = getPerpsSDK();
     if (!seriesRef.current) return;
 
-    const interval = getInterval(candleMenuKey);
+    const isWeekly = candleMenuKey === CANDLE_MENU_KEY_V2.ONE_WEEK;
+    // Subscribe to daily candles in weekly mode for correct Monday-based aggregation
+    const interval = isWeekly
+      ? CandlePeriod.ONE_DAY
+      : getInterval(candleMenuKey);
     console.log('subscribeCandle', coin, interval);
     const { unsubscribe } = sdk.ws.subscribeToCandles(
       coin,
       interval,
       (snapshot) => {
-        // Check if component is still mounted before updating
         if (!isMountedRef.current || !seriesRef.current) return;
 
         const candles = parseCandles([snapshot]);
-        if (candles.length > 0) {
+        if (candles.length === 0) return;
+
+        if (isWeekly) {
+          const daily = candles[0];
+          const mondayTs = getMondayUtc(daily.time as number);
+          const current = currentWeekCandleRef.current;
+
+          if (current && current.time === mondayTs) {
+            // Same week: merge high/low, update close
+            current.high = Math.max(current.high, daily.high);
+            current.low = Math.min(current.low, daily.low);
+            current.close = daily.close;
+          } else {
+            // New week starts
+            currentWeekCandleRef.current = {
+              time: mondayTs,
+              open: daily.open,
+              high: daily.high,
+              low: daily.low,
+              close: daily.close,
+            };
+          }
+          seriesRef.current?.update(currentWeekCandleRef.current!);
+        } else {
           seriesRef.current?.update(candles[0]);
         }
       }

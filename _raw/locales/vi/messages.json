@@ -1373,7 +1373,10 @@
           "metamaskPreferredDapps": "MetaMask Dapps Ưa Thích",
           "themeMode": "Chế độ chủ đề",
           "enableDappAccount": "Thay đổi địa chỉ Dapp độc lập\n",
-          "switchPasswordForNonWhitelistedTx": "Mật khẩu cho các giao dịch không nằm trong danh sách trắng"
+          "switchPasswordForNonWhitelistedTx": "Mật khẩu cho các giao dịch không nằm trong danh sách trắng",
+          "biometricUnlock": "Mở khóa bằng Sinh trắc học",
+          "biometricUnlockHint": "Sử dụng sinh trắc học để mở khóa trên thiết bị này.",
+          "biometricUnlockUnsupported": "Thiết bị này không hỗ trợ mở khóa sinh trắc học."
         },
         "1Hour": "1 giờ",
         "7Days": "7 ngày",
@@ -1432,7 +1435,14 @@
           "inputPlaceholder": "Nhập Mật khẩu để Xác nhận",
           "descDisable": "Một khi bị tắt, xác minh mật khẩu sẽ không còn được yêu cầu đối với các địa chỉ không được đưa vào danh sách trắng.",
           "descEnable": "Khi đã được bật, việc chuyển tài sản đến một địa chỉ không có trong danh sách trắng trong tiện ích mở rộng này sẽ yêu cầu mật khẩu của bạn."
-        }
+        },
+        "biometricUnlockSetupTitle": "Bật mở khóa sinh trắc học",
+        "biometricUnlockEnabled": "Khóa sinh trắc học đã được bật.",
+        "biometricUnlockDisableFailed": "Không thể tắt mở khóa sinh trắc học",
+        "biometricUnlockUnsupported": "Thiết bị này không hỗ trợ mở khóa sinh trắc học.",
+        "biometricUnlockEnableFailed": "Không thể bật mở khóa sinh trắc học",
+        "biometricUnlockSetupDesc": "Xác nhận mật khẩu của bạn để kích hoạt mở khóa sinh trắc học.",
+        "biometricUnlockDisabled": "Mở khóa sinh trắc học đã bị vô hiệu hóa"
       },
       "tokenDetail": {
         "txFailed": "Thất bại",
@@ -1980,7 +1990,9 @@
     },
     "unlock": {
       "btn": {
-        "unlock": "Mở khóa"
+        "unlock": "Mở khóa",
+        "unlockWithPassword": "Mở khóa bằng mật khẩu",
+        "biometric": "Mở khóa bằng sinh trắc học"
       },
       "password": {
         "error": "mật khẩu không đúng",
@@ -2550,8 +2562,8 @@
       "signWithLedger": "Ký với Ledger",
       "cancelTitle": "Hủy trên chuỗi",
       "speedUpTitle": "Tăng tốc",
-      "speedUpDesc": "Giá gas đã tăng {{percent}} để tăng tốc.",
-      "cancleDesc": "Giá gas tăng {{percent}} để hủy giao dịch",
+      "speedUpDesc": "Giá gas đã tăng {{percent}} để tăng tốc độ nhanh hơn",
+      "cancleDesc": "Giá gas tăng {{percent}} để hủy nhanh hơn.",
       "signWithOneKey": "Ký với OneKey"
     },
     "gasAccount": {
@@ -2788,7 +2800,7 @@
         "title": "Cụm từ hạt giống hoặc khóa riêng"
       },
       "importWalletType": {
-        "seedOrKey": "Cụm từ gốc hoặc khóa riêng",
+        "seedOrKey": "Cụm từ hạt giống hoặc Khóa riêng",
         "hardwareWallet": "Ví dụ: Ví phần cứng"
       }
     },
@@ -3436,7 +3448,8 @@
       "openPositionTips": "Giao dịch hợp đồng vĩnh viễn mang lại rủi ro đáng kể, bao gồm khả năng mất đột ngột và toàn bộ khoản đầu tư và tài sản thế chấp của bạn do đòn bẩy cao và biến động thị trường, và có thể không phù hợp với tất cả người dùng. Giá có thể bị ảnh hưởng bởi tỷ lệ funding và thanh khoản và bạn có thể phải chịu thanh lý tự động mà không nhận được thông báo trước. Dữ liệu thị trường được cung cấp bởi Hyperliquid.",
       "takeProfit": "Lệnh chốt lời",
       "estimatedLiquidationPrice": "Giá thanh lý ước tính",
-      "closeAll": "Đóng tất cả"
+      "closeAll": "Đóng tất cả",
+      "directDepositFast": "Nhanh, 0 Trượt giá"
     },
     "perpsPro": {
       "chatArea": {
