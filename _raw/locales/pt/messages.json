@@ -324,7 +324,7 @@
       "scamTokenAlert": "Isto é potencialmente um token de baixa qualidade e golpe com base na detecção do Rabby.",
       "transacted": "Transacionado antes",
       "sigCantDecode": "Esta assinatura não pode ser decodificada pela Rabby Wallet",
-      "safeServiceNotAvailable": "O serviço Safe não está disponível no momento, por favor, tente novamente mais tarde.",
+      "safeServiceNotAvailable": "",
       "markAsBlock": "Marcado como bloqueado",
       "markRemoved": "Marca removida",
       "firstOnChain": "Prime on-chain",

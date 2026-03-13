@@ -347,7 +347,7 @@
       "nativeTokenForGas": "Используйте токен {{tokenName}} в {{chainName}} для оплаты газа",
       "gasAccountForGas": "Использовать USD с моего GasAccount для оплаты газа",
       "primaryType": "Основной тип",
-      "safeServiceNotAvailable": "Сервис Safe в данный момент недоступен, попробуйте позже.",
+      "safeServiceNotAvailable": "",
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
