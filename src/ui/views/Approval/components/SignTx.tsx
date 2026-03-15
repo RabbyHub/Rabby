@@ -604,6 +604,13 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
 
   const is7702 = is7702Tx({ authorizationList } as any);
 
+  if (
+    (is7702 || params?.$ctx?.eip7702Revoke) &&
+    origin !== INTERNAL_REQUEST_ORIGIN
+  ) {
+    return <EIP7702Warning />;
+  }
+
   if (is7702 && !(isSpeedUp || params?.$ctx?.eip7702Revoke)) {
     return <EIP7702Warning />;
   }
