@@ -11,6 +11,7 @@ import { WalletController } from 'background/controller/wallet';
 import {
   EVENTS,
   EVENTS_IN_BG,
+  INTERNAL_REQUEST_ORIGIN,
   IS_FIREFOX,
   KEYRING_CATEGORY_MAP,
   KEYRING_TYPE,
@@ -19,7 +20,7 @@ import {
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { ethErrors } from 'eth-rpc-errors';
-import { groupBy, isNull } from 'lodash';
+import { groupBy, isNull, omit, pick } from 'lodash';
 import 'reflect-metadata';
 import browser from 'webextension-polyfill';
 import BigNumber from 'bignumber.js';
@@ -437,7 +438,7 @@ browser.runtime.onConnect.addListener((port) => {
     });
   });
 
-  pm.listen(async (data) => {
+  pm.listen(async (_data) => {
     if (!appStoreLoaded) {
       throw ethErrors.provider.disconnected();
     }
@@ -448,6 +449,16 @@ browser.runtime.onConnect.addListener((port) => {
     }
     const origin = getOriginFromUrl(port.sender.url);
     const session = sessionService.getOrCreateSession(sessionId, origin);
+
+    let data = _data;
+    if (origin !== INTERNAL_REQUEST_ORIGIN) {
+      if (data?.$ctx?.providers?.length) {
+        data.$ctx = pick(data.$ctx, 'providers');
+      } else {
+        data = omit(data, '$ctx');
+      }
+    }
+
     const req = {
       data,
       session,

@@ -116,8 +116,8 @@ const normalizeHex = (value: string | number) => {
   return value;
 };
 
-export const normalizeTxParams = (tx) => {
-  const copy = tx;
+export const normalizeTxParams = (tx, isDapp?: boolean) => {
+  let copy = tx;
   try {
     if ('nonce' in copy && isStringOrNumber(copy.nonce)) {
       copy.nonce = normalizeHex(copy.nonce);
@@ -157,6 +157,19 @@ export const normalizeTxParams = (tx) => {
       copy.authorizationList = copy.authorizationList.map((item) => {
         return normalizeHex(item);
       });
+    }
+
+    if (isDapp) {
+      copy = omit(copy, [
+        'isSpeedUp',
+        'isCancel',
+        'isSend',
+        'isSwap',
+        'isBridge',
+        'swapPreferMEVGuarded',
+        'isViewGnosisSafe',
+        'reqId',
+      ]);
     }
   } catch (e) {
     Sentry.captureException(
@@ -599,10 +612,20 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     safeTxGas,
     authorizationList,
   } = useMemo(() => {
-    return normalizeTxParams(params.data[0]);
+    return normalizeTxParams(
+      params.data[0],
+      origin !== INTERNAL_REQUEST_ORIGIN
+    );
   }, [params.data]);
 
   const is7702 = is7702Tx({ authorizationList } as any);
+
+  if (
+    (is7702 || params?.$ctx?.eip7702Revoke) &&
+    origin !== INTERNAL_REQUEST_ORIGIN
+  ) {
+    return <EIP7702Warning />;
+  }
 
   if (is7702 && !(isSpeedUp || params?.$ctx?.eip7702Revoke)) {
     return <EIP7702Warning />;
