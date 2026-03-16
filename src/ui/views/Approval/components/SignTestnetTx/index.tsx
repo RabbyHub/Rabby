@@ -16,6 +16,7 @@ import {
   DEFAULT_GAS_LIMIT_BUFFER,
   DEFAULT_GAS_LIMIT_RATIO,
   HARDWARE_KEYRING_TYPES,
+  INTERNAL_REQUEST_ORIGIN,
   KEYRING_CATEGORY_MAP,
   KEYRING_CLASS,
   KEYRING_TYPE,
@@ -230,7 +231,7 @@ export const SignTestnetTx = ({
     isViewGnosisSafe,
     reqId,
     safeTxGas,
-  } = normalizeTxParams(params.data[0]);
+  } = normalizeTxParams(params.data[0], origin !== INTERNAL_REQUEST_ORIGIN);
 
   const wallet = useWallet();
   const chainId = +params?.data?.[0]?.chainId;
