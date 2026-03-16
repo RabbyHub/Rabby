@@ -27,15 +27,13 @@ import {
 import clsx from 'clsx';
 import { MarketData } from '@/ui/models/perps';
 import { useTranslation } from 'react-i18next';
-// local formatter to avoid cross-screen import
+import dayjs from 'dayjs';
+import { splitNumberByStep, useWallet } from '@/ui/utils';
+import { ReactComponent as RcIconFullscreen } from '@/ui/assets/perps/Iconfullscreen.svg';
+
 const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
 };
-import { splitNumberByStep, useWallet } from '@/ui/utils';
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/perps/Iconfullscreen.svg';
-import { formatLocalDateTime } from '../../DesktopPerps/components/ChartArea/components/ChartWrapper';
-import { obj2query } from '@/ui/utils/url';
-import { useRabbySelector } from '@/ui/store';
 
 export type ChartProps = {
   coin: string;
@@ -118,6 +116,19 @@ const timeToDate = (time: Time): Date => {
 
   const { year, month, day } = time;
   return new Date(year, (month || 1) - 1, day || 1);
+};
+
+const formatLocalDateTime = (time: Time, noTime = false): string => {
+  const date = timeToDate(time);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  if (noTime) {
+    return dayjs(date).format('YYYY/MM/DD');
+  }
+
+  return dayjs(date).format('YYYY/MM/DD HH:mm');
 };
 
 const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
