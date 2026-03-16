@@ -230,7 +230,7 @@ export const AddNewAddress: React.FC<{
   React.useEffect(() => {
     setExpandedMap((prev) =>
       groups.reduce((acc, group) => {
-        acc[group.key] = prev[group.key] ?? group.totalBalance > 0;
+        acc[group.key] = prev[group.key] ?? true;
         return acc;
       }, {} as Record<string, boolean>)
     );

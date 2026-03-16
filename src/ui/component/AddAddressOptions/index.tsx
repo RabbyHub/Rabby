@@ -16,6 +16,9 @@ import {
   RcAddAddressOptionHardwareIcon,
   RcAddAddressOptionWatchIcon,
 } from '@/ui/assets/add-address';
+import { UseSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
+import { message } from 'antd';
+import { useCreateAddressActions } from '@/ui/views/AddAddress/useCreateAddress';
 
 type AddAddressOption = {
   key: string;
@@ -68,6 +71,11 @@ const AddAddressOptions: React.FC<{
   const location = useLocation();
   const { t } = useTranslation();
   const { connectRouter } = useAddAddressWalletOptions({ onNavigate });
+  const { seedPhraseList } = UseSeedPhrase();
+
+  const { createNewSeedPhrase } = useCreateAddressActions({
+    onNavigate,
+  });
 
   const [preventMount, setPreventMount] = React.useState(true);
 
@@ -94,17 +102,41 @@ const AddAddressOptions: React.FC<{
     setPreventMount(false);
   }, [location.state, connectRouter]);
 
+  const pendingRef = React.useRef(false);
+
+  const setPendingAction = React.useCallback((action: boolean) => {
+    pendingRef.current = action;
+  }, []);
+
   const options = React.useMemo<AddAddressOption[]>(
     () => [
       {
         key: 'add-new-address',
         label: t('page.newAddress.addNewAddress'),
         icon: <RcAddAddressOptionCreateIcon />,
-        onClick: () => {
-          if (UI_TYPE.isDesktop) {
-            onNavigate?.('add-new-address');
+        onClick: async () => {
+          if (pendingRef.current) {
+            return;
+          }
+          if (seedPhraseList?.length > 0) {
+            if (UI_TYPE.isDesktop) {
+              onNavigate?.('add-new-address');
+            } else {
+              history.push('/add-address/new-address');
+            }
           } else {
-            history.push('/add-address/new-address');
+            try {
+              setPendingAction(true);
+              await createNewSeedPhrase();
+            } catch (error) {
+              message.error(
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to create seed phrase'
+              );
+            } finally {
+              setPendingAction(false);
+            }
           }
         },
       },
@@ -157,7 +189,7 @@ const AddAddressOptions: React.FC<{
         },
       },
     ],
-    [history, onNavigate, t]
+    [history, onNavigate, t, createNewSeedPhrase, seedPhraseList?.length]
   );
 
   if (preventMount) {
