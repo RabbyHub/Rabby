@@ -1998,7 +1998,7 @@
       "addressAdded": "Alamat Ditambahkan",
       "newAddressAdded": "Alamat Baru Ditambahkan",
       "newAddressCreated": "Alamat Baru Dibuat",
-      "watchAddress": "Tautan Alamat",
+      "watchAddress": "",
       "bulkImportPrivateKey": "Impor massal kunci privat",
       "duplicateAddressesSkippedDesc_other": "{{count}} alamat dilewati karena sudah ada.",
       "openExtensionToGetStarted": "Buka ekstensi Rabby untuk memulai",

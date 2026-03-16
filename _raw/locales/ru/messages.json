@@ -1907,7 +1907,7 @@
       "addMoreAddresses": "Добавить больше адресов",
       "createANewSeedPhrase": "Создать новую семенную фразу",
       "addressAddedCount_other": "{{count}} Адреса Добавлены",
-      "watchAddress": "Смотреть адрес",
+      "watchAddress": "",
       "privateKeyTab": "Частный ключ",
       "bulkImportPrivateKey": "Массовый импорт приватного ключа",
       "newAddressCreated": "Создан новый адрес",

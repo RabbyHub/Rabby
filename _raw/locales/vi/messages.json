@@ -1996,7 +1996,7 @@
       "moreWallets": "Nhiều Ví",
       "addressImported": "Địa chỉ đã được nhập",
       "privateKeyTab": "Khóa riêng tư",
-      "watchAddress": "Theo dõi Địa chỉ",
+      "watchAddress": "",
       "newAddressCreated": "Địa chỉ mới đã được tạo",
       "addressAdded": "Địa chỉ đã được thêm",
       "bulkImportPrivateKeyInputTab": "Nhập Khóa Riêng",

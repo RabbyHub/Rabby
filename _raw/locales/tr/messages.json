@@ -1909,7 +1909,7 @@
       "importMoreWallets": "Daha Fazla Adres Ekle",
       "addMoreAddresses": "Daha Fazla Adres Ekle",
       "bulkImportPrivateKeyInputTab": "Özel Anahtarı Girin",
-      "watchAddress": "Adres Takip Et",
+      "watchAddress": "",
       "openExtensionToGetStarted": "Rabby uzantısını açarak başlayın",
       "addressAdded": "Adres Eklendi",
       "addressImported": "Adres İçe Aktarıldı",

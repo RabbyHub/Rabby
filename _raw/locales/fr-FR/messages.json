@@ -1592,7 +1592,7 @@
       "privateKeyTab": "Clé Privée",
       "newSeedPhraseCreated": "Nouvelle phrase de récupération créée",
       "addressAdded": "Adresse ajoutée",
-      "watchAddress": "Regarder l'adresse",
+      "watchAddress": "",
       "addressImported": "Adresse importée",
       "bulkImportPrivateKeyInputTab": "Entrez la clé privée",
       "imported": "Importé avant",

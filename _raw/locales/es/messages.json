@@ -1913,7 +1913,7 @@
       "privateKeyTab": "Clave Privada",
       "addressAdded": "Dirección añadida",
       "newSeedPhraseCreated": "Nueva frase semilla creada",
-      "watchAddress": "Ver dirección",
+      "watchAddress": "",
       "bulkImportPrivateKey": "Importar en masa la clave privada",
       "duplicateAddressesSkippedDesc_one": "{{count}} dirección fue omitida porque ya existe.",
       "bulkImportPrivateKeyPlaceholder": "Cada clave privada debe estar separada por un nueva línea o un carácter especial.",

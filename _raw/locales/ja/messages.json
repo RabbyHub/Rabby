@@ -1909,7 +1909,7 @@
       "seedPhraseTab": "シードフレーズ",
       "addressImported": "アドレスがインポートされました",
       "addressAddedCount_one": "{{count}} アドレスが追加されました",
-      "watchAddress": "アドレスを監視する",
+      "watchAddress": "",
       "privateKeyTab": "プライベートキー",
       "bulkImportPrivateKeyInputTab": "プライベートキーを入力してください",
       "newSeedPhraseCreated": "新しいシードフレーズが作成されました",
