@@ -824,11 +824,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
                           {t('page.dashboard.home.soon')}
                         </div>
                       )}
-                      {activeItem.isFullscreen && (
+                      {/* {{activeItem.isFullscreen && (
                         <div className="absolute top-[6px] right-[6px] opacity-50 text-r-neutral-foot hidden group-hover:block">
                           <RcIconExternal1CC />
                         </div>
-                      )}
+                      )}} */}
                     </div>
                   </div>
                 ) : null}
