@@ -11,7 +11,7 @@ import { openInternalPageInTab } from 'ui/utils/webapi';
 import { EVENTS, KEYRING_CLASS } from 'consts';
 import IconWalletconnect from 'ui/assets/walletconnect.svg';
 import IconScan from 'ui/assets/scan.svg';
-import IconArrowDown from 'ui/assets/big-arrow-down.svg';
+import { ReactComponent as RcIconArrowDown } from 'ui/assets/big-arrow-down.svg';
 import IconEnter from 'ui/assets/enter.svg';
 import { useMedia } from 'react-use';
 import clsx from 'clsx';
@@ -22,6 +22,7 @@ import eventBus from '@/eventBus';
 import { safeJSONParse } from '@/utils';
 import WatchLogo from 'ui/assets/watch-only-hero.svg';
 import { useCreateAddressActions } from './AddAddress/useCreateAddress';
+import { RcWatchAddressScan } from '../assets/add-address';
 
 const ImportWatchAddress: React.FC<{
   isInModal?: boolean;
@@ -34,11 +35,8 @@ const ImportWatchAddress: React.FC<{
   const { openSuccessPage } = useCreateAddressActions({ onNavigate });
   const [form] = Form.useForm();
   const [disableKeydown, setDisableKeydown] = useState(false);
-  const [walletconnectModalVisible, setWalletconnectModalVisible] = useState(
-    false
-  );
+
   const [QRScanModalVisible, setQRScanModalVisible] = useState(false);
-  const [walletconnectUri, setWalletconnectUri] = useState('');
   const [ensResult, setEnsResult] = useState<null | {
     addr: string;
     name: string;
@@ -110,7 +108,6 @@ const ImportWatchAddress: React.FC<{
     if (isValidAddress(address)) {
       setIsValidAddr(true);
     }
-    setWalletconnectModalVisible(false);
   }, []);
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -126,15 +123,7 @@ const ImportWatchAddress: React.FC<{
       );
     };
   }, [handleKeyDown]);
-  const handleImportByWalletconnect = async () => {
-    const uri = await wallet.walletConnectScanAccount();
 
-    setWalletconnectUri(uri!);
-    setWalletconnectModalVisible(true);
-  };
-  const handleWalletconnectModalCancel = () => {
-    setWalletconnectModalVisible(false);
-  };
   const handleScanQRCodeSuccess = (data) => {
     form.setFieldsValue({
       address: data,
@@ -257,15 +246,23 @@ const ImportWatchAddress: React.FC<{
               },
             ]}
           >
-            <Input.TextArea
-              placeholder={t('page.newAddress.addContacts.addressEns')}
-              maxLength={44}
-              size="large"
-              className="border-bright-on-active leading-normal"
-              autoFocus
-              autoSize
-              spellCheck={false}
-            />
+            <div className="relative">
+              <Input.TextArea
+                placeholder={t('page.newAddress.addContacts.addressEns')}
+                maxLength={44}
+                size="large"
+                className="border-bright-on-active leading-normal min-h-[100px]"
+                autoFocus
+                autoSize
+                spellCheck={false}
+              />
+              <div
+                className="absolute right-[16px] bottom-[16px] flex items-center justify-center cursor-pointer"
+                onClick={handleImportByQrcode}
+              >
+                <RcWatchAddressScan />
+              </div>
+            </div>
           </Form.Item>
           {tags.length > 0 && (
             <ul className="tags">
@@ -288,62 +285,24 @@ const ImportWatchAddress: React.FC<{
             </div>
           )}
         </div>
-        <div className="flex justify-between px-20">
-          <div
-            className="w-[172px] import-watchmode__button"
-            onClick={handleImportByWalletconnect}
-          >
-            <img src={IconWalletconnect} className="icon icon-walletconnect" />
-            {t('page.newAddress.addContacts.scanViaMobileWallet')}
-          </div>
-          <div
-            className="w-[172px] import-watchmode__button"
-            onClick={handleImportByQrcode}
-          >
-            <img src={IconScan} className="icon icon-walletconnect" />
-            {t('page.newAddress.addContacts.scanViaPcCamera')}
-          </div>
-        </div>
       </div>
       <ModalComponent
         closable={false}
-        height={400}
-        className="walletconnect-modal"
-        visible={walletconnectModalVisible}
-        onCancel={handleWalletconnectModalCancel}
-        // width={360}
-      >
-        <p className="guide">{t('page.newAddress.addContacts.scanQRCode')}</p>
-        <div className="symbol">
-          <img src={IconWalletconnect} className="icon icon-walletconnect" />
-          {t('page.newAddress.addContacts.walletConnect')}
-        </div>
-        {walletconnectUri && (
-          <>
-            <div className="qrcode">
-              <QRCode value={walletconnectUri} size={176} />
-            </div>
-            <div className="text-12 text-r-neutral-foot text-center mt-12">
-              {t('page.newAddress.addContacts.walletConnectVPN')}
-            </div>
-          </>
-        )}
-      </ModalComponent>
-      <ModalComponent
-        closable={false}
-        height={400}
+        height={448}
         className="walletconnect-modal"
         visible={QRScanModalVisible}
         onCancel={handleQRScanModalCancel}
         // width={360}
         destroyOnClose
       >
-        <p className="guide">{t('page.newAddress.addContacts.cameraTitle')}</p>
-        <img src={IconArrowDown} className="icon icon-arrow-down" />
-        <div className="qrcode">
+        <p className="guide text-20 font-medium text-r-neutral-title1">
+          {t('page.newAddress.addContacts.cameraTitle')}
+        </p>
+        <RcIconArrowDown className="icon icon-arrow-down" />
+        <div className="qrcode border-none w-[260px] h-[260px] mx-auto p-0">
           <QRCodeReader
-            width={176}
-            height={176}
+            width={260}
+            height={260}
             onSuccess={handleScanQRCodeSuccess}
             onError={handleScanQRCodeError}
           />

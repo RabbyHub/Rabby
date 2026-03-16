@@ -24,3 +24,4 @@ export { ReactComponent as RcAddMoreAddressesSheetInnerIcon } from './add-more-s
 export { ReactComponent as RcAddMoreAddressesSheetUncheckedIcon } from './add-more-sheet-radio-unchecked.svg';
 
 export { ReactComponent as RcBulkImportArrowCC } from './bulk-import-arrow.svg';
+export { ReactComponent as RcWatchAddressScan } from './scan.svg';
