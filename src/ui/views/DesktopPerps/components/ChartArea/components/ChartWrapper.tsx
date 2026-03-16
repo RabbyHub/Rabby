@@ -1,57 +1,19 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
-  CandlestickSeries,
-  createChart,
-  IChartApi,
-  ISeriesApi,
-  CandlestickData,
-  UTCTimestamp,
-  ColorType,
-  IPriceLine,
-  CrosshairMode,
-  TickMarkType,
-  HistogramSeries,
-  HistogramData,
-} from 'lightweight-charts';
-import type { Time } from 'lightweight-charts';
+import React, { useEffect, useMemo, useState } from 'react';
+import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
+import { splitNumberByStep } from '@/ui/utils';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useRabbySelector } from '@/ui/store';
-import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import type { Candle, CandleSnapshot } from '@rabby-wallet/hyperliquid-sdk';
-import { splitNumberByStep } from '@/ui/utils';
-import clsx from 'clsx';
-import { useMemoizedFn } from 'ahooks';
+import {
+  normalizeTradingViewLocale,
+  TradingViewHoverData,
+  TradingViewIframeChart,
+} from '@/ui/views/Perps/components/TradingViewIframeChart';
 import { isScreenSmall } from '../../../utils';
-
-// Type for pending chart data
-interface PendingChartData {
-  candles: CandlestickData<UTCTimestamp>[];
-  volumes: HistogramData<UTCTimestamp>[];
-  dataKey: string; // Used to identify which coin/interval this data belongs to
-}
 
 interface ChartWrapperProps {
   coin: string;
   interval: string;
-}
-
-export interface ChartHoverData {
-  time?: string;
-  open?: number;
-  high?: number;
-  low?: number;
-  close?: number;
-  volume?: number;
-  isPositiveChange?: boolean;
-  delta?: number;
-  deltaPercent?: number;
-  visible: boolean;
 }
 
 type IntervalKey =
@@ -62,204 +24,8 @@ type IntervalKey =
   | '1h'
   | '4h'
   | '8h'
-  | '12h'
   | '1d'
   | '1w';
-
-// Utility functions
-const toUtc = (t: number): UTCTimestamp => Math.floor(t) as UTCTimestamp;
-
-const padZero = (value: number) => String(value).padStart(2, '0');
-
-const timeToDate = (time: Time): Date => {
-  if (typeof time === 'number') {
-    return new Date(time * 1000);
-  }
-  if (typeof time === 'string') {
-    return new Date(time);
-  }
-  const { year, month, day } = time;
-  return new Date(year, (month || 1) - 1, day || 1);
-};
-
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-
-export const formatLocalDateTime = (time: Time, noTime = false): string => {
-  const date = timeToDate(time);
-  const dow = DAYS[date.getDay()];
-  const day = padZero(date.getDate());
-  const mon = MONTHS[date.getMonth()];
-  const year = String(date.getFullYear()).slice(-2);
-  const hours = padZero(date.getHours());
-  const minutes = padZero(date.getMinutes());
-  return noTime
-    ? `${dow} ${day} ${mon} '${year}`
-    : `${dow} ${day} ${mon} '${year} ${hours}:${minutes}`;
-};
-
-const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
-  const year = String(date.getFullYear()).slice(-2);
-  const mon = MONTHS[date.getMonth()];
-  const day = padZero(date.getDate());
-  const hours = padZero(date.getHours());
-  const minutes = padZero(date.getMinutes());
-  const seconds = padZero(date.getSeconds());
-
-  switch (tickMarkType) {
-    case TickMarkType.Year:
-      return String(date.getFullYear());
-    case TickMarkType.Month:
-      return `${mon} '${year}`;
-    case TickMarkType.DayOfMonth:
-      return `${day} ${mon}`;
-    case TickMarkType.TimeWithSeconds:
-      return `${hours}:${minutes}:${seconds}`;
-    case TickMarkType.Time:
-      return `${hours}:${minutes}`;
-    default:
-      return `${day} ${mon} '${year}`;
-  }
-};
-
-const createTimeLocalization = (noTime = false) => {
-  const formatTick = (time: Time, tickMarkType: TickMarkType): string =>
-    formatTickLabel(timeToDate(time), tickMarkType);
-
-  const formatHover = (time: Time): string => formatLocalDateTime(time, noTime);
-
-  return {
-    locale: 'en-US',
-    formatHover,
-    formatTick,
-  };
-};
-
-const parseCandles = (
-  data: CandleSnapshot
-): CandlestickData<UTCTimestamp>[] => {
-  if (!data || !Array.isArray(data) || data.length === 0) {
-    return [];
-  }
-
-  return data.map((row: Candle) => ({
-    time: toUtc(Number(row.t) / 1000),
-    open: Number(row.o),
-    high: Number(row.h),
-    low: Number(row.l),
-    close: Number(row.c),
-  }));
-};
-
-const parseVolumes = (data: CandleSnapshot): HistogramData<UTCTimestamp>[] => {
-  if (!data || !Array.isArray(data) || data.length === 0) {
-    return [];
-  }
-
-  return data.map((row: Candle) => {
-    const volume = Number(row.v || 0);
-
-    return {
-      time: toUtc(Number(row.t) / 1000),
-      value: volume,
-      color: Number(row.c) >= Number(row.o) ? '#0ECB8180' : '#F6465D80',
-    };
-  });
-};
-
-// Get the Monday 00:00 UTC timestamp for the week containing the given timestamp
-const getMondayUtc = (utcSeconds: number): UTCTimestamp => {
-  const date = new Date(utcSeconds * 1000);
-  const day = date.getUTCDay(); // 0=Sun,1=Mon,...,6=Sat
-  const diffDays = day === 0 ? -6 : 1 - day;
-  date.setUTCDate(date.getUTCDate() + diffDays);
-  date.setUTCHours(0, 0, 0, 0);
-  return Math.floor(date.getTime() / 1000) as UTCTimestamp;
-};
-
-// Aggregate daily candles into Monday-start weekly candles with correct OHLC
-const aggregateDailyToWeekly = (
-  dailyCandles: CandlestickData<UTCTimestamp>[]
-): CandlestickData<UTCTimestamp>[] => {
-  if (dailyCandles.length === 0) return [];
-
-  const weeks = new Map<number, CandlestickData<UTCTimestamp>>();
-
-  for (const candle of dailyCandles) {
-    const mondayTs = getMondayUtc(candle.time as number);
-    const existing = weeks.get(mondayTs);
-    if (existing) {
-      existing.high = Math.max(existing.high, candle.high);
-      existing.low = Math.min(existing.low, candle.low);
-      existing.close = candle.close;
-    } else {
-      weeks.set(mondayTs, {
-        time: mondayTs,
-        open: candle.open,
-        high: candle.high,
-        low: candle.low,
-        close: candle.close,
-      });
-    }
-  }
-
-  return Array.from(weeks.values()).sort(
-    (a, b) => (a.time as number) - (b.time as number)
-  );
-};
-
-// Aggregate daily volumes into Monday-start weekly volumes
-const aggregateDailyVolumesToWeekly = (
-  dailyVolumes: HistogramData<UTCTimestamp>[],
-  dailyCandles: CandlestickData<UTCTimestamp>[]
-): HistogramData<UTCTimestamp>[] => {
-  if (dailyVolumes.length === 0) return [];
-
-  const weeks = new Map<
-    number,
-    { value: number; lastClose: number; lastOpen: number }
-  >();
-
-  for (let i = 0; i < dailyVolumes.length; i++) {
-    const vol = dailyVolumes[i];
-    const candle = dailyCandles[i];
-    const mondayTs = getMondayUtc(vol.time as number);
-    const existing = weeks.get(mondayTs);
-    if (existing) {
-      existing.value += vol.value;
-      if (candle) {
-        existing.lastClose = candle.close;
-      }
-    } else {
-      weeks.set(mondayTs, {
-        value: vol.value,
-        lastClose: candle?.close || 0,
-        lastOpen: candle?.open || 0,
-      });
-    }
-  }
-
-  return Array.from(weeks.entries())
-    .sort(([a], [b]) => a - b)
-    .map(([mondayTs, data]) => ({
-      time: mondayTs as UTCTimestamp,
-      value: data.value,
-      color: data.lastClose >= data.lastOpen ? '#0ECB8180' : '#F6465D80',
-    }));
-};
 
 const INTERVAL_OPTIONS: Array<{ label: string; value: IntervalKey }> = [
   { label: '1M', value: '1m' },
@@ -269,77 +35,11 @@ const INTERVAL_OPTIONS: Array<{ label: string; value: IntervalKey }> = [
   { label: '1H', value: '1h' },
   { label: '4H', value: '4h' },
   { label: '8H', value: '8h' },
-  // { label: '12H', value: '12h' },
   { label: '1D', value: '1d' },
   { label: '1W', value: '1w' },
 ];
 
-const getThemeColors = (isDark: boolean) =>
-  isDark
-    ? {
-        vertLineColor: 'rgba(255, 255, 255, 0.1)',
-        horzLineColor: 'rgba(255, 255, 255, 0.1)',
-        textColor: 'rgba(247, 250, 252, 1)',
-        priceLineColor: 'rgba(255, 255, 255, 1)',
-        crosshairVertLineColor: 'rgba(186, 190, 197, 1)',
-        bgColor: 'transparent',
-        redLineColor: 'rgba(227, 73, 53, 1)',
-        timeLabelBackgroundColor: 'rgba(12, 15, 31, 1)',
-        greenLineColor: 'rgba(42, 187, 127, 1)',
-      }
-    : {
-        vertLineColor: 'rgba(46, 46, 46, 0.1)',
-        horzLineColor: 'rgba(46, 46, 46, 0.1)',
-        textColor: 'rgba(25, 41, 69, 1)',
-        priceLineColor: 'rgba(12, 15, 31, 1)',
-        crosshairVertLineColor: 'rgba(106, 117, 135, 1)',
-        redLineColor: 'rgba(227, 73, 53, 1)',
-        greenLineColor: 'rgba(42, 187, 127, 1)',
-        timeLabelBackgroundColor: 'rgba(255, 255, 255, 1)',
-        bgColor: 'transparent',
-      };
-
-// Get time range based on interval
-const getTimeRange = (interval: string) => {
-  const end = Date.now();
-  let start = 0;
-
-  switch (interval) {
-    case '1m':
-      start = end - 1 * 24 * 60 * 60 * 1000; // 1 day
-      break;
-    case '5m':
-      start = end - 1 * 24 * 60 * 60 * 1000; // 1 day
-      break;
-    case '15m':
-      start = end - 7 * 24 * 60 * 60 * 1000; // 1 week
-      break;
-    case '30m':
-      start = end - 7 * 24 * 60 * 60 * 1000; // 1 week
-      break;
-    case '1h':
-      start = end - 1 * 30 * 24 * 60 * 60 * 1000; // 1 month
-      break;
-    case '4h':
-      start = end - 4 * 30 * 24 * 60 * 60 * 1000; // 4 months
-      break;
-    case '8h':
-    case '12h':
-      start = end - 8 * 30 * 24 * 60 * 60 * 1000; // 4 months
-      break;
-
-    case '1d':
-      start = end - 12 * 30 * 24 * 60 * 60 * 1000; // 1 year
-      break;
-    case '1w':
-      start = 0; // All available data
-      break;
-    default:
-      start = end - 7 * 24 * 60 * 60 * 1000; // Default 1 week
-  }
-
-  return { start, end };
-};
+const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
 
 export const ChartWrapper: React.FC<ChartWrapperProps> = ({
   coin,
@@ -348,32 +48,33 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
   const { marketDataMap, clearinghouseState, openOrders } = useRabbySelector(
     (state) => state.perps
   );
+  const { isDarkTheme } = useThemeMode();
+  const { i18n } = useTranslation();
+
   const currentMarketData = useMemo(() => {
     return marketDataMap[coin] || {};
   }, [marketDataMap, coin]);
+
   const pxDecimals = useMemo(() => {
     return currentMarketData.pxDecimals || 2;
   }, [currentMarketData]);
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<IChartApi | null>(null);
-  const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
-  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
-  const priceLineRefs = useRef<{
-    tp?: IPriceLine;
-    sl?: IPriceLine;
-    liquidation?: IPriceLine;
-    entry?: IPriceLine;
-  }>({});
-  const isMountedRef = useRef(true);
-  const currentWeekCandleRef = useRef<CandlestickData<UTCTimestamp> | null>(
+
+  const [selectedInterval, setSelectedInterval] = useState<IntervalKey>(
+    (propInterval as IntervalKey) || '15m'
+  );
+  const [chartHoverData, setChartHoverData] = useState<TradingViewHoverData>({
+    visible: false,
+  });
+  const [latestCandle, setLatestCandle] = useState<TradingViewHoverData | null>(
     null
   );
-  const currentWeekVolumeRef = useRef<HistogramData<UTCTimestamp> | null>(null);
-  // Track last daily volume to avoid re-accumulating on same-day WS updates
-  const lastDailyVolumeRef = useRef<{ time: number; value: number } | null>(
-    null
-  );
-  const { isDarkTheme } = useThemeMode();
+
+  useEffect(() => {
+    if (propInterval && propInterval !== selectedInterval) {
+      setSelectedInterval(propInterval as IntervalKey);
+    }
+  }, [propInterval, selectedInterval]);
+
   const lineTagInfo = useMemo(() => {
     const tpPrice = openOrders.find(
       (order) =>
@@ -403,548 +104,36 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       ),
       entryPrice: Number(entryPrice || 0),
     };
-  }, [currentMarketData, pxDecimals, openOrders, clearinghouseState, coin]);
-
-  const [selectedInterval, setSelectedInterval] = useState<string>(
-    propInterval || '15m'
-  );
-  const [chartHoverData, setChartHoverData] = useState<ChartHoverData>({
-    visible: false,
-  });
-  const [latestCandle, setLatestCandle] = useState<ChartHoverData | null>(null);
-
-  const [isChartReady, setIsChartReady] = useState(false);
-  const [pendingData, setPendingData] = useState<PendingChartData | null>(null);
-  const [isDataApplied, setIsDataApplied] = useState(false);
-
-  // Generate a unique key for the current coin/interval combination
-  const dataKey = useMemo(() => `${coin}-${selectedInterval}`, [
-    coin,
-    selectedInterval,
-  ]);
-
-  // Track expected dataKey to ignore stale requests
-  const expectedDataKeyRef = useRef<string>(dataKey);
-
-  const colors = useMemo(() => getThemeColors(isDarkTheme), [isDarkTheme]);
-  const isWeekly = selectedInterval === '1w';
-  const timeLocalization = useMemo(() => createTimeLocalization(isWeekly), [
-    isWeekly,
-  ]);
-
-  // Update price lines function
-  const updatePriceLines = useCallback(() => {
-    if (!seriesRef.current || !chartRef.current || !lineTagInfo) return;
-
-    // Clear existing price lines
-    Object.values(priceLineRefs.current).forEach((line) => {
-      if (line) {
-        seriesRef.current!.removePriceLine(line);
-      }
-    });
-    priceLineRefs.current = {};
-
-    // Add Take Profit line
-    if (lineTagInfo.tpPrice && lineTagInfo.tpPrice > 0) {
-      const tpLine = seriesRef.current.createPriceLine({
-        price: lineTagInfo.tpPrice,
-        color: colors.greenLineColor,
-        lineWidth: 1,
-        lineStyle: 2, // Dashed
-        axisLabelVisible: true,
-        title: 'TP',
-      });
-      priceLineRefs.current.tp = tpLine;
-    }
-
-    // Add Entry line
-    if (lineTagInfo.entryPrice && lineTagInfo.entryPrice > 0) {
-      const entryLine = seriesRef.current.createPriceLine({
-        price: lineTagInfo.entryPrice,
-        color: colors.greenLineColor,
-        lineWidth: 1,
-        lineStyle: 2, // Dashed
-        axisLabelVisible: true,
-        title: 'Entry',
-      });
-      priceLineRefs.current.entry = entryLine;
-    }
-
-    // Add Stop Loss line
-    if (lineTagInfo.slPrice && lineTagInfo.slPrice > 0) {
-      const slLine = seriesRef.current.createPriceLine({
-        price: lineTagInfo.slPrice,
-        color: colors.redLineColor,
-        lineWidth: 1,
-        lineStyle: 2, // Dashed
-        axisLabelVisible: true,
-        title: 'SL',
-      });
-      priceLineRefs.current.sl = slLine;
-    }
-
-    // Add Liquidation line
-    if (lineTagInfo.liquidationPrice && lineTagInfo.liquidationPrice > 0) {
-      const liquidationLine = seriesRef.current.createPriceLine({
-        price: lineTagInfo.liquidationPrice,
-        color: colors.redLineColor,
-        lineWidth: 1,
-        lineStyle: 2, // Dashed
-        axisLabelVisible: true,
-        title: 'LIQ',
-      });
-      priceLineRefs.current.liquidation = liquidationLine;
-    }
-  }, [
-    lineTagInfo.entryPrice,
-    lineTagInfo.tpPrice,
-    lineTagInfo.slPrice,
-    lineTagInfo.liquidationPrice,
-    colors,
-  ]);
-
-  // Initialize chart
-  useEffect(() => {
-    if (!chartContainerRef.current) return;
-
-    if (chartRef.current) {
-      chartRef.current.remove();
-    }
-
-    const getContainerDimensions = () => {
-      if (!chartContainerRef.current) {
-        return { width: 800, height: 400 }; // Fallback dimensions
-      }
-      const width = chartContainerRef.current.clientWidth || 800;
-      const height = chartContainerRef.current.clientHeight || 400;
-      return { width, height };
-    };
-
-    const { width, height } = getContainerDimensions();
-
-    const chart = createChart(chartContainerRef.current, {
-      width,
-      height,
-      layout: {
-        background: { type: ColorType.Solid, color: colors.bgColor },
-        textColor: colors.textColor,
-        attributionLogo: true,
-      },
-      crosshair: {
-        mode: CrosshairMode.Normal,
-        vertLine: {
-          visible: true,
-          color: colors.crosshairVertLineColor,
-          labelBackgroundColor: colors.timeLabelBackgroundColor,
-          width: 1,
-          style: 3,
-        },
-        horzLine: {
-          visible: true,
-          labelVisible: true,
-          color: colors.crosshairVertLineColor,
-          labelBackgroundColor: colors.timeLabelBackgroundColor,
-          width: 1,
-          style: 3,
-        },
-      },
-      grid: {
-        vertLines: { color: colors.vertLineColor },
-        horzLines: { color: colors.horzLineColor },
-      },
-      rightPriceScale: {
-        borderVisible: false,
-        scaleMargins: {
-          top: 0,
-          bottom: 0.3, // Leave space for volume at bottom
-        },
-      },
-      timeScale: {
-        timeVisible: true,
-        secondsVisible: false,
-        borderVisible: false,
-        tickMarkFormatter: (time, tickMarkType) =>
-          timeLocalization.formatTick(time, tickMarkType),
-      },
-      localization: {
-        priceFormatter: (price: number) => {
-          return Number(price).toFixed(pxDecimals);
-        },
-        timeFormatter: (time) => timeLocalization.formatHover(time),
-      },
-    });
-
-    const series = chart.addSeries(CandlestickSeries, {
-      upColor: '#0ECB81',
-      downColor: '#F6465D',
-      borderDownColor: '#F6465D',
-      borderUpColor: '#0ECB81',
-      wickDownColor: '#F6465D',
-      wickUpColor: '#0ECB81',
-      lastValueVisible: true,
-      priceLineVisible: true,
-      priceLineSource: 0,
-      priceLineWidth: 1,
-      priceLineColor: colors.priceLineColor,
-      priceLineStyle: 2, // Dashed
-      priceFormat: {
-        type: 'price',
-        precision: pxDecimals,
-        minMove: 0.0000001,
-      },
-    });
-
-    const volumeSeries = chart.addSeries(HistogramSeries, {
-      color: '#26a69a',
-      priceFormat: {
-        type: 'volume',
-      },
-      priceScaleId: 'volume',
-      lastValueVisible: false,
-      priceLineVisible: false,
-    });
-
-    chart.priceScale('volume').applyOptions({
-      scaleMargins: {
-        top: 0.7, // Volume takes bottom 25%
-        bottom: 0,
-      },
-      alignLabels: false,
-      autoScale: true,
-      mode: 0, // Normal mode (not logarithmic)
-      invertScale: false,
-      borderVisible: false,
-    });
-
-    chartRef.current = chart;
-    seriesRef.current = series;
-    volumeSeriesRef.current = volumeSeries;
-
-    setIsChartReady(true);
-
-    // Subscribe to crosshair move for hover data
-    chart.subscribeCrosshairMove((param) => {
-      if (param.point === undefined || !param.time || param.paneIndex !== 0) {
-        setChartHoverData({ visible: false });
-        return;
-      }
-
-      const data = param.seriesData.get(series);
-      const volumeData = param.seriesData.get(volumeSeries);
-      if (data) {
-        const candleData = data as CandlestickData;
-        const volumeValue = (volumeData as HistogramData)?.value || 0;
-        const timeStr = timeLocalization.formatHover(param.time as Time);
-
-        setChartHoverData({
-          time: timeStr,
-          open: candleData.open,
-          high: candleData.high,
-          low: candleData.low,
-          close: candleData.close,
-          volume: volumeValue,
-          visible: true,
-          isPositiveChange: candleData.close - candleData.open > 0,
-          delta: candleData.close - candleData.open,
-          deltaPercent: (candleData.close - candleData.open) / candleData.open,
-        });
-      }
-    });
-
-    // Handle resize using ResizeObserver for better container tracking
-    const handleResize = () => {
-      if (chartContainerRef.current && chartRef.current) {
-        const newWidth = chartContainerRef.current.offsetWidth || 800;
-        const newHeight = chartContainerRef.current.offsetHeight || 400;
-        chartRef.current.applyOptions({
-          width: newWidth,
-          height: newHeight,
-        });
-      }
-    };
-
-    let resizeObserver: ResizeObserver | null = null;
-    if (chartContainerRef.current) {
-      resizeObserver = new ResizeObserver(() => {
-        handleResize();
-      });
-      resizeObserver.observe(chartContainerRef.current);
-    }
-
-    window.addEventListener('resize', handleResize);
-
-    const timeoutId = setTimeout(() => {
-      handleResize();
-    }, 100);
-
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('resize', handleResize);
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
-      Object.values(priceLineRefs.current).forEach((line) => {
-        if (line && seriesRef.current) {
-          seriesRef.current.removePriceLine(line);
-        }
-      });
-      priceLineRefs.current = {};
-      chart.remove();
-      chartRef.current = null;
-      seriesRef.current = null;
-      volumeSeriesRef.current = null;
-
-      setIsChartReady(false);
-      setIsDataApplied(false);
-    };
-  }, [colors, pxDecimals, timeLocalization, isDarkTheme]);
-
-  const fetchData = useMemoizedFn(
-    async (targetCoin: string, targetInterval: string) => {
-      const sdk = getPerpsSDK();
-      const { start, end } = getTimeRange(targetInterval);
-      const currentDataKey = `${targetCoin}-${targetInterval}`;
-      const isWeekly = targetInterval === '1w';
-      // For weekly: fetch daily candles and aggregate client-side to start weeks on Monday
-      const fetchInterval = isWeekly ? '1d' : targetInterval;
-
-      try {
-        const snapshot = await sdk.info.candleSnapshot(
-          targetCoin,
-          fetchInterval,
-          start,
-          end
-        );
-
-        if (!isMountedRef.current) return;
-
-        // Ignore stale request - only apply if this is still the expected data
-        if (expectedDataKeyRef.current !== currentDataKey) {
-          return;
-        }
-
-        const dailyCandles = parseCandles(snapshot);
-        const dailyVolumes = parseVolumes(snapshot);
-
-        const candles = isWeekly
-          ? aggregateDailyToWeekly(dailyCandles)
-          : dailyCandles;
-        const volumes = isWeekly
-          ? aggregateDailyVolumesToWeekly(dailyVolumes, dailyCandles)
-          : dailyVolumes;
-
-        if (isWeekly && candles.length > 0) {
-          currentWeekCandleRef.current = { ...candles[candles.length - 1] };
-          currentWeekVolumeRef.current =
-            volumes.length > 0 ? { ...volumes[volumes.length - 1] } : null;
-          lastDailyVolumeRef.current = null;
-        }
-
-        setPendingData({
-          candles,
-          volumes,
-          dataKey: currentDataKey,
-        });
-      } catch (error) {
-        console.error('Failed to fetch candle data:', error);
-      }
-    }
-  );
+  }, [coin, openOrders, clearinghouseState, pxDecimals]);
 
   const showDisplayData = useMemo(() => {
     return chartHoverData.visible ? chartHoverData : latestCandle;
   }, [chartHoverData, latestCandle]);
 
-  useEffect(() => {
-    // Update expected dataKey BEFORE fetching to prevent stale requests
-    const newDataKey = `${coin}-${selectedInterval}`;
-    expectedDataKeyRef.current = newDataKey;
-
-    setIsDataApplied(false);
-    setPendingData(null);
-
-    fetchData(coin, selectedInterval);
-  }, [coin, selectedInterval, fetchData]);
-
-  useEffect(() => {
-    if (!isChartReady || !pendingData || isDataApplied) return;
-    if (!seriesRef.current || !volumeSeriesRef.current) return;
-
-    if (pendingData.dataKey !== dataKey) return;
-
-    const { candles, volumes } = pendingData;
-
-    if (candles.length > 0) {
-      seriesRef.current.setData(candles);
-      // Save latest candle data
-      const latest = candles[candles.length - 1];
-      const latestVolume = volumes[volumes.length - 1]?.value || 0;
-      setLatestCandle({
-        open: latest.open,
-        high: latest.high,
-        low: latest.low,
-        close: latest.close,
-        volume: latestVolume,
-        visible: false,
-        isPositiveChange: latest.close - latest.open > 0,
-        delta: latest.close - latest.open,
-        deltaPercent: (latest.close - latest.open) / latest.open,
-      });
-    }
-    if (volumes.length > 0) {
-      volumeSeriesRef.current.setData(volumes);
-    }
-
-    setIsDataApplied(true);
-  }, [isChartReady, pendingData, dataKey, isDataApplied]);
-
-  const subscribeCandle = useMemoizedFn(() => {
-    const sdk = getPerpsSDK();
-    if (!seriesRef.current || !volumeSeriesRef.current) return;
-
-    const isWeekly = selectedInterval === '1w';
-    // Subscribe to daily candles in weekly mode for correct Monday-based aggregation
-    const subscribeInterval = isWeekly ? '1d' : selectedInterval;
-
-    const { unsubscribe } = sdk.ws.subscribeToCandles(
-      coin,
-      subscribeInterval,
-      (snapshot) => {
-        // Check if component is still mounted before updating
-        if (
-          !isMountedRef.current ||
-          !seriesRef.current ||
-          !volumeSeriesRef.current
-        )
-          return;
-
-        const candles = parseCandles([snapshot]);
-        const volumes = parseVolumes([snapshot]);
-        if (candles.length === 0) return;
-
-        if (isWeekly) {
-          const daily = candles[0];
-          const dailyVolume = volumes[0];
-          const mondayTs = getMondayUtc(daily.time as number);
-
-          // Aggregate candle
-          const currentCandle = currentWeekCandleRef.current;
-          if (currentCandle && currentCandle.time === mondayTs) {
-            currentCandle.high = Math.max(currentCandle.high, daily.high);
-            currentCandle.low = Math.min(currentCandle.low, daily.low);
-            currentCandle.close = daily.close;
-          } else {
-            currentWeekCandleRef.current = {
-              time: mondayTs,
-              open: daily.open,
-              high: daily.high,
-              low: daily.low,
-              close: daily.close,
-            };
-          }
-          seriesRef.current?.update(currentWeekCandleRef.current!);
-
-          // Aggregate volume
-          if (dailyVolume) {
-            const dailyTime = daily.time as number;
-            const currentVolume = currentWeekVolumeRef.current;
-            const lastDaily = lastDailyVolumeRef.current;
-            const volumeColor =
-              currentWeekCandleRef.current!.close >=
-              currentWeekCandleRef.current!.open
-                ? '#0ECB8180'
-                : '#F6465D80';
-
-            if (currentVolume && currentVolume.time === mondayTs) {
-              // Same week: subtract previous value for this day, add new value
-              const prevDayValue =
-                lastDaily && lastDaily.time === dailyTime ? lastDaily.value : 0;
-              currentVolume.value =
-                currentVolume.value - prevDayValue + dailyVolume.value;
-              currentVolume.color = volumeColor;
-            } else {
-              currentWeekVolumeRef.current = {
-                time: mondayTs,
-                value: dailyVolume.value,
-                color: volumeColor,
-              };
-            }
-            lastDailyVolumeRef.current = {
-              time: dailyTime,
-              value: dailyVolume.value,
-            };
-            volumeSeriesRef.current?.update(currentWeekVolumeRef.current!);
-          }
-
-          // Update latest candle data
-          const wc = currentWeekCandleRef.current!;
-          const wv = currentWeekVolumeRef.current;
-          setLatestCandle({
-            open: wc.open,
-            high: wc.high,
-            low: wc.low,
-            close: wc.close,
-            volume: wv?.value || 0,
-            visible: false,
-            isPositiveChange: wc.close - wc.open > 0,
-            delta: wc.close - wc.open,
-            deltaPercent: (wc.close - wc.open) / wc.open,
-          });
-        } else {
-          const latest = candles[0];
-          const latestVolume = volumes[0]?.value || 0;
-          seriesRef.current?.update(latest);
-          setLatestCandle({
-            open: latest.open,
-            high: latest.high,
-            low: latest.low,
-            close: latest.close,
-            volume: latestVolume,
-            visible: false,
-            isPositiveChange: latest.close - latest.open > 0,
-            delta: latest.close - latest.open,
-            deltaPercent: (latest.close - latest.open) / latest.open,
-          });
-          if (volumes.length > 0) {
-            volumeSeriesRef.current?.update(volumes[0]);
-          }
-        }
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  });
-
-  useEffect(() => {
-    if (!isDataApplied || !seriesRef.current) return;
-
-    const unsubscribe = subscribeCandle();
-
-    return () => {
-      unsubscribe?.();
-    };
-  }, [isDataApplied, subscribeCandle, coin, selectedInterval]);
-
-  // Update price lines when lineTagInfo changes - only after data is applied
-  useEffect(() => {
-    if (!isDataApplied) return;
-    if (seriesRef.current && chartRef.current) {
-      updatePriceLines();
-    }
-  }, [updatePriceLines, isDataApplied]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
+  const chartLocale = useMemo(() => {
+    return normalizeTradingViewLocale(i18n.language);
+  }, [i18n.language]);
+  const chartTimezone = useMemo(() => {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Etc/UTC';
+  }, []);
+  const desktopWidgetConfig = useMemo(() => {
+    return {
+      disabled_features: [
+        'symbol_search_hot_key',
+        'header_symbol_search',
+        'header_settings',
+        'header_compare',
+        'header_undo_redo',
+        'header_screenshot',
+        'header_saveload',
+        'volume_force_overlay',
+      ],
+      enabled_features: ['iframe_loading_compatibility_mode'],
+      favorites: {
+        intervals: ['15', '60', '240', '1D', '1W'],
+      },
     };
   }, []);
-
-  const formatPercent = (value: number) => {
-    return `${(value * 100).toFixed(2)}%`;
-  };
 
   return (
     <div className="w-full h-full flex flex-col bg-rb-neutral-bg-1">
@@ -954,7 +143,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           isScreenSmall() ? 'flex-col gap-4' : 'flex-row gap-8 items-center'
         )}
       >
-        {/* Left: Interval selector */}
         <div className="flex gap-8 flex-shrink-0">
           {INTERVAL_OPTIONS.map((option) => (
             <button
@@ -985,7 +173,9 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                       : 'text-r-red-default'
                   )}
                 >
-                  {splitNumberByStep(showDisplayData.open || 0)}
+                  {splitNumberByStep(
+                    Number(showDisplayData.open || 0).toFixed(pxDecimals)
+                  )}
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center flex-shrink-0">
@@ -998,7 +188,9 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                       : 'text-r-red-default'
                   )}
                 >
-                  {splitNumberByStep(showDisplayData.high || 0)}
+                  {splitNumberByStep(
+                    Number(showDisplayData.high || 0).toFixed(pxDecimals)
+                  )}
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center flex-shrink-0">
@@ -1011,7 +203,9 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                       : 'text-r-red-default'
                   )}
                 >
-                  {splitNumberByStep(showDisplayData.low || 0)}
+                  {splitNumberByStep(
+                    Number(showDisplayData.low || 0).toFixed(pxDecimals)
+                  )}
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center flex-shrink-0">
@@ -1024,7 +218,9 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                       : 'text-r-red-default'
                   )}
                 >
-                  {splitNumberByStep(showDisplayData.close || 0)}
+                  {splitNumberByStep(
+                    Number(showDisplayData.close || 0).toFixed(pxDecimals)
+                  )}
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center flex-shrink-0">
@@ -1038,12 +234,11 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                   )}
                 >
                   {splitNumberByStep(
-                    Number(showDisplayData.volume?.toFixed(2) || 0)
+                    Number(showDisplayData.volume || 0).toFixed(2)
                   )}
                 </span>
               </div>
               <div className="flex flex-row items-center justify-center flex-shrink-0">
-                {/* <span className="text-13 text-r-neutral-foot"></span> */}
                 <span
                   className={clsx(
                     'text-13 font-medium',
@@ -1052,20 +247,38 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
                       : 'text-r-red-default'
                   )}
                 >
-                  {showDisplayData.isPositiveChange ? '+' : '-'}
+                  {showDisplayData.isPositiveChange ? '+' : '-'}$
                   {splitNumberByStep(
-                    Math.abs(showDisplayData.delta || 0).toFixed(pxDecimals)
+                    Math.abs(Number(showDisplayData.delta || 0)).toFixed(
+                      pxDecimals
+                    )
                   )}{' '}
-                  ({showDisplayData.isPositiveChange ? '+' : '-'}
-                  {formatPercent(Math.abs(showDisplayData.deltaPercent || 0))})
+                  ({showDisplayData.isPositiveChange ? '+' : ''}
+                  {formatPercent(showDisplayData.deltaPercent || 0)})
                 </span>
               </div>
             </>
-          ) : null}
+          ) : (
+            <div className="text-13 text-r-neutral-foot">Loading chart...</div>
+          )}
         </div>
       </div>
 
-      <div ref={chartContainerRef} className="flex-1 min-h-0" />
+      <div className="flex-1 min-h-0 p-8">
+        <TradingViewIframeChart
+          coin={coin}
+          interval={selectedInterval}
+          pxDecimals={pxDecimals}
+          isDarkTheme={isDarkTheme}
+          locale={chartLocale}
+          timezone={chartTimezone}
+          lineTagInfo={lineTagInfo}
+          widgetConfig={desktopWidgetConfig}
+          onHoverData={setChartHoverData}
+          onLatestBar={setLatestCandle}
+          className="w-full h-full rounded-[8px]"
+        />
+      </div>
     </div>
   );
 };
