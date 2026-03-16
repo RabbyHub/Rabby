@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dropdown, Menu, message, Select } from 'antd';
+import { Dropdown, Menu, message, Select, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { MarginMode, OrderType } from '../../../types';
 import { useRabbySelector } from '@/ui/store';
@@ -37,6 +37,9 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
     (state) => state.perps.selectedCoin || 'BTC'
   );
   const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
+  const clearinghouseState = useRabbySelector(
+    (state) => state.perps.clearinghouseState
+  );
   const currentMarketData = marketDataMap?.[selectedCoin] || null;
   const maxLeverage = currentMarketData?.maxLeverage || 25;
   const wsActiveAssetData = useRabbySelector(
@@ -75,8 +78,19 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
     setShowLeverageModal(true);
   };
 
+  const hasPosition = clearinghouseState?.assetPositions.some(
+    (p) => p.position.coin === selectedCoin && Number(p.position.szi) !== 0
+  );
+
+  const marginModeDisabledReason = currentMarketData?.onlyIsolated
+    ? t('page.perpsPro.marginMode.onlyIsolatedSupported')
+    : hasPosition
+    ? t('page.perps.cannotChangeMarginModeWithOpenPositions')
+    : null;
+
   // Handlers for top controls
   const handleMarginModeClick = () => {
+    if (marginModeDisabledReason) return;
     setShowMarginModeModal(true);
   };
 
@@ -100,14 +114,25 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
   return (
     <>
       <div className="flex items-center gap-[8px]">
-        <div
-          onClick={handleMarginModeClick}
-          className="h-[32px] w-[80px] rounded-[6px] flex items-center justify-center text-[13px] text-rb-neutral-title-1 border border-solid border-rb-neutral-line font-medium cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
+        <Tooltip
+          title={marginModeDisabledReason}
+          placement="top"
+          overlayClassName="rectangle w-[max-content]"
         >
-          {marginMode === MarginMode.ISOLATED
-            ? t('page.perpsPro.marginMode.isolated')
-            : t('page.perpsPro.marginMode.cross')}
-        </div>
+          <div
+            onClick={handleMarginModeClick}
+            className={clsx(
+              'h-[32px] w-[80px] rounded-[6px] flex items-center justify-center text-[13px] font-medium border border-solid',
+              marginModeDisabledReason
+                ? 'text-rb-neutral-foot border-rb-neutral-line cursor-not-allowed opacity-60'
+                : 'text-rb-neutral-title-1 border-rb-neutral-line cursor-pointer hover:border-rb-brand-default'
+            )}
+          >
+            {marginMode === MarginMode.ISOLATED
+              ? t('page.perpsPro.marginMode.isolated')
+              : t('page.perpsPro.marginMode.cross')}
+          </div>
+        </Tooltip>
 
         <div
           onClick={handleLeverageClick}

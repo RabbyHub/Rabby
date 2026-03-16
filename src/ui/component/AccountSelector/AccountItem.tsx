@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import {
   BRAND_ALIAN_TYPE_TEXT,
   KEYRING_CLASS,
+  KEYRING_TYPE,
   KEYRING_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
 } from 'consts';
@@ -277,7 +278,7 @@ export const AccountItem = memo(
           <div className="relative flex-none">
             <img
               src={cexLogo || addressTypeIcon}
-              className={'w-[28px] h-[28px] rounded-full'}
+              className={clsx('w-[28px] h-[28px]')}
             />
             {showWhitelistIcon ? (
               <Tooltip
@@ -305,7 +306,8 @@ export const AccountItem = memo(
               <>
                 <div
                   className={clsx(
-                    'text-r-neutral-title1 font-medium leading-[20px] text-[16px]'
+                    'text-r-neutral-title1 font-medium leading-[20px] text-[16px]',
+                    'truncate'
                   )}
                   title={alias}
                 >
@@ -318,6 +320,7 @@ export const AccountItem = memo(
                       handleEditMemo();
                     }}
                     className={`
+                      pl-6
                       edit-pen
                       text-r-neutral-body transition-opacity duration-100 cursor-pointer
                       hover:text-r-blue-default

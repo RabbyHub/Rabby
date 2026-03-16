@@ -2,6 +2,13 @@ import { SvgIconCross } from '@/ui/assets';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import AddAddress from '@/ui/views/AddAddress';
+import { AddMoreAddressesFromSeedPhrase } from '@/ui/views/AddAddress/AddMoreAddressesFromSeedPhrase';
+import { AddNewAddress } from '@/ui/views/AddAddress/AddNewAddress';
+import { CreateAddressSuccess } from '@/ui/views/AddAddress/CreateAddressSuccess';
+import { HardwareWallets } from '@/ui/views/AddAddress/HardwareWallets';
+import ImportAddressSuccess from '@/ui/views/AddAddress/ImportAddressSuccess';
+import ImportKeyOrSeed from '@/ui/views/AddAddress/ImportKeyOrSeed';
+import { InstitutionalWallets } from '@/ui/views/AddAddress/InstitutionalWallets';
 import { AddFromCurrentSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase';
 import { ImportCoboArgus } from '@/ui/views/ImportCoboArgus/ImportCoboArgus';
 import { ImportCoinbase } from '@/ui/views/ImportCoinbase/ImportCoinbase';
@@ -98,6 +105,33 @@ const AddAddressModalContent: React.FC = () => {
     <PopupContainer>
       {importType === 'add-from-current-seed-phrase' ? (
         <AddFromCurrentSeedPhrase isInModal />
+      ) : importType === 'add-new-address' ? (
+        <AddNewAddress isInModal onBack={onBack} onNavigate={onNavigate} />
+      ) : importType === 'create-address-success' ? (
+        <CreateAddressSuccess isInModal onNavigate={onNavigate} state={state} />
+      ) : importType === 'import-address-success' ? (
+        <ImportAddressSuccess isInModal onNavigate={onNavigate} state={state} />
+      ) : importType === 'add-more-from-seed-phrase' ? (
+        <AddMoreAddressesFromSeedPhrase
+          isInModal
+          onNavigate={onNavigate}
+          state={state}
+        />
+      ) : importType === 'import-key-or-seed' ? (
+        <ImportKeyOrSeed
+          isInModal
+          onBack={onBack}
+          onNavigate={onNavigate}
+          state={state}
+        />
+      ) : importType === 'hardware-wallets' ? (
+        <HardwareWallets isInModal onBack={onBack} onNavigate={onNavigate} />
+      ) : importType === 'institutional-wallets' ? (
+        <InstitutionalWallets
+          isInModal
+          onBack={onBack}
+          onNavigate={onNavigate}
+        />
       ) : importType === 'key' ? (
         <ImportPrivateKey isInModal onBack={onBack} onNavigate={onNavigate} />
       ) : importType === 'json' ? (

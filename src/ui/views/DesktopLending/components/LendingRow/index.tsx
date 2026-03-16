@@ -9,6 +9,7 @@ export const LendingRow: React.FC<{
   onSupply?: (data: DisplayPoolReserveInfo) => void;
   onBorrow?: (data: DisplayPoolReserveInfo) => void;
   onRepay?: (data: DisplayPoolReserveInfo) => void;
+  onSwap?: (data: DisplayPoolReserveInfo) => void;
   onWithdraw?: (data: DisplayPoolReserveInfo) => void;
   onToggleCollateral?: (data: DisplayPoolReserveInfo) => void;
 }> = ({
@@ -17,13 +18,19 @@ export const LendingRow: React.FC<{
   onSupply,
   onBorrow,
   onRepay,
+  onSwap,
   onWithdraw,
   onToggleCollateral,
 }) => {
   return (
     <div>
       {type === 'borrow' ? (
-        <BorrowItem data={data} onBorrow={onBorrow} onRepay={onRepay} />
+        <BorrowItem
+          data={data}
+          onBorrow={onBorrow}
+          onRepay={onRepay}
+          onSwap={onSwap}
+        />
       ) : (
         <SupplyItem
           data={data}

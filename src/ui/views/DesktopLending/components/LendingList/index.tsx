@@ -29,6 +29,7 @@ import { SupplyModal } from '../SupplyModal';
 import { BorrowModal } from '../BorrowModal';
 import { WithdrawModal } from '../WithdrawModal';
 import { RepayModal } from '../RepayModal';
+import { DebtSwapModal } from '../DebtSwapModal';
 import { ToggleCollateralModal } from '../ToggleCollateralModal';
 import { SupplyListModal } from '../SupplyListModal';
 import { BorrowListModal } from '../BorrowListModal';
@@ -37,6 +38,7 @@ import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useSelectedMarket } from '../../hooks/market';
 import { getMaxModalHeight } from './window';
 import styled from 'styled-components';
+import { shouldShowDebtSwapEntry } from '../../utils/swapAction';
 
 const HoverButton = styled.button`
   &:hover {
@@ -48,6 +50,7 @@ export type LendingModalType =
   | 'supply'
   | 'borrow'
   | 'repay'
+  | 'debtSwap'
   | 'withdraw'
   | 'toggleCollateral'
   | null;
@@ -130,7 +133,12 @@ export const LendingList: React.FC = () => {
   const { t } = useTranslation();
   const { reserves } = useLendingRemoteData();
   const { displayPoolReserves, iUserSummary } = useLendingSummary();
-  const { chainEnum, marketKey, setMarketKey } = useSelectedMarket();
+  const {
+    chainEnum,
+    marketKey,
+    setMarketKey,
+    selectedMarketData,
+  } = useSelectedMarket();
   const { loading } = useLendingIsLoading();
   const history = useHistory();
   const location = useLocation();
@@ -264,6 +272,19 @@ export const LendingList: React.FC = () => {
     );
   }, [iUserSummary?.availableBorrowsUSD]);
 
+  const hasDebtSwapButton = useMemo(
+    () =>
+      filteredData.some(
+        (item) =>
+          item.type === 'borrow' &&
+          shouldShowDebtSwapEntry({
+            reserve: item.data,
+            market: selectedMarketData,
+          })
+      ),
+    [filteredData, selectedMarketData]
+  );
+
   const handleMarketChange = useCallback(
     (value: typeof marketKey) => {
       setMarketKey(value);
@@ -363,7 +384,12 @@ export const LendingList: React.FC = () => {
                   {t('page.lending.table.collateral')}
                 </div>
               </THeadCell>
-              <THeadCell className="w-[300px] flex-shrink-0">
+              <THeadCell
+                className={clsx(
+                  'flex-shrink-0',
+                  hasDebtSwapButton ? 'w-[430px]' : 'w-[300px]'
+                )}
+              >
                 <div></div>
               </THeadCell>
             </THeader>
@@ -377,6 +403,7 @@ export const LendingList: React.FC = () => {
                     onSupply={() => onAction('supply', item.data)}
                     onBorrow={() => onAction('borrow', item.data)}
                     onRepay={() => onAction('repay', item.data)}
+                    onSwap={() => onAction('debtSwap', item.data)}
                     onWithdraw={() => onAction('withdraw', item.data)}
                     onToggleCollateral={() =>
                       onAction('toggleCollateral', item.data)
@@ -434,6 +461,26 @@ export const LendingList: React.FC = () => {
           <PopupContainer>
             <SupplyModal
               visible={activeModal === 'supply'}
+              onCancel={closeModal}
+              reserve={selectedItem}
+              userSummary={iUserSummary}
+            />
+          </PopupContainer>
+        )}
+      </Modal>
+      <Modal
+        {...modalCommonProps}
+        bodyStyle={{
+          ...modalCommonProps.bodyStyle,
+          minHeight: 600,
+        }}
+        visible={activeModal === 'debtSwap'}
+        onCancel={closeModal}
+      >
+        {selectedItem && (
+          <PopupContainer>
+            <DebtSwapModal
+              visible={activeModal === 'debtSwap'}
               onCancel={closeModal}
               reserve={selectedItem}
               userSummary={iUserSummary}

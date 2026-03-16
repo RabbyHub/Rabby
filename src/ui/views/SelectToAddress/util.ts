@@ -7,8 +7,8 @@ export const padWatchAccount = (
 ): IDisplayedAccountWithBalance => {
   return {
     address,
-    brandName: KEYRING_TYPE.WatchAddressKeyring,
-    type: KEYRING_TYPE.WatchAddressKeyring,
+    brandName: KEYRING_TYPE.Whitelist,
+    type: KEYRING_TYPE.Whitelist,
     alianName: ellipsisAddress(address),
     balance: 0,
     keyring: null as any,

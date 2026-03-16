@@ -273,8 +273,8 @@ export const AddressTypeCard = ({
             <Tooltip overlayClassName="alias-tooltip" title={aliasName}>
               <div
                 className={clsx(
-                  'font-medium text-[13px] text-r-neutral-title1',
-                  showSideDesc ? 'max-w-[100px]  truncate' : ''
+                  'font-medium text-[13px] text-r-neutral-title1 truncate ',
+                  showSideDesc ? 'max-w-[100px]' : 'max-w-[220px]'
                 )}
               >
                 {allowEditAlias ? _alias || aliasName : aliasName}

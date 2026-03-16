@@ -291,20 +291,32 @@ export const useAddressRisks = (options: {
   }, [reqForbiddenTip]);
 
   const riskGetRef = useRef({
-    currentAddrs: [] as string[],
+    requestKey: '',
     controller: null as AbortController | null,
   });
   useEffect(() => {
-    if (
-      riskGetRef.current.currentAddrs.sort().join(',') ===
-        caredAddresses.sort().join(',') ||
-      !caredAddresses.length ||
-      !isValidAddress(toAddress)
-    ) {
+    if (!caredAddresses.length || !isValidAddress(toAddress)) {
+      riskGetRef.current.requestKey = '';
+      if (riskGetRef.current.controller) {
+        riskGetRef.current.controller.abort();
+        riskGetRef.current.controller = null;
+      }
+      queue.clear();
       return;
     }
 
-    riskGetRef.current.currentAddrs = caredAddresses;
+    const caredAddressesKey = caredAddresses
+      .slice()
+      .sort()
+      .map((addr) => addr.toLowerCase())
+      .join(',');
+    const requestKey = `${toAddress.toLowerCase()}|${caredAddressesKey}`;
+
+    if (riskGetRef.current.requestKey === requestKey) {
+      return;
+    }
+
+    riskGetRef.current.requestKey = requestKey;
     const prevController = riskGetRef.current.controller;
     if (prevController) prevController.abort();
 

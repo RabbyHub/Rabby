@@ -299,6 +299,7 @@ export const usePerpsPosition = ({
       midPx: string;
       tpTriggerPx?: string;
       slTriggerPx?: string;
+      marginMode?: 'cross' | 'isolated';
     }) => {
       try {
         const sdk = getPerpsSDK();
@@ -310,11 +311,12 @@ export const usePerpsPosition = ({
           midPx,
           tpTriggerPx,
           slTriggerPx,
+          marginMode = 'isolated',
         } = params;
         await sdk.exchange?.updateLeverage({
           coin,
           leverage,
-          isCross: false,
+          isCross: marginMode === 'cross',
         });
 
         const promises = [

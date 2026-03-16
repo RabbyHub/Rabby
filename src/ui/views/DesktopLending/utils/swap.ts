@@ -8,6 +8,7 @@ import { CustomMarket } from '../config/market';
 import { TOKEN_LIST } from '../config/TokenList';
 import { FormattedReservesAndIncentives } from './apy';
 import { SupportedChainId, WRAPPED_NATIVE_CURRENCIES } from './native';
+import { isSameAddress } from '@/ui/utils';
 
 // 虽然没有有效值，先放在这
 const HIDDEN_ASSETS: Partial<Record<CustomMarket, string[]>> = {
@@ -99,6 +100,53 @@ export const getFromToken = (
     variableBorrowAPY: reserve.variableBorrowAPY,
     totalDebtUSD: reserve.totalDebtUSD,
   };
+};
+
+export const getDebtTokensToDisplay = ({
+  user,
+  reserves,
+  displayPoolReserves,
+  chainId,
+  market,
+  excludeTokenAddress,
+}: {
+  user: UserSummary | null | undefined;
+  reserves: FormattedReservesAndIncentives[];
+  displayPoolReserves: Array<{
+    underlyingAsset: string;
+    totalBorrowsUSD?: string;
+    walletBalanceUSD?: string;
+  }>;
+  chainId?: number;
+  market?: CustomMarket;
+  excludeTokenAddress: string;
+}): SwappableToken[] => {
+  if (!user || !chainId || !market) {
+    return [];
+  }
+
+  return getTokensTo(user, reserves, chainId, market)
+    .filter(
+      (item) => !isSameAddress(item.underlyingAddress, excludeTokenAddress)
+    )
+    .map((item) => {
+      const displayPoolReserve = displayPoolReserves.find((pool) =>
+        isSameAddress(pool.underlyingAsset, item.underlyingAddress)
+      );
+
+      return {
+        ...item,
+        totalBorrowsUSD: displayPoolReserve?.totalBorrowsUSD,
+        walletBalanceUSD: displayPoolReserve?.walletBalanceUSD,
+      };
+    })
+    .sort((a, b) => {
+      if (Number(a.totalBorrowsUSD) === 0 && Number(b.totalBorrowsUSD) === 0) {
+        return Number(b.totalDebtUSD || 0) - Number(a.totalDebtUSD || 0);
+      }
+
+      return Number(b.totalBorrowsUSD || 0) - Number(a.totalBorrowsUSD || 0);
+    });
 };
 
 export const getCollateralTokens = (

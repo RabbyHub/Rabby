@@ -24,7 +24,7 @@ import {
   UserAbstractionResp,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
-import { RootModel } from '.';
+import { RootModel, RabbyRootState } from '.';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import {
   formatMarkData,
@@ -36,6 +36,7 @@ import { maxBy } from 'lodash';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { isSameAddress } from '../utils';
+import store from '@/ui/store';
 import {
   formatAllDexsClearinghouseState,
   handleUpdateHistoricalOrders,
@@ -80,6 +81,7 @@ export interface MarketData {
   premium: string;
   prevDayPx: string;
   dexId: string;
+  onlyIsolated?: boolean;
 }
 
 export type MarketDataMap = Record<string, MarketData>;
@@ -380,23 +382,17 @@ export const perps = createModel<RootModel>()({
       state,
       payload: {
         address: string;
-        clearinghouseState: [string, ClearinghouseState][];
+        clearinghouseState: ClearinghouseState;
       }
     ) {
-      if (
-        !payload.address ||
-        !payload.clearinghouseState ||
-        !payload.clearinghouseState[0]
-      ) {
+      if (!payload.address || !payload.clearinghouseState) {
         return state;
       }
       return {
         ...state,
         clearinghouseStateMap: {
           ...state.clearinghouseStateMap,
-          [payload.address.toLowerCase()]: formatAllDexsClearinghouseState(
-            payload.clearinghouseState
-          ),
+          [payload.address.toLowerCase()]: payload.clearinghouseState,
         },
       };
     },
@@ -853,6 +849,14 @@ export const perps = createModel<RootModel>()({
       // dispatch.perps.patchState({ openOrders });
     },
 
+    async fetchUserFillHistory() {
+      const sdk = getPerpsSDK();
+      const res = await sdk.info.getUserFills();
+      dispatch.perps.patchState({
+        userFills: ((res as unknown) as WsFill[]).slice(0, 2000),
+      });
+    },
+
     async fetchUserNonFundingLedgerUpdates() {
       const sdk = getPerpsSDK();
       const res = await sdk.info.getUserNonFundingLedgerUpdates();
@@ -1027,10 +1031,16 @@ export const perps = createModel<RootModel>()({
         if (!clearinghouseState) {
           return;
         }
+        const latestState = store.getState().perps;
+        if (
+          latestState.userAbstraction === UserAbstractionResp.unifiedAccount
+        ) {
+          clearinghouseState.withdrawable = latestState.spotState.availableToTrade.toString();
+        }
         dispatch.perps.patchClearinghouseState(clearinghouseState);
         dispatch.perps.setClearinghouseStateMapBySingle({
           address,
-          clearinghouseState: clearinghouseStates,
+          clearinghouseState,
         });
       });
       subscriptions.push(unsubscribeClearinghouseState);
@@ -1171,6 +1181,11 @@ export const perps = createModel<RootModel>()({
           const { fills, isSnapshot, user } = data;
           if (!isSameAddress(user, address)) {
             return;
+          }
+
+          if (isSnapshot && isPro) {
+            // when return snapshot, fetch all user fill history from api
+            dispatch.perps.fetchUserFillHistory();
           }
 
           dispatch.perps.patchStatsListBySnapshot({

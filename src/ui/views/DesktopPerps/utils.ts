@@ -5,6 +5,7 @@ import {
   ClearinghouseState,
   SpotClearinghouseState,
   USDC_TOKEN_ID,
+  UserAbstractionResp,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { perpsToast } from './components/PerpsToast';
 import i18n from '@/i18n';
@@ -293,6 +294,15 @@ export const getCustomClearinghouseState = async (address: string) => {
   };
   const [defaultRes, xyzRes] = await Promise.all([getDefault(), getXYX()]);
 
+  let withdrawable = defaultRes.withdrawable;
+  if (Number(defaultRes.withdrawable) === 0) {
+    const userAbstraction = await sdk.info.getUserAbstraction(address);
+    if (userAbstraction === UserAbstractionResp.unifiedAccount) {
+      const spotState = await sdk.info.getSpotClearingHouseState(address);
+      withdrawable = formatSpotState(spotState).availableToTrade;
+    }
+  }
+
   return {
     assetPositions: [...defaultRes.assetPositions, ...xyzRes.assetPositions],
     crossMaintenanceMarginUsed: new BigNumber(
@@ -316,7 +326,7 @@ export const getCustomClearinghouseState = async (address: string) => {
         .toString(),
     },
     time: defaultRes.time,
-    withdrawable: defaultRes.withdrawable,
+    withdrawable: withdrawable,
   } as ClearinghouseState;
 };
 

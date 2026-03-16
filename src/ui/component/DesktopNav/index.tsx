@@ -57,7 +57,6 @@ export const DesktopNav: React.FC<{
 
   const currentPathname = history.location.pathname;
   const lendingId = useRabbySelector((state) => state.innerDappFrame.lending);
-  const perpsId = useRabbySelector((state) => state.innerDappFrame.perps);
   const predictionId = useRabbySelector(
     (state) => state.innerDappFrame.prediction
   );
@@ -66,10 +65,7 @@ export const DesktopNav: React.FC<{
     const dapp = INNER_DAPP_LIST.LENDING.find((item) => item.id === lendingId);
     return dapp?.NavIcon || RcIconLeadingCC;
   }, [lendingId]);
-  const IconPerps = useMemo(() => {
-    const dapp = INNER_DAPP_LIST.PERPS.find((item) => item.id === perpsId);
-    return dapp?.NavIcon || RcIconPerpsCC;
-  }, [perpsId]);
+  const IconPerps = RcIconPerpsCC;
   const IconPrediction = useMemo(() => {
     const dapp = INNER_DAPP_LIST.PREDICTION.find(
       (item) => item.id === predictionId

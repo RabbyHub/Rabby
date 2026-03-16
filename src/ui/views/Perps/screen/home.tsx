@@ -56,6 +56,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import stats from '@/stats';
 import { getStatsReportSide } from '../../DesktopPerps/utils';
 import { PerpsHeaderRight } from '../components/PerpsHeaderRight';
+import { OpenProModeEntry } from '../components/OpenProModeEntry';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
 import { BackToTopButton } from '../components/BackToTopButton';
@@ -185,11 +186,7 @@ export const Perps: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (isLogin) {
-      // dispatch.perps.fetchClearinghouseState();
-      dispatch.perps.fetchPositionAndOpenOrders();
-      // dispatch.perps.fetchUserHistoricalOrders();
-    }
+    dispatch.perps.initFavoritedCoins(undefined);
   }, []);
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
@@ -220,9 +217,20 @@ export const Perps: React.FC = () => {
     availableBalance,
   ]);
 
+  const favoritedCoins = useRabbySelector((s) => s.perps.favoritedCoins);
+
+  const toggleFavorite = useMemoizedFn((coin: string) => {
+    dispatch.perps.toggleFavoriteCoin(coin);
+  });
+
   const marketSectionList = useMemo(() => {
-    return sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
-  }, [marketData]);
+    const sorted = sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
+    const favorites = sorted.filter((item) =>
+      favoritedCoins.includes(item.name)
+    );
+    const others = sorted.filter((item) => !favoritedCoins.includes(item.name));
+    return [...favorites, ...others];
+  }, [marketData, favoritedCoins]);
 
   // Calculate real-time popup data based on selected coin
   const riskPopupData = useMemo(() => {
@@ -564,6 +572,8 @@ export const Perps: React.FC = () => {
           </div>
         )}
 
+        <OpenProModeEntry />
+
         {isInitialized && Boolean(positionAndOpenOrders?.length) && (
           <div className="mt-20 mx-20">
             <div className="flex items-center mb-8 justify-between">
@@ -630,6 +640,8 @@ export const Perps: React.FC = () => {
                     );
                   }}
                   hasPosition={positionCoinSet.has(item.name)}
+                  isFavorited={favoritedCoins.includes(item.name)}
+                  onToggleFavorite={toggleFavorite}
                 />
               ))}
             </div>
@@ -638,8 +650,7 @@ export const Perps: React.FC = () => {
 
         <BackToTopButton visible={showBackToTop} onClick={handleBackToTop} />
 
-        {/* {isLogin && hasPermission && ( */}
-        {isLogin && (
+        {/* {isLogin && (
           <div
             className={clsx(
               'fixed bottom-0 left-0 right-0',
@@ -663,13 +674,29 @@ export const Perps: React.FC = () => {
               }}
             >
               <div className="flex items-center justify-center gap-[4px]">
-                {t('page.dashboard.assets.openInTab')}
+                {t('page.dashboard.assets.openProMode')}
                 <RcIconExternalCC
                   viewBox="0 0 18 18"
                   className="w-[16px] h-[16px]"
                 />
               </div>
             </button>
+          </div>
+        )} */}
+        {isLogin && hasPermission && (
+          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20">
+            <Button
+              block
+              type="primary"
+              onClick={() => {
+                setSearchPopupVisible(true);
+                setOpenFromSource('openPosition');
+              }}
+              size="large"
+              className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
+            >
+              {t('page.perps.searchPerpsPopup.openPosition')}
+            </Button>
           </div>
         )}
       </div>
@@ -770,6 +797,8 @@ export const Perps: React.FC = () => {
           history.push(`/perps/single-coin/${coin}?openPosition=true`);
         }}
         openFromSource={openFromSource}
+        favoritedCoins={favoritedCoins}
+        onToggleFavorite={toggleFavorite}
       />
       <PerpsModal
         visible={deleteAgentModalVisible}

@@ -5,11 +5,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 
+type GetContainerFunc = () => HTMLElement;
 export interface Props {
   address: string;
   onConfirm: () => void;
   onCancel: () => void;
   visible: boolean;
+  getContainer?: string | HTMLElement | GetContainerFunc | false;
 }
 
 export const SelectAddressPopup: React.FC<Props> = ({
@@ -17,6 +19,7 @@ export const SelectAddressPopup: React.FC<Props> = ({
   onConfirm,
   onCancel,
   visible,
+  getContainer,
 }) => {
   const { t } = useTranslation();
   return (
@@ -26,6 +29,7 @@ export const SelectAddressPopup: React.FC<Props> = ({
       title={t('page.newAddress.coboSafe.findTheAssociatedSafeAddress')}
       height={227}
       isSupportDarkMode
+      getContainer={getContainer}
     >
       <div
         className={clsx(

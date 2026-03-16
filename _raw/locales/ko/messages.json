@@ -326,7 +326,7 @@
       "importedAddress": "가져온 주소",
       "signTransactionOnChain": "{{chain}} 거래 서명",
       "neverTransacted": "이전에 거래한 적이 없습니다.",
-      "safeServiceNotAvailable": "안전 서비스는 현재 이용할 수 없습니다. 나중에 다시 시도해 주세요.",
+      "safeServiceNotAvailable": "현재 안전 서비스가 제공되지 않습니다. 나중에 다시 시도해 주세요.",
       "scamTokenAlert": "이는 Rabby의 감지에 따라 잠재적으로 낮은 품질의 스캠 토큰일 수 있습니다.",
       "trustValue": "신뢰 가치",
       "myMark": "내 마크",
@@ -1178,7 +1178,6 @@
       "delete-seed-phrase-title_one": "시드 구문과 그 {{count}} 주소를 삭제합니다.",
       "hd-path": "HD 경로:",
       "delete-title_other": "{{count}} {{brand}} 주소 삭제",
-      "watch-address": "주소 감시",
       "delete-private-key-modal-title_other": "{{count}} 개의 개인 키 주소 삭제",
       "sort-by-address-note": "주소 메모로 정렬",
       "delete-all-addresses-but-keep-the-seed-phrase": "모든 주소를 삭제하되, 시드 구문은 유지합니다.",
@@ -1194,7 +1193,8 @@
       "CurrentDappAddress": {
         "desc": "Dapp 주소 전환\n"
       },
-      "noSeedPhraseAddress": "이 시드 문구에 대해 추가된 주소가 없습니다. 주소를 추가하거나 시드 문구를 삭제할 수 있습니다."
+      "noSeedPhraseAddress": "이 시드 문구에 대해 추가된 주소가 없습니다. 주소를 추가하거나 시드 문구를 삭제할 수 있습니다.",
+      "watch-address": "모니터 전용"
     },
     "dashboard": {
       "home": {
@@ -1572,7 +1572,8 @@
         "price": "가격",
         "side": "측면",
         "searchTokenPlaceholder": "토큰 검색",
-        "openInTab": "Rabby 탭에서 열기"
+        "openInTab": "Rabby 탭에서 열기",
+        "openProMode": "프로 모드 열기"
       },
       "hd": {
         "ledger": {
@@ -1650,8 +1651,6 @@
     },
     "newAddress": {
       "addContacts": {
-        "content": "연락처 추가",
-        "description": "당신은 이를 단순 조회 주소로 사용할 수도 있습니다.",
         "notAValidAddress": "유효하지 않은 주소입니다",
         "addressEns": "주소 / ENS",
         "walletConnect": "지갑 연결",
@@ -1660,7 +1659,9 @@
         "scanQRCode": "WalletConnect 호환 지갑으로 QR 코드를 스캔하세요",
         "cameraTitle": "카메라로 QR 코드를 스캔하세요.",
         "scanViaMobileWallet": "모바일 지갑으로 스캔하세요",
-        "required": "주소를 입력해주세요"
+        "required": "주소를 입력해주세요",
+        "description": "모든 공개 지갑 주소를 추적하세요",
+        "content": "감시 전용 주소 추가"
       },
       "unableToImport": {
         "title": "가져올 수 없습니다",
@@ -1987,7 +1988,34 @@
       "addFromCurrentSeedPhrase": "현재 시드 문구에서 추가",
       "trezor": {
         "title": "Trezor 연결하기"
-      }
+      },
+      "moreWallets": "더 많은 지갑",
+      "importMoreWallets": "더 많은 주소 추가",
+      "addMoreAddresses": "주소 추가",
+      "createANewSeedPhrase": "새 시드 문구 만들기",
+      "imported": "가져오기 이전",
+      "bulkImportPrivateKeyInputTab": "개인 키 입력",
+      "addNewAddress": "새 주소 만들기",
+      "watchAddress": "주소 감시",
+      "seedPhraseTab": "시드 구문",
+      "newAddressAdded": "새 주소가 추가되었습니다",
+      "addressAddedCount_one": "{{count}} 주소가 추가되었습니다",
+      "addressImported": "주소가 가져왔습니다",
+      "addressAddedCount_other": "{{count}} 주소가 추가되었습니다.",
+      "bulkImportPrivateKeyInvalid": "유효하지 않은 개인 키가 있습니다. 제거하거나 다시 입력하십시오.",
+      "duplicateAddressesSkippedTitle": "이미 일부 주소가 임포트되었습니다",
+      "bulkImportPrivateKeyExceeded": "최대 {{count}}개의 개인 키를 동시에 지원합니다.",
+      "duplicateAddressesSkippedDesc_one": "{{count}} 개의 주소는 이미 존재하므로 건너뛰었습니다.",
+      "openExtensionToGetStarted": "Rabby 확장을 열어 시작하세요.",
+      "bulkImportPrivateKeySupport": "최대 1000개의 EVM 호환 개인 키를 지원합니다.",
+      "duplicateAddressesSkippedDesc_other": "{{count}} 개의 주소는 이미 존재하므로 건너뛰었습니다.",
+      "bulkImportPrivateKey": "개인 키 일괄 가져오기",
+      "addMoreAddressesFromThisSeedPhrase": "이 시드 문구에서 주소를 더 추가합니다.",
+      "bulkImportPrivateKeyPlaceholder": "각 개인 키는 새 줄 또는 특수 문자로 구분되어야 합니다.",
+      "newAddressCreated": "새 주소가 생성되었습니다",
+      "newSeedPhraseCreated": "새로운 시드문구가 생성되었습니다",
+      "privateKeyTab": "개인 키",
+      "addressAdded": "주소 추가됨"
     },
     "unlock": {
       "btn": {
@@ -2002,7 +2030,8 @@
       },
       "title": "Rabby 지갑",
       "btnForgotPassword": "비밀번호를 잊으셨나요?",
-      "description": "이더리움 및 EVM을 위한 귀하의 필수 지갑입니다."
+      "description": "이더리움 및 EVM을 위한 귀하의 필수 지갑입니다.",
+      "biometricFailed": "생체 인식 잠금 해제 실패"
     },
     "addToken": {
       "balance": "잔액",
@@ -3324,7 +3353,10 @@
         "notActivatedAddress": "활성화되지 않음",
         "hyperliquidBalance": "무기한 선물 잔고",
         "noPosition": "포지션 없음",
-        "activatedAddress": "활성화됨"
+        "activatedAddress": "활성화됨",
+        "selectAddress": "주소 선택",
+        "position": "포지션",
+        "positions": "포지션"
       },
       "riskLevel": {
         "danger": {
@@ -3450,7 +3482,21 @@
       "leverageRangeMinError": "최소 레버리지는 {{min}}x입니다.",
       "openPositionTips": "무기한 선물 계약 거래는 상당한 위험을 수반합니다. 이는 높은 레버리지와 시장 변동성으로 인해 투자 원금과 담보가 급격하고 완전히 손실될 수 있는 가능성을 포함하며, 모든 사용자에게 적합하지 않을 수 있습니다. 가격은 펀딩 비율과 유동성에 의해 영향을 받을 수 있으며, 예고 없이 자동 청산될 수 있습니다. 시장 데이터는 Hyperliquid에서 제공합니다.",
       "seeMore": "더 보기",
-      "directDepositFast": "빠르고, 슬ippage 없음"
+      "directDepositFast": "빠르고, 슬ippage 없음",
+      "marginMode": "마진 모드",
+      "settings": "설정",
+      "positionValue": "포지션 가치",
+      "details": "세부정보",
+      "crossMargin": "교차 마진",
+      "currentPrice": "현재 가격",
+      "isolatedMargin": "격리 마진",
+      "openProModeInTab": "탭에서 Pro 모드 열기",
+      "liquidationDistanceUp": "오르는 <bold>{{percent}}</bold> 는 청산을 촉발합니다",
+      "liquidationDistanceDown": "하락 <bold>{{percent}}</bold> 는 청산을 유발합니다.",
+      "isolatedMarginDesc": "각 포지션은 자체 마진을 사용합니다. 손실은 해당 포지션으로 제한되지만, 더 쉽게 청산될 수 있습니다.",
+      "cannotChangeMarginModeWithOpenPositions": "열린 포지션이 있는 상태에서 마진 모드를 변경할 수 없습니다.",
+      "crossMarginDesc": "모든 포지션은 동일한 마진을 공유합니다. 이렇게 하면 단일 포지션이 청산될 가능성이 줄어들지만, 극단적인 시장 변동에서 모든 교차 마진 자금이 손실될 수 있습니다.",
+      "unrealizedPnl": "실현되지 않은 PNL"
     },
     "perpsPro": {
       "chatArea": {
@@ -3511,7 +3557,8 @@
           "funding": "펀딩 비율",
           "value": "금액",
           "runningTimeTotal": "경과 시간 / 총 시간",
-          "fundingTipsV2": "위치가 열렸던 이후의 순 자금. 빨간색 (부정적인) 자금 가치는 지불된 자금을 나타내고, 녹색 (긍정적인) 가치는 수령된 자금을 나타냅니다."
+          "fundingTipsV2": "위치가 열렸던 이후의 순 자금. 빨간색 (부정적인) 자금 가치는 지불된 자금을 나타내고, 녹색 (긍정적인) 가치는 수령된 자금을 나타냅니다.",
+          "fundingTipsBold": "이것은 포지션이 열린 이후 정산된 총 자금을 보여줍니다. <bold>녹색(긍정적)</bold> 값은 다른 트레이더로부터 수익을 얻었다는 것을 의미하고, <bold>빨간색(부정적)</bold> 값은 그들에게 지급한 자금 비용을 나타냅니다."
         },
         "emptyMessage": {
           "openOrders": "미체결 주문이 없습니다",
@@ -3678,7 +3725,9 @@
         "cross": "크로스 마진",
         "isolated": "격리 마진",
         "isolatedDescription": "각 포지션에 할당된 마진의 양으로 개별 포지션의 위험을 관리합니다.\n격리된 포지션의 마진 비율이 100%에 도달하면 포지션이 청산됩니다.\n이 모드에서 개별 포지션에 마진을 추가하거나 제거할 수 있습니다.",
-        "crossDescription": "모든 크로스 포지션은 동일한 크로스 마진을 담보로 사용합니다. 청산이 발생할 경우, 이 모드에서의 마진 잔액과 크로스 하에 남아 있는 미청산 포지션은 몰수될 수 있습니다."
+        "crossDescription": "모든 크로스 포지션은 동일한 크로스 마진을 담보로 사용합니다. 청산이 발생할 경우, 이 모드에서의 마진 잔액과 크로스 하에 남아 있는 미청산 포지션은 몰수될 수 있습니다.",
+        "cannotChange": "마진 모드를 변경할 수 없습니다.",
+        "onlyIsolatedSupported": "이 자산은 오직 Isolated margin 모드만 지원합니다."
       },
       "leverage": {
         "confirm": "확인",
@@ -3991,7 +4040,8 @@
           "assets": "토큰",
           "balance": "잔액"
         },
-        "title": "토큰 상환 선택"
+        "title": "토큰 상환 선택",
+        "zeroLtvCollateralTips": "당신은 다음과 같은 LTV = 0 담보가 있으며, 따라서 담보 상환 규칙에 따라 이러한 담보로 먼저 상환할 수 있습니다."
       },
       "manageEmode": {
         "actions": {
@@ -4061,7 +4111,8 @@
         "entryTips": "한 번의 클릭으로 대출한 자산을 스왑하여 단계와 수수료를 줄입니다.",
         "lpRiskWarning": "스왑 후 낮은 건강 지수. 귀하의 포지션은 청산 위험이 더 높아집니다.",
         "priceImpactTips": "높은 가격 영향 ({{lostValue}}). 이 경로는 유동성이 낮거나 주문 크기가 작아 더 많은 반환을 가져올 수 있습니다.",
-        "lpDangerWarning": "이 스왑 후 귀하의 건강 지수가 매우 낮아져 청산될 수 있습니다. 안전을 위해 다른 자산을 선택하거나 스왑 금액을 줄여 주십시오."
+        "lpDangerWarning": "이 스왑 후 귀하의 건강 지수가 매우 낮아져 청산될 수 있습니다. 안전을 위해 다른 자산을 선택하거나 스왑 금액을 줄여 주십시오.",
+        "maxLtvWarning": "새로운 차입 포지션을 커버할 충분한 담보가 없습니다. 지갑에는 부채 전환을 수행하기 위해 남아 있는 차입력이 반드시 필요합니다."
       },
       "repayWithCollateral": {
         "action": {
@@ -4464,7 +4515,7 @@
     },
     "alias": {
       "simpleKeyring": "개인 키",
-      "watchAddressKeyring": "연락처",
+      "watchAddressKeyring": "보기 전용",
       "HdKeyring": "시드 구문"
     },
     "keyring": {
@@ -4482,7 +4533,7 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "연락처",
+      "WatchAddressKeyring": "지켜보기만",
       "HdKeyring": "Seed Phrase로 생성됨",
       "SimpleKeyring": "개인 키로 가져오기"
     },
