@@ -20,7 +20,7 @@ import {
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { ethErrors } from 'eth-rpc-errors';
-import { groupBy, isNull, omit } from 'lodash';
+import { groupBy, isNull, omit, pick } from 'lodash';
 import 'reflect-metadata';
 import browser from 'webextension-polyfill';
 import BigNumber from 'bignumber.js';
@@ -452,7 +452,11 @@ browser.runtime.onConnect.addListener((port) => {
 
     let data = _data;
     if (origin !== INTERNAL_REQUEST_ORIGIN) {
-      data = omit(data, '$ctx');
+      if (data?.$ctx?.providers?.length) {
+        data.$ctx = pick(data.$ctx, 'providers');
+      } else {
+        data = omit(data, '$ctx');
+      }
     }
 
     const req = {
