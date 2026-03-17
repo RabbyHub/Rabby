@@ -236,17 +236,17 @@ const ImportWatchAddress: React.FC<{
       </header>
       <div className="rabby-container widget-has-ant-input">
         <div className="relative">
-          <Form.Item
-            className="pt-32 px-20"
-            name="address"
-            rules={[
-              {
-                required: true,
-                message: t('page.newAddress.addContacts.required'),
-              },
-            ]}
-          >
-            <div className="relative">
+          <div className="relative">
+            <Form.Item
+              className="pt-32 px-20"
+              name="address"
+              rules={[
+                {
+                  required: true,
+                  message: t('page.newAddress.addContacts.required'),
+                },
+              ]}
+            >
               <Input.TextArea
                 placeholder={t('page.newAddress.addContacts.addressEns')}
                 maxLength={44}
@@ -256,14 +256,15 @@ const ImportWatchAddress: React.FC<{
                 autoSize
                 spellCheck={false}
               />
-              <div
-                className="absolute right-[16px] bottom-[16px] flex items-center justify-center cursor-pointer"
-                onClick={handleImportByQrcode}
-              >
-                <RcWatchAddressScan />
-              </div>
+            </Form.Item>
+            <div
+              className="absolute right-[36px] bottom-[16px] flex items-center justify-center cursor-pointer"
+              onClick={handleImportByQrcode}
+            >
+              <RcWatchAddressScan />
             </div>
-          </Form.Item>
+          </div>
+
           {tags.length > 0 && (
             <ul className="tags">
               {tags.map((tag) => (
