@@ -520,6 +520,10 @@ export const useBridge = () => {
             const fromChain = findChain({ serverId: fromToken?.chain });
             if (fromToken?.id === fromChain?.nativeTokenAddress) {
               tokenApproved = true;
+            }
+            // near intents send token to themselves address, so no need approve
+            if (!quote.approve_contract_id) {
+              tokenApproved = true;
             } else {
               allowance = await wallet.getERC20Allowance(
                 fromToken.chain,
