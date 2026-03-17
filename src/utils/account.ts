@@ -9,13 +9,18 @@ import {
   KeyringWithIcon,
   SORT_WEIGHT,
 } from 'consts';
-import { t } from 'i18next';
 import { DisplayChainWithWhiteLogo, findChain } from './chain';
 import { isAddress } from 'viem';
 import { isSameAddress } from '@/background/utils';
 import { isObject, isPlainObject } from 'lodash';
 import WatchLogo from 'ui/assets/waitcup.svg';
 import IconWhiteListWhite from 'ui/assets/walletlogo/whitelist-white.svg';
+
+const DEFAULT_ALIAS_PREFIX = {
+  hdKeyring: 'Seed Phrase',
+  simpleKeyring: 'Private Key',
+  watchAddressKeyring: 'Watch-only',
+} as const;
 
 export function generateAliasName({
   keyringType,
@@ -29,17 +34,17 @@ export function generateAliasName({
   addressCount?: number;
 }) {
   if (keyringType === KEYRING_CLASS.MNEMONIC) {
-    return `${t('background.alias.HdKeyring')} ${keyringCount + 1} #${
+    return `${DEFAULT_ALIAS_PREFIX.hdKeyring} ${keyringCount + 1} #${
       addressCount + 1
     }`;
   } else if (keyringType === KEYRING_TYPE.SimpleKeyring) {
-    return `${t('background.alias.simpleKeyring')} ${keyringCount + 1}`;
+    return `${DEFAULT_ALIAS_PREFIX.simpleKeyring} ${keyringCount + 1}`;
   } else {
     if (
       keyringType === KEYRING_TYPE.WatchAddressKeyring ||
       brandName === KEYRING_TYPE.WatchAddressKeyring
     ) {
-      return `${t('background.alias.watchAddressKeyring')} ${addressCount + 1}`;
+      return `${DEFAULT_ALIAS_PREFIX.watchAddressKeyring} ${addressCount + 1}`;
     }
     if (brandName) {
       return `${BRAND_ALIAN_TYPE_TEXT[brandName] || brandName} ${
