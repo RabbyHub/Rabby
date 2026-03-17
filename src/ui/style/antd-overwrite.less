@@ -479,6 +479,8 @@ textarea {
     rgba(216, 223, 235, 0.55) 0%,
     rgba(216, 223, 235, 0.6) 95.31%
   );
+
+  min-width: initial;
 }
 
 /*---------------------
@@ -491,6 +493,12 @@ textarea {
   .ant-drawer-close {
     font-size: 19px;
     line-height: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    padding: 21px;
+    margin-right: 0;
   }
   .ant-drawer-body {
     padding: 20px 20px 24px;
@@ -593,11 +601,7 @@ textarea {
   .ant-modal-confirm-content {
     margin-top: 0;
   }
-  
 }
-
-
-
 
 .desktop-swap-token-modal {
   .ant-modal-body {
@@ -669,5 +673,4 @@ html[desktop] {
   // .ant-select-dropdown {
   //   background-color: var(--rb-neutral-bg-1 #fff);
   // }
-  
 }

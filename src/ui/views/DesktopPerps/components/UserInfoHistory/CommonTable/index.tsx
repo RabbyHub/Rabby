@@ -145,7 +145,7 @@ const Wrapper = styled.div`
     }
   }
 
-  .ant-table-tbody > tr.ant-table-row:hover > td {
+  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
     background-color: transparent;
   }
 
@@ -286,9 +286,17 @@ function VirtualRow<T extends object>({
           ];
         }
 
-        const cellContent = column.render
+        const renderedValue = column.render
           ? column.render(value, record, index)
-          : (value as React.ReactNode);
+          : value;
+
+        const cellContent: React.ReactNode =
+          renderedValue &&
+          typeof renderedValue === 'object' &&
+          !React.isValidElement(renderedValue) &&
+          'children' in renderedValue
+            ? (renderedValue.children as React.ReactNode)
+            : (renderedValue as React.ReactNode);
 
         const cellKey = column.key ?? String(dataIndex) ?? colIndex;
         const cellWidth = columnWidths[colIndex] || 0;
@@ -393,6 +401,10 @@ export const CommonTable = <T extends object>({
       }
 
       const originalTitle = col.title;
+      const renderedTitle: React.ReactNode =
+        typeof originalTitle === 'function'
+          ? originalTitle({} as Parameters<typeof originalTitle>[0])
+          : originalTitle;
       const fieldKey = (col.key || col.dataIndex) as string | undefined;
 
       const enhanced: SortedColumnType<T> = {
@@ -401,7 +413,7 @@ export const CommonTable = <T extends object>({
         sortDirections: ['ascend', 'descend'] as SortDirections,
         title: (
           <>
-            {originalTitle}
+            {renderedTitle}
             <span
               className="w-[16px] text-center"
               style={{

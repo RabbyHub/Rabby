@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Input, Form, Button } from 'antd';
+import { Input, Form, Button, InputRef } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
@@ -51,7 +51,7 @@ const Unlock = () => {
   const wallet = useWallet();
   const [, resolveApproval] = useApproval();
   const [form] = Form.useForm();
-  const inputEl = useRef<Input>(null);
+  const inputEl = useRef<InputRef>(null);
   const autoBiometricTriggeredRef = useRef(false);
   const pendingUnlockTypeRef = useRef<UnlockType | null>(null);
   const UiType = getUiType();

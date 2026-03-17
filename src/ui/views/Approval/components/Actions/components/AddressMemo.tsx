@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, InputRef } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Popup } from 'ui/component';
 import styled from 'styled-components';
@@ -22,7 +22,7 @@ const DIV = styled.div`
 const AddressMemo = ({ address }: { address: string }) => {
   const { alias } = useApprovalUtils();
   const addressAlias = alias.accountMap[address]?.alias;
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<InputRef>(null);
   const [form] = useForm();
   const { t } = useTranslation();
 

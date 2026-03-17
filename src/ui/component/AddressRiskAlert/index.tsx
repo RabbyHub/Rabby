@@ -4,6 +4,7 @@ import {
   DrawerProps,
   Form,
   Input,
+  InputRef,
   Skeleton,
   Switch,
   Tooltip,
@@ -126,7 +127,7 @@ export const AddressTypeCard = ({
 
   const [form] = useForm();
   const [_alias, setAlias] = useAlias(address);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<InputRef>(null);
   const showCexInfo = useMemo(() => {
     return cexInfo.id && cexInfo.isDeposit && type === KEYRING_CLASS.WATCH;
   }, [cexInfo, type]);
@@ -469,7 +470,7 @@ export const AddressRiskAlert = ({
           {riskInfos.loadingAddrDesc ? (
             <Skeleton.Input className="w-full h-[44px] rounded-[8px]" active />
           ) : (
-            <div className="text-[16px] w-full text-center">
+            <div className="text-[16px] w-full text-center break-all">
               <AddressText>{addressSplit[0]}</AddressText>
               <span className="text-r-neutral-foot">{addressSplit[1]}</span>
               <AddressText>{addressSplit[2]}</AddressText>
@@ -541,7 +542,10 @@ export const AddressRiskAlert = ({
         {riskInfos.loadingHasTransfer ? (
           <div className="flex-1">
             <div className="flex gap-[8px] mt-[30px] items-center bg-r-neutral-card1 rounded-[8px] py-[14px] px-[16px]">
-              <Skeleton.Avatar className="w-[16px] h-[16px] rounded-full" />
+              <Skeleton.Avatar
+                size={16}
+                className="w-[16px] h-[16px] rounded-full"
+              />
               <Skeleton.Input className="w-[158px] rounded-[4px]" active />
             </div>
           </div>
