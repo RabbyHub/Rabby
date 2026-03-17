@@ -20,7 +20,13 @@ import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Badge, Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  createContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useAsync } from 'react-use';
@@ -74,6 +80,8 @@ import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
 import { RcIconLeadingCC } from '@/ui/assets/desktop/nav';
 import { PerpsSubContent } from '../SubContent/perps';
 import { LendingSubContent } from '../SubContent/lending';
+
+export const DragOverlayContext = createContext(false);
 
 const GlobalStyle = createGlobalStyle`
   .rabby-dashboard-panel-container {
@@ -818,7 +826,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
                       <div className="panel-item-label">
                         {activeItem.content}
                       </div>
-                      {activeItem.subContent}
+                      <DragOverlayContext.Provider value={true}>
+                        {activeItem.subContent}
+                      </DragOverlayContext.Provider>
                       {activeItem.commingSoonBadge && (
                         <div className="coming-soon-badge">
                           {t('page.dashboard.home.soon')}

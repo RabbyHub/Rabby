@@ -6,8 +6,9 @@ import { usePerpsHomePnl } from '@/ui/views/Perps/hooks/usePerpsHomePnl';
 import { getOriginFromUrl } from '@/utils';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useAsync } from 'react-use';
+import { DragOverlayContext } from '../DashboardPanel';
 
 export const PerpsSubContent = () => {
   const perpsId = useRabbySelector((s) => s.innerDappFrame.perps);
@@ -21,15 +22,18 @@ export const PerpsSubContent = () => {
 };
 
 const HyperliquidHeader = () => {
+  const isDragOverlay = useContext(DragOverlayContext);
   const { perpsPositionInfo, isFetching, positionPnl } = usePerpsHomePnl();
   return isFetching ? (
-    <div className="absolute bottom-[6px] text-[11px] font-medium">
-      <Skeleton.Button
-        active={true}
-        className="h-[10px] block rounded-[2px]"
-        style={{ width: 42 }}
-      />
-    </div>
+    isDragOverlay ? null : (
+      <div className="absolute bottom-[6px] text-[11px] font-medium">
+        <Skeleton.Button
+          active={true}
+          className="h-[10px] block rounded-[2px]"
+          style={{ width: 42 }}
+        />
+      </div>
+    )
   ) : perpsPositionInfo?.assetPositions?.length ? (
     <div
       className={clsx(
