@@ -4519,9 +4519,9 @@
       "failed": "Транзакция не удалась"
     },
     "alias": {
-      "HdKeyring": "Секретная фраза",
+      "HdKeyring": "Сид-фраза",
       "simpleKeyring": "Приватный ключ",
-      "watchAddressKeyring": "Только для просмотра"
+      "watchAddressKeyring": "Режим наблюдения"
     },
     "keyring": {
       "onekey": {

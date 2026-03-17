@@ -4537,9 +4537,9 @@
       "txCompleteMoreContent": "{{chain}} #{{nonce}} завершено. Натисніть, щоб дізнатися більше."
     },
     "alias": {
-      "HdKeyring": "Початкова фраза",
+      "HdKeyring": "Сід-фраза",
       "simpleKeyring": "Приватний ключ",
-      "watchAddressKeyring": "Тільки для перегляду"
+      "watchAddressKeyring": "Режим спостереження"
     },
     "keyring": {
       "onekey": {

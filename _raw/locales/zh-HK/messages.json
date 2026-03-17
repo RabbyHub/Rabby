@@ -4521,7 +4521,7 @@
     "alias": {
       "HdKeyring": "助記詞",
       "simpleKeyring": "私鑰",
-      "watchAddressKeyring": "只观赏"
+      "watchAddressKeyring": "觀察模式"
     },
     "keyring": {
       "onekey": {

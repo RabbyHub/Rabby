@@ -1,9 +1,9 @@
 {
   "background": {
     "alias": {
-      "HdKeyring": "Seed Phrase",
+      "HdKeyring": "Phrase mnémonique",
       "simpleKeyring": "Clé privée",
-      "watchAddressKeyring": "Affichage uniquement"
+      "watchAddressKeyring": "Mode observation"
     },
     "keyring": {
       "onekey": {

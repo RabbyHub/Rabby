@@ -4518,8 +4518,8 @@
     },
     "alias": {
       "HdKeyring": "Seed Phrase",
-      "simpleKeyring": "Private Key",
-      "watchAddressKeyring": "Nur zur Beobachtung"
+      "simpleKeyring": "Privater Schlüssel",
+      "watchAddressKeyring": "Beobachtungsmodus"
     },
     "keyring": {
       "onekey": {

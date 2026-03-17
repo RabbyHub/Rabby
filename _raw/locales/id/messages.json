@@ -4514,9 +4514,9 @@
       "txCompleteMoreContent": "{{chain}} #{{nonce}} selesai. Klik untuk melihat lebih banyak."
     },
     "alias": {
-      "watchAddressKeyring": "Tonton Saja",
-      "simpleKeyring": "Kunci Pribadi",
-      "HdKeyring": "Frasa Benih"
+      "watchAddressKeyring": "Mode pantau",
+      "simpleKeyring": "Kunci privat",
+      "HdKeyring": "Frasa seed"
     },
     "keyring": {
       "onekey": {

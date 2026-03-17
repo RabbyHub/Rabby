@@ -4517,9 +4517,9 @@
       "txFailedMoreContent": "{{chain}} #{{nonce}} が失敗しました。クリックして詳細を表示します。"
     },
     "alias": {
-      "HdKeyring": "シードフレーズによって作成",
-      "simpleKeyring": "プライベートキーによってインポート",
-      "watchAddressKeyring": "閲覧専用"
+      "HdKeyring": "シードフレーズ",
+      "simpleKeyring": "秘密鍵",
+      "watchAddressKeyring": "ウォッチモード"
     },
     "keyring": {
       "onekey": {

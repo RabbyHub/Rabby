@@ -4514,9 +4514,9 @@
       "failed": "Transação falhou"
     },
     "alias": {
-      "simpleKeyring": "Chave Privada",
-      "HdKeyring": "Frase Semente",
-      "watchAddressKeyring": "Apenas para visualização"
+      "simpleKeyring": "Chave privada",
+      "HdKeyring": "Frase-semente",
+      "watchAddressKeyring": "Modo de observação"
     },
     "keyring": {
       "onekey": {

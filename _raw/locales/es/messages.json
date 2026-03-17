@@ -4519,7 +4519,7 @@
     "alias": {
       "HdKeyring": "Frase semilla",
       "simpleKeyring": "Clave privada",
-      "watchAddressKeyring": "Solo de visualización"
+      "watchAddressKeyring": "Modo observación"
     },
     "keyring": {
       "onekey": {
