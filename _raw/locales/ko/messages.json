@@ -4515,8 +4515,8 @@
     },
     "alias": {
       "simpleKeyring": "개인 키",
-      "watchAddressKeyring": "관찰 모드",
-      "HdKeyring": "시드 문구"
+      "watchAddressKeyring": "보기 전용",
+      "HdKeyring": "시드 구문"
     },
     "keyring": {
       "onekey": {

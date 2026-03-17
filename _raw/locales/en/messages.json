@@ -2785,7 +2785,7 @@
       "addressAddedCount_other": "{{count}} Addresses Added",
       "importMyMetamaskAccount": "Import My MetaMask Account",
       "watchAddress": "Watch Address",
-      "imported": "Imported Before",
+      "imported":"Imported Before",
       "addContacts": {
         "content": "Add Watch-only Address",
         "description": "Track any public wallet address",
@@ -4568,7 +4568,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Private Key",
-      "watchAddressKeyring": "Watch Mode"
+      "watchAddressKeyring": "Watch-only"
     },
     "keyring": {
       "onekey": {

@@ -4520,9 +4520,9 @@
       "txCompleteMoreContent": "{{chain}} #{{nonce}} tamamlandı. Daha fazlasını görmek için tıklayın."
     },
     "alias": {
-      "HdKeyring": "Kurtarma ifadesi",
-      "simpleKeyring": "Özel anahtar",
-      "watchAddressKeyring": "İzleme modu"
+      "HdKeyring": "Seed Phrase",
+      "simpleKeyring": "Özel Anahtar",
+      "watchAddressKeyring": "Sadece İzle"
     },
     "keyring": {
       "onekey": {

@@ -4514,9 +4514,9 @@
       "txFailedMoreContent": "{{chain}} #{{nonce}} thất bại. Nhấp vào để xem thêm."
     },
     "alias": {
-      "watchAddressKeyring": "Chế độ theo dõi",
+      "watchAddressKeyring": "Chỉ xem",
       "simpleKeyring": "Khóa riêng",
-      "HdKeyring": "Cụm từ khôi phục"
+      "HdKeyring": "Câu cụt đầu tiên"
     },
     "keyring": {
       "onekey": {

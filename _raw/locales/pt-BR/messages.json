@@ -4523,8 +4523,8 @@
       "HdKeyring": "Frase-semente",
       "SimpleKeyring": "Chave privada importada",
       "WatchAddressKeyring": "Contato",
-      "watchAddressKeyring": "Modo de observação",
-      "simpleKeyring": "Chave privada"
+      "watchAddressKeyring": "Apenas para visualização",
+      "simpleKeyring": "Chave Privada"
     },
     "keyring": {
       "onekey": {
