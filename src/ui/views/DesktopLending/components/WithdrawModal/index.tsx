@@ -250,6 +250,9 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
     }
     prefetch({
       txs: txsForMiniApproval,
+      getContainer,
+      synGasHeaderInfo: true,
+      checkGasFeeTooHigh: true,
       ga: {
         category: 'Lending',
         source: 'Lending',
@@ -266,6 +269,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
     txsForMiniApproval,
     prefetch,
     closeSign,
+    getContainer,
   ]);
 
   useEffect(() => {

@@ -170,10 +170,6 @@ export const AssetList = ({
           >
             <div className="flex items-center justify-center gap-[4px]">
               {t('page.dashboard.assets.openInTab')}
-              <RcIconExternalCC
-                viewBox="0 0 18 18"
-                className="w-[16px] h-[16px]"
-              />
             </div>
           </button>
         </div>

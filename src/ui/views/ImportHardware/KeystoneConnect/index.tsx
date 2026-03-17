@@ -20,6 +20,7 @@ import Progress from '@/ui/component/Progress';
 import PillsSwitch from '@/ui/component/PillsSwitch';
 import { Button } from 'antd';
 import { query2obj } from '@/ui/utils/url';
+import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
@@ -133,7 +134,7 @@ export const KeystoneConnect = () => {
         keyringId,
         brand: WALLET_BRAND_TYPES.KEYSTONE,
       },
-      search,
+      search: withHardwareImportSelectAddressSource(search),
     });
   };
 

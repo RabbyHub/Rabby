@@ -36,8 +36,13 @@ import { ImKeyManager } from './ImKeyManager';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useRabbyDispatch } from '@/ui/store';
-import { account } from '@/ui/models/account';
 import { useNewUserGuideStore } from '../NewUserImport/hooks/useNewUserGuideStore';
+import { isHardwareImportSelectAddress } from '../SelectAddress/route';
+import type { Account } from './AccountList';
+import {
+  IMPORT_ADDRESS_SUCCESS_PATH,
+  IMPORT_ADDRESS_SUCCESS_RETURN_TO_QUERY_KEY,
+} from '../AddAddress/useCreateAddress';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
@@ -70,6 +75,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
   keyring,
   keyringId,
   brand,
+  onDone,
 }) => {
   const { search } = useLocation();
   const [isNewUserImport, noRedirect, isLazyImport] = React.useMemo(() => {
@@ -158,6 +164,10 @@ export const HDManager: React.FC<StateProviderProps> = ({
   }, []);
 
   const handleCloseWin = useMemoizedFn(async () => {
+    if (onDone) {
+      onDone();
+      return;
+    }
     if (isNewUserImport && !noRedirect) {
       let finalBrand = brand;
       const hardwareKeyring = Object.values(HARDWARE_KEYRING_TYPES).find(
@@ -214,9 +224,11 @@ export const HDManager: React.FC<StateProviderProps> = ({
 
 const DoneButton = ({ onClick }: { onClick?(): void }) => {
   const { t } = useTranslation();
+  const { search } = useLocation();
 
   const {
     currentAccounts,
+    initialAccounts,
     selectedAccounts,
     getCurrentAccounts,
     isLazyImport,
@@ -228,9 +240,64 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
   const dispatch = useRabbyDispatch();
 
   const { store } = useNewUserGuideStore();
+  const query = React.useMemo(() => new URLSearchParams(search), [search]);
 
   const wallet = useWallet();
   const history = useHistory();
+
+  const shouldOpenImportSuccessPage = React.useMemo(
+    () =>
+      isHardwareImportSelectAddress(search) && !query.get('isNewUserImport'),
+    [search]
+  );
+  const getImportedAccounts = React.useCallback(
+    (accounts: Account[]) => {
+      const initialAddressSet = new Set(
+        initialAccounts.map((item) => item.address.toLowerCase())
+      );
+
+      return accounts.filter(
+        (item) => !initialAddressSet.has(item.address.toLowerCase())
+      );
+    },
+    [initialAccounts]
+  );
+  const openImportSuccessPage = React.useCallback(
+    (accounts: Account[]) => {
+      if (!shouldOpenImportSuccessPage) {
+        return false;
+      }
+
+      const nextImportedAccounts = getImportedAccounts(accounts);
+      if (!nextImportedAccounts.length) {
+        return false;
+      }
+
+      history.push({
+        pathname: IMPORT_ADDRESS_SUCCESS_PATH,
+        search: `?${IMPORT_ADDRESS_SUCCESS_RETURN_TO_QUERY_KEY}=${encodeURIComponent(
+          search
+        )}`,
+        state: {
+          addresses: nextImportedAccounts.map((item) => ({
+            address: item.address,
+            alias: item.aliasName || '',
+          })),
+          returnToSelectAddressSearch: search,
+        },
+      });
+
+      return true;
+    },
+    [getImportedAccounts, history, search, shouldOpenImportSuccessPage]
+  );
+  const handleDone = React.useCallback(async () => {
+    if (openImportSuccessPage(currentAccounts)) {
+      return;
+    }
+
+    onClick?.();
+  }, [currentAccounts, onClick, openImportSuccessPage]);
 
   const { loading, runAsync: handleLazyAdd } = useRequest(
     async () => {
@@ -266,7 +333,11 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
         wallet.requestKeyring(keyring, 'setCurrentUsedHDPathType', keyringId)
       );
 
-      await createTask(() => getCurrentAccounts());
+      const nextCurrentAccounts = await createTask(() => getCurrentAccounts());
+      if (openImportSuccessPage(nextCurrentAccounts)) {
+        return;
+      }
+
       onClick?.();
     },
     {
@@ -292,7 +363,7 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
         <Button
           type="primary"
           className="w-[280px] h-[60px] text-20"
-          onClick={onClick}
+          onClick={handleDone}
           disabled={!currentAccounts.length}
         >
           {t('page.newAddress.hd.done')}

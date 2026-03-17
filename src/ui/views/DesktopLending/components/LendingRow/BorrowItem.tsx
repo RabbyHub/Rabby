@@ -10,14 +10,24 @@ import SymbolIcon from '../SymbolIcon';
 import { DisplayPoolReserveInfo } from '../../types';
 import { Tooltip } from 'antd';
 import { useLendingSummary } from '../../hooks';
+import { useSelectedMarket } from '../../hooks/market';
+import {
+  shouldDisableDebtSwapEntry,
+  shouldShowDebtSwapEntry,
+} from '../../utils/swapAction';
 
 export const BorrowItem: React.FC<{
   data: DisplayPoolReserveInfo;
   onBorrow?: (data: DisplayPoolReserveInfo) => void;
   onRepay?: (data: DisplayPoolReserveInfo) => void;
-}> = ({ data, onBorrow, onRepay }) => {
+  onSwap?: (data: DisplayPoolReserveInfo) => void;
+}> = ({ data, onBorrow, onRepay, onSwap }) => {
   const { t } = useTranslation();
-  const { iUserSummary: userSummary } = useLendingSummary();
+  const {
+    iUserSummary: userSummary,
+    formattedPoolReservesAndIncentives,
+  } = useLendingSummary();
+  const { selectedMarketData } = useSelectedMarket();
 
   const apy = useMemo(() => {
     return formatApy(Number(data.reserve.variableBorrowAPY));
@@ -33,6 +43,25 @@ export const BorrowItem: React.FC<{
       userSummary?.availableBorrowsUSD === '0'
     );
   }, [userSummary?.availableBorrowsUSD]);
+
+  const showDebtSwapButton = useMemo(
+    () =>
+      shouldShowDebtSwapEntry({
+        reserve: data,
+        market: selectedMarketData,
+      }),
+    [data, selectedMarketData]
+  );
+
+  const disableDebtSwapButton = useMemo(
+    () =>
+      shouldDisableDebtSwapEntry({
+        reserve: data,
+        userSummary,
+        reserves: formattedPoolReservesAndIncentives,
+      }),
+    [data, formattedPoolReservesAndIncentives, userSummary]
+  );
 
   return (
     <TRow
@@ -82,8 +111,27 @@ export const BorrowItem: React.FC<{
           <span />
         </div>
       </TCell>
-      <TCell className="w-[300px] flex-shrink-0">
+      <TCell
+        className={clsx(
+          'flex-shrink-0',
+          showDebtSwapButton ? 'w-[430px]' : 'w-[300px]'
+        )}
+      >
         <div className="flex items-center justify-end gap-[10px]">
+          {showDebtSwapButton ? (
+            <button
+              onClick={() => onSwap?.(data)}
+              className={clsx(
+                'w-[120px] h-[36px] rounded-[6px] text-[14px] font-medium',
+                'bg-rb-neutral-bg-4 text-r-neutral-title-1',
+                'hover:bg-rb-brand-light-1',
+                'flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-50'
+              )}
+              disabled={disableDebtSwapButton}
+            >
+              {t('page.lending.actions.swap')}
+            </button>
+          ) : null}
           {disableBorrowButton ? (
             <Tooltip
               overlayClassName="rectangle"

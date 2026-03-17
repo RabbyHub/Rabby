@@ -7,7 +7,7 @@ export const DashedUnderlineText = React.forwardRef<
   {
     children: React.ReactNode;
     needCursor?: boolean;
-    tooltipText?: string;
+    tooltipText?: string | (() => React.ReactNode);
     className?: string;
   } & React.HTMLAttributes<HTMLSpanElement>
 >(({ children, className, needCursor = true, tooltipText, ...rest }, ref) => {
@@ -16,7 +16,7 @@ export const DashedUnderlineText = React.forwardRef<
       overlayClassName="rectangle"
       placement="top"
       trigger="hover"
-      title={tooltipText}
+      title={typeof tooltipText === 'function' ? tooltipText() : tooltipText}
     >
       <span
         ref={ref}

@@ -44,7 +44,7 @@ export const AccountActions: React.FC = () => {
   return (
     <div className="flex items-center gap-[12px]">
       {/* Available Balance */}
-      <div className="flex items-center gap-[8px] pl-[11px] pr-[7px] py-[7px] rounded-[16px] border border-rb-neutral-line">
+      <div className="flex items-center gap-[8px] pl-[11px] pr-[7px] h-[40px] rounded-[16px] border border-rb-neutral-line">
         <Tooltip
           overlayClassName="rectangle"
           placement="bottom"
@@ -75,7 +75,7 @@ export const AccountActions: React.FC = () => {
         <button
           onClick={handleDeposit}
           className={clsx(
-            'ml-6 px-[12px] h-[28px] rounded-[6px] text-[15px] leading-[18px] font-medium flex items-center justify-center',
+            'ml-6 px-[12px] h-[26px] rounded-[6px] text-13 font-medium flex items-center justify-center',
             'bg-rb-brand-light-1 text-rb-brand-default'
           )}
         >
