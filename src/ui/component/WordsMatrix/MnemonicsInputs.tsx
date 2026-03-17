@@ -585,7 +585,7 @@ function MnemonicsInputs({
                       applyMnemonicsCount(count);
                     }}
                   >
-                    <div className="text-wrapper">
+                    <div className="text-wrapper whitespace-nowrap">
                       <Trans
                         t={t}
                         i18nKey="page.newAddress.seedPhrase.wordPhrase"
@@ -620,7 +620,7 @@ function MnemonicsInputs({
                           });
                         }}
                       >
-                        <div className="text-wrapper">
+                        <div className="text-wrapper whitespace-nowrap">
                           <Trans
                             t={t}
                             i18nKey="page.newAddress.seedPhrase.wordPhraseAndPassphrase"
@@ -654,7 +654,7 @@ function MnemonicsInputs({
                           });
                         }}
                       >
-                        <div className="text-wrapper">
+                        <div className="text-wrapper whitespace-nowrap">
                           <Trans
                             t={t}
                             i18nKey={
