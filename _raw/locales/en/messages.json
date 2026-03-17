@@ -4568,7 +4568,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Private Key",
-      "watchAddressKeyring": "Watch-only"
+      "watchAddressKeyring": "Watch Mode"
     },
     "keyring": {
       "onekey": {
