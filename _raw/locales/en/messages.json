@@ -2262,6 +2262,7 @@
       "search": "Search",
       "manage-address": "Manage Address",
       "deleted": "Deleted",
+      "deleteSuccess":"Deleted successfully",
       "whitelisted-address": "Whitelisted address",
       "addressTypeTip": "Imported by {{type}}",
       "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",

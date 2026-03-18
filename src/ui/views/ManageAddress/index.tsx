@@ -145,7 +145,7 @@ const ManageAddress = () => {
             await updateInfoAndSetCurrentIndex(deleteGroup);
             message.success({
               icon: <img src={IconSuccess} className="icon icon-success" />,
-              content: t('page.manageAddress.deleted'),
+              content: t('page.manageAddress.deleteSuccess'),
               duration: 0.5,
             });
           } finally {
@@ -178,7 +178,7 @@ const ManageAddress = () => {
       setOpen(false);
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('page.manageAddress.deleted'),
+        content: t('page.manageAddress.deleteSuccess'),
         duration: 0.5,
       });
     } finally {
@@ -218,7 +218,7 @@ const ManageAddress = () => {
         await updateInfoAndSetCurrentIndex(deleteSeedPhraseGroup);
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,
-          content: t('page.manageAddress.deleted'),
+          content: t('page.manageAddress.deleteSuccess'),
           duration: 0.5,
         });
       } finally {
