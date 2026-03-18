@@ -143,6 +143,11 @@ const ManageAddress = () => {
             }
 
             await updateInfoAndSetCurrentIndex(deleteGroup);
+            message.success({
+              icon: <img src={IconSuccess} className="icon icon-success" />,
+              content: t('page.manageAddress.deleted'),
+              duration: 0.5,
+            });
           } finally {
             setBatchDeleting(false);
           }
@@ -211,6 +216,11 @@ const ManageAddress = () => {
         }
 
         await updateInfoAndSetCurrentIndex(deleteSeedPhraseGroup);
+        message.success({
+          icon: <img src={IconSuccess} className="icon icon-success" />,
+          content: t('page.manageAddress.deleted'),
+          duration: 0.5,
+        });
       } finally {
         setBatchDeleting(false);
       }
