@@ -1,32 +1,24 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRabbySelector } from '@/ui/store';
 import { formatUsdValue } from '@/ui/utils';
-import {
-  LimitOrderType,
-  OrderSide,
-  OrderSummaryData,
-  TradingContainerProps,
-} from '../../../types';
-import { TPSLSettings } from '../components/TPSLSettings';
-import { OrderSummary } from '../components/OrderSummary';
+import { OrderSide, OrderSideInfo } from '../../../types';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { useRequest } from 'ahooks';
-import { Button, Select } from 'antd';
-import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
-import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSlider';
+import { PositionSizeInputAndSliderV2 as PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSliderV2';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
 import { validatePriceInput } from '@/ui/views/Perps/utils';
 import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
-import { DesktopPerpsInput } from '../../DesktopPerpsInput';
-import { TradingButton } from '../components/TradingButton';
+import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
+import { TradingButtons } from '../components/TradingButtons';
+import { OrderInfoGrid } from '../components/OrderInfoGrid';
 import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import { BigNumber } from 'bignumber.js';
+import { calcAmountFromPercentage } from '../utils';
 
 interface TakeOrStopMarketTradingContainerProps {
   takeOrStop: 'tp' | 'sl';
@@ -41,8 +33,6 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
   const {
     currentPerpsAccount,
     selectedCoin,
-    orderSide,
-    switchOrderSide,
     positionSize,
     setPositionSize,
     currentPosition,
@@ -58,41 +48,37 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     tradeUsdAmount,
     marginRequired,
     tradeSize,
-    estimatedLiquidationPrice,
-    maxTradeSize,
+    buyEstLiqPrice,
+    sellEstLiqPrice,
+    buyInfo,
+    sellInfo,
+    maxBuyTradeSize,
+    maxSellTradeSize,
     marginUsage,
     currentMarketData,
     percentage,
     setPercentage,
-    tpslConfig,
-    tpslConfigHasError,
-    setTpslConfig,
-    handleTPSLEnabledChange,
+    sizeDisplayUnit,
+    setSizeDisplayUnit,
     resetForm,
+    reduceOnlyBuyDisabled,
+    reduceOnlySellDisabled,
   } = usePerpsTradingState();
-  const [triggerPrice, setTriggerPrice] = React.useState(
-    // formatTpOrSlPrice(midPrice, szDecimals)
-    ''
-  );
+  const [triggerPrice, setTriggerPrice] = React.useState('');
 
   useEffect(() => {
     setTriggerPrice('');
   }, [selectedCoin]);
 
-  // Form validation
-  const validation = React.useMemo(() => {
+  // Direction-dependent validation (deferred to button click)
+  const getValidationForSide = (isBuy: boolean) => {
     let error: string = '';
     const tradeSize = Number(positionSize.amount) || 0;
     const notionalNum = tradeSize * Number(markPrice || 0);
+    const maxTradeSize = isBuy ? maxBuyTradeSize : maxSellTradeSize;
 
     if (notionalNum === 0 || !Number(triggerPrice)) {
-      return {
-        isValid: false,
-        error:
-          reduceOnly && percentage > 0 && Number(triggerPrice)
-            ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
-            : '',
-      };
+      return { isValid: false, error: '' };
     }
 
     // Check minimum order size ($10)
@@ -102,15 +88,13 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     }
 
     if (maxTradeSize && tradeSize > Number(maxTradeSize)) {
-      error = reduceOnly
-        ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
-        : t('page.perpsPro.tradingPanel.insufficientBalance');
+      error = t('page.perpsPro.tradingPanel.insufficientBalance');
       return { isValid: false, error };
     }
 
     if (
       takeOrStop === 'sl' &&
-      orderSide === OrderSide.BUY &&
+      isBuy &&
       Number(triggerPrice) < Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice');
@@ -119,7 +103,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
 
     if (
       takeOrStop === 'sl' &&
-      orderSide === OrderSide.SELL &&
+      !isBuy &&
       Number(triggerPrice) > Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice');
@@ -128,7 +112,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
 
     if (
       takeOrStop === 'tp' &&
-      orderSide === OrderSide.BUY &&
+      isBuy &&
       Number(triggerPrice) > Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice');
@@ -137,7 +121,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
 
     if (
       takeOrStop === 'tp' &&
-      orderSide === OrderSide.SELL &&
+      !isBuy &&
       Number(triggerPrice) < Number(midPrice)
     ) {
       error = t('page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice');
@@ -158,20 +142,31 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
       isValid: error === '',
       error,
     };
-  }, [
-    tradeSize,
+  };
+
+  const buyValidation = useMemo(() => getValidationForSide(true), [
+    positionSize.amount,
     markPrice,
-    maxTradeSize,
+    maxBuyTradeSize,
     reduceOnly,
     percentage,
-    orderSide,
-    tradeSize,
-    marginRequired,
-    availableBalance,
-    currentMarketData,
     midPrice,
     takeOrStop,
     triggerPrice,
+    currentMarketData,
+    t,
+  ]);
+
+  const sellValidation = useMemo(() => getValidationForSide(false), [
+    positionSize.amount,
+    markPrice,
+    maxSellTradeSize,
+    reduceOnly,
+    percentage,
+    midPrice,
+    takeOrStop,
+    triggerPrice,
+    currentMarketData,
     t,
   ]);
 
@@ -181,16 +176,22 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     handleActionApproveStatus,
   } = usePerpsProPosition();
 
-  const {
-    run: handleOpenOrderRequest,
-    loading: handleOpenOrderLoading,
-  } = useRequest(
+  const getDirectionTradeSize = (isBuy: boolean): string => {
+    if (positionSize.inputSource === 'slider') {
+      const dirMax = isBuy ? maxBuyTradeSize : maxSellTradeSize;
+      return calcAmountFromPercentage(percentage, dirMax, szDecimals);
+    }
+    return tradeSize;
+  };
+
+  const { run: handleBuyOrder, loading: buyLoading } = useRequest(
     async () => {
-      const isBuy = orderSide === OrderSide.BUY;
+      const isBuy = true;
+      const directionSize = getDirectionTradeSize(isBuy);
       await handleOpenTPSlMarketOrder({
         coin: selectedCoin,
         isBuy,
-        size: tradeSize,
+        size: directionSize,
         triggerPx: triggerPrice,
         reduceOnly,
         tpsl: takeOrStop,
@@ -223,34 +224,45 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     }
   );
 
-  const orderSummary: OrderSummaryData = React.useMemo(() => {
-    const getExpectedPnL = (percentage: string) => {
-      return Number(percentage) && Number(tradeSize) > 0
-        ? (Number(percentage) * marginRequired) / 100
-        : 0;
-    };
-    const orderValue = Number(tradeSize) * Number(markPrice);
-    return {
-      liquidationPrice: estimatedLiquidationPrice,
-      liquidationDistance: '',
-      orderValue: orderValue > 0 ? formatUsdValue(orderValue) : '$0.00',
-      marginRequired: reduceOnly ? '-' : formatUsdValue(orderValue / leverage),
-      marginUsage,
-      slippage: undefined,
-      tpExpectedPnL: 1 * getExpectedPnL(tpslConfig.takeProfit.percentage),
-      slExpectedPnL: -1 * getExpectedPnL(tpslConfig.stopLoss.percentage),
-    };
-  }, [
-    estimatedLiquidationPrice,
-    leverage,
-    markPrice,
-    reduceOnly,
-    marginUsage,
-    tpslConfig.takeProfit.percentage,
-    tpslConfig.stopLoss.percentage,
-    tradeSize,
-    marginRequired,
-  ]);
+  const { run: handleSellOrder, loading: sellLoading } = useRequest(
+    async () => {
+      const isBuy = false;
+      const directionSize = getDirectionTradeSize(isBuy);
+      await handleOpenTPSlMarketOrder({
+        coin: selectedCoin,
+        isBuy,
+        size: directionSize,
+        triggerPx: triggerPrice,
+        reduceOnly,
+        tpsl: takeOrStop,
+      });
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type:
+          takeOrStop === 'tp' ? 'take profit market' : 'stop loss market',
+        leverage: leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, reduceOnly),
+        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+        coin: selectedCoin,
+        size: tradeSize,
+        price: triggerPrice,
+        trade_usd_value: new BigNumber(triggerPrice)
+          .times(tradeSize)
+          .toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
+      });
+    },
+    {
+      manual: true,
+      onSuccess: () => {
+        resetForm();
+      },
+      onError: (error) => {},
+    }
+  );
 
   const handleMidClick = () => {
     setTriggerPrice(formatTpOrSlPrice(midPrice, szDecimals));
@@ -282,13 +294,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
 
   return (
     <div className="space-y-[16px]">
-      <OrderSideAndFunds
-        orderSide={orderSide}
-        switchOrderSide={switchOrderSide}
-        availableBalance={availableBalance}
-        currentPosition={currentPosition}
-        selectedCoin={selectedCoin}
-      />
+      <OrderSideAndFunds availableBalance={availableBalance} />
 
       <div className="flex items-center gap-8">
         <DesktopPerpsInput
@@ -317,45 +323,51 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
         price={markPrice}
-        maxTradeSize={maxTradeSize}
+        maxBuyTradeSize={maxBuyTradeSize}
+        maxSellTradeSize={maxSellTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
         percentage={percentage}
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
-        quoteAsset="USDC"
         szDecimals={szDecimals}
-        priceChangeUsdValue={true}
+        sizeDisplayUnit={sizeDisplayUnit}
+        onUnitChange={setSizeDisplayUnit}
         reduceOnly={reduceOnly}
       />
 
+      <div className="h-[1px] bg-rb-neutral-line" />
+
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-16">
-          <PerpsCheckbox
-            checked={reduceOnly}
-            onChange={setReduceOnly}
-            tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
-            title={t('page.perpsPro.tradingPanel.reduceOnly')}
-            disabled={!currentPosition}
-          />
-        </div>
+        <PerpsCheckbox
+          checked={reduceOnly}
+          onChange={setReduceOnly}
+          tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
+          title={t('page.perpsPro.tradingPanel.reduceOnly')}
+          disabled={!currentPosition}
+        />
       </div>
 
-      {/* Place Order Button */}
-      {
-        <TradingButton
-          loading={handleOpenOrderLoading}
-          onClick={handleOpenOrderRequest}
-          disabled={!validation.isValid || tpslConfigHasError}
-          error={validation.error}
-          isValid={validation.isValid}
-          orderSide={orderSide}
-          titleText={t('page.perpsPro.tradingPanel.placeOrder')}
-        />
-      }
+      {/* Place Order Buttons */}
+      <TradingButtons
+        onBuyClick={handleBuyOrder}
+        onSellClick={handleSellOrder}
+        buyLoading={buyLoading}
+        sellLoading={sellLoading}
+        buyDisabled={!buyValidation.isValid || reduceOnlyBuyDisabled}
+        sellDisabled={!sellValidation.isValid || reduceOnlySellDisabled}
+        buyError={buyValidation.error}
+        sellError={sellValidation.error}
+      />
 
-      {/* Order Summary */}
-      <OrderSummary data={orderSummary} />
+      {/* Order Info */}
+      <OrderInfoGrid
+        buy={buyInfo}
+        sell={sellInfo}
+        displayUnit={sizeDisplayUnit}
+        selectedCoin={selectedCoin}
+        reduceOnly={reduceOnly}
+      />
     </div>
   );
 };

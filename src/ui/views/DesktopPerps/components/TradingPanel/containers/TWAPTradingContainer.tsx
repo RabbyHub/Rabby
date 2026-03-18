@@ -1,32 +1,23 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRabbySelector } from '@/ui/store';
 import { formatUsdValue } from '@/ui/utils';
-import {
-  LimitOrderType,
-  OrderSide,
-  OrderSummaryData,
-  TradingContainerProps,
-} from '../../../types';
-import { TPSLSettings } from '../components/TPSLSettings';
-import { OrderSummary } from '../components/OrderSummary';
+import { OrderSide, TradingContainerProps } from '../../../types';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { useRequest } from 'ahooks';
-import { Button, Select, Tooltip } from 'antd';
-import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
-import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSlider';
+import { PositionSizeInputAndSliderV2 as PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSliderV2';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
 import { validatePriceInput } from '@/ui/views/Perps/utils';
 import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
-import { DesktopPerpsInput } from '../../DesktopPerpsInput';
-import { TradingButton } from '../components/TradingButton';
+import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
+import { TradingButtons } from '../components/TradingButtons';
 import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import { BigNumber } from 'bignumber.js';
+import { calcAmountFromPercentage } from '../utils';
 
 export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -35,8 +26,6 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
   const {
     currentPerpsAccount,
     selectedCoin,
-    orderSide,
-    switchOrderSide,
     positionSize,
     setPositionSize,
     currentPosition,
@@ -52,17 +41,17 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     tradeUsdAmount,
     marginRequired,
     tradeSize,
-    estimatedLiquidationPrice,
-    maxTradeSize,
+    maxBuyTradeSize,
+    maxSellTradeSize,
     marginUsage,
     currentMarketData,
     percentage,
     setPercentage,
-    tpslConfig,
-    tpslConfigHasError,
-    setTpslConfig,
-    handleTPSLEnabledChange,
+    sizeDisplayUnit,
+    setSizeDisplayUnit,
     resetForm,
+    reduceOnlyBuyDisabled,
+    reduceOnlySellDisabled,
   } = usePerpsTradingState();
   const [hourInput, setHourInput] = React.useState('0');
   const [minuteInput, setMinuteInput] = React.useState('5');
@@ -89,20 +78,15 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     setRandomize(false);
   }, [selectedCoin]);
 
-  // Form validation
-  const validation = React.useMemo(() => {
+  // Form validation (direction-independent parts)
+  const getValidationForSide = (isBuy: boolean) => {
     let error: string = '';
     const notionalNum = Number(positionSize.notionalValue) || 0;
     const tradeSize = Number(positionSize.amount) || 0;
+    const maxTradeSize = isBuy ? maxBuyTradeSize : maxSellTradeSize;
 
     if (notionalNum === 0) {
-      return {
-        isValid: false,
-        error:
-          reduceOnly && percentage > 0
-            ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
-            : '',
-      };
+      return { isValid: false, error: '' };
     }
 
     //allMinsDuration in 5min - 24h
@@ -128,9 +112,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     }
 
     if (maxTradeSize && tradeSize > Number(maxTradeSize)) {
-      error = reduceOnly
-        ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
-        : t('page.perpsPro.tradingPanel.insufficientBalance');
+      error = t('page.perpsPro.tradingPanel.insufficientBalance');
       return { isValid: false, error };
     }
 
@@ -148,17 +130,31 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
       isValid: error === '',
       error,
     };
-  }, [
+  };
+
+  const buyValidation = useMemo(() => getValidationForSide(true), [
     positionSize.notionalValue,
-    maxTradeSize,
+    positionSize.amount,
+    maxBuyTradeSize,
     reduceOnly,
     percentage,
-    tradeSize,
-    marginRequired,
-    availableBalance,
     currentMarketData,
     sizePerSuborder,
     midPrice,
+    allMinsDuration,
+    t,
+  ]);
+
+  const sellValidation = useMemo(() => getValidationForSide(false), [
+    positionSize.notionalValue,
+    positionSize.amount,
+    maxSellTradeSize,
+    reduceOnly,
+    percentage,
+    currentMarketData,
+    sizePerSuborder,
+    midPrice,
+    allMinsDuration,
     t,
   ]);
 
@@ -168,16 +164,22 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     handleActionApproveStatus,
   } = usePerpsProPosition();
 
-  const {
-    run: handleOpenOrderRequest,
-    loading: handleOpenOrderLoading,
-  } = useRequest(
+  const getDirectionTradeSize = (isBuy: boolean): string => {
+    if (positionSize.inputSource === 'slider') {
+      const dirMax = isBuy ? maxBuyTradeSize : maxSellTradeSize;
+      return calcAmountFromPercentage(percentage, dirMax, szDecimals);
+    }
+    return tradeSize;
+  };
+
+  const { run: handleBuyOrder, loading: buyLoading } = useRequest(
     async () => {
-      const isBuy = orderSide === OrderSide.BUY;
+      const isBuy = true;
+      const directionSize = getDirectionTradeSize(isBuy);
       await handleOpenTWAPOrder({
         coin: selectedCoin,
         isBuy,
-        size: tradeSize,
+        size: directionSize,
         reduceOnly,
         durationMins: allMinsDuration,
         randomizeDelay: randomize,
@@ -207,22 +209,42 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     }
   );
 
-  const orderSummary: OrderSummaryData = React.useMemo(() => {
-    return {
-      liquidationPrice: estimatedLiquidationPrice,
-      liquidationDistance: '',
-      orderValue: tradeUsdAmount > 0 ? formatUsdValue(tradeUsdAmount) : '$0.00',
-      marginRequired: reduceOnly ? '-' : formatUsdValue(marginRequired),
-      marginUsage,
-      slippage: '0.08%',
-    };
-  }, [
-    estimatedLiquidationPrice,
-    tradeUsdAmount,
-    marginUsage,
-    reduceOnly,
-    marginRequired,
-  ]);
+  const { run: handleSellOrder, loading: sellLoading } = useRequest(
+    async () => {
+      const isBuy = false;
+      const directionSize = getDirectionTradeSize(isBuy);
+      await handleOpenTWAPOrder({
+        coin: selectedCoin,
+        isBuy,
+        size: directionSize,
+        reduceOnly,
+        durationMins: allMinsDuration,
+        randomizeDelay: randomize,
+      });
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type: 'twap',
+        leverage: leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, reduceOnly),
+        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+        coin: selectedCoin,
+        size: tradeSize,
+        price: markPrice,
+        trade_usd_value: new BigNumber(markPrice).times(tradeSize).toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
+      });
+    },
+    {
+      manual: true,
+      onSuccess: () => {
+        resetForm();
+      },
+      onError: (error) => {},
+    }
+  );
 
   const validateNumberInput = (value: string) => {
     return /^[0-9]*$/.test(value);
@@ -244,27 +266,25 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
 
   return (
     <div className="space-y-[16px]">
-      <OrderSideAndFunds
-        orderSide={orderSide}
-        switchOrderSide={switchOrderSide}
-        availableBalance={availableBalance}
-        currentPosition={currentPosition}
-        selectedCoin={selectedCoin}
-      />
+      <OrderSideAndFunds availableBalance={availableBalance} />
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
         price={midPrice}
-        maxTradeSize={maxTradeSize}
+        maxBuyTradeSize={maxBuyTradeSize}
+        maxSellTradeSize={maxSellTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
         percentage={percentage}
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
-        quoteAsset="USDC"
         szDecimals={szDecimals}
+        sizeDisplayUnit={sizeDisplayUnit}
+        onUnitChange={setSizeDisplayUnit}
         reduceOnly={reduceOnly}
       />
+
+      <div className="h-[1px] bg-rb-neutral-line" />
 
       <div className="flex flex-col gap-8">
         <div className="flex items-center justify-between">
@@ -317,20 +337,19 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         </div>
       </div>
 
-      {/* Place Order Button */}
-      {
-        <TradingButton
-          loading={handleOpenOrderLoading}
-          onClick={handleOpenOrderRequest}
-          disabled={!validation.isValid || tpslConfigHasError}
-          error={validation.error}
-          isValid={validation.isValid}
-          orderSide={orderSide}
-          titleText={t('page.perpsPro.tradingPanel.placeOrder')}
-        />
-      }
+      {/* Place Order Buttons */}
+      <TradingButtons
+        onBuyClick={handleBuyOrder}
+        onSellClick={handleSellOrder}
+        buyLoading={buyLoading}
+        sellLoading={sellLoading}
+        buyDisabled={!buyValidation.isValid || reduceOnlyBuyDisabled}
+        sellDisabled={!sellValidation.isValid || reduceOnlySellDisabled}
+        buyError={buyValidation.error}
+        sellError={sellValidation.error}
+      />
 
-      {/* Order Summary */}
+      {/* TWAP Order Summary */}
       <div className="space-y-[6px]">
         <div className="flex items-center justify-between">
           <span className="text-r-neutral-foot text-[13px]">
@@ -381,7 +400,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
             {t('page.perpsPro.tradingPanel.marginRequired')}
           </span>
           <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {orderSummary.marginRequired}
+            {reduceOnly ? '-' : formatUsdValue(marginRequired)}
           </span>
         </div>
 
@@ -391,7 +410,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
             {t('page.perpsPro.tradingPanel.marginUsage')}
           </span>
           <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {orderSummary.marginUsage}
+            {marginUsage}
           </span>
         </div>
       </div>

@@ -49,6 +49,7 @@ import {
   OrderSide,
   PositionSize,
   TPSLConfig,
+  SizeDisplayUnit,
 } from '../views/DesktopPerps/types';
 import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
 import stats from '@/stats';
@@ -103,8 +104,24 @@ export interface AccountHistoryItem {
 
 export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
   enabled: false,
-  takeProfit: { price: '', percentage: '', error: '', inputMode: 'percentage' },
-  stopLoss: { price: '', percentage: '', error: '', inputMode: 'percentage' },
+  takeProfit: {
+    settingMode: 'price',
+    value: '',
+    error: '',
+    buyTriggerPrice: '',
+    sellTriggerPrice: '',
+    estimatedPnl: '',
+    estimatedPnlPercent: '',
+  },
+  stopLoss: {
+    settingMode: 'price',
+    value: '',
+    error: '',
+    buyTriggerPrice: '',
+    sellTriggerPrice: '',
+    estimatedPnl: '',
+    estimatedPnlPercent: '',
+  },
 };
 
 const INIT_TRADING_STATE = {
@@ -161,7 +178,9 @@ export interface PerpsState {
   quoteUnit: 'base' | 'usd';
   // Trading panel state (preserved across orderType switches)
   // tradingOrderType: OrderType;
-  tradingOrderSide: OrderSide;
+  sizeDisplayUnit: SizeDisplayUnit;
+  /** @deprecated Will be removed - direction is now determined by button click */
+  tradingOrderSide: 'buy' | 'sell';
   tradingPositionSize: PositionSize;
   tradingTpslConfig: TPSLConfig;
   tradingPercentage: number;
@@ -218,6 +237,7 @@ export const perps = createModel<RootModel>()({
     quoteUnit: 'base',
     // Trading panel state (preserved across orderType switches)
     // tradingOrderType: OrderType.MARKET,
+    sizeDisplayUnit: 'base',
     tradingOrderSide: OrderSide.BUY,
     ...INIT_TRADING_STATE,
   } as PerpsState,
@@ -741,8 +761,21 @@ export const perps = createModel<RootModel>()({
     },
 
     async updateQuoteUnit(payload: 'base' | 'usd', rootState) {
-      dispatch.perps.patchState({ quoteUnit: payload });
+      dispatch.perps.patchState({
+        quoteUnit: payload,
+        sizeDisplayUnit: payload === 'usd' ? 'usdc' : 'base',
+      });
       await rootState.app.wallet.setPerpsQuoteUnit(payload);
+    },
+
+    async updateSizeDisplayUnit(payload: 'base' | 'usdc', rootState) {
+      dispatch.perps.patchState({
+        sizeDisplayUnit: payload,
+        quoteUnit: payload === 'usdc' ? 'usd' : 'base',
+      });
+      await rootState.app.wallet.setPerpsQuoteUnit(
+        payload === 'usdc' ? 'usd' : 'base'
+      );
     },
     async saveApproveSignatures(
       payload: {

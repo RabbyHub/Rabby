@@ -1,354 +1,333 @@
-import React, { useEffect, useRef } from 'react';
-import { TPSLConfig, OrderSide, TPSLInputMode } from '../../../types';
-import { formatTpOrSlPrice, validatePriceInput } from '@/ui/views/Perps/utils';
+import React from 'react';
+import { TPSLConfig, TPSLConfigItem, TPSLSettingMode } from '../../../types';
+import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { DesktopPerpsInput } from '../../DesktopPerpsInput';
+import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
+import { Dropdown, Menu, Tooltip } from 'antd';
+import { ReactComponent as RcIconArrowDownPerpsCC } from '@/ui/assets/perps/icon-arrow-down.svg';
+import BigNumber from 'bignumber.js';
+import { PerpsDropdown } from './PerpsDropdown';
+import Perps from '@/background/service/perps';
 
 interface TPSLSettingsProps {
   config: TPSLConfig;
   setConfig: (config: TPSLConfig) => void;
   szDecimals: number;
-  orderSide: OrderSide;
   price: number | string;
   leverage: number;
-  priceChangeUpdate?: boolean;
+  tradeSize: string;
 }
+
+const MODE_OPTIONS: {
+  value: TPSLSettingMode;
+  label: string;
+  unit: string;
+}[] = [
+  { value: 'price', label: 'Price', unit: 'USDC' },
+  { value: 'pnl', label: 'PNL', unit: 'USDC' },
+  { value: 'roi', label: 'ROI%', unit: '%' },
+];
+
+// Compute trigger prices for PNL mode: triggerPrice = entryPrice ± (pnl / size)
+const calcTriggerPricesFromPnl = (
+  pnl: string,
+  price: number,
+  tradeSize: string,
+  szDecimals: number
+): { buyTriggerPrice: string; sellTriggerPrice: string } => {
+  const pnlNum = Number(pnl);
+  const size = Number(tradeSize);
+  if (!pnlNum || !price || !size) {
+    return { buyTriggerPrice: '', sellTriggerPrice: '' };
+  }
+  // Buy/Long: trigger = entry + pnl/size
+  const buyTrigger = price + pnlNum / size;
+  // Sell/Short: trigger = entry - pnl/size
+  const sellTrigger = price - pnlNum / size;
+  return {
+    buyTriggerPrice:
+      buyTrigger > 0 ? formatTpOrSlPrice(buyTrigger, szDecimals) : '',
+    sellTriggerPrice:
+      sellTrigger > 0 ? formatTpOrSlPrice(sellTrigger, szDecimals) : '',
+  };
+};
+
+// Compute trigger prices for ROI mode: triggerPrice = entryPrice * (1 ± roi% / leverage)
+const calcTriggerPricesFromRoi = (
+  roiPercent: string,
+  price: number,
+  leverage: number,
+  szDecimals: number
+): { buyTriggerPrice: string; sellTriggerPrice: string } => {
+  const roi = Number(roiPercent);
+  if (!roi || !price || !leverage) {
+    return { buyTriggerPrice: '', sellTriggerPrice: '' };
+  }
+  // Buy/Long: trigger = entry * (1 + roi% / (100 * leverage))
+  const buyTrigger = price * (1 + roi / (100 * leverage));
+  // Sell/Short: trigger = entry * (1 - roi% / (100 * leverage))
+  const sellTrigger = price * (1 - roi / (100 * leverage));
+  return {
+    buyTriggerPrice:
+      buyTrigger > 0 ? formatTpOrSlPrice(buyTrigger, szDecimals) : '',
+    sellTriggerPrice:
+      sellTrigger > 0 ? formatTpOrSlPrice(sellTrigger, szDecimals) : '',
+  };
+};
+
+// Compute estimated PnL for Price mode
+const calcEstimatedPnlFromPrice = (
+  triggerPrice: string,
+  entryPrice: number,
+  tradeSize: string,
+  leverage: number
+): { estimatedPnl: string; estimatedPnlPercent: string } => {
+  const trigger = Number(triggerPrice);
+  const size = Number(tradeSize);
+  if (!trigger || !entryPrice || !size) {
+    return { estimatedPnl: '', estimatedPnlPercent: '' };
+  }
+  // Use absolute PnL based on price difference (direction-agnostic)
+  // The sign depends on direction, which we don't know yet.
+  // Show for Long direction:
+  const pnl = (trigger - entryPrice) * size;
+  const margin = (entryPrice * size) / leverage;
+  const pnlPercent = margin > 0 ? (pnl / margin) * 100 : 0;
+  return {
+    estimatedPnl: pnl.toFixed(2),
+    estimatedPnlPercent: pnlPercent.toFixed(2),
+  };
+};
+
+const validateValueInput = (
+  value: string,
+  mode: TPSLSettingMode,
+  szDecimals: number
+): boolean => {
+  if (value === '' || value === '-') return true;
+  if (mode === 'price') {
+    // Price: positive numbers with decimals up to szDecimals
+    return /^\d*\.?\d*$/.test(value);
+  }
+  if (mode === 'pnl') {
+    // PNL: allow negative, decimals up to 2
+    return /^-?\d*\.?\d{0,2}$/.test(value);
+  }
+  if (mode === 'roi') {
+    // ROI%: allow negative, decimals up to 2
+    return /^-?\d*\.?\d{0,2}$/.test(value);
+  }
+  return true;
+};
 
 export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
   config,
   setConfig,
   szDecimals,
-  orderSide,
   price,
   leverage,
-  priceChangeUpdate = false,
+  tradeSize,
 }) => {
   const { t } = useTranslation();
+  const priceNum = Number(price);
+  const [focusedField, setFocusedField] = React.useState<
+    'takeProfit' | 'stopLoss' | null
+  >(null);
 
-  // Use ref to track if this is the first render (to skip initial effect)
-  const isFirstRender = useRef(true);
+  const updateItem = useMemoizedFn(
+    (type: 'takeProfit' | 'stopLoss', updates: Partial<TPSLConfigItem>) => {
+      const item = { ...config[type], ...updates };
 
-  const validatePercentageInput = (value: string): boolean => {
-    // Allow empty, numbers, decimal point, and minus sign at the start
-    return value === '' || /^-?\d*\.?\d*$/.test(value);
-  };
-
-  const handleTPSLConfigValidation = useMemoizedFn(
-    (
-      type: 'takeProfit' | 'stopLoss',
-      currentConfig: TPSLConfig['takeProfit'] | TPSLConfig['stopLoss']
-    ) => {
-      const direction = orderSide === OrderSide.BUY ? 'Long' : 'Short';
-      const currentPrice = Number(currentConfig.price);
-      // init error
-      currentConfig.error = '';
-      if (type === 'takeProfit' && currentPrice) {
-        if (direction === 'Long' && currentPrice <= Number(price)) {
-          currentConfig.error = t(
-            'page.perpsPro.tradingPanel.tpMustBeHigherThanCurrentPrice'
+      // Recompute derived values based on mode
+      if (item.value && priceNum) {
+        if (item.settingMode === 'price') {
+          const est = calcEstimatedPnlFromPrice(
+            item.value,
+            priceNum,
+            tradeSize,
+            leverage
           );
-        }
-        if (direction === 'Short' && currentPrice >= Number(price)) {
-          currentConfig.error = t(
-            'page.perpsPro.tradingPanel.tpMustBeLowerThanCurrentPrice'
+          item.estimatedPnl = est.estimatedPnl;
+          item.estimatedPnlPercent = est.estimatedPnlPercent;
+          item.buyTriggerPrice = item.value;
+          item.sellTriggerPrice = item.value;
+        } else if (item.settingMode === 'pnl') {
+          const triggers = calcTriggerPricesFromPnl(
+            item.value,
+            priceNum,
+            tradeSize,
+            szDecimals
           );
-        }
-      } else if (type === 'stopLoss' && currentPrice) {
-        if (direction === 'Long' && currentPrice >= Number(price)) {
-          currentConfig.error = t(
-            'page.perpsPro.tradingPanel.slMustBeLowerThanCurrentPrice'
+          item.buyTriggerPrice = triggers.buyTriggerPrice;
+          item.sellTriggerPrice = triggers.sellTriggerPrice;
+          item.estimatedPnl = item.value;
+          item.estimatedPnlPercent = '';
+        } else if (item.settingMode === 'roi') {
+          const triggers = calcTriggerPricesFromRoi(
+            item.value,
+            priceNum,
+            leverage,
+            szDecimals
           );
+          item.buyTriggerPrice = triggers.buyTriggerPrice;
+          item.sellTriggerPrice = triggers.sellTriggerPrice;
+          item.estimatedPnl = '';
+          item.estimatedPnlPercent = item.value;
         }
-        if (direction === 'Short' && currentPrice <= Number(price)) {
-          currentConfig.error = t(
-            'page.perpsPro.tradingPanel.slMustBeHigherThanCurrentPrice'
-          );
-        }
+      } else {
+        item.buyTriggerPrice = '';
+        item.sellTriggerPrice = '';
+        item.estimatedPnl = '';
+        item.estimatedPnlPercent = '';
       }
-      return currentConfig;
+
+      // Clear error on input (validation is deferred to button click)
+      item.error = '';
+
+      setConfig({ ...config, [type]: item });
     }
   );
 
-  const createTPSLChangeHandler = useMemoizedFn(
+  const handleValueChange = useMemoizedFn(
     (type: 'takeProfit' | 'stopLoss') => (
-      field: 'price' | 'percentage',
-      value: string,
-      inputMode: TPSLInputMode
+      e: React.ChangeEvent<HTMLInputElement>
     ) => {
-      const currentConfig = config[type];
-      const newConfig = {
-        ...currentConfig,
-        [field]: value,
-        inputMode, // Update inputMode based on which field user is editing
-      };
-
-      if (field === 'price' && value && price) {
-        // Price → Percentage
-        const targetPrice = Number(value);
-        const side = orderSide === OrderSide.BUY ? 1 : -1;
-        const priceDiff = (targetPrice - Number(price)) / Number(price);
-        // Take Profit: positive percentage for profit
-        // Stop Loss: negative percentage (inherently negative)
-        const pnlPercent =
-          type === 'takeProfit'
-            ? priceDiff * 100 * leverage * side
-            : -priceDiff * 100 * leverage * side;
-        newConfig.percentage = pnlPercent.toFixed(2);
-      } else if (field === 'percentage' && value && price) {
-        // Percentage → Price
-        const pnlPercent = Number(value);
-        const side = orderSide === OrderSide.BUY ? 1 : -1;
-        // Take Profit: percentage is positive, add to price
-        // Stop Loss: percentage is negative (inherently), subtract from price
-        const targetPrice =
-          type === 'takeProfit'
-            ? Number(price) * (1 + ((pnlPercent / 100) * side) / leverage)
-            : Number(price) * (1 - ((pnlPercent / 100) * side) / leverage);
-
-        newConfig.price =
-          targetPrice > 0 ? formatTpOrSlPrice(targetPrice, szDecimals) : '';
+      const value = e.target.value;
+      const mode = config[type].settingMode;
+      if (validateValueInput(value, mode, szDecimals)) {
+        updateItem(type, { value });
       }
+    }
+  );
 
-      if (value === '') {
-        newConfig.error = '';
-        newConfig.price = '';
-        newConfig.percentage = '';
-      }
-
-      setConfig({
-        ...config,
-        [type]: handleTPSLConfigValidation(type, newConfig),
+  const handleModeChange = useMemoizedFn(
+    (type: 'takeProfit' | 'stopLoss', mode: TPSLSettingMode) => {
+      updateItem(type, {
+        settingMode: mode,
+        value: '',
+        error: '',
+        buyTriggerPrice: '',
+        sellTriggerPrice: '',
+        estimatedPnl: '',
+        estimatedPnlPercent: '',
       });
     }
   );
 
-  const handleTakeProfitChange = useMemoizedFn(
-    createTPSLChangeHandler('takeProfit')
-  );
+  const renderItem = (type: 'takeProfit' | 'stopLoss') => {
+    const item = config[type];
+    const isTP = type === 'takeProfit';
+    const label = isTP ? 'Take Profit' : 'Stop Loss';
+    const modeLabel =
+      MODE_OPTIONS.find((o) => o.value === item.settingMode)?.label || 'Price';
+    const unitLabel =
+      MODE_OPTIONS.find((o) => o.value === item.settingMode)?.unit || 'USDC';
 
-  const handleStopLossChange = useMemoizedFn(
-    createTPSLChangeHandler('stopLoss')
-  );
+    const hasError = !!item.error;
 
-  const handleTPPriceChange = useMemoizedFn(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      if (validatePriceInput(value, szDecimals)) {
-        // User is inputting price, set inputMode to 'price' in config
-        handleTakeProfitChange('price', value, 'price');
-      }
-    }
-  );
+    const showTriggerPrices =
+      !hasError &&
+      item.settingMode !== 'price' &&
+      (item.buyTriggerPrice || item.sellTriggerPrice);
 
-  const handleTPPercentageChange = useMemoizedFn(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      if (validatePercentageInput(value)) {
-        // User is inputting percentage, set inputMode to 'percentage' in config
-        handleTakeProfitChange('percentage', value, 'percentage');
-      }
-    }
-  );
+    const showEstimatedPnl =
+      !hasError && item.settingMode === 'price' && item.estimatedPnl;
 
-  const handleSLPriceChange = useMemoizedFn(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      if (validatePriceInput(value, szDecimals)) {
-        // User is inputting price, set inputMode to 'price' in config
-        handleStopLossChange('price', value, 'price');
-      }
-    }
-  );
+    return (
+      <div className="space-y-[6px]">
+        {/* Title */}
+        <div className="text-[12px] text-r-neutral-foot">
+          {label} ({modeLabel})
+        </div>
 
-  const handleSLPercentageChange = useMemoizedFn(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      if (validatePercentageInput(value)) {
-        // User is inputting percentage, set inputMode to 'percentage' in config
-        handleStopLossChange('percentage', value, 'percentage');
-      }
-    }
-  );
+        {/* Input with mode dropdown, trigger prices shown as tooltip */}
+        <Tooltip
+          visible={!!showTriggerPrices && focusedField === type}
+          placement="topLeft"
+          prefixCls="perps-slider-tip"
+          title={
+            <div className="text-13 px-4 py-2 flex flex-col gap-2">
+              {item.buyTriggerPrice && (
+                <div className="text-rb-neutral-title-2">
+                  {t('page.perpsPro.tradingPanel.buyTrigger')}:{' '}
+                  <span className="text-rb-green-default">
+                    ${item.buyTriggerPrice} (
+                    {t('page.perpsPro.tradingPanel.long')})
+                  </span>
+                </div>
+              )}
+              {item.sellTriggerPrice && (
+                <div className="text-rb-neutral-title-2">
+                  {t('page.perpsPro.tradingPanel.sellTrigger')}:{' '}
+                  <span className="text-rb-red-default">
+                    ${item.sellTriggerPrice} (
+                    {t('page.perpsPro.tradingPanel.short')})
+                  </span>
+                </div>
+              )}
+            </div>
+          }
+        >
+          <DesktopPerpsInput
+            value={item.value}
+            onChange={handleValueChange(type)}
+            onFocus={() => setFocusedField(type)}
+            onBlur={() => setFocusedField(null)}
+            className={`text-left${hasError ? ' perps-input-error' : ''}`}
+            suffix={
+              <PerpsDropdown
+                options={MODE_OPTIONS.map((o) => ({
+                  key: o.value,
+                  label: `${o.label}`,
+                }))}
+                onSelect={(mode) =>
+                  handleModeChange(type, mode as TPSLSettingMode)
+                }
+              >
+                <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot flex items-center gap-[6px] cursor-pointer whitespace-nowrap">
+                  {unitLabel}
+                  <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary w-[12px] h-[12px]" />
+                </span>
+              </PerpsDropdown>
+            }
+          />
+        </Tooltip>
 
-  // Recalculate percentage from price (for price input mode)
-  const calcPercentageFromPrice = useMemoizedFn(
-    (type: 'takeProfit' | 'stopLoss', tpSlPrice: string) => {
-      if (!tpSlPrice || !price || !Number(tpSlPrice)) {
-        return '';
-      }
-      const targetPrice = Number(tpSlPrice);
-      const side = orderSide === OrderSide.BUY ? 1 : -1;
-      const priceDiff = (targetPrice - Number(price)) / Number(price);
-      const pnlPercent =
-        type === 'takeProfit'
-          ? priceDiff * 100 * leverage * side
-          : -priceDiff * 100 * leverage * side;
-      return pnlPercent.toFixed(2);
-    }
-  );
+        {/* Estimated PnL for Price mode - shown below input */}
+        {showEstimatedPnl && (
+          <div className="text-[12px] text-r-neutral-foot">
+            {t('page.perpsPro.tradingPanel.estimatedPnlWillBe')}{' '}
+            <span
+              className={
+                Number(item.estimatedPnl) >= 0
+                  ? 'text-rb-green-default'
+                  : 'text-rb-red-default'
+              }
+            >
+              {Number(item.estimatedPnl) >= 0 ? '+' : ''}${item.estimatedPnl}
+              {item.estimatedPnlPercent &&
+                ` (${Number(item.estimatedPnlPercent) >= 0 ? '+' : ''}${
+                  item.estimatedPnlPercent
+                }%)`}
+            </span>
+          </div>
+        )}
 
-  // Recalculate price from percentage (for percentage input mode)
-  const calcPriceFromPercentage = useMemoizedFn(
-    (type: 'takeProfit' | 'stopLoss', percentage: string) => {
-      if (!percentage || !price || !Number(percentage)) {
-        return '';
-      }
-      const pnlPercent = Number(percentage);
-      const side = orderSide === OrderSide.BUY ? 1 : -1;
-      const targetPrice =
-        type === 'takeProfit'
-          ? Number(price) * (1 + ((pnlPercent / 100) * side) / leverage)
-          : Number(price) * (1 - ((pnlPercent / 100) * side) / leverage);
-      return targetPrice > 0 ? formatTpOrSlPrice(targetPrice, szDecimals) : '';
-    }
-  );
-
-  // Handle price change based on input mode for both TP and SL
-  useEffect(() => {
-    // Skip first render
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    if (!priceChangeUpdate || Number(price) <= 0) {
-      return;
-    }
-
-    const newConfig = { ...config };
-    let hasChanges = false;
-
-    // Handle Take Profit based on config.takeProfit.inputMode
-    if (config.takeProfit.price || config.takeProfit.percentage) {
-      const tpConfig = { ...config.takeProfit };
-
-      if (tpConfig.inputMode === 'price' && config.takeProfit.price) {
-        // User input price, recalculate percentage
-        tpConfig.percentage = calcPercentageFromPrice(
-          'takeProfit',
-          config.takeProfit.price
-        );
-        hasChanges = true;
-      } else if (
-        tpConfig.inputMode === 'percentage' &&
-        config.takeProfit.percentage
-      ) {
-        // User input percentage, recalculate price
-        tpConfig.price = calcPriceFromPercentage(
-          'takeProfit',
-          config.takeProfit.percentage
-        );
-        hasChanges = true;
-      }
-
-      newConfig.takeProfit = handleTPSLConfigValidation('takeProfit', tpConfig);
-    }
-
-    // Handle Stop Loss based on config.stopLoss.inputMode
-    if (config.stopLoss.price || config.stopLoss.percentage) {
-      const slConfig = { ...config.stopLoss };
-
-      if (slConfig.inputMode === 'price' && config.stopLoss.price) {
-        // User input price, recalculate percentage
-        slConfig.percentage = calcPercentageFromPrice(
-          'stopLoss',
-          config.stopLoss.price
-        );
-        hasChanges = true;
-      } else if (
-        slConfig.inputMode === 'percentage' &&
-        config.stopLoss.percentage
-      ) {
-        // User input percentage, recalculate price
-        slConfig.price = calcPriceFromPercentage(
-          'stopLoss',
-          config.stopLoss.percentage
-        );
-        hasChanges = true;
-      }
-
-      newConfig.stopLoss = handleTPSLConfigValidation('stopLoss', slConfig);
-    }
-
-    if (hasChanges) {
-      setConfig(newConfig);
-    }
-  }, [price]);
+        {/* Error */}
+        {item.error && (
+          <div className="text-[12px] text-rb-red-default px-[4px]">
+            {item.error}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
-    <div className="space-y-[12px]">
-      {/* TP Row */}
-      <div className="space-y-[4px]">
-        <div className="flex items-center gap-[8px]">
-          <DesktopPerpsInput
-            prefix={
-              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                TP
-              </span>
-            }
-            value={config.takeProfit.price}
-            onChange={handleTPPriceChange}
-            className="text-right"
-          />
-          <DesktopPerpsInput
-            prefix={
-              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                Gain
-              </span>
-            }
-            suffix={
-              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                %
-              </span>
-            }
-            value={config.takeProfit.percentage}
-            onChange={handleTPPercentageChange}
-            className="text-right"
-          />
-        </div>
-        {config.takeProfit.error && (
-          <div className="text-[12px] text-rb-red-default px-[4px]">
-            {config.takeProfit.error}
-          </div>
-        )}
-      </div>
-
-      {/* SL Row */}
-      <div className="space-y-[4px]">
-        <div className="flex items-center gap-[8px]">
-          <DesktopPerpsInput
-            prefix={
-              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                SL
-              </span>
-            }
-            value={config.stopLoss.price}
-            onChange={handleSLPriceChange}
-            className="text-right"
-          />
-          <DesktopPerpsInput
-            prefix={
-              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                Loss
-              </span>
-            }
-            suffix={
-              <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                %
-              </span>
-            }
-            value={config.stopLoss.percentage}
-            onChange={handleSLPercentageChange}
-            className="text-right"
-          />
-        </div>
-        {config.stopLoss.error && (
-          <div className="text-[12px] text-rb-red-default px-[4px]">
-            {config.stopLoss.error}
-          </div>
-        )}
-      </div>
+    <div className="space-y-[6px]">
+      {renderItem('takeProfit')}
+      {renderItem('stopLoss')}
     </div>
   );
 };

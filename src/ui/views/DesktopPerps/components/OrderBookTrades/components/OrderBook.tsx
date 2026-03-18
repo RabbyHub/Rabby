@@ -268,24 +268,24 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     }
   }, [viewMode, asks, bids, rowCount]);
 
-  useEffect(() => {
-    if (!marketEstSize) return;
-    let estPrice = '';
-    const isBuy = Number(marketEstSize) > 0;
-    const arr = isBuy ? bids : asks;
-    for (const item of arr) {
-      if (item.total >= Math.abs(Number(marketEstSize))) {
-        estPrice = item.price;
-        break;
-      }
-    }
-    if (!estPrice) {
-      estPrice = arr[arr.length - 1]?.price || '';
-    }
-    dispatch.perps.patchState({
-      marketEstPrice: estPrice,
-    });
-  }, [marketEstSize, asks, bids]);
+  // useEffect(() => {
+  //   if (!marketEstSize) return;
+  //   let estPrice = '';
+  //   const isBuy = Number(marketEstSize) > 0;
+  //   const arr = isBuy ? bids : asks;
+  //   for (const item of arr) {
+  //     if (item.total >= Math.abs(Number(marketEstSize))) {
+  //       estPrice = item.price;
+  //       break;
+  //     }
+  //   }
+  //   if (!estPrice) {
+  //     estPrice = arr[arr.length - 1]?.price || '';
+  //   }
+  //   dispatch.perps.patchState({
+  //     marketEstPrice: estPrice,
+  //   });
+  // }, [marketEstSize, asks, bids]);
 
   const maxTotal = useMemo(() => {
     const bid =

@@ -15,7 +15,7 @@ import { useRequest } from 'ahooks';
 import { Button, Menu, message, Tooltip, Dropdown } from 'antd';
 import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
-import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSlider';
+import { PositionSizeInputAndSliderV2 as PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSliderV2';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
 import { formatPercent, validatePriceInput } from '@/ui/views/Perps/utils';
 import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
@@ -33,12 +33,16 @@ import { getStatsReportSide } from '../../../utils';
 export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
 
+  // Scale keeps its own orderSide state (excluded from redesign)
+  const [orderSide, setOrderSide] = React.useState<OrderSide>(OrderSide.BUY);
+  const switchOrderSide = React.useCallback((side: OrderSide) => {
+    setOrderSide(side);
+  }, []);
+
   // Get data from perpsState
   const {
     currentPerpsAccount,
     selectedCoin,
-    orderSide,
-    switchOrderSide,
     positionSize,
     setPositionSize,
     currentPosition,
@@ -54,18 +58,19 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     tradeUsdAmount,
     marginRequired,
     tradeSize,
-    estimatedLiquidationPrice,
-    maxTradeSize,
+    maxBuyTradeSize,
+    maxSellTradeSize,
     marginUsage,
     currentMarketData,
     percentage,
     setPercentage,
-    tpslConfig,
-    tpslConfigHasError,
-    setTpslConfig,
-    handleTPSLEnabledChange,
+    sizeDisplayUnit,
+    setSizeDisplayUnit,
     resetForm,
   } = usePerpsTradingState();
+
+  const maxTradeSize =
+    orderSide === OrderSide.BUY ? maxBuyTradeSize : maxSellTradeSize;
   const [startPrice, setStartPrice] = React.useState('');
   const [endPrice, setEndPrice] = React.useState('');
   const [numGrids, setNumGrids] = React.useState('5');
@@ -184,13 +189,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     const tradeSize = Number(positionSize.amount) || 0;
 
     if (notionalNum === 0) {
-      return {
-        isValid: false,
-        error:
-          reduceOnly && percentage > 0
-            ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
-            : '',
-      };
+      return { isValid: false, error: '' };
     }
 
     if (scaleOrders.length === 1 || Number(numGrids) <= 0) {
@@ -417,25 +416,45 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
 
   return (
     <div className="space-y-[16px]">
-      <OrderSideAndFunds
-        orderSide={orderSide}
-        switchOrderSide={switchOrderSide}
-        availableBalance={availableBalance}
-        currentPosition={currentPosition}
-        selectedCoin={selectedCoin}
-      />
+      {/* Scale keeps Buy/Sell toggle */}
+      <div className="flex items-center gap-[8px]">
+        <button
+          onClick={() => switchOrderSide(OrderSide.BUY)}
+          className={`flex-1 h-[32px] rounded-[8px] font-medium text-[12px] transition-colors ${
+            orderSide === OrderSide.BUY
+              ? 'bg-rb-green-default text-rb-neutral-InvertHighlight '
+              : 'hover:border-rb-brand-default border border-solid border-transparent  bg-rb-neutral-bg-2 text-rb-neutral-title-1'
+          }`}
+        >
+          {t('page.perpsPro.tradingPanel.buyLong')}
+        </button>
+        <button
+          onClick={() => switchOrderSide(OrderSide.SELL)}
+          className={`flex-1 h-[32px] rounded-[8px] font-medium text-[12px] transition-colors ${
+            orderSide === OrderSide.SELL
+              ? 'bg-rb-red-default text-rb-neutral-InvertHighlight '
+              : 'hover:border-rb-brand-default border border-solid border-transparent bg-rb-neutral-bg-2 text-rb-neutral-title-1'
+          }`}
+        >
+          {t('page.perpsPro.tradingPanel.sellShort')}
+        </button>
+      </div>
+
+      <OrderSideAndFunds availableBalance={availableBalance} />
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
         price={markPrice}
-        maxTradeSize={scaleMaxTradeSize}
+        maxBuyTradeSize={scaleMaxTradeSize}
+        maxSellTradeSize={scaleMaxTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
         percentage={percentage}
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
-        quoteAsset="USDC"
         szDecimals={szDecimals}
+        sizeDisplayUnit={sizeDisplayUnit}
+        onUnitChange={setSizeDisplayUnit}
         reduceOnly={reduceOnly}
       />
 
