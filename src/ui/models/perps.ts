@@ -130,6 +130,7 @@ const INIT_TRADING_STATE = {
   tradingPercentage: 0,
   tradingReduceOnly: false,
   tradingTpslConfig: DEFAULT_TPSL_CONFIG,
+  bboPrices: { asks1: '', asks5: '', bids1: '', bids5: '' },
 };
 
 export interface PerpsState {
@@ -185,6 +186,13 @@ export interface PerpsState {
   tradingTpslConfig: TPSLConfig;
   tradingPercentage: number;
   tradingReduceOnly: boolean;
+  // BBO prices from orderbook (default aggregation level)
+  bboPrices: {
+    asks1: string; // asks[0] — best ask
+    asks5: string; // asks[4] — 5th ask
+    bids1: string; // bids[0] — best bid
+    bids5: string; // bids[4] — 5th bid
+  };
 }
 
 let topAssetsCache: PerpTopToken[] = [];

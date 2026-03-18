@@ -68,6 +68,8 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     buyTradeSize,
     sellTradeSize,
   } = usePerpsTradingState();
+  const bboPrices = useRabbySelector((state) => state.perps.bboPrices);
+
   const [limitPrice, setLimitPrice] = React.useState(
     formatTpOrSlPrice(midPrice, szDecimals)
   );
@@ -78,11 +80,78 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       hasFillLimitPrice.current = true;
     }
   }, [midPrice, szDecimals]);
+
+  const [limitOrderType, setLimitOrderType] = React.useState<LimitOrderType>(
+    'Gtc'
+  );
+
+  // BBO state
+  type BboStrategy = 'cp1' | 'cp5' | 'q1' | 'q5';
+  const [bboEnabled, setBboEnabled] = React.useState(false);
+  const [bboStrategy, setBboStrategy] = React.useState<BboStrategy>('cp1');
+
+  const bboStrategyOptions = useMemo(
+    () => [
+      { key: 'cp1', label: 'Counterparty 1' },
+      { key: 'cp5', label: 'Counterparty 5' },
+      { key: 'q1', label: 'Queue 1' },
+      { key: 'q5', label: 'Queue 5' },
+    ],
+    []
+  );
+
+  // BBO: direction-specific prices
+  // Counterparty = opposing side: buy→asks, sell→bids
+  // Queue = same side: buy→bids, sell→asks
+  const { bboBuyPrice, bboSellPrice } = useMemo(() => {
+    const isCounterparty = bboStrategy === 'cp1' || bboStrategy === 'cp5';
+    const isFive = bboStrategy === 'cp5' || bboStrategy === 'q5';
+    const askKey = isFive ? 'asks5' : 'asks1';
+    const bidKey = isFive ? 'bids5' : 'bids1';
+    return {
+      bboBuyPrice: isCounterparty ? bboPrices[askKey] : bboPrices[bidKey],
+      bboSellPrice: isCounterparty ? bboPrices[bidKey] : bboPrices[askKey],
+    };
+  }, [bboStrategy, bboPrices]);
+
+  // BBO disabled reason
+  const bboDisabledReason = useMemo(() => {
+    if (tpslConfig.enabled) return 'TP/SL';
+    if (limitOrderType === 'Ioc') return 'IOC';
+    if (limitOrderType === 'Alo') return 'ALO';
+    return '';
+  }, [tpslConfig.enabled, limitOrderType, t]);
+
+  const canEnableBbo = !bboDisabledReason;
+
+  // Auto-disable BBO when conflict arises
+  useEffect(() => {
+    if (bboEnabled && !canEnableBbo) {
+      setBboEnabled(false);
+      setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
+    }
+  }, [canEnableBbo]);
+
+  const handleBboToggle = () => {
+    if (bboEnabled) {
+      // Disable BBO → fill midPrice
+      setBboEnabled(false);
+      setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
+    } else if (canEnableBbo) {
+      setBboEnabled(true);
+    }
+  };
+  // Direction-specific limit prices (BBO mode uses orderbook sides)
+  const buyLimitPrice = bboEnabled ? bboBuyPrice : limitPrice;
+  const sellLimitPrice = bboEnabled ? bboSellPrice : limitPrice;
+
   // Estimated execution price per direction:
-  // limitPrice > midPrice → Buy executes at market (midPrice), Sell goes on book (limitPrice)
-  // limitPrice < midPrice → Buy goes on book (limitPrice), Sell executes at market (midPrice)
-  const estBuyPrice = Math.min(Number(limitPrice) || midPrice, midPrice);
-  const estSellPrice = Math.max(Number(limitPrice) || midPrice, midPrice);
+  // If limit crosses spread → executes at market (midPrice), otherwise at limit
+  const estBuyPrice = Math.min(Number(buyLimitPrice) || midPrice, midPrice);
+  const estSellPrice = Math.max(Number(sellLimitPrice) || midPrice, midPrice);
+
+  // Safety factor to avoid hitting exchange margin limits at 100% (fees, funding, etc.)
+  const MARGIN_SAFETY = 0.99;
 
   const limitMaxBuyTradeSize = React.useMemo(() => {
     if (!estBuyPrice) return maxBuyTradeSize;
@@ -91,6 +160,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         ? Number(
             new BigNumber(availableBalance)
               .multipliedBy(leverage)
+              .multipliedBy(MARGIN_SAFETY)
               .div(estBuyPrice)
               .toFixed(szDecimals, BigNumber.ROUND_DOWN)
           )
@@ -114,6 +184,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         ? Number(
             new BigNumber(availableBalance)
               .multipliedBy(leverage)
+              .multipliedBy(MARGIN_SAFETY)
               .div(estSellPrice)
               .toFixed(szDecimals, BigNumber.ROUND_DOWN)
           )
@@ -140,10 +211,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     [calcDirectionInfo, sellTradeSize, estSellPrice]
   );
 
-  const [limitOrderType, setLimitOrderType] = React.useState<LimitOrderType>(
-    'Gtc'
-  );
-
   const wsActiveAssetCtx = useRabbySelector(
     (state) => state.perps.wsActiveAssetCtx
   );
@@ -166,7 +233,11 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const validation = React.useMemo(() => {
     let error: string = '';
     const tradeSize = Number(positionSize.amount) || 0;
-    const notionalNum = tradeSize * Number(limitPrice || 0);
+    // BBO mode: use max of both direction prices for shared validation
+    const refPrice = bboEnabled
+      ? Math.max(Number(buyLimitPrice || 0), Number(sellLimitPrice || 0))
+      : Number(limitPrice || 0);
+    const notionalNum = tradeSize * refPrice;
 
     if (notionalNum === 0) {
       return { isValid: false, error: '' };
@@ -211,6 +282,9 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   }, [
     positionSize.amount,
     reduceOnly,
+    bboEnabled,
+    buyLimitPrice,
+    sellLimitPrice,
     limitPrice,
     percentage,
     currentMarketData,
@@ -223,6 +297,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   // Per-side validation (ALO constraints only — max size check is in shared validation)
   const buyValidation = React.useMemo(() => {
     if (!validation.isValid) return validation;
+    // ALO and BBO are mutually exclusive, so limitPrice is correct here
     if (
       limitOrderType === 'Alo' &&
       Number(limitPrice) >= Number(currentBestAskPrice)
@@ -237,6 +312,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
   const sellValidation = React.useMemo(() => {
     if (!validation.isValid) return validation;
+    // ALO and BBO are mutually exclusive, so limitPrice is correct here
     if (
       limitOrderType === 'Alo' &&
       Number(limitPrice) <= Number(currentBestBidPrice)
@@ -297,11 +373,13 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
       const directionSize = getDirectionTradeSize(isBuy);
 
+      const orderLimitPrice = isBuy ? buyLimitPrice : sellLimitPrice;
+
       await handleOpenLimitOrder({
         coin: selectedCoin,
         isBuy,
         size: directionSize,
-        limitPx: limitPrice,
+        limitPx: orderLimitPrice,
         tpTriggerPx: getTriggerPrice(tpslConfig.takeProfit),
         slTriggerPx: getTriggerPrice(tpslConfig.stopLoss),
         reduceOnly,
@@ -316,8 +394,10 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
         coin: selectedCoin,
         size: tradeSize,
-        price: limitPrice,
-        trade_usd_value: new BigNumber(limitPrice).times(tradeSize).toFixed(2),
+        price: orderLimitPrice,
+        trade_usd_value: new BigNumber(orderLimitPrice)
+          .times(tradeSize)
+          .toFixed(2),
         service_provider: 'hyperliquid',
         app_version: process.env.release || '0',
         address_type: currentPerpsAccount?.type || '',
@@ -438,10 +518,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     },
   ];
 
-  const handleMidClick = () => {
-    setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
-  };
-
   useEffect(() => {
     setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
   }, [selectedCoin]);
@@ -479,22 +555,55 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
           {t('page.perpsPro.tradingPanel.price')}
         </span>
         <div className="flex items-center gap-8">
-          <DesktopPerpsInput
-            value={limitPrice}
-            onChange={handleLimitPriceChange}
-            className="text-left"
-            suffix={
-              <span className="text-15 font-medium text-rb-neutral-foot">
-                USDC
-              </span>
+          {bboEnabled ? (
+            <PerpsDropdown
+              options={bboStrategyOptions}
+              onSelect={(key) => setBboStrategy(key as BboStrategy)}
+            >
+              <div className="flex-1 h-[44px] flex items-center justify-between px-[11px] rounded-[8px] border border-solid border-rb-neutral-line bg-rb-neutral-bg-5 cursor-pointer">
+                <span className="text-[15px] font-medium text-rb-neutral-title-1">
+                  {bboStrategyOptions.find((o) => o.key === bboStrategy)
+                    ?.label || 'Counterparty 1'}
+                </span>
+                <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+              </div>
+            </PerpsDropdown>
+          ) : (
+            <DesktopPerpsInput
+              value={limitPrice}
+              onChange={handleLimitPriceChange}
+              className="text-left"
+              suffix={
+                <span className="text-15 font-medium text-rb-neutral-foot">
+                  USDC
+                </span>
+              }
+            />
+          )}
+          <Tooltip
+            overlayClassName="rectangle"
+            placement="topRight"
+            prefixCls="perps-slider-tip"
+            title={
+              bboDisabledReason
+                ? `BBO is not supported when ${bboDisabledReason} is enabled`
+                : undefined
             }
-          />
-          <div
-            className="w-[88px] h-[44px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-15 text-r-neutral-title-1 rounded-[8px] cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
-            onClick={handleMidClick}
           >
-            Mid
-          </div>
+            <div
+              className={clsx(
+                'min-w-[64px] h-[44px] relative flex items-center justify-center text-center font-medium text-15 rounded-[8px] border border-solid cursor-pointer',
+                bboEnabled
+                  ? 'bg-rb-brand-light-1 text-rb-neutral-title-1 border-rb-brand-default'
+                  : canEnableBbo
+                  ? 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent'
+                  : 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent opacity-50'
+              )}
+              onClick={handleBboToggle}
+            >
+              BBO
+            </div>
+          </Tooltip>
         </div>
       </div>
 
