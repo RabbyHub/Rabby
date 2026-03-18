@@ -9,8 +9,6 @@ import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import { EVENTS, KEYRING_CLASS } from 'consts';
-import IconWalletconnect from 'ui/assets/walletconnect.svg';
-import IconScan from 'ui/assets/scan.svg';
 import { ReactComponent as RcIconArrowDown } from 'ui/assets/big-arrow-down.svg';
 import IconEnter from 'ui/assets/enter.svg';
 import { useMedia } from 'react-use';
@@ -161,7 +159,7 @@ const ImportWatchAddress: React.FC<{
       try {
         const result = await wallet.openapi.getEnsAddressByName(address);
         setDisableKeydown(true);
-        if (result && result.addr) {
+        if (result && result.addr && result.addr.startsWith('0x')) {
           setEnsResult(result);
         }
       } catch (e) {
