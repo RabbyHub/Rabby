@@ -16,7 +16,7 @@ import { getUiType, isSameAddress, openInternalPageInTab } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { EnterAddress } from './components/EnterAddress';
-import { padWatchAccount } from './util';
+import { padWatchAccount, padWhitelistAccount } from './util';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { useWallet } from '@/ui/utils/WalletContext';
 
@@ -141,7 +141,7 @@ const SelectToAddress = () => {
         (w) =>
           !importedWhitelistAccounts.some((a) => isSameAddress(w, a.address))
       )
-      .map((w) => padWatchAccount(w));
+      .map((w) => padWhitelistAccount(w));
   }, [importedWhitelistAccounts, whitelist]);
 
   const nftItem = useMemo(() => {
