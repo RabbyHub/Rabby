@@ -254,9 +254,9 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     // Check max trade size (shared: use max of both directions)
     const effectiveMaxTradeSize = reduceOnly
       ? Number(
-          currentPosition?.side === 'Long'
+          (currentPosition?.side === 'Long'
             ? limitMaxSellTradeSize
-            : limitMaxBuyTradeSize || 0
+            : limitMaxBuyTradeSize) || 0
         )
       : Math.max(
           Number(limitMaxBuyTradeSize || 0),
@@ -315,7 +315,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         if (isBuy && Number(limitPrice) >= Number(currentBestAskPrice)) {
           perpsToast.error({
             title: t('page.perps.toast.orderError'),
-            description: t('page.perpsPro.tradingPanel.aloTooLargeSell'),
+            description: t('page.perpsPro.tradingPanel.aloTooLargeBuy'),
           });
           throw new Error(t('page.perpsPro.tradingPanel.aloTooLargeBuy'));
         }

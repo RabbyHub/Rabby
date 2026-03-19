@@ -239,7 +239,7 @@ export const perps = createModel<RootModel>()({
     twapHistory: [],
     twapSliceFills: [],
     soundEnabled: true,
-    marketSlippage: 0.05, // default 8%
+    marketSlippage: 0.05, // default 5%
     marketEstSize: '',
     marketEstPrice: '',
     quoteUnit: 'base',

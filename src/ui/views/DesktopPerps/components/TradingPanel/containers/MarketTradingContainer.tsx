@@ -88,9 +88,9 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     // reduceOnly: check against the opposite direction's max (position size)
     const effectiveMaxTradeSize = reduceOnly
       ? Number(
-          currentPosition?.side === 'Long'
+          (currentPosition?.side === 'Long'
             ? maxSellTradeSize
-            : maxBuyTradeSize || 0
+            : maxBuyTradeSize) || 0
         )
       : Math.max(Number(maxBuyTradeSize || 0), Number(maxSellTradeSize || 0));
     if (effectiveMaxTradeSize > 0 && size > effectiveMaxTradeSize) {

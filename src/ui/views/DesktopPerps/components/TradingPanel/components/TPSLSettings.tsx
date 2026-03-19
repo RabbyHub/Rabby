@@ -36,20 +36,23 @@ const calcTriggerPricesFromPnl = (
   tradeSize: string,
   szDecimals: number
 ): { buyTriggerPrice: string; sellTriggerPrice: string } => {
-  const pnlNum = Number(pnl);
-  const size = Number(tradeSize);
-  if (!pnlNum || !price || !size) {
+  const pnlBN = new BigNumber(pnl);
+  const sizeBN = new BigNumber(tradeSize);
+  const priceBN = new BigNumber(price);
+  if (pnlBN.isZero() || priceBN.isZero() || sizeBN.isZero()) {
     return { buyTriggerPrice: '', sellTriggerPrice: '' };
   }
   // Buy/Long: trigger = entry + pnl/size
-  const buyTrigger = price + pnlNum / size;
+  const buyTrigger = priceBN.plus(pnlBN.div(sizeBN));
   // Sell/Short: trigger = entry - pnl/size
-  const sellTrigger = price - pnlNum / size;
+  const sellTrigger = priceBN.minus(pnlBN.div(sizeBN));
   return {
-    buyTriggerPrice:
-      buyTrigger > 0 ? formatTpOrSlPrice(buyTrigger, szDecimals) : '',
-    sellTriggerPrice:
-      sellTrigger > 0 ? formatTpOrSlPrice(sellTrigger, szDecimals) : '',
+    buyTriggerPrice: buyTrigger.gt(0)
+      ? formatTpOrSlPrice(buyTrigger.toNumber(), szDecimals)
+      : '',
+    sellTriggerPrice: sellTrigger.gt(0)
+      ? formatTpOrSlPrice(sellTrigger.toNumber(), szDecimals)
+      : '',
   };
 };
 
@@ -60,19 +63,24 @@ const calcTriggerPricesFromRoi = (
   leverage: number,
   szDecimals: number
 ): { buyTriggerPrice: string; sellTriggerPrice: string } => {
-  const roi = Number(roiPercent);
-  if (!roi || !price || !leverage) {
+  const roiBN = new BigNumber(roiPercent);
+  const priceBN = new BigNumber(price);
+  if (roiBN.isZero() || priceBN.isZero() || !leverage) {
     return { buyTriggerPrice: '', sellTriggerPrice: '' };
   }
+  const leverageBN = new BigNumber(leverage);
+  const factor = roiBN.div(leverageBN.multipliedBy(100));
   // Buy/Long: trigger = entry * (1 + roi% / (100 * leverage))
-  const buyTrigger = price * (1 + roi / (100 * leverage));
+  const buyTrigger = priceBN.multipliedBy(new BigNumber(1).plus(factor));
   // Sell/Short: trigger = entry * (1 - roi% / (100 * leverage))
-  const sellTrigger = price * (1 - roi / (100 * leverage));
+  const sellTrigger = priceBN.multipliedBy(new BigNumber(1).minus(factor));
   return {
-    buyTriggerPrice:
-      buyTrigger > 0 ? formatTpOrSlPrice(buyTrigger, szDecimals) : '',
-    sellTriggerPrice:
-      sellTrigger > 0 ? formatTpOrSlPrice(sellTrigger, szDecimals) : '',
+    buyTriggerPrice: buyTrigger.gt(0)
+      ? formatTpOrSlPrice(buyTrigger.toNumber(), szDecimals)
+      : '',
+    sellTriggerPrice: sellTrigger.gt(0)
+      ? formatTpOrSlPrice(sellTrigger.toNumber(), szDecimals)
+      : '',
   };
 };
 

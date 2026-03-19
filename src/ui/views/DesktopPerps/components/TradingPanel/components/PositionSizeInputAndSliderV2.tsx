@@ -142,9 +142,10 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
       });
       return;
     }
-    const amountNum = Number(amount) || 0;
-    const notionalValue = amountNum * Number(price);
-    const notionalStr = notionalValue > 0 ? notionalValue.toFixed(2) : '';
+    const notionalValue = new BigNumber(amount).multipliedBy(price);
+    const notionalStr = notionalValue.gt(0)
+      ? notionalValue.toFixed(2, BigNumber.ROUND_DOWN)
+      : '';
     setPositionSize({
       amount,
       notionalValue: notionalStr,

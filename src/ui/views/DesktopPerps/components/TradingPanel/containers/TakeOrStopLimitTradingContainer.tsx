@@ -211,9 +211,9 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     // Max trade size check - use limitMax values with reduceOnly awareness
     const effectiveMaxTradeSize = reduceOnly
       ? Number(
-          currentPosition?.side === 'Long'
+          (currentPosition?.side === 'Long'
             ? limitMaxSellTradeSize
-            : limitMaxBuyTradeSize || 0
+            : limitMaxBuyTradeSize) || 0
         )
       : Math.max(
           Number(limitMaxBuyTradeSize || 0),

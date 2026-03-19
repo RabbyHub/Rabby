@@ -95,9 +95,9 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     // Check max trade size with reduceOnly awareness
     const effectiveMaxTradeSize = reduceOnly
       ? Number(
-          currentPosition?.side === 'Long'
+          (currentPosition?.side === 'Long'
             ? maxSellTradeSize
-            : maxBuyTradeSize || 0
+            : maxBuyTradeSize) || 0
         )
       : Math.max(Number(maxBuyTradeSize || 0), Number(maxSellTradeSize || 0));
 
