@@ -1,4 +1,3 @@
-import { useIsFetching, useQuery } from '@tanstack/react-query';
 import { historyDbService } from '../services/historyDbService';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '..';
