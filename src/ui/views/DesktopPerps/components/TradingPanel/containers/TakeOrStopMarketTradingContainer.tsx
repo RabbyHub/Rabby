@@ -101,7 +101,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
         )
       : Math.max(Number(maxBuyTradeSize || 0), Number(maxSellTradeSize || 0));
 
-    if (isFinite(effectiveMaxTradeSize) && tradeSize > effectiveMaxTradeSize) {
+    if (effectiveMaxTradeSize > 0 && tradeSize > effectiveMaxTradeSize) {
       return {
         isValid: false,
         error: t('page.perpsPro.tradingPanel.insufficientBalance'),

@@ -8,6 +8,7 @@ interface OrderInfoGridProps {
   displayUnit: SizeDisplayUnit;
   selectedCoin: string;
   reduceOnly?: boolean;
+  hideLiqPrice?: boolean;
 }
 
 export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
@@ -16,6 +17,7 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
   displayUnit,
   selectedCoin,
   reduceOnly,
+  hideLiqPrice,
 }) => {
   const { t } = useTranslation();
   const maxUnit =
@@ -24,7 +26,7 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
   return (
     <div className="space-y-[6px]">
       {/* Liq. Price row (hidden when reduceOnly) */}
-      {!reduceOnly && (
+      {!reduceOnly && !hideLiqPrice && (
         <div className="flex items-center justify-between">
           <div className="flex-1 flex items-center gap-4">
             <span className="text-rb-neutral-secondary text-[12px]">

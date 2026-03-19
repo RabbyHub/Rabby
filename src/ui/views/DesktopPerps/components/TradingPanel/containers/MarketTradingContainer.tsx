@@ -93,7 +93,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
             : maxBuyTradeSize || 0
         )
       : Math.max(Number(maxBuyTradeSize || 0), Number(maxSellTradeSize || 0));
-    if (isFinite(effectiveMaxTradeSize) && size > effectiveMaxTradeSize) {
+    if (effectiveMaxTradeSize > 0 && size > effectiveMaxTradeSize) {
       error = t('page.perpsPro.tradingPanel.insufficientBalance');
       return { isValid: false, error };
     }
