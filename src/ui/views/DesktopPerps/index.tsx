@@ -135,10 +135,10 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
 
               {/* TradingPanel + AccountInfo */}
               <div className="flex-1 flex-shrink-0 flex flex-col min-h-0 overflow-hidden">
-                <div className="flex-1 overflow-auto border-b border-solid border-rb-neutral-line">
+                <div className="h-[680px] flex-shrink-0 overflow-hidden border-b border-solid border-rb-neutral-line">
                   <TradingPanel />
                 </div>
-                <div className="flex-shrink-0 overflow-auto min-h-[280px]">
+                <div className="flex-1 min-h-[366px] overflow-auto">
                   <AccountInfo />
                 </div>
               </div>

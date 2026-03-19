@@ -12,7 +12,7 @@ import {
 } from './containers';
 
 export const TradingPanel: React.FC = () => {
-  const [orderType, setOrderType] = React.useState<OrderType>(OrderType.MARKET);
+  const [orderType, setOrderType] = React.useState<OrderType>(OrderType.LIMIT);
 
   const handleOrderTypeChange = (type: OrderType) => {
     setOrderType(type);
@@ -45,7 +45,7 @@ export const TradingPanel: React.FC = () => {
     <>
       <div className="h-full w-full bg-rb-neutral-bg-1 flex flex-col overflow-hidden rounded-[16px]">
         <div className="flex-1 overflow-y-scroll trades-container-no-scrollbar px-[16px] py-[16px] min-h-0">
-          <div className="space-y-[16px]">
+          <div className="space-y-[12px]">
             <TopModeStatus
               orderType={orderType}
               onOrderTypeChange={handleOrderTypeChange}

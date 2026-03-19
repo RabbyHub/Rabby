@@ -55,3 +55,22 @@ export const destroyPerpsSDK = () => {
   sdkInstance = null;
   currentMasterAddress = null;
 };
+
+// Separate SDK instance for BBO L2Book subscription
+// Avoids message routing conflicts when main SDK subscribes to a different aggregation level
+let bboSdkInstance: HyperliquidSDK | null = null;
+
+export const getBboSDK = () => {
+  if (!bboSdkInstance) {
+    bboSdkInstance = new HyperliquidSDK({
+      isTestnet: false,
+      timeout: 10000,
+    });
+  }
+  return bboSdkInstance;
+};
+
+export const destroyBboSDK = () => {
+  bboSdkInstance?.ws.disconnect();
+  bboSdkInstance = null;
+};

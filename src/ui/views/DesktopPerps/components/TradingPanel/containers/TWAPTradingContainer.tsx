@@ -1,32 +1,27 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRabbySelector } from '@/ui/store';
-import { formatUsdValue } from '@/ui/utils';
-import {
-  LimitOrderType,
-  OrderSide,
-  OrderSummaryData,
-  TradingContainerProps,
-} from '../../../types';
-import { TPSLSettings } from '../components/TPSLSettings';
-import { OrderSummary } from '../components/OrderSummary';
+import { OrderSideInfo, TradingContainerProps } from '../../../types';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { useRequest } from 'ahooks';
-import { Button, Select, Tooltip } from 'antd';
-import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
-import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSlider';
+import { PositionSizeInputAndSliderV2 as PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSliderV2';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
-import { validatePriceInput } from '@/ui/views/Perps/utils';
-import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
-import eventBus from '@/eventBus';
-import { EVENTS } from '@/constant';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
-import { DesktopPerpsInput } from '../../DesktopPerpsInput';
-import { TradingButton } from '../components/TradingButton';
+import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
+import { TradingButtons } from '../components/TradingButtons';
+import { OrderInfoGrid } from '../components/OrderInfoGrid';
 import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import { BigNumber } from 'bignumber.js';
+import { calcAmountFromPercentage } from '../utils';
+import clsx from 'clsx';
+
+const RUNTIME_PRESETS = [
+  { label: '1h', hours: 1, minutes: 0 },
+  { label: '6h', hours: 6, minutes: 0 },
+  { label: '12h', hours: 12, minutes: 0 },
+  { label: '24h', hours: 24, minutes: 0 },
+];
 
 export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -35,34 +30,31 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
   const {
     currentPerpsAccount,
     selectedCoin,
-    orderSide,
-    switchOrderSide,
     positionSize,
     setPositionSize,
     currentPosition,
     markPrice,
     midPrice,
     szDecimals,
-    pxDecimals,
     leverage,
     leverageType,
     availableBalance,
     reduceOnly,
     setReduceOnly,
-    tradeUsdAmount,
-    marginRequired,
     tradeSize,
-    estimatedLiquidationPrice,
-    maxTradeSize,
-    marginUsage,
+    maxBuyTradeSize,
+    maxSellTradeSize,
     currentMarketData,
     percentage,
     setPercentage,
-    tpslConfig,
-    tpslConfigHasError,
-    setTpslConfig,
-    handleTPSLEnabledChange,
+    sizeDisplayUnit,
+    setSizeDisplayUnit,
     resetForm,
+    reduceOnlyBuyDisabled,
+    reduceOnlySellDisabled,
+    calcDirectionInfo,
+    buyTradeSize,
+    sellTradeSize,
   } = usePerpsTradingState();
   const [hourInput, setHourInput] = React.useState('0');
   const [minuteInput, setMinuteInput] = React.useState('5');
@@ -83,82 +75,114 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     };
   }, [allMinsDuration, tradeSize, szDecimals]);
 
+  // Max duration calculation based on current input size (each suborder must be >= $10)
+  const { maxDurationMins, maxDurationDisplay } = useMemo(() => {
+    const currentSize = Number(positionSize.amount) || 0;
+    const notional = currentSize * midPrice;
+    const maxOrders = Math.floor(notional / 10);
+    if (maxOrders <= 1) {
+      return { maxDurationMins: 0, maxDurationDisplay: '' };
+    }
+    const maxMins = Math.min(Math.floor(((maxOrders - 1) * 30) / 60), 1440);
+    const hours = Math.floor(maxMins / 60);
+    const mins = maxMins % 60;
+    const display =
+      hours > 0 ? `${hours}h ${mins > 0 ? `${mins}m` : ''}`.trim() : `${mins}m`;
+    return { maxDurationMins: maxMins, maxDurationDisplay: display };
+  }, [positionSize.amount, midPrice]);
+
   useEffect(() => {
     setHourInput('0');
     setMinuteInput('5');
     setRandomize(false);
   }, [selectedCoin]);
 
-  // Form validation
-  const validation = React.useMemo(() => {
-    let error: string = '';
-    const notionalNum = Number(positionSize.notionalValue) || 0;
-    const tradeSize = Number(positionSize.amount) || 0;
+  // Order info for dual-column grid
+  const buyInfo: OrderSideInfo = useMemo(() => {
+    const info = calcDirectionInfo('Long', buyTradeSize);
+    return { ...info, max: maxBuyTradeSize || '0' };
+  }, [calcDirectionInfo, buyTradeSize, maxBuyTradeSize]);
+
+  const sellInfo: OrderSideInfo = useMemo(() => {
+    const info = calcDirectionInfo('Short', sellTradeSize);
+    return { ...info, max: maxSellTradeSize || '0' };
+  }, [calcDirectionInfo, sellTradeSize, maxSellTradeSize]);
+
+  // Shared validation (direction-agnostic)
+  const validation = useMemo(() => {
+    const size = Number(positionSize.amount) || 0;
+    const notionalNum = size * midPrice;
 
     if (notionalNum === 0) {
+      return { isValid: false, error: '' };
+    }
+
+    if (allMinsDuration < 5) {
       return {
         isValid: false,
-        error:
-          reduceOnly && percentage > 0
-            ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
-            : '',
+        error: t('page.perpsPro.tradingPanel.runtimeTooShort'),
       };
     }
 
-    //allMinsDuration in 5min - 24h
-    if (allMinsDuration < 5) {
-      error = t('page.perpsPro.tradingPanel.runtimeTooShort');
-      return { isValid: false, error };
+    if (allMinsDuration > 1440) {
+      return {
+        isValid: false,
+        error: t('page.perpsPro.tradingPanel.runtimeTooLong'),
+      };
     }
 
-    if (allMinsDuration > 24 * 60) {
-      error = t('page.perpsPro.tradingPanel.runtimeTooLong');
-      return { isValid: false, error };
-    }
-
-    // Check minimum order size ($10)
     if (notionalNum < 10) {
-      error = t('page.perpsPro.tradingPanel.minimumOrderSize');
-      return { isValid: false, error };
+      return {
+        isValid: false,
+        error: t('page.perpsPro.tradingPanel.minimumOrderSize'),
+      };
     }
 
-    if (Number(sizePerSuborder) * Number(midPrice) < 10) {
-      error = t('page.perpsPro.tradingPanel.minimumSuborderSize');
-      return { isValid: false, error };
+    if (Number(sizePerSuborder) * midPrice < 10) {
+      return {
+        isValid: false,
+        error: t('page.perpsPro.tradingPanel.minimumSuborderSize'),
+      };
     }
 
-    if (maxTradeSize && tradeSize > Number(maxTradeSize)) {
-      error = reduceOnly
-        ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
-        : t('page.perpsPro.tradingPanel.insufficientBalance');
-      return { isValid: false, error };
+    // Max trade size - use max of both directions (shared check)
+    const effectiveMaxTradeSize = reduceOnly
+      ? Number(
+          (currentPosition?.side === 'Long'
+            ? maxSellTradeSize
+            : maxBuyTradeSize) || 0
+        )
+      : Math.max(Number(maxBuyTradeSize || 0), Number(maxSellTradeSize || 0));
+
+    if (effectiveMaxTradeSize > 0 && size > effectiveMaxTradeSize) {
+      return {
+        isValid: false,
+        error: t('page.perpsPro.tradingPanel.insufficientBalance'),
+      };
     }
 
-    // Check maximum position size
     const maxUsdValue = Number(currentMarketData?.maxUsdValueSize || 1000000);
     if (notionalNum > maxUsdValue) {
-      error =
-        t('page.perpsPro.tradingPanel.maximumOrderSize', {
-          amount: `$${maxUsdValue}`,
-        }) || `Maximum order size is $${maxUsdValue}`;
-      return { isValid: false, error };
+      return {
+        isValid: false,
+        error:
+          t('page.perpsPro.tradingPanel.maximumOrderSize', {
+            amount: `$${maxUsdValue}`,
+          }) || `Maximum order size is $${maxUsdValue}`,
+      };
     }
 
-    return {
-      isValid: error === '',
-      error,
-    };
+    return { isValid: true, error: '' };
   }, [
-    positionSize.notionalValue,
-    maxTradeSize,
-    reduceOnly,
-    percentage,
-    tradeSize,
-    marginRequired,
-    availableBalance,
-    currentMarketData,
-    sizePerSuborder,
+    positionSize.amount,
     midPrice,
+    allMinsDuration,
+    sizePerSuborder,
+    maxBuyTradeSize,
+    maxSellTradeSize,
+    reduceOnly,
+    currentPosition,
+    currentMarketData,
     t,
   ]);
 
@@ -168,16 +192,22 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     handleActionApproveStatus,
   } = usePerpsProPosition();
 
-  const {
-    run: handleOpenOrderRequest,
-    loading: handleOpenOrderLoading,
-  } = useRequest(
+  const getDirectionTradeSize = (isBuy: boolean): string => {
+    if (positionSize.inputSource === 'slider') {
+      const dirMax = isBuy ? maxBuyTradeSize : maxSellTradeSize;
+      return calcAmountFromPercentage(percentage, dirMax, szDecimals);
+    }
+    return tradeSize;
+  };
+
+  const { run: handleBuyOrder, loading: buyLoading } = useRequest(
     async () => {
-      const isBuy = orderSide === OrderSide.BUY;
+      const isBuy = true;
+      const directionSize = getDirectionTradeSize(isBuy);
       await handleOpenTWAPOrder({
         coin: selectedCoin,
         isBuy,
-        size: tradeSize,
+        size: directionSize,
         reduceOnly,
         durationMins: allMinsDuration,
         randomizeDelay: randomize,
@@ -207,22 +237,42 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     }
   );
 
-  const orderSummary: OrderSummaryData = React.useMemo(() => {
-    return {
-      liquidationPrice: estimatedLiquidationPrice,
-      liquidationDistance: '',
-      orderValue: tradeUsdAmount > 0 ? formatUsdValue(tradeUsdAmount) : '$0.00',
-      marginRequired: reduceOnly ? '-' : formatUsdValue(marginRequired),
-      marginUsage,
-      slippage: '0.08%',
-    };
-  }, [
-    estimatedLiquidationPrice,
-    tradeUsdAmount,
-    marginUsage,
-    reduceOnly,
-    marginRequired,
-  ]);
+  const { run: handleSellOrder, loading: sellLoading } = useRequest(
+    async () => {
+      const isBuy = false;
+      const directionSize = getDirectionTradeSize(isBuy);
+      await handleOpenTWAPOrder({
+        coin: selectedCoin,
+        isBuy,
+        size: directionSize,
+        reduceOnly,
+        durationMins: allMinsDuration,
+        randomizeDelay: randomize,
+      });
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type: 'twap',
+        leverage: leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, reduceOnly),
+        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+        coin: selectedCoin,
+        size: tradeSize,
+        price: markPrice,
+        trade_usd_value: new BigNumber(markPrice).times(tradeSize).toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
+      });
+    },
+    {
+      manual: true,
+      onSuccess: () => {
+        resetForm();
+      },
+      onError: (error) => {},
+    }
+  );
 
   const validateNumberInput = (value: string) => {
     return /^[0-9]*$/.test(value);
@@ -243,158 +293,141 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
   };
 
   return (
-    <div className="space-y-[16px]">
-      <OrderSideAndFunds
-        orderSide={orderSide}
-        switchOrderSide={switchOrderSide}
-        availableBalance={availableBalance}
-        currentPosition={currentPosition}
-        selectedCoin={selectedCoin}
-      />
+    <div className="space-y-[12px]">
+      <OrderSideAndFunds availableBalance={availableBalance} />
 
-      {/* Position Size Input */}
       <PositionSizeInputAndSlider
         price={midPrice}
-        maxTradeSize={maxTradeSize}
+        maxBuyTradeSize={maxBuyTradeSize}
+        maxSellTradeSize={maxSellTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
         percentage={percentage}
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
-        quoteAsset="USDC"
         szDecimals={szDecimals}
+        sizeDisplayUnit={sizeDisplayUnit}
+        onUnitChange={setSizeDisplayUnit}
         reduceOnly={reduceOnly}
       />
 
-      <div className="flex flex-col gap-8">
-        <div className="flex items-center justify-between">
-          <div className="text-rb-neutral-foot font-medium text-[12px]">
-            {t('page.perpsPro.tradingPanel.runtime')}
-          </div>
-          <div className="text-rb-neutral-title-1 text-[12px] font-medium">
-            {t('page.perpsPro.tradingPanel.runtimeTips')}
-          </div>
-        </div>
+      <div className="h-[1px] bg-rb-neutral-line" />
+
+      {/* Total Time Section */}
+      <div className="flex flex-col gap-[8px]">
+        <span className="text-rb-neutral-secondary text-[12px]">
+          {t('page.perpsPro.tradingPanel.totalTime')}
+        </span>
+
+        {/* Hour / Min inputs */}
         <div className="flex items-center gap-[8px]">
           <DesktopPerpsInput
             value={hourInput}
             onChange={handleHourInputChange}
-            className="flex-1 text-right text-[13px] leading-[16px]"
-            prefix={
-              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-                {t('page.perpsPro.tradingPanel.hours')}
+            className="flex-1 text-left"
+            suffix={
+              <span className="text-15 font-medium text-rb-neutral-title-1">
+                {t('page.perpsPro.tradingPanel.hour')}
               </span>
             }
           />
           <DesktopPerpsInput
             value={minuteInput}
             onChange={handleMinuteInputChange}
-            className="flex-1 text-right text-[13px] leading-[16px]"
-            prefix={
-              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-                {t('page.perpsPro.tradingPanel.minutes')}
+            className="flex-1 text-left"
+            suffix={
+              <span className="text-15 font-medium text-rb-neutral-title-1">
+                {t('page.perpsPro.tradingPanel.min')}
               </span>
             }
           />
         </div>
-      </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-16">
-          <PerpsCheckbox
-            checked={randomize}
-            onChange={(checked) => setRandomize(checked)}
-            tooltipText={t('page.perpsPro.tradingPanel.randomizeTooltip')}
-            title={t('page.perpsPro.tradingPanel.randomize')}
-          />
-          <PerpsCheckbox
-            checked={reduceOnly}
-            onChange={setReduceOnly}
-            tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
-            title={t('page.perpsPro.tradingPanel.reduceOnly')}
-            disabled={!currentPosition}
-          />
-        </div>
-      </div>
-
-      {/* Place Order Button */}
-      {
-        <TradingButton
-          loading={handleOpenOrderLoading}
-          onClick={handleOpenOrderRequest}
-          disabled={!validation.isValid || tpslConfigHasError}
-          error={validation.error}
-          isValid={validation.isValid}
-          orderSide={orderSide}
-          titleText={t('page.perpsPro.tradingPanel.placeOrder')}
-        />
-      }
-
-      {/* Order Summary */}
-      <div className="space-y-[6px]">
-        <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.frequency')}
-          </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {t('page.perpsPro.tradingPanel.threeThirtySeconds')}
-          </span>
+        {/* Preset buttons */}
+        <div className="flex items-center gap-[8px]">
+          {RUNTIME_PRESETS.map((preset) => {
+            const presetMins = preset.hours * 60 + preset.minutes;
+            const isActive =
+              Number(hourInput) === preset.hours &&
+              Number(minuteInput) === preset.minutes;
+            const isDisabled = presetMins > maxDurationMins;
+            return (
+              <div
+                key={preset.label}
+                className={clsx(
+                  'flex-1 h-[32px] flex items-center justify-center text-center font-medium text-[13px] rounded-[6px] border border-solid',
+                  isActive
+                    ? 'bg-rb-brand-light-1 text-rb-neutral-title-1 border-rb-brand-default cursor-pointer'
+                    : isDisabled
+                    ? 'bg-rb-neutral-bg-2 text-rb-neutral-foot border-transparent opacity-50 cursor-not-allowed'
+                    : 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent hover:border-rb-brand-default cursor-pointer'
+                )}
+                onClick={() => {
+                  if (!isDisabled) {
+                    setHourInput(String(preset.hours));
+                    setMinuteInput(String(preset.minutes));
+                  }
+                }}
+              >
+                {preset.label}
+              </div>
+            );
+          })}
         </div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.runtime')}
-          </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {`${
-              Math.floor(allMinsDuration / 60) >= 1
-                ? Math.floor(allMinsDuration / 60) +
-                  t('page.perpsPro.tradingPanel.hours')
-                : ''
-            } ${Math.floor(allMinsDuration % 60)} ${t(
-              'page.perpsPro.tradingPanel.minutes'
-            )}`}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.numberOfOrders')}
-          </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
+        {/* Max duration + Number of Orders info */}
+        {maxDurationMins >= 5 && (
+          <div className="text-rb-neutral-secondary text-[12px]">
+            {t('page.perpsPro.tradingPanel.maxDurationTwap')}{' '}
+            <span className="font-medium text-rb-neutral-title-1">
+              {maxDurationDisplay}
+            </span>
+            .
+          </div>
+        )}
+        <div className="text-rb-neutral-secondary text-[12px]">
+          {t('page.perpsPro.tradingPanel.numberOfOrders')}{' '}
+          <span className="font-medium text-rb-neutral-title-1">
             {numberOfOrders}
           </span>
         </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.sizePerSuborder')}
-          </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {sizePerSuborder} {selectedCoin}
-          </span>
-        </div>
-
-        {/* Margin Required */}
-        <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.marginRequired')}
-          </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {orderSummary.marginRequired}
-          </span>
-        </div>
-
-        {/* Margin Usage */}
-        <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.marginUsage')}
-          </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {orderSummary.marginUsage}
-          </span>
-        </div>
       </div>
+
+      <div className="flex flex-col gap-[12px]">
+        <PerpsCheckbox
+          checked={reduceOnly}
+          onChange={setReduceOnly}
+          tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
+          title={t('page.perpsPro.tradingPanel.reduceOnly')}
+          disabled={!currentPosition}
+        />
+        <PerpsCheckbox
+          checked={randomize}
+          onChange={(checked) => setRandomize(checked)}
+          tooltipText={t('page.perpsPro.tradingPanel.randomizeTooltip')}
+          title={t('page.perpsPro.tradingPanel.randomize')}
+        />
+      </div>
+
+      <TradingButtons
+        onBuyClick={handleBuyOrder}
+        onSellClick={handleSellOrder}
+        buyLoading={buyLoading}
+        sellLoading={sellLoading}
+        buyDisabled={!validation.isValid || reduceOnlyBuyDisabled}
+        sellDisabled={!validation.isValid || reduceOnlySellDisabled}
+        buyError={validation.error || undefined}
+        sellError={validation.error || undefined}
+      />
+
+      <OrderInfoGrid
+        buy={buyInfo}
+        sell={sellInfo}
+        displayUnit={sizeDisplayUnit}
+        selectedCoin={selectedCoin}
+        reduceOnly={reduceOnly}
+        hideLiqPrice
+      />
     </div>
   );
 };

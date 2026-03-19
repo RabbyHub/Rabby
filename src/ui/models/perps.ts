@@ -49,6 +49,7 @@ import {
   OrderSide,
   PositionSize,
   TPSLConfig,
+  SizeDisplayUnit,
 } from '../views/DesktopPerps/types';
 import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
 import stats from '@/stats';
@@ -103,8 +104,24 @@ export interface AccountHistoryItem {
 
 export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
   enabled: false,
-  takeProfit: { price: '', percentage: '', error: '', inputMode: 'percentage' },
-  stopLoss: { price: '', percentage: '', error: '', inputMode: 'percentage' },
+  takeProfit: {
+    settingMode: 'price',
+    value: '',
+    error: '',
+    buyTriggerPrice: '',
+    sellTriggerPrice: '',
+    estimatedPnl: '',
+    estimatedPnlPercent: '',
+  },
+  stopLoss: {
+    settingMode: 'price',
+    value: '',
+    error: '',
+    buyTriggerPrice: '',
+    sellTriggerPrice: '',
+    estimatedPnl: '',
+    estimatedPnlPercent: '',
+  },
 };
 
 const INIT_TRADING_STATE = {
@@ -113,6 +130,7 @@ const INIT_TRADING_STATE = {
   tradingPercentage: 0,
   tradingReduceOnly: false,
   tradingTpslConfig: DEFAULT_TPSL_CONFIG,
+  bboPrices: { asks1: '', asks5: '', bids1: '', bids5: '' },
 };
 
 export interface PerpsState {
@@ -154,18 +172,27 @@ export interface PerpsState {
   twapStates: WsTwapStates['states'];
   twapHistory: UserTwapHistory[];
   twapSliceFills: UserTwapSliceFill[];
-  marketSlippage: number; // 0-1, default 0.08 (8%)
+  marketSlippage: number; // 0-1, default 0.05 (5%)
   soundEnabled: boolean;
   marketEstSize: string;
   marketEstPrice: string;
   quoteUnit: 'base' | 'usd';
   // Trading panel state (preserved across orderType switches)
   // tradingOrderType: OrderType;
-  tradingOrderSide: OrderSide;
+  sizeDisplayUnit: SizeDisplayUnit;
+  /** @deprecated Will be removed - direction is now determined by button click */
+  tradingOrderSide: 'buy' | 'sell';
   tradingPositionSize: PositionSize;
   tradingTpslConfig: TPSLConfig;
   tradingPercentage: number;
   tradingReduceOnly: boolean;
+  // BBO prices from orderbook (default aggregation level)
+  bboPrices: {
+    asks1: string; // asks[0] — best ask
+    asks5: string; // asks[4] — 5th ask
+    bids1: string; // bids[0] — best bid
+    bids5: string; // bids[4] — 5th bid
+  };
 }
 
 let topAssetsCache: PerpTopToken[] = [];
@@ -212,12 +239,13 @@ export const perps = createModel<RootModel>()({
     twapHistory: [],
     twapSliceFills: [],
     soundEnabled: true,
-    marketSlippage: 0.08, // default 8%
+    marketSlippage: 0.05, // default 5%
     marketEstSize: '',
     marketEstPrice: '',
     quoteUnit: 'base',
     // Trading panel state (preserved across orderType switches)
     // tradingOrderType: OrderType.MARKET,
+    sizeDisplayUnit: 'base',
     tradingOrderSide: OrderSide.BUY,
     ...INIT_TRADING_STATE,
   } as PerpsState,
@@ -741,8 +769,21 @@ export const perps = createModel<RootModel>()({
     },
 
     async updateQuoteUnit(payload: 'base' | 'usd', rootState) {
-      dispatch.perps.patchState({ quoteUnit: payload });
+      dispatch.perps.patchState({
+        quoteUnit: payload,
+        sizeDisplayUnit: payload === 'usd' ? 'usdc' : 'base',
+      });
       await rootState.app.wallet.setPerpsQuoteUnit(payload);
+    },
+
+    async updateSizeDisplayUnit(payload: 'base' | 'usdc', rootState) {
+      dispatch.perps.patchState({
+        sizeDisplayUnit: payload,
+        quoteUnit: payload === 'usdc' ? 'usd' : 'base',
+      });
+      await rootState.app.wallet.setPerpsQuoteUnit(
+        payload === 'usdc' ? 'usd' : 'base'
+      );
     },
     async saveApproveSignatures(
       payload: {
