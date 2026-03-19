@@ -21,6 +21,7 @@ import { safeJSONParse } from '@/utils';
 import WatchLogo from 'ui/assets/watch-only-hero.svg';
 import { useCreateAddressActions } from './AddAddress/useCreateAddress';
 import { RcWatchAddressScan } from '../assets/add-address';
+import { is } from 'immer/dist/internal';
 
 const ImportWatchAddress: React.FC<{
   isInModal?: boolean;
@@ -90,7 +91,7 @@ const ImportWatchAddress: React.FC<{
   const handleKeyDown = useMemo(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 'enter') {
-        if (ensResult) {
+        if (ensResult && form.getFieldValue('address') === ensResult.name) {
           e.preventDefault();
           handleConfirmENS(ensResult.addr);
         }
@@ -154,7 +155,14 @@ const ImportWatchAddress: React.FC<{
   };
   const handleValuesChange = async ({ address }: { address: string }) => {
     setTags([]);
-    if (!isValidAddress(address)) {
+    setEnsResult(null);
+    if (isValidAddress(address?.trim())) {
+      setIsValidAddr(true);
+      form.setFieldsValue({
+        address: address.trim(),
+      });
+      return;
+    } else {
       setIsValidAddr(false);
       try {
         const result = await wallet.openapi.getEnsAddressByName(address);
@@ -165,9 +173,6 @@ const ImportWatchAddress: React.FC<{
       } catch (e) {
         setEnsResult(null);
       }
-    } else {
-      setIsValidAddr(true);
-      setEnsResult(null);
     }
   };
   const handleNextClick = () => {
@@ -234,34 +239,18 @@ const ImportWatchAddress: React.FC<{
       </header>
       <div className="rabby-container widget-has-ant-input">
         <div className="relative">
-          <div className="relative">
-            <Form.Item
-              className="pt-32 px-20"
-              name="address"
-              rules={[
-                {
-                  required: true,
-                  message: t('page.newAddress.addContacts.required'),
-                },
-              ]}
-            >
-              <Input.TextArea
-                placeholder={t('page.newAddress.addContacts.addressEns')}
-                maxLength={44}
-                size="large"
-                className="border-bright-on-active leading-normal min-h-[100px]"
-                autoFocus
-                autoSize
-                spellCheck={false}
-              />
-            </Form.Item>
-            <div
-              className="absolute right-[36px] bottom-[16px] flex items-center justify-center cursor-pointer"
-              onClick={handleImportByQrcode}
-            >
-              <RcWatchAddressScan />
-            </div>
-          </div>
+          <Form.Item
+            className="pt-32 px-20"
+            name="address"
+            rules={[
+              {
+                required: true,
+                message: t('page.newAddress.addContacts.required'),
+              },
+            ]}
+          >
+            <InputWithScanIcon handleImportByQrcode={handleImportByQrcode} />
+          </Form.Item>
 
           {tags.length > 0 && (
             <ul className="tags">
@@ -310,5 +299,38 @@ const ImportWatchAddress: React.FC<{
     </StrayPageWithButton>
   );
 };
+
+function InputWithScanIcon({
+  onChange,
+  handleImportByQrcode,
+  value,
+}: {
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  handleImportByQrcode: () => void;
+  value?: HTMLTextAreaElement['value'];
+}) {
+  const { t } = useTranslation();
+  return (
+    <div className="relative">
+      <Input.TextArea
+        placeholder={t('page.newAddress.addContacts.addressEns')}
+        maxLength={44}
+        size="large"
+        className="border-bright-on-active leading-normal min-h-[100px]"
+        autoFocus
+        autoSize
+        spellCheck={false}
+        onChange={onChange}
+        value={value}
+      />
+      <div
+        className="absolute right-[16px] bottom-[16px] flex items-center justify-center cursor-pointer"
+        onClick={handleImportByQrcode}
+      >
+        <RcWatchAddressScan />
+      </div>
+    </div>
+  );
+}
 
 export default ImportWatchAddress;
