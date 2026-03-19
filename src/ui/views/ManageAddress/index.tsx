@@ -257,7 +257,7 @@ const ManageAddress = () => {
   };
 
   if (currentIndex < 0) {
-    history.replace('/add-address');
+    history.replace('/no-address');
     return null;
   }
 
