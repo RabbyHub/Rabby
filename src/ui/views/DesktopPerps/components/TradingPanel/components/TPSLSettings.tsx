@@ -1,6 +1,6 @@
 import React from 'react';
 import { TPSLConfig, TPSLConfigItem, TPSLSettingMode } from '../../../types';
-import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
+import { formatTpOrSlPrice, validatePriceInput } from '@/ui/views/Perps/utils';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
@@ -103,19 +103,18 @@ const calcEstimatedPnlFromPrice = (
 const validateValueInput = (
   value: string,
   mode: TPSLSettingMode,
-  szDecimals: number
+  szDecimals: number,
+  type: 'takeProfit' | 'stopLoss'
 ): boolean => {
   if (value === '' || value === '-') return true;
   if (mode === 'price') {
-    // Price: positive numbers with decimals up to szDecimals
-    return /^\d*\.?\d*$/.test(value);
+    return validatePriceInput(value, szDecimals);
   }
-  if (mode === 'pnl') {
-    // PNL: allow negative, decimals up to 2
-    return /^-?\d*\.?\d{0,2}$/.test(value);
-  }
-  if (mode === 'roi') {
-    // ROI%: allow negative, decimals up to 2
+  if (mode === 'pnl' || mode === 'roi') {
+    // TP: positive only; SL: allow negative
+    if (type === 'takeProfit') {
+      return /^\d*\.?\d{0,2}$/.test(value);
+    }
     return /^-?\d*\.?\d{0,2}$/.test(value);
   }
   return true;
@@ -193,9 +192,21 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     (type: 'takeProfit' | 'stopLoss') => (
       e: React.ChangeEvent<HTMLInputElement>
     ) => {
-      const value = e.target.value;
+      let value = e.target.value;
       const mode = config[type].settingMode;
-      if (validateValueInput(value, mode, szDecimals)) {
+
+      // SL in pnl/roi mode: auto-prepend "-" if user types a positive number
+      if (
+        type === 'stopLoss' &&
+        (mode === 'pnl' || mode === 'roi') &&
+        value &&
+        value !== '-' &&
+        !value.startsWith('-')
+      ) {
+        value = `-${value}`;
+      }
+
+      if (validateValueInput(value, mode, szDecimals, type)) {
         updateItem(type, { value });
       }
     }
