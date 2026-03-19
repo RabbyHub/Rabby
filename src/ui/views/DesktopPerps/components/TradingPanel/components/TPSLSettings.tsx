@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TPSLConfig, TPSLConfigItem, TPSLSettingMode } from '../../../types';
 import { formatTpOrSlPrice, validatePriceInput } from '@/ui/views/Perps/utils';
 import { useMemoizedFn } from 'ahooks';
@@ -9,6 +9,7 @@ import { ReactComponent as RcIconArrowDownPerpsCC } from '@/ui/assets/perps/icon
 import BigNumber from 'bignumber.js';
 import { PerpsDropdown } from './PerpsDropdown';
 import Perps from '@/background/service/perps';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 
 interface TPSLSettingsProps {
   config: TPSLConfig;
@@ -85,23 +86,32 @@ const calcTriggerPricesFromRoi = (
 };
 
 // Compute estimated PnL for Price mode
+// Direction-agnostic: auto-infer direction from price relationship
+// TP: triggerPrice > entryPrice → Long, triggerPrice < entryPrice → Short → PnL always positive
+// SL: triggerPrice < entryPrice → Long, triggerPrice > entryPrice → Short → PnL always negative
 const calcEstimatedPnlFromPrice = (
   triggerPrice: string,
   entryPrice: number,
   tradeSize: string,
-  leverage: number
-): { estimatedPnl: string; estimatedPnlPercent: string } => {
+  leverage: number,
+  type: 'takeProfit' | 'stopLoss'
+): {
+  estimatedPnl: string;
+  estimatedPnlPercent: string;
+} => {
   const trigger = Number(triggerPrice);
   const size = Number(tradeSize);
   if (!trigger || !entryPrice || !size) {
     return { estimatedPnl: '', estimatedPnlPercent: '' };
   }
-  // Use absolute PnL based on price difference (direction-agnostic)
-  // The sign depends on direction, which we don't know yet.
-  // Show for Long direction:
-  const pnl = (trigger - entryPrice) * size;
-  const margin = (entryPrice * size) / leverage;
-  const pnlPercent = margin > 0 ? (pnl / margin) * 100 : 0;
+  const priceDiff = new BigNumber(trigger).minus(entryPrice).abs();
+  const pnlAbs = priceDiff.multipliedBy(size);
+  // TP → positive PnL, SL → negative PnL
+  const pnl = type === 'takeProfit' ? pnlAbs : pnlAbs.negated();
+  const margin = new BigNumber(entryPrice).multipliedBy(size).div(leverage);
+  const pnlPercent = margin.gt(0)
+    ? pnl.div(margin).multipliedBy(100)
+    : new BigNumber(0);
   return {
     estimatedPnl: pnl.toFixed(2),
     estimatedPnlPercent: pnlPercent.toFixed(2),
@@ -111,19 +121,15 @@ const calcEstimatedPnlFromPrice = (
 const validateValueInput = (
   value: string,
   mode: TPSLSettingMode,
-  szDecimals: number,
-  type: 'takeProfit' | 'stopLoss'
+  szDecimals: number
 ): boolean => {
-  if (value === '' || value === '-') return true;
+  if (value === '') return true;
   if (mode === 'price') {
     return validatePriceInput(value, szDecimals);
   }
   if (mode === 'pnl' || mode === 'roi') {
-    // TP: positive only; SL: allow negative
-    if (type === 'takeProfit') {
-      return /^\d*\.?\d{0,2}$/.test(value);
-    }
-    return /^-?\d*\.?\d{0,2}$/.test(value);
+    // Only positive numbers allowed (SL negative sign is auto-managed)
+    return /^\d*\.?\d{0,2}$/.test(value);
   }
   return true;
 };
@@ -153,7 +159,8 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
             item.value,
             priceNum,
             tradeSize,
-            leverage
+            leverage,
+            type
           );
           item.estimatedPnl = est.estimatedPnl;
           item.estimatedPnlPercent = est.estimatedPnlPercent;
@@ -196,25 +203,75 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     }
   );
 
+  // Recalculate derived values (trigger prices / estimated PnL) when price or tradeSize changes
+  React.useEffect(() => {
+    if (!config.enabled) return;
+    const newConfig = { ...config };
+    let changed = false;
+    (['takeProfit', 'stopLoss'] as const).forEach((type) => {
+      const item = { ...newConfig[type] };
+      if (!item.value || !priceNum) return;
+      if (item.settingMode === 'price') {
+        const est = calcEstimatedPnlFromPrice(
+          item.value,
+          priceNum,
+          tradeSize,
+          leverage,
+          type
+        );
+        item.estimatedPnl = est.estimatedPnl;
+        item.estimatedPnlPercent = est.estimatedPnlPercent;
+      } else if (item.settingMode === 'pnl') {
+        const triggers = calcTriggerPricesFromPnl(
+          item.value,
+          priceNum,
+          tradeSize,
+          szDecimals
+        );
+        item.buyTriggerPrice = triggers.buyTriggerPrice;
+        item.sellTriggerPrice = triggers.sellTriggerPrice;
+      } else if (item.settingMode === 'roi') {
+        const triggers = calcTriggerPricesFromRoi(
+          item.value,
+          priceNum,
+          leverage,
+          szDecimals
+        );
+        item.buyTriggerPrice = triggers.buyTriggerPrice;
+        item.sellTriggerPrice = triggers.sellTriggerPrice;
+      }
+      newConfig[type] = item;
+      changed = true;
+    });
+    if (changed) {
+      setConfig(newConfig);
+    }
+  }, [price, tradeSize]);
+
   const handleValueChange = useMemoizedFn(
     (type: 'takeProfit' | 'stopLoss') => (
       e: React.ChangeEvent<HTMLInputElement>
     ) => {
       let value = e.target.value;
       const mode = config[type].settingMode;
+      const isSL = type === 'stopLoss';
+      const isPnlOrRoi = mode === 'pnl' || mode === 'roi';
 
-      // SL in pnl/roi mode: auto-prepend "-" if user types a positive number
-      if (
-        type === 'stopLoss' &&
-        (mode === 'pnl' || mode === 'roi') &&
-        value &&
-        value !== '-' &&
-        !value.startsWith('-')
-      ) {
-        value = `-${value}`;
+      if (isSL && isPnlOrRoi) {
+        // Strip any "-" the user might have typed, we manage it
+        value = value.replace(/-/g, '');
+        // If empty after stripping, clear the field
+        if (!value) {
+          updateItem(type, { value: '' });
+          return;
+        }
+        // Validate the positive part, then prepend "-"
+        if (!validateValueInput(value, mode, szDecimals)) return;
+        updateItem(type, { value: `-${value}` });
+        return;
       }
 
-      if (validateValueInput(value, mode, szDecimals, type)) {
+      if (validateValueInput(value, mode, szDecimals)) {
         updateItem(type, { value });
       }
     }
@@ -251,7 +308,9 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
       (item.buyTriggerPrice || item.sellTriggerPrice);
 
     const showEstimatedPnl =
-      !hasError && item.settingMode === 'price' && item.estimatedPnl;
+      !hasError &&
+      item.settingMode === 'price' &&
+      Boolean(Number(item.estimatedPnl));
 
     return (
       <div className="space-y-[6px]">
@@ -266,12 +325,12 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
           placement="topLeft"
           prefixCls="perps-slider-tip"
           title={
-            <div className="text-13 px-4 py-2 flex flex-col gap-2">
+            <div className="text-13 px-4 py-2 flex flex-col justify-start text-left gap-2">
               {item.buyTriggerPrice && (
                 <div className="text-rb-neutral-title-2">
                   {t('page.perpsPro.tradingPanel.buyTrigger')}:{' '}
                   <span className="text-rb-green-default">
-                    ${item.buyTriggerPrice} (
+                    ${splitNumberByStep(item.buyTriggerPrice)} (
                     {t('page.perpsPro.tradingPanel.long')})
                   </span>
                 </div>
@@ -280,7 +339,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
                 <div className="text-rb-neutral-title-2">
                   {t('page.perpsPro.tradingPanel.sellTrigger')}:{' '}
                   <span className="text-rb-red-default">
-                    ${item.sellTriggerPrice} (
+                    ${splitNumberByStep(item.sellTriggerPrice)} (
                     {t('page.perpsPro.tradingPanel.short')})
                   </span>
                 </div>
@@ -292,6 +351,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
             value={item.value}
             onChange={handleValueChange(type)}
             onFocus={() => setFocusedField(type)}
+            placeholder={modeLabel}
             onBlur={() => setFocusedField(null)}
             className={`text-left${hasError ? ' perps-input-error' : ''}`}
             suffix={
@@ -304,7 +364,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
                   handleModeChange(type, mode as TPSLSettingMode)
                 }
               >
-                <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-foot flex items-center gap-[6px] cursor-pointer whitespace-nowrap">
+                <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1 flex items-center gap-[6px] cursor-pointer whitespace-nowrap">
                   {unitLabel}
                   <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary w-[12px] h-[12px]" />
                 </span>
@@ -324,11 +384,12 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
                   : 'text-rb-red-default'
               }
             >
-              {Number(item.estimatedPnl) >= 0 ? '+' : ''}${item.estimatedPnl}
+              {Number(item.estimatedPnl) >= 0 ? '+' : '-'}
+              {formatUsdValue(Math.abs(Number(item.estimatedPnl)))}
               {item.estimatedPnlPercent &&
-                ` (${Number(item.estimatedPnlPercent) >= 0 ? '+' : ''}${
-                  item.estimatedPnlPercent
-                }%)`}
+                ` (${Number(item.estimatedPnl) >= 0 ? '+' : '-'}${Math.abs(
+                  Number(item.estimatedPnlPercent)
+                )}%)`}
             </span>
           </div>
         )}

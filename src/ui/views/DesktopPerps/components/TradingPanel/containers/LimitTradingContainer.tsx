@@ -150,7 +150,9 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   // Estimated execution price per direction:
   // If limit crosses spread → executes at market (midPrice), otherwise at limit
   const estBuyPrice = Math.min(Number(buyLimitPrice) || midPrice, midPrice);
+  // const estBuyPrice = buyLimitPrice;
   const estSellPrice = Math.max(Number(sellLimitPrice) || midPrice, midPrice);
+  // const estSellPrice = sellLimitPrice;
 
   // Safety factor to avoid hitting exchange margin limits at 100% (fees, funding, etc.)
   const MARGIN_SAFETY = 0.99;
@@ -551,7 +553,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
               onChange={handleLimitPriceChange}
               className="text-left"
               suffix={
-                <span className="text-15 font-medium text-rb-neutral-foot">
+                <span className="text-15 font-medium text-rb-neutral-title-1">
                   USDC
                 </span>
               }
@@ -563,8 +565,10 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
             prefixCls="perps-slider-tip"
             title={
               bboDisabledReason
-                ? `BBO is not supported when ${bboDisabledReason} is enabled`
-                : undefined
+                ? t('page.perpsPro.tradingPanel.bboDisabledTooltip', {
+                    bboDisabledReason,
+                  })
+                : t('page.perpsPro.tradingPanel.bboTips')
             }
           >
             <div
@@ -573,7 +577,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
                 bboEnabled
                   ? 'bg-rb-brand-light-1 text-rb-neutral-title-1 border-rb-brand-default'
                   : canEnableBbo
-                  ? 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent'
+                  ? 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent hover:border-rb-brand-default'
                   : 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent opacity-50'
               )}
               onClick={handleBboToggle}
@@ -586,7 +590,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
-        price={limitPrice}
+        price={midPrice}
         maxBuyTradeSize={limitMaxBuyTradeSize}
         maxSellTradeSize={limitMaxSellTradeSize}
         positionSize={positionSize}
@@ -669,6 +673,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         displayUnit={sizeDisplayUnit}
         selectedCoin={selectedCoin}
         reduceOnly={reduceOnly}
+        price={midPrice}
       />
     </div>
   );

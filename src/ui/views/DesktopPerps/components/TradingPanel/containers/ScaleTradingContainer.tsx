@@ -315,7 +315,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       marginUsage: `${marginRequired} ${formatPercent(
         marginRequired / availableBalance,
         1
-      )}%`,
+      )}`,
     };
   }, [
     scaleOrders,

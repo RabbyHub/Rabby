@@ -238,7 +238,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
             error: tpslValidation.errors.sl || '',
           },
         });
-        return;
+        throw new Error('TP/SL validation failed');
       }
     }
 
@@ -402,6 +402,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           displayUnit={sizeDisplayUnit}
           selectedCoin={selectedCoin}
           reduceOnly={reduceOnly}
+          price={midPrice}
         />
       </div>
 

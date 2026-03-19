@@ -478,7 +478,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
             onChange={handleTriggerPriceChange}
             className="text-left"
             suffix={
-              <span className="text-15 font-medium text-rb-neutral-foot">
+              <span className="text-15 font-medium text-rb-neutral-title-1">
                 USDC
               </span>
             }
@@ -510,7 +510,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
               onChange={handleLimitPriceChange}
               className="text-left"
               suffix={
-                <span className="text-15 font-medium text-rb-neutral-foot">
+                <span className="text-15 font-medium text-rb-neutral-title-1">
                   USDC
                 </span>
               }
@@ -584,6 +584,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         displayUnit={sizeDisplayUnit}
         selectedCoin={selectedCoin}
         reduceOnly={reduceOnly}
+        price={midPrice}
       />
     </div>
   );

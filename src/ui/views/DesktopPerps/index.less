@@ -33,12 +33,14 @@
   min-height: 24px;
   padding: 2px 8px;
   font-size: 12px;
-  font-weight: 500;
   line-height: 20px;
-  text-align: center;
+  text-align: left;
   background-color: var(--rb-neutral-bg-4);
   border-radius: 4px;
   color: var(--r-neutral-title-2);
+  max-width: 300px;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .perps-slider-tip-arrow {
@@ -72,7 +74,17 @@
 
   .perps-slider-tip-arrow {
     top: 100%;
-    left: 16px;
+    left: 8px;
+    transform: translateY(-1px);
+  }
+}
+
+.perps-slider-tip-placement-topRight {
+  padding-bottom: 6px;
+
+  .perps-slider-tip-arrow {
+    top: 100%;
+    right: 8px;
     transform: translateY(-1px);
   }
 }
