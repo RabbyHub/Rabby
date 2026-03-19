@@ -9,6 +9,7 @@ const StyledInput = styled(Input)`
     margin: 0;
   }
 
+  /* With prefix/suffix (affix wrapper) */
   &.ant-input-affix-wrapper {
     border-radius: 8px;
     border: 1px solid var(--rb-neutral-line, #e0e5ec);
@@ -32,6 +33,23 @@ const StyledInput = styled(Input)`
 
     &.text-right .ant-input {
       text-align: right;
+    }
+  }
+
+  /* Without prefix/suffix (plain input) */
+  &.ant-input {
+    border-radius: 8px;
+    border: 1px solid var(--rb-neutral-line, #e0e5ec);
+    background: var(--rb-neutral-bg-5, #fff);
+    height: 44px;
+    font-size: 15px;
+    color: var(--rb-neutral-title-1, #111827);
+    font-weight: 500;
+    padding: 0 11px;
+
+    &::placeholder {
+      color: var(--rb-neutral-foot, #6b7280);
+      opacity: 1;
     }
   }
 `;

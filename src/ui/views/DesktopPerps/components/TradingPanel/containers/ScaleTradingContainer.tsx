@@ -8,23 +8,21 @@ import {
   OrderSummaryData,
   TradingContainerProps,
 } from '../../../types';
-import { TPSLSettings } from '../components/TPSLSettings';
-import { OrderSummary } from '../components/OrderSummary';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { useRequest } from 'ahooks';
-import { Button, Menu, message, Tooltip, Dropdown } from 'antd';
+import { message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
-import { PositionSizeInputAndSliderV2 as PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSliderV2';
+import { LimitOrderTypeSelector } from '../components/LimitOrderTypeSelector';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
 import { formatPercent, validatePriceInput } from '@/ui/views/Perps/utils';
 import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import { calculateMaxScaleTotalSize } from '../utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
-import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
+
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
-import { DesktopPerpsInput } from '../../DesktopPerpsInput';
+import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
 import { TradingButton } from '../components/TradingButton';
 import { BigNumber } from 'bignumber.js';
 import stats from '@/stats';
@@ -314,7 +312,10 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       orderValue:
         scaleOrdersValue > 0 ? formatUsdValue(scaleOrdersValue) : '$0.00',
       marginRequired: formatUsdValue(marginRequired),
-      marginUsage: formatPercent(marginRequired / availableBalance, 1),
+      marginUsage: `${marginRequired} ${formatPercent(
+        marginRequired / availableBalance,
+        1
+      )}%`,
     };
   }, [
     scaleOrders,
@@ -327,24 +328,6 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     endPrice,
     scaleOrders,
   ]);
-
-  const limitOrderTypeOptions = [
-    {
-      label: 'GTC',
-      value: 'Gtc',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Gtc'),
-    },
-    {
-      label: 'IOC',
-      value: 'Ioc',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Ioc'),
-    },
-    {
-      label: 'ALO',
-      value: 'Alo',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Alo'),
-    },
-  ];
 
   const handleStartMidClick = () => {
     setStartPrice(formatTpOrSlPrice(midPrice, szDecimals));
@@ -415,230 +398,151 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   };
 
   return (
-    <div className="space-y-[16px]">
-      {/* Scale keeps Buy/Sell toggle */}
-      <div className="flex items-center gap-[8px]">
-        <button
-          onClick={() => switchOrderSide(OrderSide.BUY)}
-          className={`flex-1 h-[32px] rounded-[8px] font-medium text-[12px] transition-colors ${
-            orderSide === OrderSide.BUY
-              ? 'bg-rb-green-default text-rb-neutral-InvertHighlight '
-              : 'hover:border-rb-brand-default border border-solid border-transparent  bg-rb-neutral-bg-2 text-rb-neutral-title-1'
-          }`}
-        >
-          {t('page.perpsPro.tradingPanel.buyLong')}
-        </button>
-        <button
-          onClick={() => switchOrderSide(OrderSide.SELL)}
-          className={`flex-1 h-[32px] rounded-[8px] font-medium text-[12px] transition-colors ${
-            orderSide === OrderSide.SELL
-              ? 'bg-rb-red-default text-rb-neutral-InvertHighlight '
-              : 'hover:border-rb-brand-default border border-solid border-transparent bg-rb-neutral-bg-2 text-rb-neutral-title-1'
-          }`}
-        >
-          {t('page.perpsPro.tradingPanel.sellShort')}
-        </button>
-      </div>
-
+    <div className="space-y-[10px]">
       <OrderSideAndFunds availableBalance={availableBalance} />
 
-      {/* Position Size Input */}
-      <PositionSizeInputAndSlider
-        price={markPrice}
-        maxBuyTradeSize={scaleMaxTradeSize}
-        maxSellTradeSize={scaleMaxTradeSize}
-        positionSize={positionSize}
-        setPositionSize={setPositionSize}
-        percentage={percentage}
-        setPercentage={setPercentage}
-        baseAsset={selectedCoin}
-        szDecimals={szDecimals}
-        sizeDisplayUnit={sizeDisplayUnit}
-        onUnitChange={setSizeDisplayUnit}
-        reduceOnly={reduceOnly}
-      />
-
-      <div className="space-y-[8px]">
-        <div className="flex items-center gap-8">
-          <DesktopPerpsInput
-            value={startPrice}
-            onChange={handleStartPriceChange}
-            className="text-right text-[13px] leading-[16px]"
-            suffix={
-              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-                USD
-              </span>
-            }
-            prefix={
-              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-                {t('page.perpsPro.tradingPanel.startPrice')}
-              </span>
-            }
-          />
-          <div
-            className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
-            onClick={handleStartMidClick}
-          >
-            Mid
-          </div>
-        </div>
-
-        <div className="flex items-center gap-8">
-          <DesktopPerpsInput
-            value={endPrice}
-            onChange={handleEndPriceChange}
-            className="text-right text-[13px] leading-[16px]"
-            suffix={
-              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-                USD
-              </span>
-            }
-            prefix={
-              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-                {t('page.perpsPro.tradingPanel.endPrice')}
-              </span>
-            }
-          />
-          <div
-            className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
-            onClick={handleEndMidClick}
-          >
-            Mid
-          </div>
-        </div>
-
-        <div className="flex items-center gap-[8px]">
-          <DesktopPerpsInput
-            value={numGrids}
-            onChange={handleNumGridsChange}
-            className="flex-1 text-right text-[13px] leading-[16px]"
-            prefix={
-              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-                {t('page.perpsPro.tradingPanel.totalOrders')}
-              </span>
-            }
-          />
-          <Tooltip
-            placement="top"
-            overlayClassName={clsx('rectangle')}
-            title={t('page.perpsPro.tradingPanel.sizeSkewTooltip')}
-          >
-            <DesktopPerpsInput
-              value={sizeSkew}
-              onChange={handleSizeSkewChange}
-              className="flex-1 text-right text-[13px] leading-[16px]"
-              prefix={
-                <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-                  {t('page.perpsPro.tradingPanel.sizeSkew')}
-                </span>
-              }
-            />
-          </Tooltip>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-16">
-          <PerpsCheckbox
-            checked={reduceOnly}
-            onChange={setReduceOnly}
-            tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
-            title={t('page.perpsPro.tradingPanel.reduceOnly')}
-            disabled={!currentPosition}
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <Dropdown
-            transitionName=""
-            forceRender={true}
-            overlay={
-              <Menu
-                className="bg-r-neutral-bg1"
-                onClick={(info) =>
-                  setLimitOrderType(info.key as LimitOrderType)
-                }
-              >
-                {limitOrderTypeOptions.map((option) => (
-                  <Menu.Item
-                    className="text-r-neutral-title1 hover:bg-r-blue-light1"
-                    key={option.value}
-                  >
-                    <Tooltip key={option.value} title={option.title}>
-                      {option.label}
-                    </Tooltip>
-                  </Menu.Item>
-                ))}
-              </Menu>
-            }
-          >
-            <button
-              type="button"
-              className={clsx(
-                'inline-flex items-center justify-between',
-                'px-[8px] py-[8px] flex-1 w-[80px] h-28',
-                'border border-rb-neutral-line rounded-[6px]',
-                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1 hover:border-rb-brand-default'
-              )}
-            >
-              {
-                limitOrderTypeOptions.find(
-                  (option) => option.value === limitOrderType
-                )?.label
-              }
-              <RcIconArrowDownCC className="text-rb-neutral-secondary" />
-            </button>
-          </Dropdown>
-        </div>
-      </div>
-
-      {/* Place Order Button */}
-      {
-        <TradingButton
-          loading={handleOpenOrderLoading}
-          onClick={handleOpenOrderRequest}
-          disabled={!validation.isValid}
-          error={validation.error}
-          isValid={validation.isValid}
-          orderSide={orderSide}
-          titleText={t('page.perpsPro.tradingPanel.placeOrder')}
+      <div className="flex flex-col gap-[6px]">
+        <span className="text-rb-neutral-secondary text-[12px]">
+          {t('page.perpsPro.tradingPanel.startPrice')}
+        </span>
+        <DesktopPerpsInput
+          value={startPrice}
+          onChange={handleStartPriceChange}
+          className="text-left"
+          suffix={
+            <span className="text-15 font-medium text-rb-neutral-title-1">
+              USDC
+            </span>
+          }
         />
-      }
+      </div>
+
+      <div className="flex flex-col gap-[6px]">
+        <span className="text-rb-neutral-secondary text-[12px]">
+          {t('page.perpsPro.tradingPanel.endPrice')}
+        </span>
+        <DesktopPerpsInput
+          value={endPrice}
+          onChange={handleEndPriceChange}
+          className="text-left"
+          suffix={
+            <span className="text-15 font-medium text-rb-neutral-title-1">
+              USDC
+            </span>
+          }
+        />
+      </div>
+
+      <div className="flex flex-col gap-[6px]">
+        <span className="text-rb-neutral-secondary text-[12px]">
+          {t('page.perpsPro.tradingPanel.size')}
+        </span>
+        <DesktopPerpsInput
+          value={positionSize.amount}
+          onChange={(e) => {
+            const val = e.target.value;
+            if (/^[0-9]*\.?[0-9]*$/.test(val)) {
+              const notionalValue =
+                val && markPrice ? (Number(val) * markPrice).toFixed(2) : '';
+              setPositionSize({
+                amount: val,
+                notionalValue,
+                inputSource: 'amount',
+              });
+            }
+          }}
+          className="text-left"
+          suffix={
+            <span className="text-15 font-medium text-rb-neutral-title-1">
+              {selectedCoin}
+            </span>
+          }
+        />
+      </div>
+
+      <div className="flex flex-col gap-[6px]">
+        <span className="text-rb-neutral-secondary text-[12px]">
+          {t('page.perpsPro.tradingPanel.orderCount')}
+        </span>
+        <DesktopPerpsInput
+          value={numGrids}
+          onChange={handleNumGridsChange}
+          className="text-left"
+        />
+      </div>
+
+      <div className="flex flex-col gap-[6px]">
+        <Tooltip
+          placement="topLeft"
+          overlayClassName={clsx('rectangle')}
+          title={t('page.perpsPro.tradingPanel.sizeSkewTooltip')}
+        >
+          <span className="text-rb-neutral-secondary text-[12px] cursor-help">
+            {t('page.perpsPro.tradingPanel.sizeSkew')}
+          </span>
+        </Tooltip>
+        <DesktopPerpsInput
+          value={sizeSkew}
+          onChange={handleSizeSkewChange}
+          className="text-left"
+        />
+      </div>
+
+      {/* Action Radio */}
+      <div className="flex flex-col gap-[6px]">
+        <span className="text-rb-neutral-secondary text-[12px]">
+          {t('page.perpsPro.tradingPanel.action')}
+        </span>
+        <div className="flex items-center gap-[16px]">
+          <PerpsCheckbox
+            variant="radio"
+            checked={orderSide === OrderSide.BUY}
+            onChange={() => switchOrderSide(OrderSide.BUY)}
+            title={t('page.perpsPro.tradingPanel.Buy')}
+          />
+          <PerpsCheckbox
+            variant="radio"
+            checked={orderSide === OrderSide.SELL}
+            onChange={() => switchOrderSide(OrderSide.SELL)}
+            title={t('page.perpsPro.tradingPanel.Sell')}
+          />
+        </div>
+      </div>
+
+      {/* Reduce Only + TIF */}
+      <div className="flex items-center justify-between">
+        <PerpsCheckbox
+          checked={reduceOnly}
+          onChange={setReduceOnly}
+          tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
+          title={t('page.perpsPro.tradingPanel.reduceOnly')}
+          disabled={!currentPosition}
+        />
+        <LimitOrderTypeSelector
+          value={limitOrderType}
+          onChange={setLimitOrderType}
+        />
+      </div>
+
+      {/* Place Order Button — always primary blue */}
+      <TradingButton
+        loading={handleOpenOrderLoading}
+        onClick={handleOpenOrderRequest}
+        disabled={!validation.isValid}
+        error={validation.error}
+        isValid={validation.isValid}
+        orderSide={orderSide}
+        titleText={t('page.perpsPro.tradingPanel.placeOrder')}
+      />
 
       {/* Order Summary */}
       <div className="space-y-[6px]">
-        <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.start')}
-          </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {orderSummary.start}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.end')}
-          </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {orderSummary.end}
-          </span>
-        </div>
-
         <div className="flex items-center justify-between">
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.orderValue')}
           </span>
           <span className="text-r-neutral-title-1 font-medium text-[13px]">
             {orderSummary.orderValue}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-r-neutral-foot text-[13px]">
-            {t('page.perpsPro.tradingPanel.marginRequired')}
-          </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
-            {reduceOnly ? '-' : orderSummary.marginRequired}
           </span>
         </div>
 

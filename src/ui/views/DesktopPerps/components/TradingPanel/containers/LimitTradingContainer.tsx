@@ -29,6 +29,7 @@ import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import { calcAmountFromPercentage } from '../utils';
 import { PerpsDropdown } from '../components';
+import { LimitOrderTypeSelector } from '../components/LimitOrderTypeSelector';
 import perpsToast from '../../PerpsToast';
 
 export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
@@ -494,23 +495,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     [sellDirInfo, limitMaxSellTradeSize]
   );
 
-  const limitOrderTypeOptions = [
-    {
-      label: 'GTC',
-      value: 'Gtc',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Gtc'),
-    },
-    {
-      label: 'IOC',
-      value: 'Ioc',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Ioc'),
-    },
-    {
-      label: 'ALO',
-      value: 'Alo',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Alo'),
-    },
-  ];
 
   useEffect(() => {
     setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
@@ -657,33 +641,10 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
           title={t('page.perpsPro.tradingPanel.reduceOnly')}
           disabled={!currentPosition}
         />
-        <div className="flex items-center gap-4">
-          <PerpsDropdown
-            options={limitOrderTypeOptions.map(({ label, value, title }) => ({
-              key: value,
-              label,
-              title,
-            }))}
-            onSelect={(value) => setLimitOrderType(value as LimitOrderType)}
-          >
-            <button
-              type="button"
-              className={clsx(
-                'inline-flex items-center justify-between',
-                'px-[8px] py-[8px] flex-1 w-[80px] h-28',
-                'border border-rb-neutral-line rounded-[6px]',
-                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1 hover:border-rb-brand-default'
-              )}
-            >
-              {
-                limitOrderTypeOptions.find(
-                  (option) => option.value === limitOrderType
-                )?.label
-              }
-              <RcIconArrowDownCC className="text-rb-neutral-secondary" />
-            </button>
-          </PerpsDropdown>
-        </div>
+        <LimitOrderTypeSelector
+          value={limitOrderType}
+          onChange={setLimitOrderType}
+        />
       </div>
 
       {/* Buy/Sell Buttons */}

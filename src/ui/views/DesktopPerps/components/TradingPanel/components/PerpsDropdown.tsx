@@ -35,6 +35,7 @@ export const PerpsDropdown: React.FC<PerpsDropdownProps> = ({
               {option.title ? (
                 <Tooltip
                   title={option.title}
+                  // prefixCls="perps-slider-tip"
                   placement="topRight"
                   overlayClassName="rectangle"
                 >
