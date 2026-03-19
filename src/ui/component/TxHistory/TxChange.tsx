@@ -6,20 +6,19 @@ import { numberWithCommasIsLtOne } from 'ui/utils';
 import { getTokenSymbol } from 'ui/utils/token';
 import { TokenLabel } from './TokenLabel';
 import { useTranslation } from 'react-i18next';
+import { TxHistoryItemRow } from '@/db/schema/history';
 
 type TokenChangeProps = {
-  data: TxDisplayItem | TxHistoryItem;
+  data: TxHistoryItemRow;
   canClickToken?: boolean;
   onClose?: () => void;
-} & Pick<TxDisplayItem, 'tokenDict'>;
+};
 
 export const TokenChange = ({
   data: info,
-  tokenDict,
   canClickToken = true,
   onClose,
 }: TokenChangeProps) => {
-  const tokens = tokenDict || {};
   const { t } = useTranslation();
 
   if (!info.sends?.length && !info.receives?.length) {
@@ -29,10 +28,8 @@ export const TokenChange = ({
   return (
     <div className="ui token-change">
       {info.sends?.map((v) => {
-        const tokenId = v.token_id;
-        const tokenUUID = `${info.chain}_token:${tokenId}`;
-        const token = tokens[tokenId] || tokens[tokenUUID];
-        const isNft = v.token_id?.length === 32;
+        const token = v;
+        const isNft = v.id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft
           ? token?.name ||
@@ -43,9 +40,9 @@ export const TokenChange = ({
           <div
             className="token-change-item"
             title={name}
-            data-id={v.token_id}
+            data-id={v.id}
             data-name={name}
-            key={v.token_id}
+            key={v.id}
           >
             {isNft ? (
               <NFTAvatar
@@ -83,11 +80,8 @@ export const TokenChange = ({
         );
       })}
       {info.receives?.map((v) => {
-        const tokenId = v.token_id;
-        const tokenUUID = `${info.chain}_token:${tokenId}`;
-
-        const token = tokens[tokenId] || tokens[tokenUUID];
-        const isNft = v.token_id?.length === 32;
+        const token = v;
+        const isNft = v.id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft
           ? token?.name ||
@@ -96,11 +90,11 @@ export const TokenChange = ({
 
         return (
           <div
-            data-id={v.token_id}
+            data-id={v.id}
             data-name={name}
             className="token-change-item is-success"
             title={name}
-            key={v.token_id}
+            key={v.id}
           >
             {isNft ? (
               <NFTAvatar

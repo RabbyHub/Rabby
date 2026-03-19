@@ -16,6 +16,7 @@ import { DesktopHistoryItem } from './DesktopHistoryItem';
 import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
 import clsx from 'clsx';
 import { HideScamTransactionModal } from './HideScamTransactionModal';
+import { useQueryDbHistory } from '@/db/hooks/history';
 
 const PAGE_COUNT = 20;
 
@@ -34,56 +35,11 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
   const [isShowHideScamTxModal, setIsShowHideScamTxModal] = React.useState(
     false
   );
+  const { data, isLoading } = useQueryDbHistory({
+    address: currentAccount?.address || '',
+  });
 
-  const fetchData = async (startTime = 0) => {
-    const { address } = currentAccount!;
-    if (startTime) {
-      await sleep(500);
-    }
-    const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
-    if (apiLevel >= 1) {
-      return {
-        list: [],
-      };
-    }
-    const getHistory = wallet.openapi.listTxHisotry;
-
-    const res = await getHistory({
-      id: address,
-      start_time: startTime,
-      page_count: PAGE_COUNT,
-      chain_id: selectChainId || undefined,
-    });
-
-    const { project_dict, cate_dict, history_list: list } = res;
-    const displayList = list
-      .map((item) => ({
-        ...item,
-        projectDict: project_dict,
-        cateDict: cate_dict,
-        tokenDict: 'token_dict' in res ? res.token_dict : undefined,
-        tokenUUIDDict:
-          'token_uuid_dict' in res ? res.token_uuid_dict : undefined,
-      }))
-      .sort((v1, v2) => v2.time_at - v1.time_at);
-    return {
-      last: last(displayList)?.time_at,
-      list: displayList,
-    };
-  };
-
-  const { data, loading, loadingMore, loadMore } = useInfiniteScroll(
-    (d) => fetchData(d?.last),
-    {
-      target: scrollContainerRef,
-      reloadDeps: [selectChainId, currentAccount?.address],
-      isNoMore: (d) => {
-        return !d?.last || (d?.list.length || 0) < PAGE_COUNT;
-      },
-    }
-  );
-
-  const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
+  const isEmpty = (data?.length || 0) <= 0 && !isLoading;
 
   const [
     focusingHistoryItem,
@@ -106,7 +62,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
         </div>
       </Modal> */}
 
-      {loading ? (
+      {isLoading ? (
         <div className="overflow-hidden">
           <DesktopLoading count={8} active />
         </div>
@@ -134,16 +90,10 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
             />
           ) : (
             <div className="overflow-hidden">
-              {data?.list?.map((item) => (
-                <DesktopHistoryItem
-                  key={item.id}
-                  data={item}
-                  projectDict={item.projectDict}
-                  cateDict={item.cateDict}
-                  tokenDict={item.tokenDict || item.tokenUUIDDict || {}}
-                />
+              {data?.map((item) => (
+                <DesktopHistoryItem key={item.id} data={item} />
               ))}
-              {loadingMore && <DesktopLoading count={3} active />}
+              {/* {loadingMore && <DesktopLoading count={3} active />} */}
             </div>
           )}
         </>

@@ -8,20 +8,19 @@ import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { TokenLabel } from '@/ui/component/TxHistory/TokenLabel';
 import { DesktopTokenLabel } from './DesktopTokenLabel';
+import { TxHistoryItemRow } from '@/db/schema/history';
 
 type DesktopTokenChangeProps = {
-  data: TxDisplayItem | TxHistoryItem;
+  data: TxHistoryItemRow;
   canClickToken?: boolean;
   onClose?: () => void;
-} & Pick<TxDisplayItem, 'tokenDict'>;
+};
 
 export const DesktopTokenChange = ({
   data: info,
-  tokenDict,
   canClickToken = true,
   onClose,
 }: DesktopTokenChangeProps) => {
-  const tokens = tokenDict || {};
   const { t } = useTranslation();
 
   if (!info.sends?.length && !info.receives?.length) {
@@ -31,10 +30,10 @@ export const DesktopTokenChange = ({
   return (
     <div className="flex flex-col items-end gap-[6px]">
       {info.sends?.map((v) => {
-        const tokenId = v.token_id;
+        const tokenId = v.id;
         const tokenUUID = `${info.chain}_token:${tokenId}`;
-        const token = tokens[tokenId] || tokens[tokenUUID];
-        const isNft = v.token_id?.length === 32;
+        const token = v;
+        const isNft = v.id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft
           ? token?.name ||
@@ -42,11 +41,7 @@ export const DesktopTokenChange = ({
           : symbol;
 
         return (
-          <div
-            key={v.token_id}
-            className="flex items-center gap-[6px]"
-            title={name}
-          >
+          <div key={v.id} className="flex items-center gap-[6px]" title={name}>
             {/* Token Icon */}
             {isNft ? (
               <NFTAvatar
@@ -84,10 +79,9 @@ export const DesktopTokenChange = ({
       })}
 
       {info.receives?.map((v) => {
-        const tokenId = v.token_id;
-        const tokenUUID = `${info.chain}_token:${tokenId}`;
-        const token = tokens[tokenId] || tokens[tokenUUID];
-        const isNft = v.token_id?.length === 32;
+        const tokenId = v;
+        const token = v;
+        const isNft = v.id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft
           ? token?.name ||
@@ -95,11 +89,7 @@ export const DesktopTokenChange = ({
           : symbol;
 
         return (
-          <div
-            key={v.token_id}
-            className="flex items-center gap-[6px]"
-            title={name}
-          >
+          <div key={v.id} className="flex items-center gap-[6px]" title={name}>
             {isNft ? (
               <NFTAvatar
                 className="w-16 h-16 rounded-full"

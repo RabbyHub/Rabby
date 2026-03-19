@@ -11,14 +11,15 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { findChain } from '@/utils/chain';
 import { getTxScanLink } from '@/utils';
 import { DesktopTokenChange } from '@/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenChange';
+import { TxHistoryItemRow } from '@/db/schema/history';
 
 const isDesktop = getUiType().isDesktop;
 type HistoryItemProps = {
-  data: TxDisplayItem | TxHistoryItem;
+  data: TxHistoryItemRow;
   canClickToken?: boolean;
   onClose?: () => void;
   isInDesktopActionModal?: boolean;
-} & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
+};
 
 const EtherscanLink = styled.div`
   cursor: pointer;
@@ -30,9 +31,6 @@ const EtherscanLink = styled.div`
 
 export const HistoryItem = ({
   data,
-  cateDict,
-  projectDict,
-  tokenDict,
   canClickToken = true,
   onClose,
   isInDesktopActionModal,
@@ -84,17 +82,11 @@ export const HistoryItem = ({
           (isScam || isFailed) && 'opacity-50'
         )}
       >
-        <TxInterAddressExplain
-          data={data}
-          projectDict={projectDict}
-          tokenDict={tokenDict}
-          cateDict={cateDict}
-        ></TxInterAddressExplain>
+        <TxInterAddressExplain data={data}></TxInterAddressExplain>
         {needUseTokenDetailModal ? (
           <div className="flex justify-end flex-1 min-w-[130px]">
             <DesktopTokenChange
               data={data}
-              tokenDict={tokenDict}
               canClickToken={canClickToken}
               onClose={onClose}
             />
@@ -102,7 +94,6 @@ export const HistoryItem = ({
         ) : (
           <TokenChange
             data={data}
-            tokenDict={tokenDict}
             canClickToken={canClickToken}
             onClose={onClose}
           />
