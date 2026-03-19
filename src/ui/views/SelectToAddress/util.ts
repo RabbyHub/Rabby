@@ -14,16 +14,3 @@ export const padWatchAccount = (
     keyring: null as any,
   };
 };
-
-export const padWhitelistAccount = (
-  address: string
-): IDisplayedAccountWithBalance => {
-  return {
-    address,
-    brandName: KEYRING_TYPE.Whitelist,
-    type: KEYRING_TYPE.Whitelist,
-    alianName: ellipsisAddress(address),
-    balance: 0,
-    keyring: null as any,
-  };
-};
