@@ -60,7 +60,7 @@ export const DesktopHistoryItem = ({ data }: HistoryItemProps) => {
       )}
 
       {/* Column 1 - Time */}
-      <div className="min-w-[250px] flex-shrink-0">
+      <div className="min-w-[250px] flex-shrink-0 w-[25%]">
         <div className="flex items-center gap-1">
           <span className="text-[14px] leading-[17px]  text-rb-neutral-secondary">
             {sinceTime(data.time_at)}
@@ -82,17 +82,17 @@ export const DesktopHistoryItem = ({ data }: HistoryItemProps) => {
       </div>
 
       {/* Column 2 - Transaction Type/Details */}
-      <div className="flex-[2] min-w-0 mx-4">
+      <div className="flex-[2] min-w-0 mx-4 w-[25%]">
         <DesktopTxExplain data={data} />
       </div>
 
       {/* Column 3 - Token Changes */}
-      <div className="flex-[2] mx-4 min-w-0">
+      <div className="flex-[2] mx-4 min-w-0 w-[25%]">
         <DesktopTokenChange data={data} />
       </div>
 
       {/* Column 4 - Gas Fee and Status */}
-      <div className="w-[230px] flex-shrink-0 text-right">
+      <div className="min-w-[250px] flex-shrink-0 text-right w-[25%]">
         {data.tx && data.tx?.eth_gas_fee ? (
           <div className="text-[14px] leading-[17px] text-r-neutral-foot">
             Gas fee: {numberWithCommasIsLtOne(data.tx?.eth_gas_fee, 4)}{' '}
