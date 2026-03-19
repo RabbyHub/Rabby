@@ -29,6 +29,7 @@ import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import { calcAmountFromPercentage } from '../utils';
 import { PerpsDropdown } from '../components';
+import perpsToast from '../../PerpsToast';
 
 export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -260,7 +261,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
           Number(limitMaxBuyTradeSize || 0),
           Number(limitMaxSellTradeSize || 0)
         );
-    if (isFinite(effectiveMaxTradeSize) && tradeSize > effectiveMaxTradeSize) {
+    if (effectiveMaxTradeSize && tradeSize > effectiveMaxTradeSize) {
       error = t('page.perpsPro.tradingPanel.insufficientBalance');
       return { isValid: false, error };
     }
@@ -294,36 +295,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     t,
   ]);
 
-  // Per-side validation (ALO constraints only — max size check is in shared validation)
-  const buyValidation = React.useMemo(() => {
-    if (!validation.isValid) return validation;
-    // ALO and BBO are mutually exclusive, so limitPrice is correct here
-    if (
-      limitOrderType === 'Alo' &&
-      Number(limitPrice) >= Number(currentBestAskPrice)
-    ) {
-      return {
-        isValid: false,
-        error: t('page.perpsPro.tradingPanel.aloTooLargeBuy'),
-      };
-    }
-    return validation;
-  }, [validation, limitOrderType, limitPrice, currentBestAskPrice, t]);
-
-  const sellValidation = React.useMemo(() => {
-    if (!validation.isValid) return validation;
-    // ALO and BBO are mutually exclusive, so limitPrice is correct here
-    if (
-      limitOrderType === 'Alo' &&
-      Number(limitPrice) <= Number(currentBestBidPrice)
-    ) {
-      return {
-        isValid: false,
-        error: t('page.perpsPro.tradingPanel.aloTooLargeSell'),
-      };
-    }
-    return validation;
-  }, [validation, limitOrderType, limitPrice, currentBestBidPrice, t]);
+  // ALO validation is deferred to button click (see openOrder)
 
   const { handleOpenLimitOrder } = usePerpsProPosition();
 
@@ -337,6 +309,24 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
   const openOrder = React.useCallback(
     async (isBuy: boolean) => {
+      // ALO direction-specific validation (deferred to button click)
+      if (limitOrderType === 'Alo') {
+        if (isBuy && Number(limitPrice) >= Number(currentBestAskPrice)) {
+          perpsToast.error({
+            title: t('page.perps.toast.orderError'),
+            description: t('page.perpsPro.tradingPanel.aloTooLargeSell'),
+          });
+          throw new Error(t('page.perpsPro.tradingPanel.aloTooLargeBuy'));
+        }
+        if (!isBuy && Number(limitPrice) <= Number(currentBestBidPrice)) {
+          perpsToast.error({
+            title: t('page.perps.toast.orderError'),
+            description: t('page.perpsPro.tradingPanel.aloTooLargeSell'),
+          });
+          throw new Error(t('page.perpsPro.tradingPanel.aloTooLargeSell'));
+        }
+      }
+
       // Validate TP/SL for this direction
       const side = isBuy ? OrderSide.BUY : OrderSide.SELL;
       if (tpslConfig.enabled) {
@@ -466,7 +456,9 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       onSuccess: () => {
         resetForm();
       },
-      onError: () => {},
+      onError: (e) => {
+        console.error('Failed to open buy order:', e);
+      },
     }
   );
 
@@ -477,7 +469,9 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       onSuccess: () => {
         resetForm();
       },
-      onError: () => {},
+      onError: (e) => {
+        console.error('Failed to open sell order:', e);
+      },
     }
   );
 
@@ -699,15 +693,13 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         buyLoading={buyLoading}
         sellLoading={sellLoading}
         buyDisabled={
-          !buyValidation.isValid || tpslConfigHasError || reduceOnlyBuyDisabled
+          !validation.isValid || tpslConfigHasError || reduceOnlyBuyDisabled
         }
         sellDisabled={
-          !sellValidation.isValid ||
-          tpslConfigHasError ||
-          reduceOnlySellDisabled
+          !validation.isValid || tpslConfigHasError || reduceOnlySellDisabled
         }
-        buyError={buyValidation.error}
-        sellError={sellValidation.error}
+        buyError={validation.error}
+        sellError={validation.error}
       />
 
       {/* Order Info Grid */}

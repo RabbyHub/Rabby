@@ -1,9 +1,10 @@
 import React from 'react';
-import { Dropdown, Menu } from 'antd';
+import { Dropdown, Menu, Tooltip } from 'antd';
 
 interface PerpsDropdownOption {
   key: string;
   label: React.ReactNode;
+  title?: string;
 }
 
 interface PerpsDropdownProps {
@@ -31,7 +32,17 @@ export const PerpsDropdown: React.FC<PerpsDropdownProps> = ({
               className="text-rb-neutral-title-1 hover:bg-rb-neutral-bg-5"
               key={option.key}
             >
-              {option.label}
+              {option.title ? (
+                <Tooltip
+                  title={option.title}
+                  placement="topRight"
+                  overlayClassName="rectangle"
+                >
+                  <span className="block">{option.label}</span>
+                </Tooltip>
+              ) : (
+                option.label
+              )}
             </Menu.Item>
           ))}
         </Menu>

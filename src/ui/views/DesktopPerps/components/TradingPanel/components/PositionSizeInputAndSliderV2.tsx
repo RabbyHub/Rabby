@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Tooltip } from 'antd';
 import { PositionSize, SizeDisplayUnit } from '../../../types';
 import { DesktopPerpsSliderV2 } from '../../DesktopPerpsSliderV2';
 import { useMemoizedFn } from 'ahooks';
@@ -55,6 +56,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
 
   // Raw input text — could be "1.5" (numeric) or "50%" (percent)
   const [inputText, setInputText] = React.useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   const isPercentText = inputText.endsWith('%');
 
@@ -314,6 +316,27 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     [sizeDisplayUnit, baseAsset]
   );
 
+  // Tooltip: show equivalent amount in the other unit when focused
+  const tooltipContent = useMemo(() => {
+    if (!positionSize.amount || !price) return null;
+    if (sizeDisplayUnit === 'base') {
+      // Input is in base → tooltip shows USDC equivalent
+      const notional = positionSize.notionalValue || '0';
+      return `≈ ${notional} USDC`;
+    }
+    // Input is in USDC → tooltip shows base equivalent
+    const coin = formatPerpsCoin(baseAsset);
+    return `≈ ${positionSize.amount} ${coin}`;
+  }, [
+    positionSize.amount,
+    positionSize.notionalValue,
+    sizeDisplayUnit,
+    baseAsset,
+    price,
+  ]);
+
+  const showTooltip = isFocused && !!tooltipContent;
+
   return (
     <div className="w-full gap-[8px] flex flex-col">
       {/* Size label */}
@@ -323,25 +346,34 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
         </span>
       </div>
 
-      {/* Input: accepts "1.5" (numeric) or "50%" (percent) */}
-      <DesktopPerpsInputV2
-        value={inputText}
-        onChange={handleInputChange}
-        suffix={
-          <PerpsDropdown
-            options={[
-              { key: 'base', label: formatPerpsCoin(baseAsset) },
-              { key: 'usdc', label: 'USDC' },
-            ]}
-            onSelect={(key) => onUnitChange(key as SizeDisplayUnit)}
-          >
-            <span className="text-15 font-medium text-rb-neutral-title-1 px-[10px] h-[28px] flex items-center gap-[2px] cursor-pointer whitespace-nowrap bg-rb-neutral-bg-0 rounded-[6px]">
-              {unitLabel}
-              <RcIconSwitchCC className="text-r-neutral-foot w-[12px] h-[12px]" />
-            </span>
-          </PerpsDropdown>
-        }
-      />
+      <Tooltip
+        visible={showTooltip}
+        placement="topLeft"
+        prefixCls="perps-slider-tip"
+        title={tooltipContent}
+      >
+        {/* Input: accepts "1.5" (numeric) or "50%" (percent) */}
+        <DesktopPerpsInputV2
+          value={inputText}
+          onChange={handleInputChange}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          suffix={
+            <PerpsDropdown
+              options={[
+                { key: 'base', label: formatPerpsCoin(baseAsset) },
+                { key: 'usdc', label: 'USDC' },
+              ]}
+              onSelect={(key) => onUnitChange(key as SizeDisplayUnit)}
+            >
+              <span className="text-15 font-medium text-rb-neutral-title-1 px-[10px] h-[28px] flex items-center gap-[2px] cursor-pointer whitespace-nowrap bg-rb-neutral-bg-0 rounded-[6px]">
+                {unitLabel}
+                <RcIconSwitchCC className="text-r-neutral-foot w-[12px] h-[12px]" />
+              </span>
+            </PerpsDropdown>
+          }
+        />
+      </Tooltip>
 
       {/* Slider — always shows percentage, syncs when input is "XX%" */}
       <div className="px-[4px] mt-[12px] mb-[8px]">

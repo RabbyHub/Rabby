@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { OrderSide, OrderSideInfo } from '../../../types';
+import { OrderSideInfo } from '../../../types';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { useRequest } from 'ahooks';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
@@ -18,6 +18,12 @@ import { BigNumber } from 'bignumber.js';
 import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import { calcAmountFromPercentage } from '../utils';
+import perpsToast from '../../PerpsToast';
+import { useRabbySelector } from '@/ui/store';
+import { PerpsDropdown } from '../components/PerpsDropdown';
+import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
+import { Tooltip } from 'antd';
+import clsx from 'clsx';
 
 interface TakeOrStopLimitTradingContainerProps {
   takeOrStop: 'tp' | 'sl';
@@ -58,14 +64,57 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     buyTradeSize,
     sellTradeSize,
   } = usePerpsTradingState();
+  const bboPrices = useRabbySelector((state) => state.perps.bboPrices);
   const [triggerPrice, setTriggerPrice] = React.useState('');
   const [limitPrice, setLimitPrice] = React.useState(
     formatTpOrSlPrice(midPrice, szDecimals)
   );
 
+  // BBO state
+  type BboStrategy = 'cp1' | 'cp5' | 'q1' | 'q5';
+  const [bboEnabled, setBboEnabled] = React.useState(false);
+  const [bboStrategy, setBboStrategy] = React.useState<BboStrategy>('cp1');
+
+  const bboStrategyOptions = useMemo(
+    () => [
+      { key: 'cp1', label: 'Counterparty 1' },
+      { key: 'cp5', label: 'Counterparty 5' },
+      { key: 'q1', label: 'Queue 1' },
+      { key: 'q5', label: 'Queue 5' },
+    ],
+    []
+  );
+
+  // BBO: direction-specific prices
+  const { bboBuyPrice, bboSellPrice } = useMemo(() => {
+    const isCounterparty = bboStrategy === 'cp1' || bboStrategy === 'cp5';
+    const isFive = bboStrategy === 'cp5' || bboStrategy === 'q5';
+    const askKey = (isFive ? 'asks5' : 'asks1') as keyof typeof bboPrices;
+    const bidKey = (isFive ? 'bids5' : 'bids1') as keyof typeof bboPrices;
+    return {
+      bboBuyPrice: isCounterparty ? bboPrices[askKey] : bboPrices[bidKey],
+      bboSellPrice: isCounterparty ? bboPrices[bidKey] : bboPrices[askKey],
+    };
+  }, [bboStrategy, bboPrices]);
+
+  const canEnableBbo = true; // No TP/SL or ALO conflicts in this container
+
+  const handleBboToggle = () => {
+    if (bboEnabled) {
+      setBboEnabled(false);
+      setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
+    } else if (canEnableBbo) {
+      setBboEnabled(true);
+    }
+  };
+
+  // Direction-specific limit prices (BBO mode uses orderbook sides)
+  const buyLimitPrice = bboEnabled ? bboBuyPrice : limitPrice;
+  const sellLimitPrice = bboEnabled ? bboSellPrice : limitPrice;
+
   // Estimated execution price per direction
-  const estBuyPrice = Math.min(Number(limitPrice) || midPrice, midPrice);
-  const estSellPrice = Math.max(Number(limitPrice) || midPrice, midPrice);
+  const estBuyPrice = Math.min(Number(buyLimitPrice) || midPrice, midPrice);
+  const estSellPrice = Math.max(Number(sellLimitPrice) || midPrice, midPrice);
 
   const limitMaxBuyTradeSize = React.useMemo(() => {
     if (!estBuyPrice) return maxBuyTradeSize;
@@ -128,109 +177,82 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
   }, [selectedCoin]);
 
-  // Direction-dependent validation (deferred to button click)
-  const getValidationForSide = (isBuy: boolean) => {
-    let error: string = '';
-    const tradeSize = Number(positionSize.amount) || 0;
-    const notionalNum = tradeSize * Number(limitPrice || 0);
-    const limitMaxTradeSize = isBuy
-      ? limitMaxBuyTradeSize
-      : limitMaxSellTradeSize;
+  const isStopLoss = takeOrStop === 'sl';
 
-    if (notionalNum === 0 || !Number(triggerPrice)) {
+  // Form validation (direction-agnostic, trigger price direction check moved to button click)
+  const validation = useMemo(() => {
+    const tradeSize = Number(positionSize.amount) || 0;
+    // BBO mode: use max of both direction prices for shared validation
+    const refPrice = bboEnabled
+      ? Math.max(Number(buyLimitPrice || 0), Number(sellLimitPrice || 0))
+      : Number(limitPrice || 0);
+    const notionalNum = tradeSize * (refPrice || midPrice);
+
+    // Empty trigger/limit price check
+    if (!triggerPrice || Number(triggerPrice) <= 0) {
+      return { isValid: false, error: '' };
+    }
+    if (!bboEnabled && (!limitPrice || Number(limitPrice) <= 0)) {
       return { isValid: false, error: '' };
     }
 
-    // Check minimum order size ($10)
-    if (notionalNum < 10) {
-      error = t('page.perpsPro.tradingPanel.minimumOrderSize');
-      return { isValid: false, error };
+    if (notionalNum === 0) {
+      return { isValid: false, error: '' };
     }
 
-    if (limitMaxTradeSize && tradeSize > Number(limitMaxTradeSize)) {
-      error = t('page.perpsPro.tradingPanel.insufficientBalance');
-      return { isValid: false, error };
+    // Min order size check ($10)
+    if (notionalNum > 0 && notionalNum < 10) {
+      return {
+        isValid: false,
+        error: t('page.perpsPro.tradingPanel.minimumOrderSize'),
+      };
     }
 
-    if (
-      takeOrStop === 'sl' &&
-      isBuy &&
-      Number(triggerPrice) &&
-      Number(triggerPrice) < Number(midPrice)
-    ) {
-      error = t('page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice');
-      return { isValid: false, error };
+    // Max trade size check - use limitMax values with reduceOnly awareness
+    const effectiveMaxTradeSize = reduceOnly
+      ? Number(
+          currentPosition?.side === 'Long'
+            ? limitMaxSellTradeSize
+            : limitMaxBuyTradeSize || 0
+        )
+      : Math.max(
+          Number(limitMaxBuyTradeSize || 0),
+          Number(limitMaxSellTradeSize || 0)
+        );
+
+    if (isFinite(effectiveMaxTradeSize) && tradeSize > effectiveMaxTradeSize) {
+      return {
+        isValid: false,
+        error: t('page.perpsPro.tradingPanel.insufficientBalance'),
+      };
     }
 
-    if (
-      takeOrStop === 'sl' &&
-      !isBuy &&
-      Number(triggerPrice) &&
-      Number(triggerPrice) > Number(midPrice)
-    ) {
-      error = t('page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice');
-      return { isValid: false, error };
-    }
-
-    if (
-      takeOrStop === 'tp' &&
-      isBuy &&
-      Number(triggerPrice) &&
-      Number(triggerPrice) > Number(midPrice)
-    ) {
-      error = t('page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice');
-      return { isValid: false, error };
-    }
-
-    if (
-      takeOrStop === 'tp' &&
-      !isBuy &&
-      Number(triggerPrice) &&
-      Number(triggerPrice) < Number(midPrice)
-    ) {
-      error = t('page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice');
-      return { isValid: false, error };
-    }
-
-    // Check maximum position size
+    // Max USD value check
     const maxUsdValue = Number(currentMarketData?.maxUsdValueSize || 1000000);
     if (notionalNum > maxUsdValue) {
-      error =
-        t('page.perpsPro.tradingPanel.maximumOrderSize', {
-          amount: `$${maxUsdValue}`,
-        }) || `Maximum order size is $${maxUsdValue}`;
-      return { isValid: false, error };
+      return {
+        isValid: false,
+        error:
+          t('page.perpsPro.tradingPanel.maximumOrderSize', {
+            amount: `$${maxUsdValue}`,
+          }) || `Maximum order size is $${maxUsdValue}`,
+      };
     }
 
-    return {
-      isValid: error === '',
-      error,
-    };
-  };
-
-  const buyValidation = useMemo(() => getValidationForSide(true), [
+    return { isValid: true, error: '' };
+  }, [
     positionSize.amount,
     limitPrice,
-    limitMaxBuyTradeSize,
-    reduceOnly,
-    percentage,
-    midPrice,
-    takeOrStop,
     triggerPrice,
-    currentMarketData,
-    t,
-  ]);
-
-  const sellValidation = useMemo(() => getValidationForSide(false), [
-    positionSize.amount,
-    limitPrice,
+    midPrice,
+    limitMaxBuyTradeSize,
     limitMaxSellTradeSize,
     reduceOnly,
-    percentage,
-    midPrice,
-    takeOrStop,
-    triggerPrice,
+    currentPosition,
     currentMarketData,
+    bboEnabled,
+    buyLimitPrice,
+    sellLimitPrice,
     t,
   ]);
 
@@ -245,19 +267,48 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       const dirMax = isBuy ? limitMaxBuyTradeSize : limitMaxSellTradeSize;
       return calcAmountFromPercentage(percentage, dirMax, szDecimals);
     }
-    return tradeSize;
+    return String(Number(positionSize.amount) || 0);
   };
 
   const { run: handleBuyOrder, loading: buyLoading } = useRequest(
     async () => {
       const isBuy = true;
+
+      // Trigger price direction validation
+      if (isStopLoss) {
+        if (Number(triggerPrice) <= midPrice) {
+          perpsToast.error({
+            title: t('page.perps.toast.orderError'),
+            description: t(
+              'page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice'
+            ),
+          });
+          throw new Error(
+            t('page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice')
+          );
+        }
+      } else {
+        if (Number(triggerPrice) >= midPrice) {
+          perpsToast.error({
+            title: t('page.perps.toast.orderError'),
+            description: t(
+              'page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice'
+            ),
+          });
+          throw new Error(
+            t('page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice')
+          );
+        }
+      }
+
       const directionSize = getDirectionTradeSize(isBuy);
+      const orderLimitPrice = isBuy ? buyLimitPrice : sellLimitPrice;
       await handleOpenTPSlLimitOrder({
         coin: selectedCoin,
         isBuy,
         size: directionSize,
         triggerPx: triggerPrice,
-        limitPx: limitPrice,
+        limitPx: orderLimitPrice,
         reduceOnly,
         tpsl: takeOrStop,
       });
@@ -271,8 +322,10 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
         coin: selectedCoin,
         size: tradeSize,
-        price: limitPrice,
-        trade_usd_value: new BigNumber(limitPrice).times(tradeSize).toFixed(2),
+        price: orderLimitPrice,
+        trade_usd_value: new BigNumber(orderLimitPrice)
+          .times(tradeSize)
+          .toFixed(2),
         service_provider: 'hyperliquid',
         app_version: process.env.release || '0',
         address_type: currentPerpsAccount?.type || '',
@@ -283,20 +336,51 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       onSuccess: () => {
         resetForm();
       },
-      onError: (error) => {},
+      onError: (error) => {
+        console.error('open limit order error', error);
+      },
     }
   );
 
   const { run: handleSellOrder, loading: sellLoading } = useRequest(
     async () => {
       const isBuy = false;
+
+      // Trigger price direction validation
+      if (isStopLoss) {
+        if (Number(triggerPrice) >= midPrice) {
+          perpsToast.error({
+            title: t('page.perps.toast.orderError'),
+            description: t(
+              'page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice'
+            ),
+          });
+          throw new Error(
+            t('page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice')
+          );
+        }
+      } else {
+        if (Number(triggerPrice) <= midPrice) {
+          perpsToast.error({
+            title: t('page.perps.toast.orderError'),
+            description: t(
+              'page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice'
+            ),
+          });
+          throw new Error(
+            t('page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice')
+          );
+        }
+      }
+
       const directionSize = getDirectionTradeSize(isBuy);
+      const orderLimitPrice = isBuy ? buyLimitPrice : sellLimitPrice;
       await handleOpenTPSlLimitOrder({
         coin: selectedCoin,
         isBuy,
         size: directionSize,
         triggerPx: triggerPrice,
-        limitPx: limitPrice,
+        limitPx: orderLimitPrice,
         reduceOnly,
         tpsl: takeOrStop,
       });
@@ -310,8 +394,10 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
         coin: selectedCoin,
         size: tradeSize,
-        price: limitPrice,
-        trade_usd_value: new BigNumber(limitPrice).times(tradeSize).toFixed(2),
+        price: orderLimitPrice,
+        trade_usd_value: new BigNumber(orderLimitPrice)
+          .times(tradeSize)
+          .toFixed(2),
         service_provider: 'hyperliquid',
         app_version: process.env.release || '0',
         address_type: currentPerpsAccount?.type || '',
@@ -322,7 +408,9 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       onSuccess: () => {
         resetForm();
       },
-      onError: (error) => {},
+      onError: (error) => {
+        console.error('open limit order error', error);
+      },
     }
   );
 
@@ -344,14 +432,6 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     }),
     [sellDirInfo, limitMaxSellTradeSize]
   );
-
-  const handleTriggerMidClick = () => {
-    setTriggerPrice(formatTpOrSlPrice(midPrice, szDecimals));
-  };
-
-  const handleLimitMidClick = () => {
-    setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
-  };
 
   useEffect(() => {
     const handleClickPrice = (price: string) => {
@@ -388,51 +468,72 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     <div className="space-y-[16px]">
       <OrderSideAndFunds availableBalance={availableBalance} />
 
-      <div className="flex items-center gap-8">
-        <DesktopPerpsInput
-          value={triggerPrice}
-          onChange={handleTriggerPriceChange}
-          className="text-right text-[13px] leading-[16px]"
-          suffix={
-            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-              USD
-            </span>
-          }
-          prefix={
-            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-              {t('page.perpsPro.tradingPanel.triggerPrice')}
-            </span>
-          }
-        />
-        <div
-          className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
-          onClick={handleTriggerMidClick}
-        >
-          Mid
+      <div className="flex flex-col gap-[6px]">
+        <span className="text-rb-neutral-secondary text-[12px]">
+          {t('page.perpsPro.tradingPanel.triggerPrice')}
+        </span>
+        <div className="flex items-center gap-8">
+          <DesktopPerpsInput
+            value={triggerPrice}
+            onChange={handleTriggerPriceChange}
+            className="text-left"
+            suffix={
+              <span className="text-15 font-medium text-rb-neutral-foot">
+                USDC
+              </span>
+            }
+          />
         </div>
       </div>
 
-      <div className="flex items-center gap-8">
-        <DesktopPerpsInput
-          value={limitPrice}
-          onChange={handleLimitPriceChange}
-          className="text-right text-[13px] leading-[16px]"
-          suffix={
-            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-              USD
-            </span>
-          }
-          prefix={
-            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-              {t('page.perpsPro.tradingPanel.limitPrice')}
-            </span>
-          }
-        />
-        <div
-          className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
-          onClick={handleLimitMidClick}
-        >
-          Mid
+      <div className="flex flex-col gap-[6px]">
+        <span className="text-rb-neutral-secondary text-[12px]">
+          {t('page.perpsPro.tradingPanel.limitPrice')}
+        </span>
+        <div className="flex items-center gap-8">
+          {bboEnabled ? (
+            <PerpsDropdown
+              options={bboStrategyOptions}
+              onSelect={(key) => setBboStrategy(key as BboStrategy)}
+            >
+              <div className="flex-1 h-[44px] flex items-center justify-between px-[11px] rounded-[8px] border border-solid border-rb-neutral-line bg-rb-neutral-bg-5 cursor-pointer">
+                <span className="text-[15px] font-medium text-rb-neutral-title-1">
+                  {bboStrategyOptions.find((o) => o.key === bboStrategy)
+                    ?.label || 'Counterparty 1'}
+                </span>
+                <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+              </div>
+            </PerpsDropdown>
+          ) : (
+            <DesktopPerpsInput
+              value={limitPrice}
+              onChange={handleLimitPriceChange}
+              className="text-left"
+              suffix={
+                <span className="text-15 font-medium text-rb-neutral-foot">
+                  USDC
+                </span>
+              }
+            />
+          )}
+          <Tooltip
+            overlayClassName="rectangle"
+            placement="topRight"
+            prefixCls="perps-slider-tip"
+            title={undefined}
+          >
+            <div
+              className={clsx(
+                'min-w-[64px] h-[44px] relative flex items-center justify-center text-center font-medium text-15 rounded-[8px] border border-solid cursor-pointer',
+                bboEnabled
+                  ? 'bg-rb-brand-light-1 text-rb-neutral-title-1 border-rb-brand-default'
+                  : 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent'
+              )}
+              onClick={handleBboToggle}
+            >
+              BBO
+            </div>
+          </Tooltip>
         </div>
       </div>
 
@@ -470,10 +571,10 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         onSellClick={handleSellOrder}
         buyLoading={buyLoading}
         sellLoading={sellLoading}
-        buyDisabled={!buyValidation.isValid || reduceOnlyBuyDisabled}
-        sellDisabled={!sellValidation.isValid || reduceOnlySellDisabled}
-        buyError={buyValidation.error}
-        sellError={sellValidation.error}
+        buyDisabled={!validation.isValid || reduceOnlyBuyDisabled}
+        sellDisabled={!validation.isValid || reduceOnlySellDisabled}
+        buyError={validation.error || undefined}
+        sellError={validation.error || undefined}
       />
 
       {/* Order Info */}

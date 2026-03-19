@@ -780,6 +780,7 @@
         "deposit": "Deposit successful",
         "depositTip": "{{amount}} USDC deposited",
         "success": "Success",
+        "orderError": "Order error",
         "withdraw": "Withdrawal Successful",
         "withdrawTip": "{{amount}} USDC has been withdrawn successfully",
         "twapSliceFilled": "TWAP Slice Filled",

@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue } from '@/ui/utils';
-import { OrderSide, OrderSideInfo } from '../../../types';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { useRequest } from 'ahooks';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
@@ -19,6 +17,7 @@ import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import { BigNumber } from 'bignumber.js';
 import { calcAmountFromPercentage } from '../utils';
+import perpsToast from '../../PerpsToast';
 
 interface TakeOrStopMarketTradingContainerProps {
   takeOrStop: 'tp' | 'sl';
@@ -70,103 +69,67 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     setTriggerPrice('');
   }, [selectedCoin]);
 
-  // Direction-dependent validation (deferred to button click)
-  const getValidationForSide = (isBuy: boolean) => {
-    let error: string = '';
+  const isStopLoss = takeOrStop === 'sl';
+
+  // Form validation (direction-agnostic)
+  const validation = useMemo(() => {
     const tradeSize = Number(positionSize.amount) || 0;
     const notionalNum = tradeSize * Number(markPrice || 0);
-    const maxTradeSize = isBuy ? maxBuyTradeSize : maxSellTradeSize;
 
-    if (notionalNum === 0 || !Number(triggerPrice)) {
+    if (!triggerPrice || Number(triggerPrice) <= 0) {
+      return { isValid: false, error: '' };
+    }
+
+    if (notionalNum === 0) {
       return { isValid: false, error: '' };
     }
 
     // Check minimum order size ($10)
-    if (notionalNum < 10) {
-      error = t('page.perpsPro.tradingPanel.minimumOrderSize');
-      return { isValid: false, error };
+    if (notionalNum > 0 && notionalNum < 10) {
+      return {
+        isValid: false,
+        error: t('page.perpsPro.tradingPanel.minimumOrderSize'),
+      };
     }
 
-    if (maxTradeSize && tradeSize > Number(maxTradeSize)) {
-      error = t('page.perpsPro.tradingPanel.insufficientBalance');
-      return { isValid: false, error };
-    }
+    // Check max trade size with reduceOnly awareness
+    const effectiveMaxTradeSize = reduceOnly
+      ? Number(
+          currentPosition?.side === 'Long'
+            ? maxSellTradeSize
+            : maxBuyTradeSize || 0
+        )
+      : Math.max(Number(maxBuyTradeSize || 0), Number(maxSellTradeSize || 0));
 
-    if (
-      takeOrStop === 'sl' &&
-      isBuy &&
-      Number(triggerPrice) < Number(midPrice)
-    ) {
-      error = t('page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice');
-      return { isValid: false, error };
-    }
-
-    if (
-      takeOrStop === 'sl' &&
-      !isBuy &&
-      Number(triggerPrice) > Number(midPrice)
-    ) {
-      error = t('page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice');
-      return { isValid: false, error };
-    }
-
-    if (
-      takeOrStop === 'tp' &&
-      isBuy &&
-      Number(triggerPrice) > Number(midPrice)
-    ) {
-      error = t('page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice');
-      return { isValid: false, error };
-    }
-
-    if (
-      takeOrStop === 'tp' &&
-      !isBuy &&
-      Number(triggerPrice) < Number(midPrice)
-    ) {
-      error = t('page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice');
-      return { isValid: false, error };
+    if (isFinite(effectiveMaxTradeSize) && tradeSize > effectiveMaxTradeSize) {
+      return {
+        isValid: false,
+        error: t('page.perpsPro.tradingPanel.insufficientBalance'),
+      };
     }
 
     // Check maximum position size
     const maxUsdValue = Number(currentMarketData?.maxUsdValueSize || 1000000);
     if (notionalNum > maxUsdValue) {
-      error =
-        t('page.perpsPro.tradingPanel.maximumOrderSize', {
-          amount: `$${maxUsdValue}`,
-        }) || `Maximum order size is $${maxUsdValue}`;
-      return { isValid: false, error };
+      return {
+        isValid: false,
+        error:
+          t('page.perpsPro.tradingPanel.maximumOrderSize', {
+            amount: `$${maxUsdValue}`,
+          }) || `Maximum order size is $${maxUsdValue}`,
+      };
     }
 
-    return {
-      isValid: error === '',
-      error,
-    };
-  };
-
-  const buyValidation = useMemo(() => getValidationForSide(true), [
+    return { isValid: true, error: '' };
+  }, [
     positionSize.amount,
     markPrice,
     maxBuyTradeSize,
-    reduceOnly,
-    percentage,
-    midPrice,
-    takeOrStop,
-    triggerPrice,
-    currentMarketData,
-    t,
-  ]);
-
-  const sellValidation = useMemo(() => getValidationForSide(false), [
-    positionSize.amount,
-    markPrice,
     maxSellTradeSize,
     reduceOnly,
-    percentage,
-    midPrice,
-    takeOrStop,
-    triggerPrice,
+    currentPosition,
     currentMarketData,
+    triggerPrice,
     t,
   ]);
 
@@ -187,6 +150,34 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
   const { run: handleBuyOrder, loading: buyLoading } = useRequest(
     async () => {
       const isBuy = true;
+
+      // Trigger price direction validation
+      if (isStopLoss) {
+        if (Number(triggerPrice) <= midPrice) {
+          perpsToast.error({
+            title: t('page.perps.toast.orderError'),
+            description: t(
+              'page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice'
+            ),
+          });
+          throw new Error(
+            t('page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice')
+          );
+        }
+      } else {
+        if (Number(triggerPrice) >= midPrice) {
+          perpsToast.error({
+            title: t('page.perps.toast.orderError'),
+            description: t(
+              'page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice'
+            ),
+          });
+          throw new Error(
+            t('page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice')
+          );
+        }
+      }
+
       const directionSize = getDirectionTradeSize(isBuy);
       await handleOpenTPSlMarketOrder({
         coin: selectedCoin,
@@ -220,13 +211,43 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
       onSuccess: () => {
         resetForm();
       },
-      onError: (error) => {},
+      onError: (error) => {
+        console.error('open limit order error', error);
+      },
     }
   );
 
   const { run: handleSellOrder, loading: sellLoading } = useRequest(
     async () => {
       const isBuy = false;
+
+      // Trigger price direction validation
+      if (isStopLoss) {
+        if (Number(triggerPrice) >= midPrice) {
+          perpsToast.error({
+            title: t('page.perps.toast.orderError'),
+            description: t(
+              'page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice'
+            ),
+          });
+          throw new Error(
+            t('page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice')
+          );
+        }
+      } else {
+        if (Number(triggerPrice) <= midPrice) {
+          perpsToast.error({
+            title: t('page.perps.toast.orderError'),
+            description: t(
+              'page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice'
+            ),
+          });
+          throw new Error(
+            t('page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice')
+          );
+        }
+      }
+
       const directionSize = getDirectionTradeSize(isBuy);
       await handleOpenTPSlMarketOrder({
         coin: selectedCoin,
@@ -260,7 +281,9 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
       onSuccess: () => {
         resetForm();
       },
-      onError: (error) => {},
+      onError: (error) => {
+        console.error('open limit order error', error);
+      },
     }
   );
 
@@ -296,27 +319,21 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     <div className="space-y-[16px]">
       <OrderSideAndFunds availableBalance={availableBalance} />
 
-      <div className="flex items-center gap-8">
-        <DesktopPerpsInput
-          value={triggerPrice}
-          onChange={handleTriggerPriceChange}
-          className="text-right text-[13px] leading-[16px]"
-          suffix={
-            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-              USD
-            </span>
-          }
-          prefix={
-            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-              {t('page.perpsPro.tradingPanel.triggerPrice')}
-            </span>
-          }
-        />
-        <div
-          className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
-          onClick={handleMidClick}
-        >
-          Mid
+      <div className="flex flex-col gap-[6px]">
+        <span className="text-rb-neutral-secondary text-[12px]">
+          {t('page.perpsPro.tradingPanel.triggerPrice')}
+        </span>
+        <div className="flex items-center gap-8">
+          <DesktopPerpsInput
+            value={triggerPrice}
+            onChange={handleTriggerPriceChange}
+            className="text-left"
+            suffix={
+              <span className="text-15 font-medium text-rb-neutral-foot">
+                USDC
+              </span>
+            }
+          />
         </div>
       </div>
 
@@ -354,10 +371,10 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
         onSellClick={handleSellOrder}
         buyLoading={buyLoading}
         sellLoading={sellLoading}
-        buyDisabled={!buyValidation.isValid || reduceOnlyBuyDisabled}
-        sellDisabled={!sellValidation.isValid || reduceOnlySellDisabled}
-        buyError={buyValidation.error}
-        sellError={sellValidation.error}
+        buyDisabled={!validation.isValid || reduceOnlyBuyDisabled}
+        sellDisabled={!validation.isValid || reduceOnlySellDisabled}
+        buyError={validation.error || undefined}
+        sellError={validation.error || undefined}
       />
 
       {/* Order Info */}
