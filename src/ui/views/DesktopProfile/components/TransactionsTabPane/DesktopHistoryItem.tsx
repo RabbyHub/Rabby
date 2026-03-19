@@ -64,7 +64,7 @@ export const DesktopHistoryItem = ({
       )}
 
       {/* Column 1 - Time */}
-      <div className="min-w-[225px] flex-shrink-0 flex-grow">
+      <div className="min-w-[250px] flex-shrink-0">
         <div className="flex items-center gap-1">
           <span className="text-[14px] leading-[17px]  text-rb-neutral-secondary">
             {sinceTime(data.time_at)}
@@ -101,7 +101,7 @@ export const DesktopHistoryItem = ({
       </div>
 
       {/* Column 4 - Gas Fee and Status */}
-      <div className="w-[220px] flex-shrink-0 text-right">
+      <div className="w-[230px] flex-shrink-0 text-right">
         {data.tx && data.tx?.eth_gas_fee ? (
           <div className="text-[14px] leading-[17px] text-r-neutral-foot">
             Gas fee: {numberWithCommasIsLtOne(data.tx?.eth_gas_fee, 4)}{' '}
