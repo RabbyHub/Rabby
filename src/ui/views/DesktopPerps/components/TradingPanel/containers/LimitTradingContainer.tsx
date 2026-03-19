@@ -495,7 +495,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     [sellDirInfo, limitMaxSellTradeSize]
   );
 
-
   useEffect(() => {
     setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
   }, [selectedCoin]);
