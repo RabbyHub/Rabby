@@ -1,13 +1,21 @@
-import { TxHistoryItem } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  TokenItem,
+  TxHistoryItem,
+  TxHistoryResult,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { EntityTable } from 'dexie';
 
-export interface TxHistoryItemRow extends TxHistoryItem {
-  _id: string;
+export interface TxHistoryItemRow
+  extends Omit<TxHistoryItem, 'sends' | 'receives'> {
   owner_addr: string;
-  projectDict: Record<string, any>;
-  cateDict: Record<string, any>;
-  tokenDict: Record<string, any>;
-  tokenUUIDDict: Record<string, any>;
+  sends: TokenItem[];
+  receives: TokenItem[];
+  project_item?: TxHistoryResult['project_dict'][string];
+  approve_token?: TokenItem;
+  cate_item?: TxHistoryResult['cate_dict'][string];
+
+  _id: string;
+  _updated_at: number;
 }
 
 export type HistoryTable = {
@@ -18,7 +26,7 @@ export type HistoryTable = {
 };
 
 export const historySchema = `
-  _id,
+  &_id,
   owner_addr,
   cate_id,
   chain,
@@ -32,8 +40,7 @@ export const historySchema = `
   time_at,
   token_approve,
   tx,
-  projectDict,
-  cateDict,
-  tokenDict,
-  tokenUUIDDict
+  project_item,
+  _updated_at,
+  [owner_addr+time_at]
   `;

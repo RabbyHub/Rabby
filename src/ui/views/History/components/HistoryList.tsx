@@ -8,7 +8,7 @@ import type {
 } from 'background/service/openapi';
 
 import { useAccount } from '@/ui/store-hooks';
-import { useInfiniteScroll } from 'ahooks';
+import { useInfiniteScroll, useRequest } from 'ahooks';
 import { Virtuoso } from 'react-virtuoso';
 import { Empty, Modal } from 'ui/component';
 import { sleep, useWallet } from 'ui/utils';
@@ -16,6 +16,9 @@ import { HistoryItem, HistoryItemActionContext } from './HistoryItem';
 import { Loading } from './Loading';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { historyDbService } from '@/db/services/historyDbService';
+import { useMount } from 'react-use';
+import { db } from '@/db';
+import { useQueryDbHistory } from '@/db/hooks/history';
 
 const PAGE_COUNT = 10;
 
@@ -29,185 +32,14 @@ export const HistoryList = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const [account] = useAccount();
 
-  const getAllTxHistory = (
-    params: Parameters<typeof wallet.openapi.getAllTxHistory>[0]
-  ) => {
-    const getHistory = wallet.openapi.getAllTxHistory;
+  const { data, isLoading } = useQueryDbHistory({
+    address: account?.address || '',
+    isFilterScam,
+  });
 
-    return getHistory(params).then((res) => {
-      if (res.history_list) {
-        res.history_list = res.history_list.filter((item) => {
-          return !item.is_scam;
-        });
-      }
-      return res;
-    });
-  };
+  const isEmpty = !data || data.length === 0;
 
-  const buildDisplayData = React.useCallback(
-    (result?: TxHistoryResult | TxAllHistoryResult) => {
-      if (!result) {
-        return {
-          last: undefined,
-          list: [],
-        };
-      }
-      const tokenDict = (result as any).token_dict;
-      const tokenUUIDDict = (result as any).token_uuid_dict;
-      const historyList = (result.history_list || []).filter((item) => {
-        if (isFilterScam) {
-          return !item.is_scam;
-        }
-        return true;
-      });
-      const displayList = historyList
-        .map((item) => ({
-          ...item,
-          owner_addr: account?.address || '',
-          projectDict: result.project_dict,
-          cateDict: result.cate_dict,
-          tokenDict,
-          tokenUUIDDict,
-        }))
-        .sort((v1, v2) => v2.time_at - v1.time_at);
-      return {
-        last: last(displayList)?.time_at,
-        list: displayList,
-      };
-    },
-    [isFilterScam]
-  );
-
-  // const [cachedDisplayData, setCachedDisplayData] = React.useState<ReturnType<
-  //   typeof buildDisplayData
-  // > | null>(null);
-
-  const fetchData = async (startTime = 0) => {
-    const { address } = account!;
-    const shouldUseCache = !isFilterScam && startTime === 0;
-    let cachedResult: ReturnType<typeof buildDisplayData> | null = null;
-    let hasCachedHistory = false;
-
-    if (shouldUseCache) {
-      const cache = await historyDbService.getTransactionsCache(address);
-
-      if (cache?.length) {
-        cachedResult = {
-          last: last(cache)?.time_at,
-          list: cache,
-        };
-      }
-      hasCachedHistory = !!cache?.length;
-    }
-
-    const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
-    const apiAvailable = apiLevel < 1;
-    let hasNewTx = false;
-
-    if (shouldUseCache && hasCachedHistory && cachedResult) {
-      if (!apiAvailable) {
-        return cachedResult;
-      }
-      const firstCachedTime = cachedResult?.list?.[0]?.time_at;
-      try {
-        const { has_new_tx } = await wallet.openapi.hasNewTxFrom({
-          address,
-          startTime: firstCachedTime,
-        });
-        hasNewTx = has_new_tx;
-      } catch (e) {
-        hasNewTx = true;
-      }
-      if (!hasNewTx) {
-        return cachedResult;
-      }
-    }
-
-    if (!hasCachedHistory) {
-      hasNewTx = true;
-    }
-
-    if (!apiAvailable) {
-      return {
-        list: [],
-      };
-    }
-
-    if (startTime) {
-      await sleep(500);
-    }
-
-    const getHistory = wallet.openapi.listTxHisotry;
-
-    const res = isFilterScam
-      ? await getAllTxHistory({
-          id: address,
-        })
-      : await getHistory({
-          id: address,
-          start_time: startTime,
-          page_count: PAGE_COUNT,
-        });
-
-    const result = buildDisplayData(res);
-    if (startTime === 0 && hasNewTx && !isFilterScam) {
-      await historyDbService.updateTransactionsCache({
-        address: address.toLowerCase(),
-        rows: (result.list || []).map((item) => ({
-          _id: `${item.owner_addr}-${item.chain}-${item.id}`,
-          ...item,
-        })),
-      });
-    }
-
-    return result;
-  };
-
-  const { data, loading, loadingMore, loadMore, mutate } = useInfiniteScroll(
-    (d) => fetchData(d?.last),
-    {
-      isNoMore: (d) => {
-        return isFilterScam
-          ? true
-          : !d?.last || (d?.list.length || 0) < PAGE_COUNT;
-      },
-      reloadDeps: [account?.address, isFilterScam],
-    }
-  );
-
-  // const x = useLiveQuery(() => {
-  //   return db.history.toArray();
-  // }, []);
-
-  // React.useEffect(() => {
-  //   let cancelled = false;
-  //   if (!account || isFilterScam) {
-  //     setCachedDisplayData(null);
-  //     return;
-  //   }
-  //   (async () => {
-  //     const cached = await wallet.getTransactionsCache(account.address);
-  //     if (cancelled) {
-  //       return;
-  //     }
-  //     if (cached?.history_list?.length) {
-  //       const displayData = buildDisplayData(cached);
-  //       setCachedDisplayData(displayData);
-  //       mutate(displayData);
-  //     } else {
-  //       setCachedDisplayData(null);
-  //     }
-  //   })();
-  //   return () => {
-  //     cancelled = true;
-  //   };
-  // }, [account?.address, isFilterScam, buildDisplayData, wallet, mutate]);
-
-  // const renderData = data || cachedDisplayData;
-  const renderData = data;
-  const listData = renderData?.list || [];
-  const showInitialLoading = loading && listData.length <= 0;
-  const isEmpty = listData.length <= 0 && !showInitialLoading;
+  const showInitialLoading = isLoading && isEmpty;
 
   const [
     focusingHistoryItem,
@@ -262,29 +94,26 @@ export const HistoryList = ({
               style={{
                 height: '100%',
               }}
-              data={listData}
+              data={data}
               itemContent={(_, item) => {
                 return (
                   <HistoryItem
                     data={item}
-                    projectDict={item.projectDict}
-                    cateDict={item.cateDict}
-                    tokenDict={item.tokenDict || item.tokenUUIDDict || {}}
-                    key={item.id}
+                    key={item._id}
                     onViewInputData={setFocusingHistoryItem}
                   />
                 );
               }}
-              endReached={loadMore}
+              // endReached={loadMore}
               increaseViewportBy={100}
-              components={{
-                Footer: () => {
-                  if (loadingMore) {
-                    return <Loading count={2} active />;
-                  }
-                  return null;
-                },
-              }}
+              // components={{
+              //   Footer: () => {
+              //     if (loadingMore) {
+              //       return <Loading count={2} active />;
+              //     }
+              //     return null;
+              //   },
+              // }}
             ></Virtuoso>
           )}
         </>

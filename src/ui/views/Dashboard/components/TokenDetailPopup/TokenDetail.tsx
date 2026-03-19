@@ -498,9 +498,6 @@ const TokenDetail = ({
           {data?.list.map((item) => (
             <HistoryItem
               data={item}
-              projectDict={item.projectDict}
-              cateDict={item.cateDict}
-              tokenDict={item.tokenDict}
               key={item.id}
               onClose={onClose}
               canClickToken={canClickToken}
