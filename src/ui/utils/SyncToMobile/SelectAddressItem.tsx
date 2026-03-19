@@ -95,8 +95,10 @@ export const SelectAddressItem: React.FC<{
               <div
                 className={clsx(
                   'leading-[16px] text-r-neutral-title1 text-[13px]',
-                  'font-medium'
+                  'font-medium',
+                  'truncate max-w-[200px]'
                 )}
+                title={account.alianName}
               >
                 {account.alianName}
               </div>
