@@ -16,10 +16,10 @@ export const DesktopLoading = ({
         return (
           <div
             key={index}
-            className="flex h-[100px] items-center border-b-[0.5px] px-16 border-rabby-neutral-line"
+            className="flex h-[100px] items-center border-b-[0.5px]  border-rabby-neutral-line"
           >
             {/* Column 1 - Time and Hash */}
-            <div className="min-w-[180px] flex-shrink-0 flex-grow ">
+            <div className="min-w-[230px] flex-shrink-0">
               <Skeleton.Button
                 active={active}
                 className="h-[13px] mb-[6px] block"
