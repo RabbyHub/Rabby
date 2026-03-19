@@ -48,7 +48,32 @@ export interface Position {
 // Input mode type: 'price' means user input price, 'percentage' means user input percentage
 export type TPSLInputMode = 'price' | 'percentage';
 
+// TP/SL setting mode for the new three-mode design
+export type TPSLSettingMode = 'price' | 'pnl' | 'roi';
+
+// Position size display unit
+export type SizeDisplayUnit = 'base' | 'usdc';
+
+export interface TPSLConfigItem {
+  settingMode: TPSLSettingMode;
+  value: string; // unified input value (price in Price mode, USDC amount in PNL mode, percentage in ROI mode)
+  error: string;
+  // Computed trigger prices for both directions (used in PNL/ROI modes)
+  buyTriggerPrice: string;
+  sellTriggerPrice: string;
+  // Computed estimated PnL (used in Price mode)
+  estimatedPnl: string;
+  estimatedPnlPercent: string;
+}
+
 export interface TPSLConfig {
+  enabled: boolean;
+  takeProfit: TPSLConfigItem;
+  stopLoss: TPSLConfigItem;
+}
+
+// Legacy TPSLConfig types kept for backward compatibility during migration
+export interface LegacyTPSLConfig {
   enabled: boolean;
   takeProfit: {
     price: string;
@@ -73,6 +98,13 @@ export interface OrderSummaryData {
   tpExpectedPnL?: number;
   slExpectedPnL?: number;
   slippage?: string;
+}
+
+// Dual-column info for both buy and sell sides
+export interface OrderSideInfo {
+  liqPrice: string;
+  cost: string;
+  max: string;
 }
 
 // Trading container components don't need props
