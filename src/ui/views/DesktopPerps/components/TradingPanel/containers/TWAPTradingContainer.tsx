@@ -148,9 +148,9 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     // Max trade size - use max of both directions (shared check)
     const effectiveMaxTradeSize = reduceOnly
       ? Number(
-          currentPosition?.side === 'Long'
+          (currentPosition?.side === 'Long'
             ? maxSellTradeSize
-            : maxBuyTradeSize || 0
+            : maxBuyTradeSize) || 0
         )
       : Math.max(Number(maxBuyTradeSize || 0), Number(maxSellTradeSize || 0));
 
