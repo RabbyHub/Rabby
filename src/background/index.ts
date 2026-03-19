@@ -91,6 +91,8 @@ Sentry.init({
     /\[From .*\]/, // error from custom rpc
     /AxiosError/,
     /WebSocket connection failed/,
+    /Could not establish connection/,
+    /HttpRequestError/,
   ],
 });
 
