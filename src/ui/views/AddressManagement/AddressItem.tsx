@@ -212,9 +212,6 @@ const AddressItem = memo(
                   type,
                   BRAND_ALIAN_TYPE_TEXT[brandName] || brandName
                 )}
-                align={{
-                  offset: [10, 3],
-                }}
               >
                 <div className="relative flex-none">
                   <img
