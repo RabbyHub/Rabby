@@ -207,6 +207,7 @@ const AddressItem = memo(
               <Tooltip
                 overlayClassName="rectangle addressType__tooltip"
                 placement="topRight"
+                align={{ offset: [12, 5] }}
                 title={formatAddressTooltip(
                   type,
                   BRAND_ALIAN_TYPE_TEXT[brandName] || brandName
