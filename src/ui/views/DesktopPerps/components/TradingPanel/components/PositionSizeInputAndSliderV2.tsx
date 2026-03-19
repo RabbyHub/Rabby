@@ -15,6 +15,7 @@ import { formatPerpsCoin } from '../../../utils';
 import { useTranslation } from 'react-i18next';
 import { PerpsDropdown } from './PerpsDropdown';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/swap/switch-cc.svg';
+import { useRabbySelector } from '@/ui/store';
 
 const PRESET_POINTS = [0, 25, 50, 75, 100];
 
@@ -53,12 +54,14 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
   reduceOnly,
 }) => {
   const { t } = useTranslation();
+  const currentPerpsAccount = useRabbySelector(
+    (state) => state.perps.currentPerpsAccount
+  );
 
-  // Raw input text — could be "1.5" (numeric) or "50%" (percent)
+  // Raw input text — numeric only, "50%" is a slider placeholder
   const [inputText, setInputText] = React.useState('');
   const [isFocused, setIsFocused] = useState(false);
-
-  const isPercentText = inputText.endsWith('%');
+  const [isSliderMode, setIsSliderMode] = useState(false);
 
   // Use the larger of buy/sell max as reference for positionSize.amount (for basic validation like min order size)
   // Each direction's actual amount is calculated separately in preview and at order time
@@ -125,9 +128,10 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     });
   });
 
-  // --- Slider drag → update percentage + input text + calculate amount ---
+  // --- Slider drag → enter slider mode with percentage placeholder ---
   const handleSliderChange = useMemoizedFn((newPercentage: number) => {
     setPercentage(newPercentage);
+    setIsSliderMode(true);
     setInputText(newPercentage > 0 ? `${newPercentage}%` : '');
     calcPositionFromPercentage(newPercentage);
   });
@@ -173,68 +177,57 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     });
   });
 
-  // --- Input onChange: detect "XX%" vs plain number ---
+  // --- Input onChange: numeric only, no special chars allowed ---
   const handleInputChange = useMemoizedFn(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value;
 
-      // Percent format: only when input explicitly contains "%"
-      if (raw.endsWith('%')) {
-        const numStr = raw.replace(/%/g, '');
-        if (numStr === '') {
-          setInputText('');
+      // Allow empty input
+      if (raw === '') {
+        if (isSliderMode) {
+          setIsSliderMode(false);
           setPercentage(0);
-          calcPositionFromPercentage(0);
-          return;
         }
-        if (!/^\d+$/.test(numStr)) return;
-        const num = Math.min(Number(numStr), 100);
-        setInputText(`${numStr}%`);
-        setPercentage(num);
-        calcPositionFromPercentage(num);
+        setInputText('');
+        setPositionSize({
+          amount: '',
+          notionalValue: '',
+          inputSource: sizeDisplayUnit === 'base' ? 'amount' : 'notional',
+        });
         return;
       }
 
-      // Was in percent mode but user deleted "%" → exit to numeric mode
-      if (isPercentText) {
-        setInputText(raw);
-        if (sizeDisplayUnit === 'base') {
-          if (validateAmountInput(raw, szDecimals)) {
-            handleAmountInput(raw);
-          }
-        } else {
-          if (validateNotionalInput(raw)) {
-            handleNotionalInput(raw);
-          }
-        }
-        return;
+      // Validate: only accept numeric input
+      const isValid =
+        sizeDisplayUnit === 'base'
+          ? validateAmountInput(raw, szDecimals)
+          : validateNotionalInput(raw);
+      if (!isValid) return; // Reject non-numeric input (including "%")
+
+      // Exit slider mode on valid manual input
+      if (isSliderMode) {
+        setIsSliderMode(false);
+        setPercentage(0);
       }
 
-      // Plain numeric input
       setInputText(raw);
       if (sizeDisplayUnit === 'base') {
-        if (validateAmountInput(raw, szDecimals)) {
-          handleAmountInput(raw);
-        }
+        handleAmountInput(raw);
       } else {
-        if (validateNotionalInput(raw)) {
-          handleNotionalInput(raw);
-        }
+        handleNotionalInput(raw);
       }
     }
   );
 
   // Sync inputText when positionSize changes externally (e.g., reset)
   useEffect(() => {
-    if (positionSize.inputSource === 'slider') return; // slider sets inputText itself
-    if (!isPercentText) {
-      const val =
-        sizeDisplayUnit === 'base'
-          ? positionSize.amount
-          : positionSize.notionalValue;
-      if (val !== inputText) {
-        setInputText(val || '');
-      }
+    if (isSliderMode) return; // slider mode manages inputText itself
+    const val =
+      sizeDisplayUnit === 'base'
+        ? positionSize.amount
+        : positionSize.notionalValue;
+    if (val !== inputText) {
+      setInputText(val || '');
     }
   }, [positionSize.amount, positionSize.notionalValue, sizeDisplayUnit]);
 
@@ -270,7 +263,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     const unit =
       sizeDisplayUnit === 'usdc' ? 'USDC' : formatPerpsCoin(baseAsset);
 
-    if (isPercentText || positionSize.inputSource === 'slider') {
+    if (isSliderMode || positionSize.inputSource === 'slider') {
       // Percentage mode: each direction has its own amount
       const buyAmt = calcDirectionAmount(maxBuyTradeSize, percentage);
       const sellAmt = calcDirectionAmount(maxSellTradeSize, percentage);
@@ -291,15 +284,20 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
       };
     }
 
-    // Numeric mode: both directions show the same user-entered value
-    const val =
-      sizeDisplayUnit === 'usdc'
-        ? positionSize.notionalValue || '0'
-        : positionSize.amount || '0';
-    const display = `${val} ${unit}`;
+    // Numeric mode: both directions show the same value
+    if (sizeDisplayUnit === 'usdc') {
+      // USDC mode: convert input USDC → size (rounded) → size * price = actual USDC
+      const actualNotional =
+        positionSize.amount && Number(price)
+          ? calcAssetNotionalByAmount(positionSize.amount, price)
+          : '0';
+      const display = `${actualNotional} ${unit}`;
+      return { buyPreview: display, sellPreview: display };
+    }
+    const display = `${positionSize.amount || '0'} ${unit}`;
     return { buyPreview: display, sellPreview: display };
   }, [
-    isPercentText,
+    isSliderMode,
     positionSize.inputSource,
     positionSize.amount,
     positionSize.notionalValue,
@@ -338,6 +336,29 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
 
   const showTooltip = isFocused && !!tooltipContent;
 
+  // Focus: exit slider mode, clear to empty for fresh input
+  const handleFocus = useMemoizedFn(() => {
+    setIsFocused(true);
+    if (isSliderMode) {
+      setIsSliderMode(false);
+      setPercentage(0);
+      setInputText('');
+    }
+  });
+
+  // Reset slider mode when coin changes
+  useEffect(() => {
+    if (currentPerpsAccount?.address && baseAsset) {
+      setIsSliderMode(false);
+      setInputText('');
+    }
+  }, [baseAsset, currentPerpsAccount?.address]);
+
+  const handleChangeUnit = useMemoizedFn(() => {
+    const newUnit = sizeDisplayUnit === 'base' ? 'usdc' : 'base';
+    onUnitChange(newUnit);
+  });
+
   return (
     <div className="w-full gap-[8px] flex flex-col">
       {/* Size label */}
@@ -357,21 +378,16 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
         <DesktopPerpsInputV2
           value={inputText}
           onChange={handleInputChange}
-          onFocus={() => setIsFocused(true)}
+          onFocus={handleFocus}
           onBlur={() => setIsFocused(false)}
           suffix={
-            <PerpsDropdown
-              options={[
-                { key: 'base', label: formatPerpsCoin(baseAsset) },
-                { key: 'usdc', label: 'USDC' },
-              ]}
-              onSelect={(key) => onUnitChange(key as SizeDisplayUnit)}
+            <div
+              className="text-15 font-medium text-rb-neutral-title-1 px-[10px] h-[28px] flex items-center gap-[2px] cursor-pointer whitespace-nowrap bg-rb-neutral-bg-0 rounded-[6px]"
+              onClick={handleChangeUnit}
             >
-              <span className="text-15 font-medium text-rb-neutral-title-1 px-[10px] h-[28px] flex items-center gap-[2px] cursor-pointer whitespace-nowrap bg-rb-neutral-bg-0 rounded-[6px]">
-                {unitLabel}
-                <RcIconSwitchCC className="text-r-neutral-foot w-[12px] h-[12px]" />
-              </span>
-            </PerpsDropdown>
+              {unitLabel}
+              <RcIconSwitchCC className="text-r-neutral-foot w-[12px] h-[12px]" />
+            </div>
           }
         />
       </Tooltip>

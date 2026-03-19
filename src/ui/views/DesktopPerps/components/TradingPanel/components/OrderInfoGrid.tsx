@@ -2,6 +2,9 @@ import React from 'react';
 import { OrderSideInfo, SizeDisplayUnit } from '../../../types';
 import { formatPerpsCoin } from '../../../utils';
 import { useTranslation } from 'react-i18next';
+import { formatUsdValue } from '@/ui/utils';
+import BigNumber from 'bignumber.js';
+
 interface OrderInfoGridProps {
   buy: OrderSideInfo;
   sell: OrderSideInfo;
@@ -9,6 +12,7 @@ interface OrderInfoGridProps {
   selectedCoin: string;
   reduceOnly?: boolean;
   hideLiqPrice?: boolean;
+  price?: number | string;
 }
 
 export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
@@ -18,10 +22,16 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
   selectedCoin,
   reduceOnly,
   hideLiqPrice,
+  price,
 }) => {
   const { t } = useTranslation();
-  const maxUnit =
-    displayUnit === 'base' ? formatPerpsCoin(selectedCoin) : 'USDC';
+
+  const formatMax = (max: string) => {
+    if (displayUnit === 'usdc' && price && Number(max) > 0) {
+      return formatUsdValue(new BigNumber(max).multipliedBy(price).toNumber());
+    }
+    return `${max} ${formatPerpsCoin(selectedCoin)}`;
+  };
 
   return (
     <div className="space-y-[6px]">
@@ -74,7 +84,7 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
             {t('page.perpsPro.tradingPanel.max')}
           </span>
           <span className="text-rb-neutral-title-1 font-medium text-[12px]">
-            {buy.max} {maxUnit}
+            {formatMax(buy.max)}
           </span>
         </div>
         <div className="flex-1 flex items-center justify-end gap-4">
@@ -82,7 +92,7 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
             {t('page.perpsPro.tradingPanel.max')}
           </span>
           <span className="text-rb-neutral-title-1 font-medium text-[12px]">
-            {sell.max} {maxUnit}
+            {formatMax(sell.max)}
           </span>
         </div>
       </div>

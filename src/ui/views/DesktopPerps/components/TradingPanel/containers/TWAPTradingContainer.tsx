@@ -427,6 +427,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         selectedCoin={selectedCoin}
         reduceOnly={reduceOnly}
         hideLiqPrice
+        price={midPrice}
       />
     </div>
   );

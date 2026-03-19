@@ -11,17 +11,26 @@ interface PerpsDropdownProps {
   options: PerpsDropdownOption[];
   onSelect: (key: string) => void;
   children: React.ReactNode;
+  placement?:
+    | 'bottomLeft'
+    | 'bottomRight'
+    | 'bottomCenter'
+    | 'topLeft'
+    | 'topRight'
+    | 'topCenter';
 }
 
 export const PerpsDropdown: React.FC<PerpsDropdownProps> = ({
   options,
   onSelect,
   children,
+  placement,
 }) => {
   return (
     <Dropdown
       forceRender={true}
       transitionName=""
+      placement={placement}
       overlay={
         <Menu
           className="bg-rb-neutral-bg-4"

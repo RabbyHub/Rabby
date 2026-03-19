@@ -1313,10 +1313,16 @@ export const perps = createModel<RootModel>()({
     async initQuoteUnit(_, rootState) {
       try {
         const quoteUnit = await rootState.app.wallet.getPerpsQuoteUnit();
-        dispatch.perps.patchState({ quoteUnit: quoteUnit ?? 'base' });
+        dispatch.perps.patchState({
+          quoteUnit: quoteUnit ?? 'base',
+          sizeDisplayUnit: quoteUnit === 'usd' ? 'usdc' : 'base',
+        });
       } catch (error) {
         console.error('Failed to load quote unit:', error);
-        dispatch.perps.patchState({ quoteUnit: 'base' });
+        dispatch.perps.patchState({
+          quoteUnit: 'base',
+          sizeDisplayUnit: 'base',
+        });
       }
     },
 

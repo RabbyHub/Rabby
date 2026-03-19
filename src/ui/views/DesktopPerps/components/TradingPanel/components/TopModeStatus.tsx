@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Tooltip } from 'antd';
 import { PerpsDropdown } from './PerpsDropdown';
 import { useTranslation } from 'react-i18next';
@@ -118,13 +118,59 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
     setShowMarginModeModal(false);
   });
 
-  // Label for the dropdown trigger: show selected advanced type name, or default "Stop Limit"
+  const LAST_ADVANCED_KEY = 'perps_last_advanced_order_type';
+
+  // Remember last selected advanced type in localStorage
+  const [lastAdvancedType, setLastAdvancedType] = React.useState<OrderType>(
+    () => {
+      const cached = localStorage.getItem(LAST_ADVANCED_KEY);
+      if (
+        cached &&
+        ADVANCED_OPTIONS.some((o) => o.value === (cached as OrderType))
+      ) {
+        return cached as OrderType;
+      }
+      return ADVANCED_OPTIONS[0].value;
+    }
+  );
+
+  // Update cache when an advanced type is selected
+  React.useEffect(() => {
+    if (!isPrimaryTab(orderType)) {
+      setLastAdvancedType(orderType);
+      localStorage.setItem(LAST_ADVANCED_KEY, orderType);
+    }
+  }, [orderType]);
+
+  // Label: show current advanced type if selected, otherwise show last cached one
   const advancedLabel = isPrimaryTab(orderType)
-    ? ADVANCED_OPTIONS[0].label
+    ? ADVANCED_OPTIONS.find((o) => o.value === lastAdvancedType)?.label ||
+      ADVANCED_OPTIONS[0].label
     : ADVANCED_OPTIONS.find((o) => o.value === orderType)?.label ||
       ADVANCED_OPTIONS[0].label;
 
   const isAdvancedSelected = !isPrimaryTab(orderType);
+
+  // Sliding underline indicator
+  const tabRefs = useRef<Record<string, HTMLElement | null>>({});
+  const tabsContainerRef = useRef<HTMLDivElement | null>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+
+  // The active tab key for indicator: either a primary tab value or 'advanced'
+  const activeTabKey = isPrimaryTab(orderType) ? orderType : 'advanced';
+
+  useLayoutEffect(() => {
+    const el = tabRefs.current[activeTabKey];
+    const container = tabsContainerRef.current;
+    if (el && container) {
+      const containerRect = container.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      setIndicatorStyle({
+        left: elRect.left - containerRect.left,
+        width: elRect.width,
+      });
+    }
+  }, [activeTabKey, advancedLabel]);
 
   return (
     <>
@@ -133,6 +179,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
         <Tooltip
           title={marginModeDisabledReason}
           placement="top"
+          prefixCls="perps-slider-tip"
           overlayClassName="rectangle w-[max-content]"
         >
           <div
@@ -140,8 +187,8 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
             className={clsx(
               'h-[28px] flex-1 rounded-[6px] flex items-center justify-center text-[12px] font-medium border border-solid bg-rb-neutral-bg-5',
               marginModeDisabledReason
-                ? 'text-rb-neutral-foot border-rb-neutral-line cursor-not-allowed opacity-60'
-                : 'text-rb-neutral-title-1 border-rb-neutral-line cursor-pointer hover:border-rb-brand-default'
+                ? 'text-rb-neutral-foot border-transparent cursor-not-allowed opacity-60'
+                : 'text-rb-neutral-title-1 border-transparent cursor-pointer hover:border-rb-brand-default'
             )}
           >
             {marginMode === MarginMode.ISOLATED
@@ -152,54 +199,79 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
 
         <div
           onClick={handleLeverageClick}
-          className="h-[28px] flex-1 flex items-center justify-center rounded-[6px] text-[12px] text-rb-neutral-title-1 border border-solid border-rb-neutral-line font-medium cursor-pointer hover:border-rb-brand-default bg-rb-neutral-bg-5"
+          className="h-[28px] flex-1 flex items-center justify-center rounded-[6px] text-[12px] text-rb-neutral-title-1 border border-solid border-transparent font-medium cursor-pointer hover:border-rb-brand-default bg-rb-neutral-bg-5"
         >
           {leverage}x
         </div>
       </div>
 
       {/* Row 2: Order type tabs */}
-      <div className="flex items-center gap-[4px] border-b border-solid border-rb-neutral-line">
+      <div
+        ref={tabsContainerRef}
+        className="relative flex items-center gap-[4px] border-b border-solid border-rb-neutral-line"
+      >
         {PRIMARY_TABS.map((tab) => (
           <button
             key={tab.value}
             type="button"
+            ref={(el) => {
+              tabRefs.current[tab.value] = el;
+            }}
             onClick={() => onOrderTypeChange(tab.value)}
             className={clsx(
-              'h-[28px] mr-24 text-[12px] font-medium transition-colors border-b-2 border-solid',
+              'h-[28px] mr-24 text-15 font-medium transition-colors',
               orderType === tab.value
-                ? 'text-rb-neutral-title-1 border-rb-brand-default'
-                : 'text-rb-neutral-foot border-transparent hover:text-rb-neutral-title-1'
+                ? 'text-rb-neutral-title-1'
+                : 'text-rb-neutral-foot hover:text-rb-neutral-title-1'
             )}
           >
             {tab.label}
           </button>
         ))}
 
-        <PerpsDropdown
-          options={ADVANCED_OPTIONS.map((o) => ({
-            key: o.value,
-            label: o.label,
-          }))}
-          onSelect={(key) => onOrderTypeChange(key as OrderType)}
+        <div
+          className={clsx(
+            'h-[28px] text-15 font-medium',
+            'inline-flex items-center transition-colors',
+            isAdvancedSelected
+              ? 'text-rb-neutral-title-1'
+              : 'text-rb-neutral-body hover:text-rb-neutral-title-1'
+          )}
         >
-          <button
-            type="button"
-            className={clsx(
-              'h-[28px] text-[12px] font-medium',
-              'inline-flex items-center gap-[4px] transition-colors border-b-2 border-solid',
-              isAdvancedSelected
-                ? 'text-rb-neutral-title-1 border-rb-brand-default'
-                : 'text-rb-neutral-body border-transparent hover:text-rb-neutral-title-1'
-            )}
+          <span
+            ref={(el) => {
+              tabRefs.current['advanced'] = el;
+            }}
+            className="cursor-pointer h-[28px] inline-flex items-center"
+            onClick={() => onOrderTypeChange(lastAdvancedType)}
           >
             {advancedLabel}
-            <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
-          </button>
-        </PerpsDropdown>
+          </span>
+          <PerpsDropdown
+            placement="bottomRight"
+            options={ADVANCED_OPTIONS.map((o) => ({
+              key: o.value,
+              label: o.label,
+            }))}
+            onSelect={(key) => onOrderTypeChange(key as OrderType)}
+          >
+            <span className="inline-flex items-center cursor-pointer pl-[4px] h-[28px]">
+              <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
+            </span>
+          </PerpsDropdown>
+        </div>
+        {/* Sliding indicator */}
+        <div
+          className="absolute bottom-0 h-[2px] bg-rb-brand-default transition-all duration-300 ease-out"
+          style={{
+            left: indicatorStyle.left,
+            width: indicatorStyle.width,
+          }}
+        />
         <Tooltip
           title={t('page.perpsPro.tradingPanel.orderTypeTooltip')}
-          placement="top"
+          placement="topRight"
+          prefixCls="perps-slider-tip"
           overlayClassName="rectangle w-[max-content]"
         >
           <RcIconInfo className="text-rb-neutral-secondary ml-auto" />

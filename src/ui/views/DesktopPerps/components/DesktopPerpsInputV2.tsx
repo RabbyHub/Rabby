@@ -15,6 +15,12 @@ const StyledInput = styled(Input)`
     border: 1px solid var(--rb-neutral-line, #e0e5ec);
     background: var(--rb-neutral-bg-5, #fff);
     height: 44px;
+    transition: border-color 0.2s;
+
+    &:hover,
+    &.ant-input-affix-wrapper-focused {
+      border-color: var(--rb-brand-default, #7084ff);
+    }
 
     .ant-input {
       background: transparent;
@@ -46,6 +52,13 @@ const StyledInput = styled(Input)`
     color: var(--rb-neutral-title-1, #111827);
     font-weight: 500;
     padding: 0 11px;
+    transition: border-color 0.2s;
+
+    &:hover,
+    &:focus {
+      border-color: var(--rb-brand-default, #7084ff);
+      box-shadow: none;
+    }
 
     &::placeholder {
       color: var(--rb-neutral-foot, #6b7280);
