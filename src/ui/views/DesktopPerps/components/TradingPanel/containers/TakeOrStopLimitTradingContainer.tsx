@@ -61,8 +61,6 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     reduceOnlyBuyDisabled,
     reduceOnlySellDisabled,
     calcDirectionInfo,
-    buyTradeSize,
-    sellTradeSize,
   } = usePerpsTradingState();
   const bboPrices = useRabbySelector((state) => state.perps.bboPrices);
   const [triggerPrice, setTriggerPrice] = React.useState('');
@@ -112,9 +110,9 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
   const buyLimitPrice = bboEnabled ? bboBuyPrice : limitPrice;
   const sellLimitPrice = bboEnabled ? bboSellPrice : limitPrice;
 
-  // Estimated execution price per direction
-  const estBuyPrice = Math.min(Number(buyLimitPrice) || midPrice, midPrice);
-  const estSellPrice = Math.max(Number(sellLimitPrice) || midPrice, midPrice);
+  // Estimated price: BBO mode → midPrice, manual → use limitPrice as-is
+  const estBuyPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
+  const estSellPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
 
   const limitMaxBuyTradeSize = React.useMemo(() => {
     if (!estBuyPrice) return maxBuyTradeSize;
@@ -162,14 +160,49 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     maxSellTradeSize,
   ]);
 
-  // Use hook's calcDirectionInfo with direction-specific estPrice
+  // Limit-specific trade sizes: slider mode uses limitMax instead of hook's market-based max
+  const limitBuyTradeSize = React.useMemo(() => {
+    if (positionSize.inputSource === 'slider' && percentage > 0) {
+      return calcAmountFromPercentage(
+        percentage,
+        limitMaxBuyTradeSize,
+        szDecimals
+      );
+    }
+    return tradeSize;
+  }, [
+    positionSize.inputSource,
+    percentage,
+    limitMaxBuyTradeSize,
+    szDecimals,
+    tradeSize,
+  ]);
+
+  const limitSellTradeSize = React.useMemo(() => {
+    if (positionSize.inputSource === 'slider' && percentage > 0) {
+      return calcAmountFromPercentage(
+        percentage,
+        limitMaxSellTradeSize,
+        szDecimals
+      );
+    }
+    return tradeSize;
+  }, [
+    positionSize.inputSource,
+    percentage,
+    limitMaxSellTradeSize,
+    szDecimals,
+    tradeSize,
+  ]);
+
+  // Use hook's calcDirectionInfo with limit-based trade sizes and estPrice
   const buyDirInfo = React.useMemo(
-    () => calcDirectionInfo('Long', buyTradeSize, estBuyPrice),
-    [calcDirectionInfo, buyTradeSize, estBuyPrice]
+    () => calcDirectionInfo('Long', limitBuyTradeSize, estBuyPrice),
+    [calcDirectionInfo, limitBuyTradeSize, estBuyPrice]
   );
   const sellDirInfo = React.useMemo(
-    () => calcDirectionInfo('Short', sellTradeSize, estSellPrice),
-    [calcDirectionInfo, sellTradeSize, estSellPrice]
+    () => calcDirectionInfo('Short', limitSellTradeSize, estSellPrice),
+    [calcDirectionInfo, limitSellTradeSize, estSellPrice]
   );
 
   useEffect(() => {
@@ -519,7 +552,6 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
           <Tooltip
             overlayClassName="rectangle"
             placement="topRight"
-            prefixCls="perps-slider-tip"
             title={undefined}
           >
             <div
@@ -539,7 +571,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
-        price={limitPrice}
+        price={bboEnabled ? midPrice : Number(limitPrice) || midPrice}
         maxBuyTradeSize={limitMaxBuyTradeSize}
         maxSellTradeSize={limitMaxSellTradeSize}
         positionSize={positionSize}

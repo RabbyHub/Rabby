@@ -319,6 +319,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
   const tooltipContent = useMemo(() => {
     if (!positionSize.amount || !price) return null;
     if (sizeDisplayUnit === 'base') {
+      return null;
       // Input is in base → tooltip shows USDC equivalent
       const notional = positionSize.notionalValue || '0';
       return `≈ ${notional} USDC`;
@@ -343,6 +344,11 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
       setIsSliderMode(false);
       setPercentage(0);
       setInputText('');
+      setPositionSize({
+        amount: '',
+        notionalValue: '',
+        inputSource: sizeDisplayUnit === 'base' ? 'amount' : 'notional',
+      });
     }
   });
 
@@ -371,18 +377,19 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
       <Tooltip
         visible={showTooltip}
         placement="topLeft"
-        prefixCls="perps-slider-tip"
+        overlayClassName="rectangle"
         title={tooltipContent}
       >
         {/* Input: accepts "1.5" (numeric) or "50%" (percent) */}
         <DesktopPerpsInputV2
+          className={isSliderMode && percentage > 0 ? 'slider-active' : ''}
           value={inputText}
           onChange={handleInputChange}
           onFocus={handleFocus}
           onBlur={() => setIsFocused(false)}
           suffix={
             <div
-              className="text-15 font-medium text-rb-neutral-title-1 px-[10px] h-[28px] flex items-center gap-[2px] cursor-pointer whitespace-nowrap bg-rb-neutral-bg-0 rounded-[6px]"
+              className="text-15 font-medium text-rb-neutral-title-1 px-[10px] h-[28px] flex items-center gap-[2px] cursor-pointer whitespace-nowrap bg-rb-neutral-line rounded-[6px]"
               onClick={handleChangeUnit}
             >
               {unitLabel}

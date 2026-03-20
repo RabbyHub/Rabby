@@ -15,8 +15,10 @@ import { DEFAULT_TPSL_CONFIG } from '@/ui/models/perps';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { usePerpsAccount } from '../../Perps/hooks/usePerpsAccount';
 import { calcAmountFromPercentage } from '../components/TradingPanel/utils';
+import { useTranslation } from 'react-i18next';
 
 export const usePerpsTradingState = () => {
+  const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
 
   // Read trading state from Redux (preserved across orderType switches)
@@ -236,7 +238,7 @@ export const usePerpsTradingState = () => {
       const netNewUsd = netNew * px;
       const netNewMargin = netNewUsd / leverage;
       const liqPrice = calLiquidationPrice(
-        markPrice,
+        px,
         leverageType === 'cross' ? crossMargin : netNewMargin,
         direction,
         netNew,
@@ -330,68 +332,80 @@ export const usePerpsTradingState = () => {
   }, [dispatch]);
 
   // Validate TP/SL for a specific direction (called when button is clicked)
-  const validateTpslForSide = useMemoizedFn((side: OrderSide): {
-    valid: boolean;
-    errors: { tp?: string; sl?: string };
-  } => {
-    if (!tpslConfig.enabled) return { valid: true, errors: {} };
+  const validateTpslForSide = useMemoizedFn(
+    (
+      side: OrderSide,
+      customOrderPrice?: number | string
+    ): {
+      valid: boolean;
+      errors: { tp?: string; sl?: string };
+    } => {
+      if (!tpslConfig.enabled) return { valid: true, errors: {} };
 
-    const errors: { tp?: string; sl?: string } = {};
-    const orderPrice = Number(markPrice);
-    const isLong = side === OrderSide.BUY;
+      const errors: { tp?: string; sl?: string } = {};
+      const orderPrice = Number(customOrderPrice ?? markPrice);
+      const isLong = side === OrderSide.BUY;
 
-    // Get the trigger price for this direction
-    const tpTrigger = isLong
-      ? Number(tpslConfig.takeProfit.buyTriggerPrice)
-      : Number(tpslConfig.takeProfit.sellTriggerPrice);
-    const slTrigger = isLong
-      ? Number(tpslConfig.stopLoss.buyTriggerPrice)
-      : Number(tpslConfig.stopLoss.sellTriggerPrice);
+      // Get the trigger price for this direction
+      const tpTrigger = isLong
+        ? Number(tpslConfig.takeProfit.buyTriggerPrice)
+        : Number(tpslConfig.takeProfit.sellTriggerPrice);
+      const slTrigger = isLong
+        ? Number(tpslConfig.stopLoss.buyTriggerPrice)
+        : Number(tpslConfig.stopLoss.sellTriggerPrice);
 
-    // TP validation
-    if (tpTrigger) {
-      if (isLong && tpTrigger <= orderPrice) {
-        errors.tp =
-          'Your TP trigger price should be more than your order price';
+      // Check if TP/SL has a value configured but trigger price resolved to <= 0
+      const tpHasValue = !!tpslConfig.takeProfit.value;
+      const slHasValue = !!tpslConfig.stopLoss.value;
+      const tpIsNonPriceMode = tpslConfig.takeProfit.settingMode !== 'price';
+      const slIsNonPriceMode = tpslConfig.stopLoss.settingMode !== 'price';
+
+      // TP validation
+      if (tpHasValue && tpIsNonPriceMode && !tpTrigger) {
+        errors.tp = t('page.perpsPro.tradingPanel.tpTriggerPriceIsZero', {
+          side: isLong
+            ? t('page.perpsPro.tradingPanel.sideLongBuy')
+            : t('page.perpsPro.tradingPanel.sideShortSell'),
+        });
+      } else if (tpTrigger) {
+        if (isLong && tpTrigger <= orderPrice) {
+          errors.tp = t(
+            'page.perpsPro.tradingPanel.tpTriggerMoreThanOrderPrice'
+          );
+        }
+        if (!isLong && tpTrigger >= orderPrice) {
+          errors.tp = t(
+            'page.perpsPro.tradingPanel.tpTriggerLessThanOrderPrice'
+          );
+        }
       }
-      if (!isLong && tpTrigger >= orderPrice) {
-        errors.tp =
-          'Your TP trigger price should be less than your order price';
+
+      // SL validation
+      if (slHasValue && slIsNonPriceMode && !slTrigger) {
+        errors.sl = t('page.perpsPro.tradingPanel.slTriggerPriceIsZero', {
+          side: isLong
+            ? t('page.perpsPro.tradingPanel.sideLongBuy')
+            : t('page.perpsPro.tradingPanel.sideShortSell'),
+        });
+      } else if (slTrigger) {
+        if (isLong && slTrigger >= orderPrice) {
+          errors.sl = t(
+            'page.perpsPro.tradingPanel.slTriggerLessThanOrderPrice'
+          );
+        }
+        if (!isLong && slTrigger <= orderPrice) {
+          errors.sl = t(
+            'page.perpsPro.tradingPanel.slTriggerMoreThanOrderPrice'
+          );
+        }
       }
+
+      return {
+        valid: Object.keys(errors).length === 0,
+        errors,
+      };
     }
-
-    // SL validation
-    if (slTrigger) {
-      if (isLong && slTrigger >= orderPrice) {
-        errors.sl =
-          'Your SL trigger price should be less than your order price';
-      }
-      if (!isLong && slTrigger <= orderPrice) {
-        errors.sl =
-          'Your SL trigger price should be more than your order price';
-      }
-      // Check if SL price is below liquidation price
-      // if (
-      //   isLong &&
-      //   buyEstLiqPrice &&
-      //   slTrigger <= Number(buyEstLiqPrice.replace('$', ''))
-      // ) {
-      //   errors.sl = 'Your SL trigger price is below the liquidation price';
-      // }
-      // if (
-      //   !isLong &&
-      //   sellEstLiqPrice &&
-      //   slTrigger >= Number(sellEstLiqPrice.replace('$', ''))
-      // ) {
-      //   errors.sl = 'Your SL trigger price is above the liquidation price';
-      // }
-    }
-
-    return {
-      valid: Object.keys(errors).length === 0,
-      errors,
-    };
-  });
+  );
 
   const tpslConfigHasError = useMemo(() => {
     return (

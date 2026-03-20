@@ -246,7 +246,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     if (changed) {
       setConfig(newConfig);
     }
-  }, [price, tradeSize]);
+  }, [price, tradeSize, leverage, szDecimals]);
 
   const handleValueChange = useMemoizedFn(
     (type: 'takeProfit' | 'stopLoss') => (
@@ -323,7 +323,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
         <Tooltip
           visible={!!showTriggerPrices && focusedField === type}
           placement="topLeft"
-          prefixCls="perps-slider-tip"
+          overlayClassName="rectangle w-[max-content]"
           title={
             <div className="text-13 px-4 py-2 flex flex-col justify-start text-left gap-2">
               {item.buyTriggerPrice && (
@@ -364,7 +364,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
                   handleModeChange(type, mode as TPSLSettingMode)
                 }
               >
-                <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1 flex items-center gap-[6px] cursor-pointer whitespace-nowrap">
+                <span className="text-15 font-medium text-rb-neutral-title-1 flex items-center gap-[6px] cursor-pointer whitespace-nowrap">
                   {unitLabel}
                   <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary w-[12px] h-[12px]" />
                 </span>

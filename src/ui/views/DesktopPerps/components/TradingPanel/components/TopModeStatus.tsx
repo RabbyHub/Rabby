@@ -151,6 +151,22 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
 
   const isAdvancedSelected = !isPrimaryTab(orderType);
 
+  const ORDER_TYPE_TOOLTIP_KEYS: Record<OrderType, string> = {
+    [OrderType.LIMIT]: 'page.perpsPro.tradingPanel.orderTypeTooltipLimit',
+    [OrderType.MARKET]: 'page.perpsPro.tradingPanel.orderTypeTooltipMarket',
+    [OrderType.STOP_LIMIT]:
+      'page.perpsPro.tradingPanel.orderTypeTooltipStopLimit',
+    [OrderType.STOP_MARKET]:
+      'page.perpsPro.tradingPanel.orderTypeTooltipStopMarket',
+    [OrderType.TAKE_LIMIT]:
+      'page.perpsPro.tradingPanel.orderTypeTooltipTakeLimit',
+    [OrderType.TAKE_MARKET]:
+      'page.perpsPro.tradingPanel.orderTypeTooltipTakeMarket',
+    [OrderType.TWAP]: 'page.perpsPro.tradingPanel.orderTypeTooltipTwap',
+    [OrderType.SCALE]: 'page.perpsPro.tradingPanel.orderTypeTooltipScale',
+  };
+  const orderTypeTooltip = t(ORDER_TYPE_TOOLTIP_KEYS[orderType]);
+
   // Sliding underline indicator
   const tabRefs = useRef<Record<string, HTMLElement | null>>({});
   const tabsContainerRef = useRef<HTMLDivElement | null>(null);
@@ -179,7 +195,6 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
         <Tooltip
           title={marginModeDisabledReason}
           placement="top"
-          prefixCls="perps-slider-tip"
           overlayClassName="rectangle w-[max-content]"
         >
           <div
@@ -235,7 +250,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
             'inline-flex items-center transition-colors',
             isAdvancedSelected
               ? 'text-rb-neutral-title-1'
-              : 'text-rb-neutral-body hover:text-rb-neutral-title-1'
+              : 'text-rb-neutral-foot hover:text-rb-neutral-title-1'
           )}
         >
           <span
@@ -269,10 +284,9 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
           }}
         />
         <Tooltip
-          title={t('page.perpsPro.tradingPanel.orderTypeTooltip')}
+          title={orderTypeTooltip}
           placement="topRight"
-          prefixCls="perps-slider-tip"
-          overlayClassName="rectangle w-[max-content]"
+          overlayClassName="rectangle max-w-[320px]"
         >
           <RcIconInfo className="text-rb-neutral-secondary ml-auto" />
         </Tooltip>

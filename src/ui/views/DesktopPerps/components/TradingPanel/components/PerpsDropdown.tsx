@@ -33,18 +33,17 @@ export const PerpsDropdown: React.FC<PerpsDropdownProps> = ({
       placement={placement}
       overlay={
         <Menu
-          className="bg-rb-neutral-bg-4"
+          className="bg-r-neutral-bg1"
           onClick={(info) => onSelect(info.key as string)}
         >
           {options.map((option) => (
             <Menu.Item
-              className="text-rb-neutral-title-1 hover:bg-rb-neutral-bg-5"
+              className="text-r-neutral-title1 hover:bg-r-blue-light1"
               key={option.key}
             >
               {option.title ? (
                 <Tooltip
                   title={option.title}
-                  // prefixCls="perps-slider-tip"
                   placement="topRight"
                   overlayClassName="rectangle"
                 >

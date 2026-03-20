@@ -514,7 +514,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: (
           <div
-            className="text-rb-brand-default cursor-pointer font-bold text-[12px]"
+            className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
             onClick={handleClickCloseAll}
           >
             MKT Close ALL
@@ -526,7 +526,7 @@ export const PositionsInfo: React.FC = () => {
           return (
             <div className="flex items-center justify-start gap-[8px]">
               <span
-                className="text-rb-brand-default cursor-pointer font-bold text-[12px]"
+                className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
                 onClick={() => {
                   setSelectedCoin(record.coin);
                   setClosePositionType('market');
@@ -537,7 +537,7 @@ export const PositionsInfo: React.FC = () => {
               </span>
               <div className="w-[1px] h-[12px] bg-rb-neutral-line"></div>
               <span
-                className="text-rb-brand-default cursor-pointer font-bold text-[12px]"
+                className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
                 onClick={() => {
                   setSelectedCoin(record.coin);
                   setClosePositionType('limit');

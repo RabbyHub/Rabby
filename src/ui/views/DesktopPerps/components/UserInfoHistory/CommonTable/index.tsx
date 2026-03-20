@@ -146,7 +146,7 @@ const Wrapper = styled.div`
   }
 
   .ant-table-tbody > tr > td.ant-table-cell-row-hover {
-    background-color: transparent;
+    background-color: var(--rb-neutral-line, #e0e5ec);
   }
 
   .ant-table-tbody {
