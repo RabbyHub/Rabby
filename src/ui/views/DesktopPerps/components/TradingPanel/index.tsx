@@ -10,12 +10,20 @@ import {
   TakeOrStopMarketTradingContainer,
   TakeOrStopLimitTradingContainer,
 } from './containers';
+const ORDER_TYPE_KEY = 'rabby_perps_last_order_type';
 
 export const TradingPanel: React.FC = () => {
-  const [orderType, setOrderType] = React.useState<OrderType>(OrderType.LIMIT);
+  const [orderType, setOrderType] = React.useState<OrderType>(() => {
+    const cached = localStorage.getItem(ORDER_TYPE_KEY);
+    if (cached && Object.values(OrderType).includes(cached as OrderType)) {
+      return cached as OrderType;
+    }
+    return OrderType.LIMIT;
+  });
 
   const handleOrderTypeChange = (type: OrderType) => {
     setOrderType(type);
+    localStorage.setItem(ORDER_TYPE_KEY, type);
   };
 
   const renderTradingContainer = () => {
