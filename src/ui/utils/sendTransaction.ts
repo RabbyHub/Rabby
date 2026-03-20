@@ -382,7 +382,7 @@ export const sendTransaction = async ({
   if (support1559) {
     transaction.maxFeePerGas = maxFeePerGas;
     transaction.maxPriorityFeePerGas =
-      maxPriorityFee <= 0
+      maxPriorityFee < 0
         ? tx.maxFeePerGas
         : intToHex(Math.round(maxPriorityFee));
   } else {
@@ -691,7 +691,7 @@ export const sendTransactionByMiniSignV2 = async ({
   if (support1559) {
     transaction.maxFeePerGas = maxFeePerGas;
     transaction.maxPriorityFeePerGas =
-      maxPriorityFee <= 0
+      maxPriorityFee < 0
         ? tx.maxFeePerGas
         : intToHex(Math.round(maxPriorityFee));
   } else {
