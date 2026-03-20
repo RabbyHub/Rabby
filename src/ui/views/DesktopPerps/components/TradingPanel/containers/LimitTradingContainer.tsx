@@ -1,36 +1,36 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRabbySelector } from '@/ui/store';
-import { formatUsdValue } from '@/ui/utils';
 import {
   LimitOrderType,
   OrderSide,
-  OrderSummaryData,
+  OrderSideInfo,
   TradingContainerProps,
 } from '../../../types';
 import { TPSLSettings } from '../components/TPSLSettings';
-import { OrderSummary } from '../components/OrderSummary';
+import { OrderInfoGrid } from '../components/OrderInfoGrid';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
-import { useRequest } from 'ahooks';
-import { Button, Dropdown, Menu, Select, Tooltip } from 'antd';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { Dropdown, Menu, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
-import { PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSlider';
+import { PositionSizeInputAndSliderV2 as PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSliderV2';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
-import {
-  calLiquidationPrice,
-  validatePriceInput,
-} from '@/ui/views/Perps/utils';
+import { validatePriceInput } from '@/ui/views/Perps/utils';
 import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
-import { DesktopPerpsInput } from '../../DesktopPerpsInput';
-import { TradingButton } from '../components/TradingButton';
+import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
+import { TradingButtons } from '../components/TradingButtons';
 import { BigNumber } from 'bignumber.js';
 import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
+import { calcAmountFromPercentage } from '../utils';
+import { PerpsDropdown } from '../components';
+import { LimitOrderTypeSelector } from '../components/LimitOrderTypeSelector';
+import perpsToast from '../../PerpsToast';
 
 export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -39,28 +39,20 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const {
     currentPerpsAccount,
     leverageType,
-    crossMargin,
-    maxLeverage,
-
     selectedCoin,
-    orderSide,
-    switchOrderSide,
     positionSize,
     setPositionSize,
     currentPosition,
     markPrice,
     midPrice,
     szDecimals,
-    pxDecimals,
     leverage,
     availableBalance,
     reduceOnly,
     setReduceOnly,
-    tradeUsdAmount,
-    marginRequired,
     tradeSize,
-    maxTradeSize,
-    marginUsage,
+    maxBuyTradeSize,
+    maxSellTradeSize,
     currentMarketData,
     percentage,
     setPercentage,
@@ -69,58 +61,188 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     setTpslConfig,
     handleTPSLEnabledChange,
     resetForm,
+    validateTpslForSide,
+    sizeDisplayUnit,
+    setSizeDisplayUnit,
+    reduceOnlyBuyDisabled,
+    reduceOnlySellDisabled,
+    calcDirectionInfo,
   } = usePerpsTradingState();
+  const bboPrices = useRabbySelector((state) => state.perps.bboPrices);
+
   const [limitPrice, setLimitPrice] = React.useState(
     formatTpOrSlPrice(midPrice, szDecimals)
   );
-
-  const limitMaxTradeSize = React.useMemo(() => {
-    const price = new BigNumber(limitPrice);
-    const balance = new BigNumber(availableBalance);
-    if (price.gt(0) && balance.gt(0)) {
-      return balance
-        .multipliedBy(leverage)
-        .div(price)
-        .toFixed(szDecimals, BigNumber.ROUND_DOWN);
+  const hasFillLimitPrice = React.useRef(false);
+  useEffect(() => {
+    if (!hasFillLimitPrice.current && midPrice) {
+      setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
+      hasFillLimitPrice.current = true;
     }
-    return maxTradeSize;
-  }, [limitPrice, availableBalance, leverage, maxTradeSize, szDecimals]);
-
-  // Calculate liquidation price
-  const estimatedLiquidationPrice = React.useMemo(() => {
-    if (!limitPrice || !Number(limitPrice) || !leverage || !tradeUsdAmount)
-      return '';
-    const direction = orderSide === OrderSide.BUY ? 'Long' : 'Short';
-    const size = Number(tradeSize);
-    if (size === 0) return '';
-
-    const liqPrice = calLiquidationPrice(
-      Number(limitPrice),
-      leverageType === 'cross' ? crossMargin : marginRequired,
-      direction,
-      size,
-      tradeUsdAmount,
-      maxLeverage
-    );
-    if (!new BigNumber(liqPrice).gt(0)) {
-      return '-';
-    }
-    return `$${liqPrice.toFixed(pxDecimals)}`;
-  }, [
-    crossMargin,
-    limitPrice,
-    leverageType,
-    leverage,
-    tradeUsdAmount,
-    orderSide,
-    tradeSize,
-    marginRequired,
-    maxLeverage,
-    pxDecimals,
-  ]);
+  }, [midPrice, szDecimals]);
 
   const [limitOrderType, setLimitOrderType] = React.useState<LimitOrderType>(
     'Gtc'
+  );
+
+  // BBO state
+  type BboStrategy = 'cp1' | 'cp5' | 'q1' | 'q5';
+  const [bboEnabled, setBboEnabled] = React.useState(false);
+  const [bboStrategy, setBboStrategy] = React.useState<BboStrategy>('cp1');
+
+  const bboStrategyOptions = useMemo(
+    () => [
+      { key: 'cp1', label: 'Counterparty 1' },
+      { key: 'cp5', label: 'Counterparty 5' },
+      { key: 'q1', label: 'Queue 1' },
+      { key: 'q5', label: 'Queue 5' },
+    ],
+    []
+  );
+
+  // BBO: direction-specific prices
+  // Counterparty = opposing side: buy→asks, sell→bids
+  // Queue = same side: buy→bids, sell→asks
+  const { bboBuyPrice, bboSellPrice } = useMemo(() => {
+    const isCounterparty = bboStrategy === 'cp1' || bboStrategy === 'cp5';
+    const isFive = bboStrategy === 'cp5' || bboStrategy === 'q5';
+    const askKey = isFive ? 'asks5' : 'asks1';
+    const bidKey = isFive ? 'bids5' : 'bids1';
+    return {
+      bboBuyPrice: isCounterparty ? bboPrices[askKey] : bboPrices[bidKey],
+      bboSellPrice: isCounterparty ? bboPrices[bidKey] : bboPrices[askKey],
+    };
+  }, [bboStrategy, bboPrices]);
+
+  // BBO disabled reason
+  const bboDisabledReason = useMemo(() => {
+    if (tpslConfig.enabled) return 'TP/SL';
+    if (limitOrderType === 'Ioc') return 'IOC';
+    if (limitOrderType === 'Alo') return 'ALO';
+    return '';
+  }, [tpslConfig.enabled, limitOrderType, t]);
+
+  const canEnableBbo = !bboDisabledReason;
+
+  // Auto-disable BBO when conflict arises
+  useEffect(() => {
+    if (bboEnabled && !canEnableBbo) {
+      setBboEnabled(false);
+      setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
+    }
+  }, [canEnableBbo]);
+
+  const handleBboToggle = () => {
+    if (bboEnabled) {
+      // Disable BBO → fill midPrice
+      setBboEnabled(false);
+      setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
+    } else if (canEnableBbo) {
+      setBboEnabled(true);
+    }
+  };
+  // Direction-specific limit prices (BBO mode uses orderbook sides)
+  const buyLimitPrice = bboEnabled ? bboBuyPrice : limitPrice;
+  const sellLimitPrice = bboEnabled ? bboSellPrice : limitPrice;
+
+  // Estimated price: BBO mode → midPrice, manual → use limitPrice as-is
+  const estBuyPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
+  const estSellPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
+
+  // Safety factor to avoid hitting exchange margin limits at 100% (fees, funding, etc.)
+  const MARGIN_SAFETY = 0.99;
+
+  const limitMaxBuyTradeSize = React.useMemo(() => {
+    if (!estBuyPrice) return maxBuyTradeSize;
+    const balanceBasedMax =
+      availableBalance > 0
+        ? Number(
+            new BigNumber(availableBalance)
+              .multipliedBy(leverage)
+              .multipliedBy(MARGIN_SAFETY)
+              .div(estBuyPrice)
+              .toFixed(szDecimals, BigNumber.ROUND_DOWN)
+          )
+        : 0;
+    const closable =
+      currentPosition?.side === 'Short' ? currentPosition.size : 0;
+    return (balanceBasedMax + closable).toFixed(szDecimals);
+  }, [
+    estBuyPrice,
+    availableBalance,
+    leverage,
+    szDecimals,
+    currentPosition,
+    maxBuyTradeSize,
+  ]);
+
+  const limitMaxSellTradeSize = React.useMemo(() => {
+    if (!estSellPrice) return maxSellTradeSize;
+    const balanceBasedMax =
+      availableBalance > 0
+        ? Number(
+            new BigNumber(availableBalance)
+              .multipliedBy(leverage)
+              .multipliedBy(MARGIN_SAFETY)
+              .div(estSellPrice)
+              .toFixed(szDecimals, BigNumber.ROUND_DOWN)
+          )
+        : 0;
+    const closable =
+      currentPosition?.side === 'Long' ? currentPosition.size : 0;
+    return (balanceBasedMax + closable).toFixed(szDecimals);
+  }, [
+    estSellPrice,
+    availableBalance,
+    leverage,
+    szDecimals,
+    currentPosition,
+    maxSellTradeSize,
+  ]);
+
+  // Limit-specific trade sizes: slider mode uses limitMax instead of hook's market-based max
+  const limitBuyTradeSize = React.useMemo(() => {
+    if (positionSize.inputSource === 'slider' && percentage > 0) {
+      return calcAmountFromPercentage(
+        percentage,
+        limitMaxBuyTradeSize,
+        szDecimals
+      );
+    }
+    return tradeSize;
+  }, [
+    positionSize.inputSource,
+    percentage,
+    limitMaxBuyTradeSize,
+    szDecimals,
+    tradeSize,
+  ]);
+
+  const limitSellTradeSize = React.useMemo(() => {
+    if (positionSize.inputSource === 'slider' && percentage > 0) {
+      return calcAmountFromPercentage(
+        percentage,
+        limitMaxSellTradeSize,
+        szDecimals
+      );
+    }
+    return tradeSize;
+  }, [
+    positionSize.inputSource,
+    percentage,
+    limitMaxSellTradeSize,
+    szDecimals,
+    tradeSize,
+  ]);
+
+  // Use hook's calcDirectionInfo with direction-specific estPrice and limit-based trade sizes
+  const buyDirInfo = React.useMemo(
+    () => calcDirectionInfo('Long', limitBuyTradeSize, estBuyPrice),
+    [calcDirectionInfo, limitBuyTradeSize, estBuyPrice]
+  );
+  const sellDirInfo = React.useMemo(
+    () => calcDirectionInfo('Short', limitSellTradeSize, estSellPrice),
+    [calcDirectionInfo, limitSellTradeSize, estSellPrice]
   );
 
   const wsActiveAssetCtx = useRabbySelector(
@@ -141,20 +263,18 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     };
   }, [wsActiveAssetCtx, markPrice, selectedCoin]);
 
-  // Form validation
+  // Form validation (direction-agnostic, ALO check moved to button click)
   const validation = React.useMemo(() => {
     let error: string = '';
     const tradeSize = Number(positionSize.amount) || 0;
-    const notionalNum = tradeSize * Number(limitPrice || 0);
+    // BBO mode: use max of both direction prices for shared validation
+    const refPrice = bboEnabled
+      ? Math.max(Number(buyLimitPrice || 0), Number(sellLimitPrice || 0))
+      : Number(limitPrice || 0);
+    const notionalNum = tradeSize * refPrice;
 
     if (notionalNum === 0) {
-      return {
-        isValid: false,
-        error:
-          reduceOnly && percentage > 0
-            ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
-            : '',
-      };
+      return { isValid: false, error: '' };
     }
 
     // Check minimum order size ($10)
@@ -163,28 +283,19 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       return { isValid: false, error };
     }
 
-    // post-only order price must be lower than the best ask price to avoid immediately matching
-    if (
-      limitOrderType === 'Alo' &&
-      orderSide === OrderSide.BUY &&
-      Number(limitPrice) >= Number(currentBestAskPrice)
-    ) {
-      error = t('page.perpsPro.tradingPanel.aloTooLargeBuy');
-      return { isValid: false, error };
-    }
-    if (
-      limitOrderType === 'Alo' &&
-      orderSide === OrderSide.SELL &&
-      Number(limitPrice) <= Number(currentBestBidPrice)
-    ) {
-      error = t('page.perpsPro.tradingPanel.aloTooLargeSell');
-      return { isValid: false, error };
-    }
-
-    if (limitMaxTradeSize && tradeSize > Number(limitMaxTradeSize)) {
-      error = reduceOnly
-        ? t('page.perpsPro.tradingPanel.reduceOnlyTooLarge')
-        : t('page.perpsPro.tradingPanel.insufficientBalance');
+    // Check max trade size (shared: use max of both directions)
+    const effectiveMaxTradeSize = reduceOnly
+      ? Number(
+          (currentPosition?.side === 'Long'
+            ? limitMaxSellTradeSize
+            : limitMaxBuyTradeSize) || 0
+        )
+      : Math.max(
+          Number(limitMaxBuyTradeSize || 0),
+          Number(limitMaxSellTradeSize || 0)
+        );
+    if (effectiveMaxTradeSize && tradeSize > effectiveMaxTradeSize) {
+      error = t('page.perpsPro.tradingPanel.insufficientBalance');
       return { isValid: false, error };
     }
 
@@ -204,160 +315,198 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     };
   }, [
     positionSize.amount,
-    limitMaxTradeSize,
     reduceOnly,
-    limitOrderType,
+    bboEnabled,
+    buyLimitPrice,
+    sellLimitPrice,
     limitPrice,
     percentage,
-    tradeSize,
-    marginRequired,
-    availableBalance,
     currentMarketData,
-    currentBestAskPrice,
-    currentBestBidPrice,
-    midPrice,
+    currentPosition,
+    limitMaxBuyTradeSize,
+    limitMaxSellTradeSize,
     t,
   ]);
 
-  const {
-    handleOpenLimitOrder,
-    needEnableTrading,
-    handleActionApproveStatus,
-  } = usePerpsProPosition();
+  // ALO validation is deferred to button click (see openOrder)
 
-  const {
-    run: handleOpenOrderRequest,
-    loading: handleOpenOrderLoading,
-  } = useRequest(
-    async () => {
-      const isBuy = orderSide === OrderSide.BUY;
-      await handleOpenLimitOrder({
-        coin: selectedCoin,
-        isBuy,
-        size: tradeSize,
-        limitPx: limitPrice,
-        tpTriggerPx: tpslConfig.enabled
-          ? tpslConfig.takeProfit.price
-          : undefined,
-        slTriggerPx: tpslConfig.enabled ? tpslConfig.stopLoss.price : undefined,
-        reduceOnly,
-        orderType: limitOrderType,
-      });
-      stats.report('perpsTradeHistory', {
-        created_at: new Date().getTime(),
-        user_addr: currentPerpsAccount?.address || '',
-        trade_type: 'limit',
-        leverage: leverage.toString(),
-        trade_side: getStatsReportSide(isBuy, reduceOnly),
-        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-        coin: selectedCoin,
-        size: tradeSize,
-        price: limitPrice,
-        trade_usd_value: new BigNumber(limitPrice).times(tradeSize).toFixed(2),
-        service_provider: 'hyperliquid',
-        app_version: process.env.release || '0',
-        address_type: currentPerpsAccount?.type || '',
-      });
-      if (tpslConfig.enabled) {
-        tpslConfig.takeProfit.price &&
-          stats.report('perpsTradeHistory', {
-            created_at: new Date().getTime(),
-            user_addr: currentPerpsAccount?.address || '',
-            trade_type: 'take profit in limit',
-            leverage: leverage.toString(),
-            trade_side: getStatsReportSide(!isBuy, reduceOnly),
-            margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-            coin: selectedCoin,
-            size: tradeSize,
-            price: tpslConfig.takeProfit.price,
-            trade_usd_value: new BigNumber(tpslConfig.takeProfit.price)
-              .times(tradeSize)
-              .toFixed(2),
-            service_provider: 'hyperliquid',
-            app_version: process.env.release || '0',
-            address_type: currentPerpsAccount?.type || '',
-          });
-        tpslConfig.stopLoss.price &&
-          stats.report('perpsTradeHistory', {
-            created_at: new Date().getTime(),
-            user_addr: currentPerpsAccount?.address || '',
-            trade_type: 'stop market in limit',
-            leverage: leverage.toString(),
-            trade_side: getStatsReportSide(!isBuy, reduceOnly),
-            margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-            coin: selectedCoin,
-            size: tradeSize,
-            price: tpslConfig.stopLoss.price,
-            trade_usd_value: new BigNumber(tpslConfig.stopLoss.price)
-              .times(tradeSize)
-              .toFixed(2),
-            service_provider: 'hyperliquid',
-            app_version: process.env.release || '0',
-            address_type: currentPerpsAccount?.type || '',
-          });
+  const { handleOpenLimitOrder } = usePerpsProPosition();
+
+  const getDirectionTradeSize = (isBuy: boolean): string => {
+    if (positionSize.inputSource === 'slider') {
+      const dirMax = isBuy ? limitMaxBuyTradeSize : limitMaxSellTradeSize;
+      return calcAmountFromPercentage(percentage, dirMax, szDecimals);
+    }
+    return tradeSize;
+  };
+
+  const openOrder = useMemoizedFn(async (isBuy: boolean) => {
+    // ALO direction-specific validation (deferred to button click)
+    if (limitOrderType === 'Alo') {
+      if (isBuy && Number(limitPrice) >= Number(currentBestAskPrice)) {
+        perpsToast.error({
+          title: t('page.perps.toast.orderError'),
+          description: t('page.perpsPro.tradingPanel.aloTooLargeBuy'),
+        });
+        throw new Error(t('page.perpsPro.tradingPanel.aloTooLargeBuy'));
       }
-    },
+      if (!isBuy && Number(limitPrice) <= Number(currentBestBidPrice)) {
+        perpsToast.error({
+          title: t('page.perps.toast.orderError'),
+          description: t('page.perpsPro.tradingPanel.aloTooLargeSell'),
+        });
+        throw new Error(t('page.perpsPro.tradingPanel.aloTooLargeSell'));
+      }
+    }
+
+    // Validate TP/SL for this direction
+    const side = isBuy ? OrderSide.BUY : OrderSide.SELL;
+    if (tpslConfig.enabled) {
+      const orderLimitPx = isBuy ? buyLimitPrice : sellLimitPrice;
+      const tpslValidation = validateTpslForSide(side, orderLimitPx);
+      if (!tpslValidation.valid) {
+        const newConfig = { ...tpslConfig };
+        if (tpslValidation.errors.tp) {
+          newConfig.takeProfit = {
+            ...newConfig.takeProfit,
+            error: tpslValidation.errors.tp,
+          };
+        }
+        if (tpslValidation.errors.sl) {
+          newConfig.stopLoss = {
+            ...newConfig.stopLoss,
+            error: tpslValidation.errors.sl,
+          };
+        }
+        setTpslConfig(newConfig);
+        throw new Error('Invalid TP/SL configuration');
+      }
+    }
+
+    // Determine TP/SL trigger prices based on mode
+    const getTriggerPrice = (
+      item: typeof tpslConfig.takeProfit
+    ): string | undefined => {
+      if (!tpslConfig.enabled || !item.value) return undefined;
+      if (item.settingMode === 'price') {
+        return item.value;
+      }
+      return isBuy ? item.buyTriggerPrice : item.sellTriggerPrice;
+    };
+
+    const directionSize = getDirectionTradeSize(isBuy);
+
+    const orderLimitPrice = isBuy ? buyLimitPrice : sellLimitPrice;
+
+    await handleOpenLimitOrder({
+      coin: selectedCoin,
+      isBuy,
+      size: directionSize,
+      limitPx: orderLimitPrice,
+      tpTriggerPx: getTriggerPrice(tpslConfig.takeProfit),
+      slTriggerPx: getTriggerPrice(tpslConfig.stopLoss),
+      reduceOnly,
+      orderType: limitOrderType,
+    });
+    stats.report('perpsTradeHistory', {
+      created_at: new Date().getTime(),
+      user_addr: currentPerpsAccount?.address || '',
+      trade_type: 'limit',
+      leverage: leverage.toString(),
+      trade_side: getStatsReportSide(isBuy, reduceOnly),
+      margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+      coin: selectedCoin,
+      size: tradeSize,
+      price: orderLimitPrice,
+      trade_usd_value: new BigNumber(orderLimitPrice)
+        .times(tradeSize)
+        .toFixed(2),
+      service_provider: 'hyperliquid',
+      app_version: process.env.release || '0',
+      address_type: currentPerpsAccount?.type || '',
+    });
+    if (tpslConfig.enabled) {
+      const tpTrigger = getTriggerPrice(tpslConfig.takeProfit);
+      tpTrigger &&
+        stats.report('perpsTradeHistory', {
+          created_at: new Date().getTime(),
+          user_addr: currentPerpsAccount?.address || '',
+          trade_type: 'take profit in limit',
+          leverage: leverage.toString(),
+          trade_side: getStatsReportSide(!isBuy, reduceOnly),
+          margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+          coin: selectedCoin,
+          size: tradeSize,
+          price: tpTrigger,
+          trade_usd_value: new BigNumber(tpTrigger).times(tradeSize).toFixed(2),
+          service_provider: 'hyperliquid',
+          app_version: process.env.release || '0',
+          address_type: currentPerpsAccount?.type || '',
+        });
+      const slTrigger = getTriggerPrice(tpslConfig.stopLoss);
+      slTrigger &&
+        stats.report('perpsTradeHistory', {
+          created_at: new Date().getTime(),
+          user_addr: currentPerpsAccount?.address || '',
+          trade_type: 'stop market in limit',
+          leverage: leverage.toString(),
+          trade_side: getStatsReportSide(!isBuy, reduceOnly),
+          margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+          coin: selectedCoin,
+          size: tradeSize,
+          price: slTrigger,
+          trade_usd_value: new BigNumber(slTrigger).times(tradeSize).toFixed(2),
+          service_provider: 'hyperliquid',
+          app_version: process.env.release || '0',
+          address_type: currentPerpsAccount?.type || '',
+        });
+    }
+  });
+
+  const { run: handleBuyOrder, loading: buyLoading } = useRequest(
+    () => openOrder(true),
     {
       manual: true,
       onSuccess: () => {
         resetForm();
       },
-      onError: (error) => {},
+      onError: (e) => {
+        console.error('Failed to open buy order:', e);
+      },
     }
   );
 
-  const orderSummary: OrderSummaryData = React.useMemo(() => {
-    const getExpectedPnL = (percentage: string) => {
-      return Number(percentage) && Number(tradeSize) > 0
-        ? (Number(percentage) * marginRequired) / 100
-        : 0;
-    };
-
-    const orderValue = Number(tradeSize) * Number(limitPrice);
-
-    return {
-      tpExpectedPnL: 1 * getExpectedPnL(tpslConfig.takeProfit.percentage),
-      slExpectedPnL: -1 * getExpectedPnL(tpslConfig.stopLoss.percentage),
-      liquidationPrice: reduceOnly ? '-' : estimatedLiquidationPrice,
-      liquidationDistance: '',
-      orderValue: orderValue > 0 ? formatUsdValue(orderValue) : '$0.00',
-      marginRequired: reduceOnly ? '-' : formatUsdValue(orderValue / leverage),
-      marginUsage,
-      slippage: undefined,
-    };
-  }, [
-    estimatedLiquidationPrice,
-    marginUsage,
-    reduceOnly,
-    tpslConfig.takeProfit.percentage,
-    tpslConfig.stopLoss.percentage,
-    tradeSize,
-    marginRequired,
-    leverage,
-    limitPrice,
-  ]);
-
-  const limitOrderTypeOptions = [
+  const { run: handleSellOrder, loading: sellLoading } = useRequest(
+    () => openOrder(false),
     {
-      label: 'GTC',
-      value: 'Gtc',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Gtc'),
-    },
-    {
-      label: 'IOC',
-      value: 'Ioc',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Ioc'),
-    },
-    {
-      label: 'ALO',
-      value: 'Alo',
-      title: t('page.perpsPro.tradingPanel.limitOrderTypeOptions.Alo'),
-    },
-  ];
+      manual: true,
+      onSuccess: () => {
+        resetForm();
+      },
+      onError: (e) => {
+        console.error('Failed to open sell order:', e);
+      },
+    }
+  );
 
-  const handleMidClick = () => {
-    setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
-  };
+  // Build OrderSideInfo for buy and sell (using hook's calcDirectionInfo)
+  const buyOrderInfo: OrderSideInfo = React.useMemo(
+    () => ({
+      liqPrice: buyDirInfo.liqPrice,
+      cost: buyDirInfo.cost,
+      max: limitMaxBuyTradeSize || '0',
+    }),
+    [buyDirInfo, limitMaxBuyTradeSize]
+  );
+
+  const sellOrderInfo: OrderSideInfo = React.useMemo(
+    () => ({
+      liqPrice: sellDirInfo.liqPrice,
+      cost: sellDirInfo.cost,
+      max: limitMaxSellTradeSize || '0',
+    }),
+    [sellDirInfo, limitMaxSellTradeSize]
+  );
 
   useEffect(() => {
     setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
@@ -388,160 +537,153 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   };
 
   return (
-    <div className="space-y-[16px]">
-      <OrderSideAndFunds
-        orderSide={orderSide}
-        switchOrderSide={switchOrderSide}
-        availableBalance={availableBalance}
-        currentPosition={currentPosition}
-        selectedCoin={selectedCoin}
-      />
+    <div className="space-y-[12px]">
+      <OrderSideAndFunds availableBalance={availableBalance} />
 
-      <div className="flex items-center gap-8">
-        <DesktopPerpsInput
-          value={limitPrice}
-          onChange={handleLimitPriceChange}
-          className="text-right tet"
-          prefix={
-            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-              {t('page.perpsPro.tradingPanel.limitPrice')}
-            </span>
-          }
-          suffix={
-            <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-foot">
-              USD
-            </span>
-          }
-        />
-        <div
-          className="w-[88px] h-[40px] flex items-center justify-center text-center bg-rb-neutral-bg-2 font-medium text-[13px] text-r-neutral-title-1 rounded-[8px] cursor-pointer hover:border-rb-brand-default border border-solid border-transparent"
-          onClick={handleMidClick}
-        >
-          Mid
+      <div className="flex flex-col gap-[6px]">
+        <span className="text-rb-neutral-secondary text-[12px]">
+          {t('page.perpsPro.tradingPanel.price')}
+        </span>
+        <div className="flex items-center gap-8">
+          {bboEnabled ? (
+            <PerpsDropdown
+              options={bboStrategyOptions}
+              onSelect={(key) => setBboStrategy(key as BboStrategy)}
+            >
+              <div className="flex-1 h-[44px] flex items-center justify-between px-[11px] rounded-[8px] border border-solid border-rb-neutral-line bg-rb-neutral-bg-5 cursor-pointer">
+                <span className="text-[15px] font-medium text-rb-neutral-title-1">
+                  {bboStrategyOptions.find((o) => o.key === bboStrategy)
+                    ?.label || 'Counterparty 1'}
+                </span>
+                <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+              </div>
+            </PerpsDropdown>
+          ) : (
+            <DesktopPerpsInput
+              value={limitPrice}
+              onChange={handleLimitPriceChange}
+              className="text-left"
+              suffix={
+                <span className="text-15 font-medium text-rb-neutral-title-1">
+                  USDC
+                </span>
+              }
+            />
+          )}
+          <Tooltip
+            overlayClassName="rectangle"
+            placement="topRight"
+            title={
+              bboDisabledReason
+                ? t('page.perpsPro.tradingPanel.bboDisabledTooltip', {
+                    bboDisabledReason,
+                  })
+                : t('page.perpsPro.tradingPanel.bboTips')
+            }
+          >
+            <div
+              className={clsx(
+                'min-w-[64px] h-[44px] relative flex items-center justify-center text-center font-medium text-15 rounded-[8px] border border-solid cursor-pointer',
+                bboEnabled
+                  ? 'bg-rb-brand-light-1 text-rb-neutral-title-1 border-rb-brand-default'
+                  : canEnableBbo
+                  ? 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent hover:border-rb-brand-default'
+                  : 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent opacity-50'
+              )}
+              onClick={handleBboToggle}
+            >
+              BBO
+            </div>
+          </Tooltip>
         </div>
       </div>
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
-        price={limitPrice}
-        maxTradeSize={limitMaxTradeSize}
+        price={bboEnabled ? midPrice : Number(limitPrice) || midPrice}
+        maxBuyTradeSize={limitMaxBuyTradeSize}
+        maxSellTradeSize={limitMaxSellTradeSize}
         positionSize={positionSize}
         setPositionSize={setPositionSize}
         percentage={percentage}
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
-        quoteAsset="USDC"
         szDecimals={szDecimals}
-        priceChangeUsdValue={true}
+        sizeDisplayUnit={sizeDisplayUnit}
+        onUnitChange={setSizeDisplayUnit}
         reduceOnly={reduceOnly}
       />
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-16">
-          <PerpsCheckbox
-            checked={tpslConfig.enabled}
-            onChange={(enabled) => {
-              handleTPSLEnabledChange(enabled);
-              if (enabled) {
-                setReduceOnly(false);
-              }
-            }}
-            tooltipText={t('page.perpsPro.tradingPanel.tpSlTips')}
-            title={t('page.perpsPro.tradingPanel.tpSl')}
-          />
+      <div className="h-[1px] bg-rb-neutral-line" />
 
-          <PerpsCheckbox
-            checked={reduceOnly}
-            onChange={(checked) => {
-              setReduceOnly(checked);
-              if (checked) {
-                handleTPSLEnabledChange(false);
-              }
-            }}
-            tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
-            title={t('page.perpsPro.tradingPanel.reduceOnly')}
-            disabled={!currentPosition}
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <Dropdown
-            transitionName=""
-            forceRender={true}
-            overlay={
-              <Menu
-                className="bg-r-neutral-bg1"
-                onClick={(info) =>
-                  setLimitOrderType(info.key as LimitOrderType)
-                }
-              >
-                {limitOrderTypeOptions.map((option) => (
-                  <Menu.Item
-                    className="text-r-neutral-title1 hover:bg-r-blue-light1"
-                    key={option.value}
-                  >
-                    <Tooltip key={option.value} title={option.title}>
-                      {option.label}
-                    </Tooltip>
-                  </Menu.Item>
-                ))}
-              </Menu>
+      <div className="flex flex-col gap-[6px]">
+        <PerpsCheckbox
+          checked={tpslConfig.enabled}
+          onChange={(enabled) => {
+            handleTPSLEnabledChange(enabled);
+            if (enabled) {
+              setReduceOnly(false);
             }
-          >
-            <button
-              type="button"
-              className={clsx(
-                'inline-flex items-center justify-between',
-                'px-[8px] py-[8px] flex-1 w-[80px] h-28',
-                'border border-rb-neutral-line rounded-[6px]',
-                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1 hover:border-rb-brand-default'
-              )}
-            >
-              {
-                limitOrderTypeOptions.find(
-                  (option) => option.value === limitOrderType
-                )?.label
-              }
-              <RcIconArrowDownCC className="text-rb-neutral-secondary" />
-            </button>
-          </Dropdown>
-        </div>
+          }}
+          tooltipText={t('page.perpsPro.tradingPanel.tpSlTips')}
+          title={t('page.perpsPro.tradingPanel.tpSl')}
+          disabled={reduceOnly}
+        />
+        {tpslConfig.enabled && (
+          <TPSLSettings
+            szDecimals={szDecimals}
+            config={tpslConfig}
+            setConfig={setTpslConfig}
+            price={limitPrice}
+            leverage={leverage}
+            tradeSize={tradeSize}
+          />
+        )}
       </div>
 
-      {/* TP/SL Settings Expanded */}
-      {tpslConfig.enabled && (
-        <TPSLSettings
-          szDecimals={szDecimals}
-          config={tpslConfig}
-          setConfig={setTpslConfig}
-          orderSide={orderSide}
-          price={limitPrice}
-          leverage={leverage}
-          priceChangeUpdate={true}
+      <div className="flex items-center justify-between">
+        <PerpsCheckbox
+          checked={reduceOnly}
+          onChange={(checked) => {
+            setReduceOnly(checked);
+            if (checked) {
+              handleTPSLEnabledChange(false);
+            }
+          }}
+          tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
+          title={t('page.perpsPro.tradingPanel.reduceOnly')}
+          disabled={!currentPosition}
         />
-      )}
+        <LimitOrderTypeSelector
+          value={limitOrderType}
+          onChange={setLimitOrderType}
+        />
+      </div>
 
-      {/* Place Order Button */}
-      {
-        <TradingButton
-          loading={handleOpenOrderLoading}
-          onClick={handleOpenOrderRequest}
-          disabled={!validation.isValid || tpslConfigHasError}
-          error={validation.error}
-          isValid={validation.isValid}
-          orderSide={orderSide}
-          titleText={t('page.perpsPro.tradingPanel.placeOrder')}
-        />
-      }
-      {/* Order Summary */}
-      <OrderSummary
-        data={orderSummary}
-        showTPSLExpected={tpslConfig.enabled}
-        tpExpectedPnL={
-          tpslConfig.enabled ? orderSummary?.tpExpectedPnL : undefined
+      {/* Buy/Sell Buttons */}
+      <TradingButtons
+        onBuyClick={handleBuyOrder}
+        onSellClick={handleSellOrder}
+        buyLoading={buyLoading}
+        sellLoading={sellLoading}
+        buyDisabled={
+          !validation.isValid || tpslConfigHasError || reduceOnlyBuyDisabled
         }
-        slExpectedPnL={
-          tpslConfig.enabled ? orderSummary?.slExpectedPnL : undefined
+        sellDisabled={
+          !validation.isValid || tpslConfigHasError || reduceOnlySellDisabled
         }
+        buyError={validation.error}
+        sellError={validation.error}
+      />
+
+      {/* Order Info Grid */}
+      <OrderInfoGrid
+        buy={buyOrderInfo}
+        sell={sellOrderInfo}
+        displayUnit={sizeDisplayUnit}
+        selectedCoin={selectedCoin}
+        reduceOnly={reduceOnly}
+        price={midPrice}
       />
     </div>
   );
