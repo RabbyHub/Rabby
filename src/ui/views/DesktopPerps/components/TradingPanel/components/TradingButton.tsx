@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import React, { useMemo, useState } from 'react';
 import { Button } from 'antd';
 import { OrderSide } from '../../../types';
@@ -126,13 +127,13 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
           }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
-          className={`w-full h-[40px] rounded-[8px] font-medium text-[13px] border-transparent ${
-            isValid && !error && hasPermission
-              ? orderSide === OrderSide.BUY
-                ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
-                : 'bg-rb-red-default text-rb-neutral-InvertHighlight'
-              : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
-          }`}
+          className={clsx(
+            'w-full h-[40px] rounded-[8px] font-medium text-[13px] border-transparent text-rb-neutral-InvertHighlight',
+            !(isValid && !error && hasPermission) && 'cursor-not-allowed',
+            orderSide === OrderSide.BUY
+              ? 'bg-rb-green-default'
+              : 'bg-rb-red-default'
+          )}
         >
           {titleText}
         </Button>
