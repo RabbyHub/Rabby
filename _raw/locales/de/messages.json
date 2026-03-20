@@ -1904,7 +1904,7 @@
       "privateKeyTab": "Privater Schlüssel",
       "bulkImportPrivateKeyInputTab": "Geben Sie den Private Key ein",
       "seedPhraseTab": "Seed-Phrase",
-      "watchAddress": "Adresse beobachten",
+      "watchAddress": "",
       "addressAdded": "Adresse hinzugefügt",
       "newSeedPhraseCreated": "Neue Seed Phrase erstellt",
       "addressImported": "Adresse importiert",

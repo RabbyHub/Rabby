@@ -2262,6 +2262,7 @@
       "search": "Search",
       "manage-address": "Manage Address",
       "deleted": "Deleted",
+      "deleteSuccess":"Deleted successfully",
       "whitelisted-address": "Whitelisted address",
       "addressTypeTip": "Imported by {{type}}",
       "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
@@ -2784,8 +2785,8 @@
       "addressAddedCount_one": "{{count}} Address Added",
       "addressAddedCount_other": "{{count}} Addresses Added",
       "importMyMetamaskAccount": "Import My MetaMask Account",
-      "watchAddress": "Watch Address",
-      "imported":"Imported Before",
+      "watchAddress": "Watch-only Address",
+      "imported": "Imported Before",
       "addContacts": {
         "content": "Add Watch-only Address",
         "description": "Track any public wallet address",
@@ -3853,7 +3854,8 @@
         "addMoreFrom": "Add more addresses from {{name}}",
         "desc": "Rabby Wallet is Ready to Use!",
         "openWallet": "Open Wallet",
-        "backupSeedPhraseNow": "Backup Seed phrase Now"
+        "backupSeedPhraseNow": "Backup Seed phrase Now",
+        "backupSeedPhrase":"Backup Seed Phrase"
       },
       "readyToUse": {
         "title": "Your Rabby Wallet is Ready !",

@@ -1906,7 +1906,7 @@
       "addMoreAddresses": "Adicionar Mais Endereços",
       "addNewAddress": "Criar Novo Endereço",
       "addressAddedCount_one": "{{count}} Endereço Adicionado",
-      "watchAddress": "Assistir Endereço",
+      "watchAddress": "",
       "privateKeyTab": "Chave Privada",
       "bulkImportPrivateKey": "Importação em massa da chave privada",
       "newAddressAdded": "Novo Endereço Adicionado",

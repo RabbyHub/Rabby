@@ -1996,7 +1996,7 @@
       "imported": "가져오기 이전",
       "bulkImportPrivateKeyInputTab": "개인 키 입력",
       "addNewAddress": "새 주소 만들기",
-      "watchAddress": "주소 감시",
+      "watchAddress": "",
       "seedPhraseTab": "시드 구문",
       "newAddressAdded": "새 주소가 추가되었습니다",
       "addressAddedCount_one": "{{count}} 주소가 추가되었습니다",

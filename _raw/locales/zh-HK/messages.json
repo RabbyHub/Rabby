@@ -877,7 +877,7 @@
       "addMoreAddresses": "添加更多地址",
       "importMoreWallets": "添加更多地址",
       "seedPhraseTab": "种子短语",
-      "watchAddress": "監察地址",
+      "watchAddress": "",
       "bulkImportPrivateKey": "批量导入私钥",
       "imported": "已导入前",
       "addressAdded": "地址已添加",
