@@ -143,8 +143,20 @@ export const usePerpsTradingState = () => {
     return Number(withdrawableBalance || 0);
   }, [withdrawableBalance]);
 
-  const maxBuyTradeSize = wsActiveAssetData?.maxTradeSzs[0];
-  const maxSellTradeSize = wsActiveAssetData?.maxTradeSzs[1];
+  const rawMaxBuyTradeSize = wsActiveAssetData?.maxTradeSzs[0];
+  const rawMaxSellTradeSize = wsActiveAssetData?.maxTradeSzs[1];
+
+  // Override with position size when reduceOnly
+  const maxBuyTradeSize = reduceOnly
+    ? currentPosition?.side === 'Short'
+      ? currentPosition.size.toString()
+      : '0'
+    : rawMaxBuyTradeSize;
+  const maxSellTradeSize = reduceOnly
+    ? currentPosition?.side === 'Long'
+      ? currentPosition.size.toString()
+      : '0'
+    : rawMaxSellTradeSize;
 
   // Calculate trade amount (notional value)
   const tradeUsdAmount = React.useMemo(() => {
@@ -274,20 +286,8 @@ export const usePerpsTradingState = () => {
     sellTradeSize,
   ]);
 
-  // Max trade sizes - override with position size when reduceOnly
-  const effectiveMaxBuyTradeSize = reduceOnly
-    ? currentPosition?.side === 'Short'
-      ? currentPosition.size.toString()
-      : '0'
-    : maxBuyTradeSize;
-  const effectiveMaxSellTradeSize = reduceOnly
-    ? currentPosition?.side === 'Long'
-      ? currentPosition.size.toString()
-      : '0'
-    : maxSellTradeSize;
-
-  const maxBuyDisplay = effectiveMaxBuyTradeSize || '0';
-  const maxSellDisplay = effectiveMaxSellTradeSize || '0';
+  const maxBuyDisplay = maxBuyTradeSize || '0';
+  const maxSellDisplay = maxSellTradeSize || '0';
 
   // Build OrderSideInfo for both sides
   const buyInfo: OrderSideInfo = useMemo(
