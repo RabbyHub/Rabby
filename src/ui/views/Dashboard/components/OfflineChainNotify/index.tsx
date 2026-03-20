@@ -31,6 +31,7 @@ const useOfflineChains = () => {
       return [...res.completeds, ...res.pendings].length > 0;
     },
     {
+      refreshDeps: [account?.address],
       ready: !!account?.address,
     }
   );
