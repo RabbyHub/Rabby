@@ -115,6 +115,11 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
   const estSellPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
 
   const limitMaxBuyTradeSize = React.useMemo(() => {
+    if (reduceOnly) {
+      return currentPosition?.side === 'Short'
+        ? currentPosition.size.toFixed(szDecimals)
+        : '0';
+    }
     if (!estBuyPrice) return maxBuyTradeSize;
     const balanceBasedMax =
       availableBalance > 0
@@ -135,9 +140,15 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     szDecimals,
     currentPosition,
     maxBuyTradeSize,
+    reduceOnly,
   ]);
 
   const limitMaxSellTradeSize = React.useMemo(() => {
+    if (reduceOnly) {
+      return currentPosition?.side === 'Long'
+        ? currentPosition.size.toFixed(szDecimals)
+        : '0';
+    }
     if (!estSellPrice) return maxSellTradeSize;
     const balanceBasedMax =
       availableBalance > 0
@@ -158,6 +169,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     szDecimals,
     currentPosition,
     maxSellTradeSize,
+    reduceOnly,
   ]);
 
   // Limit-specific trade sizes: slider mode uses limitMax instead of hook's market-based max

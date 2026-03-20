@@ -153,6 +153,11 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const MARGIN_SAFETY = 0.99;
 
   const limitMaxBuyTradeSize = React.useMemo(() => {
+    if (reduceOnly) {
+      return currentPosition?.side === 'Short'
+        ? currentPosition.size.toFixed(szDecimals)
+        : '0';
+    }
     if (!estBuyPrice) return maxBuyTradeSize;
     const balanceBasedMax =
       availableBalance > 0
@@ -174,9 +179,15 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     szDecimals,
     currentPosition,
     maxBuyTradeSize,
+    reduceOnly,
   ]);
 
   const limitMaxSellTradeSize = React.useMemo(() => {
+    if (reduceOnly) {
+      return currentPosition?.side === 'Long'
+        ? currentPosition.size.toFixed(szDecimals)
+        : '0';
+    }
     if (!estSellPrice) return maxSellTradeSize;
     const balanceBasedMax =
       availableBalance > 0
@@ -198,6 +209,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     szDecimals,
     currentPosition,
     maxSellTradeSize,
+    reduceOnly,
   ]);
 
   // Limit-specific trade sizes: slider mode uses limitMax instead of hook's market-based max
