@@ -13,6 +13,7 @@ export interface TxHistoryItemRow
   project_item?: TxHistoryResult['project_dict'][string];
   approve_token?: TokenItem;
   cate_item?: TxHistoryResult['cate_dict'][string];
+  is_small_tx?: boolean;
 
   _id: string;
   _updated_at: number;

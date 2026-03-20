@@ -42,7 +42,9 @@ export const useQueryDbHistory = (options: {
     return db.history
       .where('owner_addr')
       .equalsIgnoreCase(address)
-      .and((item) => (isFilterScam ? !item.is_scam : true))
+      .and((item) => {
+        return isFilterScam ? !item.is_scam && !item.is_small_tx : true;
+      })
       .reverse()
       .sortBy('time_at');
   }, [address, isFilterScam]);
