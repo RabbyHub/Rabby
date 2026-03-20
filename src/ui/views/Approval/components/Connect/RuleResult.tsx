@@ -177,7 +177,10 @@ const RuleResult = ({
           </div>
         )}
         {(rule.id === '1006' || rule.id === '1007') && (
-          <div className="flex cursor-pointer" onClick={onEditUserList}>
+          <div
+            className="flex cursor-pointer flex-1 justify-end items-center"
+            onClick={onEditUserList}
+          >
             {!userListResult && t('page.connect.noMark')}
             {userListResult &&
               userListResult.id === '1006' &&
