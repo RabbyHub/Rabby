@@ -37,6 +37,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
   );
   const { data, isLoading } = useQueryDbHistory({
     address: currentAccount?.address || '',
+    isFilterScam: true,
   });
 
   const isEmpty = (data?.length || 0) <= 0 && !isLoading;
@@ -68,7 +69,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
         </div>
       ) : (
         <>
-          <div
+          {/* <div
             className={clsx(
               'mt-[12px] mb-[10px]',
               'inline-flex items-center gap-[4px] rounded-[8px] py-[6px] px-[8px] bg-rb-neutral-bg-3',
@@ -82,7 +83,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
           >
             {t('page.transactions.filterScam.button')}
             <RcIconArrowRightCC />
-          </div>
+          </div> */}
           {isEmpty ? (
             <Empty
               title={t('page.transactions.empty.title')}
@@ -98,10 +99,10 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
           )}
         </>
       )}
-      <HideScamTransactionModal
+      {/* <HideScamTransactionModal
         visible={isShowHideScamTxModal}
         onCancel={() => setIsShowHideScamTxModal(false)}
-      />
+      /> */}
     </div>
   );
 };

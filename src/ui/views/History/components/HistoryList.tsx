@@ -1,26 +1,14 @@
-import { last, sortBy } from 'lodash';
 import React, { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import type {
-  TxAllHistoryResult,
-  TxHistoryResult,
-} from 'background/service/openapi';
 
+import { useQueryDbHistory } from '@/db/hooks/history';
 import { useAccount } from '@/ui/store-hooks';
-import { useInfiniteScroll, useRequest } from 'ahooks';
 import { Virtuoso } from 'react-virtuoso';
 import { Empty, Modal } from 'ui/component';
-import { sleep, useWallet } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { HistoryItem, HistoryItemActionContext } from './HistoryItem';
 import { Loading } from './Loading';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { historyDbService } from '@/db/services/historyDbService';
-import { useMount } from 'react-use';
-import { db } from '@/db';
-import { useQueryDbHistory } from '@/db/hooks/history';
-
-const PAGE_COUNT = 10;
 
 export const HistoryList = ({
   isFilterScam = false,
