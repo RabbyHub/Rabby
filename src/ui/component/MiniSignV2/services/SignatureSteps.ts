@@ -491,7 +491,7 @@ export class SignatureSteps {
       if (is1559Capable) {
         buildTx = convertLegacyTo1559(buildTx) as any;
         (buildTx as any).maxPriorityFeePerGas =
-          maxPriorityFee <= 0
+          maxPriorityFee < 0
             ? (buildTx as any).maxFeePerGas
             : intToHex(Math.round(maxPriorityFee));
       }
