@@ -29,7 +29,7 @@ export const DesktopTokenChange = ({
 
   return (
     <div className="flex flex-col items-end gap-[6px]">
-      {info.sends?.map((v) => {
+      {info.sends?.map((v, index) => {
         const tokenId = v.id;
         const tokenUUID = `${info.chain}_token:${tokenId}`;
         const token = v;
@@ -41,7 +41,11 @@ export const DesktopTokenChange = ({
           : symbol;
 
         return (
-          <div key={v.id} className="flex items-center gap-[6px]" title={name}>
+          <div
+            key={v.id + '-' + index}
+            className="flex items-center gap-[6px]"
+            title={name}
+          >
             {/* Token Icon */}
             {isNft ? (
               <NFTAvatar
@@ -78,7 +82,7 @@ export const DesktopTokenChange = ({
         );
       })}
 
-      {info.receives?.map((v) => {
+      {info.receives?.map((v, index) => {
         const tokenId = v;
         const token = v;
         const isNft = v.id?.length === 32;
@@ -89,7 +93,11 @@ export const DesktopTokenChange = ({
           : symbol;
 
         return (
-          <div key={v.id} className="flex items-center gap-[6px]" title={name}>
+          <div
+            key={v.id + '-' + index}
+            className="flex items-center gap-[6px]"
+            title={name}
+          >
             {isNft ? (
               <NFTAvatar
                 className="w-16 h-16 rounded-full"

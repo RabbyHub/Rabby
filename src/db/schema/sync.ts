@@ -10,6 +10,9 @@ export interface SyncItemRow {
   type: 'history' | string;
   updatedAt: number;
   _id: string;
+  isSyncing?: boolean;
+  pendingStartTime?: number;
+  pendingLatestTime?: number;
 }
 
 export type SyncTable = {
@@ -22,6 +25,6 @@ export type SyncTable = {
 export const syncSchema = `
   &_id,
   address,
-  type,
+  [address+type],
   updatedAt
   `;
