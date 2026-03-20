@@ -364,7 +364,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
                   handleModeChange(type, mode as TPSLSettingMode)
                 }
               >
-                <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1 flex items-center gap-[6px] cursor-pointer whitespace-nowrap">
+                <span className="text-15 font-medium text-rb-neutral-title-1 flex items-center gap-[6px] cursor-pointer whitespace-nowrap">
                   {unitLabel}
                   <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary w-[12px] h-[12px]" />
                 </span>

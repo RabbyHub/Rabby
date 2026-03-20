@@ -18,7 +18,8 @@ const StyledInput = styled(Input)`
     transition: border-color 0.2s;
 
     &:hover,
-    &.ant-input-affix-wrapper-focused {
+    &.ant-input-affix-wrapper-focused,
+    &.slider-active {
       border-color: var(--rb-brand-default, #7084ff);
     }
 
@@ -55,7 +56,8 @@ const StyledInput = styled(Input)`
     transition: border-color 0.2s;
 
     &:hover,
-    &:focus {
+    &:focus,
+    &.slider-active {
       border-color: var(--rb-brand-default, #7084ff);
       box-shadow: none;
     }

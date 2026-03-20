@@ -312,10 +312,10 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       orderValue:
         scaleOrdersValue > 0 ? formatUsdValue(scaleOrdersValue) : '$0.00',
       marginRequired: formatUsdValue(marginRequired),
-      marginUsage: `${marginRequired} ${formatPercent(
+      marginUsage: `${formatUsdValue(marginRequired)} (${formatPercent(
         marginRequired / availableBalance,
         1
-      )}`,
+      )})`,
     };
   }, [
     scaleOrders,

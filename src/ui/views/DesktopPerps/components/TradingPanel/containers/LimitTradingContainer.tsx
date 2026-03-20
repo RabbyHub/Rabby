@@ -67,8 +67,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     reduceOnlyBuyDisabled,
     reduceOnlySellDisabled,
     calcDirectionInfo,
-    buyTradeSize,
-    sellTradeSize,
   } = usePerpsTradingState();
   const bboPrices = useRabbySelector((state) => state.perps.bboPrices);
 
@@ -205,14 +203,49 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     maxSellTradeSize,
   ]);
 
-  // Use hook's calcDirectionInfo with direction-specific estPrice
+  // Limit-specific trade sizes: slider mode uses limitMax instead of hook's market-based max
+  const limitBuyTradeSize = React.useMemo(() => {
+    if (positionSize.inputSource === 'slider' && percentage > 0) {
+      return calcAmountFromPercentage(
+        percentage,
+        limitMaxBuyTradeSize,
+        szDecimals
+      );
+    }
+    return tradeSize;
+  }, [
+    positionSize.inputSource,
+    percentage,
+    limitMaxBuyTradeSize,
+    szDecimals,
+    tradeSize,
+  ]);
+
+  const limitSellTradeSize = React.useMemo(() => {
+    if (positionSize.inputSource === 'slider' && percentage > 0) {
+      return calcAmountFromPercentage(
+        percentage,
+        limitMaxSellTradeSize,
+        szDecimals
+      );
+    }
+    return tradeSize;
+  }, [
+    positionSize.inputSource,
+    percentage,
+    limitMaxSellTradeSize,
+    szDecimals,
+    tradeSize,
+  ]);
+
+  // Use hook's calcDirectionInfo with direction-specific estPrice and limit-based trade sizes
   const buyDirInfo = React.useMemo(
-    () => calcDirectionInfo('Long', buyTradeSize, estBuyPrice),
-    [calcDirectionInfo, buyTradeSize, estBuyPrice]
+    () => calcDirectionInfo('Long', limitBuyTradeSize, estBuyPrice),
+    [calcDirectionInfo, limitBuyTradeSize, estBuyPrice]
   );
   const sellDirInfo = React.useMemo(
-    () => calcDirectionInfo('Short', sellTradeSize, estSellPrice),
-    [calcDirectionInfo, sellTradeSize, estSellPrice]
+    () => calcDirectionInfo('Short', limitSellTradeSize, estSellPrice),
+    [calcDirectionInfo, limitSellTradeSize, estSellPrice]
   );
 
   const wsActiveAssetCtx = useRabbySelector(

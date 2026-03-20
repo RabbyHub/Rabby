@@ -234,7 +234,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
             'inline-flex items-center transition-colors',
             isAdvancedSelected
               ? 'text-rb-neutral-title-1'
-              : 'text-rb-neutral-body hover:text-rb-neutral-title-1'
+              : 'text-rb-neutral-foot hover:text-rb-neutral-title-1'
           )}
         >
           <span
