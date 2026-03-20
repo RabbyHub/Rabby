@@ -628,7 +628,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         displayUnit={sizeDisplayUnit}
         selectedCoin={selectedCoin}
         reduceOnly={reduceOnly}
-        price={midPrice}
+        price={bboEnabled ? midPrice : Number(limitPrice) || midPrice}
       />
     </div>
   );

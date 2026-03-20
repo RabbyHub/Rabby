@@ -548,6 +548,10 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     }
   };
 
+  const priceForCalculation = useMemo(() => {
+    return bboEnabled ? midPrice : Number(limitPrice) || midPrice;
+  }, [bboEnabled, midPrice, limitPrice]);
+
   return (
     <div className="space-y-[12px]">
       <OrderSideAndFunds availableBalance={availableBalance} />
@@ -612,7 +616,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
-        price={bboEnabled ? midPrice : Number(limitPrice) || midPrice}
+        price={priceForCalculation}
         maxBuyTradeSize={limitMaxBuyTradeSize}
         maxSellTradeSize={limitMaxSellTradeSize}
         positionSize={positionSize}
@@ -695,7 +699,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         displayUnit={sizeDisplayUnit}
         selectedCoin={selectedCoin}
         reduceOnly={reduceOnly}
-        price={midPrice}
+        price={priceForCalculation}
       />
     </div>
   );
