@@ -91,7 +91,7 @@ async function recomputeExplainForCalcItems(params: {
       if (is1559Capable) {
         newTx.maxFeePerGas = intToHex(Math.round(newGas.price));
         newTx.maxPriorityFeePerGas =
-          maxPriorityFee <= 0
+          maxPriorityFee < 0
             ? newTx.maxFeePerGas
             : intToHex(Math.round(maxPriorityFee));
         delete newTx.gasPrice;
