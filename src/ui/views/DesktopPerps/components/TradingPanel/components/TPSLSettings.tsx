@@ -288,6 +288,13 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
         estimatedPnl: '',
         estimatedPnlPercent: '',
       });
+      // Persist setting mode across order types and trading pairs
+      try {
+        const key = `perps_tpsl_mode_${type}`;
+        localStorage.setItem(key, mode);
+      } catch (e) {
+        // ignore localStorage errors
+      }
     }
   );
 

@@ -102,6 +102,22 @@ export interface AccountHistoryItem {
   usdValue: string;
 }
 
+const VALID_TPSL_MODES = ['price', 'pnl', 'roi'] as const;
+
+const getSavedTpslMode = (
+  type: 'takeProfit' | 'stopLoss'
+): 'price' | 'pnl' | 'roi' => {
+  try {
+    const val = localStorage.getItem(`perps_tpsl_mode_${type}`);
+    if (val && (VALID_TPSL_MODES as readonly string[]).includes(val)) {
+      return val as 'price' | 'pnl' | 'roi';
+    }
+  } catch (e) {
+    // ignore
+  }
+  return 'price';
+};
+
 export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
   enabled: false,
   takeProfit: {
@@ -124,14 +140,23 @@ export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
   },
 };
 
-const INIT_TRADING_STATE = {
-  // tradingOrderSide: OrderSide.BUY,
+const getInitTradingState = () => ({
   tradingPositionSize: { amount: '', notionalValue: '' },
   tradingPercentage: 0,
   tradingReduceOnly: false,
-  tradingTpslConfig: DEFAULT_TPSL_CONFIG,
+  tradingTpslConfig: {
+    ...DEFAULT_TPSL_CONFIG,
+    takeProfit: {
+      ...DEFAULT_TPSL_CONFIG.takeProfit,
+      settingMode: getSavedTpslMode('takeProfit'),
+    },
+    stopLoss: {
+      ...DEFAULT_TPSL_CONFIG.stopLoss,
+      settingMode: getSavedTpslMode('stopLoss'),
+    },
+  },
   bboPrices: { asks1: '', asks5: '', bids1: '', bids5: '' },
-};
+});
 
 export interface PerpsState {
   // positionAndOpenOrders: PositionAndOpenOrder[];
@@ -247,7 +272,7 @@ export const perps = createModel<RootModel>()({
     // tradingOrderType: OrderType.MARKET,
     sizeDisplayUnit: 'base',
     tradingOrderSide: OrderSide.BUY,
-    ...INIT_TRADING_STATE,
+    ...getInitTradingState(),
   } as PerpsState,
 
   reducers: {
@@ -685,7 +710,7 @@ export const perps = createModel<RootModel>()({
     resetTradingState(state) {
       return {
         ...state,
-        ...INIT_TRADING_STATE,
+        ...getInitTradingState(),
       };
     },
 
@@ -697,7 +722,7 @@ export const perps = createModel<RootModel>()({
 
       return {
         ...state,
-        ...INIT_TRADING_STATE,
+        ...getInitTradingState(),
         selectedCoin: payload,
       };
     },

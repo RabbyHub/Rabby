@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { PerpsDropdown } from './PerpsDropdown';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/swap/switch-cc.svg';
 import { useRabbySelector } from '@/ui/store';
+import { splitNumberByStep } from '@/ui/utils';
 
 const PRESET_POINTS = [0, 25, 50, 75, 100];
 
@@ -221,6 +222,12 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
 
   // Sync inputText when positionSize changes externally (e.g., reset)
   useEffect(() => {
+    // If positionSize was reset to empty, clear slider mode too
+    if (isSliderMode && !positionSize.amount && !positionSize.notionalValue) {
+      setIsSliderMode(false);
+      setInputText('');
+      return;
+    }
     if (isSliderMode) return; // slider mode manages inputText itself
     const val =
       sizeDisplayUnit === 'base'
@@ -274,13 +281,13 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
         const sellNotional =
           Number(sellAmt) > 0 ? calcAssetNotionalByAmount(sellAmt, price) : '0';
         return {
-          buyPreview: `${buyNotional} ${unit}`,
-          sellPreview: `${sellNotional} ${unit}`,
+          buyPreview: `${splitNumberByStep(buyNotional)} ${unit}`,
+          sellPreview: `${splitNumberByStep(sellNotional)} ${unit}`,
         };
       }
       return {
-        buyPreview: `${buyAmt} ${unit}`,
-        sellPreview: `${sellAmt} ${unit}`,
+        buyPreview: `${splitNumberByStep(buyAmt)} ${unit}`,
+        sellPreview: `${splitNumberByStep(sellAmt)} ${unit}`,
       };
     }
 
