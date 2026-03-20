@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { MarginMode, OrderType } from '../../types';
 import { TopModeStatus, MarginModeModal, LeverageModal } from './components';
 import {
@@ -13,6 +13,7 @@ import {
 const ORDER_TYPE_KEY = 'rabby_perps_last_order_type';
 
 export const TradingPanel: React.FC = () => {
+  const dispatch = useRabbyDispatch();
   const [orderType, setOrderType] = React.useState<OrderType>(() => {
     const cached = localStorage.getItem(ORDER_TYPE_KEY);
     if (cached && Object.values(OrderType).includes(cached as OrderType)) {
@@ -24,6 +25,10 @@ export const TradingPanel: React.FC = () => {
   const handleOrderTypeChange = (type: OrderType) => {
     setOrderType(type);
     localStorage.setItem(ORDER_TYPE_KEY, type);
+    dispatch.perps.patchState({
+      tradingPositionSize: { amount: '', notionalValue: '' },
+      tradingPercentage: 0,
+    });
   };
 
   const renderTradingContainer = () => {
