@@ -878,7 +878,7 @@
       "moreWallets": "更多钱包",
       "privateKeyTab": "私钥",
       "addressImported": "地址已导入",
-      "watchAddress": "监控地址",
+      "watchAddress": "",
       "addressAdded": "地址已添加",
       "addressAddedCount_other": "{{count}} 个地址已添加",
       "newAddressCreated": "新地址已创建",

@@ -307,6 +307,10 @@ export const KEYRING_CLASS = {
   GNOSIS: 'Gnosis',
   CoboArgus: 'CoboArgus',
   Coinbase: 'Coinbase',
+  /**
+   * just for type, not a real keyring type
+   */
+  Whitelist: 'Whitelist',
 } as const;
 
 export const CORE_KEYRING_TYPES = [

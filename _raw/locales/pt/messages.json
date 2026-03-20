@@ -2008,7 +2008,7 @@
       "bulkImportPrivateKeyPlaceholder": "Cada chave privada deve ser separada por uma nova linha ou um caractere especial.",
       "privateKeyTab": "Chave Privada",
       "newAddressCreated": "Novo Endereço Criado",
-      "watchAddress": "Monitorar Endereço",
+      "watchAddress": "",
       "addressAdded": "Endereço Adicionado",
       "bulkImportPrivateKeyExceeded": "Suporta até {{count}} chaves privadas ao mesmo tempo",
       "addressAddedCount_one": "{{count}} Endereço Adicionado",
