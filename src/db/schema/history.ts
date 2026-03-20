@@ -28,19 +28,5 @@ export type HistoryTable = {
 export const historySchema = `
   &_id,
   owner_addr,
-  cate_id,
-  chain,
-  debt_liquidated,
-  id,
-  is_scam,
-  other_addr,
-  project_id,
-  receives,
-  sends,
-  time_at,
-  token_approve,
-  tx,
-  project_item,
-  _updated_at,
   [owner_addr+time_at]
   `;

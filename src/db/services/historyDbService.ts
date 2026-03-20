@@ -8,6 +8,7 @@ import { TxHistoryItemRow } from '../schema/history';
 import { has, last, transform } from 'lodash';
 import Dexie from 'dexie';
 import { transformToHistory } from '@/utils/history';
+import { syncDbService } from './syncDbService';
 
 const USE_REALTIME_API_DURATION = 24 * 5 * 60 * 60 * 1000; // use async history api if user not opened app in 5 days
 
@@ -54,22 +55,36 @@ class HistoryDbService {
     latestTime?: number;
     forceUseRealTimeApi?: boolean;
   }) {
+    const syncState = await syncDbService.getSyncState({
+      address,
+      scene: 'history',
+    });
+
+    const hasPendingHistorySync =
+      syncState?.isSyncing &&
+      syncState.pendingStartTime !== undefined &&
+      syncState.pendingLatestTime !== undefined;
+
+    if (hasPendingHistorySync) {
+      const pendingStartTime = syncState.pendingStartTime!;
+      const pendingLatestTime = syncState.pendingLatestTime!;
+
+      await this.syncWithAllHistoryApi({
+        address,
+        startTime: pendingStartTime,
+        latestTime: pendingLatestTime,
+      });
+    }
+
     const latestTime =
-      _latestTime || (await this.getLatestItemTime(address)) || 0;
+      _latestTime ?? (await this.getLatestItemTime(address)) ?? 0;
 
     const updatedAt =
-      (await db.sync.get(`${address.toLowerCase()}-history`))?.updatedAt || 0;
+      (await syncDbService.getUpdatedAt({ address, scene: 'history' })) || 0;
 
     const forceUseRealTimeApi =
       _forceUseRealTimeApi ??
       updatedAt > Date.now() - USE_REALTIME_API_DURATION;
-
-    db.sync.put({
-      _id: `${address.toLowerCase()}-history`,
-      address: address.toLowerCase(),
-      type: 'history',
-      updatedAt: Date.now(),
-    });
 
     let hasNew = true;
 
@@ -81,6 +96,11 @@ class HistoryDbService {
       hasNew = res.has_new_tx;
     }
     if (!hasNew) {
+      await syncDbService.setUpdatedAt({
+        address,
+        scene: 'history',
+        updatedAt: Date.now(),
+      });
       return;
     }
 
@@ -91,13 +111,25 @@ class HistoryDbService {
         latestTime: latestTime * 1000,
       });
 
+      await syncDbService.setUpdatedAt({
+        address,
+        scene: 'history',
+        updatedAt: Date.now(),
+      });
+
       return;
     }
 
     await this.syncWithAllHistoryApi({
       address,
       startTime: startTime || 0,
-      latestTime: latestTime * 1000,
+      latestTime,
+    });
+
+    await syncDbService.setUpdatedAt({
+      address,
+      scene: 'history',
+      updatedAt: Date.now(),
     });
   }
 
@@ -111,12 +143,22 @@ class HistoryDbService {
     latestTime?: number;
   }) {
     const latestTime =
-      _latestTime || (await this.getLatestItemTime(address)) || 0;
+      _latestTime ?? (await this.getLatestItemTime(address)) ?? 0;
     const isExpiredTimeAgo = new Date().getTime() - 15 * 24 * 60 * 60 * 1000; // 15 days ago
     const isAddUpdate = latestTime > isExpiredTimeAgo / 1000;
 
     let startTime = _startTime;
     let isEnd = false;
+
+    await syncDbService.updateSyncState({
+      address,
+      scene: 'history',
+      patch: {
+        isSyncing: true,
+        pendingStartTime: startTime,
+        pendingLatestTime: latestTime,
+      },
+    });
 
     while (!isEnd) {
       const res = await openapiService.getAllTxHistory({
@@ -181,8 +223,27 @@ class HistoryDbService {
           data: res,
         });
         startTime = lastItemTime;
+        await syncDbService.updateSyncState({
+          address,
+          scene: 'history',
+          patch: {
+            isSyncing: true,
+            pendingStartTime: startTime,
+            pendingLatestTime: latestTime,
+          },
+        });
       }
     }
+
+    await syncDbService.updateSyncState({
+      address,
+      scene: 'history',
+      patch: {
+        isSyncing: false,
+        pendingStartTime: undefined,
+        pendingLatestTime: undefined,
+      },
+    });
   }
 
   async syncWithRealTimeApi({
@@ -239,6 +300,10 @@ class HistoryDbService {
         data: res,
       });
     }
+  }
+
+  deleteForAddress(address: string) {
+    return db.history.where('owner_addr').equalsIgnoreCase(address).delete();
   }
 }
 
