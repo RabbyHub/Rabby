@@ -34,6 +34,7 @@ const formatPercent = (value: number, decimals = 8) => {
 import { splitNumberByStep, useWallet } from '@/ui/utils';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/perps/Iconfullscreen.svg';
 import { formatLocalDateTime } from '../../DesktopPerps/components/ChartArea/components/ChartWrapper';
+import { obj2query } from '@/ui/utils/url';
 
 export type ChartProps = {
   coin: string;
@@ -702,12 +703,20 @@ export const PerpsChart = ({
     <div
       className={clsx('bg-r-neutral-card1 rounded-[12px] p-16 mb-20 relative')}
     >
-      <div
-        className="absolute top-12 right-12 cursor-pointer text-r-neutral-body p-4 rounded-[4px] hover:bg-r-neutral-bg3"
-        onClick={() => wallet.openInDesktop('/desktop/perps')}
-      >
-        <RcIconFullscreen className="text-r-neutral-body" />
-      </div>
+      {!chartHoverData.visible && (
+        <div
+          className="absolute top-12 right-12 cursor-pointer text-r-neutral-body p-4 rounded-[4px] hover:bg-r-neutral-bg3"
+          onClick={() => {
+            wallet.openInDesktop(
+              `/desktop/perps?${obj2query({
+                coin: coin,
+              })}`
+            );
+          }}
+        >
+          <RcIconFullscreen className="text-r-neutral-body" />
+        </div>
+      )}
       <div className="text-center mb-8">
         {chartHoverData.visible ? (
           <div>

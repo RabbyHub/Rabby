@@ -43,7 +43,7 @@ export interface PerpsServiceStore {
   hasDoneNewUserProcess: boolean;
   favoritedCoins: string[];
   soundEnabled: boolean;
-  marketSlippage: number; // 0-1, default 0.08 (8%)
+  marketSlippage: number; // 0-1, default 0.05 (5%)
   quoteUnit: 'base' | 'usd';
   firstOpenPerpsNeedDark: boolean;
   selectedCoin: string;
@@ -75,7 +75,7 @@ class PerpsService {
         lastUsedAccount: null,
         hasDoneNewUserProcess: false,
         favoritedCoins: ['BTC', 'ETH', 'SOL'],
-        marketSlippage: 0.08, // default 8%
+        marketSlippage: 0.05, // default 5%
         soundEnabled: true,
         quoteUnit: 'base',
         firstOpenPerpsNeedDark: true,
@@ -414,7 +414,7 @@ class PerpsService {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
-    return this.store.marketSlippage ?? 0.08;
+    return this.store.marketSlippage ?? 0.05;
   };
 
   setMarketSlippage = async (slippage: number) => {
@@ -512,7 +512,7 @@ class PerpsService {
       hasDoneNewUserProcess: false,
       inviteConfig: {},
       favoritedCoins: ['BTC', 'ETH', 'SOL'],
-      marketSlippage: 0.08,
+      marketSlippage: 0.05,
       soundEnabled: true,
       quoteUnit: 'base',
       firstOpenPerpsNeedDark: true,

@@ -131,6 +131,7 @@ export const Perps: React.FC = () => {
   useEffect(() => {
     wallet.getHasDoneNewUserProcess().then((hasDoneNewUserProcess) => {
       if (!hasDoneNewUserProcess) {
+        wallet.setHasDoneNewUserProcess(true);
         setNewUserProcessVisible(true);
       }
     });
@@ -670,10 +671,11 @@ export const Perps: React.FC = () => {
             </button>
           </div>
         )} */}
-        {isLogin && hasPermission && (
+        {isLogin && (
           <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20">
             <Button
               block
+              disabled={!hasPermission}
               type="primary"
               onClick={() => {
                 setSearchPopupVisible(true);
@@ -763,10 +765,6 @@ export const Perps: React.FC = () => {
         visible={newUserProcessVisible}
         onCancel={async () => {
           setNewUserProcessVisible(false);
-          const hasDoneNewUserProcess = await wallet.getHasDoneNewUserProcess();
-          if (!hasDoneNewUserProcess) {
-            history.push('/dashboard');
-          }
         }}
         onComplete={() => {
           wallet.setHasDoneNewUserProcess(true);
