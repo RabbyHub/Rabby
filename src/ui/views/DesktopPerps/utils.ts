@@ -422,10 +422,18 @@ export const formatAllDexsClearinghouseState = (
 };
 
 export const formatSpotState = (spotState: SpotClearinghouseState) => {
+  if (!spotState || !spotState.balances || spotState.balances.length === 0) {
+    return {
+      accountValue: '0',
+      availableToTrade: '0',
+    };
+  }
+  const availableToTrade = new BigNumber(
+    spotState.balances?.[0]?.total || '0'
+  ).minus(spotState.balances?.[0]?.hold || '0');
   return {
     accountValue: spotState.balances?.[0]?.total || '0',
-    availableToTrade:
-      spotState.tokenToAvailableAfterMaintenance?.[0]?.[1] || '0',
+    availableToTrade: availableToTrade.toString(),
   };
   // const token = spotState.balances.find((i) => i.token === USDC_TOKEN_ID);
   // const availableToTrade = spotState.tokenToAvailableAfterMaintenance?.find(
