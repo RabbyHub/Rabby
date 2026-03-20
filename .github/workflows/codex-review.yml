@@ -1,0 +1,137 @@
+name: Codex PR Review
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  review:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          fetch-depth: 1
+
+      - name: Pre-fetch base and head refs for the PR
+        env:
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          git fetch --no-tags origin \
+            "$PR_BASE_REF" \
+            "+refs/pull/$PR_NUMBER/head"
+
+      - name: Run Codex review
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          responses-api-endpoint: ${{ vars.CODEX_RESPONSES_API_ENDPOINT }}
+          model: gpt-5.3-codex
+          prompt-file: .codex/commands/review-pr.md
+          output-schema: |
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["summary", "comments"],
+              "properties": {
+                "summary": { "type": "string" },
+                "comments": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["path", "line", "body"],
+                    "properties": {
+                      "path": { "type": "string" },
+                      "line": { "type": "integer", "minimum": 1 },
+                      "body": { "type": "string" },
+                      "severity": {
+                        "type": "string",
+                        "enum": ["critical", "high", "medium", "low"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+      - name: Report Codex feedback (inline + summary)
+        if: steps.run_codex.outputs.final-message != ''
+        uses: actions/github-script@v7
+        env:
+          CODEX_FINAL_MESSAGE: ${{ steps.run_codex.outputs.final-message }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const raw = (process.env.CODEX_FINAL_MESSAGE || "").trim();
+
+            function parsePayload(text) {
+              try {
+                return JSON.parse(text);
+              } catch (_) {
+                const fenced = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+                if (fenced && fenced[1]) {
+                  return JSON.parse(fenced[1]);
+                }
+                throw new Error("Codex output is not valid JSON");
+              }
+            }
+
+            const payload = parsePayload(raw);
+            const summary = String(payload.summary || "").trim();
+            const comments = Array.isArray(payload.comments) ? payload.comments : [];
+            const pr = context.payload.pull_request;
+
+            const posted = [];
+            const failed = [];
+
+            for (const item of comments.slice(0, 20)) {
+              const path = String(item.path || "").trim();
+              const body = String(item.body || "").trim();
+              const line = Number(item.line);
+              if (!path || !body || !Number.isInteger(line) || line <= 0) {
+                failed.push(`- Skipped invalid comment payload: \`${JSON.stringify(item)}\``);
+                continue;
+              }
+
+              try {
+                await github.rest.pulls.createReviewComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                  commit_id: pr.head.sha,
+                  path,
+                  line,
+                  side: "RIGHT",
+                  body,
+                });
+                posted.push({ path, line });
+              } catch (err) {
+                failed.push(`- ${path}:${line} -> ${err.message}`);
+              }
+            }
+
+            let body = "## Codex Review Summary\n\n";
+            body += summary || "No summary generated.";
+            body += `\n\nInline comments posted: ${posted.length}/${Math.min(comments.length, 20)}.`;
+
+            if (failed.length > 0) {
+              body += "\n\n### Inline comments not posted\n";
+              body += failed.slice(0, 20).join("\n");
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body,
+            });
