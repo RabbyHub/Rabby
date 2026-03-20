@@ -88,19 +88,71 @@ export const DesktopPerpsSliderV2 = (
   const { isDarkTheme } = useThemeMode();
   const { showTooltip, ...sliderProps } = props;
   const [hovered, setHovered] = React.useState(false);
+  const [dragging, setDragging] = React.useState(false);
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
 
-  const tooltipVisible = showTooltip ? hovered || undefined : false;
+  const tooltipVisible = showTooltip ? hovered || dragging : false;
+
+  const handleAfterChange = React.useCallback(
+    (value: number) => {
+      setDragging(false);
+      // Check if mouse is still inside the wrapper
+      const el = wrapperRef.current;
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const isInside =
+          lastMousePos.current.x >= rect.left &&
+          lastMousePos.current.x <= rect.right &&
+          lastMousePos.current.y >= rect.top &&
+          lastMousePos.current.y <= rect.bottom;
+        if (!isInside) {
+          setHovered(false);
+        }
+      }
+      sliderProps.onAfterChange?.(value);
+    },
+    [sliderProps.onAfterChange]
+  );
+
+  const lastMousePos = React.useRef({ x: 0, y: 0 });
+
+  React.useEffect(() => {
+    if (!dragging) return;
+    const onMouseMove = (e: MouseEvent) => {
+      lastMousePos.current = { x: e.clientX, y: e.clientY };
+    };
+    const onMouseUp = () => {
+      setDragging(false);
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+  }, [dragging]);
 
   return (
     <div
+      ref={wrapperRef}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => {
+        if (!dragging) setHovered(false);
+      }}
+      onMouseMove={(e) => {
+        lastMousePos.current = { x: e.clientX, y: e.clientY };
+      }}
     >
       <StyledSlider
         {...sliderProps}
         tooltipVisible={tooltipVisible}
         tooltipPrefixCls={showTooltip ? 'perps-slider-tip' : undefined}
         isDark={isDarkTheme}
+        onAfterChange={handleAfterChange}
+        onChange={(value) => {
+          setDragging(true);
+          sliderProps.onChange?.(value);
+        }}
       />
     </div>
   );

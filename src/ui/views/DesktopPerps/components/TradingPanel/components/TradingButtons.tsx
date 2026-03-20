@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import React, { useMemo, useState } from 'react';
 import { Button } from 'antd';
 import { useRabbySelector } from '@/ui/store';
@@ -117,11 +118,12 @@ export const TradingButtons: React.FC<TradingButtonsProps> = ({
             }}
             onMouseEnter={() => setBuyHovered(true)}
             onMouseLeave={() => setBuyHovered(false)}
-            className={`flex-1 h-[40px] rounded-[8px] font-medium text-[13px] border-transparent ${
-              !buyDisabled && !buyError && hasPermission
-                ? 'bg-rb-green-default text-rb-neutral-InvertHighlight'
-                : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
-            }`}
+            className={clsx(
+              'flex-1 h-[40px] rounded-[8px] font-medium text-[13px] border-transparent',
+              'bg-rb-green-default text-rb-neutral-InvertHighlight',
+              (buyDisabled || buyError || !hasPermission) &&
+                'cursor-not-allowed'
+            )}
           >
             {t('page.perpsPro.tradingPanel.buyLong')}
           </Button>
@@ -140,11 +142,12 @@ export const TradingButtons: React.FC<TradingButtonsProps> = ({
             }}
             onMouseEnter={() => setSellHovered(true)}
             onMouseLeave={() => setSellHovered(false)}
-            className={`flex-1 h-[40px] rounded-[8px] font-medium text-[13px] border-transparent ${
-              !sellDisabled && !sellError && hasPermission
-                ? 'bg-rb-red-default text-rb-neutral-InvertHighlight'
-                : 'bg-rb-neutral-bg-2 text-rb-neutral-foot opacity-50 cursor-not-allowed'
-            }`}
+            className={clsx(
+              'flex-1 h-[40px] rounded-[8px] font-medium text-[13px] border-transparent',
+              'bg-rb-red-default text-rb-neutral-InvertHighlight',
+              (sellDisabled || sellError || !hasPermission) &&
+                'cursor-not-allowed'
+            )}
           >
             {t('page.perpsPro.tradingPanel.sellShort')}
           </Button>

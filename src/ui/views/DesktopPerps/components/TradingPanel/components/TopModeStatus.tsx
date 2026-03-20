@@ -223,7 +223,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
       {/* Row 2: Order type tabs */}
       <div
         ref={tabsContainerRef}
-        className="relative flex items-center gap-[4px] border-b border-solid border-rb-neutral-line"
+        className="relative flex items-center border-b border-solid border-rb-neutral-line"
       >
         {PRIMARY_TABS.map((tab) => (
           <button
@@ -234,7 +234,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
             }}
             onClick={() => onOrderTypeChange(tab.value)}
             className={clsx(
-              'h-[28px] mr-24 text-15 font-medium transition-colors',
+              'h-[28px] mr-20 text-13 font-medium transition-colors',
               orderType === tab.value
                 ? 'text-rb-neutral-title-1'
                 : 'text-rb-neutral-foot hover:text-rb-neutral-title-1'
@@ -246,7 +246,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
 
         <div
           className={clsx(
-            'h-[28px] text-15 font-medium',
+            'h-[28px] text-13 font-medium',
             'inline-flex items-center transition-colors',
             isAdvancedSelected
               ? 'text-rb-neutral-title-1'
