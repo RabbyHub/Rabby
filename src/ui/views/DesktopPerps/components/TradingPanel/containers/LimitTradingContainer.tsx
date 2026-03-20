@@ -562,7 +562,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
           <Tooltip
             overlayClassName="rectangle"
             placement="topRight"
-            prefixCls="perps-slider-tip"
             title={
               bboDisabledReason
                 ? t('page.perpsPro.tradingPanel.bboDisabledTooltip', {

@@ -371,7 +371,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
       <Tooltip
         visible={showTooltip}
         placement="topLeft"
-        prefixCls="perps-slider-tip"
+        overlayClassName="rectangle"
         title={tooltipContent}
       >
         {/* Input: accepts "1.5" (numeric) or "50%" (percent) */}

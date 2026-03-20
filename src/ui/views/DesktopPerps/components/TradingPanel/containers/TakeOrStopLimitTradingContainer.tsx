@@ -519,7 +519,6 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
           <Tooltip
             overlayClassName="rectangle"
             placement="topRight"
-            prefixCls="perps-slider-tip"
             title={undefined}
           >
             <div

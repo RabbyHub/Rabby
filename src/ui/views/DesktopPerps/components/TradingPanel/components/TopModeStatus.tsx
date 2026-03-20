@@ -179,7 +179,6 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
         <Tooltip
           title={marginModeDisabledReason}
           placement="top"
-          prefixCls="perps-slider-tip"
           overlayClassName="rectangle w-[max-content]"
         >
           <div
@@ -271,7 +270,6 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
         <Tooltip
           title={t('page.perpsPro.tradingPanel.orderTypeTooltip')}
           placement="topRight"
-          prefixCls="perps-slider-tip"
           overlayClassName="rectangle w-[max-content]"
         >
           <RcIconInfo className="text-rb-neutral-secondary ml-auto" />

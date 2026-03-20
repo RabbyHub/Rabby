@@ -323,7 +323,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
         <Tooltip
           visible={!!showTriggerPrices && focusedField === type}
           placement="topLeft"
-          prefixCls="perps-slider-tip"
+          overlayClassName="rectangle w-[max-content]"
           title={
             <div className="text-13 px-4 py-2 flex flex-col justify-start text-left gap-2">
               {item.buyTriggerPrice && (
