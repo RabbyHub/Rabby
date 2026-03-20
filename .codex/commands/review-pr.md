@@ -24,10 +24,25 @@ Assume workflow checked out `refs/pull/<number>/merge`, so use the merge-commit 
 - Use inline comments for specific line-level issues.
 - Use one top-level summary comment for cross-cutting concerns.
 - Avoid noise and avoid speculative findings without evidence.
+- Inline comments must target changed lines on the PR head side (RIGHT).
 
-## Output Structure
-- Summary
-- Critical/High findings
-- Important findings
-- Minor suggestions
-- Residual risks and untested assumptions
+## Output Format (MUST be JSON only)
+Return valid JSON only (no markdown, no code fences), following this shape:
+
+{
+  "summary": "short summary for top-level PR comment",
+  "comments": [
+    {
+      "path": "relative/file/path.ts",
+      "line": 123,
+      "body": "inline review comment text",
+      "severity": "high"
+    }
+  ]
+}
+
+Rules:
+- `path` must be repository-relative and match a file changed in this PR.
+- `line` must be the new-file line number on the RIGHT side of the diff.
+- `body` should be concise and actionable.
+- Emit only noteworthy issues. If no issues, return an empty `comments` array and explain in `summary`.
