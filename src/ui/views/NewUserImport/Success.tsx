@@ -357,14 +357,21 @@ export const ImportOrCreatedSuccess = () => {
 
         {hd ? (
           isCreated && isSeedPhrase && store.seedPhrase ? (
-            <div
+            <Button
+              size="large"
+              type="ghost"
               onClick={handleBackup}
-              className="flex items-center justify-center gap-2 text-[13px] leading-[16px] min-h-[20px] text-r-neutral-foot mt-[16px] cursor-pointer"
+              className={clsx(
+                'mt-12',
+                'h-[52px] shadow-none rounded-[8px]',
+                'text-blue-light',
+                'border-blue-light',
+                'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                'before:content-none'
+              )}
             >
-              <span>
-                {t('page.newUserImport.successful.backupSeedPhraseNow')}
-              </span>
-            </div>
+              {t('page.newUserImport.successful.backupSeedPhrase')}
+            </Button>
           ) : (
             <div
               onClick={addMoreAddr}

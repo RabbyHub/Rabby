@@ -3854,7 +3854,8 @@
         "addMoreFrom": "Add more addresses from {{name}}",
         "desc": "Rabby Wallet is Ready to Use!",
         "openWallet": "Open Wallet",
-        "backupSeedPhraseNow": "Backup Seed phrase Now"
+        "backupSeedPhraseNow": "Backup Seed phrase Now",
+        "backupSeedPhrase":"Backup Seed Phrase"
       },
       "readyToUse": {
         "title": "Your Rabby Wallet is Ready !",

@@ -131,7 +131,7 @@ const SeedPhraseCard = ({
   const hasMoreAccounts = group.sortedAccounts.length > MAX_VISIBLE_ADDRESSES;
 
   return (
-    <div className="bg-r-neutral-card-1 rounded-[6px] overflow-hidden">
+    <div className="bg-r-neutral-card-1 rounded-[6px]">
       <button
         type="button"
         className="w-full h-[50px] px-[16px] flex items-center"
