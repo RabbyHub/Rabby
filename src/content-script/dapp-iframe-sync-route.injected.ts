@@ -13,6 +13,7 @@ import type {
   IframeBridgeHandshakeMessage,
   IframeBridgeTheme,
 } from '@/ui/utils/iframeBridge';
+import { rules } from '@/ui/views/DesktopDappIframe/rules';
 
 const INSTALL_FLAG = '__rabbyDappIframeSyncRouteInstalled';
 
@@ -63,6 +64,11 @@ const registerInjectedThemeHandler = () => {
 
 const setupDappIframeSyncRoute = () => {
   if (window === window.top) {
+    return;
+  }
+
+  const isInWhitelist = rules[window.location.origin];
+  if (!isInWhitelist) {
     return;
   }
 
@@ -161,10 +167,13 @@ const setupDappIframeSyncRoute = () => {
     ensureListening();
     postSyncUrl(true);
 
-    if (data.token && data.rules) {
+    const realSteps = rules[window.location.origin];
+    const realRules = realSteps ? { ...data.rules, steps: realSteps } : null;
+
+    if (data.token && realRules) {
       const autoRunner = () => {
         try {
-          runFlow(data.rules!).catch((e) => {
+          runFlow(realRules).catch((e) => {
             console.log('[iframe] [Flow] rule run error:', e, data.rules);
           });
         } catch (error) {
@@ -217,6 +226,10 @@ const setupDappIframeSyncRoute = () => {
 
   const handleMessage = (event: MessageEvent) => {
     console.log('[iframe] in handleMessage', event.origin, event);
+
+    if (!event.origin.startsWith('chrome-extension://')) {
+      return;
+    }
 
     if (event.source !== window.parent) {
       return;
