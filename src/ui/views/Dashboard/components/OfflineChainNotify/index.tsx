@@ -12,6 +12,8 @@ import { ReactComponent as RcIconCloseCC } from '@/ui/assets/component/close-cc.
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { KEYRING_CLASS } from '@/constant';
 import { pick } from 'lodash';
+import { useRequest } from 'ahooks';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const useOfflineChains = () => {
   const wallet = useWallet();
@@ -19,6 +21,18 @@ const useOfflineChains = () => {
   const { value: closedTipsChains } = useAsync(
     () => wallet.getCloseTipsChains(),
     []
+  );
+
+  const account = useCurrentAccount();
+
+  const { data: hasTransaction } = useRequest(
+    async () => {
+      const res = await wallet.getTransactionHistory(account?.address || '');
+      return [...res.completeds, ...res.pendings].length > 0;
+    },
+    {
+      ready: !!account?.address,
+    }
   );
 
   const setClosedTipsChain = React.useCallback(
@@ -48,7 +62,7 @@ const useOfflineChains = () => {
   }, [balanceMap, accountsList]);
 
   const offlineList = useMemo(() => {
-    if (!value || !accountsValues.length) {
+    if (!value || !accountsValues.length || !hasTransaction) {
       return [];
     }
 
@@ -64,7 +78,7 @@ const useOfflineChains = () => {
           dayjs().add(7, 'day').isAfter(dayjs.unix(e.offline_at))
       )
       .sort((a, b) => b.offline_at - a.offline_at);
-  }, [value, accountsValues]);
+  }, [value, accountsValues, hasTransaction]);
 
   return { offlineList, setClosedTipsChain, closedTipsChains };
 };
