@@ -246,7 +246,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     if (changed) {
       setConfig(newConfig);
     }
-  }, [price, tradeSize]);
+  }, [price, tradeSize, leverage, szDecimals]);
 
   const handleValueChange = useMemoizedFn(
     (type: 'takeProfit' | 'stopLoss') => (

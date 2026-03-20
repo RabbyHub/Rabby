@@ -389,7 +389,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
           onBlur={() => setIsFocused(false)}
           suffix={
             <div
-              className="text-15 font-medium text-rb-neutral-title-1 px-[10px] h-[28px] flex items-center gap-[2px] cursor-pointer whitespace-nowrap bg-rb-neutral-bg-0 rounded-[6px]"
+              className="text-15 font-medium text-rb-neutral-title-1 px-[10px] h-[28px] flex items-center gap-[2px] cursor-pointer whitespace-nowrap bg-rb-neutral-line rounded-[6px]"
               onClick={handleChangeUnit}
             >
               {unitLabel}

@@ -10,7 +10,7 @@ import {
 import { TPSLSettings } from '../components/TPSLSettings';
 import { OrderInfoGrid } from '../components/OrderInfoGrid';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { Dropdown, Menu, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
@@ -145,12 +145,9 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const buyLimitPrice = bboEnabled ? bboBuyPrice : limitPrice;
   const sellLimitPrice = bboEnabled ? bboSellPrice : limitPrice;
 
-  // Estimated execution price per direction:
-  // If limit crosses spread → executes at market (midPrice), otherwise at limit
-  const estBuyPrice = Math.min(Number(buyLimitPrice) || midPrice, midPrice);
-  // const estBuyPrice = buyLimitPrice;
-  const estSellPrice = Math.max(Number(sellLimitPrice) || midPrice, midPrice);
-  // const estSellPrice = sellLimitPrice;
+  // Estimated price: BBO mode → midPrice, manual → use limitPrice as-is
+  const estBuyPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
+  const estSellPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
 
   // Safety factor to avoid hitting exchange margin limits at 100% (fees, funding, etc.)
   const MARGIN_SAFETY = 0.99;
@@ -343,147 +340,128 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     return tradeSize;
   };
 
-  const openOrder = React.useCallback(
-    async (isBuy: boolean) => {
-      // ALO direction-specific validation (deferred to button click)
-      if (limitOrderType === 'Alo') {
-        if (isBuy && Number(limitPrice) >= Number(currentBestAskPrice)) {
-          perpsToast.error({
-            title: t('page.perps.toast.orderError'),
-            description: t('page.perpsPro.tradingPanel.aloTooLargeBuy'),
-          });
-          throw new Error(t('page.perpsPro.tradingPanel.aloTooLargeBuy'));
-        }
-        if (!isBuy && Number(limitPrice) <= Number(currentBestBidPrice)) {
-          perpsToast.error({
-            title: t('page.perps.toast.orderError'),
-            description: t('page.perpsPro.tradingPanel.aloTooLargeSell'),
-          });
-          throw new Error(t('page.perpsPro.tradingPanel.aloTooLargeSell'));
-        }
+  const openOrder = useMemoizedFn(async (isBuy: boolean) => {
+    // ALO direction-specific validation (deferred to button click)
+    if (limitOrderType === 'Alo') {
+      if (isBuy && Number(limitPrice) >= Number(currentBestAskPrice)) {
+        perpsToast.error({
+          title: t('page.perps.toast.orderError'),
+          description: t('page.perpsPro.tradingPanel.aloTooLargeBuy'),
+        });
+        throw new Error(t('page.perpsPro.tradingPanel.aloTooLargeBuy'));
       }
-
-      // Validate TP/SL for this direction
-      const side = isBuy ? OrderSide.BUY : OrderSide.SELL;
-      if (tpslConfig.enabled) {
-        const tpslValidation = validateTpslForSide(side);
-        if (!tpslValidation.valid) {
-          const newConfig = { ...tpslConfig };
-          if (tpslValidation.errors.tp) {
-            newConfig.takeProfit = {
-              ...newConfig.takeProfit,
-              error: tpslValidation.errors.tp,
-            };
-          }
-          if (tpslValidation.errors.sl) {
-            newConfig.stopLoss = {
-              ...newConfig.stopLoss,
-              error: tpslValidation.errors.sl,
-            };
-          }
-          setTpslConfig(newConfig);
-          throw new Error('Invalid TP/SL configuration');
-        }
+      if (!isBuy && Number(limitPrice) <= Number(currentBestBidPrice)) {
+        perpsToast.error({
+          title: t('page.perps.toast.orderError'),
+          description: t('page.perpsPro.tradingPanel.aloTooLargeSell'),
+        });
+        throw new Error(t('page.perpsPro.tradingPanel.aloTooLargeSell'));
       }
+    }
 
-      // Determine TP/SL trigger prices based on mode
-      const getTriggerPrice = (
-        item: typeof tpslConfig.takeProfit
-      ): string | undefined => {
-        if (!tpslConfig.enabled || !item.value) return undefined;
-        if (item.settingMode === 'price') {
-          return item.value;
+    // Validate TP/SL for this direction
+    const side = isBuy ? OrderSide.BUY : OrderSide.SELL;
+    if (tpslConfig.enabled) {
+      const orderLimitPx = isBuy ? buyLimitPrice : sellLimitPrice;
+      const tpslValidation = validateTpslForSide(side, orderLimitPx);
+      if (!tpslValidation.valid) {
+        const newConfig = { ...tpslConfig };
+        if (tpslValidation.errors.tp) {
+          newConfig.takeProfit = {
+            ...newConfig.takeProfit,
+            error: tpslValidation.errors.tp,
+          };
         }
-        return isBuy ? item.buyTriggerPrice : item.sellTriggerPrice;
-      };
-
-      const directionSize = getDirectionTradeSize(isBuy);
-
-      const orderLimitPrice = isBuy ? buyLimitPrice : sellLimitPrice;
-
-      await handleOpenLimitOrder({
-        coin: selectedCoin,
-        isBuy,
-        size: directionSize,
-        limitPx: orderLimitPrice,
-        tpTriggerPx: getTriggerPrice(tpslConfig.takeProfit),
-        slTriggerPx: getTriggerPrice(tpslConfig.stopLoss),
-        reduceOnly,
-        orderType: limitOrderType,
-      });
-      stats.report('perpsTradeHistory', {
-        created_at: new Date().getTime(),
-        user_addr: currentPerpsAccount?.address || '',
-        trade_type: 'limit',
-        leverage: leverage.toString(),
-        trade_side: getStatsReportSide(isBuy, reduceOnly),
-        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-        coin: selectedCoin,
-        size: tradeSize,
-        price: orderLimitPrice,
-        trade_usd_value: new BigNumber(orderLimitPrice)
-          .times(tradeSize)
-          .toFixed(2),
-        service_provider: 'hyperliquid',
-        app_version: process.env.release || '0',
-        address_type: currentPerpsAccount?.type || '',
-      });
-      if (tpslConfig.enabled) {
-        const tpTrigger = getTriggerPrice(tpslConfig.takeProfit);
-        tpTrigger &&
-          stats.report('perpsTradeHistory', {
-            created_at: new Date().getTime(),
-            user_addr: currentPerpsAccount?.address || '',
-            trade_type: 'take profit in limit',
-            leverage: leverage.toString(),
-            trade_side: getStatsReportSide(!isBuy, reduceOnly),
-            margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-            coin: selectedCoin,
-            size: tradeSize,
-            price: tpTrigger,
-            trade_usd_value: new BigNumber(tpTrigger)
-              .times(tradeSize)
-              .toFixed(2),
-            service_provider: 'hyperliquid',
-            app_version: process.env.release || '0',
-            address_type: currentPerpsAccount?.type || '',
-          });
-        const slTrigger = getTriggerPrice(tpslConfig.stopLoss);
-        slTrigger &&
-          stats.report('perpsTradeHistory', {
-            created_at: new Date().getTime(),
-            user_addr: currentPerpsAccount?.address || '',
-            trade_type: 'stop market in limit',
-            leverage: leverage.toString(),
-            trade_side: getStatsReportSide(!isBuy, reduceOnly),
-            margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-            coin: selectedCoin,
-            size: tradeSize,
-            price: slTrigger,
-            trade_usd_value: new BigNumber(slTrigger)
-              .times(tradeSize)
-              .toFixed(2),
-            service_provider: 'hyperliquid',
-            app_version: process.env.release || '0',
-            address_type: currentPerpsAccount?.type || '',
-          });
+        if (tpslValidation.errors.sl) {
+          newConfig.stopLoss = {
+            ...newConfig.stopLoss,
+            error: tpslValidation.errors.sl,
+          };
+        }
+        setTpslConfig(newConfig);
+        throw new Error('Invalid TP/SL configuration');
       }
-    },
-    [
-      selectedCoin,
-      tradeSize,
-      limitPrice,
-      tpslConfig,
+    }
+
+    // Determine TP/SL trigger prices based on mode
+    const getTriggerPrice = (
+      item: typeof tpslConfig.takeProfit
+    ): string | undefined => {
+      if (!tpslConfig.enabled || !item.value) return undefined;
+      if (item.settingMode === 'price') {
+        return item.value;
+      }
+      return isBuy ? item.buyTriggerPrice : item.sellTriggerPrice;
+    };
+
+    const directionSize = getDirectionTradeSize(isBuy);
+
+    const orderLimitPrice = isBuy ? buyLimitPrice : sellLimitPrice;
+
+    await handleOpenLimitOrder({
+      coin: selectedCoin,
+      isBuy,
+      size: directionSize,
+      limitPx: orderLimitPrice,
+      tpTriggerPx: getTriggerPrice(tpslConfig.takeProfit),
+      slTriggerPx: getTriggerPrice(tpslConfig.stopLoss),
       reduceOnly,
-      limitOrderType,
-      leverage,
-      leverageType,
-      currentPerpsAccount,
-      handleOpenLimitOrder,
-      validateTpslForSide,
-      setTpslConfig,
-    ]
-  );
+      orderType: limitOrderType,
+    });
+    stats.report('perpsTradeHistory', {
+      created_at: new Date().getTime(),
+      user_addr: currentPerpsAccount?.address || '',
+      trade_type: 'limit',
+      leverage: leverage.toString(),
+      trade_side: getStatsReportSide(isBuy, reduceOnly),
+      margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+      coin: selectedCoin,
+      size: tradeSize,
+      price: orderLimitPrice,
+      trade_usd_value: new BigNumber(orderLimitPrice)
+        .times(tradeSize)
+        .toFixed(2),
+      service_provider: 'hyperliquid',
+      app_version: process.env.release || '0',
+      address_type: currentPerpsAccount?.type || '',
+    });
+    if (tpslConfig.enabled) {
+      const tpTrigger = getTriggerPrice(tpslConfig.takeProfit);
+      tpTrigger &&
+        stats.report('perpsTradeHistory', {
+          created_at: new Date().getTime(),
+          user_addr: currentPerpsAccount?.address || '',
+          trade_type: 'take profit in limit',
+          leverage: leverage.toString(),
+          trade_side: getStatsReportSide(!isBuy, reduceOnly),
+          margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+          coin: selectedCoin,
+          size: tradeSize,
+          price: tpTrigger,
+          trade_usd_value: new BigNumber(tpTrigger).times(tradeSize).toFixed(2),
+          service_provider: 'hyperliquid',
+          app_version: process.env.release || '0',
+          address_type: currentPerpsAccount?.type || '',
+        });
+      const slTrigger = getTriggerPrice(tpslConfig.stopLoss);
+      slTrigger &&
+        stats.report('perpsTradeHistory', {
+          created_at: new Date().getTime(),
+          user_addr: currentPerpsAccount?.address || '',
+          trade_type: 'stop market in limit',
+          leverage: leverage.toString(),
+          trade_side: getStatsReportSide(!isBuy, reduceOnly),
+          margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+          coin: selectedCoin,
+          size: tradeSize,
+          price: slTrigger,
+          trade_usd_value: new BigNumber(slTrigger).times(tradeSize).toFixed(2),
+          service_provider: 'hyperliquid',
+          app_version: process.env.release || '0',
+          address_type: currentPerpsAccount?.type || '',
+        });
+    }
+  });
 
   const { run: handleBuyOrder, loading: buyLoading } = useRequest(
     () => openOrder(true),
@@ -622,7 +600,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
-        price={midPrice}
+        price={bboEnabled ? midPrice : Number(limitPrice) || midPrice}
         maxBuyTradeSize={limitMaxBuyTradeSize}
         maxSellTradeSize={limitMaxSellTradeSize}
         positionSize={positionSize}
