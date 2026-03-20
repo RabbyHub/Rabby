@@ -1194,7 +1194,8 @@
         "desc": "Đổi địa chỉ Dapp\n"
       },
       "noSeedPhraseAddress": "Không có địa chỉ nào được thêm cho cụm từ hạt giống này. Bạn có thể thêm một địa chỉ hoặc xóa cụm từ hạt giống.",
-      "watch-address": "Chỉ xem"
+      "watch-address": "Chỉ xem",
+      "deleteSuccess": "Xóa thành công"
     },
     "dashboard": {
       "home": {
@@ -1996,7 +1997,7 @@
       "moreWallets": "Nhiều Ví",
       "addressImported": "Địa chỉ đã được nhập",
       "privateKeyTab": "Khóa riêng tư",
-      "watchAddress": "",
+      "watchAddress": "Địa chỉ chỉ xem",
       "newAddressCreated": "Địa chỉ mới đã được tạo",
       "addressAdded": "Địa chỉ đã được thêm",
       "bulkImportPrivateKeyInputTab": "Nhập Khóa Riêng",
@@ -2747,7 +2748,8 @@
         "addMoreAddr": "Thêm nhiều địa chỉ từ cụm từ hạt giống này",
         "openWallet": "Mở Ví",
         "desc": "Rabby Wallet đã sẵn sàng để sử dụng!",
-        "backupSeedPhraseNow": "Sao lưu cụm từ khôi phục ngay bây giờ"
+        "backupSeedPhraseNow": "Sao lưu cụm từ khôi phục ngay bây giờ",
+        "backupSeedPhrase": "Sao lưu cụm từ hạt giống"
       },
       "readyToUse": {
         "pin": "Ghim Rabby Wallet",
@@ -3261,7 +3263,8 @@
         "buyFilledContent": "Đã mua {{sz}} / {{origSz}} {{coin}} khớp tại @{{price}} USDC",
         "cancelTWAPOrderSuccess": "Lệnh TWAP đã bị hủy thành công",
         "closePositionSuccess": "Đóng {{direction}} {{coin}}-USD: Khối lượng {{size}} tại giá ${{price}}",
-        "openTPSlMarketOrderSuccess": "{{tpsl}} lệnh thị trường đã được đặt {{direction}} {{coin}}-USD: Khối lượng {{size}} tại giá ${{price}}"
+        "openTPSlMarketOrderSuccess": "{{tpsl}} lệnh thị trường đã được đặt {{direction}} {{coin}}-USD: Khối lượng {{size}} tại giá ${{price}}",
+        "orderError": "Lỗi đặt hàng"
       },
       "closePositionPopup": {
         "positionSize": "Kích thước vị thế",
@@ -3717,7 +3720,42 @@
         "aloTooLargeSell": "Tất cả giá lệnh phải cao hơn giá mua tốt nhất.",
         "currentPosition": "Vị trí hiện tại",
         "deposit": "Nạp tiền",
-        "addFundsToGetStarted": "Thêm tiền để bắt đầu"
+        "addFundsToGetStarted": "Thêm tiền để bắt đầu",
+        "price": "Giá",
+        "action": "Hành động",
+        "Sell": "Bán",
+        "long": "Dài",
+        "cost": "Chi phí",
+        "sellTrigger": "Bán Kích Hoạt",
+        "sideShortSell": "bán (short)",
+        "short": "Bán khống",
+        "sideLongBuy": "mua (long)",
+        "size": "Kích thước",
+        "orderCount": "Số Lượng Đơn Hàng",
+        "slTriggerMoreThanOrderPrice": "Giá kích hoạt SL của bạn nên cao hơn giá đơn hàng của bạn.",
+        "tpTriggerLessThanOrderPrice": "Giá kích hoạt TP của bạn phải thấp hơn giá đặt hàng của bạn.",
+        "bboDisabledTooltip": "BBO không được hỗ trợ khi {{bboDisabledReason}} được kích hoạt.",
+        "tpTriggerMoreThanOrderPrice": "Giá kích hoạt TP của bạn phải cao hơn giá đơn hàng của bạn.",
+        "slTriggerLessThanOrderPrice": "Giá kích hoạt SL của bạn nên thấp hơn giá đặt hàng của bạn.",
+        "orderTypeTooltipMarket": "Lệnh thị trường sẽ được khớp ngay lập tức với giá thị trường tốt nhất có sẵn.",
+        "tpTriggerPriceIsZero": "Giá kích hoạt TP của bạn là 0 và sẽ không được đặt khi bạn đi {{side}}.",
+        "slTriggerPriceIsZero": "Giá kích hoạt SL của bạn là 0 và sẽ không được thiết lập khi bạn đi {{side}}.",
+        "orderTypeTooltipTakeLimit": "Lệnh Take Limit trở thành lệnh giới hạn khi giá take xác định được đạt đến. Đặt một mức giá kích hoạt để kích hoạt lệnh.",
+        "orderTypeTooltipStopMarket": "Lệnh Dừng Thị Trường trở thành lệnh thị trường khi giá chỉ định được đạt đến. Chỉ định một mức giá kích hoạt để kích hoạt lệnh.",
+        "orderTypeTooltipStopLimit": "Lệnh Dừng Giới Hạn trở thành lệnh giới hạn khi giá dừng chỉ định được đạt. Chỉ định một mức giá kích hoạt để kích hoạt lệnh.",
+        "orderTypeTooltipTakeMarket": "Thực hiện các lệnh thị trường sẽ trở thành lệnh thị trường khi một mức giá cụ thể được đạt tới. Chỉ định một mức giá kích hoạt để kích hoạt lệnh.",
+        "Buy": "Mua",
+        "max": "TỐI ĐA",
+        "buyTrigger": "Mua Kích hoạt",
+        "estimatedPnlWillBe": "PnL của bạn ước tính sẽ là",
+        "hour": "giờ",
+        "maxDurationTwap": "Thời gian tối đa để thực hiện lệnh TWAP là",
+        "totalTime": "Thời gian tổng cộng (5 phút - 24 giờ)",
+        "orderTypeTooltipScale": "Đơn hàng được phân chia cho phép bạn chia một số tiền thành nhiều đơn hàng con để giảm thiểu tác động đến thị trường.",
+        "orderTypeTooltipLimit": "Lệnh giới hạn là lệnh mua hoặc bán ở một mức giá cụ thể hoặc tốt hơn. Lệnh giới hạn không được đảm bảo sẽ được thực hiện.",
+        "bboTips": "Giá thầu tốt nhất (BBO) đề cập đến giá chào bán tốt nhất và giá thầu tốt nhất có sẵn trên sổ lệnh tại bất kỳ thời điểm nào. Các lệnh BBO luôn được đặt bằng cách sử dụng kích thước tick tối thiểu chính xác, đảm bảo giá cả chính xác và chi tiết, độc lập với sở thích hiển thị.",
+        "orderTypeTooltipTwap": "TWAP (Giá trung bình theo thời gian) là một chiến lược thực hiện giao dịch theo thuật toán nhằm mục tiêu đạt được mức giá thực hiện trung bình gần với giá trung bình theo thời gian của giai đoạn do người dùng chỉ định.",
+        "min": "min"
       },
       "marginMode": {
         "confirm": "Xác nhận",

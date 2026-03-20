@@ -1194,7 +1194,8 @@
         "desc": "Ganti Alamat Dapp"
       },
       "noSeedPhraseAddress": "Tidak ada alamat yang ditambahkan untuk frase biji ini. Anda dapat menambahkan alamat atau menghapus frase biji ini.",
-      "watch-address": "Tampilan Saja"
+      "watch-address": "Tampilan Saja",
+      "deleteSuccess": "Dihapus dengan sukses"
     },
     "dashboard": {
       "home": {
@@ -1998,7 +1999,7 @@
       "addressAdded": "Alamat Ditambahkan",
       "newAddressAdded": "Alamat Baru Ditambahkan",
       "newAddressCreated": "Alamat Baru Dibuat",
-      "watchAddress": "",
+      "watchAddress": "Alamat Hanya Tonton",
       "bulkImportPrivateKey": "Impor massal kunci privat",
       "duplicateAddressesSkippedDesc_other": "{{count}} alamat dilewati karena sudah ada.",
       "openExtensionToGetStarted": "Buka ekstensi Rabby untuk memulai",
@@ -2747,7 +2748,8 @@
         "import": "Diimpor Berhasil",
         "backupSeedPhraseNow": "Cadangkan Frasa Seed Sekarang",
         "openWallet": "Buka Dompet",
-        "desc": "Dompet Rabby Siap Digunakan!"
+        "desc": "Dompet Rabby Siap Digunakan!",
+        "backupSeedPhrase": "Cadangan Frasa Benih"
       },
       "readyToUse": {
         "pin": "Pin Dompet Rabby",
@@ -3261,7 +3263,8 @@
         "openPositionSuccess": "{{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
         "openTPSlMarketOrderSuccess": "{{tpsl}} order pasar telah ditempatkan {{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
         "openLimitOrderSuccess": "Limit order telah ditempatkan {{direction}} {{coin}}-USD: Jumlah {{size}} pada Harga ${{price}}",
-        "openTPSlLimitOrderSuccess": "{{tpsl}} limit order telah ditempatkan {{direction}} {{coin}}-USD: ukuran {{size}} pada harga ${{price}}"
+        "openTPSlLimitOrderSuccess": "{{tpsl}} limit order telah ditempatkan {{direction}} {{coin}}-USD: ukuran {{size}} pada harga ${{price}}",
+        "orderError": "Kesalahan pesanan"
       },
       "closePositionPopup": {
         "closeLong": "Tutup posisi long",
@@ -3717,7 +3720,42 @@
         "aloTooLargeSell": "Harga order Alo harus lebih tinggi dari harga tawaran terbaik.",
         "tpMustBeLowerThanCurrentPrice": "Harga ambil untung harus lebih rendah daripada harga saat ini",
         "deposit": "Setor",
-        "addFundsToGetStarted": "Tambahkan dana untuk memulai"
+        "addFundsToGetStarted": "Tambahkan dana untuk memulai",
+        "cost": "Biaya",
+        "short": "Pendek",
+        "price": "Harga",
+        "orderCount": "Jumlah Pesanan",
+        "sideShortSell": "short (jual)",
+        "buyTrigger": "Picu Pemicu",
+        "Sell": "Jual",
+        "Buy": "Beli",
+        "tpTriggerMoreThanOrderPrice": "Harga pemicu TP Anda harus lebih tinggi dari harga pesanan Anda.",
+        "orderTypeTooltipMarket": "Pesanan pasar langsung dicocokkan dengan harga pasar terbaik yang tersedia.",
+        "sellTrigger": "Jual Trigger",
+        "sideLongBuy": "long (beli)",
+        "tpTriggerPriceIsZero": "Harga pemicu TP Anda adalah 0 dan tidak akan diatur saat Anda pergi {{side}}",
+        "slTriggerMoreThanOrderPrice": "Harga pemicu SL Anda harus lebih tinggi dari harga pesanan Anda.",
+        "bboDisabledTooltip": "BBO tidak didukung ketika {{bboDisabledReason}} diaktifkan",
+        "slTriggerLessThanOrderPrice": "Harga pemicu SL Anda harus lebih rendah dari harga pesanan Anda.",
+        "orderTypeTooltipStopMarket": "Pesanan Stop Market menjadi pesanan pasar ketika harga tertentu tercapai. Tentukan harga pemicu untuk mengaktifkan pesanan.",
+        "orderTypeTooltipStopLimit": "Limit Order Stop menjadi limit order ketika harga stop yang ditentukan tercapai. Tentukan harga pemicu untuk mengaktifkan pesanan.",
+        "long": "Beli",
+        "slTriggerPriceIsZero": "Harga trigger SL Anda adalah 0 dan tidak akan diatur saat Anda pergi {{side}}",
+        "orderTypeTooltipLimit": "Order limit adalah perintah untuk membeli atau menjual pada harga tertentu atau lebih baik. Order limit tidak dijamin untuk dieksekusi.",
+        "orderTypeTooltipTakeLimit": "Limit Take Orders menjadi limit order ketika harga take yang ditentukan tercapai. Tentukan harga pemicu untuk mengaktifkan order.",
+        "estimatedPnlWillBe": "Estimasi PnL Anda akan menjadi",
+        "size": "Ukuran",
+        "action": "Aksi",
+        "hour": "jam",
+        "tpTriggerLessThanOrderPrice": "Harga pemicu TP Anda harus kurang dari harga pesanan Anda.",
+        "max": "MAKSIMUM",
+        "totalTime": "Total Time (5m-24h)",
+        "maxDurationTwap": "Durasi maksimum untuk menjalankan pesanan TWAP adalah",
+        "orderTypeTooltipScale": "Scaled Orders memungkinkan Anda untuk membagi jumlah menjadi beberapa suborder untuk meminimalkan dampak pasar.",
+        "orderTypeTooltipTwap": "TWAP (Time-Weighted Average Price) adalah strategi eksekusi perdagangan algoritmik yang bertujuan untuk mencapai harga eksekusi rata-rata yang mendekati harga rata-rata berbobot waktu dari periode yang ditentukan oleh pengguna.",
+        "bboTips": "Best Bid Offer (BBO) mengacu pada harga tawar terbaik yang tersedia dan harga permintaan terbaik yang tersedia di buku pesanan pada waktu tertentu. Pesanan BBO selalu ditempatkan menggunakan ukuran tick minimum yang tepat, memastikan penetapan harga yang terperinci dan akurat tanpa bergantung pada preferensi tampilan.",
+        "orderTypeTooltipTakeMarket": "Ambil Pesanan Pasar menjadi pesanan pasar ketika harga ambil yang ditentukan tercapai. Tentukan harga pemicu untuk mengaktifkan pesanan.",
+        "min": "min"
       },
       "marginMode": {
         "cross": "Lepas",
