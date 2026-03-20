@@ -2,7 +2,7 @@ import React from 'react';
 import { OrderSideInfo, SizeDisplayUnit } from '../../../types';
 import { formatPerpsCoin } from '../../../utils';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 
 interface OrderInfoGridProps {
@@ -28,7 +28,9 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
 
   const formatMax = (max: string) => {
     if (displayUnit === 'usdc' && price && Number(max) > 0) {
-      return formatUsdValue(new BigNumber(max).multipliedBy(price).toNumber());
+      return `${splitNumberByStep(
+        new BigNumber(max).multipliedBy(price).toNumber()
+      )} USDC`;
     }
     return `${max} ${formatPerpsCoin(selectedCoin)}`;
   };

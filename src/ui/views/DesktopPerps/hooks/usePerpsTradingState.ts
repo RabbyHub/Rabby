@@ -219,7 +219,7 @@ export const usePerpsTradingState = () => {
       const px = Number(orderPrice ?? markPrice);
       const size = Number(dirTradeSize);
       if (!px || !leverage || size === 0) {
-        return { liqPrice: '', cost: '$0.00' };
+        return { liqPrice: '', cost: '0 USDC' };
       }
 
       const netNew = calcNetNewSize(direction, size);
@@ -228,7 +228,7 @@ export const usePerpsTradingState = () => {
       let cost = '$0.00';
       if (!reduceOnly && netNew > 0) {
         const netNewMargin = (netNew * px) / leverage;
-        cost = `$${splitNumberByStep(netNewMargin.toFixed(2))}`;
+        cost = `${splitNumberByStep(netNewMargin.toFixed(2))} USDC`;
       }
 
       // Liq price
@@ -248,7 +248,10 @@ export const usePerpsTradingState = () => {
       if (!new BigNumber(liqPrice).gt(0)) {
         return { liqPrice: '-', cost };
       }
-      return { liqPrice: `$${liqPrice.toFixed(pxDecimals)}`, cost };
+      return {
+        liqPrice: `${splitNumberByStep(liqPrice.toFixed(pxDecimals))} USDC`,
+        cost,
+      };
     },
     [
       crossMargin,

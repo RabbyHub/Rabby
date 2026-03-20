@@ -553,14 +553,15 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.positionInfo.reverse'),
         key: 'reverse',
+        align: 'center',
         dataIndex: 'coin',
         render: (_, record) => {
           return (
-            <div className="flex justify-start">
+            <div className="flex justify-center">
               <button
                 type="button"
                 className={clsx(
-                  'bg-rb-neutral-bg-4 rounded-[8px] py-[9px] px-[12px] h-[32px] w-[88px]',
+                  'bg-rb-neutral-bg-4 rounded-[4px] px-[10px] h-[24px]',
                   'border border-transparent',
                   'hover:border-rb-brand-default',
                   'text-[12px] leading-[14px]  text-r-neutral-title-1'
@@ -580,6 +581,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.tpSl'),
         key: 'children',
+        align: 'center',
         dataIndex: 'children',
         render: (_, record) => {
           const tpPrice = record.tpItem?.triggerPx;
@@ -607,7 +609,7 @@ export const PositionsInfo: React.FC = () => {
           if (record.needSeeMoreOrder) {
             return (
               <div
-                className="text-[12px] leading-[14px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
+                className="text-[12px] leading-[14px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default flex item-center justify-center"
                 onClick={() => {
                   eventBus.emit(
                     EVENTS.PERPS.USER_INFO_HISTORY_TAB_CHANGED,
@@ -622,11 +624,11 @@ export const PositionsInfo: React.FC = () => {
 
           if (hasNoTpSl) {
             return (
-              <div className="flex items-center">
+              <div className="flex items-center justify-center">
                 <button
                   type="button"
                   className={clsx(
-                    'bg-rb-neutral-bg-4 rounded-[8px] py-[9px] px-[12px] h-[32px] w-[88px]',
+                    'bg-rb-neutral-bg-4 rounded-[4px] px-[14px] h-[24px]',
                     'border border-transparent',
                     'hover:border-rb-brand-default',
                     'text-[12px] leading-[14px]  text-r-neutral-title-1'
@@ -643,7 +645,7 @@ export const PositionsInfo: React.FC = () => {
           }
 
           return (
-            <div className="flex items-center gap-[6px]">
+            <div className="flex items-center justify-center gap-[6px]">
               <div className="flex flex-col gap-[4px]">
                 <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
                   {tpPrice ? (

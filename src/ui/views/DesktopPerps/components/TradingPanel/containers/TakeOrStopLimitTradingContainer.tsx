@@ -552,7 +552,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
           <Tooltip
             overlayClassName="rectangle"
             placement="topRight"
-            title={undefined}
+            title={t('page.perpsPro.tradingPanel.bboTips')}
           >
             <div
               className={clsx(

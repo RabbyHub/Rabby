@@ -87,13 +87,21 @@ export const DesktopPerpsSliderV2 = (
 ) => {
   const { isDarkTheme } = useThemeMode();
   const { showTooltip, ...sliderProps } = props;
+  const [hovered, setHovered] = React.useState(false);
+
+  const tooltipVisible = showTooltip ? hovered || undefined : false;
 
   return (
-    <StyledSlider
-      {...sliderProps}
-      tooltipVisible={showTooltip ? undefined : false}
-      tooltipPrefixCls={showTooltip ? 'perps-slider-tip' : undefined}
-      isDark={isDarkTheme}
-    />
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <StyledSlider
+        {...sliderProps}
+        tooltipVisible={tooltipVisible}
+        tooltipPrefixCls={showTooltip ? 'perps-slider-tip' : undefined}
+        isDark={isDarkTheme}
+      />
+    </div>
   );
 };
