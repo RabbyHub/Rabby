@@ -78,8 +78,15 @@ import { RabbyPointsPopup } from '../RabbyPointsPopup';
 import { RecentConnectionsPopup } from '../RecentConnections';
 import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
 import { RcIconLeadingCC } from '@/ui/assets/desktop/nav';
-import { PerpsSubContent } from '../SubContent/perps';
-import { LendingSubContent } from '../SubContent/lending';
+import { INNER_DAPP_IDS, INNER_DAPP_LIST } from '@/constant/dappIframe';
+import { loadAppChainList } from '@/ui/utils/portfolio/utils';
+import { getOriginFromUrl } from '@/utils';
+import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { getHealthStatusColor } from '@/ui/views/DesktopLending/utils';
+import { getHealthFactorText } from '@/ui/views/DesktopLending/utils/health';
+import { HF_COLOR_GOOD_THRESHOLD } from '@/ui/views/DesktopLending/utils/constant';
+import { fetchLendingHealthFactorForDashboard } from '@/ui/views/DesktopLending/hooks';
+import { CustomMarket } from '@/ui/views/DesktopLending/config/market';
 
 export const DragOverlayContext = createContext(false);
 
@@ -402,6 +409,150 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const IconPerps = RcIconPerpsCC;
 
+  // --- Perps data lifting (from PerpsSubContent) ---
+  const perpsId = useRabbySelector((s) => s.innerDappFrame.perps);
+
+  const {
+    perpsPositionInfo,
+    isFetching: perpsFetching,
+    positionPnl,
+  } = usePerpsHomePnl();
+
+  const lighterAccount = useRabbySelector((s) => {
+    const url = INNER_DAPP_LIST.PERPS.find(
+      (e) => e.id === INNER_DAPP_IDS.LIGHTER
+    )?.url;
+    if (url?.startsWith('https://')) {
+      const LighterOrigin = getOriginFromUrl(url || '');
+      return s.innerDappFrame.innerDappAccounts[LighterOrigin];
+    }
+    return undefined;
+  });
+  const { value: lighterAppData } = useAsync(async () => {
+    if (lighterAccount?.address) {
+      return loadAppChainList(lighterAccount.address, wallet);
+    }
+    return undefined;
+  }, [lighterAccount?.address]);
+
+  const lighterInfo = useMemo(() => {
+    const lighter = lighterAppData?.apps.find(
+      (e) => e.id === INNER_DAPP_IDS.LIGHTER
+    );
+    return {
+      lighter,
+      totalUsd: lighter?.portfolio_item_list?.reduce(
+        (pre, now) => pre + (now?.stats?.net_usd_value || 0),
+        0
+      ),
+    };
+  }, [lighterAppData]);
+
+  const perpsSubContentNode = useMemo<React.ReactNode>(() => {
+    if (perpsId === 'hyperliquid') {
+      if (perpsFetching) {
+        return (
+          <div className="absolute bottom-[6px] text-[11px] font-medium">
+            <Skeleton.Button
+              active={true}
+              className="h-[10px] block rounded-[2px]"
+              style={{ width: 42 }}
+            />
+          </div>
+        );
+      }
+      if (perpsPositionInfo?.assetPositions?.length) {
+        return (
+          <div
+            className={clsx(
+              'absolute bottom-[6px] text-[11px] leading-[13px] font-medium',
+              positionPnl && positionPnl > 0
+                ? 'text-r-green-default'
+                : 'text-r-red-default'
+            )}
+          >
+            {positionPnl && positionPnl >= 0 ? '+' : '-'}$
+            {splitNumberByStep(Math.abs(positionPnl || 0).toFixed(2))}
+          </div>
+        );
+      }
+      return null;
+    }
+    if (perpsId === 'lighter') {
+      if (!lighterAccount || !lighterInfo.lighter) return null;
+      return (
+        <div
+          className={clsx(
+            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
+          )}
+        >
+          {formatUsdValue(lighterInfo.totalUsd || 0)}
+        </div>
+      );
+    }
+    return null;
+  }, [
+    perpsId,
+    perpsFetching,
+    perpsPositionInfo,
+    positionPnl,
+    lighterAccount,
+    lighterInfo,
+  ]);
+
+  // --- Lending data lifting (from LendingSubContent) ---
+  const [lendingAccount] = useSceneAccount({ scene: 'lending' });
+
+  const { value: hfRaw, loading: lendingLoading } = useAsync(async () => {
+    if (lendingId !== 'aave') return '';
+    const address = lendingAccount?.address;
+    if (!address) return '';
+    const marketKey =
+      (await wallet.getLastSelectedLendingChain()) ||
+      CustomMarket.proto_mainnet_v3;
+    return fetchLendingHealthFactorForDashboard(
+      wallet,
+      address,
+      marketKey,
+      lendingAccount
+        ? {
+            address: lendingAccount.address,
+            type: lendingAccount.type,
+            brandName: lendingAccount.brandName,
+          }
+        : undefined
+    );
+  }, [lendingId, lendingAccount?.address]);
+
+  const lendingSubContentNode = useMemo<React.ReactNode>(() => {
+    if (lendingId !== 'aave') return null;
+    if (lendingLoading) {
+      return (
+        <div className="absolute bottom-[6px] text-[11px] font-medium">
+          <Skeleton.Button
+            active={true}
+            className="h-[10px] block rounded-[2px]"
+            style={{ width: 42 }}
+          />
+        </div>
+      );
+    }
+    const hfNumber = Number(hfRaw);
+    if (!hfRaw || hfRaw === '-1' || !Number.isFinite(hfNumber)) return null;
+    if (hfNumber >= HF_COLOR_GOOD_THRESHOLD) return null;
+    const colorInfo = getHealthStatusColor(hfNumber);
+    return (
+      <div
+        className={clsx(
+          'absolute bottom-[6px] text-[11px] leading-[13px] font-medium'
+        )}
+        style={{ color: colorInfo.color }}
+      >
+        {getHealthFactorText(hfRaw)}
+      </div>
+    );
+  }, [lendingId, lendingLoading, hfRaw]);
+
   const IconPrediction = useMemo(() => {
     if (predictionId === 'opinion') {
       return RcIconOpinionPredictionCC;
@@ -544,7 +695,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       icon: IconPerps,
       eventKey: 'Perps',
       iconClassName: 'icon-perps',
-      subContent: <PerpsSubContent />,
+      subContent: perpsSubContentNode,
       content: t('page.dashboard.home.panel.perps'),
       onClick: async () => {
         // await wallet.openInDesktop('/desktop/perps');
@@ -591,7 +742,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     lending: {
       icon: IconLending,
       eventKey: 'Lending',
-      subContent: <LendingSubContent />,
+      subContent: lendingSubContentNode,
       content: t('page.dashboard.home.panel.lending'),
       onClick: async () => {
         await wallet.openInDesktop('/desktop/lending');
