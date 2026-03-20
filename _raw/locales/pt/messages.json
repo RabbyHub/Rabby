@@ -1194,7 +1194,8 @@
         "desc": "Alterar o endereço do Dapp\n"
       },
       "noSeedPhraseAddress": "Nenhum endereço foi adicionado para esta frase semente. Você pode adicionar um endereço ou deletar a frase semente.",
-      "watch-address": "Somente visualização"
+      "watch-address": "Somente visualização",
+      "deleteSuccess": "Excluído com sucesso"
     },
     "dashboard": {
       "home": {
@@ -2008,7 +2009,7 @@
       "bulkImportPrivateKeyPlaceholder": "Cada chave privada deve ser separada por uma nova linha ou um caractere especial.",
       "privateKeyTab": "Chave Privada",
       "newAddressCreated": "Novo Endereço Criado",
-      "watchAddress": "",
+      "watchAddress": "Endereço apenas para visualização",
       "addressAdded": "Endereço Adicionado",
       "bulkImportPrivateKeyExceeded": "Suporta até {{count}} chaves privadas ao mesmo tempo",
       "addressAddedCount_one": "{{count}} Endereço Adicionado",
@@ -2747,7 +2748,8 @@
         "addMoreAddr": "Adicione mais endereços a partir desta Seed Phrase",
         "openWallet": "Abrir Wallet",
         "backupSeedPhraseNow": "Faça backup da frase-semente agora",
-        "desc": "A Carte Rabby está pronta para uso!"
+        "desc": "A Carte Rabby está pronta para uso!",
+        "backupSeedPhrase": "Frase Secreta de Backup"
       },
       "readyToUse": {
         "pin": "Fixar Rabby Wallet",
@@ -3261,7 +3263,8 @@
         "sellFilledContentNoPercentage": "vendido {{sz}} {{coin}} preenchido @{{price}} USDC",
         "openTPSlLimitOrderSuccess": "{{tpsl}} Ordem limite criada {{direction}} {{coin}}-USD: Tamanho {{size}} ao preço de ${{price}}",
         "closePositionSuccess": "Fechado {{direction}} {{coin}}-USD: Tamanho {{size}} ao preço de ${{price}}",
-        "terminalTwapSuccess": "Ordem TWAP concluída com sucesso"
+        "terminalTwapSuccess": "Ordem TWAP concluída com sucesso",
+        "orderError": "Erro de pedido"
       },
       "closePositionPopup": {
         "positionSize": "Tamanho da posição",
@@ -3717,7 +3720,42 @@
         "sizeSkewTooltip": "Proporção entre o preço final e o preço inicial. Por exemplo, se o skew de tamanho for 2,0, então uma ordem limite para o preço final será colocada com o dobro do tamanho da ordem correspondente ao preço inicial. Um skew de tamanho de 1,0 cria ordens de tamanho igual.",
         "liquidationPriceTooltip": "O risco da posição é baixo, então não há preço de liquidação por enquanto. Observe que aumentar a posição ou reduzir a margem aumentará o risco.",
         "deposit": "Depósito",
-        "addFundsToGetStarted": "Adicione fundos para começar"
+        "addFundsToGetStarted": "Adicione fundos para começar",
+        "Sell": "Vender",
+        "cost": "Custo",
+        "Buy": "Comprar",
+        "long": "Long",
+        "price": "Preço",
+        "sellTrigger": "Venda de Gatilho",
+        "sideLongBuy": "long (comprar)",
+        "orderCount": "Contagem de Ordens",
+        "action": "Ação",
+        "size": "Tamanho",
+        "estimatedPnlWillBe": "Seu PnL estimado será",
+        "sideShortSell": "curto (vender)",
+        "max": "MÁXIMO",
+        "short": "Venda",
+        "buyTrigger": "Comprar Trigger",
+        "tpTriggerLessThanOrderPrice": "Seu preço de gatilho de TP deve ser menor que o seu preço de ordem.",
+        "slTriggerLessThanOrderPrice": "Seu preço de gatilho SL deve ser menor que o preço do seu pedido.",
+        "orderTypeTooltipMarket": "A ordem de mercado é imediatamente correspondida ao melhor preço de mercado disponível.",
+        "bboDisabledTooltip": "O BBO não é suportado quando {{bboDisabledReason}} está habilitado.",
+        "slTriggerMoreThanOrderPrice": "Seu preço de gatilho SL deve ser maior que seu preço de ordem.",
+        "tpTriggerMoreThanOrderPrice": "Seu preço de ativação de TP deve ser superior ao seu preço de ordem.",
+        "slTriggerPriceIsZero": "Seu preço de ativação do SL é 0 e não será definido quando você for {{side}}.",
+        "orderTypeTooltipLimit": "Uma ordem de limite é uma ordem para comprar ou vender a um preço específico ou melhor. Ordens de limite não têm garantia de execução.",
+        "tpTriggerPriceIsZero": "O seu preço de ativação do TP é 0 e não será definido quando você for {{side}}.",
+        "orderTypeTooltipStopMarket": "Ordens de Parada de Mercado tornam-se ordens de mercado quando um preço específico é alcançado. Especifique um preço de gatilho para ativar a ordem.",
+        "orderTypeTooltipTakeMarket": "As Ordens de Mercado se tornam ordens de mercado quando um preço de venda especificado é alcançado. Especifique um preço de gatilho para ativar a ordem.",
+        "orderTypeTooltipTakeLimit": "As Ordens de Take Limit tornam-se ordens limitadas quando um preço de take especificado é atingido. Especifique um preço de gatilho para ativar a ordem.",
+        "orderTypeTooltipStopLimit": "As Ordens de Stop Limit se tornam ordens limitadas quando um preço de parada específico é alcançado. Especifique um preço de gatilho para ativar a ordem.",
+        "hour": "hora",
+        "maxDurationTwap": "Duração máxima para executar a ordem TWAP é",
+        "bboTips": "A Melhor Oferta (BBO) refere-se ao melhor preço de venda disponível e ao melhor preço de compra disponível no livro de ordens a qualquer momento. As ordens BBO são sempre colocadas usando o tamanho mínimo de tick preciso, garantindo uma precificação granular e precisa, independentemente das preferências de exibição.",
+        "totalTime": "Tempo Total (5m-24h)",
+        "orderTypeTooltipScale": "Ordens Escalonadas permitem que você divida um valor em múltiplos subpedidos para minimizar o impacto no mercado.",
+        "orderTypeTooltipTwap": "TWAP (Preço Médio Ponderado pelo Tempo) é uma estratégia de execução de trades algorítmica que visa alcançar um preço de execução médio próximo ao preço médio ponderado pelo tempo do período especificado pelo usuário.",
+        "min": "mín"
       },
       "marginMode": {
         "confirm": "Confirmar",

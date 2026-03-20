@@ -1102,7 +1102,8 @@
         "desc": "Alterar o endereço do DApp\n"
       },
       "noSeedPhraseAddress": "Nenhum endereço foi adicionado para esta frase-semente. Você pode adicionar um endereço ou excluir a frase-semente.",
-      "watch-address": "Apenas visualização"
+      "watch-address": "Apenas visualização",
+      "deleteSuccess": "Excluído com sucesso"
     },
     "dashboard": {
       "home": {
@@ -1906,7 +1907,7 @@
       "addMoreAddresses": "Adicionar Mais Endereços",
       "addNewAddress": "Criar Novo Endereço",
       "addressAddedCount_one": "{{count}} Endereço Adicionado",
-      "watchAddress": "",
+      "watchAddress": "Endereço apenas para visualização",
       "privateKeyTab": "Chave Privada",
       "bulkImportPrivateKey": "Importação em massa da chave privada",
       "newAddressAdded": "Novo Endereço Adicionado",
@@ -2750,7 +2751,8 @@
         "create": "Criado com sucesso",
         "backupSeedPhraseNow": "Faça backup da frase semente agora",
         "openWallet": "Abrir Wallet",
-        "desc": "Rabby Wallet está pronto para uso!"
+        "desc": "Rabby Wallet está pronto para uso!",
+        "backupSeedPhrase": "Backup Seed Phrase"
       },
       "readyToUse": {
         "pin": "Fixar Rabby Wallet",
@@ -3266,7 +3268,8 @@
         "openTPSlMarketOrderSuccess": "{{tpsl}} ordem de mercado colocada {{direction}} {{coin}}-USD: Quantidade {{size}} ao preço de ${{price}}",
         "openLimitOrderSuccess": "Ordem limite colocada {{direction}} {{coin}}-USD: Tamanho {{size}} ao preço de ${{price}}",
         "terminalTwap": "Terminal Preço Médio Ponderado no Tempo (TWAP)",
-        "closePositionSuccess": "Posição {{direction}} {{coin}}-USD fechada: Tamanho {{size}} ao preço de ${{price}}"
+        "closePositionSuccess": "Posição {{direction}} {{coin}}-USD fechada: Tamanho {{size}} ao preço de ${{price}}",
+        "orderError": "Erro de pedido"
       },
       "closePositionPopup": {
         "closeShort": "Fechar posição vendida",
@@ -3722,7 +3725,42 @@
         "tpSellMustBeHigherThanMidPrice": "O preço da ordem de venda deve ser maior que o preço médio.",
         "reduceOnlyTips": "Esta ordem não abrirá uma nova posição, independentemente do tamanho da ordem. Ela será comparada à posição existente no momento da execução.",
         "deposit": "Depósito",
-        "addFundsToGetStarted": "Adicione fundos para começar."
+        "addFundsToGetStarted": "Adicione fundos para começar.",
+        "price": "Preço",
+        "cost": "Custo",
+        "Sell": "Vender",
+        "action": "Ação",
+        "max": "MÁXIMO",
+        "buyTrigger": "Comprar Gatilho",
+        "orderCount": "Contagem de Pedidos",
+        "long": "Long: Comprar",
+        "size": "Tamanho",
+        "sideLongBuy": "longo (comprar)",
+        "sideShortSell": "short (vender)",
+        "sellTrigger": "Venda de Gatilho",
+        "estimatedPnlWillBe": "Seu PnL estimado será",
+        "short": "Short: Vender a descoberto",
+        "bboDisabledTooltip": "BBO não é suportado quando {{bboDisabledReason}} está habilitado",
+        "Buy": "Comprar",
+        "slTriggerLessThanOrderPrice": "Seu preço de gatilho SL deve ser inferior ao seu preço de ordem.",
+        "orderTypeTooltipMarket": "A ordem de mercado é imediatamente combinada com o melhor preço de mercado disponível.",
+        "slTriggerMoreThanOrderPrice": "Seu preço de disparo de SL deve ser maior que o preço do seu pedido.",
+        "tpTriggerMoreThanOrderPrice": "Seu preço de gatilho de TP deve ser maior que o preço do seu pedido.",
+        "tpTriggerLessThanOrderPrice": "Seu preço de ativação de TP deve ser menor que o seu preço de ordem.",
+        "slTriggerPriceIsZero": "Seu preço de disparo de SL é 0 e não será definido quando você fizer {{side}}.",
+        "tpTriggerPriceIsZero": "Seu preço de disparo de TP é 0 e não será definido quando você for {{side}}.",
+        "min": "min",
+        "orderTypeTooltipLimit": "Uma ordem limitada é uma ordem para comprar ou vender a um preço específico ou melhor. Ordens limitadas não são garantidas para execução.",
+        "hour": "hora",
+        "maxDurationTwap": "Duração máxima para executar a ordem TWAP é",
+        "orderTypeTooltipTakeMarket": "Faça Ordens de Mercado se tornam ordens de mercado quando um preço de take especificado é alcançado. Especifique um preço de gatilho para ativar a ordem.",
+        "orderTypeTooltipTakeLimit": "As Ordens de Limite se tornam ordens de limite quando um preço de take especificado é alcançado. Especifique um preço de gatilho para ativar a ordem.",
+        "orderTypeTooltipStopMarket": "Ordens de Mercado de Parada se tornam ordens de mercado quando um preço especificado é atingido. Especifique um preço de gatilho para ativar a ordem.",
+        "totalTime": "Tempo Total (5m-24h)",
+        "orderTypeTooltipScale": "Ordens escalonadas permitem que você divida um valor em múltiplas subordens para minimizar o impacto no mercado.",
+        "bboTips": "Melhor Oferta de Licitação (BBO) refere-se ao melhor preço de venda disponível e ao melhor preço de compra disponível no livro de ordens a qualquer momento. As ordens BBO são sempre colocadas utilizando o tamanho mínimo de tick preciso, garantindo preços granulares e precisos, independentemente das preferências de exibição.",
+        "orderTypeTooltipStopLimit": "Ordens de Stop Limit tornam-se ordens limitadas quando um preço de stop especificado é alcançado. Especifique um preço de gatilho para ativar a ordem.",
+        "orderTypeTooltipTwap": "TWAP (Preço Médio Ponderado pelo Tempo) é uma estratégia de execução de trades algorítmica que visa alcançar um preço médio de execução próximo ao preço médio ponderado pelo tempo do período especificado pelo usuário."
       },
       "marginMode": {
         "confirm": "Confirmar",
