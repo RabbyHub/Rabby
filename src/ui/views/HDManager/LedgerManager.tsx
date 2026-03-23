@@ -49,7 +49,7 @@ export const LedgerManager: React.FC = () => {
     if (data.type) {
       await changeHDPathTask(data.type);
     }
-    await createTask(() => getCurrentAccounts());
+    await refreshCurrentAccounts();
     setSelectedAccounts([]);
     setSetting(data);
     setLoading(false);
@@ -91,6 +91,10 @@ export const LedgerManager: React.FC = () => {
       wallet.requestKeyring(LEDGER_TYPE, 'setHDPathType', keyringId, type)
     );
   }, []);
+  const refreshCurrentAccounts = React.useCallback(
+    () => createTask(() => getCurrentAccounts({ resetInitialAccounts: true })),
+    []
+  );
 
   const detectInitialHDPathType = React.useCallback(
     async (accounts: InitAccounts, usedHDPathType?: HDPathType) => {
@@ -112,7 +116,7 @@ export const LedgerManager: React.FC = () => {
       }
 
       await changeHDPathTask(initialHDPathType!);
-      await createTask(() => getCurrentAccounts());
+      await refreshCurrentAccounts();
       setSetting((prev) => ({
         ...prev,
         type: initialHDPathType,

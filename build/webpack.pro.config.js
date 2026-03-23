@@ -32,7 +32,7 @@ const config = {
         authToken: process.env.SENTRY_AUTH_TOKEN,
       }),
     ,
-    new SecSDK({
+    false && new SecSDK({
       dev: false,
       disableProtoAssets: ['pageProvider.js'],
       skipScuttleAssets: ['pageProvider.js'],
@@ -68,7 +68,7 @@ const config = {
       new TerserPlugin({
         terserOptions: {
           compress: {
-            pure_funcs: ['console.log', 'console.debug'],
+            pure_funcs: ['console.log', 'console.debug', 'console.info'],
           },
         },
       }),

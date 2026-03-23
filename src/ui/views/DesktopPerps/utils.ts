@@ -5,6 +5,7 @@ import {
   ClearinghouseState,
   SpotClearinghouseState,
   USDC_TOKEN_ID,
+  UserAbstractionResp,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { perpsToast } from './components/PerpsToast';
 import i18n from '@/i18n';
@@ -293,6 +294,15 @@ export const getCustomClearinghouseState = async (address: string) => {
   };
   const [defaultRes, xyzRes] = await Promise.all([getDefault(), getXYX()]);
 
+  let withdrawable = defaultRes.withdrawable;
+  if (Number(defaultRes.withdrawable) === 0) {
+    const userAbstraction = await sdk.info.getUserAbstraction(address);
+    if (userAbstraction === UserAbstractionResp.unifiedAccount) {
+      const spotState = await sdk.info.getSpotClearingHouseState(address);
+      withdrawable = formatSpotState(spotState).availableToTrade;
+    }
+  }
+
   return {
     assetPositions: [...defaultRes.assetPositions, ...xyzRes.assetPositions],
     crossMaintenanceMarginUsed: new BigNumber(
@@ -316,7 +326,7 @@ export const getCustomClearinghouseState = async (address: string) => {
         .toString(),
     },
     time: defaultRes.time,
-    withdrawable: defaultRes.withdrawable,
+    withdrawable: withdrawable,
   } as ClearinghouseState;
 };
 
@@ -412,10 +422,18 @@ export const formatAllDexsClearinghouseState = (
 };
 
 export const formatSpotState = (spotState: SpotClearinghouseState) => {
+  if (!spotState || !spotState.balances || spotState.balances.length === 0) {
+    return {
+      accountValue: '0',
+      availableToTrade: '0',
+    };
+  }
+  const availableToTrade = new BigNumber(
+    spotState.balances?.[0]?.total || '0'
+  ).minus(spotState.balances?.[0]?.hold || '0');
   return {
     accountValue: spotState.balances?.[0]?.total || '0',
-    availableToTrade:
-      spotState.tokenToAvailableAfterMaintenance?.[0]?.[1] || '0',
+    availableToTrade: availableToTrade.toString(),
   };
   // const token = spotState.balances.find((i) => i.token === USDC_TOKEN_ID);
   // const availableToTrade = spotState.tokenToAvailableAfterMaintenance?.find(

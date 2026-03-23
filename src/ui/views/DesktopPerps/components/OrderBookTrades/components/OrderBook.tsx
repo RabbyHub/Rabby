@@ -1,8 +1,14 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from 'react';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { getPerpsSDK, getBboSDK } from '@/ui/views/Perps/sdkManager';
 import { splitNumberByStep } from '@/ui/utils';
 import { Dropdown, Menu, Select } from 'antd';
 import { ReactComponent as RcIconBuySell } from '@/ui/assets/perps/icon-buy-sell.svg';
@@ -52,6 +58,35 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const [aggregationIndex, setAggregationIndex] = useState<number>(0);
   const [bids, setBids] = useState<OrderBookLevel[]>([]);
   const [asks, setAsks] = useState<OrderBookLevel[]>([]);
+
+  // Dynamic row count based on container height
+  const ORDER_ROW_HEIGHT = 24;
+  const MIDDLE_PRICE_HEIGHT = 40;
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState(0);
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+      const entry = entries[0];
+      if (!entry) return;
+      setContainerHeight(entry.contentRect.height);
+    });
+    observer.observe(contentRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const rowCount = useMemo(() => {
+    if (!containerHeight) return 11;
+    if (viewMode === 'Both') {
+      const availableForRows = containerHeight - MIDDLE_PRICE_HEIGHT;
+      const totalRows = Math.floor(availableForRows / ORDER_ROW_HEIGHT);
+      return Math.max(1, Math.floor(totalRows / 2));
+    }
+    // Asks-only or Bids-only: all space for one side, no middle price row
+    const totalRows = Math.floor(containerHeight / ORDER_ROW_HEIGHT);
+    return Math.max(1, totalRows);
+  }, [containerHeight, viewMode]);
   const currentMarketData = useMemo(() => {
     if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
       return wsActiveAssetCtx.ctx;
@@ -98,14 +133,37 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     return aggregationLevels[aggregationIndex] || aggregationLevels[0];
   }, [aggregationIndex, aggregationLevels]);
 
+  // Extract BBO prices from raw L2 book levels
+  const updateBboPrices = useCallback(
+    (
+      levels: [
+        { px: string; sz: string; n: number }[],
+        { px: string; sz: string; n: number }[]
+      ]
+    ) => {
+      const rawBids = levels[0] || [];
+      const rawAsks = levels[1] || [];
+      dispatch.perps.patchState({
+        bboPrices: {
+          asks1: rawAsks[0]?.px || '',
+          asks5: rawAsks[4]?.px || '',
+          bids1: rawBids[0]?.px || '',
+          bids5: rawBids[4]?.px || '',
+        },
+      });
+    },
+    []
+  );
+
   // Subscribe to order book data via WebSocket
   useEffect(() => {
     if (!selectedCoin) return;
 
     const sdk = getPerpsSDK();
     const currentAggregation = aggregationLevels[aggregationIndex];
+    const isDefaultAgg = aggregationIndex === 0;
 
-    // Subscribe to L2 book updates with specified aggregation
+    // Main subscription: display data at current aggregation level
     const { unsubscribe } = sdk.ws.subscribeToL2Book(
       {
         coin: selectedCoin,
@@ -113,43 +171,60 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         mantissa: currentAggregation?.mantissa || undefined,
       },
       (data) => {
-        if (data && data.levels) {
-          // Process bids (buy orders) - sorted descending by price (high to low)
-          const processedBids: OrderBookLevel[] = [];
-          let totalBids = 0;
-          for (const level of data.levels[0] || []) {
-            const price = level.px;
-            const size = Number(level.sz);
-            totalBids += size;
-            processedBids.push({
-              price,
-              size,
-              total: totalBids,
-            });
-          }
+        if (!data?.levels) return;
 
-          // Process asks (sell orders) - sorted ascending by price (low to high)
-          const processedAsks: OrderBookLevel[] = [];
-          let totalAsks = 0;
-          for (const level of data.levels[1] || []) {
-            const price = level.px;
-            const size = Number(level.sz);
-            totalAsks += size;
-            processedAsks.push({
-              price,
-              size,
-              total: totalAsks,
-            });
-          }
+        const processedBids: OrderBookLevel[] = [];
+        let totalBids = 0;
+        for (const level of data.levels[0] || []) {
+          const price = level.px;
+          const size = Number(level.sz);
+          totalBids += size;
+          processedBids.push({ price, size, total: totalBids });
+        }
 
-          setBids(processedBids);
-          setAsks(processedAsks);
+        const processedAsks: OrderBookLevel[] = [];
+        let totalAsks = 0;
+        for (const level of data.levels[1] || []) {
+          const price = level.px;
+          const size = Number(level.sz);
+          totalAsks += size;
+          processedAsks.push({ price, size, total: totalAsks });
+        }
+
+        setBids(processedBids);
+        setAsks(processedAsks);
+
+        // Default aggregation: also extract BBO prices
+        if (isDefaultAgg) {
+          updateBboPrices(data.levels);
         }
       }
     );
 
+    // Non-default aggregation: use separate SDK instance for BBO
+    // Separate WS connection avoids message routing conflicts
+    let unsubscribeBbo: (() => void) | undefined;
+    if (!isDefaultAgg && aggregationLevels[0]) {
+      const bboSdk = getBboSDK();
+      const defaultAgg = aggregationLevels[0];
+      const sub = bboSdk.ws.subscribeToL2Book(
+        {
+          coin: selectedCoin,
+          nSigFigs: defaultAgg.nSigFigs || 5,
+          mantissa: defaultAgg.mantissa || undefined,
+        },
+        (data) => {
+          if (data?.levels) {
+            updateBboPrices(data.levels);
+          }
+        }
+      );
+      unsubscribeBbo = sub.unsubscribe;
+    }
+
     return () => {
       unsubscribe();
+      unsubscribeBbo?.();
     };
   }, [selectedCoin, aggregationIndex, aggregationLevels]);
 
@@ -217,40 +292,40 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const { displayAsks, displayBids } = useMemo(() => {
     if (viewMode === 'Both') {
       return {
-        displayAsks: asks.slice(0, 11).reverse(),
-        displayBids: bids.slice(0, 11),
+        displayAsks: asks.slice(0, rowCount).reverse(),
+        displayBids: bids.slice(0, rowCount),
       };
     } else if (viewMode === 'Asks') {
       return {
-        displayAsks: asks.reverse(),
+        displayAsks: asks.slice(0, rowCount).reverse(),
         displayBids: [],
       };
     } else {
       return {
         displayAsks: [],
-        displayBids: bids,
+        displayBids: bids.slice(0, rowCount),
       };
     }
-  }, [viewMode, asks, bids]);
+  }, [viewMode, asks, bids, rowCount]);
 
-  useEffect(() => {
-    if (!marketEstSize) return;
-    let estPrice = '';
-    const isBuy = Number(marketEstSize) > 0;
-    const arr = isBuy ? bids : asks;
-    for (const item of arr) {
-      if (item.total >= Math.abs(Number(marketEstSize))) {
-        estPrice = item.price;
-        break;
-      }
-    }
-    if (!estPrice) {
-      estPrice = arr[arr.length - 1]?.price || '';
-    }
-    dispatch.perps.patchState({
-      marketEstPrice: estPrice,
-    });
-  }, [marketEstSize, asks, bids]);
+  // useEffect(() => {
+  //   if (!marketEstSize) return;
+  //   let estPrice = '';
+  //   const isBuy = Number(marketEstSize) > 0;
+  //   const arr = isBuy ? bids : asks;
+  //   for (const item of arr) {
+  //     if (item.total >= Math.abs(Number(marketEstSize))) {
+  //       estPrice = item.price;
+  //       break;
+  //     }
+  //   }
+  //   if (!estPrice) {
+  //     estPrice = arr[arr.length - 1]?.price || '';
+  //   }
+  //   dispatch.perps.patchState({
+  //     marketEstPrice: estPrice,
+  //   });
+  // }, [marketEstSize, asks, bids]);
 
   const maxTotal = useMemo(() => {
     const bid =
@@ -398,10 +473,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </span>
       </div>
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div ref={contentRef} className="flex-1 flex flex-col overflow-hidden">
         {(viewMode === 'Both' || viewMode === 'Asks') && (
           <div
-            className={clsx('overflow-y-auto gap-2 flex flex-col', {
+            className={clsx('overflow-hidden gap-2 flex flex-col', {
               'flex-1': viewMode === 'Both',
             })}
           >
@@ -434,7 +509,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         )}
         {(viewMode === 'Both' || viewMode === 'Bids') && (
           <div
-            className={clsx('overflow-y-auto gap-2 flex flex-col', {
+            className={clsx('overflow-hidden gap-2 flex flex-col', {
               'flex-1': viewMode === 'Both',
             })}
           >

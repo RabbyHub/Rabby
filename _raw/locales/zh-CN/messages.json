@@ -446,7 +446,8 @@
         "side": "侧边",
         "price": "价格",
         "searchTokenPlaceholder": "搜索代币",
-        "openInTab": "在 Rabby Tab 中打开"
+        "openInTab": "在 Rabby Tab 中打开",
+        "openProMode": "开启专业模式"
       },
       "hd": {
         "howToConnectLedger": "如何连接 Ledger",
@@ -534,8 +535,6 @@
       "importPrivateKey": "导入私钥",
       "importMyMetamaskAccount": "导入我的 MetaMask 帐户",
       "addContacts": {
-        "content": "添加联系人",
-        "description": "你也可以将其用作观察地址",
         "required": "请输入地址",
         "notAValidAddress": "无效地址",
         "scanViaMobileWallet": "通过手机钱包扫描",
@@ -544,7 +543,9 @@
         "walletConnect": "WalleConnect",
         "walletConnectVPN": "如果你使用 VPN，WalletConnect 将会不稳定",
         "cameraTitle": "请用相机扫描二维码",
-        "addressEns": "输入地址/ENS"
+        "addressEns": "输入地址/ENS",
+        "content": "添加只读地址",
+        "description": "跟踪任何公开钱包地址"
       },
       "unableToImport": {
         "title": "无法导入",
@@ -868,7 +869,34 @@
       "addFromCurrentSeedPhrase": "从当前助记词添加",
       "trezor": {
         "title": "连接 Trezor"
-      }
+      },
+      "importMoreWallets": "添加更多地址",
+      "addMoreAddresses": "添加更多地址",
+      "addNewAddress": "创建新地址",
+      "createANewSeedPhrase": "创建新的助记词",
+      "newSeedPhraseCreated": "新的助记词已创建",
+      "moreWallets": "更多钱包",
+      "privateKeyTab": "私钥",
+      "addressImported": "地址已导入",
+      "watchAddress": "仅观察地址",
+      "addressAdded": "地址已添加",
+      "addressAddedCount_other": "{{count}} 个地址已添加",
+      "newAddressCreated": "新地址已创建",
+      "addMoreAddressesFromThisSeedPhrase": "从这个种子短语添加更多地址",
+      "newAddressAdded": "新地址已添加",
+      "openExtensionToGetStarted": "打开 Rabby 扩展以开始使用",
+      "bulkImportPrivateKeyInvalid": "一些私钥无效。请删除或重新输入它们。",
+      "duplicateAddressesSkippedDesc_other": "{{count}} 个地址被跳过，因为它们已存在。",
+      "bulkImportPrivateKey": "批量导入私钥",
+      "seedPhraseTab": "种子短语",
+      "bulkImportPrivateKeyPlaceholder": "每个私钥应使用新行或特殊字符分隔。",
+      "duplicateAddressesSkippedTitle": "某些地址已被导入",
+      "bulkImportPrivateKeySupport": "支持多达 1000 个 EVM 兼容的私钥",
+      "duplicateAddressesSkippedDesc_one": "{{count}} 个地址被跳过，因为它已经存在。",
+      "addressAddedCount_one": "{{count}} 个地址已添加",
+      "bulkImportPrivateKeyInputTab": "输入私钥",
+      "imported": "导入过",
+      "bulkImportPrivateKeyExceeded": "支持一次最多 {{count}} 个私钥"
     },
     "activities": {
       "signedText": {
@@ -1211,7 +1239,6 @@
       "seed-phrase": "助记词",
       "seed-phrase-delete-title": "删除助记词？",
       "update-balance-data": "刷新所有余额",
-      "watch-address": "观察地址",
       "whitelisted-address": "白名单地址",
       "sort-by-balance": "按地址金额排序",
       "sort-by-address-type": "按地址类型排序",
@@ -1224,7 +1251,9 @@
       "CurrentDappAddress": {
         "desc": "切换 Dapp 地址\n"
       },
-      "noSeedPhraseAddress": "还没有为这个种子短语添加地址。您可以添加一个地址或删除该种子短语。"
+      "noSeedPhraseAddress": "还没有为这个种子短语添加地址。您可以添加一个地址或删除该种子短语。",
+      "watch-address": "仅观察",
+      "deleteSuccess": "删除成功"
     },
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
@@ -2046,7 +2075,8 @@
       },
       "btnForgotPassword": "忘记密码？",
       "title": "Rabby Wallet",
-      "description": "你首选的以太坊和 EVM 钱包"
+      "description": "你首选的以太坊和 EVM 钱包",
+      "biometricFailed": "生物识别解锁失败"
     },
     "addressDetail": {
       "add-to-whitelist": "添加到白名单",
@@ -2798,7 +2828,8 @@
         "addMoreFrom": "从 {{name}} 添加更多地址",
         "openWallet": "打开钱包",
         "desc": "Rabby 钱包已经可以使用了！",
-        "backupSeedPhraseNow": "立即备份种子短语"
+        "backupSeedPhraseNow": "立即备份种子短语",
+        "backupSeedPhrase": "备份种子短语"
       },
       "readyToUse": {
         "pin": "固定 Rabby 钱包",
@@ -3273,7 +3304,8 @@
         "openLimitOrderSuccess": "限价单已下单 {{direction}} {{coin}}-USD：数量 {{size}}，价格 ${{price}}",
         "cancelTWAPOrderSuccess": "时间加权平均价委托取消成功",
         "terminalTwap": "交易终端时间加权平均价",
-        "openTPSlLimitOrderSuccess": "{{tpsl}} 限价单已下单 {{direction}} {{coin}}-USD：数量 {{size}}，价格 ${{price}}"
+        "openTPSlLimitOrderSuccess": "{{tpsl}} 限价单已下单 {{direction}} {{coin}}-USD：数量 {{size}}，价格 ${{price}}",
+        "orderError": "订单错误"
       },
       "closePositionPopup": {
         "closeLong": "平多",
@@ -3365,7 +3397,10 @@
         "notActivatedAddress": "未激活",
         "hyperliquidBalance": "永续合约余额",
         "activatedAddress": "已激活",
-        "noPosition": "暂无头寸"
+        "noPosition": "暂无头寸",
+        "position": "头寸",
+        "selectAddress": "选择一个地址",
+        "positions": "头寸"
       },
       "riskLevel": {
         "danger": {
@@ -3491,7 +3526,21 @@
       "stopLossTipsLongLiquidation": "价格低于爆仓价（{{price}}）",
       "rabbyFeeTipsZero": "Rabby 费率：0%",
       "reviewOrder": "订单预览",
-      "directDepositFast": "快速，零滑点"
+      "directDepositFast": "快速，零滑点",
+      "settings": "设置",
+      "positionValue": "仓位价值",
+      "currentPrice": "当前价格",
+      "isolatedMargin": "孤立保证金",
+      "crossMargin": "跨保证金",
+      "unrealizedPnl": "未实现盈亏",
+      "liquidationDistanceUp": "上涨 <bold>{{percent}}</bold> 将触发清算",
+      "cannotChangeMarginModeWithOpenPositions": "无法更改开仓的保证金模式",
+      "marginMode": "保证金模式",
+      "openProModeInTab": "在选项卡中打开专业模式",
+      "isolatedMarginDesc": "每个头寸使用独立的保证金。损失仅限于该头寸，但更容易被清算。",
+      "liquidationDistanceDown": "下跌 <bold>{{percent}}</bold> 将触发清算",
+      "details": "详情",
+      "crossMarginDesc": "所有头寸共享相同的保证金。这减少了单一头寸被强制平仓的风险，但在极端市场波动中，所有交叉保证金资金都有可能被损失。"
     },
     "perpsPro": {
       "chatArea": {
@@ -3552,7 +3601,8 @@
           "coin": "币种",
           "closedPnl": "已实现盈亏",
           "unrealizedPnl": "未实现盈亏",
-          "fundingTipsV2": "自开仓以来的净资金。红色（负值）资金表示支付的资金，而绿色（正值）资金表示收到的资金。"
+          "fundingTipsV2": "自开仓以来的净资金。红色（负值）资金表示支付的资金，而绿色（正值）资金表示收到的资金。",
+          "fundingTipsBold": "这显示了自仓位开启以来您的总资金结算情况。<bold>绿色（正值）</bold>表示您从其他交易者那里赚取的资金，而<bold>红色（负值）</bold>表示您向他们支付的资金成本。"
         },
         "emptyMessage": {
           "positions": "暂无持仓",
@@ -3711,7 +3761,42 @@
         "marginUsage": "保证金使用情况",
         "limitPrice": "限价",
         "deposit": "存款",
-        "addFundsToGetStarted": "添加资金以开始使用"
+        "addFundsToGetStarted": "添加资金以开始使用",
+        "price": "价格",
+        "action": "操作",
+        "orderCount": "订单数量",
+        "buyTrigger": "买入触发器",
+        "short": "做空",
+        "Buy": "购买",
+        "sideLongBuy": "做多 (买入)",
+        "cost": "成本",
+        "max": "最大值",
+        "sideShortSell": "做空 (卖出)",
+        "estimatedPnlWillBe": "您预计的盈亏将是",
+        "orderTypeTooltipMarket": "市价单会立即与最佳可用市场价格匹配。",
+        "sellTrigger": "卖出触发器",
+        "slTriggerMoreThanOrderPrice": "您的止损触发价格应该高于您的订单价格",
+        "tpTriggerMoreThanOrderPrice": "您的 TP 触发价格应高于您的订单价格",
+        "slTriggerLessThanOrderPrice": "您的止损触发价格应该低于您的订单价格",
+        "tpTriggerLessThanOrderPrice": "您的止盈触发价格应低于您的订单价格",
+        "orderTypeTooltipLimit": "限价单是以特定价格或更好的价格买入或卖出的订单。限价单不能保证执行。",
+        "tpTriggerPriceIsZero": "您的止盈触发价格为 0，在您进行 {{side}} 时不会设置。",
+        "bboDisabledTooltip": "当 {{bboDisabledReason}} 被启用时，不支持 BBO。",
+        "orderTypeTooltipTakeLimit": "当达到指定的成交价格时，限价订单会变为限价单。指定一个触发价格以激活该订单。",
+        "slTriggerPriceIsZero": "您的止损触发价格为 0，进行 {{side}} 操作时将不会设置。",
+        "orderTypeTooltipStopLimit": "当达到特定止损价时，止损限价单变为限价单。请指定一个触发价格以激活该订单。",
+        "orderTypeTooltipStopMarket": "当达到指定价格时，止损市场订单会变为市场订单。指定一个触发价格以激活订单。",
+        "size": "大小",
+        "Sell": "卖出",
+        "orderTypeTooltipTakeMarket": "当达到指定的成交价格时，市价单会变为市场订单。指定一个触发价格以激活该订单。",
+        "min": "最小值",
+        "long": "做多",
+        "hour": "小时",
+        "maxDurationTwap": "最大运行 TWAP 订单的时长为",
+        "orderTypeTooltipScale": "缩放订单允许您将一个金额拆分为多个子订单，以最小化市场影响。",
+        "totalTime": "总时间（5分钟-24小时）",
+        "orderTypeTooltipTwap": "TWAP（时间加权平均价格）是一种算法交易执行策略，旨在实现接近用户指定周期的时间加权平均价格的平均执行价格。",
+        "bboTips": "最佳买卖报价（BBO）指的是在任何给定时间内，订单薄上可用的最佳卖出价格和最佳买入价格。BBO 订单始终使用精确的最小跳动点大小进行下单，确保价格细致且准确，与显示偏好无关。"
       },
       "marginMode": {
         "cross": "全仓",
@@ -3719,7 +3804,9 @@
         "confirm": "确认",
         "isolated": "逐仓",
         "isolatedDescription": "通过为每个仓位分配保证金来管理其风险。若逐仓仓位的保证金率达到 100%，该仓位将被强平。在此模式下，可以对单个仓位追加保证金或提取保证金。",
-        "crossDescription": "所有全仓头寸共用同一跨保证金作为抵押。若发生强制平仓，在本模式下，您的保证金余额以及仍处于全仓头寸的未平仓部位可能被没收。"
+        "crossDescription": "所有全仓头寸共用同一跨保证金作为抵押。若发生强制平仓，在本模式下，您的保证金余额以及仍处于全仓头寸的未平仓部位可能被没收。",
+        "cannotChange": "无法更改保证金模式",
+        "onlyIsolatedSupported": "该资产仅支持孤立保证金模式"
       },
       "leverage": {
         "minError": "最低杠杆为1x",
@@ -4032,7 +4119,8 @@
           "balance": "余额",
           "assets": "代币"
         },
-        "title": "选择还款代币"
+        "title": "选择还款代币",
+        "zeroLtvCollateralTips": "您拥有以下 LTV = 0 的抵押品，因此只能根据抵押品偿还规则首先使用这些抵押品进行偿还。"
       },
       "manageEmode": {
         "actions": {
@@ -4102,7 +4190,8 @@
         "entryTips": "一键交换您的借入资产，减少步骤和费用。",
         "lpRiskWarning": "低健康系数，交易后您的头寸将面临更高的清算风险。",
         "priceImpactTips": "高价格影响（{{lostValue}}）。由于流动性低或订单规模小，该路线可能返回更多。",
-        "lpDangerWarning": "在这次交换后，您的健康因子将极低，可能导致平仓。请选择其他资产或减少交换金额以保持安全。"
+        "lpDangerWarning": "在这次交换后，您的健康因子将极低，可能导致平仓。请选择其他资产或减少交换金额以保持安全。",
+        "maxLtvWarning": "抵押品不足以覆盖新的借贷头寸。钱包必须保留足够的借贷能力以执行债务切换。"
       },
       "repayWithCollateral": {
         "action": {
@@ -4470,7 +4559,7 @@
     "alias": {
       "HdKeyring": "助记词",
       "simpleKeyring": "私钥",
-      "watchAddressKeyring": "联系人"
+      "watchAddressKeyring": "仅可查看"
     },
     "keyring": {
       "onekey": {
@@ -4489,7 +4578,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "通过助记词创建",
       "SimpleKeyring": "通过私钥导入",
-      "WatchAddressKeyring": "联系人"
+      "WatchAddressKeyring": "仅监视"
     },
     "IMPORTED_HD_KEYRING": "通过助记词导入",
     "SIGN_PERMISSION_OPTIONS": {

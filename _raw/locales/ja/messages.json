@@ -347,7 +347,7 @@
       "addressSource": "アドレスソース",
       "typedDataMessage": "型付きデータに署名",
       "primaryType": "プライマリタイプ",
-      "safeServiceNotAvailable": "現在、Safeサービスは利用できません。後でもう一度お試しください。",
+      "safeServiceNotAvailable": "安全サービスは現在利用できません。後で再試行してください。",
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
@@ -1086,7 +1086,6 @@
       "confirm-delete": "削除を確認",
       "private-key": "プライベートキー",
       "seed-phrase": "シードフレーズ",
-      "watch-address": "ウォッチアドレス",
       "backup-seed-phrase": "シードフレーズのバックアップ",
       "delete-all-addresses-but-keep-the-seed-phrase": "すべてのアドレスを削除してシードフレーズを保持",
       "delete-all-addresses-and-the-seed-phrase": "すべてのアドレスとシードフレーズを削除",
@@ -1102,7 +1101,9 @@
       "CurrentDappAddress": {
         "desc": "Dappアドレスを切り替える"
       },
-      "noSeedPhraseAddress": "このシードフレーズに対して追加されたアドレスはありません。アドレスを追加するか、シードフレーズを削除できます。"
+      "noSeedPhraseAddress": "このシードフレーズに対して追加されたアドレスはありません。アドレスを追加するか、シードフレーズを削除できます。",
+      "watch-address": "ウォッチオンリー",
+      "deleteSuccess": "削除に成功しました"
     },
     "dashboard": {
       "home": {
@@ -1482,7 +1483,8 @@
         "side": "サイド",
         "price": "価格",
         "searchTokenPlaceholder": "トークンを検索",
-        "openInTab": "Rabbyタブで開く"
+        "openInTab": "Rabbyタブで開く",
+        "openProMode": "プロモードを開く"
       },
       "hd": {
         "howToConnectLedger": "Ledgerとの接続方法",
@@ -1565,8 +1567,6 @@
       "importPrivateKey": "プライベートキーをインポート",
       "importMyMetamaskAccount": "私のMetaMaskアカウントをインポート",
       "addContacts": {
-        "content": "連絡先を追加",
-        "description": "ウォッチオンリーアドレスとしても使用できます",
         "required": "アドレスを入力してください",
         "notAValidAddress": "有効なアドレスではありません",
         "scanViaMobileWallet": "モバイルウォレットを使用してスキャン",
@@ -1575,7 +1575,9 @@
         "walletConnect": "ウォレット接続",
         "walletConnectVPN": "VPNを使用するとWalletConnectが不安定になる場合があります。",
         "cameraTitle": "カメラでQRコードをスキャンしてください",
-        "addressEns": "アドレス / ENS"
+        "addressEns": "アドレス / ENS",
+        "content": "ウォッチ専用アドレスを追加",
+        "description": "任意の公開ウォレットアドレスを追跡する"
       },
       "unableToImport": {
         "title": "インポートできません",
@@ -1898,7 +1900,34 @@
       "addFromCurrentSeedPhrase": "現在のシードフレーズから追加",
       "trezor": {
         "title": "Trezorに接続する"
-      }
+      },
+      "addMoreAddresses": "アドレスを追加する",
+      "moreWallets": "もっとウォレット",
+      "importMoreWallets": "アドレスを追加する",
+      "addNewAddress": "新しいアドレスを作成",
+      "createANewSeedPhrase": "新しいシードフレーズを作成する",
+      "addressAdded": "アドレスが追加されました",
+      "seedPhraseTab": "シードフレーズ",
+      "addressImported": "アドレスがインポートされました",
+      "addressAddedCount_one": "{{count}} アドレスが追加されました",
+      "watchAddress": "監視専用アドレス",
+      "privateKeyTab": "プライベートキー",
+      "bulkImportPrivateKeyInputTab": "プライベートキーを入力してください",
+      "newSeedPhraseCreated": "新しいシードフレーズが作成されました",
+      "duplicateAddressesSkippedDesc_one": "{{count}} のアドレスはすでに存在するため、スキップされました。",
+      "duplicateAddressesSkippedTitle": "いくつかのアドレスはすでにインポートされています",
+      "addressAddedCount_other": "{{count}} アドレスが追加されました",
+      "addMoreAddressesFromThisSeedPhrase": "このシードフレーズからさらにアドレスを追加してください",
+      "imported": "インポート済み",
+      "bulkImportPrivateKeySupport": "最大1000個EVM互換のプライベートキーをサポートしています",
+      "duplicateAddressesSkippedDesc_other": "{{count}} のアドレスは、すでに存在するためスキップされました。",
+      "bulkImportPrivateKey": "プライベートキーの一括インポート",
+      "bulkImportPrivateKeyExceeded": "{{count}} 个プライベートキーを同時にサポートしています",
+      "openExtensionToGetStarted": "Rabby拡張機能を開いて始めましょう。",
+      "bulkImportPrivateKeyInvalid": "無効なプライベートキーがあります。削除するか、再入力してください。",
+      "newAddressAdded": "新しいアドレスが追加されました",
+      "bulkImportPrivateKeyPlaceholder": "各プライベートキーは新しい行または特別な文字で区切る必要があります。",
+      "newAddressCreated": "新しいアドレスが作成されました"
     },
     "unlock": {
       "btn": {
@@ -1913,7 +1942,8 @@
       },
       "title": "Rabby Wallet",
       "btnForgotPassword": "パスワードをお忘れですか?",
-      "description": "EthereumとEVMのための定番ウォレット"
+      "description": "EthereumとEVMのための定番ウォレット",
+      "biometricFailed": "生体認証の解除に失敗しました"
     },
     "addToken": {
       "noTokenFound": "トークンが見つかりません",
@@ -2721,7 +2751,8 @@
         "import": "インポートしました",
         "openWallet": "ウォレットを開く",
         "desc": "Rabbyウォレットは使用準備完了です！",
-        "backupSeedPhraseNow": "今すぐバックアップシードフレーズを保存してください"
+        "backupSeedPhraseNow": "今すぐバックアップシードフレーズを保存してください",
+        "backupSeedPhrase": "バックアップシードフレーズ"
       },
       "readyToUse": {
         "pin": "Rabby Wallet をピン留め",
@@ -3235,7 +3266,8 @@
         "closePositionSuccess": "クローズ済み {{direction}} {{coin}}-USD：サイズ {{size}}、価格 ${{price}}",
         "openPositionSuccess": "{{direction}} {{coin}}-USD: サイズ {{size}}、価格は ${{price}}",
         "openTPSlMarketOrderSuccess": "{{tpsl}} 市場成行注文を出しました {{direction}} {{coin}}-USD: 数量 {{size}}、価格 ${{price}}",
-        "openTPSlLimitOrderSuccess": "{{tpsl}} 指値注文を出しました {{direction}} {{coin}}-USD: サイズ {{size}} 価格 ${{price}}"
+        "openTPSlLimitOrderSuccess": "{{tpsl}} 指値注文を出しました {{direction}} {{coin}}-USD: サイズ {{size}} 価格 ${{price}}",
+        "orderError": "注文エラー"
       },
       "closePositionPopup": {
         "positionSize": "ポジションサイズ",
@@ -3327,7 +3359,10 @@
         "notActivatedAddress": "有効化されていません",
         "noPosition": "ポジションなし",
         "hyperliquidBalance": "パーペチュアル残高",
-        "activatedAddress": "有効化済み"
+        "activatedAddress": "有効化済み",
+        "position": "ポジション",
+        "positions": "ポジション",
+        "selectAddress": "アドレスを選択してください"
       },
       "riskLevel": {
         "danger": {
@@ -3453,7 +3488,21 @@
       "marginCross": "証拠金（クロスマージン）",
       "rabbyFeeTipsV2": "Rabby 手数料: 0.02%",
       "openPositionTips": "無期限契約の取引には、投資額および担保の突然かつ全損につながる可能性を含む、重大なリスクが伴います。高いレバレッジと市場のボラティリティのため、すべてのユーザーに適しているとは限りません。価格はファンディングレートと流動性の影響を受けることがあり、通知なしに自動清算されることがあります。市場データはHyperliquidによって提供されます。",
-      "directDepositFast": "迅速、スリッページなし"
+      "directDepositFast": "迅速、スリッページなし",
+      "details": "詳細情報",
+      "positionValue": "ポジションの価値",
+      "currentPrice": "現在の価格",
+      "settings": "設定",
+      "crossMargin": "クロスマージン",
+      "isolatedMargin": "アイソレーテッド マージン",
+      "unrealizedPnl": "未実現PNL",
+      "openProModeInTab": "タブでプロモードを開く",
+      "liquidationDistanceDown": "<bold>{{percent}}</bold> の下落は清算を引き起こします",
+      "liquidationDistanceUp": "上昇 <bold>{{percent}}</bold> は清算を引き起こします",
+      "cannotChangeMarginModeWithOpenPositions": "オープンポジションがある状態でマージンモードを変更することはできません。",
+      "marginMode": "マージンモード",
+      "isolatedMarginDesc": "各ポジションはそれぞれ独自のマージンを使用します。損失はそのポジションに限定されますが、より簡単に清算される可能性があります。",
+      "crossMarginDesc": "すべてのポジションは同じマージンを共有します。これにより、単一のポジションが清算される可能性が減りますが、すべてのクロスマージン資金は、極端な市場動向では失われる可能性があります。"
     },
     "perpsPro": {
       "chatArea": {
@@ -3514,7 +3563,8 @@
           "tradeHistory": "約定履歴",
           "runningTimeTotal": "経過時間 / 合計",
           "unrealizedPnlTooltip": "マーク価格は未実現PNLを推定するために使用されます。実現PNLには取引価格のみが使用されます。",
-          "fundingTipsV2": "ポジションが開かれてからのネット資金。赤（負）の資金値は支払われた資金を示し、緑（正）の値は受け取った資金を示します。"
+          "fundingTipsV2": "ポジションが開かれてからのネット資金。赤（負）の資金値は支払われた資金を示し、緑（正）の値は受け取った資金を示します。",
+          "fundingTipsBold": "これは、ポジションがオープンして以来の合計資金決済を示しています。<bold>グリーン（プラス）</bold>の値は、他のトレーダーから獲得したことを意味し、<bold>レッド（マイナス）</bold>の値は、彼らに支払った資金コストです。"
         },
         "emptyMessage": {
           "positions": "ポジションなし",
@@ -3673,7 +3723,42 @@
         "tpSl": "利確 / 損切り",
         "tpSlTips": "シンプルな成行の利確/損切り注文を出します。限定価格や部分的な利確/損切りといった高度な機能を使う場合は、開いているポジションで利確/損切りを設定してください。",
         "deposit": "入金",
-        "addFundsToGetStarted": "資金を追加して開始します"
+        "addFundsToGetStarted": "資金を追加して開始します",
+        "action": "アクション",
+        "Sell": "売却",
+        "max": "最大値",
+        "cost": "コスト",
+        "Buy": "購入",
+        "price": "価格",
+        "long": "ロング",
+        "buyTrigger": "購入トリガー",
+        "orderCount": "オーダー数",
+        "short": "ショート",
+        "size": "サイズ",
+        "sellTrigger": "売却トリガー",
+        "estimatedPnlWillBe": "あなたの推定PnLは次のとおりです。",
+        "bboDisabledTooltip": "BBOは{{bboDisabledReason}}が有効な場合サポートされていません",
+        "sideShortSell": "ショート (売り)",
+        "sideLongBuy": "ロング (買い)",
+        "tpTriggerLessThanOrderPrice": "あなたのTPトリガープライスは、注文価格よりも低くするべきです。",
+        "slTriggerMoreThanOrderPrice": "あなたのSLトリガー価格は、あなたの注文価格よりも高い必要があります。",
+        "orderTypeTooltipMarket": "市場注文は、最良の利用可能な市場価格に即座にマッチングされます。",
+        "tpTriggerMoreThanOrderPrice": "あなたのTPトリガー価格は、注文価格よりも高くなければなりません。",
+        "slTriggerPriceIsZero": "あなたのSLトリガー価格は0で、{{side}}の際には設定されません。",
+        "tpTriggerPriceIsZero": "あなたのTPトリガープライスは0であり、{{side}}を行うときに設定されません。",
+        "hour": "時間",
+        "min": "ミニマム",
+        "totalTime": "総時間 (5分-24時間)",
+        "orderTypeTooltipTakeMarket": "市場注文は、指定されたテイクプライスに達したときに市場注文になります。注文を有効にするためにトリガープライスを指定してください。",
+        "orderTypeTooltipStopMarket": "指定した価格に達すると、ストップ・マーケット・オーダーはマーケット・オーダーになります。注文を有効にするためにトリガー価格を指定してください。",
+        "maxDurationTwap": "TWAPオーダーの最大実行期間は",
+        "slTriggerLessThanOrderPrice": "あなたのSLトリガー価格は、注文価格よりも低くする必要があります。",
+        "orderTypeTooltipLimit": "リミットオーダーは、特定の価格またはそれ以上の価格で買うか売るための注文です。リミットオーダーは実行が保証されるものではありません。",
+        "orderTypeTooltipStopLimit": "ストップリミット注文は、指定されたストップ価格に達したときにリミット注文になります。注文を有効にするためにトリガー価格を指定してください。",
+        "orderTypeTooltipTakeLimit": "リミットオーダーは、指定したテイクプライスに達したときにリミットオーダーになります。オーダーをアクティブにするためのトリガープライスを指定してください。",
+        "bboTips": "最良い入札オファー（BBO）とは、特定の時点におけるオーダーブック上での最良の売り価格と最良の買い価格を指します。BBOの注文は常に正確な最小ティックサイズを使用して出され、表示の好みに依存しない細かな正確な価格設定を保証します。",
+        "orderTypeTooltipScale": "スケール注文を使用すると、金額を複数のサブオーダーに分割して市場への影響を最小限に抑えることができます。",
+        "orderTypeTooltipTwap": "TWAP（時間加重平均価格）は、ユーザー指定の期間の時間加重平均価格に近い平均実行価格を達成することを目指すアルゴリズミックな取引執行戦略です。"
       },
       "marginMode": {
         "cross": "クロス証拠金",
@@ -3681,7 +3766,9 @@
         "isolatedDescription": "各ポジションに割り当てる証拠金の額を設定することで、個別ポジションのリスクを管理します。分離証拠金ポジションの証拠金率が100%に達すると、そのポジションは清算されます。このモードでは、個別ポジションに証拠金を追加したり削除したりできます。",
         "title": "証拠金モード",
         "crossDescription": "すべてのクロス・ポジションは、同じクロス・マージンを担保として共有します。清算が発生した場合、このモードにおけるクロスの証拠金残高と、残っているオープンポジションは没収される可能性があります。",
-        "confirm": "確認"
+        "confirm": "確認",
+        "cannotChange": "マージンモードを変更できません",
+        "onlyIsolatedSupported": "この資産は、アイソレートマージンモードのみをサポートしています。"
       },
       "leverage": {
         "confirm": "確認",
@@ -3994,7 +4081,8 @@
           "balance": "残高",
           "assets": "トークン"
         },
-        "title": "返済トークンを選択"
+        "title": "返済トークンを選択",
+        "zeroLtvCollateralTips": "以下のLTVが0の担保があるため、担保返済ルールに従って、まずこれらの担保で返済する必要があります。"
       },
       "manageEmode": {
         "actions": {
@@ -4064,7 +4152,8 @@
         "entryTips": "ワンクリックで借りた資産をスワップし、ステップと手数料を削減します。",
         "lpRiskWarning": "スワップ後のヘルスファクターが低下しました。あなたのポジションは清算のリスクが高くなります。",
         "priceImpactTips": "高い価格影響 ({{lostValue}})。このルートは流動性が低いか注文サイズが小さいために、より多くのリターンを得られる場合があります。",
-        "lpDangerWarning": "このスワップ後の健康係数は非常に低くなり、清算のリスクがあります。安全を保つために、別の資産を選択するか、スワップ金額を減らしてください。"
+        "lpDangerWarning": "このスワップ後の健康係数は非常に低くなり、清算のリスクがあります。安全を保つために、別の資産を選択するか、スワップ金額を減らしてください。",
+        "maxLtvWarning": "新しい借入ポジションをカバーするのに十分な担保がありません。ウォレットには負債スイッチを行うために残っている借入力が必要です。"
       },
       "repayWithCollateral": {
         "action": {
@@ -4468,7 +4557,7 @@
     "alias": {
       "HdKeyring": "シードフレーズによって作成",
       "simpleKeyring": "プライベートキーによってインポート",
-      "watchAddressKeyring": "コンタクト"
+      "watchAddressKeyring": "閲覧専用"
     },
     "keyring": {
       "onekey": {
@@ -4487,7 +4576,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "シードフレーズで作成",
       "SimpleKeyring": "プライベートキーでインポート",
-      "WatchAddressKeyring": "コンタクト"
+      "WatchAddressKeyring": "閲覧専用"
     },
     "IMPORTED_HD_KEYRING": "シードフレーズでインポート",
     "SIGN_PERMISSION_OPTIONS": {

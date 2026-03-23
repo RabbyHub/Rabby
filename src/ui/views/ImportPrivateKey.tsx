@@ -64,7 +64,7 @@ const ImportPrivateKey: React.FC<{
       if (UI_TYPE.isDesktop) {
         onNavigate?.('success', {
           accounts: successShowAccounts,
-          title: t('page.newAddress.importedSuccessfully'),
+          title: t('page.newAddress.addressImported'),
           editing: true,
           importedAccount: true,
           importedLength: importedAccountsLength,
@@ -74,7 +74,7 @@ const ImportPrivateKey: React.FC<{
           pathname: '/popup/import/success',
           state: {
             accounts: successShowAccounts,
-            title: t('page.newAddress.importedSuccessfully'),
+            title: t('page.newAddress.addressImported'),
             editing: true,
             importedAccount: true,
             importedLength: importedAccountsLength,

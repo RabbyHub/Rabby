@@ -24,7 +24,7 @@ import {
   UserAbstractionResp,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
-import { RootModel } from '.';
+import { RootModel, RabbyRootState } from '.';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import {
   formatMarkData,
@@ -36,6 +36,7 @@ import { maxBy } from 'lodash';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { isSameAddress } from '../utils';
+import store from '@/ui/store';
 import {
   formatAllDexsClearinghouseState,
   handleUpdateHistoricalOrders,
@@ -48,6 +49,7 @@ import {
   OrderSide,
   PositionSize,
   TPSLConfig,
+  SizeDisplayUnit,
 } from '../views/DesktopPerps/types';
 import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
 import stats from '@/stats';
@@ -80,6 +82,7 @@ export interface MarketData {
   premium: string;
   prevDayPx: string;
   dexId: string;
+  onlyIsolated?: boolean;
 }
 
 export type MarketDataMap = Record<string, MarketData>;
@@ -99,19 +102,61 @@ export interface AccountHistoryItem {
   usdValue: string;
 }
 
-export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
-  enabled: false,
-  takeProfit: { price: '', percentage: '', error: '', inputMode: 'percentage' },
-  stopLoss: { price: '', percentage: '', error: '', inputMode: 'percentage' },
+const VALID_TPSL_MODES = ['price', 'pnl', 'roi'] as const;
+
+const getSavedTpslMode = (
+  type: 'takeProfit' | 'stopLoss'
+): 'price' | 'pnl' | 'roi' => {
+  try {
+    const val = localStorage.getItem(`perps_tpsl_mode_${type}`);
+    if (val && (VALID_TPSL_MODES as readonly string[]).includes(val)) {
+      return val as 'price' | 'pnl' | 'roi';
+    }
+  } catch (e) {
+    // ignore
+  }
+  return 'price';
 };
 
-const INIT_TRADING_STATE = {
-  // tradingOrderSide: OrderSide.BUY,
+export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
+  enabled: false,
+  takeProfit: {
+    settingMode: 'price',
+    value: '',
+    error: '',
+    buyTriggerPrice: '',
+    sellTriggerPrice: '',
+    estimatedPnl: '',
+    estimatedPnlPercent: '',
+  },
+  stopLoss: {
+    settingMode: 'price',
+    value: '',
+    error: '',
+    buyTriggerPrice: '',
+    sellTriggerPrice: '',
+    estimatedPnl: '',
+    estimatedPnlPercent: '',
+  },
+};
+
+const getInitTradingState = () => ({
   tradingPositionSize: { amount: '', notionalValue: '' },
   tradingPercentage: 0,
   tradingReduceOnly: false,
-  tradingTpslConfig: DEFAULT_TPSL_CONFIG,
-};
+  tradingTpslConfig: {
+    ...DEFAULT_TPSL_CONFIG,
+    takeProfit: {
+      ...DEFAULT_TPSL_CONFIG.takeProfit,
+      settingMode: getSavedTpslMode('takeProfit'),
+    },
+    stopLoss: {
+      ...DEFAULT_TPSL_CONFIG.stopLoss,
+      settingMode: getSavedTpslMode('stopLoss'),
+    },
+  },
+  bboPrices: { asks1: '', asks5: '', bids1: '', bids5: '' },
+});
 
 export interface PerpsState {
   // positionAndOpenOrders: PositionAndOpenOrder[];
@@ -152,18 +197,27 @@ export interface PerpsState {
   twapStates: WsTwapStates['states'];
   twapHistory: UserTwapHistory[];
   twapSliceFills: UserTwapSliceFill[];
-  marketSlippage: number; // 0-1, default 0.08 (8%)
+  marketSlippage: number; // 0-1, default 0.05 (5%)
   soundEnabled: boolean;
   marketEstSize: string;
   marketEstPrice: string;
   quoteUnit: 'base' | 'usd';
   // Trading panel state (preserved across orderType switches)
   // tradingOrderType: OrderType;
-  tradingOrderSide: OrderSide;
+  sizeDisplayUnit: SizeDisplayUnit;
+  /** @deprecated Will be removed - direction is now determined by button click */
+  tradingOrderSide: 'buy' | 'sell';
   tradingPositionSize: PositionSize;
   tradingTpslConfig: TPSLConfig;
   tradingPercentage: number;
   tradingReduceOnly: boolean;
+  // BBO prices from orderbook (default aggregation level)
+  bboPrices: {
+    asks1: string; // asks[0] — best ask
+    asks5: string; // asks[4] — 5th ask
+    bids1: string; // bids[0] — best bid
+    bids5: string; // bids[4] — 5th bid
+  };
 }
 
 let topAssetsCache: PerpTopToken[] = [];
@@ -210,14 +264,15 @@ export const perps = createModel<RootModel>()({
     twapHistory: [],
     twapSliceFills: [],
     soundEnabled: true,
-    marketSlippage: 0.08, // default 8%
+    marketSlippage: 0.05, // default 5%
     marketEstSize: '',
     marketEstPrice: '',
     quoteUnit: 'base',
     // Trading panel state (preserved across orderType switches)
     // tradingOrderType: OrderType.MARKET,
+    sizeDisplayUnit: 'base',
     tradingOrderSide: OrderSide.BUY,
-    ...INIT_TRADING_STATE,
+    ...getInitTradingState(),
   } as PerpsState,
 
   reducers: {
@@ -380,23 +435,17 @@ export const perps = createModel<RootModel>()({
       state,
       payload: {
         address: string;
-        clearinghouseState: [string, ClearinghouseState][];
+        clearinghouseState: ClearinghouseState;
       }
     ) {
-      if (
-        !payload.address ||
-        !payload.clearinghouseState ||
-        !payload.clearinghouseState[0]
-      ) {
+      if (!payload.address || !payload.clearinghouseState) {
         return state;
       }
       return {
         ...state,
         clearinghouseStateMap: {
           ...state.clearinghouseStateMap,
-          [payload.address.toLowerCase()]: formatAllDexsClearinghouseState(
-            payload.clearinghouseState
-          ),
+          [payload.address.toLowerCase()]: payload.clearinghouseState,
         },
       };
     },
@@ -661,7 +710,7 @@ export const perps = createModel<RootModel>()({
     resetTradingState(state) {
       return {
         ...state,
-        ...INIT_TRADING_STATE,
+        ...getInitTradingState(),
       };
     },
 
@@ -673,7 +722,7 @@ export const perps = createModel<RootModel>()({
 
       return {
         ...state,
-        ...INIT_TRADING_STATE,
+        ...getInitTradingState(),
         selectedCoin: payload,
       };
     },
@@ -745,8 +794,21 @@ export const perps = createModel<RootModel>()({
     },
 
     async updateQuoteUnit(payload: 'base' | 'usd', rootState) {
-      dispatch.perps.patchState({ quoteUnit: payload });
+      dispatch.perps.patchState({
+        quoteUnit: payload,
+        sizeDisplayUnit: payload === 'usd' ? 'usdc' : 'base',
+      });
       await rootState.app.wallet.setPerpsQuoteUnit(payload);
+    },
+
+    async updateSizeDisplayUnit(payload: 'base' | 'usdc', rootState) {
+      dispatch.perps.patchState({
+        sizeDisplayUnit: payload,
+        quoteUnit: payload === 'usdc' ? 'usd' : 'base',
+      });
+      await rootState.app.wallet.setPerpsQuoteUnit(
+        payload === 'usdc' ? 'usd' : 'base'
+      );
     },
     async saveApproveSignatures(
       payload: {
@@ -851,6 +913,14 @@ export const perps = createModel<RootModel>()({
       // const openOrders = await sdk.info.getFrontendOpenOrders();
       // dispatch.perps.updateOpenOrders(openOrders);
       // dispatch.perps.patchState({ openOrders });
+    },
+
+    async fetchUserFillHistory() {
+      const sdk = getPerpsSDK();
+      const res = await sdk.info.getUserFills();
+      dispatch.perps.patchState({
+        userFills: ((res as unknown) as WsFill[]).slice(0, 2000),
+      });
     },
 
     async fetchUserNonFundingLedgerUpdates() {
@@ -1027,10 +1097,16 @@ export const perps = createModel<RootModel>()({
         if (!clearinghouseState) {
           return;
         }
+        const latestState = store.getState().perps;
+        if (
+          latestState.userAbstraction === UserAbstractionResp.unifiedAccount
+        ) {
+          clearinghouseState.withdrawable = latestState.spotState.availableToTrade.toString();
+        }
         dispatch.perps.patchClearinghouseState(clearinghouseState);
         dispatch.perps.setClearinghouseStateMapBySingle({
           address,
-          clearinghouseState: clearinghouseStates,
+          clearinghouseState,
         });
       });
       subscriptions.push(unsubscribeClearinghouseState);
@@ -1173,6 +1249,11 @@ export const perps = createModel<RootModel>()({
             return;
           }
 
+          if (isSnapshot && isPro) {
+            // when return snapshot, fetch all user fill history from api
+            dispatch.perps.fetchUserFillHistory();
+          }
+
           dispatch.perps.patchStatsListBySnapshot({
             listName: 'userFills',
             list: fills,
@@ -1257,10 +1338,16 @@ export const perps = createModel<RootModel>()({
     async initQuoteUnit(_, rootState) {
       try {
         const quoteUnit = await rootState.app.wallet.getPerpsQuoteUnit();
-        dispatch.perps.patchState({ quoteUnit: quoteUnit ?? 'base' });
+        dispatch.perps.patchState({
+          quoteUnit: quoteUnit ?? 'base',
+          sizeDisplayUnit: quoteUnit === 'usd' ? 'usdc' : 'base',
+        });
       } catch (error) {
         console.error('Failed to load quote unit:', error);
-        dispatch.perps.patchState({ quoteUnit: 'base' });
+        dispatch.perps.patchState({
+          quoteUnit: 'base',
+          sizeDisplayUnit: 'base',
+        });
       }
     },
 

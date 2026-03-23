@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { MarginMode, OrderType } from '../../types';
 import { TopModeStatus, MarginModeModal, LeverageModal } from './components';
 import {
@@ -10,12 +10,25 @@ import {
   TakeOrStopMarketTradingContainer,
   TakeOrStopLimitTradingContainer,
 } from './containers';
+const ORDER_TYPE_KEY = 'rabby_perps_last_order_type';
 
 export const TradingPanel: React.FC = () => {
-  const [orderType, setOrderType] = React.useState<OrderType>(OrderType.MARKET);
+  const dispatch = useRabbyDispatch();
+  const [orderType, setOrderType] = React.useState<OrderType>(() => {
+    const cached = localStorage.getItem(ORDER_TYPE_KEY);
+    if (cached && Object.values(OrderType).includes(cached as OrderType)) {
+      return cached as OrderType;
+    }
+    return OrderType.LIMIT;
+  });
 
   const handleOrderTypeChange = (type: OrderType) => {
     setOrderType(type);
+    localStorage.setItem(ORDER_TYPE_KEY, type);
+    dispatch.perps.patchState({
+      tradingPositionSize: { amount: '', notionalValue: '' },
+      tradingPercentage: 0,
+    });
   };
 
   const renderTradingContainer = () => {
@@ -45,7 +58,7 @@ export const TradingPanel: React.FC = () => {
     <>
       <div className="h-full w-full bg-rb-neutral-bg-1 flex flex-col overflow-hidden rounded-[16px]">
         <div className="flex-1 overflow-y-scroll trades-container-no-scrollbar px-[16px] py-[16px] min-h-0">
-          <div className="space-y-[16px]">
+          <div className="space-y-[12px]">
             <TopModeStatus
               orderType={orderType}
               onOrderTypeChange={handleOrderTypeChange}

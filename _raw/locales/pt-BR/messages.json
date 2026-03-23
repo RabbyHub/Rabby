@@ -347,7 +347,7 @@
       "maxPriorityFeeDisabledAlert": "Por favor, defina o Gas Price primeiro",
       "label": "Rótulo",
       "primaryType": "Tipo principal",
-      "safeServiceNotAvailable": "O serviço Safe não está disponível no momento, por favor, tente mais tarde.",
+      "safeServiceNotAvailable": "O serviço de segurança não está disponível no momento, por favor, tente novamente mais tarde.",
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
@@ -1086,7 +1086,6 @@
       "confirm-delete": "Confirmar Exclusão",
       "private-key": "Chave Privada",
       "seed-phrase": "Frase de Recuperação",
-      "watch-address": "Endereço de Observação",
       "backup-seed-phrase": "Fazer Backup da Frase de Recuperação",
       "delete-all-addresses-but-keep-the-seed-phrase": "Excluir todos os endereços, mas manter a frase de recuperação",
       "delete-all-addresses-and-the-seed-phrase": "Excluir todos os endereços e a frase de recuperação",
@@ -1102,7 +1101,9 @@
       "CurrentDappAddress": {
         "desc": "Alterar o endereço do DApp\n"
       },
-      "noSeedPhraseAddress": "Nenhum endereço foi adicionado para esta frase-semente. Você pode adicionar um endereço ou excluir a frase-semente."
+      "noSeedPhraseAddress": "Nenhum endereço foi adicionado para esta frase-semente. Você pode adicionar um endereço ou excluir a frase-semente.",
+      "watch-address": "Apenas visualização",
+      "deleteSuccess": "Excluído com sucesso"
     },
     "dashboard": {
       "home": {
@@ -1482,7 +1483,8 @@
         "price": "PREÇO",
         "side": "LADO",
         "searchTokenPlaceholder": "Pesquisar Token",
-        "openInTab": "Abra na aba Rabby"
+        "openInTab": "Abra na aba Rabby",
+        "openProMode": "Ativar o Modo Pro"
       },
       "hd": {
         "howToConnectLedger": "Como Conectar o Ledger",
@@ -1565,8 +1567,6 @@
       "importPrivateKey": "Importar Chave Privada",
       "importMyMetamaskAccount": "Importar Minha Conta do MetaMask",
       "addContacts": {
-        "content": "Adicionar Contatos",
-        "description": "Você também pode usá-lo como um endereço de observação",
         "required": "Por favor, insira um endereço",
         "notAValidAddress": "Não é um endereço válido",
         "scanViaMobileWallet": "Escanear via carteira móvel",
@@ -1575,7 +1575,9 @@
         "walletConnect": "WalletConnect",
         "walletConnectVPN": "O WalletConnect será instável se você usar uma VPN.",
         "cameraTitle": "Por favor, escaneie o código QR com sua câmera",
-        "addressEns": "Endereço / ENS"
+        "addressEns": "Endereço / ENS",
+        "content": "Adicionar Endereço Somente para Observação",
+        "description": "Acompanhe qualquer endereço de carteira pública"
       },
       "unableToImport": {
         "title": "Não é possível importar",
@@ -1898,7 +1900,34 @@
       "addFromCurrentSeedPhrase": "Adicionar da Seed Phrase Atual",
       "trezor": {
         "title": "Conectar Trezor"
-      }
+      },
+      "importMoreWallets": "Adicionar Mais Endereços",
+      "createANewSeedPhrase": "Crie uma nova frase semente",
+      "moreWallets": "Mais Carteiras",
+      "addMoreAddresses": "Adicionar Mais Endereços",
+      "addNewAddress": "Criar Novo Endereço",
+      "addressAddedCount_one": "{{count}} Endereço Adicionado",
+      "watchAddress": "Endereço apenas para visualização",
+      "privateKeyTab": "Chave Privada",
+      "bulkImportPrivateKey": "Importação em massa da chave privada",
+      "newAddressAdded": "Novo Endereço Adicionado",
+      "newAddressCreated": "Novo Endereço Criado",
+      "bulkImportPrivateKeyInputTab": "Digite a Chave Privada",
+      "openExtensionToGetStarted": "Abra a extensão Rabby para começar",
+      "duplicateAddressesSkippedTitle": "Alguns endereços já estão importados",
+      "duplicateAddressesSkippedDesc_other": "{{count}} endereços foram ignorados porque já existem.",
+      "newSeedPhraseCreated": "Nova Frase Sementes Criada",
+      "imported": "Importado Antes",
+      "seedPhraseTab": "Frase Semente",
+      "bulkImportPrivateKeyExceeded": "Suporta até {{count}} chaves privadas ao mesmo tempo",
+      "addressImported": "Endereço Importado",
+      "bulkImportPrivateKeySupport": "Suporta até 1000 chaves privadas compatíveis com EVM",
+      "addressAddedCount_other": "{{count}} Endereços Adicionados",
+      "bulkImportPrivateKeyInvalid": "Algumas chaves privadas são inválidas. Por favor, remova ou insira novamente.",
+      "addMoreAddressesFromThisSeedPhrase": "Adicionar mais endereços a partir desta frase-semente",
+      "duplicateAddressesSkippedDesc_one": "{{count}} endereço foi pulado porque já existe.",
+      "bulkImportPrivateKeyPlaceholder": "Cada chave privada deve ser separada por uma nova linha ou um caractere especial.",
+      "addressAdded": "Endereço Adicionado"
     },
     "unlock": {
       "btn": {
@@ -1913,7 +1942,8 @@
       },
       "btnForgotPassword": "Esqueceu a senha?",
       "title": "Rabby Wallet",
-      "description": "Sua carteira de referência para Ethereum e EVM"
+      "description": "Sua carteira de referência para Ethereum e EVM",
+      "biometricFailed": "Desbloqueio biométrico falhou"
     },
     "addToken": {
       "noTokenFound": "Nenhum token encontrado",
@@ -2721,7 +2751,8 @@
         "create": "Criado com sucesso",
         "backupSeedPhraseNow": "Faça backup da frase semente agora",
         "openWallet": "Abrir Wallet",
-        "desc": "Rabby Wallet está pronto para uso!"
+        "desc": "Rabby Wallet está pronto para uso!",
+        "backupSeedPhrase": "Backup Seed Phrase"
       },
       "readyToUse": {
         "pin": "Fixar Rabby Wallet",
@@ -3237,7 +3268,8 @@
         "openTPSlMarketOrderSuccess": "{{tpsl}} ordem de mercado colocada {{direction}} {{coin}}-USD: Quantidade {{size}} ao preço de ${{price}}",
         "openLimitOrderSuccess": "Ordem limite colocada {{direction}} {{coin}}-USD: Tamanho {{size}} ao preço de ${{price}}",
         "terminalTwap": "Terminal Preço Médio Ponderado no Tempo (TWAP)",
-        "closePositionSuccess": "Posição {{direction}} {{coin}}-USD fechada: Tamanho {{size}} ao preço de ${{price}}"
+        "closePositionSuccess": "Posição {{direction}} {{coin}}-USD fechada: Tamanho {{size}} ao preço de ${{price}}",
+        "orderError": "Erro de pedido"
       },
       "closePositionPopup": {
         "closeShort": "Fechar posição vendida",
@@ -3329,7 +3361,10 @@
         "activatedAddress": "Ativado",
         "notActivatedAddress": "Não ativado",
         "noPosition": "Sem Posição",
-        "hyperliquidBalance": "Saldo de contratos perp"
+        "hyperliquidBalance": "Saldo de contratos perp",
+        "selectAddress": "Selecione um Endereço",
+        "position": "Posição",
+        "positions": "Posições"
       },
       "riskLevel": {
         "danger": {
@@ -3455,7 +3490,21 @@
       "rabbyFeeTipsV2": "Tarifa Rabby: 0,02%",
       "long": "Compra",
       "deleteAgentSuccess": "Agente deletado com sucesso",
-      "directDepositFast": "Rápido, 0 Slippage"
+      "directDepositFast": "Rápido, 0 Slippage",
+      "crossMargin": "Margem Cruzada",
+      "marginMode": "Modo de Margem",
+      "settings": "Configurações",
+      "unrealizedPnl": "PNL não realizado",
+      "positionValue": "Valor da Posição",
+      "isolatedMargin": "Margem Isolada",
+      "openProModeInTab": "Abra o Modo Pro em Abas",
+      "cannotChangeMarginModeWithOpenPositions": "Não é possível alterar o Modo de Margem com posições abertas.",
+      "crossMarginDesc": "Todas as posições compartilham a mesma margem. Isso reduz a chance de uma única posição ser liquidada, mas todos os fundos de margem cruzada podem ser perdidos em movimentos extremos do mercado.",
+      "isolatedMarginDesc": "Cada posição utiliza sua própria margem. As perdas são limitadas àquela posição, mas pode ser liquidada mais facilmente.",
+      "currentPrice": "Preço Atual",
+      "liquidationDistanceDown": "A queda de <bold>{{percent}}</bold> irá acionar a liquidação.",
+      "details": "Detalhes",
+      "liquidationDistanceUp": "Subindo <bold>{{percent}}</bold> irá acionar a liquidação"
     },
     "perpsPro": {
       "chatArea": {
@@ -3516,7 +3565,8 @@
           "positions": "Posições",
           "size": "Tamanho da posição",
           "tpSl": "Lucro-alvo / Stop Loss",
-          "fundingTipsV2": "Financiamento líquido desde que a posição foi aberta. Um valor de financiamento vermelho (negativo) indica financiamento pago, enquanto um valor verde (positivo) indica financiamento recebido."
+          "fundingTipsV2": "Financiamento líquido desde que a posição foi aberta. Um valor de financiamento vermelho (negativo) indica financiamento pago, enquanto um valor verde (positivo) indica financiamento recebido.",
+          "fundingTipsBold": "Isto mostra o total de funding liquidado desde que a posição foi aberta. Valores <bold>Verde (positivo)</bold> significam que você ganhou de outros traders, enquanto valores <bold>Vermelho (negativo)</bold> são os custos de funding que você pagou a eles."
         },
         "emptyMessage": {
           "orderHistory": "Sem histórico de ordens",
@@ -3675,7 +3725,42 @@
         "tpSellMustBeHigherThanMidPrice": "O preço da ordem de venda deve ser maior que o preço médio.",
         "reduceOnlyTips": "Esta ordem não abrirá uma nova posição, independentemente do tamanho da ordem. Ela será comparada à posição existente no momento da execução.",
         "deposit": "Depósito",
-        "addFundsToGetStarted": "Adicione fundos para começar."
+        "addFundsToGetStarted": "Adicione fundos para começar.",
+        "price": "Preço",
+        "cost": "Custo",
+        "Sell": "Vender",
+        "action": "Ação",
+        "max": "MÁXIMO",
+        "buyTrigger": "Comprar Gatilho",
+        "orderCount": "Contagem de Pedidos",
+        "long": "Long: Comprar",
+        "size": "Tamanho",
+        "sideLongBuy": "longo (comprar)",
+        "sideShortSell": "short (vender)",
+        "sellTrigger": "Venda de Gatilho",
+        "estimatedPnlWillBe": "Seu PnL estimado será",
+        "short": "Short: Vender a descoberto",
+        "bboDisabledTooltip": "BBO não é suportado quando {{bboDisabledReason}} está habilitado",
+        "Buy": "Comprar",
+        "slTriggerLessThanOrderPrice": "Seu preço de gatilho SL deve ser inferior ao seu preço de ordem.",
+        "orderTypeTooltipMarket": "A ordem de mercado é imediatamente combinada com o melhor preço de mercado disponível.",
+        "slTriggerMoreThanOrderPrice": "Seu preço de disparo de SL deve ser maior que o preço do seu pedido.",
+        "tpTriggerMoreThanOrderPrice": "Seu preço de gatilho de TP deve ser maior que o preço do seu pedido.",
+        "tpTriggerLessThanOrderPrice": "Seu preço de ativação de TP deve ser menor que o seu preço de ordem.",
+        "slTriggerPriceIsZero": "Seu preço de disparo de SL é 0 e não será definido quando você fizer {{side}}.",
+        "tpTriggerPriceIsZero": "Seu preço de disparo de TP é 0 e não será definido quando você for {{side}}.",
+        "min": "min",
+        "orderTypeTooltipLimit": "Uma ordem limitada é uma ordem para comprar ou vender a um preço específico ou melhor. Ordens limitadas não são garantidas para execução.",
+        "hour": "hora",
+        "maxDurationTwap": "Duração máxima para executar a ordem TWAP é",
+        "orderTypeTooltipTakeMarket": "Faça Ordens de Mercado se tornam ordens de mercado quando um preço de take especificado é alcançado. Especifique um preço de gatilho para ativar a ordem.",
+        "orderTypeTooltipTakeLimit": "As Ordens de Limite se tornam ordens de limite quando um preço de take especificado é alcançado. Especifique um preço de gatilho para ativar a ordem.",
+        "orderTypeTooltipStopMarket": "Ordens de Mercado de Parada se tornam ordens de mercado quando um preço especificado é atingido. Especifique um preço de gatilho para ativar a ordem.",
+        "totalTime": "Tempo Total (5m-24h)",
+        "orderTypeTooltipScale": "Ordens escalonadas permitem que você divida um valor em múltiplas subordens para minimizar o impacto no mercado.",
+        "bboTips": "Melhor Oferta de Licitação (BBO) refere-se ao melhor preço de venda disponível e ao melhor preço de compra disponível no livro de ordens a qualquer momento. As ordens BBO são sempre colocadas utilizando o tamanho mínimo de tick preciso, garantindo preços granulares e precisos, independentemente das preferências de exibição.",
+        "orderTypeTooltipStopLimit": "Ordens de Stop Limit tornam-se ordens limitadas quando um preço de stop especificado é alcançado. Especifique um preço de gatilho para ativar a ordem.",
+        "orderTypeTooltipTwap": "TWAP (Preço Médio Ponderado pelo Tempo) é uma estratégia de execução de trades algorítmica que visa alcançar um preço médio de execução próximo ao preço médio ponderado pelo tempo do período especificado pelo usuário."
       },
       "marginMode": {
         "confirm": "Confirmar",
@@ -3683,7 +3768,9 @@
         "isolated": "Isolado",
         "cross": "Margem Cruzada",
         "isolatedDescription": "Gerencie o seu risco em posições individuais alocando a quantidade de margem destinada a cada uma. Se a relação de margem de uma posição isolada atingir 100%, a posição será liquidada. A margem pode ser adicionada ou removida às posições individuais neste modo.",
-        "crossDescription": "Todas as posições cruzadas compartilham a mesma margem cruzada como garantia. Em caso de liquidação, seu saldo de margem e quaisquer posições em aberto remanescentes sob a margem cruzada neste modo podem ser perdidos."
+        "crossDescription": "Todas as posições cruzadas compartilham a mesma margem cruzada como garantia. Em caso de liquidação, seu saldo de margem e quaisquer posições em aberto remanescentes sob a margem cruzada neste modo podem ser perdidos.",
+        "onlyIsolatedSupported": "Este ativo suporta apenas o modo de margem isolada.",
+        "cannotChange": "Não é possível mudar o modo de margem"
       },
       "leverage": {
         "higherLeverageRisk": "Maior alavancagem aumenta o risco de liquidação.",
@@ -3996,7 +4083,8 @@
           "balance": "Saldo",
           "assets": "Token"
         },
-        "title": "Selecionar Token de Reembolso"
+        "title": "Selecionar Token de Reembolso",
+        "zeroLtvCollateralTips": "Você tem o seguinte LTV = 0 colaterais e, portanto, só pode pagar com esses colaterais primeiro, de acordo com as regras de pagamento de colaterais."
       },
       "manageEmode": {
         "actions": {
@@ -4066,7 +4154,8 @@
         "entryTips": "Uma clique para trocar seu ativo emprestado, reduzindo etapas e taxas.",
         "lpRiskWarning": "Fator de saúde baixo após a troca. Sua posição terá um risco maior de liquidação.",
         "priceImpactTips": "Alta impacto de preço ({{lostValue}}). Esta rota pode retornar mais devido à baixa liquidez ou ao tamanho pequeno do pedido.",
-        "lpDangerWarning": "Seu fator de saúde após esta troca ficará criticamente baixo e pode resultar em liquidação. Por favor, escolha um ativo diferente ou reduza o montante da troca para se manter seguro."
+        "lpDangerWarning": "Seu fator de saúde após esta troca ficará criticamente baixo e pode resultar em liquidação. Por favor, escolha um ativo diferente ou reduza o montante da troca para se manter seguro.",
+        "maxLtvWarning": "Colateral insuficiente para cobrir a nova posição de empréstimo. A carteira deve ter poder de empréstimo restante para realizar a troca de dívida."
       },
       "repayWithCollateral": {
         "action": {
@@ -4472,7 +4561,7 @@
       "HdKeyring": "Frase-semente",
       "SimpleKeyring": "Chave privada importada",
       "WatchAddressKeyring": "Contato",
-      "watchAddressKeyring": "Contato",
+      "watchAddressKeyring": "Apenas para visualização",
       "simpleKeyring": "Chave Privada"
     },
     "keyring": {
@@ -4492,7 +4581,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Criado pela Frase-semente",
       "SimpleKeyring": "Importado pela Chave Privada",
-      "WatchAddressKeyring": "Contato"
+      "WatchAddressKeyring": "Apenas visualização"
     },
     "IMPORTED_HD_KEYRING": "Importado pela Frase-semente",
     "SIGN_PERMISSION_OPTIONS": {

@@ -69,7 +69,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
       await changeHDPathTask(data.type);
     }
 
-    await createTask(() => getCurrentAccounts());
+    await createTask(() => getCurrentAccounts({ resetInitialAccounts: true }));
     setSelectedAccounts([]);
     setSetting(data);
   }, []);

@@ -84,6 +84,10 @@ import {
   isSameAddress,
   setPopupIcon,
 } from 'background/utils';
+import {
+  handleGasAccountLoginSuccess as syncGasAccountLoginSuccess,
+  trackGasAccountActiveStatus as trackCurrentGasAccountActiveStatus,
+} from '../utils/gasAccountLogin';
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
@@ -1686,8 +1690,19 @@ export class WalletController extends BaseController {
     return false;
   };
 
-  openInDesktop = async (_url: string) => {
-    const desktopTabId = preferenceService.getPreference('desktopTabId');
+  openInDesktop = async (
+    _url: string,
+    options?: {
+      desktopTabId?: Browser.Tabs.Tab['id'];
+      triggerFocusEventOnDesktop?: boolean;
+    }
+  ) => {
+    const {
+      desktopTabId: inputDesktopTabId,
+      triggerFocusEventOnDesktop = true,
+    } = options || {};
+    const desktopTabId: Browser.Tabs.Tab['id'] =
+      inputDesktopTabId || preferenceService.getPreference('desktopTabId');
     const currentDesktopTab = desktopTabId
       ? await Browser.tabs.get(desktopTabId).catch(() => null)
       : null;
@@ -1698,9 +1713,10 @@ export class WalletController extends BaseController {
         active: true,
         url: url,
       });
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.DESKTOP.FOCUSED,
-      });
+      triggerFocusEventOnDesktop &&
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.DESKTOP.FOCUSED,
+        });
       const currentWindow = await Browser.windows.getLastFocused();
       if (tab.windowId && tab.windowId !== currentWindow.id) {
         Browser.windows.update(tab.windowId, {
@@ -2145,6 +2161,37 @@ export class WalletController extends BaseController {
   getGasAccountData = gasAccountService.getGasAccountData;
   getGasAccountSig = gasAccountService.getGasAccountSig;
   setGasAccountSig = gasAccountService.setGasAccountSig;
+  setGasAccountBalanceState = (accountId?: string, hasBalance?: boolean) => {
+    gasAccountService.setCurrentBalanceState(accountId, hasBalance);
+  };
+
+  trackGasAccountActiveStatus = async () => {
+    const { sig, accountId } = this.getGasAccountSig();
+    return trackCurrentGasAccountActiveStatus(sig, accountId);
+  };
+
+  trackGasAccountActiveStatusOncePerDay = async () => {
+    if (gasAccountService.hasTrackedGa4ActiveToday()) {
+      return false;
+    }
+
+    const tracked = await this.trackGasAccountActiveStatus();
+    if (tracked) {
+      gasAccountService.markGa4ActiveTracked();
+    }
+
+    return tracked;
+  };
+
+  handleGasAccountLoginSuccess = async (
+    signature: string,
+    account: Account,
+    options?: {
+      redirectToGasAccount?: boolean;
+    }
+  ) => {
+    await syncGasAccountLoginSuccess(signature, account, options);
+  };
 
   getCloseTipsChains = OfflineChainsService.getCloseTipsChains;
   setCloseTipsChains = OfflineChainsService.setCloseTipsChains;
@@ -3447,6 +3494,41 @@ export class WalletController extends BaseController {
     }
   };
 
+  importPrivateKeys = async (dataList: string[]) => {
+    const privateKeys = dataList.map((item) => stripHexPrefix(item));
+
+    for (const privateKey of privateKeys) {
+      const buffer = Buffer.from(privateKey, 'hex');
+      const error = new Error(t('background.error.invalidPrivateKey'));
+
+      try {
+        if (!isValidPrivate(buffer)) {
+          throw error;
+        }
+      } catch {
+        throw error;
+      }
+    }
+
+    const {
+      keyrings,
+      duplicateAddresses,
+    } = await keyringService.importPrivateKeys(privateKeys);
+    const accounts = await Promise.all(
+      keyrings.map((keyring) => this._getAccountFromKeyring(keyring))
+    );
+    const lastAccount = accounts[accounts.length - 1];
+
+    if (lastAccount) {
+      preferenceService.setCurrentAccount(lastAccount);
+    }
+
+    return {
+      accounts,
+      duplicateAddresses,
+    };
+  };
+
   importPrivateKey = async (data) => {
     const privateKey = stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');
@@ -3609,6 +3691,16 @@ export class WalletController extends BaseController {
         });
       }
     });
+  };
+
+  removeAddresses = async (
+    payloads: [string, string, string | undefined, boolean | undefined][]
+  ) => {
+    await Promise.all(
+      payloads.map(([address, type, brand, removeEmptyKeyrings]) =>
+        this.removeAddress(address, type, brand, removeEmptyKeyrings)
+      )
+    );
   };
 
   removeContactInfo = (address: string) => {
@@ -3874,6 +3966,24 @@ export class WalletController extends BaseController {
     const result = await keyringService.addNewAccount(keyring);
     this._setCurrentAccountFromKeyring(keyring, -1);
     return result;
+  };
+
+  deriveNextAccountFromMnemonicByPublicKey = async (publicKey: string) => {
+    const keyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
+    if (!keyring) {
+      throw new Error(t('background.error.notFoundKeyringByAddress'));
+    }
+
+    const accounts = await keyringService.addNewAccount(keyring);
+    const nextAddress = accounts[accounts.length - 1];
+    this._setCurrentAccountFromKeyring(keyring, -1);
+    HDKeyRingLastAddAddrTimeService.addUnixRecord(publicKey);
+
+    return {
+      address: nextAddress,
+      alias: this.getAlianName(nextAddress) || '',
+      publicKey,
+    };
   };
 
   getAccountsCount = async () => {
@@ -4525,7 +4635,7 @@ export class WalletController extends BaseController {
     }
   };
 
-  private async _setCurrentAccountFromKeyring(keyring, index = 0) {
+  private async _getAccountFromKeyring(keyring, index = 0) {
     const accounts = keyring.getAccountsWithBrand
       ? await keyring.getAccountsWithBrand()
       : await keyring.getAccounts();
@@ -4540,6 +4650,12 @@ export class WalletController extends BaseController {
       type: keyring.type,
       brandName: typeof account === 'string' ? keyring.type : account.brandName,
     };
+
+    return _account;
+  }
+
+  private async _setCurrentAccountFromKeyring(keyring, index = 0) {
+    const _account = await this._getAccountFromKeyring(keyring, index);
     preferenceService.setCurrentAccount(_account);
 
     return [_account];
@@ -5397,11 +5513,6 @@ export class WalletController extends BaseController {
     return signature;
   };
 
-  /**
-   * 执行Gas Account登录的核心流程
-   * @param account 账户信息
-   * @returns 登录结果，包含签名和是否成功
-   */
   private async executeGasAccountLogin(
     account: Account
   ): Promise<{
@@ -5456,19 +5567,12 @@ export class WalletController extends BaseController {
     return { signature, success: result?.success || false, result };
   }
 
-  private async saveGasAccountLoginState(signature: string, account: Account) {
-    await gasAccountService.setGasAccountSig(signature, account);
-    await pageStateCacheService.clear();
-    await pageStateCacheService.set({
-      path: '/gas-account',
-      states: {},
-    });
-  }
-
   signGasAccount = async (account: Account, isClaimGift: boolean = false) => {
     const { signature, success } = await this.executeGasAccountLogin(account);
     if (success && signature) {
-      await this.saveGasAccountLoginState(signature, account);
+      await this.handleGasAccountLoginSuccess(signature, account, {
+        redirectToGasAccount: true,
+      });
     }
     if (isClaimGift) {
       await this.claimGasAccountGift(account.address);

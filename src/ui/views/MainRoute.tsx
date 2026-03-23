@@ -57,6 +57,14 @@ import CreateMnemonics from './CreateMnemonics';
 import ImportHardware from './ImportHardware';
 import { CustomTestnet } from './CustomTestnet';
 import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
+import { AddNewAddress } from './AddAddress/AddNewAddress';
+import { AddMoreAddressesFromSeedPhrase } from './AddAddress/AddMoreAddressesFromSeedPhrase';
+import { CreateAddressSuccess } from './AddAddress/CreateAddressSuccess';
+import ImportAddressSuccess from './AddAddress/ImportAddressSuccess';
+import { HardwareWallets } from './AddAddress/HardwareWallets';
+import BulkImportPrivateKey from './AddAddress/BulkImportPrivateKey';
+import ImportKeyOrSeed from './AddAddress/ImportKeyOrSeed';
+import { InstitutionalWallets } from './AddAddress/InstitutionalWallets';
 import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 import { GasAccount } from './GasAccount';
@@ -149,6 +157,8 @@ const Main = () => {
         ) {
           return;
         }
+        await wallet.trackGasAccountActiveStatusOncePerDay();
+
         ga4.fireEvent(
           `ThemeMode_${
             preference.themeMode === DARK_MODE_TYPE.dark ? 'Dark' : 'Light'
@@ -168,6 +178,23 @@ const Main = () => {
         ga4.fireEvent(`Whitelist_${isEnabledWhiteList ? 'On' : 'Off'}`, {
           event_category: 'Settings Snapshot',
         });
+
+        ga4.fireEvent(
+          `PwdForNonWhitelistedTx_${
+            preference.isEnabledPwdForNonWhitelistedTx ? 'On' : 'Off'
+          }`,
+          {
+            event_category: 'Settings Snapshot',
+          }
+        );
+
+        const isBiometricsEnabled = preference.biometricUnlockEnabled;
+        ga4.fireEvent(
+          `Unlock_Biometrics_${isBiometricsEnabled ? 'On' : 'Off'}`,
+          {
+            event_category: 'Settings Snapshot',
+          }
+        );
         wallet.updateGa4EventTime(Date.now());
       }
     })();
@@ -331,6 +358,38 @@ const Main = () => {
 
         <PrivateRoute exact path="/import/add-from-current-seed-phrase">
           <AddFromCurrentSeedPhrase />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/new-address">
+          <AddNewAddress />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/import">
+          <ImportKeyOrSeed />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/bulk-import-private-key">
+          <BulkImportPrivateKey />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/create-address-success">
+          <CreateAddressSuccess />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/import-address-success">
+          <ImportAddressSuccess />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/add-more-from-seed-phrase">
+          <AddMoreAddressesFromSeedPhrase />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/hardware-wallets">
+          <HardwareWallets />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/institutional-wallets">
+          <InstitutionalWallets />
         </PrivateRoute>
 
         <PrivateRoute exact path="/history">

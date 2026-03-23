@@ -9,10 +9,7 @@ import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import { EVENTS, KEYRING_CLASS } from 'consts';
-import WatchLogo from 'ui/assets/waitcup.svg';
-import IconWalletconnect from 'ui/assets/walletconnect.svg';
-import IconScan from 'ui/assets/scan.svg';
-import IconArrowDown from 'ui/assets/big-arrow-down.svg';
+import { ReactComponent as RcIconArrowDown } from 'ui/assets/big-arrow-down.svg';
 import IconEnter from 'ui/assets/enter.svg';
 import { useMedia } from 'react-use';
 import clsx from 'clsx';
@@ -21,8 +18,10 @@ import IconBack from 'ui/assets/icon-back.svg';
 import { useRepeatImportConfirm } from 'ui/utils/useRepeatImportConfirm';
 import eventBus from '@/eventBus';
 import { safeJSONParse } from '@/utils';
-import { UI_TYPE } from '@/constant/ui';
-import qs from 'qs';
+import WatchLogo from 'ui/assets/watch-only-hero.svg';
+import { useCreateAddressActions } from './AddAddress/useCreateAddress';
+import { RcWatchAddressScan } from '../assets/add-address';
+import { is } from 'immer/dist/internal';
 
 const ImportWatchAddress: React.FC<{
   isInModal?: boolean;
@@ -32,19 +31,16 @@ const ImportWatchAddress: React.FC<{
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
+  const { openSuccessPage } = useCreateAddressActions({ onNavigate });
   const [form] = Form.useForm();
   const [disableKeydown, setDisableKeydown] = useState(false);
-  const [walletconnectModalVisible, setWalletconnectModalVisible] = useState(
-    false
-  );
+
   const [QRScanModalVisible, setQRScanModalVisible] = useState(false);
-  const [walletconnectUri, setWalletconnectUri] = useState('');
   const [ensResult, setEnsResult] = useState<null | {
     addr: string;
     name: string;
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
-  const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const isWide = useMedia('(min-width: 401px)');
   const [isValidAddr, setIsValidAddr] = useState(false);
   const { show, contextHolder } = useRepeatImportConfirm();
@@ -52,29 +48,17 @@ const ImportWatchAddress: React.FC<{
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
       setDisableKeydown(false);
-      const successShowAccounts = accounts.map((item, index) => {
-        return { ...item, index: index + 1 };
-      });
-      if (UI_TYPE.isDesktop) {
-        onNavigate?.('success', {
-          accounts: successShowAccounts,
-          title: t('page.newAddress.importedSuccessfully'),
-          editing: true,
-          importedAccount: true,
-          importedLength: importedAccounts && importedAccounts?.length,
-        });
-      } else {
-        history.replace({
-          pathname: '/popup/import/success',
-          state: {
-            accounts: successShowAccounts,
-            title: t('page.newAddress.importedSuccessfully'),
-            editing: true,
-            importedAccount: true,
-            importedLength: importedAccounts && importedAccounts?.length,
-          },
-        });
-      }
+      openSuccessPage(
+        {
+          addresses: accounts.map((item) => ({
+            address: item.address,
+            alias: '',
+          })),
+          publicKey: '',
+          title: t('page.newAddress.addressAdded'),
+        },
+        { replace: true }
+      );
     },
     onError(err) {
       if (err.message?.includes?.('DuplicateAccountError')) {
@@ -107,7 +91,7 @@ const ImportWatchAddress: React.FC<{
   const handleKeyDown = useMemo(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 'enter') {
-        if (ensResult) {
+        if (ensResult && form.getFieldValue('address') === ensResult.name) {
           e.preventDefault();
           handleConfirmENS(ensResult.addr);
         }
@@ -123,7 +107,6 @@ const ImportWatchAddress: React.FC<{
     if (isValidAddress(address)) {
       setIsValidAddr(true);
     }
-    setWalletconnectModalVisible(false);
   }, []);
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -139,15 +122,7 @@ const ImportWatchAddress: React.FC<{
       );
     };
   }, [handleKeyDown]);
-  const handleImportByWalletconnect = async () => {
-    const uri = await wallet.walletConnectScanAccount();
 
-    setWalletconnectUri(uri!);
-    setWalletconnectModalVisible(true);
-  };
-  const handleWalletconnectModalCancel = () => {
-    setWalletconnectModalVisible(false);
-  };
   const handleScanQRCodeSuccess = (data) => {
     form.setFieldsValue({
       address: data,
@@ -180,20 +155,24 @@ const ImportWatchAddress: React.FC<{
   };
   const handleValuesChange = async ({ address }: { address: string }) => {
     setTags([]);
-    if (!isValidAddress(address)) {
+    setEnsResult(null);
+    if (isValidAddress(address?.trim())) {
+      setIsValidAddr(true);
+      form.setFieldsValue({
+        address: address.trim(),
+      });
+      return;
+    } else {
       setIsValidAddr(false);
       try {
         const result = await wallet.openapi.getEnsAddressByName(address);
         setDisableKeydown(true);
-        if (result && result.addr) {
+        if (result && result.addr && result.addr.startsWith('0x')) {
           setEnsResult(result);
         }
       } catch (e) {
         setEnsResult(null);
       }
-    } else {
-      setIsValidAddr(true);
-      setEnsResult(null);
     }
   };
   const handleNextClick = () => {
@@ -211,15 +190,8 @@ const ImportWatchAddress: React.FC<{
       history.replace('/');
     }
   };
-  const allAccounts = async () => {
-    const importedAccounts = await wallet.getTypedAccounts(KEYRING_CLASS.WATCH);
-    if (importedAccounts && importedAccounts[0]?.accounts) {
-      setImportedAccounts(importedAccounts[0]?.accounts);
-    }
-  };
   useEffect(() => {
     handleLoadCache();
-    allAccounts();
     return () => {
       wallet.clearPageStateCache();
     };
@@ -277,16 +249,9 @@ const ImportWatchAddress: React.FC<{
               },
             ]}
           >
-            <Input.TextArea
-              placeholder={t('page.newAddress.addContacts.addressEns')}
-              maxLength={44}
-              size="large"
-              className="border-bright-on-active leading-normal"
-              autoFocus
-              autoSize
-              spellCheck={false}
-            />
+            <InputWithScanIcon handleImportByQrcode={handleImportByQrcode} />
           </Form.Item>
+
           {tags.length > 0 && (
             <ul className="tags">
               {tags.map((tag) => (
@@ -308,62 +273,24 @@ const ImportWatchAddress: React.FC<{
             </div>
           )}
         </div>
-        <div className="flex justify-between px-20">
-          <div
-            className="w-[172px] import-watchmode__button"
-            onClick={handleImportByWalletconnect}
-          >
-            <img src={IconWalletconnect} className="icon icon-walletconnect" />
-            {t('page.newAddress.addContacts.scanViaMobileWallet')}
-          </div>
-          <div
-            className="w-[172px] import-watchmode__button"
-            onClick={handleImportByQrcode}
-          >
-            <img src={IconScan} className="icon icon-walletconnect" />
-            {t('page.newAddress.addContacts.scanViaPcCamera')}
-          </div>
-        </div>
       </div>
       <ModalComponent
         closable={false}
-        height={400}
-        className="walletconnect-modal"
-        visible={walletconnectModalVisible}
-        onCancel={handleWalletconnectModalCancel}
-        // width={360}
-      >
-        <p className="guide">{t('page.newAddress.addContacts.scanQRCode')}</p>
-        <div className="symbol">
-          <img src={IconWalletconnect} className="icon icon-walletconnect" />
-          {t('page.newAddress.addContacts.walletConnect')}
-        </div>
-        {walletconnectUri && (
-          <>
-            <div className="qrcode">
-              <QRCode value={walletconnectUri} size={176} />
-            </div>
-            <div className="text-12 text-r-neutral-foot text-center mt-12">
-              {t('page.newAddress.addContacts.walletConnectVPN')}
-            </div>
-          </>
-        )}
-      </ModalComponent>
-      <ModalComponent
-        closable={false}
-        height={400}
+        height={448}
         className="walletconnect-modal"
         visible={QRScanModalVisible}
         onCancel={handleQRScanModalCancel}
         // width={360}
         destroyOnClose
       >
-        <p className="guide">{t('page.newAddress.addContacts.cameraTitle')}</p>
-        <img src={IconArrowDown} className="icon icon-arrow-down" />
-        <div className="qrcode">
+        <p className="guide text-20 font-medium text-r-neutral-title1">
+          {t('page.newAddress.addContacts.cameraTitle')}
+        </p>
+        <RcIconArrowDown className="icon icon-arrow-down" />
+        <div className="qrcode border-none w-[260px] h-[260px] mx-auto p-0">
           <QRCodeReader
-            width={176}
-            height={176}
+            width={260}
+            height={260}
             onSuccess={handleScanQRCodeSuccess}
             onError={handleScanQRCodeError}
           />
@@ -372,5 +299,38 @@ const ImportWatchAddress: React.FC<{
     </StrayPageWithButton>
   );
 };
+
+function InputWithScanIcon({
+  onChange,
+  handleImportByQrcode,
+  value,
+}: {
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  handleImportByQrcode: () => void;
+  value?: HTMLTextAreaElement['value'];
+}) {
+  const { t } = useTranslation();
+  return (
+    <div className="relative">
+      <Input.TextArea
+        placeholder={t('page.newAddress.addContacts.addressEns')}
+        maxLength={44}
+        size="large"
+        className="border-bright-on-active leading-normal min-h-[100px]"
+        autoFocus
+        autoSize
+        spellCheck={false}
+        onChange={onChange}
+        value={value}
+      />
+      <div
+        className="absolute right-[16px] bottom-[16px] flex items-center justify-center cursor-pointer"
+        onClick={handleImportByQrcode}
+      >
+        <RcWatchAddressScan />
+      </div>
+    </div>
+  );
+}
 
 export default ImportWatchAddress;

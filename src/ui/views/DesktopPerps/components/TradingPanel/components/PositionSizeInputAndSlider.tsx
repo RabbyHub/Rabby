@@ -35,6 +35,7 @@ interface PositionSizeInputAndSliderProps {
   szDecimals: number;
   priceChangeUsdValue?: boolean;
   reduceOnly?: boolean;
+  pinToAmount?: boolean;
 }
 
 export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProps> = ({
@@ -50,6 +51,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   szDecimals,
   priceChangeUsdValue,
   reduceOnly,
+  pinToAmount,
 }) => {
   const [
     percentageInputValue,
@@ -140,9 +142,31 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   useEffect(() => {
     if (priceChangeUsdValue && positionSize.amount) {
       if (percentage > 0 && positionSize.inputSource === 'slider') {
-        // When set via slider, pin to USDC notional value
-        // and recalculate coin amount from notional / new price.
-        // This prevents "insufficient balance" when price rises after setting 100%.
+        // pinToAmount: keep coin amount fixed, only update USD display
+        if (pinToAmount && price) {
+          const newNotional = calcAssetNotionalByAmount(
+            positionSize.amount,
+            price
+          );
+          setPositionSize({
+            amount: positionSize.amount,
+            notionalValue: newNotional,
+            inputSource: 'slider',
+          });
+          return;
+        }
+        // At 100%, pin to maxTradeSize directly to avoid precision loss
+        if (percentage === 100 && maxTradeSize && price) {
+          const newNotional = calcAssetNotionalByAmount(maxTradeSize, price);
+          setPositionSize({
+            amount: maxTradeSize,
+            notionalValue: newNotional,
+            inputSource: 'slider',
+          });
+          return;
+        }
+        // Pin to USDC notional value and recalculate coin amount when price
+        // changes. This prevents "insufficient balance" when price rises.
         const notional = positionSize.notionalValue;
         if (notional && price) {
           let newAmount = calcAssetAmountByNotional(
@@ -219,6 +243,22 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
   const handlePercentageChange = useMemoizedFn((newPercentage: number) => {
     setPercentage(newPercentage);
 
+    if (!price || newPercentage === 0) {
+      setPositionSize({ amount: '', notionalValue: '', inputSource: 'slider' });
+      return;
+    }
+
+    // At 100%, use maxTradeSize directly to avoid floating-point precision loss
+    if (newPercentage === 100 && maxTradeSize) {
+      const notional = calcAssetNotionalByAmount(maxTradeSize, price);
+      setPositionSize({
+        amount: maxTradeSize,
+        notionalValue: notional,
+        inputSource: 'slider',
+      });
+      return;
+    }
+
     const orderSize = new BigNumber(maxTradeSize || 0)
       .multipliedBy(newPercentage)
       .div(100);
@@ -226,18 +266,14 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
       .multipliedBy(new BigNumber(price))
       .toNumber();
 
-    if (notionalValue === 0 || !price) {
+    if (notionalValue === 0) {
       setPositionSize({ amount: '', notionalValue: '', inputSource: 'slider' });
-      // setPercentage(0);
       return;
     }
 
     let amount = calcAssetAmountByNotional(notionalValue, price, szDecimals);
     let newNotionalValue = calcAssetNotionalByAmount(amount, price);
-    if (
-      maxTradeSize &&
-      (Number(amount) > Number(maxTradeSize) || newPercentage === 100)
-    ) {
+    if (maxTradeSize && Number(amount) > Number(maxTradeSize)) {
       amount = maxTradeSize;
       newNotionalValue = calcAssetNotionalByAmount(maxTradeSize, price);
     }

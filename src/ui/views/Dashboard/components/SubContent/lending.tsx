@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import clsx from 'clsx';
 import { Skeleton } from 'antd';
 import { useAsync } from 'react-use';
@@ -11,6 +11,7 @@ import { HF_COLOR_GOOD_THRESHOLD } from '@/ui/views/DesktopLending/utils/constan
 import { fetchLendingHealthFactorForDashboard } from '@/ui/views/DesktopLending/hooks';
 import { CustomMarket } from '@/ui/views/DesktopLending/config/market';
 import { isNumber } from 'lodash';
+import { DragOverlayContext } from '../DashboardPanel';
 
 export const LendingSubContent = () => {
   const wallet = useWallet();
@@ -47,8 +48,10 @@ export const LendingSubContent = () => {
 
   if (lendingId !== 'aave') return null;
 
+  const isDragOverlay = useContext(DragOverlayContext);
+
   if (loading) {
-    return (
+    return isDragOverlay ? null : (
       <div className="absolute bottom-[6px] text-[11px] font-medium">
         <Skeleton.Button
           active={true}

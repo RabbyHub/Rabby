@@ -300,7 +300,7 @@
       "safeAdminSigned": "Đã ký",
       "unwrap": "Gỡ mã Token",
       "eip1559Desc1": "Trên các chuỗi hỗ trợ EIP-1559, Phí Ưu Tiên là tiền boa cho các thợ đào để xử lý giao dịch của bạn. Bạn có thể tiết kiệm chi phí gas cuối cùng của mình bằng cách giảm Phí Ưu Tiên, điều này có thể tốn thêm thời gian để giao dịch được xử lý.",
-      "safeServiceNotAvailable": "Dịch vụ an toàn hiện không khả dụng, vui lòng thử lại sau.",
+      "safeServiceNotAvailable": "Dịch vụ Safe hiện không khả dụng, vui lòng thử lại sau.",
       "nftCollection": "Bộ sưu tập NFT",
       "popularity": "Sự phổ biến",
       "chain": "Chuỗi",
@@ -1169,7 +1169,6 @@
       "passphraseError": "Mật khẩu không hợp lệ",
       "sort-address": "Sắp xếp Địa chỉ",
       "add-address": "Thêm địa chỉ",
-      "watch-address": "Theo dõi Địa chỉ",
       "sort-by-balance": "Sắp xếp theo số dư",
       "sort-by-address-note": "Sắp xếp theo ghi chú địa chỉ",
       "delete-private-key-modal-title_other": "Xóa {{count}} địa chỉ khóa riêng",
@@ -1194,7 +1193,9 @@
       "CurrentDappAddress": {
         "desc": "Đổi địa chỉ Dapp\n"
       },
-      "noSeedPhraseAddress": "Không có địa chỉ nào được thêm cho cụm từ hạt giống này. Bạn có thể thêm một địa chỉ hoặc xóa cụm từ hạt giống."
+      "noSeedPhraseAddress": "Không có địa chỉ nào được thêm cho cụm từ hạt giống này. Bạn có thể thêm một địa chỉ hoặc xóa cụm từ hạt giống.",
+      "watch-address": "Chỉ xem",
+      "deleteSuccess": "Xóa thành công"
     },
     "dashboard": {
       "home": {
@@ -1442,7 +1443,8 @@
         "biometricUnlockUnsupported": "Thiết bị này không hỗ trợ mở khóa sinh trắc học.",
         "biometricUnlockEnableFailed": "Không thể bật mở khóa sinh trắc học",
         "biometricUnlockSetupDesc": "Xác nhận mật khẩu của bạn để kích hoạt mở khóa sinh trắc học.",
-        "biometricUnlockDisabled": "Mở khóa sinh trắc học đã bị vô hiệu hóa"
+        "biometricUnlockDisabled": "Mở khóa sinh trắc học đã bị vô hiệu hóa",
+        "biometricUnlockPasswordPlaceholder": "Nhập mật khẩu"
       },
       "tokenDetail": {
         "txFailed": "Thất bại",
@@ -1571,7 +1573,8 @@
         "side": "BÊN",
         "price": "GIÁ",
         "searchTokenPlaceholder": "Tìm kiếm Token",
-        "openInTab": "Mở trong Rabby Tab"
+        "openInTab": "Mở trong Rabby Tab",
+        "openProMode": "Mở Chế Độ Chuyên Nghiệp"
       },
       "hd": {
         "ledger": {
@@ -1651,15 +1654,15 @@
       "addContacts": {
         "required": "Vui lòng nhập địa chỉ",
         "scanViaPcCamera": "Quét qua camera máy tính",
-        "content": "Thêm Danh Bạ",
         "scanViaMobileWallet": "Quét qua ví di động",
         "notAValidAddress": "Địa chỉ không hợp lệ",
-        "description": "Bạn cũng có thể sử dụng nó như một địa chỉ chỉ xem.",
         "walletConnectVPN": "WalletConnect sẽ không ổn định nếu bạn sử dụng VPN.",
         "walletConnect": "Kết nối ví",
         "addressEns": "Địa chỉ / ENS",
         "scanQRCode": "Quét mã QR với ví tương thích WalletConnect",
-        "cameraTitle": "Vui lòng quét mã QR bằng camera của bạn"
+        "cameraTitle": "Vui lòng quét mã QR bằng camera của bạn",
+        "content": "Thêm Địa chỉ Chỉ Xem",
+        "description": "Theo dõi bất kỳ địa chỉ ví công khai nào"
       },
       "unableToImport": {
         "title": "Không thể nhập khẩu",
@@ -1986,7 +1989,34 @@
       "addFromCurrentSeedPhrase": "Thêm từ Câu Châm Ngôn Hiện Tại",
       "trezor": {
         "title": "Kết nối Trezor"
-      }
+      },
+      "importMoreWallets": "Thêm Địa Chỉ Khác",
+      "addNewAddress": "Tạo Địa Chỉ Mới",
+      "createANewSeedPhrase": "Tạo một cụm từ hạt giống mới",
+      "addMoreAddresses": "Thêm nhiều địa chỉ",
+      "moreWallets": "Nhiều Ví",
+      "addressImported": "Địa chỉ đã được nhập",
+      "privateKeyTab": "Khóa riêng tư",
+      "watchAddress": "Địa chỉ chỉ xem",
+      "newAddressCreated": "Địa chỉ mới đã được tạo",
+      "addressAdded": "Địa chỉ đã được thêm",
+      "bulkImportPrivateKeyInputTab": "Nhập Khóa Riêng",
+      "newSeedPhraseCreated": "Cụm từ hạt giống mới đã được tạo.",
+      "bulkImportPrivateKeyExceeded": "Hỗ trợ tới {{count}} khóa riêng cùng một lúc",
+      "bulkImportPrivateKeyInvalid": "Một số khóa riêng tư không hợp lệ. Vui lòng xóa hoặc nhập lại chúng.",
+      "duplicateAddressesSkippedDesc_other": "{{count}} địa chỉ đã bị bỏ qua vì chúng đã tồn tại.",
+      "bulkImportPrivateKeyPlaceholder": "Mỗi khóa riêng tư nên được tách biệt bằng một dòng mới hoặc một ký tự đặc biệt.",
+      "addressAddedCount_one": "{{count}} Địa chỉ đã được thêm",
+      "imported": "Nhập trước",
+      "seedPhraseTab": "Câu nói hạt giống",
+      "openExtensionToGetStarted": "Mở tiện ích mở rộng Rabby để bắt đầu",
+      "newAddressAdded": "Địa chỉ mới đã được thêm",
+      "duplicateAddressesSkippedTitle": "Một số địa chỉ đã được nhập khẩu.",
+      "addressAddedCount_other": "{{count}} Địa chỉ Đã Thêm",
+      "bulkImportPrivateKeySupport": "Hỗ trợ tối đa 1000 khóa riêng tư tương thích với EVM",
+      "addMoreAddressesFromThisSeedPhrase": "Thêm nhiều địa chỉ từ cụm từ hạt giống này",
+      "duplicateAddressesSkippedDesc_one": "{{count}} địa chỉ đã bị bỏ qua vì nó đã tồn tại.",
+      "bulkImportPrivateKey": "Nhập hàng loạt khóa riêng tư"
     },
     "unlock": {
       "btn": {
@@ -2001,7 +2031,8 @@
       },
       "title": "Ví dụ ví Rabby",
       "btnForgotPassword": "Quên mật khẩu?",
-      "description": "Ví dụ ví của bạn cho Ethereum và EVM"
+      "description": "Ví dụ ví của bạn cho Ethereum và EVM",
+      "biometricFailed": "Mở khóa sinh trắc học thất bại"
     },
     "addToken": {
       "noTokenFound": "Không tìm thấy token",
@@ -2717,7 +2748,8 @@
         "addMoreAddr": "Thêm nhiều địa chỉ từ cụm từ hạt giống này",
         "openWallet": "Mở Ví",
         "desc": "Rabby Wallet đã sẵn sàng để sử dụng!",
-        "backupSeedPhraseNow": "Sao lưu cụm từ khôi phục ngay bây giờ"
+        "backupSeedPhraseNow": "Sao lưu cụm từ khôi phục ngay bây giờ",
+        "backupSeedPhrase": "Sao lưu cụm từ hạt giống"
       },
       "readyToUse": {
         "pin": "Ghim Rabby Wallet",
@@ -3231,7 +3263,8 @@
         "buyFilledContent": "Đã mua {{sz}} / {{origSz}} {{coin}} khớp tại @{{price}} USDC",
         "cancelTWAPOrderSuccess": "Lệnh TWAP đã bị hủy thành công",
         "closePositionSuccess": "Đóng {{direction}} {{coin}}-USD: Khối lượng {{size}} tại giá ${{price}}",
-        "openTPSlMarketOrderSuccess": "{{tpsl}} lệnh thị trường đã được đặt {{direction}} {{coin}}-USD: Khối lượng {{size}} tại giá ${{price}}"
+        "openTPSlMarketOrderSuccess": "{{tpsl}} lệnh thị trường đã được đặt {{direction}} {{coin}}-USD: Khối lượng {{size}} tại giá ${{price}}",
+        "orderError": "Lỗi đặt hàng"
       },
       "closePositionPopup": {
         "positionSize": "Kích thước vị thế",
@@ -3323,7 +3356,10 @@
         "activatedAddress": "Đã kích hoạt",
         "notActivatedAddress": "Chưa kích hoạt",
         "hyperliquidBalance": "Số dư hợp đồng vĩnh viễn",
-        "noPosition": "Chưa có vị thế"
+        "noPosition": "Chưa có vị thế",
+        "positions": "Vị trí",
+        "position": "Vị trí",
+        "selectAddress": "Chọn một Địa chỉ"
       },
       "riskLevel": {
         "danger": {
@@ -3449,7 +3485,21 @@
       "takeProfit": "Lệnh chốt lời",
       "estimatedLiquidationPrice": "Giá thanh lý ước tính",
       "closeAll": "Đóng tất cả",
-      "directDepositFast": "Nhanh, 0 Trượt giá"
+      "directDepositFast": "Nhanh, 0 Trượt giá",
+      "currentPrice": "Giá hiện tại",
+      "crossMargin": "Gửi đa tài sản",
+      "details": "Chi tiết",
+      "settings": "Cài đặt",
+      "marginMode": "Chế độ Ký quỹ",
+      "positionValue": "Giá trị vị thế",
+      "isolatedMargin": "Ký quỹ riêng biệt",
+      "unrealizedPnl": "Lãi lỗ chưa thực hiện",
+      "openProModeInTab": "Mở Chế độ Chuyên nghiệp trong Tab",
+      "liquidationDistanceUp": "Đi lên <bold>{{percent}}</bold> sẽ kích hoạt thanh lý",
+      "cannotChangeMarginModeWithOpenPositions": "Không thể thay đổi Chế độ Margin khi có vị trí mở.",
+      "liquidationDistanceDown": "Đi xuống <bold>{{percent}}</bold> sẽ kích hoạt thanh lý",
+      "crossMarginDesc": "Tất cả các vị trí đều chia sẻ cùng một khoản ký quỹ. Điều này giảm khả năng một vị trí đơn lẻ bị thanh lý, nhưng tất cả các quỹ ký quỹ chéo có thể bị mất trong những biến động cực đoan của thị trường.",
+      "isolatedMarginDesc": "Mỗi vị thế sử dụng ký quỹ riêng của nó. Lỗ giới hạn ở vị thế đó, nhưng nó có thể bị thanh lý dễ hơn."
     },
     "perpsPro": {
       "chatArea": {
@@ -3510,7 +3560,8 @@
           "payment": "Thanh toán",
           "markEntry": "Giá tham chiếu / Giá vào vị thế",
           "closedPnl": "PnL đã thực hiện",
-          "fundingTipsV2": "Net funding kể từ khi vị trí được mở. Một giá trị funding đỏ (âm) cho thấy đã trả tiền funding, trong khi giá trị funding xanh (dương) cho thấy đã nhận được tiền funding."
+          "fundingTipsV2": "Net funding kể từ khi vị trí được mở. Một giá trị funding đỏ (âm) cho thấy đã trả tiền funding, trong khi giá trị funding xanh (dương) cho thấy đã nhận được tiền funding.",
+          "fundingTipsBold": "Điều này cho thấy tổng số phí tài trợ của bạn đã được thanh toán kể từ khi vị trí được mở. <bold>Giá trị xanh (dương)</bold> có nghĩa là bạn đã kiếm được từ các nhà giao dịch khác, trong khi <bold>Giá trị đỏ (âm)</bold> là chi phí tài trợ mà bạn đã trả cho họ."
         },
         "emptyMessage": {
           "tradeHistory": "Không có lịch sử giao dịch",
@@ -3669,7 +3720,42 @@
         "aloTooLargeSell": "Tất cả giá lệnh phải cao hơn giá mua tốt nhất.",
         "currentPosition": "Vị trí hiện tại",
         "deposit": "Nạp tiền",
-        "addFundsToGetStarted": "Thêm tiền để bắt đầu"
+        "addFundsToGetStarted": "Thêm tiền để bắt đầu",
+        "price": "Giá",
+        "action": "Hành động",
+        "Sell": "Bán",
+        "long": "Dài",
+        "cost": "Chi phí",
+        "sellTrigger": "Bán Kích Hoạt",
+        "sideShortSell": "bán (short)",
+        "short": "Bán khống",
+        "sideLongBuy": "mua (long)",
+        "size": "Kích thước",
+        "orderCount": "Số Lượng Đơn Hàng",
+        "slTriggerMoreThanOrderPrice": "Giá kích hoạt SL của bạn nên cao hơn giá đơn hàng của bạn.",
+        "tpTriggerLessThanOrderPrice": "Giá kích hoạt TP của bạn phải thấp hơn giá đặt hàng của bạn.",
+        "bboDisabledTooltip": "BBO không được hỗ trợ khi {{bboDisabledReason}} được kích hoạt.",
+        "tpTriggerMoreThanOrderPrice": "Giá kích hoạt TP của bạn phải cao hơn giá đơn hàng của bạn.",
+        "slTriggerLessThanOrderPrice": "Giá kích hoạt SL của bạn nên thấp hơn giá đặt hàng của bạn.",
+        "orderTypeTooltipMarket": "Lệnh thị trường sẽ được khớp ngay lập tức với giá thị trường tốt nhất có sẵn.",
+        "tpTriggerPriceIsZero": "Giá kích hoạt TP của bạn là 0 và sẽ không được đặt khi bạn đi {{side}}.",
+        "slTriggerPriceIsZero": "Giá kích hoạt SL của bạn là 0 và sẽ không được thiết lập khi bạn đi {{side}}.",
+        "orderTypeTooltipTakeLimit": "Lệnh Take Limit trở thành lệnh giới hạn khi giá take xác định được đạt đến. Đặt một mức giá kích hoạt để kích hoạt lệnh.",
+        "orderTypeTooltipStopMarket": "Lệnh Dừng Thị Trường trở thành lệnh thị trường khi giá chỉ định được đạt đến. Chỉ định một mức giá kích hoạt để kích hoạt lệnh.",
+        "orderTypeTooltipStopLimit": "Lệnh Dừng Giới Hạn trở thành lệnh giới hạn khi giá dừng chỉ định được đạt. Chỉ định một mức giá kích hoạt để kích hoạt lệnh.",
+        "orderTypeTooltipTakeMarket": "Thực hiện các lệnh thị trường sẽ trở thành lệnh thị trường khi một mức giá cụ thể được đạt tới. Chỉ định một mức giá kích hoạt để kích hoạt lệnh.",
+        "Buy": "Mua",
+        "max": "TỐI ĐA",
+        "buyTrigger": "Mua Kích hoạt",
+        "estimatedPnlWillBe": "PnL của bạn ước tính sẽ là",
+        "hour": "giờ",
+        "maxDurationTwap": "Thời gian tối đa để thực hiện lệnh TWAP là",
+        "totalTime": "Thời gian tổng cộng (5 phút - 24 giờ)",
+        "orderTypeTooltipScale": "Đơn hàng được phân chia cho phép bạn chia một số tiền thành nhiều đơn hàng con để giảm thiểu tác động đến thị trường.",
+        "orderTypeTooltipLimit": "Lệnh giới hạn là lệnh mua hoặc bán ở một mức giá cụ thể hoặc tốt hơn. Lệnh giới hạn không được đảm bảo sẽ được thực hiện.",
+        "bboTips": "Giá thầu tốt nhất (BBO) đề cập đến giá chào bán tốt nhất và giá thầu tốt nhất có sẵn trên sổ lệnh tại bất kỳ thời điểm nào. Các lệnh BBO luôn được đặt bằng cách sử dụng kích thước tick tối thiểu chính xác, đảm bảo giá cả chính xác và chi tiết, độc lập với sở thích hiển thị.",
+        "orderTypeTooltipTwap": "TWAP (Giá trung bình theo thời gian) là một chiến lược thực hiện giao dịch theo thuật toán nhằm mục tiêu đạt được mức giá thực hiện trung bình gần với giá trung bình theo thời gian của giai đoạn do người dùng chỉ định.",
+        "min": "min"
       },
       "marginMode": {
         "confirm": "Xác nhận",
@@ -3677,7 +3763,9 @@
         "crossDescription": "Tất cả các vị thế chéo dùng chung một ký quỹ chéo làm tài sản thế chấp. Trong trường hợp thanh lý, số dư ký quỹ của bạn và bất kỳ vị thế mở nào còn lại trong chế độ chéo này có thể bị mất.",
         "cross": "Ký quỹ chéo",
         "isolatedDescription": "Quản lý rủi ro của bạn trên từng vị thế bằng cách phân bổ số ký quỹ được cấp cho mỗi vị thế. Nếu tỷ lệ ký quỹ của một vị thế cô lập đạt 100%, vị thế đó sẽ bị thanh lý. Ký quỹ có thể được thêm vào hoặc rút khỏi các vị thế riêng lẻ ở chế độ này.",
-        "isolated": "Ký quỹ cô lập"
+        "isolated": "Ký quỹ cô lập",
+        "cannotChange": "Không thể thay đổi chế độ ký quỹ",
+        "onlyIsolatedSupported": "Tài sản này chỉ hỗ trợ chế độ ký quỹ Isolated."
       },
       "leverage": {
         "minError": "Đòn bẩy tối thiểu là 1x",
@@ -3990,7 +4078,8 @@
           "balance": "Số dư",
           "assets": "Hợp đồng"
         },
-        "title": "Chọn Token Trả Nợ"
+        "title": "Chọn Token Trả Nợ",
+        "zeroLtvCollateralTips": "Bạn có các tài sản thế chấp LTV = 0 sau đây và do đó chỉ có thể trả nợ bằng các tài sản thế chấp này theo quy tắc trả nợ thế chấp."
       },
       "manageEmode": {
         "actions": {
@@ -4060,7 +4149,8 @@
         "entryTips": "Nhấn một lần để hoán đổi tài sản bạn đã vay, giảm bớt bước thực hiện và phí giao dịch.",
         "lpRiskWarning": "Hệ số sức khỏe thấp sau khi hoán đổi. Vị thế của bạn sẽ mang rủi ro thanh lý cao hơn.",
         "priceImpactTips": "Tác động giá cao ({{lostValue}}). Đường dẫn này có thể trả lại nhiều hơn do thanh khoản thấp hoặc kích thước lệnh nhỏ.",
-        "lpDangerWarning": "Hệ số sức khỏe của bạn sau giao dịch này sẽ ở mức rất thấp và có thể dẫn đến thanh lý. Vui lòng chọn một tài sản khác hoặc giảm số lượng giao dịch để giữ an toàn."
+        "lpDangerWarning": "Hệ số sức khỏe của bạn sau giao dịch này sẽ ở mức rất thấp và có thể dẫn đến thanh lý. Vui lòng chọn một tài sản khác hoặc giảm số lượng giao dịch để giữ an toàn.",
+        "maxLtvWarning": "Không đủ tài sản thế chấp để bao phủ vị thế vay mới. Ví cần phải có khả năng vay còn lại để thực hiện chuyển đổi nợ."
       },
       "repayWithCollateral": {
         "action": {
@@ -4462,7 +4552,7 @@
       "txFailedMoreContent": "{{chain}} #{{nonce}} thất bại. Nhấp vào để xem thêm."
     },
     "alias": {
-      "watchAddressKeyring": "Liên hệ",
+      "watchAddressKeyring": "Chỉ xem",
       "simpleKeyring": "Khóa riêng",
       "HdKeyring": "Câu cụt đầu tiên"
     },
@@ -4481,7 +4571,7 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "Liên hệ",
+      "WatchAddressKeyring": "Xem chỉ",
       "SimpleKeyring": "Nhập bằng Private Key",
       "HdKeyring": "Được tạo bởi Seed Phrase"
     },

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PageHeader } from '@/ui/component';
 import { useParams, useHistory } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { formatUsdValue, splitNumberByStep, useWallet } from '@/ui/utils';
 import { Button, Switch, message } from 'antd';
 import clsx from 'clsx';
@@ -41,16 +41,23 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
-import DistanceToLiquidationTag from '../components/DistanceToLiquidationTag';
 import { EditTpSlTag } from '../components/EditTpSlTag';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { ReactComponent as RcIconArrow } from '@/ui/assets/perps/polygon-cc.svg';
+import { ReactComponent as RcIconCollected } from '@/ui/assets/perps/IconCollected.svg';
+import { ReactComponent as RcIconNotCollected } from '@/ui/assets/perps/IconUnCollected.svg';
 import { AddPositionPopup } from '../popup/AddPositionPopup';
 import usePerpsState from '../hooks/usePerpsState';
 import { MiniTypedDataApproval } from '../../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
-import { formatPerpsCoin, getStatsReportSide } from '../../DesktopPerps/utils';
+import {
+  formatPerpsCoin,
+  getStatsReportSide,
+  handleDisplayFundingPayments,
+} from '../../DesktopPerps/utils';
 import stats from '@/stats';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
+import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
+import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -68,6 +75,7 @@ export const PerpsSingleCoin = () => {
     marketData,
     clearinghouseState,
     openOrders,
+    favoritedCoins,
   } = useRabbySelector((state) => state.perps);
   const [coin, setCoin] = useState(_coin);
   const { accountValue, availableBalance } = usePerpsAccount();
@@ -87,7 +95,23 @@ export const PerpsSingleCoin = () => {
   const [editMarginVisible, setEditMarginVisible] = useState(false);
   const [addPositionVisible, setAddPositionVisible] = useState(false);
   const [riskPopupVisible, setRiskPopupVisible] = useState(false);
+  const [marginMode, setMarginMode] = useState<'cross' | 'isolated'>(
+    'isolated'
+  );
   const activeAssetCtxRef = useRef<(() => void) | null>(null);
+
+  const isFavorited = useMemo(() => favoritedCoins.includes(coin), [
+    favoritedCoins,
+    coin,
+  ]);
+
+  const handleToggleFavorite = useMemoizedFn(() => {
+    dispatch.perps.toggleFavoriteCoin(coin);
+  });
+
+  const toggleFavoriteForSearch = useMemoizedFn((coinName: string) => {
+    dispatch.perps.toggleFavoriteCoin(coinName);
+  });
 
   const positionAndOpenOrders = useMemo(() => {
     if (!clearinghouseState || !openOrders) {
@@ -190,6 +214,17 @@ export const PerpsSingleCoin = () => {
 
   const hasPosition = useMemo(() => {
     return !!currentPosition;
+  }, [currentPosition]);
+
+  // Sync margin mode from existing position
+  useEffect(() => {
+    if (currentPosition) {
+      setMarginMode(
+        currentPosition.position.leverage.type === 'cross'
+          ? 'cross'
+          : 'isolated'
+      );
+    }
   }, [currentPosition]);
 
   const needDepositFirst = useMemo(() => {
@@ -446,9 +481,38 @@ export const PerpsSingleCoin = () => {
     return pnlUsdValue;
   }, [slPrice, positionData]);
 
+  const HeaderRightSlot = useMemo(() => {
+    return (
+      <div className="flex items-center justify-center">
+        <div
+          className="ml-8 cursor-pointer flex items-end"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleToggleFavorite();
+          }}
+        >
+          {isFavorited ? <RcIconCollected /> : <RcIconNotCollected />}
+        </div>
+      </div>
+    );
+  }, [isFavorited, handleToggleFavorite]);
+
+  const distancePercent = useMemo(() => {
+    return formatPerpsPct(
+      calculateDistanceToLiquidation(
+        positionData?.liquidationPrice || 0,
+        markPrice
+      )
+    );
+  }, [positionData?.liquidationPrice, markPrice]);
+
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
-      <PageHeader className="mx-[20px] pt-[20px]" forceShowBack>
+      <PageHeader
+        className="mx-[20px] pt-[20px]"
+        forceShowBack
+        rightSlot={HeaderRightSlot}
+      >
         <div className="flex items-center justify-center">
           <div
             className="flex items-center gap-8 cursor-pointer"
@@ -508,50 +572,99 @@ export const PerpsSingleCoin = () => {
 
         {hasPosition && isLogin && (
           <>
+            {/* Position Header */}
             <div className="flex items-center gap-6 mt-16 mb-8">
-              <div className="text-13 font-medium text-r-neutral-title-1">
+              <div className="text-15 font-medium text-r-neutral-title-1">
                 {t('page.perps.position')}
               </div>
+              <span
+                className={clsx(
+                  'text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px]',
+                  positionData?.direction === 'Long'
+                    ? 'text-r-green-default bg-r-green-light'
+                    : 'text-r-red-default bg-r-red-light'
+                )}
+              >
+                {positionData?.direction} {positionData?.leverage}x
+              </span>
+              <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-line text-r-neutral-foot">
+                {positionData?.type === 'cross'
+                  ? t('page.perps.cross')
+                  : t('page.perps.isolated')}
+              </span>
             </div>
+
+            {/* Position Summary */}
             <div className="bg-r-neutral-card1 rounded-[12px] px-16">
-              <div className="flex justify-between text-13 py-16">
-                <span className="text-r-neutral-body">
-                  {t('page.perps.pnl')}
-                </span>
-                <span
+              <div className="flex flex-col items-center py-16">
+                <div className="text-13 text-r-neutral-body mb-4">
+                  {t('page.perps.unrealizedPnl')}
+                </div>
+                <div
                   className={clsx(
-                    'font-medium',
+                    'text-20 font-bold',
                     positionData && positionData.pnl >= 0
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
                   )}
                 >
                   {positionData && positionData.pnl >= 0 ? '+' : '-'}$
-                  {Math.abs(positionData?.pnl || 0).toFixed(2)}
-                </span>
-              </div>
-
-              <div className="flex justify-between text-13 py-16">
-                <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
-                  {t('page.perps.size')}
-                  <TooltipWithMagnetArrow
-                    overlayClassName="rectangle w-[max-content]"
-                    placement="top"
-                    title={t('page.perps.sizeTips')}
-                  >
-                    <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-                  </TooltipWithMagnetArrow>
-                </div>
-                <span className="text-r-neutral-title-1 font-medium">
-                  $
                   {splitNumberByStep(
-                    Number(positionData?.positionValue || 0).toFixed(2)
-                  )}{' '}
-                  = {positionData?.size} {formatPerpsCoin(coin)}
+                    Math.abs(positionData?.pnl || 0).toFixed(2)
+                  )}
+                </div>
+                <div className="text-13 text-r-neutral-body mt-4">
+                  {t('page.perps.positionValue')}{' '}
+                  <span className="text-r-neutral-title-1 font-bold">
+                    {formatUsdValue(Number(positionData?.positionValue || 0))}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-r-neutral-card1 rounded-[12px] px-16 mt-8">
+              <div className="flex justify-between text-13 py-16">
+                <span className="text-r-neutral-body">
+                  {t('page.perps.currentPrice')}
+                </span>
+                <span className="text-r-neutral-title-1 font-medium">
+                  ${splitNumberByStep(markPrice)}
                 </span>
               </div>
 
-              <div className="flex justify-between text-13 py-16 group">
+              <div className="flex text-13 py-16 flex-col gap-8">
+                <div className="flex justify-between">
+                  <div className="text-r-neutral-body flex items-center gap-4 relative">
+                    {t('page.perps.liquidationPrice')}
+                  </div>
+                  <span className="text-r-neutral-title-1 font-medium">
+                    ${splitNumberByStep(positionData?.liquidationPrice || 0)}
+                  </span>
+                </div>
+                {!currentTpOrSl.slPrice && (
+                  <div className="text-12 font-medium text-r-neutral-body rounded-[6px] bg-r-blue-light-1 text-r-blue-default py-[10px] flex items-baseline justify-center">
+                    <Trans
+                      i18nKey={
+                        positionData?.direction === 'Long'
+                          ? 'page.perps.liquidationDistanceDown'
+                          : 'page.perps.liquidationDistanceUp'
+                      }
+                      values={{ percent: distancePercent }}
+                      components={{
+                        bold: <span className="text-[15px] font-bold mx-4" />,
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Settings */}
+            <div className="text-15 font-medium text-r-neutral-title-1 mt-16 mb-8">
+              {t('page.perps.settings')}
+            </div>
+            <div className="bg-r-neutral-card1 rounded-[12px] px-16">
+              <div className="flex justify-between text-13 py-12 group">
                 <span className="text-r-neutral-body">
                   {positionData?.type === 'isolated'
                     ? t('page.perps.marginIsolated')
@@ -585,181 +698,215 @@ export const PerpsSingleCoin = () => {
                 )}
               </div>
 
-              <div className="flex justify-between text-13 py-16">
-                <div className="text-r-neutral-body">
-                  <div className="text-13 text-r-neutral-body">
-                    {positionData?.direction === 'Long'
-                      ? t(
-                          'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceAbove'
-                        )
-                      : t(
-                          'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceBelow'
-                        )}
+              <div className="py-12 gap-[15px] flex flex-col">
+                <div className="flex justify-between text-13">
+                  <div className="text-r-neutral-body">
+                    <div className="text-13 text-r-neutral-body">
+                      {positionData?.direction === 'Long'
+                        ? t(
+                            'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceAbove'
+                          )
+                        : t(
+                            'page.perpsDetail.PerpsOpenPositionPopup.takeProfitWhenPriceBelow'
+                          )}
+                    </div>
                   </div>
+                  <EditTpSlTag
+                    handleActionApproveStatus={handleActionApproveStatus}
+                    coin={coin}
+                    markPrice={markPrice}
+                    initTpOrSlPrice={currentTpOrSl.tpPrice || ''}
+                    direction={positionData?.direction as 'Long' | 'Short'}
+                    size={Number(positionData?.size || 0)}
+                    margin={Number(positionData?.marginUsed || 0)}
+                    leverage={positionData?.leverage || 1}
+                    liqPrice={Number(positionData?.liquidationPrice || 0)}
+                    pxDecimals={currentAssetCtx?.pxDecimals || 2}
+                    szDecimals={currentAssetCtx?.szDecimals || 0}
+                    actionType="tp"
+                    entryPrice={Number(positionData?.entryPrice || 0)}
+                    type="hasPosition"
+                    handleCancelAutoClose={async () => {
+                      await handleCancelAutoClose('tp');
+                    }}
+                    handleSetAutoClose={async (price: string) => {
+                      await handleSetAutoClose({
+                        coin,
+                        tpTriggerPx: price,
+                        slTriggerPx: '',
+                        direction: positionData?.direction as 'Long' | 'Short',
+                      });
+                      const isBuy = positionData?.direction === 'Long';
+                      stats.report('perpsTradeHistory', {
+                        created_at: new Date().getTime(),
+                        user_addr: currentPerpsAccount?.address || '',
+                        trade_type: 'popup has position set tp',
+                        leverage: (positionData?.leverage || 1).toString(),
+                        trade_side: getStatsReportSide(!isBuy, true),
+                        margin_mode: marginMode,
+                        coin,
+                        size: (positionData?.size || 0).toString(),
+                        price,
+                        trade_usd_value: new BigNumber(price)
+                          .times(positionData?.size || 0)
+                          .toFixed(2),
+                        service_provider: 'hyperliquid',
+                        app_version: process.env.release || '0',
+                        address_type: currentPerpsAccount?.type || '',
+                      });
+                    }}
+                  />
                 </div>
-                <EditTpSlTag
-                  handleActionApproveStatus={handleActionApproveStatus}
-                  coin={coin}
-                  markPrice={markPrice}
-                  initTpOrSlPrice={currentTpOrSl.tpPrice || ''}
-                  direction={positionData?.direction as 'Long' | 'Short'}
-                  size={Number(positionData?.size || 0)}
-                  margin={Number(positionData?.marginUsed || 0)}
-                  liqPrice={Number(positionData?.liquidationPrice || 0)}
-                  pxDecimals={currentAssetCtx?.pxDecimals || 2}
-                  szDecimals={currentAssetCtx?.szDecimals || 0}
-                  actionType="tp"
-                  entryPrice={Number(positionData?.entryPrice || 0)}
-                  type="hasPosition"
-                  handleCancelAutoClose={async () => {
-                    await handleCancelAutoClose('tp');
-                  }}
-                  handleSetAutoClose={async (price: string) => {
-                    await handleSetAutoClose({
-                      coin,
-                      tpTriggerPx: price,
-                      slTriggerPx: '',
-                      direction: positionData?.direction as 'Long' | 'Short',
-                    });
-                    const isBuy = positionData?.direction === 'Long';
-                    stats.report('perpsTradeHistory', {
-                      created_at: new Date().getTime(),
-                      user_addr: currentPerpsAccount?.address || '',
-                      trade_type: 'popup has position set tp',
-                      leverage: (positionData?.leverage || 1).toString(),
-                      trade_side: getStatsReportSide(!isBuy, true),
-                      margin_mode:
-                        currentPosition?.position.leverage.type === 'cross'
-                          ? 'cross'
-                          : 'isolated',
-                      coin,
-                      size: (positionData?.size || 0).toString(),
-                      price,
-                      trade_usd_value: new BigNumber(price)
-                        .times(positionData?.size || 0)
-                        .toFixed(2),
-                      service_provider: 'hyperliquid',
-                      app_version: process.env.release || '0',
-                      address_type: currentPerpsAccount?.type || '',
-                    });
-                  }}
-                />
+
+                {tpPrice && takeProfitExpectedPnl !== null && (
+                  <div className="relative bg-r-neutral-card-2 rounded-[6px] mt-[-6px]">
+                    <div className="absolute right-[28px] top-[-6px]">
+                      <RcIconArrow className="text-r-neutral-card-2" />
+                    </div>
+                    <div className="flex items-center justify-between p-[12px]">
+                      <div className="text-[12px] leading-[14px] text-r-neutral-body">
+                        {t(
+                          'page.perpsDetail.PerpsAutoCloseModal.takeProfitExpectedPNL'
+                        )}
+                        :
+                      </div>
+                      <div
+                        className={clsx(
+                          'text-[12px] leading-[14px] font-bold',
+                          takeProfitExpectedPnl >= 0
+                            ? 'text-r-green-default'
+                            : 'text-r-red-default'
+                        )}
+                      >
+                        {takeProfitExpectedPnl >= 0 ? '+' : '-'}
+                        {formatUsdValue(Math.abs(takeProfitExpectedPnl))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {tpPrice && takeProfitExpectedPnl !== null && (
-                <div className="relative bg-r-neutral-card-2 rounded-[6px] mt-[-6px]">
-                  <div className="absolute right-[28px] top-[-6px]">
-                    <RcIconArrow className="text-r-neutral-card-2" />
-                  </div>
-                  <div className="flex items-center justify-between p-[12px]">
-                    <div className="text-[12px] leading-[14px] text-r-neutral-body">
-                      {t(
-                        'page.perpsDetail.PerpsAutoCloseModal.takeProfitExpectedPNL'
-                      )}
-                      :
-                    </div>
-                    <div
-                      className={clsx(
-                        'text-[12px] leading-[14px] font-bold',
-                        takeProfitExpectedPnl >= 0
-                          ? 'text-r-green-default'
-                          : 'text-r-red-default'
-                      )}
-                    >
-                      {takeProfitExpectedPnl >= 0 ? '+' : '-'}
-                      {formatUsdValue(Math.abs(takeProfitExpectedPnl))}
+              <div className="py-12 gap-[15px] flex flex-col">
+                <div className="flex justify-between text-13">
+                  <div className="text-r-neutral-body">
+                    <div className="text-13 text-r-neutral-body">
+                      {positionData?.direction === 'Long'
+                        ? t(
+                            'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceBelow'
+                          )
+                        : t(
+                            'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceAbove'
+                          )}
                     </div>
                   </div>
+                  <EditTpSlTag
+                    handleActionApproveStatus={handleActionApproveStatus}
+                    coin={coin}
+                    markPrice={markPrice}
+                    entryPrice={Number(positionData?.entryPrice || 0)}
+                    initTpOrSlPrice={currentTpOrSl.slPrice || ''}
+                    direction={positionData?.direction as 'Long' | 'Short'}
+                    size={Number(positionData?.size || 0)}
+                    margin={Number(positionData?.marginUsed || 0)}
+                    leverage={positionData?.leverage || 1}
+                    liqPrice={Number(positionData?.liquidationPrice || 0)}
+                    pxDecimals={currentAssetCtx?.pxDecimals || 2}
+                    szDecimals={currentAssetCtx?.szDecimals || 0}
+                    actionType="sl"
+                    type="hasPosition"
+                    handleCancelAutoClose={async () => {
+                      await handleCancelAutoClose('sl');
+                    }}
+                    handleSetAutoClose={async (price: string) => {
+                      await handleSetAutoClose({
+                        coin,
+                        tpTriggerPx: '',
+                        slTriggerPx: price,
+                        direction: positionData?.direction as 'Long' | 'Short',
+                      });
+                      const isBuy = positionData?.direction === 'Long';
+                      stats.report('perpsTradeHistory', {
+                        created_at: new Date().getTime(),
+                        user_addr: currentPerpsAccount?.address || '',
+                        trade_type: 'popup has position set sl',
+                        leverage: (positionData?.leverage || 1).toString(),
+                        trade_side: getStatsReportSide(!isBuy, true),
+                        margin_mode: marginMode,
+                        coin,
+                        size: (positionData?.size || 0).toString(),
+                        price,
+                        trade_usd_value: new BigNumber(price)
+                          .times(positionData?.size || 0)
+                          .toFixed(2),
+                        service_provider: 'hyperliquid',
+                        app_version: process.env.release || '0',
+                        address_type: currentPerpsAccount?.type || '',
+                      });
+                    }}
+                  />
                 </div>
-              )}
-
-              <div className="flex justify-between text-13 py-16">
-                <div className="text-r-neutral-body">
-                  <div className="text-13 text-r-neutral-body">
-                    {positionData?.direction === 'Long'
-                      ? t(
-                          'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceBelow'
-                        )
-                      : t(
-                          'page.perpsDetail.PerpsOpenPositionPopup.stopLossWhenPriceAbove'
+                {slPrice && stopLossExpectedPnl !== null && (
+                  <div className="relative bg-r-neutral-card-2 rounded-[6px] mt-[-6px]">
+                    <div className="absolute right-[28px] top-[-6px]">
+                      <RcIconArrow className="text-r-neutral-card-2" />
+                    </div>
+                    <div className="flex items-center justify-between p-[12px]">
+                      <div className="text-[12px] leading-[14px] text-r-neutral-body">
+                        {t(
+                          'page.perpsDetail.PerpsAutoCloseModal.stopLossExpectedPNL'
                         )}
+                        :
+                      </div>
+                      <div
+                        className={clsx(
+                          'text-[12px] leading-[14px] font-bold',
+                          stopLossExpectedPnl >= 0
+                            ? 'text-r-green-default'
+                            : 'text-r-red-default'
+                        )}
+                      >
+                        {stopLossExpectedPnl >= 0 ? '+' : '-'}
+                        {formatUsdValue(Math.abs(stopLossExpectedPnl))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <EditTpSlTag
-                  handleActionApproveStatus={handleActionApproveStatus}
-                  coin={coin}
-                  markPrice={markPrice}
-                  entryPrice={Number(positionData?.entryPrice || 0)}
-                  initTpOrSlPrice={currentTpOrSl.slPrice || ''}
-                  direction={positionData?.direction as 'Long' | 'Short'}
-                  size={Number(positionData?.size || 0)}
-                  margin={Number(positionData?.marginUsed || 0)}
-                  liqPrice={Number(positionData?.liquidationPrice || 0)}
-                  pxDecimals={currentAssetCtx?.pxDecimals || 2}
-                  szDecimals={currentAssetCtx?.szDecimals || 0}
-                  actionType="sl"
-                  type="hasPosition"
-                  handleCancelAutoClose={async () => {
-                    await handleCancelAutoClose('sl');
-                  }}
-                  handleSetAutoClose={async (price: string) => {
-                    await handleSetAutoClose({
-                      coin,
-                      tpTriggerPx: '',
-                      slTriggerPx: price,
-                      direction: positionData?.direction as 'Long' | 'Short',
-                    });
-                    const isBuy = positionData?.direction === 'Long';
-                    stats.report('perpsTradeHistory', {
-                      created_at: new Date().getTime(),
-                      user_addr: currentPerpsAccount?.address || '',
-                      trade_type: 'popup has position set sl',
-                      leverage: (positionData?.leverage || 1).toString(),
-                      trade_side: getStatsReportSide(!isBuy, true),
-                      margin_mode:
-                        currentPosition?.position.leverage.type === 'cross'
-                          ? 'cross'
-                          : 'isolated',
-                      coin,
-                      size: (positionData?.size || 0).toString(),
-                      price,
-                      trade_usd_value: new BigNumber(price)
-                        .times(positionData?.size || 0)
-                        .toFixed(2),
-                      service_provider: 'hyperliquid',
-                      app_version: process.env.release || '0',
-                      address_type: currentPerpsAccount?.type || '',
-                    });
-                  }}
-                />
+                )}
+              </div>
+            </div>
+
+            {/* Details */}
+            <div className="text-15 font-medium text-r-neutral-title-1 mt-16 mb-8">
+              {t('page.perps.details')}
+            </div>
+            <div className="bg-r-neutral-card1 rounded-[12px] px-16">
+              <div className="flex justify-between text-13 py-16">
+                <span className="text-r-neutral-body">
+                  {t('page.perps.entryPrice')}
+                </span>
+                <span className="text-r-neutral-title-1 font-medium">
+                  ${splitNumberByStep(positionData?.entryPrice || 0)}
+                </span>
               </div>
 
-              {slPrice && stopLossExpectedPnl !== null && (
-                <div className="relative bg-r-neutral-card-2 rounded-[6px] mt-[-6px]">
-                  <div className="absolute right-[28px] top-[-6px]">
-                    <RcIconArrow className="text-r-neutral-card-2" />
-                  </div>
-                  <div className="flex items-center justify-between p-[12px]">
-                    <div className="text-[12px] leading-[14px] text-r-neutral-body">
-                      {t(
-                        'page.perpsDetail.PerpsAutoCloseModal.stopLossExpectedPNL'
-                      )}
-                      :
-                    </div>
-                    <div
-                      className={clsx(
-                        'text-[12px] leading-[14px] font-bold',
-                        stopLossExpectedPnl >= 0
-                          ? 'text-r-green-default'
-                          : 'text-r-red-default'
-                      )}
-                    >
-                      {stopLossExpectedPnl >= 0 ? '+' : '-'}
-                      {formatUsdValue(Math.abs(stopLossExpectedPnl))}
-                    </div>
-                  </div>
+              <div className="flex justify-between text-13 py-16">
+                <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
+                  {t('page.perps.size')}
+                  <TooltipWithMagnetArrow
+                    overlayClassName="rectangle w-[max-content]"
+                    placement="top"
+                    title={t('page.perps.sizeTips')}
+                  >
+                    <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+                  </TooltipWithMagnetArrow>
                 </div>
-              )}
+                <span className="text-r-neutral-title-1 font-medium">
+                  $
+                  {splitNumberByStep(
+                    Number(positionData?.positionValue || 0).toFixed(2)
+                  )}{' '}
+                  = {positionData?.size} {formatPerpsCoin(coin)}
+                </span>
+              </div>
 
               <div className="flex justify-between text-13 py-16">
                 <span className="text-r-neutral-body">
@@ -772,55 +919,46 @@ export const PerpsSingleCoin = () => {
 
               <div className="flex justify-between text-13 py-16">
                 <span className="text-r-neutral-body">
-                  {t('page.perps.entryPrice')}
+                  {t('page.perps.marginMode')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
-                  ${splitNumberByStep(positionData?.entryPrice || 0)}
+                  {positionData?.type === 'cross'
+                    ? t('page.perps.cross')
+                    : t('page.perps.isolated')}
                 </span>
               </div>
 
               <div className="flex justify-between text-13 py-16">
                 <div className="text-r-neutral-body flex items-center gap-4 relative">
-                  {t('page.perps.liquidationPrice')}
-                  <DistanceToLiquidationTag
-                    liquidationPrice={Number(
-                      currentPosition?.position.liquidationPx || 0
-                    )}
-                    markPrice={markPrice}
-                    onPress={() => {
-                      setRiskPopupVisible(true);
-                    }}
-                  />
-                </div>
-                <span className="text-r-neutral-title-1 font-medium">
-                  ${splitNumberByStep(positionData?.liquidationPrice || 0)}
-                </span>
-              </div>
-
-              <div className="flex justify-between text-13 py-16">
-                <div className="text-r-neutral-body flex items-center gap-4 relative">
-                  {Number(positionData?.fundingPayments || 0) > 0
+                  {Number(positionData?.fundingPayments || 0) < 0
                     ? t('page.perps.fundingGains')
                     : t('page.perps.fundingPayments')}
                   <TooltipWithMagnetArrow
                     overlayClassName="rectangle w-[max-content]"
                     placement="top"
                     title={
-                      Number(positionData?.fundingPayments || 0) > 0
-                        ? t('page.perps.singleCoin.fundingGainsTips')
-                        : t('page.perps.singleCoin.fundingPaymentsTips')
+                      <Trans
+                        i18nKey={'page.perpsPro.userInfo.tab.fundingTipsBold'}
+                        components={{
+                          bold: <span className="font-bold" />,
+                        }}
+                      />
                     }
                   >
                     <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
                   </TooltipWithMagnetArrow>
                 </div>
-                <span className="text-r-neutral-title-1 font-medium">
-                  {Number(positionData?.fundingPayments || 0) === 0
-                    ? ''
-                    : Number(positionData?.fundingPayments || 0) > 0
-                    ? '+'
-                    : '-'}
-                  ${Math.abs(Number(positionData?.fundingPayments || 0))}
+                <span
+                  className={clsx(
+                    'font-medium',
+                    Number(positionData?.fundingPayments || 0) < 0
+                      ? 'text-r-green-default'
+                      : 'text-r-red-default'
+                  )}
+                >
+                  {handleDisplayFundingPayments(
+                    positionData?.fundingPayments || '0'
+                  )}
                 </span>
               </div>
             </div>
@@ -831,7 +969,7 @@ export const PerpsSingleCoin = () => {
         <div className="text-15 font-medium text-r-neutral-title-1 mt-16 mb-8">
           Info
         </div>
-        <div className="bg-r-neutral-card1 rounded-[12px] px-16">
+        <div className="bg-r-neutral-line rounded-[12px] px-16">
           <div className="flex justify-between text-13 py-16">
             <span className="text-r-neutral-body">
               {t('page.perps.dailyVolume')}
@@ -1002,11 +1140,9 @@ export const PerpsSingleCoin = () => {
         szDecimals={currentAssetCtx?.szDecimals || 0}
         leverageRange={[1, currentAssetCtx?.maxLeverage || 5]}
         markPrice={markPrice}
-        marginMode={
-          currentPosition?.position.leverage.type === 'cross'
-            ? 'cross'
-            : 'isolated'
-        }
+        marginMode={marginMode}
+        onMarginModeChange={setMarginMode}
+        hasPosition={hasPosition}
         availableBalance={Number(availableBalance || 0)}
         onCancel={() => setOpenPositionVisible(false)}
         handleOpenPosition={handleOpenPosition}
@@ -1103,6 +1239,8 @@ export const PerpsSingleCoin = () => {
         openFromSource="searchPerps"
         marketData={marketData}
         positionAndOpenOrders={positionAndOpenOrders}
+        favoritedCoins={favoritedCoins}
+        onToggleFavorite={toggleFavoriteForSearch}
       />
 
       {hasPosition && positionData && (
@@ -1110,6 +1248,11 @@ export const PerpsSingleCoin = () => {
           <EditMarginPopup
             visible={editMarginVisible}
             coin={coin}
+            leverageType={
+              currentPosition?.position.leverage.type === 'cross'
+                ? 'cross'
+                : 'isolated'
+            }
             currentAssetCtx={currentAssetCtx}
             activeAssetCtx={activeAssetCtx}
             direction={positionData.direction as 'Long' | 'Short'}
@@ -1143,6 +1286,11 @@ export const PerpsSingleCoin = () => {
           <AddPositionPopup
             visible={addPositionVisible}
             coin={coin}
+            leverageType={
+              currentPosition?.position.leverage.type === 'cross'
+                ? 'cross'
+                : 'isolated'
+            }
             currentAssetCtx={currentAssetCtx}
             activeAssetCtx={activeAssetCtx}
             direction={positionData.direction as 'Long' | 'Short'}

@@ -308,7 +308,7 @@
       "markAsBlock": "Ditandai sebagai diblokir",
       "interactContract": "Interaksi kontrak",
       "markRemoved": "Mark dihapus",
-      "safeServiceNotAvailable": "Layanan aman tidak tersedia sekarang, silakan coba nanti.",
+      "safeServiceNotAvailable": "Layanan aman tidak tersedia sekarang, silakan coba lagi nanti.",
       "scamTokenAlert": "Ini kemungkinan adalah token berkualitas rendah dan penipuan berdasarkan deteksi Rabby.",
       "importedAddress": "Alamat yang diimpor",
       "fakeTokenAlert": "Ini adalah token scam yang ditandai oleh Rabby",
@@ -1159,7 +1159,6 @@
       "seed-phrase-delete-title": "Hapus frasa benih?",
       "confirm": "Konfirmasi",
       "delete-seed-phrase": "Hapus seed phrase",
-      "watch-address": "Tonton Alamat",
       "addressTypeTip": "Diimpor oleh {{type}}",
       "deleted": "Dihapus",
       "cancel": "Batal",
@@ -1194,7 +1193,9 @@
       "CurrentDappAddress": {
         "desc": "Ganti Alamat Dapp"
       },
-      "noSeedPhraseAddress": "Tidak ada alamat yang ditambahkan untuk frase biji ini. Anda dapat menambahkan alamat atau menghapus frase biji ini."
+      "noSeedPhraseAddress": "Tidak ada alamat yang ditambahkan untuk frase biji ini. Anda dapat menambahkan alamat atau menghapus frase biji ini.",
+      "watch-address": "Tampilan Saja",
+      "deleteSuccess": "Dihapus dengan sukses"
     },
     "dashboard": {
       "home": {
@@ -1572,7 +1573,8 @@
         "price": "HARGA",
         "side": "SISI",
         "searchTokenPlaceholder": "Cari Token",
-        "openInTab": "Buka di Rabby Tab"
+        "openInTab": "Buka di Rabby Tab",
+        "openProMode": "Buka Mode Pro"
       },
       "hd": {
         "ledger": {
@@ -1650,7 +1652,6 @@
     },
     "newAddress": {
       "addContacts": {
-        "content": "Tambahkan Kontak",
         "walletConnectVPN": "WalletConnect akan tidak stabil jika Anda menggunakan VPN.",
         "scanViaPcCamera": "Pindai melalui kamera PC",
         "cameraTitle": "Silakan pindai kode QR dengan kamera Anda",
@@ -1659,8 +1660,9 @@
         "scanQRCode": "Pindai kode QR dengan dompet yang kompatibel dengan WalletConnect",
         "notAValidAddress": "Alamat tidak valid",
         "walletConnect": "Wallet connect",
-        "description": "Anda juga dapat menggunakannya sebagai alamat yang hanya dapat dilihat",
-        "required": "Silakan masukkan alamat"
+        "required": "Silakan masukkan alamat",
+        "description": "Lacak alamat dompet publik mana pun",
+        "content": "Tambahkan Alamat Hanya Tonton"
       },
       "unableToImport": {
         "title": "Tidak dapat mengimpor",
@@ -1987,7 +1989,34 @@
       "importYourKeystore": "Impor KeyStore Anda",
       "trezor": {
         "title": "Connect Trezor"
-      }
+      },
+      "addNewAddress": "Buat Alamat Baru",
+      "addMoreAddresses": "Tambahkan Lebih Banyak Alamat",
+      "createANewSeedPhrase": "Buat Frase Seed Baru",
+      "importMoreWallets": "Tambahkan Lebih Banyak Alamat",
+      "moreWallets": "Lebih Banyak Dompet",
+      "newSeedPhraseCreated": "Seed Phrase Baru Dibuat",
+      "addressAdded": "Alamat Ditambahkan",
+      "newAddressAdded": "Alamat Baru Ditambahkan",
+      "newAddressCreated": "Alamat Baru Dibuat",
+      "watchAddress": "Alamat Hanya Tonton",
+      "bulkImportPrivateKey": "Impor massal kunci privat",
+      "duplicateAddressesSkippedDesc_other": "{{count}} alamat dilewati karena sudah ada.",
+      "openExtensionToGetStarted": "Buka ekstensi Rabby untuk memulai",
+      "duplicateAddressesSkippedTitle": "Beberapa alamat sudah diimpor",
+      "imported": "Diimpor Sebelumnya",
+      "addressAddedCount_one": "{{count}} Alamat Ditambahkan",
+      "duplicateAddressesSkippedDesc_one": "{{count}} alamat dilewati karena sudah ada.",
+      "addMoreAddressesFromThisSeedPhrase": "Tambahkan lebih banyak alamat dari frasa seed ini",
+      "bulkImportPrivateKeyInvalid": "Beberapa kunci privat tidak valid. Harap hapus atau masukkan kembali.",
+      "bulkImportPrivateKeySupport": "Mendukung hingga 1000 kunci pribadi yang kompatibel dengan EVM",
+      "bulkImportPrivateKeyExceeded": "Mendukung hingga {{count}} kunci privat sekaligus",
+      "bulkImportPrivateKeyInputTab": "Masukkan Kunci Pribadi",
+      "bulkImportPrivateKeyPlaceholder": "Setiap kunci privat harus dipisahkan oleh baris baru atau karakter khusus.",
+      "privateKeyTab": "Kunci Privat",
+      "addressImported": "Alamat Diimpor",
+      "seedPhraseTab": "Frase Benih",
+      "addressAddedCount_other": "{{count}} Alamat Ditambahkan"
     },
     "unlock": {
       "btn": {
@@ -2002,7 +2031,8 @@
       },
       "btnForgotPassword": "Lupa Kata Sandi?",
       "title": "Rabby Wallet",
-      "description": "Dompet andalan Anda untuk Ethereum dan EVM"
+      "description": "Dompet andalan Anda untuk Ethereum dan EVM",
+      "biometricFailed": "Pembukaan biometrik gagal"
     },
     "addToken": {
       "balance": "Saldo",
@@ -2718,7 +2748,8 @@
         "import": "Diimpor Berhasil",
         "backupSeedPhraseNow": "Cadangkan Frasa Seed Sekarang",
         "openWallet": "Buka Dompet",
-        "desc": "Dompet Rabby Siap Digunakan!"
+        "desc": "Dompet Rabby Siap Digunakan!",
+        "backupSeedPhrase": "Cadangan Frasa Benih"
       },
       "readyToUse": {
         "pin": "Pin Dompet Rabby",
@@ -3232,7 +3263,8 @@
         "openPositionSuccess": "{{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
         "openTPSlMarketOrderSuccess": "{{tpsl}} order pasar telah ditempatkan {{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
         "openLimitOrderSuccess": "Limit order telah ditempatkan {{direction}} {{coin}}-USD: Jumlah {{size}} pada Harga ${{price}}",
-        "openTPSlLimitOrderSuccess": "{{tpsl}} limit order telah ditempatkan {{direction}} {{coin}}-USD: ukuran {{size}} pada harga ${{price}}"
+        "openTPSlLimitOrderSuccess": "{{tpsl}} limit order telah ditempatkan {{direction}} {{coin}}-USD: ukuran {{size}} pada harga ${{price}}",
+        "orderError": "Kesalahan pesanan"
       },
       "closePositionPopup": {
         "closeLong": "Tutup posisi long",
@@ -3324,7 +3356,10 @@
         "activatedAddress": "Diaktifkan",
         "noPosition": "Tidak ada posisi",
         "notActivatedAddress": "Belum Diaktifkan",
-        "hyperliquidBalance": "Saldo Perpetual"
+        "hyperliquidBalance": "Saldo Perpetual",
+        "position": "Posisi",
+        "positions": "Posisi",
+        "selectAddress": "Pilih Alamat"
       },
       "riskLevel": {
         "danger": {
@@ -3450,7 +3485,21 @@
       "leverageRangeMaxError": "Leverage maksimum adalah {{max}}x",
       "rabbyFeeTipsZero": "Biaya Rabby: 0%",
       "close": "Tutup posisi",
-      "directDepositFast": "Cepat, 0 Slippage"
+      "directDepositFast": "Cepat, 0 Slippage",
+      "positionValue": "Nilai Posisi",
+      "details": "Detail",
+      "marginMode": "Mode Margin",
+      "currentPrice": "Harga Saat Ini",
+      "isolatedMargin": "Margin Terpisah",
+      "openProModeInTab": "Buka Mode Pro di Tab",
+      "crossMargin": "Margin Silang",
+      "unrealizedPnl": "Keuntungan dan Kerugian yang Belum Direalisasikan",
+      "cannotChangeMarginModeWithOpenPositions": "Tidak dapat mengubah Mode Margin dengan posisi terbuka",
+      "liquidationDistanceDown": "Turun <bold>{{percent}}</bold> akan memicu likuidasi",
+      "liquidationDistanceUp": "Naik <bold>{{percent}}</bold> akan memicu likuidasi",
+      "settings": "Pengaturan",
+      "isolatedMarginDesc": "Setiap posisi menggunakan margin-nya sendiri. Kerugian dibatasi pada posisi tersebut, tetapi dapat dilikuidasi dengan lebih mudah.",
+      "crossMarginDesc": "Semua posisi berbagi margin yang sama. Ini mengurangi kemungkinan satu posisi dilikuidasi, tetapi semua dana cross-margin bisa hilang dalam gerakan pasar yang ekstrem."
     },
     "perpsPro": {
       "chatArea": {
@@ -3511,7 +3560,8 @@
           "closedPnlTooltip": "PNL terealisasi mencakup biaya dan cashback",
           "closedPnl": "Pnl terealisasi",
           "direction": "Arah",
-          "fundingTipsV2": "Pendanaan bersih sejak posisi dibuka. nilai pendanaan merah (negatif) menunjukkan pendanaan yang dibayar, sementara nilai hijau (positif) menunjukkan pendanaan yang diterima."
+          "fundingTipsV2": "Pendanaan bersih sejak posisi dibuka. nilai pendanaan merah (negatif) menunjukkan pendanaan yang dibayar, sementara nilai hijau (positif) menunjukkan pendanaan yang diterima.",
+          "fundingTipsBold": "Ini menunjukkan total pendanaan yang telah diselesaikan sejak posisi dibuka. Nilai <bold>Hijau (positif)</bold> berarti Anda telah mendapatkan dari trader lain, sementara nilai <bold>Merah (negatif)</bold> adalah biaya pendanaan yang telah Anda bayar kepada mereka."
         },
         "emptyMessage": {
           "fundingHistory": "Tidak ada riwayat pendanaan",
@@ -3670,7 +3720,42 @@
         "aloTooLargeSell": "Harga order Alo harus lebih tinggi dari harga tawaran terbaik.",
         "tpMustBeLowerThanCurrentPrice": "Harga ambil untung harus lebih rendah daripada harga saat ini",
         "deposit": "Setor",
-        "addFundsToGetStarted": "Tambahkan dana untuk memulai"
+        "addFundsToGetStarted": "Tambahkan dana untuk memulai",
+        "cost": "Biaya",
+        "short": "Pendek",
+        "price": "Harga",
+        "orderCount": "Jumlah Pesanan",
+        "sideShortSell": "short (jual)",
+        "buyTrigger": "Picu Pemicu",
+        "Sell": "Jual",
+        "Buy": "Beli",
+        "tpTriggerMoreThanOrderPrice": "Harga pemicu TP Anda harus lebih tinggi dari harga pesanan Anda.",
+        "orderTypeTooltipMarket": "Pesanan pasar langsung dicocokkan dengan harga pasar terbaik yang tersedia.",
+        "sellTrigger": "Jual Trigger",
+        "sideLongBuy": "long (beli)",
+        "tpTriggerPriceIsZero": "Harga pemicu TP Anda adalah 0 dan tidak akan diatur saat Anda pergi {{side}}",
+        "slTriggerMoreThanOrderPrice": "Harga pemicu SL Anda harus lebih tinggi dari harga pesanan Anda.",
+        "bboDisabledTooltip": "BBO tidak didukung ketika {{bboDisabledReason}} diaktifkan",
+        "slTriggerLessThanOrderPrice": "Harga pemicu SL Anda harus lebih rendah dari harga pesanan Anda.",
+        "orderTypeTooltipStopMarket": "Pesanan Stop Market menjadi pesanan pasar ketika harga tertentu tercapai. Tentukan harga pemicu untuk mengaktifkan pesanan.",
+        "orderTypeTooltipStopLimit": "Limit Order Stop menjadi limit order ketika harga stop yang ditentukan tercapai. Tentukan harga pemicu untuk mengaktifkan pesanan.",
+        "long": "Beli",
+        "slTriggerPriceIsZero": "Harga trigger SL Anda adalah 0 dan tidak akan diatur saat Anda pergi {{side}}",
+        "orderTypeTooltipLimit": "Order limit adalah perintah untuk membeli atau menjual pada harga tertentu atau lebih baik. Order limit tidak dijamin untuk dieksekusi.",
+        "orderTypeTooltipTakeLimit": "Limit Take Orders menjadi limit order ketika harga take yang ditentukan tercapai. Tentukan harga pemicu untuk mengaktifkan order.",
+        "estimatedPnlWillBe": "Estimasi PnL Anda akan menjadi",
+        "size": "Ukuran",
+        "action": "Aksi",
+        "hour": "jam",
+        "tpTriggerLessThanOrderPrice": "Harga pemicu TP Anda harus kurang dari harga pesanan Anda.",
+        "max": "MAKSIMUM",
+        "totalTime": "Total Time (5m-24h)",
+        "maxDurationTwap": "Durasi maksimum untuk menjalankan pesanan TWAP adalah",
+        "orderTypeTooltipScale": "Scaled Orders memungkinkan Anda untuk membagi jumlah menjadi beberapa suborder untuk meminimalkan dampak pasar.",
+        "orderTypeTooltipTwap": "TWAP (Time-Weighted Average Price) adalah strategi eksekusi perdagangan algoritmik yang bertujuan untuk mencapai harga eksekusi rata-rata yang mendekati harga rata-rata berbobot waktu dari periode yang ditentukan oleh pengguna.",
+        "bboTips": "Best Bid Offer (BBO) mengacu pada harga tawar terbaik yang tersedia dan harga permintaan terbaik yang tersedia di buku pesanan pada waktu tertentu. Pesanan BBO selalu ditempatkan menggunakan ukuran tick minimum yang tepat, memastikan penetapan harga yang terperinci dan akurat tanpa bergantung pada preferensi tampilan.",
+        "orderTypeTooltipTakeMarket": "Ambil Pesanan Pasar menjadi pesanan pasar ketika harga ambil yang ditentukan tercapai. Tentukan harga pemicu untuk mengaktifkan pesanan.",
+        "min": "min"
       },
       "marginMode": {
         "cross": "Lepas",
@@ -3678,7 +3763,9 @@
         "confirm": "Konfirmasi",
         "title": "Mode Marjin",
         "crossDescription": "Semua posisi silang berbagi margin silang yang sama sebagai jaminan. Dalam hal likuidasi, saldo margin Anda dan posisi terbuka lainnya yang tersisa di bawah silang dalam mode ini dapat disita.",
-        "isolatedDescription": "Kelola risiko Anda pada posisi individu dengan mengalokasikan jumlah margin yang ditetapkan untuk masing-masing. Jika rasio margin dari posisi terisolasi mencapai 100%, posisi tersebut akan dilikuidasi. Margin dapat ditambahkan atau dihapus dari posisi individu dalam mode ini."
+        "isolatedDescription": "Kelola risiko Anda pada posisi individu dengan mengalokasikan jumlah margin yang ditetapkan untuk masing-masing. Jika rasio margin dari posisi terisolasi mencapai 100%, posisi tersebut akan dilikuidasi. Margin dapat ditambahkan atau dihapus dari posisi individu dalam mode ini.",
+        "cannotChange": "Tidak Dapat Mengubah Mode Margin",
+        "onlyIsolatedSupported": "Aset ini hanya mendukung mode margin Terpisah"
       },
       "leverage": {
         "title": "Sesuaikan Leverage",
@@ -3991,7 +4078,8 @@
           "assets": "Token",
           "balance": "Saldo"
         },
-        "title": "Pilih Token Pembayaran kembali"
+        "title": "Pilih Token Pembayaran kembali",
+        "zeroLtvCollateralTips": "Anda memiliki LTV berikut = 0 danau dengan demikian hanya dapat membayar kembali dengan jaminan ini terlebih dahulu sesuai dengan aturan pembayaran kembali jaminan."
       },
       "manageEmode": {
         "actions": {
@@ -4061,7 +4149,8 @@
         "entryTips": "Satu klik untuk menukar aset yang Anda pinjam, mengurangi langkah dan biaya.",
         "priceImpactTips": "Dampak harga tinggi ({{lostValue}}). Rute ini mungkin memberikan lebih banyak karena likuiditas rendah atau ukuran pesanan kecil.",
         "lpDangerWarning": "Faktor kesehatan Anda setelah pertukaran ini akan sangat rendah dan dapat mengakibatkan likuidasi. Silakan pilih aset lain atau kurangi jumlah pertukaran untuk tetap aman.",
-        "lpRiskWarning": "Faktor kesehatan rendah setelah pertukaran. Posisi Anda akan menghadapi risiko likuidasi yang lebih tinggi."
+        "lpRiskWarning": "Faktor kesehatan rendah setelah pertukaran. Posisi Anda akan menghadapi risiko likuidasi yang lebih tinggi.",
+        "maxLtvWarning": "Kekurangan jaminan untuk menutupi posisi pinjaman baru. Dompet harus memiliki daya pinjam yang tersisa untuk melakukan perpindahan utang."
       },
       "repayWithCollateral": {
         "action": {
@@ -4463,7 +4552,7 @@
       "txCompleteMoreContent": "{{chain}} #{{nonce}} selesai. Klik untuk melihat lebih banyak."
     },
     "alias": {
-      "watchAddressKeyring": "Kontak",
+      "watchAddressKeyring": "Tonton Saja",
       "simpleKeyring": "Kunci Pribadi",
       "HdKeyring": "Frasa Benih"
     },
@@ -4482,7 +4571,7 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "Kontak",
+      "WatchAddressKeyring": "Tampilan Saja",
       "HdKeyring": "Dibuat oleh Seed Phrase",
       "SimpleKeyring": "Diimpor oleh Kunci Pribadi"
     },
