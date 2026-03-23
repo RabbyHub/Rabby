@@ -57,7 +57,7 @@ jobs:
 
           # Optional: Configure Claude's behavior with CLI arguments
           claude_args: |
-            --model gpt-5.3-codex
+            --model claude-opus-4-6
 
           # Optional: Advanced settings configuration
           # settings: |
