@@ -65,17 +65,17 @@ export const DesktopTokenChange = ({
 
             {/* Amount and Symbol */}
             <div className="flex items-center gap-[4px] flex-1 min-w-0">
-              <span className="text-[12px] leading-[14px] text-r-neutral-body">
+              <span className="text-[14px] leading-[17px] text-r-neutral-body">
                 -
               </span>
-              <span className="text-[12px] leading-[14px] text-r-neutral-body">
+              <span className="text-[14px] leading-[17px] text-r-neutral-body">
                 {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 4)}
               </span>
               <DesktopTokenLabel
                 isNft={isNft}
                 token={token}
                 onClose={onClose}
-                textClassName="text-[12px] leading-[14px] text-r-neutral-body"
+                textClassName="text-[14px] leading-[17px] text-r-neutral-body"
                 canClickToken={isNft ? false : canClickToken}
               />
             </div>
@@ -116,17 +116,17 @@ export const DesktopTokenChange = ({
             )}
 
             <div className="flex items-center gap-[4px] flex-1 min-w-0">
-              <span className="text-[12px] leading-[14px] text-r-green-default">
+              <span className="text-[14px] leading-[17px] text-r-green-default">
                 +
               </span>
-              <span className="text-[12px] leading-[14px] text-r-green-default">
+              <span className="text-[14px] leading-[17px] text-r-green-default">
                 {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 4)}
               </span>
               <DesktopTokenLabel
                 isNft={isNft}
                 token={token}
                 onClose={onClose}
-                textClassName="text-[12px] leading-[14px] text-r-green-default"
+                textClassName="text-[14px] leading-[17px] text-r-green-default"
                 canClickToken={canClickToken}
               />
             </div>

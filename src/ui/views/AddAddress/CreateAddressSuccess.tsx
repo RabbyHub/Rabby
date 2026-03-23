@@ -7,7 +7,9 @@ import { Button, message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import browser from 'webextension-polyfill';
 import {
+  BACKUP_SEED_PHRASE_REDIRECT_PATH,
   CreateAddressSuccessState,
+  getCreateAddressSuccessSecondaryAction,
   useCreateAddressActions,
 } from './useCreateAddress';
 import type { AddAddressNavigateHandler } from './shared';
@@ -30,7 +32,10 @@ export const CreateAddressSuccess: React.FC<{
   const location = useLocation<CreateAddressSuccessState>();
   const wallet = useWallet();
   const { t } = useTranslation();
-  const { openAddMoreAddressesPage } = useCreateAddressActions({
+  const {
+    openAddMoreAddressesPage,
+    openBackupSeedPhrasePage,
+  } = useCreateAddressActions({
     onNavigate,
   });
 
@@ -43,8 +48,12 @@ export const CreateAddressSuccess: React.FC<{
     state,
   ]);
   const successAddressCardsRef = React.useRef<SuccessAddressCardsRef>(null);
+  const secondaryAction = React.useMemo(
+    () => getCreateAddressSuccessSecondaryAction(state),
+    [state]
+  );
   const [pendingAction, setPendingAction] = React.useState<
-    'done' | 'more' | null
+    'done' | 'backup' | 'more' | null
   >(null);
 
   const handleDone = useMemoizedFn(async () => {
@@ -98,8 +107,34 @@ export const CreateAddressSuccess: React.FC<{
     }
   });
 
+  const handleBackupSeedPhrase = useMemoizedFn(async () => {
+    if (
+      secondaryAction?.kind !== 'backup' ||
+      !state.address ||
+      !state.seedPhrase
+    ) {
+      return;
+    }
+
+    try {
+      setPendingAction('backup');
+      await successAddressCardsRef.current?.commitAllAliases();
+      openBackupSeedPhrasePage({
+        address: state.address,
+        data: state.seedPhrase,
+        redirectTo: BACKUP_SEED_PHRASE_REDIRECT_PATH,
+      });
+    } catch (error) {
+      message.error(
+        error instanceof Error ? error.message : 'Failed to open backup page'
+      );
+    } finally {
+      setPendingAction(null);
+    }
+  });
+
   const handleAddMore = useMemoizedFn(async () => {
-    if (!state.publicKey) {
+    if (secondaryAction?.kind !== 'add-more' || !state.publicKey) {
       return;
     }
 
@@ -114,6 +149,9 @@ export const CreateAddressSuccess: React.FC<{
           publicKey: state.publicKey,
           title: state.title,
           description: state.description,
+          address: state.address,
+          alias: state.alias,
+          seedPhrase: state.seedPhrase,
         },
       });
     } catch (error) {
@@ -174,21 +212,37 @@ export const CreateAddressSuccess: React.FC<{
             : t('global.Done')}
         </Button>
 
-        {state.publicKey && state.primaryAction !== 'open-wallet' ? (
-          <button
-            type="button"
-            disabled={pendingAction !== null}
-            className={clsx(
-              'mt-[14px] flex w-full items-center justify-center gap-[1px] text-[13px] leading-[16px] text-r-neutral-foot',
-              pendingAction !== null && 'opacity-50'
-            )}
-            onClick={handleAddMore}
-          >
-            <span>
-              {t('page.newAddress.addMoreAddressesFromThisSeedPhrase')}
-            </span>
-            <RcCreateAddressSuccessArrowIcon className="h-[16px] w-[16px]" />
-          </button>
+        {secondaryAction ? (
+          secondaryAction.kind === 'backup' ? (
+            <Button
+              size="large"
+              type="ghost"
+              className={clsx(
+                'mt-12',
+                'w-full h-[44px] rounded-[8px] text-[13px] leading-[16px] font-medium',
+                'text-blue-light',
+                'border-blue-light',
+                'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                'before:content-none'
+              )}
+              onClick={handleBackupSeedPhrase}
+            >
+              {t(secondaryAction.labelKey)}
+            </Button>
+          ) : (
+            <button
+              type="button"
+              disabled={pendingAction !== null}
+              className={clsx(
+                'mt-[14px] flex w-full items-center justify-center gap-[1px] text-[13px] leading-[16px] text-r-neutral-foot',
+                pendingAction !== null && 'opacity-50'
+              )}
+              onClick={handleAddMore}
+            >
+              <span>{t(secondaryAction.labelKey)}</span>
+              <RcCreateAddressSuccessArrowIcon className="h-[16px] w-[16px]" />
+            </button>
+          )
         ) : null}
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, sleep, splitNumberByStep } from '@/ui/utils';
-import { Button, Dropdown, Menu, message, Modal, Table, Tooltip } from 'antd';
+import { Button, message, Modal, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -13,10 +13,7 @@ import {
   calculateDistanceToLiquidation,
   formatPerpsPct,
 } from '@/ui/views/Perps/utils';
-import {
-  RcIconArrowDownPerpsCC,
-  RcIconEditCC,
-} from '@/ui/assets/desktop/common';
+import { RcIconEditCC } from '@/ui/assets/desktop/common';
 import { EditMarginModal } from '../../../modal/EditMarginModal';
 import { EditTpSlModal } from '../../../modal/EditTpSLModal';
 import { useMemoizedFn } from 'ahooks';
@@ -297,7 +294,6 @@ export const PositionsInfo: React.FC = () => {
     () => [
       {
         title: t('page.perpsPro.userInfo.tab.coin'),
-        // width: 120,
         className: 'relative',
         key: 'coin',
         dataIndex: 'coin',
@@ -348,7 +344,6 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.tab.size'),
-        // width: 160,
         key: 'positionValue',
         dataIndex: 'positionValue',
         sorter: (a, b) => Number(a.positionValue) - Number(b.positionValue),
@@ -370,7 +365,6 @@ export const PositionsInfo: React.FC = () => {
         key: 'entryPx',
         dataIndex: 'entryPx',
         sorter: (a, b) => Number(a.entryPx) - Number(b.entryPx),
-        // width: 160,
         render: (_, record) => {
           return (
             <div>
@@ -385,48 +379,7 @@ export const PositionsInfo: React.FC = () => {
         },
       },
       {
-        title: (
-          <DashedUnderlineText
-            tooltipText={t('page.perpsPro.userInfo.tab.unrealizedPnlTooltip')}
-          >
-            {t('page.perpsPro.userInfo.tab.unrealizedPnl')}
-          </DashedUnderlineText>
-        ),
-        key: 'unrealizedPnl',
-        dataIndex: 'unrealizedPnl',
-        sorter: (a, b) => Number(a.unrealizedPnl) - Number(b.unrealizedPnl),
-        // width: 160,
-        render: (_, record) => {
-          const isUp = Number(record.unrealizedPnl) >= 0;
-          return (
-            <div>
-              <div
-                className={clsx(
-                  'text-[12px] leading-[14px]   mb-[4px]',
-                  isUp ? 'text-r-green-default' : 'text-r-red-default'
-                )}
-              >
-                {isUp ? '+' : '-'}$
-                {splitNumberByStep(
-                  Math.abs(Number(record.unrealizedPnl)).toFixed(2)
-                )}{' '}
-              </div>
-              <div
-                className={clsx(
-                  'text-[12px] leading-[14px]   mb-[4px]',
-                  isUp ? 'text-r-green-default' : 'text-r-red-default'
-                )}
-              >
-                {isUp ? '+' : '-'}
-                {Math.abs(Number(record.returnOnEquity) * 100).toFixed(2)}%
-              </div>
-            </div>
-          );
-        },
-      },
-      {
         title: t('page.perpsPro.userInfo.tab.liqPrice'),
-        // width: 160,
         key: 'liquidationPx',
         dataIndex: 'liquidationPx',
         sorter: (a, b) => Number(a.liquidationPx) - Number(b.liquidationPx),
@@ -456,7 +409,6 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: t('page.perpsPro.userInfo.tab.margin'),
-        // width: 160,
         key: 'marginUsed',
         dataIndex: 'marginUsed',
         sorter: (a, b) => Number(a.marginUsed) - Number(b.marginUsed),
@@ -487,6 +439,45 @@ export const PositionsInfo: React.FC = () => {
       {
         title: (
           <DashedUnderlineText
+            tooltipText={t('page.perpsPro.userInfo.tab.unrealizedPnlTooltip')}
+          >
+            {t('page.perpsPro.userInfo.tab.unrealizedPnl')}
+          </DashedUnderlineText>
+        ),
+        key: 'unrealizedPnl',
+        dataIndex: 'unrealizedPnl',
+        sorter: (a, b) => Number(a.unrealizedPnl) - Number(b.unrealizedPnl),
+        render: (_, record) => {
+          const isUp = Number(record.unrealizedPnl) >= 0;
+          return (
+            <div>
+              <div
+                className={clsx(
+                  'text-[12px] leading-[14px]   mb-[4px]',
+                  isUp ? 'text-r-green-default' : 'text-r-red-default'
+                )}
+              >
+                {isUp ? '+' : '-'}$
+                {splitNumberByStep(
+                  Math.abs(Number(record.unrealizedPnl)).toFixed(2)
+                )}{' '}
+              </div>
+              <div
+                className={clsx(
+                  'text-[12px] leading-[14px]   mb-[4px]',
+                  isUp ? 'text-r-green-default' : 'text-r-red-default'
+                )}
+              >
+                {isUp ? '+' : '-'}
+                {Math.abs(Number(record.returnOnEquity) * 100).toFixed(2)}%
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        title: (
+          <DashedUnderlineText
             tooltipText={() => (
               <Trans
                 i18nKey={'page.perpsPro.userInfo.tab.fundingTipsBold'}
@@ -499,7 +490,6 @@ export const PositionsInfo: React.FC = () => {
             {t('page.perpsPro.userInfo.tab.funding')}
           </DashedUnderlineText>
         ),
-        // width: 160,
         key: 'fundingPayments',
         dataIndex: 'fundingPayments',
         sorter: (a, b) =>
@@ -519,9 +509,76 @@ export const PositionsInfo: React.FC = () => {
         },
       },
       {
+        title: (
+          <div
+            className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
+            onClick={handleClickCloseAll}
+          >
+            MKT Close ALL
+          </div>
+        ),
+        key: 'closeAction',
+        dataIndex: 'coin',
+        render: (_, record) => {
+          return (
+            <div className="flex items-center justify-start gap-[8px]">
+              <span
+                className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
+                onClick={() => {
+                  setSelectedCoin(record.coin);
+                  setClosePositionType('market');
+                  setClosePositionVisible(true);
+                }}
+              >
+                Market
+              </span>
+              <div className="w-[1px] h-[12px] bg-rb-neutral-line"></div>
+              <span
+                className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
+                onClick={() => {
+                  setSelectedCoin(record.coin);
+                  setClosePositionType('limit');
+                  setClosePositionVisible(true);
+                }}
+              >
+                Limit
+              </span>
+            </div>
+          );
+        },
+      },
+      {
+        title: t('page.perpsPro.userInfo.positionInfo.reverse'),
+        key: 'reverse',
+        align: 'center',
+        dataIndex: 'coin',
+        render: (_, record) => {
+          return (
+            <div className="flex justify-center">
+              <button
+                type="button"
+                className={clsx(
+                  'bg-rb-neutral-bg-4 rounded-[4px] px-[10px] h-[24px]',
+                  'border border-transparent',
+                  'hover:border-rb-brand-default',
+                  'text-[12px] leading-[14px]  text-r-neutral-title-1'
+                )}
+                onClick={() => {
+                  setSelectedCoin(record.coin);
+                  setClosePositionType('reverse');
+                  setClosePositionVisible(true);
+                }}
+              >
+                {t('page.perpsPro.userInfo.positionInfo.reverse')}
+              </button>
+            </div>
+          );
+        },
+      },
+      {
         title: t('page.perpsPro.userInfo.tab.tpSl'),
-        // width: 160,
         key: 'children',
+        align: 'center',
         dataIndex: 'children',
         render: (_, record) => {
           const tpPrice = record.tpItem?.triggerPx;
@@ -531,15 +588,12 @@ export const PositionsInfo: React.FC = () => {
           const size = Math.abs(Number(record.size || 0));
 
           const isLong = record.direction === 'Long';
-          // Calculate expected PNL for take profit
           const takeProfitExpectedPnl = calculatePnL(
             Number(tpPrice || 0),
             isLong ? 'Long' : 'Short',
             size,
             entryPrice
           );
-
-          // Calculate expected PNL for stop loss
           const stopLossExpectedPnl = calculatePnL(
             Number(slPrice || 0),
             isLong ? 'Long' : 'Short',
@@ -547,70 +601,96 @@ export const PositionsInfo: React.FC = () => {
             entryPrice
           );
 
-          return (
-            <div className="flex items-center gap-[6px]">
-              {record.needSeeMoreOrder ? (
-                <div
-                  className="text-[12px] leading-[14px]  text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
+          const hasNoTpSl = !tpPrice && !slPrice;
+
+          if (record.needSeeMoreOrder) {
+            return (
+              <div
+                className="text-[12px] leading-[14px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default flex item-center justify-center"
+                onClick={() => {
+                  eventBus.emit(
+                    EVENTS.PERPS.USER_INFO_HISTORY_TAB_CHANGED,
+                    'openOrders'
+                  );
+                }}
+              >
+                {t('page.perpsPro.userInfo.positionInfo.viewOrders')}
+              </div>
+            );
+          }
+
+          if (hasNoTpSl) {
+            return (
+              <div className="flex items-center justify-center">
+                <button
+                  type="button"
+                  className={clsx(
+                    'bg-rb-neutral-bg-4 rounded-[4px] px-[14px] h-[24px]',
+                    'border border-transparent',
+                    'hover:border-rb-brand-default',
+                    'text-[12px] leading-[14px]  text-r-neutral-title-1'
+                  )}
                   onClick={() => {
-                    eventBus.emit(
-                      EVENTS.PERPS.USER_INFO_HISTORY_TAB_CHANGED,
-                      'openOrders'
-                    );
+                    setSelectedCoin(record.coin);
+                    setEditTpSlVisible(true);
                   }}
                 >
-                  {t('page.perpsPro.userInfo.positionInfo.viewOrders')}
+                  Add
+                </button>
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex items-center justify-center gap-[6px]">
+              <div className="flex flex-col gap-[4px]">
+                <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+                  {tpPrice ? (
+                    <div>
+                      ${splitNumberByStep(tpPrice)}{' '}
+                      {takeProfitExpectedPnl ? (
+                        <span
+                          className={
+                            takeProfitExpectedPnl >= 0
+                              ? 'text-r-green-default'
+                              : 'text-r-red-default'
+                          }
+                        >
+                          ({takeProfitExpectedPnl >= 0 ? '+' : '-'}
+                          {formatUsdValue(Math.abs(takeProfitExpectedPnl))})
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
+                      no TP
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="flex flex-col gap-[4px]">
-                  <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-                    {tpPrice ? (
-                      <div>
-                        ${splitNumberByStep(tpPrice)}{' '}
-                        {takeProfitExpectedPnl ? (
-                          <span
-                            className={
-                              takeProfitExpectedPnl >= 0
-                                ? 'text-r-green-default'
-                                : 'text-r-red-default'
-                            }
-                          >
-                            ({takeProfitExpectedPnl >= 0 ? '+' : '-'}
-                            {formatUsdValue(Math.abs(takeProfitExpectedPnl))})
-                          </span>
-                        ) : null}
-                      </div>
-                    ) : (
-                      <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
-                        no TP
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
-                    {slPrice ? (
-                      <div>
-                        ${splitNumberByStep(slPrice)}{' '}
-                        {stopLossExpectedPnl ? (
-                          <span
-                            className={
-                              stopLossExpectedPnl >= 0
-                                ? 'text-r-green-default'
-                                : 'text-r-red-default'
-                            }
-                          >
-                            ({stopLossExpectedPnl >= 0 ? '+' : '-'}
-                            {formatUsdValue(Math.abs(stopLossExpectedPnl))})
-                          </span>
-                        ) : null}
-                      </div>
-                    ) : (
-                      <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
-                        no SL
-                      </div>
-                    )}
-                  </div>
+                <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+                  {slPrice ? (
+                    <div>
+                      ${splitNumberByStep(slPrice)}{' '}
+                      {stopLossExpectedPnl ? (
+                        <span
+                          className={
+                            stopLossExpectedPnl >= 0
+                              ? 'text-r-green-default'
+                              : 'text-r-red-default'
+                          }
+                        >
+                          ({stopLossExpectedPnl >= 0 ? '+' : '-'}
+                          {formatUsdValue(Math.abs(stopLossExpectedPnl))})
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
+                      no SL
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
               <RcIconEditCC
                 className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default"
                 onClick={() => {
@@ -618,80 +698,6 @@ export const PositionsInfo: React.FC = () => {
                   setEditTpSlVisible(true);
                 }}
               />
-            </div>
-          );
-        },
-      },
-      {
-        title: (
-          <div
-            className="text-rb-neutral-foot cursor-pointer underline  hover:text-rb-brand-default"
-            onClick={handleClickCloseAll}
-          >
-            {t('page.perpsPro.userInfo.positionInfo.closeAll')}
-          </div>
-        ),
-        key: 'oid',
-        align: 'center',
-        dataIndex: 'oid',
-        // width: 160,
-        render: (_, record) => {
-          const CLOSE_POSITION_OPTIONS = [
-            {
-              label: t('page.perpsPro.userInfo.positionInfo.reverse'),
-              value: 'reverse',
-            },
-            {
-              label: t('page.perpsPro.userInfo.positionInfo.closeLimit'),
-              value: 'limit',
-            },
-            {
-              label: t('page.perpsPro.userInfo.positionInfo.closeMarket'),
-              value: 'market',
-            },
-          ];
-
-          return (
-            <div className="flex justify-center">
-              <Dropdown
-                transitionName=""
-                forceRender={true}
-                overlay={
-                  <Menu
-                    className="bg-r-neutral-bg1"
-                    onClick={(info) => {
-                      setSelectedCoin(record.coin);
-                      setClosePositionType(
-                        info.key as 'limit' | 'market' | 'reverse'
-                      );
-                      setClosePositionVisible(true);
-                    }}
-                  >
-                    {CLOSE_POSITION_OPTIONS.map((option) => (
-                      <Menu.Item
-                        className="text-r-neutral-title1 hover:bg-r-blue-light1"
-                        key={option.value}
-                      >
-                        {option.label}
-                      </Menu.Item>
-                    ))}
-                  </Menu>
-                }
-              >
-                <button
-                  type="button"
-                  className={clsx(
-                    'inline-flex items-center justify-between',
-                    'pl-[8px] pr-[4px] py-[8px] w-[64px]',
-                    'border border-rb-neutral-line rounded-[6px]',
-                    'hover:border-rb-brand-default border border-solid border-transparent',
-                    'text-[12px] leading-[14px]  text-rb-neutral-title-1'
-                  )}
-                >
-                  {t('page.perpsPro.userInfo.positionInfo.close')}
-                  <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
-                </button>
-              </Dropdown>
             </div>
           );
         },

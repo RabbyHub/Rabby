@@ -145,14 +145,6 @@ const ImportKeyOrSeed: React.FC<{
   const syncTab = useMemoizedFn((tab: ImportTab) => {
     setSelectedTab(tab);
     clearSeedPhraseErrors();
-    if (isInModal) {
-      onNavigate?.('import-key-or-seed', { tab });
-      return;
-    }
-    history.replace({
-      pathname: '/add-address/import',
-      search: `?tab=${tab}`,
-    });
   });
 
   const handleBack = useMemoizedFn(() => {

@@ -131,7 +131,7 @@ const SeedPhraseCard = ({
   const hasMoreAccounts = group.sortedAccounts.length > MAX_VISIBLE_ADDRESSES;
 
   return (
-    <div className="bg-r-neutral-card-1 rounded-[6px] overflow-hidden">
+    <div className="bg-r-neutral-card-1 rounded-[6px]">
       <button
         type="button"
         className="w-full h-[50px] px-[16px] flex items-center"
@@ -167,7 +167,7 @@ const SeedPhraseCard = ({
           <div
             role="button"
             className={clsx(
-              'mt-[12px] w-full h-[40px] rounded-[4px] bg-r-blue-light-1 text-r-blue-default flex items-center justify-center gap-[6px]'
+              'mt-[12px] w-full h-[40px] rounded-[4px] bg-r-blue-light-1 text-r-blue-default flex items-center justify-center gap-[6px] hover:bg-r-blue-light-2 transition-colors'
             )}
             onClick={disabled ? undefined : onAdd}
           >
@@ -230,7 +230,7 @@ export const AddNewAddress: React.FC<{
   React.useEffect(() => {
     setExpandedMap((prev) =>
       groups.reduce((acc, group) => {
-        acc[group.key] = prev[group.key] ?? group.totalBalance > 0;
+        acc[group.key] = prev[group.key] ?? true;
         return acc;
       }, {} as Record<string, boolean>)
     );
@@ -299,8 +299,6 @@ export const AddNewAddress: React.FC<{
           px={16}
           py={16}
           className="h-[56px]"
-          hoverBgColor="var(--r-neutral-card-1, #fff)"
-          hoverBorder={false}
           right={
             <RcAddNewAddressChevronIcon className="ml-auto w-[20px] h-[20px] shrink-0 rotate-180" />
           }

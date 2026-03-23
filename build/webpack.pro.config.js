@@ -68,7 +68,7 @@ const config = {
       new TerserPlugin({
         terserOptions: {
           compress: {
-            pure_funcs: ['console.log', 'console.debug'],
+            pure_funcs: ['console.log', 'console.debug', 'console.info'],
           },
         },
       }),

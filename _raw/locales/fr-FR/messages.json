@@ -1240,7 +1240,8 @@
         "desc": "Changer l'adresse Dapp"
       },
       "noSeedPhraseAddress": "Aucune adresse n'a été ajoutée pour cette phrase de récupération. Vous pouvez ajouter une adresse ou supprimer la phrase de récupération.",
-      "watch-address": "Regarder uniquement"
+      "watch-address": "Regarder uniquement",
+      "deleteSuccess": "Supprimé avec succès"
     },
     "newAddress": {
       "addContacts": {
@@ -1592,7 +1593,7 @@
       "privateKeyTab": "Clé Privée",
       "newSeedPhraseCreated": "Nouvelle phrase de récupération créée",
       "addressAdded": "Adresse ajoutée",
-      "watchAddress": "Regarder l'adresse",
+      "watchAddress": "Adresse en lecture seule",
       "addressImported": "Adresse importée",
       "bulkImportPrivateKeyInputTab": "Entrez la clé privée",
       "imported": "Importé avant",
@@ -3073,7 +3074,8 @@
         "addMoreAddr": "Ajoutez plus d'adresses à partir de cette Seed Phrase",
         "openWallet": "Ouvrir le portefeuille",
         "desc": "Rabby Wallet est prêt à l'emploi !",
-        "backupSeedPhraseNow": "Sauvegardez la phrase de récupération maintenant"
+        "backupSeedPhraseNow": "Sauvegardez la phrase de récupération maintenant",
+        "backupSeedPhrase": "Phrase de sauvegarde"
       },
       "readyToUse": {
         "pin": "Épingler Rabby Wallet",
@@ -3587,7 +3589,8 @@
         "buyFilledContentNoPercentage": "Achat de {{sz}} {{coin}} exécuté au prix de {{price}} USDC",
         "openScaleOrderSuccess": "Ordre par palier passé {{direction}} {{coin}}-USD : Taille {{size}}",
         "cancelAllOrderSuccess": "{count, plural, one {# commande annulée avec succès} other {# commandes annulées avec succès}}",
-        "sellFilledContent": "vendu {{sz}} / {{origSz}} {{coin}} exécuté à {{price}} USDC"
+        "sellFilledContent": "vendu {{sz}} / {{origSz}} {{coin}} exécuté à {{price}} USDC",
+        "orderError": "Erreur de commande"
       },
       "closePositionPopup": {
         "positionSize": "Taille de la position",
@@ -4043,7 +4046,42 @@
         "sizeSkewTooltip": "Rapport entre le prix de fin et le prix de départ. Par exemple, si le déséquilibre de taille est de 2,0, alors un ordre limite sur le prix de fin sera passé avec le double de la taille de l'ordre associé au prix de départ. Un déséquilibre de taille de 1,0 crée des ordres de taille égale.",
         "tpSlTips": "Passez des ordres simples de prise de bénéfice et de stop loss sur le marché. Pour des fonctionnalités avancées telles que des prix limités ou des prises de bénéfice et de stop loss partiels, définissez les ordres de prise de bénéfice et de stop loss dans une position ouverte.",
         "deposit": "Dépôt",
-        "addFundsToGetStarted": "Ajoutez des fonds pour commencer"
+        "addFundsToGetStarted": "Ajoutez des fonds pour commencer",
+        "short": "Short",
+        "size": "Taille",
+        "Buy": "Acheter",
+        "long": "Long",
+        "cost": "Coût",
+        "price": "Prix",
+        "max": "MAX",
+        "Sell": "Vendre",
+        "action": "Action",
+        "sideLongBuy": "long (acheter)",
+        "buyTrigger": "Acheter Déclencheur",
+        "sideShortSell": "vendre (short)",
+        "sellTrigger": "Déclencheur de vente",
+        "estimatedPnlWillBe": "Votre PnL estimé sera",
+        "orderTypeTooltipMarket": "L'ordre de marché est immédiatement apparié au meilleur prix de marché disponible.",
+        "slTriggerLessThanOrderPrice": "Votre prix de déclenchement SL doit être inférieur à votre prix d'ordre.",
+        "bboDisabledTooltip": "BBO n'est pas pris en charge lorsque {{bboDisabledReason}} est activé.",
+        "tpTriggerMoreThanOrderPrice": "Votre prix de déclenchement TP doit être supérieur à votre prix de commande.",
+        "tpTriggerPriceIsZero": "Votre prix de déclenchement de TP est 0 et ne sera pas défini lorsque vous irez {{side}}.",
+        "slTriggerPriceIsZero": "Votre prix de déclenchement SL est à 0 et ne sera pas défini lorsque vous irez {{side}}",
+        "slTriggerMoreThanOrderPrice": "Votre prix de déclenchement SL doit être supérieur à votre prix d'ordre.",
+        "orderTypeTooltipTakeMarket": "Prenez des ordres de marché lorsque le prix de prise spécifié est atteint. Spécifiez un prix de déclenchement pour activer l'ordre.",
+        "orderTypeTooltipStopMarket": "Les ordres de marché Stop deviennent des ordres de marché lorsque le prix spécifié est atteint. Spécifiez un prix de déclenchement pour activer l'ordre.",
+        "orderTypeTooltipTakeLimit": "Les ordres à seuil deviennent des ordres à cours limité lorsque le prix de seuil spécifié est atteint. Spécifiez un prix de déclenchement pour activer l'ordre.",
+        "orderTypeTooltipLimit": "Un ordre limite est un ordre d'acheter ou de vendre à un prix spécifique ou meilleur. Les ordres limites ne sont pas garantis de s'exécuter.",
+        "orderTypeTooltipStopLimit": "Les ordres Stop Limit deviennent des ordres à cours limité lorsque le prix d'arrêt spécifié est atteint. Spécifiez un prix de déclenchement pour activer l'ordre.",
+        "min": "min",
+        "hour": "heure",
+        "maxDurationTwap": "La durée maximale d'exécution de l'ordre TWAP est de",
+        "bboTips": "Meilleure Offre de Soumission (BBO) fait référence au meilleur prix d'offre et au meilleur prix de demande disponibles dans le carnet de commandes à un moment donné. Les ordres BBO sont toujours placés en utilisant la taille de tick minimale précise, garantissant un prix granulaire et précis indépendamment des préférences d'affichage.",
+        "totalTime": "Temps total (5m-24h)",
+        "tpTriggerLessThanOrderPrice": "Votre prix de déclenchement TP doit être inférieur au prix de votre commande.",
+        "orderTypeTooltipScale": "Les commandes échelonnées vous permettent de diviser un montant en plusieurs sous-commandes afin de minimiser l'impact sur le marché.",
+        "orderTypeTooltipTwap": "TWAP (Prix Moyen Pondéré dans le Temps) est une stratégie d'exécution de trade algorithmique qui vise à atteindre un prix d'exécution moyen proche du prix moyen pondéré dans le temps de la période spécifiée par l'utilisateur.",
+        "orderCount": "Nombre de Commandes"
       },
       "marginMode": {
         "title": "Mode de marge",

@@ -146,7 +146,11 @@ const Wrapper = styled.div`
   }
 
   .ant-table-tbody > tr > td.ant-table-cell-row-hover {
-    background-color: transparent;
+    /* background-color: transparent; */
+    background-color: var(--rb-neutral-bg-3, #e0e5ec);
+  }
+  .ant-table-tbody > tr.ant-table-row:hover > td {
+    background-color: var(--rb-neutral-bg-3, #e0e5ec);
   }
 
   .ant-table-tbody {
