@@ -95,6 +95,12 @@ const StyledSlider = styled(Slider)<{ isDark: boolean }>`
 export const DesktopPerpsSlider = (props: SliderSingleProps) => {
   const { isDarkTheme } = useThemeMode();
   return (
-    <StyledSlider {...props} tooltipVisible={false} isDark={isDarkTheme} />
+    <StyledSlider
+      {...props}
+      tooltip={{
+        open: false,
+      }}
+      isDark={isDarkTheme}
+    />
   );
 };
