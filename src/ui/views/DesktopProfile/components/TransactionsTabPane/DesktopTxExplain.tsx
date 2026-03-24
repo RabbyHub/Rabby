@@ -1,22 +1,17 @@
-import { TxDisplayItem, TxHistoryItem } from '@/background/service/openapi';
-import React from 'react';
-import { getTokenSymbol } from 'ui/utils/token';
-import { useTranslation } from 'react-i18next';
+import { TxHistoryItemRow } from '@/db/schema/history';
 import { NameAndAddress, TxAvatar } from '@/ui/component';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { getTokenSymbol } from 'ui/utils/token';
 
 type TxInterAddressExplainProps = {
-  data: TxDisplayItem | TxHistoryItem;
-} & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
+  data: TxHistoryItemRow;
+};
 
-export const DesktopTxExplain = ({
-  data,
-  projectDict,
-  tokenDict,
-  cateDict,
-}: TxInterAddressExplainProps) => {
+export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
   const isCancel = data.cate_id === 'cancel';
   const isApprove = data.cate_id === 'approve';
-  const project = data.project_id ? projectDict[data.project_id] : null;
+  const project = data.project_item;
   const { t } = useTranslation();
 
   const projectName = (
@@ -49,7 +44,7 @@ export const DesktopTxExplain = ({
     const tokenId = data.token_approve?.token_id || '';
     const tokenUUID = `${data.chain}_token:${tokenId}`;
 
-    const approveToken = tokenDict[tokenId] || tokenDict[tokenUUID];
+    const approveToken = data.approve_token;
 
     const amount = data.token_approve?.value || 0;
 
@@ -65,7 +60,7 @@ export const DesktopTxExplain = ({
     interAddressExplain = (
       <>
         <div className="text-[14px] leading-[17px] text-r-neutral-title1">
-          {cateDict[data.cate_id || '']?.name ??
+          {data.cate_item?.name ??
             (data.tx?.name || t('page.transactions.explain.unknown'))}
         </div>
         <div className="text-[14px] leading-[17px] text-r-neutral-title1">
@@ -78,7 +73,7 @@ export const DesktopTxExplain = ({
   return (
     <div className="flex items-center gap-[8px]">
       <TxAvatar
-        src={projectDict[data.project_id as string]?.logo_url}
+        src={data.project_item?.logo_url}
         cateId={data.cate_id}
         className="w-[32px] h-[32px] rounded-[4px]"
       ></TxAvatar>

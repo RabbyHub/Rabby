@@ -24,6 +24,7 @@ import {
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
 import { findChainByServerID } from '@/utils/chain';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { TxHistoryItemRow } from '@/db/schema/history';
 
 export type HistoryItemActionContext = {
   parsedInputData: string;
@@ -223,19 +224,11 @@ function useClientParseTx({
 }
 
 type HistoryItemProps = {
-  data: TxDisplayItem | TxHistoryItem;
+  data: TxHistoryItemRow;
   onViewInputData?: (ctx: HistoryItemActionContext) => void;
-  isTestnet?: boolean;
-} & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
+};
 
-export const HistoryItem = ({
-  data,
-  cateDict,
-  projectDict,
-  tokenDict,
-  onViewInputData,
-  isTestnet,
-}: HistoryItemProps) => {
+export const HistoryItem = ({ data, onViewInputData }: HistoryItemProps) => {
   const chainItem = getChain(data.chain);
   const isFailed = data.tx?.status === 0;
   const isScam = data.is_scam;
@@ -296,13 +289,8 @@ export const HistoryItem = ({
           (isScam || isFailed) && 'opacity-50'
         )}
       >
-        <TxInterAddressExplain
-          data={data}
-          projectDict={projectDict}
-          tokenDict={tokenDict}
-          cateDict={cateDict}
-        />
-        <TokenChange data={data} tokenDict={tokenDict} />
+        <TxInterAddressExplain data={data} />
+        <TokenChange data={data} />
       </div>
       {(data.tx && data.tx?.eth_gas_fee) || isFailed ? (
         <div

@@ -16,17 +16,13 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import IconUnknown from 'ui/assets/token-default.svg';
 import { ellipsis } from '@/ui/utils/address';
 import { DesktopTxExplain } from './DesktopTxExplain';
+import { TxHistoryItemRow } from '@/db/schema/history';
 
 type HistoryItemProps = {
-  data: TxDisplayItem | TxHistoryItem;
-} & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
+  data: TxHistoryItemRow;
+};
 
-export const DesktopHistoryItem = ({
-  data,
-  cateDict,
-  projectDict,
-  tokenDict,
-}: HistoryItemProps) => {
+export const DesktopHistoryItem = ({ data }: HistoryItemProps) => {
   const chainItem = getChain(data.chain);
   const isFailed = data.tx?.status === 0;
   const isScam = data.is_scam;
@@ -87,17 +83,12 @@ export const DesktopHistoryItem = ({
 
       {/* Column 2 - Transaction Type/Details */}
       <div className="flex-[2] min-w-0 mx-4 w-[25%]">
-        <DesktopTxExplain
-          data={data}
-          projectDict={projectDict}
-          tokenDict={tokenDict}
-          cateDict={cateDict}
-        />
+        <DesktopTxExplain data={data} />
       </div>
 
       {/* Column 3 - Token Changes */}
       <div className="flex-[2] mx-4 min-w-0 w-[25%]">
-        <DesktopTokenChange data={data} tokenDict={tokenDict} />
+        <DesktopTokenChange data={data} />
       </div>
 
       {/* Column 4 - Gas Fee and Status */}
