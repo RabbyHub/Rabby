@@ -26,6 +26,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import * as Sentry from '@sentry/browser';
 import { ClosePositionModal } from '../../../modal/ClosePositionModal';
 import { DistanceRiskTag } from './DistanceRiskTag';
+import { InlineLimitClose } from './InlineLimitClose';
 import { calculatePnL } from '../../TradingPanel/utils';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { LeverageModal } from '../../TradingPanel/components';
@@ -64,6 +65,7 @@ export interface PositionFormatData {
   tpItem: OpenOrder | undefined;
   slItem: OpenOrder | undefined;
   needSeeMoreOrder: boolean;
+  closeLimitOrders: OpenOrder[];
 }
 
 export const PositionsInfo: React.FC = () => {
@@ -118,6 +120,14 @@ export const PositionsInfo: React.FC = () => {
           !order.isPositionTpsl
       );
 
+      const closeLimitOrders = openOrders.filter(
+        (order) =>
+          order.coin === item.position.coin &&
+          order.reduceOnly &&
+          !order.isTrigger
+        // order.orderType === 'Limit'
+      );
+
       const pxDecimals = marketData.pxDecimals || 2;
 
       const liquidationDistance = calculateDistanceToLiquidation(
@@ -145,6 +155,7 @@ export const PositionsInfo: React.FC = () => {
         tpItem: tpItem,
         slItem: slItem,
         needSeeMoreOrder: Boolean(needSeeMoreOrder) && !tpItem && !slItem,
+        closeLimitOrders,
       });
     });
 
@@ -513,40 +524,24 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: (
-          <div
-            className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
-            onClick={handleClickCloseAll}
-          >
-            MKT Close ALL
+          <div className="flex">
+            <div
+              className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors whitespace-nowrap"
+              onClick={handleClickCloseAll}
+            >
+              MKT Close ALL
+            </div>
           </div>
         ),
         key: 'closeAction',
+        width: 280,
         dataIndex: 'coin',
         render: (_, record) => {
           return (
-            <div className="flex items-center justify-start gap-[8px]">
-              <span
-                className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
-                onClick={() => {
-                  setSelectedCoin(record.coin);
-                  setClosePositionType('market');
-                  setClosePositionVisible(true);
-                }}
-              >
-                Market
-              </span>
-              <div className="w-[1px] h-[12px] bg-rb-neutral-line"></div>
-              <span
-                className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
-                onClick={() => {
-                  setSelectedCoin(record.coin);
-                  setClosePositionType('limit');
-                  setClosePositionVisible(true);
-                }}
-              >
-                Limit
-              </span>
-            </div>
+            <InlineLimitClose
+              record={record}
+              marketData={marketDataMap[record.coin] || ({} as any)}
+            />
           );
         },
       },

@@ -1144,7 +1144,8 @@
           "closedPnl": "Closed PNL",
           "newPosition": "New Position",
           "closePositionReverseTips": "This will immediately close your position at the current market price and open a position of equal size in the opposite direction.",
-          "confirm": "Confirm"
+          "confirm": "Confirm",
+          "invalidPrice": "Invalid Price"
         },
         "openOrders": {
           "__skip_translation": [

@@ -68,7 +68,7 @@ const Wrapper = styled.div`
   .ant-table-body {
     flex: 1;
     overflow-y: auto !important;
-    overflow-x: hidden !important;
+    overflow-x: auto !important;
   }
 
   .ant-table-expanded-row {
