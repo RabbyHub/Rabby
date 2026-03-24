@@ -20,6 +20,8 @@ export const HistoryList = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const [account] = useAccount();
 
+  console.log('HistoryList render', { account, isFilterScam });
+
   const { data, isLoading } = useQueryDbHistory({
     address: account?.address || '',
     isFilterScam,
