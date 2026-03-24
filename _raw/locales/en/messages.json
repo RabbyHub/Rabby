@@ -29,7 +29,9 @@
         "loading": "Loading may take a moment, and data delays are possible",
         "btn": "Hide scam transactions",
         "button": "Hide Scam tx"
-      }
+      },
+      "hideScamTips": "Hide scam transactions",
+      "showScamTips": "Show scam transactions"
     },
     "chainList": {
       "title": "{{count}} chains Integrated",
@@ -1211,7 +1213,7 @@
         "estimatedPnlWillBe": "Your estimated PnL will be",
         "Buy": "Buy",
         "cost": "Cost",
-        "max":"MAX",
+        "max": "MAX",
         "price": "Price",
         "Sell": "Sell",
         "deposit": "Deposit",
@@ -2298,7 +2300,7 @@
       "search": "Search",
       "manage-address": "Manage Address",
       "deleted": "Deleted",
-      "deleteSuccess":"Deleted successfully",
+      "deleteSuccess": "Deleted successfully",
       "whitelisted-address": "Whitelisted address",
       "addressTypeTip": "Imported by {{type}}",
       "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
@@ -3891,7 +3893,7 @@
         "desc": "Rabby Wallet is Ready to Use!",
         "openWallet": "Open Wallet",
         "backupSeedPhraseNow": "Backup Seed phrase Now",
-        "backupSeedPhrase":"Backup Seed Phrase"
+        "backupSeedPhrase": "Backup Seed Phrase"
       },
       "readyToUse": {
         "title": "Your Rabby Wallet is Ready !",

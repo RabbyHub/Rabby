@@ -33,8 +33,9 @@ export const useSyncDbHistory = (options: { address: string }) => {
 export const useQueryDbHistory = (options: {
   address: string;
   isFilterScam?: boolean;
+  serverChainId?: string;
 }) => {
-  const { address, isFilterScam } = options;
+  const { address, isFilterScam, serverChainId } = options;
 
   const { loading } = useSyncDbHistory({ address });
 
@@ -43,11 +44,15 @@ export const useQueryDbHistory = (options: {
       .where('owner_addr')
       .equalsIgnoreCase(address)
       .and((item) => {
-        return isFilterScam ? !item.is_scam && !item.is_small_tx : true;
+        return isFilterScam
+          ? !item.is_scam && !item.is_small_tx
+          : serverChainId
+          ? item.chain === serverChainId
+          : true;
       })
       .reverse()
       .sortBy('time_at');
-  }, [address, isFilterScam]);
+  }, [address, isFilterScam, serverChainId]);
 
   return {
     data,
