@@ -51,6 +51,6 @@ export const useQueryDbHistory = (options: {
 
   return {
     data,
-    isLoading: loading,
+    isLoading: loading || data === undefined,
   };
 };
