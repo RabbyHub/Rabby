@@ -3,13 +3,12 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { HistoryItemActionContext } from '@/ui/views/History/components/HistoryItem';
 import { Switch } from 'antd';
 import React from 'react';
+import { Virtuoso } from 'react-virtuoso';
 import { useTranslation } from 'react-i18next';
 import { Empty } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { DesktopHistoryItem } from './DesktopHistoryItem';
 import { DesktopLoading } from './DesktopLoading';
-
-const PAGE_COUNT = 20;
 
 interface TransactionsTabPaneProps {
   scrollContainerRef?: React.RefObject<HTMLElement>;
@@ -67,9 +66,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
             <label className="flex items-center gap-[6px] cursor-pointer">
               <Switch checked={isHideScam} onChange={setIsHideScam} />
               <div className="text-rb-neutral-title-1 text-[14px] leading-[17px]">
-                {isHideScam
-                  ? t('page.transactions.showScamTips')
-                  : t('page.transactions.hideScamTips')}
+                {t('page.transactions.hideScamTips')}
               </div>
             </label>
           </div>
@@ -79,12 +76,14 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
               className="pt-[108px]"
             />
           ) : (
-            <div className="overflow-hidden">
-              {data?.map((item) => (
+            <Virtuoso
+              data={data}
+              customScrollParent={scrollContainerRef?.current || undefined}
+              increaseViewportBy={200}
+              itemContent={(_, item) => (
                 <DesktopHistoryItem key={item.id} data={item} />
-              ))}
-              {/* {loadingMore && <DesktopLoading count={3} active />} */}
-            </div>
+              )}
+            />
           )}
         </>
       )}
