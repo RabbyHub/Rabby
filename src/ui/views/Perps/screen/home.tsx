@@ -59,7 +59,6 @@ import { PerpsHeaderRight } from '../components/PerpsHeaderRight';
 import { OpenProModeEntry } from '../components/OpenProModeEntry';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
-import { BackToTopButton } from '../components/BackToTopButton';
 import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
 import { useScroll } from 'ahooks';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
@@ -124,7 +123,6 @@ export const Perps: React.FC = () => {
   const [logoutVisible, setLogoutVisible] = useState(false);
   const [isPreparingSign, setIsPreparingSign] = useState(false);
   const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
-  const [showBackToTop, setShowBackToTop] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const headerInitialTopRef = useRef<number>(0);
@@ -133,6 +131,7 @@ export const Perps: React.FC = () => {
   useEffect(() => {
     wallet.getHasDoneNewUserProcess().then((hasDoneNewUserProcess) => {
       if (!hasDoneNewUserProcess) {
+        wallet.setHasDoneNewUserProcess(true);
         setNewUserProcessVisible(true);
       }
     });
@@ -163,8 +162,6 @@ export const Perps: React.FC = () => {
         stickyRect.top <= containerRect.top ||
         (headerInitialTopRef.current > 0 &&
           scrollTop >= headerInitialTopRef.current);
-
-      setShowBackToTop(isSticky);
     };
 
     scrollContainer.addEventListener('scroll', handleScroll);
@@ -174,16 +171,6 @@ export const Perps: React.FC = () => {
       scrollContainer.removeEventListener('scroll', handleScroll);
     };
   }, [isInitialized]);
-
-  const handleBackToTop = useCallback(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      });
-    }
-  }, []);
 
   useEffect(() => {
     dispatch.perps.initFavoritedCoins(undefined);
@@ -651,8 +638,6 @@ export const Perps: React.FC = () => {
           </div>
         )}
 
-        <BackToTopButton visible={showBackToTop} onClick={handleBackToTop} />
-
         {/* {isLogin && (
           <div
             className={clsx(
@@ -686,10 +671,11 @@ export const Perps: React.FC = () => {
             </button>
           </div>
         )} */}
-        {isLogin && hasPermission && (
+        {isLogin && (
           <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20">
             <Button
               block
+              disabled={!hasPermission}
               type="primary"
               onClick={() => {
                 setSearchPopupVisible(true);
@@ -779,10 +765,6 @@ export const Perps: React.FC = () => {
         visible={newUserProcessVisible}
         onCancel={async () => {
           setNewUserProcessVisible(false);
-          const hasDoneNewUserProcess = await wallet.getHasDoneNewUserProcess();
-          if (!hasDoneNewUserProcess) {
-            history.push('/dashboard');
-          }
         }}
         onComplete={() => {
           wallet.setHasDoneNewUserProcess(true);

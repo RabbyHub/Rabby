@@ -16,6 +16,7 @@ import { useHistory } from 'react-router-dom';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { UI_TYPE } from '@/constant/ui';
 import { useHandleDeleteHdKeyringAndSimpleKeyringAccount } from '@/ui/hooks/useDeleteHdOrPrivateKeyringAddress';
+import { useRabbyDispatch } from '@/ui/store';
 
 type AddressDeleteProps = {
   brandName?: string;
@@ -34,18 +35,20 @@ export const AddressDelete = ({
   const [visible, setVisible] = useState(false);
   const history = useHistory();
   const { getContainer } = usePopupContainer();
+  const dispatch = useRabbyDispatch();
 
   const handleDeleteAddress = async () => {
-    await wallet.removeAddress(
+    dispatch.addressManagement.removeAddress([
       address,
       type,
       brandName,
       type === KEYRING_TYPE.HdKeyring ||
-        KEYRING_CLASS.HARDWARE.GRIDPLUS ||
-        KEYRING_CLASS.HARDWARE.KEYSTONE
+      KEYRING_CLASS.HARDWARE.GRIDPLUS ||
+      KEYRING_CLASS.HARDWARE.KEYSTONE
         ? false
-        : true
-    );
+        : true,
+    ]);
+
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('global.Deleted'),

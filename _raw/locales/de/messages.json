@@ -1102,7 +1102,8 @@
         "desc": "Wechseln Sie die Dapp-Adresse"
       },
       "noSeedPhraseAddress": "Es wurden keine Adressen für diesen Seed-Phrase hinzugefügt. Sie können eine Adresse hinzufügen oder den Seed-Phrase löschen.",
-      "watch-address": "Nur ansehen"
+      "watch-address": "Nur ansehen",
+      "deleteSuccess": "Erfolgreich gelöscht"
     },
     "dashboard": {
       "home": {
@@ -1904,7 +1905,7 @@
       "privateKeyTab": "Privater Schlüssel",
       "bulkImportPrivateKeyInputTab": "Geben Sie den Private Key ein",
       "seedPhraseTab": "Seed-Phrase",
-      "watchAddress": "Adresse beobachten",
+      "watchAddress": "Watch-only Adresse",
       "addressAdded": "Adresse hinzugefügt",
       "newSeedPhraseCreated": "Neue Seed Phrase erstellt",
       "addressImported": "Adresse importiert",
@@ -2750,7 +2751,8 @@
         "addMoreFrom": "Fügen Sie weitere Adressen von {{name}} hinzu",
         "desc": "Rabby Wallet ist bereit zur Nutzung!",
         "backupSeedPhraseNow": "Backup Seed phrase Jetzt",
-        "openWallet": "Öffne Wallet"
+        "openWallet": "Öffne Wallet",
+        "backupSeedPhrase": "Backup Seed Phrase"
       },
       "readyToUse": {
         "pin": "Rabby Wallet anheften",
@@ -3264,7 +3266,8 @@
         "cancelAllOrderSuccess": "Erfolgreich {{count}} Bestellungen storniert.",
         "sellFilledContentNoPercentage": "Verkauft {{sz}} {{coin}}, ausgeführt @{{price}} USDC",
         "closePositionSuccess": "Geschlossen {{direction}} {{coin}}-USD: Größe {{size}} zum Preis von ${{price}}",
-        "openTPSlMarketOrderSuccess": "{{tpsl}} Marktorder platziert {{direction}} {{coin}}-USD: Größe {{size}} zum Preis von ${{price}}"
+        "openTPSlMarketOrderSuccess": "{{tpsl}} Marktorder platziert {{direction}} {{coin}}-USD: Größe {{size}} zum Preis von ${{price}}",
+        "orderError": "Bestellfehler"
       },
       "closePositionPopup": {
         "closeLong": "Long-Position schließen",
@@ -3720,7 +3723,42 @@
         "slBuyMustBeHigherThanMidPrice": "Der Stop-Kaufsorder-Preis muss höher als der Mid-Preis sein.",
         "randomizeTooltip": "Randomisiert das Timing und die Größe von Teilaufträgen, um die Vorhersagbarkeit zu verringern.",
         "deposit": "Einzahlen",
-        "addFundsToGetStarted": "Geld hinzufügen, um zu starten"
+        "addFundsToGetStarted": "Geld hinzufügen, um zu starten",
+        "long": "Long",
+        "max": "MAX",
+        "cost": "Kosten",
+        "short": "Short",
+        "size": "Größe",
+        "sideLongBuy": "long (kaufen)",
+        "action": "Aktion",
+        "orderCount": "Bestellanzahl",
+        "buyTrigger": "Kaufauslöser",
+        "sellTrigger": "Verkaufsauslöser",
+        "sideShortSell": "short (verkaufen)",
+        "estimatedPnlWillBe": "Ihr geschätzter PnL wird sein",
+        "slTriggerMoreThanOrderPrice": "Ihr SL-Triggerpreis sollte höher sein als Ihr Bestellpreis.",
+        "tpTriggerLessThanOrderPrice": "Ihr TP-Auslöserspreis sollte niedriger sein als Ihr Bestellpreis.",
+        "orderTypeTooltipMarket": "Die Market-Order wird sofort zum besten verfügbaren Marktpreis ausgeführt.",
+        "slTriggerLessThanOrderPrice": "Ihr SL-Auslöserpreis sollte niedriger sein als Ihr Auftragspreis.",
+        "Buy": "Kaufen",
+        "tpTriggerPriceIsZero": "Ihr TP-Triggerpreis beträgt 0 und wird nicht gesetzt, wenn Sie {{side}} gehen.",
+        "price": "Preis",
+        "slTriggerPriceIsZero": "Ihr SL-Auslöserpreis beträgt 0 und wird nicht gesetzt, wenn Sie {{side}} gehen.",
+        "tpTriggerMoreThanOrderPrice": "Ihr TP-Auslöserpreis sollte über Ihrem Auftragspreis liegen.",
+        "bboDisabledTooltip": "BBO wird nicht unterstützt, wenn {{bboDisabledReason}} aktiviert ist.",
+        "orderTypeTooltipStopLimit": "Stop-Limit-Orders werden zu Limit-Orders, wenn ein bestimmter Stop-Preis erreicht ist. Geben Sie einen Triggerpreis an, um die Order zu aktivieren.",
+        "orderTypeTooltipLimit": "Eine Limitorder ist eine Bestellung, um zu einem bestimmten Preis oder besser zu kaufen oder zu verkaufen. Limitorders garantieren nicht, dass sie ausgeführt werden.",
+        "orderTypeTooltipTakeLimit": "Limit Orders werden zu Limitaufträgen, wenn ein festgelegter Take-Preis erreicht wird. Geben Sie einen Auslösepreis an, um die Bestellung zu aktivieren.",
+        "orderTypeTooltipStopMarket": "Stop-Market-Orders werden zu Marktorders, wenn ein festgelegter Preis erreicht wird. Geben Sie einen Auslöserpreis an, um die Order zu aktivieren.",
+        "orderTypeTooltipTakeMarket": "Marktaufträge werden zu Marktaufträgen, wenn ein bestimmter Ausführungspreis erreicht ist. Geben Sie einen Auslösepreis an, um die Bestellung zu aktivieren.",
+        "hour": "Stunde",
+        "min": "min",
+        "maxDurationTwap": "Maximale Dauer für die Ausführung des TWAP-Auftrags beträgt",
+        "totalTime": "Gesamtzeit (5m-24h)",
+        "bboTips": "Das beste Angebot (BBO) bezieht sich auf den zum jeweiligen Zeitpunkt besten verfügbaren Ask-Preis und den besten verfügbaren Bid-Preis im Orderbuch. BBO-Orders werden immer mit der genauen minimalen Tickgröße platziert, was eine granulare und präzise Preisgestaltung unabhängig von Anzeigepräferenzen gewährleistet.",
+        "orderTypeTooltipScale": "Skalierte Aufträge ermöglichen es Ihnen, einen Betrag in mehrere Unteraufträge aufzuteilen, um die Marktbeeinflussung zu minimieren.",
+        "orderTypeTooltipTwap": "TWAP (Zeitgewichteter Durchschnittspreis) ist eine algorithmische Handelsausführungsstrategie, die darauf abzielt, einen durchschnittlichen Ausführungspreis zu erreichen, der nahe am zeitgewichteten Durchschnittspreis des benutzerdefinierten Zeitraums liegt.",
+        "Sell": "Verkaufen"
       },
       "marginMode": {
         "confirm": "Bestätigen",

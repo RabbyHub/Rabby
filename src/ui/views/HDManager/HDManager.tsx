@@ -43,6 +43,7 @@ import {
   IMPORT_ADDRESS_SUCCESS_PATH,
   IMPORT_ADDRESS_SUCCESS_RETURN_TO_QUERY_KEY,
 } from '../AddAddress/useCreateAddress';
+import browser from 'webextension-polyfill';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
@@ -78,12 +79,19 @@ export const HDManager: React.FC<StateProviderProps> = ({
   onDone,
 }) => {
   const { search } = useLocation();
-  const [isNewUserImport, noRedirect, isLazyImport] = React.useMemo(() => {
+
+  const [
+    isNewUserImport,
+    noRedirect,
+    isLazyImport,
+    shouldOpenImportSuccessPage,
+  ] = React.useMemo(() => {
     const query = new URLSearchParams(search);
     return [
       query.get('isNewUserImport'),
       query.get('noRedirect'),
       !!query.get('isLazyImport'),
+      isHardwareImportSelectAddress(search),
     ];
   }, [search]);
   const history = useHistory();
@@ -168,7 +176,8 @@ export const HDManager: React.FC<StateProviderProps> = ({
       onDone();
       return;
     }
-    if (isNewUserImport && !noRedirect) {
+    const gotoNewUser = !!(isNewUserImport && !noRedirect);
+    if (gotoNewUser) {
       let finalBrand = brand;
       const hardwareKeyring = Object.values(HARDWARE_KEYRING_TYPES).find(
         (item) => item.type === keyring
@@ -183,6 +192,12 @@ export const HDManager: React.FC<StateProviderProps> = ({
       return;
     }
     window.close();
+
+    if (!shouldOpenImportSuccessPage && !gotoNewUser) {
+      browser?.action?.openPopup().catch((e) => {
+        console.error('Failed to open popup after closing window', e);
+      });
+    }
   });
 
   if (!initialed) {

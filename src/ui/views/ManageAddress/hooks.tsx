@@ -7,12 +7,12 @@ import {
   WALLET_SORT_SCORE,
 } from '@/constant';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { groupBy, omit } from 'lodash';
 import { nanoid } from 'nanoid';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
@@ -113,6 +113,7 @@ export const getWalletScore = (
 export const useWalletTypeData = () => {
   const { t } = useTranslation();
   const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
   const {
     accountsList,
     highlightedAddresses = [],
@@ -262,6 +263,15 @@ export const useWalletTypeData = () => {
     sortIdList.current = sortIdList.current.filter((e) => !!result[e]);
     return [result, sortIdList.current] as const;
   }, [sortedAccountsList, watchSortedAccountsList, wallet]);
+
+  useEffect(() => {
+    dispatch.accountToDisplay.getAllAccountsToDisplay()?.catch((e) => {
+      console.error('getAllAccountsToDisplay error', e);
+    });
+    dispatch.addressManagement.getHilightedAddressesAsync()?.catch((e) => {
+      console.error('getHilightedAddressesAsync error', e);
+    });
+  }, []);
 
   if (error) {
     console.error('manage address', error);

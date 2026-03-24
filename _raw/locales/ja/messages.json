@@ -1102,7 +1102,8 @@
         "desc": "Dappアドレスを切り替える"
       },
       "noSeedPhraseAddress": "このシードフレーズに対して追加されたアドレスはありません。アドレスを追加するか、シードフレーズを削除できます。",
-      "watch-address": "ウォッチオンリー"
+      "watch-address": "ウォッチオンリー",
+      "deleteSuccess": "削除に成功しました"
     },
     "dashboard": {
       "home": {
@@ -1909,7 +1910,7 @@
       "seedPhraseTab": "シードフレーズ",
       "addressImported": "アドレスがインポートされました",
       "addressAddedCount_one": "{{count}} アドレスが追加されました",
-      "watchAddress": "アドレスを監視する",
+      "watchAddress": "監視専用アドレス",
       "privateKeyTab": "プライベートキー",
       "bulkImportPrivateKeyInputTab": "プライベートキーを入力してください",
       "newSeedPhraseCreated": "新しいシードフレーズが作成されました",
@@ -2750,7 +2751,8 @@
         "import": "インポートしました",
         "openWallet": "ウォレットを開く",
         "desc": "Rabbyウォレットは使用準備完了です！",
-        "backupSeedPhraseNow": "今すぐバックアップシードフレーズを保存してください"
+        "backupSeedPhraseNow": "今すぐバックアップシードフレーズを保存してください",
+        "backupSeedPhrase": "バックアップシードフレーズ"
       },
       "readyToUse": {
         "pin": "Rabby Wallet をピン留め",
@@ -3264,7 +3266,8 @@
         "closePositionSuccess": "クローズ済み {{direction}} {{coin}}-USD：サイズ {{size}}、価格 ${{price}}",
         "openPositionSuccess": "{{direction}} {{coin}}-USD: サイズ {{size}}、価格は ${{price}}",
         "openTPSlMarketOrderSuccess": "{{tpsl}} 市場成行注文を出しました {{direction}} {{coin}}-USD: 数量 {{size}}、価格 ${{price}}",
-        "openTPSlLimitOrderSuccess": "{{tpsl}} 指値注文を出しました {{direction}} {{coin}}-USD: サイズ {{size}} 価格 ${{price}}"
+        "openTPSlLimitOrderSuccess": "{{tpsl}} 指値注文を出しました {{direction}} {{coin}}-USD: サイズ {{size}} 価格 ${{price}}",
+        "orderError": "注文エラー"
       },
       "closePositionPopup": {
         "positionSize": "ポジションサイズ",
@@ -3720,7 +3723,42 @@
         "tpSl": "利確 / 損切り",
         "tpSlTips": "シンプルな成行の利確/損切り注文を出します。限定価格や部分的な利確/損切りといった高度な機能を使う場合は、開いているポジションで利確/損切りを設定してください。",
         "deposit": "入金",
-        "addFundsToGetStarted": "資金を追加して開始します"
+        "addFundsToGetStarted": "資金を追加して開始します",
+        "action": "アクション",
+        "Sell": "売却",
+        "max": "最大値",
+        "cost": "コスト",
+        "Buy": "購入",
+        "price": "価格",
+        "long": "ロング",
+        "buyTrigger": "購入トリガー",
+        "orderCount": "オーダー数",
+        "short": "ショート",
+        "size": "サイズ",
+        "sellTrigger": "売却トリガー",
+        "estimatedPnlWillBe": "あなたの推定PnLは次のとおりです。",
+        "bboDisabledTooltip": "BBOは{{bboDisabledReason}}が有効な場合サポートされていません",
+        "sideShortSell": "ショート (売り)",
+        "sideLongBuy": "ロング (買い)",
+        "tpTriggerLessThanOrderPrice": "あなたのTPトリガープライスは、注文価格よりも低くするべきです。",
+        "slTriggerMoreThanOrderPrice": "あなたのSLトリガー価格は、あなたの注文価格よりも高い必要があります。",
+        "orderTypeTooltipMarket": "市場注文は、最良の利用可能な市場価格に即座にマッチングされます。",
+        "tpTriggerMoreThanOrderPrice": "あなたのTPトリガー価格は、注文価格よりも高くなければなりません。",
+        "slTriggerPriceIsZero": "あなたのSLトリガー価格は0で、{{side}}の際には設定されません。",
+        "tpTriggerPriceIsZero": "あなたのTPトリガープライスは0であり、{{side}}を行うときに設定されません。",
+        "hour": "時間",
+        "min": "ミニマム",
+        "totalTime": "総時間 (5分-24時間)",
+        "orderTypeTooltipTakeMarket": "市場注文は、指定されたテイクプライスに達したときに市場注文になります。注文を有効にするためにトリガープライスを指定してください。",
+        "orderTypeTooltipStopMarket": "指定した価格に達すると、ストップ・マーケット・オーダーはマーケット・オーダーになります。注文を有効にするためにトリガー価格を指定してください。",
+        "maxDurationTwap": "TWAPオーダーの最大実行期間は",
+        "slTriggerLessThanOrderPrice": "あなたのSLトリガー価格は、注文価格よりも低くする必要があります。",
+        "orderTypeTooltipLimit": "リミットオーダーは、特定の価格またはそれ以上の価格で買うか売るための注文です。リミットオーダーは実行が保証されるものではありません。",
+        "orderTypeTooltipStopLimit": "ストップリミット注文は、指定されたストップ価格に達したときにリミット注文になります。注文を有効にするためにトリガー価格を指定してください。",
+        "orderTypeTooltipTakeLimit": "リミットオーダーは、指定したテイクプライスに達したときにリミットオーダーになります。オーダーをアクティブにするためのトリガープライスを指定してください。",
+        "bboTips": "最良い入札オファー（BBO）とは、特定の時点におけるオーダーブック上での最良の売り価格と最良の買い価格を指します。BBOの注文は常に正確な最小ティックサイズを使用して出され、表示の好みに依存しない細かな正確な価格設定を保証します。",
+        "orderTypeTooltipScale": "スケール注文を使用すると、金額を複数のサブオーダーに分割して市場への影響を最小限に抑えることができます。",
+        "orderTypeTooltipTwap": "TWAP（時間加重平均価格）は、ユーザー指定の期間の時間加重平均価格に近い平均実行価格を達成することを目指すアルゴリズミックな取引執行戦略です。"
       },
       "marginMode": {
         "cross": "クロス証拠金",

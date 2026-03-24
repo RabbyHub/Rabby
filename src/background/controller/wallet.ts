@@ -3698,6 +3698,16 @@ export class WalletController extends BaseController {
     historyDbService.deleteForAddress(address);
   };
 
+  removeAddresses = async (
+    payloads: [string, string, string | undefined, boolean | undefined][]
+  ) => {
+    await Promise.all(
+      payloads.map(([address, type, brand, removeEmptyKeyrings]) =>
+        this.removeAddress(address, type, brand, removeEmptyKeyrings)
+      )
+    );
+  };
+
   removeContactInfo = (address: string) => {
     contactBookService.removeAlias(address);
   };

@@ -877,7 +877,7 @@
       "addMoreAddresses": "添加更多地址",
       "importMoreWallets": "添加更多地址",
       "seedPhraseTab": "种子短语",
-      "watchAddress": "監察地址",
+      "watchAddress": "只读地址",
       "bulkImportPrivateKey": "批量导入私钥",
       "imported": "已导入前",
       "addressAdded": "地址已添加",
@@ -1252,7 +1252,8 @@
         "desc": "切換 Dapp 地址\n"
       },
       "noSeedPhraseAddress": "此种子短语尚未添加任何地址。您可以添加一个地址或删除该种子短语。",
-      "watch-address": "只读模式"
+      "watch-address": "只读模式",
+      "deleteSuccess": "已成功删除"
     },
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
@@ -2788,7 +2789,8 @@
         "addMoreAddr": "從這个 Seed Phrase 新增更多地址",
         "openWallet": "開啟錢包",
         "backupSeedPhraseNow": "立即备份种子短语",
-        "desc": "Rabby Wallet 随时可用！"
+        "desc": "Rabby Wallet 随时可用！",
+        "backupSeedPhrase": "備份種子詞"
       },
       "readyToUse": {
         "pin": "將 Rabby 錢包釘選",
@@ -3302,7 +3304,8 @@
         "openPositionSuccess": "{{direction}} {{coin}}-USD：下單量 {{size}}，價格 ${{price}}",
         "closePositionSuccess": "已平倉 {{direction}} {{coin}}-USD：數量 {{size}}，價格 ${{price}}",
         "sellFilledContent": "賣出 {{sz}} / {{origSz}} {{coin}}，已成交，成交價 @{{price}} USDC",
-        "openTPSlMarketOrderSuccess": "{{tpsl}} 市價單已下單 {{direction}} {{coin}}-USD：數量 {{size}}，價格 ${{price}}"
+        "openTPSlMarketOrderSuccess": "{{tpsl}} 市價單已下單 {{direction}} {{coin}}-USD：數量 {{size}}，價格 ${{price}}",
+        "orderError": "訂單錯誤"
       },
       "closePositionPopup": {
         "pnl": "盈虧",
@@ -3758,7 +3761,42 @@
         "minimumSuborderSize": "時間加權平均價格（TWAP）分單的最小下單量為 $10",
         "sizeSkewTooltip": "結束價格與起始價格之比。例如，若大小偏斜為 2.0，則結束價格的限價單下單量為起始價格限價單下單量的兩倍。大小偏斜為 1.0 時，兩筆訂單大小相等。",
         "deposit": "存入",
-        "addFundsToGetStarted": "添加资金以开始使用"
+        "addFundsToGetStarted": "添加资金以开始使用",
+        "orderCount": "訂單數量",
+        "short": "做空",
+        "max": "最大值",
+        "cost": "成本",
+        "price": "價格",
+        "long": "做多",
+        "action": "行動",
+        "sideShortSell": "做空 (卖出)",
+        "estimatedPnlWillBe": "您的預估盈虧將為",
+        "slTriggerMoreThanOrderPrice": "您的止损触发价应高于您的订单价格",
+        "buyTrigger": "買入觸發器",
+        "tpTriggerLessThanOrderPrice": "您的 TP 触发价格应低于您的订单价格。",
+        "size": "規模",
+        "slTriggerLessThanOrderPrice": "您的止损触发价格应低于您的订单价格。",
+        "bboDisabledTooltip": "當 {{bboDisabledReason}} 被啟用時，BBO 不受支持",
+        "sideLongBuy": "做多 (买入)",
+        "tpTriggerMoreThanOrderPrice": "您的 TP 触发价格应高于您的订单价格。",
+        "tpTriggerPriceIsZero": "您的止盈触发价格为 0，并且在您进行 {{side}} 时不会设置。",
+        "Sell": "出售",
+        "orderTypeTooltipMarket": "市价单会立即与最佳可用市场价格匹配。",
+        "sellTrigger": "賣出觸發器",
+        "orderTypeTooltipStopMarket": "當指定價格達到時，停止市價單會變為市價單。請指定觸發價格以啟動該訂單。",
+        "orderTypeTooltipTakeLimit": "當指定的成交價格達到時，限價單將變為限價訂單。請指定一個觸發價格以激活該訂單。",
+        "orderTypeTooltipTakeMarket": "當達到指定的成交價格時，市場訂單會變成市價訂單。指定一個觸發價格來啟動該訂單。",
+        "orderTypeTooltipLimit": "限价单是以特定价格或更优价格买入或卖出的订单。限价单无法保证会被执行。",
+        "slTriggerPriceIsZero": "您的止损触发价格为 0，进行 {{side}} 时将不会设置。",
+        "Buy": "買入",
+        "hour": "小时",
+        "min": "最小值",
+        "maxDurationTwap": "最大运行 TWAP 订单的持续时间为",
+        "orderTypeTooltipStopLimit": "止损限价单在达到指定的止损价格时变为限价单。指定触发价格以激活订单。",
+        "totalTime": "總時間 (5分鐘-24小時)",
+        "orderTypeTooltipScale": "Scaled Orders 允許你將一個金額拆分為多個子訂單，以最小化市場影響。",
+        "bboTips": "最佳出价询价 (BBO) 指的是在任何给定时间，订单簿上可用的最佳卖出价格和最佳买入价格。BBO 订单始终采用精确的最小跳动点价位进行下单，确保价格的细致和准确，不受显示偏好的影响。",
+        "orderTypeTooltipTwap": "TWAP（时间加权平均价格）是一种算法交易执行策略，旨在实现接近用户指定时间段的时间加权平均价格的平均执行价格。"
       },
       "marginMode": {
         "title": "保證金模式",

@@ -18,11 +18,13 @@ type DelectModalProps = {
   visible: boolean;
   onClose(): void;
   onSubmit(): void;
+  loading?: boolean;
 };
 export const AddressDeleteModal = ({
   visible,
   onClose,
   onSubmit,
+  loading = false,
   item,
   count,
 }: DelectModalProps & {
@@ -70,7 +72,13 @@ export const AddressDeleteModal = ({
         })}
       </div>
       <footer className="flex gap-[16px]">
-        <Button type="primary" size="large" block onClick={onClose}>
+        <Button
+          type="primary"
+          size="large"
+          block
+          onClick={onClose}
+          disabled={loading}
+        >
           {t('page.manageAddress.cancel')}
         </Button>
         <Button
@@ -80,6 +88,8 @@ export const AddressDeleteModal = ({
           size="large"
           className={'rabby-btn-ghost'}
           block
+          loading={loading}
+          disabled={loading}
         >
           {t('page.manageAddress.confirm-delete')}
         </Button>

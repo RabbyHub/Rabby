@@ -10,7 +10,6 @@ import { IconWithChain } from '@/ui/component/TokenWithChain';
 import PortfolioTemplate from './ProtocolTemplates';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import { openInTab, useCommonPopupView, useWallet } from '@/ui/utils';
-import { ReactComponent as RcOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import DappActionsForPopup from './components/DappActions/DappActionsForPopup';
@@ -220,7 +219,7 @@ export const ProtocolItem = ({
       <div>
         <div
           className={clsx(
-            'flex items-center justify-start',
+            'group flex items-center justify-start',
             'title border border-solid bg-r-neutral-card1 border-transparent rounded-[8px] h-[48px] pr-14',
             'hover:bg-blue-light',
             'hover:bg-opacity-10',
@@ -240,7 +239,7 @@ export const ProtocolItem = ({
           <div
             className={clsx(
               'ml-[8px] flex items-center min-w-0',
-              'border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot'
+              'border-b-[1px] border-b-solid border-transparent group-hover:border-b-rabby-neutral-foot'
             )}
             onClick={(evt) => {
               evt.stopPropagation();
@@ -266,17 +265,6 @@ export const ProtocolItem = ({
                   <RcIconInfoCC />
                 </div>
               </Tooltip>
-            )}
-
-            {protocol.id === 'hyperliquid' && isShowPerpsInvite ? (
-              <Tooltip
-                overlayClassName="app-chain-tooltip"
-                title={t('component.ChainItem.hyperliquidCode')}
-              >
-                <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot flex-shrink-0" />
-              </Tooltip>
-            ) : (
-              <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot flex-shrink-0" />
             )}
           </div>
           {actions?.length ? (

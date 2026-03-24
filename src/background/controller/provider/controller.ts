@@ -445,6 +445,10 @@ class ProviderController extends BaseController {
     let is1559 = is1559Tx(approvalRes);
     const is7702 = is7702Tx(approvalRes);
 
+    if ((eip7702Revoke || is7702) && origin !== INTERNAL_REQUEST_ORIGIN) {
+      throw new Error('not support 7702');
+    }
+
     if (is7702 && !(eip7702Revoke || isSpeedUp)) {
       // todo
       throw new Error('not support 7702');

@@ -89,114 +89,6 @@ export const rules: Record<string, StepConfig[]> = {
       action: { type: 'click' },
     },
   ],
-  'https://www.asterdex.com': [
-    {
-      beforeMs: 1000,
-      wait: {
-        path: [
-          {
-            css: '#app header button span.contents',
-          },
-          { closest: 'button' },
-          { enabled: true },
-        ],
-      },
-      action: { type: 'click' },
-    },
-    {
-      beforeMs: 1000,
-      wait: {
-        path: [
-          {
-            css: '#app header button span.contents',
-          },
-          { closest: 'button' },
-          { enabled: true },
-        ],
-      },
-      action: { type: 'click' },
-    },
-    {
-      wait: {
-        path: [
-          {
-            css: 'div[role=dialog]>div>div>button.button',
-          },
-        ],
-      },
-      action: { type: 'click' },
-    },
-  ],
-  'https://app.lighter.xyz': [
-    {
-      wait: {
-        path: [
-          {
-            css: 'button[data-testid=connect-wallet-button]',
-          },
-        ],
-      },
-      action: { type: 'click' },
-    },
-    {
-      wait: {
-        path: [
-          {
-            css: '#dynamic-modal > div:nth-child(1)',
-          },
-          { shadow: true },
-          {
-            css: 'div.modal-component__container div button img[alt^=rabby]',
-          },
-          { enabled: true },
-        ],
-      },
-      action: { type: 'click' },
-    },
-    {
-      wait: {
-        path: [
-          {
-            css: 'button[data-testid=connect-wallet-modal-submit-request]',
-          },
-        ],
-      },
-      action: { type: 'click' },
-    },
-  ],
-  'https://app.opinion.trade': [
-    {
-      wait: {
-        path: [
-          {
-            css: 'a[href="/login"]',
-          },
-        ],
-      },
-      action: { type: 'wait', ms: 2000 },
-    },
-    {
-      wait: {
-        path: [
-          {
-            css: 'a[href="/login"]',
-          },
-        ],
-      },
-      action: { type: 'click' },
-    },
-    {
-      wait: {
-        path: [
-          {
-            css: '[alt="Rabby Wallet"][src^=data\\:image\\/svg]',
-          },
-          { enabled: true },
-        ],
-      },
-      action: { type: 'click' },
-    },
-  ],
   'https://probable.markets': [
     {
       wait: {
@@ -219,4 +111,112 @@ export const rules: Record<string, StepConfig[]> = {
       action: { type: 'click' },
     },
   ],
+  // 'https://www.asterdex.com': [
+  //   {
+  //     beforeMs: 1000,
+  //     wait: {
+  //       path: [
+  //         {
+  //           css: '#app header button span.contents',
+  //         },
+  //         { closest: 'button' },
+  //         { enabled: true },
+  //       ],
+  //     },
+  //     action: { type: 'click' },
+  //   },
+  //   {
+  //     beforeMs: 1000,
+  //     wait: {
+  //       path: [
+  //         {
+  //           css: '#app header button span.contents',
+  //         },
+  //         { closest: 'button' },
+  //         { enabled: true },
+  //       ],
+  //     },
+  //     action: { type: 'click' },
+  //   },
+  //   {
+  //     wait: {
+  //       path: [
+  //         {
+  //           css: 'div[role=dialog]>div>div>button.button',
+  //         },
+  //       ],
+  //     },
+  //     action: { type: 'click' },
+  //   },
+  // ],
+  // 'https://app.lighter.xyz': [
+  //   {
+  //     wait: {
+  //       path: [
+  //         {
+  //           css: 'button[data-testid=connect-wallet-button]',
+  //         },
+  //       ],
+  //     },
+  //     action: { type: 'click' },
+  //   },
+  //   {
+  //     wait: {
+  //       path: [
+  //         {
+  //           css: '#dynamic-modal > div:nth-child(1)',
+  //         },
+  //         { shadow: true },
+  //         {
+  //           css: 'div.modal-component__container div button img[alt^=rabby]',
+  //         },
+  //         { enabled: true },
+  //       ],
+  //     },
+  //     action: { type: 'click' },
+  //   },
+  //   {
+  //     wait: {
+  //       path: [
+  //         {
+  //           css: 'button[data-testid=connect-wallet-modal-submit-request]',
+  //         },
+  //       ],
+  //     },
+  //     action: { type: 'click' },
+  //   },
+  // ],
+  // 'https://app.opinion.trade': [
+  //   {
+  //     wait: {
+  //       path: [
+  //         {
+  //           css: 'a[href="/login"]',
+  //         },
+  //       ],
+  //     },
+  //     action: { type: 'wait', ms: 2000 },
+  //   },
+  //   {
+  //     wait: {
+  //       path: [
+  //         {
+  //           css: 'a[href="/login"]',
+  //         },
+  //       ],
+  //     },
+  //     action: { type: 'click' },
+  //   },
+  //   {
+  //     wait: {
+  //       path: [
+  //         {
+  //           css: '[alt="Rabby Wallet"][src^=data\\:image\\/svg]',
+  //         },
+  //         { enabled: true },
+  //       ],
+  //     },
+  //     action: { type: 'click' },
+  //   },
+  // ],
 };

@@ -1102,7 +1102,8 @@
         "desc": "DApp Adresini Değiştir\n"
       },
       "noSeedPhraseAddress": "Bu tohum ifadesi için adres eklenmemiştir. Bir adres ekleyebilir veya tohum ifadesini silebilirsiniz.",
-      "watch-address": "Sadece izleme"
+      "watch-address": "Sadece izleme",
+      "deleteSuccess": "Başarıyla silindi"
     },
     "dashboard": {
       "home": {
@@ -1909,7 +1910,7 @@
       "importMoreWallets": "Daha Fazla Adres Ekle",
       "addMoreAddresses": "Daha Fazla Adres Ekle",
       "bulkImportPrivateKeyInputTab": "Özel Anahtarı Girin",
-      "watchAddress": "Adres Takip Et",
+      "watchAddress": "Sadece İzleme Adresi",
       "openExtensionToGetStarted": "Rabby uzantısını açarak başlayın",
       "addressAdded": "Adres Eklendi",
       "addressImported": "Adres İçe Aktarıldı",
@@ -2753,7 +2754,8 @@
         "create": "Başarıyla Oluşturuldu",
         "openWallet": "Cüzdanı Aç",
         "desc": "Rabby Wallet Kullanıma Hazır!",
-        "backupSeedPhraseNow": "Şu anda Yedek Seed ifadesi oluşturun"
+        "backupSeedPhraseNow": "Şu anda Yedek Seed ifadesi oluşturun",
+        "backupSeedPhrase": "Yedek Seed Cümlesi"
       },
       "readyToUse": {
         "pin": "Rabby Wallet'i Sabitle",
@@ -3267,7 +3269,8 @@
         "buyFilledContentNoPercentage": "{{sz}} {{coin}} satın alındı, @{{price}} USDC ile tamamlandı",
         "openTPSlMarketOrderSuccess": "{{tpsl}} Piyasa emri verildi {{direction}} {{coin}}-USD: Miktar {{size}}, Fiyat ${{price}}",
         "openPositionSuccess": "{{direction}} {{coin}}-USD: Boyut {{size}} Fiyatı ${{price}}",
-        "closePositionSuccess": "Kapatıldı {{direction}} {{coin}}-USD: Miktar {{size}}, Fiyatı ${{price}}"
+        "closePositionSuccess": "Kapatıldı {{direction}} {{coin}}-USD: Miktar {{size}}, Fiyatı ${{price}}",
+        "orderError": "Sipariş hatası"
       },
       "closePositionPopup": {
         "positionSize": "Pozisyon Büyüklüğü",
@@ -3723,7 +3726,42 @@
         "buyLong": "Satın Al / Uzun Pozisyon",
         "enableTrading": "Süresiz Vadeli İşlemleri Etkinleştir",
         "addFundsToGetStarted": "Fon ekleyin ve başlayın",
-        "deposit": "Teminat Deposito"
+        "deposit": "Teminat Deposito",
+        "Sell": "Satışı Yap",
+        "price": "Fiyat",
+        "max": "MAX",
+        "buyTrigger": "Alım Tetikleyici",
+        "short": "Kısa",
+        "cost": "Maliyet",
+        "long": "Uzun",
+        "Buy": "Satın Al",
+        "orderCount": "Sipariş Sayısı",
+        "action": "Eylem",
+        "tpTriggerMoreThanOrderPrice": "TP tetik fiyatınız, sipariş fiyatınızdan daha yüksek olmalıdır.",
+        "slTriggerMoreThanOrderPrice": "SL tetikleme fiyatınız, emir fiyatınızdan daha yüksek olmalıdır.",
+        "slTriggerLessThanOrderPrice": "SL tetikleme fiyatınız, sipariş fiyatınızdan düşük olmalıdır.",
+        "sideShortSell": "kısa (sat)",
+        "bboDisabledTooltip": "BBO, {{bboDisabledReason}} etkin olduğunda desteklenmiyor.",
+        "estimatedPnlWillBe": "Tahmin edilen PnL'iniz olacaktır",
+        "sellTrigger": "Satış Tetikleyici",
+        "orderTypeTooltipMarket": "Piyasa emri, mevcut en iyi piyasa fiyatıyla hemen eşleştirilir.",
+        "size": "Büyüklük",
+        "sideLongBuy": "uzun (al)",
+        "tpTriggerLessThanOrderPrice": "TP tetik fiyatınız, sipariş fiyatınızdan düşük olmalıdır.",
+        "tpTriggerPriceIsZero": "TP tetik fiyatınız 0'dır ve {{side}} gittiğinizde ayarlanmayacaktır.",
+        "slTriggerPriceIsZero": "SL tetikleme fiyatınız 0'dır ve {{side}} gittiğinizde ayarlanmamıştır.",
+        "orderTypeTooltipTakeLimit": "Limit Emirleri, belirli bir alım fiyatına ulaşıldığında limit emirlerine dönüşür. Emir aktivasyonu için bir tetikleme fiyatı belirtin.",
+        "orderTypeTooltipStopMarket": "Stop Market Orders, belirli bir fiyata ulaşıldığında piyasa emirlerine dönüşür. Emri aktive etmek için bir tetikleme fiyatı belirtin.",
+        "orderTypeTooltipStopLimit": "Stop Limit Orders, belirli bir stop fiyatına ulaşıldığında limit emirlerine dönüşür. Emri etkinleştirmek için bir tetikleme fiyatı belirtin.",
+        "orderTypeTooltipTakeMarket": "Piyasa Emirleri, belirli bir alım fiyatına ulaşıldığında piyasa emirlerine dönüşür. Emri etkinleştirmek için bir tetikleme fiyatı belirtin.",
+        "hour": "saat",
+        "orderTypeTooltipLimit": "Limit emri, belirli bir fiyattan veya daha iyi bir fiyattan alım veya satım yapmak için verilen bir emirdir. Limit emirlerinin gerçekleştirilmesi garanti edilmez.",
+        "min": "min",
+        "totalTime": "Toplam Zaman (5d-24s)",
+        "bboTips": "En İyi Teklif Teklifi (BBO), herhangi bir anda emir defterinde mevcut olan en iyi arza fiyatı ve en iyi teklife fiyatını ifade eder. BBO emirleri her zaman tam minimum fiyat adımı kullanılarak verilir, bu da fiyatların ayrıntılı ve doğru olmasını sağlar ve görüntüleme tercihlerinden bağımsızdır.",
+        "maxDurationTwap": "TWAP emri siparişinin çalışması için maksimum süre şudur:",
+        "orderTypeTooltipScale": "Scaled Orders, bir miktarı piyasa etkisini minimize etmek için birden fazla alt siparişe bölmenizi sağlar.",
+        "orderTypeTooltipTwap": "TWAP (Zaman Ağırlıklı Ortalama Fiyat), kullanıcının belirttiği dönem boyunca zaman ağırlıklı ortalama fiyata yakın bir ortalama işlem fiyatı elde etmeyi amaçlayan bir algoritmik işlem yürütme stratejisidir."
       },
       "marginMode": {
         "title": "Marjin Modu",
