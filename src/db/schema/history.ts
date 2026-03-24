@@ -8,8 +8,8 @@ import { EntityTable } from 'dexie';
 export interface TxHistoryItemRow
   extends Omit<TxHistoryItem, 'sends' | 'receives'> {
   owner_addr: string;
-  sends: TokenItem[];
-  receives: TokenItem[];
+  sends: (TxHistoryItem['sends'][number] & { token: TokenItem })[];
+  receives: (TxHistoryItem['receives'][number] & { token: TokenItem })[];
   project_item?: TxHistoryResult['project_dict'][string];
   approve_token?: TokenItem;
   cate_item?: TxHistoryResult['cate_dict'][string];

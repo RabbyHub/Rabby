@@ -32,8 +32,9 @@ export const judgeIsSmallUsdTx = (item: TxHistoryItemRow) => {
   }
   let allUsd = 0;
 
-  for (const token of receives) {
-    const tokenIsNft = token.id?.length === 32;
+  for (const i of receives) {
+    const token = i.token;
+    const tokenIsNft = i.token_id?.length === 32;
     if (tokenIsNft) {
       // reeives nft
       const nftToken = (token as unknown) as NFTItem;
@@ -76,7 +77,7 @@ export const transformToHistory = ({
       receives: item.receives.map((token) => {
         return {
           ...token,
-          ...getTokenFromDict({
+          token: getTokenFromDict({
             tokenId: token.token_id,
             chain: item.chain,
             tokenDict:
@@ -87,7 +88,7 @@ export const transformToHistory = ({
       sends: item.sends.map((token) => {
         return {
           ...token,
-          ...getTokenFromDict({
+          token: getTokenFromDict({
             tokenId: token.token_id,
             chain: item.chain,
             tokenDict:

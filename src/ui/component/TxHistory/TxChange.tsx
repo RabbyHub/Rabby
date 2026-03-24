@@ -28,8 +28,8 @@ export const TokenChange = ({
   return (
     <div className="ui token-change">
       {info.sends?.map((v) => {
-        const token = v;
-        const isNft = v.id?.length === 32;
+        const token = v.token;
+        const isNft = v.token_id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft
           ? token?.name ||
@@ -40,9 +40,9 @@ export const TokenChange = ({
           <div
             className="token-change-item"
             title={name}
-            data-id={v.id}
+            data-id={v.token_id}
             data-name={name}
-            key={v.id}
+            key={v.token_id}
           >
             {isNft ? (
               <NFTAvatar
@@ -80,8 +80,8 @@ export const TokenChange = ({
         );
       })}
       {info.receives?.map((v) => {
-        const token = v;
-        const isNft = v.id?.length === 32;
+        const token = v.token;
+        const isNft = v.token_id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft
           ? token?.name ||
@@ -90,11 +90,11 @@ export const TokenChange = ({
 
         return (
           <div
-            data-id={v.id}
+            data-id={v.token_id}
             data-name={name}
             className="token-change-item is-success"
             title={name}
-            key={v.id}
+            key={v.token_id}
           >
             {isNft ? (
               <NFTAvatar

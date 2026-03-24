@@ -30,10 +30,10 @@ export const DesktopTokenChange = ({
   return (
     <div className="flex flex-col items-end gap-[6px]">
       {info.sends?.map((v, index) => {
-        const tokenId = v.id;
-        const tokenUUID = `${info.chain}_token:${tokenId}`;
-        const token = v;
-        const isNft = v.id?.length === 32;
+        const tokenId = v.token_id;
+
+        const token = v.token;
+        const isNft = v.token_id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft
           ? token?.name ||
@@ -42,7 +42,7 @@ export const DesktopTokenChange = ({
 
         return (
           <div
-            key={v.id + '-' + index}
+            key={v.token_id + '-' + index}
             className="flex items-center gap-[6px]"
             title={name}
           >
@@ -83,9 +83,9 @@ export const DesktopTokenChange = ({
       })}
 
       {info.receives?.map((v, index) => {
-        const tokenId = v;
-        const token = v;
-        const isNft = v.id?.length === 32;
+        const tokenId = v.token_id;
+        const token = v.token;
+        const isNft = v.token_id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft
           ? token?.name ||
@@ -94,7 +94,7 @@ export const DesktopTokenChange = ({
 
         return (
           <div
-            key={v.id + '-' + index}
+            key={v.token_id + '-' + index}
             className="flex items-center gap-[6px]"
             title={name}
           >
