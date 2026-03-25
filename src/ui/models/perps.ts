@@ -199,6 +199,7 @@ export interface PerpsState {
   twapSliceFills: UserTwapSliceFill[];
   marketSlippage: number; // 0-1, default 0.05 (5%)
   soundEnabled: boolean;
+  skipMarketCloseConfirm: boolean;
   marketEstSize: string;
   marketEstPrice: string;
   quoteUnit: 'base' | 'usd';
@@ -264,6 +265,7 @@ export const perps = createModel<RootModel>()({
     twapHistory: [],
     twapSliceFills: [],
     soundEnabled: true,
+    skipMarketCloseConfirm: false,
     marketSlippage: 0.05, // default 5%
     marketEstSize: '',
     marketEstPrice: '',
@@ -783,6 +785,13 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         soundEnabled: payload ?? true,
+      };
+    },
+
+    setSkipMarketCloseConfirm(state, payload: boolean) {
+      return {
+        ...state,
+        skipMarketCloseConfirm: payload,
       };
     },
   },
@@ -1374,10 +1383,19 @@ export const perps = createModel<RootModel>()({
     async initMarketSlippage(_, rootState) {
       try {
         const slippage = await rootState.app.wallet.getMarketSlippage();
-        dispatch.perps.setMarketSlippage(slippage ?? 0.08);
+        dispatch.perps.setMarketSlippage(slippage ?? 0.05);
       } catch (error) {
         console.error('Failed to load market slippage:', error);
-        dispatch.perps.setMarketSlippage(0.08);
+        dispatch.perps.setMarketSlippage(0.05);
+      }
+    },
+
+    async initSkipMarketCloseConfirm(_, rootState) {
+      try {
+        const skip = await rootState.app.wallet.getSkipMarketCloseConfirm();
+        dispatch.perps.setSkipMarketCloseConfirm(skip ?? false);
+      } catch (error) {
+        dispatch.perps.setSkipMarketCloseConfirm(false);
       }
     },
 
@@ -1407,6 +1425,15 @@ export const perps = createModel<RootModel>()({
         dispatch.perps.setSoundEnabled(enabled);
       } catch (error) {
         console.error('Failed to save sound enabled:', error);
+      }
+    },
+
+    async updateSkipMarketCloseConfirm(skip: boolean, rootState) {
+      try {
+        await rootState.app.wallet.setSkipMarketCloseConfirm(skip);
+        dispatch.perps.setSkipMarketCloseConfirm(skip);
+      } catch (error) {
+        console.error('Failed to save skipMarketCloseConfirm:', error);
       }
     },
   }),

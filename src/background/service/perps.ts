@@ -47,6 +47,7 @@ export interface PerpsServiceStore {
   quoteUnit: 'base' | 'usd';
   firstOpenPerpsNeedDark: boolean;
   selectedCoin: string;
+  skipMarketCloseConfirm: boolean;
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -80,6 +81,7 @@ class PerpsService {
         quoteUnit: 'base',
         firstOpenPerpsNeedDark: true,
         selectedCoin: 'BTC',
+        skipMarketCloseConfirm: false,
       },
     });
 
@@ -499,6 +501,20 @@ class PerpsService {
     this.store.selectedCoin = coin;
   };
 
+  getSkipMarketCloseConfirm = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.skipMarketCloseConfirm ?? false;
+  };
+
+  setSkipMarketCloseConfirm = async (skip: boolean) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.skipMarketCloseConfirm = skip;
+  };
+
   // only test use
   resetStore = async () => {
     if (!this.store) {
@@ -517,6 +533,7 @@ class PerpsService {
       quoteUnit: 'base',
       firstOpenPerpsNeedDark: true,
       selectedCoin: 'BTC',
+      skipMarketCloseConfirm: false,
     };
     this.memoryState.agentWallets = {};
   };

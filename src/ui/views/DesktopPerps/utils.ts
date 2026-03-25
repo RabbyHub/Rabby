@@ -452,3 +452,8 @@ export const getStatsReportSide = (isBuy: boolean, isReduceOnly: boolean) => {
   }
   return isBuy ? 'open long' : 'open short';
 };
+
+export const formatPerpsValueWithUsdc = (num: string | number) => {
+  const string = new BigNumber(num).toFixed(2);
+  return `${splitNumberByStep(string)} USDC`;
+};
