@@ -452,7 +452,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
           return (
             <div
               key={order.oid}
-              className="flex items-center justify-between gap-[36px] text-[12px]"
+              className="flex items-center justify-between gap-[28px] text-[12px]"
             >
               <span>
                 {splitNumberByStep(orderSize)} {coinUnit} to be closed @$
@@ -493,7 +493,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         <Tooltip
           title={limitOrdersTooltip}
           placement="bottomRight"
-          overlayClassName="rectangle"
+          // overlayClassName="rectangle"
         >
           <span
             className={clsx(
