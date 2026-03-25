@@ -5,6 +5,8 @@ import { findChainByServerID, DisplayChainWithWhiteLogo } from '@/utils/chain';
 import { filterChainWithBalance, normalizeChainList } from '@/utils/account';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useRequest } from 'ahooks';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 /** @deprecated import from '@/utils/chain' directly  */
 export type { DisplayChainWithWhiteLogo };
@@ -120,6 +122,9 @@ export default function useCurrentBalance(
         setBalanceLoading(false);
       }
     }
+
+    // refresh account list to update balance in account list
+    eventBus.emit(EVENTS.RELOAD_ACCOUNT_LIST);
   };
 
   const refresh = useCallback(async () => {
