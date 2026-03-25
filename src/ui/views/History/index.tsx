@@ -31,11 +31,7 @@ export const HistoryPage = () => {
           selectedTab === 'mainnet' ? (
             <div className="flex absolute right-0">
               <Tooltip
-                title={
-                  isHideScam
-                    ? t('page.transactions.showScamTips')
-                    : t('page.transactions.hideScamTips')
-                }
+                title={t('page.transactions.hideScamTips')}
                 overlayClassName="rectangle"
                 placement="bottomLeft"
               >
