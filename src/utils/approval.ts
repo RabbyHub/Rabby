@@ -498,7 +498,7 @@ function getAssetSpenderTypeOrderScore(spender: AssetApprovalSpender) {
     }
   }
 
-  return AssetTypeScores.unknown;
+  return score;
 }
 
 /**
