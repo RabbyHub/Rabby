@@ -2470,6 +2470,19 @@ export class WalletController extends BaseController {
 
   clearKeyrings = () => keyringService.clearKeyrings();
 
+  getSafePendingTransactions = async (
+    address: string,
+    networkId: string,
+    nonce: number
+  ) => {
+    const pendingTxs = await Safe.getPendingTransactions(
+      address,
+      networkId,
+      nonce
+    );
+    return pendingTxs;
+  };
+
   importGnosisAddress = async (address: string, networkIds: string[]) => {
     let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.GNOSIS;
