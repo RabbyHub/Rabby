@@ -104,6 +104,7 @@ const MenuTitleStyled = styled.div`
   font-style: normal;
   font-weight: 600;
   position: relative;
+  white-space: nowrap;
 `;
 
 const DivideStyled = styled(Divide)`
