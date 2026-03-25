@@ -1145,7 +1145,13 @@
           "newPosition": "New Position",
           "closePositionReverseTips": "This will immediately close your position at the current market price and open a position of equal size in the opposite direction.",
           "confirm": "Confirm",
-          "invalidPrice": "Invalid Price"
+          "invalidPrice": "Invalid Price",
+          "marketCloseTitle": "Market Close Position",
+          "marketCloseDesc": "This will attempt to immediately close the position.",
+          "marketCloseBtn": "Market Close",
+          "dontShowAgain": "Don't show this again",
+          "confirmCloseAllTitle": "Confirm Close All Positions",
+          "confirmCloseAllDesc": "All your open positions will be closed at market price and cancel all orders."
         },
         "openOrders": {
           "__skip_translation": [

@@ -68,6 +68,16 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     formatTpOrSlPrice(midPrice, szDecimals)
   );
 
+  const hasFillLimitPrice = React.useRef(false);
+  useEffect(() => {
+    if (!hasFillLimitPrice.current && midPrice) {
+      const price = formatTpOrSlPrice(midPrice, szDecimals);
+      setLimitPrice(price);
+      hasFillLimitPrice.current = true;
+      eventBus.emit(EVENTS.PERPS.SWITCH_LIMIT_FILL_PRICE, price);
+    }
+  }, [midPrice, szDecimals]);
+
   // BBO state
   type BboStrategy = 'cp1' | 'cp5' | 'q1' | 'q5';
   const [bboEnabled, setBboEnabled] = React.useState(false);

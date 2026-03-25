@@ -34,6 +34,7 @@ import { MarginMode } from '../../../types';
 import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { ReactComponent as RcIconCloseAllWarning } from '@/ui/assets/perps/IconCloseAllWarning.svg';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import {
   getStatsReportSide,
@@ -254,11 +255,12 @@ export const PositionsInfo: React.FC = () => {
 
   const handleClickCloseAll = useMemoizedFn(async () => {
     const modal = Modal.info({
-      width: 360,
+      width: 400,
       closable: false,
       maskClosable: true,
       centered: true,
       title: null,
+      icon: null,
       bodyStyle: {
         padding: 0,
       },
@@ -269,37 +271,36 @@ export const PositionsInfo: React.FC = () => {
           : 'perps-bridge-swap-modal-light'
       ),
       content: (
-        <>
-          <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
-            <div className=" text-20 font-medium text-r-neutral-title-1 text-center">
-              {t('page.perps.closeAllPopup.title')}
-            </div>
-            <div className="text-[13px] leading-[16px] font-medium text-rb-neutral-body text-center">
-              {t('page.perps.closeAllPopup.description')}
-            </div>
-            <div className="flex items-center justify-center w-full gap-12 mt-20">
-              <PerpsBlueBorderedButton
-                block
-                onClick={() => {
-                  modal.destroy();
-                }}
-              >
-                {t('page.manageAddress.cancel')}
-              </PerpsBlueBorderedButton>
-              <Button
-                size="large"
-                block
-                type="primary"
-                onClick={async () => {
-                  handleCloseAllPosition();
-                  modal.destroy();
-                }}
-              >
-                {t('page.manageAddress.confirm')}
-              </Button>
-            </div>
+        <div className="flex items-center justify-center flex-col">
+          <RcIconCloseAllWarning />
+          <div className="text-[20px] mt-20 mb-12 font-medium text-r-neutral-title-1 text-center">
+            {t('page.perpsPro.userInfo.positionInfo.confirmCloseAllTitle')}
           </div>
-        </>
+          <div className="text-15 text-rb-neutral-foot text-center">
+            {t('page.perpsPro.userInfo.positionInfo.confirmCloseAllDesc')}
+          </div>
+          <div className="flex items-center justify-center w-full gap-12 mt-[48px]">
+            <PerpsBlueBorderedButton
+              block
+              onClick={() => {
+                modal.destroy();
+              }}
+            >
+              {t('page.manageAddress.cancel')}
+            </PerpsBlueBorderedButton>
+            <Button
+              size="large"
+              block
+              type="primary"
+              onClick={async () => {
+                handleCloseAllPosition();
+                modal.destroy();
+              }}
+            >
+              {t('page.manageAddress.confirm')}
+            </Button>
+          </div>
+        </div>
       ),
     });
   });

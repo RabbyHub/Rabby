@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Tooltip } from 'antd';
+import { Button, Modal, Tooltip } from 'antd';
 import { ScrollAwareTooltip } from './ScrollAwareTooltip';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
@@ -18,15 +18,37 @@ import { calculatePnL } from '../../TradingPanel/utils';
 import { validatePriceInput, formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import { validateAmountInput } from '../../TradingPanel/utils';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
-import { formatPerpsCoin } from '../../../utils';
+import { formatPerpsCoin, formatPerpsValueWithUsdc } from '../../../utils';
 import { ReactComponent as RcIconPerpsDelete } from '@/ui/assets/perps/IconPerpsDelete.svg';
 import { PositionFormatData } from './index';
 import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBorderedButton';
+import { PerpsCheckbox } from '../../TradingPanel/components/PerpsCheckbox';
 
 const CLOSE_PERCENTAGES = [10, 25, 50, 75, 100];
+
+const MarketCloseCheckbox: React.FC<{
+  defaultChecked: boolean;
+  onChange: (checked: boolean) => void;
+}> = ({ defaultChecked, onChange }) => {
+  const [checked, setChecked] = useState(defaultChecked);
+  const { t } = useTranslation();
+  const title = t('page.perpsPro.userInfo.positionInfo.dontShowAgain');
+  return (
+    <PerpsCheckbox
+      checked={checked}
+      onChange={(val) => {
+        setChecked(val);
+        onChange(val);
+      }}
+      title={<span className="text-r-neutral-foot text-[12px]">{title}</span>}
+    />
+  );
+};
 
 interface InlineLimitCloseProps {
   record: PositionFormatData;
@@ -38,12 +60,16 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
   marketData,
 }) => {
   const { t } = useTranslation();
+  const { isDarkTheme } = useThemeMode();
   const dispatch = useRabbyDispatch();
   const currentPerpsAccount = useRabbySelector(
     (store) => store.perps.currentPerpsAccount
   );
   const sizeDisplayUnit = useRabbySelector(
     (state) => state.perps.sizeDisplayUnit
+  );
+  const skipMarketCloseConfirm = useRabbySelector(
+    (state) => state.perps.skipMarketCloseConfirm
   );
 
   const selectedCoin = useRabbySelector((store) => store.perps.selectedCoin);
@@ -60,14 +86,28 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     sizeDisplayUnit === 'usdc' ? 'USDC' : formatPerpsCoin(record.coin);
 
   const [limitPrice, setLimitPrice] = useState(
-    formatTpOrSlPrice(midPrice, pxDecimals)
+    formatTpOrSlPrice(midPrice, szDecimals)
   );
+  const hasFillLimitPrice = React.useRef(false);
+  useEffect(() => {
+    if (!hasFillLimitPrice.current && midPrice) {
+      const price = formatTpOrSlPrice(midPrice, szDecimals);
+      setLimitPrice(price);
+      hasFillLimitPrice.current = true;
+    }
+  }, [midPrice, szDecimals]);
+
   const [sizeInput, setSizeInput] = useState(positionSize.toFixed(szDecimals));
   const [priceFocused, setPriceFocused] = useState(false);
   const [priceHovered, setPriceHovered] = useState(false);
   const [sizeFocused, setSizeFocused] = useState(false);
   const [sizeHovered, setSizeHovered] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+
+  // Tooltip：focus > hover , only show one tips
+  const anyFocused = priceFocused || sizeFocused;
+  const showPriceTooltip = priceFocused || (priceHovered && !anyFocused);
+  const showSizeTooltip = sizeFocused || (sizeHovered && !anyFocused);
   const containerRef = useRef<HTMLDivElement>(null);
   const sizeInputRef = useRef<HTMLInputElement>(null);
 
@@ -82,9 +122,18 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
       handleClickPrice
     );
 
+    eventBus.addEventListener(
+      EVENTS.PERPS.SWITCH_LIMIT_FILL_PRICE,
+      handleClickPrice
+    );
+
     return () => {
       eventBus.removeEventListener(
         EVENTS.PERPS.HANDLE_CLICK_PRICE,
+        handleClickPrice
+      );
+      eventBus.removeEventListener(
+        EVENTS.PERPS.SWITCH_LIMIT_FILL_PRICE,
         handleClickPrice
       );
     };
@@ -92,7 +141,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
   useEffect(() => {
     if (selectedCoin === record.coin) {
-      setLimitPrice(formatTpOrSlPrice(midPrice, pxDecimals));
+      setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
     }
   }, [selectedCoin]);
 
@@ -152,15 +201,16 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
   const { loading, runAsync: handleSubmit } = useRequest(
     async () => {
       const isBuy = record.direction === 'Short';
-      const effectiveSize = Math.min(sizeNum, positionSize);
-      const size = new BigNumber(effectiveSize).toFixed(szDecimals);
-      const price = new BigNumber(limitPrice).toFixed(pxDecimals);
+      let effectiveSize = sizeInput;
+      if (Number(sizeInput) >= positionSize) {
+        effectiveSize = positionSize.toString();
+      }
 
       await handleOpenLimitOrder({
         coin: record.coin,
         isBuy,
-        size,
-        limitPx: price,
+        size: effectiveSize,
+        limitPx: limitPrice,
         reduceOnly: true,
       });
 
@@ -172,9 +222,11 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         trade_side: getStatsReportSide(isBuy, true),
         margin_mode: record.type === 'cross' ? 'cross' : 'isolated',
         coin: record.coin,
-        size,
-        price,
-        trade_usd_value: new BigNumber(price).times(size).toFixed(2),
+        size: effectiveSize,
+        price: limitPrice,
+        trade_usd_value: new BigNumber(limitPrice)
+          .times(effectiveSize)
+          .toFixed(2),
         service_provider: 'hyperliquid',
         app_version: process.env.release || '0',
         address_type: currentPerpsAccount?.type || '',
@@ -221,6 +273,67 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     }
   );
 
+  const handleMarketCloseWithConfirm = useMemoizedFn(() => {
+    if (marketLoading) return;
+
+    if (skipMarketCloseConfirm) {
+      handleMarketClose();
+      return;
+    }
+
+    const dontShowAgainRef = { current: true };
+    const modal = Modal.info({
+      width: 400,
+      closable: false,
+      maskClosable: true,
+      centered: true,
+      title: null,
+      icon: null,
+      bodyStyle: { padding: 0 },
+      className: clsx(
+        'perps-bridge-swap-modal perps-close-all-position-modal',
+        isDarkTheme
+          ? 'perps-bridge-swap-modal-dark'
+          : 'perps-bridge-swap-modal-light'
+      ),
+      content: (
+        <div className="flex items-center justify-center flex-col gap-12">
+          <div className="text-[16px] font-bold text-r-neutral-title-1 text-center">
+            {t('page.perpsPro.userInfo.positionInfo.marketCloseTitle')}
+          </div>
+          <div className="text-[13px] leading-[16px] text-rb-neutral-foot text-center mb-[20px]">
+            {t('page.perpsPro.userInfo.positionInfo.marketCloseDesc')}
+          </div>
+          <MarketCloseCheckbox
+            defaultChecked={true}
+            onChange={(checked) => {
+              dontShowAgainRef.current = checked;
+            }}
+          />
+          <div className="flex items-center justify-center w-full gap-12 mt-[12px]">
+            <PerpsBlueBorderedButton block onClick={() => modal.destroy()}>
+              {t('page.manageAddress.cancel')}
+            </PerpsBlueBorderedButton>
+            <Button
+              size="large"
+              block
+              type="primary"
+              onClick={() => {
+                if (dontShowAgainRef.current) {
+                  dispatch.perps.updateSkipMarketCloseConfirm(true);
+                }
+                handleMarketClose();
+                modal.destroy();
+              }}
+            >
+              {t('page.perpsPro.userInfo.positionInfo.marketCloseBtn')}
+            </Button>
+          </div>
+        </div>
+      ),
+    });
+  });
+
   const handlePriceChange = useMemoizedFn(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const val = e.target.value;
@@ -247,6 +360,12 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     setSizeInput(amount);
   });
 
+  useEffect(() => {
+    if (!sizeFocused) {
+      setSizeInput(positionSize.toFixed(szDecimals));
+    }
+  }, [positionSize]);
+
   const handleKeyDown = useMemoizedFn((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && isPriceValid && sizeNum > 0 && !loading) {
       handleSubmit();
@@ -259,15 +378,19 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     return (
       <div className="text-[12px] space-y-[2px]">
         <div>Price: {splitNumberByStep(limitPrice)}</div>
-        <div>
-          Est. PNL:{' '}
-          <span
-            className={pnlIsUp ? 'text-r-green-default' : 'text-r-red-default'}
-          >
-            {pnlIsUp ? '+' : '-'}
-            {formatUsdValue(Math.abs(estPnl))}
-          </span>
-        </div>
+        {Boolean(Number(estPnl)) && (
+          <div>
+            Est. PNL:{' '}
+            <span
+              className={
+                pnlIsUp ? 'text-r-green-default' : 'text-r-red-default'
+              }
+            >
+              {pnlIsUp ? '+' : '-'}
+              {formatPerpsValueWithUsdc(Math.abs(estPnl))}
+            </span>
+          </div>
+        )}
       </div>
     );
   }, [priceNum, limitPrice, estPnl]);
@@ -292,15 +415,19 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
             Qty: {sizeInput} {coin}
           </div>
         )}
-        <div>
-          Est. PNL:{' '}
-          <span
-            className={pnlIsUp ? 'text-r-green-default' : 'text-r-red-default'}
-          >
-            {pnlIsUp ? '+' : '-'}
-            {formatUsdValue(Math.abs(estPnl))}
-          </span>
-        </div>
+        {Boolean(Number(estPnl)) && (
+          <div>
+            Est. PNL:{' '}
+            <span
+              className={
+                pnlIsUp ? 'text-r-green-default' : 'text-r-red-default'
+              }
+            >
+              {pnlIsUp ? '+' : '-'}
+              {formatPerpsValueWithUsdc(Math.abs(estPnl))}
+            </span>
+          </div>
+        )}
       </div>
     );
   }, [
@@ -316,7 +443,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
   const limitOrdersTooltip = useMemo(() => {
     if (closeLimitCount === 0) return undefined;
     return (
-      <div className="space-y-[4px]">
+      <div className="space-y-[4px] px-2">
         {record.closeLimitOrders.map((order) => {
           const orderSize =
             sizeDisplayUnit === 'usdc'
@@ -355,7 +482,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         {/* Market link */}
         <span
           className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
-          onClick={() => !marketLoading && handleMarketClose()}
+          onClick={() => !marketLoading && handleMarketCloseWithConfirm()}
         >
           Market
         </span>
@@ -365,7 +492,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         {/* Limit link — click to submit */}
         <Tooltip
           title={limitOrdersTooltip}
-          placement="bottom"
+          placement="bottomRight"
           overlayClassName="rectangle"
         >
           <span
@@ -391,26 +518,22 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         visible={
           (showValidation && !isPriceValid) ||
           (!isPriceValid && !!limitPrice) ||
-          ((priceFocused || priceHovered) && !!priceTooltipContent)
+          (showPriceTooltip && !!priceTooltipContent)
         }
         placement="top"
         overlayClassName="rectangle"
-        title={
-          !isPriceValid
-            ? t('page.perpsPro.userInfo.positionInfo.invalidPrice')
-            : priceTooltipContent
-        }
+        title={priceTooltipContent}
       >
         <input
           className={clsx(
             'w-[60px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',
-            'bg-rb-neutral-bg-4 text-r-neutral-title-1',
+            'bg-transparent text-r-neutral-title-1',
             'border border-solid',
             (showValidation || limitPrice) && !isPriceValid
               ? 'border-rb-red-default'
               : priceFocused
               ? 'border-rb-brand-default'
-              : 'border-transparent hover:border-rb-brand-default'
+              : 'border-rb-neutral-line hover:border-rb-brand-default'
           )}
           placeholder="Price"
           value={limitPrice}
@@ -427,7 +550,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
       {/* Size input — top: info tooltip, bottom: percentage buttons */}
       <ScrollAwareTooltip
-        visible={(sizeFocused || sizeHovered) && !!sizeTooltipContent}
+        visible={showSizeTooltip && !!sizeTooltipContent}
         placement="top"
         overlayClassName="rectangle"
         title={sizeTooltipContent}
@@ -457,13 +580,13 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
             ref={sizeInputRef}
             className={clsx(
               'w-[60px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',
-              'bg-rb-neutral-bg-4 text-r-neutral-title-1',
+              'bg-transparent text-r-neutral-title-1',
               'border border-solid',
               isSizeOverMax || (showValidation && sizeNum <= 0)
                 ? 'border-rb-red-default'
                 : sizeFocused
                 ? 'border-rb-brand-default'
-                : 'border-transparent hover:border-rb-brand-default'
+                : 'border-rb-neutral-line hover:border-rb-brand-default'
             )}
             placeholder="Size"
             value={sizeInput}
