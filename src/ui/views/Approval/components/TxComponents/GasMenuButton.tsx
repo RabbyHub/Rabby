@@ -49,6 +49,11 @@ const MenuItemStyled = styled(Menu.Item)`
   &:hover {
     background: var(--r-blue-light1, #eef1ff);
   }
+  .ant-dropdown-menu-title-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 `;
 
 const LevelTextWrapStyled = styled.div`
