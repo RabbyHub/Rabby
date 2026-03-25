@@ -590,11 +590,11 @@ const SendToken = () => {
           ] as any[],
         } as const,
         [
-        [
-          toChecksumAddress(toAddress || zeroAddress()),
-          sendValue.toFixed(0),
-        ] as any[],
-            '0x0000000000000000000000000000000000000000',
+          [
+            toChecksumAddress(toAddress || zeroAddress()),
+            sendValue.toFixed(0),
+          ] as any[],
+          '0x0000000000000000000000000000000000000000',
           sendValue.toFixed(0),
         ] as any[],
       ] as const;
