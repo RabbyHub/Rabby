@@ -70,7 +70,7 @@
     "@rabby-wallet/eth-trezor-keyring": "2.6.4",
     "@rabby-wallet/eth-walletconnect-keyring": "2.1.7",
     "@rabby-wallet/eth-watch-keyring": "1.0.0",
-    "@rabby-wallet/gnosis-sdk": "1.4.6",
+    "@rabby-wallet/gnosis-sdk": "1.4.7",
     "@rabby-wallet/hyperliquid-sdk": "1.1.5",
     "@rabby-wallet/page-provider": "0.4.11",
     "@rabby-wallet/rabby-action": "0.1.14",
