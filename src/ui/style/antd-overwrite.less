@@ -404,6 +404,11 @@ textarea {
   }
   .ant-tooltip-arrow-content {
     background-color: black;
+    width: 8px;
+    height: 8px;
+    &::before {
+      display: none;
+    }
   }
   .ant-tooltip-arrow {
     display: none;
@@ -468,6 +473,9 @@ html.dark .ant-tooltip:not(.disable-ant-overwrite) {
 
   .ant-tooltip-arrow-content {
     background-color: var(--rb-neutral-bg-4);
+    &::before {
+      background: var(--rb-neutral-bg-4);
+    }
   }
 }
 
