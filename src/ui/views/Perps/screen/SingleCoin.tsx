@@ -90,7 +90,11 @@ export const PerpsSingleCoin = () => {
   const [searchPopupVisible, setSearchPopupVisible] = useState(false);
   const [positionDirection, setPositionDirection] = React.useState<
     'Long' | 'Short'
-  >('Long');
+  >(() => {
+    const params = new URLSearchParams(history.location.search);
+    const dir = params.get('direction');
+    return dir === 'Short' ? 'Short' : 'Long';
+  });
   const [closePositionVisible, setClosePositionVisible] = React.useState(false);
   const [editMarginVisible, setEditMarginVisible] = useState(false);
   const [addPositionVisible, setAddPositionVisible] = useState(false);

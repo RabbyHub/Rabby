@@ -1035,6 +1035,10 @@
       "fundingGains": "Funding Gains",
       "close": "Close",
       "add": "Add",
+      "addFunds": "Add Funds",
+      "newUserGuide": {
+        "learnMore": "Learn More"
+      },
       "invitePopup": {
         "title": "Save on Hyperliquid Fees",
         "activatedSuccess": "4% Hyperliquid fee savings activated",
