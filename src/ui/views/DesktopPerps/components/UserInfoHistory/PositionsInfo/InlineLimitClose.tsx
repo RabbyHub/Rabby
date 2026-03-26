@@ -492,6 +492,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         {/* Limit link — click to submit */}
         <Tooltip
           title={limitOrdersTooltip}
+          align={{ offset: [0, -4] }}
           placement="bottomRight"
           // overlayClassName="rectangle"
         >
@@ -515,21 +516,17 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
       {/* Price input */}
       <ScrollAwareTooltip
-        visible={
-          (showValidation && !isPriceValid) ||
-          (!isPriceValid && !!limitPrice) ||
-          (showPriceTooltip && !!priceTooltipContent)
-        }
+        visible={showPriceTooltip && isPriceValid && !!priceTooltipContent}
         placement="top"
         overlayClassName="rectangle"
         title={priceTooltipContent}
       >
         <input
           className={clsx(
-            'w-[60px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',
+            'w-[80px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',
             'bg-transparent text-r-neutral-title-1',
             'border border-solid',
-            (showValidation || limitPrice) && !isPriceValid
+            !isPriceValid
               ? 'border-rb-red-default'
               : priceFocused
               ? 'border-rb-brand-default'
@@ -550,7 +547,12 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
       {/* Size input — top: info tooltip, bottom: percentage buttons */}
       <ScrollAwareTooltip
-        visible={showSizeTooltip && !!sizeTooltipContent}
+        visible={
+          showSizeTooltip &&
+          !!sizeTooltipContent &&
+          !isSizeOverMax &&
+          !(showValidation && sizeNum <= 0)
+        }
         placement="top"
         overlayClassName="rectangle"
         title={sizeTooltipContent}
@@ -582,7 +584,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
               'w-[60px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',
               'bg-transparent text-r-neutral-title-1',
               'border border-solid',
-              isSizeOverMax || (showValidation && sizeNum <= 0)
+              isSizeOverMax || sizeNum <= 0
                 ? 'border-rb-red-default'
                 : sizeFocused
                 ? 'border-rb-brand-default'
