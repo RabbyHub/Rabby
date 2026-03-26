@@ -872,6 +872,7 @@
         "desc": "You are logging out of your current Perps account. You can restore it anytime by logging in with this address."
       },
       "depositAmountPopup": {
+        "amount": "Amount",
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
