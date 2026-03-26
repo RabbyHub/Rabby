@@ -367,7 +367,7 @@ export class WalletController extends BaseController {
             },
           ],
         },
-        [to, rawAmount]
+        [toChecksumAddress(to), rawAmount]
       ),
       isSend: true,
     };
@@ -1059,7 +1059,7 @@ export class WalletController extends BaseController {
           stateMutability: 'nonpayable',
           type: 'function',
         },
-        [spender, amount] as any
+        [toChecksumAddress(spender), amount] as any
       ),
     };
   };
@@ -1114,7 +1114,7 @@ export class WalletController extends BaseController {
           stateMutability: 'nonpayable',
           type: 'function',
         },
-        [spender, amount] as any
+        [toChecksumAddress(spender), amount] as any
       ),
     };
     if (gasPrice) {
@@ -1157,6 +1157,10 @@ export class WalletController extends BaseController {
     } = input;
 
     const tokenSpenders = JSON.parse(JSON.stringify(_tokenSpenders));
+    tokenSpenders.forEach((item: TokenSpenderPair) => {
+      item.token = toChecksumAddress(item.token);
+      item.spender = toChecksumAddress(item.spender);
+    });
 
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
@@ -1317,7 +1321,11 @@ export class WalletController extends BaseController {
                 stateMutability: 'nonpayable',
                 type: 'function',
               },
-              [account.address, to, tokenId]
+              [
+                toChecksumAddress(account.address),
+                toChecksumAddress(to),
+                tokenId,
+              ]
             ),
           },
         ],
@@ -1365,7 +1373,13 @@ export class WalletController extends BaseController {
                 stateMutability: 'nonpayable',
                 type: 'function',
               },
-              [account.address, to, tokenId, amount, []] as any
+              [
+                toChecksumAddress(account.address),
+                toChecksumAddress(to),
+                tokenId,
+                amount,
+                [],
+              ] as any
             ),
           },
         ],
@@ -1430,7 +1444,7 @@ export class WalletController extends BaseController {
                     stateMutability: 'nonpayable',
                     type: 'function',
                   },
-                  [spender, false] as any
+                  [toChecksumAddress(spender), false] as any
                 ),
               },
             ],
@@ -1501,7 +1515,7 @@ export class WalletController extends BaseController {
                   stateMutability: 'nonpayable',
                   type: 'function',
                 },
-                [spender, false] as any
+                [toChecksumAddress(spender), false] as any
               ),
               chainId,
             },
