@@ -188,6 +188,7 @@ import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { AccountScene, SCENE_ACCOUNT_CONFIG } from '@/constant/scene-account';
 import { syncDbService } from '@/db/services/syncDbService';
 import { historyDbService } from '@/db/services/historyDbService';
+import { tokenDbService } from '@/db/services/tokenDbService';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -3696,6 +3697,7 @@ export class WalletController extends BaseController {
 
     syncDbService.deleteForAddress(address);
     historyDbService.deleteForAddress(address);
+    tokenDbService.deleteForAddress(address);
   };
 
   removeAddresses = async (
