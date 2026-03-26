@@ -121,10 +121,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       disabled_features: [
         'symbol_search_hot_key',
         'header_symbol_search',
-        'header_settings',
-        'header_compare',
-        'header_undo_redo',
-        'header_screenshot',
         'header_saveload',
         'volume_force_overlay',
       ],
