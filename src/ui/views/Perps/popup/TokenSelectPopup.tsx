@@ -2,6 +2,7 @@ import React, { CSSProperties } from 'react';
 import { message, Modal, Skeleton, Spin } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { formatUsdValue, useWallet } from '@/ui/utils';
+import { formatNumber } from '../../../utils/number';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useAsync } from 'react-use';
 import { Button, Space, Tooltip } from 'antd';
@@ -59,32 +60,31 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   }, []);
 
   const sortedList = React.useMemo(() => {
-    const items = [...(list || [])];
-    items.sort((a, b) => b.amount * b.price - a.amount * a.price);
+    const items = [...(list || [])].filter((t) => t.amount > 0);
+    // Sort by USD value descending
 
-    // Move HYPE USDC to the front
-    const hypeIdx = items.findIndex(
-      (t) =>
-        t.id === HYPE_USDC_TOKEN_ID && t.chain === HYPE_USDC_TOKEN_SERVER_CHAIN
-    );
-    if (hypeIdx > 0) {
-      const [hit] = items.splice(hypeIdx, 1);
-      items.unshift(hit);
-    } else if (hypeIdx === -1) {
-      items.unshift(HYPE_USDC_TOKEN_ITEM);
-    }
-
-    // Move ARB USDC to the very front
-    const idx = items.findIndex(
+    // Ensure ARB USDC and HYPE USDC are always present (even with 0 balance)
+    const hasArbUsdc = items.some(
       (t) =>
         t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
     );
-    if (idx > 0) {
-      const [hit] = items.splice(idx, 1);
-      items.unshift(hit);
-    } else if (idx === -1) {
-      items.unshift(ARB_USDC_TOKEN_ITEM);
+    if (!hasArbUsdc) {
+      items.unshift({ ...ARB_USDC_TOKEN_ITEM, amount: 0 });
     }
+
+    const hasHypeUsdc = items.some(
+      (t) =>
+        t.id === HYPE_USDC_TOKEN_ID && t.chain === HYPE_USDC_TOKEN_SERVER_CHAIN
+    );
+    if (!hasHypeUsdc) {
+      const arbIdx = items.findIndex(
+        (t) =>
+          t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
+      );
+      items.splice(arbIdx + 1, 0, { ...HYPE_USDC_TOKEN_ITEM, amount: 0 });
+    }
+    items.sort((a, b) => b.amount * b.price - a.amount * a.price);
+
     return items;
   }, [list]);
 

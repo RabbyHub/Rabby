@@ -855,6 +855,7 @@
         "fee": "Fee",
         "closedPnl": "Closed PNL",
         "provider": "Provider",
+        "feeDesc": "When users place trades, both <bold>trading fees</bold> (Hyperliquid), <bold>builder fees</bold> (Rabby).",
         "title": {
           "openLong": "Open Long",
           "openShort": "Open Short",
@@ -874,6 +875,7 @@
         "desc": "You are logging out of your current Perps account. You can restore it anytime by logging in with this address."
       },
       "depositAmountPopup": {
+        "amount": "Amount",
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
@@ -919,6 +921,7 @@
       "size": "Size",
       "isolated": "Isolated",
       "cross": "Cross",
+      "crossMarginLiqPriceTip": "In Cross Margin mode, the liquidation price for a single position is an estimate for reference only.",
       "marginIsolated": "Margin (Isolated)",
       "marginCross": "Margin (Cross)",
       "marginMode": "Margin Mode",
@@ -1037,6 +1040,10 @@
       "fundingGains": "Funding Gains",
       "close": "Close",
       "add": "Add",
+      "addFunds": "Add Funds",
+      "newUserGuide": {
+        "learnMore": "Learn More"
+      },
       "invitePopup": {
         "title": "Save on Hyperliquid Fees",
         "activatedSuccess": "4% Hyperliquid fee savings activated",

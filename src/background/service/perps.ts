@@ -41,6 +41,7 @@ export interface PerpsServiceStore {
   currentAccount: StoreAccount | null;
   lastUsedAccount: StoreAccount | null;
   hasDoneNewUserProcess: boolean;
+  hasDismissedNewUserGuideV2: boolean;
   favoritedCoins: string[];
   soundEnabled: boolean;
   marketSlippage: number; // 0-1, default 0.05 (5%)
@@ -75,6 +76,7 @@ class PerpsService {
         // no clear account , just cache for last used
         lastUsedAccount: null,
         hasDoneNewUserProcess: false,
+        hasDismissedNewUserGuideV2: false,
         favoritedCoins: ['BTC', 'ETH', 'SOL'],
         marketSlippage: 0.05, // default 5%
         soundEnabled: true,
@@ -100,6 +102,20 @@ class PerpsService {
       throw new Error('PerpsService not initialized');
     }
     return this.store.hasDoneNewUserProcess;
+  };
+
+  setHasDismissedNewUserGuideV2 = async (dismissed: boolean) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.hasDismissedNewUserGuideV2 = dismissed;
+  };
+
+  getHasDismissedNewUserGuideV2 = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.hasDismissedNewUserGuideV2;
   };
 
   setSendApproveAfterDeposit = async (
@@ -521,6 +537,7 @@ class PerpsService {
       throw new Error('PerpsService not initialized');
     }
     this.store = {
+      hasDismissedNewUserGuideV2: false,
       agentVaults: '',
       agentPreferences: {},
       currentAccount: null,

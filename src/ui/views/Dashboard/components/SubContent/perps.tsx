@@ -23,7 +23,12 @@ export const PerpsSubContent = () => {
 
 const HyperliquidHeader = () => {
   const isDragOverlay = useContext(DragOverlayContext);
-  const { perpsPositionInfo, isFetching, positionPnl } = usePerpsHomePnl();
+  const {
+    perpsPositionInfo,
+    isFetching,
+    positionPnl,
+    availableBalance,
+  } = usePerpsHomePnl();
   return isFetching ? (
     isDragOverlay ? null : (
       <div className="absolute bottom-[6px] text-[11px] font-medium">
@@ -45,6 +50,14 @@ const HyperliquidHeader = () => {
     >
       {positionPnl && positionPnl >= 0 ? '+' : '-'}$
       {splitNumberByStep(Math.abs(positionPnl || 0).toFixed(2))}
+    </div>
+  ) : +(availableBalance || '') ? (
+    <div
+      className={clsx(
+        'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
+      )}
+    >
+      {formatUsdValue(availableBalance || 0)}
     </div>
   ) : null;
 };

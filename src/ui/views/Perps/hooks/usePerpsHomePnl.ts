@@ -2,6 +2,7 @@ import { useRabbySelector } from '@/ui/store';
 import { usePerpsClearHouseState } from './usePerpsClearingHouseState';
 import { useEffect, useMemo } from 'react';
 import { ga4 } from '@/utils/ga4';
+import { usePerpsAccount } from './usePerpsAccount';
 
 export const usePerpsHomePnl = () => {
   const perpsState = useRabbySelector((state) => state.perps);
@@ -10,6 +11,7 @@ export const usePerpsHomePnl = () => {
   const { data, loading: isFetching } = usePerpsClearHouseState({
     address: perpsAccount?.address,
   });
+  const { availableBalance } = usePerpsAccount();
 
   const pnl = useMemo(() => {
     return data?.assetPositions.reduce((acc, item) => {
@@ -33,5 +35,6 @@ export const usePerpsHomePnl = () => {
     perpsPositionInfo: data,
     isFetching,
     positionPnl: pnl,
+    availableBalance: availableBalance || Number(data?.withdrawable) || 0,
   };
 };

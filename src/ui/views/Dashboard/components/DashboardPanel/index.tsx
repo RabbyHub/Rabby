@@ -413,6 +413,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const perpsId = useRabbySelector((s) => s.innerDappFrame.perps);
 
   const {
+    availableBalance,
     perpsPositionInfo,
     isFetching: perpsFetching,
     positionPnl,
@@ -476,7 +477,17 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           </div>
         );
       }
-      return null;
+      if (Number(availableBalance) > 0) {
+        return (
+          <div
+            className={clsx(
+              'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
+            )}
+          >
+            {formatUsdValue(availableBalance || 0)}
+          </div>
+        );
+      }
     }
     if (perpsId === 'lighter') {
       if (!lighterAccount || !lighterInfo.lighter) return null;
@@ -494,6 +505,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   }, [
     perpsId,
     perpsFetching,
+    availableBalance,
     perpsPositionInfo,
     positionPnl,
     lighterAccount,
