@@ -710,6 +710,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
         border: 0,
       }}
       sandbox="allow-scripts allow-same-origin allow-forms allow-downloads allow-popups"
+      allowFullScreen
     />
   );
 };
