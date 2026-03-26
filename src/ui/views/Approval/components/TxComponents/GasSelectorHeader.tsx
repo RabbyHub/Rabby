@@ -27,7 +27,7 @@ import {
   formatGasHeaderUsdValue,
   formatGasAccountUSDValue,
 } from '@/ui/utils/number';
-import { calcMaxPriorityFee } from '@/utils/transaction';
+import { calcMaxPriorityFee, GasTokenInfo } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -103,6 +103,8 @@ interface GasSelectorProps {
   }[];
   engineResults?: Result[];
   nativeTokenBalance: string;
+  gasToken?: GasTokenInfo;
+  checkTxValueInBalance?: boolean;
   gasPriceMedian: number | null;
   pushType?: TxPushType;
   gasMethod?: 'native' | 'gasAccount';
@@ -312,6 +314,7 @@ const GasSelectorHeader = ({
   tx,
   checkGasLevelIsNotEnough,
   directSubmit,
+  gasToken,
   getContainer,
 }: GasSelectorProps) => {
   const wallet = useWallet();
@@ -356,6 +359,16 @@ const GasSelectorHeader = ({
   const chain = findChain({
     id: chainId,
   })!;
+  const resolvedGasToken = useMemo(
+    () =>
+      gasToken || {
+        tokenId: chain.nativeTokenAddress,
+        symbol: chain.nativeTokenSymbol,
+        decimals: chain.nativeTokenDecimals || 18,
+        logoUrl: chain.nativeTokenLogo,
+      },
+    [gasToken, chain]
+  );
   const [customGasEstimated, setCustomGasEstimated] = useState<number>(0);
 
   const { rules, processedRules } = useRabbySelector((s) => ({
@@ -928,8 +941,8 @@ const GasSelectorHeader = ({
       new BigNumber(modalExplainGas.gasCostAmount).toString(10),
       6,
       true
-    )} ${chain.nativeTokenSymbol}`;
-  }, [modalExplainGas?.gasCostAmount]);
+    )} ${resolvedGasToken.symbol}`;
+  }, [modalExplainGas?.gasCostAmount, resolvedGasToken.symbol]);
 
   const [isGasHovering, gasHoverProps] = useHover();
 
@@ -1028,7 +1041,7 @@ const GasSelectorHeader = ({
                 ActiveComponent={RcIconGasActive}
                 BlurComponent={RcIconGasBlurCC}
                 tips={t('page.signTx.nativeTokenForGas', {
-                  tokenName: chain.nativeTokenSymbol,
+                  tokenName: resolvedGasToken.symbol,
                   chainName: chain.name,
                 })}
               />
@@ -1233,7 +1246,11 @@ const GasSelectorHeader = ({
               <div className="gas-selector-modal-amount">{gasCostUsdStr}</div>
               <div className="gas-selector-modal-usd">
                 <img
-                  src={chain.nativeTokenLogo || IconUnknown}
+                  src={
+                    resolvedGasToken.logoUrl ||
+                    chain.nativeTokenLogo ||
+                    IconUnknown
+                  }
                   className="w-16 h-16 rounded-full"
                 />
                 {gasCostAmountStr}
@@ -1334,11 +1351,13 @@ const GasSelectorHeader = ({
             {t('page.signTx.myNativeTokenBalance')}
             <GasPriceBold>
               {formatTokenAmount(
-                new BigNumber(nativeTokenBalance).div(1e18).toFixed(),
+                new BigNumber(nativeTokenBalance)
+                  .div(new BigNumber(10).pow(resolvedGasToken.decimals || 18))
+                  .toFixed(),
                 4,
                 true
               )}{' '}
-              {chain.nativeTokenSymbol}
+              {resolvedGasToken.symbol}
             </GasPriceBold>
           </div>
           {gasPriceMedian !== null && (

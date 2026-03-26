@@ -8,7 +8,7 @@ import {
   checkGasAndNonce,
   convertLegacyTo1559,
   explainGas,
-  getNativeTokenBalance,
+  getGasTokenBalance,
   getPendingTxs,
 } from '@/utils/transaction';
 
@@ -59,6 +59,7 @@ import { isLedgerLockError } from '@/ui/utils/ledger';
 import { t } from 'i18next';
 import AuthenticationModalPromise from '../../AuthenticationModal';
 import { ModalProps } from 'antd';
+import { isTempoChain } from '@/utils/tempo';
 
 async function recomputeExplainForCalcItems(params: {
   wallet: WalletControllerType;
@@ -68,6 +69,7 @@ async function recomputeExplainForCalcItems(params: {
   txsCalc: CalcItem[];
   newGas: GasLevel;
   account: Account;
+  gasTokenDecimals?: number;
 }): Promise<CalcItem[]> {
   const {
     wallet,
@@ -77,6 +79,7 @@ async function recomputeExplainForCalcItems(params: {
     txsCalc,
     newGas,
     account,
+    gasTokenDecimals = 18,
   } = params;
   const chain = findChain({ id: chainId })!;
   const maxPriorityFee = calcMaxPriorityFee(
@@ -109,6 +112,7 @@ async function recomputeExplainForCalcItems(params: {
         tx: newTx,
         gasLimit: item.gasLimit,
         account,
+        gasTokenDecimals,
       });
       return { ...item, tx: newTx, gasCost } as CalcItem;
     })
@@ -158,8 +162,15 @@ async function computeGasAccount(params: {
 function aggregateCheckErrors(params: {
   txsCalc: CalcItem[];
   nativeTokenBalance?: string;
+  gasTokenDecimals?: number;
+  checkTxValueInBalance?: boolean;
 }): PreparedContext['checkErrors'] {
-  const { txsCalc, nativeTokenBalance } = params;
+  const {
+    txsCalc,
+    nativeTokenBalance,
+    gasTokenDecimals = 18,
+    checkTxValueInBalance = true,
+  } = params;
   let checkErrors: PreparedContext['checkErrors'] = [];
   if (!txsCalc.length) return checkErrors;
   let balanceLeft = nativeTokenBalance || '0';
@@ -176,11 +187,16 @@ function aggregateCheckErrors(params: {
       isSpeedUp: false,
       isGnosisAccount: false,
       nativeTokenBalance: balanceLeft,
+      gasTokenDecimals,
+      checkTxValueInBalance,
     });
     checkErrors = [...checkErrors, ...errs];
+    const txValueRaw = checkTxValueInBalance
+      ? new BigNumber(item.tx.value || 0)
+      : new BigNumber(0);
     balanceLeft = new BigNumber(balanceLeft)
-      .minus(new BigNumber(item.tx.value || 0))
-      .minus(new BigNumber(item.gasCost.maxGasCostAmount || 0))
+      .minus(txValueRaw)
+      .minus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0))
       .toFixed();
   }
   return checkErrors;
@@ -428,7 +444,7 @@ export class SignatureSteps {
       _,
       gasList,
       { median: gasPriceMedian },
-      nativeTokenBalance,
+      gasTokenBalanceInfo,
       hasCustomChainRPC,
       baseRecommendNonce,
     ] = await Promise.all([
@@ -439,7 +455,7 @@ export class SignatureSteps {
         customGas: customGasPrice > 0 ? customGasPrice : undefined,
       }),
       wallet.openapi.gasPriceStats(chain.serverId),
-      getNativeTokenBalance({
+      getGasTokenBalance({
         wallet,
         chainId: chain.id,
         address: account.address,
@@ -451,6 +467,11 @@ export class SignatureSteps {
         chainId: chain.id,
       }),
     ]);
+
+    const nativeTokenBalance = gasTokenBalanceInfo.rawBalance;
+    const gasToken = gasTokenBalanceInfo.token;
+    const gasTokenDecimals = gasToken.decimals || 18;
+    const checkTxValueInBalance = !isTempoChain(chain.serverId);
 
     const noCustomRPC = !hasCustomChainRPC;
 
@@ -589,6 +610,8 @@ export class SignatureSteps {
           needRatio,
           wallet,
           preparedBlock,
+          gasTokenDecimals,
+          checkTxValueInBalance,
         });
         gasLimit = _gl;
         recommendGasLimitRatio = _ratio;
@@ -603,6 +626,7 @@ export class SignatureSteps {
         gasLimit,
         account,
         preparedL1Fee: L1feePromises,
+        gasTokenDecimals,
       });
       nativeTokenPrice = preExecResult.native_token.price;
       const finalTx = { ...buildTx, gas: gasLimit } as Tx;
@@ -638,6 +662,7 @@ export class SignatureSteps {
       chainId: chain.id,
       txsCalc,
       price: selectedGas.price,
+      gasTokenDecimals,
       gasCostList: txsCalc?.map((i) => i.gasCost) || undefined,
     });
     const engineResultsTask: Promise<SecurityResult | undefined> =
@@ -651,7 +676,12 @@ export class SignatureSteps {
         : Promise.resolve(undefined);
 
     // align with MiniSignTx: aggregate checkErrors across batch with running balance
-    const checkErrors = aggregateCheckErrors({ txsCalc, nativeTokenBalance });
+    const checkErrors = aggregateCheckErrors({
+      txsCalc,
+      nativeTokenBalance,
+      gasTokenDecimals,
+      checkTxValueInBalance,
+    });
     const isGasNotEnough = !!checkErrors?.some((e) => e.code === 3001);
 
     const [
@@ -676,6 +706,7 @@ export class SignatureSteps {
       txsCalc,
       nativeTokenPrice,
       nativeTokenBalance,
+      gasToken,
       checkErrors,
       gasless,
       gasAccount,
@@ -694,6 +725,7 @@ export class SignatureSteps {
     txsCalc: CalcItem[];
     newGas: GasLevel;
     nativeTokenBalance?: string;
+    gasToken?: PreparedContext['gasToken'];
   }): Promise<
     Pick<
       PreparedContext,
@@ -715,8 +747,11 @@ export class SignatureSteps {
       txsCalc,
       newGas,
       nativeTokenBalance,
+      gasToken,
     } = params;
     const chain = findChain({ id: chainId })!;
+    const gasTokenDecimals = gasToken?.decimals || 18;
+    const checkTxValueInBalance = !isTempoChain(chain.serverId);
     const maxPriorityFee = calcMaxPriorityFee(
       gasList as any,
       newGas as any,
@@ -739,6 +774,7 @@ export class SignatureSteps {
       txsCalc,
       newGas,
       account,
+      gasTokenDecimals,
     });
 
     const gaslessTask = computeGasless({
@@ -753,12 +789,15 @@ export class SignatureSteps {
       chainId: chain.id,
       txsCalc: nextCalc,
       price: newGas.price,
+      gasTokenDecimals,
     });
 
     // lightweight re-validation: recompute gas warnings using cached balance
     const checkErrors = aggregateCheckErrors({
       txsCalc: nextCalc,
       nativeTokenBalance,
+      gasTokenDecimals,
+      checkTxValueInBalance,
     });
     const isGasNotEnough = !!checkErrors?.some((e) => e.code === 3001);
 
@@ -785,17 +824,30 @@ export class SignatureSteps {
     chainId: number;
     txsCalc: CalcItem[];
     price: string | number;
+    gasTokenDecimals?: number;
     gasCostList?: {
       gasCostUsd: BigNumber;
       gasCostAmount: BigNumber;
       maxGasCostAmount: BigNumber;
+      gasCostRawAmount?: BigNumber;
+      maxGasCostRawAmount?: BigNumber;
     }[];
   }): Promise<{
     gasCostUsd: BigNumber;
     gasCostAmount: BigNumber;
     maxGasCostAmount: BigNumber;
+    gasCostRawAmount: BigNumber;
+    maxGasCostRawAmount: BigNumber;
   }> {
-    const { wallet, account, chainId, txsCalc, price, gasCostList } = params;
+    const {
+      wallet,
+      account,
+      chainId,
+      txsCalc,
+      price,
+      gasCostList,
+      gasTokenDecimals = 18,
+    } = params;
     let res = gasCostList;
     if (!res) {
       res = await Promise.all(
@@ -809,6 +861,7 @@ export class SignatureSteps {
             wallet,
             gasLimit: item.gasLimit,
             account: account,
+            gasTokenDecimals,
           })
         )
       );
@@ -819,12 +872,20 @@ export class SignatureSteps {
         sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCostUsd);
 
         sum.maxGasCostAmount = sum.maxGasCostAmount.plus(item.maxGasCostAmount);
+        sum.gasCostRawAmount = sum.gasCostRawAmount.plus(
+          item.gasCostRawAmount || 0
+        );
+        sum.maxGasCostRawAmount = sum.maxGasCostRawAmount.plus(
+          item.maxGasCostRawAmount || 0
+        );
         return sum;
       },
       {
         gasCostUsd: new BigNumber(0),
         gasCostAmount: new BigNumber(0),
         maxGasCostAmount: new BigNumber(0),
+        gasCostRawAmount: new BigNumber(0),
+        maxGasCostRawAmount: new BigNumber(0),
       }
     );
     return totalCost;
@@ -1133,7 +1194,14 @@ export class SignatureSteps {
     account: Account;
   }): Promise<SignerCtx> {
     const { wallet, ctx, gas, account } = params;
-    const { txsCalc, gasList, chainId, is1559, nativeTokenBalance } = ctx;
+    const {
+      txsCalc,
+      gasList,
+      chainId,
+      is1559,
+      nativeTokenBalance,
+      gasToken,
+    } = ctx;
     const updated = await SignatureSteps.refreshOnGasChange({
       wallet,
       account,
@@ -1143,6 +1211,7 @@ export class SignatureSteps {
       txsCalc: txsCalc as any,
       newGas: gas,
       nativeTokenBalance,
+      gasToken,
     });
     return {
       ...ctx,

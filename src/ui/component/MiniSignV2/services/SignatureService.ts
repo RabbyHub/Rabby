@@ -132,11 +132,13 @@ export const signatureService = {
     price,
     currentAccount,
     wallet,
+    gasTokenDecimals = 18,
   }: {
     txsCalc: CalcItem[];
     price: string | number;
     currentAccount: Account;
     wallet: WalletControllerType;
+    gasTokenDecimals?: number;
   }) => {
     const res = await Promise.all(
       txsCalc.map((item) =>
@@ -149,6 +151,7 @@ export const signatureService = {
           wallet,
           gasLimit: item.gasLimit,
           account: currentAccount!,
+          gasTokenDecimals,
         })
       )
     );
@@ -158,12 +161,20 @@ export const signatureService = {
         sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCostUsd);
 
         sum.maxGasCostAmount = sum.maxGasCostAmount.plus(item.maxGasCostAmount);
+        sum.gasCostRawAmount = sum.gasCostRawAmount.plus(
+          item.gasCostRawAmount || 0
+        );
+        sum.maxGasCostRawAmount = sum.maxGasCostRawAmount.plus(
+          item.maxGasCostRawAmount || 0
+        );
         return sum;
       },
       {
         gasCostUsd: new BigNumber(0),
         gasCostAmount: new BigNumber(0),
         maxGasCostAmount: new BigNumber(0),
+        gasCostRawAmount: new BigNumber(0),
+        maxGasCostRawAmount: new BigNumber(0),
       }
     );
     return totalCost;

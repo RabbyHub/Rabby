@@ -39,6 +39,7 @@ import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { ModalProps } from 'antd';
 import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
+import { isTempoChain } from '@/utils/tempo';
 
 const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const { t } = useTranslation();
@@ -136,7 +137,14 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
   const isReady = (ctx?.txsCalc?.length || 0) > 0;
   const chain = findChain({ id: ctx?.chainId })!;
-  const nativeTokenBalance = ctx?.nativeTokenBalance || '0x0';
+  const nativeTokenBalance = ctx?.nativeTokenBalance || '0';
+  const gasToken = ctx?.gasToken || {
+    tokenId: chain.nativeTokenAddress,
+    symbol: chain.nativeTokenSymbol,
+    decimals: chain.nativeTokenDecimals || 18,
+    logoUrl: chain.nativeTokenLogo,
+  };
+  const checkTxValueInBalance = !isTempoChain(chain.serverId);
   const support1559 = !!ctx?.is1559;
 
   const checkGasLevelIsNotEnough = useMemoizedFn(
@@ -177,6 +185,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
               gasLimit: item.gasLimit,
               account: currentAccount!,
               preparedL1Fee: item.L1feeCache,
+              gasTokenDecimals: gasToken.decimals || 18,
             }),
           };
         })
@@ -202,10 +211,15 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
               isSpeedUp: isSpeedUp,
               isGnosisAccount: false,
               nativeTokenBalance: balance,
+              gasTokenDecimals: gasToken.decimals || 18,
+              checkTxValueInBalance,
             });
+            const txValueRaw = checkTxValueInBalance
+              ? new BigNumber(item.tx.value || 0)
+              : new BigNumber(0);
             balance = new BigNumber(balance)
-              .minus(new BigNumber(item.tx.value || 0))
-              .minus(new BigNumber(item.gasCost.maxGasCostAmount || 0))
+              .minus(txValueRaw)
+              .minus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0))
               .toFixed();
             return result;
           });
@@ -562,6 +576,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                         errors={checkErrors}
                         // engineResults={engineResults}
                         nativeTokenBalance={nativeTokenBalance}
+                        gasToken={gasToken}
+                        checkTxValueInBalance={checkTxValueInBalance}
                         gasPriceMedian={gasPriceMedian}
                         gas={totalGasCost}
                         gasCalcMethod={gasCalcMethod}
@@ -781,6 +797,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 errors={checkErrors}
                 // engineResults={engineResults}
                 nativeTokenBalance={nativeTokenBalance}
+                gasToken={gasToken}
+                checkTxValueInBalance={checkTxValueInBalance}
                 gasPriceMedian={gasPriceMedian}
                 gas={totalGasCost}
                 gasCalcMethod={gasCalcMethod}
