@@ -853,6 +853,7 @@
         "fee": "Fee",
         "closedPnl": "Closed PNL",
         "provider": "Provider",
+        "feeDesc": "When users place trades, both <bold>trading fees</bold> (Hyperliquid), <bold>builder fees</bold> (Rabby).",
         "title": {
           "openLong": "Open Long",
           "openShort": "Open Short",
@@ -918,6 +919,7 @@
       "size": "Size",
       "isolated": "Isolated",
       "cross": "Cross",
+      "crossMarginLiqPriceTip": "In Cross Margin mode, the liquidation price for a single position is an estimate for reference only.",
       "marginIsolated": "Margin (Isolated)",
       "marginCross": "Margin (Cross)",
       "marginMode": "Margin Mode",

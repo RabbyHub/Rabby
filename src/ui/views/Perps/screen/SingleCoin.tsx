@@ -3,7 +3,7 @@ import { PageHeader } from '@/ui/component';
 import { useParams, useHistory } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { formatUsdValue, splitNumberByStep, useWallet } from '@/ui/utils';
-import { Button, Switch, message } from 'antd';
+import { Button, Switch, Tooltip, message } from 'antd';
 import clsx from 'clsx';
 import { PerpsChart } from '../components/Chart';
 import { PERPS_MAX_NTL_VALUE, PERPS_BUILDER_INFO } from '../constants';
@@ -591,10 +591,24 @@ export const PerpsSingleCoin = () => {
               >
                 {positionData?.direction} {positionData?.leverage}x
               </span>
-              <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-line text-r-neutral-foot">
+              <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-line text-r-neutral-foot gap-2">
                 {positionData?.type === 'cross'
                   ? t('page.perps.cross')
                   : t('page.perps.isolated')}
+                {positionData?.type === 'cross' && (
+                  <Tooltip
+                    overlayClassName="rectangle"
+                    placement="bottom"
+                    title={t('page.perps.crossMarginLiqPriceTip')}
+                  >
+                    <RcIconInfo
+                      viewBox="0 0 14 14"
+                      width={12}
+                      height={12}
+                      className="text-r-neutral-foot"
+                    />
+                  </Tooltip>
+                )}
               </span>
             </div>
 
