@@ -1328,6 +1328,7 @@ export const PerpsSingleCoin = () => {
                 leverage: positionData?.leverage || 1,
                 direction: positionData?.direction as 'Long' | 'Short',
                 midPx: activeAssetCtx?.markPx || '0',
+                isAddPosition: true,
               });
               if (res) {
                 const isBuy = positionData?.direction === 'Long';
