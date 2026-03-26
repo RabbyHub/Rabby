@@ -67,11 +67,7 @@ import {
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
-import {
-  MultiAction,
-  TransactionAction,
-  TxPushType,
-} from '@rabby-wallet/rabby-api/dist/types';
+import { MultiAction, TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { findChain, isTestnet } from '@/utils/chain';
@@ -1660,7 +1656,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       }
     }
     try {
-      const pendingTxs = await Safe.getPendingTransactions(
+      const pendingTxs = await wallet.getSafePendingTransactions(
         currentAccount.address,
         networkId,
         safeInfo.nonce

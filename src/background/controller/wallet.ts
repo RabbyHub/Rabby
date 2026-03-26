@@ -2472,6 +2472,19 @@ export class WalletController extends BaseController {
 
   clearKeyrings = () => keyringService.clearKeyrings();
 
+  getSafePendingTransactions = async (
+    address: string,
+    networkId: string,
+    nonce: number
+  ) => {
+    const pendingTxs = await Safe.getPendingTransactions(
+      address,
+      networkId,
+      nonce
+    );
+    return pendingTxs;
+  };
+
   importGnosisAddress = async (address: string, networkIds: string[]) => {
     let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.GNOSIS;
@@ -2754,7 +2767,7 @@ export class WalletController extends BaseController {
               address: safeAddress,
             });
             const threshold = await safe.getThreshold();
-            const { results } = await safe.apiKit.getMessages(safeAddress);
+            const { results } = await safe.getMessages();
             return {
               networkId,
               messages: results.filter(
@@ -3016,8 +3029,7 @@ export class WalletController extends BaseController {
     chainId: number;
     messageHash: string;
   }) => {
-    const apiKit = Safe.createSafeApiKit(String(chainId));
-    return apiKit.getMessage(messageHash);
+    return Safe.getMessage(messageHash, String(chainId));
   };
 
   getGnosisMessageHash = async ({
