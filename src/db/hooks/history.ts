@@ -2,6 +2,7 @@ import { historyDbService } from '../services/historyDbService';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '..';
 import { useRequest } from 'ahooks';
+import { UI_TYPE } from '@/constant/ui';
 
 export const useSyncDbHistory = (options: { address: string }) => {
   // return useQuery({
@@ -25,7 +26,7 @@ export const useSyncDbHistory = (options: { address: string }) => {
       refreshDeps: [options.address],
       cacheKey: `syncHistory-${options.address}`,
       staleTime: 0.5 * 60 * 1000,
-      ready: !!options.address,
+      ready: !!options.address && (UI_TYPE.isDesktop || UI_TYPE.isPop),
     }
   );
 };
