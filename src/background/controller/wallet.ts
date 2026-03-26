@@ -831,7 +831,7 @@ export class WalletController extends BaseController {
         await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           payTokenRawAmount,
           {
             ga: {
@@ -930,7 +930,7 @@ export class WalletController extends BaseController {
         const res = await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           0,
           {
             ga: {
@@ -953,7 +953,7 @@ export class WalletController extends BaseController {
         const res = await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           payTokenRawAmount,
           {
             ga: {
