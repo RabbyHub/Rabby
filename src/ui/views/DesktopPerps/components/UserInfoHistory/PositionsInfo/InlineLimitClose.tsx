@@ -289,7 +289,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
       centered: true,
       title: null,
       icon: null,
-      bodyStyle: { padding: 0 },
+      // bodyStyle: { padding: 0 },
       className: clsx(
         'perps-bridge-swap-modal perps-close-all-position-modal',
         isDarkTheme
