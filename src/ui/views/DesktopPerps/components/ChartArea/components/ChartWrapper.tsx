@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { splitNumberByStep } from '@/ui/utils';
@@ -9,35 +9,11 @@ import {
   TradingViewHoverData,
   TradingViewIframeChart,
 } from '@/ui/views/Perps/components/TradingViewIframeChart';
-import { isScreenSmall } from '../../../utils';
 
 interface ChartWrapperProps {
   coin: string;
   interval: string;
 }
-
-type IntervalKey =
-  | '1m'
-  | '5m'
-  | '15m'
-  | '30m'
-  | '1h'
-  | '4h'
-  | '8h'
-  | '1d'
-  | '1w';
-
-const INTERVAL_OPTIONS: Array<{ label: string; value: IntervalKey }> = [
-  { label: '1M', value: '1m' },
-  { label: '5M', value: '5m' },
-  { label: '15M', value: '15m' },
-  { label: '30M', value: '30m' },
-  { label: '1H', value: '1h' },
-  { label: '4H', value: '4h' },
-  { label: '8H', value: '8h' },
-  { label: '1D', value: '1d' },
-  { label: '1W', value: '1w' },
-];
 
 const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
 
@@ -59,21 +35,12 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     return currentMarketData.pxDecimals || 2;
   }, [currentMarketData]);
 
-  const [selectedInterval, setSelectedInterval] = useState<IntervalKey>(
-    (propInterval as IntervalKey) || '15m'
-  );
   const [chartHoverData, setChartHoverData] = useState<TradingViewHoverData>({
     visible: false,
   });
   const [latestCandle, setLatestCandle] = useState<TradingViewHoverData | null>(
     null
   );
-
-  useEffect(() => {
-    if (propInterval && propInterval !== selectedInterval) {
-      setSelectedInterval(propInterval as IntervalKey);
-    }
-  }, [propInterval, selectedInterval]);
 
   const lineTagInfo = useMemo(() => {
     const tpPrice = openOrders.find(
@@ -123,6 +90,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
         'header_symbol_search',
         'header_saveload',
         'volume_force_overlay',
+        'widget_logo',
       ],
       enabled_features: ['iframe_loading_compatibility_mode'],
       favorites: {
@@ -133,29 +101,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col bg-rb-neutral-bg-1">
-      <div
-        className={clsx(
-          'flex px-16 py-12 gap-8',
-          isScreenSmall() ? 'flex-col gap-4' : 'flex-row gap-8 items-center'
-        )}
-      >
-        <div className="flex gap-8 flex-shrink-0">
-          {INTERVAL_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setSelectedInterval(option.value)}
-              className={clsx(
-                'px-10 py-4 text-12 rounded-[4px] font-medium transition-colors',
-                selectedInterval === option.value
-                  ? 'bg-r-blue-default text-white'
-                  : 'text-r-neutral-body hover:bg-r-neutral-bg3'
-              )}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-
+      <div className="flex px-16 py-12 gap-8 items-center">
         <div className="flex flex-wrap items-center gap-8 flex-shrink-0">
           {showDisplayData ? (
             <>
@@ -263,7 +209,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       <div className="flex-1 min-h-0 p-8">
         <TradingViewIframeChart
           coin={coin}
-          interval={selectedInterval}
+          interval={propInterval as any}
           pxDecimals={pxDecimals}
           isDarkTheme={isDarkTheme}
           locale={chartLocale}
