@@ -621,6 +621,10 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   }, [iframeOrigin]);
 
   useEffect(() => {
+    // Cancel all active SDK WebSocket subscriptions before switching symbol
+    subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
+    subscriptionsRef.current.clear();
+
     postToIframe({
       channel: BRIDGE_CHANNEL,
       kind: 'command',
