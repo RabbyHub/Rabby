@@ -8,6 +8,8 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
 import fetchAdapter from 'background/utils/fetchAdapter';
 import { WalletController } from 'background/controller/wallet';
+import { TOKEN_CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
+import { syncDbService } from '@/db/services/syncDbService';
 import {
   EVENTS,
   EVENTS_IN_BG,
@@ -171,6 +173,11 @@ async function restoreAppState() {
 
     walletController.forceExpireInMemoryAddressBalance(address);
     walletController.forceExpireInMemoryNetCurve(address);
+    syncDbService.setUpdatedAtIfExists({
+      address,
+      scene: TOKEN_SYNC_SCENE,
+      updatedAt: Date.now() - TOKEN_CACHE_VALID_DURATION,
+    });
   });
 
   if (appIsDev) {

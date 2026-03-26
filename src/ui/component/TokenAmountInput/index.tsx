@@ -238,7 +238,9 @@ const TokenAmountInput = ({
     undefined,
     isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
     undefined,
-    !!keyword
+    !!keyword,
+    false,
+    true
   );
 
   const handleSelectToken = useCallback(() => {
