@@ -771,6 +771,7 @@ export class WalletController extends BaseController {
 
   bridgeToken = async (
     {
+      approveId,
       to,
       data,
       payTokenRawAmount,
@@ -783,6 +784,7 @@ export class WalletController extends BaseController {
       value,
       addHistoryData,
     }: {
+      approveId?: string;
       data: string;
       to: string;
       value: string;
@@ -811,7 +813,7 @@ export class WalletController extends BaseController {
         await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           0,
           {
             ga: {
@@ -887,6 +889,7 @@ export class WalletController extends BaseController {
 
   buildBridgeToken = async (
     {
+      approveId,
       to,
       data,
       payTokenRawAmount,
@@ -899,6 +902,7 @@ export class WalletController extends BaseController {
       value,
       addHistoryData,
     }: {
+      approveId?: string;
       data: string;
       to: string;
       value: string;
