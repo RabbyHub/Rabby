@@ -404,6 +404,11 @@ textarea {
   }
   .ant-tooltip-arrow-content {
     background-color: black;
+    width: 8px;
+    height: 8px;
+    &::before {
+      display: none;
+    }
   }
   .ant-tooltip-arrow {
     display: none;
@@ -468,6 +473,9 @@ html.dark .ant-tooltip:not(.disable-ant-overwrite) {
 
   .ant-tooltip-arrow-content {
     background-color: var(--rb-neutral-bg-4);
+    &::before {
+      background: var(--rb-neutral-bg-4);
+    }
   }
 }
 
@@ -485,11 +493,11 @@ html.dark .ant-tooltip:not(.disable-ant-overwrite) {
 .ant-skeleton-element .ant-skeleton-input {
   height: 18px;
   border-radius: 2px;
-  background: linear-gradient(
-    90deg,
-    rgba(216, 223, 235, 0.55) 0%,
-    rgba(216, 223, 235, 0.6) 95.31%
-  );
+  // background: linear-gradient(
+  //   90deg,
+  //   rgba(216, 223, 235, 0.55) 0%,
+  //   rgba(216, 223, 235, 0.6) 95.31%
+  // );
 
   min-width: initial;
 }
