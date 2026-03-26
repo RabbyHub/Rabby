@@ -3,11 +3,13 @@ import produce from 'immer';
 import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
+import { TOKEN_CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
 import {
   findChainByEnum,
   isTestnet as checkIsTestnet,
   findChain,
 } from '@/utils/chain';
+import { isFullVersionAccountType } from '@/utils/account';
 import { syncDbService } from '@/db/services/syncDbService';
 import { tokenDbService } from '@/db/services/tokenDbService';
 import { useWallet } from '../WalletContext';
@@ -40,9 +42,6 @@ import { useAsync } from 'react-use';
 
 let lastResetTokenListAddr = '';
 // export const tokenChangeLoadingAtom = atom(false);
-
-const TOKEN_CACHE_VALID_DURATION = 10 * 60 * 1000;
-const TOKEN_SYNC_SCENE = 'token';
 
 const filterDisplayToken = (
   tokens: AbstractPortfolioToken[],
@@ -177,6 +176,11 @@ export const useTokens = (
       lastResetTokenListAddr = userAddr;
     }
 
+    const matchedAccount = await wallet.getAccountByAddress(userAddr);
+    const shouldPersistTokenCache = matchedAccount
+      ? isFullVersionAccountType(matchedAccount as any)
+      : false;
+
     const currentAbort = new AbortController();
     abortProcess.current = currentAbort;
     historyLoad.current = false;
@@ -209,54 +213,64 @@ export const useTokens = (
       return;
     }
 
-    let currentAllTokens: TokenItem[] = await tokenDbService.queryTokens(
-      userAddr
-    );
+    let currentAllTokens: TokenItem[] = [];
 
-    if (currentAbort.signal.aborted) {
-      abortedFn();
-      return;
-    }
+    if (!shouldPersistTokenCache) {
+      await Promise.all([
+        tokenDbService.deleteForAddress(userAddr),
+        syncDbService.deleteSceneForAddress({
+          address: userAddr,
+          scene: TOKEN_SYNC_SCENE,
+        }),
+      ]);
+    } else {
+      currentAllTokens = await tokenDbService.queryTokens(userAddr);
 
-    if (currentAllTokens.length) {
-      const chainTokens = currentAllTokens.reduce((m, n) => {
-        m[n.chain] = m[n.chain] || [];
-        m[n.chain].push(n);
-
-        return m;
-      }, {} as Record<string, TokenItem[]>);
-      _data = produce(_data, (draft) => {
-        setWalletTokens(draft, chainTokens);
-      });
-
-      setData(_data);
-      _tokens = sortWalletTokens(_data);
-      if (isTestnet) {
-        dispatch.account.setTestnetTokenList(
-          filterDisplayToken(_tokens, blocked)
-        );
-      } else {
-        dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+      if (currentAbort.signal.aborted) {
+        abortedFn();
+        return;
       }
-      setLoading(false);
-    }
 
-    const updatedAt =
-      (await syncDbService.getUpdatedAt({
-        address: userAddr,
-        scene: TOKEN_SYNC_SCENE,
-      })) || 0;
+      if (currentAllTokens.length) {
+        const chainTokens = currentAllTokens.reduce((m, n) => {
+          m[n.chain] = m[n.chain] || [];
+          m[n.chain].push(n);
 
-    const shouldUseDbCache =
-      currentAllTokens.length > 0 &&
-      !forceRefresh &&
-      !realtimeMode &&
-      updatedAt > Date.now() - TOKEN_CACHE_VALID_DURATION;
+          return m;
+        }, {} as Record<string, TokenItem[]>);
+        _data = produce(_data, (draft) => {
+          setWalletTokens(draft, chainTokens);
+        });
 
-    if (shouldUseDbCache) {
-      log('<<==Tokens-cache-hit==>>', userAddr);
-      setIsAllTokenLoading(false);
-      return;
+        setData(_data);
+        _tokens = sortWalletTokens(_data);
+        if (isTestnet) {
+          dispatch.account.setTestnetTokenList(
+            filterDisplayToken(_tokens, blocked)
+          );
+        } else {
+          dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+        }
+        setLoading(false);
+      }
+
+      const updatedAt =
+        (await syncDbService.getUpdatedAt({
+          address: userAddr,
+          scene: TOKEN_SYNC_SCENE,
+        })) || 0;
+
+      const shouldUseDbCache =
+        currentAllTokens.length > 0 &&
+        !forceRefresh &&
+        !realtimeMode &&
+        updatedAt > Date.now() - TOKEN_CACHE_VALID_DURATION;
+
+      if (shouldUseDbCache) {
+        log('<<==Tokens-cache-hit==>>', userAddr);
+        setIsAllTokenLoading(false);
+        return;
+      }
     }
 
     const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
@@ -415,14 +429,16 @@ export const useTokens = (
       return;
     }
 
-    await tokenDbService.replaceAddressTokens(userAddr, currentAllTokens);
+    if (shouldPersistTokenCache) {
+      await tokenDbService.replaceAddressTokens(userAddr, currentAllTokens);
 
-    if (!chainServerId) {
-      await syncDbService.setUpdatedAt({
-        address: userAddr,
-        scene: TOKEN_SYNC_SCENE,
-        updatedAt: Date.now(),
-      });
+      if (!chainServerId) {
+        await syncDbService.setUpdatedAt({
+          address: userAddr,
+          scene: TOKEN_SYNC_SCENE,
+          updatedAt: Date.now(),
+        });
+      }
     }
 
     const tokensDict: Record<string, TokenItem[]> = {};
