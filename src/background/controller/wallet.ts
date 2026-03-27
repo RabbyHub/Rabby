@@ -3694,6 +3694,7 @@ export class WalletController extends BaseController {
       preferenceService.removeAddressBalance(address);
       preferenceService.removeCurvePoints(address);
       perpsService.removeAgentWallet(address);
+      this.forceExpireInMemoryAddressBalance(address);
     }
     const current = preferenceService.getCurrentAccount();
     if (
