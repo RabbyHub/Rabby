@@ -176,9 +176,6 @@ const rawAmountToBn = (
   if (BigNumber.isBigNumber(value)) {
     return value;
   }
-  if (typeof value === 'string' && value.toLowerCase().startsWith('0x')) {
-    return new BigNumber(value.slice(2) || '0', 16);
-  }
   return new BigNumber(value || 0);
 };
 
