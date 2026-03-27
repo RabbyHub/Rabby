@@ -3314,7 +3314,8 @@
         "tradeValue": "Valor da transação",
         "closedPnl": "PNL realizado",
         "fee": "Taxa",
-        "size": "Tamanho da posição"
+        "size": "Tamanho da posição",
+        "feeDesc": "Quando os usuários fazem negociações, tanto as <1>taxas de negociação</1> quanto as <2>taxas de criador</2> se aplicam."
       },
       "logoutConfirmModal": {
         "title": "Desconectar o endereço atual",
@@ -3336,7 +3337,8 @@
         "estReceiveTooltipNoTime": "Depósito entre cadeias é processado via LiFi e pode ocorrer deslizamento de preço.",
         "estReceive": "Recebimento estimado: {{balance}}",
         "goBridgeTips": "Apenas o USDC na Arbitrum é suportado para depósito direto. Por favor, faça a ponte do seu token atual para o USDC na Arbitrum antes de depositar.",
-        "hyperliquidFeeLabelTooltip": "Novos usuários são cobrados uma taxa de ativação única pela Hyperliquid."
+        "hyperliquidFeeLabelTooltip": "Novos usuários são cobrados uma taxa de ativação única pela Hyperliquid.",
+        "amount": "Quantidade"
       },
       "home": {
         "entryPrice": "Preço de entrada",
@@ -3499,7 +3501,12 @@
       "positionValue": "Valor da Posição",
       "liquidationDistanceUp": "Subindo <bold>{{percent}}</bold> irá acionar a liquidação",
       "cannotChangeMarginModeWithOpenPositions": "Não é possível alterar o Modo de Margem com posições abertas.",
-      "crossMarginDesc": "Todas as posições compartilham a mesma margem. Isso reduz a chance de uma única posição ser liquidada, mas todos os fundos de margem cruzada podem ser perdidos em movimentos extremos do mercado."
+      "crossMarginDesc": "Todas as posições compartilham a mesma margem. Isso reduz a chance de uma única posição ser liquidada, mas todos os fundos de margem cruzada podem ser perdidos em movimentos extremos do mercado.",
+      "newUserGuide": {
+        "learnMore": "Saiba Mais"
+      },
+      "addFunds": "Adicionar Fundos",
+      "crossMarginLiqPriceTip": "No modo de Margem Cruzada, o preço de liquidação para uma única posição é uma estimativa apenas para referência."
     },
     "perpsPro": {
       "chatArea": {
@@ -3593,7 +3600,14 @@
           "closePositionReverseTips": "Isso encerrará imediatamente sua posição ao preço de mercado atual e abrirá uma posição do mesmo tamanho na direção oposta.",
           "reversePosition": "Reversão de posição",
           "closeMarket": "Fechar posição a mercado",
-          "closedPnl": "PNL realizado"
+          "closedPnl": "PNL realizado",
+          "dontShowAgain": "Não mostrar isso novamente",
+          "marketCloseBtn": "Fechamento do Mercado",
+          "invalidPrice": "Preço inválido",
+          "confirmCloseAllTitle": "Confirmar Fechar Todas as Posições",
+          "marketCloseDesc": "Isso tentará fechar a posição imediatamente.",
+          "marketCloseTitle": "Fechar Posição de Mercado",
+          "confirmCloseAllDesc": "Todas as suas posições abertas serão fechadas ao preço de mercado e todos os pedidos serão cancelados."
         },
         "openOrders": {
           "cancel": "Cancelar",

@@ -3319,7 +3319,8 @@
         "tradeValue": "Valor nocional",
         "fee": "Taxa",
         "closedPnl": "PnL realizado",
-        "size": "Tamanho da Posição"
+        "size": "Tamanho da Posição",
+        "feeDesc": "Quando os usuários realizam negociações, tanto as <1>taxas de negociação</1> quanto as <2>taxas de construtor</2> se aplicam."
       },
       "logoutConfirmModal": {
         "desc": "Você está encerrando a sessão da sua conta Perps atual. Você pode restaurá-la a qualquer momento fazendo login com este endereço.",
@@ -3341,7 +3342,8 @@
         "feeTipTooltip": "Taxa de retirada cobrada pela Hyperliquid: $1",
         "estReceiveTooltip": "O depósito entre cadeias é processado via LiFi; pode haver algum deslizamento de preço. Chegada estimada em {{number}}s.",
         "estTimeLabel": "Tempo estimado",
-        "hyperliquidFeeLabelTooltip": "Novos usuários são cobrados uma taxa de ativação única pela Hyperliquid."
+        "hyperliquidFeeLabelTooltip": "Novos usuários são cobrados uma taxa de ativação única pela Hyperliquid.",
+        "amount": "Quantidade"
       },
       "home": {
         "entryPrice": "Preço de entrada",
@@ -3504,7 +3506,12 @@
       "currentPrice": "Preço Atual",
       "liquidationDistanceDown": "A queda de <bold>{{percent}}</bold> irá acionar a liquidação.",
       "details": "Detalhes",
-      "liquidationDistanceUp": "Subindo <bold>{{percent}}</bold> irá acionar a liquidação"
+      "liquidationDistanceUp": "Subindo <bold>{{percent}}</bold> irá acionar a liquidação",
+      "newUserGuide": {
+        "learnMore": "Saiba mais"
+      },
+      "addFunds": "Adicionar Fundos",
+      "crossMarginLiqPriceTip": "No modo de Margem Cruzada, o preço de liquidação para uma única posição é uma estimativa apenas para referência."
     },
     "perpsPro": {
       "chatArea": {
@@ -3598,7 +3605,14 @@
           "closePositionMarketTips": "Isso será fechado imediatamente ao preço de mercado atual.",
           "reversePosition": "Inverter posição",
           "limitPrice": "Preço Limite",
-          "closedPnl": "PNL Realizado"
+          "closedPnl": "PNL Realizado",
+          "dontShowAgain": "Não mostrar isso novamente",
+          "marketCloseBtn": "Fechamento de Mercado",
+          "invalidPrice": "Preço Inválido",
+          "marketCloseTitle": "Fechar Posição de Mercado",
+          "marketCloseDesc": "Isso tentará fechar a posição imediatamente.",
+          "confirmCloseAllTitle": "Confirmar Fechar Todas as Posições",
+          "confirmCloseAllDesc": "Todas as suas posições abertas serão fechadas a preço de mercado e todos os pedidos serão cancelados."
         },
         "openOrders": {
           "cancel": "Cancelar",
