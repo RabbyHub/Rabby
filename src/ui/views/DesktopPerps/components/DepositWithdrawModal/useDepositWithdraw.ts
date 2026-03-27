@@ -124,19 +124,9 @@ export const useDepositWithdraw = (
 
   const pickDefaultToken = useCallback((list: TokenItem[]) => {
     if (!list.length) return;
-
-    const first = list[0];
-    const second = list[1];
-
-    if (first?.amount) {
-      setSelectedToken(first);
-      return;
-    }
-    if (second?.amount) {
-      setSelectedToken(second);
-      return;
-    }
-    setSelectedToken(list[2] ?? first);
+    // Pick the first token with balance (list is already sorted by USD value)
+    const withBalance = list.find((t) => t.amount > 0);
+    setSelectedToken(withBalance ?? ARB_USDC_TOKEN_ITEM);
   }, []);
 
   // Fetch token list

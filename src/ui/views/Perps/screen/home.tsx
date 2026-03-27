@@ -15,9 +15,8 @@ import {
   splitNumberByStep,
   useWallet,
 } from '@/ui/utils';
-import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { ReactComponent as RcIconBackTopCC } from '@/ui/assets/perps/IconBackTopCC.svg';
-import perpsBg from '@/ui/assets/perps/perps-bg.svg';
+import { ReactComponent as RcIconHyperLogo } from '@/ui/assets/perps/IconHyperLogo.svg';
 import { AssetPosition, HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
 import { Button, message, Modal } from 'antd';
 import { PerpsLoginPopup } from '../popup/LoginPopup';
@@ -25,7 +24,6 @@ import { PerpsLogoutPopup } from '../popup/LogoutPopup';
 import { usePerpsDeposit } from '../hooks/usePerpsDeposit';
 import { usePerpsState } from '../hooks/usePerpsState';
 import { PerpsLoginContent } from '../components/LoginContent';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import clsx from 'clsx';
 import { PerpsBlueBorderedButton } from '../components/BlueBorderedButton';
 import { PerpsDepositAmountPopup } from '../popup/DepositAmountPopup';
@@ -62,6 +60,7 @@ import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
 import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
 import { useScroll } from 'ahooks';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
+import { PerpsAccountCard } from '../components/PerpsAccountCard';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -104,6 +103,9 @@ export const Perps: React.FC = () => {
   const [openFromSource, setOpenFromSource] = useState<
     'openPosition' | 'searchPerps'
   >('openPosition');
+  const [openPositionDirection, setOpenPositionDirection] = useState<
+    'Long' | 'Short'
+  >('Long');
   const {
     miniSignTx,
     clearMiniSignTx,
@@ -127,15 +129,6 @@ export const Perps: React.FC = () => {
   const headerRef = useRef<HTMLDivElement>(null);
   const headerInitialTopRef = useRef<number>(0);
   const scroll = useScroll(scrollContainerRef);
-
-  useEffect(() => {
-    wallet.getHasDoneNewUserProcess().then((hasDoneNewUserProcess) => {
-      if (!hasDoneNewUserProcess) {
-        wallet.setHasDoneNewUserProcess(true);
-        setNewUserProcessVisible(true);
-      }
-    });
-  }, [wallet]);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -184,12 +177,6 @@ export const Perps: React.FC = () => {
     return miniSignTx || [];
   }, [miniSignTx]);
 
-  const positionAllPnl = useMemo(() => {
-    return positionAndOpenOrders.reduce((acc, asset) => {
-      return acc + Number(asset.position.unrealizedPnl || 0);
-    }, 0);
-  }, [positionAndOpenOrders]);
-
   const goBack = () => {
     if (history.length > 1) {
       history.goBack();
@@ -199,10 +186,6 @@ export const Perps: React.FC = () => {
   };
 
   const { accountValue, availableBalance } = usePerpsAccount();
-
-  const withdrawDisabled = useMemo(() => !Number(availableBalance || 0), [
-    availableBalance,
-  ]);
 
   const favoritedCoins = useRabbySelector((s) => s.perps.favoritedCoins);
 
@@ -460,103 +443,29 @@ export const Perps: React.FC = () => {
         }
         showCurrentAccount={currentPerpsAccount || undefined}
       >
-        {t('page.perps.title')}
+        <span className="flex items-center justify-center gap-6">
+          <RcIconHyperLogo className="w-[20px] h-[20px]" />
+          {t('page.perps.title')}
+        </span>
       </PageHeader>
       {!hasPermission ? <TopPermissionTips /> : null}
       <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
         {!isInitialized ? (
           <PerpsLoading />
-        ) : isLogin ? (
-          <div className="mx-20">
-            <div
-              className="bg-r-neutral-card1 rounded-[8px] p-[16px] "
-              style={{
-                background: `no-repeat top 16px right 16px url(${perpsBg})`,
-              }}
-            >
-              <div className="flex items-end gap-[4px]">
-                <div className="text-[28px] leading-[33px] font-bold text-r-neutral-title-1">
-                  {formatUsdValue(
-                    Number(accountValue || 0),
-                    BigNumber.ROUND_DOWN
-                  )}
-                </div>
-                {Boolean(positionAndOpenOrders?.length) && (
-                  <div
-                    className={clsx(
-                      'text-[15px] leading-[18px] font-medium pb-[5px]',
-                      positionAllPnl >= 0
-                        ? 'text-r-green-default'
-                        : 'text-r-red-default'
-                    )}
-                  >
-                    {positionAllPnl >= 0 ? '+' : '-'}$
-                    {splitNumberByStep(Math.abs(positionAllPnl).toFixed(2))}
-                  </div>
-                )}
-              </div>
-              <div className="text-[13px] leading-[16px] text-r-neutral-foot mt-[4px]">
-                {t('page.perps.availableBalance', {
-                  balance: formatUsdValue(
-                    Number(availableBalance || 0),
-                    BigNumber.ROUND_DOWN
-                  ),
-                })}
-              </div>
-              <div className="w-full flex gap-12 items-center justify-center relative mt-24">
-                <TooltipWithMagnetArrow
-                  className="rectangle w-[max-content]"
-                  visible={withdrawDisabled ? undefined : false}
-                  title={t('page.gasAccount.noBalance')}
-                >
-                  <div className="w-[158px]">
-                    <PerpsBlueBorderedButton
-                      block
-                      className={clsx(
-                        'h-[36px] text-[13px] leading-[16px]',
-                        withdrawDisabled && 'opacity-50 cursor-not-allowed'
-                      )}
-                      onClick={() => {
-                        if (currentPerpsAccount) {
-                          dispatch.account.changeAccountAsync(
-                            currentPerpsAccount
-                          );
-                        }
-                        setPopupType('withdraw');
-                        setAmountVisible(true);
-                      }}
-                      disabled={withdrawDisabled}
-                    >
-                      {t('page.gasAccount.withdraw')}
-                    </PerpsBlueBorderedButton>
-                  </div>
-                </TooltipWithMagnetArrow>
-                <Button
-                  block
-                  size="large"
-                  type="primary"
-                  className="h-[36px] text-r-neutral-title2 text-[13px] leading-[16px] font-medium w-[158px]"
-                  onClick={() => {
-                    if (currentPerpsAccount) {
-                      dispatch.account.changeAccountAsync(currentPerpsAccount);
-                    }
-                    setPopupType('deposit');
-                    setAmountVisible(true);
-                  }}
-                >
-                  {t('page.gasAccount.deposit')}
-                </Button>
-              </div>
-            </div>
-          </div>
         ) : (
           <div className="mx-20">
-            <PerpsLoginContent
-              onLearnAboutPerps={() => {
-                setNewUserProcessVisible(true);
+            <PerpsAccountCard
+              currentPerpsAccount={currentPerpsAccount}
+              onDeposit={() => {
+                setPopupType('deposit');
+                setAmountVisible(true);
               }}
-              clickLoginBtn={() => {
-                setLoginVisible(true);
+              onWithdraw={() => {
+                setPopupType('withdraw');
+                setAmountVisible(true);
+              }}
+              onLearnMore={() => {
+                setNewUserProcessVisible(true);
               }}
             />
           </div>
@@ -567,7 +476,8 @@ export const Perps: React.FC = () => {
         {isInitialized && Boolean(positionAndOpenOrders?.length) && (
           <div className="mt-20 mx-20">
             <div className="flex items-center mb-8 justify-between">
-              <div className="text-13 font-medium text-r-neutral-title-1">
+              <div className="text-13 font-medium text-r-neutral-title-1 flex items-center gap-6">
+                <span className="w-[2px] h-[12px] bg-r-blue-default inline-block" />
                 {t('page.perps.positions')}
               </div>
               <div
@@ -637,54 +547,36 @@ export const Perps: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* {isLogin && (
-          <div
-            className={clsx(
-              'fixed bottom-0 left-0 right-0',
-              'px-[20px] py-[14px]',
-              'border-t-[0.5px] border-solid border-rabby-neutral-line',
-              'bg-r-neutral-bg-2 z-20',
-              scroll?.top ? 'hidden' : ''
-            )}
-          >
-            <button
-              type="button"
-              className={clsx(
-                'w-full h-[40px] text-r-blue-default text-[13px] leading-[16px] font-medium',
-                'rounded-[8px]',
-                'border-[1px] border-solid border-rabby-blue-default',
-                'bg-r-neutral-bg-2 hover:bg-r-blue-light1'
-              )}
-              onClick={() => {
-                wallet.openInDesktop('/desktop/perps');
-                window.close();
-              }}
-            >
-              <div className="flex items-center justify-center gap-[4px]">
-                {t('page.dashboard.assets.openProMode')}
-                <RcIconExternalCC
-                  viewBox="0 0 18 18"
-                  className="w-[16px] h-[16px]"
-                />
-              </div>
-            </button>
-          </div>
-        )} */}
+        <div className="h-[96px]"></div>
         {isLogin && (
-          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20">
+          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20 flex gap-12">
             <Button
               block
               disabled={!hasPermission}
-              type="primary"
+              size="large"
+              className="h-[48px] text-white text-15 font-medium rounded-[8px] border-none"
+              style={{ backgroundColor: 'var(--r-green-default, #2abb7f)' }}
               onClick={() => {
+                setOpenPositionDirection('Long');
                 setSearchPopupVisible(true);
                 setOpenFromSource('openPosition');
               }}
-              size="large"
-              className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
             >
-              {t('page.perps.searchPerpsPopup.openPosition')}
+              {t('page.perps.long')}
+            </Button>
+            <Button
+              block
+              disabled={!hasPermission}
+              size="large"
+              className="h-[48px] text-white text-15 font-medium rounded-[8px] border-none"
+              style={{ backgroundColor: 'var(--r-red-default, #e34935)' }}
+              onClick={() => {
+                setOpenPositionDirection('Short');
+                setSearchPopupVisible(true);
+                setOpenFromSource('openPosition');
+              }}
+            >
+              {t('page.perps.short')}
             </Button>
           </div>
         )}
@@ -779,7 +671,13 @@ export const Perps: React.FC = () => {
         marketData={marketData}
         positionAndOpenOrders={positionAndOpenOrders}
         onSelect={(coin) => {
-          history.push(`/perps/single-coin/${coin}?openPosition=true`);
+          const dirParam =
+            openFromSource === 'openPosition'
+              ? `&direction=${openPositionDirection}`
+              : '';
+          history.push(
+            `/perps/single-coin/${coin}?openPosition=true${dirParam}`
+          );
         }}
         openFromSource={openFromSource}
         favoritedCoins={favoritedCoins}

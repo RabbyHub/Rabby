@@ -4,7 +4,7 @@ import { MarketData } from '@/ui/models/perps';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { useRequest } from 'ahooks';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useEffect, useMemo } from 'react';
@@ -230,10 +230,24 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
                 <span className="text-[16px] font-medium text-r-neutral-title-1">
                   {formatPerpsCoin(coin)}
                 </span>
-                <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot">
+                <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot gap-2">
                   {leverageType === 'cross'
                     ? t('page.perps.cross')
                     : t('page.perps.isolated')}
+                  {leverageType === 'cross' && (
+                    <Tooltip
+                      overlayClassName="rectangle"
+                      placement="top"
+                      title={t('page.perps.crossMarginLiqPriceTip')}
+                    >
+                      <RcIconInfo
+                        viewBox="0 0 14 14"
+                        width={12}
+                        height={12}
+                        className="text-r-neutral-foot"
+                      />
+                    </Tooltip>
+                  )}
                 </span>
               </div>
               <div className="flex items-center gap-4">
