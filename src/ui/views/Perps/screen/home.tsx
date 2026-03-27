@@ -377,9 +377,18 @@ export const Perps: React.FC = () => {
           ? 'perps-bridge-swap-modal-dark'
           : 'perps-bridge-swap-modal-light'
       ),
+      bodyStyle: {
+        padding: 0,
+      },
       content: (
         <>
-          <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
+          <div
+            className={clsx(
+              'flex items-center justify-center flex-col gap-12',
+              'bg-r-neutral-bg2 rounded-lg',
+              'px-[16px] pt-[20px] pb-[24px]'
+            )}
+          >
             <div className="text-[17px] font-bold text-r-neutral-title-1 text-center">
               {t('page.perps.closeAllPopup.title')}
             </div>

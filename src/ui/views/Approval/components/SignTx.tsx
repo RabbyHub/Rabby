@@ -2248,7 +2248,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           <Drawer
             placement="bottom"
             height="400px"
-            className="gnosis-drawer is-support-darkmode"
+            className="gnosis-drawer custom-popup is-support-darkmode"
             visible={drawerVisible}
             onClose={() => setDrawerVisible(false)}
             maskClosable
