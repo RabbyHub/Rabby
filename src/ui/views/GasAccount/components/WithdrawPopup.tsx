@@ -551,6 +551,7 @@ const WithdrawContent = ({
                   <Skeleton.Avatar
                     className="rounded-[12px] w-[24px] h-[24px]"
                     active
+                    size={24}
                   />
                   <div className="flex flex-col overflow-hidden gap-[6px]">
                     <Skeleton.Input
@@ -594,6 +595,7 @@ const WithdrawContent = ({
                   <Skeleton.Avatar
                     className="rounded-[12px] w-[24px] h-[24px]"
                     active
+                    size={24}
                   />
                   <div className="flex flex-col overflow-hidden gap-[6px]">
                     <Skeleton.Input

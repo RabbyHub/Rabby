@@ -165,7 +165,7 @@ export default function TabWhitelist({
       {/* WhiteList or Imported Addresses List */}
       <div
         className="flex-1 overflow-y-auto px-[20px]"
-        style={{ paddingBottom: 72 }}
+        style={{ paddingBottom: 84 }}
       >
         <div className="h-full">
           {allAccounts.length > 0 ? (

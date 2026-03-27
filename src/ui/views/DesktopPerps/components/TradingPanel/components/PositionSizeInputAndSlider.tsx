@@ -18,7 +18,7 @@ const PRESET_POINTS = [0, 25, 50, 75, 100];
 
 // Create marks for the slider
 const SLIDER_MARKS = PRESET_POINTS.reduce((acc, point) => {
-  acc[point] = '';
+  acc[point] = ' '; // Show only the handle, no labels
   return acc;
 }, {} as Record<number, string>);
 

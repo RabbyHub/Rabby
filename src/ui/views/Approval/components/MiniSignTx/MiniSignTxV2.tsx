@@ -37,7 +37,7 @@ import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPop
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
-import { ModalProps } from 'antd';
+import { DrawerProps, ModalProps } from 'antd';
 import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
 import { isTempoChain } from '@/utils/tempo';
 
@@ -268,7 +268,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const handleToggleGasless = (value) => {
     signatureStore.toggleGasless(value);
   };
-  const handleConfirm = (getContainer: ModalProps['getContainer']) => {
+  const handleConfirm = (
+    getContainer: ModalProps['getContainer'] | DrawerProps['getContainer']
+  ) => {
     if (!ctx?.txsCalc?.length) return;
     signatureStore.send({ wallet, getContainer }).catch(() => undefined);
   };
@@ -277,7 +279,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     signatureStore.close();
   };
 
-  const handleRetry = (getContainer: ModalProps['getContainer']) => {
+  const handleRetry = (
+    getContainer: ModalProps['getContainer'] | DrawerProps['getContainer']
+  ) => {
     signatureStore.retry({ wallet, getContainer }).catch(() => undefined);
   };
 

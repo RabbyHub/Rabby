@@ -389,7 +389,7 @@ const SelectToAddress = () => {
 
         {!inputingAddress && (
           <Tabs
-            className="w-full select-to-address-tabs"
+            className="w-full select-to-address-tabs overflow-hidden"
             centered
             activeKey={focusTab}
             onChange={(key: any) => setFocusTab(key)}

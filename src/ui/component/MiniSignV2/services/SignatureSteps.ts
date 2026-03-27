@@ -58,7 +58,7 @@ import type {
 import { isLedgerLockError } from '@/ui/utils/ledger';
 import { t } from 'i18next';
 import AuthenticationModalPromise from '../../AuthenticationModal';
-import { ModalProps } from 'antd';
+import { DrawerProps, ModalProps } from 'antd';
 import { isTempoChain } from '@/utils/tempo';
 
 async function recomputeExplainForCalcItems(params: {
@@ -208,7 +208,7 @@ export class SignatureSteps {
   static async invokeEnterPassphraseModal(params: {
     wallet: WalletControllerType;
     value?: string;
-    getContainer?: ModalProps['getContainer'];
+    getContainer?: ModalProps['getContainer'] | DrawerProps['getContainer'];
   }) {
     const { wallet, value, getContainer } = params;
     const type = 'address';

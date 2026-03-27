@@ -1,4 +1,4 @@
-import { Button, DrawerProps, Input, Skeleton, Tooltip } from 'antd';
+import { Button, DrawerProps, Input, InputRef, Skeleton, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { GasLevel, Tx, TxPushType } from 'background/service/openapi';
@@ -320,7 +320,7 @@ const GasSelectorHeader = ({
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
-  const customerInputRef = useRef<Input>(null);
+  const customerInputRef = useRef<InputRef>(null);
   const hasCustomPriorityFee = useRef(false);
   const [afterGasLimit, setGasLimit] = useState<string | number>(
     Number(gasLimit)

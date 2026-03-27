@@ -23,7 +23,7 @@ import { CHAINS_ENUM, EVENTS, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import eventBus from '@/eventBus';
 import { findChain } from '@/utils/chain';
 import { t } from 'i18next';
-import { ModalProps } from 'antd';
+import { DrawerProps, ModalProps } from 'antd';
 
 const ETH_GAS_USD_LIMIT = 15;
 const OTHER_GAS_USD_LIMIT = 5;
@@ -417,7 +417,7 @@ class SignatureManager {
   }: {
     wallet: WalletControllerType;
     retry?: boolean;
-    getContainer?: ModalProps['getContainer'];
+    getContainer?: ModalProps['getContainer'] | DrawerProps['getContainer'];
     pauseAfter?: number;
   }) {
     this.pauseAfterThreshold =

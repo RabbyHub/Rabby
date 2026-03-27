@@ -4,7 +4,7 @@ import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
-import { DrawerProps, Input, Modal, Skeleton } from 'antd';
+import { DrawerProps, Input, InputRef, Modal, Skeleton } from 'antd';
 import { TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
 import uniqBy from 'lodash/uniqBy';
@@ -112,7 +112,7 @@ const TokenAmountInput = ({
   initLoading,
   disableItemCheck,
 }: TokenAmountInputProps) => {
-  const tokenInputRef = useRef<Input>(null);
+  const tokenInputRef = useRef<InputRef>(null);
   const [updateNonce, setUpdateNonce] = useState(0);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const selectorOpened = useRef(false);
@@ -372,7 +372,10 @@ const TokenAmountInput = ({
         <div className="left" onClick={handleSelectToken}>
           {initLoading ? (
             <>
-              <Skeleton.Avatar className="bg-r-neutral-line w-[24px] h-[24px] rounded-full" />
+              <Skeleton.Avatar
+                className="bg-r-neutral-line w-[24px] h-[24px] rounded-full"
+                size={24}
+              />
               <Skeleton.Input className="bg-r-neutral-line w-[58px] h-[20px] rounded-[2px] ml-[6px] mr-[6px]" />
             </>
           ) : (

@@ -396,6 +396,11 @@ textarea {
 ---------------------*/
 .ant-tooltip:not(.disable-ant-overwrite) {
   max-width: 360px;
+  &.ant-tooltip-placement-top,
+  &.ant-tooltip-placement-topLeft,
+  &.ant-tooltip-placement-topRight {
+    padding-bottom: 8px;
+  }
   .ant-tooltip-inner {
     font-size: 12px;
     border-radius: 14px;
@@ -404,6 +409,11 @@ textarea {
   }
   .ant-tooltip-arrow-content {
     background-color: black;
+    width: 8px;
+    height: 8px;
+    &::before {
+      display: none;
+    }
   }
   .ant-tooltip-arrow {
     display: none;
@@ -468,6 +478,9 @@ html.dark .ant-tooltip:not(.disable-ant-overwrite) {
 
   .ant-tooltip-arrow-content {
     background-color: var(--rb-neutral-bg-4);
+    &::before {
+      background: var(--rb-neutral-bg-4);
+    }
   }
 }
 
@@ -485,11 +498,13 @@ html.dark .ant-tooltip:not(.disable-ant-overwrite) {
 .ant-skeleton-element .ant-skeleton-input {
   height: 18px;
   border-radius: 2px;
-  background: linear-gradient(
-    90deg,
-    rgba(216, 223, 235, 0.55) 0%,
-    rgba(216, 223, 235, 0.6) 95.31%
-  );
+  // background: linear-gradient(
+  //   90deg,
+  //   rgba(216, 223, 235, 0.55) 0%,
+  //   rgba(216, 223, 235, 0.6) 95.31%
+  // );
+
+  min-width: initial;
 }
 
 /*---------------------
@@ -502,6 +517,12 @@ html.dark .ant-tooltip:not(.disable-ant-overwrite) {
   .ant-drawer-close {
     font-size: 19px;
     line-height: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    padding: 21px;
+    margin-right: 0;
   }
   .ant-drawer-body {
     padding: 20px 20px 24px;
@@ -617,11 +638,7 @@ html.dark .ant-tooltip:not(.disable-ant-overwrite) {
   .ant-modal-confirm-content {
     margin-top: 0;
   }
-  
 }
-
-
-
 
 .desktop-swap-token-modal {
   .ant-modal-body {
@@ -693,5 +710,4 @@ html[desktop] {
   // .ant-select-dropdown {
   //   background-color: var(--rb-neutral-bg-1 #fff);
   // }
-  
 }

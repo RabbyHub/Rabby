@@ -145,8 +145,10 @@ export const DesktopPerpsSliderV2 = (
     >
       <StyledSlider
         {...sliderProps}
-        tooltipVisible={tooltipVisible}
-        tooltipPrefixCls={showTooltip ? 'perps-slider-tip' : undefined}
+        tooltip={{
+          open: tooltipVisible,
+          prefixCls: showTooltip ? 'perps-slider-tip' : undefined,
+        }}
         isDark={isDarkTheme}
         onAfterChange={handleAfterChange}
         onChange={(value) => {

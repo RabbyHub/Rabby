@@ -1,5 +1,5 @@
 import { Card } from './Card';
-import { Button, Form, Input, Tooltip } from 'antd';
+import { Button, Form, Input, InputRef, Tooltip } from 'antd';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
@@ -52,7 +52,7 @@ export const SignAdvancedSettings = ({
   disabled,
   manuallyChangeGasLimit,
 }: GasSelectorProps) => {
-  const gasLimitInputRef = React.useRef<Input>(null);
+  const gasLimitInputRef = React.useRef<InputRef>(null);
   const [visible, setVisible] = React.useState(false);
   const { t } = useTranslation();
   const [afterGasLimit, setGasLimit] = useState<string | number>(

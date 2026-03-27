@@ -205,7 +205,7 @@ const AddressItem = memo(
               )}
             >
               <Tooltip
-                overlayClassName="rectangle addressType__tooltip"
+                overlayClassName="rectangle"
                 placement="topRight"
                 align={{ offset: [12, 5] }}
                 title={formatAddressTooltip(
@@ -213,7 +213,7 @@ const AddressItem = memo(
                   BRAND_ALIAN_TYPE_TEXT[brandName] || brandName
                 )}
               >
-                <div className="relative mr-[12px] flex-none">
+                <div className="relative flex-none">
                   <img
                     src={addressTypeIcon}
                     className={
@@ -231,7 +231,7 @@ const AddressItem = memo(
                 </div>
               </Tooltip>
 
-              <div className={clsx('rabby-address-item-content')}>
+              <div className={clsx('rabby-address-item-content ml-[12px]')}>
                 {
                   <div className="rabby-address-item-title" ref={titleRef}>
                     {

@@ -137,9 +137,10 @@ export default function ShowMoreGasSelectModal({
 
   return (
     <Dropdown
-      onVisibleChange={(v) => {
+      onOpenChange={(v) => {
         setVisible(v);
       }}
+      open={visible}
       placement="topRight"
       trigger={['click']}
       overlay={
