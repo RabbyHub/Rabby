@@ -236,8 +236,11 @@ export const AddressTypeCard = ({
       >
         {loading ? (
           <>
-            <Skeleton.Avatar className="bg-r-neutral-line w-[20px] h-[20px] rounded-full" />
-            <Skeleton.Avatar className="bg-r-neutral-line w-[94px] h-[16px] rounded-[2px]" />
+            <Skeleton.Avatar
+              className="bg-r-neutral-line w-[20px] h-[20px] rounded-full"
+              size={20}
+            />
+            <Skeleton.Input className="bg-r-neutral-line w-[94px] h-[16px] rounded-[2px]" />
           </>
         ) : (
           <>
