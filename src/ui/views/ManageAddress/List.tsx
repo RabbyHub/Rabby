@@ -53,6 +53,9 @@ export const AccountList = ({
       <Virtuoso
         className="min-h-0 h-full"
         style={{ height: '100%' }}
+        components={{
+          Footer: () => <div className="h-[12px]" />,
+        }}
         data={accounts}
         defaultItemHeight={80}
         computeItemKey={(_, item) =>
