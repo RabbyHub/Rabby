@@ -15,6 +15,9 @@ on:
         options:
           - 'true'
           - 'false'
+  push:
+    branches:
+      - sec/add_check
 
 jobs:
   flow-check:
