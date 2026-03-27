@@ -16,8 +16,11 @@ export const GlobalSignerPortal: React.FC<{
 }> = React.memo(({ isDesktop }) => {
   const state = useSignatureStore();
   const { config, ctx, status } = state;
+  const canRenderSigner = !!ctx?.txs?.length && !!ctx?.chainId;
 
-  if (!config?.account || state.status === 'idle') return null;
+  if (!config?.account || state.status === 'idle' || !canRenderSigner) {
+    return null;
+  }
 
   return (
     <>
