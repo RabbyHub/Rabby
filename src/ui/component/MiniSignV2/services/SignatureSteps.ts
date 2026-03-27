@@ -866,7 +866,13 @@ export class SignatureSteps {
         )
       );
     }
-    const totalCost = res.reduce(
+    const totalCost = res.reduce<{
+      gasCostUsd: BigNumber;
+      gasCostAmount: BigNumber;
+      maxGasCostAmount: BigNumber;
+      gasCostRawAmount: BigNumber;
+      maxGasCostRawAmount: BigNumber;
+    }>(
       (sum, item) => {
         sum.gasCostAmount = sum.gasCostAmount.plus(item.gasCostAmount);
         sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCostUsd);

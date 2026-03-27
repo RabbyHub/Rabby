@@ -136,15 +136,15 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   );
 
   const isReady = (ctx?.txsCalc?.length || 0) > 0;
-  const chain = findChain({ id: ctx?.chainId })!;
+  const chain = findChain({ id: ctx?.chainId });
   const nativeTokenBalance = ctx?.nativeTokenBalance || '0';
   const gasToken = ctx?.gasToken || {
-    tokenId: chain.nativeTokenAddress,
-    symbol: chain.nativeTokenSymbol,
-    decimals: chain.nativeTokenDecimals || 18,
-    logoUrl: chain.nativeTokenLogo,
+    tokenId: chain?.nativeTokenAddress || '',
+    symbol: chain?.nativeTokenSymbol || '',
+    decimals: chain?.nativeTokenDecimals || 18,
+    logoUrl: chain?.nativeTokenLogo || '',
   };
-  const checkTxValueInBalance = !isTempoChain(chain.serverId);
+  const checkTxValueInBalance = !isTempoChain(chain?.serverId);
   const support1559 = !!ctx?.is1559;
 
   const checkGasLevelIsNotEnough = useMemoizedFn(
@@ -154,7 +154,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     ): Promise<[boolean, number]> => {
       const initdTxs = ctx?.txsCalc || [];
       let _txsResult = initdTxs;
-      if (!isReady || !initdTxs.length) {
+      if (!isReady || !initdTxs.length || !chain) {
         return Promise.resolve([true, 0]);
       }
 
@@ -251,7 +251,15 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     }
   );
 
-  if (!ctx || !config?.account || !ctx?.txs?.length) return null;
+  if (
+    !ctx ||
+    !config?.account ||
+    !ctx?.txs?.length ||
+    !ctx?.chainId ||
+    !chain
+  ) {
+    return null;
+  }
 
   const { swapPreferMEVGuarded, isSpeedUp, isCancel } = normalizeTxParams(
     ctx.txs[0]
