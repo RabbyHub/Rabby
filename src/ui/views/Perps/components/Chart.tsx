@@ -710,10 +710,12 @@ export const PerpsChart = ({
     >
       {!chartHoverData.visible && (
         <div
-          className="absolute top-12 right-12 cursor-pointer text-r-neutral-body p-4 rounded-[4px] hovepr:bg-r-neutral-bg3"
+          className="absolute top-12 right-12 cursor-pointer text-r-neutral-body p-4 rounded-[4px] hover:bg-r-neutral-bg3"
           onClick={() => {
-            wallet.setPerpsCurrentAccount(currentPerpsAccount);
-            wallet.switchDesktopPerpsAccount(currentPerpsAccount!);
+            if (currentPerpsAccount) {
+              wallet.setPerpsCurrentAccount(currentPerpsAccount);
+              wallet.switchDesktopPerpsAccount(currentPerpsAccount);
+            }
             wallet.openInDesktop(
               `/desktop/perps?${obj2query({
                 coin: coin,

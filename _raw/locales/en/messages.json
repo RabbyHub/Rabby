@@ -855,7 +855,7 @@
         "fee": "Fee",
         "closedPnl": "Closed PNL",
         "provider": "Provider",
-        "feeDesc": "When users place trades, both <bold>trading fees</bold> (Hyperliquid), <bold>builder fees</bold> (Rabby).",
+        "feeDesc": "When users place trades, both\n<1>trading fees</1> and <2>builder fees</2> apply.",
         "title": {
           "openLong": "Open Long",
           "openShort": "Open Short",

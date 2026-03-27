@@ -137,13 +137,13 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         handleClickPrice
       );
     };
-  }, [selectedCoin]);
+  }, [selectedCoin, record.coin]);
 
   useEffect(() => {
     if (selectedCoin === record.coin) {
       setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
     }
-  }, [selectedCoin]);
+  }, [selectedCoin, record.coin, midPrice, szDecimals]);
 
   // When size input is focused, check if the bottom tooltip (percentage buttons ~40px)
   // would be clipped by the scroll container. If so, scroll the table body to make room.
@@ -198,11 +198,17 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     handleCloseWithMarketOrder,
   } = usePerpsProPosition();
 
+  const isMarketSubmitting = useRef(false);
+
   const { loading, runAsync: handleSubmit } = useRequest(
     async () => {
+      const priceVal = Number(limitPrice);
+      const sizeVal = Number(sizeInput);
+      if (!priceVal || priceVal <= 0 || !sizeVal || sizeVal <= 0) return;
+
       const isBuy = record.direction === 'Short';
       let effectiveSize = sizeInput;
-      if (Number(sizeInput) >= positionSize) {
+      if (sizeVal >= positionSize) {
         effectiveSize = positionSize.toString();
       }
 
@@ -274,10 +280,13 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
   );
 
   const handleMarketCloseWithConfirm = useMemoizedFn(() => {
-    if (marketLoading) return;
+    if (marketLoading || isMarketSubmitting.current) return;
 
     if (skipMarketCloseConfirm) {
-      handleMarketClose();
+      isMarketSubmitting.current = true;
+      handleMarketClose().finally(() => {
+        isMarketSubmitting.current = false;
+      });
       return;
     }
 
@@ -523,7 +532,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
       >
         <input
           className={clsx(
-            'w-[80px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',
+            'w-[68px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',
             'bg-transparent text-r-neutral-title-1',
             'border border-solid',
             !isPriceValid

@@ -273,10 +273,10 @@ export const PositionsInfo: React.FC = () => {
       content: (
         <div className="flex items-center justify-center flex-col">
           <RcIconCloseAllWarning />
-          <div className="text-[20px] mt-20 mb-12 font-medium text-r-neutral-title-1 text-center">
+          <div className="text-[16px] mt-20 mb-12 font-medium text-r-neutral-title-1 text-center">
             {t('page.perpsPro.userInfo.positionInfo.confirmCloseAllTitle')}
           </div>
-          <div className="text-15 text-rb-neutral-foot text-center">
+          <div className="text-13 text-rb-neutral-foot text-center">
             {t('page.perpsPro.userInfo.positionInfo.confirmCloseAllDesc')}
           </div>
           <div className="flex items-center justify-center w-full gap-12 mt-[48px]">
@@ -535,8 +535,8 @@ export const PositionsInfo: React.FC = () => {
           </div>
         ),
         key: 'closeAction',
-        width: 280,
-        dataIndex: 'coin',
+        width: 260,
+        dataIndex: 'closeAction',
         render: (_, record) => {
           return (
             <InlineLimitClose
@@ -550,7 +550,7 @@ export const PositionsInfo: React.FC = () => {
         title: t('page.perpsPro.userInfo.positionInfo.reverse'),
         key: 'reverse',
         align: 'center',
-        dataIndex: 'coin',
+        dataIndex: 'reverse',
         render: (_, record) => {
           return (
             <div className="flex justify-center">
