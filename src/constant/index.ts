@@ -1694,5 +1694,3 @@ export const SELF_HOST_SAFE_NETWORKS = [
   '10',
   '8453',
 ];
-
-export const SAFE_API_KEY = process.env.SAFE_API_KEY || '';

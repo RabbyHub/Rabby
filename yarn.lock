@@ -4978,10 +4978,10 @@
     events "^3.3.0"
     web3-utils "^1.6.0"
 
-"@rabby-wallet/gnosis-sdk@1.4.6":
-  version "1.4.6"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.4.6.tgz#ce93ef994e81d02be7f357ea41b8b6c548b63a2c"
-  integrity sha512-LRuK9wmrV2mOJTC5eYrCgefZoDFnUVCjcloK6114wxYXImWNqiiWYOZus7js+BhPklIeIBWDRGSUlomJAkEMUg==
+"@rabby-wallet/gnosis-sdk@1.4.8":
+  version "1.4.8"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.4.8.tgz#d30b83096dcee8be8d991e234e7c9e29b7481b07"
+  integrity sha512-/eFuV4i+qCaO3t2fBAgf52WXXhtzWCLL289hlrPPR8yY+q0igjd/xM9UsKNBwVjLxbNvgpplR0tRR+Y5DTkiyQ==
   dependencies:
     "@ethersproject/bignumber" "5.5.0"
     "@ethersproject/bytes" "5.5.0"
@@ -5031,10 +5031,10 @@
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.14.tgz#f382909ca99aa306f8670e9befdebadb978c9837"
   integrity sha512-KSG+MGJjxj+nzNqneQaTtOXPlZHxWmWSv8KG5aac4xEdStkGzZXogURqrDVwKwnF+fXgMFyKRjUfrAwiBOpSEg==
 
-"@rabby-wallet/rabby-api@0.9.55":
-  version "0.9.55"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.9.55.tgz#7c9c6902a6ebcae37b95968b299a6d06cd587aec"
-  integrity sha512-8A45WZuoVtSr6Foio1ZBtt2jBYNUUsLZiqA3QI4th8agHSRXwEWzqsKFHaDNkE5xiQvhx/y3xcloupuNlORCJA==
+"@rabby-wallet/rabby-api@0.9.58":
+  version "0.9.58"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.9.58.tgz#d5739812754bbdf629e2c00e778d2a203446b3f1"
+  integrity sha512-TARS3yjKBzgqhZLENl94tbB3K9VZSIab+Hi60LvpN58hXZeugG+7FGA3FiB9P3pso8+t70yzg8PIfUdpOBYtQQ==
   dependencies:
     "@rabby-wallet/rabby-sign" "0.4.0"
     axios "^0.27.2"
