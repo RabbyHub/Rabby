@@ -68,7 +68,6 @@ const Wrapper = styled.div`
   .ant-table-body {
     flex: 1;
     overflow-y: auto !important;
-    overflow-x: hidden !important;
   }
 
   .ant-table-expanded-row {
@@ -557,7 +556,7 @@ export const CommonTable = <T extends object>({
         dataSource={sortedData}
         columns={enhancedColumns as ColumnType<T>[]}
         onChange={handleTableChange}
-        scroll={{ y: bodyHeight || 'auto' }}
+        scroll={{ x: 'max-content', y: bodyHeight || 'auto' }}
       />
     </Wrapper>
   );

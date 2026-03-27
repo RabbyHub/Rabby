@@ -300,6 +300,7 @@ export const usePerpsPosition = ({
       tpTriggerPx?: string;
       slTriggerPx?: string;
       marginMode?: 'cross' | 'isolated';
+      isAddPosition?: boolean;
     }) => {
       try {
         const sdk = getPerpsSDK();
@@ -313,11 +314,13 @@ export const usePerpsPosition = ({
           slTriggerPx,
           marginMode = 'isolated',
         } = params;
-        await sdk.exchange?.updateLeverage({
-          coin,
-          leverage,
-          isCross: marginMode === 'cross',
-        });
+        if (!params.isAddPosition) {
+          await sdk.exchange?.updateLeverage({
+            coin,
+            leverage,
+            isCross: marginMode === 'cross',
+          });
+        }
 
         const promises = [
           sdk.exchange?.marketOrderOpen({

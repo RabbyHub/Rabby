@@ -26,6 +26,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import * as Sentry from '@sentry/browser';
 import { ClosePositionModal } from '../../../modal/ClosePositionModal';
 import { DistanceRiskTag } from './DistanceRiskTag';
+import { InlineLimitClose } from './InlineLimitClose';
 import { calculatePnL } from '../../TradingPanel/utils';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { LeverageModal } from '../../TradingPanel/components';
@@ -33,6 +34,7 @@ import { MarginMode } from '../../../types';
 import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { ReactComponent as RcIconCloseAllWarning } from '@/ui/assets/perps/IconCloseAllWarning.svg';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import {
   getStatsReportSide,
@@ -64,6 +66,7 @@ export interface PositionFormatData {
   tpItem: OpenOrder | undefined;
   slItem: OpenOrder | undefined;
   needSeeMoreOrder: boolean;
+  closeLimitOrders: OpenOrder[];
 }
 
 export const PositionsInfo: React.FC = () => {
@@ -118,6 +121,14 @@ export const PositionsInfo: React.FC = () => {
           !order.isPositionTpsl
       );
 
+      const closeLimitOrders = openOrders.filter(
+        (order) =>
+          order.coin === item.position.coin &&
+          order.reduceOnly &&
+          !order.isTrigger
+        // order.orderType === 'Limit'
+      );
+
       const pxDecimals = marketData.pxDecimals || 2;
 
       const liquidationDistance = calculateDistanceToLiquidation(
@@ -145,6 +156,7 @@ export const PositionsInfo: React.FC = () => {
         tpItem: tpItem,
         slItem: slItem,
         needSeeMoreOrder: Boolean(needSeeMoreOrder) && !tpItem && !slItem,
+        closeLimitOrders,
       });
     });
 
@@ -243,11 +255,12 @@ export const PositionsInfo: React.FC = () => {
 
   const handleClickCloseAll = useMemoizedFn(async () => {
     const modal = Modal.info({
-      width: 360,
+      width: 400,
       closable: false,
       maskClosable: true,
       centered: true,
       title: null,
+      icon: null,
       className: clsx(
         'perps-bridge-swap-modal perps-close-all-position-modal',
         isDarkTheme
@@ -255,37 +268,36 @@ export const PositionsInfo: React.FC = () => {
           : 'perps-bridge-swap-modal-light'
       ),
       content: (
-        <>
-          <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
-            <div className=" text-20 font-medium text-r-neutral-title-1 text-center">
-              {t('page.perps.closeAllPopup.title')}
-            </div>
-            <div className="text-[13px] leading-[16px] font-medium text-rb-neutral-body text-center">
-              {t('page.perps.closeAllPopup.description')}
-            </div>
-            <div className="flex items-center justify-center w-full gap-12 mt-20">
-              <PerpsBlueBorderedButton
-                block
-                onClick={() => {
-                  modal.destroy();
-                }}
-              >
-                {t('page.manageAddress.cancel')}
-              </PerpsBlueBorderedButton>
-              <Button
-                size="large"
-                block
-                type="primary"
-                onClick={async () => {
-                  handleCloseAllPosition();
-                  modal.destroy();
-                }}
-              >
-                {t('page.manageAddress.confirm')}
-              </Button>
-            </div>
+        <div className="flex items-center justify-center flex-col">
+          <RcIconCloseAllWarning />
+          <div className="text-[16px] mt-20 mb-12 font-medium text-r-neutral-title-1 text-center">
+            {t('page.perpsPro.userInfo.positionInfo.confirmCloseAllTitle')}
           </div>
-        </>
+          <div className="text-13 text-rb-neutral-foot text-center">
+            {t('page.perpsPro.userInfo.positionInfo.confirmCloseAllDesc')}
+          </div>
+          <div className="flex items-center justify-center w-full gap-12 mt-[48px]">
+            <PerpsBlueBorderedButton
+              block
+              onClick={() => {
+                modal.destroy();
+              }}
+            >
+              {t('page.manageAddress.cancel')}
+            </PerpsBlueBorderedButton>
+            <Button
+              size="large"
+              block
+              type="primary"
+              onClick={async () => {
+                handleCloseAllPosition();
+                modal.destroy();
+              }}
+            >
+              {t('page.manageAddress.confirm')}
+            </Button>
+          </div>
+        </div>
       ),
     });
   });
@@ -296,6 +308,7 @@ export const PositionsInfo: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         className: 'relative',
         key: 'coin',
+        width: 100,
         dataIndex: 'coin',
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
@@ -345,6 +358,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.size'),
         key: 'positionValue',
+        width: 160,
         dataIndex: 'positionValue',
         sorter: (a, b) => Number(a.positionValue) - Number(b.positionValue),
         render: (_, record) => {
@@ -363,6 +377,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.markEntry'),
         key: 'entryPx',
+        width: 100,
         dataIndex: 'entryPx',
         sorter: (a, b) => Number(a.entryPx) - Number(b.entryPx),
         render: (_, record) => {
@@ -381,23 +396,29 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.liqPrice'),
         key: 'liquidationPx',
+        width: 100,
         dataIndex: 'liquidationPx',
         sorter: (a, b) => Number(a.liquidationPx) - Number(b.liquidationPx),
         render: (_, record) => {
           return (
             <div className="flex items-center gap-[4px]">
               {new BigNumber(record.liquidationPx).gt(0) ? (
-                <>
-                  <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+                <Tooltip
+                  overlayClassName="rectangle"
+                  title={
+                    record.direction === 'Long'
+                      ? t('page.perpsPro.userInfo.distanceRiskTag.goingDown', {
+                          percent: record.liquidationDistancePercent,
+                        })
+                      : t('page.perpsPro.userInfo.distanceRiskTag.goingUp', {
+                          percent: record.liquidationDistancePercent,
+                        })
+                  }
+                >
+                  <div className="text-[12px] leading-[14px]  text-rb-orange-default">
                     ${splitNumberByStep(record.liquidationPx)}
                   </div>
-                  {!isSmallScreen && (
-                    <DistanceRiskTag
-                      isLong={record.direction === 'Long'}
-                      percent={record.liquidationDistancePercent}
-                    />
-                  )}
-                </>
+                </Tooltip>
               ) : (
                 <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
                   -
@@ -410,6 +431,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.margin'),
         key: 'marginUsed',
+        width: 140,
         dataIndex: 'marginUsed',
         sorter: (a, b) => Number(a.marginUsed) - Number(b.marginUsed),
         render: (_, record) => {
@@ -444,6 +466,7 @@ export const PositionsInfo: React.FC = () => {
             {t('page.perpsPro.userInfo.tab.unrealizedPnl')}
           </DashedUnderlineText>
         ),
+        width: 120,
         key: 'unrealizedPnl',
         dataIndex: 'unrealizedPnl',
         sorter: (a, b) => Number(a.unrealizedPnl) - Number(b.unrealizedPnl),
@@ -491,6 +514,7 @@ export const PositionsInfo: React.FC = () => {
           </DashedUnderlineText>
         ),
         key: 'fundingPayments',
+        width: 100,
         dataIndex: 'fundingPayments',
         sorter: (a, b) =>
           Number(a.sinceOpenFunding) - Number(b.sinceOpenFunding),
@@ -510,40 +534,24 @@ export const PositionsInfo: React.FC = () => {
       },
       {
         title: (
-          <div
-            className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
-            onClick={handleClickCloseAll}
-          >
-            MKT Close ALL
+          <div className="flex">
+            <div
+              className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors whitespace-nowrap"
+              onClick={handleClickCloseAll}
+            >
+              MKT Close ALL
+            </div>
           </div>
         ),
         key: 'closeAction',
-        dataIndex: 'coin',
+        width: 260,
+        dataIndex: 'closeAction',
         render: (_, record) => {
           return (
-            <div className="flex items-center justify-start gap-[8px]">
-              <span
-                className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
-                onClick={() => {
-                  setSelectedCoin(record.coin);
-                  setClosePositionType('market');
-                  setClosePositionVisible(true);
-                }}
-              >
-                Market
-              </span>
-              <div className="w-[1px] h-[12px] bg-rb-neutral-line"></div>
-              <span
-                className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
-                onClick={() => {
-                  setSelectedCoin(record.coin);
-                  setClosePositionType('limit');
-                  setClosePositionVisible(true);
-                }}
-              >
-                Limit
-              </span>
-            </div>
+            <InlineLimitClose
+              record={record}
+              marketData={marketDataMap[record.coin] || ({} as any)}
+            />
           );
         },
       },
@@ -551,7 +559,8 @@ export const PositionsInfo: React.FC = () => {
         title: t('page.perpsPro.userInfo.positionInfo.reverse'),
         key: 'reverse',
         align: 'center',
-        dataIndex: 'coin',
+        dataIndex: 'reverse',
+        width: 100,
         render: (_, record) => {
           return (
             <div className="flex justify-center">
@@ -579,6 +588,7 @@ export const PositionsInfo: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.tpSl'),
         key: 'children',
         align: 'center',
+        width: 140,
         dataIndex: 'children',
         render: (_, record) => {
           const tpPrice = record.tpItem?.triggerPx;

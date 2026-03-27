@@ -182,7 +182,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-4 text-13 text-r-neutral-foot mb-12">
+          {/* <div className="flex items-center justify-center gap-4 text-13 text-r-neutral-foot mb-12">
             <span>
               {t('page.perpsDetail.PerpsClosePositionPopup.fee')}{' '}
               {formatPercent(bothFee, 4)}
@@ -206,7 +206,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
             >
               <RcIconInfo className="text-rb-neutral-info w-15 h-15" />
             </Tooltip>
-          </div>
+          </div> */}
           {/* Action Button */}
           <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 flex flex-col">
             <Button
