@@ -111,6 +111,7 @@ interface TradingViewIframeChartProps {
   className?: string;
   onHoverData?: (data: TradingViewHoverData) => void;
   onLatestBar?: (data: TradingViewHoverData) => void;
+  onIntervalChange?: (interval: PerpsInterval) => void;
 }
 
 const SUPPORTED_RESOLUTIONS: TradingViewResolution[] = [
@@ -316,9 +317,11 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   className,
   onHoverData,
   onLatestBar,
+  onIntervalChange,
 }) => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const subscriptionsRef = useRef<Map<string, BarSubscription>>(new Map());
+  const iframeIntervalChangeRef = useRef(false);
 
   const iframeUrl = useMemo(() => {
     const base = getTradingViewBaseUrl();
@@ -351,6 +354,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     widgetConfig,
     onHoverData,
     onLatestBar,
+    onIntervalChange,
   });
 
   useEffect(() => {
@@ -365,6 +369,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       widgetConfig,
       onHoverData,
       onLatestBar,
+      onIntervalChange,
     };
   }, [
     coin,
@@ -377,6 +382,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     widgetConfig,
     onHoverData,
     onLatestBar,
+    onIntervalChange,
   ]);
 
   useEffect(() => {
@@ -531,6 +537,14 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
           stateRef.current.onHoverData?.(
             message.payload as TradingViewHoverData
           );
+        } else if (message.event === 'intervalChanged') {
+          const resolution = message.payload?.resolution;
+          if (resolution) {
+            iframeIntervalChangeRef.current = true;
+            stateRef.current.onIntervalChange?.(
+              resolutionToInterval(resolution)
+            );
+          }
         }
         return;
       }
@@ -621,6 +635,12 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   }, [iframeOrigin]);
 
   useEffect(() => {
+    // Skip if the interval change originated from the TradingView iframe itself
+    if (iframeIntervalChangeRef.current) {
+      iframeIntervalChangeRef.current = false;
+      return;
+    }
+
     // Cancel all active SDK WebSocket subscriptions before switching symbol
     subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
     subscriptionsRef.current.clear();

@@ -13,6 +13,7 @@ import {
 interface ChartWrapperProps {
   coin: string;
   interval: string;
+  onIntervalChange?: (interval: string) => void;
 }
 
 const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
@@ -20,6 +21,7 @@ const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
 export const ChartWrapper: React.FC<ChartWrapperProps> = ({
   coin,
   interval: propInterval,
+  onIntervalChange,
 }) => {
   const { marketDataMap, clearinghouseState, openOrders } = useRabbySelector(
     (state) => state.perps
@@ -218,6 +220,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           widgetConfig={desktopWidgetConfig}
           onHoverData={setChartHoverData}
           onLatestBar={setLatestCandle}
+          onIntervalChange={onIntervalChange}
           className="w-full h-full rounded-[8px]"
         />
       </div>
