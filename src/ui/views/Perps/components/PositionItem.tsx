@@ -122,25 +122,29 @@ export const PositionItem: React.FC<{
             <span className="text-15 ml-4 font-medium text-r-neutral-title-1">
               {formatPerpsCoin(coin)}
             </span>
-            <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot gap-2">
-              {leverageType === 'cross'
-                ? t('page.perps.cross')
-                : t('page.perps.isolated')}
-              {leverageType === 'cross' && (
-                <Tooltip
-                  overlayClassName="rectangle"
-                  placement="top"
-                  title={t('page.perps.crossMarginLiqPriceTip')}
-                >
+            <Tooltip
+              overlayClassName="rectangle"
+              placement="top"
+              title={
+                leverageType === 'cross'
+                  ? t('page.perps.crossMarginLiqPriceTip')
+                  : undefined
+              }
+            >
+              <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot gap-2">
+                {leverageType === 'cross'
+                  ? t('page.perps.cross')
+                  : t('page.perps.isolated')}
+                {leverageType === 'cross' && (
                   <RcIconInfo
                     viewBox="0 0 14 14"
                     width={12}
                     height={12}
                     className="text-r-neutral-foot"
                   />
-                </Tooltip>
-              )}
-            </span>
+                )}
+              </span>
+            </Tooltip>
             {/* <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-foot" /> */}
           </div>
           <div className="flex items-center gap-6">
