@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { toChecksumAddress } from '@ethereumjs/util';
 import COBOSAFE_ABI from './abi/account.json';
 import L2_ABI from './abi/l2.json';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
@@ -58,7 +59,7 @@ export class CoboSafeAccount {
 
     const tx = [
       flag,
-      to,
+      toChecksumAddress(to),
       value,
       data,
       '0x', // hint

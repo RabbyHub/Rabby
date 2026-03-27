@@ -3,6 +3,7 @@ import { message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import { useWallet, isSameAddress } from '@/ui/utils';
 import { useAsync, useDebounce } from 'react-use';
+import { toChecksumAddress } from '@ethereumjs/util';
 import BigNumber from 'bignumber.js';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { last } from 'lodash';
@@ -530,7 +531,7 @@ export const useDepositWithdraw = (
             },
           ] as any[],
         } as const,
-        [to, sendValue.toFixed(0)] as any[],
+        [toChecksumAddress(to), sendValue.toFixed(0)] as any[],
       ] as const;
       const params: Record<string, any> = {
         chainId: chain.id,

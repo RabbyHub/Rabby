@@ -212,6 +212,7 @@ class SignatureManager {
 
   private createSkeletonCtx(txs: Tx[], fingerprint: string): SignerCtx {
     const chainId = txs[0]?.chainId || 0;
+    const chain = findChain({ id: chainId });
     return {
       fingerprint,
       open: true,
@@ -223,7 +224,15 @@ class SignatureManager {
       selectedGas: null,
       txsCalc: [],
       nativeTokenPrice: 0,
-      nativeTokenBalance: '0x0',
+      nativeTokenBalance: '0',
+      gasToken: chain
+        ? {
+            tokenId: chain.nativeTokenAddress,
+            symbol: chain.nativeTokenSymbol,
+            decimals: chain.nativeTokenDecimals || 18,
+            logoUrl: chain.nativeTokenLogo,
+          }
+        : undefined,
       checkErrors: [],
       gasless: undefined,
       gasAccount: undefined,
