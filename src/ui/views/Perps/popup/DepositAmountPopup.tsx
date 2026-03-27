@@ -511,7 +511,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               <div
                 className={clsx(
                   'flex items-center gap-6 px-12 h-[40px] justify-center rounded-[6px]',
-                  'bg-r-neutral-bg2',
+                  'bg-r-neutral-card-2',
                   'border border-solid border-transparent',
                   type === 'deposit' &&
                     'cursor-pointer hover:bg-r-blue-light1 hover:border-rabby-blue-default'
@@ -539,7 +539,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                 </span>
                 {type === 'deposit' && (
                   <ThemeIcon
-                    className="icon icon-arrow-right"
+                    className="icon icon-arrow-right text-r-neutral-foot"
                     src={RcIconArrowRight}
                   />
                 )}

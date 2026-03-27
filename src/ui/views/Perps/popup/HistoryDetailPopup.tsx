@@ -225,7 +225,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
           <div className="text-18 font-medium text-r-neutral-title-1 text-center mb-12">
             {t('page.perps.fee')}
           </div>
-          <div className="text-15 text-r-neutral-body text-center mb-16">
+          <div className="text-15 text-r-neutral-body text-center mb-16 whitespace-pre-line">
             <Trans
               i18nKey="page.perps.historyDetail.feeDesc"
               components={{
