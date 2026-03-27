@@ -3314,7 +3314,8 @@
         "provider": "프로바이더",
         "fee": "수수료",
         "tradeValue": "거래 가치",
-        "size": "포지션 규모"
+        "size": "포지션 규모",
+        "feeDesc": "사용자가 거래를 진행할 때, <1>거래 수수료</1>와 <2>빌더 수수료</2>가 모두 적용됩니다."
       },
       "logoutConfirmModal": {
         "desc": "현재의 무기한 계약 계정에서 로그아웃 중입니다. 이 주소로 로그인하면 언제든지 복구할 수 있습니다.",
@@ -3336,7 +3337,8 @@
         "goBridgeTips": "아비트럼에서 USDC만 직접 입금이 지원됩니다. 입금하기 전에 현재 보유 토큰을 아비트럼의 USDC로 브리지해 주세요.",
         "estReceiveTooltip": "크로스체인 입금은 LiFi를 통해 처리되며 약간의 슬리피지가 발생할 수 있습니다. 도착 예정 시간은 {{number}}초입니다.",
         "estReceiveLabel": "추정 수령",
-        "hyperliquidFeeLabelTooltip": "신규 사용자는 Hyperliquid에 의해 일회성 활성화 요금이 부과됩니다."
+        "hyperliquidFeeLabelTooltip": "신규 사용자는 Hyperliquid에 의해 일회성 활성화 요금이 부과됩니다.",
+        "amount": "금액"
       },
       "home": {
         "entryPrice": "진입가",
@@ -3499,7 +3501,12 @@
       "isolatedMarginDesc": "각 포지션은 자체 마진을 사용합니다. 손실은 해당 포지션으로 제한되지만, 더 쉽게 청산될 수 있습니다.",
       "cannotChangeMarginModeWithOpenPositions": "열린 포지션이 있는 상태에서 마진 모드를 변경할 수 없습니다.",
       "crossMarginDesc": "모든 포지션은 동일한 마진을 공유합니다. 이렇게 하면 단일 포지션이 청산될 가능성이 줄어들지만, 극단적인 시장 변동에서 모든 교차 마진 자금이 손실될 수 있습니다.",
-      "unrealizedPnl": "실현되지 않은 PNL"
+      "unrealizedPnl": "실현되지 않은 PNL",
+      "newUserGuide": {
+        "learnMore": "자세히 알아보기"
+      },
+      "addFunds": "자금 추가",
+      "crossMarginLiqPriceTip": "크로스 마진 모드에서는 단일 포지션의 청산 가격이 참고용 추정치입니다."
     },
     "perpsPro": {
       "chatArea": {
@@ -3593,7 +3600,14 @@
           "reverse": "역전",
           "closedPnl": "실현 손익",
           "closeLimit": "포지션 종료 지정가",
-          "receive": "받기"
+          "receive": "받기",
+          "marketCloseTitle": "시장 포지션 종료",
+          "marketCloseBtn": "시장 마감",
+          "dontShowAgain": "다시 표시하지 않음",
+          "invalidPrice": "잘못된 가격",
+          "marketCloseDesc": "이것은 포지션을 즉시 종료하려고 시도합니다.",
+          "confirmCloseAllTitle": "모든 포지션 종료 확인",
+          "confirmCloseAllDesc": "모든 열린 포지션은 시장 가격으로 종료되며 모든 주문이 취소됩니다."
         },
         "openOrders": {
           "time": "시간",

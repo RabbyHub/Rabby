@@ -3317,7 +3317,8 @@
         "tradeValue": "取引価値",
         "size": "ポジションサイズ",
         "provider": "プロバイダ",
-        "closedPnl": "確定損益"
+        "closedPnl": "確定損益",
+        "feeDesc": "ユーザーが取引を行うと、<1>取引手数料</1>と<2>ビルダー手数料</2>が適用されます。"
       },
       "logoutConfirmModal": {
         "title": "現在のアドレスをログアウト",
@@ -3339,7 +3340,8 @@
         "minimumWithdrawSize": "最小出金額は $2",
         "feeTipTooltip": "Hyperliquid が請求する出金手数料：$1",
         "hyperliquidFeeLabel": "Hyperliquidの手数料",
-        "hyperliquidFeeLabelTooltip": "新規ユーザーはHyperliquidによって一度限りのアクティベーション手数料が課されます。"
+        "hyperliquidFeeLabelTooltip": "新規ユーザーはHyperliquidによって一度限りのアクティベーション手数料が課されます。",
+        "amount": "金額"
       },
       "home": {
         "markPrice": "マーク価格",
@@ -3502,7 +3504,12 @@
       "cannotChangeMarginModeWithOpenPositions": "オープンポジションがある状態でマージンモードを変更することはできません。",
       "marginMode": "マージンモード",
       "isolatedMarginDesc": "各ポジションはそれぞれ独自のマージンを使用します。損失はそのポジションに限定されますが、より簡単に清算される可能性があります。",
-      "crossMarginDesc": "すべてのポジションは同じマージンを共有します。これにより、単一のポジションが清算される可能性が減りますが、すべてのクロスマージン資金は、極端な市場動向では失われる可能性があります。"
+      "crossMarginDesc": "すべてのポジションは同じマージンを共有します。これにより、単一のポジションが清算される可能性が減りますが、すべてのクロスマージン資金は、極端な市場動向では失われる可能性があります。",
+      "newUserGuide": {
+        "learnMore": "詳細を学ぶ"
+      },
+      "addFunds": "資金を追加する",
+      "crossMarginLiqPriceTip": "クロスマージンモードでは、単一ポジションの清算価格は参考用の推定値です。"
     },
     "perpsPro": {
       "chatArea": {
@@ -3596,7 +3603,14 @@
           "closeLimit": "決済指値",
           "mid": "ミッド価格",
           "reverse": "反転",
-          "closeMarket": "市場価格で決済"
+          "closeMarket": "市場価格で決済",
+          "marketCloseBtn": "マーケットクローズ",
+          "invalidPrice": "無効な価格",
+          "dontShowAgain": "再表示しない",
+          "marketCloseTitle": "マーケットクローズポジション",
+          "marketCloseDesc": "この操作はポジションを直ちにクローズしようとします。",
+          "confirmCloseAllTitle": "すべてのポジションをクローズすることを確認してください",
+          "confirmCloseAllDesc": "すべてのオープンポジションはマーケット価格でクローズされ、すべての注文はキャンセルされます。"
         },
         "openOrders": {
           "price": "価格",

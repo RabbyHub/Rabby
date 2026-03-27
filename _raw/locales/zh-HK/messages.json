@@ -3355,7 +3355,8 @@
         "price": "價格",
         "closedPnl": "已實現盈虧",
         "fee": "費用",
-        "size": "合約張數"
+        "size": "合約張數",
+        "feeDesc": "當用戶進行交易時，會收取<1>交易費用</1>和<2>建構者費用</2>。"
       },
       "logoutConfirmModal": {
         "title": "登出當前地址",
@@ -3377,7 +3378,8 @@
         "hyperliquidFeeLabel": "Hyperliquid 手續費",
         "fetchQuoteFailed": "無法取得入金報價。請切換代幣。",
         "goSwapTips": "僅支援 Arbitrum 上的 USDC 作為直接入金。請在入金前將您當前的代幣兌換為 USDC。",
-        "hyperliquidFeeLabelTooltip": "新用戶需支付一筆一次性啟動費用給 Hyperliquid。"
+        "hyperliquidFeeLabelTooltip": "新用戶需支付一筆一次性啟動費用給 Hyperliquid。",
+        "amount": "金額"
       },
       "home": {
         "margin": "保證金",
@@ -3540,7 +3542,12 @@
       "isolatedMarginDesc": "每个仓位使用其自己的保证金。亏损仅限于该仓位，但更容易被强制平仓。",
       "unrealizedPnl": "未实现盈亏",
       "crossMargin": "跨保证金",
-      "crossMarginDesc": "所有头寸共享相同的保证金。这可以减少单一头寸被强平的机会，但在极端市场波动中，所有交叉保证金资金可能会丢失。"
+      "crossMarginDesc": "所有头寸共享相同的保证金。这可以减少单一头寸被强平的机会，但在极端市场波动中，所有交叉保证金资金可能会丢失。",
+      "newUserGuide": {
+        "learnMore": "了解更多"
+      },
+      "addFunds": "添加資金",
+      "crossMarginLiqPriceTip": "在交叉保证金模式下，单个头寸的清算价格仅为参考估算。"
     },
     "perpsPro": {
       "chatArea": {
@@ -3634,7 +3641,14 @@
           "reversePosition": "反向開倉",
           "close": "平倉",
           "closePositionReverseTips": "這將以當前市場價格立即平倉您的倉位，並以同等倉位於相反方向開倉。",
-          "closeLimit": "平倉限價單"
+          "closeLimit": "平倉限價單",
+          "marketCloseBtn": "市場收盤",
+          "invalidPrice": "無效價格",
+          "marketCloseTitle": "市場平倉",
+          "confirmCloseAllTitle": "確認關閉所有頭寸",
+          "dontShowAgain": "不要再显示此内容",
+          "marketCloseDesc": "這將嘗試立即平倉。",
+          "confirmCloseAllDesc": "所有您的未平仓头寸将按市场价格平仓，并取消所有订单。"
         },
         "openOrders": {
           "cancel": "取消",

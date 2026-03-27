@@ -3314,7 +3314,8 @@
         "provider": "Nhà cung cấp",
         "size": "Kích thước vị thế",
         "tradeValue": "Giá trị giao dịch",
-        "closedPnl": "PNL đã thực hiện"
+        "closedPnl": "PNL đã thực hiện",
+        "feeDesc": "Khi người dùng thực hiện giao dịch, cả <1>phí giao dịch</1> và <2>phí nhà phát triển</2> đều được áp dụng."
       },
       "logoutConfirmModal": {
         "title": "Đăng xuất khỏi địa chỉ hiện tại",
@@ -3336,7 +3337,8 @@
         "goSwapTips": "Chỉ có USDC trên Arbitrum được hỗ trợ cho nạp ký quỹ trực tiếp. Vui lòng đổi token hiện tại của bạn sang USDC trước khi nạp ký quỹ.",
         "goBridgeTips": "Chỉ USDC trên Arbitrum được hỗ trợ cho việc nạp trực tiếp. Vui lòng bắc cầu token đang có của bạn sang USDC trên Arbitrum trước khi nạp tiền.",
         "payWith": "Thanh toán bằng",
-        "hyperliquidFeeLabelTooltip": "Người dùng mới sẽ bị tính phí kích hoạt một lần bởi Hyperliquid."
+        "hyperliquidFeeLabelTooltip": "Người dùng mới sẽ bị tính phí kích hoạt một lần bởi Hyperliquid.",
+        "amount": "Số lượng"
       },
       "home": {
         "margin": "Ký quỹ",
@@ -3499,7 +3501,12 @@
       "cannotChangeMarginModeWithOpenPositions": "Không thể thay đổi Chế độ Margin khi có vị trí mở.",
       "liquidationDistanceDown": "Đi xuống <bold>{{percent}}</bold> sẽ kích hoạt thanh lý",
       "crossMarginDesc": "Tất cả các vị trí đều chia sẻ cùng một khoản ký quỹ. Điều này giảm khả năng một vị trí đơn lẻ bị thanh lý, nhưng tất cả các quỹ ký quỹ chéo có thể bị mất trong những biến động cực đoan của thị trường.",
-      "isolatedMarginDesc": "Mỗi vị thế sử dụng ký quỹ riêng của nó. Lỗ giới hạn ở vị thế đó, nhưng nó có thể bị thanh lý dễ hơn."
+      "isolatedMarginDesc": "Mỗi vị thế sử dụng ký quỹ riêng của nó. Lỗ giới hạn ở vị thế đó, nhưng nó có thể bị thanh lý dễ hơn.",
+      "newUserGuide": {
+        "learnMore": "Tìm hiểu thêm"
+      },
+      "addFunds": "Thêm Quỹ",
+      "crossMarginLiqPriceTip": "Trong chế độ Cross Margin, giá thanh lý cho một vị trí đơn lẻ chỉ là một ước tính để tham khảo."
     },
     "perpsPro": {
       "chatArea": {
@@ -3593,7 +3600,14 @@
           "limitClose": "Đóng lệnh giới hạn",
           "closeLimit": "Lệnh đóng giới hạn",
           "closeMarket": "Đóng vị thế theo giá thị trường",
-          "closedPnl": "PNL đã đóng"
+          "closedPnl": "PNL đã đóng",
+          "marketCloseBtn": "Đóng thị trường",
+          "invalidPrice": "Giá không hợp lệ",
+          "marketCloseTitle": "Đóng vị trí Thị trường",
+          "dontShowAgain": "Không hiển thị lại điều này nữa",
+          "marketCloseDesc": "Điều này sẽ cố gắng đóng vị thế ngay lập tức.",
+          "confirmCloseAllTitle": "Xác nhận Đóng Tất Cả Vị Thế",
+          "confirmCloseAllDesc": "Tất cả các vị thế mở của bạn sẽ được đóng ở giá thị trường và hủy tất cả các lệnh."
         },
         "openOrders": {
           "time": "Thời gian",
