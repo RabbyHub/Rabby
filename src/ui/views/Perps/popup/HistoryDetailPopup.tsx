@@ -11,7 +11,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { TokenImg } from '../components/TokenImg';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
-import IconHyperliquid from 'ui/assets/perps/icon-hyperliquid.svg';
+import IconHyperliquid from 'ui/assets/perps/IconHyperLogo.svg';
 import IconRabby from 'ui/assets/rabby-logo-circle.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
@@ -229,7 +229,8 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
             <Trans
               i18nKey="page.perps.historyDetail.feeDesc"
               components={{
-                bold: <span className="font-bold text-r-neutral-title-1" />,
+                1: <span className="font-bold text-r-neutral-title-1" />,
+                2: <span className="font-bold text-r-neutral-title-1" />,
               }}
             />
           </div>

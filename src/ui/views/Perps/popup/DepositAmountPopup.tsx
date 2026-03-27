@@ -40,6 +40,7 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { useTwoStepSwap } from '@/ui/views/Swap/hooks/twoStepSwap';
 import TokenSelectPopup from './TokenSelectPopup';
+import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
@@ -445,10 +446,10 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         <div className="px-16">
           {/* Amount / Balance — outside card */}
           <div className="flex items-center justify-between mb-8">
-            <div className="text-13 text-r-neutral-body">
+            <div className="text-13 text-r-neutral-foot">
               {t('page.perps.depositAmountPopup.amount')}
             </div>
-            <div className="text-13 text-r-neutral-body">
+            <div className="text-13 text-r-neutral-foot">
               {type === 'withdraw'
                 ? t('page.perps.availableBalance', {
                     balance: formatUsdValue(
@@ -541,7 +542,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                 {type === 'deposit' && (
                   <ThemeIcon
                     className="icon icon-arrow-right text-r-neutral-foot"
-                    src={RcIconArrowRight}
+                    src={RcIconArrowDownCC}
                   />
                 )}
               </div>

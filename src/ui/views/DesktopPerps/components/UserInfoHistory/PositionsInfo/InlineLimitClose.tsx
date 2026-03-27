@@ -137,13 +137,13 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         handleClickPrice
       );
     };
-  }, [selectedCoin, record.coin]);
+  }, [selectedCoin]);
 
   useEffect(() => {
     if (selectedCoin === record.coin) {
       setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
     }
-  }, [selectedCoin, record.coin, midPrice, szDecimals]);
+  }, [selectedCoin]);
 
   // When size input is focused, check if the bottom tooltip (percentage buttons ~40px)
   // would be clipped by the scroll container. If so, scroll the table body to make room.

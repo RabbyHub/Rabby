@@ -311,6 +311,7 @@ export const PositionsInfo: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         className: 'relative',
         key: 'coin',
+        width: 100,
         dataIndex: 'coin',
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
@@ -360,6 +361,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.size'),
         key: 'positionValue',
+        width: 160,
         dataIndex: 'positionValue',
         sorter: (a, b) => Number(a.positionValue) - Number(b.positionValue),
         render: (_, record) => {
@@ -378,6 +380,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.markEntry'),
         key: 'entryPx',
+        width: 140,
         dataIndex: 'entryPx',
         sorter: (a, b) => Number(a.entryPx) - Number(b.entryPx),
         render: (_, record) => {
@@ -396,6 +399,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.liqPrice'),
         key: 'liquidationPx',
+        width: 180,
         dataIndex: 'liquidationPx',
         sorter: (a, b) => Number(a.liquidationPx) - Number(b.liquidationPx),
         render: (_, record) => {
@@ -425,6 +429,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.margin'),
         key: 'marginUsed',
+        width: 140,
         dataIndex: 'marginUsed',
         sorter: (a, b) => Number(a.marginUsed) - Number(b.marginUsed),
         render: (_, record) => {
@@ -459,6 +464,7 @@ export const PositionsInfo: React.FC = () => {
             {t('page.perpsPro.userInfo.tab.unrealizedPnl')}
           </DashedUnderlineText>
         ),
+        width: 140,
         key: 'unrealizedPnl',
         dataIndex: 'unrealizedPnl',
         sorter: (a, b) => Number(a.unrealizedPnl) - Number(b.unrealizedPnl),
@@ -506,6 +512,7 @@ export const PositionsInfo: React.FC = () => {
           </DashedUnderlineText>
         ),
         key: 'fundingPayments',
+        width: 100,
         dataIndex: 'fundingPayments',
         sorter: (a, b) =>
           Number(a.sinceOpenFunding) - Number(b.sinceOpenFunding),
@@ -551,6 +558,7 @@ export const PositionsInfo: React.FC = () => {
         key: 'reverse',
         align: 'center',
         dataIndex: 'reverse',
+        width: 100,
         render: (_, record) => {
           return (
             <div className="flex justify-center">
@@ -578,6 +586,7 @@ export const PositionsInfo: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.tpSl'),
         key: 'children',
         align: 'center',
+        width: 140,
         dataIndex: 'children',
         render: (_, record) => {
           const tpPrice = record.tpItem?.triggerPx;
