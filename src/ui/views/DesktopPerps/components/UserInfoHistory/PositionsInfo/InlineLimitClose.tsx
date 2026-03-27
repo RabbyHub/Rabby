@@ -97,7 +97,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     }
   }, [midPrice, szDecimals]);
 
-  const [sizeInput, setSizeInput] = useState(positionSize.toFixed(szDecimals));
+  const [sizeInput, setSizeInput] = useState(record.size);
   const [priceFocused, setPriceFocused] = useState(false);
   const [priceHovered, setPriceHovered] = useState(false);
   const [sizeFocused, setSizeFocused] = useState(false);
@@ -371,9 +371,9 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
   useEffect(() => {
     if (!sizeFocused) {
-      setSizeInput(positionSize.toFixed(szDecimals));
+      setSizeInput(record.size);
     }
-  }, [positionSize]);
+  }, [record.size]);
 
   const handleKeyDown = useMemoizedFn((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && isPriceValid && sizeNum > 0 && !loading) {
