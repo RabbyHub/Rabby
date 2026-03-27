@@ -46,6 +46,10 @@ jobs:
         working-directory: rabby
         run: yarn install
 
+      - name: Disable minimize in webpack config
+        working-directory: rabby
+        run: sed -i 's/minimize: true,/minimize: false,/' build/webpack.pro.config.js
+
       - name: Build production
         working-directory: rabby
         run: yarn build:pro
