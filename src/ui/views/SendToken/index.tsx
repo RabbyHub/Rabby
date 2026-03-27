@@ -16,7 +16,12 @@ import { useAsyncFn, usePrevious } from 'react-use';
 import { Form, message, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
-import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
+import {
+  isValidAddress,
+  intToHex,
+  zeroAddress,
+  toChecksumAddress,
+} from '@ethereumjs/util';
 import { globalSupportCexList } from '@/ui/models/exchange';
 
 import {
@@ -585,7 +590,9 @@ const SendToken = () => {
           ] as any[],
         } as const,
         [
-          toAddress || '0x0000000000000000000000000000000000000000',
+          toChecksumAddress(
+            toAddress || '0x0000000000000000000000000000000000000000'
+          ),
           sendValue.toFixed(0),
         ] as any[],
       ] as const;
@@ -842,7 +849,7 @@ const SendToken = () => {
           const code = await wallet.requestETHRpc<any>(
             {
               method: 'eth_getCode',
-              params: [toAddress, 'latest'],
+              params: [toChecksumAddress(toAddress), 'latest'],
             },
             chain.serverId
           );
@@ -998,7 +1005,7 @@ const SendToken = () => {
             const code = await wallet.requestETHRpc<any>(
               {
                 method: 'eth_getCode',
-                params: [toAddress, 'latest'],
+                params: [toChecksumAddress(toAddress), 'latest'],
               },
               chain.serverId
             );
@@ -1323,10 +1330,11 @@ const SendToken = () => {
             params: [
               {
                 from: currentAddress,
-                to:
+                to: toChecksumAddress(
                   toAddress && isValidAddress(toAddress)
                     ? toAddress
-                    : zeroAddress(),
+                    : zeroAddress()
+                ),
                 gasPrice: intToHex(0),
                 value: intToHex(0),
               },
