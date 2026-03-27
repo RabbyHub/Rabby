@@ -380,7 +380,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.markEntry'),
         key: 'entryPx',
-        width: 140,
+        width: 100,
         dataIndex: 'entryPx',
         sorter: (a, b) => Number(a.entryPx) - Number(b.entryPx),
         render: (_, record) => {
@@ -399,24 +399,29 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.liqPrice'),
         key: 'liquidationPx',
-        width: 180,
+        width: 100,
         dataIndex: 'liquidationPx',
         sorter: (a, b) => Number(a.liquidationPx) - Number(b.liquidationPx),
         render: (_, record) => {
           return (
             <div className="flex items-center gap-[4px]">
               {new BigNumber(record.liquidationPx).gt(0) ? (
-                <>
-                  <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+                <Tooltip
+                  overlayClassName="rectangle"
+                  title={
+                    record.direction === 'Long'
+                      ? t('page.perpsPro.userInfo.distanceRiskTag.goingDown', {
+                          percent: record.liquidationDistancePercent,
+                        })
+                      : t('page.perpsPro.userInfo.distanceRiskTag.goingUp', {
+                          percent: record.liquidationDistancePercent,
+                        })
+                  }
+                >
+                  <div className="text-[12px] leading-[14px]  text-rb-orange-default">
                     ${splitNumberByStep(record.liquidationPx)}
                   </div>
-                  {!isSmallScreen && (
-                    <DistanceRiskTag
-                      isLong={record.direction === 'Long'}
-                      percent={record.liquidationDistancePercent}
-                    />
-                  )}
-                </>
+                </Tooltip>
               ) : (
                 <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
                   -
@@ -464,7 +469,7 @@ export const PositionsInfo: React.FC = () => {
             {t('page.perpsPro.userInfo.tab.unrealizedPnl')}
           </DashedUnderlineText>
         ),
-        width: 140,
+        width: 120,
         key: 'unrealizedPnl',
         dataIndex: 'unrealizedPnl',
         sorter: (a, b) => Number(a.unrealizedPnl) - Number(b.unrealizedPnl),
