@@ -1,4 +1,4 @@
-import { Tabs } from 'antd';
+import { message, Switch, Tabs, Tooltip } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -14,16 +14,43 @@ import './style.less';
 import { TestnetTransactionHistory } from '../TransactionHistory/TestnetTranasctionHistory';
 
 const Null = () => null;
+const renderTabBar = () => <Null />;
 
-const History = () => {
+export const HistoryPage = () => {
   const { t } = useTranslation();
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
-  const renderTabBar = React.useCallback(() => <Null />, []);
   const history = useHistory();
+  const [isHideScam, setIsHideScam] = React.useState(true);
 
   return (
     <div className="txs-history">
-      <PageHeader className="transparent-wrap" fixed>
+      <PageHeader
+        className="transparent-wrap"
+        fixed
+        rightSlot={
+          selectedTab === 'mainnet' ? (
+            <div className="flex absolute right-0">
+              <Tooltip
+                title={t('page.transactions.hideScamTips')}
+                overlayClassName="rectangle"
+                placement="bottomLeft"
+              >
+                <Switch
+                  checked={isHideScam}
+                  onChange={(v) => {
+                    setIsHideScam(v);
+                    message.success(
+                      v
+                        ? t('page.transactions.hideScamTips')
+                        : t('page.transactions.showScamTips')
+                    );
+                  }}
+                />
+              </Tooltip>
+            </div>
+          ) : null
+        }
+      >
         {t('page.transactions.title')}
       </PageHeader>
       {isShowTestnet && (
@@ -31,24 +58,13 @@ const History = () => {
           <NetSwitchTabs value={selectedTab} onTabChange={onTabChange} />
         </div>
       )}
-      {selectedTab === 'mainnet' ? (
-        <div
-          className="filter-scam-nav hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10"
-          onClick={() => {
-            history.push(`/history/filter-scam?net=${selectedTab}`);
-          }}
-        >
-          {t('page.transactions.filterScam.btn')}
-          <ThemeIcon src={RcIconArrowRight} />
-        </div>
-      ) : null}
       <Tabs
         className="h-full"
         renderTabBar={renderTabBar}
         activeKey={selectedTab}
       >
         <Tabs.TabPane key="mainnet" destroyInactiveTabPane={false}>
-          <HistoryList />
+          <HistoryList isFilterScam={isHideScam} />
         </Tabs.TabPane>
         <Tabs.TabPane key="testnet">
           <TestnetTransactionHistory />
@@ -56,25 +72,4 @@ const History = () => {
       </Tabs>
     </div>
   );
-};
-
-const HistoryFilterScam = () => {
-  const { t } = useTranslation();
-
-  return (
-    <div className="txs-history">
-      <PageHeader className="transparent-wrap" fixed>
-        {t('page.transactions.filterScam.title')}
-      </PageHeader>
-      <HistoryList isFilterScam={true} />
-    </div>
-  );
-};
-
-export const HistoryPage = ({
-  isFitlerScam = false,
-}: {
-  isFitlerScam?: boolean;
-}) => {
-  return isFitlerScam ? <HistoryFilterScam /> : <History />;
 };

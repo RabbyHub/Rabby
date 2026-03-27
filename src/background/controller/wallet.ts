@@ -186,6 +186,8 @@ import { http } from '../utils/http';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { AccountScene, SCENE_ACCOUNT_CONFIG } from '@/constant/scene-account';
+import { syncDbService } from '@/db/services/syncDbService';
+import { historyDbService } from '@/db/services/historyDbService';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -3722,6 +3724,9 @@ export class WalletController extends BaseController {
         });
       }
     });
+
+    syncDbService.deleteForAddress(address);
+    historyDbService.deleteForAddress(address);
   };
 
   removeAddresses = async (

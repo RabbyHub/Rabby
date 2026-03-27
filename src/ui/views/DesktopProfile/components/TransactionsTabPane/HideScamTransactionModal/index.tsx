@@ -9,6 +9,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DesktopHistoryItem } from '../DesktopHistoryItem';
 import { DesktopLoading } from '../DesktopLoading';
+import { useQueryDbHistory } from '@/db/hooks/history';
 
 export const HideScamTransactionModal: React.FC<ModalProps> = (modalProps) => {
   const { t } = useTranslation();
@@ -16,58 +17,12 @@ export const HideScamTransactionModal: React.FC<ModalProps> = (modalProps) => {
   const wallet = useWallet();
   const currentAccount = useCurrentAccount();
 
-  const getAllTxHistory = useMemoizedFn(
-    (params: Parameters<typeof wallet.openapi.getAllTxHistory>[0]) => {
-      const getHistory = wallet.openapi.getAllTxHistory;
-
-      return getHistory(params).then((res) => {
-        if (res.history_list) {
-          res.history_list = res.history_list.filter((item) => {
-            return !item.is_scam;
-          });
-        }
-        return res;
-      });
-    }
-  );
-
-  const fetchData = useMemoizedFn(async () => {
-    const { address } = currentAccount!;
-
-    const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
-    if (apiLevel >= 1) {
-      return {
-        list: [],
-      };
-    }
-
-    const res = await getAllTxHistory({
-      id: address,
-    });
-
-    const { project_dict, cate_dict, history_list: list } = res;
-    const displayList = list
-      .map((item) => ({
-        ...item,
-        projectDict: project_dict,
-        cateDict: cate_dict,
-        tokenDict: 'token_dict' in res ? res.token_dict : undefined,
-        tokenUUIDDict:
-          'token_uuid_dict' in res ? res.token_uuid_dict : undefined,
-      }))
-      .sort((v1, v2) => v2.time_at - v1.time_at);
-    return {
-      last: last(displayList)?.time_at,
-      list: displayList,
-    };
+  const { data, isLoading: loading } = useQueryDbHistory({
+    address: currentAccount?.address || '',
+    isFilterScam: true,
   });
 
-  const { data, loading } = useRequest(() => fetchData(), {
-    refreshDeps: [currentAccount?.address],
-    ready: !!currentAccount && modalProps.visible,
-  });
-
-  const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
+  const isEmpty = (data?.length || 0) <= 0 && !loading;
 
   return (
     <Modal
@@ -121,14 +76,8 @@ export const HideScamTransactionModal: React.FC<ModalProps> = (modalProps) => {
               />
             ) : (
               <div className="overflow-hidden">
-                {data?.list?.map((item) => (
-                  <DesktopHistoryItem
-                    key={item.id}
-                    data={item}
-                    projectDict={item.projectDict}
-                    cateDict={item.cateDict}
-                    tokenDict={item.tokenDict || item.tokenUUIDDict || {}}
-                  />
+                {data?.map((item) => (
+                  <DesktopHistoryItem key={item.id} data={item} />
                 ))}
               </div>
             )}
