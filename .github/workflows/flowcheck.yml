@@ -1,0 +1,54 @@
+name: Flow Check
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch name to build'
+        required: true
+        type: string
+      notify_larkbot:
+        description: 'Notify LarkBot (true/false)'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  flow-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install chrome-extension-automator
+        run: yarn global add chrome-extension-automator
+
+      - name: Clone Rabby repository
+        uses: actions/checkout@v4
+        with:
+          repository: RabbyHub/Rabby
+          ref: ${{ inputs.branch }}
+          path: rabby
+
+      - name: Install dependencies
+        working-directory: rabby
+        run: yarn install
+
+      - name: Build production
+        working-directory: rabby
+        run: yarn build:pro
+
+      - name: Run chrome-extension-automator
+        env:
+          RABBY_LARK_CHAT_URL: ${{ secrets.RABBY_LARK_CHAT_URL }}
+          RABBY_LARK_CHAT_SECRET: ${{ secrets.RABBY_LARK_CHAT_SECRET }}
+        run: npx chrome-extension-automator rabby/dist ${{ inputs.branch }} ${{ inputs.notify_larkbot }}
