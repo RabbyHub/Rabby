@@ -73,11 +73,11 @@ const Content: React.FC<Props> = (props) => {
               {t('page.desktopProfile.nft.pending')}
             </div>
           ) : status === 'success' ? (
-            <div className="text-[20px] leading-[24px] font-medium">
+            <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
               {successMessage?.title}
             </div>
           ) : status === 'failed' ? (
-            <div className="text-[20px] leading-[24px] font-medium">
+            <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
               {errorMessage?.title}
             </div>
           ) : null}

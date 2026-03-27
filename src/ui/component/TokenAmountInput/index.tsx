@@ -374,7 +374,10 @@ const TokenAmountInput = ({
         <div className="left" onClick={handleSelectToken}>
           {initLoading ? (
             <>
-              <Skeleton.Avatar className="bg-r-neutral-line w-[24px] h-[24px] rounded-full" />
+              <Skeleton.Avatar
+                className="bg-r-neutral-line w-[24px] h-[24px] rounded-full"
+                size={24}
+              />
               <Skeleton.Input className="bg-r-neutral-line w-[58px] h-[20px] rounded-[2px] ml-[6px] mr-[6px]" />
             </>
           ) : (
