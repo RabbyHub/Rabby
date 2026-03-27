@@ -396,6 +396,11 @@ textarea {
 ---------------------*/
 .ant-tooltip:not(.disable-ant-overwrite) {
   max-width: 360px;
+  &.ant-tooltip-placement-top,
+  &.ant-tooltip-placement-topLeft,
+  &.ant-tooltip-placement-topRight {
+    padding-bottom: 8px;
+  }
   .ant-tooltip-inner {
     font-size: 12px;
     border-radius: 14px;
