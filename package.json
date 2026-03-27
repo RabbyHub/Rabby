@@ -126,7 +126,7 @@
     "obs-store": "4.0.3",
     "p-queue": "7.3.0",
     "p-retry": "5.1.2",
-    "patch-package": "6.4.7",
+    "patch-package": "8.0.1",
     "postinstall-postinstall": "2.1.0",
     "process": "0.11.10",
     "qrcode.react": "3.1.0",
