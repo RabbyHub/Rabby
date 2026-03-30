@@ -77,8 +77,14 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
         'header_saveload',
         'volume_force_overlay',
         'widget_logo',
+        'header_compare',
+        'timeframes_toolbar',
+        'right_toolbar',
       ],
-      enabled_features: ['iframe_loading_compatibility_mode'],
+      enabled_features: [
+        'iframe_loading_compatibility_mode',
+        'hide_left_toolbar_by_default',
+      ],
       favorites: {
         intervals: ['15', '60', '240', '1D', '1W'],
       },
