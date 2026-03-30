@@ -78,7 +78,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
         'volume_force_overlay',
         'widget_logo',
         'header_compare',
-        'timeframes_toolbar',
         'right_toolbar',
       ],
       enabled_features: [
@@ -88,6 +87,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       favorites: {
         intervals: ['15', '60', '240', '1D', '1W'],
       },
+      time_frames: [],
     };
   }, []);
 
