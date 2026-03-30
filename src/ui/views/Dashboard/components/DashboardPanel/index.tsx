@@ -46,7 +46,6 @@ import {
   RcIconNftCC,
   RcIconPerpsCC,
   RcIconPointsCC,
-  RcIconPrediction,
   RcIconReceiveCC,
   RcIconSearchCC,
   RcIconSendCC,
@@ -56,8 +55,6 @@ import {
   RcIconAaveLendingCC,
   RcIconSparkLendingCC,
   RcIconVenusLendingCC,
-  RcIconProbablePredictionCC,
-  RcIconOpinionPredictionCC,
 } from 'ui/assets/dashboard/panel';
 
 import { RcIconExternal1CC } from '@/ui/assets/dashboard';
@@ -393,9 +390,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   }, [giftUsdValue, hasClaimedGift]);
 
   const lendingId = useRabbySelector((state) => state.innerDappFrame.lending);
-  const predictionId = useRabbySelector(
-    (state) => state.innerDappFrame.prediction
-  );
 
   const IconLending = useMemo(() => {
     if (lendingId === 'venus') {
@@ -565,16 +559,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     );
   }, [lendingId, lendingLoading, hfRaw]);
 
-  const IconPrediction = useMemo(() => {
-    if (predictionId === 'opinion') {
-      return RcIconOpinionPredictionCC;
-    }
-    if (predictionId === 'probable') {
-      return RcIconProbablePredictionCC;
-    }
-    return RcIconPrediction;
-  }, [predictionId]);
-
   const panelItems = {
     swap: {
       icon: RcIconSwapCC,
@@ -741,16 +725,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         history.push('/settings/address');
       },
     } as IPanelItem,
-    prediction: {
-      icon: IconPrediction,
-      eventKey: 'Prediction',
-      content: t('page.dashboard.home.panel.prediction'),
-      onClick: async () => {
-        await wallet.openInDesktop('/desktop/prediction');
-        window.close();
-      },
-      isFullscreen: true,
-    } as IPanelItem,
     lending: {
       icon: IconLending,
       eventKey: 'Lending',
@@ -773,7 +747,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'transactions',
       'security',
       'perps',
-      'prediction',
       'lending',
       'points',
       'mobile',

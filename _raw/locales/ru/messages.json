@@ -1132,7 +1132,6 @@
           "settings": "Настройки",
           "perpsPositions_one": "{{count}} Позиция",
           "perpsPositions_other": "{{count}} Позиции",
-          "prediction": "Прогнозирование",
           "lending": "Кредитование",
           "dragTip": "Функция длительного нажатия для переупорядочивания"
         },
@@ -4487,8 +4486,7 @@
       "lending": "Кредитование",
       "perps": "Перпсы",
       "comingSoon": "Скоро будет",
-      "portfolio": "Портфель",
-      "prediction": "Предсказание"
+      "portfolio": "Портфель"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Добавить адрес"

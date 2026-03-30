@@ -125,7 +125,6 @@
           "settings": "設置",
           "perpsPositions_other": "{{count}} 位置",
           "perpsPositions_one": "{{count}} 头寸",
-          "prediction": "預測",
           "dragTip": "長按功能以重新排序",
           "lending": "借贷"
         },
@@ -4523,8 +4522,7 @@
       "lending": "借貸",
       "comingSoon": "即將推出",
       "perps": "合约",
-      "portfolio": "投资组合",
-      "prediction": "預測"
+      "portfolio": "投资组合"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "添加地址"

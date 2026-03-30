@@ -19,7 +19,6 @@ export const innerDappFrame = createModel<RootModel>()({
   state: {
     innerDappAccounts: {},
     perps: DEFAULT_INNER_DAPP_ID.perps,
-    prediction: DEFAULT_INNER_DAPP_ID.prediction,
     lending: DEFAULT_INNER_DAPP_ID.lending,
   } as InnerDappFrameServiceStore,
 

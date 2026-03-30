@@ -1223,7 +1223,6 @@
           "settings": "설정",
           "perpsPositions_one": "{{count}} 포지션",
           "perpsPositions_other": "{{count}} 포지션",
-          "prediction": "예측",
           "lending": "대출",
           "dragTip": "길게 눌러서 재배치하기"
         },
@@ -4482,8 +4481,7 @@
       "lending": "대출",
       "perps": "Perps",
       "comingSoon": "곧 출시됩니다",
-      "portfolio": "포트폴리오",
-      "prediction": "예측"
+      "portfolio": "포트폴리오"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "주소 추가"

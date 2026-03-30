@@ -1132,7 +1132,6 @@
           "settings": "Ayarlar",
           "perpsPositions_one": "{{count}} Pozisyon",
           "perpsPositions_other": "{{count}} Pozisyonlar",
-          "prediction": "Tahmin",
           "lending": "Kredi Verme",
           "dragTip": "Uzun basma özelliği ile sıralama"
         },
@@ -4488,8 +4487,7 @@
       "perps": "Perps",
       "comingSoon": "Yakında",
       "lending": "Kredi Verme",
-      "portfolio": "Portföy",
-      "prediction": "Tahmin"
+      "portfolio": "Portföy"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adres ekle"

@@ -1223,7 +1223,6 @@
           "settings": "Pengaturan",
           "perpsPositions_other": "{{count}} Posisi",
           "perpsPositions_one": "{{count}} Posisi",
-          "prediction": "Prediksi",
           "lending": "Peminjaman",
           "dragTip": "Fitur tekan lama untuk mengurutkan ulang"
         },
@@ -4482,8 +4481,7 @@
       "perps": "Perps",
       "portfolio": "Portofolio",
       "comingSoon": "Segera Hadir",
-      "lending": "Peminjaman",
-      "prediction": "Prediksi"
+      "lending": "Peminjaman"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Tambah alamat"
