@@ -1,12 +1,10 @@
 import React, { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-
 import { useQueryDbHistory } from '@/db/hooks/history';
-import { useAccount } from '@/ui/store-hooks';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { Virtuoso } from 'react-virtuoso';
 import { Empty, Modal } from 'ui/component';
-import { useWallet } from 'ui/utils';
 import { HistoryItem, HistoryItemActionContext } from './HistoryItem';
 import { Loading } from './Loading';
 
@@ -15,21 +13,18 @@ export const HistoryList = ({
 }: {
   isFilterScam?: boolean;
 }) => {
-  const wallet = useWallet();
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement | null>(null);
-  const [account] = useAccount();
+  const currentAccount = useCurrentAccount();
 
-  console.log('HistoryList render', { account, isFilterScam });
-
-  const { data, isLoading } = useQueryDbHistory({
-    address: account?.address || '',
+  const { data, loading } = useQueryDbHistory({
+    account: currentAccount,
     isFilterScam,
   });
 
   const isEmpty = !data || data.length === 0;
 
-  const showInitialLoading = isLoading && isEmpty;
+  const showInitialLoading = loading && isEmpty;
 
   const [
     focusingHistoryItem,
@@ -54,12 +49,12 @@ export const HistoryList = ({
       </Modal>
 
       {showInitialLoading ? (
-        <div className={isFilterScam ? 'pt-[20px]' : ''}>
-          {isFilterScam ? (
+        <div>
+          {/* {isFilterScam ? (
             <div className="filter-scam-loading-text">
               {t('page.transactions.filterScam.loading')}
             </div>
-          ) : null}
+          ) : null} */}
           <Loading count={4} active />
         </div>
       ) : (
