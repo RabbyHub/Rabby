@@ -2381,7 +2381,6 @@
           "settings": "Settings",
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
-          "prediction": "Prediction",
           "lending": "Lending",
           "dragTip": "Long-press feature to reorder"
         },
@@ -4536,7 +4535,6 @@
       "portfolio": "Portfolio",
       "perps": "Perps",
       "lending": "Lending",
-      "prediction": "Prediction",
       "comingSoon": "Coming Soon"
     },
     "DesktopSelectAccountList": {

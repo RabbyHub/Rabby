@@ -1,9 +1,4 @@
-import PngPolymarket from 'ui/assets/prediction/polymarket.png';
-import PngOpinion from 'ui/assets/prediction/opinion.png';
-import PngProbable from 'ui/assets/prediction/probable.png';
-
 import PngHyperliquid from 'ui/assets/perps/hyperliquid.png';
-import PngAster from 'ui/assets/perps/aster.png';
 import PngLighter from 'ui/assets/perps/lighter.png';
 import PngAave from 'ui/assets/lending/aave.png';
 import PngSpark from 'ui/assets/lending/spark.png';
@@ -12,11 +7,7 @@ import {
   RcIconLeadingCC,
   RcIconSparkCC,
   RcIconVenusCC,
-  RcIconPredictionCC,
-  RcIconProbableCC,
-  RcIconOpinionCC,
   RcIconPerpsCC,
-  RcIconAsterCC,
   RcIconLighterCC,
 } from '@/ui/assets/desktop/nav';
 
@@ -44,26 +35,6 @@ export type DappSelectItem = {
   value?: string;
   NavIcon: typeof RcIconLeadingCC;
 };
-
-const PREDICTION: DappSelectItem[] = [
-  {
-    id: INNER_DAPP_IDS.POLYMARKET,
-    name: 'Polymarket',
-    icon: PngPolymarket,
-    url: 'https://polymarket.com/',
-    extraInfo: 'Vol: $3.614b',
-    NavIcon: RcIconPredictionCC,
-  },
-  {
-    id: INNER_DAPP_IDS.PROBABLE,
-    name: 'Probable',
-    icon: PngProbable,
-    url: 'https://probable.markets',
-
-    extraInfo: 'Vol: $1.823b',
-    NavIcon: RcIconProbableCC,
-  },
-];
 
 const LENDING: DappSelectItem[] = [
   {
@@ -120,7 +91,6 @@ const PERPS: DappSelectItem[] = [
 ];
 
 export const INNER_DAPP_LIST = {
-  PREDICTION,
   LENDING,
   PERPS,
 } as const;
@@ -132,7 +102,6 @@ export const DEFAULT_INNER_DAPP_ID = {
 } as const;
 
 export const ALL_SUPPORTED_INNER_DAPP_ORIGINS = [
-  ...PREDICTION.map((item) => new URL(item.url).origin),
   ...LENDING.map((item) => new URL(item.url).origin),
   ...PERPS.map((item) => new URL(item.url).origin),
 ];
