@@ -234,6 +234,7 @@ export interface StateProviderProps {
   keyring: string;
   brand?: string;
   isLazyImport?: boolean;
+  children?: React.ReactNode;
   onDone?(): void;
 }
 

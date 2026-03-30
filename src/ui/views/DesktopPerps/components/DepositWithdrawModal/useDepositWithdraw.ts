@@ -3,6 +3,7 @@ import { message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import { useWallet, isSameAddress } from '@/ui/utils';
 import { useAsync, useDebounce } from 'react-use';
+import { toChecksumAddress } from '@ethereumjs/util';
 import BigNumber from 'bignumber.js';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { last } from 'lodash';
@@ -123,19 +124,9 @@ export const useDepositWithdraw = (
 
   const pickDefaultToken = useCallback((list: TokenItem[]) => {
     if (!list.length) return;
-
-    const first = list[0];
-    const second = list[1];
-
-    if (first?.amount) {
-      setSelectedToken(first);
-      return;
-    }
-    if (second?.amount) {
-      setSelectedToken(second);
-      return;
-    }
-    setSelectedToken(list[2] ?? first);
+    // Pick the first token with balance (list is already sorted by USD value)
+    const withBalance = list.find((t) => t.amount > 0);
+    setSelectedToken(withBalance ?? ARB_USDC_TOKEN_ITEM);
   }, []);
 
   // Fetch token list
@@ -530,7 +521,7 @@ export const useDepositWithdraw = (
             },
           ] as any[],
         } as const,
-        [to, sendValue.toFixed(0)] as any[],
+        [toChecksumAddress(to), sendValue.toFixed(0)] as any[],
       ] as const;
       const params: Record<string, any> = {
         chainId: chain.id,

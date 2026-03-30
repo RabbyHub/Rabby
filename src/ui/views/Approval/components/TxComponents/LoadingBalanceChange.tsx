@@ -35,11 +35,11 @@ const LoadingBalanceChange = () => {
       </p>
       <div>
         <div className="flex items-center gap-[12px] mb-[12px]">
-          <Skeleton.Avatar active style={{ width: 28, height: 28 }} />
+          <Skeleton.Avatar active style={{ width: 28, height: 28 }} size={28} />
           <Skeleton.Input active style={{ width: 120, height: 17 }} />
         </div>
         <div className="flex items-center gap-[12px]">
-          <Skeleton.Avatar active style={{ width: 28, height: 28 }} />
+          <Skeleton.Avatar active style={{ width: 28, height: 28 }} size={28} />
           <Skeleton.Input active style={{ width: 120, height: 17 }} />
         </div>
       </div>

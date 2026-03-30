@@ -3355,7 +3355,8 @@
         "tradeValue": "名义价值",
         "closedPnl": "已实现盈亏",
         "size": "头寸规模",
-        "fee": "手续费"
+        "fee": "手续费",
+        "feeDesc": "当用户进行交易时，同时会收取 <1>交易费用</1> 和 <2>建造者费用</2>。"
       },
       "logoutConfirmModal": {
         "title": "登出当前地址",
@@ -3377,7 +3378,8 @@
         "estReceiveTooltip": "跨链充值通过 LiFi 进行，可能产生一些滑点。预计在 {{number}} 秒内到达。",
         "minimumWithdrawSize": "最低提现金额为$2",
         "goBridgeTips": "仅支持在 Arbitrum 上的 USDC 进行直接充值。请在存款前，将您当前的代币跨链到 Arbitrum 上的 USDC。",
-        "hyperliquidFeeLabelTooltip": "新用户需支付 Hyperliquid 一次性激活费用。"
+        "hyperliquidFeeLabelTooltip": "新用户需支付 Hyperliquid 一次性激活费用。",
+        "amount": "金额"
       },
       "home": {
         "markPrice": "标记价格",
@@ -3540,7 +3542,12 @@
       "isolatedMarginDesc": "每个头寸使用独立的保证金。损失仅限于该头寸，但更容易被清算。",
       "liquidationDistanceDown": "下跌 <bold>{{percent}}</bold> 将触发清算",
       "details": "详情",
-      "crossMarginDesc": "所有头寸共享相同的保证金。这减少了单一头寸被强制平仓的风险，但在极端市场波动中，所有交叉保证金资金都有可能被损失。"
+      "crossMarginDesc": "所有头寸共享相同的保证金。这减少了单一头寸被强制平仓的风险，但在极端市场波动中，所有交叉保证金资金都有可能被损失。",
+      "newUserGuide": {
+        "learnMore": "了解更多"
+      },
+      "addFunds": "添加资金",
+      "crossMarginLiqPriceTip": "在跨保证金模式下，单个头寸的清算价格仅供参考估算。"
     },
     "perpsPro": {
       "chatArea": {
@@ -3634,7 +3641,14 @@
           "newPosition": "新建仓位",
           "reverse": "反向",
           "closedPnl": "已平仓盈亏",
-          "closeAll": "全部关闭"
+          "closeAll": "全部关闭",
+          "dontShowAgain": "不再显示此内容",
+          "marketCloseBtn": "市场关闭",
+          "confirmCloseAllTitle": "确认关闭所有头寸",
+          "marketCloseTitle": "市场平仓",
+          "marketCloseDesc": "这将尝试立即平仓。",
+          "invalidPrice": "无效价格",
+          "confirmCloseAllDesc": "您所有未平仓的头寸将按市场价格平仓，并取消所有订单。"
         },
         "openOrders": {
           "tpSl": "止盈/止损",

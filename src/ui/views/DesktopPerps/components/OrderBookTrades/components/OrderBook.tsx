@@ -429,7 +429,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
             overlay={
               <Menu
                 className="bg-r-neutral-bg1"
-                onClick={(info) => setAggregationIndex(info.key as number)}
+                onClick={(info) =>
+                  setAggregationIndex((info.key as unknown) as number)
+                }
               >
                 {aggregationLevels.map((level, index) => (
                   <Menu.Item

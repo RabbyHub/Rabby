@@ -3317,7 +3317,8 @@
         "size": "Tamaño de la posición",
         "closedPnl": "P/L realizado",
         "tradeValue": "Valor nocional",
-        "fee": "Comisión"
+        "fee": "Comisión",
+        "feeDesc": "Cuando los usuarios realizan operaciones, se aplican tanto <1>comisiones de trading</1> como <2>comisiones de constructor</2>."
       },
       "logoutConfirmModal": {
         "title": "Cerrar sesión de la dirección actual",
@@ -3339,7 +3340,8 @@
         "estReceiveLabel": "Recibo estimado",
         "goBridgeTips": "Solo USDC en Arbitrum es compatible con depósitos directos. Por favor, puentea tu token actual a USDC en Arbitrum antes de depositar.",
         "estReceive": "Recibo estimado: {{balance}}",
-        "hyperliquidFeeLabelTooltip": "Los nuevos usuarios deben pagar una tarifa de activación única a Hyperliquid."
+        "hyperliquidFeeLabelTooltip": "Los nuevos usuarios deben pagar una tarifa de activación única a Hyperliquid.",
+        "amount": "Cantidad"
       },
       "home": {
         "size": "Tamaño",
@@ -3502,7 +3504,12 @@
       "openProModeInTab": "Abrir Modo Pro en la pestaña",
       "cannotChangeMarginModeWithOpenPositions": "No se puede cambiar el modo de margen con posiciones abiertas.",
       "isolatedMarginDesc": "Cada posición utiliza su propio margen. Las pérdidas están limitadas a esa posición, pero puede ser liquidada más fácilmente.",
-      "crossMarginDesc": "Todas las posiciones comparten el mismo margen. Esto reduce la posibilidad de que una sola posición sea liquidada, pero todos los fondos de margen cruzado pueden perderse en movimientos extremos del mercado."
+      "crossMarginDesc": "Todas las posiciones comparten el mismo margen. Esto reduce la posibilidad de que una sola posición sea liquidada, pero todos los fondos de margen cruzado pueden perderse en movimientos extremos del mercado.",
+      "newUserGuide": {
+        "learnMore": "Aprender más"
+      },
+      "addFunds": "Agregar fondos",
+      "crossMarginLiqPriceTip": "En el modo de margen cruzado, el precio de liquidación para una posición única es solo una estimación de referencia."
     },
     "perpsPro": {
       "chatArea": {
@@ -3596,7 +3603,14 @@
           "close": "Cerrar",
           "mid": "Precio medio",
           "limitClose": "Cierre límite",
-          "closeLimit": "Límite de cierre"
+          "closeLimit": "Límite de cierre",
+          "marketCloseBtn": "Cierre de mercado",
+          "dontShowAgain": "No mostrar esto de nuevo",
+          "confirmCloseAllTitle": "Confirmar cierre de todas las posiciones",
+          "marketCloseDesc": "Esto intentará cerrar la posición de inmediato.",
+          "confirmCloseAllDesc": "Todas tus posiciones abiertas se cerrarán al precio de mercado y se cancelarán todas las órdenes.",
+          "marketCloseTitle": "Cerrar posición de mercado",
+          "invalidPrice": "Precio inválido"
         },
         "openOrders": {
           "order": "Orden",

@@ -16,7 +16,12 @@ import { useAsyncFn, usePrevious } from 'react-use';
 import { Form, message, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
-import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
+import {
+  isValidAddress,
+  intToHex,
+  zeroAddress,
+  toChecksumAddress,
+} from '@ethereumjs/util';
 import { globalSupportCexList } from '@/ui/models/exchange';
 
 import {
@@ -55,6 +60,7 @@ import { Chain } from '@debank/common';
 import {
   checkIfTokenBalanceEnough,
   customTestnetTokenToTokenItem,
+  getChainDefaultToken,
   tokenAmountBn,
 } from '@/ui/utils/token';
 import {
@@ -98,6 +104,7 @@ import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
 import { ChainSelectorInSend } from './components/ChainSelectorInSend';
 import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
+import { resolveTempoDefaultTokenId } from '@/utils/tempo';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -585,7 +592,9 @@ const SendToken = () => {
           ] as any[],
         } as const,
         [
-          toAddress || '0x0000000000000000000000000000000000000000',
+          toChecksumAddress(
+            toAddress || '0x0000000000000000000000000000000000000000'
+          ),
           sendValue.toFixed(0),
         ] as any[],
       ] as const;
@@ -842,7 +851,7 @@ const SendToken = () => {
           const code = await wallet.requestETHRpc<any>(
             {
               method: 'eth_getCode',
-              params: [toAddress, 'latest'],
+              params: [toChecksumAddress(toAddress), 'latest'],
             },
             chain.serverId
           );
@@ -998,7 +1007,7 @@ const SendToken = () => {
             const code = await wallet.requestETHRpc<any>(
               {
                 method: 'eth_getCode',
-                params: [toAddress, 'latest'],
+                params: [toChecksumAddress(toAddress), 'latest'],
               },
               chain.serverId
             );
@@ -1323,10 +1332,11 @@ const SendToken = () => {
             params: [
               {
                 from: currentAddress,
-                to:
+                to: toChecksumAddress(
                   toAddress && isValidAddress(toAddress)
                     ? toAddress
-                    : zeroAddress(),
+                    : zeroAddress()
+                ),
                 gasPrice: intToHex(0),
                 value: intToHex(0),
               },
@@ -1353,18 +1363,27 @@ const SendToken = () => {
       const chain = findChain({
         serverId: chainId,
       });
+      const tokenId = resolveTempoDefaultTokenId({
+        chainServerId: chainId,
+        tokenId: id,
+        nativeTokenId: chain?.nativeTokenAddress,
+      });
       let result: TokenItem | null = null;
       if (chain?.isTestnet) {
         const res = await wallet.getCustomTestnetToken({
           address: currentAddress,
           chainId: chain.id,
-          tokenId: id,
+          tokenId,
         });
         if (res) {
           result = customTestnetTokenToTokenItem(res);
         }
       } else {
-        result = await wallet.openapi.getToken(currentAddress, chainId, id);
+        result = await wallet.openapi.getToken(
+          currentAddress,
+          chainId,
+          tokenId
+        );
       }
       if (result) {
         estimateGasOnChain({
@@ -1833,8 +1852,9 @@ const SendToken = () => {
         let nativeToken: TokenItem | null = null;
         if (chain) {
           setChain(chain.enum);
+          const defaultToken = getChainDefaultToken(chain.enum);
           nativeToken = await loadCurrentToken(
-            chain.nativeTokenAddress,
+            defaultToken.id,
             chain.serverId,
             account.address
           );

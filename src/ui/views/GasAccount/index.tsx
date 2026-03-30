@@ -116,27 +116,31 @@ const GasAccountInner = () => {
         }}
       >
         <Menu.Item
-          className="px-12 h-40 flex items-center gap-[6px] bg-transparent hover:bg-transparent border-b-[0.5px] border-solid border-rabby-neutral-line"
+          className="px-12 h-40 bg-transparent hover:bg-transparent border-b-[0.5px] border-solid border-rabby-neutral-line"
           onClick={() => {
             setLoginVisible(true);
           }}
         >
-          <RcIconSwitchCC className="w-16 h-16 text-r-neutral-title-1" />
-          <span className="text-r-neutral-title-1 text-13 font-medium">
-            {t('page.gasAccount.switchAccount')}
-          </span>
+          <div className="flex items-center gap-[6px]">
+            <RcIconSwitchCC className="w-16 h-16 text-r-neutral-title-1" />
+            <span className="text-r-neutral-title-1 text-13 font-medium">
+              {t('page.gasAccount.switchAccount')}
+            </span>
+          </div>
         </Menu.Item>
 
         <Menu.Item
-          className="px-12 h-40 flex items-center gap-[6px] bg-transparent hover:bg-transparent"
+          className="px-12 h-40 bg-transparent hover:bg-transparent"
           onClick={() => {
             setLogoutVisible(true);
           }}
         >
-          <RcIconLogout className="w-16 h-16" />
-          <span className="text-r-red-default text-13 font-medium">
-            {t('page.gasAccount.logout')}
-          </span>
+          <div className="flex items-center gap-[6px]">
+            <RcIconLogout className="w-16 h-16" />
+            <span className="text-r-red-default text-13 font-medium">
+              {t('page.gasAccount.logout')}
+            </span>
+          </div>
         </Menu.Item>
       </Menu>
     ),

@@ -3320,7 +3320,8 @@
         "date": "Tarih",
         "tradeValue": "İşlem Değeri",
         "size": "Pozisyon Büyüklüğü",
-        "closedPnl": "Kapatılan Kâr/Zarar"
+        "closedPnl": "Kapatılan Kâr/Zarar",
+        "feeDesc": "Kullanıcılar işlem yaptığında, hem <1>işlem ücretleri</1> hem de <2>oluşturucu ücretleri</2> geçerlidir."
       },
       "logoutConfirmModal": {
         "desc": "Mevcut Sürekli Vadeli Hesabınızdan çıkış yapıyorsunuz. Bu adresle giriş yaparak istediğiniz zaman hesabınızı geri yükleyebilirsiniz.",
@@ -3342,7 +3343,8 @@
         "estReceiveLabel": "Tahmini Alınacak",
         "goBridgeTips": "Arbitrum üzerinde doğrudan yatırma için yalnızca USDC desteklenir. Yatırmadan önce mevcut tokeninizi Arbitrum'daki USDC'ye köprüleyin.",
         "estReceiveTooltip": "Çapraz zincir mevduatı LiFi üzerinden işlenir, bazı kaymalar meydana gelebilir. {{number}} saniye içinde varış tahmini.",
-        "hyperliquidFeeLabelTooltip": "Yeni kullanıcılar Hyperliquid tarafından tek seferlik bir etkinleştirme ücreti öder."
+        "hyperliquidFeeLabelTooltip": "Yeni kullanıcılar Hyperliquid tarafından tek seferlik bir etkinleştirme ücreti öder.",
+        "amount": "Miktar"
       },
       "home": {
         "entryPrice": "Giriş Fiyatı",
@@ -3505,7 +3507,12 @@
       "marginMode": "Marjinal Modu",
       "positionValue": "Pozisyon Değeri",
       "isolatedMarginDesc": "Her bir pozisyon kendi teminatını kullanır. Kayıplar o pozisyonla sınırlıdır, ancak likiditeye daha kolay maruz kalabilir.",
-      "crossMarginDesc": "Tüm pozisyonlar aynı marjı paylaşır. Bu, tek bir pozisyonun tasfiye edilme şansını azaltır, ancak tüm çapraz marj fonları aşırı piyasa hareketlerinde kaybedilebilir."
+      "crossMarginDesc": "Tüm pozisyonlar aynı marjı paylaşır. Bu, tek bir pozisyonun tasfiye edilme şansını azaltır, ancak tüm çapraz marj fonları aşırı piyasa hareketlerinde kaybedilebilir.",
+      "newUserGuide": {
+        "learnMore": "Daha Fazla Öğrenin"
+      },
+      "addFunds": "Fon Ekle",
+      "crossMarginLiqPriceTip": "Cross Margin modunda, tek bir pozisyon için tasfiye fiyatı sadece referans için bir tahmindir."
     },
     "perpsPro": {
       "chatArea": {
@@ -3599,7 +3606,14 @@
           "closeLimit": "Kapatma Limiti",
           "closePositionMarketTips": "Bu, mevcut piyasa fiyatında derhal kapanacaktır.",
           "reverse": "Tersine çevir",
-          "mid": "orta fiyat"
+          "mid": "orta fiyat",
+          "invalidPrice": "Geçersiz Fiyat",
+          "dontShowAgain": "Bunu bir daha gösterme",
+          "marketCloseTitle": "Piyasa Kapatma Pozisyonu",
+          "confirmCloseAllTitle": "Tüm Pozisyonları Kapatmayı Onayla",
+          "marketCloseBtn": "Piyasa Kapatma",
+          "marketCloseDesc": "Bu, pozisyonu hemen kapatmayı deneyecektir.",
+          "confirmCloseAllDesc": "Tüm açık pozisyonlar piyasa fiyatından kapatılacak ve tüm emirler iptal edilecektir."
         },
         "openOrders": {
           "time": "Zaman",

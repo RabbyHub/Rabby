@@ -585,7 +585,7 @@ function MnemonicsInputs({
                       applyMnemonicsCount(count);
                     }}
                   >
-                    <div className="text-wrapper">
+                    <div className="text-wrapper whitespace-nowrap">
                       <Trans
                         t={t}
                         i18nKey="page.newAddress.seedPhrase.wordPhrase"
@@ -597,7 +597,7 @@ function MnemonicsInputs({
                             color: 'var(--r-blue-default, #7084ff)',
                           }}
                         >
-                          {{ count }}
+                          {{ count } as any}
                         </b>
                         -word phrase
                       </Trans>
@@ -620,7 +620,7 @@ function MnemonicsInputs({
                           });
                         }}
                       >
-                        <div className="text-wrapper">
+                        <div className="text-wrapper whitespace-nowrap">
                           <Trans
                             t={t}
                             i18nKey="page.newAddress.seedPhrase.wordPhraseAndPassphrase"
@@ -632,7 +632,7 @@ function MnemonicsInputs({
                                 color: 'var(--r-blue-default, #7084ff)',
                               }}
                             >
-                              {{ count }}
+                              {{ count } as any}
                             </b>
                             -word phrase and Passphrase
                           </Trans>
@@ -654,7 +654,7 @@ function MnemonicsInputs({
                           });
                         }}
                       >
-                        <div className="text-wrapper">
+                        <div className="text-wrapper whitespace-nowrap">
                           <Trans
                             t={t}
                             i18nKey={
@@ -721,7 +721,7 @@ function MnemonicsInputs({
                       color: 'var(--r-blue-default, #7084ff)',
                     }}
                   >
-                    {{ mnemonicsCount }}
+                    {{ mnemonicsCount } as any}
                   </b>
                   -word phrase and Passphrase
                 </Trans>

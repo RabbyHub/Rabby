@@ -14,7 +14,7 @@ import {
   calcMaxPriorityFee,
   checkGasAndNonce,
   explainGas,
-  getNativeTokenBalance,
+  getGasTokenBalance,
   getPendingTxs,
   is7702Tx,
 } from '@/utils/transaction';
@@ -37,6 +37,7 @@ import {
 import stats from '@/stats';
 import { getCexInfo } from '../models/exchange';
 import { Account } from '@/background/service/preference';
+import { isTempoChain } from '@/utils/tempo';
 
 // fail code
 export enum FailedCode {
@@ -216,11 +217,13 @@ export const sendTransaction = async ({
       }),
     }));
 
-  const balance = await getNativeTokenBalance({
+  const gasToken = await getGasTokenBalance({
     wallet,
     chainId: chain.id,
     address,
   });
+  const balance = gasToken.rawBalance;
+  const checkTxValueInBalance = !isTempoChain(chain.serverId);
   let estimateGas = 0;
   if (preExecResult.gas.success) {
     estimateGas = preExecResult.gas.gas_limit || preExecResult.gas.gas_used;
@@ -248,6 +251,8 @@ export const sendTransaction = async ({
       explainTx: preExecResult,
       needRatio,
       wallet,
+      gasTokenDecimals: gasToken.token.decimals,
+      checkTxValueInBalance,
     });
     gasLimit = _gasLimit;
     recommendGasLimitRatio = _recommendGasLimitRatio;
@@ -263,6 +268,7 @@ export const sendTransaction = async ({
     tx,
     gasLimit,
     account: { ...currentAccount, address },
+    gasTokenDecimals: gasToken.token.decimals,
   });
 
   // check gas errors
@@ -280,6 +286,8 @@ export const sendTransaction = async ({
         isGnosisAccount: false,
         nativeTokenBalance: balance,
         recommendGasLimitRatio,
+        gasTokenDecimals: gasToken.token.decimals,
+        checkTxValueInBalance,
       });
 
   const isGasNotEnough = !isGasLess && checkErrors.some((e) => e.code === 3001);

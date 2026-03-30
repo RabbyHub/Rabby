@@ -3,6 +3,7 @@ import React from 'react';
 import IconArrowRight from '@/ui/assets/dashboard/settings/icon-right-arrow.svg';
 
 export interface Props {
+  children?: React.ReactNode;
   onClick(): void;
 }
 

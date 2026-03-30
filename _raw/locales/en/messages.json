@@ -855,6 +855,7 @@
         "fee": "Fee",
         "closedPnl": "Closed PNL",
         "provider": "Provider",
+        "feeDesc": "When users place trades, both <1>trading fees</1> and <2>builder fees</2> apply.",
         "title": {
           "openLong": "Open Long",
           "openShort": "Open Short",
@@ -874,6 +875,7 @@
         "desc": "You are logging out of your current Perps account. You can restore it anytime by logging in with this address."
       },
       "depositAmountPopup": {
+        "amount": "Amount",
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
@@ -919,6 +921,7 @@
       "size": "Size",
       "isolated": "Isolated",
       "cross": "Cross",
+      "crossMarginLiqPriceTip": "In Cross Margin mode, the liquidation price for a single position is an estimate for reference only.",
       "marginIsolated": "Margin (Isolated)",
       "marginCross": "Margin (Cross)",
       "marginMode": "Margin Mode",
@@ -1037,6 +1040,10 @@
       "fundingGains": "Funding Gains",
       "close": "Close",
       "add": "Add",
+      "addFunds": "Add Funds",
+      "newUserGuide": {
+        "learnMore": "Learn More"
+      },
       "invitePopup": {
         "title": "Save on Hyperliquid Fees",
         "activatedSuccess": "4% Hyperliquid fee savings activated",
@@ -1146,7 +1153,14 @@
           "closedPnl": "Closed PNL",
           "newPosition": "New Position",
           "closePositionReverseTips": "This will immediately close your position at the current market price and open a position of equal size in the opposite direction.",
-          "confirm": "Confirm"
+          "confirm": "Confirm",
+          "invalidPrice": "Invalid Price",
+          "marketCloseTitle": "Market Close Position",
+          "marketCloseDesc": "This will attempt to immediately close the position.",
+          "marketCloseBtn": "Market Close",
+          "dontShowAgain": "Don't show this again",
+          "confirmCloseAllTitle": "Confirm Close All Positions",
+          "confirmCloseAllDesc": "All your open positions will be closed at market price and cancel all orders."
         },
         "openOrders": {
           "__skip_translation": [

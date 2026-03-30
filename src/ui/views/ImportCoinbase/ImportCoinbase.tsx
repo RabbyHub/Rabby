@@ -56,7 +56,7 @@ export const ImportCoinbase: React.FC<{
     },
     onError(err) {
       if (!err?.message.includes('duplicate')) {
-        message.error(t(err?.message as any));
+        message.error(err?.message as any);
       }
       handleImportCoinbase();
       return;

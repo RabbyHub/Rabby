@@ -158,6 +158,7 @@ const AccountItem: React.FC<{
   isSelected?: boolean;
   isShowApprovalCount?: boolean;
   isPined?: boolean;
+  children?: React.ReactNode;
 }> = ({ item, onClick, isSelected, isShowApprovalCount, isPined }) => {
   const dispatch = useRabbyDispatch();
   const history = useHistory();

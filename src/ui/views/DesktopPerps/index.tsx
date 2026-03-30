@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useRef } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { ChartArea } from './components/ChartArea';
 import { OrderBookTrades } from './components/OrderBookTrades';
@@ -13,7 +13,7 @@ import {
   DepositWithdrawModal,
   DepositWithdrawModalType,
 } from './components/DepositWithdrawModal';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
 import { TopPermissionTips } from './components/TopPermissionTips';
@@ -38,57 +38,19 @@ export type PopupType = DepositWithdrawModalType | 'add-address' | null;
 export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   isActive = true,
 }) => {
-  usePerpsProInit();
+  usePerpsProInit(isActive);
 
   const history = useHistory();
   const location = useLocation();
-  const dispatch = useRabbyDispatch();
-  const selectedCoin = useRabbySelector((state) => state.perps.selectedCoin);
-  const isUpdatingFromUrl = useRef(false);
 
   const currentPerpsAccount = useRabbySelector(
     (s) => s.perps.currentPerpsAccount
   );
   const { login: switchPerpsAccount } = usePerpsProState();
 
-  const { action, coin } = useMemo(() => {
-    const searchParams = new URLSearchParams(location.search);
-    return {
-      action: searchParams.get('action'),
-      coin: searchParams.get('coin'),
-    };
+  const action = useMemo(() => {
+    return new URLSearchParams(location.search).get('action');
   }, [location.search]);
-
-  // Initialize coin from URL on mount or when URL coin changes
-  useEffect(() => {
-    if (!isActive) {
-      return;
-    }
-    if (coin && coin !== selectedCoin) {
-      isUpdatingFromUrl.current = true;
-      dispatch.perps.updateSelectedCoin(coin);
-      // Reset flag after state update
-      setTimeout(() => {
-        isUpdatingFromUrl.current = false;
-      }, 0);
-    }
-  }, [coin, dispatch, isActive]); // Run when URL coin param changes
-
-  // Update URL when selectedCoin changes (but not from URL change)
-  useEffect(() => {
-    if (!isActive) {
-      return;
-    }
-
-    if (!isUpdatingFromUrl.current && selectedCoin && coin !== selectedCoin) {
-      const searchParams = new URLSearchParams(location.search);
-      searchParams.set('coin', selectedCoin);
-      history.replace({
-        pathname: location.pathname,
-        search: searchParams.toString(),
-      });
-    }
-  }, [selectedCoin, coin, history, location, isActive]);
 
   return (
     <>

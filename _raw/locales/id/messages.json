@@ -3314,7 +3314,8 @@
         "price": "Harga",
         "provider": "Penyedia",
         "closedPnl": "PNL terealisasi",
-        "size": "Ukuran posisi"
+        "size": "Ukuran posisi",
+        "feeDesc": "Saat pengguna melakukan transaksi, baik <1>biaya perdagangan</1> maupun <2>biaya pembangun</2> berlaku."
       },
       "logoutConfirmModal": {
         "title": "Keluar dari alamat saat ini",
@@ -3336,7 +3337,8 @@
         "estReceiveTooltipNoTime": "Setoran lintas rantai diproses melalui LiFi, mungkin terjadi slippage.",
         "estReceiveTooltip": "Setoran lintas rantai diproses melalui LiFi, mungkin terjadi selisih harga. Perkiraan kedatangan dalam {{number}} detik.",
         "goBridgeTips": "Hanya USDC di Arbitrum yang didukung untuk deposit langsung. Silakan jembatani token Anda saat ini ke USDC di Arbitrum sebelum melakukan deposit.",
-        "hyperliquidFeeLabelTooltip": "Pengguna baru dikenakan biaya aktivasi satu kali oleh Hyperliquid."
+        "hyperliquidFeeLabelTooltip": "Pengguna baru dikenakan biaya aktivasi satu kali oleh Hyperliquid.",
+        "amount": "Jumlah"
       },
       "home": {
         "size": "Ukuran Posisi",
@@ -3499,7 +3501,12 @@
       "liquidationDistanceUp": "Naik <bold>{{percent}}</bold> akan memicu likuidasi",
       "settings": "Pengaturan",
       "isolatedMarginDesc": "Setiap posisi menggunakan margin-nya sendiri. Kerugian dibatasi pada posisi tersebut, tetapi dapat dilikuidasi dengan lebih mudah.",
-      "crossMarginDesc": "Semua posisi berbagi margin yang sama. Ini mengurangi kemungkinan satu posisi dilikuidasi, tetapi semua dana cross-margin bisa hilang dalam gerakan pasar yang ekstrem."
+      "crossMarginDesc": "Semua posisi berbagi margin yang sama. Ini mengurangi kemungkinan satu posisi dilikuidasi, tetapi semua dana cross-margin bisa hilang dalam gerakan pasar yang ekstrem.",
+      "newUserGuide": {
+        "learnMore": "Pelajari Lebih Lanjut"
+      },
+      "addFunds": "Tambahkan Dana",
+      "crossMarginLiqPriceTip": "Dalam mode Cross Margin, harga likuidasi untuk satu posisi adalah perkiraan untuk referensi saja."
     },
     "perpsPro": {
       "chatArea": {
@@ -3593,7 +3600,14 @@
           "closeMarket": "Tutup Posisi Pasar",
           "closedPnl": "PNL terealisasi",
           "closeLimit": "Tutup Limit",
-          "configure": "Konfigurasikan"
+          "configure": "Konfigurasikan",
+          "marketCloseBtn": "Tutup Pasar",
+          "dontShowAgain": "Jangan tunjukkan ini lagi",
+          "invalidPrice": "Harga Tidak Valid",
+          "marketCloseTitle": "Tutup Posisi Pasar",
+          "confirmCloseAllTitle": "Konfirmasi Tutup Semua Posisi",
+          "marketCloseDesc": "Ini akan mencoba untuk segera menutup posisi.",
+          "confirmCloseAllDesc": "Semua posisi terbuka Anda akan ditutup pada harga pasar dan membatalkan semua pesanan."
         },
         "openOrders": {
           "price": "Harga",
