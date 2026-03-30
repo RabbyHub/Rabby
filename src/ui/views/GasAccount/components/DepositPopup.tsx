@@ -35,7 +35,7 @@ import {
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { GasAccountDepositButton } from './GasAccountDepositButton';
-import { addHexPrefix } from '@ethereumjs/util';
+import { addHexPrefix, toChecksumAddress } from '@ethereumjs/util';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { Account } from '@/background/service/preference';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
@@ -257,7 +257,7 @@ const buildDepositTxs = ({
           { type: 'uint256', name: 'value' },
         ],
       },
-      [to, rawAmount]
+      [toChecksumAddress(to), rawAmount]
     ),
     isSend: true,
   };

@@ -76,8 +76,10 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const hasFillLimitPrice = React.useRef(false);
   useEffect(() => {
     if (!hasFillLimitPrice.current && midPrice) {
-      setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
+      const price = formatTpOrSlPrice(midPrice, szDecimals);
+      setLimitPrice(price);
       hasFillLimitPrice.current = true;
+      eventBus.emit(EVENTS.PERPS.SWITCH_LIMIT_FILL_PRICE, price);
     }
   }, [midPrice, szDecimals]);
 

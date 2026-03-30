@@ -1,6 +1,7 @@
 import { ChainWithBalance } from '@rabby-wallet/rabby-api/dist/types';
 import {
   BRAND_ALIAN_TYPE_TEXT,
+  HARDWARE_KEYRING_TYPES,
   KEYRING_CLASS,
   KEYRING_ICONS,
   KEYRING_ICONS_WHITE,
@@ -258,4 +259,18 @@ export const filterMyAccounts = (account: Account) => {
     isWatchOnly: account.type === KEYRING_CLASS.WATCH,
     isGnosis: account.type === KEYRING_CLASS.GNOSIS,
   };
+};
+
+export const isSupportDBAccount = (account?: Account) => {
+  if (!account) {
+    return false;
+  }
+  return (
+    ([KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY] as string[]).includes(
+      account.type
+    ) ||
+    Object.values(HARDWARE_KEYRING_TYPES).find(
+      (item) => item.type === account.type
+    )
+  );
 };

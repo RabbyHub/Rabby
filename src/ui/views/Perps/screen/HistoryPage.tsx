@@ -64,6 +64,9 @@ export const HistoryPage: React.FC = () => {
           <Virtuoso
             data={list}
             style={{ height: '100%' }}
+            components={{
+              Footer: () => <div className="h-[12px]" />,
+            }}
             itemContent={(_, item) =>
               'usdValue' in item ? (
                 <HistoryAccountItem data={item} />

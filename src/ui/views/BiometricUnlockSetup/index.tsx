@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Input, message } from 'antd';
+import { Button, Input, InputRef, message } from 'antd';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import browser from 'webextension-polyfill';
@@ -99,7 +99,7 @@ export const BiometricUnlockSetup = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [inputError, setInputError] = useState('');
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<InputRef>(null);
   const disableSubmit = !password || loading;
 
   const closeCurrentWindowOnly = async () => {

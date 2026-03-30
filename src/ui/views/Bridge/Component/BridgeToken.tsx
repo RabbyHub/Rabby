@@ -5,7 +5,7 @@ import TokenSelect from '@/ui/component/TokenSelect';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { DrawerProps, Input } from 'antd';
+import { DrawerProps, Input, InputRef } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -107,7 +107,7 @@ export const BridgeToken = ({
 
   const isMaxRef = useRef(false);
 
-  const inputRef = useRef<Input>();
+  const inputRef = useRef<InputRef>();
 
   const chainSelectorRef = useRef<ChainSelectorRef>(null);
 

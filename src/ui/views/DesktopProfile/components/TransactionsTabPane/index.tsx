@@ -1,12 +1,10 @@
 import { useQueryDbHistory } from '@/db/hooks/history';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { HistoryItemActionContext } from '@/ui/views/History/components/HistoryItem';
 import { Switch } from 'antd';
 import React from 'react';
-import { Virtuoso } from 'react-virtuoso';
 import { useTranslation } from 'react-i18next';
+import { Virtuoso } from 'react-virtuoso';
 import { Empty } from 'ui/component';
-import { useWallet } from 'ui/utils';
 import { DesktopHistoryItem } from './DesktopHistoryItem';
 import { DesktopLoading } from './DesktopLoading';
 
@@ -19,44 +17,22 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
   scrollContainerRef,
   selectChainId,
 }) => {
-  const wallet = useWallet();
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
-  const [isShowHideScamTxModal, setIsShowHideScamTxModal] = React.useState(
-    false
-  );
+
   const [isHideScam, setIsHideScam] = React.useState(true);
 
-  const { data, isLoading } = useQueryDbHistory({
-    address: currentAccount?.address || '',
+  const { data, loading } = useQueryDbHistory({
+    account: currentAccount,
     isFilterScam: isHideScam,
     serverChainId: selectChainId,
   });
 
-  const isEmpty = (data?.length || 0) <= 0 && !isLoading;
-
-  const [
-    focusingHistoryItem,
-    setFocusingHistoryItem,
-  ] = React.useState<HistoryItemActionContext | null>(null);
+  const isEmpty = (data?.length || 0) <= 0 && !loading;
 
   return (
     <div className="pb-[16px] px-[20px]">
-      {/* <Modal
-        visible={!!focusingHistoryItem}
-        title={t('page.transactions.modalViewMessage.title')}
-        className="view-tx-message-modal"
-        onCancel={() => {
-          setFocusingHistoryItem(null);
-        }}
-        maxHeight="360px"
-      >
-        <div className="parsed-content text-14">
-          {focusingHistoryItem?.parsedInputData}
-        </div>
-      </Modal> */}
-
-      {isLoading ? (
+      {loading ? (
         <div className="overflow-hidden">
           <DesktopLoading count={8} active />
         </div>
@@ -83,14 +59,19 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
               itemContent={(_, item) => (
                 <DesktopHistoryItem key={item.id} data={item} />
               )}
+              // endReached={loadMore}
+              // components={{
+              //   Footer: () => {
+              //     if (loadingMore) {
+              //       return <DesktopLoading count={3} active />;
+              //     }
+              //     return null;
+              //   },
+              // }}
             />
           )}
         </>
       )}
-      {/* <HideScamTransactionModal
-        visible={isShowHideScamTxModal}
-        onCancel={() => setIsShowHideScamTxModal(false)}
-      /> */}
     </div>
   );
 };

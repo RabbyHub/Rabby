@@ -1,7 +1,7 @@
 import { Drawer, DrawerProps } from 'antd';
 import clsx from 'clsx';
 import React, { ReactNode } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import './index.less';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 
@@ -54,9 +54,10 @@ const open = (
   }
 ) => {
   const container = document.createDocumentFragment();
+  const root = createRoot(container);
 
   function destroy() {
-    ReactDOM.unmountComponentAtNode(container);
+    root.unmount();
   }
 
   function render({
@@ -72,19 +73,17 @@ const open = (
         onClose && onClose();
         onCancel && onCancel();
       };
-      ReactDOM.render(
+      root.render(
         <Popup visible={false} onClose={handleCancel} {...props}>
           {content}
-        </Popup>,
-        container
+        </Popup>
       );
       if (visible) {
         setTimeout(() => {
-          ReactDOM.render(
+          root.render(
             <Popup visible={visible} onClose={handleCancel} {...props}>
               {content}
-            </Popup>,
-            container
+            </Popup>
           );
         });
       }

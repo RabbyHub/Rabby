@@ -6,7 +6,7 @@ import TokenSelect from '@/ui/component/TokenSelect';
 import { formatTokenAmount } from '@debank/common';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { TokenRender } from './TokenRender';
-import { DrawerProps, Input } from 'antd';
+import { DrawerProps, Input, InputRef } from 'antd';
 import styled from 'styled-components';
 import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
@@ -105,7 +105,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
 
   const { t } = useTranslation();
 
-  const inputRef = useRef<Input>();
+  const inputRef = useRef<InputRef>();
 
   const isFrom = type === 'from';
 

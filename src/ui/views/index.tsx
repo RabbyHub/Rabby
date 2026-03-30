@@ -104,7 +104,7 @@ const Main = () => {
   useSyncCurrentAccount();
   const account = useCurrentAccount();
   useSyncDbHistory({
-    address: account?.address || '',
+    account,
   });
 
   return (

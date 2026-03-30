@@ -23,7 +23,7 @@ import { CHAINS_ENUM, EVENTS, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import eventBus from '@/eventBus';
 import { findChain } from '@/utils/chain';
 import { t } from 'i18next';
-import { ModalProps } from 'antd';
+import { DrawerProps, ModalProps } from 'antd';
 
 const ETH_GAS_USD_LIMIT = 15;
 const OTHER_GAS_USD_LIMIT = 5;
@@ -212,6 +212,7 @@ class SignatureManager {
 
   private createSkeletonCtx(txs: Tx[], fingerprint: string): SignerCtx {
     const chainId = txs[0]?.chainId || 0;
+    const chain = findChain({ id: chainId });
     return {
       fingerprint,
       open: true,
@@ -223,7 +224,15 @@ class SignatureManager {
       selectedGas: null,
       txsCalc: [],
       nativeTokenPrice: 0,
-      nativeTokenBalance: '0x0',
+      nativeTokenBalance: '0',
+      gasToken: chain
+        ? {
+            tokenId: chain.nativeTokenAddress,
+            symbol: chain.nativeTokenSymbol,
+            decimals: chain.nativeTokenDecimals || 18,
+            logoUrl: chain.nativeTokenLogo,
+          }
+        : undefined,
       checkErrors: [],
       gasless: undefined,
       gasAccount: undefined,
@@ -408,7 +417,7 @@ class SignatureManager {
   }: {
     wallet: WalletControllerType;
     retry?: boolean;
-    getContainer?: ModalProps['getContainer'];
+    getContainer?: ModalProps['getContainer'] | DrawerProps['getContainer'];
     pauseAfter?: number;
   }) {
     this.pauseAfterThreshold =

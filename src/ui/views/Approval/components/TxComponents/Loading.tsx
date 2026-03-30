@@ -11,7 +11,7 @@ const Loading = () => {
     <ActionWrapper>
       <Card>
         <div className="space-x-[8px] mx-auto flex items-center justify-center py-10">
-          <Skeleton.Avatar active className="w-[24px] h-[24px]" />
+          <Skeleton.Avatar active className="w-[24px] h-[24px]" size={24} />
           <Skeleton.Input active className="w-[140px] h-[16px] rounded" />
         </div>
 
@@ -22,7 +22,7 @@ const Loading = () => {
 
           {Array.from({ length: 2 }).map((_, index) => (
             <div key={index} className="space-x-[8px] py-10 flex items-center">
-              <Skeleton.Avatar active className="w-[24px] h-[24px]" />
+              <Skeleton.Avatar active className="w-[24px] h-[24px]" size={24} />
               <Skeleton.Input active className="w-[140px] h-[16px] rounded" />
             </div>
           ))}

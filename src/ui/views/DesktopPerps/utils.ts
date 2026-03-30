@@ -336,50 +336,36 @@ export const sortTokenList = (
 ) => {
   const items = [...(tokenList || [])];
 
-  // Sort by amount * price (descending)
-  items.sort((a, b) => {
-    const aValue = a.amount * a.price;
-    const bValue = b.amount * b.price;
+  // Ensure ARB USDC and HYPE USDC are always present (even with 0 balance)
+  if (
+    !items.some(
+      (t) =>
+        t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
+    )
+  ) {
+    items.push({ ...ARB_USDC_TOKEN_ITEM, amount: 0 });
+  }
+  if (
+    !items.some(
+      (t) =>
+        t.id === HYPE_USDC_TOKEN_ID && t.chain === HYPE_USDC_TOKEN_SERVER_CHAIN
+    )
+  ) {
+    items.push({ ...HYPE_USDC_TOKEN_ITEM, amount: 0 });
+  }
 
-    // Check if tokens are in supported chains
+  // Sort by USD value descending, supported chains first
+  items.sort((a, b) => {
     const aChain = findChainByServerID(a.chain)?.enum || CHAINS_ENUM.ETH;
     const bChain = findChainByServerID(b.chain)?.enum || CHAINS_ENUM.ETH;
     const aIsSupported = supportedChains.includes(aChain);
     const bIsSupported = supportedChains.includes(bChain);
-
-    // Supported chains first, then by value
     if (aIsSupported && !bIsSupported) return -1;
     if (!aIsSupported && bIsSupported) return 1;
 
-    // Both supported or both not supported, sort by value
-    return bValue - aValue;
+    return b.amount * b.price - a.amount * a.price;
   });
 
-  // Move HYPE USDC to the front if it exists
-  const hypeIdx = items.findIndex(
-    (token) =>
-      token.id === HYPE_USDC_TOKEN_ID &&
-      token.chain === HYPE_USDC_TOKEN_SERVER_CHAIN
-  );
-  if (hypeIdx > 0) {
-    const [hit] = items.splice(hypeIdx, 1);
-    items.unshift(hit);
-  } else if (hypeIdx === -1) {
-    items.unshift(HYPE_USDC_TOKEN_ITEM);
-  }
-
-  // Move ARB USDC to the front if it exists
-  const idx = items.findIndex(
-    (token) =>
-      token.id === ARB_USDC_TOKEN_ID &&
-      token.chain === ARB_USDC_TOKEN_SERVER_CHAIN
-  );
-  if (idx > 0) {
-    const [hit] = items.splice(idx, 1);
-    items.unshift(hit);
-  } else if (idx === -1) {
-    items.unshift(ARB_USDC_TOKEN_ITEM);
-  }
   return items;
 };
 
@@ -451,4 +437,9 @@ export const getStatsReportSide = (isBuy: boolean, isReduceOnly: boolean) => {
     return isBuy ? 'close short' : 'close long';
   }
   return isBuy ? 'open long' : 'open short';
+};
+
+export const formatPerpsValueWithUsdc = (num: string | number) => {
+  const string = new BigNumber(num).toFixed(2);
+  return `${splitNumberByStep(string)} USDC`;
 };

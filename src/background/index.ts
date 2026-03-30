@@ -17,7 +17,6 @@ import {
   IS_FIREFOX,
   KEYRING_CATEGORY_MAP,
   KEYRING_TYPE,
-  SAFE_API_KEY,
 } from 'consts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -71,7 +70,7 @@ import { subscribeTxCompleted } from './subscriptions/rateGuidance';
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
 Safe.adapter = fetchAdapter as any;
-Safe.apiKey = SAFE_API_KEY;
+Safe.openapiService = openapiService;
 
 dayjs.extend(utc);
 

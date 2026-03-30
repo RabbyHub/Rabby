@@ -368,7 +368,7 @@ export class WalletController extends BaseController {
             },
           ],
         },
-        [to, rawAmount]
+        [toChecksumAddress(to), rawAmount]
       ),
       isSend: true,
     };
@@ -771,6 +771,7 @@ export class WalletController extends BaseController {
 
   bridgeToken = async (
     {
+      approveId,
       to,
       data,
       payTokenRawAmount,
@@ -783,6 +784,7 @@ export class WalletController extends BaseController {
       value,
       addHistoryData,
     }: {
+      approveId?: string;
       data: string;
       to: string;
       value: string;
@@ -811,7 +813,7 @@ export class WalletController extends BaseController {
         await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           0,
           {
             ga: {
@@ -832,7 +834,7 @@ export class WalletController extends BaseController {
         await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           payTokenRawAmount,
           {
             ga: {
@@ -887,6 +889,7 @@ export class WalletController extends BaseController {
 
   buildBridgeToken = async (
     {
+      approveId,
       to,
       data,
       payTokenRawAmount,
@@ -899,6 +902,7 @@ export class WalletController extends BaseController {
       value,
       addHistoryData,
     }: {
+      approveId?: string;
       data: string;
       to: string;
       value: string;
@@ -929,7 +933,7 @@ export class WalletController extends BaseController {
         const res = await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           0,
           {
             ga: {
@@ -952,7 +956,7 @@ export class WalletController extends BaseController {
         const res = await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           payTokenRawAmount,
           {
             ga: {
@@ -1060,7 +1064,7 @@ export class WalletController extends BaseController {
           stateMutability: 'nonpayable',
           type: 'function',
         },
-        [spender, amount] as any
+        [toChecksumAddress(spender), amount] as any
       ),
     };
   };
@@ -1115,7 +1119,7 @@ export class WalletController extends BaseController {
           stateMutability: 'nonpayable',
           type: 'function',
         },
-        [spender, amount] as any
+        [toChecksumAddress(spender), amount] as any
       ),
     };
     if (gasPrice) {
@@ -1158,6 +1162,10 @@ export class WalletController extends BaseController {
     } = input;
 
     const tokenSpenders = JSON.parse(JSON.stringify(_tokenSpenders));
+    tokenSpenders.forEach((item: TokenSpenderPair) => {
+      item.token = toChecksumAddress(item.token);
+      item.spender = toChecksumAddress(item.spender);
+    });
 
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
@@ -1318,7 +1326,11 @@ export class WalletController extends BaseController {
                 stateMutability: 'nonpayable',
                 type: 'function',
               },
-              [account.address, to, tokenId]
+              [
+                toChecksumAddress(account.address),
+                toChecksumAddress(to),
+                tokenId,
+              ]
             ),
           },
         ],
@@ -1366,7 +1378,13 @@ export class WalletController extends BaseController {
                 stateMutability: 'nonpayable',
                 type: 'function',
               },
-              [account.address, to, tokenId, amount, []] as any
+              [
+                toChecksumAddress(account.address),
+                toChecksumAddress(to),
+                tokenId,
+                amount,
+                [],
+              ] as any
             ),
           },
         ],
@@ -1431,7 +1449,7 @@ export class WalletController extends BaseController {
                     stateMutability: 'nonpayable',
                     type: 'function',
                   },
-                  [spender, false] as any
+                  [toChecksumAddress(spender), false] as any
                 ),
               },
             ],
@@ -1502,7 +1520,7 @@ export class WalletController extends BaseController {
                   stateMutability: 'nonpayable',
                   type: 'function',
                 },
-                [spender, false] as any
+                [toChecksumAddress(spender), false] as any
               ),
               chainId,
             },
@@ -2473,6 +2491,19 @@ export class WalletController extends BaseController {
 
   clearKeyrings = () => keyringService.clearKeyrings();
 
+  getSafePendingTransactions = async (
+    address: string,
+    networkId: string,
+    nonce: number
+  ) => {
+    const pendingTxs = await Safe.getPendingTransactions(
+      address,
+      networkId,
+      nonce
+    );
+    return pendingTxs;
+  };
+
   importGnosisAddress = async (address: string, networkIds: string[]) => {
     let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.GNOSIS;
@@ -2755,7 +2786,7 @@ export class WalletController extends BaseController {
               address: safeAddress,
             });
             const threshold = await safe.getThreshold();
-            const { results } = await safe.apiKit.getMessages(safeAddress);
+            const { results } = await safe.getMessages();
             return {
               networkId,
               messages: results.filter(
@@ -3017,8 +3048,7 @@ export class WalletController extends BaseController {
     chainId: number;
     messageHash: string;
   }) => {
-    const apiKit = Safe.createSafeApiKit(String(chainId));
-    return apiKit.getMessage(messageHash);
+    return Safe.getMessage(messageHash, String(chainId));
   };
 
   getGnosisMessageHash = async ({
@@ -3671,6 +3701,7 @@ export class WalletController extends BaseController {
       preferenceService.removeAddressBalance(address);
       preferenceService.removeCurvePoints(address);
       perpsService.removeAgentWallet(address);
+      this.forceExpireInMemoryAddressBalance(address);
     }
     const current = preferenceService.getCurrentAccount();
     if (
@@ -6034,6 +6065,8 @@ export class WalletController extends BaseController {
   setMarketSlippage = perpsService.setMarketSlippage;
   getSoundEnabled = perpsService.getSoundEnabled;
   setSoundEnabled = perpsService.setSoundEnabled;
+  getSkipMarketCloseConfirm = perpsService.getSkipMarketCloseConfirm;
+  setSkipMarketCloseConfirm = perpsService.setSkipMarketCloseConfirm;
   getPerpsIsNeedSetDarkTheme = perpsService.getIsNeedSetDarkTheme;
   updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
   setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;
@@ -6044,6 +6077,8 @@ export class WalletController extends BaseController {
   setPerpsQuoteUnit = perpsService.setQuoteUnit;
   setHasDoneNewUserProcess = perpsService.setHasDoneNewUserProcess;
   getHasDoneNewUserProcess = perpsService.getHasDoneNewUserProcess;
+  setHasDismissedNewUserGuideV2 = perpsService.setHasDismissedNewUserGuideV2;
+  getHasDismissedNewUserGuideV2 = perpsService.getHasDismissedNewUserGuideV2;
   getPerpsAgentWallet = async (masterWallet: string) => {
     return perpsService.getAgentWallet(masterWallet);
   };

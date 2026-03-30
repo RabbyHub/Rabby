@@ -25,6 +25,7 @@ import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
 import eventBus from '@/eventBus';
 import { useAutoSlippageEffect } from './autoSlippageEffect';
+import { getChainDefaultToken } from '@/ui/utils/token';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -923,26 +924,6 @@ export const useTokenPair = (userAddress: string) => {
     setAutoSuggestSlippage,
   };
 };
-
-function getChainDefaultToken(chain: CHAINS_ENUM) {
-  const chainInfo = findChainByEnum(chain)!;
-  return {
-    id: chainInfo.nativeTokenAddress,
-    decimals: chainInfo.nativeTokenDecimals,
-    logo_url: chainInfo.nativeTokenLogo,
-    symbol: chainInfo.nativeTokenSymbol,
-    display_symbol: chainInfo.nativeTokenSymbol,
-    optimized_symbol: chainInfo.nativeTokenSymbol,
-    is_core: true,
-    is_verified: true,
-    is_wallet: true,
-    amount: 0,
-    price: 0,
-    name: chainInfo.nativeTokenSymbol,
-    chain: chainInfo.serverId,
-    time_at: 0,
-  } as TokenItem;
-}
 
 function tokenAmountBn(token: TokenItem) {
   return new BigNumber(token?.raw_amount_hex_str || 0, 16).div(

@@ -23,7 +23,7 @@ export const gnosisController = {
     return new Promise((resolve, reject) => {
       poll(
         async ({ unpoll }) => {
-          const res = await safe.apiKit.getMessage(safeMessageHash);
+          const res = await safe.getMessage(safeMessageHash);
           if (res.confirmations.length >= threshold) {
             resolve(res.preparedSignature);
             unpoll();

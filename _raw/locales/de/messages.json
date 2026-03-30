@@ -3317,7 +3317,8 @@
         "fee": "Gebühr",
         "closedPnl": "Realisiertes P&L",
         "tradeValue": "Transaktionswert",
-        "size": "Positionsgröße"
+        "size": "Positionsgröße",
+        "feeDesc": "Wenn Nutzer Trades platzieren, fallen sowohl <1>Handelsgebühren</1> als auch <2>Erbauergebühren</2> an."
       },
       "logoutConfirmModal": {
         "title": "Aktuelle Adresse abmelden",
@@ -3339,7 +3340,8 @@
         "feeTip": "1 $ Gebühr",
         "goSwapTips": "Nur USDC auf Arbitrum wird für direkte Einzahlungen unterstützt. Bitte tauschen Sie Ihr aktuelles Token vor der Einzahlung in USDC um.",
         "estReceiveTooltip": "Cross-Chain-Einzahlung wird über LiFi verarbeitet; es kann zu einer Slippage kommen. Voraussichtliche Ankunft in {{number}}s.",
-        "hyperliquidFeeLabelTooltip": "Neue Benutzer zahlen eine einmalige Aktivierungsgebühr an Hyperliquid."
+        "hyperliquidFeeLabelTooltip": "Neue Benutzer zahlen eine einmalige Aktivierungsgebühr an Hyperliquid.",
+        "amount": "Betrag"
       },
       "home": {
         "entryPrice": "Einstiegskurs",
@@ -3502,7 +3504,12 @@
       "openProModeInTab": "Pro-Modus im Tab öffnen",
       "liquidationDistanceDown": "Der Rückgang um <bold>{{percent}}</bold> wird die Liquidation auslösen.",
       "isolatedMarginDesc": "Jede Position verwendet ihre eigene Margin. Die Verluste sind auf diese Position beschränkt, können jedoch leichter liquidiert werden.",
-      "crossMarginDesc": "Alle Positionen teilen sich die gleiche Marge. Dies verringert die Wahrscheinlichkeit, dass eine einzelne Position liquidiert wird, aber alle Cross-Margin-Fonds können bei extremen Marktbewegungen verloren gehen."
+      "crossMarginDesc": "Alle Positionen teilen sich die gleiche Marge. Dies verringert die Wahrscheinlichkeit, dass eine einzelne Position liquidiert wird, aber alle Cross-Margin-Fonds können bei extremen Marktbewegungen verloren gehen.",
+      "newUserGuide": {
+        "learnMore": "Mehr Erfahren"
+      },
+      "addFunds": "Fonds Hinzufügen",
+      "crossMarginLiqPriceTip": "Im Cross Margin-Modus ist der Liquidationspreis für eine einzelne Position nur eine Schätzung zur Referenz."
     },
     "perpsPro": {
       "chatArea": {
@@ -3596,7 +3603,14 @@
           "closeLimit": "Limit zum Schließen der Position",
           "close": "Schließen",
           "currentPosition": "Offene Position",
-          "closedPnl": "Realisiertes PnL"
+          "closedPnl": "Realisiertes PnL",
+          "dontShowAgain": "Nicht erneut anzeigen",
+          "marketCloseBtn": "Marktschluss",
+          "invalidPrice": "Ungültiger Preis",
+          "marketCloseTitle": "Markt Position Schließen",
+          "marketCloseDesc": "Dies wird versuchen, die Position sofort zu schließen.",
+          "confirmCloseAllTitle": "Alle Positionen schließen bestätigen",
+          "confirmCloseAllDesc": "Alle Ihre offenen Positionen werden zum Marktpreis geschlossen und alle Aufträge werden storniert."
         },
         "openOrders": {
           "type": "Typ",
