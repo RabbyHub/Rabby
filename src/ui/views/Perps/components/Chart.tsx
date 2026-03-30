@@ -29,6 +29,8 @@ import { MarketData } from '@/ui/models/perps';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import { splitNumberByStep, useWallet } from '@/ui/utils';
+import { obj2query } from '@/ui/utils/url';
+import { useRabbySelector } from '@/ui/store';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/perps/Iconfullscreen.svg';
 
 const formatPercent = (value: number, decimals = 8) => {

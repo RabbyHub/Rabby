@@ -1,12 +1,9 @@
-import React, { useMemo, useState } from 'react';
-import clsx from 'clsx';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { splitNumberByStep } from '@/ui/utils';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useRabbySelector } from '@/ui/store';
 import {
   normalizeTradingViewLocale,
-  TradingViewHoverData,
   TradingViewIframeChart,
 } from '@/ui/views/Perps/components/TradingViewIframeChart';
 
@@ -15,8 +12,6 @@ interface ChartWrapperProps {
   interval: string;
   onIntervalChange?: (interval: string) => void;
 }
-
-const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
 
 export const ChartWrapper: React.FC<ChartWrapperProps> = ({
   coin,
@@ -36,13 +31,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
   const pxDecimals = useMemo(() => {
     return currentMarketData.pxDecimals || 2;
   }, [currentMarketData]);
-
-  const [chartHoverData, setChartHoverData] = useState<TradingViewHoverData>({
-    visible: false,
-  });
-  const [latestCandle, setLatestCandle] = useState<TradingViewHoverData | null>(
-    null
-  );
 
   const lineTagInfo = useMemo(() => {
     const tpPrice = openOrders.find(
@@ -75,10 +63,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     };
   }, [coin, openOrders, clearinghouseState, pxDecimals]);
 
-  const showDisplayData = useMemo(() => {
-    return chartHoverData.visible ? chartHoverData : latestCandle;
-  }, [chartHoverData, latestCandle]);
-
   const chartLocale = useMemo(() => {
     return normalizeTradingViewLocale(i18n.language);
   }, [i18n.language]);
@@ -103,111 +87,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col bg-rb-neutral-bg-1">
-      <div className="flex px-16 py-12 gap-8 items-center">
-        <div className="flex flex-wrap items-center gap-8 flex-shrink-0">
-          {showDisplayData ? (
-            <>
-              <div className="flex flex-row items-center justify-center flex-shrink-0">
-                <span className="text-13 text-r-neutral-foot mr-2">O</span>
-                <span
-                  className={clsx(
-                    'text-13 font-medium',
-                    showDisplayData.isPositiveChange
-                      ? 'text-r-green-default'
-                      : 'text-r-red-default'
-                  )}
-                >
-                  {splitNumberByStep(
-                    Number(showDisplayData.open || 0).toFixed(pxDecimals)
-                  )}
-                </span>
-              </div>
-              <div className="flex flex-row items-center justify-center flex-shrink-0">
-                <span className="text-13 text-r-neutral-foot mr-2">H</span>
-                <span
-                  className={clsx(
-                    'text-13 font-medium',
-                    showDisplayData.isPositiveChange
-                      ? 'text-r-green-default'
-                      : 'text-r-red-default'
-                  )}
-                >
-                  {splitNumberByStep(
-                    Number(showDisplayData.high || 0).toFixed(pxDecimals)
-                  )}
-                </span>
-              </div>
-              <div className="flex flex-row items-center justify-center flex-shrink-0">
-                <span className="text-13 text-r-neutral-foot mr-2">L</span>
-                <span
-                  className={clsx(
-                    'text-13 font-medium',
-                    showDisplayData.isPositiveChange
-                      ? 'text-r-green-default'
-                      : 'text-r-red-default'
-                  )}
-                >
-                  {splitNumberByStep(
-                    Number(showDisplayData.low || 0).toFixed(pxDecimals)
-                  )}
-                </span>
-              </div>
-              <div className="flex flex-row items-center justify-center flex-shrink-0">
-                <span className="text-13 text-r-neutral-foot mr-2">C</span>
-                <span
-                  className={clsx(
-                    'text-13 font-medium',
-                    showDisplayData.isPositiveChange
-                      ? 'text-r-green-default'
-                      : 'text-r-red-default'
-                  )}
-                >
-                  {splitNumberByStep(
-                    Number(showDisplayData.close || 0).toFixed(pxDecimals)
-                  )}
-                </span>
-              </div>
-              <div className="flex flex-row items-center justify-center flex-shrink-0">
-                <span className="text-13 text-r-neutral-foot mr-2">V</span>
-                <span
-                  className={clsx(
-                    'text-13 font-medium',
-                    showDisplayData.isPositiveChange
-                      ? 'text-r-green-default'
-                      : 'text-r-red-default'
-                  )}
-                >
-                  {splitNumberByStep(
-                    Number(showDisplayData.volume || 0).toFixed(2)
-                  )}
-                </span>
-              </div>
-              <div className="flex flex-row items-center justify-center flex-shrink-0">
-                <span
-                  className={clsx(
-                    'text-13 font-medium',
-                    showDisplayData.isPositiveChange
-                      ? 'text-r-green-default'
-                      : 'text-r-red-default'
-                  )}
-                >
-                  {showDisplayData.isPositiveChange ? '+' : '-'}$
-                  {splitNumberByStep(
-                    Math.abs(Number(showDisplayData.delta || 0)).toFixed(
-                      pxDecimals
-                    )
-                  )}{' '}
-                  ({showDisplayData.isPositiveChange ? '+' : ''}
-                  {formatPercent(showDisplayData.deltaPercent || 0)})
-                </span>
-              </div>
-            </>
-          ) : (
-            <div className="text-13 text-r-neutral-foot">Loading chart...</div>
-          )}
-        </div>
-      </div>
-
       <div className="flex-1 min-h-0 p-8">
         <TradingViewIframeChart
           coin={coin}
@@ -218,8 +97,6 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           timezone={chartTimezone}
           lineTagInfo={lineTagInfo}
           widgetConfig={desktopWidgetConfig}
-          onHoverData={setChartHoverData}
-          onLatestBar={setLatestCandle}
           onIntervalChange={onIntervalChange}
           className="w-full h-full rounded-[8px]"
         />
