@@ -3,7 +3,7 @@ import produce from 'immer';
 import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
-import { TOKEN_CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
+import { CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
 import {
   findChainByEnum,
   isTestnet as checkIsTestnet,
@@ -264,7 +264,7 @@ export const useTokens = (
         currentAllTokens.length > 0 &&
         !forceRefresh &&
         !realtimeMode &&
-        updatedAt > Date.now() - TOKEN_CACHE_VALID_DURATION;
+        updatedAt > Date.now() - CACHE_VALID_DURATION;
 
       if (shouldUseDbCache) {
         log('<<==Tokens-cache-hit==>>', userAddr);

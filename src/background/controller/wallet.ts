@@ -189,6 +189,7 @@ import { AccountScene, SCENE_ACCOUNT_CONFIG } from '@/constant/scene-account';
 import { syncDbService } from '@/db/services/syncDbService';
 import { historyDbService } from '@/db/services/historyDbService';
 import { tokenDbService } from '@/db/services/tokenDbService';
+import { defiDbService } from '@/db/services/defiDbService';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -3729,6 +3730,7 @@ export class WalletController extends BaseController {
     syncDbService.deleteForAddress(address);
     historyDbService.deleteForAddress(address);
     tokenDbService.deleteForAddress(address);
+    defiDbService.deleteForAddress(address);
   };
 
   removeAddresses = async (
