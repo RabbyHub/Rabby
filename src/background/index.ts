@@ -10,6 +10,7 @@ import fetchAdapter from 'background/utils/fetchAdapter';
 import { WalletController } from 'background/controller/wallet';
 import {
   APPCHAIN_SYNC_SCENE,
+  BALANCE_SYNC_SCENE,
   CACHE_VALID_DURATION,
   DEFI_SYNC_SCENE,
   TOKEN_SYNC_SCENE,
@@ -192,6 +193,11 @@ async function restoreAppState() {
       scene: APPCHAIN_SYNC_SCENE,
       updatedAt: Date.now() - CACHE_VALID_DURATION,
     });
+    syncDbService.setUpdatedAtIfExists({
+      address,
+      scene: BALANCE_SYNC_SCENE,
+      updatedAt: Date.now() - CACHE_VALID_DURATION,
+    });
   });
 
   if (appIsDev) {
@@ -250,18 +256,21 @@ restoreAppState();
         label: chains.join(','),
       });
       const accounts = await walletController.getAccounts();
-      const list = accounts.map((account) => {
-        const category = KEYRING_CATEGORY_MAP[account.type];
-        const action = account.brandName;
-        const label =
-          (walletController.getAddressCacheBalance(account.address)
-            ?.total_usd_value || 0) <= 0;
-        return {
-          category,
-          action,
-          label: label ? 'empty' : 'notEmpty',
-        };
-      });
+      const list = await Promise.all(
+        accounts.map(async (account) => {
+          const category = KEYRING_CATEGORY_MAP[account.type];
+          const action = account.brandName;
+          const balance = await walletController.getAddressCacheBalance(
+            account.address
+          );
+          const label = (balance?.total_usd_value || 0) <= 0;
+          return {
+            category,
+            action,
+            label: label ? 'empty' : 'notEmpty',
+          };
+        })
+      );
       const groups = groupBy(list, (item) => {
         return `${item.category}_${item.action}_${item.label}`;
       });

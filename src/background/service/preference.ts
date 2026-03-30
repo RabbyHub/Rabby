@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import * as Sentry from '@sentry/browser';
+import type { BalanceCacheData } from '@/db/schema/balance';
 import eventBus from '@/eventBus';
 import { createPersistStore, isSameAddress } from 'background/utils';
 import {
@@ -69,9 +70,7 @@ export interface PreferenceStore {
   externalLinkAck: boolean;
   hiddenAddresses: Account[];
   balanceMap: {
-    [address: string]: TotalBalanceResponse & {
-      evmUsdValue?: number;
-    };
+    [address: string]: BalanceCacheData;
   };
   curvePointsMap: {
     [address: string]: CurvePointCollection;
@@ -623,7 +622,7 @@ class PreferenceService {
   updateBalanceAboutCache = (
     address: string,
     data: {
-      totalBalance?: TotalBalanceResponse;
+      totalBalance?: BalanceCacheData;
       curvePoints?: CurvePointCollection;
     }
   ) => {
