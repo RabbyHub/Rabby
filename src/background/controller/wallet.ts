@@ -190,6 +190,7 @@ import { syncDbService } from '@/db/services/syncDbService';
 import { historyDbService } from '@/db/services/historyDbService';
 import { tokenDbService } from '@/db/services/tokenDbService';
 import { defiDbService } from '@/db/services/defiDbService';
+import { appChainDbService } from '@/db/services/appChainDbService';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -3731,6 +3732,7 @@ export class WalletController extends BaseController {
     historyDbService.deleteForAddress(address);
     tokenDbService.deleteForAddress(address);
     defiDbService.deleteForAddress(address);
+    appChainDbService.deleteForAddress(address);
   };
 
   removeAddresses = async (

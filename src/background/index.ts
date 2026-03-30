@@ -9,6 +9,7 @@ import * as Sentry from '@sentry/browser';
 import fetchAdapter from 'background/utils/fetchAdapter';
 import { WalletController } from 'background/controller/wallet';
 import {
+  APPCHAIN_SYNC_SCENE,
   CACHE_VALID_DURATION,
   DEFI_SYNC_SCENE,
   TOKEN_SYNC_SCENE,
@@ -184,6 +185,11 @@ async function restoreAppState() {
     syncDbService.setUpdatedAtIfExists({
       address,
       scene: DEFI_SYNC_SCENE,
+      updatedAt: Date.now() - CACHE_VALID_DURATION,
+    });
+    syncDbService.setUpdatedAtIfExists({
+      address,
+      scene: APPCHAIN_SYNC_SCENE,
       updatedAt: Date.now() - CACHE_VALID_DURATION,
     });
   });

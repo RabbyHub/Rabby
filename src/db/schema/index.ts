@@ -1,3 +1,4 @@
+import { AppChainTable, appChainSchema } from './appChain';
 import { DefiTable, defiSchema } from './defi';
 import { HistoryTable, historySchema } from './history';
 import { syncSchema, SyncTable } from './sync';
@@ -13,12 +14,18 @@ export const schemaV2 = {
   token: tokenSchema,
 };
 
-export const schema = {
+export const schemaV3 = {
   ...schemaV2,
   defi: defiSchema,
+};
+
+export const schema = {
+  ...schemaV3,
+  appChain: appChainSchema,
 };
 
 export type DexieEntityTable = HistoryTable &
   SyncTable &
   TokenTable &
-  DefiTable;
+  DefiTable &
+  AppChainTable;
