@@ -13,6 +13,8 @@ import {
 import rabbyLogo from '@/ui/assets/unlock/rabby.svg';
 import { ReactComponent as BackgroundSVG } from '@/ui/assets/unlock/background.svg';
 import { ReactComponent as BiometricsSVG } from '@/ui/assets/unlock/biometrics.svg';
+import { ReactComponent as PasswordSwitchSVG } from '@/ui/assets/dashboard/settings/password.svg';
+import { ReactComponent as BiometricSwitchSVG } from '@/ui/assets/dashboard/settings/biometric.svg';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
@@ -46,6 +48,24 @@ const BiometricsImage = styled.div`
   justify-content: center;
 `;
 
+const UnlockMethodSwitch = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 10.5px;
+  border: 0;
+  border-radius: 8px;
+  background: #ccd2ff;
+  color: var(--r-blue-default);
+  font-size: 13px;
+  font-weight: 500;
+
+  &:hover {
+    background: #b8c1ff;
+  }
+`;
+
 const Unlock = () => {
   type UnlockType = 'Biometrics' | 'Password';
   const wallet = useWallet();
@@ -61,6 +81,9 @@ const Unlock = () => {
   const [hasForgotPassword, setHasForgotPassword] = React.useState(false);
   const [biometricSupported, setBiometricSupported] = React.useState(false);
   const [biometricUnlocking, setBiometricUnlocking] = React.useState(false);
+  const [biometricSetupOpening, setBiometricSetupOpening] = React.useState(
+    false
+  );
   const [showPasswordUnlock, setShowPasswordUnlock] = useState(false);
   const location = useLocation();
   const [inputError, setInputError] = React.useState('');
@@ -166,12 +189,14 @@ const Unlock = () => {
     handleUnlockSuccess();
   });
 
-  const biometricAvailable =
-    biometricSupported &&
+  const biometricConfigured =
     biometricUnlockEnabled &&
     !!biometricUnlockCredentialId &&
     !!biometricUnlockEncryptedPassword &&
     !!biometricUnlockIv;
+  const biometricAvailable = biometricSupported && biometricConfigured;
+  const showBiometricSwitch =
+    biometricSupported && (UiType.isTab || UiType.isPop || UiType.isDesktop);
 
   useEffect(() => {
     setShowPasswordUnlock(!biometricAvailable);
@@ -207,6 +232,25 @@ const Unlock = () => {
     } finally {
       isUnlockingRef.current = false;
       setBiometricUnlocking(false);
+    }
+  });
+
+  const handleBiometricEntry = useMemoizedFn(async () => {
+    if (!biometricSupported) return;
+    if (biometricAvailable) {
+      handleBiometricUnlock();
+      return;
+    }
+
+    if (biometricSetupOpening || biometricUnlocking) return;
+    setBiometricSetupOpening(true);
+    try {
+      await wallet.openBiometricUnlockSetupWindow({ from: 'unlock' });
+      if (UiType.isPop) {
+        window.close();
+      }
+    } finally {
+      setBiometricSetupOpening(false);
     }
   });
 
@@ -248,6 +292,27 @@ const Unlock = () => {
       <div className="unlock page-has-ant-input relative h-full min-h-[550px]">
         <BackgroundSVG className="absolute inset-0 z-[-1]" />
         <div className="pt-80">
+          {showBiometricSwitch && (
+            <div className="w-full absolute top-32 left-0 right-0 flex justify-center z-10">
+              {showPasswordUnlock ? (
+                <UnlockMethodSwitch
+                  type="button"
+                  onClick={() => setShowPasswordUnlock(false)}
+                >
+                  <BiometricSwitchSVG className="w-[18px] h-[18px]" />
+                  {t('page.unlock.btn.biometric')}
+                </UnlockMethodSwitch>
+              ) : (
+                <UnlockMethodSwitch
+                  type="button"
+                  onClick={() => setShowPasswordUnlock(true)}
+                >
+                  <PasswordSwitchSVG className="w-[18px] h-[18px]" />
+                  {t('page.unlock.btn.unlockWithPassword')}
+                </UnlockMethodSwitch>
+              )}
+            </div>
+          )}
           <img src={rabbyLogo} className="m-auto w-[100px] h-[100px]" />
           <h1
             className={clsx(
@@ -270,7 +335,7 @@ const Unlock = () => {
             {t('page.unlock.description')}
           </p>
         </div>
-        {biometricAvailable && !showPasswordUnlock ? (
+        {showBiometricSwitch && !showPasswordUnlock ? (
           <>
             <BiometricsImage>
               <BiometricsSVG />
@@ -287,24 +352,12 @@ const Unlock = () => {
                   htmlType="button"
                   type="primary"
                   size="large"
-                  loading={biometricUnlocking}
-                  onClick={handleBiometricUnlock}
+                  loading={biometricUnlocking || biometricSetupOpening}
+                  onClick={handleBiometricEntry}
                 >
                   {t('page.unlock.btn.biometric')}
                 </Button>
               </div>
-
-              <button
-                type="button"
-                className={clsx(
-                  'text-r-neutral-body',
-                  'text-[16px] leading-[20px] font-normal',
-                  'hover:underline'
-                )}
-                onClick={() => setShowPasswordUnlock(true)}
-              >
-                {t('page.unlock.btn.unlockWithPassword')}
-              </button>
             </footer>
           </>
         ) : (

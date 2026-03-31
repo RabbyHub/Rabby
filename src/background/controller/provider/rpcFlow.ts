@@ -102,7 +102,7 @@ const flowContext = flow
         lockedOrigins.add(origin);
         try {
           await notificationService.requestApproval(
-            { lock: true },
+            { lock: true, approvalComponent: 'Unlock' },
             { height: 628 }
           );
           lockedOrigins.delete(origin);
