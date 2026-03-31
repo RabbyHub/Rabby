@@ -1,9 +1,13 @@
 import { useEffect, useRef } from 'react';
-import produce from 'immer';
+import { AppChainItem } from '@rabby-wallet/rabby-api/dist/types';
+import { APPCHAIN_SYNC_SCENE, CACHE_VALID_DURATION } from '@/db/constants';
+import { appChainDbService } from '@/db/services/appChainDbService';
+import { syncDbService } from '@/db/services/syncDbService';
+import { isFullVersionAccountType } from '@/utils/account';
 import { useWallet } from '../utils/WalletContext';
 import { loadAppChainList } from '../utils/portfolio/utils';
 import { useSafeState } from '../utils/safeState';
-import { snapshot2Display, portfolio2Display } from '../utils/portfolio/utils';
+import { snapshot2Display } from '../utils/portfolio/utils';
 import { DisplayedProject } from '../utils/portfolio/project';
 import { isSameAddress } from '../utils';
 import { DisplayChainWithWhiteLogo } from './useCurrentBalance';
@@ -36,6 +40,8 @@ export const useAppChain = (
   visible = true,
   isTestnet = false
 ) => {
+  const abortProcess = useRef<AbortController>();
+  const [appChains, setAppChains] = useSafeState<AppChainItem[]>([]);
   const [data, setData] = useSafeState<DisplayedProject[]>([]);
   const [netWorth, setNetWorth] = useSafeState(0);
   const [hasValue, setHasValue] = useSafeState(false);
@@ -47,6 +53,7 @@ export const useAppChain = (
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
     if (userAddr && !isSameAddress(userAddr, userAddrRef.current)) {
+      setAppChains([]);
       setData([]);
       setNetWorth(0);
     }
@@ -54,6 +61,7 @@ export const useAppChain = (
     if (userAddr) {
       timer = setTimeout(() => {
         if (visible && !isSameAddress(userAddr, userAddrRef.current)) {
+          abortProcess.current?.abort();
           userAddrRef.current = userAddr;
           loadProcess();
         }
@@ -68,10 +76,34 @@ export const useAppChain = (
     };
   }, [userAddr, visible]);
 
-  const loadProcess = async () => {
+  const applyAppChains = (appChains: AppChainItem[]) => {
+    const { list, netWorth: snapshotNetWorth } = snapshot2Display(
+      appChains.map((app) => ({
+        ...app,
+        chain: app.id,
+      }))
+    );
+
+    projectDict.current = list;
+    const snapshotData = Object.values(list)?.sort(
+      (m, n) => (n.netWorth || 0) - (m.netWorth || 0)
+    );
+
+    setData(snapshotData);
+    setAppChains(appChains);
+    setHasValue(snapshotData.length > 0);
+    setNetWorth(snapshotNetWorth);
+  };
+
+  const loadProcess = async ({ forceRefresh = false } = {}) => {
     if (!userAddr) return;
+
+    const currentAbort = new AbortController();
+    abortProcess.current = currentAbort;
+
     projectDict.current = {};
     setLoading(true);
+    setAppChains([]);
     setData([]);
     setHasValue(false);
 
@@ -79,42 +111,94 @@ export const useAppChain = (
       setLoading(false);
       return;
     }
-    try {
-      const { list } = snapshot2Display([]);
-      projectDict.current = list;
 
-      // load app chain list
-      const appChainListRes = await loadAppChainList(userAddr, wallet);
-      if (!appChainListRes?.apps?.length) {
+    let currentAppChains: AppChainItem[] = [];
+    const matchedAccount = await wallet.getAccountByAddress(userAddr);
+    const shouldPersistAppChainCache = matchedAccount
+      ? isFullVersionAccountType(matchedAccount as any)
+      : false;
+
+    if (shouldPersistAppChainCache) {
+      currentAppChains = await appChainDbService.queryAppChains(userAddr);
+
+      if (currentAbort.signal.aborted) {
+        setLoading(false);
         return;
       }
-      appChainListRes.apps.forEach((app) => {
-        if (projectDict.current) {
-          projectDict.current = produce(projectDict.current, (draft) => {
-            portfolio2Display({ ...app, chain: app.id }, draft);
-          });
-        }
-      });
 
-      const realtimeData = Object.values(projectDict.current)?.sort(
-        (m, n) => (n.netWorth || 0) - (m.netWorth || 0)
-      );
-      setData(realtimeData);
-      setHasValue(true);
-      setNetWorth(realtimeData.reduce((m, n) => m + n.netWorth, 0));
+      if (currentAppChains.length) {
+        applyAppChains(currentAppChains);
+        setLoading(false);
+      }
+
+      const updatedAt =
+        (await syncDbService.getUpdatedAt({
+          address: userAddr,
+          scene: APPCHAIN_SYNC_SCENE,
+        })) || 0;
+
+      const shouldUseDbCache =
+        currentAppChains.length > 0 &&
+        !forceRefresh &&
+        updatedAt > Date.now() - CACHE_VALID_DURATION;
+
+      if (shouldUseDbCache) {
+        return;
+      }
+    } else {
+      await Promise.all([
+        appChainDbService.deleteForAddress(userAddr),
+        syncDbService.deleteSceneForAddress({
+          address: userAddr,
+          scene: APPCHAIN_SYNC_SCENE,
+        }),
+      ]);
+    }
+
+    try {
+      const appChainListRes = await loadAppChainList(userAddr, wallet);
+
+      if (currentAbort.signal.aborted) {
+        setLoading(false);
+        return;
+      }
+
+      currentAppChains = appChainListRes?.apps || [];
+      applyAppChains(currentAppChains);
+
+      if (shouldPersistAppChainCache) {
+        await appChainDbService.replaceAddressAppChains(
+          userAddr,
+          currentAppChains
+        );
+        await syncDbService.setUpdatedAt({
+          address: userAddr,
+          scene: APPCHAIN_SYNC_SCENE,
+          updatedAt: Date.now(),
+        });
+      }
     } catch (error) {
       // just ignore appChain data
     } finally {
-      setLoading(false);
+      if (!currentAbort.signal.aborted) {
+        setLoading(false);
+      }
     }
   };
 
+  useEffect(() => {
+    return () => {
+      abortProcess.current?.abort();
+    };
+  }, []);
+
   return {
+    appChains,
     netWorth,
     data,
     hasValue,
     isLoading,
-    updateData: loadProcess,
+    updateData: () => loadProcess({ forceRefresh: true }),
   };
 };
 

@@ -3,6 +3,10 @@ import produce from 'immer';
 import { Dayjs } from 'dayjs';
 // import { atom, useSetAtom } from 'jotai';
 
+import { CACHE_VALID_DURATION, DEFI_SYNC_SCENE } from '@/db/constants';
+import { defiDbService } from '@/db/services/defiDbService';
+import { syncDbService } from '@/db/services/syncDbService';
+import { isFullVersionAccountType } from '@/utils/account';
 import { CHAIN_ID_LIST, syncChainIdList } from 'consts';
 import { useWallet } from '../WalletContext';
 import { chunk, loadTestnetPortfolioSnapshot } from './utils';
@@ -22,6 +26,22 @@ import { isSameAddress } from '..';
 import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
 
 const chunkSize = 5;
+
+const buildProtocolKey = (protocol: Pick<ComplexProtocol, 'id'>) => protocol.id;
+
+const replaceProtocols = (
+  protocols: ComplexProtocol[],
+  nextProtocols: ComplexProtocol[]
+) => {
+  const nextProtocolMap = nextProtocols.reduce((map, protocol) => {
+    map[buildProtocolKey(protocol)] = protocol;
+    return map;
+  }, {} as Record<string, ComplexProtocol>);
+
+  return protocols.map((protocol) => {
+    return nextProtocolMap[buildProtocolKey(protocol)] || protocol;
+  });
+};
 
 export const log = (...args: any) => {
   // console.log(...args);
@@ -86,7 +106,31 @@ export const usePortfolios = (
     // eslint-disable-next-line
   }, [timeAt, isLoading]);
 
-  const loadProcess = async () => {
+  const applyProtocols = (protocols: ComplexProtocol[]) => {
+    const _hasValue = protocols.some((x) => Object.keys(x).length > 0);
+    setHasValue(_hasValue);
+
+    const { list, netWorth: snapshotNetWorth } = snapshot2Display(protocols);
+
+    projectDict.current = list;
+    const snapshotData = Object.values(list)?.sort(
+      (m, n) => (n.netWorth || 0) - (m.netWorth || 0)
+    );
+
+    setData(snapshotData);
+    setNetWorth(snapshotNetWorth);
+
+    const { thresholdIndex, hasExpandSwitch } = getExpandListSwitch(
+      snapshotData,
+      snapshotNetWorth
+    );
+
+    realtimeIds.current = hasExpandSwitch
+      ? snapshotData.slice(0, thresholdIndex).map((x) => x.id)
+      : protocols.map((x) => x.id);
+  };
+
+  const loadProcess = async ({ forceRefresh = false } = {}) => {
     if (!userAddr) return;
     projectDict.current = {};
 
@@ -102,6 +146,54 @@ export const usePortfolios = (
     setData([]);
     setHasValue(false);
 
+    let currentProtocols: ComplexProtocol[] = [];
+    const matchedAccount = isTestnet
+      ? null
+      : await wallet.getAccountByAddress(userAddr);
+    const shouldPersistDefiCache =
+      !isTestnet && matchedAccount
+        ? isFullVersionAccountType(matchedAccount as any)
+        : false;
+
+    if (shouldPersistDefiCache) {
+      currentProtocols = await defiDbService.queryProtocols(userAddr);
+
+      if (currentAbort.signal.aborted) {
+        log('--Terminate-portfolio-db-cache-', userAddr);
+        setLoading(false);
+        return;
+      }
+
+      if (currentProtocols.length) {
+        applyProtocols(currentProtocols);
+        setLoading(false);
+      }
+
+      const updatedAt =
+        (await syncDbService.getUpdatedAt({
+          address: userAddr,
+          scene: DEFI_SYNC_SCENE,
+        })) || 0;
+
+      const shouldUseDbCache =
+        currentProtocols.length > 0 &&
+        !forceRefresh &&
+        updatedAt > Date.now() - CACHE_VALID_DURATION;
+
+      if (shouldUseDbCache) {
+        log('<<==Defi-cache-hit==>>', userAddr);
+        return;
+      }
+    } else if (!isTestnet) {
+      await Promise.all([
+        defiDbService.deleteForAddress(userAddr),
+        syncDbService.deleteSceneForAddress({
+          address: userAddr,
+          scene: DEFI_SYNC_SCENE,
+        }),
+      ]);
+    }
+
     let snapshotRes: ComplexProtocol[] = [];
     if (isTestnet) {
       snapshotRes = await loadTestnetPortfolioSnapshot(userAddr, wallet);
@@ -115,34 +207,27 @@ export const usePortfolios = (
       return;
     }
 
-    // request success
-    const _hasValue = Object.values(snapshotRes).some(
-      (x) => Object.keys(x).length > 0
-    );
+    currentProtocols = snapshotRes;
+    applyProtocols(snapshotRes);
+    setLoading(false);
 
-    if (_hasValue) {
-      setHasValue(true);
+    if (currentAbort.signal.aborted) {
+      log('--Terminate-portfolio-loadProjectIds-', userAddr);
+      projectDict.current = null;
+      setLoading(false);
+      return;
     }
 
-    const { list, netWorth: snapshotNetWorth } = snapshot2Display(snapshotRes);
+    if (!realtimeIds.current.length) {
+      if (shouldPersistDefiCache) {
+        await defiDbService.replaceAddressProtocols(userAddr, currentProtocols);
+        await syncDbService.setUpdatedAt({
+          address: userAddr,
+          scene: DEFI_SYNC_SCENE,
+          updatedAt: Date.now(),
+        });
+      }
 
-    projectDict.current = list;
-    const snapshotData = Object.values(list)?.sort(
-      (m, n) => (n.netWorth || 0) - (m.netWorth || 0)
-    );
-    setData(snapshotData);
-    setNetWorth(snapshotNetWorth);
-
-    const { thresholdIndex, hasExpandSwitch } = getExpandListSwitch(
-      snapshotData,
-      snapshotNetWorth
-    );
-
-    realtimeIds.current = hasExpandSwitch
-      ? snapshotData.slice(0, thresholdIndex).map((x) => x.id)
-      : snapshotRes.map((x) => x.id);
-
-    if (currentAbort.signal.aborted || !realtimeIds.current.length) {
       log('--Terminate-portfolio-loadProjectIds-', userAddr);
       projectDict.current = null;
       setLoading(false);
@@ -152,6 +237,7 @@ export const usePortfolios = (
     const chunkIds = chunk(realtimeIds.current, chunkSize);
 
     let realtimeData: DisplayedProject[] = [];
+    const realtimeProtocols: ComplexProtocol[] = [];
 
     await Promise.all(
       chunkIds.map(async (ids) => {
@@ -172,6 +258,8 @@ export const usePortfolios = (
           return;
         }
 
+        realtimeProtocols.push(...projects);
+
         projects.forEach((project) => {
           if (!currentAbort.signal.aborted && projectDict.current) {
             log('#####################REALTIME###############################');
@@ -182,6 +270,17 @@ export const usePortfolios = (
         });
       })
     );
+
+    currentProtocols = replaceProtocols(currentProtocols, realtimeProtocols);
+
+    if (shouldPersistDefiCache) {
+      await defiDbService.replaceAddressProtocols(userAddr, currentProtocols);
+      await syncDbService.setUpdatedAt({
+        address: userAddr,
+        scene: DEFI_SYNC_SCENE,
+        updatedAt: Date.now(),
+      });
+    }
 
     realtimeData = Object.values(projectDict.current)?.sort(
       (m, n) => (n.netWorth || 0) - (m.netWorth || 0)
@@ -329,7 +428,7 @@ export const usePortfolios = (
     data,
     hasValue,
     isLoading,
-    updateData: loadProcess,
+    updateData: () => loadProcess({ forceRefresh: true }),
     removeProtocol,
   };
 };
