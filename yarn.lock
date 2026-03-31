@@ -7,6 +7,11 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
+"@aave-dao/aave-address-book@4.47.14":
+  version "4.47.14"
+  resolved "https://registry.yarnpkg.com/@aave-dao/aave-address-book/-/aave-address-book-4.47.14.tgz#aa5bb3f70dfa4b46adbad07bbf62f7c8ba452e5f"
+  integrity sha512-KO8Dvuwi34rX/bsRYyY6FhhJpkBY7bwuHZNOypSqlKaLK++fZfUZZSlRQ8BKn33BGZaihCInChpdjRBgByJqFQ==
+
 "@aave/contract-helpers@1.36.1":
   version "1.36.1"
   resolved "https://registry.yarnpkg.com/@aave/contract-helpers/-/contract-helpers-1.36.1.tgz#729735e6be4f8a1872e1e3400591485fc2198b76"
@@ -1578,11 +1583,6 @@
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
-
-"@bgd-labs/aave-address-book@4.36.0":
-  version "4.36.0"
-  resolved "https://registry.yarnpkg.com/@bgd-labs/aave-address-book/-/aave-address-book-4.36.0.tgz#c850f5b235675006ae92c2f2918040abd86b99e1"
-  integrity sha512-9vpDl3SYJyxVronEIEmh3B1Z58o87A5b98DCvsDmeochD1UMdsi8GmptgQ5fDwHFyiqRGwlbA1uy0YCExdz+Zg==
 
 "@chainsafe/as-sha256@^0.3.1":
   version "0.3.1"
