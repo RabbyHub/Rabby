@@ -304,9 +304,9 @@ const Main = () => {
         <PrivateRoute exact path="/mnemonics/create">
           <CreateMnemonics />
         </PrivateRoute>
-        <PrivateRoute exact path="/biometric-unlock-setup">
+        <Route exact path="/biometric-unlock-setup">
           <BiometricUnlockSetup />
-        </PrivateRoute>
+        </Route>
         <PrivateRoute exact path="/import">
           <ImportMode />
         </PrivateRoute>

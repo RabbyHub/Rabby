@@ -1764,7 +1764,10 @@ export class WalletController extends BaseController {
     return tab;
   };
 
-  openBiometricUnlockSetupWindow = async () => {
+  openBiometricUnlockSetupWindow = async (params?: { from?: string }) => {
+    if (params?.from !== 'settings') {
+      await this.clearPageStateCache();
+    }
     const {
       top: cTop,
       left: cLeft,
@@ -1772,7 +1775,8 @@ export class WalletController extends BaseController {
     } = await Browser.windows.getLastFocused({
       windowTypes: ['normal'],
     } as Windows.GetInfo);
-    const url = 'index.html#/biometric-unlock-setup';
+    const from = params?.from ? `?from=${encodeURIComponent(params.from)}` : '';
+    const url = `index.html#/biometric-unlock-setup${from}`;
     const top = cTop;
     const left = cLeft! + width! - 500;
     return Browser.windows.create({
@@ -1802,14 +1806,22 @@ export class WalletController extends BaseController {
     return false;
   };
 
-  finishBiometricUnlockSetup = async (setupWindowId?: number) => {
-    await this.setPageStateCache({
-      path: '/dashboard',
-      params: {},
-      states: {
-        action: 'open-settings',
-      },
-    });
+  finishBiometricUnlockSetup = async (
+    setupWindowId?: number,
+    options?: { openSettings?: boolean }
+  ) => {
+    const shouldOpenSettings = options?.openSettings ?? true;
+    if (shouldOpenSettings) {
+      await this.setPageStateCache({
+        path: '/dashboard',
+        params: {},
+        states: {
+          action: 'open-settings',
+        },
+      });
+    } else {
+      await this.clearPageStateCache();
+    }
 
     if (typeof setupWindowId === 'number') {
       try {
