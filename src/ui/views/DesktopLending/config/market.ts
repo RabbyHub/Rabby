@@ -18,7 +18,11 @@ import {
   AaveV3Soneium,
   AaveV3Sonic,
   AaveV3ZkSync,
-} from '@bgd-labs/aave-address-book';
+  AaveV3Mantle,
+  AaveV3XLayer,
+  GhoMantle,
+  AaveV3MegaEth,
+} from '@aave-dao/aave-address-book';
 import { ReactNode } from 'react';
 
 export type MarketDataType = {
@@ -85,6 +89,9 @@ export enum CustomMarket {
   proto_horizon_v3 = 'proto_horizon_v3',
   proto_plasma_v3 = 'proto_plasma_v3',
   proto_ink_v3 = 'proto_ink_v3',
+  proto_xlayer_v3 = 'proto_xlayer_v3',
+  proto_mantle_v3 = 'proto_mantle_v3',
+  proto_megaeth_v3 = 'proto_megaeth_v3',
 }
 
 export const marketsData: {
@@ -397,6 +404,58 @@ export const marketsData: {
       UI_INCENTIVE_DATA_PROVIDER:
         AaveV3InkWhitelabel.UI_INCENTIVE_DATA_PROVIDER,
       // COLLECTOR: AaveV3InkWhitelabel.COLLECTOR,
+    },
+  },
+  [CustomMarket.proto_megaeth_v3]: {
+    marketTitle: 'MegaETH',
+    market: CustomMarket.proto_megaeth_v3,
+    chainId: 4326 as ChainId,
+    v3: true,
+    logo: '/icons/networks/megaeth.svg',
+    addresses: {
+      LENDING_POOL_ADDRESS_PROVIDER: AaveV3MegaEth.POOL_ADDRESSES_PROVIDER,
+      LENDING_POOL: AaveV3MegaEth.POOL,
+      WETH_GATEWAY: AaveV3MegaEth.WETH_GATEWAY,
+      WALLET_BALANCE_PROVIDER: AaveV3MegaEth.WALLET_BALANCE_PROVIDER,
+      UI_POOL_DATA_PROVIDER: AaveV3MegaEth.UI_POOL_DATA_PROVIDER,
+      UI_INCENTIVE_DATA_PROVIDER: AaveV3MegaEth.UI_INCENTIVE_DATA_PROVIDER,
+      COLLECTOR: AaveV3MegaEth.COLLECTOR,
+      L2_ENCODER: AaveV3MegaEth.L2_ENCODER,
+    },
+  },
+  [CustomMarket.proto_xlayer_v3]: {
+    marketTitle: 'X Layer',
+    market: CustomMarket.proto_xlayer_v3,
+    chainId: 196 as ChainId,
+    v3: true,
+    addresses: {
+      LENDING_POOL_ADDRESS_PROVIDER: AaveV3XLayer.POOL_ADDRESSES_PROVIDER,
+      LENDING_POOL: AaveV3XLayer.POOL,
+      WETH_GATEWAY: AaveV3XLayer.WETH_GATEWAY,
+      WALLET_BALANCE_PROVIDER: AaveV3XLayer.WALLET_BALANCE_PROVIDER,
+      UI_POOL_DATA_PROVIDER: AaveV3XLayer.UI_POOL_DATA_PROVIDER,
+      UI_INCENTIVE_DATA_PROVIDER: AaveV3XLayer.UI_INCENTIVE_DATA_PROVIDER,
+      COLLECTOR: AaveV3XLayer.COLLECTOR,
+    },
+  },
+  [CustomMarket.proto_mantle_v3]: {
+    marketTitle: 'Mantle',
+    market: CustomMarket.proto_mantle_v3,
+    chainId: 5000 as ChainId,
+    v3: true,
+    enabledFeatures: {
+      incentives: true,
+    },
+    addresses: {
+      LENDING_POOL_ADDRESS_PROVIDER: AaveV3Mantle.POOL_ADDRESSES_PROVIDER,
+      LENDING_POOL: AaveV3Mantle.POOL,
+      WETH_GATEWAY: AaveV3Mantle.WETH_GATEWAY,
+      WALLET_BALANCE_PROVIDER: AaveV3Mantle.WALLET_BALANCE_PROVIDER,
+      UI_POOL_DATA_PROVIDER: AaveV3Mantle.UI_POOL_DATA_PROVIDER,
+      UI_INCENTIVE_DATA_PROVIDER: AaveV3Mantle.UI_INCENTIVE_DATA_PROVIDER,
+      L2_ENCODER: AaveV3Mantle.L2_ENCODER,
+      COLLECTOR: AaveV3Mantle.COLLECTOR,
+      GHO_TOKEN_ADDRESS: GhoMantle.GHO_TOKEN,
     },
   },
 
