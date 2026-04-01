@@ -1052,11 +1052,7 @@
       }
     },
     "perpsPro": {
-      "__skip_translation": [
-        "TWAP",
-        "TP",
-        "SL"
-      ],
+      "__skip_translation": ["TWAP", "TP", "SL"],
       "chatArea": {
         "markTips": "Used for margining, computing unrealized PNL, liquidations, and triggering TP/SL orders.",
         "oracleTips": "The median of external prices reported by validators, used for computing funding rates.",
@@ -1076,9 +1072,7 @@
       },
       "userInfo": {
         "tab": {
-          "__skip_translation": [
-            "twap"
-          ],
+          "__skip_translation": ["twap"],
           "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
           "fundingTips": "Net funding payments since the position was opened. If negative, it means funding gains.",
           "fundingTipsV2": "Net funding since the position was opened. a red (negative) funding value indicates funding paid, while a green (positive) value indicates funding received.",
@@ -1161,9 +1155,7 @@
           "confirmCloseAllDesc": "All your open positions will be closed at market price and cancel all orders."
         },
         "openOrders": {
-          "__skip_translation": [
-            "ro"
-          ],
+          "__skip_translation": ["ro"],
           "order": "Order",
           "time": "Time",
           "triggerConditions": "Trigger Conditions",
@@ -1225,7 +1217,7 @@
         "estimatedPnlWillBe": "Your estimated PnL will be",
         "Buy": "Buy",
         "cost": "Cost",
-        "max":"MAX",
+        "max": "MAX",
         "price": "Price",
         "Sell": "Sell",
         "deposit": "Deposit",
@@ -1561,9 +1553,7 @@
           "mySupplies": "My supplies"
         },
         "item": {
-          "__skip_translation": [
-            "tvl"
-          ],
+          "__skip_translation": ["tvl"],
           "tvl": "TVL",
           "wrapperToken": "Wrapped token for {{name}}"
         }
@@ -1696,9 +1686,7 @@
         "zeroLtvCollateralTips": "You have following LTV = 0 collaterals and thus can only repay with these collaterals first according to collateral repay rules. "
       },
       "manageEmode": {
-        "__skip_translation": [
-          "emode"
-        ],
+        "__skip_translation": ["emode"],
         "emode": "E-Mode",
         "title": "Manage E-Mode",
         "disableTitle": "Disable",
@@ -2312,14 +2300,15 @@
       "search": "Search",
       "manage-address": "Manage Address",
       "deleted": "Deleted",
-      "deleteSuccess":"Deleted successfully",
+      "deleteSuccess": "Deleted successfully",
       "whitelisted-address": "Whitelisted address",
       "addressTypeTip": "Imported by {{type}}",
       "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
       "delete-checklist-1": "I understand that if I delete this address, the corresponding Private Key & Seed Phrase of this address will be deleted and Rabby will NOT be able to recover it.",
       "delete-checklist-2": "I confirm that I have backed up the private key or Seed Phrase and I'm ready to delete it now.",
       "confirm": "Confirm",
-      "seedPhraseNotBackedUp": "Seed phrase not backed up",
+      "seedPhraseNotBackedUp": "Wallet not backed up",
+      "backupSeedPhraseNow": "Start backup",
       "cancel": "Cancel",
       "delete-private-key-modal-title_one": "Delete {{count}} private key address",
       "delete-private-key-modal-title_other": "Delete {{count}} private key addresses",
@@ -3906,7 +3895,7 @@
         "desc": "Rabby Wallet is Ready to Use!",
         "openWallet": "Open Wallet",
         "backupSeedPhraseNow": "Backup Seed phrase Now",
-        "backupSeedPhrase":"Backup Seed Phrase"
+        "backupSeedPhrase": "Backup Seed Phrase"
       },
       "readyToUse": {
         "title": "Your Rabby Wallet is Ready !",
@@ -4074,9 +4063,7 @@
     },
     "search": {
       "sectionHeader": {
-        "__skip_translation": [
-          "Defi"
-        ],
+        "__skip_translation": ["Defi"],
         "token": "Tokens",
         "Defi": "DeFi",
         "NFT": "NFT",
@@ -4158,9 +4145,7 @@
         "pending": "{{pendingTxCount}} Pending"
       },
       "tabs": {
-        "__skip_translation": [
-          "defi"
-        ],
+        "__skip_translation": ["defi"],
         "tokens": "Tokens",
         "transactions": "Transactions",
         "approvals": "Approvals",
@@ -4519,10 +4504,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
