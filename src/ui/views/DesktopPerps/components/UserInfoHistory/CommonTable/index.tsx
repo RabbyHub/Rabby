@@ -56,12 +56,10 @@ const Wrapper = styled.div`
   .ant-table-header {
     flex-shrink: 0;
     .ant-table-thead > tr > th.ant-table-cell-scrollbar:last-child {
-      padding-right: 0;
-      display: none;
-    }
-
-    .ant-table-thead > tr > th:nth-last-child(2) {
-      padding-right: 16px; // add 4px for scrollbar
+      padding: 0;
+      border: none;
+      background: transparent;
+      box-shadow: none;
     }
   }
 
