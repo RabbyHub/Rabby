@@ -1211,6 +1211,7 @@
       "address-management": "地址管理",
       "addressTypeTip": "由 {{type}} 导入",
       "backup-seed-phrase": "备份助记词",
+      "seedPhraseNotBackedUp": "助记词未备份",
       "cancel": "取消",
       "confirm": "确认",
       "confirm-delete": "确认删除",
