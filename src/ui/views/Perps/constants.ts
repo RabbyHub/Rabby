@@ -39,6 +39,10 @@ export const HYPE_CORE_DEPOSIT_WALLET =
 
 export const HYPE_CORE_DEPOSIT_PERPS_DEX = 0;
 
+export const HYPE_EVM_BRIDGE_ADDRESS =
+  '0x2000000000000000000000000000000000000000';
+export const HYPE_SEND_ASSET_TOKEN = 'USDC';
+
 export const HYPE_USDC_TOKEN_ITEM = {
   id: HYPE_USDC_TOKEN_ID,
   chain: HYPE_USDC_TOKEN_SERVER_CHAIN,
@@ -59,6 +63,27 @@ export const HYPE_USDC_TOKEN_ITEM = {
   is_suspicious: false,
   time_at: 0,
 } as TokenItem;
+
+export const WITHDRAW_TOKEN_LIST: TokenItem[] = [
+  ARB_USDC_TOKEN_ITEM,
+  HYPE_USDC_TOKEN_ITEM,
+];
+
+export function isDirectDepositToken(token: TokenItem): boolean {
+  return (
+    (token.id === ARB_USDC_TOKEN_ID &&
+      token.chain === ARB_USDC_TOKEN_SERVER_CHAIN) ||
+    (token.id === HYPE_USDC_TOKEN_ID &&
+      token.chain === HYPE_USDC_TOKEN_SERVER_CHAIN)
+  );
+}
+
+export function isHypeWithdrawToken(token?: TokenItem | null): boolean {
+  return (
+    token?.id === HYPE_USDC_TOKEN_ID &&
+    token?.chain === HYPE_USDC_TOKEN_SERVER_CHAIN
+  );
+}
 
 export enum CANDLE_MENU_KEY {
   ONE_HOUR = '1H',

@@ -87,6 +87,7 @@ import { getHealthFactorText } from '@/ui/views/DesktopLending/utils/health';
 import { HF_COLOR_GOOD_THRESHOLD } from '@/ui/views/DesktopLending/utils/constant';
 import { fetchLendingHealthFactorForDashboard } from '@/ui/views/DesktopLending/hooks';
 import { CustomMarket } from '@/ui/views/DesktopLending/config/market';
+import BigNumber from 'bignumber.js';
 
 export const DragOverlayContext = createContext(false);
 
@@ -484,11 +485,12 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
               'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
             )}
           >
-            {formatUsdValue(availableBalance || 0)}
+            {formatUsdValue(availableBalance || 0, BigNumber.ROUND_DOWN)}
           </div>
         );
       }
     }
+    // todo remove lighter
     if (perpsId === 'lighter') {
       if (!lighterAccount || !lighterInfo.lighter) return null;
       return (

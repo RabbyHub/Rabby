@@ -30,7 +30,10 @@ import {
   formatMarkData,
   getMaxTimeFromAccountHistory,
 } from '../views/Perps/utils';
-import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
+import {
+  DEFAULT_TOP_ASSET,
+  HYPE_EVM_BRIDGE_ADDRESS,
+} from '../views/Perps/constants';
 import { ApproveSignatures } from '@/background/service/perps';
 import { maxBy } from 'lodash';
 import eventBus from '@/eventBus';
@@ -364,6 +367,19 @@ export const perps = createModel<RootModel>()({
               time: item.time,
               hash: item.hash,
               type: 'receive' as const,
+              status: 'success' as const,
+              usdValue: usdcValue.toString(),
+            };
+          }
+
+          if (
+            item.delta.type === 'send' &&
+            destination === HYPE_EVM_BRIDGE_ADDRESS
+          ) {
+            return {
+              time: item.time,
+              hash: item.hash,
+              type: 'withdraw' as const,
               status: 'success' as const,
               usdValue: usdcValue.toString(),
             };
