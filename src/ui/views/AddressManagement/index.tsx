@@ -551,7 +551,7 @@ const AddressManagement = () => {
                     </span>
                     <div className="flex items-center shrink-0">
                       <span className="text-12 leading-[14px] text-white font-medium text-right whitespace-nowrap">
-                        {t('page.addressDetail.backup-seed-phrase')}
+                        {t('page.manageAddress.backupSeedPhraseNow')}
                       </span>
                       <RcIconArrowRight14 className="w-[14px] h-[14px] shrink-0 text-white" />
                     </div>
