@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
-const SecSDK = require('supplychain_security_sdk').default;
+const SecSDK = require('warden-for-js').WardenPlugin;
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const config = {
@@ -16,7 +16,7 @@ const config = {
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
       'process.env.DEBUG': true,
     }),
-    false &&
+    true &&
       new SecSDK({
         dev: false,
         disableProtoAssets: ['pageProvider.js'],

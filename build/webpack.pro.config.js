@@ -3,7 +3,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 
 const sentrySourceMap = !!process.env.sourcemap || false;
-const SecSDK = require('supplychain_security_sdk').default;
+const SecSDK = require('warden-for-js').WardenPlugin;
 
 const config = {
   mode: 'production',
