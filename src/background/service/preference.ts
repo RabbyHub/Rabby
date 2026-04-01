@@ -350,10 +350,7 @@ class PreferenceService {
       this.store.biometricUnlockIv = '';
     }
     if ((this.store as any).biometricUnlockPrfSalt) {
-      this.store.biometricUnlockEnabled = false;
-      this.store.biometricUnlockCredentialId = '';
-      this.store.biometricUnlockEncryptedPassword = '';
-      this.store.biometricUnlockIv = '';
+      this.clearBiometricUnlockStorage();
       (this.store as any).biometricUnlockPrfSalt = '';
     }
     if (
@@ -416,6 +413,15 @@ class PreferenceService {
           console.error(err);
         }
       }
+    });
+  };
+
+  clearBiometricUnlockStorage = () => {
+    this.setPreferencePartials({
+      biometricUnlockEnabled: false,
+      biometricUnlockCredentialId: '',
+      biometricUnlockEncryptedPassword: '',
+      biometricUnlockIv: '',
     });
   };
 

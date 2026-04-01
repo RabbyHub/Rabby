@@ -2062,12 +2062,7 @@ export class WalletController extends BaseController {
     iv?: string;
   }) => {
     if (!payload.enabled) {
-      preferenceService.setPreferencePartials({
-        biometricUnlockEnabled: false,
-        biometricUnlockCredentialId: '',
-        biometricUnlockEncryptedPassword: '',
-        biometricUnlockIv: '',
-      });
+      preferenceService.clearBiometricUnlockStorage();
       return;
     }
 
