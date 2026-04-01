@@ -144,6 +144,7 @@ export interface PreferenceStore {
   biometricUnlockCredentialId?: string;
   biometricUnlockEncryptedPassword?: string;
   biometricUnlockIv?: string;
+  unlockPreferredMethod?: UnlockPreferredMethod;
 
   rateGuideLastExposure?: RateGuideLastExposure;
 
@@ -170,6 +171,7 @@ const defaultAddressSortStore: AddressSortStore = {
 };
 
 export type PreferenceServiceCls = PreferenceService;
+export type UnlockPreferredMethod = 'password' | 'biometric';
 
 class PreferenceService {
   store!: PreferenceStore;
@@ -234,6 +236,7 @@ class PreferenceService {
         biometricUnlockCredentialId: '',
         biometricUnlockEncryptedPassword: '',
         biometricUnlockIv: '',
+        unlockPreferredMethod: 'biometric',
         ga4EventTime: 0,
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
         desktopTabId: undefined,
@@ -348,11 +351,11 @@ class PreferenceService {
     if (!this.store.biometricUnlockIv) {
       this.store.biometricUnlockIv = '';
     }
+    if (!this.store.unlockPreferredMethod) {
+      this.store.unlockPreferredMethod = 'biometric';
+    }
     if ((this.store as any).biometricUnlockPrfSalt) {
-      this.store.biometricUnlockEnabled = false;
-      this.store.biometricUnlockCredentialId = '';
-      this.store.biometricUnlockEncryptedPassword = '';
-      this.store.biometricUnlockIv = '';
+      this.clearBiometricUnlockStorage();
       (this.store as any).biometricUnlockPrfSalt = '';
     }
     if (
@@ -415,6 +418,15 @@ class PreferenceService {
           console.error(err);
         }
       }
+    });
+  };
+
+  clearBiometricUnlockStorage = () => {
+    this.setPreferencePartials({
+      biometricUnlockEnabled: false,
+      biometricUnlockCredentialId: '',
+      biometricUnlockEncryptedPassword: '',
+      biometricUnlockIv: '',
     });
   };
 

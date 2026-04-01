@@ -164,6 +164,7 @@ export const BiometricUnlockSetup = () => {
         encryptedPassword: payload.encryptedPassword,
         iv: payload.iv,
       });
+      await dispatch.preference.setUnlockPreferredMethod('biometric');
       message.success(t('page.dashboard.settings.biometricUnlockEnabled'));
       const currentWindow = await browser.windows.getCurrent();
       if (isFromSettings) {

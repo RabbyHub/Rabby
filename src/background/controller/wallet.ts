@@ -60,7 +60,11 @@ import {
   CORE_KEYRING_TYPES,
 } from 'consts';
 import { ERC20ABI, ERC721ABI, SeaportABI } from 'consts/abi';
-import { Account, IHighlightedAddress } from '../service/preference';
+import {
+  Account,
+  IHighlightedAddress,
+  UnlockPreferredMethod,
+} from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import {
   TokenItem,
@@ -2139,12 +2143,7 @@ export class WalletController extends BaseController {
     iv?: string;
   }) => {
     if (!payload.enabled) {
-      preferenceService.setPreferencePartials({
-        biometricUnlockEnabled: false,
-        biometricUnlockCredentialId: '',
-        biometricUnlockEncryptedPassword: '',
-        biometricUnlockIv: '',
-      });
+      preferenceService.clearBiometricUnlockStorage();
       return;
     }
 
@@ -2153,6 +2152,15 @@ export class WalletController extends BaseController {
       biometricUnlockCredentialId: payload.credentialId || '',
       biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
       biometricUnlockIv: payload.iv || '',
+    });
+  };
+
+  setUnlockPreferredMethod = (method: UnlockPreferredMethod) => {
+    if (!['password', 'biometric'].includes(method)) {
+      return;
+    }
+    preferenceService.setPreferencePartials({
+      unlockPreferredMethod: method,
     });
   };
 

@@ -43,7 +43,7 @@ const InputFormStyled = styled(Form.Item)`
   }
 `;
 const BiometricsImage = styled.div`
-  margin-top: 45px;
+  margin-top: 28px;
   display: flex;
   justify-content: center;
 `;
@@ -63,6 +63,14 @@ const UnlockMethodSwitch = styled.button`
 
   &:hover {
     background: #b8c1ff;
+  }
+
+  html.dark & {
+    background: #232b4e;
+  }
+
+  html.dark &:hover {
+    background: #2a3770;
   }
 `;
 
@@ -99,6 +107,9 @@ const Unlock = () => {
   const biometricUnlockIv = useRabbySelector(
     (state) => state.preference.biometricUnlockIv
   );
+  const unlockPreferredMethod = useRabbySelector(
+    (state) => state.preference.unlockPreferredMethod
+  );
   const hasUnlockedOnce = useRabbySelector(
     (state) => state.app.hasUnlockedOnce
   );
@@ -128,6 +139,9 @@ const Unlock = () => {
       ga4.fireEvent(`Unlock_Act_${unlockType}`, {
         event_category: 'Unlock_Wallet',
       });
+      await dispatch.preference.setUnlockPreferredMethod(
+        unlockType === 'Biometrics' ? 'biometric' : 'password'
+      );
     }
 
     dispatch.app.setField({
@@ -199,8 +213,12 @@ const Unlock = () => {
     biometricSupported && (UiType.isTab || UiType.isPop || UiType.isDesktop);
 
   useEffect(() => {
-    setShowPasswordUnlock(!biometricAvailable);
-  }, [biometricAvailable]);
+    if (!biometricAvailable) {
+      setShowPasswordUnlock(true);
+      return;
+    }
+    setShowPasswordUnlock(unlockPreferredMethod === 'password');
+  }, [biometricAvailable, unlockPreferredMethod]);
 
   useEffect(() => {
     if (!showPasswordUnlock) return;
@@ -254,9 +272,16 @@ const Unlock = () => {
     }
   });
 
+  const switchToBiometricMode = useMemoizedFn(() => {
+    form.resetFields(['password']);
+    setInputError('');
+    setShowPasswordUnlock(false);
+  });
+
   useEffect(() => {
     if (!biometricAvailable) return;
     if (showPasswordUnlock) return;
+    if (unlockPreferredMethod === 'password') return;
     if (hasUnlockedOnce) return;
     if (autoBiometricTriggeredRef.current) return;
 
@@ -265,6 +290,7 @@ const Unlock = () => {
   }, [
     biometricAvailable,
     showPasswordUnlock,
+    unlockPreferredMethod,
     hasUnlockedOnce,
     handleBiometricUnlock,
   ]);
@@ -291,13 +317,13 @@ const Unlock = () => {
     <FullscreenContainer isUnlock>
       <div className="unlock page-has-ant-input relative h-full min-h-[550px]">
         <BackgroundSVG className="absolute inset-0 z-[-1]" />
-        <div className="pt-80">
+        <div className="pt-[124px]">
           {showBiometricSwitch && (
             <div className="w-full absolute top-32 left-0 right-0 flex justify-center z-10">
               {showPasswordUnlock ? (
                 <UnlockMethodSwitch
                   type="button"
-                  onClick={() => setShowPasswordUnlock(false)}
+                  onClick={switchToBiometricMode}
                 >
                   <BiometricSwitchSVG className="w-[18px] h-[18px]" />
                   {t('page.unlock.btn.biometric')}
@@ -341,8 +367,8 @@ const Unlock = () => {
               <BiometricsSVG />
             </BiometricsImage>
 
-            <footer className="absolute bottom-32 left-0 right-0 text-center">
-              <div className="mx-20 mb-20">
+            <footer className="absolute bottom-[68px] left-0 right-0 text-center">
+              <div className="mx-20">
                 <Button
                   block
                   className={clsx(
