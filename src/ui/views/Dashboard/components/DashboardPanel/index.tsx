@@ -490,19 +490,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         );
       }
     }
-    // todo remove lighter
-    if (perpsId === 'lighter') {
-      if (!lighterAccount || !lighterInfo.lighter) return null;
-      return (
-        <div
-          className={clsx(
-            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
-          )}
-        >
-          {formatUsdValue(lighterInfo.totalUsd || 0)}
-        </div>
-      );
-    }
     return null;
   }, [
     perpsId,
