@@ -4,12 +4,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { sleep, useWallet } from '@/ui/utils';
 import { destroyPerpsSDK, getPerpsSDK } from '../sdkManager';
 import * as Sentry from '@sentry/browser';
+import { UserAbstractionResp } from '@rabby-wallet/hyperliquid-sdk';
 import {
   PERPS_AGENT_NAME,
   PERPS_BUILD_FEE,
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
   PERPS_REFERENCE_CODE,
   DELETE_AGENT_EMPTY_ADDRESS,
+  HYPE_EVM_BRIDGE_ADDRESS,
+  HYPE_SEND_ASSET_TOKEN,
 } from '../constants';
 import { isSameAddress } from '@/ui/utils';
 import { findAccountByPriority } from '@/utils/account';
@@ -730,9 +733,9 @@ export const usePerpsState = ({
   });
 
   const handleWithdraw = useMemoizedFn(
-    async (amount: number): Promise<boolean> => {
+    async (amount: number, isHypeWithdraw = false): Promise<boolean> => {
       try {
-        console.log('handleWithdraw', amount);
+        console.log('handleWithdraw', amount, isHypeWithdraw);
         const sdk = getPerpsSDK();
 
         if (!currentPerpsAccount) {
@@ -743,31 +746,60 @@ export const usePerpsState = ({
           throw new Error('Hyperliquid no exchange client');
         }
 
-        const action = sdk.exchange.prepareWithdraw({
-          amount: amount.toString(),
-          destination: currentPerpsAccount.address,
-        });
-        console.log('withdraw action', action);
+        const isUnified =
+          perpsState.userAbstraction === UserAbstractionResp.unifiedAccount;
 
-        const [signature] = await executeSignTypedData(
-          [action],
-          currentPerpsAccount
-        );
+        const time = Date.now();
+        let res: any;
+        if (isHypeWithdraw) {
+          const action = sdk.exchange.prepareSendAsset({
+            destination: HYPE_EVM_BRIDGE_ADDRESS,
+            amount: amount.toString(),
+            token: HYPE_SEND_ASSET_TOKEN,
+            sourceDex: isUnified ? 'spot' : '',
+            destinationDex: 'spot',
+          });
+          console.log('withdraw sendAsset action', action);
 
-        console.log('withdraw signature', signature);
-        const res = await sdk.exchange.sendWithdraw({
-          action: action.message as any,
-          nonce: action.nonce || 0,
-          signature: signature as string,
-        });
+          const [signature] = await executeSignTypedData(
+            [action],
+            currentPerpsAccount
+          );
+
+          res = await sdk.exchange.sendSendAsset({
+            action: action.message as any,
+            nonce: action.nonce || 0,
+            signature: signature as string,
+          });
+        } else {
+          const action = sdk.exchange.prepareWithdraw({
+            amount: amount.toString(),
+            destination: currentPerpsAccount.address,
+          });
+          console.log('withdraw action', action);
+
+          const [signature] = await executeSignTypedData(
+            [action],
+            currentPerpsAccount
+          );
+
+          console.log('withdraw signature', signature);
+          res = await sdk.exchange.sendWithdraw({
+            action: action.message as any,
+            nonce: action.nonce || 0,
+            signature: signature as string,
+          });
+        }
         console.log('withdraw res', res);
         dispatch.perps.setLocalLoadingHistory([
           {
-            time: Date.now(),
+            time,
             hash: res.hash || '',
             type: 'withdraw',
             status: 'pending',
-            usdValue: (amount - 1).toString(),
+            usdValue: isHypeWithdraw
+              ? amount.toString()
+              : (amount - 1).toString(),
           },
         ]);
         dispatch.perps.fetchClearinghouseState();
@@ -839,10 +871,10 @@ export const usePerpsState = ({
           account: initAccount,
           isPro: false,
         });
-        dispatch.perps.fetchMarketData(undefined);
-
         // checkIsNeedAutoLoginOut(initAccount.address, agentAddress);
         ensureLoginApproveSign(initAccount, agentAddress);
+
+        await dispatch.perps.fetchMarketData(undefined);
 
         dispatch.perps.setInitialized(true);
         return true;
