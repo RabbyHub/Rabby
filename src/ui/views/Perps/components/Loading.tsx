@@ -9,34 +9,30 @@ export const PerpsLoading = ({ active = true }: PerpsLoadingProps) => {
   return (
     <div className="mx-20">
       {/* 登录后的账户余额卡片骨架 */}
-      <div className="bg-r-neutral-card1 rounded-[12px] px-16 py-16 flex flex-col items-center">
-        <Skeleton.Button
-          active={active}
-          className="h-[40px] mb-8 block rounded-[8px]"
-          style={{ width: 100 }}
-        />
-        <Skeleton.Button
-          active={active}
-          className="h-[20px] mb-8 block rounded-[8px]"
-          style={{ width: 80 }}
-        />
-        <Skeleton.Button
-          active={active}
-          className="h-[16px] mb-24 block rounded-[8px]"
-          style={{ width: 120 }}
-        />
-        {/* 按钮骨架 */}
-        <div className="w-full flex gap-12 items-center justify-center">
+      <div className="bg-r-neutral-card1 rounded-[8px] px-16 py-16 flex justify-between items-center">
+        <div className="flex flex-col gap-8">
           <Skeleton.Button
             active={active}
-            className="h-[44px] w-[158px] flex-1 block rounded-[8px]"
+            className="h-[32px] block rounded-[4px]"
+            style={{ width: 100 }}
           />
           <Skeleton.Button
             active={active}
-            className="h-[44px] w-[158px] flex-1 block rounded-[8px]"
+            className="h-[18px] block rounded-[4px]"
+            style={{ width: 100 }}
           />
         </div>
+        <Skeleton.Button
+          active={active}
+          className="h-[40px] block rounded-[8px]"
+          style={{ width: 120 }}
+        />
       </div>
+
+      <Skeleton.Button
+        active={active}
+        className="h-[32px] w-full mt-12 block rounded-[8px]"
+      />
 
       {/* 持仓列表骨架 */}
       <div className="mt-20">

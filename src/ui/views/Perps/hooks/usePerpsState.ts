@@ -871,10 +871,10 @@ export const usePerpsState = ({
           account: initAccount,
           isPro: false,
         });
-        dispatch.perps.fetchMarketData(undefined);
-
         // checkIsNeedAutoLoginOut(initAccount.address, agentAddress);
         ensureLoginApproveSign(initAccount, agentAddress);
+
+        await dispatch.perps.fetchMarketData(undefined);
 
         dispatch.perps.setInitialized(true);
         return true;
