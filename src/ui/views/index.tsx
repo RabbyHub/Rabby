@@ -97,15 +97,20 @@ const useAutoLock = () => {
   }, [handleLockShortcut]);
 };
 
+const SyncHook = () => {
+  const account = useCurrentAccount();
+  useSyncDbHistory({
+    account,
+  });
+
+  return null;
+};
+
 const Main = () => {
   useAutoLock();
   useThemeModeOnMain();
   useSubscribeCurrentAccountChanged();
   useSyncCurrentAccount();
-  const account = useCurrentAccount();
-  useSyncDbHistory({
-    account,
-  });
 
   return (
     <>
@@ -127,6 +132,8 @@ const Main = () => {
       <Suspense fallback={null}>
         <AsyncMainRoute />
       </Suspense>
+
+      <SyncHook />
     </>
   );
 };
