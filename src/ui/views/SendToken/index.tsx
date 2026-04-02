@@ -2176,7 +2176,6 @@ const SendToken = () => {
                       onChange={handleAmountChange}
                       onTokenChange={handleCurrentTokenChange}
                       // chainId={chainItem.serverId}
-                      excludeTokens={[]}
                       initLoading={initLoading}
                       disableItemCheck={disableItemCheck}
                       balanceNumText={balanceNumText}
