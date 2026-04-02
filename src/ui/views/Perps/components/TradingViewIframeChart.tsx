@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ReactComponent as ChartLoadingSVG } from '@/ui/assets/perps-chart-loading.svg';
 import type { Candle, CandleSnapshot } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
 
@@ -112,6 +113,7 @@ interface TradingViewIframeChartProps {
   onHoverData?: (data: TradingViewHoverData) => void;
   onLatestBar?: (data: TradingViewHoverData) => void;
   onIntervalChange?: (interval: PerpsInterval) => void;
+  onReady?: () => void;
 }
 
 const SUPPORTED_RESOLUTIONS: TradingViewResolution[] = [
@@ -318,10 +320,12 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   onHoverData,
   onLatestBar,
   onIntervalChange,
+  onReady,
 }) => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const subscriptionsRef = useRef<Map<string, BarSubscription>>(new Map());
   const iframeIntervalChangeRef = useRef(false);
+  const [isChartReady, setIsChartReady] = useState(false);
 
   const iframeUrl = useMemo(() => {
     const base = getTradingViewBaseUrl();
@@ -355,6 +359,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     onHoverData,
     onLatestBar,
     onIntervalChange,
+    onReady,
   });
 
   useEffect(() => {
@@ -370,6 +375,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       onHoverData,
       onLatestBar,
       onIntervalChange,
+      onReady,
     };
   }, [
     coin,
@@ -383,6 +389,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     onHoverData,
     onLatestBar,
     onIntervalChange,
+    onReady,
   ]);
 
   useEffect(() => {
@@ -537,6 +544,9 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
           stateRef.current.onHoverData?.(
             message.payload as TradingViewHoverData
           );
+        } else if (message.event === 'chartReady') {
+          setIsChartReady(true);
+          stateRef.current.onReady?.();
         } else if (message.event === 'intervalChanged') {
           const resolution = message.payload?.resolution;
           if (resolution) {
@@ -719,18 +729,50 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   }, [widgetConfig]);
 
   return (
-    <iframe
-      ref={iframeRef}
-      src={iframeUrl}
-      className={className}
-      title="tradingview-advanced-chart"
-      style={{
-        width: '100%',
-        height: '100%',
-        border: 0,
-      }}
-      sandbox="allow-scripts allow-same-origin allow-forms allow-downloads allow-popups"
-      allowFullScreen
-    />
+    <div className={className} style={{ position: 'relative' }}>
+      {!isChartReady && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 1,
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 4,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: isDarkTheme ? '#131416' : '#F2F4F7',
+          }}
+        >
+          <ChartLoadingSVG
+            style={{
+              width: 14,
+              height: 14,
+            }}
+          />
+          <span
+            style={{
+              fontSize: 13,
+              lineHeight: 'normal',
+              color: '#BABEC5',
+            }}
+          >
+            Loading
+          </span>
+        </div>
+      )}
+      <iframe
+        ref={iframeRef}
+        src={iframeUrl}
+        title="tradingview-advanced-chart"
+        style={{
+          width: '100%',
+          height: '100%',
+          border: 0,
+        }}
+        sandbox="allow-scripts allow-same-origin allow-forms allow-downloads allow-popups"
+        allowFullScreen
+      />
+    </div>
   );
 };
