@@ -494,9 +494,19 @@ export const perps = createModel<RootModel>()({
     },
 
     setLocalLoadingHistory(state, payload: AccountHistoryItem[]) {
+      // If WS already delivered a confirmed entry for this type,
+      // skip adding the pending item (WS arrived before HTTP response)
+      const filtered = payload.filter((item) => {
+        return !state.userAccountHistory.some(
+          (h) => h.type === item.type && h.time >= item.time
+        );
+      });
+      if (filtered.length === 0) {
+        return state;
+      }
       return {
         ...state,
-        localLoadingHistory: [...payload, ...state.localLoadingHistory],
+        localLoadingHistory: [...filtered, ...state.localLoadingHistory],
       };
     },
 
