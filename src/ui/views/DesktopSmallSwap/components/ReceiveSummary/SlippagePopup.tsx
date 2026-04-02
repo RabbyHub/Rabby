@@ -5,12 +5,18 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const SlippagePopup = ({
+  visible,
+  onCancel,
+  onConfirm,
   slippage,
   onChange,
   getContainer,
 }: {
   slippage: number;
   onChange(slippage: number): void;
+  visible?: boolean;
+  onCancel?: () => void;
+  onConfirm?: () => void;
   getContainer?: DrawerProps['getContainer'];
 }) => {
   const [inputValue, setInputValue] = useState(slippage.toString());
@@ -37,8 +43,8 @@ export const SlippagePopup = ({
 
   return (
     <Popup
-      visible={true}
-      // onClose={handleCancel}
+      visible={visible}
+      onClose={onCancel}
       height={'fit-content'}
       // bodyStyle={{ height: '100%', padding: '14px 20px 0 20px' }}
       destroyOnClose
@@ -75,7 +81,7 @@ export const SlippagePopup = ({
         <button
           type="button"
           className="flex-1 block  h-[60px] rounded-[8px] text-[18px] leading-[20px] bg-r-neutral-bg-4"
-          // onClick={handleCancel}
+          onClick={onCancel}
         >
           {t('global.Cancel')}
         </button>
@@ -84,7 +90,7 @@ export const SlippagePopup = ({
           type="primary"
           block
           className="flex-1 h-[60px] rounded-[8px] text-[18px] leading-[20px]"
-          // onClick={handleSubmit}
+          onClick={onConfirm}
         >
           {t('global.Confirm')}
         </Button>

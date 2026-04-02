@@ -195,6 +195,11 @@ export const Main = () => {
   const wallet = useWallet();
   const rbiSource = useRbiSource();
 
+  console.log('query', {
+    quoteList,
+    activeProvider,
+  });
+
   const { runAsync: gotoSwap, loading: isSubmitLoading } = useRequest(
     async () => {
       if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {

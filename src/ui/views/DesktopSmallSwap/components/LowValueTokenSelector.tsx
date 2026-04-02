@@ -1,19 +1,21 @@
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
 
-import { TokenAvatar } from './TokenAvatar';
-import { Table, Image } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
-import styled from 'styled-components';
-import { Checkbox } from '@/ui/component';
-import { Chain } from '@debank/common';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '@/db';
-import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import IconUnknown from '@/ui/assets/token-default.svg';
+import { Checkbox } from '@/ui/component';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { formatUsdValue } from '@/ui/utils';
+import { defaultTokenFilter } from '@/ui/utils/portfolio/lpToken';
+import { DisplayedToken } from '@/ui/utils/portfolio/project';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { formatAmount, formatUsdValue } from '@/ui/utils';
+import { Chain } from '@debank/common';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { Image, Table } from 'antd';
+import { ColumnsType } from 'antd/lib/table';
+import { sortBy } from 'lodash';
+import styled from 'styled-components';
+import { PANEL_WIDTH, PANEL_WIDTH_DELTA } from '../constant';
+import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
 
 const Container = styled.section`
   .ant-table {
@@ -51,7 +53,7 @@ const Container = styled.section`
   }
 
   .ant-table-body {
-    height: 435px;
+    min-height: 435px;
   }
   .ant-table-tbody > tr > td {
     height: 48px;
@@ -90,31 +92,56 @@ const thresholds = [
 type LowValueTokenSelectorProps = {
   chain?: Chain | null;
   tokenList?: TokenItem[];
+  selectedTokenIds?: string[];
+  onSelectedChange?(selectedIds: string[]): void;
+  task?: BatchSwapTaskType;
 };
 export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
   chain,
   tokenList,
+  selectedTokenIds,
+  onSelectedChange,
+  task,
 }) => {
   const [currentThreshold, setCurrentThreshold] = React.useState(10);
-  console.log('LowValueTokenSelector render', { chain, tokenList });
+  const filteredTokenList = useMemo(() => {
+    return sortBy(
+      (tokenList || [])
+        ?.map((item) => new DisplayedToken(item))
+        .filter(
+          (item) =>
+            defaultTokenFilter(item) &&
+            item._tokenId !== chain?.nativeTokenAddress &&
+            (item._usdValue || 0) < currentThreshold
+        ),
+      (item) => -(item._usdValue || 0)
+    );
+  }, [tokenList, currentThreshold]);
 
-  const columns = useMemo<ColumnsType<TokenItem>>(() => {
+  const columns = useMemo<ColumnsType<DisplayedToken>>(() => {
     return [
       {
         title: <Checkbox checked={false} width={'20px'} height={'20px'} />,
         dataIndex: 'select',
         width: 68,
         render: (_, record) => {
-          // const checked = selectedTokenIds.includes(record.id);
-          // return (
-          //   <Checkbox
-          //     width={'20px'}
-          //     height={'20px'}
-          //     checked={checked}
-          //     onChange={() => onToggleToken(record.id)}
-          //   />
-          // );
-          return <div></div>;
+          const checked = !!selectedTokenIds?.includes(record._tokenId);
+          return (
+            <Checkbox
+              width={'20px'}
+              height={'20px'}
+              checked={checked}
+              onChange={() =>
+                onSelectedChange?.(
+                  checked
+                    ? selectedTokenIds?.filter(
+                        (id) => id !== record._tokenId
+                      ) || []
+                    : [...(selectedTokenIds || []), record._tokenId]
+                )
+              }
+            />
+          );
         },
       },
       {
@@ -153,31 +180,51 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
         dataIndex: 'amount',
         align: 'right',
         render: (text, record) => (
-          <div className="text-r-neutral-title1">
-            {formatAmount(record.amount)}
-          </div>
+          <div className="text-r-neutral-title1">{record._amountStr}</div>
         ),
       },
       {
         title: 'Value',
-        // width: 112,
+        width: 112,
         align: 'right',
         render: (value, record) => (
-          <span className="text-r-neutral-title1">
-            {formatUsdValue(record.usd_value || 0)}
-          </span>
+          <span className="text-r-neutral-title1">{record._usdValueStr}</span>
         ),
       },
-    ];
-  }, [chain]);
+      task?.status !== 'idle'
+        ? {
+            title: 'Status',
+            // width: 128,
+            align: 'right',
+            render: (value, record) => (
+              <span className="text-r-neutral-title1">
+                {task?.statusDict[record._tokenId]?.status || ''}
+              </span>
+            ),
+          }
+        : null,
+    ].filter(Boolean) as ColumnsType<DisplayedToken>;
+  }, [chain, selectedTokenIds, onSelectedChange, task]);
+
+  const totalValue = useMemo(() => {
+    return filteredTokenList
+      ?.filter((item) => selectedTokenIds?.includes(item.id))
+      .reduce((sum, item) => sum + (item._usdValue || 0), 0);
+  }, [tokenList, selectedTokenIds]);
 
   return (
     <Container
       className={clsx(
-        'min-w-0 rounded-[16px] bg-r-neutral-card-1 px-[32px] py-[24px]',
-        'w-[520px]'
+        'min-w-0 rounded-[16px] bg-r-neutral-card-1 px-[32px] py-[24px]'
       )}
-      style={{ boxShadow: '0 16px 40px rgba(25, 41, 69, 0.06)' }}
+      style={{
+        boxShadow: '0 16px 40px rgba(25, 41, 69, 0.06)',
+        translation: 'width 0.3s',
+        width:
+          task?.status === 'idle'
+            ? PANEL_WIDTH
+            : PANEL_WIDTH + PANEL_WIDTH_DELTA,
+      }}
     >
       <div className="mb-[32px] text-[24px] leading-[29px] font-medium text-r-neutral-title1">
         Select low-value tokens
@@ -190,7 +237,10 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
             <button
               type="button"
               key={item.value}
-              onClick={() => setCurrentThreshold(item.value)}
+              onClick={() => {
+                setCurrentThreshold(item.value);
+                onSelectedChange?.([]);
+              }}
               className={clsx(
                 'h-[40px] min-w-[80px] rounded-[8px] px-[14px] border text-[15px] leading-[18px] font-medium transition-colors',
                 active
@@ -207,7 +257,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
       <div className="mt-[14px] overflow-hidden rounded-[10px] border-[0.5px] border-rabby-neutral-line">
         <Table
           columns={columns}
-          dataSource={tokenList}
+          dataSource={filteredTokenList}
           pagination={false}
           rowKey="id"
           bordered={false}
@@ -224,13 +274,13 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
               <div>
                 Selected Tokens{' '}
                 <span className="ml-[8px] font-medium text-r-neutral-title1">
-                  {/* {selectedVisibleCount} */}
+                  {selectedTokenIds?.length || 0}
                 </span>
               </div>
               <div>
                 Total value{' '}
                 <span className="ml-[8px] font-medium text-r-neutral-title1">
-                  {/* {formatUsd(totalValue)} */}
+                  {formatUsdValue(totalValue || 0)}
                 </span>
               </div>
             </div>

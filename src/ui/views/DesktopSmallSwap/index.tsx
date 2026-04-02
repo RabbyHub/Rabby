@@ -2,7 +2,7 @@ import { Account } from '@/background/service/preference';
 import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useState } from 'react';
 import IconRabby from 'ui/assets/rabby.svg';
@@ -14,6 +14,15 @@ import { sortBy } from 'lodash';
 import { ChainPillList } from './components/ChainPillList';
 import { LowValueTokenSelector } from './components/LowValueTokenSelector';
 import { ReceiveSummary } from './components/ReceiveSummary';
+import { defaultTokenFilter } from '@/ui/utils/portfolio/lpToken';
+import { DisplayedToken } from '@/ui/utils/portfolio/project';
+import { useRequest } from 'ahooks';
+import { sleep, useWallet } from '@/ui/utils';
+import { buildSwapTxs, useBatchSwapTask } from './hooks/useBatchSwapTask';
+import { DEX, SWAP_FEE_ADDRESS } from '@/constant';
+import { DEX_ENUM, getQuote } from '@rabby-wallet/rabby-swap';
+import { isSwapWrapToken } from '../Swap/hooks';
+import BigNumber from 'bignumber.js';
 
 export const DesktopSmallSwap: React.FC<{
   isActive?: boolean;
@@ -21,6 +30,7 @@ export const DesktopSmallSwap: React.FC<{
 }> = ({ isActive = true, style }) => {
   const dispatch = useRabbyDispatch();
   const currentAccount = useCurrentAccount();
+  const wallet = useWallet();
 
   const [chainServerId, setChainServerId] = useState('');
 
@@ -57,7 +67,96 @@ export const DesktopSmallSwap: React.FC<{
       .where('[owner_addr+chain]')
       .equals([currentAccount?.address?.toLowerCase() || '', chainServerId])
       .toArray();
-  }, [currentAccount?.address, chainServerId]);
+  }, [currentAccount?.address, chainServerId, chain?.nativeTokenAddress]);
+
+  const [selectedTokenIds, setSelectedTokenIds] = useState<string[]>([]);
+  const handleSelectedChange = (ids: string[]) => {
+    setSelectedTokenIds(ids);
+    task.init(tokenList?.filter((item) => ids.includes(item.id)) || []);
+  };
+
+  const { data: receiveToken } = useRequest(
+    async () => {
+      if (!chain) {
+        return null;
+      }
+      return wallet.openapi.getToken(
+        currentAccount?.address || '',
+        chain.serverId,
+        chain.nativeTokenAddress
+      );
+    },
+    {
+      refreshDeps: [chain, currentAccount?.address],
+    }
+  );
+
+  console.log('receiveToken', receiveToken);
+
+  const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
+  const dexId = (supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[])[0];
+
+  // getDexQuote({
+  //   ...params,
+  //   dexId,
+  //   sharedTasks: {
+  //     preFetched: sharedPreFetched,
+  //     recommendNonceTask: sharedRecommendNonceTask || undefined,
+  //   },
+  // });
+  const task = useBatchSwapTask();
+  const onStart = async () => {
+    console.log('start swap');
+    // task.init(
+    //   tokenList?.filter((item) => selectedTokenIds.includes(item.id)) || []
+    // );
+    // await sleep(100);
+    // task.start(
+    //   tokenList?.filter((item) => selectedTokenIds.includes(item.id)) || []
+    // );
+    // const payToken = tokenList?.find((item) => item.id === selectedTokenIds[0]);
+    // const slippage = 3;
+    // console.log('payToken', payToken);
+    // if (!chain || !payToken || !receiveToken || !currentAccount) {
+    //   return;
+    // }
+    // const isOpenOcean = dexId === DEX_ENUM.OPENOCEAN;
+    // const isSwapWrappedToken = isSwapWrapToken(
+    //   payToken.id,
+    //   receiveToken.id,
+    //   chain.enum
+    // );
+    // const feeAfterDiscount = isSwapWrappedToken ? '0' : '0.25';
+    // // 获取报价
+    // const quote = await getQuote(
+    //   isSwapWrappedToken ? DEX_ENUM.WRAPTOKEN : dexId,
+    //   {
+    //     fromToken: payToken.id,
+    //     toToken: receiveToken.id,
+    //     feeAddress: SWAP_FEE_ADDRESS,
+    //     fromTokenDecimals: payToken.decimals,
+    //     amount: new BigNumber(payToken.raw_amount_hex_str || 0).toFixed(0, 1),
+    //     userAddress: currentAccount?.address,
+    //     slippage: Number(slippage),
+    //     feeRate:
+    //       feeAfterDiscount === '0' && isOpenOcean
+    //         ? undefined
+    //         : Number(feeAfterDiscount) || 0,
+    //     chain: chain.enum,
+    //     fee: true,
+    //     chainServerId: chain.serverId,
+    //     nativeTokenAddress: chain.nativeTokenAddress,
+    //     insufficient: false,
+    //   },
+    //   wallet.openapi
+    // );
+
+    // console.log('quote', quote);
+
+    // 构建交易
+  };
+
+  console.log('render', task);
 
   return (
     <div
@@ -97,7 +196,13 @@ export const DesktopSmallSwap: React.FC<{
         />
 
         <div className="flex items-stretch justify-between gap-[24px]">
-          <LowValueTokenSelector chain={chain} tokenList={tokenList || []} />
+          <LowValueTokenSelector
+            chain={chain}
+            tokenList={tokenList || []}
+            selectedTokenIds={selectedTokenIds}
+            onSelectedChange={handleSelectedChange}
+            task={task}
+          />
 
           <div className="w-[64px] flex items-center justify-center flex-shrink-0">
             <button
@@ -109,7 +214,71 @@ export const DesktopSmallSwap: React.FC<{
             </button>
           </div>
 
-          {/* <ReceiveSummary totalValue={totalValue} formatUsd={formatUsd} /> */}
+          <ReceiveSummary
+            token={receiveToken}
+            chain={chain}
+            task={task}
+            onStart={onStart}
+            // onStart={() => {
+            //   if (!chain || !receiveToken) {
+            //     return;
+            //   }
+            //   buildSwapTxs({
+            //     // todo
+            //     wallet,
+            //     chain: chain.enum,
+            //     quote: activeProvider?.quote,
+            //     needApprove: activeProvider.shouldApproveToken,
+            //     spender:
+            //       activeProvider?.name === DEX_ENUM.WRAPTOKEN
+            //         ? ''
+            //         : DEX_SPENDER_WHITELIST[activeProvider.name][chain],
+            //     pay_token_id: payToken.id,
+            //     unlimited: false,
+            //     shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
+            //     gasPrice:
+            //       payTokenIsNativeToken && passGasPrice
+            //         ? gasList?.find((e) => e.level === gasLevel)?.price
+            //         : undefined,
+            //     postSwapParams: {
+            //       quote: {
+            //         pay_token_id: payToken.id,
+            //         pay_token_amount: Number(inputAmount),
+            //         receive_token_id: receiveToken!.id,
+            //         receive_token_amount: new BigNumber(
+            //           activeProvider?.quote.toTokenAmount
+            //         )
+            //           .div(
+            //             10 **
+            //             (activeProvider?.quote.toTokenDecimals ||
+            //               receiveToken.decimals)
+            //           )
+            //           .toNumber(),
+            //         slippage: new BigNumber(slippage).div(100).toNumber(),
+            //       },
+            //       dex_id: activeProvider?.name || 'WrapToken',
+            //     },
+            //     addHistoryData: {
+            //       address: userAddress,
+            //       chainId: findChain({ enum: chain })?.id || 0,
+            //       fromToken: payToken,
+            //       toToken: receiveToken,
+            //       fromAmount: Number(inputAmount),
+            //       toAmount: new BigNumber(activeProvider?.quote.toTokenAmount)
+            //         .div(
+            //           10 **
+            //           (activeProvider?.quote.toTokenDecimals ||
+            //             receiveToken.decimals)
+            //         )
+            //         .toNumber(),
+            //       slippage: new BigNumber(slippage).div(100).toNumber(),
+            //       dexId: activeProvider?.name || 'WrapToken',
+            //       status: 'pending',
+            //       createdAt: Date.now(),
+            //     },
+            //   })
+            // }}
+          />
         </div>
       </div>
     </div>
