@@ -72,7 +72,6 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
           throw new Error('Function not implemented.');
         }}
         getContainer={() => {
-          console.log('ref.current', ref.current);
           return ref.current || document.body;
         }}
       />

@@ -2,41 +2,18 @@ import clsx from 'clsx';
 import React, { useMemo } from 'react';
 
 import { TokenAvatar } from './TokenAvatar';
-import { Table } from 'antd';
+import { Table, Image } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import styled from 'styled-components';
 import { Checkbox } from '@/ui/component';
-
-export type ThresholdKey = '0.1' | '1' | '10' | '100';
-
-export type ThresholdOption = {
-  key: ThresholdKey;
-  label: string;
-  value: number;
-};
-
-export type LowValueToken = {
-  id: string;
-  symbol: string;
-  amount: string;
-  value: number;
-  tone: string;
-  chainTone: string;
-};
-
-type LowValueTokenSelectorProps = {
-  thresholds: ThresholdOption[];
-  activeThreshold: ThresholdKey;
-  onThresholdChange: (key: ThresholdKey) => void;
-  visibleTokens: LowValueToken[];
-  selectedTokenIds: string[];
-  selectionState: 'none' | 'partial' | 'all';
-  selectedVisibleCount: number;
-  totalValue: number;
-  onToggleAllVisible: () => void;
-  onToggleToken: (id: string) => void;
-  formatUsd: (value: number) => string;
-};
+import { Chain } from '@debank/common';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '@/db';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import IconUnknown from '@/ui/assets/token-default.svg';
+import { getTokenSymbol } from '@/ui/utils/token';
+import { formatAmount, formatUsdValue } from '@/ui/utils';
 
 const Container = styled.section`
   .ant-table {
@@ -104,50 +81,70 @@ const Container = styled.section`
   }
 `;
 
+const thresholds = [
+  { label: '<$0.1', value: 0.1 },
+  { label: '<$1', value: 1 },
+  { label: '<$10', value: 10 },
+  { label: '<$100', value: 100 },
+];
+type LowValueTokenSelectorProps = {
+  chain?: Chain | null;
+  tokenList?: TokenItem[];
+};
 export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
-  thresholds,
-  activeThreshold,
-  onThresholdChange,
-  visibleTokens,
-  selectedTokenIds,
-  selectionState,
-  selectedVisibleCount,
-  totalValue,
-  onToggleAllVisible,
-  onToggleToken,
-  formatUsd,
+  chain,
+  tokenList,
 }) => {
-  const columns = useMemo<ColumnsType<LowValueToken>>(() => {
+  const [currentThreshold, setCurrentThreshold] = React.useState(10);
+  console.log('LowValueTokenSelector render', { chain, tokenList });
+
+  const columns = useMemo<ColumnsType<TokenItem>>(() => {
     return [
       {
         title: <Checkbox checked={false} width={'20px'} height={'20px'} />,
         dataIndex: 'select',
         width: 68,
         render: (_, record) => {
-          const checked = selectedTokenIds.includes(record.id);
-          return (
-            <Checkbox
-              width={'20px'}
-              height={'20px'}
-              checked={checked}
-              onChange={() => onToggleToken(record.id)}
-            />
-          );
+          // const checked = selectedTokenIds.includes(record.id);
+          // return (
+          //   <Checkbox
+          //     width={'20px'}
+          //     height={'20px'}
+          //     checked={checked}
+          //     onChange={() => onToggleToken(record.id)}
+          //   />
+          // );
+          return <div></div>;
         },
       },
       {
         title: 'Token',
         width: 142,
-        dataIndex: 'symbol',
         render: (text, record) => (
-          <span className="min-w-0 flex items-center gap-[10px]">
-            <TokenAvatar
-              symbol={record.symbol}
-              tone={record.tone}
-              chainTone={record.chainTone}
-            />
-            {record.symbol}
-          </span>
+          <div className="flex items-center gap-[10px]">
+            <div className="relative w-[24px] h-[24px] flex-shrink-0">
+              <Image
+                className="w-full h-full block rounded-full"
+                src={record.logo_url || IconUnknown}
+                alt={record.symbol}
+                fallback={IconUnknown}
+                preview={false}
+              />
+              <TooltipWithMagnetArrow
+                title={chain?.name}
+                className="rectangle w-[max-content]"
+              >
+                <img
+                  className="w-[14px] h-[14px] absolute right-[-2px] bottom-[-2px] rounded-full"
+                  src={chain?.logo || IconUnknown}
+                  alt={record.chain}
+                />
+              </TooltipWithMagnetArrow>
+            </div>
+            <div className="text-[14px] leading-[17px] text-r-neutral-title1 truncate">
+              {getTokenSymbol(record)}
+            </div>
+          </div>
         ),
       },
       {
@@ -155,19 +152,25 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
         width: 112,
         dataIndex: 'amount',
         align: 'right',
-        render: (text) => <span className="text-r-neutral-title1">{text}</span>,
+        render: (text, record) => (
+          <div className="text-r-neutral-title1">
+            {formatAmount(record.amount)}
+          </div>
+        ),
       },
       {
         title: 'Value',
         // width: 112,
-        dataIndex: 'value',
         align: 'right',
-        render: (value) => (
-          <span className="text-r-neutral-title1">{formatUsd(value)}</span>
+        render: (value, record) => (
+          <span className="text-r-neutral-title1">
+            {formatUsdValue(record.usd_value || 0)}
+          </span>
         ),
       },
     ];
-  }, [selectedTokenIds]);
+  }, [chain]);
+
   return (
     <Container
       className={clsx(
@@ -182,12 +185,12 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
 
       <div className="flex items-center gap-[12px] mb-[16px]">
         {thresholds.map((item) => {
-          const active = item.key === activeThreshold;
+          const active = item.value === currentThreshold;
           return (
             <button
               type="button"
-              key={item.key}
-              onClick={() => onThresholdChange(item.key)}
+              key={item.value}
+              onClick={() => setCurrentThreshold(item.value)}
               className={clsx(
                 'h-[40px] min-w-[80px] rounded-[8px] px-[14px] border text-[15px] leading-[18px] font-medium transition-colors',
                 active
@@ -204,7 +207,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
       <div className="mt-[14px] overflow-hidden rounded-[10px] border-[0.5px] border-rabby-neutral-line">
         <Table
           columns={columns}
-          dataSource={visibleTokens}
+          dataSource={tokenList}
           pagination={false}
           rowKey="id"
           bordered={false}
@@ -221,13 +224,13 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
               <div>
                 Selected Tokens{' '}
                 <span className="ml-[8px] font-medium text-r-neutral-title1">
-                  {selectedVisibleCount}
+                  {/* {selectedVisibleCount} */}
                 </span>
               </div>
               <div>
                 Total value{' '}
                 <span className="ml-[8px] font-medium text-r-neutral-title1">
-                  {formatUsd(totalValue)}
+                  {/* {formatUsd(totalValue)} */}
                 </span>
               </div>
             </div>

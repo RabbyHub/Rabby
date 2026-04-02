@@ -1,3 +1,5 @@
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
+import { ChainWithBalance } from '@rabby-wallet/rabby-api/dist/types';
 import clsx from 'clsx';
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 
@@ -8,9 +10,9 @@ interface PortfolioPillItem {
 }
 
 interface ChainPillProps {
-  chain: string;
-  balance?: string;
+  data: ChainWithBalance;
   active?: boolean;
+  onClick?(): void;
 }
 
 const extraLabelButtonClassName = clsx(
@@ -21,51 +23,44 @@ const extraLabelButtonClassName = clsx(
 );
 
 export const ChainPillList = ({
-  items,
-  activeIndex = 0,
-  extraLabel,
+  data,
+  value,
+  onChange,
 }: {
-  items: PortfolioPillItem[];
-  activeIndex?: number;
-  extraLabel?: string | ((hiddenCount: number) => string);
+  value?: string;
+  data?: ChainWithBalance[];
+  onChange?: (chain: string) => void;
 }) => {
   const GAP = 10;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const extraMeasureRef = useRef<HTMLButtonElement | null>(null);
   const itemMeasureRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const [visibleCount, setVisibleCount] = useState(items.length);
+  const [visibleCount, setVisibleCount] = useState(data?.length || 0);
   const [expanded, setExpanded] = useState(false);
 
   const getExtraLabel = (hiddenCount: number) => {
-    if (typeof extraLabel === 'function') {
-      return extraLabel(hiddenCount);
-    }
-
-    if (typeof extraLabel === 'string') {
-      return extraLabel;
-    }
-
     return `+${hiddenCount} chains`;
   };
 
-  const hiddenCount = Math.max(items.length - visibleCount, 0);
+  const hiddenCount = Math.max((data?.length || 0) - visibleCount, 0);
   const shouldShowExtra = hiddenCount > 0 && !expanded;
 
   const visibleItems = useMemo(() => {
     if (expanded || hiddenCount === 0) {
-      return items;
+      return data;
     }
 
-    return items.slice(0, visibleCount);
-  }, [expanded, hiddenCount, items, visibleCount]);
+    return data?.slice(0, visibleCount) || [];
+  }, [expanded, hiddenCount, data, visibleCount]);
 
   const renderPills = (
-    pillItems: PortfolioPillItem[],
+    pillItems?: ChainWithBalance[],
     shouldMeasure?: boolean
   ) => {
-    return pillItems.map((pill, index) => (
+    return pillItems?.map((pill, index) => (
       <ChainPill
-        key={shouldMeasure ? `${pill.chain}-measure` : pill.chain}
+        data={pill}
+        key={shouldMeasure ? `${pill.id}-measure` : pill.id}
         ref={
           shouldMeasure
             ? (node) => {
@@ -73,9 +68,10 @@ export const ChainPillList = ({
               }
             : undefined
         }
-        chain={pill.chain}
-        balance={pill.valueLabel}
-        active={index === activeIndex}
+        onClick={() => {
+          onChange?.(pill.id);
+        }}
+        active={pill.id === value}
       />
     ));
   };
@@ -89,9 +85,10 @@ export const ChainPillList = ({
     const measure = () => {
       const containerWidth = container.clientWidth;
       const extraWidth = extraMeasureRef.current?.offsetWidth ?? 0;
-      const itemWidths = items.map(
-        (_, index) => itemMeasureRefs.current[index]?.offsetWidth ?? 0
-      );
+      const itemWidths =
+        data?.map(
+          (_, index) => itemMeasureRefs.current[index]?.offsetWidth ?? 0
+        ) || [];
 
       let nextVisibleCount = itemWidths.length;
       let usedWidth = 0;
@@ -125,7 +122,7 @@ export const ChainPillList = ({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [items, extraLabel]);
+  }, [data]);
 
   return (
     <>
@@ -148,10 +145,10 @@ export const ChainPillList = ({
       </div>
 
       <div className="absolute left-0 top-0 -z-10 invisible pointer-events-none flex items-center gap-[10px] whitespace-nowrap">
-        {renderPills(items, true)}
+        {renderPills(data, true)}
         <ExtraLabelButton
           ref={extraMeasureRef}
-          label={getExtraLabel(Math.max(items.length - 1, 1))}
+          label={getExtraLabel(Math.max((data?.length || 0) - 1, 1))}
         />
       </div>
     </>
@@ -159,11 +156,12 @@ export const ChainPillList = ({
 };
 
 const ChainPill = React.forwardRef<HTMLButtonElement, ChainPillProps>(
-  ({ active, chain, balance }, ref) => {
+  ({ data, active, onClick }, ref) => {
     return (
       <button
         ref={ref}
         type="button"
+        onClick={onClick}
         className={clsx(
           'flex-shrink-0 h-[40px] rounded-[16px] px-[12px] py-[10px] inline-flex items-center gap-[8px]',
           'border',
@@ -173,11 +171,10 @@ const ChainPill = React.forwardRef<HTMLButtonElement, ChainPillProps>(
             : 'border-rabby-neutral-line bg-r-neutral-card-1 text-r-neutral-body'
         )}
       >
-        <img
-          src="https://static.debank.com/image/chain/logo_url/eth/42ba589cd077e7bdd97db6480b0ff61d.png"
-          className="w-[18px] h-[18px] rounded-full"
-        />
-        <div className="text-[15px] leading-[18px]">{balance}</div>
+        <img src={data.logo_url} className="w-[18px] h-[18px] rounded-full" />
+        <div className="text-[15px] leading-[18px]">
+          ${splitNumberByStep(data.usd_value.toFixed(2))}
+        </div>
       </button>
     );
   }
