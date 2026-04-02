@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { FavoriteBar } from './components/FavoriteBar';
 import { CoinSelector } from './components/CoinSelector';
@@ -14,6 +14,13 @@ export const ChartArea: React.FC = () => {
     dispatch.perps.updateSelectedCoin(coin);
   };
 
+  const handleIntervalChange = useCallback(
+    (interval: string) => {
+      dispatch.perps.setChartInterval(interval);
+    },
+    [dispatch]
+  );
+
   return (
     <div className="h-full w-full bg-rb-neutral-bg-1 flex flex-col overflow-hidden">
       <FavoriteBar onSelectCoin={handleSelectCoin} />
@@ -21,7 +28,11 @@ export const ChartArea: React.FC = () => {
       <CoinSelector coin={selectedCoin} onSelectCoin={handleSelectCoin} />
 
       <div className="flex-1 min-h-0">
-        <ChartWrapper coin={selectedCoin} interval={chartInterval} />
+        <ChartWrapper
+          coin={selectedCoin}
+          interval={chartInterval}
+          onIntervalChange={handleIntervalChange}
+        />
       </div>
     </div>
   );
