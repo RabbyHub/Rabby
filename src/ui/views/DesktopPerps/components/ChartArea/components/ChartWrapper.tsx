@@ -78,6 +78,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
         'header_quick_search',
         'header_settings',
         'header_layouttoggle',
+        'legend_inplace_edit',
         'volume_force_overlay',
         'widget_logo',
         'header_compare',
