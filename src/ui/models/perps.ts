@@ -30,7 +30,10 @@ import {
   formatMarkData,
   getMaxTimeFromAccountHistory,
 } from '../views/Perps/utils';
-import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
+import {
+  DEFAULT_TOP_ASSET,
+  HYPE_EVM_BRIDGE_ADDRESS,
+} from '../views/Perps/constants';
 import { ApproveSignatures } from '@/background/service/perps';
 import { maxBy } from 'lodash';
 import eventBus from '@/eventBus';
@@ -369,6 +372,19 @@ export const perps = createModel<RootModel>()({
             };
           }
 
+          if (
+            item.delta.type === 'send' &&
+            destination === HYPE_EVM_BRIDGE_ADDRESS
+          ) {
+            return {
+              time: item.time,
+              hash: item.hash,
+              type: 'withdraw' as const,
+              status: 'success' as const,
+              usdValue: usdcValue.toString(),
+            };
+          }
+
           const type =
             item.delta.type === 'accountClassTransfer'
               ? item.delta.toPerp
@@ -478,9 +494,19 @@ export const perps = createModel<RootModel>()({
     },
 
     setLocalLoadingHistory(state, payload: AccountHistoryItem[]) {
+      // If WS already delivered a confirmed entry for this type,
+      // skip adding the pending item (WS arrived before HTTP response)
+      const filtered = payload.filter((item) => {
+        return !state.userAccountHistory.some(
+          (h) => h.type === item.type && h.time >= item.time
+        );
+      });
+      if (filtered.length === 0) {
+        return state;
+      }
       return {
         ...state,
-        localLoadingHistory: [...payload, ...state.localLoadingHistory],
+        localLoadingHistory: [...filtered, ...state.localLoadingHistory],
       };
     },
 

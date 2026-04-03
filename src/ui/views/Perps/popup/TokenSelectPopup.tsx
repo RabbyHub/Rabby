@@ -18,6 +18,8 @@ import {
   HYPE_USDC_TOKEN_ID,
   HYPE_USDC_TOKEN_ITEM,
   HYPE_USDC_TOKEN_SERVER_CHAIN,
+  WITHDRAW_TOKEN_LIST,
+  isDirectDepositToken as isDirectDepositTokenFn,
 } from '../constants';
 import { useMemoizedFn } from 'ahooks';
 import { TokenWithChain } from '@/ui/component';
@@ -33,6 +35,7 @@ export type TokenSelectPopupProps = PopupProps & {
   list: TokenItem[];
   tokenListLoading: boolean;
   changeAccount: () => Promise<void>;
+  mode?: 'deposit' | 'withdraw';
 };
 
 export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
@@ -42,6 +45,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   tokenListLoading,
   list,
   changeAccount,
+  mode = 'deposit',
   ...rest
 }) => {
   const { t } = useTranslation();
@@ -49,17 +53,13 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   const history = useHistory();
   const wallet = useWallet();
   const [clickLoading, setClickLoading] = React.useState(false);
+  const isWithdrawMode = mode === 'withdraw';
 
-  const isDirectDepositToken = React.useCallback((token: TokenItem) => {
-    return (
-      (token.id === ARB_USDC_TOKEN_ID &&
-        token.chain === ARB_USDC_TOKEN_SERVER_CHAIN) ||
-      (token.id === HYPE_USDC_TOKEN_ID &&
-        token.chain === HYPE_USDC_TOKEN_SERVER_CHAIN)
-    );
-  }, []);
+  const isDirectDepositToken = isDirectDepositTokenFn;
 
   const sortedList = React.useMemo(() => {
+    if (isWithdrawMode) return WITHDRAW_TOKEN_LIST;
+
     const items = [...(list || [])].filter((t) => t.amount > 0);
     // Sort by USD value descending
 
@@ -86,13 +86,12 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
     items.sort((a, b) => b.amount * b.price - a.amount * a.price);
 
     return items;
-  }, [list]);
+  }, [list, isWithdrawMode]);
 
   const handleClickToken = useMemoizedFn(async (token: TokenItem) => {
     if (clickLoading) return;
     try {
-      if (isDirectDepositToken(token)) {
-        // direct deposit (ARB USDC or HYPE USDC)
+      if (isWithdrawMode || isDirectDepositToken(token)) {
         onSelect(token);
         return;
       }
@@ -279,7 +278,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
             <span className="text-15 text-r-neutral-title-1 font-medium">
               {getTokenSymbol(item)}
             </span>
-            {isDirectDepositToken(item) && (
+            {isDirectDepositToken(item) && !isWithdrawMode && (
               <div className="flex items-center gap-4 text-[11px] font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px] px-6 py-2">
                 <svg
                   width="8"
@@ -294,22 +293,24 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
               </div>
             )}
           </div>
-          <div className="flex flex-col gap-2 items-end">
-            <div className="text-15 text-r-neutral-title-1 font-medium">
-              {formatUsdValue(
-                isDirectDepositToken(item)
-                  ? item.amount
-                  : item.amount * item.price || 0
-              )}
+          {!isWithdrawMode && (
+            <div className="flex flex-col gap-2 items-end">
+              <div className="text-15 text-r-neutral-title-1 font-medium">
+                {formatUsdValue(
+                  isDirectDepositToken(item)
+                    ? item.amount
+                    : item.amount * item.price || 0
+                )}
+              </div>
+              <div className="text-[12px] text-r-neutral-foot">
+                {formatAmount(item.amount)}
+              </div>
             </div>
-            <div className="text-[12px] text-r-neutral-foot">
-              {formatAmount(item.amount)}
-            </div>
-          </div>
+          )}
         </div>
       );
     },
-    [handleClickToken]
+    [handleClickToken, isWithdrawMode]
   );
 
   return (
@@ -333,7 +334,9 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
     >
       <div className="flex flex-col h-full pt-16 px-16 bg-r-neutral-bg2">
         <div className="px-16 text-20 font-medium text-r-neutral-title-1 text-center">
-          {t('page.perps.selectTokenToDeposit')}
+          {isWithdrawMode
+            ? t('page.perps.selectTokenToWithdraw')
+            : t('page.perps.selectTokenToDeposit')}
         </div>
         <div className="overflow-y-auto flex-1 relative mt-16">
           {tokenListLoading ? (

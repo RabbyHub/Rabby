@@ -14,7 +14,7 @@ import { format } from 'path';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
-import { Tooltip } from 'antd';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
@@ -112,7 +112,7 @@ export const PositionItem: React.FC<{
     >
       <div className={clsx('flex items-center justify-between px-16 py-12')}>
         <div className="flex flex-col gap-8 flex-1">
-          <div className="flex items-center">
+          <div className="flex items-center relative">
             <TokenImg
               logoUrl={logoUrl}
               direction={side}
@@ -122,7 +122,7 @@ export const PositionItem: React.FC<{
             <span className="text-15 ml-4 font-medium text-r-neutral-title-1">
               {formatPerpsCoin(coin)}
             </span>
-            <Tooltip
+            <TooltipWithMagnetArrow
               overlayClassName="rectangle"
               placement="top"
               title={
@@ -144,7 +144,7 @@ export const PositionItem: React.FC<{
                   />
                 )}
               </span>
-            </Tooltip>
+            </TooltipWithMagnetArrow>
             {/* <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-foot" /> */}
           </div>
           <div className="flex items-center gap-6">

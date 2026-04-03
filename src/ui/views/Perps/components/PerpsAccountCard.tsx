@@ -70,16 +70,35 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
 
   const { isDarkTheme } = useThemeMode();
 
+  const balanceDisplay = useMemo(() => {
+    const value = Number(availableBalance || 0);
+    if (!value) {
+      return <span className="text-[28px] leading-[33px]">$0</span>;
+    }
+    const formatted = formatUsdValue(value, BigNumber.ROUND_DOWN);
+    const dotIndex = formatted.indexOf('.');
+    if (dotIndex === -1) {
+      return <span className="text-[28px] leading-[33px]">{formatted}</span>;
+    }
+    return (
+      <>
+        <span className="text-[28px] leading-[33px]">
+          {formatted.slice(0, dotIndex)}
+        </span>
+        <span className="text-[20px] font-semibold leading-[33px]">
+          {formatted.slice(dotIndex)}
+        </span>
+      </>
+    );
+  }, [availableBalance]);
+
   return (
     <>
       <div className="bg-r-neutral-card1 rounded-[8px] p-[16px]">
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <div className="text-[28px] leading-[33px] font-bold text-r-neutral-title-1">
-              {formatUsdValue(
-                Number(availableBalance || 0),
-                BigNumber.ROUND_DOWN
-              )}
+            <div className="font-bold text-r-neutral-title-1">
+              {balanceDisplay}
             </div>
             <div className="text-[13px] leading-[16px] text-r-neutral-foot mt-[4px]">
               {t('page.perpsDetail.PerpsOpenPositionPopup.available')}
@@ -133,7 +152,8 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
         >
           <div
             className="absolute top-8 right-8 w-[16px] h-[16px] flex items-center justify-center cursor-pointer text-r-neutral-foot hover:text-r-blue-default z-10"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setNewUserGuideDismissed(true);
               wallet.setHasDismissedNewUserGuideV2(true);
             }}

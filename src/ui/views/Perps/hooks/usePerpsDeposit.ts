@@ -345,7 +345,8 @@ export const usePerpsDeposit = ({
 
     dispatch.perps.setLocalLoadingHistory([
       {
-        time: Date.now(),
+        // Set a slightly earlier time to ensure it appears before withdraw in history
+        time: Date.now() - 1000,
         hash,
         type,
         status: 'pending',

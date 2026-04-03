@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { getPerpsSDK, getBboSDK } from '@/ui/views/Perps/sdkManager';
 import { splitNumberByStep } from '@/ui/utils';
-import { Dropdown, Menu, Select } from 'antd';
+import { Dropdown, Menu, Select, Skeleton } from 'antd';
 import { ReactComponent as RcIconBuySell } from '@/ui/assets/perps/icon-buy-sell.svg';
 import { ReactComponent as RcIconBuy } from '@/ui/assets/perps/icon-buy.svg';
 import { ReactComponent as RcIconSell } from '@/ui/assets/perps/icon-sell.svg';
@@ -335,9 +335,44 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     return Math.max(bid, ask);
   }, [displayBids, displayAsks]);
 
+  const isLoading = bids.length === 0 && asks.length === 0;
+
   const priceChange = currentMarketData?.prevDayPx
     ? Number(currentMarketData.markPx) - Number(currentMarketData.prevDayPx)
     : 0;
+
+  const renderSkeletonRows = (count: number) => {
+    return new Array(count).fill(null).map((_, index) => (
+      <div
+        key={index}
+        className="flex items-center justify-between px-[12px] h-[24px]"
+      >
+        <div className="grid grid-cols-10 items-center w-full">
+          <span className="col-span-3">
+            <Skeleton.Button
+              active
+              className="h-[14px] block rounded-[4px]"
+              style={{ width: 60, minWidth: 60 }}
+            />
+          </span>
+          <span className="col-span-3 flex justify-end">
+            <Skeleton.Button
+              active
+              className="h-[14px] block rounded-[4px]"
+              style={{ width: 50, minWidth: 50 }}
+            />
+          </span>
+          <span className="col-span-4 flex justify-end">
+            <Skeleton.Button
+              active
+              className="h-[14px] block rounded-[4px]"
+              style={{ width: 60, minWidth: 60 }}
+            />
+          </span>
+        </div>
+      </div>
+    ));
+  };
 
   return (
     <div className="h-full flex flex-col bg-rb-neutral-bg-1 whitespace-nowrap">
@@ -476,47 +511,67 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
       </div>
 
       <div ref={contentRef} className="flex-1 flex flex-col overflow-hidden">
-        {(viewMode === 'Both' || viewMode === 'Asks') && (
-          <div
-            className={clsx('overflow-hidden gap-2 flex flex-col', {
-              'flex-1': viewMode === 'Both',
-            })}
-          >
-            {displayAsks.map((ask) => renderOrderRow(ask, 'ask', maxTotal))}
-          </div>
-        )}
-        {Boolean(latestTrade?.price) && (
-          <div className="flex items-center justify-between px-[12px] h-40">
-            <div className="flex items-center gap-[6px]">
-              <span
-                className={clsx(
-                  'text-[20px] font-bold',
-                  latestTrade?.side === 'buy'
-                    ? 'text-rb-green-default'
-                    : 'text-rb-red-default'
-                )}
-              >
-                {splitNumberByStep(latestTrade?.price || 0)}
-              </span>
-
-              <span
-                className={clsx(
-                  'text-[16px] text-rb-neutral-secondary font-medium'
-                )}
-              >
-                {splitNumberByStep(markPx)}
-              </span>
+        {isLoading ? (
+          <>
+            <div className="flex-1 flex flex-col gap-2 justify-end">
+              {renderSkeletonRows(rowCount)}
             </div>
-          </div>
-        )}
-        {(viewMode === 'Both' || viewMode === 'Bids') && (
-          <div
-            className={clsx('overflow-hidden gap-2 flex flex-col', {
-              'flex-1': viewMode === 'Both',
-            })}
-          >
-            {displayBids.map((bid) => renderOrderRow(bid, 'bid', maxTotal))}
-          </div>
+            <div className="flex items-center px-[12px] h-40">
+              <Skeleton.Button
+                active
+                className="h-[20px] block rounded-[4px]"
+                style={{ width: 100, minWidth: 100 }}
+              />
+            </div>
+            <div className="flex-1 flex flex-col gap-2">
+              {renderSkeletonRows(rowCount)}
+            </div>
+          </>
+        ) : (
+          <>
+            {(viewMode === 'Both' || viewMode === 'Asks') && (
+              <div
+                className={clsx('overflow-hidden gap-2 flex flex-col', {
+                  'flex-1': viewMode === 'Both',
+                })}
+              >
+                {displayAsks.map((ask) => renderOrderRow(ask, 'ask', maxTotal))}
+              </div>
+            )}
+            {Boolean(latestTrade?.price) && (
+              <div className="flex items-center justify-between px-[12px] h-40">
+                <div className="flex items-center gap-[6px]">
+                  <span
+                    className={clsx(
+                      'text-[20px] font-bold',
+                      latestTrade?.side === 'buy'
+                        ? 'text-rb-green-default'
+                        : 'text-rb-red-default'
+                    )}
+                  >
+                    {splitNumberByStep(latestTrade?.price || 0)}
+                  </span>
+
+                  <span
+                    className={clsx(
+                      'text-[16px] text-rb-neutral-secondary font-medium'
+                    )}
+                  >
+                    {splitNumberByStep(markPx)}
+                  </span>
+                </div>
+              </div>
+            )}
+            {(viewMode === 'Both' || viewMode === 'Bids') && (
+              <div
+                className={clsx('overflow-hidden gap-2 flex flex-col', {
+                  'flex-1': viewMode === 'Both',
+                })}
+              >
+                {displayBids.map((bid) => renderOrderRow(bid, 'bid', maxTotal))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
