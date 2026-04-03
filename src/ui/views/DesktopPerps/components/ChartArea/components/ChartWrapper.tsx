@@ -84,6 +84,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
         'header_compare',
         'right_toolbar',
         'trading_account_manager',
+        'header_screenshot',
       ],
       enabled_features: [
         'iframe_loading_compatibility_mode',
