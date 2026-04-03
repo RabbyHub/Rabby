@@ -36,6 +36,7 @@ import {
   miscService,
   lendingService,
   innerDappFrameService,
+  blockscoutService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -6501,6 +6502,15 @@ export class WalletController extends BaseController {
     innerDappFrameService.getInnerDappAccountByOrigin;
   setInnerDappAccount = innerDappFrameService.setInnerDappAccount;
   setInnerDappId = innerDappFrameService.setInnerDappId;
+
+  getRnsAddressByName = async (name: string) => {
+    try {
+      const rnsResult = await blockscoutService.getRnsAddressByName(name);
+      return rnsResult;
+    } catch {
+      return null;
+    }
+  };
 
   updateDashboardPanelOrder = preferenceService.updateDashboardPanelOrder;
 }

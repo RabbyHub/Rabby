@@ -150,7 +150,11 @@ export const EnterAddress = ({
     (result: string) => {
       setInputAddress(result);
       // setIsValidAddr(true);
-      setTags([`ENS: ${ensResult?.name || ''}`]);
+      let domain = 'ENS';
+      if (ensResult?.name && ensResult.name.endsWith('.rsk')) {
+        domain = 'RNS';
+      }
+      setTags([`${domain}: ${ensResult?.name || ''}`]);
       setEnsResult(null);
     },
     [ensResult?.name]
@@ -186,7 +190,13 @@ export const EnterAddress = ({
               setEnsResult(result);
               // setIsValidAddr(true);
             } else {
-              setEnsResult(null);
+              const rnsResult = await wallet.getRnsAddressByName(address);
+
+              if (rnsResult && rnsResult.addr) {
+                setEnsResult(rnsResult);
+              } else {
+                setEnsResult(null);
+              }
               // setIsValidAddr(!address.length);
             }
           } catch (e) {
