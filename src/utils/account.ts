@@ -269,7 +269,7 @@ export const isSupportDBAccount = (account?: Account | null) => {
     ([KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY] as string[]).includes(
       account.type
     ) ||
-    Object.values(HARDWARE_KEYRING_TYPES).find(
+    !!Object.values(HARDWARE_KEYRING_TYPES).find(
       (item) => item.type === account.type
     )
   );
