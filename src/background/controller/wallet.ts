@@ -188,6 +188,15 @@ import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { AccountScene, SCENE_ACCOUNT_CONFIG } from '@/constant/scene-account';
 import { syncDbService } from '@/db/services/syncDbService';
 import { historyDbService } from '@/db/services/historyDbService';
+import { tokenDbService } from '@/db/services/tokenDbService';
+import { defiDbService } from '@/db/services/defiDbService';
+import { appChainDbService } from '@/db/services/appChainDbService';
+import { balanceDbService } from '@/db/services/balanceDbService';
+import { BALANCE_SYNC_SCENE, CACHE_VALID_DURATION } from '@/db/constants';
+import {
+  BalanceCacheData,
+  normalizeBalanceCacheData,
+} from '@/db/schema/balance';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1881,15 +1890,30 @@ export class WalletController extends BaseController {
       } catch (error) {
         // just ignore appChain data
       }
-      const formatData = {
+      const formatData: BalanceCacheData = normalizeBalanceCacheData({
         ...data,
         evmUsdValue: data.total_usd_value,
         total_usd_value: data.total_usd_value + appChainTotalNetWorth,
         appChainIds,
-      };
+        appChainUsdValue: appChainTotalNetWorth,
+      });
       preferenceService.updateBalanceAboutCache(address, {
         totalBalance: formatData,
       });
+
+      try {
+        await Promise.all([
+          balanceDbService.putBalance(address, formatData),
+          syncDbService.setUpdatedAt({
+            address,
+            scene: BALANCE_SYNC_SCENE,
+            updatedAt: Date.now(),
+          }),
+        ]);
+      } catch (error) {
+        // keep balance response available even if Dexie persistence fails
+      }
+
       return formatData;
     },
     {
@@ -1950,20 +1974,71 @@ export class WalletController extends BaseController {
   /**
    * @deprecatedgetPersistedBalanceAboutCacheMap
    */
-  getAddressCacheBalance = (address: string | undefined, isTestnet = false) => {
+  getAddressCacheBalance = async (
+    address: string | undefined,
+    isTestnet = false
+  ) => {
     if (!address) return null;
     if (isTestnet) {
       return null;
     }
 
-    return (
-      preferenceService.getBalanceAboutCacheByAddress(address)?.totalBalance ??
-      null
-    );
+    try {
+      const balance = await balanceDbService.queryBalance(address);
+
+      if (balance) {
+        return balance;
+      }
+    } catch (error) {
+      // fallback to legacy preference cache below
+    }
+
+    const legacyBalance = preferenceService.getBalanceAboutCacheByAddress(
+      address
+    )?.totalBalance;
+
+    return legacyBalance ? normalizeBalanceCacheData(legacyBalance) : null;
   };
 
-  getPersistedBalanceAboutCacheMap = () => {
-    return preferenceService.getBalanceAboutCacheMap();
+  getPersistedBalanceAboutCacheMap = async () => {
+    const legacyCacheMap = preferenceService.getBalanceAboutCacheMap();
+    let dexieBalanceMap = {} as Record<string, BalanceCacheData>;
+
+    try {
+      dexieBalanceMap = await balanceDbService.queryBalanceMap();
+    } catch (error) {
+      // fallback to legacy preference cache below
+    }
+
+    return {
+      balanceMap: {
+        ...Object.entries(legacyCacheMap.balanceMap || {}).reduce(
+          (map, [address, balance]) => {
+            map[address] = normalizeBalanceCacheData(balance);
+            return map;
+          },
+          {} as Record<string, BalanceCacheData>
+        ),
+        ...dexieBalanceMap,
+      },
+      curvePointsMap: legacyCacheMap.curvePointsMap || {},
+    };
+  };
+
+  isBalanceDbCacheExpired = async (address: string) => {
+    let updatedAt = 0;
+
+    try {
+      updatedAt =
+        (await syncDbService.getUpdatedAt({
+          address,
+          scene: BALANCE_SYNC_SCENE,
+        })) || 0;
+    } catch (error) {
+      return true;
+    }
+
+    return updatedAt < Date.now() - CACHE_VALID_DURATION;
   };
 
   private getNetCurveCached = cached(
@@ -3727,6 +3802,10 @@ export class WalletController extends BaseController {
 
     syncDbService.deleteForAddress(address);
     historyDbService.deleteForAddress(address);
+    tokenDbService.deleteForAddress(address);
+    defiDbService.deleteForAddress(address);
+    appChainDbService.deleteForAddress(address);
+    balanceDbService.deleteForAddress(address);
   };
 
   removeAddresses = async (

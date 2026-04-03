@@ -207,7 +207,9 @@ const TokenSelect = forwardRef<
       undefined,
       isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
       undefined,
-      !!queryConds.keyword
+      !!queryConds.keyword,
+      false,
+      true
     );
 
     const {

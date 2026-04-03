@@ -72,6 +72,47 @@ class SyncDbService {
       },
     });
   }
+
+  async setUpdatedAtIfExists({
+    address,
+    scene,
+    updatedAt,
+  }: {
+    address: string;
+    scene: 'history' | string;
+    updatedAt: number;
+  }) {
+    const current = await this.getSyncState({
+      address,
+      scene,
+    });
+
+    if (!current) {
+      return;
+    }
+
+    return this.updateSyncState({
+      address,
+      scene,
+      patch: {
+        updatedAt,
+      },
+    });
+  }
+
+  deleteSceneForAddress({
+    address,
+    scene,
+  }: {
+    address: string;
+    scene: 'history' | string;
+  }) {
+    return db.sync
+      .where('[address+type]')
+      .equals([address.toLowerCase(), scene])
+      .delete();
+  }
+
   deleteForAddress(address: string) {
     return db.sync.where('address').equalsIgnoreCase(address).delete();
   }

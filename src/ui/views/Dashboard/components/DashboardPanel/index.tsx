@@ -429,25 +429,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     }
     return undefined;
   });
-  const { value: lighterAppData } = useAsync(async () => {
-    if (lighterAccount?.address) {
-      return loadAppChainList(lighterAccount.address, wallet);
-    }
-    return undefined;
-  }, [lighterAccount?.address]);
-
-  const lighterInfo = useMemo(() => {
-    const lighter = lighterAppData?.apps.find(
-      (e) => e.id === INNER_DAPP_IDS.LIGHTER
-    );
-    return {
-      lighter,
-      totalUsd: lighter?.portfolio_item_list?.reduce(
-        (pre, now) => pre + (now?.stats?.net_usd_value || 0),
-        0
-      ),
-    };
-  }, [lighterAppData]);
 
   const perpsSubContentNode = useMemo<React.ReactNode>(() => {
     if (perpsId === 'hyperliquid') {
@@ -489,18 +470,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         );
       }
     }
-    if (perpsId === 'lighter') {
-      if (!lighterAccount || !lighterInfo.lighter) return null;
-      return (
-        <div
-          className={clsx(
-            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
-          )}
-        >
-          {formatUsdValue(lighterInfo.totalUsd || 0)}
-        </div>
-      );
-    }
     return null;
   }, [
     perpsId,
@@ -509,7 +478,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     perpsPositionInfo,
     positionPnl,
     lighterAccount,
-    lighterInfo,
   ]);
 
   // --- Lending data lifting (from LendingSubContent) ---
