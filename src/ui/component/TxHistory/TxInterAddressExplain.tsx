@@ -4,20 +4,16 @@ import { NameAndAddress } from '..';
 import { getTokenSymbol } from 'ui/utils/token';
 import { TxAvatar } from './TxAvatar';
 import { useTranslation } from 'react-i18next';
+import { TxHistoryItemRow } from '@/db/schema/history';
 
 type TxInterAddressExplainProps = {
-  data: TxDisplayItem | TxHistoryItem;
-} & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
+  data: TxHistoryItemRow;
+};
 
-export const TxInterAddressExplain = ({
-  data,
-  projectDict,
-  tokenDict,
-  cateDict,
-}: TxInterAddressExplainProps) => {
+export const TxInterAddressExplain = ({ data }: TxInterAddressExplainProps) => {
   const isCancel = data.cate_id === 'cancel';
   const isApprove = data.cate_id === 'approve';
-  const project = data.project_id ? projectDict[data.project_id] : null;
+  const project = data.project_item;
   const { t } = useTranslation();
 
   const projectName = (
@@ -42,9 +38,8 @@ export const TxInterAddressExplain = ({
     );
   } else if (isApprove) {
     const tokenId = data.token_approve?.token_id || '';
-    const tokenUUID = `${data.chain}_token:${tokenId}`;
 
-    const approveToken = tokenDict[tokenId] || tokenDict[tokenUUID];
+    const approveToken = data.approve_token;
 
     const amount = data.token_approve?.value || 0;
 
@@ -60,7 +55,7 @@ export const TxInterAddressExplain = ({
     interAddressExplain = (
       <>
         <div className="tx-explain-title">
-          {cateDict[data.cate_id || '']?.name ??
+          {data.cate_item?.name ??
             (data.tx?.name || t('page.transactions.explain.unknown'))}
         </div>
         <div className="tx-explain-desc">{projectName}</div>
@@ -71,7 +66,7 @@ export const TxInterAddressExplain = ({
   return (
     <div className="ui tx-explain">
       <TxAvatar
-        src={projectDict[data.project_id as string]?.logo_url}
+        src={data.project_item?.logo_url}
         cateId={data.cate_id}
         className="tx-icon"
       ></TxAvatar>

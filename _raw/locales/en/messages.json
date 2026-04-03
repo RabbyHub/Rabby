@@ -29,7 +29,9 @@
         "loading": "Loading may take a moment, and data delays are possible",
         "btn": "Hide scam transactions",
         "button": "Hide Scam tx"
-      }
+      },
+      "hideScamTips": "Hide scam transactions",
+      "showScamTips": "Show scam transactions"
     },
     "chainList": {
       "title": "{{count}} chains Integrated",

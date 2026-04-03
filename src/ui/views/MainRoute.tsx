@@ -396,7 +396,7 @@ const Main = () => {
           <HistoryPage />
         </PrivateRoute>
         <PrivateRoute exact path="/history/filter-scam">
-          <HistoryPage isFitlerScam={true} />
+          <HistoryPage />
         </PrivateRoute>
         <PrivateRoute exact path="/activities">
           <Activities />

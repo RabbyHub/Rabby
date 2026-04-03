@@ -1,13 +1,17 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useMemo, useCallback } from 'react';
 import produce from 'immer';
 import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
+import { CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
 import {
   findChainByEnum,
   isTestnet as checkIsTestnet,
   findChain,
 } from '@/utils/chain';
+import { isFullVersionAccountType } from '@/utils/account';
+import { syncDbService } from '@/db/services/syncDbService';
+import { tokenDbService } from '@/db/services/tokenDbService';
 import { useWallet } from '../WalletContext';
 import { useSafeState } from '../safeState';
 import { log } from './usePortfolio';
@@ -15,6 +19,7 @@ import {
   PortfolioItem,
   PortfolioItemToken,
 } from '@rabby-wallet/rabby-api/dist/types';
+import { uniqBy } from 'lodash';
 import { DisplayedProject, DisplayedToken } from './project';
 import { AbstractPortfolioToken } from './types';
 import { getMissedTokenPrice } from './utils';
@@ -56,6 +61,21 @@ const filterDisplayToken = (
   });
 };
 
+const buildTokenKey = (token: Pick<TokenItem, 'chain' | 'id'>) =>
+  `${token.chain}-${token.id.toLowerCase()}`;
+
+const uniqTokens = (tokens: TokenItem[]) => {
+  return uniqBy(tokens, buildTokenKey);
+};
+
+/** 替换核心 token */
+const replaceCoreTokens = (tokens: TokenItem[], cacheTokens: TokenItem[]) => {
+  return uniqTokens([
+    ...tokens.filter((token) => !token.is_core),
+    ...cacheTokens,
+  ]);
+};
+
 export const useTokens = (
   userAddr: string | undefined,
   timeAt?: Dayjs,
@@ -68,7 +88,8 @@ export const useTokens = (
   lpTokensOnly = false,
   showBlocked = false,
   searchMode = false,
-  disableRecommended = false
+  disableRecommended = false,
+  realtimeMode = false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
@@ -136,7 +157,7 @@ export const useTokens = (
     // eslint-disable-next-line
   }, [timeAt, isLoading]);
 
-  const loadProcess = async () => {
+  const loadProcess = async ({ forceRefresh = false } = {}) => {
     callCountRef.current++;
     const callCount = callCountRef.current;
     const abortedFn = () => {
@@ -155,6 +176,11 @@ export const useTokens = (
       lastResetTokenListAddr = userAddr;
     }
 
+    const matchedAccount = await wallet.getAccountByAddress(userAddr);
+    const shouldPersistTokenCache = matchedAccount
+      ? isFullVersionAccountType(matchedAccount as any)
+      : false;
+
     const currentAbort = new AbortController();
     abortProcess.current = currentAbort;
     historyLoad.current = false;
@@ -169,10 +195,8 @@ export const useTokens = (
       draft.netWorthChange = 0;
       draft._netWorthChangePercent = '';
     });
-
     let _tokens: AbstractPortfolioToken[] = [];
     setData(_data);
-    const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
 
     const blocked = showBlocked
       ? []
@@ -183,6 +207,73 @@ export const useTokens = (
             return !checkIsTestnet(token.chain);
           }
         });
+
+    if (currentAbort.signal.aborted) {
+      abortedFn();
+      return;
+    }
+
+    let currentAllTokens: TokenItem[] = [];
+
+    if (!shouldPersistTokenCache) {
+      await Promise.all([
+        tokenDbService.deleteForAddress(userAddr),
+        syncDbService.deleteSceneForAddress({
+          address: userAddr,
+          scene: TOKEN_SYNC_SCENE,
+        }),
+      ]);
+    } else {
+      currentAllTokens = await tokenDbService.queryTokens(userAddr);
+
+      if (currentAbort.signal.aborted) {
+        abortedFn();
+        return;
+      }
+
+      if (currentAllTokens.length) {
+        const chainTokens = currentAllTokens.reduce((m, n) => {
+          m[n.chain] = m[n.chain] || [];
+          m[n.chain].push(n);
+
+          return m;
+        }, {} as Record<string, TokenItem[]>);
+        _data = produce(_data, (draft) => {
+          setWalletTokens(draft, chainTokens);
+        });
+
+        setData(_data);
+        _tokens = sortWalletTokens(_data);
+        if (isTestnet) {
+          dispatch.account.setTestnetTokenList(
+            filterDisplayToken(_tokens, blocked)
+          );
+        } else {
+          dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+        }
+        setLoading(false);
+      }
+
+      const updatedAt =
+        (await syncDbService.getUpdatedAt({
+          address: userAddr,
+          scene: TOKEN_SYNC_SCENE,
+        })) || 0;
+
+      const shouldUseDbCache =
+        currentAllTokens.length > 0 &&
+        !forceRefresh &&
+        !realtimeMode &&
+        updatedAt > Date.now() - CACHE_VALID_DURATION;
+
+      if (shouldUseDbCache) {
+        log('<<==Tokens-cache-hit==>>', userAddr);
+        setIsAllTokenLoading(false);
+        return;
+      }
+    }
+
+    const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
 
     if (!snapshot) {
       log('--Terminate-tokens-snapshot-', userAddr);
@@ -198,7 +289,8 @@ export const useTokens = (
     }
 
     if (snapshot?.length) {
-      const chainTokens = snapshot.reduce((m, n) => {
+      currentAllTokens = replaceCoreTokens(currentAllTokens, snapshot);
+      const chainTokens = currentAllTokens.reduce((m, n) => {
         m[n.chain] = m[n.chain] || [];
         m[n.chain].push(n);
 
@@ -218,7 +310,6 @@ export const useTokens = (
         dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
       }
       setLoading(false);
-      // setTokens(filterDisplayToken(_tokens, blocked));
     }
 
     const tokenRes = await batchQueryTokens(
@@ -232,6 +323,7 @@ export const useTokens = (
       log('--Terminate-tokens- no tokenRes', userAddr);
       setLoading(false);
       setIsAllTokenLoading(false);
+      return;
     }
 
     if (currentAbort.signal.aborted) {
@@ -241,7 +333,6 @@ export const useTokens = (
     }
 
     // customize and blocked tokens
-
     const customizeTokens = (await wallet.getCustomizedToken()).filter(
       (token) => {
         if (isTestnet) {
@@ -303,18 +394,51 @@ export const useTokens = (
       );
       blockedTokenList.push(...blockedTokens.filter((token) => token.is_core));
     }
+
+    if (currentAbort.signal.aborted) {
+      abortedFn();
+      return;
+    }
+
     const formattedCustomTokenList = customTokenList.map(
       (token) => new DisplayedToken(token) as AbstractPortfolioToken
     );
     const formattedBlockedTokenList = blockedTokenList.map(
       (token) => new DisplayedToken(token) as AbstractPortfolioToken
     );
+
     if (isTestnet) {
       dispatch.account.setTestnetBlockedTokenList(formattedBlockedTokenList);
       dispatch.account.setTestnetCustomizeTokenList(formattedCustomTokenList);
     } else {
       dispatch.account.setBlockedTokenList(formattedBlockedTokenList);
       dispatch.account.setCustomizeTokenList(formattedCustomTokenList);
+    }
+
+    currentAllTokens = uniqTokens([
+      ...(chainServerId
+        ? currentAllTokens.filter((token) => token.chain !== chainServerId)
+        : []),
+      ...tokenRes,
+      ...customTokenList,
+      ...blockedTokenList,
+    ]);
+
+    if (currentAbort.signal.aborted) {
+      abortedFn();
+      return;
+    }
+
+    if (shouldPersistTokenCache) {
+      await tokenDbService.replaceAddressTokens(userAddr, currentAllTokens);
+
+      if (!chainServerId) {
+        await syncDbService.setUpdatedAt({
+          address: userAddr,
+          scene: TOKEN_SYNC_SCENE,
+          updatedAt: Date.now(),
+        });
+      }
     }
 
     const tokensDict: Record<string, TokenItem[]> = {};
@@ -342,6 +466,7 @@ export const useTokens = (
         ...formattedCustomTokenList,
       ]);
     }
+
     setLoading(false);
     setIsAllTokenLoading(false);
     loadHistory(_data, currentAbort);
@@ -530,6 +655,10 @@ export const useTokens = (
     lpTokensOnly,
   ]);
 
+  const forceRefresh = useCallback(() => {
+    loadProcess({ forceRefresh: true });
+  }, [loadProcess]);
+
   return {
     netWorth: data?.netWorth || 0,
     isLoading: isLoading || loadingRecommendedTokens,
@@ -540,7 +669,7 @@ export const useTokens = (
       : mainnetTokens.customize,
     blockedTokens: isTestnet ? testnetTokens.blocked : mainnetTokens.blocked,
     hasValue: !!data?._portfolios?.length,
-    updateData: loadProcess,
+    updateData: forceRefresh,
     walletProject: data,
   };
 };
