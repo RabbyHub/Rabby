@@ -75,6 +75,12 @@ export default (store: typeof import('@/ui/store').default) => {
         });
         break;
       }
+      case 'unlockPreferredMethod': {
+        dispatch.preference.setField({
+          unlockPreferredMethod: payload.partials.unlockPreferredMethod,
+        });
+        break;
+      }
     }
   });
 

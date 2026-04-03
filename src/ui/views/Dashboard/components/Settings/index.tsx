@@ -712,7 +712,7 @@ const SettingsInner = ({
         }
         setBiometricBusy(true);
         try {
-          await wallet.openBiometricUnlockSetupWindow();
+          await wallet.openBiometricUnlockSetupWindow({ from: 'settings' });
         } finally {
           setBiometricBusy(false);
         }
@@ -960,6 +960,7 @@ const SettingsInner = ({
       items: [
         {
           leftIcon: RCIconBiometric,
+          leftIconClassName: 'text-r-neutral-body',
           className: 'js-setting-biometric',
           content: t('page.dashboard.settings.settings.biometricUnlock'),
           rightIcon: (

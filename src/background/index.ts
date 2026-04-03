@@ -307,6 +307,7 @@ restoreAppState();
 }
 
 keyringService.on('resetPassword', async () => {
+  preferenceService.clearBiometricUnlockStorage();
   const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
 
   if (
