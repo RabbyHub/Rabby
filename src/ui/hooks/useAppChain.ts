@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { AppChainItem } from '@rabby-wallet/rabby-api/dist/types';
 import { APPCHAIN_SYNC_SCENE, CACHE_VALID_DURATION } from '@/db/constants';
 import { appChainDbService } from '@/db/services/appChainDbService';
@@ -192,13 +192,17 @@ export const useAppChain = (
     };
   }, []);
 
+  const forceRefresh = useCallback(() => {
+    loadProcess({ forceRefresh: true });
+  }, [loadProcess]);
+
   return {
     appChains,
     netWorth,
     data,
     hasValue,
     isLoading,
-    updateData: () => loadProcess({ forceRefresh: true }),
+    updateData: forceRefresh,
   };
 };
 

@@ -417,6 +417,10 @@ export const usePortfolios = (
     [setData]
   );
 
+  const forceRefresh = useCallback(() => {
+    loadProcess({ forceRefresh: true });
+  }, [loadProcess]);
+
   useEffect(() => {
     return () => {
       abortProcess.current?.abort();
@@ -428,7 +432,7 @@ export const usePortfolios = (
     data,
     hasValue,
     isLoading,
-    updateData: () => loadProcess({ forceRefresh: true }),
+    updateData: forceRefresh,
     removeProtocol,
   };
 };
