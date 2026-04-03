@@ -395,6 +395,10 @@ const AddressManagement = () => {
   const isCoinbase =
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.Coinbase;
   const hasStatusBar = isWalletConnect || isLedger || isGridPlus || isCoinbase;
+  const showBackupWarning =
+    currentAccountIndex !== -1 &&
+    accountList[currentAccountIndex]?.type === KEYRING_CLASS.MNEMONIC &&
+    !hasBackup;
 
   useEffect(() => {
     dispatch.preference.setAddressSortStoreValue({
@@ -583,7 +587,15 @@ const AddressManagement = () => {
           <VList
             ref={listRef}
             key={addressSortStore.sortType + debouncedSearchKeyword}
-            height={currentAccountIndex === -1 ? 471 : hasStatusBar ? 368 : 426}
+            height={
+              currentAccountIndex === -1
+                ? 471
+                : hasStatusBar
+                ? 368
+                : showBackupWarning
+                ? 382
+                : 426
+            }
             width="100%"
             itemData={filteredAccounts}
             itemCount={filteredAccounts.length}
