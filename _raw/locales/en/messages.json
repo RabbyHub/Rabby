@@ -2383,7 +2383,8 @@
           "perpsPositions_other": "{{count}} Positions",
           "prediction": "Prediction",
           "lending": "Lending",
-          "dragTip": "Long-press feature to reorder"
+          "dragTip": "Long-press feature to reorder",
+          "convertDust": "Convert Dust"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
