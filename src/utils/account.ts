@@ -261,7 +261,7 @@ export const filterMyAccounts = (account: Account) => {
   };
 };
 
-export const isSupportDBAccount = (account?: Account) => {
+export const isSupportDBAccount = (account?: Account | null) => {
   if (!account) {
     return false;
   }
