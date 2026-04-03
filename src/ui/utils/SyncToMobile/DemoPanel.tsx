@@ -17,7 +17,7 @@ export const DemoPanel: React.FC = () => {
           loop
           muted
           playsInline
-          src="https://static-assets.debank.com/files/31fdc403-add6-4c45-8eca-24177b327f3e.mp4"
+          src="https://static-assets.debank.com/files/9d8010a4-c458-4626-bccd-f0ebda3e4d2f.mp4"
         />
       </div>
     </div>
