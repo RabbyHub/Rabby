@@ -1,6 +1,5 @@
 const webpack = require('webpack');
 const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
 const SecSDK = require('warden-for-js').WardenPlugin;
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
@@ -17,7 +16,7 @@ const config = {
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
       'process.env.DEBUG': true,
     }),
-    false &&
+    true &&
       new SecSDK({
         dev: false,
         disableProtoAssets: ['pageProvider.js'],
@@ -47,19 +46,6 @@ const config = {
         ],
       }),
   ].filter(Boolean),
-
-  optimization: {
-    minimize: false,
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          compress: {
-            pure_funcs: ['console.log', 'console.debug', 'console.info'],
-          },
-        },
-      }),
-    ],
-  },
 };
 
 module.exports = config;

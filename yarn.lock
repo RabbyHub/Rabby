@@ -22209,10 +22209,10 @@ walker@^1.0.8:
   dependencies:
     makeerror "1.0.12"
 
-warden-for-js@1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/warden-for-js/-/warden-for-js-1.0.4.tgz#7818624bbc814940d14163114d4329129c007f3c"
-  integrity sha512-pTph2++V827t47poXyCKnaQ2lYCPqaIKgfT0lXJEFxPUqccSCShJYTMxGq8ThoWIpaWCcmFTDL5zUsoy7LbMCw==
+warden-for-js@1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/warden-for-js/-/warden-for-js-1.0.5.tgz#f6e40ebd61fbfad537610e96a702f4d5ac46ba43"
+  integrity sha512-8DrHaqfGTB5Celc19yi8jSp0LOD3wd3vbye8VBRbYi5D4nmv8d/Hp5dTqJxDbLVvi5ncXSazPlZB4KALFQFv0Q==
   dependencies:
     "@babel/generator" "^7.29.1"
     "@babel/parser" "^7.29.0"

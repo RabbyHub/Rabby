@@ -141,7 +141,8 @@
         "ResizeObserver": "r"
       },
       "disallow": []
-    }
+    },
+    "enable": false
   },
   "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_writable.js": {
     "global": {
@@ -455,6 +456,9 @@
     "enable": false
   },
   "node_modules/elliptic/lib/elliptic/curve/base.js": {
+    "enable": false
+  },
+  "node_modules/react-idle-timer/dist/index.esm.js": {
     "enable": false
   },
   "node_modules/elliptic/lib/elliptic/curve/short.js": {
