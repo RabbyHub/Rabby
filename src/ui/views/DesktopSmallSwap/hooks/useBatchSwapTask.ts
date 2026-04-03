@@ -1,7 +1,7 @@
 import { useWallet, WalletControllerType } from '@/ui/utils';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { AssetApprovalSpender } from '@/utils/approval';
-import { TokenItem, Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { TokenItem, Tx, TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import PQueue from 'p-queue';
 import React from 'react';
@@ -11,14 +11,97 @@ import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 import { findIndexRevokeList } from '../../DesktopProfile/components/ApprovalsTabPane/utils';
 import { findChain } from '@/utils/chain';
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
-import { CHAINS_ENUM } from '@debank/common';
+import { Chain, CHAINS_ENUM } from '@debank/common';
+import { isSwapWrapToken, useQuoteMethods } from '../../Swap/hooks';
 import { QuoteProvider, TDexQuoteData } from '../../Swap/hooks';
+import { useRabbySelector } from '@/ui/store';
+import { DEX } from '@/constant';
+import { useMemoizedFn } from 'ahooks';
+import { Account } from '@/background/service/preference';
+import { omit } from 'lodash';
 export { FailedCode } from '@/ui/utils/sendTransaction';
+
+export const getActiveProvider = async ({
+  chain,
+  currentAddress,
+  dexId,
+  getSingleQuote,
+  payToken,
+  receiveToken,
+  slippage = '3',
+}: {
+  chain: NonNullable<ReturnType<typeof findChain>>;
+  currentAddress: string;
+  dexId: DEX_ENUM;
+  getSingleQuote: (params: {
+    dexId: DEX_ENUM;
+    userAddress: string;
+    payToken: TokenItem;
+    receiveToken: TokenItem;
+    slippage: string;
+    chain: CHAINS_ENUM;
+    payAmount: string;
+    fee: string;
+    inSufficient: boolean;
+    setQuote?: (quote: TDexQuoteData) => void;
+  }) => Promise<TDexQuoteData>;
+  payToken: TokenItem;
+  receiveToken: TokenItem;
+  slippage?: string;
+}): Promise<QuoteProvider | null> => {
+  const payAmount = new BigNumber(payToken.raw_amount_hex_str || 0)
+    .div(10 ** payToken.decimals)
+    .toString(10);
+
+  if (!new BigNumber(payAmount).gt(0)) {
+    return null;
+  }
+
+  const quoteResult = await getSingleQuote({
+    dexId,
+    userAddress: currentAddress,
+    payToken,
+    receiveToken,
+    slippage,
+    chain: chain.enum,
+    payAmount,
+    fee: isSwapWrapToken(payToken.id, receiveToken.id, chain.enum)
+      ? '0'
+      : '0.25',
+    inSufficient: false,
+  });
+
+  console.log('???', quoteResult);
+
+  if (!quoteResult?.data || !quoteResult.preExecResult?.isSdkPass) {
+    return null;
+  }
+
+  const actualReceiveAmount = new BigNumber(quoteResult.data.toTokenAmount)
+    .div(10 ** (quoteResult.data.toTokenDecimals || receiveToken.decimals))
+    .toString();
+
+  return {
+    name: quoteResult.name,
+    quote: quoteResult.data,
+    preExecResult: quoteResult.preExecResult,
+    gasPrice: quoteResult.preExecResult.gasPrice,
+    shouldApproveToken: !!quoteResult.preExecResult.shouldApproveToken,
+    shouldTwoStepApprove: !!quoteResult.preExecResult.shouldTwoStepApprove,
+    error: !quoteResult.preExecResult,
+    halfBetterRate: '',
+    quoteWarning: undefined,
+    actualReceiveAmount,
+    gasUsd: quoteResult.preExecResult.gasUsd,
+  };
+};
 
 export const buildSwapTxs = async ({
   wallet,
   payToken,
   receiveToken,
+  quote,
+  activeProvider,
 
   preferMEVGuarded,
   chain,
@@ -41,121 +124,69 @@ export const buildSwapTxs = async ({
   rbiSource: any;
   swapUseSlider?: boolean;
 }) => {
-  // if (payToken && receiveToken && activeProvider?.quote) {
-  //   try {
-  //     const result = await wallet.buildDexSwap(
-  //       {
-  //         swapPreferMEVGuarded: preferMEVGuarded,
-  //         chain,
-  //         quote: activeProvider?.quote,
-  //         needApprove: activeProvider.shouldApproveToken,
-  //         spender:
-  //           activeProvider?.name === DEX_ENUM.WRAPTOKEN
-  //             ? ''
-  //             : DEX_SPENDER_WHITELIST[activeProvider.name][chain],
-  //         pay_token_id: payToken.id,
-  //         unlimited: false,
-  //         shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
-  //         // todo check this
-  //         gasPrice: undefined,
-  //         postSwapParams: {
-  //           quote: {
-  //             pay_token_id: payToken.id,
-  //             pay_token_amount: Number(inputAmount),
-  //             receive_token_id: receiveToken!.id,
-  //             receive_token_amount: new BigNumber(
-  //               activeProvider?.quote.toTokenAmount
-  //             )
-  //               .div(
-  //                 10 **
-  //                   (activeProvider?.quote.toTokenDecimals ||
-  //                     receiveToken.decimals)
-  //               )
-  //               .toNumber(),
-  //             slippage: new BigNumber(slippage).div(100).toNumber(),
-  //           },
-  //           dex_id: activeProvider?.name || 'WrapToken',
-  //         },
-  //         addHistoryData: {
-  //           address: userAddress,
-  //           chainId: findChain({ enum: chain })?.id || 0,
-  //           fromToken: payToken,
-  //           toToken: receiveToken,
-  //           fromAmount: Number(inputAmount),
-  //           toAmount: new BigNumber(activeProvider?.quote.toTokenAmount)
-  //             .div(
-  //               10 **
-  //                 (activeProvider?.quote.toTokenDecimals ||
-  //                   receiveToken.decimals)
-  //             )
-  //             .toNumber(),
-  //           slippage: new BigNumber(slippage).div(100).toNumber(),
-  //           dexId: activeProvider?.name || 'WrapToken',
-  //           status: 'pending',
-  //           createdAt: Date.now(),
-  //         },
-  //       },
-  //       {
-  //         ga: {
-  //           category: 'Swap',
-  //           source: 'swap',
-  //           trigger: rbiSource,
-  //           swapUseSlider,
-  //         },
-  //       }
-  //     );
-  //     return result;
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
-};
+  const quoteResult = activeProvider?.quote || quote?.data;
 
-async function buildTx(
-  wallet: WalletControllerType,
-  item: ApprovalSpenderItemToBeRevoked
-) {
-  // generate tx
-  let tx: Tx;
-  if (item.permit2Id) {
-    const data = await wallet.lockdownPermit2(
-      {
-        id: item.permit2Id,
-        chainServerId: item.chainServerId,
-        tokenSpenders: [
-          {
-            token: item.tokenId!,
-            spender: item.spender,
-          },
-        ],
-      },
-      true
-    );
-    tx = data.params[0];
-  } else if ('nftTokenId' in item) {
-    const data = await wallet.revokeNFTApprove(item, undefined, true);
-    tx = data.params[0];
-  } else {
-    const data = await wallet.approveToken(
-      item.chainServerId,
-      item.id,
-      item.spender,
-      0,
-      {
-        ga: {
-          category: 'Security',
-          source: 'tokenApproval',
-        },
-      },
-      undefined,
-      undefined,
-      true
-    );
-    tx = data.params[0];
+  if (!payToken || !receiveToken || !quoteResult || !activeProvider) {
+    return;
   }
 
-  return tx;
-}
+  try {
+    const toAmount = new BigNumber(quoteResult.toTokenAmount)
+      .div(10 ** (quoteResult.toTokenDecimals || receiveToken.decimals))
+      .toNumber();
+
+    const result = await wallet.buildDexSwap(
+      {
+        swapPreferMEVGuarded: preferMEVGuarded,
+        chain,
+        quote: quoteResult,
+        needApprove: activeProvider.shouldApproveToken,
+        spender:
+          activeProvider.name === DEX_ENUM.WRAPTOKEN
+            ? ''
+            : DEX_SPENDER_WHITELIST[activeProvider.name][chain],
+        pay_token_id: payToken.id,
+        unlimited: false,
+        shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
+        gasPrice: undefined,
+        postSwapParams: {
+          quote: {
+            pay_token_id: payToken.id,
+            pay_token_amount: Number(inputAmount),
+            receive_token_id: receiveToken.id,
+            receive_token_amount: toAmount,
+            slippage: new BigNumber(slippage).div(100).toNumber(),
+          },
+          dex_id: activeProvider.name || 'WrapToken',
+        },
+        addHistoryData: {
+          address: userAddress,
+          chainId: findChain({ enum: chain })?.id || 0,
+          fromToken: payToken,
+          toToken: receiveToken,
+          fromAmount: Number(inputAmount),
+          toAmount,
+          slippage: new BigNumber(slippage).div(100).toNumber(),
+          dexId: activeProvider.name || 'WrapToken',
+          status: 'pending',
+          createdAt: Date.now(),
+        },
+      },
+      {
+        ga: {
+          category: 'Swap',
+          source: 'swap',
+          trigger: rbiSource,
+          swapUseSlider,
+        },
+      }
+    );
+
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 export const FailReason = {
   [FailedCode.GasNotEnough]: i18n.t('page.approvals.revokeModal.gasNotEnough'),
@@ -194,7 +225,13 @@ export type TaskItemStatus =
       };
     };
 
-export const useBatchSwapTask = () => {
+export const useBatchSwapTask = (options: {
+  chain?: Chain;
+  account?: Account;
+  receiveToken?: TokenItem;
+  slippage?: string;
+  maxGasCost?: string;
+}) => {
   const wallet = useWallet();
   const gasAccount = useGasAccountSign();
   const queueRef = React.useRef(
@@ -215,74 +252,114 @@ export const useBatchSwapTask = () => {
   const [currentToken, setCurrentToken] = React.useState<TokenItem | null>(
     null
   );
+  const { getSingleQuote } = useQuoteMethods();
+  const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
+  const dexId = (supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[])[0];
 
-  const addTask = React.useCallback(
+  const addTask = useMemoizedFn(
     async (item: TokenItem, priority: number = 0, ignoreGasCheck = false) => {
       return queueRef.current.add(
         async () => {
-          currentApprovalRef.current = item;
-          setCurrentToken(item);
-
-          setStatusDict((prev) => ({
-            ...prev,
-            [item.id]: {
-              status: 'pending',
-            },
-          }));
-
           try {
-            // todo build swap tx and send
-            // const tx = await buildTx(wallet, revokeItem);
-            // const result = await sendTransaction({
-            //   tx,
-            //   ignoreGasCheck,
-            //   wallet,
-            //   chainServerId: revokeItem.chainServerId,
-            //   sig: gasAccount?.sig,
-            //   autoUseGasAccount: true,
-            //   onProgress: (status) => {
-            //     if (status === 'builded') {
-            //       setTxStatus('sended');
-            //     } else if (status === 'signed') {
-            //       setTxStatus('signed');
-            //     }
-            //   },
-            //   onUseGasAccount: () => {
-            //     // update status
-            //     cloneItem.$status = {
-            //       status: 'pending',
-            //       isGasAccount: true,
-            //     };
-            //     setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
-            //   },
-            //   ga: {
-            //     category: 'Security',
-            //     source: 'tokenApproval',
-            //   },
-            // });
-            // update status
-            const result = await new Promise<any>((resolve, reject) => {
-              setTimeout(() => {
-                if (Math.random() > 0.5) {
-                  resolve({
-                    txHash: '0x123',
-                    gasCost: {
-                      gasCostUsd: new BigNumber(1),
-                      gasCostAmount: new BigNumber(0.01),
-                      nativeTokenSymbol: 'ETH',
-                    },
-                  });
-                } else {
-                  reject(new Error('Failed to send transaction'));
-                }
-              }, 3000);
+            if (
+              !options.chain ||
+              !options.account ||
+              !options.receiveToken ||
+              !dexId
+            ) {
+              throw new Error('Missing required parameters');
+            }
+            currentApprovalRef.current = item;
+            setCurrentToken(item);
+
+            setStatusDict((prev) => ({
+              ...prev,
+              [item.id]: {
+                status: 'pending',
+              },
+            }));
+
+            const activeProvider = await getActiveProvider({
+              chain: options.chain,
+              currentAddress: options.account.address,
+              dexId,
+              getSingleQuote,
+              payToken: item,
+              receiveToken: options.receiveToken,
+              slippage: options.slippage,
             });
+
+            console.log('Got active provider:', activeProvider);
+
+            if (!activeProvider) {
+              throw new Error('Failed to get active provider');
+            }
+
+            const txs = await buildSwapTxs({
+              wallet,
+              payToken: item,
+              receiveToken: options.receiveToken,
+              quote: null,
+              activeProvider,
+              preferMEVGuarded: false,
+              chain: options.chain.enum,
+              inputAmount: new BigNumber(item.raw_amount_hex_str || 0)
+                .div(10 ** item.decimals)
+                .toString(10),
+              slippage: options.slippage || '3',
+              userAddress: options.account.address,
+              rbiSource: 'desktopSmallSwap',
+              swapUseSlider: false,
+            });
+
+            console.log('Built swap txs:', txs);
+
+            if (!txs?.length) {
+              throw new Error('Failed to build swap txs');
+            }
+
+            let result: Awaited<ReturnType<typeof sendTransaction>> | undefined;
+
+            for (const tx of txs) {
+              let pushType: TxPushType = 'default';
+              if ('swapPreferMEVGuarded' in tx) {
+                if (tx.swapPreferMEVGuarded) {
+                  pushType = 'mev';
+                }
+                delete tx.swapPreferMEVGuarded;
+              }
+              result = await sendTransaction({
+                tx,
+                ignoreGasCheck,
+                wallet,
+                chainServerId: options.chain.serverId,
+                sig: gasAccount?.sig,
+                autoUseGasAccount: true,
+                pushType,
+                onProgress: (status) => {
+                  if (status === 'builded') {
+                    setTxStatus('sended');
+                  } else if (status === 'signed') {
+                    setTxStatus('signed');
+                  }
+                },
+                ga: {
+                  category: 'Swap',
+                  source: 'swap',
+                },
+              });
+            }
+
+            if (!result) {
+              throw new Error('Failed to send swap tx');
+            }
+
             setStatusDict((prev) => ({
               ...prev,
               [item.id]: {
                 status: 'success',
-                txHash: result.txHash,
-                gasCost: result.gasCost,
+                txHash: result!.txHash,
+                gasCost: result!.gasCost,
               },
             }));
           } catch (e) {
@@ -308,8 +385,7 @@ export const useBatchSwapTask = () => {
         },
         { priority }
       );
-    },
-    []
+    }
   );
 
   const start = React.useCallback(() => {

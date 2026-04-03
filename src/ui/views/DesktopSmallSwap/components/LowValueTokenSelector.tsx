@@ -219,7 +219,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
       )}
       style={{
         boxShadow: '0 16px 40px rgba(25, 41, 69, 0.06)',
-        translation: 'width 0.3s',
+        transition: 'width 0.3s',
         width:
           task?.status === 'idle'
             ? PANEL_WIDTH

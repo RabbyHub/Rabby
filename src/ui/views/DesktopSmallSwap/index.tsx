@@ -18,11 +18,14 @@ import { defaultTokenFilter } from '@/ui/utils/portfolio/lpToken';
 import { DisplayedToken } from '@/ui/utils/portfolio/project';
 import { useRequest } from 'ahooks';
 import { sleep, useWallet } from '@/ui/utils';
-import { buildSwapTxs, useBatchSwapTask } from './hooks/useBatchSwapTask';
-import { DEX, SWAP_FEE_ADDRESS } from '@/constant';
-import { DEX_ENUM, getQuote } from '@rabby-wallet/rabby-swap';
-import { isSwapWrapToken } from '../Swap/hooks';
-import BigNumber from 'bignumber.js';
+import {
+  buildSwapTxs,
+  getActiveProvider,
+  useBatchSwapTask,
+} from './hooks/useBatchSwapTask';
+import { DEX } from '@/constant';
+import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
+import { useQuoteMethods } from '../Swap/hooks/quote';
 
 export const DesktopSmallSwap: React.FC<{
   isActive?: boolean;
@@ -95,6 +98,7 @@ export const DesktopSmallSwap: React.FC<{
 
   const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
   const dexId = (supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[])[0];
+  const { getDexQuote } = useQuoteMethods();
 
   // getDexQuote({
   //   ...params,
@@ -104,9 +108,36 @@ export const DesktopSmallSwap: React.FC<{
   //     recommendNonceTask: sharedRecommendNonceTask || undefined,
   //   },
   // });
-  const task = useBatchSwapTask();
+  const task = useBatchSwapTask({
+    chain: chain || undefined,
+    account: currentAccount || undefined,
+    receiveToken: receiveToken || undefined,
+    slippage: '3',
+  });
   const onStart = async () => {
     console.log('start swap');
+    const payToken = tokenList?.find((item) => item.id === selectedTokenIds[0]);
+    if (
+      !payToken ||
+      !chain ||
+      !receiveToken ||
+      !currentAccount?.address ||
+      !dexId
+    ) {
+      return;
+    }
+
+    // const activeProvider = await getActiveProvider({
+    //   chain,
+    //   currentAddress: currentAccount.address,
+    //   dexId,
+    //   getDexQuote,
+    //   payToken,
+    //   receiveToken,
+    //   slippage: '3',
+    // });
+    // console.log('activeProvider', activeProvider);
+
     // task.init(
     //   tokenList?.filter((item) => selectedTokenIds.includes(item.id)) || []
     // );
