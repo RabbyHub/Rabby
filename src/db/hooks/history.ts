@@ -11,7 +11,6 @@ import { db } from '..';
 import { historyDbService } from '../services/historyDbService';
 import { useEffect, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { I } from 'ts-toolbelt';
 
 export const useSyncDbHistory = (options: { account?: Account | null }) => {
   // return useQuery({
