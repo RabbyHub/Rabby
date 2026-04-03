@@ -5008,10 +5008,10 @@
     ethers "5.5.1"
     semver "7.5.4"
 
-"@rabby-wallet/hyperliquid-sdk@1.1.6-beta.1":
-  version "1.1.6-beta.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/hyperliquid-sdk/-/hyperliquid-sdk-1.1.6-beta.1.tgz#f343b55a445675891478c9042ba7643096b0f766"
-  integrity sha512-6uM+EprFqDvcZ9YjUbKIB0UNQoF76LqJOQ2eSmqx8IlhLNksys3o2UFuHrZyDzg+1ZVKjSEEaX+0NKnBWe/6JA==
+"@rabby-wallet/hyperliquid-sdk@1.1.6":
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/hyperliquid-sdk/-/hyperliquid-sdk-1.1.6.tgz#8bdcb73476a5123c66b69224705a96334eef14b4"
+  integrity sha512-iRH8sog14y/FZ8DX+lon3CB9neO+Tgw6dno3SwQJ4I8KWBWHtqWe4yUvN85291KVIxplQAfGhJLRcUwAlrNrXA==
   dependencies:
     "@ethereumjs/util" "9.0.0"
     "@metamask/eth-sig-util" "5.1.0"
