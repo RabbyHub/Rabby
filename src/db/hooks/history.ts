@@ -26,7 +26,11 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
   return useRequest(
     async () => {
       const { account } = options;
-      if (!account?.address) {
+      if (
+        !account?.address ||
+        !isSupportDBAccount(account) ||
+        !(UI_TYPE.isDesktop || UI_TYPE.isPop)
+      ) {
         return;
       }
       return historyDbService.sync({ address: account.address });
@@ -35,10 +39,6 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
       refreshDeps: [options.account?.address],
       cacheKey: `syncHistory-${options.account?.address}`,
       staleTime: 0.5 * 60 * 1000,
-      ready:
-        !!options.account?.address &&
-        isSupportDBAccount(options.account) &&
-        (UI_TYPE.isDesktop || UI_TYPE.isPop),
     }
   );
 };
