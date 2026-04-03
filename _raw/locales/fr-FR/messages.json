@@ -1239,7 +1239,9 @@
       },
       "noSeedPhraseAddress": "Aucune adresse n'a été ajoutée pour cette phrase de récupération. Vous pouvez ajouter une adresse ou supprimer la phrase de récupération.",
       "watch-address": "Regarder uniquement",
-      "deleteSuccess": "Supprimé avec succès"
+      "deleteSuccess": "Supprimé avec succès",
+      "backupSeedPhraseNow": "Commencer la sauvegarde",
+      "seedPhraseNotBackedUp": "Portefeuille non sauvegardé"
     },
     "newAddress": {
       "addContacts": {
@@ -2501,7 +2503,9 @@
         "Pending": "En attente",
         "Succeeded": "Réussi",
         "Failed": "Échoué"
-      }
+      },
+      "showScamTips": "Afficher les transactions frauduleuses",
+      "hideScamTips": "Masquer les transactions frauduleuses"
     },
     "unlock": {
       "btn": {
@@ -3662,7 +3666,9 @@
         "goBridgeTips": "Seul l'USDC sur Arbitrum est pris en charge pour le dépôt direct. Veuillez transférer votre jeton actuel vers l'USDC sur Arbitrum via le pont avant de déposer.",
         "estReceiveTooltip": "Le dépôt cross-chain est traité via LiFi, ce qui peut entraîner un léger glissement. Arrivée estimée dans {{number}}s.",
         "hyperliquidFeeLabelTooltip": "Les nouveaux utilisateurs sont facturés des frais d'activation uniques par Hyperliquid.",
-        "amount": "Montant"
+        "amount": "Montant",
+        "hypeActivationFeeTip": "Une frais d'activation unique de {{fee}} sera facturé par Hyperliquid pour le premier retrait HyperEVM.",
+        "feeTipTooltipHype": "Des frais d'environ ~0,00002 HYPE seront facturés pour retirer vers l'EVM."
       },
       "home": {
         "entryPrice": "Prix d'entrée",
@@ -3830,7 +3836,8 @@
         "learnMore": "En savoir plus"
       },
       "addFunds": "Ajouter des fonds",
-      "crossMarginLiqPriceTip": "En mode Cross Margin, le prix de liquidation pour une position unique est une estimation à titre de référence uniquement."
+      "crossMarginLiqPriceTip": "En mode Cross Margin, le prix de liquidation pour une position unique est une estimation à titre de référence uniquement.",
+      "selectTokenToWithdraw": "Sélectionnez le réseau de retrait"
     },
     "perpsPro": {
       "chatArea": {

@@ -65,7 +65,9 @@
         "Pending": "待处理",
         "Failed": "失敗",
         "Succeeded": "成功"
-      }
+      },
+      "showScamTips": "顯示詐騙交易",
+      "hideScamTips": "隱藏詐騙交易"
     },
     "dashboard": {
       "feedback": {
@@ -1252,7 +1254,9 @@
       },
       "noSeedPhraseAddress": "此种子短语尚未添加任何地址。您可以添加一个地址或删除该种子短语。",
       "watch-address": "只读模式",
-      "deleteSuccess": "已成功删除"
+      "deleteSuccess": "已成功删除",
+      "seedPhraseNotBackedUp": "錢包未備份",
+      "backupSeedPhraseNow": "開始備份"
     },
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
@@ -3378,7 +3382,9 @@
         "fetchQuoteFailed": "無法取得入金報價。請切換代幣。",
         "goSwapTips": "僅支援 Arbitrum 上的 USDC 作為直接入金。請在入金前將您當前的代幣兌換為 USDC。",
         "hyperliquidFeeLabelTooltip": "新用戶需支付一筆一次性啟動費用給 Hyperliquid。",
-        "amount": "金額"
+        "amount": "金額",
+        "feeTipTooltipHype": "提取至 EVM 时将收取约 0.00002 HYPE 的费用。",
+        "hypeActivationFeeTip": "Hyperliquid 將收取一次性啟動費用 {{fee}} 以進行首次 HyperEVM 提現。"
       },
       "home": {
         "margin": "保證金",
@@ -3546,7 +3552,8 @@
         "learnMore": "了解更多"
       },
       "addFunds": "添加資金",
-      "crossMarginLiqPriceTip": "在交叉保证金模式下，单个头寸的清算价格仅为参考估算。"
+      "crossMarginLiqPriceTip": "在交叉保证金模式下，单个头寸的清算价格仅为参考估算。",
+      "selectTokenToWithdraw": "選擇提款網絡"
     },
     "perpsPro": {
       "chatArea": {

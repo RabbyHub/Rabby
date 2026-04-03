@@ -29,7 +29,9 @@
         "Succeeded": "Thành công",
         "Pending": "Đang chờ xử lý",
         "Failed": "Thất bại"
-      }
+      },
+      "hideScamTips": "Ẩn các giao dịch lừa đảo",
+      "showScamTips": "Hiển thị giao dịch lừa đảo"
     },
     "chainList": {
       "mainnet": "Mainnets",
@@ -1195,7 +1197,9 @@
       },
       "noSeedPhraseAddress": "Không có địa chỉ nào được thêm cho cụm từ hạt giống này. Bạn có thể thêm một địa chỉ hoặc xóa cụm từ hạt giống.",
       "watch-address": "Chỉ xem",
-      "deleteSuccess": "Xóa thành công"
+      "deleteSuccess": "Xóa thành công",
+      "seedPhraseNotBackedUp": "Ví không được sao lưu",
+      "backupSeedPhraseNow": "Bắt đầu sao lưu"
     },
     "dashboard": {
       "home": {
@@ -3337,7 +3341,9 @@
         "goBridgeTips": "Chỉ USDC trên Arbitrum được hỗ trợ cho việc nạp trực tiếp. Vui lòng bắc cầu token đang có của bạn sang USDC trên Arbitrum trước khi nạp tiền.",
         "payWith": "Thanh toán bằng",
         "hyperliquidFeeLabelTooltip": "Người dùng mới sẽ bị tính phí kích hoạt một lần bởi Hyperliquid.",
-        "amount": "Số lượng"
+        "amount": "Số lượng",
+        "feeTipTooltipHype": "Phí ~0.00002 HYPE sẽ được tính cho việc rút về EVM.",
+        "hypeActivationFeeTip": "Phí kích hoạt một lần là {{fee}} sẽ được Hyperliquid tính cho lần rút HyperEVM đầu tiên."
       },
       "home": {
         "margin": "Ký quỹ",
@@ -3505,7 +3511,8 @@
         "learnMore": "Tìm hiểu thêm"
       },
       "addFunds": "Thêm Quỹ",
-      "crossMarginLiqPriceTip": "Trong chế độ Cross Margin, giá thanh lý cho một vị trí đơn lẻ chỉ là một ước tính để tham khảo."
+      "crossMarginLiqPriceTip": "Trong chế độ Cross Margin, giá thanh lý cho một vị trí đơn lẻ chỉ là một ước tính để tham khảo.",
+      "selectTokenToWithdraw": "Chọn Mạng Rút Tiền"
     },
     "perpsPro": {
       "chatArea": {
