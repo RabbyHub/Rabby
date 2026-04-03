@@ -304,9 +304,9 @@ const Main = () => {
         <PrivateRoute exact path="/mnemonics/create">
           <CreateMnemonics />
         </PrivateRoute>
-        <PrivateRoute exact path="/biometric-unlock-setup">
+        <Route exact path="/biometric-unlock-setup">
           <BiometricUnlockSetup />
-        </PrivateRoute>
+        </Route>
         <PrivateRoute exact path="/import">
           <ImportMode />
         </PrivateRoute>
@@ -396,7 +396,7 @@ const Main = () => {
           <HistoryPage />
         </PrivateRoute>
         <PrivateRoute exact path="/history/filter-scam">
-          <HistoryPage isFitlerScam={true} />
+          <HistoryPage />
         </PrivateRoute>
         <PrivateRoute exact path="/activities">
           <Activities />

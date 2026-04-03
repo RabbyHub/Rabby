@@ -96,7 +96,7 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
               )}
             >
               {isRealDeposit ? '+' : '-'}
-              {`${formatUsdValue(usdValue)}`}
+              {`${formatUsdValue(usdValue, BigNumber.ROUND_DOWN)}`}
             </div>
             <div className="text-13 text-r-neutral-foot">
               {sinceTime(time / 1000)}
@@ -110,7 +110,7 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
             )}
           >
             {isRealDeposit ? '+' : '-'}
-            {`${formatUsdValue(usdValue)}`}
+            {`${formatUsdValue(usdValue, BigNumber.ROUND_DOWN)}`}
           </div>
         )}
       </div>

@@ -5,6 +5,7 @@ import {
   AddressSortStore,
   GasCache,
   addedToken,
+  UnlockPreferredMethod,
 } from 'background/service/preference';
 import { CHAINS_ENUM, DARK_MODE_TYPE } from 'consts';
 import { changeLanguage } from '@/i18n';
@@ -43,6 +44,7 @@ interface PreferenceState {
   biometricUnlockCredentialId?: string;
   biometricUnlockEncryptedPassword?: string;
   biometricUnlockIv?: string;
+  unlockPreferredMethod?: UnlockPreferredMethod;
   rateGuideLastExposure?: RateGuideLastExposure;
   dashboardPanelOrder?: string[];
 
@@ -80,6 +82,7 @@ export const preference = createModel<RootModel>()({
     biometricUnlockCredentialId: '',
     biometricUnlockEncryptedPassword: '',
     biometricUnlockIv: '',
+    unlockPreferredMethod: 'biometric',
     rateGuideLastExposure: getDefaultRateGuideLastExposure(),
     desktopTokensAllMode: false,
     dashboardPanelOrder: [],
@@ -344,6 +347,13 @@ export const preference = createModel<RootModel>()({
       });
       ga4.fireEvent(`Unlock_Biometrics_${payload.enabled ? 'On' : 'Off'}`, {
         event_category: 'Settings Snapshot',
+      });
+    },
+
+    async setUnlockPreferredMethod(method: UnlockPreferredMethod, store) {
+      await store.app.wallet.setUnlockPreferredMethod(method);
+      dispatch.preference.setField({
+        unlockPreferredMethod: method,
       });
     },
 

@@ -1132,7 +1132,6 @@
           "settings": "Configuraciones",
           "perpsPositions_one": "{{count}} Posición",
           "perpsPositions_other": "{{count}} Posiciones",
-          "prediction": "Predicción",
           "lending": "Préstamo",
           "dragTip": "Función de pulsar largo para reordenar"
         },
@@ -4485,8 +4484,7 @@
       "portfolio": "Cartera",
       "lending": "Préstamo",
       "perps": "Perps",
-      "comingSoon": "Próximamente",
-      "prediction": "Predicción"
+      "comingSoon": "Próximamente"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Agregar dirección"

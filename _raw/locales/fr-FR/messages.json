@@ -255,8 +255,7 @@
       "perps": "Perps",
       "portfolio": "Portefeuille",
       "lending": "Prêt",
-      "comingSoon": "Bientôt disponible",
-      "prediction": "Prédiction"
+      "comingSoon": "Bientôt disponible"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Ajouter une adresse"
@@ -877,7 +876,6 @@
           "settings": "Paramètres",
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
-          "prediction": "Prédiction",
           "lending": "Prêt",
           "dragTip": "Fonctionnalité de pression longue pour réorganiser"
         },

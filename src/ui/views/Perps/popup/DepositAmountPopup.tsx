@@ -15,7 +15,10 @@ import {
   ARB_USDC_TOKEN_ITEM,
   ARB_USDC_TOKEN_SERVER_CHAIN,
   HYPE_USDC_TOKEN_ID,
+  HYPE_USDC_TOKEN_ITEM,
   HYPE_USDC_TOKEN_SERVER_CHAIN,
+  isHypeWithdrawToken,
+  HYPE_EVM_BRIDGE_ADDRESS,
 } from '../constants';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { TokenWithChain } from '@/ui/component';
@@ -34,7 +37,7 @@ import { getTokenSymbol, tokenAmountBn } from '@/ui/utils/token';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@/types/chain';
 import { Tx } from 'background/service/openapi';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { getPerpsSDK } from '../sdkManager';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
@@ -59,7 +62,10 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   setIsPreparingSign: (isPreparingSign: boolean) => void;
   handleDeposit: () => void;
   miniTxs: Tx[];
-  handleWithdraw?: (amount: number) => Promise<boolean>;
+  handleWithdraw?: (
+    amount: number,
+    isHypeWithdraw?: boolean
+  ) => Promise<boolean>;
   onClose: () => void;
   clearMiniSignTx: () => void;
   clearMiniSignTypeData?: () => void;
@@ -101,6 +107,31 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const [tokenListLoading, setTokenListLoading] = React.useState(false);
   const [gasPrice, setGasPrice] = React.useState<number>(0);
 
+  // Fetch preTransferCheck fee for HyperEVM withdrawal
+  const [hypeTransferFee, setHypeTransferFee] = React.useState<string>('0');
+  React.useEffect(() => {
+    if (!visible || !currentPerpsAccount?.address) {
+      setHypeTransferFee('0');
+      return;
+    }
+    const sdk = getPerpsSDK();
+    sdk.info
+      .getPreTransferCheck(HYPE_EVM_BRIDGE_ADDRESS, currentPerpsAccount.address)
+      .then((res) => {
+        setHypeTransferFee(res?.fee || '0');
+      })
+      .catch(() => {
+        setHypeTransferFee('0');
+      });
+  }, [visible, currentPerpsAccount?.address]);
+
+  const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
+
+  const hypeGasFeeUsd = useMemo(() => {
+    const hypePrice = Number(marketDataMap?.['HYPE']?.markPx || 0);
+    return new BigNumber(0.00002).times(hypePrice).toNumber();
+  }, [marketDataMap]);
+
   const { value: _tokenInfo, loading: tokenLoading } = useAsync(async () => {
     if (!currentPerpsAccount?.address || !visible || !selectedToken)
       return null;
@@ -129,7 +160,8 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   }, [_tokenInfo, selectedToken]);
 
   const fetchTokenList = useCallback(async () => {
-    if (!currentPerpsAccount?.address || !visible) return [];
+    if (!currentPerpsAccount?.address || !visible || type === 'withdraw')
+      return [];
     setTokenListLoading(true);
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
     setTokenListLoading(false);
@@ -169,8 +201,27 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
   }, [selectedToken]);
 
+  const isHypeWithdraw = useMemo(() => {
+    return type === 'withdraw' && isHypeWithdrawToken(selectedToken);
+  }, [type, selectedToken]);
+
+  const withdrawMaxBalance = useMemo(() => {
+    if (!isHypeWithdraw || !Number(hypeTransferFee))
+      return Number(availableBalance);
+    return Math.max(
+      0,
+      new BigNumber(availableBalance)
+        .minus(hypeTransferFee)
+        .decimalPlaces(6, BigNumber.ROUND_DOWN)
+        .toNumber()
+    );
+  }, [isHypeWithdraw, availableBalance, hypeTransferFee]);
+
   // Auto-select token with highest USD balance
   useEffect(() => {
+    if (visible && type === 'withdraw' && !selectedToken) {
+      setSelectedToken(ARB_USDC_TOKEN_ITEM);
+    }
     if (visible && type === 'deposit' && !selectedToken) {
       if (tokenList.length > 0) {
         const sorted = [...tokenList].sort(
@@ -329,7 +380,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           setUsdValue(
             val
               .times(tokenInfo?.price || 0)
-              .decimalPlaces(2, BigNumber.ROUND_DOWN)
+              .decimalPlaces(6, BigNumber.ROUND_DOWN)
               .toFixed()
           );
           setGasPrice(normalPrice);
@@ -343,7 +394,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         setUsdValue(
           tokenAmountBn(tokenInfo)
             ?.times(tokenInfo?.price || 0)
-            .decimalPlaces(2, BigNumber.ROUND_DOWN)
+            .decimalPlaces(6, BigNumber.ROUND_DOWN)
             .toFixed()
         );
       }
@@ -357,7 +408,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       const val = maxVal
         .times(pct)
         .div(100)
-        .decimalPlaces(2, BigNumber.ROUND_DOWN);
+        .decimalPlaces(6, BigNumber.ROUND_DOWN);
       setUsdValue(val.toFixed());
     },
     [depositMaxUsdValue, tokenInfo]
@@ -449,11 +500,11 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
             <div className="text-13 text-r-neutral-foot">
               {t('page.perps.depositAmountPopup.amount')}
             </div>
-            <div className="text-13 text-r-neutral-foot">
+            <div className="text-13 text-r-neutral-foot flex items-center">
               {type === 'withdraw'
                 ? t('page.perps.availableBalance', {
                     balance: formatUsdValue(
-                      availableBalance,
+                      withdrawMaxBalance,
                       BigNumber.ROUND_DOWN
                     ),
                   })
@@ -463,6 +514,25 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                       BigNumber.ROUND_DOWN
                     ),
                   })}
+              {isHypeWithdraw && Number(hypeTransferFee) > 0 && (
+                <Tooltip
+                  overlayClassName={clsx('rectangle')}
+                  placement="topLeft"
+                  title={t(
+                    'page.perps.depositAmountPopup.hypeActivationFeeTip',
+                    {
+                      fee: formatUsdValue(hypeTransferFee),
+                    }
+                  )}
+                >
+                  <RcIconInfo
+                    viewBox="0 0 12 12"
+                    width={12}
+                    height={12}
+                    className="text-rabby-neutral-foot mx-4"
+                  />
+                </Tooltip>
+              )}
             </div>
           </div>
 
@@ -504,7 +574,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                         usdValue
                           ? new BigNumber(usdValue)
                               .div(tokenInfo?.price || 1)
-                              .decimalPlaces(4, BigNumber.ROUND_DOWN)
+                              .decimalPlaces(6, BigNumber.ROUND_DOWN)
                               .toFixed()
                           : '0'
                       } ${getTokenSymbol(tokenInfo || ARB_USDC_TOKEN_ITEM)}`}
@@ -515,36 +585,25 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   'flex items-center gap-6 px-12 h-[40px] justify-center rounded-[6px]',
                   'bg-r-neutral-card-2',
                   'border border-solid border-transparent',
-                  type === 'deposit' &&
-                    'cursor-pointer hover:bg-r-blue-light1 hover:border-rabby-blue-default'
+                  'cursor-pointer hover:bg-r-blue-light1 hover:border-rabby-blue-default'
                 )}
                 onClick={() => {
-                  if (type === 'deposit') {
-                    setTokenVisible(true);
-                  }
+                  setTokenVisible(true);
                 }}
               >
                 <TokenWithChain
-                  token={
-                    type === 'withdraw'
-                      ? ARB_USDC_TOKEN_ITEM
-                      : selectedToken || ARB_USDC_TOKEN_ITEM
-                  }
+                  token={selectedToken || ARB_USDC_TOKEN_ITEM}
                   hideConer
                   width="24px"
                   height="24px"
                 />
                 <span className="text-[18px] font-medium text-r-neutral-title-1">
-                  {type === 'withdraw'
-                    ? getTokenSymbol(ARB_USDC_TOKEN_ITEM)
-                    : getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
+                  {getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
                 </span>
-                {type === 'deposit' && (
-                  <ThemeIcon
-                    className="icon icon-arrow-right text-r-neutral-foot"
-                    src={RcIconArrowDownCC}
-                  />
-                )}
+                <ThemeIcon
+                  className="icon icon-arrow-right text-r-neutral-foot"
+                  src={RcIconArrowDownCC}
+                />
               </div>
             </div>
           </div>
@@ -557,10 +616,10 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                 className="flex-1 h-[40px] flex items-center justify-center rounded-[8px] border border-solid border-transparent text-13 text-r-neutral-title-1 cursor-pointer hover:border-rabby-blue-default font-medium hover:text-r-blue-default bg-r-neutral-card1"
                 onClick={() => {
                   if (type === 'withdraw') {
-                    const val = new BigNumber(availableBalance)
+                    const val = new BigNumber(withdrawMaxBalance)
                       .times(pct)
                       .div(100)
-                      .decimalPlaces(2, BigNumber.ROUND_DOWN);
+                      .decimalPlaces(6, BigNumber.ROUND_DOWN);
                     setUsdValue(val.toFixed());
                   } else {
                     handlePercentage(pct);
@@ -575,8 +634,8 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               onClick={() => {
                 if (type === 'withdraw') {
                   setUsdValue(
-                    new BigNumber(availableBalance)
-                      .decimalPlaces(2, BigNumber.ROUND_DOWN)
+                    new BigNumber(withdrawMaxBalance)
+                      .decimalPlaces(6, BigNumber.ROUND_DOWN)
                       .toFixed()
                   );
                 } else {
@@ -597,12 +656,20 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           {type === 'withdraw' && (
             <div className="mb-10 flex flex-row items-center justify-center">
               <div className="text-[11px] text-r-neutral-foot text-center">
-                {t('page.perps.depositAmountPopup.feeTip')}
+                {isHypeWithdraw
+                  ? `${t('page.perps.fee')}: $${new BigNumber(hypeGasFeeUsd)
+                      .decimalPlaces(6)
+                      .toFixed()}`
+                  : `${t('page.perps.fee')}: $1.00`}
               </div>
               <Tooltip
                 overlayClassName={clsx('rectangle')}
                 placement="top"
-                title={t('page.perps.depositAmountPopup.feeTipTooltip')}
+                title={t(
+                  isHypeWithdraw
+                    ? 'page.perps.depositAmountPopup.feeTipTooltipHype'
+                    : 'page.perps.depositAmountPopup.feeTipTooltip'
+                )}
                 align={{ targetOffset: [0, 0] }}
               >
                 <RcIconInfo
@@ -729,9 +796,19 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               onClick={async () => {
                 setIsWithdrawLoading(true);
                 clearMiniSignTx();
-                await handleWithdraw?.(Number(usdValue));
+                let withdrawAmount = Number(usdValue);
+                if (isHypeWithdraw && hypeGasFeeUsd > 0) {
+                  withdrawAmount = new BigNumber(withdrawAmount)
+                    .minus(hypeGasFeeUsd)
+                    .decimalPlaces(6, BigNumber.ROUND_DOWN)
+                    .toNumber();
+                }
+                const success = await handleWithdraw?.(
+                  withdrawAmount,
+                  isHypeWithdraw
+                );
                 setIsWithdrawLoading(false);
-                onClose?.();
+                if (success) onClose?.();
               }}
             >
               {t('page.perps.withdraw')}
@@ -749,6 +826,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           }
         }}
         list={tokenList || []}
+        mode={type}
         onCancel={() => {
           if (type === 'deposit' && !selectedToken) {
             onClose();

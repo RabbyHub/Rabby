@@ -93,16 +93,20 @@ export default function useCurrentBalance(
     if (!account || noNeedBalance) return;
     setBalanceLoading(true);
     const cacheData = await wallet.getAddressCacheBalance(account);
+    const cacheExpired = cacheData
+      ? await wallet.isBalanceDbCacheExpired(account)
+      : true;
     const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
     if (cacheData) {
       setBalanceFromCache(true);
       setBalance(cacheData.total_usd_value);
       setEvmBalance(cacheData.evmUsdValue || 0);
+      setAppChainIds(cacheData.appChainIds || []);
       const chainList = normalizeChainList(cacheData.chain_list);
       setChainBalances(chainList);
 
       if (update) {
-        if (apiLevel < 2) {
+        if (apiLevel < 2 && (force || cacheExpired)) {
           setBalanceLoading(true);
           await getInMemoryAddressBalance(account, force);
         } else {
@@ -130,7 +134,7 @@ export default function useCurrentBalance(
     if (!account) return false;
 
     try {
-      return wallet.isInMemoryAddressBalanceExpired(account.toLowerCase());
+      return wallet.isBalanceDbCacheExpired(account.toLowerCase());
     } catch (error) {
       return false;
     }

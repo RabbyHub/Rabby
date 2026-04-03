@@ -62,6 +62,8 @@ interface TokenAmountInputProps {
   };
 }
 
+const DEFAULT_EXCLUDE_TOKENS: TokenItem['id'][] = [];
+
 const StyledInput = styled(Input)`
   color: var(--r-neutral-title1, #192945);
   font-size: 28px !important;
@@ -100,7 +102,7 @@ const TokenAmountInput = ({
   onStartSelectChain,
   // chainId,
   amountFocus,
-  excludeTokens = [],
+  excludeTokens = DEFAULT_EXCLUDE_TOKENS,
   className,
   type = 'default',
   placeholder,
@@ -238,7 +240,9 @@ const TokenAmountInput = ({
     undefined,
     isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
     undefined,
-    !!keyword
+    !!keyword,
+    false,
+    true
   );
 
   const handleSelectToken = useCallback(() => {

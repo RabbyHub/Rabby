@@ -24,6 +24,7 @@ import { HistoryPopup } from './HistoryPopup';
 import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconPending.svg';
 import { DepositPending } from './DepositPending';
 import { DashedUnderlineText } from '../DashedUnderlineText';
+import { ReactComponent as RcIconInfo } from '@/ui/assets/perps/IconInfo.svg';
 
 export type DepositWithdrawModalType = 'deposit' | 'withdraw';
 
@@ -73,6 +74,10 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
     availableBalance,
     depositMaxUsdValue,
     isDirectDeposit,
+    isHypeWithdraw,
+    hypeTransferFee,
+    hypeGasFeeUsd,
+    withdrawMaxBalance,
     // isMissingRole,
     estReceiveUsdValue,
 
@@ -97,7 +102,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
     }
 
     if (type === 'withdraw') {
-      if (value > Number(availableBalance)) {
+      if (value > withdrawMaxBalance) {
         return {
           isValid: false,
           error: 'insufficient_balance',
@@ -226,11 +231,11 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                       }
                     }}
                   />
-                  <div className="text-13 text-r-neutral-body mt-8">
+                  <div className="text-13 text-r-neutral-body mt-8 flex items-center">
                     {type === 'withdraw'
                       ? t('page.perps.availableBalance', {
                           balance: formatUsdValue(
-                            availableBalance,
+                            withdrawMaxBalance,
                             BigNumber.ROUND_DOWN
                           ),
                         })
@@ -240,6 +245,25 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                             BigNumber.ROUND_DOWN
                           ),
                         })}
+                    {isHypeWithdraw && Number(hypeTransferFee) > 0 && (
+                      <Tooltip
+                        overlayClassName={clsx('rectangle')}
+                        placement="top"
+                        title={t(
+                          'page.perps.depositAmountPopup.hypeActivationFeeTip',
+                          {
+                            fee: formatUsdValue(hypeTransferFee),
+                          }
+                        )}
+                      >
+                        <RcIconInfo
+                          viewBox="0 0 12 12"
+                          width={12}
+                          height={12}
+                          className="text-rabby-neutral-foot ml-4"
+                        />
+                      </Tooltip>
+                    )}
                   </div>
                 </div>
 
@@ -271,14 +295,11 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
               {/* Token Selector */}
               <div
                 onClick={() => {
-                  if (type === 'deposit') {
-                    setTokenSelectVisible(true);
-                  }
+                  setTokenSelectVisible(true);
                 }}
                 className={clsx(
                   'bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between text-13 px-16 h-[48px] border border-solid border-transparent',
-                  type === 'deposit' &&
-                    'hover:border-rabby-blue-default cursor-pointer'
+                  'hover:border-rabby-blue-default cursor-pointer'
                 )}
               >
                 <div className="text-r-neutral-body text-13">
@@ -294,16 +315,12 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                     height="20px"
                   />
                   <div className="text-r-neutral-title-1 font-medium text-13 ml-4">
-                    {type === 'withdraw'
-                      ? getTokenSymbol(ARB_USDC_TOKEN_ITEM)
-                      : getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
+                    {getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
                   </div>
-                  {type === 'deposit' && (
-                    <ThemeIcon
-                      className="icon icon-arrow-right text-r-neutral-title-1 ml-4"
-                      src={RcIconArrowRight}
-                    />
-                  )}
+                  <ThemeIcon
+                    className="icon icon-arrow-right text-r-neutral-title-1 ml-4"
+                    src={RcIconArrowRight}
+                  />
                 </div>
               </div>
 
@@ -315,7 +332,11 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                       <Tooltip
                         overlayClassName={clsx('rectangle')}
                         placement="top"
-                        title={t('page.perps.depositAmountPopup.feeTipTooltip')}
+                        title={t(
+                          isHypeWithdraw
+                            ? 'page.perps.depositAmountPopup.feeTipTooltipHype'
+                            : 'page.perps.depositAmountPopup.feeTipTooltip'
+                        )}
                       >
                         <DashedUnderlineText className="text-r-neutral-foot">
                           {t(
@@ -323,13 +344,21 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                           )}
                         </DashedUnderlineText>
                       </Tooltip>
-                      <span className="text-r-neutral-title-1">$1</span>
+                      <span className="text-r-neutral-title-1">
+                        {isHypeWithdraw
+                          ? `$${new BigNumber(hypeGasFeeUsd)
+                              .decimalPlaces(6)
+                              .toFixed()}`
+                          : '$1'}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between text-13">
                       <span className="text-r-neutral-foot">
                         {t('page.perps.depositAmountPopup.estTimeLabel')}
                       </span>
-                      <span className="text-r-neutral-title-1">~5 min</span>
+                      <span className="text-r-neutral-title-1">
+                        {isHypeWithdraw ? '~2s' : '~5 min'}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between text-13">
                       <span className="text-r-neutral-foot">
@@ -337,7 +366,12 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                       </span>
                       <span className="text-r-neutral-title-1">
                         {usdValue && isValidAmount
-                          ? formatUsdValue(Math.max(0, Number(usdValue) - 1))
+                          ? formatUsdValue(
+                              isHypeWithdraw
+                                ? Number(usdValue)
+                                : Math.max(0, Number(usdValue) - 1),
+                              BigNumber.ROUND_DOWN
+                            )
                           : '-'}
                       </span>
                     </div>
@@ -447,15 +481,14 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
             </div>
           </div>
           {/* Token Select Popup */}
-          {type === 'deposit' && (
-            <TokenSelectPopup
-              visible={tokenSelectVisible}
-              onCancel={handleCloseTokenSelect}
-              onSelect={handleTokenSelect}
-              tokenList={tokenList}
-              tokenListLoading={tokenListLoading}
-            />
-          )}
+          <TokenSelectPopup
+            visible={tokenSelectVisible}
+            onCancel={handleCloseTokenSelect}
+            onSelect={handleTokenSelect}
+            tokenList={tokenList}
+            tokenListLoading={tokenListLoading}
+            mode={type}
+          />
 
           {/* History Popup */}
           <HistoryPopup

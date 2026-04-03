@@ -83,7 +83,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                       <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
                         <ChartArea />
                       </div>
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 max-w-[340px] min-w-0">
                         <OrderBookTrades />
                       </div>
                     </div>
@@ -96,7 +96,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
               </div>
 
               {/* TradingPanel + AccountInfo */}
-              <div className="flex-1 flex-shrink-0 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 max-w-[340px] flex-shrink-0 flex flex-col min-h-0 overflow-hidden">
                 <div className="h-[680px] flex-shrink-0 overflow-hidden border-b border-solid border-rb-neutral-line">
                   <TradingPanel />
                 </div>

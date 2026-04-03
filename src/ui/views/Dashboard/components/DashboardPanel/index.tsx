@@ -46,7 +46,6 @@ import {
   RcIconNftCC,
   RcIconPerpsCC,
   RcIconPointsCC,
-  RcIconPrediction,
   RcIconReceiveCC,
   RcIconSearchCC,
   RcIconSendCC,
@@ -56,8 +55,6 @@ import {
   RcIconAaveLendingCC,
   RcIconSparkLendingCC,
   RcIconVenusLendingCC,
-  RcIconProbablePredictionCC,
-  RcIconOpinionPredictionCC,
 } from 'ui/assets/dashboard/panel';
 
 import { RcIconExternal1CC } from '@/ui/assets/dashboard';
@@ -87,6 +84,7 @@ import { getHealthFactorText } from '@/ui/views/DesktopLending/utils/health';
 import { HF_COLOR_GOOD_THRESHOLD } from '@/ui/views/DesktopLending/utils/constant';
 import { fetchLendingHealthFactorForDashboard } from '@/ui/views/DesktopLending/hooks';
 import { CustomMarket } from '@/ui/views/DesktopLending/config/market';
+import BigNumber from 'bignumber.js';
 
 export const DragOverlayContext = createContext(false);
 
@@ -393,9 +391,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   }, [giftUsdValue, hasClaimedGift]);
 
   const lendingId = useRabbySelector((state) => state.innerDappFrame.lending);
-  const predictionId = useRabbySelector(
-    (state) => state.innerDappFrame.prediction
-  );
 
   const IconLending = useMemo(() => {
     if (lendingId === 'venus') {
@@ -429,25 +424,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     }
     return undefined;
   });
-  const { value: lighterAppData } = useAsync(async () => {
-    if (lighterAccount?.address) {
-      return loadAppChainList(lighterAccount.address, wallet);
-    }
-    return undefined;
-  }, [lighterAccount?.address]);
-
-  const lighterInfo = useMemo(() => {
-    const lighter = lighterAppData?.apps.find(
-      (e) => e.id === INNER_DAPP_IDS.LIGHTER
-    );
-    return {
-      lighter,
-      totalUsd: lighter?.portfolio_item_list?.reduce(
-        (pre, now) => pre + (now?.stats?.net_usd_value || 0),
-        0
-      ),
-    };
-  }, [lighterAppData]);
 
   const perpsSubContentNode = useMemo<React.ReactNode>(() => {
     if (perpsId === 'hyperliquid') {
@@ -484,22 +460,10 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
               'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
             )}
           >
-            {formatUsdValue(availableBalance || 0)}
+            {formatUsdValue(availableBalance || 0, BigNumber.ROUND_DOWN)}
           </div>
         );
       }
-    }
-    if (perpsId === 'lighter') {
-      if (!lighterAccount || !lighterInfo.lighter) return null;
-      return (
-        <div
-          className={clsx(
-            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
-          )}
-        >
-          {formatUsdValue(lighterInfo.totalUsd || 0)}
-        </div>
-      );
     }
     return null;
   }, [
@@ -509,7 +473,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     perpsPositionInfo,
     positionPnl,
     lighterAccount,
-    lighterInfo,
   ]);
 
   // --- Lending data lifting (from LendingSubContent) ---
@@ -564,16 +527,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       </div>
     );
   }, [lendingId, lendingLoading, hfRaw]);
-
-  const IconPrediction = useMemo(() => {
-    if (predictionId === 'opinion') {
-      return RcIconOpinionPredictionCC;
-    }
-    if (predictionId === 'probable') {
-      return RcIconProbablePredictionCC;
-    }
-    return RcIconPrediction;
-  }, [predictionId]);
 
   const panelItems = {
     swap: {
@@ -741,16 +694,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         history.push('/settings/address');
       },
     } as IPanelItem,
-    prediction: {
-      icon: IconPrediction,
-      eventKey: 'Prediction',
-      content: t('page.dashboard.home.panel.prediction'),
-      onClick: async () => {
-        await wallet.openInDesktop('/desktop/prediction');
-        window.close();
-      },
-      isFullscreen: true,
-    } as IPanelItem,
     lending: {
       icon: IconLending,
       eventKey: 'Lending',
@@ -773,7 +716,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'transactions',
       'security',
       'perps',
-      'prediction',
       'lending',
       'points',
       'mobile',

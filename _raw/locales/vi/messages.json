@@ -1223,7 +1223,6 @@
           "settings": "Cài đặt",
           "perpsPositions_other": "{{count}} Vị trí",
           "perpsPositions_one": "{{count}} Vị trí",
-          "prediction": "Dự đoán",
           "lending": "Cho vay",
           "dragTip": "Tính năng nhấn giữ để sắp xếp lại"
         },
@@ -4482,8 +4481,7 @@
       "perps": "Perps",
       "portfolio": "Danh mục đầu tư",
       "lending": "Cho vay",
-      "comingSoon": "Sắp ra mắt",
-      "prediction": "Dự đoán"
+      "comingSoon": "Sắp ra mắt"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Thêm địa chỉ"

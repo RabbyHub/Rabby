@@ -1,23 +1,12 @@
-import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { useInfiniteScroll } from 'ahooks';
-import { Empty, Modal } from 'ui/component';
-import { sleep, useWallet } from 'ui/utils';
-import {
-  HistoryItem,
-  HistoryItemActionContext,
-} from '@/ui/views/History/components/HistoryItem';
-import { Loading } from '@/ui/views/History/components/Loading';
-import { DesktopLoading } from './DesktopLoading';
-import { last } from 'lodash';
+import { useQueryDbHistory } from '@/db/hooks/history';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { Switch } from 'antd';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Virtuoso } from 'react-virtuoso';
+import { Empty } from 'ui/component';
 import { DesktopHistoryItem } from './DesktopHistoryItem';
-import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
-import clsx from 'clsx';
-import { HideScamTransactionModal } from './HideScamTransactionModal';
-
-const PAGE_COUNT = 20;
+import { DesktopLoading } from './DesktopLoading';
 
 interface TransactionsTabPaneProps {
   scrollContainerRef?: React.RefObject<HTMLElement>;
@@ -28,104 +17,34 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
   scrollContainerRef,
   selectChainId,
 }) => {
-  const wallet = useWallet();
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
-  const [isShowHideScamTxModal, setIsShowHideScamTxModal] = React.useState(
-    false
-  );
 
-  const fetchData = async (startTime = 0) => {
-    const { address } = currentAccount!;
-    if (startTime) {
-      await sleep(500);
-    }
-    const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
-    if (apiLevel >= 1) {
-      return {
-        list: [],
-      };
-    }
-    const getHistory = wallet.openapi.listTxHisotry;
+  const [isHideScam, setIsHideScam] = React.useState(true);
 
-    const res = await getHistory({
-      id: address,
-      start_time: startTime,
-      page_count: PAGE_COUNT,
-      chain_id: selectChainId || undefined,
-    });
+  const { data, loading } = useQueryDbHistory({
+    account: currentAccount,
+    isFilterScam: isHideScam,
+    serverChainId: selectChainId,
+  });
 
-    const { project_dict, cate_dict, history_list: list } = res;
-    const displayList = list
-      .map((item) => ({
-        ...item,
-        projectDict: project_dict,
-        cateDict: cate_dict,
-        tokenDict: 'token_dict' in res ? res.token_dict : undefined,
-        tokenUUIDDict:
-          'token_uuid_dict' in res ? res.token_uuid_dict : undefined,
-      }))
-      .sort((v1, v2) => v2.time_at - v1.time_at);
-    return {
-      last: last(displayList)?.time_at,
-      list: displayList,
-    };
-  };
-
-  const { data, loading, loadingMore, loadMore } = useInfiniteScroll(
-    (d) => fetchData(d?.last),
-    {
-      target: scrollContainerRef,
-      reloadDeps: [selectChainId, currentAccount?.address],
-      isNoMore: (d) => {
-        return !d?.last || (d?.list.length || 0) < PAGE_COUNT;
-      },
-    }
-  );
-
-  const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
-
-  const [
-    focusingHistoryItem,
-    setFocusingHistoryItem,
-  ] = React.useState<HistoryItemActionContext | null>(null);
+  const isEmpty = (data?.length || 0) <= 0 && !loading;
 
   return (
     <div className="pb-[16px] px-[20px]">
-      {/* <Modal
-        visible={!!focusingHistoryItem}
-        title={t('page.transactions.modalViewMessage.title')}
-        className="view-tx-message-modal"
-        onCancel={() => {
-          setFocusingHistoryItem(null);
-        }}
-        maxHeight="360px"
-      >
-        <div className="parsed-content text-14">
-          {focusingHistoryItem?.parsedInputData}
-        </div>
-      </Modal> */}
-
       {loading ? (
         <div className="overflow-hidden">
           <DesktopLoading count={8} active />
         </div>
       ) : (
         <>
-          <div
-            className={clsx(
-              'mt-[12px] mb-[10px]',
-              'inline-flex items-center gap-[4px] rounded-[8px] py-[6px] px-[8px] bg-rb-neutral-bg-3',
-              'text-[14px] leading-[18px] font-medium text-rb-neutral-foot',
-              'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
-              'cursor-pointer'
-            )}
-            onClick={() => {
-              setIsShowHideScamTxModal(true);
-            }}
-          >
-            {t('page.transactions.filterScam.button')}
-            <RcIconArrowRightCC />
+          <div className="flex items-center justify-end pt-[24px]">
+            <label className="flex items-center gap-[6px] cursor-pointer">
+              <Switch checked={isHideScam} onChange={setIsHideScam} />
+              <div className="text-rb-neutral-title-1 text-[14px] leading-[17px]">
+                {t('page.transactions.hideScamTips')}
+              </div>
+            </label>
           </div>
           {isEmpty ? (
             <Empty
@@ -133,25 +52,26 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
               className="pt-[108px]"
             />
           ) : (
-            <div className="overflow-hidden">
-              {data?.list?.map((item) => (
-                <DesktopHistoryItem
-                  key={item.id}
-                  data={item}
-                  projectDict={item.projectDict}
-                  cateDict={item.cateDict}
-                  tokenDict={item.tokenDict || item.tokenUUIDDict || {}}
-                />
-              ))}
-              {loadingMore && <DesktopLoading count={3} active />}
-            </div>
+            <Virtuoso
+              data={data}
+              customScrollParent={scrollContainerRef?.current || undefined}
+              increaseViewportBy={200}
+              itemContent={(_, item) => (
+                <DesktopHistoryItem key={item.id} data={item} />
+              )}
+              // endReached={loadMore}
+              // components={{
+              //   Footer: () => {
+              //     if (loadingMore) {
+              //       return <DesktopLoading count={3} active />;
+              //     }
+              //     return null;
+              //   },
+              // }}
+            />
           )}
         </>
       )}
-      <HideScamTransactionModal
-        visible={isShowHideScamTxModal}
-        onCancel={() => setIsShowHideScamTxModal(false)}
-      />
     </div>
   );
 };

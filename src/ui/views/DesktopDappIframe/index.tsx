@@ -94,9 +94,6 @@ export const DesktopInnerDapp = (props: {
   type: InnerDappType;
 }) => {
   const dappList = useMemo(() => {
-    if (props.type === 'prediction') {
-      return INNER_DAPP_LIST.PREDICTION;
-    }
     if (props.type === 'perps') {
       return INNER_DAPP_LIST.PERPS;
     }

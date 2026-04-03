@@ -8,20 +8,19 @@ import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { TokenLabel } from '@/ui/component/TxHistory/TokenLabel';
 import { DesktopTokenLabel } from './DesktopTokenLabel';
+import { TxHistoryItemRow } from '@/db/schema/history';
 
 type DesktopTokenChangeProps = {
-  data: TxDisplayItem | TxHistoryItem;
+  data: TxHistoryItemRow;
   canClickToken?: boolean;
   onClose?: () => void;
-} & Pick<TxDisplayItem, 'tokenDict'>;
+};
 
 export const DesktopTokenChange = ({
   data: info,
-  tokenDict,
   canClickToken = true,
   onClose,
 }: DesktopTokenChangeProps) => {
-  const tokens = tokenDict || {};
   const { t } = useTranslation();
 
   if (!info.sends?.length && !info.receives?.length) {
@@ -30,10 +29,10 @@ export const DesktopTokenChange = ({
 
   return (
     <div className="flex flex-col items-end gap-[6px]">
-      {info.sends?.map((v) => {
+      {info.sends?.map((v, index) => {
         const tokenId = v.token_id;
-        const tokenUUID = `${info.chain}_token:${tokenId}`;
-        const token = tokens[tokenId] || tokens[tokenUUID];
+
+        const token = v.token;
         const isNft = v.token_id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft
@@ -43,7 +42,7 @@ export const DesktopTokenChange = ({
 
         return (
           <div
-            key={v.token_id}
+            key={v.token_id + '-' + index}
             className="flex items-center gap-[6px]"
             title={name}
           >
@@ -83,10 +82,9 @@ export const DesktopTokenChange = ({
         );
       })}
 
-      {info.receives?.map((v) => {
+      {info.receives?.map((v, index) => {
         const tokenId = v.token_id;
-        const tokenUUID = `${info.chain}_token:${tokenId}`;
-        const token = tokens[tokenId] || tokens[tokenUUID];
+        const token = v.token;
         const isNft = v.token_id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft
@@ -96,7 +94,7 @@ export const DesktopTokenChange = ({
 
         return (
           <div
-            key={v.token_id}
+            key={v.token_id + '-' + index}
             className="flex items-center gap-[6px]"
             title={name}
           >

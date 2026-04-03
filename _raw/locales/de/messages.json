@@ -1132,7 +1132,6 @@
           "settings": "Einstellungen",
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positionen",
-          "prediction": "Vorhersage",
           "dragTip": "Lange-Taste-Funktion zum Neuordnen",
           "lending": "Kreditvergabe"
         },
@@ -4485,8 +4484,7 @@
       "lending": "Kreditvergabe",
       "portfolio": "Portfolio",
       "perps": "Perps",
-      "comingSoon": "Bald verfügbar",
-      "prediction": "Vorhersage"
+      "comingSoon": "Bald verfügbar"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adresse hinzufügen"

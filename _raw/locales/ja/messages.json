@@ -1132,7 +1132,6 @@
           "settings": "設定",
           "perpsPositions_other": "{{count}} ポジション",
           "perpsPositions_one": "{{count}} ポジション",
-          "prediction": "予測",
           "lending": "レンディング",
           "dragTip": "長押しで並び替え"
         },
@@ -4485,8 +4484,7 @@
       "lending": "レンディング",
       "perps": "パープス",
       "portfolio": "ポートフォリオ",
-      "comingSoon": "近日公開予定",
-      "prediction": "予測"
+      "comingSoon": "近日公開予定"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "アドレスを追加"

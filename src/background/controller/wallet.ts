@@ -60,7 +60,11 @@ import {
   CORE_KEYRING_TYPES,
 } from 'consts';
 import { ERC20ABI, ERC721ABI, SeaportABI } from 'consts/abi';
-import { Account, IHighlightedAddress } from '../service/preference';
+import {
+  Account,
+  IHighlightedAddress,
+  UnlockPreferredMethod,
+} from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import {
   TokenItem,
@@ -186,6 +190,17 @@ import { http } from '../utils/http';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { AccountScene, SCENE_ACCOUNT_CONFIG } from '@/constant/scene-account';
+import { syncDbService } from '@/db/services/syncDbService';
+import { historyDbService } from '@/db/services/historyDbService';
+import { tokenDbService } from '@/db/services/tokenDbService';
+import { defiDbService } from '@/db/services/defiDbService';
+import { appChainDbService } from '@/db/services/appChainDbService';
+import { balanceDbService } from '@/db/services/balanceDbService';
+import { BALANCE_SYNC_SCENE, CACHE_VALID_DURATION } from '@/db/constants';
+import {
+  BalanceCacheData,
+  normalizeBalanceCacheData,
+} from '@/db/schema/balance';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1753,7 +1768,10 @@ export class WalletController extends BaseController {
     return tab;
   };
 
-  openBiometricUnlockSetupWindow = async () => {
+  openBiometricUnlockSetupWindow = async (params?: { from?: string }) => {
+    if (params?.from !== 'settings') {
+      await this.clearPageStateCache();
+    }
     const {
       top: cTop,
       left: cLeft,
@@ -1761,7 +1779,8 @@ export class WalletController extends BaseController {
     } = await Browser.windows.getLastFocused({
       windowTypes: ['normal'],
     } as Windows.GetInfo);
-    const url = 'index.html#/biometric-unlock-setup';
+    const from = params?.from ? `?from=${encodeURIComponent(params.from)}` : '';
+    const url = `index.html#/biometric-unlock-setup${from}`;
     const top = cTop;
     const left = cLeft! + width! - 500;
     return Browser.windows.create({
@@ -1791,14 +1810,22 @@ export class WalletController extends BaseController {
     return false;
   };
 
-  finishBiometricUnlockSetup = async (setupWindowId?: number) => {
-    await this.setPageStateCache({
-      path: '/dashboard',
-      params: {},
-      states: {
-        action: 'open-settings',
-      },
-    });
+  finishBiometricUnlockSetup = async (
+    setupWindowId?: number,
+    options?: { openSettings?: boolean }
+  ) => {
+    const shouldOpenSettings = options?.openSettings ?? true;
+    if (shouldOpenSettings) {
+      await this.setPageStateCache({
+        path: '/dashboard',
+        params: {},
+        states: {
+          action: 'open-settings',
+        },
+      });
+    } else {
+      await this.clearPageStateCache();
+    }
 
     if (typeof setupWindowId === 'number') {
       try {
@@ -1879,15 +1906,30 @@ export class WalletController extends BaseController {
       } catch (error) {
         // just ignore appChain data
       }
-      const formatData = {
+      const formatData: BalanceCacheData = normalizeBalanceCacheData({
         ...data,
         evmUsdValue: data.total_usd_value,
         total_usd_value: data.total_usd_value + appChainTotalNetWorth,
         appChainIds,
-      };
+        appChainUsdValue: appChainTotalNetWorth,
+      });
       preferenceService.updateBalanceAboutCache(address, {
         totalBalance: formatData,
       });
+
+      try {
+        await Promise.all([
+          balanceDbService.putBalance(address, formatData),
+          syncDbService.setUpdatedAt({
+            address,
+            scene: BALANCE_SYNC_SCENE,
+            updatedAt: Date.now(),
+          }),
+        ]);
+      } catch (error) {
+        // keep balance response available even if Dexie persistence fails
+      }
+
       return formatData;
     },
     {
@@ -1948,20 +1990,71 @@ export class WalletController extends BaseController {
   /**
    * @deprecatedgetPersistedBalanceAboutCacheMap
    */
-  getAddressCacheBalance = (address: string | undefined, isTestnet = false) => {
+  getAddressCacheBalance = async (
+    address: string | undefined,
+    isTestnet = false
+  ) => {
     if (!address) return null;
     if (isTestnet) {
       return null;
     }
 
-    return (
-      preferenceService.getBalanceAboutCacheByAddress(address)?.totalBalance ??
-      null
-    );
+    try {
+      const balance = await balanceDbService.queryBalance(address);
+
+      if (balance) {
+        return balance;
+      }
+    } catch (error) {
+      // fallback to legacy preference cache below
+    }
+
+    const legacyBalance = preferenceService.getBalanceAboutCacheByAddress(
+      address
+    )?.totalBalance;
+
+    return legacyBalance ? normalizeBalanceCacheData(legacyBalance) : null;
   };
 
-  getPersistedBalanceAboutCacheMap = () => {
-    return preferenceService.getBalanceAboutCacheMap();
+  getPersistedBalanceAboutCacheMap = async () => {
+    const legacyCacheMap = preferenceService.getBalanceAboutCacheMap();
+    let dexieBalanceMap = {} as Record<string, BalanceCacheData>;
+
+    try {
+      dexieBalanceMap = await balanceDbService.queryBalanceMap();
+    } catch (error) {
+      // fallback to legacy preference cache below
+    }
+
+    return {
+      balanceMap: {
+        ...Object.entries(legacyCacheMap.balanceMap || {}).reduce(
+          (map, [address, balance]) => {
+            map[address] = normalizeBalanceCacheData(balance);
+            return map;
+          },
+          {} as Record<string, BalanceCacheData>
+        ),
+        ...dexieBalanceMap,
+      },
+      curvePointsMap: legacyCacheMap.curvePointsMap || {},
+    };
+  };
+
+  isBalanceDbCacheExpired = async (address: string) => {
+    let updatedAt = 0;
+
+    try {
+      updatedAt =
+        (await syncDbService.getUpdatedAt({
+          address,
+          scene: BALANCE_SYNC_SCENE,
+        })) || 0;
+    } catch (error) {
+      return true;
+    }
+
+    return updatedAt < Date.now() - CACHE_VALID_DURATION;
   };
 
   private getNetCurveCached = cached(
@@ -2050,12 +2143,7 @@ export class WalletController extends BaseController {
     iv?: string;
   }) => {
     if (!payload.enabled) {
-      preferenceService.setPreferencePartials({
-        biometricUnlockEnabled: false,
-        biometricUnlockCredentialId: '',
-        biometricUnlockEncryptedPassword: '',
-        biometricUnlockIv: '',
-      });
+      preferenceService.clearBiometricUnlockStorage();
       return;
     }
 
@@ -2064,6 +2152,15 @@ export class WalletController extends BaseController {
       biometricUnlockCredentialId: payload.credentialId || '',
       biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
       biometricUnlockIv: payload.iv || '',
+    });
+  };
+
+  setUnlockPreferredMethod = (method: UnlockPreferredMethod) => {
+    if (!['password', 'biometric'].includes(method)) {
+      return;
+    }
+    preferenceService.setPreferencePartials({
+      unlockPreferredMethod: method,
     });
   };
 
@@ -3722,6 +3819,13 @@ export class WalletController extends BaseController {
         });
       }
     });
+
+    syncDbService.deleteForAddress(address);
+    historyDbService.deleteForAddress(address);
+    tokenDbService.deleteForAddress(address);
+    defiDbService.deleteForAddress(address);
+    appChainDbService.deleteForAddress(address);
+    balanceDbService.deleteForAddress(address);
   };
 
   removeAddresses = async (
@@ -6383,6 +6487,7 @@ export class WalletController extends BaseController {
   fetchRemoteConfig = async (): Promise<{
     switches?: {
       isPerpsInviteDisabled?: boolean;
+      rabbySyncTour20260403?: boolean;
     };
   }> => {
     const url = appIsProd

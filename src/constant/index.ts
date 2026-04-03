@@ -1411,6 +1411,7 @@ export const CAN_ESTIMATE_L1_FEE_CHAINS = [
   CHAINS_ENUM.PZE,
   CHAINS_ENUM.ERA,
   CHAINS_ENUM.LINEA,
+  'CITREA',
 ];
 
 export const SecurityEngineLevelOrder = [
