@@ -6487,6 +6487,7 @@ export class WalletController extends BaseController {
   fetchRemoteConfig = async (): Promise<{
     switches?: {
       isPerpsInviteDisabled?: boolean;
+      rabbySyncTour20260403?: boolean;
     };
   }> => {
     const url = appIsProd
