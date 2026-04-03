@@ -94,7 +94,7 @@ export const useQueryDbHistory = (options: {
       return transformToHistory({ data: res || [], address });
     },
     {
-      refreshDeps: [account?.address, account?.type],
+      refreshDeps: [account?.address, account?.type, isSupportAccount],
     }
   );
 
@@ -120,6 +120,6 @@ export const useQueryDbHistory = (options: {
 
   return {
     data: result,
-    loading: isSupportAccount ? loading : isSyncing || dbHistory === undefined,
+    loading: !isSupportAccount ? loading : isSyncing || dbHistory === undefined,
   };
 };
