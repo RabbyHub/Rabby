@@ -139,6 +139,9 @@ export default function ShowMoreGasSelectModal({
     <Dropdown
       onOpenChange={(v) => {
         setVisible(v);
+        if (!v) {
+          onCancel();
+        }
       }}
       open={visible}
       placement="topRight"
