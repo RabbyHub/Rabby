@@ -29,7 +29,9 @@
         "Failed": "Falhou",
         "Pending": "Pendente",
         "Succeeded": "Sucesso"
-      }
+      },
+      "showScamTips": "Mostrar transações fraudulentas",
+      "hideScamTips": "Ocultar transações fraudulentas"
     },
     "chainList": {
       "title": "{{count}} rede suportada",
@@ -1103,7 +1105,9 @@
       },
       "noSeedPhraseAddress": "Nenhum endereço foi adicionado para esta frase-semente. Você pode adicionar um endereço ou excluir a frase-semente.",
       "watch-address": "Apenas visualização",
-      "deleteSuccess": "Excluído com sucesso"
+      "deleteSuccess": "Excluído com sucesso",
+      "backupSeedPhraseNow": "Iniciar backup",
+      "seedPhraseNotBackedUp": "Carteira não está salva"
     },
     "dashboard": {
       "home": {
@@ -3342,7 +3346,9 @@
         "estReceiveTooltip": "O depósito entre cadeias é processado via LiFi; pode haver algum deslizamento de preço. Chegada estimada em {{number}}s.",
         "estTimeLabel": "Tempo estimado",
         "hyperliquidFeeLabelTooltip": "Novos usuários são cobrados uma taxa de ativação única pela Hyperliquid.",
-        "amount": "Quantidade"
+        "amount": "Quantidade",
+        "feeTipTooltipHype": "Uma taxa de ~0,00002 HYPE será cobrada para retirar para o EVM.",
+        "hypeActivationFeeTip": "Uma taxa de ativação única de {{fee}} será cobrada pela Hyperliquid para o primeiro saque de HyperEVM."
       },
       "home": {
         "entryPrice": "Preço de entrada",
@@ -3510,7 +3516,8 @@
         "learnMore": "Saiba mais"
       },
       "addFunds": "Adicionar Fundos",
-      "crossMarginLiqPriceTip": "No modo de Margem Cruzada, o preço de liquidação para uma única posição é uma estimativa apenas para referência."
+      "crossMarginLiqPriceTip": "No modo de Margem Cruzada, o preço de liquidação para uma única posição é uma estimativa apenas para referência.",
+      "selectTokenToWithdraw": "Selecione a Rede de Retirada"
     },
     "perpsPro": {
       "chatArea": {

@@ -29,7 +29,9 @@
         "Succeeded": "Erfolgreich",
         "Failed": "Fehlgeschlagen",
         "Pending": "Ausstehend"
-      }
+      },
+      "hideScamTips": "Scam-Transaktionen ausblenden",
+      "showScamTips": "Betrugs-Transaktionen anzeigen"
     },
     "chainList": {
       "title": "{{count}} chains integriert",
@@ -1103,7 +1105,9 @@
       },
       "noSeedPhraseAddress": "Es wurden keine Adressen für diesen Seed-Phrase hinzugefügt. Sie können eine Adresse hinzufügen oder den Seed-Phrase löschen.",
       "watch-address": "Nur ansehen",
-      "deleteSuccess": "Erfolgreich gelöscht"
+      "deleteSuccess": "Erfolgreich gelöscht",
+      "backupSeedPhraseNow": "Backup starten",
+      "seedPhraseNotBackedUp": "Wallet nicht gesichert"
     },
     "dashboard": {
       "home": {
@@ -3340,7 +3344,9 @@
         "goSwapTips": "Nur USDC auf Arbitrum wird für direkte Einzahlungen unterstützt. Bitte tauschen Sie Ihr aktuelles Token vor der Einzahlung in USDC um.",
         "estReceiveTooltip": "Cross-Chain-Einzahlung wird über LiFi verarbeitet; es kann zu einer Slippage kommen. Voraussichtliche Ankunft in {{number}}s.",
         "hyperliquidFeeLabelTooltip": "Neue Benutzer zahlen eine einmalige Aktivierungsgebühr an Hyperliquid.",
-        "amount": "Betrag"
+        "amount": "Betrag",
+        "feeTipTooltipHype": "Eine Gebühr von ~0,00002 HYPE wird für den Abzug auf die EVM erhoben.",
+        "hypeActivationFeeTip": "Eine einmalige Aktivierungsgebühr von {{fee}} wird von Hyperliquid für die erste HyperEVM-Abhebung erhoben."
       },
       "home": {
         "entryPrice": "Einstiegskurs",
@@ -3508,7 +3514,8 @@
         "learnMore": "Mehr Erfahren"
       },
       "addFunds": "Fonds Hinzufügen",
-      "crossMarginLiqPriceTip": "Im Cross Margin-Modus ist der Liquidationspreis für eine einzelne Position nur eine Schätzung zur Referenz."
+      "crossMarginLiqPriceTip": "Im Cross Margin-Modus ist der Liquidationspreis für eine einzelne Position nur eine Schätzung zur Referenz.",
+      "selectTokenToWithdraw": "Netzwerk für Abhebungen auswählen"
     },
     "perpsPro": {
       "chatArea": {

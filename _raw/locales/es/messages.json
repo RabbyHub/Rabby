@@ -29,7 +29,9 @@
         "Pending": "Pendiente",
         "Failed": "Fallido",
         "Succeeded": "Sucedido"
-      }
+      },
+      "showScamTips": "Mostrar transacciones de estafa",
+      "hideScamTips": "Ocultar transacciones fraudulentas"
     },
     "chainList": {
       "title": "{{count}} chains Integrated",
@@ -1103,7 +1105,9 @@
       },
       "noSeedPhraseAddress": "No se han agregado direcciones para esta frase semilla. Puedes agregar una dirección o eliminar la frase semilla.",
       "watch-address": "Solo de ver",
-      "deleteSuccess": "Eliminado con éxito"
+      "deleteSuccess": "Eliminado con éxito",
+      "seedPhraseNotBackedUp": "Wallet no respaldada",
+      "backupSeedPhraseNow": "Iniciar copia de seguridad"
     },
     "dashboard": {
       "home": {
@@ -3340,7 +3344,9 @@
         "goBridgeTips": "Solo USDC en Arbitrum es compatible con depósitos directos. Por favor, puentea tu token actual a USDC en Arbitrum antes de depositar.",
         "estReceive": "Recibo estimado: {{balance}}",
         "hyperliquidFeeLabelTooltip": "Los nuevos usuarios deben pagar una tarifa de activación única a Hyperliquid.",
-        "amount": "Cantidad"
+        "amount": "Cantidad",
+        "hypeActivationFeeTip": "Se cobrará una tarifa de activación única de {{fee}} por parte de Hyperliquid para el primer retiro de HyperEVM.",
+        "feeTipTooltipHype": "Se cobrará una tarifa de ~0.00002 HYPE para retirar a la EVM."
       },
       "home": {
         "size": "Tamaño",
@@ -3508,7 +3514,8 @@
         "learnMore": "Aprender más"
       },
       "addFunds": "Agregar fondos",
-      "crossMarginLiqPriceTip": "En el modo de margen cruzado, el precio de liquidación para una posición única es solo una estimación de referencia."
+      "crossMarginLiqPriceTip": "En el modo de margen cruzado, el precio de liquidación para una posición única es solo una estimación de referencia.",
+      "selectTokenToWithdraw": "Seleccionar Red de Retiro"
     },
     "perpsPro": {
       "chatArea": {

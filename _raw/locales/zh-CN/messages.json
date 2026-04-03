@@ -65,7 +65,9 @@
         "Pending": "待处理",
         "Failed": "失败",
         "Succeeded": "成功"
-      }
+      },
+      "hideScamTips": "隐藏欺诈交易",
+      "showScamTips": "显示诈骗交易"
     },
     "dashboard": {
       "feedback": {
@@ -3380,7 +3382,9 @@
         "minimumWithdrawSize": "最低提现金额为$2",
         "goBridgeTips": "仅支持在 Arbitrum 上的 USDC 进行直接充值。请在存款前，将您当前的代币跨链到 Arbitrum 上的 USDC。",
         "hyperliquidFeeLabelTooltip": "新用户需支付 Hyperliquid 一次性激活费用。",
-        "amount": "金额"
+        "amount": "金额",
+        "hypeActivationFeeTip": "Hyperliquid 将收取一次性激活费 {{fee}} 作为首次 HyperEVM 提现的费用。",
+        "feeTipTooltipHype": "提取到 EVM 将收取 ~0.00002 HYPE 的费用。"
       },
       "home": {
         "markPrice": "标记价格",
@@ -3548,7 +3552,8 @@
         "learnMore": "了解更多"
       },
       "addFunds": "添加资金",
-      "crossMarginLiqPriceTip": "在跨保证金模式下，单个头寸的清算价格仅供参考估算。"
+      "crossMarginLiqPriceTip": "在跨保证金模式下，单个头寸的清算价格仅供参考估算。",
+      "selectTokenToWithdraw": "选择提现网络"
     },
     "perpsPro": {
       "chatArea": {

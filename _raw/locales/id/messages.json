@@ -29,7 +29,9 @@
         "Failed": "Gagal",
         "Pending": "Menunggu",
         "Succeeded": "Sukses"
-      }
+      },
+      "hideScamTips": "Sembunyikan transaksi penipuan",
+      "showScamTips": "Tampilkan transaksi penipuan"
     },
     "chainList": {
       "mainnet": "Jaringan Utama",
@@ -1195,7 +1197,9 @@
       },
       "noSeedPhraseAddress": "Tidak ada alamat yang ditambahkan untuk frase biji ini. Anda dapat menambahkan alamat atau menghapus frase biji ini.",
       "watch-address": "Tampilan Saja",
-      "deleteSuccess": "Dihapus dengan sukses"
+      "deleteSuccess": "Dihapus dengan sukses",
+      "seedPhraseNotBackedUp": "Dompet tidak dicadangkan",
+      "backupSeedPhraseNow": "Mulai cadangan"
     },
     "dashboard": {
       "home": {
@@ -3337,7 +3341,9 @@
         "estReceiveTooltip": "Setoran lintas rantai diproses melalui LiFi, mungkin terjadi selisih harga. Perkiraan kedatangan dalam {{number}} detik.",
         "goBridgeTips": "Hanya USDC di Arbitrum yang didukung untuk deposit langsung. Silakan jembatani token Anda saat ini ke USDC di Arbitrum sebelum melakukan deposit.",
         "hyperliquidFeeLabelTooltip": "Pengguna baru dikenakan biaya aktivasi satu kali oleh Hyperliquid.",
-        "amount": "Jumlah"
+        "amount": "Jumlah",
+        "feeTipTooltipHype": "Biaya sebesar ~0,00002 HYPE akan dikenakan untuk menarik ke EVM.",
+        "hypeActivationFeeTip": "Biaya aktivasi sekali sebesar {{fee}} akan dikenakan oleh Hyperliquid untuk penarikan HyperEVM pertama."
       },
       "home": {
         "size": "Ukuran Posisi",
@@ -3505,7 +3511,8 @@
         "learnMore": "Pelajari Lebih Lanjut"
       },
       "addFunds": "Tambahkan Dana",
-      "crossMarginLiqPriceTip": "Dalam mode Cross Margin, harga likuidasi untuk satu posisi adalah perkiraan untuk referensi saja."
+      "crossMarginLiqPriceTip": "Dalam mode Cross Margin, harga likuidasi untuk satu posisi adalah perkiraan untuk referensi saja.",
+      "selectTokenToWithdraw": "Pilih Jaringan Penarikan"
     },
     "perpsPro": {
       "chatArea": {
