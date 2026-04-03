@@ -10,4 +10,4 @@ If you use VSCode, [i18n Ally extension](https://marketplace.visualstudio.com/it
 
 ![i18n Ally](./i18n-ally.png)
 
-If you want to verify that your translations are displayed correctly in Rabby Wallet, follow the [local startup tutorial](/README.md#contribution) to start Rabby and switch to your language.
+If you want to verify that your translations are displayed correctly in Rabby Wallet, follow the [local startup tutorial](../README.md#contribution) to start Rabby and switch to your language.
