@@ -58,6 +58,33 @@ export const opStackL1FeeEstimate = async (
   return `0x${bn.toString(16)}`;
 };
 
+// https://docs.citrea.xyz/advanced/fee-model#l1-fee-rate-source
+export const citreaL1FeeEstimate = async (
+  provider: ethers.providers.Web3Provider,
+  txParams: any
+) => {
+  try {
+    const [diffSizeRes, latestBlock] = await Promise.all([
+      provider.send('eth_estimateDiffSize', [txParams]),
+      provider.send('eth_getBlockByNumber', ['latest', false]),
+    ]);
+
+    const l1DiffSize = diffSizeRes?.l1DiffSize;
+    const l1FeeRate = latestBlock?.l1FeeRate;
+
+    if (!l1DiffSize || !l1FeeRate) {
+      return '0x0';
+    }
+
+    const l1Fee = new BigNumber(l1DiffSize)
+      .times(l1FeeRate)
+      .integerValue(BigNumber.ROUND_CEIL);
+    return `0x${l1Fee.toString(16)}`;
+  } catch {
+    return '0x0';
+  }
+};
+
 export const estimateL1Fee = ({
   txParams,
   chain,
@@ -67,6 +94,9 @@ export const estimateL1Fee = ({
   chain: CHAINS_ENUM;
   provider: ethers.providers.Web3Provider;
 }): Promise<string> => {
+  if (chain.toLowerCase() === 'citrea') {
+    return citreaL1FeeEstimate(provider, txParams);
+  }
   if (OP_STACK_ENUMS.includes(chain)) {
     return opStackL1FeeEstimate(provider, txParams);
   } else if (chain === CHAINS_ENUM.SCRL) {
