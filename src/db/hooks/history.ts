@@ -11,6 +11,7 @@ import { db } from '..';
 import { historyDbService } from '../services/historyDbService';
 import { useEffect, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { I } from 'ts-toolbelt';
 
 export const useSyncDbHistory = (options: { account?: Account | null }) => {
   // return useQuery({
@@ -69,11 +70,14 @@ export const useQueryDbHistory = (options: {
       .where('owner_addr')
       .equalsIgnoreCase(address)
       .and((item) => {
-        return isFilterScam
-          ? !item.is_scam && !item.is_small_tx
-          : serverChainId
-          ? item.chain === serverChainId
-          : true;
+        let flag = true;
+        if (isFilterScam) {
+          flag = !item.is_scam && !item.is_small_tx;
+        }
+        if (serverChainId) {
+          flag = flag && item.chain === serverChainId;
+        }
+        return flag;
       })
       .reverse()
       .sortBy('time_at');
