@@ -5,13 +5,10 @@ import { KEYRING_CLASS } from '@/constant';
 import { fromHex, isHex } from 'viem';
 
 const AUTO_CONNECT_SILENTLY_ORIGINS = new Set<string>([
-  'https://polymarket.com',
   'https://www.asterdex.com',
   'https://app.lighter.xyz',
   'https://venus.io',
   'https://app.spark.fi',
-  'https://app.opinion.trade',
-  'https://probable.markets',
 ]);
 const AUTO_CONNECT_METHODS = new Set<string>([
   'wallet_requestPermissions',
@@ -29,31 +26,16 @@ const SUPPORTED_KEYRING_LIST = [
 ];
 
 const AUTO_PERSONAL_SIGN_ORIGINS = new Set<string>([
-  'https://polymarket.com',
   'https://www.asterdex.com',
   'https://app.lighter.xyz',
-  'https://app.opinion.trade',
-  'https://probable.markets',
 ]);
 const AUTO_PERSONAL_SIGN_METHODS = new Set<string>(['personal_sign']);
 
 const SUPPORTED_PERSONAL_SIGN = new Map<string, string[]>([
-  [
-    'https://polymarket.com',
-    ['polymarket.com wants you to sign in with your Ethereum account:'],
-  ],
   ['https://www.asterdex.com', ['You are signing into Aster DEX']],
   [
     'https://app.lighter.xyz',
     ['Access Lighter account', 'Register Lighter Account'],
-  ],
-  [
-    'https://app.opinion.trade',
-    ['app.opinion.trade wants you to sign in with your'],
-  ],
-  [
-    'https://probable.markets',
-    ['probable.markets wants you to sign in with your'],
   ],
 ]);
 

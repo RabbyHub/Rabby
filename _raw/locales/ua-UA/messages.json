@@ -1135,7 +1135,6 @@
           "settings": "Налаштування",
           "perpsPositions_other": "{{count}} Позицій",
           "perpsPositions_one": "{{count}} Позиція",
-          "prediction": "Прогнозування",
           "dragTip": "Функція довгого натискання для зміни порядку",
           "lending": "Кредитування"
         },
@@ -4497,8 +4496,7 @@
       "lending": "Позика",
       "portfolio": "Портфель",
       "comingSoon": "Скоро буде",
-      "perps": "Периферійні",
-      "prediction": "Прогнозування"
+      "perps": "Периферійні"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Додати адресу"

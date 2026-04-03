@@ -1225,7 +1225,7 @@
         "estimatedPnlWillBe": "Your estimated PnL will be",
         "Buy": "Buy",
         "cost": "Cost",
-        "max":"MAX",
+        "max": "MAX",
         "price": "Price",
         "Sell": "Sell",
         "deposit": "Deposit",
@@ -2312,7 +2312,7 @@
       "search": "Search",
       "manage-address": "Manage Address",
       "deleted": "Deleted",
-      "deleteSuccess":"Deleted successfully",
+      "deleteSuccess": "Deleted successfully",
       "whitelisted-address": "Whitelisted address",
       "addressTypeTip": "Imported by {{type}}",
       "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
@@ -2379,7 +2379,6 @@
           "settings": "Settings",
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
-          "prediction": "Prediction",
           "lending": "Lending",
           "dragTip": "Long-press feature to reorder"
         },
@@ -3905,7 +3904,7 @@
         "desc": "Rabby Wallet is Ready to Use!",
         "openWallet": "Open Wallet",
         "backupSeedPhraseNow": "Backup Seed phrase Now",
-        "backupSeedPhrase":"Backup Seed Phrase"
+        "backupSeedPhrase": "Backup Seed Phrase"
       },
       "readyToUse": {
         "title": "Your Rabby Wallet is Ready !",
@@ -4534,7 +4533,6 @@
       "portfolio": "Portfolio",
       "perps": "Perps",
       "lending": "Lending",
-      "prediction": "Prediction",
       "comingSoon": "Coming Soon"
     },
     "DesktopSelectAccountList": {
