@@ -31,7 +31,7 @@ export const verifyRouterAndSpender = (
   if (!dexId || !router || !spender || !payTokenId || !receiveTokenId) {
     return [true, true];
   }
-  const routerWhitelist = getRouter(dexId, chain);
+  const routerWhitelist = getRouter(dexId, chain, payTokenId);
   const spenderWhitelist = getSpender(dexId, chain);
   const isNativeToken = isSameAddress(
     payTokenId,
