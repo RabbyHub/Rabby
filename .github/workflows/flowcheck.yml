@@ -1,0 +1,92 @@
+name: Flow Check
+
+on:
+  schedule:
+    # 01:00 UTC = 09:00 Asia/Shanghai
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch name to build, leave empty to auto-select latest tmp/YYYYMMDD branch'
+        required: false
+        default: ''
+        type: string
+      notify_larkbot:
+        description: 'Notify LarkBot (true/false)'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  flow-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve target branch
+        id: resolve-branch
+        env:
+          BRANCH_OVERRIDE: ${{ github.event.inputs.branch || '' }}
+          NOTIFY_LARKBOT: ${{ github.event.inputs.notify_larkbot || 'true' }}
+        run: |
+          set -euo pipefail
+
+          target_branch="${BRANCH_OVERRIDE:-}"
+          if [[ -z "$target_branch" ]]; then
+            target_branch="$(
+              git ls-remote --heads https://github.com/RabbyHub/Rabby.git 'refs/heads/tmp/*' \
+                | awk -F'refs/heads/' '{print $2}' \
+                | grep -E '^tmp/[0-9]{8}$' \
+                | sort -t/ -k2,2r \
+                | head -n 1
+            )"
+          fi
+
+          if [[ -z "$target_branch" ]]; then
+            echo "No remote branch matching tmp/YYYYMMDD was found." >&2
+            exit 1
+          fi
+
+          echo "target_branch=$target_branch" >> "$GITHUB_OUTPUT"
+          echo "notify_larkbot=${NOTIFY_LARKBOT:-true}" >> "$GITHUB_OUTPUT"
+          echo "Selected branch: $target_branch"
+          echo "Notify LarkBot: ${NOTIFY_LARKBOT:-true}"
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install chrome-extension-automator
+        run: yarn global add chrome-extension-automator
+
+      - name: Clone Rabby repository
+        uses: actions/checkout@v4
+        with:
+          repository: RabbyHub/Rabby
+          ref: ${{ steps.resolve-branch.outputs.target_branch }}
+          path: rabby
+
+      - name: Install dependencies
+        working-directory: rabby
+        run: yarn install
+
+      - name: Disable minimize in webpack config
+        working-directory: rabby
+        run: |
+          sed -i 's/minimize: true,/minimize: false,/' build/webpack.pro.config.js
+
+      - name: Build production
+        working-directory: rabby
+        run: yarn build:pro
+
+      - name: Run chrome-extension-automator
+        env:
+          RABBY_LARK_CHAT_URL: ${{ secrets.RABBY_LARK_CHAT_URL }}
+          RABBY_LARK_CHAT_SECRET: ${{ secrets.RABBY_LARK_CHAT_SECRET }}
+        run: npx chrome-extension-automator rabby/dist ${{ steps.resolve-branch.outputs.target_branch }} ${{ steps.resolve-branch.outputs.notify_larkbot }}
