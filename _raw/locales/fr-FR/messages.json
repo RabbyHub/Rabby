@@ -2266,7 +2266,9 @@
         "cancel": "A annulé une transaction en attente",
         "unknown": "Interaction avec un contrat"
       },
-      "title": "Transactions",
+      "title": {
+        "good": "bon"
+      },
       "filterScam": {
         "btn": "Masquer les tx frauduleuses",
         "loading": "Le chargement peut prendre un moment et des retards de données sont possibles",
