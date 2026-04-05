@@ -37,7 +37,9 @@
   },
   "page": {
     "transactions": {
-      "title": "交易記錄",
+      "title": {
+        "good": "好"
+      },
       "empty": {
         "desc": "在<1>支持的鏈</1>上找不到交易",
         "title": "沒有交易"
