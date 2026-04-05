@@ -1,7 +1,9 @@
 {
   "page": {
     "transactions": {
-      "title": "Transacciones",
+      "title": {
+        "good": "bien"
+      },
       "empty": {
         "title": "No hay transacciones",
         "desc": " No se encontraron transacciones en <1>cadenas soportadas</1>"
