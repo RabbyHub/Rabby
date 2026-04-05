@@ -23,7 +23,9 @@
         "title": "Ẩn giao dịch lừa đảo",
         "btn": "Ẩn giao dịch lừa đảo"
       },
-      "title": "Giao dịch"
+      "title": {
+        "good": "tốt"
+      }
     },
     "chainList": {
       "mainnet": "Mainnets",
