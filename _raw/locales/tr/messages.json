@@ -1,7 +1,9 @@
 {
   "page": {
     "transactions": {
-      "title": "İşlemler",
+      "title": {
+        "good": "iyi"
+      },
       "empty": {
         "title": "İşlem yok",
         "desc": "<1>Desteklenen zincirlerde</1> işlem bulunamadı"
