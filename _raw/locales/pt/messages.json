@@ -23,7 +23,9 @@
         "title": "Ocultar transações de scam",
         "loading": "Carregando pode levar um momento e atrasos nos dados são possíveis."
       },
-      "title": "Transações"
+      "title": {
+        "good": "bom"
+      }
     },
     "chainList": {
       "title": "{{count}} chains Integrados",
