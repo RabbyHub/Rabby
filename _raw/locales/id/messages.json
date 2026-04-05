@@ -23,7 +23,9 @@
         "btn": "Sembunyikan transaksi penipuan",
         "title": "Sembunyikan transaksi penipuan"
       },
-      "title": "Transaksi"
+      "title": {
+        "good": "baik"
+      }
     },
     "chainList": {
       "mainnet": "Jaringan Utama",
