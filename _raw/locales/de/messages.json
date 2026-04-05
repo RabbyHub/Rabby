@@ -1,7 +1,9 @@
 {
   "page": {
     "transactions": {
-      "title": "Transaktionen",
+      "title": {
+        "good": "gut"
+      },
       "empty": {
         "title": "Keine Transaktionen",
         "desc": "Keine Transaktionen auf <1>unterstützten Blockchains</1> gefunden"
