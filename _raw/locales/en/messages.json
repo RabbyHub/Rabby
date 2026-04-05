@@ -1,7 +1,9 @@
 {
   "page": {
     "transactions": {
-      "title": "Transactions",
+      "title": {
+        "good": "good"
+      },
       "empty": {
         "title": "No transactions",
         "desc": " No transactions found on <1>supported chains</1>"
@@ -852,10 +854,10 @@
       "component": {
         "table": {
           "bodyEmpty": {
+            "7702": "No EIP-7702 Delegation",
             "loadingText": "Loading...",
             "noDataText": "No Approvals",
-            "noMatchText": "No Match",
-            "7702": "No EIP-7702 Delegation"
+            "noMatchText": "No Match"
           }
         },
         "ApprovalContractItem": {
