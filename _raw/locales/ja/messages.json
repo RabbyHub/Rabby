@@ -1,7 +1,9 @@
 {
   "page": {
     "transactions": {
-      "title": "取引",
+      "title": {
+        "good": "良い"
+      },
       "empty": {
         "title": "取引なし",
         "desc": "<1>対応しているチェーン</1>で取引が見つかりません"
