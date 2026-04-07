@@ -1,9 +1,6 @@
 name: Flow Check
 
 on:
-  schedule:
-    # 01:00 UTC = 09:00 Asia/Shanghai
-    - cron: '0 1 * * *'
   workflow_dispatch:
     inputs:
       branch:
