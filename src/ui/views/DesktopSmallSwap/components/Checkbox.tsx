@@ -1,36 +1,40 @@
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import clsx from 'clsx';
 import React from 'react';
 import { CheckboxCC, CheckboxIndeterminateCC } from 'ui/assets/checkbox';
 
-export const Checkbox: React.FC<{
-  checked: boolean;
+export const CheckboxV2: React.FC<{
+  checked?: boolean;
   indeterminate?: boolean;
-  width?: string;
-  height?: string;
-  onChange?: (evt: React.MouseEvent) => void;
-}> = ({
-  checked,
-  indeterminate,
-  width = '20px',
-  height = '20px',
-  onChange,
-}) => {
+  className?: string;
+  onChange?: (checked: boolean) => void;
+  disabled?: boolean;
+}> = ({ checked, indeterminate, disabled, onChange, className }) => {
   return (
     <div
-      className="flex items-center justify-center cursor-pointer"
+      className={clsx(
+        'flex items-center justify-center cursor-pointer',
+        disabled ? 'cursor-not-allowed opacity-50' : '',
+        className
+      )}
       onClick={(evt) => {
+        if (disabled) {
+          return;
+        }
         evt.stopPropagation();
-        onChange?.(evt);
+        onChange?.(indeterminate ? true : !checked);
       }}
-      style={{ width, height }}
     >
-      <ThemeIcon
-        className="w-full h-full"
-        src={indeterminate ? CheckboxIndeterminateCC : CheckboxCC}
-        style={{
-          opacity: checked || indeterminate ? 1 : 0.4,
-        }}
-      />
+      {indeterminate ? (
+        <CheckboxIndeterminateCC className="w-full h-full text-r-blue-default" />
+      ) : (
+        <CheckboxCC
+          className={clsx(
+            'w-full h-full',
+            checked ? 'text-r-blue-default' : 'text-r-neutral-line'
+          )}
+        />
+      )}
     </div>
   );
 };

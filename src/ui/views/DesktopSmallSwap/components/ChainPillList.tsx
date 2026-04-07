@@ -13,6 +13,7 @@ interface ChainPillProps {
   data: ChainWithBalance;
   active?: boolean;
   onClick?(): void;
+  disabled?: boolean;
 }
 
 const extraLabelButtonClassName = clsx(
@@ -26,10 +27,12 @@ export const ChainPillList = ({
   data,
   value,
   onChange,
+  disabled,
 }: {
   value?: string;
   data?: ChainWithBalance[];
   onChange?: (chain: string) => void;
+  disabled?: boolean;
 }) => {
   const GAP = 10;
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -59,6 +62,7 @@ export const ChainPillList = ({
   ) => {
     return pillItems?.map((pill, index) => (
       <ChainPill
+        disabled={disabled}
         data={pill}
         key={shouldMeasure ? `${pill.id}-measure` : pill.id}
         ref={
@@ -69,7 +73,9 @@ export const ChainPillList = ({
             : undefined
         }
         onClick={() => {
-          onChange?.(pill.id);
+          if (!disabled) {
+            onChange?.(pill.id);
+          }
         }}
         active={pill.id === value}
       />
@@ -156,19 +162,21 @@ export const ChainPillList = ({
 };
 
 const ChainPill = React.forwardRef<HTMLButtonElement, ChainPillProps>(
-  ({ data, active, onClick }, ref) => {
+  ({ data, active, onClick, disabled }, ref) => {
     return (
       <button
         ref={ref}
         type="button"
         onClick={onClick}
+        disabled={disabled}
         className={clsx(
           'flex-shrink-0 h-[40px] rounded-[16px] px-[12px] py-[10px] inline-flex items-center gap-[8px]',
           'border',
           'hover:border-rabby-blue-default hover:bg-r-blue-light1 hover:text-r-blue-default',
           active
             ? 'border-r-blue-default bg-r-blue-light1 text-r-blue-default'
-            : 'border-rabby-neutral-line bg-r-neutral-card-1 text-r-neutral-body'
+            : 'border-rabby-neutral-line bg-r-neutral-card-1 text-r-neutral-body',
+          disabled ? 'cursor-not-allowed' : ''
         )}
       >
         <img src={data.logo_url} className="w-[18px] h-[18px] rounded-full" />

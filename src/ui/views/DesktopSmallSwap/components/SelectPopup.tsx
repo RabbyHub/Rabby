@@ -1,45 +1,38 @@
 import { Popup } from '@/ui/component';
 import { Button, DrawerProps } from 'antd';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const SlippagePopup = ({
+export const SelectPopup = ({
   visible,
   onCancel,
   onConfirm,
-  slippage,
-  onChange,
+  value,
   getContainer,
+  options,
+  title,
 }: {
-  slippage: number;
-  onChange(slippage: number): void;
+  value?: string;
   visible?: boolean;
   onCancel?: () => void;
-  onConfirm?: () => void;
+  onConfirm?: (v: string) => void;
   getContainer?: DrawerProps['getContainer'];
+  title?: ReactNode;
+  options?: {
+    label: string;
+    value: string;
+  }[];
 }) => {
-  const [inputValue, setInputValue] = useState(slippage.toString());
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (/^\d*\.?\d*$/.test(value)) {
-      setInputValue(value);
-    }
-  };
-
-  const handleBlur = () => {
-    let value = parseFloat(inputValue);
-    if (isNaN(value) || value < 0) {
-      value = 0;
-    } else if (value > 100) {
-      value = 100;
-    }
-    setInputValue(value.toString());
-    onChange(value);
-  };
+  const [inputValue, setInputValue] = useState(value || '');
 
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (visible) {
+      setInputValue(value || '');
+    }
+  }, [visible, value]);
 
   return (
     <Popup
@@ -53,15 +46,15 @@ export const SlippagePopup = ({
     >
       <header className="mb-[32px]">
         <h1 className="text-center m-0 text-[20px] leading-[24px] text-r-neutral-title1 font-medium">
-          Slippage tolerance
+          {title}
         </h1>
       </header>
       <main className="flex items-center gap-[8px] mb-[32px]">
-        {[1, 3, 10, 20].map((item) => {
-          const isActive = item === 1;
+        {(options || []).map((item) => {
+          const isActive = item.value === inputValue;
           return (
             <div
-              key={item}
+              key={item.value}
               className={clsx(
                 'w-[25%] text-center py-[10px] px-[4px]',
                 'border rounded-[6px]',
@@ -71,8 +64,11 @@ export const SlippagePopup = ({
                   ? 'border-rabby-blue-default bg-r-blue-light1 text-r-blue-default'
                   : 'border-rabby-neutral-line text-r-neutral-title1'
               )}
+              onClick={() => {
+                setInputValue(item.value.toString());
+              }}
             >
-              {item}%
+              {item.label}
             </div>
           );
         })}
@@ -90,7 +86,7 @@ export const SlippagePopup = ({
           type="primary"
           block
           className="flex-1 h-[60px] rounded-[8px] text-[18px] leading-[20px]"
-          onClick={onConfirm}
+          onClick={() => onConfirm?.(inputValue)}
         >
           {t('global.Confirm')}
         </Button>

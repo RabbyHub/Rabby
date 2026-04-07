@@ -1,36 +1,35 @@
 import { Account } from '@/background/service/preference';
-import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
+// import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useState } from 'react';
+import { ReactComponent as RcIconArrowRightCC } from 'ui/assets/arrow-right-1-cc.svg';
 import IconRabby from 'ui/assets/rabby.svg';
 
+import { DEX } from '@/constant';
 import { db } from '@/db';
+import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
+import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
+import { useEventListener, useMemoizedFn, useRequest } from 'ahooks';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { sortBy } from 'lodash';
+import { useQuoteMethods } from '../Swap/hooks/quote';
 import { ChainPillList } from './components/ChainPillList';
 import { LowValueTokenSelector } from './components/LowValueTokenSelector';
 import { ReceiveSummary } from './components/ReceiveSummary';
-import { defaultTokenFilter } from '@/ui/utils/portfolio/lpToken';
-import { DisplayedToken } from '@/ui/utils/portfolio/project';
-import { useRequest } from 'ahooks';
-import { sleep, useWallet } from '@/ui/utils';
+import { StopTaskModal } from './components/StopTaskModal';
 import {
-  buildSwapTxs,
-  getActiveProvider,
-  useBatchSwapTask,
-} from './hooks/useBatchSwapTask';
-import { DEX } from '@/constant';
-import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
-import { useQuoteMethods } from '../Swap/hooks/quote';
+  DEFAULT_ETH_MAX_GAS_COST,
+  DEFAULT_MAX_GAS_COST,
+  DEFAULT_SLIPPAGE,
+} from './constant';
+import { useBatchSwapTask } from './hooks/useBatchSwapTask';
+import { SwapAnimation } from './components/SwapAnimation';
 
-export const DesktopSmallSwap: React.FC<{
-  isActive?: boolean;
-  style?: React.CSSProperties;
-}> = ({ isActive = true, style }) => {
+const DesktopSmallSwapContent: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
@@ -51,9 +50,23 @@ export const DesktopSmallSwap: React.FC<{
       });
   }, [currentAccount?.address]);
 
-  if (chainList?.length && !chainServerId) {
-    setChainServerId(chainList[0].id);
-  }
+  const handleChainChange = useMemoizedFn((serverId: string) => {
+    if (chainServerId !== serverId) {
+      if (serverId === 'eth') {
+        task.setConfig({
+          slippage: DEFAULT_SLIPPAGE,
+          maxGasCost: DEFAULT_ETH_MAX_GAS_COST,
+        });
+      } else {
+        task.setConfig({
+          slippage: DEFAULT_SLIPPAGE,
+          maxGasCost: DEFAULT_MAX_GAS_COST,
+        });
+      }
+      task.clear();
+    }
+    setChainServerId(serverId);
+  });
 
   const chain = useMemo(() => {
     console.log('chainList', chainList, chainServerId);
@@ -71,12 +84,6 @@ export const DesktopSmallSwap: React.FC<{
       .equals([currentAccount?.address?.toLowerCase() || '', chainServerId])
       .toArray();
   }, [currentAccount?.address, chainServerId, chain?.nativeTokenAddress]);
-
-  const [selectedTokenIds, setSelectedTokenIds] = useState<string[]>([]);
-  const handleSelectedChange = (ids: string[]) => {
-    setSelectedTokenIds(ids);
-    task.init(tokenList?.filter((item) => ids.includes(item.id)) || []);
-  };
 
   const { data: receiveToken } = useRequest(
     async () => {
@@ -96,107 +103,35 @@ export const DesktopSmallSwap: React.FC<{
 
   console.log('receiveToken', receiveToken);
 
-  const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
-  const dexId = (supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[])[0];
-  const { getDexQuote } = useQuoteMethods();
-
-  // getDexQuote({
-  //   ...params,
-  //   dexId,
-  //   sharedTasks: {
-  //     preFetched: sharedPreFetched,
-  //     recommendNonceTask: sharedRecommendNonceTask || undefined,
-  //   },
-  // });
   const task = useBatchSwapTask({
     chain: chain || undefined,
     account: currentAccount || undefined,
     receiveToken: receiveToken || undefined,
-    slippage: '3',
   });
-  const onStart = async () => {
-    console.log('start swap');
-    const payToken = tokenList?.find((item) => item.id === selectedTokenIds[0]);
-    if (
-      !payToken ||
-      !chain ||
-      !receiveToken ||
-      !currentAccount?.address ||
-      !dexId
-    ) {
-      return;
+
+  useEffect(() => {
+    if (chainList?.length && !chainServerId) {
+      handleChainChange(chainList[0].id);
     }
+  }, [chainList?.length]);
 
-    // const activeProvider = await getActiveProvider({
-    //   chain,
-    //   currentAddress: currentAccount.address,
-    //   dexId,
-    //   getDexQuote,
-    //   payToken,
-    //   receiveToken,
-    //   slippage: '3',
-    // });
-    // console.log('activeProvider', activeProvider);
+  useEventListener('blur', () => {
+    if (task.status === 'active') {
+      task.pause();
+    }
+  });
 
-    // task.init(
-    //   tokenList?.filter((item) => selectedTokenIds.includes(item.id)) || []
-    // );
-    // await sleep(100);
-    // task.start(
-    //   tokenList?.filter((item) => selectedTokenIds.includes(item.id)) || []
-    // );
-    // const payToken = tokenList?.find((item) => item.id === selectedTokenIds[0]);
-    // const slippage = 3;
-    // console.log('payToken', payToken);
-    // if (!chain || !payToken || !receiveToken || !currentAccount) {
-    //   return;
-    // }
-    // const isOpenOcean = dexId === DEX_ENUM.OPENOCEAN;
-    // const isSwapWrappedToken = isSwapWrapToken(
-    //   payToken.id,
-    //   receiveToken.id,
-    //   chain.enum
-    // );
-    // const feeAfterDiscount = isSwapWrappedToken ? '0' : '0.25';
-    // // 获取报价
-    // const quote = await getQuote(
-    //   isSwapWrappedToken ? DEX_ENUM.WRAPTOKEN : dexId,
-    //   {
-    //     fromToken: payToken.id,
-    //     toToken: receiveToken.id,
-    //     feeAddress: SWAP_FEE_ADDRESS,
-    //     fromTokenDecimals: payToken.decimals,
-    //     amount: new BigNumber(payToken.raw_amount_hex_str || 0).toFixed(0, 1),
-    //     userAddress: currentAccount?.address,
-    //     slippage: Number(slippage),
-    //     feeRate:
-    //       feeAfterDiscount === '0' && isOpenOcean
-    //         ? undefined
-    //         : Number(feeAfterDiscount) || 0,
-    //     chain: chain.enum,
-    //     fee: true,
-    //     chainServerId: chain.serverId,
-    //     nativeTokenAddress: chain.nativeTokenAddress,
-    //     insufficient: false,
-    //   },
-    //   wallet.openapi
-    // );
-
-    // console.log('quote', quote);
-
-    // 构建交易
-  };
-
-  console.log('render', task);
+  useEventListener('beforeunload', (e) => {
+    if (task.status === 'active') {
+      task.pause();
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    }
+  });
 
   return (
-    <div
-      className={clsx(
-        'h-full overflow-auto bg-r-neutral-bg-2',
-        !isActive && 'hidden'
-      )}
-      style={style}
-    >
+    <div className={clsx('h-full overflow-auto bg-r-neutral-bg-2')}>
       <div className="max-w-[1248px] min-w-[1200px] mx-auto px-[24px] pt-[32px] pb-[40px] min-h-full">
         <header className="flex items-start justify-between gap-[24px] mb-[32px]">
           <div className="min-w-0">
@@ -217,101 +152,60 @@ export const DesktopSmallSwap: React.FC<{
           <DesktopAccountSelector
             value={currentAccount}
             onChange={handleAccountChange}
+            scene="smallSwap"
+            className="bg-r-neutral-card-1"
           />
         </header>
 
         <ChainPillList
           data={chainList}
           value={chainServerId}
-          onChange={setChainServerId}
+          disabled={task.status !== 'idle'}
+          onChange={handleChainChange}
         />
 
         <div className="flex items-stretch justify-between gap-[24px]">
           <LowValueTokenSelector
+            key={chain?.serverId}
             chain={chain}
             tokenList={tokenList || []}
-            selectedTokenIds={selectedTokenIds}
-            onSelectedChange={handleSelectedChange}
             task={task}
+            disabled={task.status !== 'idle'}
           />
 
-          <div className="w-[64px] flex items-center justify-center flex-shrink-0">
-            <button
-              type="button"
-              className="w-[48px] h-[48px] rounded-full border border-rabby-neutral-line bg-r-neutral-card-1 flex items-center justify-center text-r-neutral-foot hover:text-r-blue-default hover:border-r-blue-default"
+          <div className="flex-shrink-0 flex items-center">
+            <div
+              className="w-[64px] h-[64px] rounded-full border border-rabby-neutral-line bg-r-neutral-card-1 flex items-center justify-center text-r-neutral-foot"
               style={{ boxShadow: '0 12px 24px rgba(25, 41, 69, 0.08)' }}
             >
-              <RcIconArrowRightCC className="w-[18px] h-[18px]" />
-            </button>
+              <RcIconArrowRightCC className="w-[26px] h-[26px]" />
+            </div>
           </div>
 
           <ReceiveSummary
             token={receiveToken}
             chain={chain}
             task={task}
-            onStart={onStart}
-            // onStart={() => {
-            //   if (!chain || !receiveToken) {
-            //     return;
-            //   }
-            //   buildSwapTxs({
-            //     // todo
-            //     wallet,
-            //     chain: chain.enum,
-            //     quote: activeProvider?.quote,
-            //     needApprove: activeProvider.shouldApproveToken,
-            //     spender:
-            //       activeProvider?.name === DEX_ENUM.WRAPTOKEN
-            //         ? ''
-            //         : DEX_SPENDER_WHITELIST[activeProvider.name][chain],
-            //     pay_token_id: payToken.id,
-            //     unlimited: false,
-            //     shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
-            //     gasPrice:
-            //       payTokenIsNativeToken && passGasPrice
-            //         ? gasList?.find((e) => e.level === gasLevel)?.price
-            //         : undefined,
-            //     postSwapParams: {
-            //       quote: {
-            //         pay_token_id: payToken.id,
-            //         pay_token_amount: Number(inputAmount),
-            //         receive_token_id: receiveToken!.id,
-            //         receive_token_amount: new BigNumber(
-            //           activeProvider?.quote.toTokenAmount
-            //         )
-            //           .div(
-            //             10 **
-            //             (activeProvider?.quote.toTokenDecimals ||
-            //               receiveToken.decimals)
-            //           )
-            //           .toNumber(),
-            //         slippage: new BigNumber(slippage).div(100).toNumber(),
-            //       },
-            //       dex_id: activeProvider?.name || 'WrapToken',
-            //     },
-            //     addHistoryData: {
-            //       address: userAddress,
-            //       chainId: findChain({ enum: chain })?.id || 0,
-            //       fromToken: payToken,
-            //       toToken: receiveToken,
-            //       fromAmount: Number(inputAmount),
-            //       toAmount: new BigNumber(activeProvider?.quote.toTokenAmount)
-            //         .div(
-            //           10 **
-            //           (activeProvider?.quote.toTokenDecimals ||
-            //             receiveToken.decimals)
-            //         )
-            //         .toNumber(),
-            //       slippage: new BigNumber(slippage).div(100).toNumber(),
-            //       dexId: activeProvider?.name || 'WrapToken',
-            //       status: 'pending',
-            //       createdAt: Date.now(),
-            //     },
-            //   })
-            // }}
+            receiveToken={receiveToken}
+            account={currentAccount}
           />
         </div>
       </div>
+
+      <StopTaskModal
+        visible={task.status === 'paused'}
+        onContinue={task.continue}
+        onStop={task.clear}
+      />
     </div>
+  );
+};
+
+export const DesktopSmallSwap: React.FC = () => {
+  const currentAccount = useCurrentAccount();
+  return (
+    <DesktopSmallSwapContent
+      key={`${currentAccount?.type}-${currentAccount?.address}`}
+    />
   );
 };

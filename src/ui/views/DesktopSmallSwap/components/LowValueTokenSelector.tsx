@@ -1,21 +1,28 @@
 import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { Checkbox } from '@/ui/component';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { formatUsdValue } from '@/ui/utils';
+import { formatAmount, formatUsdValue } from '@/ui/utils';
 import { defaultTokenFilter } from '@/ui/utils/portfolio/lpToken';
 import { DisplayedToken } from '@/ui/utils/portfolio/project';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { Chain } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { Image, Table } from 'antd';
+import { Image, Table, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { sortBy } from 'lodash';
 import styled from 'styled-components';
 import { PANEL_WIDTH, PANEL_WIDTH_DELTA } from '../constant';
 import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
+import { useMemoizedFn } from 'ahooks';
+import { ReactComponent as RcIconStatusIdle } from 'ui/assets/small-swap/status-idle.svg';
+import { ReactComponent as RcIconStatusPending } from 'ui/assets/small-swap/status-pending.svg';
+import { ReactComponent as RcIconStatusSuccess } from 'ui/assets/small-swap/status-success.svg';
+import { ReactComponent as RcIconStatusError } from 'ui/assets/small-swap/status-failed.svg';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { CheckboxV2 } from './Checkbox';
 
 const Container = styled.section`
   .ant-table {
@@ -95,51 +102,75 @@ type LowValueTokenSelectorProps = {
   selectedTokenIds?: string[];
   onSelectedChange?(selectedIds: string[]): void;
   task?: BatchSwapTaskType;
+  disabled?: boolean;
 };
 export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
   chain,
   tokenList,
-  selectedTokenIds,
-  onSelectedChange,
   task,
+  disabled,
 }) => {
   const [currentThreshold, setCurrentThreshold] = React.useState(10);
+
   const filteredTokenList = useMemo(() => {
     return sortBy(
-      (tokenList || [])
-        ?.map((item) => new DisplayedToken(item))
-        .filter(
-          (item) =>
-            defaultTokenFilter(item) &&
-            item._tokenId !== chain?.nativeTokenAddress &&
-            (item._usdValue || 0) < currentThreshold
-        ),
-      (item) => -(item._usdValue || 0)
+      (tokenList || []).filter(
+        (item) =>
+          defaultTokenFilter(item) &&
+          item.id !== chain?.nativeTokenAddress &&
+          (item.amount * item.price || 0) < currentThreshold
+      ),
+      (item) => -(item.amount * item.price || 0)
     );
   }, [tokenList, currentThreshold]);
 
-  const columns = useMemo<ColumnsType<DisplayedToken>>(() => {
+  const handleThresholdChange = useMemoizedFn((value: number) => {
+    setCurrentThreshold(value);
+    task?.clear();
+  });
+
+  const handleSelectedChange = useMemoizedFn((tokens: TokenItem[]) => {
+    task?.init(sortBy(tokens, (item) => -(item.amount * item.price || 0)));
+  });
+
+  const columns = useMemo<ColumnsType<TokenItem>>(() => {
     return [
       {
-        title: <Checkbox checked={false} width={'20px'} height={'20px'} />,
+        title: (
+          <CheckboxV2
+            checked={
+              !!task?.list?.length &&
+              task?.list?.length === filteredTokenList?.length
+            }
+            indeterminate={
+              !!(
+                task?.list?.length &&
+                task?.list?.length < filteredTokenList?.length
+              )
+            }
+            disabled={disabled}
+            className="w-[20px] h-[20px]"
+            onChange={(v) => {
+              handleSelectedChange(v ? filteredTokenList : []);
+            }}
+          />
+        ),
         dataIndex: 'select',
         width: 68,
         render: (_, record) => {
-          const checked = !!selectedTokenIds?.includes(record._tokenId);
+          const checked = !!task?.list?.find((item) => item.id === record.id);
           return (
-            <Checkbox
-              width={'20px'}
-              height={'20px'}
+            <CheckboxV2
+              className="w-[20px] h-[20px]"
               checked={checked}
-              onChange={() =>
-                onSelectedChange?.(
-                  checked
-                    ? selectedTokenIds?.filter(
-                        (id) => id !== record._tokenId
-                      ) || []
-                    : [...(selectedTokenIds || []), record._tokenId]
-                )
-              }
+              disabled={disabled}
+              onChange={(v) => {
+                handleSelectedChange(
+                  !v
+                    ? task?.list?.filter((item) => item.id !== record.id) || []
+                    : [...(task?.list || []), record]
+                );
+              }}
             />
           );
         },
@@ -180,7 +211,9 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
         dataIndex: 'amount',
         align: 'right',
         render: (text, record) => (
-          <div className="text-r-neutral-title1">{record._amountStr}</div>
+          <div className="text-r-neutral-title1">
+            {formatAmount(Math.abs(record.amount))}
+          </div>
         ),
       },
       {
@@ -188,7 +221,9 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
         width: 112,
         align: 'right',
         render: (value, record) => (
-          <span className="text-r-neutral-title1">{record._usdValueStr}</span>
+          <span className="text-r-neutral-title1">
+            {formatUsdValue(record.amount * record.price || 0)}
+          </span>
         ),
       },
       task?.status !== 'idle'
@@ -196,21 +231,37 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
             title: 'Status',
             // width: 128,
             align: 'right',
-            render: (value, record) => (
-              <span className="text-r-neutral-title1">
-                {task?.statusDict[record._tokenId]?.status || ''}
-              </span>
-            ),
+            render: (value, record) => {
+              const item = task?.statusDict[record.id];
+              if (!item) {
+                return null;
+              }
+              return (
+                <div className="flex justify-end">
+                  {item.status === 'idle' && (
+                    <ThemeIcon src={RcIconStatusIdle} />
+                  )}
+                  {item.status === 'pending' && (
+                    <ThemeIcon src={RcIconStatusPending} />
+                  )}
+                  {item.status === 'success' && (
+                    <ThemeIcon src={RcIconStatusSuccess} />
+                  )}
+                  {item.status === 'failed' && (
+                    <Tooltip
+                      overlayClassName="rectangle"
+                      title={item.failedReason}
+                    >
+                      <ThemeIcon src={RcIconStatusError} />
+                    </Tooltip>
+                  )}
+                </div>
+              );
+            },
           }
         : null,
-    ].filter(Boolean) as ColumnsType<DisplayedToken>;
-  }, [chain, selectedTokenIds, onSelectedChange, task]);
-
-  const totalValue = useMemo(() => {
-    return filteredTokenList
-      ?.filter((item) => selectedTokenIds?.includes(item.id))
-      .reduce((sum, item) => sum + (item._usdValue || 0), 0);
-  }, [tokenList, selectedTokenIds]);
+    ].filter(Boolean) as ColumnsType<TokenItem>;
+  }, [chain, task, disabled, filteredTokenList, task?.list]);
 
   return (
     <Container
@@ -237,15 +288,14 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
             <button
               type="button"
               key={item.value}
-              onClick={() => {
-                setCurrentThreshold(item.value);
-                onSelectedChange?.([]);
-              }}
+              disabled={disabled}
+              onClick={() => handleThresholdChange(item.value)}
               className={clsx(
                 'h-[40px] min-w-[80px] rounded-[8px] px-[14px] border text-[15px] leading-[18px] font-medium transition-colors',
                 active
                   ? 'border-rabby-blue-default bg-rabby-blue-light1 text-rabby-blue-default'
-                  : 'border-rabby-neutral-line bg-rabby-neutral-card-1 text-rabby-neutral-foot hover:bg-rabby-blue-light1 hover:border-rabby-blue-default hover:text-rabby-blue-default'
+                  : 'border-rabby-neutral-line bg-rabby-neutral-card-1 text-rabby-neutral-foot hover:bg-rabby-blue-light1 hover:border-rabby-blue-default hover:text-rabby-blue-default',
+                disabled ? 'cursor-not-allowed' : ''
               )}
             >
               {item.label}
@@ -262,29 +312,31 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
           rowKey="id"
           bordered={false}
           scroll={{ y: 435 }}
-          footer={() => (
-            <div
-              className={clsx(
-                'h-[52px] px-[18px]',
-                'flex items-center justify-center gap-[64px]',
-                'text-[13px] leading-[16px] text-r-neutral-foot',
-                'border-t border-rabby-neutral-line'
-              )}
-            >
-              <div>
-                Selected Tokens{' '}
-                <span className="ml-[8px] font-medium text-r-neutral-title1">
-                  {selectedTokenIds?.length || 0}
-                </span>
+          footer={() =>
+            task?.status === 'idle' ? (
+              <div
+                className={clsx(
+                  'h-[52px] px-[18px]',
+                  'flex items-center justify-center gap-[64px]',
+                  'text-[13px] leading-[16px] text-r-neutral-foot',
+                  'border-t border-rabby-neutral-line'
+                )}
+              >
+                <div>
+                  Selected Tokens{' '}
+                  <span className="ml-[8px] font-medium text-r-neutral-title1">
+                    {task?.list?.length || 0}
+                  </span>
+                </div>
+                <div>
+                  Total value{' '}
+                  <span className="ml-[8px] font-medium text-r-neutral-title1">
+                    {formatUsdValue(task?.expectReceive?.usd || 0)}
+                  </span>
+                </div>
               </div>
-              <div>
-                Total value{' '}
-                <span className="ml-[8px] font-medium text-r-neutral-title1">
-                  {formatUsdValue(totalValue || 0)}
-                </span>
-              </div>
-            </div>
-          )}
+            ) : null
+          }
         ></Table>
       </div>
     </Container>

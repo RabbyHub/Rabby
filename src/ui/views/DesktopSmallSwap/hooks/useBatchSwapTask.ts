@@ -1,10 +1,15 @@
-import { useWallet, WalletControllerType } from '@/ui/utils';
+import { formatAmount, useWallet, WalletControllerType } from '@/ui/utils';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { AssetApprovalSpender } from '@/utils/approval';
-import { TokenItem, Tx, TxPushType } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  ExplainTxResponse,
+  TokenItem,
+  Tx,
+  TxPushType,
+} from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import PQueue from 'p-queue';
-import React from 'react';
+import React, { useMemo } from 'react';
 import i18n from '@/i18n';
 import { FailedCode, sendTransaction } from '@/ui/utils/sendTransaction';
 import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
@@ -19,6 +24,8 @@ import { DEX } from '@/constant';
 import { useMemoizedFn } from 'ahooks';
 import { Account } from '@/background/service/preference';
 import { omit } from 'lodash';
+import { DEFAULT_MAX_GAS_COST, DEFAULT_SLIPPAGE } from '../constant';
+import { format } from 'path';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 export const getActiveProvider = async ({
@@ -204,11 +211,14 @@ export const FailReason = {
 
 export type TaskItemStatus =
   | {
+      status: 'idle';
+    }
+  | {
       status: 'pending';
       isGasAccount?: boolean;
     }
   | {
-      status: 'fail';
+      status: 'failed';
       failedCode: FailedCode;
       failedReason?: string;
       gasCost?: {
@@ -218,6 +228,7 @@ export type TaskItemStatus =
   | {
       status: 'success';
       txHash: string;
+      preExecResult?: ExplainTxResponse;
       gasCost: {
         gasCostUsd: BigNumber;
         gasCostAmount: BigNumber;
@@ -229,9 +240,8 @@ export const useBatchSwapTask = (options: {
   chain?: Chain;
   account?: Account;
   receiveToken?: TokenItem;
-  slippage?: string;
-  maxGasCost?: string;
 }) => {
+  const { receiveToken } = options;
   const wallet = useWallet();
   const gasAccount = useGasAccountSign();
   const queueRef = React.useRef(
@@ -241,6 +251,14 @@ export const useBatchSwapTask = (options: {
   const [statusDict, setStatusDict] = React.useState<
     Record<string, TaskItemStatus>
   >({});
+
+  const [config, setConfig] = React.useState<{
+    slippage: string;
+    maxGasCost: string;
+  }>({
+    slippage: DEFAULT_SLIPPAGE,
+    maxGasCost: DEFAULT_MAX_GAS_COST,
+  });
 
   const [status, setStatus] = React.useState<
     'idle' | 'active' | 'paused' | 'completed'
@@ -286,13 +304,23 @@ export const useBatchSwapTask = (options: {
               getSingleQuote,
               payToken: item,
               receiveToken: options.receiveToken,
-              slippage: options.slippage,
+              slippage: config.slippage,
             });
 
             console.log('Got active provider:', activeProvider);
 
             if (!activeProvider) {
               throw new Error('Failed to get active provider');
+            }
+
+            // 预执行失败 ｜ gas 费用过高
+            if (
+              !activeProvider.preExecResult ||
+              new BigNumber(
+                activeProvider.preExecResult.gasUsdValue
+              ).isGreaterThan(config.maxGasCost)
+            ) {
+              throw new Error('Gas cost is too high');
             }
 
             const txs = await buildSwapTxs({
@@ -306,7 +334,7 @@ export const useBatchSwapTask = (options: {
               inputAmount: new BigNumber(item.raw_amount_hex_str || 0)
                 .div(10 ** item.decimals)
                 .toString(10),
-              slippage: options.slippage || '3',
+              slippage: config.slippage,
               userAddress: options.account.address,
               rbiSource: 'desktopSmallSwap',
               swapUseSlider: false,
@@ -354,10 +382,13 @@ export const useBatchSwapTask = (options: {
               throw new Error('Failed to send swap tx');
             }
 
+            console.log('Swap tx result:', result);
+
             setStatusDict((prev) => ({
               ...prev,
               [item.id]: {
                 status: 'success',
+                preExecResult: result!.preExecResult,
                 txHash: result!.txHash,
                 gasCost: result!.gasCost,
               },
@@ -372,7 +403,7 @@ export const useBatchSwapTask = (options: {
             setStatusDict((prev) => ({
               ...prev,
               [item.id]: {
-                status: 'fail',
+                status: 'failed',
                 failedCode: failedCode,
                 failedReason: e.message,
                 gasCost: e.gasCost,
@@ -390,15 +421,26 @@ export const useBatchSwapTask = (options: {
 
   const start = React.useCallback(() => {
     setStatus('active');
+
     for (const item of list) {
       addTask(item);
+    }
+    if (queueRef.current.isPaused) {
+      queueRef.current.start();
     }
   }, [list]);
 
   const init = React.useCallback((dataSource: TokenItem[]) => {
     queueRef.current.clear();
     setList(dataSource);
-    setStatusDict({});
+    setStatusDict(
+      dataSource.reduce((dict, item) => {
+        dict[item.id] = {
+          status: 'idle',
+        };
+        return dict;
+      }, {} as Record<string, TaskItemStatus>)
+    );
     setCurrentToken(null);
     setStatus('idle');
   }, []);
@@ -407,6 +449,8 @@ export const useBatchSwapTask = (options: {
     queueRef.current.pause();
     setStatus('paused');
   }, []);
+
+  console.log('queueRef.current', queueRef.current);
 
   const handleContinue = React.useCallback(() => {
     queueRef.current.start();
@@ -426,6 +470,41 @@ export const useBatchSwapTask = (options: {
       queueRef.current.clear();
     };
   }, []);
+
+  const expectReceiveUsd = useMemo(() => {
+    return (list || []).reduce((sum, item) => {
+      return sum + (item.amount * item.price || 0);
+    }, 0);
+  }, [list]);
+
+  const expectReceiveAmount = useMemo(() => {
+    if (!options.receiveToken?.price) {
+      return '0';
+    }
+    return formatAmount(expectReceiveUsd / options.receiveToken.price);
+  }, [expectReceiveUsd, options.receiveToken]);
+
+  const finalReceive = useMemo(() => {
+    let totalUsd = 0;
+    let totalAmount = 0;
+
+    Object.values(statusDict).forEach((item) => {
+      if (item.status === 'success' && item.preExecResult) {
+        item.preExecResult.balance_change?.receive_token_list?.forEach(
+          (token) => {
+            if (token.id === options.receiveToken?.id) {
+              totalUsd += token.amount * token.price || 0;
+              totalAmount += token.amount || 0;
+            }
+          }
+        );
+      }
+    });
+    return {
+      usd: totalUsd,
+      amount: totalAmount,
+    };
+  }, [statusDict, options.receiveToken?.id]);
 
   const currentTaskIndex = React.useMemo(() => {
     return list.findIndex((item) => statusDict[item.id]?.status === 'pending');
@@ -453,6 +532,13 @@ export const useBatchSwapTask = (options: {
     currentTaskIndex,
     currentApprovalRef,
     clear,
+    config,
+    setConfig,
+    expectReceive: {
+      usd: expectReceiveUsd,
+      amount: expectReceiveAmount,
+    },
+    finalReceive,
   };
 };
 

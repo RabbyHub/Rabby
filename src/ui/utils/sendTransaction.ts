@@ -602,6 +602,7 @@ export const sendTransaction = async ({
 
     return {
       txHash: hash,
+      preExecResult: preExecResult,
       gasCost: {
         ...estimateGasCost,
         gasCostUsd,
@@ -611,6 +612,7 @@ export const sendTransaction = async ({
   } else {
     return {
       txHash: hash,
+      preExecResult: preExecResult,
       gasCost: {
         ...estimateGasCost,
       },
