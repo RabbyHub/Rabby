@@ -2387,7 +2387,8 @@
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
           "lending": "Lending",
-          "dragTip": "Long-press feature to reorder"
+          "dragTip": "Long-press feature to reorder",
+          "convertDust": "Convert Dust"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -4546,7 +4547,8 @@
       "comingSoon": "Coming Soon"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Add address"
+      "addAddresses": "Add address",
+      "smallSwapDisabledTips": "Currently only private key and seed phrase addresses are supported."
     },
     "LpTokenTag": {
       "title": "This is a liquidity provider(LP) token",

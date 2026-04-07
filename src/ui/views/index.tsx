@@ -111,6 +111,10 @@ const Main = () => {
   useThemeModeOnMain();
   useSubscribeCurrentAccountChanged();
   useSyncCurrentAccount();
+  const account = useCurrentAccount();
+  useSyncDbHistory({
+    account,
+  });
 
   return (
     <>

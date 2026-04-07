@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { PrivateRouteGuard } from 'ui/component';
+import { PrivateRoute, PrivateRouteGuard } from 'ui/component';
 
 import { PortalHost } from '../component/PortalHost';
 import { CommonPopup } from './CommonPopup';
@@ -19,6 +19,7 @@ import { useEventBusListener } from '../hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
 import { useMemoizedFn } from 'ahooks';
 import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
+import { DesktopSmallSwap } from './DesktopSmallSwap';
 
 declare global {
   interface Window {
@@ -73,6 +74,9 @@ const Main = () => {
 
   return (
     <>
+      <PrivateRoute exact path="/desktop/small-swap">
+        <DesktopSmallSwap />
+      </PrivateRoute>
       {hasMountedProfileRef.current ? (
         <PrivateRouteGuard>
           <DesktopProfile
