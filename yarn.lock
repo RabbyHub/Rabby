@@ -7,17 +7,22 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@aave/contract-helpers@1.36.1":
-  version "1.36.1"
-  resolved "https://registry.yarnpkg.com/@aave/contract-helpers/-/contract-helpers-1.36.1.tgz#729735e6be4f8a1872e1e3400591485fc2198b76"
-  integrity sha512-Ppoz11WRA3bjkZqnRA0a/txjfb67fVWh+ucgtN/RR45WI9oDsEmtYsqAwiNR3egvigSeyJASFeei0ijGGoFifw==
+"@aave-dao/aave-address-book@4.47.14":
+  version "4.47.14"
+  resolved "https://registry.yarnpkg.com/@aave-dao/aave-address-book/-/aave-address-book-4.47.14.tgz#aa5bb3f70dfa4b46adbad07bbf62f7c8ba452e5f"
+  integrity sha512-KO8Dvuwi34rX/bsRYyY6FhhJpkBY7bwuHZNOypSqlKaLK++fZfUZZSlRQ8BKn33BGZaihCInChpdjRBgByJqFQ==
+
+"@aave/contract-helpers@1.37.1":
+  version "1.37.1"
+  resolved "https://registry.yarnpkg.com/@aave/contract-helpers/-/contract-helpers-1.37.1.tgz#20c75564bd70cd8b116c113faffa11c26029abd2"
+  integrity sha512-cPKwiweE8WZKm4a1wmLk/i8e5VKfyXfnk0Wb+raCyvIE9CZoCAU8Vz/2VOvPIDNs4E/Yil5s/ZArV6mq/nidKA==
   dependencies:
     isomorphic-unfetch "^3.1.0"
 
-"@aave/math-utils@1.36.1":
-  version "1.36.1"
-  resolved "https://registry.yarnpkg.com/@aave/math-utils/-/math-utils-1.36.1.tgz#3e501962de3700250c213c981ea47b36a8e37a54"
-  integrity sha512-rR1sbDX1IFb1B1TLdi8hZANvtviPeU8hfpLuHC9cwlXluujCdHttnNVODwco1J5d2k6KxnNnc0DZJj2yV7nLTQ==
+"@aave/math-utils@1.37.1":
+  version "1.37.1"
+  resolved "https://registry.yarnpkg.com/@aave/math-utils/-/math-utils-1.37.1.tgz#da0367363ecf872e77b4e4c54c4cf18d636746ac"
+  integrity sha512-K32WEpgyKFi1zopXCWaWIL3i9lR45Rv/LsTYJuILPVQypx/0fRCQQQdZ2MMncI45izxMhFFLOPX1XvWxPwlfoQ==
 
 "@adraffy/ens-normalize@1.10.0":
   version "1.10.0"
@@ -1578,11 +1583,6 @@
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
-
-"@bgd-labs/aave-address-book@4.36.0":
-  version "4.36.0"
-  resolved "https://registry.yarnpkg.com/@bgd-labs/aave-address-book/-/aave-address-book-4.36.0.tgz#c850f5b235675006ae92c2f2918040abd86b99e1"
-  integrity sha512-9vpDl3SYJyxVronEIEmh3B1Z58o87A5b98DCvsDmeochD1UMdsi8GmptgQ5fDwHFyiqRGwlbA1uy0YCExdz+Zg==
 
 "@chainsafe/as-sha256@^0.3.1":
   version "0.3.1"
@@ -5008,10 +5008,10 @@
     ethers "5.5.1"
     semver "7.5.4"
 
-"@rabby-wallet/hyperliquid-sdk@1.1.5":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/hyperliquid-sdk/-/hyperliquid-sdk-1.1.5.tgz#41f873c1c38adbe75e1330c8fd6165798e038e14"
-  integrity sha512-BHshLXTr+cVEyKacmopftteNxuv6a+XBDTHAJuzgjhcw4CSvurcjNuCVQBcW3OzKh1Av7C8sEHvCSxgZaWue2A==
+"@rabby-wallet/hyperliquid-sdk@1.1.6":
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/hyperliquid-sdk/-/hyperliquid-sdk-1.1.6.tgz#8bdcb73476a5123c66b69224705a96334eef14b4"
+  integrity sha512-iRH8sog14y/FZ8DX+lon3CB9neO+Tgw6dno3SwQJ4I8KWBWHtqWe4yUvN85291KVIxplQAfGhJLRcUwAlrNrXA==
   dependencies:
     "@ethereumjs/util" "9.0.0"
     "@metamask/eth-sig-util" "5.1.0"
@@ -11185,12 +11185,12 @@ detective@^5.2.0:
     defined "^1.0.0"
     minimist "^1.1.1"
 
-dexie-react-hooks@^4.2.0:
+dexie-react-hooks@4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/dexie-react-hooks/-/dexie-react-hooks-4.2.0.tgz#33d8a64c79e1e2067b9b3c4fe52367fbb6b36450"
   integrity sha512-u7KqTX9JpBQK8+tEyA9X0yMGXlSCsbm5AU64N6gjvGk/IutYDpLBInMYEAEC83s3qhIvryFS+W+sqLZUBEvePQ==
 
-dexie@^4.3.0:
+dexie@4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/dexie/-/dexie-4.3.0.tgz#5b6b9e3ed4e48ba1c36442e6a7d07b86335e2df5"
   integrity sha512-5EeoQpJvMKHe6zWt/FSIIuRa3CWlZeIl6zKXt+Lz7BU6RoRRLgX9dZEynRfXrkLcldKYCBiz7xekTEylnie1Ug==

@@ -29,7 +29,9 @@
         "Succeeded": "成功しました",
         "Pending": "保留中",
         "Failed": "失敗しました"
-      }
+      },
+      "hideScamTips": "スキャムトランザクションを非表示にする",
+      "showScamTips": "詐欺取引を表示"
     },
     "chainList": {
       "title": "{{count}} chains Integrated",
@@ -1103,7 +1105,9 @@
       },
       "noSeedPhraseAddress": "このシードフレーズに対して追加されたアドレスはありません。アドレスを追加するか、シードフレーズを削除できます。",
       "watch-address": "ウォッチオンリー",
-      "deleteSuccess": "削除に成功しました"
+      "deleteSuccess": "削除に成功しました",
+      "seedPhraseNotBackedUp": "ウォレットがバックアップされていません",
+      "backupSeedPhraseNow": "バックアップを開始する"
     },
     "dashboard": {
       "home": {
@@ -1132,7 +1136,6 @@
           "settings": "設定",
           "perpsPositions_other": "{{count}} ポジション",
           "perpsPositions_one": "{{count}} ポジション",
-          "prediction": "予測",
           "lending": "レンディング",
           "dragTip": "長押しで並び替え"
         },
@@ -3341,7 +3344,9 @@
         "feeTipTooltip": "Hyperliquid が請求する出金手数料：$1",
         "hyperliquidFeeLabel": "Hyperliquidの手数料",
         "hyperliquidFeeLabelTooltip": "新規ユーザーはHyperliquidによって一度限りのアクティベーション手数料が課されます。",
-        "amount": "金額"
+        "amount": "金額",
+        "feeTipTooltipHype": "EVMへの引き出しには約0.00002 HYPEの手数料が発生します。",
+        "hypeActivationFeeTip": "Hyperliquid は最初の HyperEVM 引き出しに対して、{{fee}} の一度限りのアクティベーション料金を請求します。"
       },
       "home": {
         "markPrice": "マーク価格",
@@ -3509,7 +3514,8 @@
         "learnMore": "詳細を学ぶ"
       },
       "addFunds": "資金を追加する",
-      "crossMarginLiqPriceTip": "クロスマージンモードでは、単一ポジションの清算価格は参考用の推定値です。"
+      "crossMarginLiqPriceTip": "クロスマージンモードでは、単一ポジションの清算価格は参考用の推定値です。",
+      "selectTokenToWithdraw": "出金ネットワークを選択してください"
     },
     "perpsPro": {
       "chatArea": {
@@ -4485,8 +4491,7 @@
       "lending": "レンディング",
       "perps": "パープス",
       "portfolio": "ポートフォリオ",
-      "comingSoon": "近日公開予定",
-      "prediction": "予測"
+      "comingSoon": "近日公開予定"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "アドレスを追加"

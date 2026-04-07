@@ -8,6 +8,7 @@ import { ResetTip } from './ResetTip';
 import { useHistory } from 'react-router-dom';
 import { ResetSuccess } from './ResetSuccess';
 import { message } from 'antd';
+import { cleanupBiometricCredential } from '@/ui/utils/biometric';
 
 export const ForgotPassword = () => {
   const history = useHistory();
@@ -62,7 +63,21 @@ export const ForgotPassword = () => {
   const onPasswordSubmit = React.useCallback(
     async (password: string) => {
       try {
+        const preference = await wallet.getPreference();
+        const biometricUnlockCredentialId =
+          preference?.biometricUnlockEnabled &&
+          preference?.biometricUnlockCredentialId
+            ? preference.biometricUnlockCredentialId
+            : '';
+
         await wallet.resetPassword(password);
+
+        if (biometricUnlockCredentialId) {
+          await cleanupBiometricCredential(biometricUnlockCredentialId).catch(
+            () => undefined
+          );
+        }
+
         handleSetStep('reset-success');
       } catch (e) {
         message.error(e.message);

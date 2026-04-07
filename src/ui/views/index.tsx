@@ -97,6 +97,15 @@ const useAutoLock = () => {
   }, [handleLockShortcut]);
 };
 
+const SyncHook = () => {
+  const account = useCurrentAccount();
+  useSyncDbHistory({
+    account,
+  });
+
+  return null;
+};
+
 const Main = () => {
   useAutoLock();
   useThemeModeOnMain();
@@ -127,6 +136,8 @@ const Main = () => {
       <Suspense fallback={null}>
         <AsyncMainRoute />
       </Suspense>
+
+      <SyncHook />
     </>
   );
 };

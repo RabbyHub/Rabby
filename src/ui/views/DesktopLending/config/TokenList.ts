@@ -173,6 +173,29 @@ const NETWORK_ASSETS: TokenInfo[] = [
       isNative: true,
     },
   },
+  {
+    name: 'XPL',
+    symbol: 'XPL',
+    decimals: 18,
+    address: API_ETH_MOCK_ADDRESS,
+    chainId: 9745,
+    logoURI: '/icons/networks/plasma.svg',
+    extensions: {
+      isNative: true,
+    },
+  },
+  {
+    name: 'ETH',
+    symbol: 'ETH',
+    decimals: 18,
+    address: API_ETH_MOCK_ADDRESS,
+    chainId: 59144,
+    logoURI:
+      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    extensions: {
+      isNative: true,
+    },
+  },
 ];
 
 export const TOKEN_LIST: TokenList = {
@@ -9904,6 +9927,15 @@ export const TOKEN_LIST: TokenList = {
         'https://assets.coingecko.com/coins/images/40143/standard/cbbtc.webp?1726136727',
     },
     {
+      chainId: 8453,
+      address: '0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42',
+      name: 'EURC',
+      symbol: 'EURC',
+      decimals: 6,
+      logoURI:
+        'https://assets.coingecko.com/coins/images/26045/standard/euro.png?1696525125',
+    },
+    {
       name: 'Compound',
       address: '0x9e1028F5F1D5eDE59748FFceE5532509976840E0',
       symbol: 'COMP',
@@ -13426,6 +13458,171 @@ export const TOKEN_LIST: TokenList = {
       chainId: 1,
       logoURI:
         'https://assets.coingecko.com/coins/images/32254/standard/sdai.png?1697015278',
+    },
+    // Plasma
+    {
+      chainId: 9745,
+      address: '0x9895D81bB462A195b4922ED7De0e3ACD007c32CB',
+      name: 'Wrapped Ether',
+      symbol: 'WETH',
+      decimals: 18,
+      logoURI:
+        'https://assets.coingecko.com/coins/images/2518/standard/weth.png?1696503332',
+    },
+    {
+      chainId: 9745,
+      address: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb',
+      name: 'Tether USD',
+      symbol: 'USDT0',
+      decimals: 6,
+      logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png',
+    },
+    {
+      chainId: 9745,
+      address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
+      name: 'USDe',
+      symbol: 'USDe',
+      decimals: 18,
+    },
+    {
+      chainId: 9745,
+      address: '0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2',
+      name: 'Staked USDe',
+      symbol: 'sUSDe',
+      decimals: 18,
+    },
+    {
+      chainId: 9745,
+      address: '0x1B64B9025EEbb9A6239575dF9Ea4b9Ac46D4d193',
+      name: 'Tether Gold',
+      symbol: 'XAUt0',
+      decimals: 6,
+    },
+    {
+      chainId: 9745,
+      address: '0xA3D68b74bF0528fdD07263c60d6488749044914b',
+      name: 'Wrapped eETH',
+      symbol: 'weETH',
+      decimals: 18,
+    },
+    {
+      chainId: 9745,
+      address: '0xe48D935e6C9e735463ccCf29a7F11e32bC09136E',
+      name: 'Wrapped liquid staked Ether 2.0',
+      symbol: 'wstETH',
+      decimals: 18,
+      logoURI:
+        'https://assets.coingecko.com/coins/images/18834/standard/wstETH.png?1696518295',
+    },
+    {
+      chainId: 9745,
+      address: '0xe561FE05C39075312Aa9Bc6af79DdaE981461359',
+      name: 'Wrapped rsETH',
+      symbol: 'wrsETH',
+      decimals: 18,
+    },
+    {
+      chainId: 9745,
+      address: '0x93B544c330F60A2aa05ceD87aEEffB8D38FD8c9a',
+      name: 'Pendle USDe PT 15JAN2026',
+      symbol: 'PT_USDe_15JAN2026',
+      decimals: 18,
+    },
+    {
+      chainId: 9745,
+      address: '0x02FCC4989B4C9D435b7ceD3fE1Ba4CF77BBb5Dd8',
+      name: 'Pendle sUSDe PT 15JAN2026',
+      symbol: 'PT_sUSDE_15JAN2026',
+      decimals: 18,
+    },
+    {
+      chainId: 9745,
+      address: '0xC4374775489CB9C56003BF2C9b12495fC64F0771',
+      name: 'syrupUSDT',
+      symbol: 'syrupUSDT',
+      decimals: 6,
+    },
+    {
+      chainId: 9745,
+      address: '0x6100E367285b01F48D07953803A2d8dCA5D19873',
+      name: 'Wrapped XPL',
+      symbol: 'WXPL',
+      decimals: 18,
+    },
+    // Linea
+    {
+      chainId: 59144,
+      address: '0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f',
+      name: 'Wrapped Ether',
+      symbol: 'WETH',
+      decimals: 18,
+      logoURI:
+        'https://assets.coingecko.com/coins/images/2518/standard/weth.png?1696503332',
+    },
+    {
+      chainId: 59144,
+      address: '0x3aAB2285ddcDdaD8edf438C1bAB47e1a9D05a9b4',
+      name: 'Wrapped BTC',
+      symbol: 'WBTC',
+      decimals: 8,
+      logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    },
+    {
+      chainId: 59144,
+      address: '0x176211869cA2b568f2A7D4EE941E073a821EE1ff',
+      name: 'USDCoin',
+      symbol: 'USDC',
+      decimals: 6,
+      logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    },
+    {
+      chainId: 59144,
+      address: '0xA219439258ca9da29E9Cc4cE5596924745e12B93',
+      name: 'Tether USD',
+      symbol: 'USDT',
+      decimals: 6,
+      logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png',
+    },
+    {
+      chainId: 59144,
+      address: '0xB5beDd42000b71FddE22D3eE8a79Bd49A568fC8F',
+      name: 'Wrapped liquid staked Ether 2.0',
+      symbol: 'wstETH',
+      decimals: 18,
+      logoURI:
+        'https://assets.coingecko.com/coins/images/18834/standard/wstETH.png?1696518295',
+    },
+    {
+      chainId: 59144,
+      address: '0x2416092f143378750bb29b79eD961ab195CcEea5',
+      name: 'Renzo Restaked ETH',
+      symbol: 'ezETH',
+      decimals: 18,
+    },
+    {
+      chainId: 59144,
+      address: '0x1Bf74C010E6320bab11e2e5A532b5AC15e0b8aA6',
+      name: 'Wrapped eETH',
+      symbol: 'weETH',
+      decimals: 18,
+    },
+    {
+      chainId: 59144,
+      address: '0xD2671165570f41BBB3B0097893300b6EB6101E6C',
+      name: 'Wrapped rsETH',
+      symbol: 'wrsETH',
+      decimals: 18,
+    },
+    {
+      chainId: 59144,
+      address: '0xacA92E438df0B2401fF60dA7E4337B687a2435DA',
+      name: 'mUSD',
+      symbol: 'mUSD',
+      decimals: 6,
     },
     // Sonic
     {

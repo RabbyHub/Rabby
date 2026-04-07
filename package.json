@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.93.82",
+  "version": "0.93.83",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "node build/clean.js",
@@ -27,9 +27,9 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@aave/contract-helpers": "1.36.1",
-    "@aave/math-utils": "1.36.1",
-    "@bgd-labs/aave-address-book": "4.36.0",
+    "@aave-dao/aave-address-book": "4.47.14",
+    "@aave/contract-helpers": "1.37.1",
+    "@aave/math-utils": "1.37.1",
     "@coinbase/wallet-sdk": "3.8.0-beta.3",
     "@debank/common": "0.3.60",
     "@debank/festats": "1.0.1",
@@ -71,7 +71,7 @@
     "@rabby-wallet/eth-walletconnect-keyring": "2.1.7",
     "@rabby-wallet/eth-watch-keyring": "1.0.0",
     "@rabby-wallet/gnosis-sdk": "1.4.8",
-    "@rabby-wallet/hyperliquid-sdk": "1.1.5",
+    "@rabby-wallet/hyperliquid-sdk": "1.1.6",
     "@rabby-wallet/page-provider": "0.4.11",
     "@rabby-wallet/rabby-action": "0.1.14",
     "@rabby-wallet/rabby-api": "0.9.58",
@@ -106,8 +106,8 @@
     "clsx": "1.1.1",
     "crypto-browserify": "3.12.0",
     "dayjs": "1.10.7",
-    "dexie": "^4.3.0",
-    "dexie-react-hooks": "^4.2.0",
+    "dexie": "4.3.0",
+    "dexie-react-hooks": "4.2.0",
     "eth-rpc-errors": "4.0.3",
     "ethers": "5.8.0",
     "events": "3.3.0",

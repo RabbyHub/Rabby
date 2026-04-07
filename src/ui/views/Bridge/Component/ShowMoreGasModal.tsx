@@ -140,6 +140,9 @@ export default function ShowMoreGasSelectModal({
       onOpenChange={(v) => {
         console.log('Dropdown visibility changed:', v);
         setVisible(v);
+        if (!v) {
+          onCancel();
+        }
       }}
       open={visible}
       placement="topRight"

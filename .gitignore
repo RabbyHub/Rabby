@@ -5,7 +5,7 @@ dist-*
 .DS_Store
 yarn-error
 .claude/settings.local.json
-
+.claude/CLAUDE.local.md
 tmp/*.zip
 tmp/inv-batch.json
 tmp/styled-components-id-mappings.*

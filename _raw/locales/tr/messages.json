@@ -29,7 +29,9 @@
         "Failed": "Başarısız",
         "Pending": "Beklemede",
         "Succeeded": "Başarılı"
-      }
+      },
+      "hideScamTips": "Dolandırıcılık işlemlerini gizle",
+      "showScamTips": "Dolandırıcılık işlemlerini göster"
     },
     "chainList": {
       "title": "{{count}} chains Integrated",
@@ -1103,7 +1105,9 @@
       },
       "noSeedPhraseAddress": "Bu tohum ifadesi için adres eklenmemiştir. Bir adres ekleyebilir veya tohum ifadesini silebilirsiniz.",
       "watch-address": "Sadece izleme",
-      "deleteSuccess": "Başarıyla silindi"
+      "deleteSuccess": "Başarıyla silindi",
+      "backupSeedPhraseNow": "Yedeklemeye başla",
+      "seedPhraseNotBackedUp": "Cüzdan yedeklenmedi"
     },
     "dashboard": {
       "home": {
@@ -1132,7 +1136,6 @@
           "settings": "Ayarlar",
           "perpsPositions_one": "{{count}} Pozisyon",
           "perpsPositions_other": "{{count}} Pozisyonlar",
-          "prediction": "Tahmin",
           "lending": "Kredi Verme",
           "dragTip": "Uzun basma özelliği ile sıralama"
         },
@@ -3344,7 +3347,9 @@
         "goBridgeTips": "Arbitrum üzerinde doğrudan yatırma için yalnızca USDC desteklenir. Yatırmadan önce mevcut tokeninizi Arbitrum'daki USDC'ye köprüleyin.",
         "estReceiveTooltip": "Çapraz zincir mevduatı LiFi üzerinden işlenir, bazı kaymalar meydana gelebilir. {{number}} saniye içinde varış tahmini.",
         "hyperliquidFeeLabelTooltip": "Yeni kullanıcılar Hyperliquid tarafından tek seferlik bir etkinleştirme ücreti öder.",
-        "amount": "Miktar"
+        "amount": "Miktar",
+        "feeTipTooltipHype": "EVM'ye çekim yapmak için yaklaşık ~0.00002 HYPE ücret alınacaktır.",
+        "hypeActivationFeeTip": "Hyperliquid, ilk HyperEVM çekimi için {{fee}} tutarında tek seferlik bir aktivasyon ücreti alacaktır."
       },
       "home": {
         "entryPrice": "Giriş Fiyatı",
@@ -3512,7 +3517,8 @@
         "learnMore": "Daha Fazla Öğrenin"
       },
       "addFunds": "Fon Ekle",
-      "crossMarginLiqPriceTip": "Cross Margin modunda, tek bir pozisyon için tasfiye fiyatı sadece referans için bir tahmindir."
+      "crossMarginLiqPriceTip": "Cross Margin modunda, tek bir pozisyon için tasfiye fiyatı sadece referans için bir tahmindir.",
+      "selectTokenToWithdraw": "Para Çekim Ağı Seçin"
     },
     "perpsPro": {
       "chatArea": {
@@ -4488,8 +4494,7 @@
       "perps": "Perps",
       "comingSoon": "Yakında",
       "lending": "Kredi Verme",
-      "portfolio": "Portföy",
-      "prediction": "Tahmin"
+      "portfolio": "Portföy"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adres ekle"

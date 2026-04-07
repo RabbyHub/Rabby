@@ -16,11 +16,14 @@ export const usePerpsDefaultAccount = ({
   const accounts = useRabbySelector(
     (state) => state.accountToDisplay.accountsList
   );
+  const isInitialized = useRabbySelector((state) => state.perps.isInitialized);
   const sdk = getPerpsSDK();
 
   return useRequest(
     async () => {
-      dispatch.perps.setInitialized(false);
+      if (isInitialized) {
+        return;
+      }
       try {
         const currentAccount = await wallet.getPerpsCurrentAccount();
         const lastUsedAccount = await wallet.getPerpsLastUsedAccount();

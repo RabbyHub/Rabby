@@ -261,7 +261,7 @@ export const filterMyAccounts = (account: Account) => {
   };
 };
 
-export const isSupportDBAccount = (account?: Account) => {
+export const isSupportDBAccount = (account?: Account | null) => {
   if (!account) {
     return false;
   }
@@ -269,7 +269,7 @@ export const isSupportDBAccount = (account?: Account) => {
     ([KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY] as string[]).includes(
       account.type
     ) ||
-    Object.values(HARDWARE_KEYRING_TYPES).find(
+    !!Object.values(HARDWARE_KEYRING_TYPES).find(
       (item) => item.type === account.type
     )
   );

@@ -1,3 +1,4 @@
+import { is } from 'immer/dist/internal';
 import openapiService, { TxHistoryItem } from '@/background/service/openapi';
 import { Account } from '@/background/service/preference';
 import { UI_TYPE } from '@/constant/ui';
@@ -8,7 +9,8 @@ import Dexie from 'dexie';
 import { last, sortBy, has } from 'lodash';
 import { db } from '..';
 import { historyDbService } from '../services/historyDbService';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 export const useSyncDbHistory = (options: { account?: Account | null }) => {
   // return useQuery({
@@ -26,7 +28,11 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
   return useRequest(
     async () => {
       const { account } = options;
-      if (!account?.address) {
+      if (
+        !account?.address ||
+        !isSupportDBAccount(account) ||
+        !(UI_TYPE.isDesktop || UI_TYPE.isPop)
+      ) {
         return;
       }
       return historyDbService.sync({ address: account.address });
@@ -35,10 +41,6 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
       refreshDeps: [options.account?.address],
       cacheKey: `syncHistory-${options.account?.address}`,
       staleTime: 0.5 * 60 * 1000,
-      ready:
-        !!options.account?.address &&
-        isSupportDBAccount(options.account) &&
-        (UI_TYPE.isDesktop || UI_TYPE.isPop),
     }
   );
 };
@@ -54,25 +56,38 @@ export const useQueryDbHistory = (options: {
 
   const { loading: isSyncing } = useSyncDbHistory({ account });
 
+  const isSupportAccount = useMemo(() => isSupportDBAccount(account), [
+    account,
+  ]);
+
+  const dbHistory = useLiveQuery(() => {
+    if (!account?.address || !isSupportAccount) {
+      return [];
+    }
+    const address = account?.address;
+    return db.history
+      .where('owner_addr')
+      .equalsIgnoreCase(address)
+      .and((item) => {
+        let flag = true;
+        if (isFilterScam) {
+          flag = !item.is_scam && !item.is_small_tx;
+        }
+        if (serverChainId) {
+          flag = flag && item.chain === serverChainId;
+        }
+        return flag;
+      })
+      .reverse()
+      .sortBy('time_at');
+  }, [isSupportAccount, account?.address, isFilterScam, serverChainId]);
+
   const { data, loading } = useRequest(
     async (d) => {
       const startTime = d?.last || 0;
       const address = account?.address;
-      if (!address) {
+      if (!address || isSupportAccount) {
         return [];
-      }
-
-      if (isSupportDBAccount(account)) {
-        const list = await db.history
-          .where('[owner_addr+time_at]')
-          .between(
-            [address.toLowerCase(), startTime],
-            [address.toLowerCase(), Dexie.maxKey]
-          )
-          .reverse()
-          .sortBy('time_at');
-
-        return list;
       }
 
       const res = await openapiService.getAllTxHistory({
@@ -82,7 +97,7 @@ export const useQueryDbHistory = (options: {
       return transformToHistory({ data: res || [], address });
     },
     {
-      refreshDeps: [account?.address, account?.type],
+      refreshDeps: [account?.address, account?.type, isSupportAccount],
     }
   );
 
@@ -99,8 +114,15 @@ export const useQueryDbHistory = (options: {
     });
   }, [data, isFilterScam, serverChainId]);
 
+  const result = useMemo(() => {
+    if (isSupportAccount) {
+      return dbHistory || [];
+    }
+    return list;
+  }, [dbHistory, list, isSupportAccount]);
+
   return {
-    data: list,
-    loading: loading || isSyncing,
+    data: result,
+    loading: !isSupportAccount ? loading : isSyncing || dbHistory === undefined,
   };
 };

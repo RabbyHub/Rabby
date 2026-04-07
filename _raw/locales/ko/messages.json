@@ -29,7 +29,9 @@
         "Pending": "대기 중",
         "Succeeded": "성공했습니다",
         "Failed": "실패했습니다"
-      }
+      },
+      "showScamTips": "사기 거래 표시",
+      "hideScamTips": "스캠 트랜잭션 숨기기"
     },
     "chainList": {
       "mainnet": "메인넷",
@@ -1195,7 +1197,9 @@
       },
       "noSeedPhraseAddress": "이 시드 문구에 대해 추가된 주소가 없습니다. 주소를 추가하거나 시드 문구를 삭제할 수 있습니다.",
       "watch-address": "모니터 전용",
-      "deleteSuccess": "삭제가 완료되었습니다"
+      "deleteSuccess": "삭제가 완료되었습니다",
+      "backupSeedPhraseNow": "백업 시작",
+      "seedPhraseNotBackedUp": "백업되지 않은 지갑"
     },
     "dashboard": {
       "home": {
@@ -1223,7 +1227,6 @@
           "settings": "설정",
           "perpsPositions_one": "{{count}} 포지션",
           "perpsPositions_other": "{{count}} 포지션",
-          "prediction": "예측",
           "lending": "대출",
           "dragTip": "길게 눌러서 재배치하기"
         },
@@ -3338,7 +3341,9 @@
         "estReceiveTooltip": "크로스체인 입금은 LiFi를 통해 처리되며 약간의 슬리피지가 발생할 수 있습니다. 도착 예정 시간은 {{number}}초입니다.",
         "estReceiveLabel": "추정 수령",
         "hyperliquidFeeLabelTooltip": "신규 사용자는 Hyperliquid에 의해 일회성 활성화 요금이 부과됩니다.",
-        "amount": "금액"
+        "amount": "금액",
+        "feeTipTooltipHype": "EVM으로 출금할 때 ~0.00002 HYPE의 수수료가 부과됩니다.",
+        "hypeActivationFeeTip": "HyperEVM 첫 번째 출금 시 Hyperliquid에서 {{fee}}의 일회성 활성화 수수료가 부과됩니다."
       },
       "home": {
         "entryPrice": "진입가",
@@ -3506,7 +3511,8 @@
         "learnMore": "자세히 알아보기"
       },
       "addFunds": "자금 추가",
-      "crossMarginLiqPriceTip": "크로스 마진 모드에서는 단일 포지션의 청산 가격이 참고용 추정치입니다."
+      "crossMarginLiqPriceTip": "크로스 마진 모드에서는 단일 포지션의 청산 가격이 참고용 추정치입니다.",
+      "selectTokenToWithdraw": "출금 네트워크 선택"
     },
     "perpsPro": {
       "chatArea": {
@@ -4482,8 +4488,7 @@
       "lending": "대출",
       "perps": "Perps",
       "comingSoon": "곧 출시됩니다",
-      "portfolio": "포트폴리오",
-      "prediction": "예측"
+      "portfolio": "포트폴리오"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "주소 추가"

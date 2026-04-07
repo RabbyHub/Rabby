@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useMemo, useCallback } from 'react';
 import produce from 'immer';
 import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -655,6 +655,10 @@ export const useTokens = (
     lpTokensOnly,
   ]);
 
+  const forceRefresh = useCallback(() => {
+    loadProcess({ forceRefresh: true });
+  }, [loadProcess]);
+
   return {
     netWorth: data?.netWorth || 0,
     isLoading: isLoading || loadingRecommendedTokens,
@@ -665,7 +669,7 @@ export const useTokens = (
       : mainnetTokens.customize,
     blockedTokens: isTestnet ? testnetTokens.blocked : mainnetTokens.blocked,
     hasValue: !!data?._portfolios?.length,
-    updateData: () => loadProcess({ forceRefresh: true }),
+    updateData: forceRefresh,
     walletProject: data,
   };
 };

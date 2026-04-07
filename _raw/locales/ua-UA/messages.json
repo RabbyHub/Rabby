@@ -29,7 +29,9 @@
         "Failed": "Не вдалося",
         "Pending": "Очікує",
         "Succeeded": "Вдалося"
-      }
+      },
+      "showScamTips": "Показати шахрайські транзакції",
+      "hideScamTips": "Сховати шахрайські транзакції"
     },
     "chainList": {
       "title": "{{count}} підтримуваних мереж",
@@ -1106,7 +1108,9 @@
       },
       "noSeedPhraseAddress": "Для цієї сеїд-фрази не додано жодних адрес. Ви можете додати адресу або видалити сеїд-фразу.",
       "watch-address": "Тільки перегляд",
-      "deleteSuccess": "Успішно видалено"
+      "deleteSuccess": "Успішно видалено",
+      "seedPhraseNotBackedUp": "Гаманець не був створений резервною копією",
+      "backupSeedPhraseNow": "Почати резервне копіювання"
     },
     "dashboard": {
       "home": {
@@ -1135,7 +1139,6 @@
           "settings": "Налаштування",
           "perpsPositions_other": "{{count}} Позицій",
           "perpsPositions_one": "{{count}} Позиція",
-          "prediction": "Прогнозування",
           "dragTip": "Функція довгого натискання для зміни порядку",
           "lending": "Кредитування"
         },
@@ -3353,7 +3356,9 @@
         "goBridgeTips": "Для прямого депозиту підтримується лише USDC на мережі Arbitrum. Будь ласка, перенесіть ваш поточний токен у USDC на Arbitrum перед депозитом.",
         "estReceiveTooltip": "Міжланцюговий депозит обробляється через LiFi, може виникнути деяке проскальзування. Очікуване прибуття через {{number}} с.",
         "hyperliquidFeeLabelTooltip": "Новим користувачам стягується одноразовий платіж за активацію від Hyperliquid.",
-        "amount": "Сума"
+        "amount": "Сума",
+        "feeTipTooltipHype": "Для виведення до EVM стягуватиметься плата в розмірі ~0.00002 HYPE.",
+        "hypeActivationFeeTip": "Одноразовий платіж у розмірі {{fee}} буде стягнуто Hyperliquid за перший вивід HyperEVM."
       },
       "home": {
         "margin": "Маржа",
@@ -3521,7 +3526,8 @@
         "learnMore": "Дізнатися більше"
       },
       "addFunds": "Додати кошти",
-      "crossMarginLiqPriceTip": "У режимі перехресного маржинування ціна ліквідації для однієї позиції є оцінкою лише для довідки."
+      "crossMarginLiqPriceTip": "У режимі перехресного маржинування ціна ліквідації для однієї позиції є оцінкою лише для довідки.",
+      "selectTokenToWithdraw": "Виберіть мережу виведення"
     },
     "perpsPro": {
       "chatArea": {
@@ -4497,8 +4503,7 @@
       "lending": "Позика",
       "portfolio": "Портфель",
       "comingSoon": "Скоро буде",
-      "perps": "Периферійні",
-      "prediction": "Прогнозування"
+      "perps": "Периферійні"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Додати адресу"

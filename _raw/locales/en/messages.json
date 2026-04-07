@@ -879,6 +879,8 @@
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
+        "feeTipTooltipHype": "A fee of ~0.00002 HYPE will be charged to withdraw to the EVM.",
+        "hypeActivationFeeTip": "A one-time activation fee of {{fee}} will be charged by Hyperliquid for first HyperEVM withdrawal.",
         "hyperliquidFeeLabelTooltip": "New users are charged a one-time activation fee by Hyperliquid.",
         "receiveToken": "Receive Token",
         "estReceiveLabel": "Est. Receive",
@@ -914,6 +916,7 @@
       "balanceAvailable": "Balance: {{balance}}",
       "lastUsed": "Last used",
       "selectTokenToDeposit": "Select Token to Deposit",
+      "selectTokenToWithdraw": "Select Withdrawal Network",
       "tradePerps": "Trade Perps",
       "position": "Position",
       "yourPosition": "Your Position",
@@ -1054,11 +1057,7 @@
       }
     },
     "perpsPro": {
-      "__skip_translation": [
-        "TWAP",
-        "TP",
-        "SL"
-      ],
+      "__skip_translation": ["TWAP", "TP", "SL"],
       "chatArea": {
         "markTips": "Used for margining, computing unrealized PNL, liquidations, and triggering TP/SL orders.",
         "oracleTips": "The median of external prices reported by validators, used for computing funding rates.",
@@ -1078,9 +1077,7 @@
       },
       "userInfo": {
         "tab": {
-          "__skip_translation": [
-            "twap"
-          ],
+          "__skip_translation": ["twap"],
           "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
           "fundingTips": "Net funding payments since the position was opened. If negative, it means funding gains.",
           "fundingTipsV2": "Net funding since the position was opened. a red (negative) funding value indicates funding paid, while a green (positive) value indicates funding received.",
@@ -1163,9 +1160,7 @@
           "confirmCloseAllDesc": "All your open positions will be closed at market price and cancel all orders."
         },
         "openOrders": {
-          "__skip_translation": [
-            "ro"
-          ],
+          "__skip_translation": ["ro"],
           "order": "Order",
           "time": "Time",
           "triggerConditions": "Trigger Conditions",
@@ -1563,9 +1558,7 @@
           "mySupplies": "My supplies"
         },
         "item": {
-          "__skip_translation": [
-            "tvl"
-          ],
+          "__skip_translation": ["tvl"],
           "tvl": "TVL",
           "wrapperToken": "Wrapped token for {{name}}"
         }
@@ -1698,9 +1691,7 @@
         "zeroLtvCollateralTips": "You have following LTV = 0 collaterals and thus can only repay with these collaterals first according to collateral repay rules. "
       },
       "manageEmode": {
-        "__skip_translation": [
-          "emode"
-        ],
+        "__skip_translation": ["emode"],
         "emode": "E-Mode",
         "title": "Manage E-Mode",
         "disableTitle": "Disable",
@@ -2321,6 +2312,8 @@
       "delete-checklist-1": "I understand that if I delete this address, the corresponding Private Key & Seed Phrase of this address will be deleted and Rabby will NOT be able to recover it.",
       "delete-checklist-2": "I confirm that I have backed up the private key or Seed Phrase and I'm ready to delete it now.",
       "confirm": "Confirm",
+      "seedPhraseNotBackedUp": "Wallet not backed up",
+      "backupSeedPhraseNow": "Start backup",
       "cancel": "Cancel",
       "delete-private-key-modal-title_one": "Delete {{count}} private key address",
       "delete-private-key-modal-title_other": "Delete {{count}} private key addresses",
@@ -2381,7 +2374,6 @@
           "settings": "Settings",
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
-          "prediction": "Prediction",
           "lending": "Lending",
           "dragTip": "Long-press feature to reorder",
           "convertDust": "Convert Dust"
@@ -4076,9 +4068,7 @@
     },
     "search": {
       "sectionHeader": {
-        "__skip_translation": [
-          "Defi"
-        ],
+        "__skip_translation": ["Defi"],
         "token": "Tokens",
         "Defi": "DeFi",
         "NFT": "NFT",
@@ -4160,9 +4150,7 @@
         "pending": "{{pendingTxCount}} Pending"
       },
       "tabs": {
-        "__skip_translation": [
-          "defi"
-        ],
+        "__skip_translation": ["defi"],
         "tokens": "Tokens",
         "transactions": "Transactions",
         "approvals": "Approvals",
@@ -4521,10 +4509,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
@@ -4537,7 +4522,6 @@
       "portfolio": "Portfolio",
       "perps": "Perps",
       "lending": "Lending",
-      "prediction": "Prediction",
       "comingSoon": "Coming Soon"
     },
     "DesktopSelectAccountList": {
