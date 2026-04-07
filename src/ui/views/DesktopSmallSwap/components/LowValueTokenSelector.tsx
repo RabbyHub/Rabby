@@ -1,27 +1,25 @@
 import clsx from 'clsx';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 
 import IconUnknown from '@/ui/assets/token-default.svg';
-import { Checkbox } from '@/ui/component';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatAmount, formatUsdValue } from '@/ui/utils';
 import { defaultTokenFilter } from '@/ui/utils/portfolio/lpToken';
-import { DisplayedToken } from '@/ui/utils/portfolio/project';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { Chain } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { useMemoizedFn } from 'ahooks';
 import { Image, Table, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { sortBy } from 'lodash';
 import styled from 'styled-components';
-import { PANEL_WIDTH, PANEL_WIDTH_DELTA } from '../constant';
-import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
-import { useMemoizedFn } from 'ahooks';
+import { ReactComponent as RcIconStatusError } from 'ui/assets/small-swap/status-failed.svg';
 import { ReactComponent as RcIconStatusIdle } from 'ui/assets/small-swap/status-idle.svg';
 import { ReactComponent as RcIconStatusPending } from 'ui/assets/small-swap/status-pending.svg';
 import { ReactComponent as RcIconStatusSuccess } from 'ui/assets/small-swap/status-success.svg';
-import { ReactComponent as RcIconStatusError } from 'ui/assets/small-swap/status-failed.svg';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { PANEL_WIDTH, PANEL_WIDTH_DELTA } from '../constant';
+import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
 import { CheckboxV2 } from './Checkbox';
 
 const Container = styled.section`

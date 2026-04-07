@@ -17,6 +17,7 @@ import CountUp from 'react-countup';
 import { usePrevious } from 'ahooks';
 import { KEYRING_TYPE } from '@/constant';
 import { Account } from '@/background/service/preference';
+import Lottie from 'lottie-react';
 
 type ReceiveSummaryProps = {
   totalValue?: number;
@@ -62,13 +63,18 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
       >
         {task?.status === 'completed' ? (
           <>
-            <div className="flex-1">
-              <div className="text-center text-[24px] leading-[29px] font-medium text-r-neutral-title1">
+            <div className="flex-1 pt-[12px]">
+              <Lottie
+                animationData={require('@/ui/assets/animation/animation-create-success.min.json')}
+                loop={false}
+                style={{ width: 130, height: 130, margin: '0 auto' }}
+              />
+              <div className="mt-[-8px] text-center text-[24px] leading-[29px] font-medium text-r-neutral-title1">
                 Dust Converted !
               </div>
               <div
                 className={clsx(
-                  'flex items-center justify-center gap-[8px] mt-[48px]',
+                  'flex items-center justify-center gap-[8px] mt-[68px]',
                   'text-[24px] leading-[29px] font-medium text-r-neutral-title1'
                 )}
               >
