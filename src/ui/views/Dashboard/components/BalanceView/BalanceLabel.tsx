@@ -24,7 +24,7 @@ export const BalanceLabel: React.FC<Props> = ({ balance }) => {
         'cursor-pointer transition-opacity truncate'
         // isCache && 'opacity-80'
       )}
-      title={splitBalance}
+      //title={splitBalance}
       onClick={handleClick}
     >
       {hiddenBalance ? (
