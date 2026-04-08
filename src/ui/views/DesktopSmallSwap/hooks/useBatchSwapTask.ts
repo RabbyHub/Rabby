@@ -28,6 +28,14 @@ import { DEFAULT_MAX_GAS_COST, DEFAULT_SLIPPAGE } from '../constant';
 import { format } from 'path';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
+const TASK_CANCELLED_ERROR_NAME = 'BatchSwapTaskCancelled';
+
+const createTaskCancelledError = () => {
+  const error = new Error('Batch swap task cancelled');
+  error.name = TASK_CANCELLED_ERROR_NAME;
+  return error;
+};
+
 export const getActiveProvider = async ({
   chain,
   currentAddress,
@@ -263,9 +271,13 @@ export const useBatchSwapTask = (options: {
   const [status, setStatus] = React.useState<
     'idle' | 'active' | 'paused' | 'completed'
   >('idle');
+  const statusRef = React.useRef<'idle' | 'active' | 'paused' | 'completed'>(
+    'idle'
+  );
   const [txStatus, setTxStatus] = React.useState<'sended' | 'signed' | 'idle'>(
     'idle'
   );
+  const cancelTokenRef = React.useRef(0);
   const currentApprovalRef = React.useRef<TokenItem>();
   const [currentToken, setCurrentToken] = React.useState<TokenItem | null>(
     null
@@ -274,11 +286,35 @@ export const useBatchSwapTask = (options: {
   const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
   const dexId = (supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[])[0];
 
+  const updateStatus = React.useCallback(
+    (nextStatus: 'idle' | 'active' | 'paused' | 'completed') => {
+      statusRef.current = nextStatus;
+      setStatus(nextStatus);
+    },
+    []
+  );
+
+  const cancelRunningTasks = React.useCallback(() => {
+    cancelTokenRef.current += 1;
+    queueRef.current.pause();
+    queueRef.current.clear();
+  }, []);
+
   const addTask = useMemoizedFn(
     async (item: TokenItem, priority: number = 0, ignoreGasCheck = false) => {
+      const taskToken = cancelTokenRef.current;
+      const isTaskCancelled = () => cancelTokenRef.current !== taskToken;
+      const throwIfTaskCancelled = () => {
+        if (isTaskCancelled()) {
+          throw createTaskCancelledError();
+        }
+      };
+
       return queueRef.current.add(
         async () => {
           try {
+            throwIfTaskCancelled();
+
             if (
               !options.chain ||
               !options.account ||
@@ -306,6 +342,8 @@ export const useBatchSwapTask = (options: {
               receiveToken: options.receiveToken,
               slippage: config.slippage,
             });
+
+            throwIfTaskCancelled();
 
             console.log('Got active provider:', activeProvider);
 
@@ -340,6 +378,8 @@ export const useBatchSwapTask = (options: {
               swapUseSlider: false,
             });
 
+            throwIfTaskCancelled();
+
             console.log('Built swap txs:', txs);
 
             if (!txs?.length) {
@@ -349,6 +389,8 @@ export const useBatchSwapTask = (options: {
             let result: Awaited<ReturnType<typeof sendTransaction>> | undefined;
 
             for (const tx of txs) {
+              throwIfTaskCancelled();
+
               let pushType: TxPushType = 'default';
               if ('swapPreferMEVGuarded' in tx) {
                 if (tx.swapPreferMEVGuarded) {
@@ -365,6 +407,10 @@ export const useBatchSwapTask = (options: {
                 autoUseGasAccount: true,
                 pushType,
                 onProgress: (status) => {
+                  if (isTaskCancelled()) {
+                    return;
+                  }
+
                   if (status === 'builded') {
                     setTxStatus('sended');
                   } else if (status === 'signed') {
@@ -376,11 +422,15 @@ export const useBatchSwapTask = (options: {
                   source: 'swap',
                 },
               });
+
+              throwIfTaskCancelled();
             }
 
             if (!result) {
               throw new Error('Failed to send swap tx');
             }
+
+            throwIfTaskCancelled();
 
             console.log('Swap tx result:', result);
 
@@ -394,23 +444,31 @@ export const useBatchSwapTask = (options: {
               },
             }));
           } catch (e) {
+            if (e?.name === TASK_CANCELLED_ERROR_NAME) {
+              return;
+            }
+
             let failedCode = FailedCode.DefaultFailed;
             if (FailedCode[e.name]) {
               failedCode = e.name;
             }
 
             console.error(e);
-            setStatusDict((prev) => ({
-              ...prev,
-              [item.id]: {
-                status: 'failed',
-                failedCode: failedCode,
-                failedReason: e.message,
-                gasCost: e.gasCost,
-              },
-            }));
+            if (!isTaskCancelled()) {
+              setStatusDict((prev) => ({
+                ...prev,
+                [item.id]: {
+                  status: 'failed',
+                  failedCode: failedCode,
+                  failedReason: e.message,
+                  gasCost: e.gasCost,
+                },
+              }));
+            }
           } finally {
-            setTxStatus('idle');
+            if (!isTaskCancelled()) {
+              setTxStatus('idle');
+            }
             // setCurrentToken(null);
           }
         },
@@ -420,7 +478,7 @@ export const useBatchSwapTask = (options: {
   );
 
   const start = React.useCallback(() => {
-    setStatus('active');
+    updateStatus('active');
 
     for (const item of list) {
       addTask(item);
@@ -428,34 +486,38 @@ export const useBatchSwapTask = (options: {
     if (queueRef.current.isPaused) {
       queueRef.current.start();
     }
-  }, [list]);
+  }, [addTask, list, updateStatus]);
 
-  const init = React.useCallback((dataSource: TokenItem[]) => {
-    queueRef.current.clear();
-    setList(dataSource);
-    setStatusDict(
-      dataSource.reduce((dict, item) => {
-        dict[item.id] = {
-          status: 'idle',
-        };
-        return dict;
-      }, {} as Record<string, TaskItemStatus>)
-    );
-    setCurrentToken(null);
-    setStatus('idle');
-  }, []);
+  const init = React.useCallback(
+    (dataSource: TokenItem[]) => {
+      cancelRunningTasks();
+      setList(dataSource);
+      setStatusDict(
+        dataSource.reduce((dict, item) => {
+          dict[item.id] = {
+            status: 'idle',
+          };
+          return dict;
+        }, {} as Record<string, TaskItemStatus>)
+      );
+      setTxStatus('idle');
+      setCurrentToken(null);
+      updateStatus('idle');
+    },
+    [cancelRunningTasks, updateStatus]
+  );
 
   const pause = React.useCallback(() => {
     queueRef.current.pause();
-    setStatus('paused');
-  }, []);
+    updateStatus('paused');
+  }, [updateStatus]);
 
   console.log('queueRef.current', queueRef.current);
 
   const handleContinue = React.useCallback(() => {
     queueRef.current.start();
-    setStatus('active');
-  }, []);
+    updateStatus('active');
+  }, [updateStatus]);
 
   React.useEffect(() => {
     queueRef.current.on('error', (error) => {
@@ -463,13 +525,16 @@ export const useBatchSwapTask = (options: {
     });
 
     queueRef.current.on('idle', () => {
-      setStatus('completed');
+      console.log('All tasks completed');
+      if (statusRef.current === 'active' || statusRef.current === 'paused') {
+        updateStatus('completed');
+      }
     });
 
     return () => {
-      queueRef.current.clear();
+      cancelRunningTasks();
     };
-  }, []);
+  }, [cancelRunningTasks, updateStatus]);
 
   const expectReceiveUsd = useMemo(() => {
     return (list || []).reduce((sum, item) => {
@@ -511,12 +576,13 @@ export const useBatchSwapTask = (options: {
   }, [list, statusDict]);
 
   const clear = React.useCallback(() => {
-    queueRef.current.clear();
+    cancelRunningTasks();
     setList([]);
     setStatusDict({});
+    setTxStatus('idle');
     setCurrentToken(null);
-    setStatus('idle');
-  }, []);
+    updateStatus('idle');
+  }, [cancelRunningTasks, updateStatus]);
 
   return {
     statusDict,
