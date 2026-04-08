@@ -253,7 +253,7 @@ const SendToken = () => {
   } | null>(null);
 
   const [inited, setInited] = useState(false);
-  const [initLoading, setInitLoading] = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
   const [balanceError, setBalanceError] = useState<string | null>(null);
