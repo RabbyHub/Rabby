@@ -66,6 +66,7 @@ import { isEqual } from 'lodash';
 import {
   formatGasAccountUsdValueV2,
   formatUsdValue,
+  openInTab,
   openInternalPageInTab,
   splitNumberByStep,
   useWallet,
@@ -712,8 +713,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       eventKey: 'Convert Dust',
       content: t('page.dashboard.home.panel.convertDust'),
       onClick: async () => {
-        await wallet.openInDesktop('/desktop/small-swap');
-        window.close();
+        openInTab('desktop.html#/desktop/small-swap', true);
+        // await wallet.openInDesktop('/desktop/small-swap');
+        // window.close();
       },
       isFullscreen: true,
     } as IPanelItem,

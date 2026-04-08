@@ -33,6 +33,7 @@ interface DesktopAccountSelectorProps {
   onChange?(account: Account): void;
   scene?: Scene;
   className?: string;
+  disabled?: boolean;
 }
 
 type Scene = 'perps' | 'prediction' | 'smallSwap';
@@ -42,6 +43,7 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
   onChange,
   scene,
   className,
+  disabled,
 }) => {
   const { t } = useTranslation();
 
@@ -52,6 +54,12 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
     onChange?.(account);
     setIsOpen(false);
   });
+
+  React.useEffect(() => {
+    if (disabled && isOpen) {
+      setIsOpen(false);
+    }
+  }, [disabled, isOpen]);
 
   useMount(() => {
     dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
@@ -84,16 +92,24 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
             }}
           />
         }
-        visible={isOpen}
-        onVisibleChange={setIsOpen}
+        visible={disabled ? false : isOpen}
+        onVisibleChange={(visible) => {
+          if (disabled) {
+            return;
+          }
+          setIsOpen(visible);
+        }}
         destroyTooltipOnHide
       >
         <div
+          aria-disabled={disabled}
           className={clsx(
             'h-[40px] pl-[16px] px-[12px] rounded-[16px]',
-            'flex items-center gap-[6px] cursor-pointer',
+            'flex items-center gap-[6px]',
             'border border-rb-neutral-line',
-            'hover:bg-rb-brand-light-1 hover:border-rb-brand-default',
+            disabled
+              ? 'cursor-not-allowed opacity-50'
+              : 'cursor-pointer hover:bg-rb-brand-light-1 hover:border-rb-brand-default',
             className
           )}
         >

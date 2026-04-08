@@ -43,6 +43,11 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
 
   const previousUsd = usePrevious(task?.finalReceive?.usd || 0);
 
+  const isSupported = !!([
+    KEYRING_TYPE.HdKeyring,
+    KEYRING_TYPE.SimpleKeyring,
+  ] as string[]).includes(account?.type || '');
+
   return (
     <>
       <section
@@ -231,13 +236,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
             <div className="mt-auto pt-[24px]">
               {task?.status === 'idle' ? (
                 <Button
-                  disabled={
-                    !task?.list?.length ||
-                    !([
-                      KEYRING_TYPE.HdKeyring,
-                      KEYRING_TYPE.SimpleKeyring,
-                    ] as string[]).includes(account?.type || '')
-                  }
+                  disabled={!task?.list?.length || !isSupported}
                   type="primary"
                   block
                   className="flex-1 h-[60px] rounded-[8px] text-[18px] leading-[20px]"
@@ -246,7 +245,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                     task?.start();
                   }}
                 >
-                  Start convert
+                  {isSupported ? 'Start convert' : 'Unsupported wallet type'}
                 </Button>
               ) : (
                 <button

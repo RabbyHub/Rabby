@@ -1,31 +1,29 @@
+import { Account } from '@/background/service/preference';
+import { DEX } from '@/constant';
+import i18n from '@/i18n';
+import { useRabbySelector } from '@/ui/store';
 import { formatAmount, useWallet, WalletControllerType } from '@/ui/utils';
-import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
-import { AssetApprovalSpender } from '@/utils/approval';
+import { FailedCode, sendTransaction } from '@/ui/utils/sendTransaction';
+import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
+import { findChain } from '@/utils/chain';
+import { Chain, CHAINS_ENUM } from '@debank/common';
 import {
   ExplainTxResponse,
   TokenItem,
-  Tx,
   TxPushType,
 } from '@rabby-wallet/rabby-api/dist/types';
+import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
+import { useMemoizedFn } from 'ahooks';
 import BigNumber from 'bignumber.js';
 import PQueue from 'p-queue';
 import React, { useMemo } from 'react';
-import i18n from '@/i18n';
-import { FailedCode, sendTransaction } from '@/ui/utils/sendTransaction';
-import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
-import { findIndexRevokeList } from '../../DesktopProfile/components/ApprovalsTabPane/utils';
-import { findChain } from '@/utils/chain';
-import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
-import { Chain, CHAINS_ENUM } from '@debank/common';
-import { isSwapWrapToken, useQuoteMethods } from '../../Swap/hooks';
-import { QuoteProvider, TDexQuoteData } from '../../Swap/hooks';
-import { useRabbySelector } from '@/ui/store';
-import { DEX } from '@/constant';
-import { useMemoizedFn } from 'ahooks';
-import { Account } from '@/background/service/preference';
-import { omit } from 'lodash';
+import {
+  isSwapWrapToken,
+  QuoteProvider,
+  TDexQuoteData,
+  useQuoteMethods,
+} from '../../Swap/hooks';
 import { DEFAULT_MAX_GAS_COST, DEFAULT_SLIPPAGE } from '../constant';
-import { format } from 'path';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 const TASK_CANCELLED_ERROR_NAME = 'BatchSwapTaskCancelled';
@@ -85,8 +83,6 @@ export const getActiveProvider = async ({
       : '0.25',
     inSufficient: false,
   });
-
-  console.log('???', quoteResult);
 
   if (!quoteResult?.data || !quoteResult.preExecResult?.isSdkPass) {
     return null;
@@ -229,6 +225,7 @@ export type TaskItemStatus =
       status: 'failed';
       failedCode: FailedCode;
       failedReason?: string;
+      createdAt?: number;
       gasCost?: {
         gasCostUsd: BigNumber;
       };
@@ -237,6 +234,7 @@ export type TaskItemStatus =
       status: 'success';
       txHash: string;
       preExecResult?: ExplainTxResponse;
+      createdAt?: number;
       gasCost: {
         gasCostUsd: BigNumber;
         gasCostAmount: BigNumber;
@@ -347,6 +345,7 @@ export const useBatchSwapTask = (options: {
 
             console.log('Got active provider:', activeProvider);
 
+            // 获取报价失败
             if (!activeProvider) {
               throw new Error('Failed to get active provider');
             }
@@ -360,6 +359,8 @@ export const useBatchSwapTask = (options: {
             ) {
               throw new Error('Gas cost is too high');
             }
+
+            // todo 价差过大？
 
             const txs = await buildSwapTxs({
               wallet,
@@ -438,6 +439,7 @@ export const useBatchSwapTask = (options: {
               ...prev,
               [item.id]: {
                 status: 'success',
+                createdAt: Date.now(),
                 preExecResult: result!.preExecResult,
                 txHash: result!.txHash,
                 gasCost: result!.gasCost,
@@ -460,8 +462,9 @@ export const useBatchSwapTask = (options: {
                 [item.id]: {
                   status: 'failed',
                   failedCode: failedCode,
-                  failedReason: e.message,
+                  failedReason: failedCode ? FailReason[failedCode] : e.message,
                   gasCost: e.gasCost,
+                  createdAt: Date.now(),
                 },
               }));
             }
