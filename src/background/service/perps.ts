@@ -77,7 +77,7 @@ class PerpsService {
         lastUsedAccount: null,
         hasDoneNewUserProcess: false,
         hasDismissedNewUserGuideV2: false,
-        favoritedCoins: ['BTC', 'ETH', 'SOL'],
+        favoritedCoins: [],
         marketSlippage: 0.05, // default 5%
         soundEnabled: true,
         quoteUnit: 'base',
@@ -418,7 +418,7 @@ class PerpsService {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
-    return this.store.favoritedCoins || ['BTC', 'ETH', 'SOL'];
+    return this.store.favoritedCoins || [];
   };
 
   setPerpsFavoritedCoins = async (coins: string[]) => {
@@ -544,7 +544,7 @@ class PerpsService {
       lastUsedAccount: null,
       hasDoneNewUserProcess: false,
       inviteConfig: {},
-      favoritedCoins: ['BTC', 'ETH', 'SOL'],
+      favoritedCoins: [],
       marketSlippage: 0.05,
       soundEnabled: true,
       quoteUnit: 'base',
