@@ -127,7 +127,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
           <div className={clsx('rounded-[10px] p-[2px] bg-rb-neutral-bg-0')}>
             <div
               className={clsx(
-                'py-[6px] px-[12px] rounded-[8px] bg-rb-neutral-foot',
+                'py-[6px] px-[12px] rounded-[8px] bg-rb-neutral-foot dark:bg-rb-neutral-bg-4',
                 'text-rb-neutral-InvertHighlight text-[12px] leading-[14px] font-medium'
               )}
             >
