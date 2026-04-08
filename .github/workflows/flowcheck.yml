@@ -19,6 +19,7 @@ on:
   push:
     branches:
       - master
+      - sec/flow
 
 jobs:
   flow-check:
@@ -28,12 +29,20 @@ jobs:
       - name: Resolve target branch
         id: resolve-branch
         env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_BRANCH: ${{ github.ref_name }}
           BRANCH_OVERRIDE: ${{ github.event.inputs.branch || '' }}
-          NOTIFY_LARKBOT: ${{ github.event.inputs.notify_larkbot || 'true' }}
+          NOTIFY_LARKBOT: ${{ github.event.inputs.notify_larkbot || 'false' }}
         run: |
           set -euo pipefail
 
           target_branch="${BRANCH_OVERRIDE:-}"
+          if [[ -z "$target_branch" ]]; then
+            if [[ "${EVENT_NAME:-}" == "push" ]]; then
+              target_branch="${PUSH_BRANCH:-}"
+            fi
+          fi
+
           if [[ -z "$target_branch" ]]; then
             target_branch="$(
               git ls-remote --heads https://github.com/RabbyHub/Rabby.git 'refs/heads/tmp/*' \
