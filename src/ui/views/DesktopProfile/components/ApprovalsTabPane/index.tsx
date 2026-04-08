@@ -1513,7 +1513,7 @@ export const ApprovalsTabPane = ({
                   )}
                   itemClassname="text-[12px] leading-[14px] font-medium px-[12px] py-[6px] w-auto rounded-[8px]"
                   itemClassnameActive={
-                    'text-rb-neutral-InvertHighlight bg-rb-neutral-foot'
+                    'text-rb-neutral-InvertHighlight bg-rb-neutral-foot dark:bg-rb-neutral-bg-4'
                   }
                   itemClassnameInActive={'text-rb-neutral-foot'}
                 />
