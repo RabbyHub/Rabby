@@ -4,7 +4,7 @@ import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ReactComponent as RcIconArrowRightCC } from 'ui/assets/arrow-right-1-cc.svg';
 import IconRabby from 'ui/assets/rabby.svg';
 
@@ -28,6 +28,9 @@ import {
 } from './constant';
 import { useBatchSwapTask } from './hooks/useBatchSwapTask';
 import { SwapAnimation } from './components/SwapAnimation';
+import { useTokens } from '@/ui/utils/portfolio/token';
+import { abstractTokenToTokenItem } from '@/ui/utils/token';
+import { isSupportDBAccount } from '@/utils/account';
 
 const DesktopSmallSwapContent: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -39,6 +42,29 @@ const DesktopSmallSwapContent: React.FC = () => {
   const handleAccountChange = (account: Account) => {
     dispatch.account.changeAccountAsync(account);
   };
+
+  const { runAsync: fetchChainList } = useRequest(
+    async (force?: boolean) => {
+      if (!currentAccount) {
+        return [];
+      }
+
+      const data = await wallet.getInMemoryAddressBalance(
+        currentAccount.address,
+        force
+      );
+      return sortBy(data?.chain_list || [], (item) => -(item.usd_value || 0));
+    },
+    {
+      manual: true,
+      cacheKey: `DesktopSmallSwap_chainList-${currentAccount?.address}`,
+      staleTime: 5 * 1000,
+    }
+  );
+
+  useEffect(() => {
+    fetchChainList();
+  }, [currentAccount?.address, fetchChainList]);
 
   const chainList = useLiveQuery(() => {
     return db.balance
@@ -69,21 +95,59 @@ const DesktopSmallSwapContent: React.FC = () => {
   });
 
   const chain = useMemo(() => {
-    console.log('chainList', chainList, chainServerId);
     return findChain({
       serverId: chainServerId,
     });
   }, [chainList, chainServerId]);
 
-  const tokenList = useLiveQuery(() => {
-    if (!currentAccount?.address || !chainServerId) {
+  const {
+    tokens: allTokens,
+    isLoading: isLoadingAllTokens,
+    updateData: updateAllTokens,
+  } = useTokens(
+    chainServerId ? currentAccount?.address : undefined,
+    undefined,
+    true,
+    undefined,
+    chainServerId,
+    undefined,
+    undefined,
+    undefined,
+    false,
+    false,
+    true
+  );
+
+  const isSupportDB = isSupportDBAccount(currentAccount);
+
+  const _tokenList = useMemo(() => {
+    if (isSupportDB) {
+      return [];
+    }
+    if (!chain) {
+      return [];
+    }
+    return allTokens
+      .map((token) => abstractTokenToTokenItem(token))
+      .filter((token) => token.chain === chain.serverId);
+  }, [chain, allTokens, isSupportDB]);
+
+  const dbTokenList = useLiveQuery(() => {
+    if (!currentAccount || !isSupportDB || !chainServerId) {
       return [];
     }
     return db.token
       .where('[owner_addr+chain]')
       .equals([currentAccount?.address?.toLowerCase() || '', chainServerId])
       .toArray();
-  }, [currentAccount?.address, chainServerId, chain?.nativeTokenAddress]);
+  }, [currentAccount?.address, chainServerId]);
+
+  const tokenList = useMemo(() => {
+    if (isSupportDB) {
+      return dbTokenList || [];
+    }
+    return _tokenList;
+  }, [isSupportDB, dbTokenList, _tokenList]);
 
   const { data: receiveToken } = useRequest(
     async () => {
@@ -98,6 +162,8 @@ const DesktopSmallSwapContent: React.FC = () => {
     },
     {
       refreshDeps: [chain, currentAccount?.address],
+      cacheKey: `DesktopSmallSwap_receiveToken-${currentAccount?.address}-${chain?.serverId}`,
+      staleTime: 5 * 1000,
     }
   );
 
@@ -109,26 +175,44 @@ const DesktopSmallSwapContent: React.FC = () => {
     receiveToken: receiveToken || undefined,
   });
 
+  const handleRefresh = useMemoizedFn(() => {
+    updateAllTokens();
+    fetchChainList(true);
+  });
+
   useEffect(() => {
     if (chainList?.length && !chainServerId) {
       handleChainChange(chainList[0].id);
     }
   }, [chainList?.length]);
 
+  const isBeforeUnload = useRef(false);
   useEventListener('blur', () => {
-    if (task.status === 'active') {
+    if (task.status === 'active' && !isBeforeUnload.current) {
       task.pause();
+    }
+  });
+
+  useEventListener('focus', () => {
+    if (isBeforeUnload.current) {
+      isBeforeUnload.current = false;
     }
   });
 
   useEventListener('beforeunload', (e) => {
     if (task.status === 'active') {
-      task.pause();
       e.preventDefault();
       e.returnValue = '';
+      isBeforeUnload.current = true;
       return '';
     }
   });
+
+  useEffect(() => {
+    if (task.status === 'completed') {
+      handleRefresh();
+    }
+  }, [task.status]);
 
   return (
     <div className={clsx('h-full overflow-auto bg-r-neutral-bg-2')}>
@@ -154,6 +238,7 @@ const DesktopSmallSwapContent: React.FC = () => {
             onChange={handleAccountChange}
             scene="smallSwap"
             className="bg-r-neutral-card-1"
+            disabled={task.status !== 'idle'}
           />
         </header>
 
@@ -195,7 +280,10 @@ const DesktopSmallSwapContent: React.FC = () => {
       <StopTaskModal
         visible={task.status === 'paused'}
         onContinue={task.continue}
-        onStop={task.clear}
+        onStop={() => {
+          task.clear();
+          handleRefresh();
+        }}
       />
     </div>
   );

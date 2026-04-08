@@ -9,84 +9,93 @@ import { defaultTokenFilter } from '@/ui/utils/portfolio/lpToken';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { Chain } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { useMemoizedFn } from 'ahooks';
-import { Image, Table, Tooltip } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
+import { useInterval, useMemoizedFn } from 'ahooks';
+import { Image, Tooltip } from 'antd';
 import { sortBy } from 'lodash';
 import styled from 'styled-components';
 import { ReactComponent as RcIconStatusError } from 'ui/assets/small-swap/status-failed.svg';
 import { ReactComponent as RcIconStatusIdle } from 'ui/assets/small-swap/status-idle.svg';
 import { ReactComponent as RcIconStatusPending } from 'ui/assets/small-swap/status-pending.svg';
 import { ReactComponent as RcIconStatusSuccess } from 'ui/assets/small-swap/status-success.svg';
+import { ReactComponent as RcIconEmptyCC } from 'ui/assets/small-swap/empty-cc.svg';
 import { PANEL_WIDTH, PANEL_WIDTH_DELTA } from '../constant';
 import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
 import { CheckboxV2 } from './Checkbox';
 
 const Container = styled.section`
-  .ant-table {
-    background-color: transparent;
-  }
-  .ant-table-container table > thead > tr:first-child th:first-child {
-    border-top-left-radius: 8px;
-    padding-left: 32px;
+  .token-list {
+    border: 0.5px solid var(--rabby-neutral-line, #d8e0ea);
+    border-radius: 8px;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    height: 525px;
   }
 
-  .ant-table-container table > thead > tr:first-child th:nth-last-child(2) {
-    /* border-top-right-radius: 8px; */
-    padding-right: 28px;
-  }
-
-  .ant-table-thead > tr > th {
+  .token-list-header {
     height: 40px;
-    padding: 0 16px;
-    border: none;
-    &::before {
-      display: none;
-    }
-
+    background-color: var(--r-neutral-bg2, #f2f4f7);
     color: var(--r-neutral-body, #3e495e);
     font-size: 14px;
     font-weight: 500;
     line-height: 17px;
+    padding-left: 16px;
+    padding-right: 16px;
+    flex-shrink: 0;
 
-    background-color: var(--r-neutral-bg2, #f2f4f7);
-    &.ant-table-cell-scrollbar {
-      /* display: none; */
-      background-color: var(--r-neutral-bg2, #f2f4f7);
-      box-shadow: none;
+    .token-list-cell {
+      height: 40px;
     }
   }
 
-  .ant-table-body {
-    min-height: 435px;
+  .token-list-body {
+    overflow-y: auto;
+    min-height: 0;
+    flex: 1;
   }
-  .ant-table-tbody > tr > td {
+
+  .token-list-cell {
     height: 48px;
     padding: 0 16px;
-    border: none;
-
     color: var(--r-neutral-title1, #192945);
     font-size: 14px;
     line-height: 17px;
-    background: transparent;
-
-    &:first-child {
-      padding-left: 32px;
-    }
-    &:last-child {
-      padding-right: 28px;
-    }
-
-    &.ant-table-cell-row-hover {
-      background-color: transparent;
-    }
   }
 
-  .ant-table-footer {
-    padding: 0;
+  .token-list-row {
     background: transparent;
+    cursor: pointer;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .token-list-row.is-disabled {
+    cursor: not-allowed;
+  }
+
+  .token-list-row:not(.is-disabled):hover {
+    background: rgba(112, 132, 255, 0.04);
+  }
+
+  .token-list-row + .token-list-row {
+    margin-top: 0;
+  }
+
+  .token-list-footer {
+    background: transparent;
+    flex-shrink: 0;
   }
 `;
+
+const COLUMN_WIDTH = {
+  select: 52,
+  token: 142,
+  amount: 112,
+  value: 112,
+  status: 112,
+} as const;
 
 const thresholds = [
   { label: '<$0.1', value: 0.1 },
@@ -109,6 +118,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
   disabled,
 }) => {
   const [currentThreshold, setCurrentThreshold] = React.useState(10);
+  const showStatus = task?.status !== 'idle';
 
   const filteredTokenList = useMemo(() => {
     return sortBy(
@@ -122,6 +132,27 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
     );
   }, [tokenList, currentThreshold]);
 
+  const [now, setNow] = React.useState(Date.now());
+  useInterval(() => {
+    setNow(Date.now());
+  }, 1000);
+  const displayTokenList = useMemo(() => {
+    if (task?.status === 'idle') {
+      return filteredTokenList;
+    }
+    return filteredTokenList.filter((item) => {
+      const statusItem = task?.statusDict[item.id];
+      if (
+        statusItem?.status === 'success' &&
+        statusItem.createdAt &&
+        statusItem.createdAt < now - 1.5 * 1000
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [filteredTokenList, task?.status, task?.statusDict, now]);
+
   const handleThresholdChange = useMemoizedFn((value: number) => {
     setCurrentThreshold(value);
     task?.clear();
@@ -131,135 +162,39 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
     task?.init(sortBy(tokens, (item) => -(item.amount * item.price || 0)));
   });
 
-  const columns = useMemo<ColumnsType<TokenItem>>(() => {
-    return [
-      {
-        title: (
-          <CheckboxV2
-            checked={
-              !!task?.list?.length &&
-              task?.list?.length === filteredTokenList?.length
-            }
-            indeterminate={
-              !!(
-                task?.list?.length &&
-                task?.list?.length < filteredTokenList?.length
-              )
-            }
-            disabled={disabled}
-            className="w-[20px] h-[20px]"
-            onChange={(v) => {
-              handleSelectedChange(v ? filteredTokenList : []);
-            }}
-          />
-        ),
-        dataIndex: 'select',
-        width: 68,
-        render: (_, record) => {
-          const checked = !!task?.list?.find((item) => item.id === record.id);
-          return (
-            <CheckboxV2
-              className="w-[20px] h-[20px]"
-              checked={checked}
-              disabled={disabled}
-              onChange={(v) => {
-                handleSelectedChange(
-                  !v
-                    ? task?.list?.filter((item) => item.id !== record.id) || []
-                    : [...(task?.list || []), record]
-                );
-              }}
-            />
-          );
-        },
-      },
-      {
-        title: 'Token',
-        width: 142,
-        render: (text, record) => (
-          <div className="flex items-center gap-[10px]">
-            <div className="relative w-[24px] h-[24px] flex-shrink-0">
-              <Image
-                className="w-full h-full block rounded-full"
-                src={record.logo_url || IconUnknown}
-                alt={record.symbol}
-                fallback={IconUnknown}
-                preview={false}
-              />
-              <TooltipWithMagnetArrow
-                title={chain?.name}
-                className="rectangle w-[max-content]"
-              >
-                <img
-                  className="w-[14px] h-[14px] absolute right-[-2px] bottom-[-2px] rounded-full"
-                  src={chain?.logo || IconUnknown}
-                  alt={record.chain}
-                />
-              </TooltipWithMagnetArrow>
-            </div>
-            <div className="text-[14px] leading-[17px] text-r-neutral-title1 truncate">
-              {getTokenSymbol(record)}
-            </div>
-          </div>
-        ),
-      },
-      {
-        title: 'Amount',
-        width: 112,
-        dataIndex: 'amount',
-        align: 'right',
-        render: (text, record) => (
-          <div className="text-r-neutral-title1">
-            {formatAmount(Math.abs(record.amount))}
-          </div>
-        ),
-      },
-      {
-        title: 'Value',
-        width: 112,
-        align: 'right',
-        render: (value, record) => (
-          <span className="text-r-neutral-title1">
-            {formatUsdValue(record.amount * record.price || 0)}
-          </span>
-        ),
-      },
-      task?.status !== 'idle'
-        ? {
-            title: 'Status',
-            // width: 128,
-            align: 'right',
-            render: (value, record) => {
-              const item = task?.statusDict[record.id];
-              if (!item) {
-                return null;
-              }
-              return (
-                <div className="flex justify-end">
-                  {item.status === 'idle' && (
-                    <ThemeIcon src={RcIconStatusIdle} />
-                  )}
-                  {item.status === 'pending' && (
-                    <ThemeIcon src={RcIconStatusPending} />
-                  )}
-                  {item.status === 'success' && (
-                    <ThemeIcon src={RcIconStatusSuccess} />
-                  )}
-                  {item.status === 'failed' && (
-                    <Tooltip
-                      overlayClassName="rectangle"
-                      title={item.failedReason}
-                    >
-                      <ThemeIcon src={RcIconStatusError} />
-                    </Tooltip>
-                  )}
-                </div>
-              );
-            },
-          }
-        : null,
-    ].filter(Boolean) as ColumnsType<TokenItem>;
-  }, [chain, task, disabled, filteredTokenList, task?.list]);
+  const handleTokenToggle = useMemoizedFn(
+    (record: TokenItem, nextChecked: boolean) => {
+      handleSelectedChange(
+        !nextChecked
+          ? task?.list?.filter((item) => item.id !== record.id) || []
+          : [...(task?.list || []), record]
+      );
+    }
+  );
+
+  const allSelected =
+    !!task?.list?.length && task?.list?.length === filteredTokenList.length;
+  const partiallySelected =
+    !!task?.list?.length && task?.list?.length < filteredTokenList.length;
+
+  const renderStatus = useMemoizedFn((record: TokenItem) => {
+    const item = task?.statusDict[record.id];
+    if (!item) {
+      return null;
+    }
+    return (
+      <div className="flex justify-end">
+        {item.status === 'idle' && <ThemeIcon src={RcIconStatusIdle} />}
+        {item.status === 'pending' && <ThemeIcon src={RcIconStatusPending} />}
+        {item.status === 'success' && <ThemeIcon src={RcIconStatusSuccess} />}
+        {item.status === 'failed' && (
+          <Tooltip overlayClassName="rectangle" title={item.failedReason}>
+            <ThemeIcon src={RcIconStatusError} />
+          </Tooltip>
+        )}
+      </div>
+    );
+  });
 
   return (
     <Container
@@ -302,40 +237,188 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
         })}
       </div>
 
-      <div className="mt-[14px] overflow-hidden rounded-[10px] border-[0.5px] border-rabby-neutral-line">
-        <Table
-          columns={columns}
-          dataSource={filteredTokenList}
-          pagination={false}
-          rowKey="id"
-          bordered={false}
-          scroll={{ y: 435 }}
-          footer={() =>
-            task?.status === 'idle' ? (
-              <div
-                className={clsx(
-                  'h-[52px] px-[18px]',
-                  'flex items-center justify-center gap-[64px]',
-                  'text-[13px] leading-[16px] text-r-neutral-foot',
-                  'border-t border-rabby-neutral-line'
-                )}
-              >
-                <div>
-                  Selected Tokens{' '}
-                  <span className="ml-[8px] font-medium text-r-neutral-title1">
-                    {task?.list?.length || 0}
-                  </span>
+      <div className="token-list mt-[14px]">
+        <div className="token-list-header flex items-center">
+          <div
+            className="token-list-cell token-list-cell flex items-center"
+            style={{ width: COLUMN_WIDTH.select }}
+          >
+            <CheckboxV2
+              checked={allSelected}
+              indeterminate={partiallySelected}
+              disabled={disabled}
+              className="w-[20px] h-[20px]"
+              onChange={(v) => {
+                handleSelectedChange(v ? filteredTokenList : []);
+              }}
+            />
+          </div>
+          <div
+            className="token-list-cell flex-1 min-w-0 flex items-center"
+            style={{ width: COLUMN_WIDTH.token }}
+          >
+            Token
+          </div>
+          <div
+            className="token-list-cell flex items-center justify-end"
+            style={{ width: COLUMN_WIDTH.amount }}
+          >
+            Amount
+          </div>
+          <div
+            className="token-list-cell flex items-center justify-end"
+            style={{ width: COLUMN_WIDTH.value }}
+          >
+            Value
+          </div>
+          {showStatus ? (
+            <div
+              className="token-list-cell token-list-cell--last flex items-center justify-end"
+              style={{ width: COLUMN_WIDTH.status }}
+            >
+              Status
+            </div>
+          ) : null}
+        </div>
+
+        {displayTokenList.length > 0 ? (
+          <div className="token-list-body">
+            {displayTokenList.map((record) => {
+              const checked = !!task?.list?.find(
+                (item) => item.id === record.id
+              );
+              return (
+                <div
+                  className={clsx('token-list-row flex items-center', {
+                    'is-disabled': disabled,
+                  })}
+                  key={record.id}
+                  role="checkbox"
+                  aria-checked={checked}
+                  aria-disabled={disabled}
+                  tabIndex={disabled ? -1 : 0}
+                  onClick={() => {
+                    if (disabled) {
+                      return;
+                    }
+                    handleTokenToggle(record, !checked);
+                  }}
+                  onKeyDown={(evt) => {
+                    if (disabled) {
+                      return;
+                    }
+                    if (evt.key === 'Enter' || evt.key === ' ') {
+                      evt.preventDefault();
+                      handleTokenToggle(record, !checked);
+                    }
+                  }}
+                >
+                  <div
+                    className="token-list-cell token-list-cell--first flex items-center"
+                    style={{ width: COLUMN_WIDTH.select }}
+                  >
+                    <CheckboxV2
+                      className="w-[20px] h-[20px]"
+                      checked={checked}
+                      disabled={disabled}
+                      onChange={(v) => {
+                        handleTokenToggle(record, v);
+                      }}
+                    />
+                  </div>
+
+                  <div
+                    className="token-list-cell flex-1 min-w-0 flex items-center"
+                    style={{ width: COLUMN_WIDTH.amount }}
+                  >
+                    <div className="flex items-center gap-[10px] min-w-0">
+                      <div className="relative w-[24px] h-[24px] flex-shrink-0">
+                        <Image
+                          className="w-full h-full block rounded-full"
+                          src={record.logo_url || IconUnknown}
+                          alt={record.symbol}
+                          fallback={IconUnknown}
+                          preview={false}
+                        />
+                        <TooltipWithMagnetArrow
+                          title={chain?.name}
+                          className="rectangle w-[max-content]"
+                        >
+                          <img
+                            className="w-[14px] h-[14px] absolute right-[-2px] bottom-[-2px] rounded-full"
+                            src={chain?.logo || IconUnknown}
+                            alt={record.chain}
+                          />
+                        </TooltipWithMagnetArrow>
+                      </div>
+                      <div className="text-[14px] leading-[17px] text-r-neutral-title1 truncate">
+                        {getTokenSymbol(record)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className="token-list-cell flex items-center justify-end"
+                    style={{ width: COLUMN_WIDTH.amount }}
+                  >
+                    <div className="text-r-neutral-title1">
+                      {formatAmount(Math.abs(record.amount))}
+                    </div>
+                  </div>
+
+                  <div
+                    className="token-list-cell flex items-center justify-end"
+                    style={{ width: COLUMN_WIDTH.value }}
+                  >
+                    <span className="text-r-neutral-title1">
+                      {formatUsdValue(record.amount * record.price || 0)}
+                    </span>
+                  </div>
+
+                  {showStatus ? (
+                    <div
+                      className="token-list-cell token-list-cell--last flex items-center justify-end"
+                      style={{ width: COLUMN_WIDTH.status }}
+                    >
+                      {renderStatus(record)}
+                    </div>
+                  ) : null}
                 </div>
-                <div>
-                  Total value{' '}
-                  <span className="ml-[8px] font-medium text-r-neutral-title1">
-                    {formatUsdValue(task?.expectReceive?.usd || 0)}
-                  </span>
-                </div>
-              </div>
-            ) : null
-          }
-        ></Table>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center">
+            <RcIconEmptyCC />
+            <div className="text-[14px] leading-[17px] text-r-neutral-foot mt-[16px]">
+              No low-value tokens found
+            </div>
+          </div>
+        )}
+
+        {task?.status === 'idle' ? (
+          <div
+            className={clsx(
+              'token-list-footer h-[52px] px-[18px]',
+              'flex items-center justify-center gap-[64px]',
+              'text-[13px] leading-[16px] text-r-neutral-foot',
+              'border-t border-rabby-neutral-line'
+            )}
+          >
+            <div>
+              Selected Tokens{' '}
+              <span className="ml-[8px] font-medium text-r-neutral-title1">
+                {task?.list?.length || 0}
+              </span>
+            </div>
+            <div>
+              Total value{' '}
+              <span className="ml-[8px] font-medium text-r-neutral-title1">
+                {formatUsdValue(task?.expectReceive?.usd || 0)}
+              </span>
+            </div>
+          </div>
+        ) : null}
       </div>
     </Container>
   );
