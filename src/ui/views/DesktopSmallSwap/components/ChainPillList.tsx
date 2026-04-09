@@ -2,6 +2,7 @@ import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { ChainWithBalance } from '@rabby-wallet/rabby-api/dist/types';
 import clsx from 'clsx';
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PortfolioPillItem {
   chain: string;
@@ -34,6 +35,7 @@ export const ChainPillList = ({
   onChange?: (chain: string) => void;
   disabled?: boolean;
 }) => {
+  const { t } = useTranslation();
   const GAP = 10;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const extraMeasureRef = useRef<HTMLButtonElement | null>(null);
@@ -42,7 +44,9 @@ export const ChainPillList = ({
   const [expanded, setExpanded] = useState(false);
 
   const getExtraLabel = (hiddenCount: number) => {
-    return `+${hiddenCount} chains`;
+    return t('page.desktopSmallSwap.moreChains', {
+      count: hiddenCount,
+    });
   };
 
   const hiddenCount = Math.max((data?.length || 0) - visibleCount, 0);

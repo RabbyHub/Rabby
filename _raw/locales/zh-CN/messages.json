@@ -128,7 +128,8 @@
           "perpsPositions_one": "{{count}} 头寸",
           "perpsPositions_other": "{{count}} 头寸",
           "lending": "借贷",
-          "dragTip": "长按以重新排序"
+          "dragTip": "长按以重新排序",
+          "convertDust": "小额资产兑换"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -4318,6 +4319,29 @@
       "searchMarket": "搜索市场",
       "selectChain": "选择区块链",
       "disabled": "禁用"
+    },
+    "desktopSmallSwap": {
+      "title": "小额资产兑换",
+      "description": "清空链上小额资产，让资产列表更简洁！",
+      "selectedTokens": "已选择资产",
+      "totalValue": "共计",
+      "selectLowValueTokens": "选择小额资产",
+      "receiveTitle": "兑换为",
+      "expectedToReceive": "预计收到",
+      "slippageTolerance": "滑点",
+      "singleTransactionGasLimit": "单笔Gas上限",
+      "startConvert": "一键兑换",
+      "stop": "停止兑换",
+      "unsupportedWalletType": "不支持此钱包类型",
+      "conversionProgress": "兑换进度",
+      "completedTitle": "兑换完成！",
+      "done": "完成",
+      "stopTaskModal": {
+        "title": "是否确认停止兑换？",
+        "description": "请注意，已兑换成功的资产无法撤销",
+        "continueSwap": "返回继续",
+        "stop": "停止兑换"
+      }
     }
   },
   "component": {

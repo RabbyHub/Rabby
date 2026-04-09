@@ -12,6 +12,7 @@ import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import { Image, Tooltip } from 'antd';
 import { sortBy } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ReactComponent as RcIconStatusError } from 'ui/assets/small-swap/status-failed.svg';
 import { ReactComponent as RcIconStatusIdle } from 'ui/assets/small-swap/status-idle.svg';
@@ -117,6 +118,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
   task,
   disabled,
 }) => {
+  const { t } = useTranslation();
   const [currentThreshold, setCurrentThreshold] = React.useState(10);
   const showStatus = task?.status !== 'idle';
 
@@ -211,7 +213,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
       }}
     >
       <div className="mb-[32px] text-[24px] leading-[29px] font-medium text-r-neutral-title1">
-        Select low-value tokens
+        {t('page.desktopSmallSwap.selectLowValueTokens')}
       </div>
 
       <div className="flex items-center gap-[12px] mb-[16px]">
@@ -257,26 +259,26 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
             className="token-list-cell flex-1 min-w-0 flex items-center"
             style={{ width: COLUMN_WIDTH.token }}
           >
-            Token
+            {t('page.desktopSmallSwap.tokenColumn')}
           </div>
           <div
             className="token-list-cell flex items-center justify-end"
             style={{ width: COLUMN_WIDTH.amount }}
           >
-            Amount
+            {t('page.desktopSmallSwap.amountColumn')}
           </div>
           <div
             className="token-list-cell flex items-center justify-end"
             style={{ width: COLUMN_WIDTH.value }}
           >
-            Value
+            {t('page.desktopSmallSwap.valueColumn')}
           </div>
           {showStatus ? (
             <div
               className="token-list-cell token-list-cell--last flex items-center justify-end"
               style={{ width: COLUMN_WIDTH.status }}
             >
-              Status
+              {t('page.desktopSmallSwap.statusColumn')}
             </div>
           ) : null}
         </div>
@@ -391,7 +393,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
           <div className="flex-1 flex flex-col items-center justify-center">
             <RcIconEmptyCC />
             <div className="text-[14px] leading-[17px] text-r-neutral-foot mt-[16px]">
-              No low-value tokens found
+              {t('page.desktopSmallSwap.noLowValueTokensFound')}
             </div>
           </div>
         )}
@@ -406,13 +408,13 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
             )}
           >
             <div>
-              Selected Tokens{' '}
+              {t('page.desktopSmallSwap.selectedTokens')}{' '}
               <span className="ml-[8px] font-medium text-r-neutral-title1">
                 {task?.list?.length || 0}
               </span>
             </div>
             <div>
-              Total value{' '}
+              {t('page.desktopSmallSwap.totalValue')}{' '}
               <span className="ml-[8px] font-medium text-r-neutral-title1">
                 {formatUsdValue(task?.expectReceive?.usd || 0)}
               </span>
