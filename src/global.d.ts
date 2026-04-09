@@ -6,3 +6,5 @@ declare module 'csstype' {
 }
 
 declare module '*.md';
+declare module '*.less';
+declare module '*.css';
