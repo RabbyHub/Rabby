@@ -18,7 +18,8 @@ import { LpTokenSwitch } from './components/LpTokenSwitch';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import styled from 'styled-components';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
-import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
+// import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
+const DESKTOP_NAV_HEIGHT = 0;
 
 interface Props {
   isTokensLoading: boolean;

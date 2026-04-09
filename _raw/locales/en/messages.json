@@ -2737,6 +2737,7 @@
         "noTestnetAssets": "No Custom Network Assets",
         "addTokenEntryText": "Token",
         "openInTab": "Open in Rabby Tab",
+        "openInTabV2": "Open in Tab",
         "openProMode": "Open Pro Mode",
         "searchTokenPlaceholder": "Search Token"
       },
