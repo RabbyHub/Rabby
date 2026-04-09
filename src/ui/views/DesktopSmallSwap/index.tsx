@@ -291,8 +291,7 @@ const DesktopSmallSwapContent: React.FC = () => {
         visible={task.status === 'paused'}
         onContinue={task.continue}
         onStop={() => {
-          task.clear();
-          handleRefresh();
+          task.stop();
         }}
       />
     </div>

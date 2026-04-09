@@ -1,5 +1,5 @@
 import { Account } from '@/background/service/preference';
-import { DEX } from '@/constant';
+import { DEX, EVENTS } from '@/constant';
 import i18n from '@/i18n';
 import { useRabbySelector } from '@/ui/store';
 import { formatAmount, useWallet, WalletControllerType } from '@/ui/utils';
@@ -24,6 +24,10 @@ import {
   useQuoteMethods,
 } from '../../Swap/hooks';
 import { DEFAULT_MAX_GAS_COST, DEFAULT_SLIPPAGE } from '../constant';
+import { last, random } from 'lodash';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import eventBus from '@/eventBus';
+import { useSignatureStore } from '@/ui/component/MiniSignV2';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 const TASK_CANCELLED_ERROR_NAME = 'BatchSwapTaskCancelled';
@@ -264,20 +268,12 @@ export type TaskItemStatus =
       failedCode?: FailedCode;
       failedReason?: string;
       createdAt?: number;
-      gasCost?: {
-        gasCostUsd: BigNumber;
-      };
     }
   | {
       status: 'success';
       txHash: string;
       preExecResult?: ExplainTxResponse;
       createdAt?: number;
-      gasCost: {
-        gasCostUsd: BigNumber;
-        gasCostAmount: BigNumber;
-        nativeTokenSymbol: string;
-      };
     };
 
 export const useBatchSwapTask = (options: {
@@ -285,7 +281,7 @@ export const useBatchSwapTask = (options: {
   account?: Account;
   receiveToken?: TokenItem;
 }) => {
-  const { receiveToken } = options;
+  const { receiveToken, account, chain } = options;
   const wallet = useWallet();
   const gasAccount = useGasAccountSign();
   const queueRef = React.useRef(
@@ -319,8 +315,19 @@ export const useBatchSwapTask = (options: {
     null
   );
   const { getSingleQuote } = useQuoteMethods();
-  const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
-  const dexId = (supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[])[0];
+
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+    account: account!,
+    chainServerId: chain?.serverId || '',
+    autoResetGasStoreOnChainChange: true,
+  });
+  const signState = useSignatureStore();
+
+  const dexId = useRabbySelector((s) => {
+    const list = s.swap.supportedDEXList.filter((e) => DEX[e]);
+    const randomIndex = random(0, list.length - 1);
+    return list[randomIndex] as DEX_ENUM;
+  });
 
   const updateStatus = React.useCallback(
     (nextStatus: 'idle' | 'active' | 'paused' | 'completed') => {
@@ -350,6 +357,7 @@ export const useBatchSwapTask = (options: {
         async () => {
           try {
             throwIfTaskCancelled();
+            closeSign();
 
             if (
               !options.chain ||
@@ -438,52 +446,86 @@ export const useBatchSwapTask = (options: {
               throw createNamedError(BatchSwapFailReasonKey.BuildSwapTxsFailed);
             }
 
-            let result: Awaited<ReturnType<typeof sendTransaction>> | undefined;
+            const result: {
+              txHash: string;
+              preExecResult?: ExplainTxResponse;
+              isSimulationFailed?: boolean;
+            } = { txHash: '' };
 
-            for (const tx of txs) {
-              throwIfTaskCancelled();
+            throwIfTaskCancelled();
 
-              let pushType: TxPushType = 'default';
-              if ('swapPreferMEVGuarded' in tx) {
-                if (tx.swapPreferMEVGuarded) {
-                  pushType = 'mev';
-                }
-                delete tx.swapPreferMEVGuarded;
-              }
-              result = await sendTransaction({
-                tx,
-                ignoreGasCheck,
-                wallet,
-                chainServerId: options.chain.serverId,
-                sig: gasAccount?.sig,
-                autoUseGasAccount: true,
-                pushType,
-                onProgress: (status) => {
-                  if (isTaskCancelled()) {
-                    return;
-                  }
+            // let pushType: TxPushType = 'default';
+            // if ('swapPreferMEVGuarded' in tx) {
+            //   if (tx.swapPreferMEVGuarded) {
+            //     pushType = 'mev';
+            //   }
+            //   delete tx.swapPreferMEVGuarded;
+            // }
 
-                  if (status === 'builded') {
-                    setTxStatus('sended');
-                  } else if (status === 'signed') {
-                    setTxStatus('signed');
-                  }
-                },
-                ga: {
-                  category: 'Swap',
-                  source: 'swap',
-                },
-              });
+            await prefetch({ txs: txs });
+            const res = await openDirect({
+              txs: txs,
+              onPreExecChange(p) {
+                // not work
+                console.log('preExec change', p);
+                // result.preExecResult = p;
+              },
+              onPreExecError() {
+                result.isSimulationFailed = true;
+              },
+            });
 
-              throwIfTaskCancelled();
+            result.txHash = last(res) || '';
+
+            console.log('signState', signState);
+            // result = await sendTransaction({
+            //   tx,
+            //   ignoreGasCheck,
+            //   wallet,
+            //   chainServerId: options.chain.serverId,
+            //   sig: gasAccount?.sig,
+            //   autoUseGasAccount: true,
+            //   pushType,
+            //   onProgress: (status) => {
+            //     if (isTaskCancelled()) {
+            //       return;
+            //     }
+
+            //     if (status === 'builded') {
+            //       setTxStatus('sended');
+            //     } else if (status === 'signed') {
+            //       setTxStatus('signed');
+            //     }
+            //   },
+            //   ga: {
+            //     category: 'Swap',
+            //     source: 'swap',
+            //   },
+            // });
+            console.log('sendTransaction result', result);
+            throwIfTaskCancelled();
+            if (result.isSimulationFailed) {
+              throw createNamedError(BatchSwapFailReasonKey.TransactionFailed);
             }
-
-            if (!result) {
+            if (!result?.txHash) {
               throw createNamedError(BatchSwapFailReasonKey.SendSwapTxFailed);
             }
 
+            const txCompleted = await new Promise<{
+              gasUsed: number;
+              status: number;
+            }>((resolve) => {
+              const handler = (res) => {
+                if (res?.hash === result.txHash) {
+                  eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+                  resolve(res || {});
+                }
+              };
+              eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+            });
+            throwIfTaskCancelled();
             // 上链成功，但交易失败（如被 MEV 抢跑、价格变动过大等导致交易最终失败）
-            if (!result.status || Number(result.status) === 0) {
+            if (!txCompleted.status || Number(txCompleted.status) === 0) {
               throw createNamedError(BatchSwapFailReasonKey.TransactionFailed);
             }
 
@@ -496,7 +538,6 @@ export const useBatchSwapTask = (options: {
                 createdAt: Date.now(),
                 preExecResult: result!.preExecResult,
                 txHash: result!.txHash,
-                gasCost: result!.gasCost,
               },
             }));
           } catch (e) {
@@ -523,7 +564,6 @@ export const useBatchSwapTask = (options: {
                   status: 'failed',
                   failedCode: failedCode,
                   failedReason,
-                  gasCost: e.gasCost,
                   createdAt: Date.now(),
                 },
               }));
@@ -531,6 +571,7 @@ export const useBatchSwapTask = (options: {
           } finally {
             if (!isTaskCancelled()) {
               setTxStatus('idle');
+              closeSign();
             }
             // setCurrentToken(null);
           }
@@ -609,6 +650,7 @@ export const useBatchSwapTask = (options: {
     return formatAmount(expectReceiveUsd / options.receiveToken.price);
   }, [expectReceiveUsd, options.receiveToken]);
 
+  console.log('statusDict', statusDict);
   const finalReceive = useMemo(() => {
     let totalUsd = 0;
     let totalAmount = 0;
@@ -635,14 +677,21 @@ export const useBatchSwapTask = (options: {
     return list.findIndex((item) => statusDict[item.id]?.status === 'pending');
   }, [list, statusDict]);
 
-  const clear = React.useCallback(() => {
+  const clear = useMemoizedFn(() => {
     cancelRunningTasks();
     setList([]);
     setStatusDict({});
     setTxStatus('idle');
     setCurrentToken(null);
     updateStatus('idle');
-  }, [cancelRunningTasks, updateStatus]);
+  });
+
+  const stop = useMemoizedFn(() => {
+    cancelRunningTasks();
+    setList([]);
+    setCurrentToken(null);
+    updateStatus('completed');
+  });
 
   return {
     statusDict,
@@ -651,6 +700,7 @@ export const useBatchSwapTask = (options: {
     start,
     continue: handleContinue,
     pause,
+    stop,
     status,
     txStatus,
     addTask,

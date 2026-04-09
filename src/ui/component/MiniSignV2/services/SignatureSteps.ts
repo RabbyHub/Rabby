@@ -646,6 +646,7 @@ export class SignatureSteps {
       txs.map((_, index) => preExecProcess(index))
     );
 
+    console.log('txsCalc', txsCalc, config, config?.onPreExecChange);
     if (config?.onPreExecChange && txsCalc.length) {
       config?.onPreExecChange(txsCalc[txsCalc.length - 1].preExecResult);
     }
