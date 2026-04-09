@@ -55,7 +55,10 @@ const DesktopSmallSwapContent: React.FC = () => {
         currentAccount.address,
         force
       );
-      return sortBy(data?.chain_list || [], (item) => -(item.usd_value || 0));
+      return sortBy(
+        data?.chain_list || [],
+        (item) => -(item.usd_value || 0)
+      ).filter((item) => !!item.usd_value);
     },
     {
       manual: true,
@@ -74,7 +77,10 @@ const DesktopSmallSwapContent: React.FC = () => {
       .equalsIgnoreCase(currentAccount?.address || '')
       .first()
       .then((data) => {
-        return sortBy(data?.chain_list || [], (item) => -(item.usd_value || 0));
+        return sortBy(
+          data?.chain_list || [],
+          (item) => -(item.usd_value || 0)
+        ).filter((item) => !!item.usd_value);
       });
   }, [currentAccount?.address]);
 
@@ -141,8 +147,13 @@ const DesktopSmallSwapContent: React.FC = () => {
     return db.token
       .where('[owner_addr+chain]')
       .equals([currentAccount?.address?.toLowerCase() || '', chainServerId])
-      .toArray();
-  }, [currentAccount?.address, chainServerId]);
+      .toArray()
+      .then((tokens) => {
+        return tokens.filter(
+          (token) => token.id !== (chain?.nativeTokenAddress || chainServerId)
+        );
+      });
+  }, [currentAccount?.address, chainServerId, chain?.nativeTokenAddress]);
 
   const tokenList = useMemo(() => {
     if (isSupportDB) {

@@ -76,7 +76,10 @@ export const SelectPopup = ({
       <footer className="fixed-footer flex justify-between items-center gap-[16px]">
         <button
           type="button"
-          className="flex-1 block  h-[60px] rounded-[8px] text-[18px] leading-[20px] bg-r-neutral-bg-4"
+          className={clsx(
+            'flex-1 block h-[60px] rounded-[8px] bg-rb-neutral-bg-4',
+            'text-[18px] leading-[20px] font-medium text-r-neutral-title1'
+          )}
           onClick={onCancel}
         >
           {t('global.Cancel')}

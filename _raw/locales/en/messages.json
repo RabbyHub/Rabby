@@ -4632,7 +4632,8 @@
     "Done": "Done",
     "Nonce": "Nonce",
     "tryAgain": "Try Again",
-    "notSupportTesntnet": "Not supported for custom network"
+    "notSupportTesntnet": "Not supported for custom network",
+    "collapse": "Collapse"
   },
   "background": {
     "error": {

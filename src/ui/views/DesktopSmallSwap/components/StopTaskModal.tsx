@@ -38,7 +38,7 @@ export const StopTaskModal: React.FC<{
       className="modal-support-darkmode small-swap-stop-task-modal"
     >
       <GlobalStyle />
-      <div className="bg-rb-neutral-InvertHighlight flex flex-col h-full p-[24px]">
+      <div className="flex flex-col h-full p-[24px]">
         <header className="mb-[16px]">
           <h3 className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1 text-center m-0">
             {t('page.desktopSmallSwap.stopTaskModal.title')}
@@ -50,7 +50,10 @@ export const StopTaskModal: React.FC<{
         <footer className="flex items-center gap-[16px]">
           <button
             type="button"
-            className="flex-1 w-[50%]  h-[60px] rounded-[8px] text-[18px] leading-[20px] font-medium bg-rb-neutral-bg-4"
+            className={clsx(
+              'flex-1 w-[50%]  h-[60px] rounded-[8px] bg-rb-neutral-bg-4',
+              'text-[18px] leading-[20px] font-medium text-r-neutral-title1'
+            )}
             onClick={onContinue}
           >
             {t('page.desktopSmallSwap.stopTaskModal.continueSwap')}

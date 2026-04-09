@@ -25,7 +25,7 @@ import { CheckboxV2 } from './Checkbox';
 
 const Container = styled.section`
   .token-list {
-    border: 0.5px solid var(--rabby-neutral-line, #d8e0ea);
+    border: 0.5px solid var(--r-neutral-line, #d8e0ea);
     border-radius: 8px;
     overflow: hidden;
 
@@ -139,7 +139,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
     setNow(Date.now());
   }, 1000);
   const displayTokenList = useMemo(() => {
-    if (task?.status === 'idle') {
+    if (!task?.status || task?.status === 'idle') {
       return filteredTokenList;
     }
     return filteredTokenList.filter((item) => {

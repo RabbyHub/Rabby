@@ -1,8 +1,10 @@
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { ChainWithBalance } from '@rabby-wallet/rabby-api/dist/types';
+import { Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ReactComponent as RcIconArrowUp } from 'ui/assets/small-swap/arrow-up-cc.svg';
 
 interface PortfolioPillItem {
   chain: string;
@@ -18,11 +20,14 @@ interface ChainPillProps {
 }
 
 const extraLabelButtonClassName = clsx(
+  'flex items-center gap-[10px]',
   'flex-shrink-0 h-[40px] rounded-[16px] px-[12px] py-[10px]',
   'border border-rabby-neutral-line bg-r-neutral-card-1',
   'text-[15px] leading-[18px] text-r-neutral-body',
   'hover:border-rabby-blue-default hover:bg-r-blue-light1 hover:text-r-blue-default'
 );
+
+const collapseLabelButtonClassName = clsx(extraLabelButtonClassName);
 
 export const ChainPillList = ({
   data,
@@ -47,6 +52,10 @@ export const ChainPillList = ({
     return t('page.desktopSmallSwap.moreChains', {
       count: hiddenCount,
     });
+  };
+
+  const getCollapseLabel = () => {
+    return t('global.collapse');
   };
 
   const hiddenCount = Math.max((data?.length || 0) - visibleCount, 0);
@@ -152,6 +161,16 @@ export const ChainPillList = ({
             }}
           />
         ) : null}
+        {expanded ? (
+          <ExtraLabelButton
+            showIcon
+            label={getCollapseLabel()}
+            className={collapseLabelButtonClassName}
+            onClick={() => {
+              setExpanded(false);
+            }}
+          />
+        ) : null}
       </div>
 
       <div className="absolute left-0 top-0 -z-10 invisible pointer-events-none flex items-center gap-[10px] whitespace-nowrap">
@@ -183,7 +202,9 @@ const ChainPill = React.forwardRef<HTMLButtonElement, ChainPillProps>(
           disabled ? 'cursor-not-allowed' : ''
         )}
       >
-        <img src={data.logo_url} className="w-[18px] h-[18px] rounded-full" />
+        <Tooltip title={data.name} placement="top" overlayClassName="rectangle">
+          <img src={data.logo_url} className="w-[18px] h-[18px] rounded-full" />
+        </Tooltip>
         <div className="text-[15px] leading-[18px]">
           ${splitNumberByStep(data.usd_value.toFixed(2))}
         </div>
@@ -199,15 +220,18 @@ const ExtraLabelButton = React.forwardRef<
   {
     label: string;
     onClick?: () => void;
+    className?: string;
+    showIcon?: boolean;
   }
->(({ label, onClick }, ref) => {
+>(({ label, onClick, className, showIcon }, ref) => {
   return (
     <button
       ref={ref}
       type="button"
       onClick={onClick}
-      className={extraLabelButtonClassName}
+      className={clsx(extraLabelButtonClassName, className)}
     >
+      {showIcon ? <RcIconArrowUp className="text-r-neutral-foot" /> : null}
       {label}
     </button>
   );
