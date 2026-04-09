@@ -18,6 +18,8 @@ import { CustomMarket } from './config/market';
 import { DesktopDappSelector } from '@/ui/component/DesktopDappSelector';
 import { useSelectedMarket } from './hooks/market';
 import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
+import { ReactComponent as RcIconRabbyCC } from '@/ui/assets/perps/IconRabbyCC.svg';
+import { useTranslation } from 'react-i18next';
 
 const Wrap = styled.div`
   width: 100%;
@@ -36,6 +38,7 @@ const DesktopLendingContent: React.FC = () => {
   const { fetchData, setFetchLoading } = useFetchLendingData();
   const { iUserSummary, apyInfo } = useLendingSummaryCard();
   const { marketKey, init } = useSelectedMarket();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!init) return;
@@ -47,9 +50,15 @@ const DesktopLendingContent: React.FC = () => {
 
   return (
     <Wrap>
-      <div className="flex items-center justify-between">
-        <DesktopNav showRightItems={false} />
-        <div className="flex items-center gap-[16px]">
+      <div className="flex items-center justify-between mt-20">
+        {/* <DesktopNav showRightItems={false} /> */}
+        <div className="flex items-center gap-[6px] text-rb-neutral-title-1">
+          <RcIconRabbyCC />
+          <span className="text-[20px] leading-[24px] font-bold">
+            {t('component.DesktopNav.lending')}
+          </span>
+        </div>
+        <div className="flex items-center gap-[12px]">
           <DesktopDappSelector type="lending" />
           <DesktopAccountSelector
             value={currentAccount}
@@ -62,7 +71,7 @@ const DesktopLendingContent: React.FC = () => {
       </div>
       <div
         className={clsx(
-          'flex flex-col flex-1 min-h-0 min-w-0 mt-[4px] relative',
+          'flex flex-col flex-1 min-h-0 min-w-0 mt-[12px] relative',
           'border border-solid border-rb-neutral-line rounded-[20px] overflow-hidden',
           'bg-rb-neutral-bg-1'
         )}

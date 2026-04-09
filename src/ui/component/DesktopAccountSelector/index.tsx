@@ -88,7 +88,7 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
       >
         <div
           className={clsx(
-            'h-[40px] pl-[16px] px-[12px] rounded-[16px]',
+            'h-[32px] pl-[12px] px-[10px] rounded-[8px]',
             'flex items-center gap-[6px] cursor-pointer',
             'border border-rb-neutral-line',
             'hover:bg-rb-brand-light-1 hover:border-rb-brand-default'

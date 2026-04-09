@@ -41,6 +41,9 @@ const reportNavEvent = debounce((eventKey: string) => {
   });
 }, 300);
 
+/**
+ * @deprecated
+ */
 export const DesktopNav: React.FC<{
   onActionSelect?: (action: DesktopNavAction) => void;
   showRightItems?: boolean;

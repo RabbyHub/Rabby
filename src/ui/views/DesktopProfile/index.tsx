@@ -2,7 +2,6 @@ import React, { useMemo, useState, useRef, useEffect } from 'react';
 
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { DESKTOP_NAV_HEIGHT, DesktopNav } from '@/ui/component/DesktopNav';
 import { ProfileHeader } from './components/ProfileHeader';
 import { BackTop, Tabs } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -44,6 +43,7 @@ import { DIFITab } from './components/TokensTabPane/DifiTab';
 import { useTokenAndDIFIData } from './components/TokensTabPane/hook';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 import { SwitchThemeBtn } from './components/SwitchThemeBtn';
+const DESKTOP_NAV_HEIGHT = 0;
 
 const StickyBorderTop = () => (
   <div className="sticky h-0 z-50" style={{ top: DESKTOP_NAV_HEIGHT }}>
@@ -203,13 +203,13 @@ export const DesktopProfile: React.FC<{
   return (
     <>
       <DesktopPageWrap
-        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] no-scrollbar"
+        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] mt-[18px] no-scrollbar"
         ref={scrollContainerRef}
         style={style}
       >
         <div className="main-content flex-1 pb-[20px]">
           <div className="layout-container">
-            <DesktopNav />
+            {/* <DesktopNav /> */}
             <div
               className="sticky z-10 pt-[0px] overflow-scroll flex-initial px-1 w-auto"
               style={{
@@ -364,12 +364,12 @@ export const DesktopProfile: React.FC<{
           )}
           // style={{ top: DESKTOP_NAV_HEIGHT }}
         >
-          <div
+          {/* <div
             className="flex items-center justify-end flex-shrink-0"
             style={{ height: `${DESKTOP_NAV_HEIGHT}px` }}
           >
             <SwitchThemeBtn />
-          </div>
+          </div> */}
           <div className="flex-1">
             <DesktopSelectAccountList />
           </div>
