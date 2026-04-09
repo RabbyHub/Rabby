@@ -2593,6 +2593,8 @@
           "customRpc": "Modify RPC URL",
           "metamaskPreferredDapps": "MetaMask Preferred Dapps",
           "currentLanguage": "Current Language",
+          "currency": "Currency",
+          "searchCurrency": "Search currency",
           "enableTestnets": "Enable Testnets",
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
@@ -2774,6 +2776,7 @@
         "noTestnetAssets": "No Custom Network Assets",
         "addTokenEntryText": "Token",
         "openInTab": "Open in Rabby Tab",
+        "openInTabV2": "Open in Tab",
         "openProMode": "Open Pro Mode",
         "searchTokenPlaceholder": "Search Token"
       },
@@ -2838,7 +2841,8 @@
         "title": "Rabby Points",
         "desc": "Check your points in Rabby Mobile.",
         "downloadIntro": "Don’t have the app yet? Download now."
-      }
+      },
+      "noData": "No matched currency"
     },
     "nft": {
       "floorPrice": "/ Floor Price:",

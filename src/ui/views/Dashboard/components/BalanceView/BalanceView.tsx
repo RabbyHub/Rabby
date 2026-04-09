@@ -37,6 +37,7 @@ import { IExtractFromPromise } from '@/ui/utils/type';
 import { OfflineChainNotify } from '../OfflineChainNotify';
 import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
 import { useQueryProjects } from 'ui/utils/portfolio';
+import { useCurrency } from '@/ui/hooks/useCurrency';
 
 export const BalanceView = ({
   currentAccount,
@@ -44,6 +45,7 @@ export const BalanceView = ({
   currentAccount?: Account | null;
 }) => {
   const { t } = useTranslation();
+  const { currency, syncCurrencyList } = useCurrency();
 
   const { currentHomeBalanceCache } = useHomeBalanceView(
     currentAccount?.address
@@ -94,6 +96,7 @@ export const BalanceView = ({
     nonce: accountBalanceUpdateNonce,
     realtimeNetWorth: latestEvmBalance,
     initData: currentHomeBalanceCache?.originalCurveData,
+    currency,
   });
   const wallet = useWallet();
   const [isGnosis, setIsGnosis] = useState(false);
@@ -125,7 +128,8 @@ export const BalanceView = ({
         formChartData(
           currentHomeBalanceCache?.originalCurveData || [],
           balanceValue,
-          Date.now()
+          Date.now(),
+          currency
         ),
       matteredChainBalances: latestMatteredChainBalances.length
         ? latestMatteredChainBalances
@@ -142,6 +146,7 @@ export const BalanceView = ({
     latestChainBalancesWithValue,
     latestCurveChartData,
     currentHomeBalanceCache,
+    currency,
   ]);
 
   const getCacheExpired = useCallback(async () => {
@@ -201,6 +206,10 @@ export const BalanceView = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+
+  useEffect(() => {
+    syncCurrencyList();
+  }, [syncCurrencyList]);
 
   const handleIsGnosisChange = useCallback(async () => {
     if (!currentAccount) return;
@@ -355,7 +364,8 @@ export const BalanceView = ({
             ) : (
               <BalanceLabel
                 // isCache={balanceFromCache}
-                balance={currentBalance || 0}
+                balanceUsd={currentBalance || 0}
+                currency={currency}
               />
             )}
           </div>

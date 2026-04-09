@@ -20,9 +20,10 @@ import { TopPermissionTips } from './components/TopPermissionTips';
 import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import usePerpsProState from './hooks/usePerpsProState';
-import { DesktopDappSelector } from '@/ui/component/DesktopDappSelector';
+import { ReactComponent as RcIconRabbyCC } from '@/ui/assets/perps/IconRabbyCC.svg';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import './resizable-panels.css';
+import { useTranslation } from 'react-i18next';
 
 const Wrap = styled.div`
   width: 100%;
@@ -40,6 +41,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
 }) => {
   usePerpsProInit(isActive);
 
+  const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
 
@@ -55,12 +57,17 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   return (
     <>
       <Wrap>
-        <div className="flex flex-1 px-[20px] pb-16">
+        <div className="flex flex-1 pb-16">
           <div className="flex flex-col flex-1 min-w-0">
-            <div className="flex items-center justify-between">
-              <DesktopNav showRightItems={false} />
-
-              <div className="flex items-center gap-[16px]">
+            <div className="flex items-center justify-between mt-20 mb-12 px-[12px]">
+              {/* <DesktopNav showRightItems={false} /> */}
+              <div className="flex items-center gap-[6px] text-rb-neutral-title-1">
+                <RcIconRabbyCC />
+                <span className="text-[20px] leading-[24px] font-bold">
+                  {t('component.DesktopNav.perps')}
+                </span>
+              </div>
+              <div className="flex items-center gap-[12px]">
                 <DesktopAccountSelector
                   scene="perps"
                   value={currentPerpsAccount}
@@ -71,7 +78,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
               </div>
             </div>
             <TopPermissionTips />
-            <div className="flex flex-1 min-w-0 min-h-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
+            <div className="flex flex-1 min-w-0 min-h-0 border-t border-b  border-solid border-rb-neutral-line overflow-hidden bg-rb-neutral-bg-1">
               {/* [chart + order book] + UserInfoHistory，can be resized vertically */}
               <div className="flex-[4] flex flex-col min-w-0 min-h-0 border-r border-solid border-rb-neutral-line overflow-hidden">
                 <PanelGroup

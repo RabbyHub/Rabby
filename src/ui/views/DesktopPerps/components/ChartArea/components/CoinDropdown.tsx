@@ -481,25 +481,37 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   );
 
   return (
-    <Dropdown
-      overlay={dropdownMenu}
-      // trigger={['click']}
-      transitionName=""
-      visible={dropdownVisible}
-      onVisibleChange={setDropdownVisible}
-      placement="bottomLeft"
-    >
-      <div className="mr-32 flex items-center gap-[8px] cursor-pointer transition-colors py-[4px] rounded-[6px] min-w-[90px] justify-center">
-        <TokenImg
-          logoUrl={marketItem?.logoUrl || ''}
-          withDirection={false}
-          size={24}
-        />
-        <div className="text-[20px] leading-[24px] font-bold text-r-neutral-title-1">
-          {formatPerpsCoin(coin)}
-        </div>
-        <RcIconArrowDown className="text-r-neutral-secondary" />
+    <div className="mr-32 flex items-center gap-[8px] py-[4px]">
+      <div
+        className="flex items-center justify-center w-[16px] h-[16px] flex-shrink-0 cursor-pointer"
+        onClick={(e) => handleToggleFavorite(coin, e)}
+      >
+        {favoritedCoins.includes(coin) ? (
+          <RcIconStarFilled className="text-r-yellow-default" />
+        ) : (
+          <RcIconStar className="text-r-neutral-foot" />
+        )}
       </div>
-    </Dropdown>
+      <Dropdown
+        overlay={dropdownMenu}
+        // trigger={['click']}
+        transitionName=""
+        visible={dropdownVisible}
+        onVisibleChange={setDropdownVisible}
+        placement="bottomLeft"
+      >
+        <div className="flex items-center gap-[8px] cursor-pointer transition-colors rounded-[6px] min-w-[90px] justify-center">
+          <TokenImg
+            logoUrl={marketItem?.logoUrl || ''}
+            withDirection={false}
+            size={24}
+          />
+          <div className="text-[20px] leading-[24px] font-bold text-r-neutral-title-1">
+            {formatPerpsCoin(coin)}
+          </div>
+          <RcIconArrowDown className="text-r-neutral-secondary" />
+        </div>
+      </Dropdown>
+    </div>
   );
 };

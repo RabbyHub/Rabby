@@ -253,7 +253,7 @@ const SendToken = () => {
   } | null>(null);
 
   const [inited, setInited] = useState(false);
-  const [initLoading, setInitLoading] = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
   const [balanceError, setBalanceError] = useState<string | null>(null);
@@ -357,6 +357,16 @@ const SendToken = () => {
         };
       }
 
+      // 当 token 还在加载时，不执行检查，避免用不完整数据判断导致错误闪现
+      if (initLoading) {
+        return {
+          disable: false,
+          cexId: '',
+          reason: '',
+          shortReason: '',
+        };
+      }
+
       const toCexId = addressDesc?.cex?.id;
       const isSupportCEX = globalSupportCexList.find(
         (cex) => cex.id === toCexId
@@ -411,7 +421,7 @@ const SendToken = () => {
         shortReason: '',
       };
     },
-    [addressDesc, t]
+    [addressDesc, initLoading, t]
   );
 
   const disableChainCheck: TDisableCheckChainFn = useCallback(

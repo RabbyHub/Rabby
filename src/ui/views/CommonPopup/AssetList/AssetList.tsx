@@ -169,7 +169,7 @@ export const AssetList = ({
             }}
           >
             <div className="flex items-center justify-center gap-[4px]">
-              {t('page.dashboard.assets.openInTab')}
+              {t('page.dashboard.assets.openInTabV2')}
             </div>
           </button>
         </div>

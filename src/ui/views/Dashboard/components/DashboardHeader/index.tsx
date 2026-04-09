@@ -226,15 +226,6 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
             >
               <RcIconAddWalletCC />
             </div> */}
-            <div
-              className={clsx(
-                'p-[6px] rounded-[5px] cursor-pointer text-r-neutral-title-2',
-                'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
-              )}
-              onClick={handleOpenDesktop}
-            >
-              <RcIconFullscreen1CC />
-            </div>
 
             <div
               className={clsx(

@@ -19,6 +19,7 @@ import {
   transactionHistoryService,
   transactionsService,
   contactBookService,
+  currencyService,
   signTextHistoryService,
   whitelistService,
   swapService,
@@ -2093,6 +2094,11 @@ export class WalletController extends BaseController {
 
   getLocale = () => preferenceService.getLocale();
   setLocale = (locale: string) => preferenceService.setLocale(locale);
+
+  getCurrencyStore = () => currencyService.getStore();
+  syncCurrencyList = (force = false) => currencyService.syncCurrencyList(force);
+  getCurrency = () => currencyService.getCurrency();
+  setCurrency = (currency: string) => currencyService.setCurrency(currency);
 
   getThemeMode = () => preferenceService.getThemeMode();
   setThemeMode = (themeMode: DARK_MODE_TYPE) =>
