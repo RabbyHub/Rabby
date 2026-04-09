@@ -169,8 +169,6 @@ const DesktopSmallSwapContent: React.FC = () => {
     }
   );
 
-  console.log('receiveToken', receiveToken);
-
   const task = useBatchSwapTask({
     chain: chain || undefined,
     account: currentAccount || undefined,

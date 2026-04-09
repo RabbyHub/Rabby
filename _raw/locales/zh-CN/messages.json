@@ -4341,7 +4341,8 @@
         "description": "请注意，已兑换成功的资产无法撤销",
         "continueSwap": "返回继续",
         "stop": "停止兑换"
-      }
+      },
+      "swapFailed": "兑换失败，{{reason}}"
     }
   },
   "component": {

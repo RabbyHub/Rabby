@@ -190,7 +190,12 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
         {item.status === 'pending' && <ThemeIcon src={RcIconStatusPending} />}
         {item.status === 'success' && <ThemeIcon src={RcIconStatusSuccess} />}
         {item.status === 'failed' && (
-          <Tooltip overlayClassName="rectangle" title={item.failedReason}>
+          <Tooltip
+            overlayClassName="rectangle"
+            title={t('page.desktopSmallSwap.swapFailed', {
+              reason: item.failedReason,
+            })}
+          >
             <ThemeIcon src={RcIconStatusError} />
           </Tooltip>
         )}

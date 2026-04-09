@@ -28,10 +28,27 @@ export { FailedCode } from '@/ui/utils/sendTransaction';
 
 const TASK_CANCELLED_ERROR_NAME = 'BatchSwapTaskCancelled';
 
-const createTaskCancelledError = () => {
-  const error = new Error('Batch swap task cancelled');
-  error.name = TASK_CANCELLED_ERROR_NAME;
+const BatchSwapFailReasonKey = {
+  MissingRequiredParams: 'MissingRequiredParams',
+  QuoteUnavailable: 'QuoteUnavailable',
+  GasCostTooHigh: 'GasCostTooHigh',
+  PriceImpactTooHigh: 'PriceImpactTooHigh',
+  BuildSwapTxsFailed: 'BuildSwapTxsFailed',
+  SendSwapTxFailed: 'SendSwapTxFailed',
+  TransactionFailed: 'TransactionFailed',
+} as const;
+
+const createNamedError = (name: string, message?: string) => {
+  const error = new Error(message || name);
+  error.name = name;
   return error;
+};
+
+const createTaskCancelledError = () => {
+  return createNamedError(
+    TASK_CANCELLED_ERROR_NAME,
+    'Batch swap task cancelled'
+  );
 };
 
 export const getActiveProvider = async ({
@@ -199,7 +216,7 @@ export const buildSwapTxs = async ({
   }
 };
 
-export const FailReason = {
+const FailReason: Record<string, string> = {
   [FailedCode.GasNotEnough]: i18n.t('page.approvals.revokeModal.gasNotEnough'),
   [FailedCode.GasTooHigh]: i18n.t('page.approvals.revokeModal.gasTooHigh'),
   [FailedCode.SubmitTxFailed]: i18n.t(
@@ -210,6 +227,27 @@ export const FailReason = {
   ),
   [FailedCode.SimulationFailed]: i18n.t(
     'page.approvals.revokeModal.simulationFailed'
+  ),
+  [BatchSwapFailReasonKey.MissingRequiredParams]: i18n.t(
+    'page.desktopSmallSwap.failReason.missingRequiredParams'
+  ),
+  [BatchSwapFailReasonKey.QuoteUnavailable]: i18n.t(
+    'page.desktopSmallSwap.failReason.quoteUnavailable'
+  ),
+  [BatchSwapFailReasonKey.GasCostTooHigh]: i18n.t(
+    'page.desktopSmallSwap.failReason.gasCostTooHigh'
+  ),
+  [BatchSwapFailReasonKey.PriceImpactTooHigh]: i18n.t(
+    'page.desktopSmallSwap.failReason.priceImpactTooHigh'
+  ),
+  [BatchSwapFailReasonKey.BuildSwapTxsFailed]: i18n.t(
+    'page.desktopSmallSwap.failReason.buildSwapTxsFailed'
+  ),
+  [BatchSwapFailReasonKey.SendSwapTxFailed]: i18n.t(
+    'page.desktopSmallSwap.failReason.sendSwapTxFailed'
+  ),
+  [BatchSwapFailReasonKey.TransactionFailed]: i18n.t(
+    'page.desktopSmallSwap.failReason.transactionFailed'
   ),
 };
 
@@ -319,7 +357,9 @@ export const useBatchSwapTask = (options: {
               !options.receiveToken ||
               !dexId
             ) {
-              throw new Error('Missing required parameters');
+              throw createNamedError(
+                BatchSwapFailReasonKey.MissingRequiredParams
+              );
             }
             currentApprovalRef.current = item;
             setCurrentToken(item);
@@ -343,11 +383,9 @@ export const useBatchSwapTask = (options: {
 
             throwIfTaskCancelled();
 
-            console.log('Got active provider:', activeProvider);
-
             // 获取报价失败
             if (!activeProvider) {
-              throw new Error('Failed to get quote');
+              throw createNamedError(BatchSwapFailReasonKey.QuoteUnavailable);
             }
 
             // 预执行失败 ｜ gas 费用过高
@@ -357,7 +395,7 @@ export const useBatchSwapTask = (options: {
                 activeProvider.preExecResult.gasUsdValue
               ).isGreaterThan(config.maxGasCost)
             ) {
-              throw new Error('Gas cost is too high');
+              throw createNamedError(BatchSwapFailReasonKey.GasCostTooHigh);
             }
 
             const fromUsdBn = new BigNumber(item.amount || 0).times(
@@ -374,7 +412,7 @@ export const useBatchSwapTask = (options: {
 
             // 价差过大
             if (priceImpact.lte(-20)) {
-              throw new Error('Price impact is too high');
+              throw createNamedError(BatchSwapFailReasonKey.PriceImpactTooHigh);
             }
 
             const txs = await buildSwapTxs({
@@ -396,10 +434,8 @@ export const useBatchSwapTask = (options: {
 
             throwIfTaskCancelled();
 
-            console.log('Built swap txs:', txs);
-
             if (!txs?.length) {
-              throw new Error('Failed to build swap txs');
+              throw createNamedError(BatchSwapFailReasonKey.BuildSwapTxsFailed);
             }
 
             let result: Awaited<ReturnType<typeof sendTransaction>> | undefined;
@@ -443,12 +479,15 @@ export const useBatchSwapTask = (options: {
             }
 
             if (!result) {
-              throw new Error('Failed to send swap tx');
+              throw createNamedError(BatchSwapFailReasonKey.SendSwapTxFailed);
+            }
+
+            // 上链成功，但交易失败（如被 MEV 抢跑、价格变动过大等导致交易最终失败）
+            if (!result.status || Number(result.status) === 0) {
+              throw createNamedError(BatchSwapFailReasonKey.TransactionFailed);
             }
 
             throwIfTaskCancelled();
-
-            console.log('Swap tx result:', result);
 
             setStatusDict((prev) => ({
               ...prev,
@@ -465,10 +504,16 @@ export const useBatchSwapTask = (options: {
               return;
             }
 
+            const errorName = typeof e?.name === 'string' ? e.name : '';
             let failedCode: FailedCode | undefined = undefined;
-            if (FailedCode[e.name]) {
-              failedCode = e.name;
+            if (Object.values(FailedCode).includes(errorName as FailedCode)) {
+              failedCode = errorName as FailedCode;
             }
+
+            const failedReason =
+              FailReason[errorName] ||
+              e?.message ||
+              FailReason[FailedCode.DefaultFailed];
 
             console.error(e);
             if (!isTaskCancelled()) {
@@ -477,7 +522,7 @@ export const useBatchSwapTask = (options: {
                 [item.id]: {
                   status: 'failed',
                   failedCode: failedCode,
-                  failedReason: failedCode ? FailReason[failedCode] : e.message,
+                  failedReason,
                   gasCost: e.gasCost,
                   createdAt: Date.now(),
                 },
@@ -530,8 +575,6 @@ export const useBatchSwapTask = (options: {
     updateStatus('paused');
   }, [updateStatus]);
 
-  console.log('queueRef.current', queueRef.current);
-
   const handleContinue = React.useCallback(() => {
     queueRef.current.start();
     updateStatus('active');
@@ -543,7 +586,6 @@ export const useBatchSwapTask = (options: {
     });
 
     queueRef.current.on('idle', () => {
-      console.log('All tasks completed');
       if (statusRef.current === 'active' || statusRef.current === 'paused') {
         updateStatus('completed');
       }
