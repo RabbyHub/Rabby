@@ -16,6 +16,7 @@ import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 import { useEventListener, useMemoizedFn, useRequest } from 'ahooks';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { sortBy } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useQuoteMethods } from '../Swap/hooks/quote';
 import { ChainPillList } from './components/ChainPillList';
 import { LowValueTokenSelector } from './components/LowValueTokenSelector';
@@ -36,6 +37,7 @@ const DesktopSmallSwapContent: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
+  const { t } = useTranslation();
 
   const [chainServerId, setChainServerId] = useState('');
 
@@ -223,11 +225,10 @@ const DesktopSmallSwapContent: React.FC = () => {
               <img src={IconRabby} alt="Rabby" />
               <div className="space-y-[8px]">
                 <div className="text-[24px] leading-[29px] font-semibold text-r-neutral-title1">
-                  Dust converter
+                  {t('page.desktopSmallSwap.title')}
                 </div>
                 <div className="text-[15px] leading-[18px] text-r-neutral-foot">
-                  Clear out low-value tokens on the blockchain to make your
-                  asset list simpler!
+                  {t('page.desktopSmallSwap.description')}
                 </div>
               </div>
             </div>

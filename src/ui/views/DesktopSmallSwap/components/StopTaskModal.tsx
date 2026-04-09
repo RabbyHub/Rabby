@@ -41,12 +41,11 @@ export const StopTaskModal: React.FC<{
       <div className="bg-rb-neutral-InvertHighlight flex flex-col h-full p-[24px]">
         <header className="mb-[16px]">
           <h3 className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1 text-center m-0">
-            Stop the current swaps?
+            {t('page.desktopSmallSwap.stopTaskModal.title')}
           </h3>
         </header>
-        <div className="text-center mb-[24px] text-[15px] leading-[18px] text-r-neutral-foot">
-          If you stop now, any remaining swaps will not be completed. Please
-          note completed swaps cannot be reversed.
+        <div className="text-center mb-[24px] text-[15px] leading-[18px] text-r-neutral-foot min-h-[36px]">
+          {t('page.desktopSmallSwap.stopTaskModal.description')}
         </div>
         <footer className="flex items-center gap-[16px]">
           <button
@@ -54,7 +53,7 @@ export const StopTaskModal: React.FC<{
             className="flex-1 w-[50%]  h-[60px] rounded-[8px] text-[18px] leading-[20px] font-medium bg-rb-neutral-bg-4"
             onClick={onContinue}
           >
-            Continue swap
+            {t('page.desktopSmallSwap.stopTaskModal.continueSwap')}
           </button>
           <button
             type="button"
@@ -65,7 +64,7 @@ export const StopTaskModal: React.FC<{
             )}
             onClick={onStop}
           >
-            Stop
+            {t('page.desktopSmallSwap.stopTaskModal.stop')}
           </button>
         </footer>
       </div>

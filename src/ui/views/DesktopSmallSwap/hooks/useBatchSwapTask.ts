@@ -223,7 +223,7 @@ export type TaskItemStatus =
     }
   | {
       status: 'failed';
-      failedCode: FailedCode;
+      failedCode?: FailedCode;
       failedReason?: string;
       createdAt?: number;
       gasCost?: {
@@ -347,7 +347,7 @@ export const useBatchSwapTask = (options: {
 
             // 获取报价失败
             if (!activeProvider) {
-              throw new Error('Failed to get active provider');
+              throw new Error('Failed to get quote');
             }
 
             // 预执行失败 ｜ gas 费用过高
@@ -360,7 +360,22 @@ export const useBatchSwapTask = (options: {
               throw new Error('Gas cost is too high');
             }
 
-            // todo 价差过大？
+            const fromUsdBn = new BigNumber(item.amount || 0).times(
+              item.price || 0
+            );
+            const toUsdBn = new BigNumber(
+              activeProvider.actualReceiveAmount || 0
+            ).times(options.receiveToken?.price || 0);
+
+            const priceImpact = toUsdBn
+              .minus(fromUsdBn)
+              .div(fromUsdBn)
+              .times(100);
+
+            // 价差过大
+            if (priceImpact.lte(-20)) {
+              throw new Error('Price impact is too high');
+            }
 
             const txs = await buildSwapTxs({
               wallet,
@@ -450,7 +465,7 @@ export const useBatchSwapTask = (options: {
               return;
             }
 
-            let failedCode = FailedCode.DefaultFailed;
+            let failedCode: FailedCode | undefined = undefined;
             if (FailedCode[e.name]) {
               failedCode = e.name;
             }
@@ -484,7 +499,7 @@ export const useBatchSwapTask = (options: {
     updateStatus('active');
 
     for (const item of list) {
-      addTask(item);
+      addTask(item, 0, true);
     }
     if (queueRef.current.isPaused) {
       queueRef.current.start();

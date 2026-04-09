@@ -18,6 +18,7 @@ import { usePrevious } from 'ahooks';
 import { KEYRING_TYPE } from '@/constant';
 import { Account } from '@/background/service/preference';
 import Lottie from 'lottie-react';
+import { useTranslation } from 'react-i18next';
 
 type ReceiveSummaryProps = {
   totalValue?: number;
@@ -37,6 +38,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
   account,
 }) => {
   const ref = React.useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   const [slippagePopupVisible, setSlippagePopupVisible] = React.useState(false);
   const [gasPopupVisible, setGasPopupVisible] = React.useState(false);
@@ -75,7 +77,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                 style={{ width: 130, height: 130, margin: '0 auto' }}
               />
               <div className="mt-[-8px] text-center text-[24px] leading-[29px] font-medium text-r-neutral-title1">
-                Dust Converted !
+                {t('page.desktopSmallSwap.completedTitle')}
               </div>
               <div
                 className={clsx(
@@ -121,14 +123,14 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                   task.clear();
                 }}
               >
-                Done
+                {t('page.desktopSmallSwap.done')}
               </Button>
             </footer>
           </>
         ) : (
           <>
             <div className="mb-[32px] text-[24px] leading-[29px] font-medium text-r-neutral-title1">
-              You Receive
+              {t('page.desktopSmallSwap.receiveTitle')}
             </div>
 
             <div className="mb-[32px] flex items-center gap-[16px]">
@@ -157,7 +159,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                     {formatUsdValue(task?.expectReceive?.usd || 0)}{' '}
                   </div>
                   <div className="mt-[8px] text-[15px] leading-[18px] text-r-neutral-title1">
-                    Expected to receive{' '}
+                    {t('page.desktopSmallSwap.expectedToReceive')}{' '}
                     {formatAmount(task?.expectReceive?.amount || 0)}{' '}
                     {receiveToken ? getTokenSymbol(receiveToken) : ''}
                   </div>
@@ -169,9 +171,6 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                     <CountUp
                       start={previousUsd}
                       end={task?.finalReceive?.usd || 0}
-                      // formattingFn={(n) => {
-                      //   return formatUsdValue(n);
-                      // }}
                       decimals={2}
                       duration={1}
                       separator=","
@@ -190,7 +189,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
             <div className="mt-[32px]">
               {task?.status !== 'idle' && task?.currentToken ? (
                 <ExchangeSettingRow
-                  label="Conversion progress"
+                  label={t('page.desktopSmallSwap.conversionProgress')}
                   value={
                     <div className="flex items-center gap-[18px]">
                       <SwapAnimation
@@ -207,7 +206,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                 />
               ) : null}
               <ExchangeSettingRow
-                label="Slippage tolerance"
+                label={t('page.desktopSmallSwap.slippageTolerance')}
                 value={task?.config.slippage ? `${task.config.slippage}%` : '-'}
                 isShowArrow={task?.status === 'idle'}
                 onClick={() => {
@@ -219,7 +218,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
               />
 
               <ExchangeSettingRow
-                label="Single Transaction Gas Limit"
+                label={t('page.desktopSmallSwap.singleTransactionGasLimit')}
                 value={
                   task?.config.maxGasCost ? `$${task.config.maxGasCost}` : '-'
                 }
@@ -245,7 +244,9 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                     task?.start();
                   }}
                 >
-                  {isSupported ? 'Start convert' : 'Unsupported wallet type'}
+                  {isSupported
+                    ? t('page.desktopSmallSwap.startConvert')
+                    : t('page.desktopSmallSwap.unsupportedWalletType')}
                 </Button>
               ) : (
                 <button
@@ -259,7 +260,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                     task?.pause();
                   }}
                 >
-                  Stop
+                  {t('page.desktopSmallSwap.stop')}
                 </button>
               )}
             </div>
@@ -268,7 +269,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
       </section>
       <SelectPopup
         value={task?.config.slippage}
-        title="Slippage tolerance"
+        title={t('page.desktopSmallSwap.slippageTolerance')}
         visible={slippagePopupVisible}
         onCancel={() => {
           setSlippagePopupVisible(false);
@@ -305,7 +306,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
 
       <SelectPopup
         value={task?.config.maxGasCost}
-        title="Single Transaction Gas Limit"
+        title={t('page.desktopSmallSwap.singleTransactionGasLimit')}
         visible={gasPopupVisible}
         onCancel={() => {
           setGasPopupVisible(false);

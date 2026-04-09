@@ -38,6 +38,35 @@
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
+    "desktopSmallSwap": {
+      "title": "Convert Dust",
+      "description": "Convert low-value tokens into a single asset to simplify your asset list !",
+      "receiveTitle": "You Receive",
+      "expectedToReceive": "Expected to receive",
+      "completedTitle": "Dust Converted !",
+      "done": "Done",
+      "conversionProgress": "Conversion progress",
+      "slippageTolerance": "Slippage tolerance",
+      "singleTransactionGasLimit": "Single Transaction Gas Limit",
+      "startConvert": "Start convert",
+      "unsupportedWalletType": "Unsupported wallet type",
+      "stop": "Stop",
+      "selectLowValueTokens": "Select Low-Value Tokens",
+      "tokenColumn": "Token",
+      "amountColumn": "Amount",
+      "valueColumn": "Value",
+      "statusColumn": "Status",
+      "noLowValueTokensFound": "No low-value tokens found",
+      "selectedTokens": "Selected Tokens",
+      "totalValue": "Total value",
+      "moreChains": "+{{count}} chains",
+      "stopTaskModal": {
+        "title": "Stop the current swaps?",
+        "description": "If you stop now, any remaining swaps will not be completed. Please note completed swaps cannot be reversed.",
+        "continueSwap": "Continue swap",
+        "stop": "Stop swap"
+      }
+    },
     "signTx": {
       "nftIn": "NFT in",
       "gasLimitNotEnough": "Gas limit is less than 21000. Transaction can't be submitted",
