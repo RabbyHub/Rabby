@@ -1,50 +1,34 @@
-import { message } from 'antd';
 import { Account } from '@/background/service/preference';
-import { DEX, EVENTS } from '@/constant';
-import i18n from '@/i18n';
+import { DEX } from '@/constant';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { useRabbySelector } from '@/ui/store';
 import { formatAmount, useWallet, WalletControllerType } from '@/ui/utils';
-import { FailedCode, sendTransaction } from '@/ui/utils/sendTransaction';
+import { waitForTxCompleted } from '@/ui/utils/transaction';
 import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 import { findChain } from '@/utils/chain';
 import { Chain, CHAINS_ENUM } from '@debank/common';
 import {
   ExplainTxResponse,
   TokenItem,
-  TxPushType,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useMemoizedFn } from 'ahooks';
 import BigNumber from 'bignumber.js';
+import { last, random } from 'lodash';
 import PQueue from 'p-queue';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   isSwapWrapToken,
   QuoteProvider,
   TDexQuoteData,
   useQuoteMethods,
 } from '../../Swap/hooks';
-import { DEFAULT_MAX_GAS_COST, DEFAULT_SLIPPAGE } from '../constant';
-import { last, random } from 'lodash';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
-import eventBus from '@/eventBus';
-import { useSignatureStore } from '@/ui/component/MiniSignV2';
-import { useTranslation } from 'react-i18next';
 import { twoStepChains } from '../../Swap/hooks/twoStepSwap';
-import { waitForTxCompleted } from '@/ui/utils/transaction';
+import { DEFAULT_MAX_GAS_COST, DEFAULT_SLIPPAGE } from '../constant';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 const TASK_CANCELLED_ERROR_NAME = 'BatchSwapTaskCancelled';
-
-const BatchSwapFailReasonKey = {
-  MissingRequiredParams: 'MissingRequiredParams',
-  QuoteUnavailable: 'QuoteUnavailable',
-  GasCostTooHigh: 'GasCostTooHigh',
-  PriceImpactTooHigh: 'PriceImpactTooHigh',
-  BuildSwapTxsFailed: 'BuildSwapTxsFailed',
-  SendSwapTxFailed: 'SendSwapTxFailed',
-  TransactionFailed: 'TransactionFailed',
-} as const;
 
 const createNamedError = (name: string, message?: string) => {
   const error = new Error(message || name);

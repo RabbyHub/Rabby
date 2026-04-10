@@ -582,17 +582,15 @@ export const sendTransaction = async ({
 
   if (waitCompleted) {
     // wait tx completed
-    const txCompleted = await new Promise<{ gasUsed: number; status: number }>(
-      (resolve) => {
-        const handler = (res) => {
-          if (res?.hash === hash) {
-            eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-            resolve(res || {});
-          }
-        };
-        eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
-      }
-    );
+    const txCompleted = await new Promise<{ gasUsed: number }>((resolve) => {
+      const handler = (res) => {
+        if (res?.hash === hash) {
+          eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+          resolve(res || {});
+        }
+      };
+      eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+    });
 
     // calc gas cost
     const gasCostAmount = new BigNumber(txCompleted.gasUsed)
@@ -604,8 +602,6 @@ export const sendTransaction = async ({
 
     return {
       txHash: hash,
-      preExecResult: preExecResult,
-      status: txCompleted.status,
       gasCost: {
         ...estimateGasCost,
         gasCostUsd,
@@ -615,7 +611,6 @@ export const sendTransaction = async ({
   } else {
     return {
       txHash: hash,
-      preExecResult: preExecResult,
       gasCost: {
         ...estimateGasCost,
       },

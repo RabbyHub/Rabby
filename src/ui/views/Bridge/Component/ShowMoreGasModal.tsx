@@ -138,7 +138,6 @@ export default function ShowMoreGasSelectModal({
   return (
     <Dropdown
       onOpenChange={(v) => {
-        console.log('Dropdown visibility changed:', v);
         setVisible(v);
         if (!v) {
           onCancel();

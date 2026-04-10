@@ -482,7 +482,6 @@ export const useTokenPair = (userAddress: string) => {
   const setQuote = useCallback(
     (id: number) => (quote: TDexQuoteData) => {
       if (id === fetchIdRef.current) {
-        console.log('get quote', quote);
         setQuotesList((e) => {
           const index = e.findIndex((q) => q.name === quote.name);
           // setActiveProvider((activeQuote) => {
@@ -642,8 +641,6 @@ export const useTokenPair = (userAddress: string) => {
     1000,
     [getQuotes]
   );
-
-  console.log('quoteList', quoteList, 'inSufficient', inSufficient);
 
   useEffect(() => {
     if (
