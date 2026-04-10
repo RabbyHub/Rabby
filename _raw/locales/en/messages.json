@@ -40,7 +40,7 @@
     },
     "desktopSmallSwap": {
       "title": "Convert Dust",
-      "description": "Convert low-value tokens into a single asset to simplify your asset list !",
+      "description": "Convert low-value tokens into gas token to simplify your asset list !",
       "receiveTitle": "You Receive",
       "expectedToReceive": "Expected to receive",
       "completedTitle": "Dust Converted !",
@@ -49,7 +49,7 @@
       "slippageTolerance": "Slippage tolerance",
       "singleTransactionGasLimit": "Single Transaction Gas Limit",
       "startConvert": "Start convert",
-      "unsupportedWalletType": "Unsupported wallet type",
+      "unsupportedWalletType": "Only private key and seed phrase addresses are supported.",
       "stop": "Stop",
       "selectLowValueTokens": "Select Low-Value Tokens",
       "tokenColumn": "Token",
@@ -81,7 +81,8 @@
         "pending": "Swapping",
         "idle": "Waiting to swap",
         "success": "Swap successful"
-      }
+      },
+      "completedTips": "Ongoing swap will continue processing"
     },
     "signTx": {
       "nftIn": "NFT in",

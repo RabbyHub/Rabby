@@ -4332,7 +4332,7 @@
       "singleTransactionGasLimit": "单笔Gas上限",
       "startConvert": "一键兑换",
       "stop": "停止兑换",
-      "unsupportedWalletType": "不支持此钱包类型",
+      "unsupportedWalletType": "目前只支持私钥助记词类型的地址",
       "conversionProgress": "兑换进度",
       "completedTitle": "兑换完成！",
       "done": "完成",
@@ -4342,7 +4342,8 @@
         "continueSwap": "返回继续",
         "stop": "停止兑换"
       },
-      "swapFailed": "兑换失败，{{reason}}"
+      "swapFailed": "兑换失败，{{reason}}",
+      "completedTips": "进行中的兑换会继续执行"
     }
   },
   "component": {

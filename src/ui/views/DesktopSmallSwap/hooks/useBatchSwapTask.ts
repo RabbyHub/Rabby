@@ -312,11 +312,12 @@ export const useBatchSwapTask = (options: {
     []
   );
 
-  const cancelRunningTasks = React.useCallback(() => {
+  const cancelRunningTasks = useMemoizedFn(() => {
     cancelTokenRef.current += 1;
     queueRef.current.pause();
     queueRef.current.clear();
-  }, []);
+    closeSign();
+  });
 
   const addTask = useMemoizedFn(
     async (item: TokenItem, priority: number = 0, ignoreGasCheck = false) => {
@@ -664,9 +665,12 @@ export const useBatchSwapTask = (options: {
           );
         } else {
           totalUsd +=
-            Number(item.actualReceiveAmount || 0) *
-              (options.receiveToken?.price || 0) || 0;
-          totalAmount += Number(item.actualReceiveAmount || 0) || 0;
+            (Number(item.actualReceiveAmount || 0) *
+              (options.receiveToken?.price || 0) || 0) *
+            (1 - Number(config.slippage) / 100);
+          totalAmount +=
+            (Number(item.actualReceiveAmount || 0) || 0) *
+            (1 - Number(config.slippage) / 100);
         }
       }
     });
@@ -690,7 +694,7 @@ export const useBatchSwapTask = (options: {
   });
 
   const stop = useMemoizedFn(() => {
-    cancelRunningTasks();
+    // cancelRunningTasks();
     setList([]);
     setCurrentToken(null);
     updateStatus('completed');

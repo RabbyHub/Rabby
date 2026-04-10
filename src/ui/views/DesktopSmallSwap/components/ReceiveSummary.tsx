@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React from 'react';
+import React, { useMemo } from 'react';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Chain } from '@debank/common';
@@ -19,6 +19,7 @@ import { KEYRING_TYPE } from '@/constant';
 import { Account } from '@/background/service/preference';
 import Lottie from 'lottie-react';
 import { useTranslation } from 'react-i18next';
+import { RcIconWaringCC } from '@/ui/assets/desktop/common';
 
 type ReceiveSummaryProps = {
   totalValue?: number;
@@ -49,6 +50,18 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
     KEYRING_TYPE.HdKeyring,
     KEYRING_TYPE.SimpleKeyring,
   ] as string[]).includes(account?.type || '');
+
+  const isShowTips = useMemo(() => {
+    if (
+      task?.status === 'completed' &&
+      Object.values(task?.statusDict || {}).find(
+        (item) => item.status === 'pending'
+      )
+    ) {
+      return true;
+    }
+    return false;
+  }, [task?.status, task?.statusDict]);
 
   return (
     <>
@@ -113,6 +126,17 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
               </div>
             </div>
             <footer>
+              {isShowTips ? (
+                <div className="flex items-center justify-center gap-[8px] mb-[16px]">
+                  <RcIconWaringCC
+                    className="text-r-neutral-foot w-[16px] h-[16px]"
+                    viewBox="0 0 24 24"
+                  />
+                  <div className="text-[14px] leading-[17px] text-r-neutral-foot">
+                    {t('page.desktopSmallSwap.completedTips')}
+                  </div>
+                </div>
+              ) : null}
               <Button
                 // disabled={disableSubmit}
                 type="primary"
@@ -168,9 +192,17 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                 <div>
                   <div className="text-[24px] leading-[29px] font-medium text-r-neutral-title1">
                     {/* {formatUsdValue(task?.finalReceive?.usd || 0)}{' '} */}
+                    {task?.finalReceive?.usd && task?.finalReceive?.usd < 0.01
+                      ? '<'
+                      : null}
                     <CountUp
                       start={previousUsd}
-                      end={task?.finalReceive?.usd || 0}
+                      end={
+                        task?.finalReceive?.usd &&
+                        task?.finalReceive?.usd < 0.01
+                          ? 0.01
+                          : task?.finalReceive?.usd || 0
+                      }
                       decimals={2}
                       duration={1}
                       separator=","
