@@ -273,45 +273,52 @@ export const useTokens = (
       }
     }
 
-    const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
+    // 实时场景下，二次单独刷新某条链的token，不走缓存(避免缓存带来的 amount 闪动，影响体验)
+    const skitCacheFetch =
+      realtimeMode &&
+      !isTestnet &&
+      mainnetTokens.list.length > 0 &&
+      !!chainServerId;
+    if (!skitCacheFetch) {
+      const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
 
-    if (!snapshot) {
-      log('--Terminate-tokens-snapshot-', userAddr);
-      setLoading(false);
-      setIsAllTokenLoading(false);
-      return;
-    }
-
-    if (currentAbort.signal.aborted) {
-      log('--Terminate-tokens-snapshot-', userAddr);
-      abortedFn();
-      return;
-    }
-
-    if (snapshot?.length) {
-      currentAllTokens = replaceCoreTokens(currentAllTokens, snapshot);
-      const chainTokens = currentAllTokens.reduce((m, n) => {
-        m[n.chain] = m[n.chain] || [];
-        m[n.chain].push(n);
-
-        return m;
-      }, {} as Record<string, TokenItem[]>);
-      _data = produce(_data, (draft) => {
-        setWalletTokens(draft, chainTokens);
-      });
-
-      setData(_data);
-      _tokens = sortWalletTokens(_data);
-      if (isTestnet) {
-        dispatch.account.setTestnetTokenList(
-          filterDisplayToken(_tokens, blocked)
-        );
-      } else {
-        dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+      if (!snapshot) {
+        log('--Terminate-tokens-snapshot-', userAddr);
+        setLoading(false);
+        setIsAllTokenLoading(false);
+        return;
       }
-      setLoading(false);
-    }
 
+      if (currentAbort.signal.aborted) {
+        log('--Terminate-tokens-snapshot-', userAddr);
+        abortedFn();
+        return;
+      }
+
+      if (snapshot?.length) {
+        currentAllTokens = replaceCoreTokens(currentAllTokens, snapshot);
+        const chainTokens = currentAllTokens.reduce((m, n) => {
+          m[n.chain] = m[n.chain] || [];
+          m[n.chain].push(n);
+
+          return m;
+        }, {} as Record<string, TokenItem[]>);
+        _data = produce(_data, (draft) => {
+          setWalletTokens(draft, chainTokens);
+        });
+
+        setData(_data);
+        _tokens = sortWalletTokens(_data);
+        if (isTestnet) {
+          dispatch.account.setTestnetTokenList(
+            filterDisplayToken(_tokens, blocked)
+          );
+        } else {
+          dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+        }
+        setLoading(false);
+      }
+    }
     const tokenRes = await batchQueryTokens(
       userAddr,
       wallet,
