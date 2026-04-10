@@ -303,8 +303,8 @@ export const HistoryItem = ({ data, onViewInputData }: HistoryItemProps) => {
             <div>
               {t('global.gas')}:{' '}
               {numberWithCommasIsLtOne(data.tx?.eth_gas_fee, 2)}{' '}
-              {chainItem?.nativeTokenSymbol} ($
-              {numberWithCommasIsLtOne(data.tx?.usd_gas_fee ?? 0, 2)})
+              {chainItem?.nativeTokenSymbol} (
+              {numberWithCommasIsLtOne(data.tx?.usd_gas_fee ?? 0, 2, '$')})
             </div>
           ) : null}
           {isFailed && (
