@@ -35,14 +35,17 @@ export const CurrencyModal = ({
   };
 
   const sortedList = useMemo(() => {
-    const selected = currencyList.find((item) => item.code === currency.code);
-    if (!selected) {
-      return currencyList;
-    }
-    return [
-      selected,
-      ...currencyList.filter((item) => item.code !== selected.code),
-    ];
+    const topCodes = Array.from(new Set([currency.code, 'USD', 'EUR']));
+
+    const topList = topCodes.map((code) =>
+      currencyList.find((item) => item.code === code)
+    );
+
+    const rest = currencyList
+      .filter((item) => !topCodes.includes(item.code))
+      .sort((a, b) => a.code.localeCompare(b.code));
+
+    return [...topList, ...rest].filter(Boolean) as CurrencyItem[];
   }, [currency.code, currencyList]);
 
   const filteredList = useMemo(() => {
@@ -102,11 +105,9 @@ export const CurrencyModal = ({
                 handleSelect(item);
               }}
             >
-              <img
-                src={item.logo_url}
-                alt=""
-                className="w-20 h-20 rounded-full mr-8"
-              />
+              <div className="currency-icon-wrapper">
+                <img src={item.logo_url} alt="" className="currency-icon" />
+              </div>
               {item.code} ({item.symbol})
               {currency.code === item.code && (
                 <img
@@ -150,7 +151,7 @@ const Wrapper = styled.div<{
   .currency-search {
     padding: 14px 12px;
     margin-bottom: 12px;
-    border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.12)) !important;
+    border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.12));
     border-radius: 8px;
     background-color: var(--r-neutral-card-1) !important;
     font-size: 13px;
@@ -168,7 +169,7 @@ const Wrapper = styled.div<{
 
   .auto-lock-option-list {
     overflow: auto;
-    max-height: calc(100% - 48px);
+    max-height: calc(100% - 106px);
   }
 
   .auto-lock-option-list-item {
@@ -190,6 +191,26 @@ const Wrapper = styled.div<{
       background-color: rgba(134, 151, 255, 0.2);
       border: 1px solid var(--r-blue-default, #7084ff);
     }
+  }
+
+  .currency-icon-wrapper {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    border-radius: 9999px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .currency-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
   }
 
   .auto-lock-option-list-item-icon {
