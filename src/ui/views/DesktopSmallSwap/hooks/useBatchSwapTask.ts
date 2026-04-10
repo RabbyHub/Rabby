@@ -30,6 +30,8 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import eventBus from '@/eventBus';
 import { useSignatureStore } from '@/ui/component/MiniSignV2';
 import { useTranslation } from 'react-i18next';
+import { twoStepChains } from '../../Swap/hooks/twoStepSwap';
+import { waitForTxCompleted } from '@/ui/utils/transaction';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 const TASK_CANCELLED_ERROR_NAME = 'BatchSwapTaskCancelled';
@@ -442,25 +444,44 @@ export const useBatchSwapTask = (options: {
             //   delete tx.swapPreferMEVGuarded;
             // }
 
-            await prefetch({
-              txs: txs,
-              onPreExecChange(p) {
-                console.log('preExec change', p);
-                result.preExecResult = p;
-              },
-              onPreExecError() {
-                console.log('preExec error');
-                result.isSimulationFailed = true;
-              },
-            });
-            const res = await openDirect({
-              txs: txs,
-              onPreExecError() {
-                result.isSimulationFailed = true;
-              },
-            });
+            const txsArray = twoStepChains.includes(options.chain.enum)
+              ? txs.map((tx) => [tx])
+              : [txs];
 
-            result.txHash = last(res) || '';
+            for (const txsGroup of txsArray) {
+              await prefetch({
+                txs: txsGroup,
+                onPreExecChange(p) {
+                  console.log('preExec change', p);
+                  result.preExecResult = p;
+                },
+                onPreExecError() {
+                  console.log('preExec error');
+                  result.isSimulationFailed = true;
+                },
+              });
+              const res = await openDirect({
+                txs: txsGroup,
+                onPreExecError() {
+                  result.isSimulationFailed = true;
+                },
+              });
+
+              result.txHash = last(res) || '';
+              if (result.txHash) {
+                try {
+                  await waitForTxCompleted({
+                    hash: result.txHash,
+                    wallet,
+                    chainServerId: options.chain.serverId,
+                  });
+                } catch (e) {
+                  throw new Error(
+                    t('page.desktopSmallSwap.failReason.transactionFailed')
+                  );
+                }
+              }
+            }
 
             // result = await sendTransaction({
             //   tx,
@@ -490,6 +511,7 @@ export const useBatchSwapTask = (options: {
             throwIfTaskCancelled();
             // 预执行失败
             if (result.isSimulationFailed) {
+              console.error('simulation failed', result.preExecResult);
               throw new Error(
                 t('page.desktopSmallSwap.failReason.submitFailed')
               );
@@ -498,26 +520,6 @@ export const useBatchSwapTask = (options: {
             if (!result?.txHash) {
               throw new Error(
                 t('page.desktopSmallSwap.failReason.submitFailed')
-              );
-            }
-
-            const txCompleted = await new Promise<{
-              gasUsed: number;
-              status: number;
-            }>((resolve) => {
-              const handler = (res) => {
-                if (res?.hash === result.txHash) {
-                  eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-                  resolve(res || {});
-                }
-              };
-              eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
-            });
-            throwIfTaskCancelled();
-            // 上链成功，但交易失败（如被 MEV 抢跑、价格变动过大等导致交易最终失败）
-            if (!txCompleted.status || Number(txCompleted.status) === 0) {
-              throw new Error(
-                t('page.desktopSmallSwap.failReason.transactionFailed')
               );
             }
 
@@ -539,7 +541,7 @@ export const useBatchSwapTask = (options: {
               return;
             }
 
-            console.error(e);
+            console.error('transaction error', e);
             if (!isTaskCancelled()) {
               setStatusDict((prev) => ({
                 ...prev,
@@ -547,7 +549,7 @@ export const useBatchSwapTask = (options: {
                   status: 'failed',
                   message:
                     e.message ||
-                    t('page.desktopSmallSwap.failReason.transactionFailed'),
+                    t('page.desktopSmallSwap.failReason.submitFailed'),
                   createdAt: Date.now(),
                 },
               }));
