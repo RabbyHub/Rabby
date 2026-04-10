@@ -4349,7 +4349,8 @@
         "quoteUnavailable": "报价获取失败",
         "priceImpactTooHigh": "价差损失过大",
         "submitFailed": "交易提交失败",
-        "transactionFailed": "交易失败"
+        "transactionFailed": "交易失败",
+        "gasNotEnough": "Gas不足"
       }
     }
   },
