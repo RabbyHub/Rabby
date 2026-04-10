@@ -24,7 +24,7 @@ const extraLabelButtonClassName = clsx(
   'flex-shrink-0 h-[40px] rounded-[16px] px-[12px] py-[10px]',
   'border border-rabby-neutral-line bg-r-neutral-card-1',
   'text-[15px] leading-[18px] text-r-neutral-body',
-  'hover:border-rabby-blue-default hover:bg-r-blue-light1 hover:text-r-blue-default'
+  'hover:border-rabby-blue-default hover:text-r-blue-default'
 );
 
 const collapseLabelButtonClassName = clsx(extraLabelButtonClassName);
@@ -195,7 +195,7 @@ const ChainPill = React.forwardRef<HTMLButtonElement, ChainPillProps>(
         className={clsx(
           'flex-shrink-0 h-[40px] rounded-[16px] px-[12px] py-[10px] inline-flex items-center gap-[8px]',
           'border',
-          'hover:border-rabby-blue-default hover:bg-r-blue-light1 hover:text-r-blue-default',
+          'hover:border-rabby-blue-default hover:text-r-blue-default',
           active
             ? 'border-r-blue-default bg-r-blue-light1 text-r-blue-default'
             : 'border-rabby-neutral-line bg-r-neutral-card-1 text-r-neutral-body',
