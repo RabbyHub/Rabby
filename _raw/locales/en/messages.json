@@ -38,6 +38,53 @@
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
+    "desktopSmallSwap": {
+      "title": "Convert Dust",
+      "description": "Convert low-value tokens into gas token to simplify your asset list !",
+      "receiveTitle": "You Receive",
+      "expectedToReceive": "Expected to receive",
+      "completedTitle": "Dust Converted !",
+      "done": "Done",
+      "conversionProgress": "Conversion progress",
+      "slippageTolerance": "Slippage tolerance",
+      "singleTransactionGasLimit": "Single Transaction Gas Limit",
+      "startConvert": "Start convert",
+      "unsupportedWalletType": "Only private key and seed phrase addresses are supported.",
+      "stop": "Stop",
+      "selectLowValueTokens": "Select Low-Value Tokens",
+      "tokenColumn": "Token",
+      "amountColumn": "Amount",
+      "valueColumn": "Value",
+      "statusColumn": "Status",
+      "noLowValueTokensFound": "No low-value tokens found",
+      "selectedTokens": "Selected Tokens",
+      "totalValue": "Total value",
+      "moreChains": "+{{count}} chains",
+      "failReason": {
+        "missingRequiredParams": "Missing required parameters",
+        "quoteUnavailable": "Fail to fetch quote",
+        "gasCostTooHigh": "Exceed gas fee limit",
+        "priceImpactTooHigh": "High price impact",
+        "buildSwapTxsFailed": "Failed to build swap txs",
+        "sendSwapTxFailed": "Failed to send swap tx",
+        "transactionFailed": "Transaction failed",
+        "submitFailed": "Fail to submit transactions",
+        "gasNotEnough": "Insufficient Gas"
+      },
+      "stopTaskModal": {
+        "title": "Stop the current swaps?",
+        "description": "If you stop now, any remaining swaps will not be completed. Please note completed swaps cannot be reversed.",
+        "continueSwap": "Continue swap",
+        "stop": "Stop swap"
+      },
+      "swapFailed": "Swap failed, {{reason}}",
+      "status": {
+        "pending": "Swapping",
+        "idle": "Waiting to swap",
+        "success": "Swap successful"
+      },
+      "completedTips": "Ongoing swap will continue processing"
+    },
     "signTx": {
       "nftIn": "NFT in",
       "gasLimitNotEnough": "Gas limit is less than 21000. Transaction can't be submitted",
@@ -1057,7 +1104,11 @@
       }
     },
     "perpsPro": {
-      "__skip_translation": ["TWAP", "TP", "SL"],
+      "__skip_translation": [
+        "TWAP",
+        "TP",
+        "SL"
+      ],
       "chatArea": {
         "markTips": "Used for margining, computing unrealized PNL, liquidations, and triggering TP/SL orders.",
         "oracleTips": "The median of external prices reported by validators, used for computing funding rates.",
@@ -1077,7 +1128,9 @@
       },
       "userInfo": {
         "tab": {
-          "__skip_translation": ["twap"],
+          "__skip_translation": [
+            "twap"
+          ],
           "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
           "fundingTips": "Net funding payments since the position was opened. If negative, it means funding gains.",
           "fundingTipsV2": "Net funding since the position was opened. a red (negative) funding value indicates funding paid, while a green (positive) value indicates funding received.",
@@ -1160,7 +1213,9 @@
           "confirmCloseAllDesc": "All your open positions will be closed at market price and cancel all orders."
         },
         "openOrders": {
-          "__skip_translation": ["ro"],
+          "__skip_translation": [
+            "ro"
+          ],
           "order": "Order",
           "time": "Time",
           "triggerConditions": "Trigger Conditions",
@@ -1558,7 +1613,9 @@
           "mySupplies": "My supplies"
         },
         "item": {
-          "__skip_translation": ["tvl"],
+          "__skip_translation": [
+            "tvl"
+          ],
           "tvl": "TVL",
           "wrapperToken": "Wrapped token for {{name}}"
         }
@@ -1691,7 +1748,9 @@
         "zeroLtvCollateralTips": "You have following LTV = 0 collaterals and thus can only repay with these collaterals first according to collateral repay rules. "
       },
       "manageEmode": {
-        "__skip_translation": ["emode"],
+        "__skip_translation": [
+          "emode"
+        ],
         "emode": "E-Mode",
         "title": "Manage E-Mode",
         "disableTitle": "Disable",
@@ -2375,7 +2434,8 @@
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
           "lending": "Lending",
-          "dragTip": "Long-press feature to reorder"
+          "dragTip": "Long-press feature to reorder",
+          "convertDust": "Convert Dust"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -2541,6 +2601,8 @@
           "customRpc": "Modify RPC URL",
           "metamaskPreferredDapps": "MetaMask Preferred Dapps",
           "currentLanguage": "Current Language",
+          "currency": "Currency",
+          "searchCurrency": "Search currency",
           "enableTestnets": "Enable Testnets",
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
@@ -2787,7 +2849,8 @@
         "title": "Rabby Points",
         "desc": "Check your points in Rabby Mobile.",
         "downloadIntro": "Don’t have the app yet? Download now."
-      }
+      },
+      "noData": "No matched currency"
     },
     "nft": {
       "floorPrice": "/ Floor Price:",
@@ -4068,7 +4131,9 @@
     },
     "search": {
       "sectionHeader": {
-        "__skip_translation": ["Defi"],
+        "__skip_translation": [
+          "Defi"
+        ],
         "token": "Tokens",
         "Defi": "DeFi",
         "NFT": "NFT",
@@ -4150,7 +4215,9 @@
         "pending": "{{pendingTxCount}} Pending"
       },
       "tabs": {
-        "__skip_translation": ["defi"],
+        "__skip_translation": [
+          "defi"
+        ],
         "tokens": "Tokens",
         "transactions": "Transactions",
         "approvals": "Approvals",
@@ -4509,7 +4576,10 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
@@ -4525,7 +4595,8 @@
       "comingSoon": "Coming Soon"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Add address"
+      "addAddresses": "Add address",
+      "smallSwapDisabledTips": "Currently only private key and seed phrase addresses are supported."
     },
     "LpTokenTag": {
       "title": "This is a liquidity provider(LP) token",
@@ -4573,7 +4644,8 @@
     "Done": "Done",
     "Nonce": "Nonce",
     "tryAgain": "Try Again",
-    "notSupportTesntnet": "Not supported for custom network"
+    "notSupportTesntnet": "Not supported for custom network",
+    "collapse": "Collapse"
   },
   "background": {
     "error": {

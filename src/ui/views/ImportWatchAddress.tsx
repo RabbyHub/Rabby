@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import { isValidAddress } from '@ethereumjs/util';
+import { debounce } from 'lodash';
 import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
@@ -18,6 +19,7 @@ import IconBack from 'ui/assets/icon-back.svg';
 import { useRepeatImportConfirm } from 'ui/utils/useRepeatImportConfirm';
 import eventBus from '@/eventBus';
 import { safeJSONParse } from '@/utils';
+import { resolveEnsAddressByName } from '@/ui/utils/ens';
 import WatchLogo from 'ui/assets/watch-only-hero.svg';
 import { useCreateAddressActions } from './AddAddress/useCreateAddress';
 import { RcWatchAddressScan } from '../assets/add-address';
@@ -153,27 +155,37 @@ const ImportWatchAddress: React.FC<{
   const handleImportByQrcode = () => {
     setQRScanModalVisible(true);
   };
-  const handleValuesChange = async ({ address }: { address: string }) => {
+  const debouncedResolveENS = useMemo(
+    () =>
+      debounce(async (address: string) => {
+        try {
+          const result = await resolveEnsAddressByName(address, wallet);
+          setDisableKeydown(true);
+          if (result && result.addr && result.addr.startsWith('0x')) {
+            setEnsResult(result);
+          }
+        } catch (e) {
+          setEnsResult(null);
+        }
+      }, 300),
+    [wallet]
+  );
+
+  const handleValuesChange = ({ address }: { address: string }) => {
     setTags([]);
     setEnsResult(null);
-    if (isValidAddress(address?.trim())) {
+    const trimmedAddress = address?.trim();
+    if (isValidAddress(trimmedAddress)) {
       setIsValidAddr(true);
+      debouncedResolveENS.cancel();
       form.setFieldsValue({
-        address: address.trim(),
+        address: trimmedAddress,
       });
       return;
-    } else {
-      setIsValidAddr(false);
-      try {
-        const result = await wallet.openapi.getEnsAddressByName(address);
-        setDisableKeydown(true);
-        if (result && result.addr && result.addr.startsWith('0x')) {
-          setEnsResult(result);
-        }
-      } catch (e) {
-        setEnsResult(null);
-      }
     }
+
+    setIsValidAddr(false);
+    debouncedResolveENS(trimmedAddress);
   };
   const handleNextClick = () => {
     const address = form.getFieldValue('address');
@@ -193,9 +205,10 @@ const ImportWatchAddress: React.FC<{
   useEffect(() => {
     handleLoadCache();
     return () => {
+      debouncedResolveENS.cancel();
       wallet.clearPageStateCache();
     };
-  }, []);
+  }, [debouncedResolveENS]);
   return (
     <StrayPageWithButton
       custom={isWide}

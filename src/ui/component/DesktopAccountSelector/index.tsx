@@ -12,7 +12,7 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { isSameAccount } from '@/utils/account';
 import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { Popover } from 'antd';
+import { Popover, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { flatten, sortBy } from 'lodash';
 import React, { useMemo, useRef } from 'react';
@@ -32,14 +32,18 @@ interface DesktopAccountSelectorProps {
   value?: Account | null;
   onChange?(account: Account): void;
   scene?: Scene;
+  className?: string;
+  disabled?: boolean;
 }
 
-type Scene = 'perps' | 'prediction';
+type Scene = 'perps' | 'prediction' | 'smallSwap';
 
 export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
   value,
   onChange,
   scene,
+  className,
+  disabled,
 }) => {
   const { t } = useTranslation();
 
@@ -50,6 +54,12 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
     onChange?.(account);
     setIsOpen(false);
   });
+
+  React.useEffect(() => {
+    if (disabled && isOpen) {
+      setIsOpen(false);
+    }
+  }, [disabled, isOpen]);
 
   useMount(() => {
     dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
@@ -82,16 +92,25 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
             }}
           />
         }
-        visible={isOpen}
-        onVisibleChange={setIsOpen}
+        visible={disabled ? false : isOpen}
+        onVisibleChange={(visible) => {
+          if (disabled) {
+            return;
+          }
+          setIsOpen(visible);
+        }}
         destroyTooltipOnHide
       >
         <div
+          aria-disabled={disabled}
           className={clsx(
             'h-[32px] pl-[12px] px-[10px] rounded-[8px]',
-            'flex items-center gap-[6px] cursor-pointer',
+            'flex items-center gap-[6px]',
             'border border-rb-neutral-line',
-            'hover:bg-rb-brand-light-1 hover:border-rb-brand-default'
+            disabled
+              ? 'cursor-not-allowed opacity-50'
+              : 'cursor-pointer hover:bg-rb-brand-light-1 hover:border-rb-brand-default',
+            className
           )}
         >
           {value ? (
@@ -302,6 +321,13 @@ const AccountList: React.FC<{
             ? isSameAccount(item, selectedAccount)
             : false;
 
+          const disabled =
+            scene === 'smallSwap' &&
+            !([
+              KEYRING_TYPE.HdKeyring,
+              KEYRING_TYPE.SimpleKeyring,
+            ] as string[]).includes(item.type);
+
           return (
             <div
               key={`${item.address}-${item.type}-${item.brandName}`}
@@ -314,6 +340,14 @@ const AccountList: React.FC<{
                 isSelected={isSelected}
                 item={item}
                 // isLast={isLast}
+                tips={
+                  disabled
+                    ? t(
+                        'component.DesktopSelectAccountList.smallSwapDisabledTips'
+                      )
+                    : undefined
+                }
+                disabled={disabled}
                 scene={scene}
                 clearinghouseState={
                   clearinghouseStateMap[item.address.toLowerCase()]
@@ -363,7 +397,18 @@ const AccountItem: React.FC<{
   isLast?: boolean;
   clearinghouseState?: ClearinghouseState | null;
   children?: React.ReactNode;
-}> = ({ item, onClick, isSelected, isLast, clearinghouseState, scene }) => {
+  tips?: string;
+  disabled?: boolean;
+}> = ({
+  item,
+  onClick,
+  isSelected,
+  isLast,
+  clearinghouseState,
+  scene,
+  disabled,
+  tips,
+}) => {
   const { t } = useTranslation();
   const addressTypeIcon = useBrandIcon({
     ...item,
@@ -374,109 +419,112 @@ const AccountItem: React.FC<{
   }, [clearinghouseState]);
 
   return (
-    <div className={clsx(!isLast ? 'pb-[12px]' : '', 'group min-h-[1px]')}>
-      <div
-        className={clsx(
-          'rounded-[12px] px-[12px] py-[11px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
-          'border-solid border-[0.5px]',
-          'desktop-account-item',
-          isSelected
-            ? 'border-transparent bg-r-blue-light-2'
-            : 'border-rb-neutral-line hover:bg-rb-neutral-bg-2'
-        )}
-        onClick={onClick}
-      >
-        <img
-          src={addressTypeIcon}
-          className={clsx('w-[24px] h-[24px]')}
-          alt=""
-        />
-        <div className="flex flex-1 flex-col gap-[2px] min-w-0 desktop-account-item-content">
-          <div className="flex items-center gap-[4px]">
-            <div
-              className={clsx(
-                'truncate flex-1',
-                isSelected
-                  ? 'text-[16px] leading-[19px] font-bold text-rb-neutral-title-1'
-                  : 'text-[16px] text-rb-neutral-body leading-[19px] font-medium'
-              )}
-            >
-              {item.alianName}
-            </div>
-            {scene === 'perps' ? (
-              <>
-                {positionCount ||
-                Number(clearinghouseState?.withdrawable) > 0 ? (
-                  <div
-                    className={clsx(
-                      'ml-[10px] truncate flex-1 block text-right',
-                      isSelected
-                        ? 'text-[14px] leading-[19px] font-bold text-rb-neutral-title-1'
-                        : 'text-[14px] leading-[19px] font-medium text-rb-neutral-body'
-                    )}
-                  >
-                    {formatUsdValue(
-                      Number(clearinghouseState?.withdrawable || 0),
-                      BigNumber.ROUND_DOWN
-                    )}
-                  </div>
-                ) : null}
-              </>
-            ) : null}
-          </div>
-          <div className="flex items-center">
-            <AddressViewer
-              address={item.address?.toLowerCase()}
-              showArrow={false}
-              className={clsx(
-                isSelected
-                  ? 'text-[12px] leading-[14px] text-rb-neutral-title-1'
-                  : 'text-[12px] leading-[14px] text-rb-neutral-foot'
-              )}
-            />
-            <CopyChecked
-              copyIcon={RcIconCopyCC}
-              addr={item.address}
-              className={clsx('w-[16px] h-[16px] ml-[2px] text-14')}
-              copyClassName={clsx(
-                isSelected
-                  ? 'text-rb-neutral-foot'
-                  : 'text-rb-neutral-secondary'
-              )}
-              checkedClassName={clsx('text-rb-green-default')}
-            />
-            {scene === 'perps' ? (
-              <>
-                {positionCount > 0 ? (
-                  <div
-                    className={clsx(
-                      'ml-[10px] truncate flex-1 block text-right',
-                      'text-[12px] leading-[14px] text-rb-neutral-foot'
-                    )}
-                  >
-                    {positionCount === 1
-                      ? t('page.perpsPro.accountActions.onePosition')
-                      : t('page.perpsPro.accountActions.positionCount', {
-                          count: positionCount,
-                        })}
-                  </div>
-                ) : null}
-              </>
-            ) : (
+    <Tooltip title={tips} overlayClassName="rectangle">
+      <div className={clsx(!isLast ? 'pb-[12px]' : '', 'group min-h-[1px]')}>
+        <div
+          className={clsx(
+            'rounded-[12px] px-[12px] py-[11px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
+            'border-solid border-[0.5px]',
+            'desktop-account-item',
+            isSelected
+              ? 'border-transparent bg-r-blue-light-2'
+              : 'border-rb-neutral-line hover:bg-rb-neutral-bg-2',
+            disabled ? 'cursor-not-allowed opacity-50' : ''
+          )}
+          onClick={disabled ? undefined : onClick}
+        >
+          <img
+            src={addressTypeIcon}
+            className={clsx('w-[24px] h-[24px]')}
+            alt=""
+          />
+          <div className="flex flex-1 flex-col gap-[2px] min-w-0 desktop-account-item-content">
+            <div className="flex items-center gap-[4px]">
               <div
                 className={clsx(
-                  'ml-[10px] truncate flex-1 block',
+                  'truncate flex-1',
                   isSelected
-                    ? 'text-[12px] leading-[14px] text-rb-neutral-title-1'
-                    : 'text-[12px] leading-[14px]  text-rb-neutral-foot'
+                    ? 'text-[16px] leading-[19px] font-bold text-rb-neutral-title-1'
+                    : 'text-[16px] text-rb-neutral-body leading-[19px] font-medium'
                 )}
               >
-                ${splitNumberByStep(item.balance?.toFixed(2))}
+                {item.alianName}
               </div>
-            )}
+              {scene === 'perps' ? (
+                <>
+                  {positionCount ||
+                  Number(clearinghouseState?.withdrawable) > 0 ? (
+                    <div
+                      className={clsx(
+                        'ml-[10px] truncate flex-1 block text-right',
+                        isSelected
+                          ? 'text-[14px] leading-[19px] font-bold text-rb-neutral-title-1'
+                          : 'text-[14px] leading-[19px] font-medium text-rb-neutral-body'
+                      )}
+                    >
+                      {formatUsdValue(
+                        Number(clearinghouseState?.withdrawable || 0),
+                        BigNumber.ROUND_DOWN
+                      )}
+                    </div>
+                  ) : null}
+                </>
+              ) : null}
+            </div>
+            <div className="flex items-center">
+              <AddressViewer
+                address={item.address?.toLowerCase()}
+                showArrow={false}
+                className={clsx(
+                  isSelected
+                    ? 'text-[12px] leading-[14px] text-rb-neutral-title-1'
+                    : 'text-[12px] leading-[14px] text-rb-neutral-foot'
+                )}
+              />
+              <CopyChecked
+                copyIcon={RcIconCopyCC}
+                addr={item.address}
+                className={clsx('w-[16px] h-[16px] ml-[2px] text-14')}
+                copyClassName={clsx(
+                  isSelected
+                    ? 'text-rb-neutral-foot'
+                    : 'text-rb-neutral-secondary'
+                )}
+                checkedClassName={clsx('text-rb-green-default')}
+              />
+              {scene === 'perps' ? (
+                <>
+                  {positionCount > 0 ? (
+                    <div
+                      className={clsx(
+                        'ml-[10px] truncate flex-1 block text-right',
+                        'text-[12px] leading-[14px] text-rb-neutral-foot'
+                      )}
+                    >
+                      {positionCount === 1
+                        ? t('page.perpsPro.accountActions.onePosition')
+                        : t('page.perpsPro.accountActions.positionCount', {
+                            count: positionCount,
+                          })}
+                    </div>
+                  ) : null}
+                </>
+              ) : (
+                <div
+                  className={clsx(
+                    'ml-[10px] truncate flex-1 block',
+                    isSelected
+                      ? 'text-[12px] leading-[14px] text-rb-neutral-title-1'
+                      : 'text-[12px] leading-[14px]  text-rb-neutral-foot'
+                  )}
+                >
+                  ${splitNumberByStep(item.balance?.toFixed(2))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Tooltip>
   );
 };

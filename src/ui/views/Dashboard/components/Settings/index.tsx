@@ -25,6 +25,7 @@ import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings
 import { ReactComponent as RcIconSwitchPwdForNonWhitelistedTx } from 'ui/assets/dashboard/settings/switch-password-non-whitelisted-tx.svg';
 import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/dapp-switch-address.svg';
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
+import { ReactComponent as RcIconCurrency } from 'ui/assets/settings/currency.svg';
 import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
 import { ReactComponent as RcIconRabbyMobileCC } from 'ui/assets/settings/IconMobileSync-cc.svg';
 import { ReactComponent as RCIconBiometric } from 'ui/assets/dashboard/settings/biometric.svg';
@@ -65,6 +66,7 @@ import { useAsync, useCss } from 'react-use';
 import semver from 'semver-compare';
 import { Contacts, RecentConnections } from '..';
 import SwitchThemeModal from './components/SwitchThemeModal';
+import { CurrencyModal } from './components/CurrencyModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import FeedbackPopup from '../Feedback';
 import { getChainList } from '@/utils/chain';
@@ -76,6 +78,7 @@ import { useMemoizedFn } from 'ahooks';
 import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
+import { useCurrency } from '@/ui/hooks/useCurrency';
 import {
   cleanupBiometricCredential,
   isBiometricUnlockSupported,
@@ -609,6 +612,7 @@ const SettingsInner = ({
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [isShowAutoLockModal, setIsShowAutoLockModal] = useState(false);
   const [isShowLangModal, setIsShowLangModal] = useState(false);
+  const [isShowCurrencyModal, setIsShowCurrencyModal] = useState(false);
   const [isShowThemeModeModal, setIsShowThemeModeModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
@@ -648,6 +652,7 @@ const SettingsInner = ({
   const openapiStore = useRabbySelector((state) => state.openapi);
 
   const dispatch = useRabbyDispatch();
+  const { currency, syncCurrencyList } = useCurrency();
 
   const autoLockTimeLabel = useMemo(() => {
     return (
@@ -817,6 +822,11 @@ const SettingsInner = ({
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    syncCurrencyList();
+  }, [visible, syncCurrencyList]);
 
   const {
     mockExposureRateGuide,
@@ -1054,10 +1064,32 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title-1"
+                className="text-14 mr-[8px] text-r-neutral-foot"
                 role="button"
               >
                 {langLabel}
+              </span>
+              <ThemeIcon
+                src={RcIconArrowRight}
+                className="icon icon-arrow-right"
+              />
+            </>
+          ),
+        },
+        {
+          leftIcon: RcIconCurrency,
+          content: t('page.dashboard.settings.settings.currency'),
+          onClick: () => {
+            reportSettings('Currency');
+            setIsShowCurrencyModal(true);
+          },
+          rightIcon: (
+            <>
+              <span
+                className="text-14 mr-[8px] text-r-neutral-foot"
+                role="button"
+              >
+                {currency.code}
               </span>
               <ThemeIcon
                 src={RcIconArrowRight}
@@ -1086,7 +1118,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title-1"
+                className="text-14 mr-[8px] text-r-neutral-foot"
                 role="button"
               >
                 {ThemeModes.find((item) => item.code === themeMode)?.name ||
@@ -1141,7 +1173,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title-1"
+                className="text-14 mr-[8px] text-r-neutral-foot"
                 role="button"
               >
                 {autoLockTimeLabel}
@@ -1368,7 +1400,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title-1"
+                className="text-14 mr-[8px] text-r-neutral-foot"
                 role="button"
                 onClick={updateVersion}
               >
@@ -1420,7 +1452,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title-1"
+                className="text-14 mr-[8px] text-r-neutral-foot"
                 role="button"
               >
                 {getChainList('mainnet').length}
@@ -1634,6 +1666,11 @@ const SettingsInner = ({
         visible={isShowLangModal}
         onFinish={() => setIsShowLangModal(false)}
         onCancel={() => setIsShowLangModal(false)}
+      />
+      <CurrencyModal
+        visible={isShowCurrencyModal}
+        onFinish={() => setIsShowCurrencyModal(false)}
+        onCancel={() => setIsShowCurrencyModal(false)}
       />
       <SwitchThemeModal
         visible={isShowThemeModeModal}

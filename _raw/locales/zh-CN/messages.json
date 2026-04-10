@@ -128,7 +128,8 @@
           "perpsPositions_one": "{{count}} 头寸",
           "perpsPositions_other": "{{count}} 头寸",
           "lending": "借贷",
-          "dragTip": "长按以重新排序"
+          "dragTip": "长按以重新排序",
+          "convertDust": "小额资产兑换"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -261,6 +262,8 @@
           "metamaskPreferredDapps": "优先使用MetaMask连接的Dapp",
           "enableTestnets": "启用测试网",
           "currentLanguage": "当前语言",
+          "currency": "货币",
+          "searchCurrency": "搜索货币",
           "toggleThemeMode": "主题模式",
           "themeMode": "主题模式",
           "customTestnet": "添加自定义网络",
@@ -4318,6 +4321,39 @@
       "searchMarket": "搜索市场",
       "selectChain": "选择区块链",
       "disabled": "禁用"
+    },
+    "desktopSmallSwap": {
+      "title": "小额资产兑换",
+      "description": "清空链上小额资产，让资产列表更简洁！",
+      "selectedTokens": "已选择资产",
+      "totalValue": "共计",
+      "selectLowValueTokens": "选择小额资产",
+      "receiveTitle": "兑换为",
+      "expectedToReceive": "预计收到",
+      "slippageTolerance": "滑点",
+      "singleTransactionGasLimit": "单笔Gas上限",
+      "startConvert": "一键兑换",
+      "stop": "停止兑换",
+      "unsupportedWalletType": "目前只支持私钥助记词类型的地址",
+      "conversionProgress": "兑换进度",
+      "completedTitle": "兑换完成！",
+      "done": "完成",
+      "stopTaskModal": {
+        "title": "是否确认停止兑换？",
+        "description": "请注意，已兑换成功的资产无法撤销",
+        "continueSwap": "返回继续",
+        "stop": "停止兑换"
+      },
+      "swapFailed": "兑换失败，{{reason}}",
+      "completedTips": "进行中的兑换会继续执行",
+      "failReason": {
+        "gasCostTooHigh": "超过设置的Gas费上限",
+        "quoteUnavailable": "报价获取失败",
+        "priceImpactTooHigh": "价差损失过大",
+        "submitFailed": "交易提交失败",
+        "transactionFailed": "交易失败",
+        "gasNotEnough": "Gas不足"
+      }
     }
   },
   "component": {

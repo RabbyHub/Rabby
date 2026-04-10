@@ -40,7 +40,7 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
     {
       refreshDeps: [options.account?.address],
       cacheKey: `syncHistory-${options.account?.address}`,
-      staleTime: 0.5 * 60 * 1000,
+      staleTime: 10 * 1000,
     }
   );
 };
