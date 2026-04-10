@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { WalletController } from '@/background/controller/wallet';
+import { CurrencyItem } from '@/background/service/openapi';
 import {
   coerceFloat,
-  formatUsdValue,
+  formatCurrency,
   isMeaningfulNumber,
   useWallet,
 } from '@/ui/utils';
@@ -19,7 +19,8 @@ export const formChartData = (
   data: CurveList,
   /** @notice if realtimeNetWorth is not number, it means 'unknown' due to not-loaded or load-failure */
   realtimeNetWorth?: number | null,
-  realtimeTimestamp?: number
+  realtimeTimestamp?: number,
+  currency?: CurrencyItem
 ) => {
   const startData = data[0] || { value: 0, timestamp: 0 };
   const startUsdValue = coerceFloat(startData.usd_value, 0);
@@ -36,8 +37,10 @@ export const formChartData = (
 
       return {
         value: x.usd_value || 0,
-        netWorth: x.usd_value ? `${formatUsdValue(x.usd_value)}` : '$0',
-        change: `${formatUsdValue(Math.abs(change))}`,
+        netWorth: x.usd_value
+          ? `${formatCurrency(x.usd_value, { currency })}`
+          : formatCurrency(0, { currency }),
+        change: `${formatCurrency(Math.abs(change), { currency })}`,
         isLoss: change < 0,
         changePercent:
           startUsdValue === 0
@@ -71,9 +74,9 @@ export const formChartData = (
       list.push({
         value: realtimeNetWorth || 0,
         netWorth: realtimeNetWorth
-          ? `$${formatUsdValue(realtimeNetWorth)}`
-          : '$0',
-        change: `${formatUsdValue(Math.abs(realtimeChange))}`,
+          ? `${formatCurrency(realtimeNetWorth, { currency })}`
+          : formatCurrency(0, { currency }),
+        change: `${formatCurrency(Math.abs(realtimeChange), { currency })}`,
         isLoss: realtimeChange < 0,
         changePercent:
           startUsdValue === 0
@@ -92,8 +95,11 @@ export const formChartData = (
 
   return {
     list,
-    netWorth: endNetWorth === 0 ? '$0' : `${formatUsdValue(endNetWorth)}`,
-    change: `${formatUsdValue(Math.abs(assetsChange))}`,
+    netWorth:
+      endNetWorth === 0
+        ? formatCurrency(0, { currency })
+        : `${formatCurrency(endNetWorth, { currency })}`,
+    change: `${formatCurrency(Math.abs(assetsChange), { currency })}`,
     startUsdValue,
     changePercent:
       startUsdValue !== 0
@@ -111,9 +117,10 @@ export const useCurve = (
     nonce: number;
     realtimeNetWorth: number | null;
     initData?: CurvePointCollection;
+    currency?: CurrencyItem;
   }
 ) => {
-  const { nonce, realtimeNetWorth, initData = [] } = options;
+  const { nonce, realtimeNetWorth, initData = [], currency } = options;
   const [data, setData] = useState<CurvePointCollection>(initData);
 
   const wallet = useWallet();
@@ -159,8 +166,13 @@ export const useCurve = (
   }, [address, nonce]);
 
   const select = useMemo(() => {
-    return formChartData(data, realtimeNetWorth, new Date().getTime());
-  }, [data, realtimeNetWorth]);
+    return formChartData(
+      data,
+      realtimeNetWorth,
+      new Date().getTime(),
+      currency
+    );
+  }, [data, realtimeNetWorth, currency]);
 
   return {
     curveData: data,

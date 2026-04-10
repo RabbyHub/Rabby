@@ -1,14 +1,16 @@
+import { CurrencyItem } from '@/background/service/openapi';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { splitNumberByStep } from '@/ui/utils';
+import { formatCurrency } from '@/ui/utils';
 import clsx from 'clsx';
 import React from 'react';
 
 interface Props {
   // isCache: boolean;
-  balance: number;
+  balanceUsd: number;
+  currency: CurrencyItem;
 }
-export const BalanceLabel: React.FC<Props> = ({ balance }) => {
-  const splitBalance = splitNumberByStep((balance || 0).toFixed(2));
+export const BalanceLabel: React.FC<Props> = ({ balanceUsd, currency }) => {
+  const formattedBalance = formatCurrency(balanceUsd || 0, { currency });
   const { hiddenBalance } = useRabbySelector((state) => state.preference);
   const dispatch = useRabbyDispatch();
 
@@ -36,7 +38,7 @@ export const BalanceLabel: React.FC<Props> = ({ balance }) => {
           *****
         </div>
       ) : (
-        <div>${splitBalance}</div>
+        <div>{formattedBalance}</div>
       )}
     </div>
   );

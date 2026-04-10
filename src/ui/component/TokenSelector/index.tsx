@@ -732,7 +732,7 @@ function CommonTokenItem(props: {
     onConfirm(value || token);
   }, [disabled, value, token, onConfirm]);
 
-  if (externalMode) {
+  if (externalMode && !hideUsdValue) {
     return (
       <Tooltip
         trigger={['click', 'hover']}
@@ -779,6 +779,8 @@ function CommonTokenItem(props: {
               width="32px"
               height="32px"
               hideConer
+              chainSize={hideUsdValue ? 16 : 14}
+              isShowChainTooltip={!!hideUsdValue}
             />
             <div className="flex flex-col gap-2">
               {showExchangeLogos ? (
@@ -817,7 +819,11 @@ function CommonTokenItem(props: {
                   )}
                 </div>
               )}
-              {isBridgeTo ? (
+              {hideUsdValue ? (
+                <span className="symbol text-13 font-normal text-r-neutral-foot mb-2 leading-[14px] truncate">
+                  {chainItem?.name}
+                </span>
+              ) : isBridgeTo ? (
                 <div
                   className={clsx(
                     'flex items-center justify-center',

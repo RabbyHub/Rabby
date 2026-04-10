@@ -69,17 +69,20 @@ export const formatTokenAmount = (
 
 export const numberWithCommasIsLtOne = (
   x?: number | string | BigNumber,
-  precision?: number
+  precision?: number,
+  prefix?: string
 ) => {
   if (x === undefined || x === null) {
     return '-';
   }
-  if (x.toString() === '0') return '0';
+  if (x.toString() === '0') {
+    return `${prefix || ''}0`;
+  }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   if (x < 0.00005) {
-    return '< 0.0001';
+    return `< ${prefix || ''}0.0001`;
   }
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
@@ -87,7 +90,7 @@ export const numberWithCommasIsLtOne = (
   const parts: string[] = Number(x).toFixed(precision).split('.');
 
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return parts.join('.');
+  return `${prefix || ''}${parts.join('.')}`;
 };
 
 export const formatNumber = (
@@ -157,6 +160,57 @@ export const formatUsdValue = (
     return `$${formatNumber(value, 2, undefined, roundingMode)}`;
   }
   return '<$0.01';
+};
+
+export type CurrencyLike = {
+  code?: string;
+  symbol: string;
+  logo_url?: string;
+  usd_rate: number;
+};
+
+const DEFAULT_USD_CURRENCY: CurrencyLike = {
+  code: 'USD',
+  symbol: '$',
+  usd_rate: 1,
+};
+
+export const formatCurrency = (
+  value: string | number,
+  options?: {
+    decimal?: number;
+    currency?: CurrencyLike;
+    roundingMode?: BigNumber.RoundingMode;
+  }
+) => {
+  const {
+    decimal = 2,
+    currency = DEFAULT_USD_CURRENCY,
+    roundingMode = BigNumber.ROUND_HALF_UP,
+  } = options || {};
+
+  const bnValue = new BigNumber(value).times(currency.usd_rate || 1);
+  const symbol = currency.symbol || '$';
+
+  if (bnValue.lt(0)) {
+    return `-${symbol}${formatNumber(
+      bnValue.absoluteValue().toFixed(),
+      decimal,
+      undefined,
+      roundingMode
+    )}`;
+  }
+
+  if (bnValue.gte(0.01) || bnValue.eq(0)) {
+    return `${symbol}${formatNumber(
+      bnValue.toFixed(),
+      decimal,
+      undefined,
+      roundingMode
+    )}`;
+  }
+
+  return `<${symbol}0.01`;
 };
 
 export const formatAmount = (amount: string | number, decimals = 4) => {

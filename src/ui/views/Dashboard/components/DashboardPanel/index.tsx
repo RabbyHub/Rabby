@@ -55,6 +55,7 @@ import {
   RcIconAaveLendingCC,
   RcIconSparkLendingCC,
   RcIconVenusLendingCC,
+  RcIconConvertDustCC,
 } from 'ui/assets/dashboard/panel';
 
 import { RcIconExternal1CC } from '@/ui/assets/dashboard';
@@ -65,6 +66,7 @@ import { isEqual } from 'lodash';
 import {
   formatGasAccountUsdValueV2,
   formatUsdValue,
+  openInTab,
   openInternalPageInTab,
   splitNumberByStep,
   useWallet,
@@ -705,6 +707,18 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       },
       isFullscreen: true,
     } as IPanelItem,
+
+    convertDust: {
+      icon: RcIconConvertDustCC,
+      eventKey: 'Convert Dust',
+      content: t('page.dashboard.home.panel.convertDust'),
+      onClick: async () => {
+        openInTab('desktop.html#/desktop/small-swap', true);
+        // await wallet.openInDesktop('/desktop/small-swap');
+        // window.close();
+      },
+      isFullscreen: true,
+    } as IPanelItem,
   };
 
   const defaultPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
@@ -721,8 +735,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'mobile',
       'nft',
       'gasAccount',
-      'searchDapp',
+      // 'searchDapp',
       'dapps',
+      'convertDust',
     ];
   }, []);
 

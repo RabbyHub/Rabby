@@ -21,7 +21,7 @@ class AutoLockService {
     if (autoLockAt) {
       if (Date.now() >= autoLockAt) {
         this.onAutoLock?.();
-      } else {
+      } else if (this.timer === null) {
         this.autoLockAt = autoLockAt;
         this.timer = setTimeout(
           () => this.onAutoLock?.(),
@@ -41,12 +41,12 @@ class AutoLockService {
     }
     const duration = autoLockTime * 60 * 1000;
     this.autoLockAt = Date.now() + duration;
+    this.timer = setTimeout(() => this.onAutoLock?.(), duration);
     if (isManifestV3) {
       await browser.storage.session.set({
         [AUTO_LOCK_AT_KEY]: this.autoLockAt,
       });
     }
-    this.timer = setTimeout(() => this.onAutoLock?.(), duration);
   }
 
   setLastActiveTime() {

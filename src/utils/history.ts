@@ -45,8 +45,8 @@ export const judgeIsSmallUsdTx = (item: TxHistoryItemRow) => {
       }
     }
     const isCore = token?.is_core || token?.is_verified;
-    const price = isCore ? token?.price || token?.price || 0 : 0; // is not core token price to 0
-    const usd = token.amount * price;
+    const price = isCore ? i?.price || token?.price || 0 : 0; // is not core token price to 0
+    const usd = i.amount * price;
     allUsd += usd;
   }
 

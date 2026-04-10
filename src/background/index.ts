@@ -36,6 +36,7 @@ import createSubscription from './controller/provider/subscriptionManager';
 import {
   bridgeService,
   contactBookService,
+  currencyService,
   gasAccountService,
   HDKeyRingLastAddAddrTimeService,
   keyringService,
@@ -118,6 +119,7 @@ async function restoreAppState() {
   await customTestnetService.init();
   await permissionService.init();
   await preferenceService.init();
+  await currencyService.init();
   await transactionWatchService.init();
   await transactionBroadcastWatchService.init();
   await pageStateCacheService.init();
