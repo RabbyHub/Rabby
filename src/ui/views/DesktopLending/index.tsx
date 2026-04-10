@@ -59,7 +59,6 @@ const DesktopLendingContent: React.FC = () => {
           </span>
         </div>
         <div className="flex items-center gap-[12px]">
-          <DesktopDappSelector type="lending" />
           <DesktopAccountSelector
             value={currentAccount}
             onChange={(account) => {

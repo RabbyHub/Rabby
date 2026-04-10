@@ -21,6 +21,20 @@ const IGNORE_CHECK = ['wallet_importAddress'];
 
 tab.on('tabRemove', (id) => {
   sessionService.deleteSessionsByTabId(id);
+
+  // Clean up desktop tab ID references when a tab is closed
+  const desktopTabIds = preferenceService.getPreference('desktopTabIds') || {};
+  const updatedIds = { ...desktopTabIds };
+  let changed = false;
+  for (const key of Object.keys(updatedIds)) {
+    if (updatedIds[key as keyof typeof updatedIds] === id) {
+      updatedIds[key as keyof typeof updatedIds] = undefined;
+      changed = true;
+    }
+  }
+  if (changed) {
+    preferenceService.setPreferencePartials({ desktopTabIds: updatedIds });
+  }
 });
 
 export default async <T = void>(req: ProviderRequest): Promise<T> => {

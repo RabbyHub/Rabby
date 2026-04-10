@@ -148,7 +148,15 @@ export interface PreferenceStore {
 
   rateGuideLastExposure?: RateGuideLastExposure;
 
+  /** @deprecated use desktopTabIds instead */
   desktopTabId?: number;
+
+  desktopTabIds?: {
+    profile?: number;
+    perps?: number;
+    lending?: number;
+    prediction?: number;
+  };
 
   dashboardPanelOrder?: string[];
 
@@ -240,6 +248,7 @@ class PreferenceService {
         ga4EventTime: 0,
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
         desktopTabId: undefined,
+        desktopTabIds: {},
         desktopTokensAllMode: false,
         dashboardPanelOrder: [],
         sceneAccountMap: {},
