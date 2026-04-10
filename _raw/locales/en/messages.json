@@ -67,7 +67,8 @@
         "priceImpactTooHigh": "Price impact is too high",
         "buildSwapTxsFailed": "Failed to build swap txs",
         "sendSwapTxFailed": "Failed to send swap tx",
-        "transactionFailed": "Transaction failed"
+        "transactionFailed": "Transaction failed",
+        "submitFailed": "Fail to Submit"
       },
       "stopTaskModal": {
         "title": "Stop the current swaps?",
@@ -75,7 +76,12 @@
         "continueSwap": "Continue swap",
         "stop": "Stop swap"
       },
-      "swapFailed": "Swap failed, {{reason}}"
+      "swapFailed": "Swap failed, {{reason}}",
+      "status": {
+        "pending": "Swapping",
+        "idle": "Waiting to swap",
+        "success": "Swap successful"
+      }
     },
     "signTx": {
       "nftIn": "NFT in",
