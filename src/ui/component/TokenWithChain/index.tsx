@@ -7,6 +7,7 @@ import './style.less';
 import clsx from 'clsx';
 import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
+import { Tooltip } from 'antd';
 
 const TokenWithChain = ({
   token,
@@ -57,16 +58,17 @@ const TokenWithChain = ({
       {!hideChainIcon &&
         (!hideConer || chain?.id) &&
         (isShowChainTooltip ? (
-          <TooltipWithMagnetArrow
+          <Tooltip
             title={chain?.name}
-            className={clsx('chain-symbol', chainClassName)}
+            overlayClassName={clsx('rectangle w-[max-content]', chainClassName)}
+            placement="top"
           >
             <img
-              className="chain-symbol"
+              className={clsx('chain-symbol', chainClassName)}
               style={chainStyle}
               src={chain?.logo || IconUnknown}
             />
-          </TooltipWithMagnetArrow>
+          </Tooltip>
         ) : (
           <img
             className={clsx('chain-symbol', chainClassName)}

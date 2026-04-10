@@ -38,7 +38,6 @@ import {
 } from '../../Approval/components/FooterBar/GasLessComponents';
 import { useGasAccountSign } from '../../GasAccount/hooks';
 import { useMemoizedFn } from 'ahooks';
-import { ReactComponent as IconGasCostArrowDownCC } from '../icons/gas-cost-arrow-down-cc.svg';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -657,41 +656,13 @@ export const DirectSignGasInfo = ({
                   setGasModalVisible(true);
                 }}
               >
-                {type === 'send' ? (
-                  <div>
-                    <span
-                      className={clsx(
-                        'gas-level-text',
-                        'rounded-[4px] height-[24px] bg-rb-brand-light-1 px-[6px] py-[2px]',
-                        'text-[12px] text-rb-brand-default font-medium leading-[16px]'
-                      )}
-                    >
-                      {ctx?.selectedGas?.level
-                        ? t(getGasLevelI18nKey(ctx.selectedGas.level))
-                        : t(getGasLevelI18nKey('normal'))}
-                    </span>
-
-                    <span
-                      className={clsx(
-                        'gas-cost-text',
-                        'inline-flex items-center gap-[4px] ml-[8px]',
-                        'text-r-blue-default',
-                        'text-[14px] font-[700] leading-[18px]'
-                      )}
-                    >
-                      {gasCostUsd}
-                      <IconGasCostArrowDownCC className="text-r-blue-default" />
-                    </span>
-                  </div>
-                ) : (
-                  <div>
-                    {ctx?.selectedGas?.level
-                      ? t(getGasLevelI18nKey(ctx.selectedGas.level))
-                      : t(getGasLevelI18nKey('normal'))}
-                    {' · '}
-                    {gasCostUsd}
-                  </div>
-                )}
+                <div>
+                  {ctx?.selectedGas?.level
+                    ? t(getGasLevelI18nKey(ctx.selectedGas.level))
+                    : t(getGasLevelI18nKey('normal'))}
+                  {' · '}
+                  {gasCostUsd}
+                </div>
                 {ctx.gasMethod === 'gasAccount' ? (
                   <Tooltip
                     align={{

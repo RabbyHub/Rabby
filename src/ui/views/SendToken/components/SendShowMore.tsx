@@ -18,7 +18,7 @@ export const ShowMoreOnSend = ({
   const [showGasFeeError, setShowGasFeeError] = useState(false);
 
   return (
-    <div className="mx-0">
+    <div className="px-20">
       {/* <div className="flex items-center justify-center gap-8 mb-8">
         <div
           className={clsx(
