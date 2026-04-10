@@ -235,7 +235,7 @@ export const waitForTxCompleted = async ({
   return await new Promise((resolve, reject) => {
     const handler = (res) => {
       if (res?.hash === hash) {
-        if (res?.status) {
+        if (res?.status && Number(res.status) !== 0) {
           resolve(true);
         } else {
           reject(new Error('tx failed'));

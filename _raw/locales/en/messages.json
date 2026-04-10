@@ -38,6 +38,53 @@
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
+    "desktopSmallSwap": {
+      "title": "Convert Dust",
+      "description": "Convert low-value tokens into gas token to simplify your asset list !",
+      "receiveTitle": "You Receive",
+      "expectedToReceive": "Expected to receive",
+      "completedTitle": "Dust Converted !",
+      "done": "Done",
+      "conversionProgress": "Conversion progress",
+      "slippageTolerance": "Slippage tolerance",
+      "singleTransactionGasLimit": "Single Transaction Gas Limit",
+      "startConvert": "Start convert",
+      "unsupportedWalletType": "Only private key and seed phrase addresses are supported.",
+      "stop": "Stop",
+      "selectLowValueTokens": "Select Low-Value Tokens",
+      "tokenColumn": "Token",
+      "amountColumn": "Amount",
+      "valueColumn": "Value",
+      "statusColumn": "Status",
+      "noLowValueTokensFound": "No low-value tokens found",
+      "selectedTokens": "Selected Tokens",
+      "totalValue": "Total value",
+      "moreChains": "+{{count}} chains",
+      "failReason": {
+        "missingRequiredParams": "Missing required parameters",
+        "quoteUnavailable": "Fail to fetch quote",
+        "gasCostTooHigh": "Exceed gas fee limit",
+        "priceImpactTooHigh": "High price impact",
+        "buildSwapTxsFailed": "Failed to build swap txs",
+        "sendSwapTxFailed": "Failed to send swap tx",
+        "transactionFailed": "Transaction failed",
+        "submitFailed": "Fail to submit transactions",
+        "gasNotEnough": "Insufficient Gas"
+      },
+      "stopTaskModal": {
+        "title": "Stop the current swaps?",
+        "description": "If you stop now, any remaining swaps will not be completed. Please note completed swaps cannot be reversed.",
+        "continueSwap": "Continue swap",
+        "stop": "Stop swap"
+      },
+      "swapFailed": "Swap failed, {{reason}}",
+      "status": {
+        "pending": "Swapping",
+        "idle": "Waiting to swap",
+        "success": "Swap successful"
+      },
+      "completedTips": "Ongoing swap will continue processing"
+    },
     "signTx": {
       "nftIn": "NFT in",
       "gasLimitNotEnough": "Gas limit is less than 21000. Transaction can't be submitted",
@@ -2387,7 +2434,8 @@
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
           "lending": "Lending",
-          "dragTip": "Long-press feature to reorder"
+          "dragTip": "Long-press feature to reorder",
+          "convertDust": "Convert Dust"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -4546,7 +4594,8 @@
       "comingSoon": "Coming Soon"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Add address"
+      "addAddresses": "Add address",
+      "smallSwapDisabledTips": "Currently only private key and seed phrase addresses are supported."
     },
     "LpTokenTag": {
       "title": "This is a liquidity provider(LP) token",
@@ -4594,7 +4643,8 @@
     "Done": "Done",
     "Nonce": "Nonce",
     "tryAgain": "Try Again",
-    "notSupportTesntnet": "Not supported for custom network"
+    "notSupportTesntnet": "Not supported for custom network",
+    "collapse": "Collapse"
   },
   "background": {
     "error": {
