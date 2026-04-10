@@ -435,7 +435,7 @@ const TokenSelector = ({
       const { disable, shortReason } = checkItem?.(token) || {};
       return (
         <CommonTokenItem
-          key={`${token.chain}-${token.id}-${token.amount}`}
+          key={`${token.chain}-${token.id}`}
           onConfirm={onConfirm}
           warningText={disable ? shortReason : undefined}
           token={token}
@@ -711,7 +711,7 @@ function CommonTokenItem(props: {
       return data;
     }
     return token;
-  }, [currentAccount?.address, updateToken, token?.chain, token?.id]);
+  }, [currentAccount?.address, updateToken, token]);
 
   const tips = useMemo(() => {
     return disabled ? t('component.TokenSelector.chainNotSupport') : undefined;

@@ -274,12 +274,12 @@ export const useTokens = (
     }
 
     // 实时场景下，二次单独刷新某条链的token，不走缓存(避免缓存带来的 amount 闪动，影响体验)
-    const skitCacheFetch =
+    const skipCacheFetch =
       realtimeMode &&
       !isTestnet &&
       mainnetTokens.list.length > 0 &&
       !!chainServerId;
-    if (!skitCacheFetch) {
+    if (!skipCacheFetch) {
       const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
 
       if (!snapshot) {
