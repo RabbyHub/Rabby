@@ -68,7 +68,8 @@
         "buildSwapTxsFailed": "Failed to build swap txs",
         "sendSwapTxFailed": "Failed to send swap tx",
         "transactionFailed": "Transaction failed",
-        "submitFailed": "Fail to submit transactions"
+        "submitFailed": "Fail to submit transactions",
+        "gasNotEnough": "Insufficient Gas"
       },
       "stopTaskModal": {
         "title": "Stop the current swaps?",

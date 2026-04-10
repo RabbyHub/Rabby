@@ -548,15 +548,18 @@ export const useBatchSwapTask = (options: {
               return;
             }
 
-            console.error('transaction error', e);
+            console.log('batch swap task error', e);
+            console.error('transaction error', e, e.message);
             if (!isTaskCancelled()) {
               setStatusDict((prev) => ({
                 ...prev,
                 [item.id]: {
                   status: 'failed',
                   message:
-                    e.message ||
-                    t('page.desktopSmallSwap.failReason.submitFailed'),
+                    e === 'Gas not enough'
+                      ? t('page.desktopSmallSwap.failReason.gasNotEnough')
+                      : e.message ||
+                        t('page.desktopSmallSwap.failReason.submitFailed'),
                   createdAt: Date.now(),
                 },
               }));
