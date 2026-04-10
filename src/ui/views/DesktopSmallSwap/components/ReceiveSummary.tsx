@@ -4,7 +4,7 @@ import IconUnknown from '@/ui/assets/token-default.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Chain } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { Button, Image } from 'antd';
+import { Button, Image, Tooltip } from 'antd';
 import { PANEL_WIDTH, PANEL_WIDTH_DELTA } from '../constant';
 import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
 import { ExchangeSettingRow } from './ExchangeSettingRow';
@@ -56,7 +56,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
         className={clsx(
           'relative translate-x-0 overflow-hidden',
           'bg-r-neutral-card-1 rounded-[16px]',
-          'flex-shrink-0 px-[24px] py-[32px] flex flex-col'
+          'flex-shrink-0 py-[24px] px-[32px] flex flex-col'
         )}
         style={{
           boxShadow: '0 16px 40px rgba(25, 41, 69, 0.06)',
@@ -234,20 +234,36 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
 
             <div className="mt-auto pt-[24px]">
               {task?.status === 'idle' ? (
-                <Button
-                  disabled={!task?.list?.length || !isSupported}
-                  type="primary"
-                  block
-                  className="flex-1 h-[60px] rounded-[8px] text-[18px] leading-[20px]"
-                  // onClick={onConfirm}
-                  onClick={() => {
-                    task?.start();
-                  }}
-                >
-                  {isSupported
-                    ? t('page.desktopSmallSwap.startConvert')
-                    : t('page.desktopSmallSwap.unsupportedWalletType')}
-                </Button>
+                isSupported ? (
+                  <Button
+                    disabled={!task?.list?.length}
+                    type="primary"
+                    block
+                    className="flex-1 h-[60px] rounded-[8px] text-[18px] leading-[20px]"
+                    onClick={() => {
+                      task?.start();
+                    }}
+                  >
+                    {t('page.desktopSmallSwap.startConvert')}
+                  </Button>
+                ) : (
+                  <Tooltip
+                    title={t('page.desktopSmallSwap.unsupportedWalletType')}
+                    placement="top"
+                    overlayClassName="rectangle"
+                  >
+                    <div className="flex-1">
+                      <Button
+                        disabled={true}
+                        type="primary"
+                        block
+                        className="h-[60px] rounded-[8px] text-[18px] leading-[20px]"
+                      >
+                        {t('page.desktopSmallSwap.startConvert')}
+                      </Button>
+                    </div>
+                  </Tooltip>
+                )
               ) : (
                 <button
                   type="button"

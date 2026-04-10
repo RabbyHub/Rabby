@@ -2,22 +2,22 @@ import { Account } from '@/background/service/preference';
 // import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import clsx from 'clsx';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ReactComponent as RcIconArrowRightCC } from 'ui/assets/arrow-right-1-cc.svg';
 import IconRabby from 'ui/assets/rabby.svg';
-
-import { DEX, SWAP_SUPPORT_CHAINS } from '@/constant';
+import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { db } from '@/db';
 import { useWallet } from '@/ui/utils';
+import { useTokens } from '@/ui/utils/portfolio/token';
+import { abstractTokenToTokenItem } from '@/ui/utils/token';
+import { isSupportDBAccount } from '@/utils/account';
 import { findChain } from '@/utils/chain';
-import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 import { useEventListener, useMemoizedFn, useRequest } from 'ahooks';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useQuoteMethods } from '../Swap/hooks/quote';
 import { ChainPillList } from './components/ChainPillList';
 import { LowValueTokenSelector } from './components/LowValueTokenSelector';
 import { ReceiveSummary } from './components/ReceiveSummary';
@@ -28,10 +28,6 @@ import {
   DEFAULT_SLIPPAGE,
 } from './constant';
 import { useBatchSwapTask } from './hooks/useBatchSwapTask';
-import { SwapAnimation } from './components/SwapAnimation';
-import { useTokens } from '@/ui/utils/portfolio/token';
-import { abstractTokenToTokenItem } from '@/ui/utils/token';
-import { isSupportDBAccount } from '@/utils/account';
 
 const DesktopSmallSwapContent: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -204,16 +200,9 @@ const DesktopSmallSwapContent: React.FC = () => {
     }
   }, [chainList?.length]);
 
-  const isBeforeUnload = useRef(false);
-  useEventListener('blur', () => {
-    if (task.status === 'active' && !isBeforeUnload.current) {
+  useEventListener('visibilitychange', () => {
+    if (document.hidden && task.status === 'active') {
       task.pause();
-    }
-  });
-
-  useEventListener('focus', () => {
-    if (isBeforeUnload.current) {
-      isBeforeUnload.current = false;
     }
   });
 
@@ -221,7 +210,6 @@ const DesktopSmallSwapContent: React.FC = () => {
     if (task.status === 'active') {
       e.preventDefault();
       e.returnValue = '';
-      isBeforeUnload.current = true;
       return '';
     }
   });
@@ -234,8 +222,8 @@ const DesktopSmallSwapContent: React.FC = () => {
 
   return (
     <div className={clsx('h-full overflow-auto bg-r-neutral-bg-2')}>
-      <div className="max-w-[1248px] min-w-[1200px] mx-auto px-[24px] pt-[32px] pb-[40px] min-h-full">
-        <header className="flex items-start justify-between gap-[24px] mb-[32px]">
+      <div className="max-w-[1248px] min-w-[1200px] mx-auto px-[24px] pt-[32px] pb-[40px] h-full flex flex-col">
+        <header className="flex items-end justify-between gap-[24px] mb-[32px] flex-shrink-0">
           <div className="min-w-0">
             <div className="flex items-center gap-[16px]">
               <img src={IconRabby} alt="Rabby" />
@@ -254,25 +242,27 @@ const DesktopSmallSwapContent: React.FC = () => {
             value={currentAccount}
             onChange={handleAccountChange}
             scene="smallSwap"
-            className="bg-r-neutral-card-1"
-            disabled={task.status !== 'idle'}
+            className="bg-r-neutral-card-1 h-[38px]"
+            disabled={task.disabled}
           />
         </header>
 
-        <ChainPillList
-          data={chainList}
-          value={chainServerId}
-          disabled={task.status !== 'idle'}
-          onChange={handleChainChange}
-        />
+        <div className="flex-shrink-0">
+          <ChainPillList
+            data={chainList}
+            value={chainServerId}
+            disabled={task.disabled}
+            onChange={handleChainChange}
+          />
+        </div>
 
-        <div className="flex items-stretch justify-between gap-[24px]">
+        <div className="flex-1 min-h-[608px] flex items-stretch justify-between gap-[24px]">
           <LowValueTokenSelector
             key={chain?.serverId}
             chain={chain}
             tokenList={tokenList || []}
             task={task}
-            disabled={task.status !== 'idle'}
+            disabled={task.disabled}
           />
 
           <div className="flex-shrink-0 flex items-center">

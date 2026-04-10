@@ -9,7 +9,7 @@ import { defaultTokenFilter } from '@/ui/utils/portfolio/lpToken';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { Chain } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { useInterval, useMemoizedFn } from 'ahooks';
+import { useInterval, useLocalStorageState, useMemoizedFn } from 'ahooks';
 import { Image, Tooltip } from 'antd';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +32,7 @@ const Container = styled.section`
     display: flex;
     flex-direction: column;
 
-    height: 525px;
+    /* height: 525px; */
   }
 
   .token-list-header {
@@ -119,8 +119,14 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
   disabled,
 }) => {
   const { t } = useTranslation();
-  const [currentThreshold, setCurrentThreshold] = React.useState(10);
   const showStatus = task?.status !== 'idle';
+
+  const [
+    currentThreshold = 10,
+    setCurrentThreshold,
+  ] = useLocalStorageState<number>('ui-desktop-low-value-token-threshold', {
+    defaultValue: 10,
+  });
 
   const filteredTokenList = useMemo(() => {
     return sortBy(
@@ -206,7 +212,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
   return (
     <Container
       className={clsx(
-        'min-w-0 rounded-[16px] bg-r-neutral-card-1 px-[32px] py-[24px]'
+        'min-w-0 flex flex-col rounded-[16px] bg-r-neutral-card-1 px-[32px] py-[24px]'
       )}
       style={{
         boxShadow: '0 16px 40px rgba(25, 41, 69, 0.06)',
@@ -217,11 +223,11 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
             : PANEL_WIDTH + PANEL_WIDTH_DELTA,
       }}
     >
-      <div className="mb-[32px] text-[24px] leading-[29px] font-medium text-r-neutral-title1">
+      <div className="mb-[32px] text-[24px] leading-[29px] font-medium text-r-neutral-title1 flex-shrink-0">
         {t('page.desktopSmallSwap.selectLowValueTokens')}
       </div>
 
-      <div className="flex items-center gap-[12px] mb-[16px]">
+      <div className="flex items-center gap-[12px] mb-[16px] flex-shrink-0">
         {thresholds.map((item) => {
           const active = item.value === currentThreshold;
           return (
@@ -234,7 +240,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
                 'h-[40px] min-w-[80px] rounded-[8px] px-[14px] border text-[15px] leading-[18px] font-medium transition-colors',
                 active
                   ? 'border-rabby-blue-default bg-rabby-blue-light1 text-rabby-blue-default'
-                  : 'border-rabby-neutral-line bg-rabby-neutral-card-1 text-rabby-neutral-foot hover:bg-rabby-blue-light1 hover:border-rabby-blue-default hover:text-rabby-blue-default',
+                  : 'border-rabby-neutral-line bg-rabby-neutral-card-1 text-rabby-neutral-foot hover:border-rabby-blue-default hover:text-rabby-blue-default',
                 disabled ? 'cursor-not-allowed' : ''
               )}
             >
@@ -244,7 +250,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
         })}
       </div>
 
-      <div className="token-list mt-[14px]">
+      <div className="token-list mt-[14px] flex-1 min-h-0">
         <div className="token-list-header flex items-center">
           <div
             className="token-list-cell token-list-cell flex items-center"
@@ -396,7 +402,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
           </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center">
-            <RcIconEmptyCC />
+            <RcIconEmptyCC className="text-rb-neutral-bg-4" />
             <div className="text-[14px] leading-[17px] text-r-neutral-foot mt-[16px]">
               {t('page.desktopSmallSwap.noLowValueTokensFound')}
             </div>

@@ -688,6 +688,10 @@ export const useBatchSwapTask = (options: {
     updateStatus('completed');
   });
 
+  const disabled = useMemo(() => {
+    return status === 'active' || status === 'paused';
+  }, [status]);
+
   return {
     statusDict,
     list,
@@ -710,6 +714,7 @@ export const useBatchSwapTask = (options: {
       amount: expectReceiveAmount,
     },
     finalReceive,
+    disabled,
   };
 };
 
