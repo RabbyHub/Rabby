@@ -1228,7 +1228,8 @@
           "perpsPositions_other": "{{count}} Posisi",
           "perpsPositions_one": "{{count}} Posisi",
           "lending": "Peminjaman",
-          "dragTip": "Fitur tekan lama untuk mengurutkan ulang"
+          "dragTip": "Fitur tekan lama untuk mengurutkan ulang",
+          "convertDust": "Konversi Dust"
         },
         "queue": {
           "title": "Antrian",
@@ -1380,7 +1381,9 @@
           "switchPasswordForNonWhitelistedTx": "Kata sandi untuk transfer yang tidak terdaftar",
           "biometricUnlock": "Buka dengan Biometrik",
           "biometricUnlockHint": "Gunakan biometrik untuk membuka kunci di perangkat ini.",
-          "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik."
+          "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik.",
+          "currency": "Mata Uang",
+          "searchCurrency": "Cari mata uang"
         },
         "7Days": "7 hari",
         "4Hours": "4 jam",
@@ -1577,7 +1580,8 @@
         "side": "SISI",
         "searchTokenPlaceholder": "Cari Token",
         "openInTab": "Buka di Rabby Tab",
-        "openProMode": "Buka Mode Pro"
+        "openProMode": "Buka Mode Pro",
+        "openInTabV2": "Buka di Tab"
       },
       "hd": {
         "ledger": {
@@ -1640,7 +1644,8 @@
         "downloadIntro": "Belum punya aplikasi? Unduh sekarang.",
         "desc": "Periksa poin Anda di Rabby Mobile.",
         "title": "Rabby Points"
-      }
+      },
+      "noData": "Tidak ada mata uang yang cocok"
     },
     "nft": {
       "empty": {
@@ -4277,6 +4282,53 @@
       "hfTitle": "Faktor Kesehatan",
       "hf": "Faktor kesehatan",
       "selectMarket": "Pilih Pasar"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Parameter yang diperlukan tidak ada",
+        "quoteUnavailable": "Gagal mengambil kutipan",
+        "gasCostTooHigh": "Melebihi batas biaya gas",
+        "priceImpactTooHigh": "Dampak harga tinggi",
+        "buildSwapTxsFailed": "Gagal membangun txs tukar",
+        "sendSwapTxFailed": "Gagal mengirim tx tukar",
+        "transactionFailed": "Transaksi gagal",
+        "submitFailed": "Gagal mengirimkan transaksi",
+        "gasNotEnough": "Gas tidak mencukupi"
+      },
+      "stopTaskModal": {
+        "title": "Hentikan swap yang sedang berlangsung?",
+        "description": "Jika Anda berhenti sekarang, swap yang tersisa tidak akan selesai. Perlu diperhatikan bahwa swap yang sudah selesai tidak dapat dibatalkan.",
+        "continueSwap": "Lanjutkan swap",
+        "stop": "Hentikan swap"
+      },
+      "status": {
+        "pending": "Menukar",
+        "idle": "Menunggu penukaran",
+        "success": "Penukaran berhasil"
+      },
+      "title": "Konversi Dust",
+      "description": "Ubah token bernilai rendah menjadi gas token untuk menyederhanakan daftar aset Anda!",
+      "receiveTitle": "Anda Menerima",
+      "expectedToReceive": "Diperkirakan menerima",
+      "completedTitle": "Dust Dikonversi!",
+      "done": "Selesai",
+      "conversionProgress": "Kemajuan konversi",
+      "slippageTolerance": "Toleransi selip",
+      "singleTransactionGasLimit": "Batas Gas Transaksi Tunggal",
+      "startConvert": "Mulai konversi",
+      "unsupportedWalletType": "Hanya alamat kunci privat dan seed phrase yang didukung.",
+      "stop": "Berhenti",
+      "selectLowValueTokens": "Pilih Token Bernilai Rendah",
+      "tokenColumn": "Token",
+      "amountColumn": "Jumlah",
+      "valueColumn": "Nilai",
+      "statusColumn": "Status",
+      "noLowValueTokensFound": "Tidak ada token bernilai rendah ditemukan",
+      "selectedTokens": "Token Terpilih",
+      "totalValue": "Total nilai",
+      "moreChains": "+{{count}} rantai",
+      "swapFailed": "Swap gagal, {{reason}}",
+      "completedTips": "Swap yang sedang berlangsung akan terus diproses"
     }
   },
   "component": {
@@ -4491,7 +4543,8 @@
       "lending": "Peminjaman"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Tambah alamat"
+      "addAddresses": "Tambah alamat",
+      "smallSwapDisabledTips": "Saat ini hanya alamat kunci privat dan frase seed yang didukung."
     },
     "LpTokenTag": {
       "title": "Ini adalah token penyedia likuiditas (LP)",
@@ -4539,7 +4592,8 @@
     "tryAgain": "Coba Lagi",
     "Nonce": "Nonce",
     "backButton": "Kembali",
-    "appDescription": "Dompet andalan Anda untuk Ethereum dan EVM"
+    "appDescription": "Dompet andalan Anda untuk Ethereum dan EVM",
+    "collapse": "Tutup"
   },
   "background": {
     "error": {

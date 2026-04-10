@@ -1140,7 +1140,8 @@
           "perpsPositions_other": "{{count}} Позицій",
           "perpsPositions_one": "{{count}} Позиція",
           "dragTip": "Функція довгого натискання для зміни порядку",
-          "lending": "Кредитування"
+          "lending": "Кредитування",
+          "convertDust": "Конвертувати пил"
         },
         "comingSoon": "Скоро",
         "soon": "Незабаром",
@@ -1315,7 +1316,9 @@
           "switchPasswordForNonWhitelistedTx": "Пароль для нестандартних трансакцій",
           "biometricUnlock": "Розблокувати за допомогою біометрії",
           "biometricUnlockUnsupported": "Цей пристрій не підтримує біометричне розблокування.",
-          "biometricUnlockHint": "Використовуйте біометрію для розблокування на цьому пристрої."
+          "biometricUnlockHint": "Використовуйте біометрію для розблокування на цьому пристрої.",
+          "currency": "Валюта",
+          "searchCurrency": "Пошук валюти"
         },
         "aboutUs": "Про нас",
         "currentVersion": "Поточна версія",
@@ -1490,7 +1493,8 @@
         "side": "БОКОВИЙ",
         "searchTokenPlaceholder": "Пошук Токену",
         "openInTab": "Відкрити в Rabby Tab",
-        "openProMode": "Відкрити професійний режим"
+        "openProMode": "Відкрити професійний режим",
+        "openInTabV2": "Відкрити у вкладці"
       },
       "hd": {
         "howToConnectLedger": "Як підключити Ledger",
@@ -1555,7 +1559,8 @@
         "title": "Rabby Points",
         "desc": "Перевірте свої бали в Rabby Mobile.",
         "downloadIntro": "Ще не маєте програми? Завантажте зараз."
-      }
+      },
+      "noData": "Валюта не знайдена"
     },
     "nft": {
       "floorPrice": "/ Ринкова Ціна:",
@@ -4292,6 +4297,53 @@
       "selectChain": "Виберіть ланцюг",
       "disabled": "ВІКЛЮЧЕНО",
       "supplyBalance": "Постачання Баланс"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Відсутні обов'язкові параметри",
+        "quoteUnavailable": "Не вдалося отримати котирування",
+        "gasCostTooHigh": "Перевищено ліміт комісії за газ",
+        "priceImpactTooHigh": "Високий вплив на ціну",
+        "buildSwapTxsFailed": "Не вдалося створити транзакції обміну",
+        "sendSwapTxFailed": "Не вдалося надіслати транзакцію обміну",
+        "transactionFailed": "Транзакція не виконана",
+        "submitFailed": "Не вдалося надіслати транзакції",
+        "gasNotEnough": "Недостатньо Газу"
+      },
+      "stopTaskModal": {
+        "title": "Зупинити поточні свопи?",
+        "description": "Якщо ви зупините зараз, усі незавершені свопи не будуть виконані. Зверніть увагу, що завершені свопи не можна скасувати.",
+        "continueSwap": "Продовжити своп",
+        "stop": "Зупинити своп"
+      },
+      "status": {
+        "pending": "Обмін",
+        "idle": "Очікування обміну",
+        "success": "Обмін успішний"
+      },
+      "title": "Конвертація пилюки",
+      "description": "Конвертуйте токени з низькою вартістю в gas-токен, щоб спростити список активів!",
+      "receiveTitle": "Ви отримаєте",
+      "expectedToReceive": "Очікується отримати",
+      "completedTitle": "Пилюка конвертована!",
+      "done": "Готово",
+      "conversionProgress": "Прогрес конвертації",
+      "slippageTolerance": "Допуск slippage",
+      "singleTransactionGasLimit": "Ліміт газу однієї транзакції",
+      "startConvert": "Почати конвертацію",
+      "unsupportedWalletType": "Підтримуються лише адреси з приватним ключем та seed-фразою.",
+      "stop": "Стоп",
+      "selectLowValueTokens": "Виберіть токени з низькою вартістю",
+      "tokenColumn": "Токен",
+      "amountColumn": "Сума",
+      "valueColumn": "Вартість",
+      "statusColumn": "Статус",
+      "noLowValueTokensFound": "Токени з низькою вартістю не знайдено",
+      "selectedTokens": "Вибрані токени",
+      "totalValue": "Загальна вартість",
+      "moreChains": "+{{count}} ланцюжків",
+      "swapFailed": "Конвертація не вдалася, {{reason}}",
+      "completedTips": "Поточна конвертація продовжить обробку"
     }
   },
   "component": {
@@ -4506,7 +4558,8 @@
       "perps": "Периферійні"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Додати адресу"
+      "addAddresses": "Додати адресу",
+      "smallSwapDisabledTips": "Наразі підтримуються лише адреси з приватним ключем та seed-фразою."
     },
     "LpTokenTag": {
       "title": "Це токен постачальника ліквідності (LP)",
@@ -4562,7 +4615,8 @@
     "Deleted": "Видалити",
     "Save": "Зберегти",
     "Done": "Готово",
-    "appDescription": "Ваш улюблений гаманець для Ethereum та EVM"
+    "appDescription": "Ваш улюблений гаманець для Ethereum та EVM",
+    "collapse": "Згорнути"
   },
   "background": {
     "error": {

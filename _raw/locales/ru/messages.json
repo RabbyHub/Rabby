@@ -1137,7 +1137,8 @@
           "perpsPositions_one": "{{count}} Позиция",
           "perpsPositions_other": "{{count}} Позиции",
           "lending": "Кредитование",
-          "dragTip": "Функция длительного нажатия для переупорядочивания"
+          "dragTip": "Функция длительного нажатия для переупорядочивания",
+          "convertDust": "Конвертировать Dust"
         },
         "comingSoon": "Скоро будет",
         "soon": "Скоро",
@@ -1313,7 +1314,9 @@
           "switchPasswordForNonWhitelistedTx": "Пароль для неавторизованных переводов",
           "biometricUnlock": "Разблокировать с помощью биометрии",
           "biometricUnlockUnsupported": "Это устройство не поддерживает биометрическую разблокировку.",
-          "biometricUnlockHint": "Используйте биометрию для разблокировки на этом устройстве."
+          "biometricUnlockHint": "Используйте биометрию для разблокировки на этом устройстве.",
+          "currency": "Валюта",
+          "searchCurrency": "Поиск валюты"
         },
         "aboutUs": "О нас",
         "currentVersion": "Текущая версия",
@@ -1488,7 +1491,8 @@
         "side": "Сторона",
         "searchTokenPlaceholder": "Поиск токена",
         "openInTab": "Открыть в Rabby Tab",
-        "openProMode": "Открыть Pro режим"
+        "openProMode": "Открыть Pro режим",
+        "openInTabV2": "Открыть в новой вкладке"
       },
       "hd": {
         "howToConnectLedger": "Как подключить Ledger",
@@ -1552,7 +1556,8 @@
         "title": "Rabby Очки",
         "desc": "Проверьте свои баллы в Rabby Mobile.",
         "downloadIntro": "Еще нет приложения? Загрузите сейчас."
-      }
+      },
+      "noData": "Валюта не найдена"
     },
     "nft": {
       "floorPrice": "/ Floor Price:",
@@ -4282,6 +4287,53 @@
       "hf": "Фактор здоровья",
       "searchMarket": "Поиск рынка",
       "selectMarket": "Выбрать рынок"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Отсутствуют обязательные параметры",
+        "quoteUnavailable": "Не удалось получить котировку",
+        "gasCostTooHigh": "Превышен лимит комиссии за gas",
+        "priceImpactTooHigh": "Высокое влияние на цену",
+        "buildSwapTxsFailed": "Не удалось создать swap транзакции",
+        "sendSwapTxFailed": "Не удалось отправить swap транзакцию",
+        "transactionFailed": "Транзакция не удалась",
+        "submitFailed": "Не удалось отправить транзакции",
+        "gasNotEnough": "Недостаточно Gas"
+      },
+      "stopTaskModal": {
+        "title": "Остановить текущие свопы?",
+        "description": "Если вы остановите сейчас, все оставшиеся свопы не будут выполнены. Обратите внимание, что завершённые свопы нельзя отменить.",
+        "continueSwap": "Продолжить своп",
+        "stop": "Остановить своп"
+      },
+      "status": {
+        "pending": "Обмен",
+        "idle": "Ожидание обмена",
+        "success": "Обмен успешен"
+      },
+      "title": "Конвертировать пыль",
+      "description": "Конвертируйте низкоценные токены в gas token, чтобы упростить список активов!",
+      "receiveTitle": "Вы получите",
+      "expectedToReceive": "Ожидаемое получение",
+      "completedTitle": "Пыль конвертирована!",
+      "done": "Готово",
+      "conversionProgress": "Прогресс конвертации",
+      "slippageTolerance": "Допуск проскальзывания",
+      "singleTransactionGasLimit": "Лимит Gas для одной транзакции",
+      "startConvert": "Начать конвертацию",
+      "unsupportedWalletType": "Поддерживаются только адреса с приватным ключом и seed фразой.",
+      "stop": "Остановить",
+      "selectLowValueTokens": "Выберите низкоценные токены",
+      "tokenColumn": "Токен",
+      "amountColumn": "Количество",
+      "valueColumn": "Ценность",
+      "statusColumn": "Статус",
+      "noLowValueTokensFound": "Низкоценные токены не найдены",
+      "selectedTokens": "Выбранные токены",
+      "totalValue": "Общая ценность",
+      "moreChains": "+{{count}} цепей",
+      "swapFailed": "Неудачный обмен, {{reason}}",
+      "completedTips": "Текущий обмен будет продолжать обрабатываться"
     }
   },
   "component": {
@@ -4496,7 +4548,8 @@
       "portfolio": "Портфель"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Добавить адрес"
+      "addAddresses": "Добавить адрес",
+      "smallSwapDisabledTips": "На данный момент поддерживаются только адреса с закрытым ключом и сид-фразой."
     },
     "LpTokenTag": {
       "title": "Это токен поставщика ликвидности (LP)",
@@ -4544,7 +4597,8 @@
     "Nonce": "Nonce",
     "tryAgain": "Попробовать снова",
     "notSupportTesntnet": "Эта своя сеть поддерживается",
-    "appDescription": "Ваш кошелек для Ethereum и EVM"
+    "appDescription": "Ваш кошелек для Ethereum и EVM",
+    "collapse": "Свернуть"
   },
   "background": {
     "error": {

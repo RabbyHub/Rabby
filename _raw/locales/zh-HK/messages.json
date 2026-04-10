@@ -33,7 +33,8 @@
     "Nonce": "Nonce",
     "tryAgain": "再試一次",
     "notSupportTesntnet": "不支持自定義網絡",
-    "appDescription": "您首选的以太坊和 EVM 钱包"
+    "appDescription": "您首选的以太坊和 EVM 钱包",
+    "collapse": "摺疊"
   },
   "page": {
     "transactions": {
@@ -128,7 +129,8 @@
           "perpsPositions_other": "{{count}} 位置",
           "perpsPositions_one": "{{count}} 头寸",
           "dragTip": "長按功能以重新排序",
-          "lending": "借贷"
+          "lending": "借贷",
+          "convertDust": "轉換粉塵"
         },
         "comingSoon": "即將推出",
         "soon": "很快",
@@ -269,7 +271,9 @@
           "switchPasswordForNonWhitelistedTx": "非白名单转账的密碼",
           "biometricUnlock": "使用生物识别解锁",
           "biometricUnlockUnsupported": "此設備不支持生物識別解鎖。",
-          "biometricUnlockHint": "使用生物识别技术在此设备上解锁。"
+          "biometricUnlockHint": "使用生物识别技术在此设备上解锁。",
+          "currency": "貨幣",
+          "searchCurrency": "搜尋貨幣"
         },
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "更新版本",
@@ -448,7 +452,8 @@
         "price": "價格",
         "searchTokenPlaceholder": "搜索 Token",
         "openInTab": "在 Rabby 标签中打开",
-        "openProMode": "開啟專業模式"
+        "openProMode": "開啟專業模式",
+        "openInTabV2": "在分頁打開"
       },
       "hd": {
         "howToConnectLedger": "如何連接 Ledger",
@@ -512,7 +517,8 @@
         "title": "Rabby 積分",
         "desc": "在 Rabby Mobile 中查看您的积分。",
         "downloadIntro": "還未下載應用程序？立即下載。"
-      }
+      },
+      "noData": "沒有匹配的貨幣"
     },
     "chainList": {
       "title": "已集成 {{count}} 條鏈",
@@ -4318,6 +4324,53 @@
       "hfTitle": "健康因素",
       "searchMarket": "搜尋市場",
       "selectMarket": "選擇市場"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "缺少必要參數",
+        "quoteUnavailable": "無法獲取報價",
+        "gasCostTooHigh": "超出 Gas 費用限額",
+        "priceImpactTooHigh": "價格影響過高",
+        "buildSwapTxsFailed": "無法建立交換交易",
+        "sendSwapTxFailed": "無法發送交換交易",
+        "transactionFailed": "交易失敗",
+        "submitFailed": "無法提交交易",
+        "gasNotEnough": "Gas 不足"
+      },
+      "stopTaskModal": {
+        "title": "停止當前的交換？",
+        "description": "如果現在停止，任何剩餘的交換都將無法完成。請注意，已完成的交換無法撤銷。",
+        "continueSwap": "繼續交換",
+        "stop": "停止交換"
+      },
+      "status": {
+        "pending": "正在兌換",
+        "idle": "等待兌換",
+        "success": "兌換成功"
+      },
+      "title": "轉換灰塵代幣",
+      "description": "將低價值代幣轉換為gas代幣，簡化你的資產列表！",
+      "receiveTitle": "你將收到",
+      "expectedToReceive": "預期收到",
+      "completedTitle": "灰塵代幣已轉換！",
+      "done": "完成",
+      "conversionProgress": "轉換進度",
+      "slippageTolerance": "滑點容許範圍",
+      "singleTransactionGasLimit": "單筆交易Gas上限",
+      "startConvert": "開始轉換",
+      "unsupportedWalletType": "只支持私鑰和助記詞地址。",
+      "stop": "停止",
+      "selectLowValueTokens": "選擇低價值代幣",
+      "tokenColumn": "代幣",
+      "amountColumn": "數量",
+      "valueColumn": "價值",
+      "statusColumn": "狀態",
+      "noLowValueTokensFound": "找不到低價值代幣",
+      "selectedTokens": "已選擇代幣",
+      "totalValue": "總價值",
+      "moreChains": "+{{count}} 條鏈",
+      "swapFailed": "交換失敗，{{reason}}",
+      "completedTips": "正在進行的交換將繼續處理"
     }
   },
   "component": {
@@ -4532,7 +4585,8 @@
       "portfolio": "投资组合"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "添加地址"
+      "addAddresses": "添加地址",
+      "smallSwapDisabledTips": "目前僅支援私鑰及助記詞地址。"
     },
     "LpTokenTag": {
       "title": "這是一個流動性提供者(LP)代幣",
