@@ -22,6 +22,10 @@ db.version(6).upgrade((trans) => {
     .table('history')
     .toCollection()
     .modify((item: TxHistoryItemRow) => {
-      item.is_small_tx = judgeIsSmallUsdTx(item);
+      try {
+        item.is_small_tx = judgeIsSmallUsdTx(item);
+      } catch (e) {
+        console.error('judgeIsSmallUsdTx error', e, item);
+      }
     });
 });
