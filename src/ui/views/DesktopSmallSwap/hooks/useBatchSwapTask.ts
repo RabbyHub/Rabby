@@ -295,10 +295,13 @@ export const useBatchSwapTask = (options: {
     autoResetGasStoreOnChainChange: true,
   });
 
-  const dexId = useRabbySelector((s) => {
-    const list = s.swap.supportedDEXList.filter((e) => DEX[e]);
-    const randomIndex = random(0, list.length - 1);
-    return list[randomIndex] as DEX_ENUM;
+  const dexList = useRabbySelector((s) => {
+    return s.swap.supportedDEXList.filter((e) => DEX[e]);
+  });
+
+  const getDexId = useMemoizedFn(() => {
+    const randomIndex = random(0, dexList.length - 1);
+    return dexList[randomIndex] as DEX_ENUM;
   });
 
   const updateStatus = React.useCallback(
@@ -330,6 +333,8 @@ export const useBatchSwapTask = (options: {
           try {
             throwIfTaskCancelled();
             closeSign();
+
+            const dexId = getDexId();
 
             if (
               !options.chain ||
@@ -465,6 +470,7 @@ export const useBatchSwapTask = (options: {
                 onPreExecError() {
                   result.isSimulationFailed = true;
                 },
+                isHideErrorUI: true,
               });
 
               result.txHash = last(res) || '';
