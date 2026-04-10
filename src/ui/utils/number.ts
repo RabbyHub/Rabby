@@ -69,17 +69,20 @@ export const formatTokenAmount = (
 
 export const numberWithCommasIsLtOne = (
   x?: number | string | BigNumber,
-  precision?: number
+  precision?: number,
+  prefix?: string
 ) => {
   if (x === undefined || x === null) {
     return '-';
   }
-  if (x.toString() === '0') return '0';
+  if (x.toString() === '0') {
+    return `${prefix || ''}0`;
+  }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   if (x < 0.00005) {
-    return '< 0.0001';
+    return `< ${prefix || ''}0.0001`;
   }
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
@@ -87,7 +90,7 @@ export const numberWithCommasIsLtOne = (
   const parts: string[] = Number(x).toFixed(precision).split('.');
 
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return parts.join('.');
+  return `${prefix || ''}${parts.join('.')}`;
 };
 
 export const formatNumber = (
