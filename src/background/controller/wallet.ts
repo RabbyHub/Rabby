@@ -213,6 +213,16 @@ const gnosisPQueue = new PQueue({
   concurrency: 2,
 });
 
+type DesktopPageType = 'profile' | 'perps' | 'lending' | 'prediction';
+
+function getDesktopPageType(path: string): DesktopPageType {
+  const normalized = path.replace(/^\//, '');
+  if (normalized.startsWith('desktop/perps')) return 'perps';
+  if (normalized.startsWith('desktop/lending')) return 'lending';
+  if (normalized.startsWith('desktop/prediction')) return 'prediction';
+  return 'profile';
+}
+
 export class WalletController extends BaseController {
   openapi = openapiService;
   testnetOpenapi = testnetOpenapiService;
@@ -1726,21 +1736,22 @@ export class WalletController extends BaseController {
   openInDesktop = async (
     _url: string,
     options?: {
-      desktopTabId?: Browser.Tabs.Tab['id'];
       triggerFocusEventOnDesktop?: boolean;
     }
   ) => {
-    const {
-      desktopTabId: inputDesktopTabId,
-      triggerFocusEventOnDesktop = true,
-    } = options || {};
-    const desktopTabId: Browser.Tabs.Tab['id'] =
-      inputDesktopTabId || preferenceService.getPreference('desktopTabId');
-    const currentDesktopTab = desktopTabId
-      ? await Browser.tabs.get(desktopTabId).catch(() => null)
+    const { triggerFocusEventOnDesktop = true } = options || {};
+
+    const path = _url.replace(/^\//, '');
+    const pageType = getDesktopPageType(path);
+    const desktopTabIds =
+      preferenceService.getPreference('desktopTabIds') || {};
+    const storedTabId = desktopTabIds[pageType];
+
+    const currentDesktopTab = storedTabId
+      ? await Browser.tabs.get(storedTabId).catch(() => null)
       : null;
 
-    const url = `desktop.html#/${_url.replace(/^\//, '')}`;
+    const url = `desktop.html#/${path}`;
     if (currentDesktopTab) {
       const tab = await Browser.tabs.update(currentDesktopTab.id, {
         active: true,
@@ -1762,8 +1773,9 @@ export class WalletController extends BaseController {
       active: true,
       url: url,
     });
+    const latestIds = preferenceService.getPreference('desktopTabIds') || {};
     preferenceService.setPreferencePartials({
-      desktopTabId: tab.id,
+      desktopTabIds: { ...latestIds, [pageType]: tab.id },
     });
     return tab;
   };
