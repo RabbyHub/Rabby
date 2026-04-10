@@ -435,7 +435,7 @@ const TokenSelector = ({
       const { disable, shortReason } = checkItem?.(token) || {};
       return (
         <CommonTokenItem
-          key={`${token.chain}-${token.id}`}
+          key={`${token.chain}-${token.id}-${token.amount}`}
           onConfirm={onConfirm}
           warningText={disable ? shortReason : undefined}
           token={token}
