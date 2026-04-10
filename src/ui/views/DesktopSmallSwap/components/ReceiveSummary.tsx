@@ -1,25 +1,24 @@
-import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import { Account } from '@/background/service/preference';
+import { KEYRING_TYPE } from '@/constant';
+import { RcIconWaringCC } from '@/ui/assets/desktop/common';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { formatAmount, formatUsdValue } from '@/ui/utils';
 import { Chain } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { usePrevious } from 'ahooks';
 import { Button, Image, Tooltip } from 'antd';
+import clsx from 'clsx';
+import Lottie from 'lottie-react';
+import React, { useMemo } from 'react';
+import CountUp from 'react-countup';
+import { useTranslation } from 'react-i18next';
+import { getTokenSymbol } from '../../DesktopProfile/components/TokensTabPane/Protocols/utils';
 import { PANEL_WIDTH, PANEL_WIDTH_DELTA } from '../constant';
 import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
 import { ExchangeSettingRow } from './ExchangeSettingRow';
 import { SelectPopup } from './SelectPopup';
-import { set } from 'lodash';
-import { getTokenSymbol } from '../../DesktopProfile/components/TokensTabPane/Protocols/utils';
-import { formatAmount, formatTokenAmount, formatUsdValue } from '@/ui/utils';
 import { SwapAnimation } from './SwapAnimation';
-import CountUp from 'react-countup';
-import { usePrevious } from 'ahooks';
-import { KEYRING_TYPE } from '@/constant';
-import { Account } from '@/background/service/preference';
-import Lottie from 'lottie-react';
-import { useTranslation } from 'react-i18next';
-import { RcIconWaringCC } from '@/ui/assets/desktop/common';
 
 type ReceiveSummaryProps = {
   totalValue?: number;

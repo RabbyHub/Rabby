@@ -1,4 +1,4 @@
-import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
+import { splitNumberByStep } from '@/ui/utils';
 import { ChainWithBalance } from '@rabby-wallet/rabby-api/dist/types';
 import { Tooltip } from 'antd';
 import clsx from 'clsx';

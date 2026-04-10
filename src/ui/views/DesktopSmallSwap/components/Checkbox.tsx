@@ -1,4 +1,3 @@
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import clsx from 'clsx';
 import React from 'react';
 import { CheckboxCC, CheckboxIndeterminateCC } from 'ui/assets/checkbox';
