@@ -83,6 +83,10 @@ const Wrapper = styled.div`
 
     padding: 12px 8px;
 
+    &::before {
+      display: none !important;
+    }
+
     &:first-child {
       padding-left: 16px;
     }
@@ -180,6 +184,10 @@ const VirtualWrapper = styled.div<{ isDarkTheme: boolean }>`
       background-color: var(--rb-neutral-bg-1, #fff);
       border: none;
       padding: 12px 8px;
+
+      &::before {
+        display: none !important;
+      }
 
       &:first-child {
         padding-left: 16px;
