@@ -4365,11 +4365,11 @@
         "idle": "等待交换",
         "success": "交换成功"
       },
-      "tokenColumn": "代币",
-      "amountColumn": "数量",
-      "valueColumn": "价值",
-      "statusColumn": "状态",
-      "noLowValueTokensFound": "未找到低价值代币",
+      "tokenColumn": "资产",
+      "amountColumn": "持有量",
+      "valueColumn": "美元价值",
+      "statusColumn": "兑换状态",
+      "noLowValueTokensFound": "暂无资产",
       "moreChains": "+{{count}} 条链"
     }
   },
