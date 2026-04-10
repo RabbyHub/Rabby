@@ -1347,16 +1347,9 @@ export const perps = createModel<RootModel>()({
     async initFavoritedCoins(_, rootState) {
       try {
         const favoritedCoins = await rootState.app.wallet.getPerpsFavoritedCoins();
-        if (favoritedCoins && favoritedCoins.length > 0) {
-          dispatch.perps.setFavoritedCoins(favoritedCoins);
-        } else {
-          // Default favorited coins
-          dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
-        }
+        dispatch.perps.setFavoritedCoins(favoritedCoins);
       } catch (error) {
         console.error('Failed to load favorited coins:', error);
-        // Fallback to default
-        dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
       }
     },
 

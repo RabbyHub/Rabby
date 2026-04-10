@@ -80,7 +80,7 @@ export const HomePerpsPositionList: React.FC = () => {
                 dispatch.perps.setCurrentPerpsAccount(currentAccount);
                 dispatch.perps.updateSelectedCoin(assetPosition.position.coin);
                 wallet.setPerpsCurrentAccount(currentAccount);
-                history.push('/desktop/perps');
+                wallet.openInDesktop('/desktop/perps');
                 ga4.fireEvent('Perps_CardToPerps_Web', {
                   event_category: 'Rabby Perps',
                 });

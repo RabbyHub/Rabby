@@ -19,6 +19,7 @@ import { ActionRow, hasActions } from '../components/ActionRow';
 import { useHistory } from 'react-router-dom';
 import { CustomMarket } from '@/ui/views/DesktopLending/config/market';
 import { useRabbyDispatch } from '@/ui/store';
+import { useWallet } from '@/ui/utils';
 
 const LENDING_PROTOCOL_MARKET: Record<string, CustomMarket> = {
   aave3: CustomMarket.proto_mainnet_v3,
@@ -50,6 +51,7 @@ export default memo(
   }) => {
     const { t } = useTranslation();
 
+    const wallet = useWallet();
     const { tag, protocolLogo, protocolName, protocolId } = props;
     const data = props.data;
 
@@ -70,9 +72,12 @@ export default memo(
           type: 'lending',
           dappId: 'aave',
         });
-        history.push(
+        wallet.openInDesktop(
           `/desktop/lending?marketKey=${encodeURIComponent(lendingMarketKey)}`
         );
+        // history.push(
+        //   `/desktop/lending?marketKey=${encodeURIComponent(lendingMarketKey)}`
+        // );
       },
       [history, lendingMarketKey]
     );
