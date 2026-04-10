@@ -1137,7 +1137,8 @@
           "perpsPositions_one": "{{count}} Pozisyon",
           "perpsPositions_other": "{{count}} Pozisyonlar",
           "lending": "Kredi Verme",
-          "dragTip": "Uzun basma özelliği ile sıralama"
+          "dragTip": "Uzun basma özelliği ile sıralama",
+          "convertDust": "Tozu Dönüştür"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -1312,7 +1313,9 @@
           "switchPasswordForNonWhitelistedTx": "Beyaz listeye alınmamış transferler için şifre",
           "biometricUnlock": "Biyometriklerle Kilidi Açma",
           "biometricUnlockUnsupported": "Bu cihaz biyometrik kilit açmayı desteklememektedir.",
-          "biometricUnlockHint": "Bu cihazda açmak için biyometrik verileri kullanın."
+          "biometricUnlockHint": "Bu cihazda açmak için biyometrik verileri kullanın.",
+          "currency": "Para Birimi",
+          "searchCurrency": "Para birimi ara"
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",
@@ -1487,7 +1490,8 @@
         "price": "FİYAT",
         "searchTokenPlaceholder": "Token Ara",
         "openInTab": "Rabby Sekmesinde Açın",
-        "openProMode": "Pro Modu Açın"
+        "openProMode": "Pro Modu Açın",
+        "openInTabV2": "Sekmede Aç"
       },
       "hd": {
         "howToConnectLedger": "Ledger Nasıl Bağlanır",
@@ -1551,7 +1555,8 @@
         "desc": "Rabby Mobile'de puanlarınızı kontrol edin.",
         "title": "Rabby Puanları",
         "downloadIntro": "Uygulamayı henüz indirmediniz mi? Şimdi indirin."
-      }
+      },
+      "noData": "Eşleşen para birimi yok"
     },
     "nft": {
       "floorPrice": "Taban Fiyat:",
@@ -4283,6 +4288,53 @@
       "hf": "Sağlık faktörü",
       "searchMarket": "Pazar Ara",
       "selectChain": "Zincir Seçin"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Eksik zorunlu parametreler",
+        "quoteUnavailable": "Teklif alınamadı",
+        "gasCostTooHigh": "Gas ücret limiti aşıldı",
+        "priceImpactTooHigh": "Yüksek fiyat etkisi",
+        "buildSwapTxsFailed": "Swap işlemleri oluşturulamadı",
+        "sendSwapTxFailed": "Swap işlemi gönderilemedi",
+        "transactionFailed": "İşlem başarısız",
+        "submitFailed": "İşlemler gönderilemedi",
+        "gasNotEnough": "Yetersiz Gas"
+      },
+      "stopTaskModal": {
+        "title": "Mevcut takasları durdur?",
+        "description": "Şimdi durdurursanız, kalan takaslar tamamlanmayacaktır. Tamamlanan takasların geri alınamayacağını lütfen unutmayın.",
+        "continueSwap": "Takasa devam et",
+        "stop": "Takası durdur"
+      },
+      "status": {
+        "pending": "Takas yapılıyor",
+        "idle": "Takas bekleniyor",
+        "success": "Takas başarılı"
+      },
+      "title": "Küçük Bakiyeleri Dönüştür",
+      "description": "Varlık listenizi basitleştirmek için düşük değerli tokenları gas tokenına dönüştürün!",
+      "receiveTitle": "Alacaksınız",
+      "expectedToReceive": "Beklenen alış",
+      "completedTitle": "Küçük Bakiyeler Dönüştürüldü!",
+      "done": "Tamamlandı",
+      "conversionProgress": "Dönüştürme ilerlemesi",
+      "slippageTolerance": "Kayma toleransı",
+      "singleTransactionGasLimit": "Tek İşlem Gas Limiti",
+      "startConvert": "Dönüştürmeyi başlat",
+      "unsupportedWalletType": "Yalnızca özel anahtar ve kurtarma cümlesi adresleri desteklenir.",
+      "stop": "Durdur",
+      "selectLowValueTokens": "Düşük Değerli Tokenları Seç",
+      "tokenColumn": "Token",
+      "amountColumn": "Miktar",
+      "valueColumn": "Değer",
+      "statusColumn": "Durum",
+      "noLowValueTokensFound": "Düşük değerli token bulunamadı",
+      "selectedTokens": "Seçili Tokenlar",
+      "totalValue": "Toplam değer",
+      "moreChains": "+{{count}} zincir",
+      "swapFailed": "Swap başarısız oldu, {{reason}}",
+      "completedTips": "Devam eden swap işlemi işlenmeye devam edecek"
     }
   },
   "component": {
@@ -4497,7 +4549,8 @@
       "portfolio": "Portföy"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Adres ekle"
+      "addAddresses": "Adres ekle",
+      "smallSwapDisabledTips": "Şu anda yalnızca özel anahtar ve kurtarma ifadesi adresleri desteklenmektedir."
     },
     "LpTokenTag": {
       "title": "Bu bir likidite sağlayıcı (LP) tokenıdır.",
@@ -4545,7 +4598,8 @@
     "Nonce": "Nonce",
     "notSupportTesntnet": "Özel ağ için desteklenmiyor",
     "tryAgain": "Tekrar Dene",
-    "appDescription": "Ethereum ve EVM için gideceğiniz cüzdan."
+    "appDescription": "Ethereum ve EVM için gideceğiniz cüzdan.",
+    "collapse": "Daralt"
   },
   "background": {
     "error": {

@@ -258,7 +258,8 @@
       "comingSoon": "Bientôt disponible"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Ajouter une adresse"
+      "addAddresses": "Ajouter une adresse",
+      "smallSwapDisabledTips": "Actuellement, seules les adresses de clé privée et de phrase de récupération sont prises en charge."
     },
     "LpTokenTag": {
       "title": "Ceci est un jeton de fournisseur de liquidité (LP)",
@@ -319,7 +320,8 @@
     "Nonce": "Nonce",
     "tryAgain": "Essayer à nouveau",
     "notSupportTesntnet": "Non pris en charge pour le réseau personnalisé",
-    "appDescription": "Votre portefeuille de référence pour Ethereum et EVM"
+    "appDescription": "Votre portefeuille de référence pour Ethereum et EVM",
+    "collapse": "Réduire"
   },
   "page": {
     "activities": {
@@ -791,7 +793,8 @@
         "side": "CÔTÉ",
         "searchTokenPlaceholder": "Rechercher Token",
         "openInTab": "Ouvrir dans l'onglet Rabby",
-        "openProMode": "Ouvrir le mode pro"
+        "openProMode": "Ouvrir le mode pro",
+        "openInTabV2": "Ouvrir dans l'onglet"
       },
       "contacts": {
         "noData": "Pas de données",
@@ -877,7 +880,8 @@
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
           "lending": "Prêt",
-          "dragTip": "Fonctionnalité de pression longue pour réorganiser"
+          "dragTip": "Fonctionnalité de pression longue pour réorganiser",
+          "convertDust": "Convertir les Dust"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",
@@ -1029,7 +1033,9 @@
           "switchPasswordForNonWhitelistedTx": "Mot de passe pour les transferts non autorisés",
           "biometricUnlockHint": "Utilisez des biométries pour déverrouiller cet appareil.",
           "biometricUnlockUnsupported": "Cet appareil ne prend pas en charge le déverrouillage biométrique.",
-          "biometricUnlock": "Déverrouiller avec des biométriques"
+          "biometricUnlock": "Déverrouiller avec des biométriques",
+          "currency": "Devise",
+          "searchCurrency": "Rechercher une devise"
         },
         "supportedChains": "Chaînes prises en charge",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -1146,7 +1152,8 @@
         "title": "Rabby Points",
         "desc": "Vérifiez vos points dans Rabby Mobile.",
         "downloadIntro": "Vous n'avez pas encore l'application ? Téléchargez-la maintenant."
-      }
+      },
+      "noData": "Aucune devise correspondante"
     },
     "ethSign": {
       "alert": "Signer avec \"eth_sign\" peut entraîner une perte d'actifs. Pour votre sécurité, Rabby ne prend pas en charge cette méthode."
@@ -4602,6 +4609,53 @@
       "enterAmount": "Entrez le montant",
       "estDailyEarning": "Est. Gain quotidien",
       "supplyBalance": "Fournir le solde"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Paramètres requis manquants",
+        "quoteUnavailable": "Échec de la récupération du devis",
+        "gasCostTooHigh": "Dépassement de la limite de frais de gas",
+        "priceImpactTooHigh": "Impact élevé sur le prix",
+        "buildSwapTxsFailed": "Échec de la construction des transactions d'échange",
+        "sendSwapTxFailed": "Échec de l'envoi de la transaction d'échange",
+        "transactionFailed": "Transaction échouée",
+        "submitFailed": "Échec de la soumission des transactions",
+        "gasNotEnough": "Gas insuffisant"
+      },
+      "stopTaskModal": {
+        "title": "Arrêter les swaps en cours ?",
+        "description": "Si vous arrêtez maintenant, les swaps restants ne seront pas terminés. Veuillez noter que les swaps terminés ne peuvent pas être annulés.",
+        "continueSwap": "Continuer le swap",
+        "stop": "Arrêter le swap"
+      },
+      "status": {
+        "pending": "Échange en cours",
+        "idle": "En attente d'échange",
+        "success": "Échange réussi"
+      },
+      "title": "Convertir la poussière",
+      "description": "Convertissez les jetons de faible valeur en jeton de gaz pour simplifier votre liste d'actifs !",
+      "receiveTitle": "Vous recevez",
+      "expectedToReceive": "Réception estimée",
+      "completedTitle": "Poussière convertie !",
+      "done": "Terminé",
+      "conversionProgress": "Progression de la conversion",
+      "slippageTolerance": "Tolérance de slippage",
+      "singleTransactionGasLimit": "Limite de gaz pour une seule transaction",
+      "startConvert": "Démarrer la conversion",
+      "unsupportedWalletType": "Seules les adresses de clé privée et de phrase de graine sont prises en charge.",
+      "stop": "Arrêter",
+      "selectLowValueTokens": "Sélectionner les jetons de faible valeur",
+      "tokenColumn": "Jeton",
+      "amountColumn": "Montant",
+      "valueColumn": "Valeur",
+      "statusColumn": "Statut",
+      "noLowValueTokensFound": "Aucun jeton de faible valeur trouvé",
+      "selectedTokens": "Jetons sélectionnés",
+      "totalValue": "Valeur totale",
+      "moreChains": "+{{count}} chaînes",
+      "swapFailed": "Échec de l'échange, {{reason}}",
+      "completedTips": "L'échange en cours continuera à être traité"
     }
   }
 }

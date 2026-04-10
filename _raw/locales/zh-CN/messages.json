@@ -33,7 +33,8 @@
     "Nonce": "Nonce",
     "tryAgain": "再试一次",
     "notSupportTesntnet": "不支持自定义网络",
-    "appDescription": "你首选的以太坊和 EVM 钱包"
+    "appDescription": "你首选的以太坊和 EVM 钱包",
+    "collapse": "折叠"
   },
   "page": {
     "transactions": {
@@ -451,7 +452,8 @@
         "price": "价格",
         "searchTokenPlaceholder": "搜索代币",
         "openInTab": "在 Rabby Tab 中打开",
-        "openProMode": "开启专业模式"
+        "openProMode": "开启专业模式",
+        "openInTabV2": "在标签页中打开"
       },
       "hd": {
         "howToConnectLedger": "如何连接 Ledger",
@@ -515,7 +517,8 @@
         "desc": "在 Rabby Mobile 中查看您的积分。",
         "title": "Rabby 积分",
         "downloadIntro": "还没有这个应用吗？现在就下载吧。"
-      }
+      },
+      "noData": "无匹配的货币"
     },
     "chainList": {
       "title": "{{count}} chains 集成",
@@ -4352,8 +4355,22 @@
         "priceImpactTooHigh": "价差损失过大",
         "submitFailed": "交易提交失败",
         "transactionFailed": "交易失败",
-        "gasNotEnough": "Gas不足"
-      }
+        "gasNotEnough": "Gas不足",
+        "missingRequiredParams": "缺少必需参数",
+        "buildSwapTxsFailed": "构建交换交易失败",
+        "sendSwapTxFailed": "发送交换交易失败"
+      },
+      "status": {
+        "pending": "正在交换",
+        "idle": "等待交换",
+        "success": "交换成功"
+      },
+      "tokenColumn": "资产",
+      "amountColumn": "持有量",
+      "valueColumn": "美元价值",
+      "statusColumn": "兑换状态",
+      "noLowValueTokensFound": "暂无资产",
+      "moreChains": "+{{count}} 条链"
     }
   },
   "component": {
@@ -4568,7 +4585,8 @@
       "lending": "借贷"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "添加地址"
+      "addAddresses": "添加地址",
+      "smallSwapDisabledTips": "目前仅支持私钥和助记词地址。"
     },
     "LpTokenTag": {
       "title": "这是一个流动性提供者(LP)代币",

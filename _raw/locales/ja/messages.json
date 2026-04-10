@@ -1137,7 +1137,8 @@
           "perpsPositions_other": "{{count}} ポジション",
           "perpsPositions_one": "{{count}} ポジション",
           "lending": "レンディング",
-          "dragTip": "長押しで並び替え"
+          "dragTip": "長押しで並び替え",
+          "convertDust": "ダストを変換"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -1312,7 +1313,9 @@
           "switchPasswordForNonWhitelistedTx": "ホワイトリストに登録されていない転送のパスワード",
           "biometricUnlock": "生体認証でロック解除",
           "biometricUnlockHint": "このデバイスでバイオメトリクスを使用してロックを解除します。",
-          "biometricUnlockUnsupported": "このデバイスは生体認証によるロック解除をサポートしていません。"
+          "biometricUnlockUnsupported": "このデバイスは生体認証によるロック解除をサポートしていません。",
+          "currency": "通貨",
+          "searchCurrency": "通貨を検索"
         },
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",
@@ -1487,7 +1490,8 @@
         "price": "価格",
         "searchTokenPlaceholder": "トークンを検索",
         "openInTab": "Rabbyタブで開く",
-        "openProMode": "プロモードを開く"
+        "openProMode": "プロモードを開く",
+        "openInTabV2": "新しいタブで開く"
       },
       "hd": {
         "howToConnectLedger": "Ledgerとの接続方法",
@@ -1551,7 +1555,8 @@
         "title": "Rabbyポイント",
         "desc": "Rabby Mobileでポイントを確認してください。",
         "downloadIntro": "アプリをまだお持ちではありませんか？今すぐダウンロードしてください。"
-      }
+      },
+      "noData": "一致する通貨がありません"
     },
     "nft": {
       "floorPrice": "/ フロア価格:",
@@ -4280,6 +4285,53 @@
       "selectMarket": "マーケットを選択",
       "searchMarket": "マーケットを検索",
       "selectChain": "チェーンを選択"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "必須パラメータがありません",
+        "quoteUnavailable": "クォートの取得に失敗しました",
+        "gasCostTooHigh": "Gas代の制限を超えています",
+        "priceImpactTooHigh": "高い価格インパクト",
+        "buildSwapTxsFailed": "Swap取引の構築に失敗しました",
+        "sendSwapTxFailed": "Swap取引の送信に失敗しました",
+        "transactionFailed": "取引が失敗しました",
+        "submitFailed": "取引の提出に失敗しました",
+        "gasNotEnough": "Gas不足"
+      },
+      "stopTaskModal": {
+        "title": "現在のswapを停止しますか？",
+        "description": "今停止すると、残りのswapは完了しません。完了したswapは取り消せないことにご注意ください。",
+        "continueSwap": "swapを続ける",
+        "stop": "swapを停止"
+      },
+      "status": {
+        "pending": "交換中",
+        "idle": "交換待ち",
+        "success": "交換完了"
+      },
+      "title": "Dustを変換",
+      "description": "低価値トークンをガス代トークンに変換し、アセットリストを簡素化します！",
+      "receiveTitle": "受取額",
+      "expectedToReceive": "受取予定額",
+      "completedTitle": "Dustが変換されました！",
+      "done": "完了",
+      "conversionProgress": "変換進捗",
+      "slippageTolerance": "スリッページ許容範囲",
+      "singleTransactionGasLimit": "単一トランザクションのガスリミット",
+      "startConvert": "変換を開始",
+      "unsupportedWalletType": "秘密鍵とシードフレーズのアドレスのみサポートされています。",
+      "stop": "停止",
+      "selectLowValueTokens": "低価値トークンを選択",
+      "tokenColumn": "トークン",
+      "amountColumn": "数量",
+      "valueColumn": "価値",
+      "statusColumn": "ステータス",
+      "noLowValueTokensFound": "低価値トークンが見つかりません",
+      "selectedTokens": "選択されたトークン",
+      "totalValue": "合計価値",
+      "moreChains": "+{{count}}チェーン",
+      "swapFailed": "スワップに失敗しました、{{reason}}",
+      "completedTips": "進行中のスワップは処理を継続します"
     }
   },
   "component": {
@@ -4494,7 +4546,8 @@
       "comingSoon": "近日公開予定"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "アドレスを追加"
+      "addAddresses": "アドレスを追加",
+      "smallSwapDisabledTips": "現在、秘密鍵とシードフレーズのアドレスのみサポートされています。"
     },
     "LpTokenTag": {
       "title": "これは流動性プロバイダー(LP)トークンです。",
@@ -4542,7 +4595,8 @@
     "Nonce": "Nonce",
     "notSupportTesntnet": "カスタムネットワークには対応していません。",
     "tryAgain": "再試行してください",
-    "appDescription": "EthereumおよびEVMのためのあなたの定番ウォレット"
+    "appDescription": "EthereumおよびEVMのためのあなたの定番ウォレット",
+    "collapse": "折りたたむ"
   },
   "background": {
     "error": {

@@ -1137,7 +1137,8 @@
           "perpsPositions_one": "{{count}} Posición",
           "perpsPositions_other": "{{count}} Posiciones",
           "lending": "Préstamo",
-          "dragTip": "Función de pulsar largo para reordenar"
+          "dragTip": "Función de pulsar largo para reordenar",
+          "convertDust": "Convertir Polvo"
         },
         "comingSoon": "Próximamente",
         "soon": "Pronto",
@@ -1312,7 +1313,9 @@
           "switchPasswordForNonWhitelistedTx": "Contraseña para transferencias no autorizadas",
           "biometricUnlock": "Desbloquear con biometría",
           "biometricUnlockHint": "Usa biometría para desbloquear en este dispositivo.",
-          "biometricUnlockUnsupported": "Este dispositivo no soporta el desbloqueo biométrico."
+          "biometricUnlockUnsupported": "Este dispositivo no soporta el desbloqueo biométrico.",
+          "currency": "Moneda",
+          "searchCurrency": "Buscar moneda"
         },
         "aboutUs": "Acerca de Nosotros",
         "currentVersion": "Versión Actual",
@@ -1487,7 +1490,8 @@
         "side": "LADO",
         "searchTokenPlaceholder": "Buscar Token",
         "openInTab": "Abrir en Rabby Tab",
-        "openProMode": "Abrir Modo Pro"
+        "openProMode": "Abrir Modo Pro",
+        "openInTabV2": "Abrir en pestaña"
       },
       "hd": {
         "howToConnectLedger": "¿Cómo Conectar Ledger?",
@@ -1551,7 +1555,8 @@
         "title": "Rabby Puntos",
         "downloadIntro": "¿No tienes la aplicación aún? Descárgala ahora.",
         "desc": "Consulta tus puntos en Rabby Mobile."
-      }
+      },
+      "noData": "No se encontró moneda"
     },
     "nft": {
       "floorPrice": "/ Precio Mínimo:",
@@ -4280,6 +4285,53 @@
       "hfTitle": "Factor de Salud",
       "selectChain": "Seleccionar cadena",
       "selectMarket": "Seleccionar Mercado"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Faltan parámetros requeridos",
+        "quoteUnavailable": "Error al obtener la cotización",
+        "gasCostTooHigh": "Excede el límite de comisión de gas",
+        "priceImpactTooHigh": "Alto impacto en el precio",
+        "buildSwapTxsFailed": "Error al construir las transacciones de swap",
+        "sendSwapTxFailed": "Error al enviar la transacción de swap",
+        "transactionFailed": "Transacción fallida",
+        "submitFailed": "Error al enviar las transacciones",
+        "gasNotEnough": "Gas insuficiente"
+      },
+      "stopTaskModal": {
+        "title": "¿Detener los intercambios actuales?",
+        "description": "Si detienes ahora, los intercambios restantes no se completarán. Ten en cuenta que los intercambios completados no se pueden revertir.",
+        "continueSwap": "Continuar intercambio",
+        "stop": "Detener intercambio"
+      },
+      "status": {
+        "pending": "Intercambiando",
+        "idle": "Esperando para intercambiar",
+        "success": "Intercambio exitoso"
+      },
+      "title": "Convertir Polvo",
+      "description": "¡Convierte tokens de bajo valor en token de gas para simplificar tu lista de activos!",
+      "receiveTitle": "Recibes",
+      "expectedToReceive": "Se espera recibir",
+      "completedTitle": "¡Polvo Convertido!",
+      "done": "Hecho",
+      "conversionProgress": "Progreso de conversión",
+      "slippageTolerance": "Tolerancia de deslizamiento",
+      "singleTransactionGasLimit": "Límite de gas de transacción única",
+      "startConvert": "Iniciar conversión",
+      "unsupportedWalletType": "Solo se admiten direcciones de clave privada y frase semilla.",
+      "stop": "Detener",
+      "selectLowValueTokens": "Seleccionar tokens de bajo valor",
+      "tokenColumn": "Token",
+      "amountColumn": "Cantidad",
+      "valueColumn": "Valor",
+      "statusColumn": "Estado",
+      "noLowValueTokensFound": "No se encontraron tokens de bajo valor",
+      "selectedTokens": "Tokens seleccionados",
+      "totalValue": "Valor total",
+      "moreChains": "+{{count}} cadenas",
+      "swapFailed": "Intercambio fallido, {{reason}}",
+      "completedTips": "El intercambio en curso continuará procesándose"
     }
   },
   "component": {
@@ -4494,7 +4546,8 @@
       "comingSoon": "Próximamente"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Agregar dirección"
+      "addAddresses": "Agregar dirección",
+      "smallSwapDisabledTips": "Actualmente solo se admiten direcciones de clave privada y frase semilla."
     },
     "LpTokenTag": {
       "title": "Este es un token de proveedor de liquidez (LP)",
@@ -4542,7 +4595,8 @@
     "notSupportTesntnet": "No compatible con red personalizada",
     "tryAgain": "Inténtalo de nuevo",
     "Nonce": "Nonce",
-    "appDescription": "Tu billetera de referencia para Ethereum y EVM"
+    "appDescription": "Tu billetera de referencia para Ethereum y EVM",
+    "collapse": "Contraer"
   },
   "background": {
     "error": {

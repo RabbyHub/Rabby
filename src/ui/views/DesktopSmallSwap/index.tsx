@@ -242,7 +242,7 @@ const DesktopSmallSwapContent: React.FC = () => {
             value={currentAccount}
             onChange={handleAccountChange}
             scene="smallSwap"
-            className="bg-r-neutral-card-1 h-[38px]"
+            className="bg-r-neutral-card-1 h-[38px] rounded-[16px]"
             disabled={task.disabled}
           />
         </header>
