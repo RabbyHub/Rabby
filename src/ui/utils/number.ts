@@ -162,6 +162,57 @@ export const formatUsdValue = (
   return '<$0.01';
 };
 
+export type CurrencyLike = {
+  code?: string;
+  symbol: string;
+  logo_url?: string;
+  usd_rate: number;
+};
+
+const DEFAULT_USD_CURRENCY: CurrencyLike = {
+  code: 'USD',
+  symbol: '$',
+  usd_rate: 1,
+};
+
+export const formatCurrency = (
+  value: string | number,
+  options?: {
+    decimal?: number;
+    currency?: CurrencyLike;
+    roundingMode?: BigNumber.RoundingMode;
+  }
+) => {
+  const {
+    decimal = 2,
+    currency = DEFAULT_USD_CURRENCY,
+    roundingMode = BigNumber.ROUND_HALF_UP,
+  } = options || {};
+
+  const bnValue = new BigNumber(value).times(currency.usd_rate || 1);
+  const symbol = currency.symbol || '$';
+
+  if (bnValue.lt(0)) {
+    return `-${symbol}${formatNumber(
+      bnValue.absoluteValue().toFixed(),
+      decimal,
+      undefined,
+      roundingMode
+    )}`;
+  }
+
+  if (bnValue.gte(0.01) || bnValue.eq(0)) {
+    return `${symbol}${formatNumber(
+      bnValue.toFixed(),
+      decimal,
+      undefined,
+      roundingMode
+    )}`;
+  }
+
+  return `<${symbol}0.01`;
+};
+
 export const formatAmount = (amount: string | number, decimals = 4) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
