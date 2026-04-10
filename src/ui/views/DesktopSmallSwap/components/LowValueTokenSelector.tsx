@@ -161,7 +161,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
   });
 
   const handleSelectedChange = useMemoizedFn((tokens: TokenItem[]) => {
-    task?.init(sortBy(tokens, (item) => -(item.amount * item.price || 0)));
+    task?.init(tokens);
   });
 
   const handleTokenToggle = useMemoizedFn(
@@ -169,7 +169,10 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
       handleSelectedChange(
         !nextChecked
           ? task?.list?.filter((item) => item.id !== record.id) || []
-          : [...(task?.list || []), record]
+          : filteredTokenList.filter((item) => {
+              const result = [...(task?.list || []), record];
+              return result.find((i) => i.id === item.id);
+            })
       );
     }
   );
@@ -186,19 +189,16 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
     }
     return (
       <div className="flex justify-end">
-        {item.status === 'idle' && <ThemeIcon src={RcIconStatusIdle} />}
-        {item.status === 'pending' && <ThemeIcon src={RcIconStatusPending} />}
-        {item.status === 'success' && <ThemeIcon src={RcIconStatusSuccess} />}
-        {item.status === 'failed' && (
-          <Tooltip
-            overlayClassName="rectangle"
-            title={t('page.desktopSmallSwap.swapFailed', {
-              reason: item.failedReason,
-            })}
-          >
-            <ThemeIcon src={RcIconStatusError} />
-          </Tooltip>
-        )}
+        <Tooltip
+          overlayClassName="rectangle"
+          title={item.message}
+          placement="top"
+        >
+          {item.status === 'idle' && <ThemeIcon src={RcIconStatusIdle} />}
+          {item.status === 'pending' && <ThemeIcon src={RcIconStatusPending} />}
+          {item.status === 'success' && <ThemeIcon src={RcIconStatusSuccess} />}
+          {item.status === 'failed' && <ThemeIcon src={RcIconStatusError} />}
+        </Tooltip>
       </div>
     );
   });

@@ -208,6 +208,7 @@ export const useMiniSigner = ({
       cfg: SimpleSignConfig & { pauseAfter?: number }
     ): Promise<string[]> => {
       const payload = await prepareSignerPayload(cfg);
+      console.log('openDirect payload', payload, cfg);
       if (!payload) {
         throw new Error('No transactions to sign');
       }

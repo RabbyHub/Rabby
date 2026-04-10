@@ -1,5 +1,6 @@
+import { message } from 'antd';
 import { Account } from '@/background/service/preference';
-import { DEX } from '@/constant';
+import { DEX, EVENTS } from '@/constant';
 import i18n from '@/i18n';
 import { useRabbySelector } from '@/ui/store';
 import { formatAmount, useWallet, WalletControllerType } from '@/ui/utils';
@@ -24,6 +25,11 @@ import {
   useQuoteMethods,
 } from '../../Swap/hooks';
 import { DEFAULT_MAX_GAS_COST, DEFAULT_SLIPPAGE } from '../constant';
+import { last, random } from 'lodash';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import eventBus from '@/eventBus';
+import { useSignatureStore } from '@/ui/component/MiniSignV2';
+import { useTranslation } from 'react-i18next';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 const TASK_CANCELLED_ERROR_NAME = 'BatchSwapTaskCancelled';
@@ -216,68 +222,28 @@ export const buildSwapTxs = async ({
   }
 };
 
-const FailReason: Record<string, string> = {
-  [FailedCode.GasNotEnough]: i18n.t('page.approvals.revokeModal.gasNotEnough'),
-  [FailedCode.GasTooHigh]: i18n.t('page.approvals.revokeModal.gasTooHigh'),
-  [FailedCode.SubmitTxFailed]: i18n.t(
-    'page.approvals.revokeModal.submitTxFailed'
-  ),
-  [FailedCode.DefaultFailed]: i18n.t(
-    'page.approvals.revokeModal.defaultFailed'
-  ),
-  [FailedCode.SimulationFailed]: i18n.t(
-    'page.approvals.revokeModal.simulationFailed'
-  ),
-  [BatchSwapFailReasonKey.MissingRequiredParams]: i18n.t(
-    'page.desktopSmallSwap.failReason.missingRequiredParams'
-  ),
-  [BatchSwapFailReasonKey.QuoteUnavailable]: i18n.t(
-    'page.desktopSmallSwap.failReason.quoteUnavailable'
-  ),
-  [BatchSwapFailReasonKey.GasCostTooHigh]: i18n.t(
-    'page.desktopSmallSwap.failReason.gasCostTooHigh'
-  ),
-  [BatchSwapFailReasonKey.PriceImpactTooHigh]: i18n.t(
-    'page.desktopSmallSwap.failReason.priceImpactTooHigh'
-  ),
-  [BatchSwapFailReasonKey.BuildSwapTxsFailed]: i18n.t(
-    'page.desktopSmallSwap.failReason.buildSwapTxsFailed'
-  ),
-  [BatchSwapFailReasonKey.SendSwapTxFailed]: i18n.t(
-    'page.desktopSmallSwap.failReason.sendSwapTxFailed'
-  ),
-  [BatchSwapFailReasonKey.TransactionFailed]: i18n.t(
-    'page.desktopSmallSwap.failReason.transactionFailed'
-  ),
-};
-
 export type TaskItemStatus =
   | {
       status: 'idle';
+      message?: string;
     }
   | {
       status: 'pending';
       isGasAccount?: boolean;
+      message?: string;
     }
   | {
       status: 'failed';
-      failedCode?: FailedCode;
-      failedReason?: string;
       createdAt?: number;
-      gasCost?: {
-        gasCostUsd: BigNumber;
-      };
+      message?: string;
     }
   | {
       status: 'success';
       txHash: string;
       preExecResult?: ExplainTxResponse;
+      actualReceiveAmount?: string | number;
       createdAt?: number;
-      gasCost: {
-        gasCostUsd: BigNumber;
-        gasCostAmount: BigNumber;
-        nativeTokenSymbol: string;
-      };
+      message?: string;
     };
 
 export const useBatchSwapTask = (options: {
@@ -285,8 +251,9 @@ export const useBatchSwapTask = (options: {
   account?: Account;
   receiveToken?: TokenItem;
 }) => {
-  const { receiveToken } = options;
+  const { receiveToken, account, chain } = options;
   const wallet = useWallet();
+  const { t } = useTranslation();
   const gasAccount = useGasAccountSign();
   const queueRef = React.useRef(
     new PQueue({ concurrency: 1, autoStart: true })
@@ -319,8 +286,18 @@ export const useBatchSwapTask = (options: {
     null
   );
   const { getSingleQuote } = useQuoteMethods();
-  const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
-  const dexId = (supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[])[0];
+
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+    account: account!,
+    chainServerId: chain?.serverId || '',
+    autoResetGasStoreOnChainChange: true,
+  });
+
+  const dexId = useRabbySelector((s) => {
+    const list = s.swap.supportedDEXList.filter((e) => DEX[e]);
+    const randomIndex = random(0, list.length - 1);
+    return list[randomIndex] as DEX_ENUM;
+  });
 
   const updateStatus = React.useCallback(
     (nextStatus: 'idle' | 'active' | 'paused' | 'completed') => {
@@ -350,6 +327,7 @@ export const useBatchSwapTask = (options: {
         async () => {
           try {
             throwIfTaskCancelled();
+            closeSign();
 
             if (
               !options.chain ||
@@ -357,8 +335,8 @@ export const useBatchSwapTask = (options: {
               !options.receiveToken ||
               !dexId
             ) {
-              throw createNamedError(
-                BatchSwapFailReasonKey.MissingRequiredParams
+              throw new Error(
+                t('page.desktopSmallSwap.failReason.quoteUnavailable')
               );
             }
             currentApprovalRef.current = item;
@@ -368,6 +346,7 @@ export const useBatchSwapTask = (options: {
               ...prev,
               [item.id]: {
                 status: 'pending',
+                message: t('page.desktopSmallSwap.status.pending'),
               },
             }));
 
@@ -385,17 +364,21 @@ export const useBatchSwapTask = (options: {
 
             // 获取报价失败
             if (!activeProvider) {
-              throw createNamedError(BatchSwapFailReasonKey.QuoteUnavailable);
+              throw new Error(
+                t('page.desktopSmallSwap.failReason.quoteUnavailable')
+              );
             }
 
-            // 预执行失败 ｜ gas 费用过高
+            // gas 费用超过预设值
             if (
               !activeProvider.preExecResult ||
               new BigNumber(
                 activeProvider.preExecResult.gasUsdValue
               ).isGreaterThan(config.maxGasCost)
             ) {
-              throw createNamedError(BatchSwapFailReasonKey.GasCostTooHigh);
+              throw new Error(
+                t('page.desktopSmallSwap.failReason.gasCostTooHigh')
+              );
             }
 
             const fromUsdBn = new BigNumber(item.amount || 0).times(
@@ -412,7 +395,9 @@ export const useBatchSwapTask = (options: {
 
             // 价差过大
             if (priceImpact.lte(-20)) {
-              throw createNamedError(BatchSwapFailReasonKey.PriceImpactTooHigh);
+              throw new Error(
+                t('page.desktopSmallSwap.failReason.priceImpactTooHigh')
+              );
             }
 
             const txs = await buildSwapTxs({
@@ -434,57 +419,106 @@ export const useBatchSwapTask = (options: {
 
             throwIfTaskCancelled();
 
+            // 构建交易数据失败
             if (!txs?.length) {
-              throw createNamedError(BatchSwapFailReasonKey.BuildSwapTxsFailed);
+              throw new Error(
+                t('page.desktopSmallSwap.failReason.submitFailed')
+              );
             }
 
-            let result: Awaited<ReturnType<typeof sendTransaction>> | undefined;
+            const result: {
+              txHash: string;
+              preExecResult?: ExplainTxResponse;
+              isSimulationFailed?: boolean;
+            } = { txHash: '' };
 
-            for (const tx of txs) {
-              throwIfTaskCancelled();
+            throwIfTaskCancelled();
 
-              let pushType: TxPushType = 'default';
-              if ('swapPreferMEVGuarded' in tx) {
-                if (tx.swapPreferMEVGuarded) {
-                  pushType = 'mev';
+            // let pushType: TxPushType = 'default';
+            // if ('swapPreferMEVGuarded' in tx) {
+            //   if (tx.swapPreferMEVGuarded) {
+            //     pushType = 'mev';
+            //   }
+            //   delete tx.swapPreferMEVGuarded;
+            // }
+
+            await prefetch({
+              txs: txs,
+              onPreExecChange(p) {
+                console.log('preExec change', p);
+                result.preExecResult = p;
+              },
+              onPreExecError() {
+                console.log('preExec error');
+                result.isSimulationFailed = true;
+              },
+            });
+            const res = await openDirect({
+              txs: txs,
+              onPreExecError() {
+                result.isSimulationFailed = true;
+              },
+            });
+
+            result.txHash = last(res) || '';
+
+            // result = await sendTransaction({
+            //   tx,
+            //   ignoreGasCheck,
+            //   wallet,
+            //   chainServerId: options.chain.serverId,
+            //   sig: gasAccount?.sig,
+            //   autoUseGasAccount: true,
+            //   pushType,
+            //   onProgress: (status) => {
+            //     if (isTaskCancelled()) {
+            //       return;
+            //     }
+
+            //     if (status === 'builded') {
+            //       setTxStatus('sended');
+            //     } else if (status === 'signed') {
+            //       setTxStatus('signed');
+            //     }
+            //   },
+            //   ga: {
+            //     category: 'Swap',
+            //     source: 'swap',
+            //   },
+            // });
+            console.log('sendTransaction result', result);
+            throwIfTaskCancelled();
+            // 预执行失败
+            if (result.isSimulationFailed) {
+              throw new Error(
+                t('page.desktopSmallSwap.failReason.submitFailed')
+              );
+            }
+            // 提交交易失败
+            if (!result?.txHash) {
+              throw new Error(
+                t('page.desktopSmallSwap.failReason.submitFailed')
+              );
+            }
+
+            const txCompleted = await new Promise<{
+              gasUsed: number;
+              status: number;
+            }>((resolve) => {
+              const handler = (res) => {
+                if (res?.hash === result.txHash) {
+                  eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+                  resolve(res || {});
                 }
-                delete tx.swapPreferMEVGuarded;
-              }
-              result = await sendTransaction({
-                tx,
-                ignoreGasCheck,
-                wallet,
-                chainServerId: options.chain.serverId,
-                sig: gasAccount?.sig,
-                autoUseGasAccount: true,
-                pushType,
-                onProgress: (status) => {
-                  if (isTaskCancelled()) {
-                    return;
-                  }
-
-                  if (status === 'builded') {
-                    setTxStatus('sended');
-                  } else if (status === 'signed') {
-                    setTxStatus('signed');
-                  }
-                },
-                ga: {
-                  category: 'Swap',
-                  source: 'swap',
-                },
-              });
-
-              throwIfTaskCancelled();
-            }
-
-            if (!result) {
-              throw createNamedError(BatchSwapFailReasonKey.SendSwapTxFailed);
-            }
-
+              };
+              eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+            });
+            throwIfTaskCancelled();
             // 上链成功，但交易失败（如被 MEV 抢跑、价格变动过大等导致交易最终失败）
-            if (!result.status || Number(result.status) === 0) {
-              throw createNamedError(BatchSwapFailReasonKey.TransactionFailed);
+            if (!txCompleted.status || Number(txCompleted.status) === 0) {
+              throw new Error(
+                t('page.desktopSmallSwap.failReason.transactionFailed')
+              );
             }
 
             throwIfTaskCancelled();
@@ -495,8 +529,9 @@ export const useBatchSwapTask = (options: {
                 status: 'success',
                 createdAt: Date.now(),
                 preExecResult: result!.preExecResult,
+                actualReceiveAmount: activeProvider.actualReceiveAmount,
                 txHash: result!.txHash,
-                gasCost: result!.gasCost,
+                message: t('page.desktopSmallSwap.status.success'),
               },
             }));
           } catch (e) {
@@ -504,26 +539,15 @@ export const useBatchSwapTask = (options: {
               return;
             }
 
-            const errorName = typeof e?.name === 'string' ? e.name : '';
-            let failedCode: FailedCode | undefined = undefined;
-            if (Object.values(FailedCode).includes(errorName as FailedCode)) {
-              failedCode = errorName as FailedCode;
-            }
-
-            const failedReason =
-              FailReason[errorName] ||
-              e?.message ||
-              FailReason[FailedCode.DefaultFailed];
-
             console.error(e);
             if (!isTaskCancelled()) {
               setStatusDict((prev) => ({
                 ...prev,
                 [item.id]: {
                   status: 'failed',
-                  failedCode: failedCode,
-                  failedReason,
-                  gasCost: e.gasCost,
+                  message:
+                    e.message ||
+                    t('page.desktopSmallSwap.failReason.transactionFailed'),
                   createdAt: Date.now(),
                 },
               }));
@@ -531,6 +555,7 @@ export const useBatchSwapTask = (options: {
           } finally {
             if (!isTaskCancelled()) {
               setTxStatus('idle');
+              closeSign();
             }
             // setCurrentToken(null);
           }
@@ -559,6 +584,7 @@ export const useBatchSwapTask = (options: {
         dataSource.reduce((dict, item) => {
           dict[item.id] = {
             status: 'idle',
+            message: t('page.desktopSmallSwap.status.idle'),
           };
           return dict;
         }, {} as Record<string, TaskItemStatus>)
@@ -614,15 +640,26 @@ export const useBatchSwapTask = (options: {
     let totalAmount = 0;
 
     Object.values(statusDict).forEach((item) => {
-      if (item.status === 'success' && item.preExecResult) {
-        item.preExecResult.balance_change?.receive_token_list?.forEach(
-          (token) => {
-            if (token.id === options.receiveToken?.id) {
-              totalUsd += token.amount * token.price || 0;
-              totalAmount += token.amount || 0;
+      if (item.status === 'success') {
+        if (
+          item.preExecResult &&
+          item.preExecResult.pre_exec_version !== 'v0' &&
+          item.preExecResult.balance_change.success
+        ) {
+          item.preExecResult.balance_change?.receive_token_list?.forEach(
+            (token) => {
+              if (token.id === options.receiveToken?.id) {
+                totalUsd += token.amount * token.price || 0;
+                totalAmount += token.amount || 0;
+              }
             }
-          }
-        );
+          );
+        } else {
+          totalUsd +=
+            Number(item.actualReceiveAmount || 0) *
+              (options.receiveToken?.price || 0) || 0;
+          totalAmount += Number(item.actualReceiveAmount || 0) || 0;
+        }
       }
     });
     return {
@@ -635,14 +672,21 @@ export const useBatchSwapTask = (options: {
     return list.findIndex((item) => statusDict[item.id]?.status === 'pending');
   }, [list, statusDict]);
 
-  const clear = React.useCallback(() => {
+  const clear = useMemoizedFn(() => {
     cancelRunningTasks();
     setList([]);
     setStatusDict({});
     setTxStatus('idle');
     setCurrentToken(null);
     updateStatus('idle');
-  }, [cancelRunningTasks, updateStatus]);
+  });
+
+  const stop = useMemoizedFn(() => {
+    cancelRunningTasks();
+    setList([]);
+    setCurrentToken(null);
+    updateStatus('completed');
+  });
 
   return {
     statusDict,
@@ -651,6 +695,7 @@ export const useBatchSwapTask = (options: {
     start,
     continue: handleContinue,
     pause,
+    stop,
     status,
     txStatus,
     addTask,

@@ -8,7 +8,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ReactComponent as RcIconArrowRightCC } from 'ui/assets/arrow-right-1-cc.svg';
 import IconRabby from 'ui/assets/rabby.svg';
 
-import { DEX } from '@/constant';
+import { DEX, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { db } from '@/db';
 import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
@@ -80,7 +80,14 @@ const DesktopSmallSwapContent: React.FC = () => {
         return sortBy(
           data?.chain_list || [],
           (item) => -(item.usd_value || 0)
-        ).filter((item) => !!item.usd_value);
+        ).filter((item) => {
+          const chainEnum = findChain({ serverId: item.id })?.enum;
+          return (
+            chainEnum &&
+            SWAP_SUPPORT_CHAINS.includes(chainEnum) &&
+            !!item.usd_value
+          );
+        });
       });
   }, [currentAccount?.address]);
 
@@ -291,8 +298,7 @@ const DesktopSmallSwapContent: React.FC = () => {
         visible={task.status === 'paused'}
         onContinue={task.continue}
         onStop={() => {
-          task.clear();
-          handleRefresh();
+          task.stop();
         }}
       />
     </div>
