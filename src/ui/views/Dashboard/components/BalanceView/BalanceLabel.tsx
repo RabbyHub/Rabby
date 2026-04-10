@@ -26,7 +26,6 @@ export const BalanceLabel: React.FC<Props> = ({ balanceUsd, currency }) => {
         'cursor-pointer transition-opacity truncate'
         // isCache && 'opacity-80'
       )}
-      title={formattedBalance}
       onClick={handleClick}
     >
       {hiddenBalance ? (

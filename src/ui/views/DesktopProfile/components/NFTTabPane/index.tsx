@@ -23,6 +23,7 @@ import { ResultModal } from './components/ResultModal';
 import { useHistory } from 'react-router-dom';
 import { useListenTxReload } from '../../hooks/useListenTxReload';
 import { useTranslation } from 'react-i18next';
+import { EmptyIcon } from '../TokensTabPane/TokenListEmpty';
 
 export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
   selectChainId,
@@ -127,7 +128,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
           <div className={clsx('rounded-[10px] p-[2px] bg-rb-neutral-bg-0')}>
             <div
               className={clsx(
-                'py-[6px] px-[12px] rounded-[8px] bg-rb-neutral-foot',
+                'py-[6px] px-[12px] rounded-[8px] bg-rb-neutral-foot dark:bg-rb-neutral-bg-4',
                 'text-rb-neutral-InvertHighlight text-[12px] leading-[14px] font-medium'
               )}
             >
@@ -184,7 +185,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
             </>
           ) : (
             <div className="w-full py-[160px] flex flex-col items-center justify-center gap-[8px]">
-              <ThemeIcon src={RcIconNftEmpty}></ThemeIcon>
+              <EmptyIcon />
               <div className="text-r-neutral-foot text-[13px] leading-[16px] font-medium">
                 {t('page.desktopProfile.nft.empty')}
               </div>
